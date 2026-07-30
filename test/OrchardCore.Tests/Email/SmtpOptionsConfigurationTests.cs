@@ -228,5 +228,5 @@ public class SmtpOptionsConfigurationTests
     }
 
     private static string GetRootedPath(params string[] segments)
-        => Path.GetFullPath(Path.Combine(Path.DirectorySeparatorChar.ToString(), Path.Combine(segments)));
+        => Path.GetFullPath(Path.Combine([Path.DirectorySeparatorChar.ToString(), .. segments]));
 }

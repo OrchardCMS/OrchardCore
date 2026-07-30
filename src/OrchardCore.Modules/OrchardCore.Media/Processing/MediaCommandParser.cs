@@ -38,14 +38,14 @@ internal sealed class MediaCommandParser
             var value = query[key].ToString();
             switch (key)
             {
-                case MediaCommands.WidthCommand:            commands.Width            = value; rawCommandPairs.Add(new(key, value)); break;
-                case MediaCommands.HeightCommand:           commands.Height           = value; rawCommandPairs.Add(new(key, value)); break;
-                case MediaCommands.ResizeModeCommand:       commands.ResizeMode       = value; rawCommandPairs.Add(new(key, value)); break;
+                case MediaCommands.WidthCommand: commands.Width = value; rawCommandPairs.Add(new(key, value)); break;
+                case MediaCommands.HeightCommand: commands.Height = value; rawCommandPairs.Add(new(key, value)); break;
+                case MediaCommands.ResizeModeCommand: commands.ResizeMode = value; rawCommandPairs.Add(new(key, value)); break;
                 case MediaCommands.ResizeFocalPointCommand: commands.ResizeFocalPoint = value; rawCommandPairs.Add(new(key, value)); break;
-                case MediaCommands.FormatCommand:           commands.Format           = value; rawCommandPairs.Add(new(key, value)); break;
-                case MediaCommands.BackgroundColorCommand:  commands.BackgroundColor  = value; rawCommandPairs.Add(new(key, value)); break;
-                case MediaCommands.QualityCommand:          commands.Quality          = value; rawCommandPairs.Add(new(key, value)); break;
-                case MediaCommands.AutoOrientCommand:       commands.AutoOrient       = value; rawCommandPairs.Add(new(key, value)); break;
+                case MediaCommands.FormatCommand: commands.Format = value; rawCommandPairs.Add(new(key, value)); break;
+                case MediaCommands.BackgroundColorCommand: commands.BackgroundColor = value; rawCommandPairs.Add(new(key, value)); break;
+                case MediaCommands.QualityCommand: commands.Quality = value; rawCommandPairs.Add(new(key, value)); break;
+                case MediaCommands.AutoOrientCommand: commands.AutoOrient = value; rawCommandPairs.Add(new(key, value)); break;
             }
         }
 

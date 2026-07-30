@@ -2,7 +2,6 @@ using Microsoft.Extensions.Primitives;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Implementation;
-using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Environment.Cache;
 

@@ -32,7 +32,7 @@ public class PartialAsteriskRedactor : Redactor
     public override int GetRedactedLength(ReadOnlySpan<char> input) => input.Length;
 
     public override string Redact(string source) =>
-        (source?.Length ?? 0) <= 2 
+        (source?.Length ?? 0) <= 2
             ? source
             : $"{source![0]}{new string('*', source.Length - 2)}{source[^1]}";
 }

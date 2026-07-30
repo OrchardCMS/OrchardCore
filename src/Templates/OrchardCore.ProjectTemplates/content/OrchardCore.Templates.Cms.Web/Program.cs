@@ -21,11 +21,11 @@ builder.Host.UseSerilog((hostingContext, configBuilder) =>
 
 builder.Services
     .AddOrchardCms()
-    // // Orchard Specific Pipeline
-    // .ConfigureServices( services => {
-    // })
-    // .Configure( (app, routes, services) => {
-    // })
+// // Orchard Specific Pipeline
+// .ConfigureServices( services => {
+// })
+// .Configure( (app, routes, services) => {
+// })
 ;
 
 var app = builder.Build();

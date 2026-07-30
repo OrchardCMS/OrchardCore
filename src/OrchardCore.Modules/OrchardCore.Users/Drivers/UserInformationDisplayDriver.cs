@@ -6,7 +6,6 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
-using OrchardCore.Sms;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.ViewModels;
 

@@ -63,7 +63,7 @@ public class ShellDescriptorManager : IShellDescriptorManager
             shellDescriptor = new ShellDescriptor
             {
                 SerialNumber = shellDescriptor.SerialNumber,
-                Installed = new List<InstalledShellFeature>(shellDescriptor.Installed),
+                Installed = [.. shellDescriptor.Installed],
             };
         }
 

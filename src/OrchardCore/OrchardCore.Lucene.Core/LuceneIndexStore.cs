@@ -8,7 +8,6 @@ using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Modules;
-using OrchardCore.Lucene;
 using OrchardCore.Lucene.Models;
 using OrchardCore.Lucene.Services;
 using Directory = System.IO.Directory;
@@ -24,7 +23,7 @@ public sealed class LuceneIndexStore : ILuceneIndexStore, IDisposable
     private readonly ConcurrentDictionary<string, IndexWriterWrapper> _writers = new();
     private readonly ConcurrentDictionary<string, DateTime> _timestamps = new();
 
-    private readonly object _lock = new();
+    private readonly System.Threading.Lock _lock = new();
 
     private readonly string _rootPath;
     private readonly IClock _clock;

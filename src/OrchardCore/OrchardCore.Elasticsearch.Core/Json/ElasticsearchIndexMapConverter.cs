@@ -9,7 +9,7 @@ namespace OrchardCore.Elasticsearch.Core.Json;
 
 public sealed class ElasticsearchIndexMapConverter : JsonConverter<ElasticsearchIndexMap>
 {
-    internal readonly static Serializer _elasticsearchSerializer;
+    internal static readonly Serializer _elasticsearchSerializer;
 
     private static readonly JsonWriterOptions _writerOptions = new JsonWriterOptions
     {

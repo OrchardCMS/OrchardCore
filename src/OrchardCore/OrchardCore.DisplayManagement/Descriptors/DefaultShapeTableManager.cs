@@ -23,7 +23,7 @@ public class DefaultShapeTableManager : IShapeTableManager
     // create a unique list of these per tenant.
     private static readonly ConcurrentDictionary<string, FeatureShapeDescriptor> _shapeDescriptors = new();
 
-    private static readonly object _syncLock = new();
+    private static readonly System.Threading.Lock _syncLock = new();
 
     // Singleton cache to hold a tenant's theme ShapeTable.
     private readonly IDictionary<string, Task<ShapeTable>> _shapeTableCache;
@@ -89,7 +89,7 @@ public class DefaultShapeTableManager : IShapeTableManager
         // Here we don't use a lock for thread safety but for atomicity.
         lock (_syncLock)
         {
-            excludedFeatures = new HashSet<string>(_shapeDescriptors.Select(kv => kv.Value.Feature.Id));
+            excludedFeatures = [.. _shapeDescriptors.Select(kv => kv.Value.Feature.Id)];
         }
 
         var shapeDescriptors = new Dictionary<string, FeatureShapeDescriptor>();

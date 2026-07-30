@@ -171,7 +171,7 @@ public class MenuShapes : ShapeTableProvider
         return ValueTask.CompletedTask;
     }
 
-    private async static Task<bool> ShouldCreateAsync(
+    private static async Task<bool> ShouldCreateAsync(
         ContentItem contentItem,
         IContentManager contentManager,
         IPermissionService permissionService,

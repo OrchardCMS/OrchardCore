@@ -8,14 +8,14 @@ public class JavaScriptScope : IScriptingScope
     {
         Engine = engine;
         ServiceProvider = serviceProvider;
-        
+
         foreach (var method in methods)
         {
             if (method.Method != null)
             {
                 Engine.SetValue(method.Name, method.Method(ServiceProvider));
             }
-            
+
             if (method.AsyncMethod != null)
             {
                 Engine.SetValue(method.Name + "Async", method.AsyncMethod(ServiceProvider));

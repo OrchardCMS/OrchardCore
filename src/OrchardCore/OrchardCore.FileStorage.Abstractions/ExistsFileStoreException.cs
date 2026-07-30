@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.FileStorage;
+namespace OrchardCore.FileStorage;
 
 public class ExistsFileStoreException : FileStoreException
 {

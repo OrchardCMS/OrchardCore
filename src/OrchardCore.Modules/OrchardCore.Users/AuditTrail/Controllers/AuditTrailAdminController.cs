@@ -47,7 +47,7 @@ public sealed class AuditTrailAdminController : Controller
             .Union(await _customUserSettingsService.GetAllSettingsTypeNamesAsync())
             .Where(name => !UserEventHandler.BannedProperties.Contains(name))
             .Order();
-        
+
         return View(new AuditTrailUserEventSettingsViewModel
         {
             UserSnapshotProperties = propertyNames

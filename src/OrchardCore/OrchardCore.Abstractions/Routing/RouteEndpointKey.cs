@@ -59,13 +59,7 @@ public readonly struct RouteEndpointKey : IEquatable<RouteEndpointKey>
 
         return hash;
     }
-    public static bool operator ==(RouteEndpointKey left, RouteEndpointKey right)
-    {
-        return left.Equals(right);
-    }
+    public static bool operator ==(RouteEndpointKey left, RouteEndpointKey right) => left.Equals(right);
 
-    public static bool operator !=(RouteEndpointKey left, RouteEndpointKey right)
-    {
-        return !(left == right);
-    }
+    public static bool operator !=(RouteEndpointKey left, RouteEndpointKey right) => !(left == right);
 }

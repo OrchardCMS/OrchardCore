@@ -76,7 +76,7 @@ public static class NavigationHelper
             shape.Item = menuItem;
             shape.Menu = menu;
             shape.Parent = parentShape;
-            shape.Level = GetLevel(parentShape) + 1;   
+            shape.Level = GetLevel(parentShape) + 1;
             shape.Priority = menuItem.Priority;
             shape.Local = menuItem.LocalNav;
             shape.Hash = (GetHash(parentShape) + menuItem.Text.Value).GetHashCode().ToString();

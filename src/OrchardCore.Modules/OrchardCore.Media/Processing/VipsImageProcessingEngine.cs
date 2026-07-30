@@ -62,11 +62,11 @@ internal sealed class VipsImageProcessingEngine : IImageProcessingEngine
         return commands.ResizeMode switch
         {
             ResizeMode.Stretch => ApplyStretch(buffer, width, height, autoOrient),
-            ResizeMode.Crop    => ApplyCrop(buffer, width, height, commands.FocalPointX, commands.FocalPointY, autoOrient),
-            ResizeMode.Pad     => ApplyPad(buffer, width, height, commands.BackgroundColor, autoOrient, boxPad: false),
-            ResizeMode.BoxPad  => ApplyPad(buffer, width, height, commands.BackgroundColor, autoOrient, boxPad: true),
-            ResizeMode.Min     => ApplyMax(buffer, width, height, autoOrient),
-            _                  => ApplyMax(buffer, width, height, autoOrient),
+            ResizeMode.Crop => ApplyCrop(buffer, width, height, commands.FocalPointX, commands.FocalPointY, autoOrient),
+            ResizeMode.Pad => ApplyPad(buffer, width, height, commands.BackgroundColor, autoOrient, boxPad: false),
+            ResizeMode.BoxPad => ApplyPad(buffer, width, height, commands.BackgroundColor, autoOrient, boxPad: true),
+            ResizeMode.Min => ApplyMax(buffer, width, height, autoOrient),
+            _ => ApplyMax(buffer, width, height, autoOrient),
         };
     }
 
@@ -267,10 +267,10 @@ internal sealed class VipsImageProcessingEngine : IImageProcessingEngine
 
         return commands.Format switch
         {
-            Format.Png  => (".png", MediaResizingConstants.PngContentType),
-            Format.Gif  => (".gif", MediaResizingConstants.GifContentType),
+            Format.Png => (".png", MediaResizingConstants.PngContentType),
+            Format.Gif => (".gif", MediaResizingConstants.GifContentType),
             Format.WebP => ($".webp[Q={quality}]", MediaResizingConstants.WebpContentType),
-            _           => ($".jpg[Q={quality}]", MediaResizingConstants.JpegContentType),
+            _ => ($".jpg[Q={quality}]", MediaResizingConstants.JpegContentType),
         };
     }
 

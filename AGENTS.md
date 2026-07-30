@@ -14,7 +14,7 @@ Orchard Core is an open-source, modular, multi-tenant application framework and 
 
 ## Prerequisites
 
-- **.NET SDK**: Version 10.0+ (see `global.json` for exact version requirements)
+- **.NET SDK**: Version 11.0 Preview 6+ (see `global.json` for exact version requirements)
 - **Node.js**: Version 22.x (for asset compilation)
 - **Yarn**: Version 4.x (package manager for frontend assets)
 
@@ -30,7 +30,7 @@ cd src/OrchardCore.Cms.Web
 dotnet run
 
 # Or build with specific configuration
-dotnet build -c Debug -f net10.0
+dotnet build -c Debug -f net11.0
 ```
 
 ### Full Solution Build
@@ -45,13 +45,13 @@ dotnet build OrchardCore.sln -c Release
 
 ### Target Framework
 
-The default target framework is `net10.0` as defined in `src/OrchardCore.Build/TargetFrameworks.props`.
+The default target framework is `net11.0` as defined in `src/OrchardCore.Build/TargetFrameworks.props`.
 
 ## Running the Application
 
 ```bash
 cd src/OrchardCore.Cms.Web
-dotnet run -f net10.0
+dotnet run -f net11.0
 ```
 
 The application will be available at `http://localhost:5000` (and `https://localhost:5001`).
@@ -377,11 +377,11 @@ For browser-based manual testing using Playwright, see the `orchardcore-tester` 
 **Quick start:**
 ```powershell
 # Build
-dotnet build src/OrchardCore.Cms.Web -c Debug -f net10.0
+dotnet build src/OrchardCore.Cms.Web -c Debug -f net11.0
 
 # Generate/get port and start in background
 $port = if (Test-Path .orchardcore-port) { Get-Content .orchardcore-port } else { $p = Get-Random -Min 5000 -Max 6000; $p | Out-File .orchardcore-port -NoNewline; $p }
-$proc = Start-Process dotnet -ArgumentList "run","-f","net10.0","--no-build","--urls","http://localhost:$port" -WorkingDirectory "src/OrchardCore.Cms.Web" -PassThru -NoNewWindow
+$proc = Start-Process dotnet -ArgumentList "run","-f","net11.0","--no-build","--urls","http://localhost:$port" -WorkingDirectory "src/OrchardCore.Cms.Web" -PassThru -NoNewWindow
 $proc.Id | Out-File .orchardcore-pid -NoNewline
 
 # URL: http://localhost:$port

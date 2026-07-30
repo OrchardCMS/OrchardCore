@@ -15,7 +15,7 @@ public class Permissions : IPermissionProvider
         "View Audit Trail events about own user",
         [ViewUserAuditTrailEvents],
         isSecurityCritical: true);
-    
+
     public static readonly Permission ManageUserAuditTrailSettings = new(
         nameof(ManageUserAuditTrailSettings),
         "Manage Audit Trail settings for user events",
