@@ -22,6 +22,11 @@ public class ApiControllerTests
 
     private delegate void TryGetSettingsCallback(string name, out ShellSettings settings);
 
+    private void TryGetShellSettings(string name, out ShellSettings settings)
+    {
+        _ = _shellSettings.TryGetValue(name, out settings);
+    }
+
     [Fact]
     public async Task CallCreateApiMultipleTimes_ReturnsSetupToken_CreatesTenant()
     {
@@ -371,10 +376,7 @@ public class ApiControllerTests
         var _ = It.IsAny<ShellSettings>();
         shellHostMock
             .Setup(host => host.TryGetSettings(It.IsAny<string>(), out _))
-            .Callback(new TryGetSettingsCallback((string name, out ShellSettings settings) =>
-            {
-                _shellSettings.TryGetValue(name, out settings);
-            }))
+            .Callback(new TryGetSettingsCallback(TryGetShellSettings))
             .Returns<string, ShellSettings>((name, _) => _shellSettings.ContainsKey(name));
 
         var shellSettingsManagerMock = new Mock<IShellSettingsManager>();
