@@ -128,7 +128,7 @@ public class ShellContextFactory : IShellContextFactory
         return new ShellDescriptor
         {
             SerialNumber = -1,
-            Features = new List<ShellFeature>(_shellFeatures),
+            Features = [.. _shellFeatures],
         };
     }
 }

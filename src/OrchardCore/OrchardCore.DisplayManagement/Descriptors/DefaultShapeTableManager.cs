@@ -89,7 +89,7 @@ public class DefaultShapeTableManager : IShapeTableManager
         // Here we don't use a lock for thread safety but for atomicity.
         lock (_syncLock)
         {
-            excludedFeatures = new HashSet<string>(_shapeDescriptors.Select(kv => kv.Value.Feature.Id));
+            excludedFeatures = [.. _shapeDescriptors.Select(kv => kv.Value.Feature.Id)];
         }
 
         var shapeDescriptors = new Dictionary<string, FeatureShapeDescriptor>();
