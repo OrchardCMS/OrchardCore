@@ -1,7 +1,7 @@
-﻿@{
+﻿@model ConfirmEmailSentViewModel
+
+@{
     ViewLayout = "Layout__Login";
-    var returnUrl = Context.Request.Query["ReturnUrl"];
-    var resendCode = Context.Request.Query["code"];
 }
 
 <h2>@T["Email confirmation sent"]</h2>
@@ -9,19 +9,18 @@
     <p>
         @T["An email has been sent to you. Please click on the link it contains in order to have access on this site."]
     </p>
-    @if (!string.IsNullOrWhiteSpace(resendCode))
+    @if (Model.CanResendEmailConfirmation)
     {
-        <form id="resend-email-confirmation-form" asp-controller="Account" asp-action="ResendEmailConfirmation" asp-area="@UserConstants.Features.Users"
-              asp-route-returnurl="@returnUrl" method="post" class="mb-3 no-multisubmit">
-            <input name="code" type="hidden" value="@resendCode" />
-            <a href="#" onclick="event.preventDefault(); document.getElementById('resend-email-confirmation-form').submit();">@T["Send confirmation email"]</a>
+        <form id="resend-email-confirmation-form" asp-controller="EmailConfirmation" asp-action="ResendEmailConfirmation" asp-area="@UserConstants.Features.Users"
+              asp-route-returnurl="@Model.ReturnUrl" method="post" class="mb-3 no-multisubmit">
+            <a href="#" onclick="event.preventDefault(); document.getElementById('resend-email-confirmation-form').requestSubmit();">@T["Send confirmation email"]</a>
         </form>
     }
 
     <p>
-        @if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+        @if (!string.IsNullOrWhiteSpace(Model.ReturnUrl) && Url.IsLocalUrl(Model.ReturnUrl))
         {
-            <a href="@returnUrl">@T["Previous Page"]</a>
+            <a href="@Model.ReturnUrl">@T["Previous Page"]</a>
         }
         else
         {

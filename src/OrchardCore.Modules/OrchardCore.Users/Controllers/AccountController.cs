@@ -1,7 +1,6 @@
-using System.Security.Cryptography;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -24,8 +23,6 @@ namespace OrchardCore.Users.Controllers;
 [Authorize]
 public sealed class AccountController : AccountBaseController
 {
-    private const string ResendEmailConfirmationPurpose = "OrchardCore.Users.ResendEmailConfirmation";
-
     private readonly IUserService _userService;
     private readonly SignInManager<IUser> _signInManager;
     private readonly UserManager<IUser> _userManager;
@@ -36,8 +33,6 @@ public sealed class AccountController : AccountBaseController
     private readonly IDisplayManager<LoginForm> _loginFormDisplayManager;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly INotifier _notifier;
-    private readonly UserEmailService _userEmailService;
-    private readonly IDataProtector _resendEmailConfirmationProtector;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -53,8 +48,6 @@ public sealed class AccountController : AccountBaseController
         IEnumerable<ILoginFormEvent> loginFormEvents,
         IOptions<RegistrationOptions> registrationOptions,
         INotifier notifier,
-        UserEmailService userEmailService,
-        IDataProtectionProvider dataProtectionProvider,
         IDisplayManager<LoginForm> loginFormDisplayManager,
         IUpdateModelAccessor updateModelAccessor)
     {
@@ -66,8 +59,6 @@ public sealed class AccountController : AccountBaseController
         _loginFormEvents = loginFormEvents;
         _registrationOptions = registrationOptions.Value;
         _notifier = notifier;
-        _userEmailService = userEmailService;
-        _resendEmailConfirmationProtector = dataProtectionProvider.CreateProtector(ResendEmailConfirmationPurpose);
         _loginFormDisplayManager = loginFormDisplayManager;
         _updateModelAccessor = updateModelAccessor;
 
@@ -83,8 +74,9 @@ public sealed class AccountController : AccountBaseController
             returnUrl = null;
         }
 
-        // Clear the existing external cookie to ensure a clean login process.
+        // Clear temporary authentication cookies to ensure a clean login process.
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+        await HttpContext.SignOutAsync(UserConstants.EmailConfirmationAuthenticationScheme);
 
         foreach (var loginFormEvent in _loginFormEvents)
         {
@@ -148,7 +140,7 @@ public sealed class AccountController : AccountBaseController
                             if (loginResult is RedirectToActionResult redirectToActionResult &&
                                 IsConfirmEmailSentResult(redirectToActionResult))
                             {
-                                await AddResendEmailConfirmationCodeAsync(redirectToActionResult, user);
+                                await StoreEmailConfirmationAuthenticationAsync(user);
                             }
 
                             return loginResult;
@@ -208,44 +200,6 @@ public sealed class AccountController : AccountBaseController
     }
 
     [HttpPost]
-    [AllowAnonymous]
-    public async Task<IActionResult> ResendEmailConfirmation(string code, string returnUrl = null)
-    {
-        if (string.IsNullOrEmpty(code))
-        {
-            return NotFound();
-        }
-
-        var userId = string.Empty;
-
-        try
-        {
-            userId = _resendEmailConfirmationProtector.Unprotect(code);
-        }
-        catch (CryptographicException)
-        {
-            return NotFound();
-        }
-
-        var user = await _userManager.FindByIdAsync(userId);
-
-        if (user == null)
-        {
-            return NotFound();
-        }
-
-        if (!await _userManager.IsEmailConfirmedAsync(user))
-        {
-            await _userEmailService.SendEmailConfirmationAsync(user);
-        }
-
-        return RedirectToAction(
-            nameof(EmailConfirmationController.ConfirmEmailSent),
-            typeof(EmailConfirmationController).ControllerName(),
-            new { returnUrl });
-    }
-
-    [HttpPost]
     public async Task<IActionResult> LogOff(string returnUrl = null)
     {
         await _signInManager.SignOutAsync();
@@ -291,16 +245,14 @@ public sealed class AccountController : AccountBaseController
     public IActionResult ChangePasswordConfirmation()
         => View();
 
-    private async Task AddResendEmailConfirmationCodeAsync(RedirectToActionResult result, IUser user)
+    private async Task StoreEmailConfirmationAuthenticationAsync(IUser user)
     {
-        if (!_registrationOptions.UsersMustValidateEmail || await _userManager.IsEmailConfirmedAsync(user))
-        {
-            return;
-        }
+        var identity = new ClaimsIdentity(UserConstants.EmailConfirmationAuthenticationScheme);
+        identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, await _userManager.GetUserIdAsync(user)));
 
-        result.RouteValues ??= [];
-        result.RouteValues["code"] = _resendEmailConfirmationProtector.Protect(
-            await _userManager.GetUserIdAsync(user));
+        await HttpContext.SignInAsync(
+            UserConstants.EmailConfirmationAuthenticationScheme,
+            new ClaimsPrincipal(identity));
     }
 
     private static bool IsConfirmEmailSentResult(RedirectToActionResult result)

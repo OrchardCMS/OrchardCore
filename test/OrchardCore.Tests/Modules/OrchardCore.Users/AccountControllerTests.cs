@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using OrchardCore.Tests.Apis.Context;
@@ -557,14 +556,22 @@ public class AccountControllerTests
 
         Assert.DoesNotContain("Send confirmation email", confirmEmailSentBodyWithoutCode);
 
+        var responseFromUnauthorizedResendPost = await context.Client.SendAsync(
+            await CreateResendEmailConfirmationRequestMessageAsync(loginBody, responseFromLoginGet),
+            TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.NotFound, responseFromUnauthorizedResendPost.StatusCode);
+
         // Act
         var responseFromLoginPost = await context.Client.SendAsync(await CreateLoginRequestMessageAsync(model, responseFromLoginGet), TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.Redirect, responseFromLoginPost.StatusCode);
-        Assert.StartsWith($"/{context.TenantName}/ConfirmEmailSent?", responseFromLoginPost.Headers.Location.ToString());
+        Assert.Equal($"/{context.TenantName}/ConfirmEmailSent", responseFromLoginPost.Headers.Location.ToString());
 
-        var responseFromConfirmEmailSent = await context.Client.GetAsync(responseFromLoginPost.Headers.Location, TestContext.Current.CancellationToken);
+        var responseFromConfirmEmailSent = await context.Client.SendAsync(
+            HttpRequestHelper.CreateGetMessageWithCookies(responseFromLoginPost.Headers.Location.ToString(), responseFromLoginPost),
+            TestContext.Current.CancellationToken);
 
         Assert.True(responseFromConfirmEmailSent.IsSuccessStatusCode);
 
@@ -574,12 +581,12 @@ public class AccountControllerTests
         Assert.Contains("Send confirmation email", body);
         Assert.Contains(">Send confirmation email</a>", body);
         Assert.DoesNotContain(">Send confirmation email</button>", body);
+        Assert.DoesNotContain("""name="code" """, body);
 
-        var resendCode = ExtractResendEmailConfirmationCode(body);
+        var resendRequest = await CreateResendEmailConfirmationRequestMessageAsync(body, responseFromConfirmEmailSent);
+        CookiesHelper.CopyCookies(resendRequest, responseFromLoginPost);
 
-        Assert.NotNull(resendCode);
-
-        var responseFromResendPost = await context.Client.SendAsync(await CreateResendEmailConfirmationRequestMessageAsync(resendCode, body, responseFromConfirmEmailSent), TestContext.Current.CancellationToken);
+        var responseFromResendPost = await context.Client.SendAsync(resendRequest, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.Redirect, responseFromResendPost.StatusCode);
         Assert.Equal($"/{context.TenantName}/ConfirmEmailSent", responseFromResendPost.Headers.Location.ToString());
@@ -614,22 +621,14 @@ public class AccountControllerTests
         return HttpRequestHelper.CreatePostMessageWithCookies("Login", data, response);
     }
 
-    private static Task<HttpRequestMessage> CreateResendEmailConfirmationRequestMessageAsync(string code, string body, HttpResponseMessage response)
+    private static Task<HttpRequestMessage> CreateResendEmailConfirmationRequestMessageAsync(string body, HttpResponseMessage response)
     {
         var data = new Dictionary<string, string>
         {
             {"__RequestVerificationToken", AntiForgeryHelper.ExtractAntiForgeryToken(body) },
-            {"code", code},
         };
 
         return Task.FromResult(HttpRequestHelper.CreatePostMessageWithCookies("ResendEmailConfirmation", data, response));
-    }
-
-    private static string ExtractResendEmailConfirmationCode(string body)
-    {
-        var match = Regex.Match(body, """<input name="code" type="hidden" value="([^"]+)" />""");
-
-        return match.Success ? match.Groups[1].Captures[0].Value : null;
     }
 
     private static async Task<SiteContext> GetSiteContextAsync(RegistrationSettings settings, bool enableRegistrationFeature = true, bool requireUniqueEmail = true, bool enableExternalAuthentication = false)

@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +12,7 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
+using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Controllers;
 
@@ -65,6 +67,8 @@ public sealed class EmailConfirmationController : Controller
 
         if (result.Succeeded)
         {
+            await HttpContext.SignOutAsync(UserConstants.EmailConfirmationAuthenticationScheme);
+
             var userContext = new UserConfirmContext(user) { ConfirmationType = UserConfirmationType.Email };
             await _userEventHandlers.InvokeAsync((handler, context) => handler.ConfirmedAsync(userContext), userContext, _logger);
 
@@ -75,8 +79,44 @@ public sealed class EmailConfirmationController : Controller
     }
 
     [AllowAnonymous]
-    public IActionResult ConfirmEmailSent(string returnUrl = null)
-        => View(new { ReturnUrl = returnUrl });
+    public async Task<IActionResult> ConfirmEmailSent(string returnUrl = null)
+    {
+        var user = await GetEmailConfirmationUserAsync();
+
+        return View(new ConfirmEmailSentViewModel
+        {
+            ReturnUrl = returnUrl,
+            CanResendEmailConfirmation = user != null && !await _userManager.IsEmailConfirmedAsync(user),
+        });
+    }
+
+    [AllowAnonymous]
+    [HttpPost]
+    public async Task<IActionResult> ResendEmailConfirmation(string returnUrl = null)
+    {
+        var user = await GetEmailConfirmationUserAsync();
+
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        if (await _userManager.IsEmailConfirmedAsync(user))
+        {
+            await HttpContext.SignOutAsync(UserConstants.EmailConfirmationAuthenticationScheme);
+            await _notifier.WarningAsync(H["Your email is already confirmed."]);
+        }
+        else if (await _userEmailService.SendEmailConfirmationAsync(user))
+        {
+            await _notifier.SuccessAsync(H["Verification email sent."]);
+        }
+        else
+        {
+            await _notifier.ErrorAsync(H["The verification email could not be sent."]);
+        }
+
+        return RedirectToAction(nameof(ConfirmEmailSent), new { returnUrl });
+    }
 
     [Authorize]
     [HttpPost]
@@ -117,5 +157,15 @@ public sealed class EmailConfirmationController : Controller
         }
 
         return RedirectToAction(nameof(AdminController.Index), typeof(AdminController).ControllerName());
+    }
+
+    private async Task<IUser> GetEmailConfirmationUserAsync()
+    {
+        var result = await HttpContext.AuthenticateAsync(UserConstants.EmailConfirmationAuthenticationScheme);
+        var userId = result.Principal?.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        return string.IsNullOrEmpty(userId)
+            ? null
+            : await _userManager.FindByIdAsync(userId);
     }
 }
