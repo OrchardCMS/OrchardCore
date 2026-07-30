@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Security;
@@ -68,16 +70,18 @@ public sealed class ApiProblemDetailsMiddleware
         // details of a resource server challenge are conveyed by the WWW-Authenticate header (RFC 6750),
         // that the description points to. The "title" and "type" nodes of the other status codes are
         // resolved from the RFC 9110 defaults by the Problem Details service.
+        var S = context.RequestServices.GetRequiredService<IStringLocalizer<ApiProblemDetailsMiddleware>>();
+
         switch (response.StatusCode)
         {
             case StatusCodes.Status401Unauthorized:
-                problemDetails.Title = "Authentication required";
-                problemDetails.Detail = "Authentication is required to access this resource. Additional details may be found in the WWW-Authenticate HTTP response header.";
+                problemDetails.Title = S["Authentication required"];
+                problemDetails.Detail = S["Authentication is required to access this resource. Additional details may be found in the WWW-Authenticate HTTP response header."];
                 break;
 
             case StatusCodes.Status403Forbidden:
-                problemDetails.Title = "Access forbidden";
-                problemDetails.Detail = "Access to this resource is forbidden or you do not have sufficient permissions to perform this action.";
+                problemDetails.Title = S["Access forbidden"];
+                problemDetails.Detail = S["Access to this resource is forbidden or you do not have sufficient permissions to perform this action."];
                 break;
         }
 
