@@ -1,5 +1,3 @@
-using OrchardCore.Users.Models;
-
 namespace OrchardCore.Users.AuditTrail.Models;
 
 /// <summary>
