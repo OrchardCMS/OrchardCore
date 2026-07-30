@@ -1,6 +1,6 @@
 # How YesSql works
 
-Orchard Core does not use an ORM like Entity Framework. Most of its persistent application data — including content items, users, settings, and workflows — is stored with [YesSql](https://github.com/sebastienros/yessql), a .NET **document database interface over a relational database**. You get the flexibility of a document store (no schema to migrate when your objects change) while still running on SQL Server, SQLite, MySQL or PostgreSQL.
+Orchard Core does not use an ORM like Entity Framework. Most of its persistent application data — including content items, users, settings, and workflows — is stored with [YesSql](https://github.com/sebastienros/yessql), a .NET **document database interface over a relational database**. You get the flexibility of a document store (no schema to migrate when your objects change) while still running on SQL Server, SQLite, MySQL, or PostgreSQL.
 
 ## Documents
 
@@ -20,8 +20,8 @@ An index is a plain C# class holding the properties you want to query on. YesSql
 
 There are two kinds:
 
-- **`MapIndex`**: one (or several) index rows per document. For example `ContentItemIndex` maps every content item to its `ContentType`, `Published`, `Owner`, etc., and `AliasPartIndex` maps every content item that has an `AliasPart` to its alias.
-- **`ReduceIndex`**: one row per group of documents, aggregating values (like a `GROUP BY`). Used for counting or grouping scenarios.
+- **`MapIndex`**: each index row maps to one document. A mapping can emit one or more rows for a document. For example, `ContentItemIndex` maps every content item to its `ContentType`, `Published`, `Owner`, etc., and `AliasPartIndex` maps every content item that has an `AliasPart` to its alias.
+- **`ReduceIndex`**: each index row aggregates a group of documents, like a SQL `GROUP BY`. It is used for counting or grouping scenarios.
 
 A queryable property must be part of an index; everything else stays only in the JSON document.
 
@@ -106,9 +106,9 @@ public sealed class MyController : Controller
 }
 ```
 
-The query filters on the index table with regular SQL, then loads the matching JSON documents and deserializes them. Documents are cached by the session: loading the same document twice in a request returns the same instance.
+The query filters on the index table with regular SQL, then loads the matching JSON documents and deserializes them. The session caches documents: loading the same document twice in a request returns the same instance.
 
-For content items specifically, prefer the higher-level `IContentManager` (or `IOrchardHelper` extensions like `QueryContentItemsAsync`) which take care of loading, versioning, and handlers; drop down to `ISession` when you need to query on your own indexes.
+For content items specifically, prefer the higher-level `IContentManager` (or `IOrchardHelper` extensions like `QueryContentItemsAsync`), which handle loading, versioning, and handlers; drop down to `ISession` when you need to query your own indexes.
 
 ## Configuration
 
