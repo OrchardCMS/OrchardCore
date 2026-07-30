@@ -1113,7 +1113,7 @@ public sealed class ResourceManagementOptionsConfiguration
             .SetVersion("1.0.0");
 
         // List Management
-        
+
         manifest
             .DefineScript("list-management")
             .SetUrl(

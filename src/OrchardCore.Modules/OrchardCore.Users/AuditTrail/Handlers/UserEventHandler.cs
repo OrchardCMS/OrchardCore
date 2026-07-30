@@ -33,7 +33,7 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
             nameof(User.UserTokens)
         ],
         StringComparer.OrdinalIgnoreCase);
-    
+
     private readonly IAuditTrailManager _auditTrailManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IServiceProvider _serviceProvider;
@@ -151,7 +151,7 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
         {
             UserName = userName,
             UserId = userId,
-            Snapshot = storeSnapshot && user is User fullUser 
+            Snapshot = storeSnapshot && user is User fullUser
                 ? CreateSnapshotObject(fullUser, await _siteService.GetSettingsAsync<AuditTrailUserEventSettings>())
                 : null,
         };
@@ -179,7 +179,7 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
             {
                 return null;
             }
-            
+
             var redactor = redactors[settings.UserSnapshotRedactors[propertyName]];
 
             return JsonValue.Create(redactor.Redact(text));
@@ -200,10 +200,10 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
                 .Where(pair => pair.Value != null)
                 .ToDictionary(pair => pair.Key, pair => (JsonNode)pair.Value);
         }
-        
+
         // Ensure that the User object only has the allowed properties and none of the banned ones.
         var dictionary = CreateDictionary(JObject.FromObject(fullUser));
-        
+
         // Custom user settings have to be handled separately.
         dictionary[nameof(User.Properties)] = JObject.FromObject(CreateDictionary(fullUser.Properties));
 

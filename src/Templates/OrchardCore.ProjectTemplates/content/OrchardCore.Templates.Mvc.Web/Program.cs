@@ -3,13 +3,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddOrchardCore()
     .AddMvc()
-    // // Orchard Specific Pipeline
-    // .ConfigureServices( services => {
+// // Orchard Specific Pipeline
+// .ConfigureServices( services => {
 
-    // })
-    // .Configure( (app, routes, services) => {
+// })
+// .Configure( (app, routes, services) => {
 
-    // })
+// })
 ;
 
 var app = builder.Build();

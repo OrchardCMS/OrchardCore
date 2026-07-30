@@ -34,7 +34,7 @@ public class RedactorTests
     [InlineData("Multiple line\ndata", "M****************a")]
     public void PartialAsteriskRedactor_Default_Succeeds(string input, string expectedOutput)
     {
-       // Act
+        // Act
         var output = Redact<PartialAsteriskRedactor>(input);
 
         // Assert
@@ -44,9 +44,9 @@ public class RedactorTests
     [Fact]
     public void PartialAsteriskRedactor_Random_Succeeds()
     {
-       // Arrange
+        // Arrange
         var input = Guid.NewGuid().ToString("B");
-        
+
         // Act
         var output = Redact<PartialAsteriskRedactor>(input);
 

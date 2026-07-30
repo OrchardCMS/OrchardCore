@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Templates.Cms.Module.Settings
+namespace OrchardCore.Templates.Cms.Module.Settings
 {
     public class MyTestPartSettings
     {

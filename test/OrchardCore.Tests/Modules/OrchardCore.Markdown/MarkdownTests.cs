@@ -51,10 +51,10 @@ public class MarkdownTests
         services.AddScoped<IOrchardHelper>(provider => new MockOrchardHelper(provider));
         services.AddScoped<IShortcodeService, ShortcodeService>();
         services.AddScoped<IHtmlSanitizerService, HtmlSanitizerService>();
-        
+
         // Act
         var orchard = services.BuildServiceProvider().GetService<IOrchardHelper>();
-        
+
         await using var stringWriter = new StringWriter();
         (await orchard.MarkdownToHtmlAsync("This _is_ a ==test== markdown.")).WriteTo(stringWriter, HtmlEncoder.Default);
         var html = stringWriter.ToString();
@@ -74,7 +74,7 @@ public class MarkdownTests
 
         return services;
     }
-    
+
     private sealed class MockOrchardHelper : IOrchardHelper
     {
         public HttpContext HttpContext { get; }

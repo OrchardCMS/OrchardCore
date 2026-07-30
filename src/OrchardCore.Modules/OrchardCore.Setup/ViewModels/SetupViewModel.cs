@@ -29,7 +29,7 @@ public class SetupViewModel
 
     /// <summary>
     /// True if the database configuration is preset and can't be changed or displayed on the Setup screen.
-     /// </summary>
+    /// </summary>
     [BindNever]
     public bool DatabaseConfigurationPreset { get; set; }
 

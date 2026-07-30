@@ -10,9 +10,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Resolvers;
 using OrchardCore.ContentManagement.GraphQL.Queries;
-using OrchardCore.Entities;
 using OrchardCore.Lucene;
-using OrchardCore.Lucene.Models;
 
 namespace OrchardCore.Queries.Lucene.GraphQL.Queries;
 

@@ -16,7 +16,7 @@ public class AuditTrailUserEventIndex : MapIndex
 public class AuditTrailUserEventIndexProvider : IndexProvider<AuditTrailEvent>
 {
     public AuditTrailUserEventIndexProvider() => CollectionName = AuditTrailEvent.Collection;
-    
+
     public override void Describe(DescribeContext<AuditTrailEvent> context) => context
         .For<AuditTrailUserEventIndex>()
         .When(auditTrailEvent =>

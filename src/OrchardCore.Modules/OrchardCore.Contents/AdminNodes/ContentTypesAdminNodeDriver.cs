@@ -32,7 +32,7 @@ public sealed class ContentTypesAdminNodeDriver : DisplayDriver<MenuItem, Conten
         );
     }
 
-    public async override Task<IDisplayResult> EditAsync(ContentTypesAdminNode treeNode, BuildEditorContext context)
+    public override async Task<IDisplayResult> EditAsync(ContentTypesAdminNode treeNode, BuildEditorContext context)
     {
         var contentTypeDefinitions = await GetListableContentTypeDefinitionsAsync();
 

@@ -4,7 +4,6 @@ using Microsoft.Extensions.Options;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Json;
-using OrchardCore.Navigation;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 

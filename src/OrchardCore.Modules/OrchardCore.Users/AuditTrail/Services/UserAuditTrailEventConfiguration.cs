@@ -8,7 +8,7 @@ public sealed class UserAuditTrailEventConfiguration : IConfigureOptions<AuditTr
     [Obsolete($"Use {nameof(CategoryName)} for clarity.")]
     public const string User = CategoryName;
     public const string CategoryName = "User";
-    
+
     public const string Registered = nameof(Registered);
     public const string LoggedIn = nameof(LoggedIn);
     public const string LogInFailed = nameof(LogInFailed);

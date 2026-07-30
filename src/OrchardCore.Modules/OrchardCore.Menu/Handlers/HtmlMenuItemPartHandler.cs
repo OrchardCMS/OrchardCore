@@ -16,14 +16,14 @@ public class HtmlMenuItemPartHandler : ContentPartHandler<HtmlMenuItemPart>
         _contentDefinitionManager = contentDefinitionManager;
         _htmlSanitizerService = htmlSanitizerService;
     }
-    
+
     public override async Task ImportedAsync(ImportContentContext context, HtmlMenuItemPart part)
     {
         var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
 
         if (typeDefinition.GetSettings<HtmlMenuItemPartSettings>() is { SanitizeHtml: true })
         {
-            context.ContentItem.Alter<HtmlMenuItemPart>(part => 
+            context.ContentItem.Alter<HtmlMenuItemPart>(part =>
                 part.Html = _htmlSanitizerService.Sanitize(part.Html));
         }
     }
