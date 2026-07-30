@@ -157,6 +157,7 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<Navbar, UserMenuNavbarDisplayDriver>();
         services.AddDisplayDriver<UserMenu, UserMenuDisplayDriver>();
         services.AddShapeTableProvider<UserMenuShapeTableProvider>();
+        services.AddShapeTableProvider<AdminDashboardShapeTableProvider>();
 
         services.AddRecipeExecutionStep<UsersStep>();
 
