@@ -48,7 +48,7 @@ jobs:
         key: playwright-${{ hashFiles('Directory.Packages.props') }}
     - name: Install Playwright Browsers
       run: |
-        pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
+        pwsh test/OrchardCore.Tests.Functional/bin/Release/net11.0/playwright.ps1 install --with-deps chromium
     - name: Functional Tests
       run: |
         dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Mvc*"
@@ -83,7 +83,7 @@ jobs:
         key: playwright-${{ hashFiles('Directory.Packages.props') }}
     - name: Install Playwright Browsers
       run: |
-        pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
+        pwsh test/OrchardCore.Tests.Functional/bin/Release/net11.0/playwright.ps1 install --with-deps chromium
     - name: Functional Tests
       run: |
         dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Cms*"
@@ -135,7 +135,7 @@ jobs:
         key: playwright-${{ hashFiles('Directory.Packages.props') }}
     - name: Install Playwright Browsers
       run: |
-        pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
+        pwsh test/OrchardCore.Tests.Functional/bin/Release/net11.0/playwright.ps1 install --with-deps chromium
     - name: Functional Tests
       run: |
         dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Cms*"
@@ -181,7 +181,7 @@ jobs:
         key: playwright-${{ hashFiles('Directory.Packages.props') }}
     - name: Install Playwright Browsers
       run: |
-        pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
+        pwsh test/OrchardCore.Tests.Functional/bin/Release/net11.0/playwright.ps1 install --with-deps chromium
     - name: Functional Tests
       run: |
         dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Cms*"
@@ -226,7 +226,7 @@ jobs:
         key: playwright-${{ hashFiles('Directory.Packages.props') }}
     - name: Install Playwright Browsers
       run: |
-        pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
+        pwsh test/OrchardCore.Tests.Functional/bin/Release/net11.0/playwright.ps1 install --with-deps chromium
     - name: Functional Tests
       run: |
         dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Cms*"

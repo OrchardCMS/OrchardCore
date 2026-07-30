@@ -54,7 +54,7 @@ OrchardCore__OrchardCore_AutoSetup__Tenants__0__AdminEmail=admin@test.com \
 OrchardCore__OrchardCore_AutoSetup__Tenants__0__AdminPassword=Password1! \
 OrchardCore__OrchardCore_AutoSetup__Tenants__0__DatabaseProvider=Sqlite \
 OrchardCore__OrchardCore_AutoSetup__Tenants__0__RecipeName=Blog \
-dotnet run -f net10.0 --no-build --urls "http://localhost:$PORT" > autosetup-console.log 2>&1 &
+dotnet run -f net11.0 --no-build --urls "http://localhost:$PORT" > autosetup-console.log 2>&1 &
 ```
 
 The very first HTTP request to `/` triggers AutoSetup, so curl the root once and
@@ -80,7 +80,7 @@ $env:OrchardCore__OrchardCore_AutoSetup__Tenants__0__AdminEmail = "admin@test.co
 $env:OrchardCore__OrchardCore_AutoSetup__Tenants__0__AdminPassword = "Password1!"
 $env:OrchardCore__OrchardCore_AutoSetup__Tenants__0__DatabaseProvider = "Sqlite"
 $env:OrchardCore__OrchardCore_AutoSetup__Tenants__0__RecipeName = "Blog"
-dotnet run -f net10.0 --no-build --urls "http://localhost:$port"
+dotnet run -f net11.0 --no-build --urls "http://localhost:$port"
 ```
 
 > In PowerShell, assigning `""` to `$env:...` is fine; the value is genuinely

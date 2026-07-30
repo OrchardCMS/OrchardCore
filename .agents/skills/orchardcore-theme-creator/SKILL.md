@@ -10,7 +10,7 @@ This skill guides you through creating new OrchardCore themes following project 
 ## Prerequisites
 
 - OrchardCore repository at `D:\orchardcore`
-- .NET SDK 10.0+ installed
+- .NET SDK 11.0 Preview 6+ installed
 - Node.js 22.x and Yarn 4.x (for asset compilation)
 
 ## Theme Creation Workflow
@@ -125,7 +125,7 @@ yarn && yarn build
 
 # Run application
 cd src/OrchardCore.Cms.Web
-dotnet run -f net10.0
+dotnet run -f net11.0
 
 # Activate theme in Admin → Design → Themes
 ```

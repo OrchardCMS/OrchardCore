@@ -264,7 +264,7 @@ This clever trick:
 Check for generated files after building:
 
 ```
-obj/Debug/net10.0/generated/
+obj/Debug/net11.0/generated/
   OrchardCore.SourceGenerators/
     OrchardCore.DisplayManagement.SourceGenerators.ArgumentsFromInterceptor/
       ArgumentsFromInterceptors.g.cs
