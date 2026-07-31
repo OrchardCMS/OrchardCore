@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Jint" />
+    <PackageReference Include="Acornima" />
   </ItemGroup>
 
   <ItemGroup>
