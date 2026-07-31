@@ -35,6 +35,8 @@ public sealed class FeaturesProvider : FeaturesProviderBase
                 var featureName = feature.Name;
 
                 var featureDependencyIds = feature.Dependencies;
+                var featureBeforeDependencyIds = feature.Before;
+                var featureAfterDependencyIds = feature.After;
 
                 // Categorize, Prioritize, Describe, using the ModuleInfo (ModuleAttribute) as the back stop
                 var featureCategory = feature.Categorize(manifestInfo.ModuleInfo);
@@ -54,6 +56,8 @@ public sealed class FeaturesProvider : FeaturesProviderBase
                     ManifestInfo = manifestInfo,
                     Priority = featurePriority,
                     FeatureDependencyIds = featureDependencyIds,
+                    FeatureBeforeDependencyIds = featureBeforeDependencyIds,
+                    FeatureAfterDependencyIds = featureAfterDependencyIds,
                     DefaultTenantOnly = featureDefaultTenantOnly,
                     IsAlwaysEnabled = featureIsAlwaysEnabled,
                     EnabledByDependencyOnly = featureEnabledByDependencyOnly,
@@ -67,6 +71,8 @@ public sealed class FeaturesProvider : FeaturesProviderBase
                     ctx.Description,
                     ctx.ExtensionInfo,
                     ctx.FeatureDependencyIds,
+                    ctx.FeatureBeforeDependencyIds,
+                    ctx.FeatureAfterDependencyIds,
                     ctx.DefaultTenantOnly,
                     ctx.IsAlwaysEnabled,
                     ctx.EnabledByDependencyOnly));
@@ -81,6 +87,8 @@ public sealed class FeaturesProvider : FeaturesProviderBase
             var featureName = manifestInfo.Name;
 
             var featureDependencyIds = manifestInfo.ModuleInfo.Dependencies;
+            var featureBeforeDependencyIds = manifestInfo.ModuleInfo.Before;
+            var featureAfterDependencyIds = manifestInfo.ModuleInfo.After;
 
             // Ditto Categorize, Prioritize, Describe, in this case the root Module 'is' the back stop
             var featureCategory = manifestInfo.ModuleInfo.Categorize();
@@ -100,6 +108,8 @@ public sealed class FeaturesProvider : FeaturesProviderBase
                 ManifestInfo = manifestInfo,
                 Priority = featurePriority,
                 FeatureDependencyIds = featureDependencyIds,
+                FeatureBeforeDependencyIds = featureBeforeDependencyIds,
+                FeatureAfterDependencyIds = featureAfterDependencyIds,
                 DefaultTenantOnly = featureDefaultTenantOnly,
                 IsAlwaysEnabled = featureIsAlwaysEnabled,
                 EnabledByDependencyOnly = featureEnabledByDependencyOnly,
@@ -113,6 +123,8 @@ public sealed class FeaturesProvider : FeaturesProviderBase
                 ctx.Description,
                 ctx.ExtensionInfo,
                 ctx.FeatureDependencyIds,
+                ctx.FeatureBeforeDependencyIds,
+                ctx.FeatureAfterDependencyIds,
                 ctx.DefaultTenantOnly,
                 ctx.IsAlwaysEnabled,
                 ctx.EnabledByDependencyOnly));
