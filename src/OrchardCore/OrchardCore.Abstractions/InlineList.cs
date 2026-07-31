@@ -109,6 +109,11 @@ public struct InlineList<T> : IList<T>, IReadOnlyList<T>
         {
             _overflowItems = new T[InlineItems.Length + OverflowAdditionalCapacity];
             ((ReadOnlySpan<T>)_items).CopyTo(_overflowItems);
+
+            if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+            {
+                ((Span<T>)_items).Clear();
+            }
         }
         else if (_count == _overflowItems.Length)
         {

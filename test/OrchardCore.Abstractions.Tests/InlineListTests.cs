@@ -454,6 +454,17 @@ public class InlineListTests
     }
 
     [Fact]
+    public void RemoveAt_AfterOverflow_ShouldReleaseReferencesFromInlineStorage()
+    {
+        var holder = OverflowListContainingRemovedReference();
+
+        CollectGarbage();
+
+        Assert.False(holder.Reference.TryGetTarget(out _));
+        Assert.Equal(8, holder.List.Count);
+    }
+
+    [Fact]
     public void RemoveAt_ShouldWorkWithOverflowStorage()
     {
         // Arrange
@@ -1200,11 +1211,38 @@ public class InlineListTests
         return reference;
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static OverflowListHolder OverflowListContainingRemovedReference()
+    {
+        var item = new object();
+        var holder = new OverflowListHolder(new WeakReference<object>(item));
+
+        holder.List.Add(item);
+
+        for (var i = 0; i < 8; i++)
+        {
+            holder.List.Add(new object());
+        }
+
+        holder.List.RemoveAt(0);
+
+        return holder;
+    }
+
     private static void CollectGarbage()
     {
         GC.Collect();
         GC.WaitForPendingFinalizers();
         GC.Collect();
+    }
+
+    private sealed class OverflowListHolder
+    {
+        public OverflowListHolder(WeakReference<object> reference) => Reference = reference;
+
+        public InlineList<object> List;
+
+        public WeakReference<object> Reference;
     }
 
     #endregion
