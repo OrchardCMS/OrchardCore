@@ -39,29 +39,33 @@ public sealed class ElasticsearchQueryDisplayDriver : DisplayDriver<Query>
         );
     }
 
-    public override IDisplayResult Edit(Query query, BuildEditorContext context)
+    public override async Task<IDisplayResult> EditAsync(Query query, BuildEditorContext context)
     {
         if (query.Source != ElasticsearchConstants.ProviderName)
         {
             return null;
         }
 
+        // Create model object here, to make sure that TryUpdateModelAsync work on a specific object type, not over a proxied one
+        var viewModel = new ElasticQueryViewModel();
+        if (query.TryGet<ElasticsearchQueryMetadata>(out var metadata))
+        {
+            viewModel.Query = metadata.Template;
+            viewModel.Index = metadata.Index;
+        }
+
+        // Extract query from the query string if we come from the main query editor.
+        if (string.IsNullOrEmpty(viewModel.Query))
+        {
+            await context.Updater.TryUpdateModelAsync(viewModel, string.Empty, m => m.Query);
+        }
+
         return Initialize<ElasticQueryViewModel>("ElasticQuery_Edit", async model =>
         {
-            if (query.TryGet<ElasticsearchQueryMetadata>(out var metadata))
-            {
-                model.Query = metadata.Template;
-                model.Index = metadata.Index;
-            }
-
-            model.ReturnContentItems = query.ReturnContentItems;
+            model.Query = viewModel.Query;
+            model.Index = viewModel.Index;
             model.Indexes = (await _store.GetByProviderAsync(ElasticsearchConstants.ProviderName)).Select(x => new SelectListItem(x.Name, x.Name)).ToArray();
-
-            // Extract query from the query string if we come from the main query editor.
-            if (string.IsNullOrEmpty(model.Query))
-            {
-                await context.Updater.TryUpdateModelAsync(model, string.Empty, m => m.Query);
-            }
+            model.ReturnContentItems = query.ReturnContentItems;
         }).Location("Content:5");
     }
 
@@ -95,6 +99,6 @@ public sealed class ElasticsearchQueryDisplayDriver : DisplayDriver<Query>
             Index = viewModel.Index,
         });
 
-        return Edit(query, context);
+        return await EditAsync(query, context);
     }
 }

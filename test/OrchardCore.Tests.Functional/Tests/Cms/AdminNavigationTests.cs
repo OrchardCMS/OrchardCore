@@ -57,6 +57,36 @@ public sealed class AdminNavigationTests : CmsTestBase<BlogFixture>, IClassFixtu
         await page.CloseAsync();
     }
 
+    [Fact]
+    public async Task AdminNavigation_ContentTypeEdit_KeepsContentTypeMenuItemActive()
+    {
+        var page = await Fixture.CreatePageAsync();
+        await page.LoginAsync();
+        await page.GotoAndAssertOkAsync("/Admin");
+
+        await page.GetByRole(AriaRole.Button, new() { Name = "Content", Exact = true }).ClickAsync();
+
+        var articleLink = page.Locator("#adminMenu a[data-admin-hash][href=\"/Admin/Contents/ContentItems/Article\"]");
+        var contentItemsLink = page.Locator("#adminMenu a[data-admin-hash][href=\"/Admin/Contents/ContentItems\"]");
+        var activeArticleItem = articleLink.Locator("xpath=ancestor::li[1][contains(concat(' ', normalize-space(@class), ' '), ' active ')]");
+        var activeContentItemsItem = contentItemsLink.Locator("xpath=ancestor::li[1][contains(concat(' ', normalize-space(@class), ' '), ' active ')]");
+
+        await articleLink.ClickAsync();
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        await Assertions.Expect(activeArticleItem).ToHaveCountAsync(1);
+        await Assertions.Expect(activeContentItemsItem).ToHaveCountAsync(0);
+
+        await page.GetByRole(AriaRole.Link, new() { Name = "About", Exact = true }).ClickAsync();
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        Assert.Contains("/Edit", page.Url, StringComparison.OrdinalIgnoreCase);
+        await Assertions.Expect(activeArticleItem).ToHaveCountAsync(1);
+        await Assertions.Expect(activeContentItemsItem).ToHaveCountAsync(0);
+
+        await page.CloseAsync();
+    }
+
     private static JsonNode ParseAndDecodeCookieJson(string value)
     {
         var raw = value;
