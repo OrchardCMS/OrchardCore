@@ -7,9 +7,13 @@ let menuInitialized = false;
 
 const getSelectedNavHashStorageKey = () => `${getTenantName()}-selectedNavHash`;
 
-const persistSelectedNavHash = (hash: string) => {
+const persistSelectedNavHash = (hash: string | null) => {
     try {
-        sessionStorage.setItem(getSelectedNavHashStorageKey(), hash);
+        if (hash === null) {
+            sessionStorage.removeItem(getSelectedNavHashStorageKey());
+        } else {
+            sessionStorage.setItem(getSelectedNavHashStorageKey(), hash);
+        }
     } catch (error) {
         console.error('Error storing selected navigation hash', error);
     }
@@ -32,6 +36,7 @@ const applySelectedNavFromSessionStorage = () => {
     const currentPath = window.location.pathname.toLowerCase();
 
     if (currentPath === adminPrefix || currentPath === adminPrefix + '/') {
+        persistSelectedNavHash(null);
         return true;
     }
 
