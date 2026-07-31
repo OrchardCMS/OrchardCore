@@ -14,7 +14,7 @@ public static class ShellScopeExtensions
     /// <param name="scope">The <see cref="ShellScope"/> instance on which to register the delegate.</param>
     /// <param name="callback">The delegate task to be invoked before disposal. This delegate takes a <see cref="ShellScope"/> and state parameters and returns a <see cref="Task"/>.</param>
     /// <param name="state">The state object to pass to the callback.</param>
-    /// <param name="last">A boolean value indicating whether the delegate should be invoked last. 
+    /// <param name="last">A boolean value indicating whether the delegate should be invoked last.
     /// If true, the delegate is added to the end of the invocation list; otherwise, it is added to the beginning. The default value is false.</param>
     /// <returns>The <see cref="ShellScope"/> instance for chaining further calls.</returns>
     public static ShellScope RegisterBeforeDispose<TState>(this ShellScope scope, Func<ShellScope, TState, Task> callback, TState state, bool last = false)
@@ -28,7 +28,7 @@ public static class ShellScopeExtensions
     /// </summary>
     /// <param name="scope">The <see cref="ShellScope"/> instance on which to register the delegate.</param>
     /// <param name="callback">The delegate task to be invoked before disposal. This delegate takes a <see cref="ShellScope"/> parameter and returns a <see cref="Task"/>.</param>
-    /// <param name="last">A boolean value indicating whether the delegate should be invoked last. 
+    /// <param name="last">A boolean value indicating whether the delegate should be invoked last.
     /// If true, the delegate is added to the end of the invocation list; otherwise, it is added to the beginning. The default value is false.</param>
     /// <returns>The <see cref="ShellScope"/> instance for chaining further calls.</returns>
     public static ShellScope RegisterBeforeDispose(this ShellScope scope, Func<ShellScope, Task> callback, bool last = false)

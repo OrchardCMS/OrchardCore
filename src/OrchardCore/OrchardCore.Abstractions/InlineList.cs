@@ -203,13 +203,26 @@ public struct InlineList<T> : IList<T>, IReadOnlyList<T>
         Span<T> items = _overflowItems is not null ? _overflowItems : _items;
         items.Slice(index + 1, _count - index - 1).CopyTo(items.Slice(index));
         _count--;
+
+        if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+        {
+            items[_count] = default!;
+        }
     }
 
     /// <summary>
     /// Removes all elements from the <see cref="InlineList{T}" />.
     /// </summary>
-    public void Clear() =>
+    public void Clear()
+    {
+        if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+        {
+            Span<T> items = _overflowItems is not null ? _overflowItems : _items;
+            items.Slice(0, _count).Clear();
+        }
+
         _count = 0;
+    }
 
     /// <summary>
     /// Determines whether an item is in the <see cref="InlineList{T}" />.

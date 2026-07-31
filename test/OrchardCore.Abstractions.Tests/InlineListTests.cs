@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Xunit;
 
 namespace OrchardCore;
@@ -443,6 +444,16 @@ public class InlineListTests
     }
 
     [Fact]
+    public void RemoveAt_ShouldReleaseRemovedReference()
+    {
+        var reference = RemoveReferenceFromList();
+
+        CollectGarbage();
+
+        Assert.False(reference.TryGetTarget(out _));
+    }
+
+    [Fact]
     public void RemoveAt_ShouldWorkWithOverflowStorage()
     {
         // Arrange
@@ -617,6 +628,16 @@ public class InlineListTests
 
         // Assert
         Assert.Empty(list);
+    }
+
+    [Fact]
+    public void Clear_ShouldReleaseReferences()
+    {
+        var reference = ClearListContainingReference();
+
+        CollectGarbage();
+
+        Assert.False(reference.TryGetTarget(out _));
     }
 
     #endregion
@@ -865,8 +886,9 @@ public class InlineListTests
         var destination = new int[5];
 
         // Act & Assert
-        Assert.Throws<ArgumentOutOfRangeException>(() => list.CopyTo(destination, 5));
+        Assert.Throws<ArgumentOutOfRangeException>(() => list.CopyTo(destination, -1));
         Assert.Throws<ArgumentOutOfRangeException>(() => list.CopyTo(destination, 10));
+        Assert.Throws<ArgumentException>(() => list.CopyTo(destination, 5));
     }
 
     #endregion
@@ -1150,6 +1172,39 @@ public class InlineListTests
         Assert.Equal(1, list[0]);
         Assert.Null(list[1]);
         Assert.Equal(3, list[2]);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static WeakReference<object> RemoveReferenceFromList()
+    {
+        var list = new InlineList<object>();
+        var item = new object();
+        var reference = new WeakReference<object>(item);
+
+        list.Add(item);
+        list.RemoveAt(0);
+
+        return reference;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static WeakReference<object> ClearListContainingReference()
+    {
+        var list = new InlineList<object>();
+        var item = new object();
+        var reference = new WeakReference<object>(item);
+
+        list.Add(item);
+        list.Clear();
+
+        return reference;
+    }
+
+    private static void CollectGarbage()
+    {
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
     }
 
     #endregion
