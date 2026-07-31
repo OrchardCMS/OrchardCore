@@ -201,6 +201,6 @@ public sealed class ImportController : Controller
             }
         }
 
-        return View(model);
+        return RedirectToAction(nameof(Json));
     }
 }
