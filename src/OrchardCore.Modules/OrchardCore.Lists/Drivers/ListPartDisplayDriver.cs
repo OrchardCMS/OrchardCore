@@ -171,7 +171,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
                     pager,
                     containedItemOptions)).ToArray();
 
-                var query = BuildTotalItemCountQuery(listPart.ContentItem.ContentItemId, containedItemOptions);
+                var query = _containerService.BuildTotalItemCountQuery(listPart.ContentItem.ContentItemId, containedItemOptions);
 
                 var totalItemCount = await query.CountAsync();
 
@@ -215,7 +215,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
                     containedItemOptions);
 
                 containedItemOptions.Status = ContentsStatus.Published;
-                var query = BuildTotalItemCountQuery(listPart.ContentItem.ContentItemId, containedItemOptions);
+                var query = _containerService.BuildTotalItemCountQuery(listPart.ContentItem.ContentItemId, containedItemOptions);
                 var totalItemCount = await query.CountAsync();
 
                 model.Pager = await _shapeFactory.PagerAsync(pager, totalItemCount);
@@ -234,49 +234,6 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
             }
         })
         .Location(OrchardCoreConstants.DisplayType.Detail, "Content:10");
-    }
-
-    /// <summary>
-    /// Builds a query that retrieves content items associated with a specified list content item ID, filtered according
-    /// to the provided options.
-    /// </summary>
-    private IQuery<ContentItem> BuildTotalItemCountQuery(string listContentItemId, ContainedItemOptions options)
-    {
-        IQuery<ContentItem> query = _session.Query<ContentItem>()
-            .With<ContainedPartIndex>(x => x.ListContentItemId == listContentItemId);
-
-        if (options.Status == ContentsStatus.Published)
-        {
-            query = query.With<ContentItemIndex>(x => x.Published);
-        }
-        else if (options.Status == ContentsStatus.Latest)
-        {
-            query = query.With<ContentItemIndex>(x => x.Latest);
-        }
-        else if (options.Status == ContentsStatus.Draft)
-        {
-            query = query.With<ContentItemIndex>(x => x.Latest && !x.Published);
-        }
-        else if (options.Status == ContentsStatus.Owner)
-        {
-            var currentUserName = _httpContextAccessor.HttpContext?.User?.Identity?.Name;
-
-            if (!string.IsNullOrEmpty(currentUserName))
-            {
-                query = query.With<ContentItemIndex>(x => x.Latest && x.Author == currentUserName);
-            }
-            else
-            {
-                query = query.With<ContentItemIndex>(x => x.Latest);
-            }
-        }
-
-        if (!string.IsNullOrWhiteSpace(options.DisplayText))
-        {
-            query = query.With<ContentItemIndex>(x => x.DisplayText.Contains(options.DisplayText));
-        }
-
-        return query;
     }
 
     private static async Task<PagerSlim> GetPagerSlimAsync(BuildPartDisplayContext context)

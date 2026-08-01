@@ -1,11 +1,21 @@
 using OrchardCore.ContentManagement;
 using OrchardCore.Lists.Models;
 using OrchardCore.Navigation;
+using YesSql;
 
 namespace OrchardCore.Lists.Services;
 
 public interface IContainerService
 {
+    /// <summary>
+    /// Builds a query that retrieves content items associated with a specified list content item ID, filtered according
+    /// to the provided options.
+    /// </summary>
+    IQuery<ContentItem> BuildTotalItemCountQuery(string listContentItemId, ContainedItemOptions options);
+
+    /// <summary>
+    /// Change PagerSlim to Pager and use the standard Skip and Take methods.
+    /// </summary>
     Task<IEnumerable<ContentItem>> QueryContainedItemsAsync(string contentItemId, bool enableOrdering, Pager pager, ContainedItemOptions containedItemOptions);
     /// <summary>
     /// Query contained items by page either order by the created utc or order value.
