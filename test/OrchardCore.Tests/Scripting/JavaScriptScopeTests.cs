@@ -61,6 +61,68 @@ public class JavaScriptScopeTests
     }
 
     [Fact]
+    public void ScopedMethods_AreNotBuiltWhenTheScriptDoesNotUseThem()
+    {
+        var (engine, methods, serviceProvider, _) = CreateEngine();
+        var scoped = new CountingMethodProvider("scoped");
+
+        var scope = engine.CreateScope(methods.Concat(scoped.GetMethods()), serviceProvider, null, null);
+
+        Assert.Equal(0, scoped.BuildCount);
+        Assert.Equal(1, Convert.ToInt32(engine.Evaluate(scope, "return 1;")));
+        Assert.Equal(0, scoped.BuildCount);
+    }
+
+    [Fact]
+    public void ScopedMethods_AreBuiltOncePerEngine()
+    {
+        var (engine, methods, serviceProvider, _) = CreateEngine();
+        var scoped = new CountingMethodProvider("scoped");
+
+        var scope = engine.CreateScope(methods.Concat(scoped.GetMethods()), serviceProvider, null, null);
+
+        Assert.Equal("scoped", engine.Evaluate(scope, "return scoped();"));
+        Assert.Equal(1, scoped.BuildCount);
+
+        // The materialized value is kept by the engine, so the identity of the global is stable.
+        Assert.True((bool)engine.Evaluate(scope, "var first = scoped; var second = scoped; return first === second;"));
+        Assert.Equal(1, scoped.BuildCount);
+
+        // A second scope gets its own engine, and therefore its own delegate.
+        var otherScope = engine.CreateScope(methods.Concat(scoped.GetMethods()), serviceProvider, null, null);
+
+        Assert.Equal("scoped", engine.Evaluate(otherScope, "return scoped();"));
+        Assert.Equal(2, scoped.BuildCount);
+    }
+
+    [Fact]
+    public void ScopedMethods_AreNotEnumerable()
+    {
+        var (engine, methods, serviceProvider, _) = CreateEngine();
+        var scoped = new CountingMethodProvider("scoped");
+
+        var scope = engine.CreateScope(methods.Concat(scoped.GetMethods()), serviceProvider, null, null);
+
+        Assert.True((bool)engine.Evaluate(scope, "return Object.keys(globalThis).indexOf('scoped') === -1;"));
+        Assert.True((bool)engine.Evaluate(scope, "return 'scoped' in globalThis;"));
+    }
+
+    [Fact]
+    public void ScopedMethods_AreReachableThroughGlobalThis()
+    {
+        // A lazily declared global is a real own property of globalThis, so it is reachable by every route a
+        // script has to a global and not only by the identifier. This is what makes deferring the delegate
+        // unobservable rather than a narrowing of what scripts can do.
+        var (engine, methods, serviceProvider, _) = CreateEngine();
+        var scoped = new CountingMethodProvider("scoped");
+
+        var scope = engine.CreateScope(methods.Concat(scoped.GetMethods()), serviceProvider, null, null);
+
+        Assert.Equal("scoped", engine.Evaluate(scope, "return globalThis['scoped']();"));
+        Assert.Equal(1, scoped.BuildCount);
+    }
+
+    [Fact]
     public void ScopedMethods_TakePrecedenceOverRegisteredGlobalsOfTheSameName()
     {
         var (engine, methods, serviceProvider, provider) = CreateEngine();
@@ -113,22 +175,22 @@ public class JavaScriptScopeTests
     {
         private readonly GlobalMethod _globalMethod;
 
-        public CountingMethodProvider()
+        public CountingMethodProvider(string name = "counted")
         {
             _globalMethod = new GlobalMethod
             {
-                Name = "counted",
+                Name = name,
                 Method = _ =>
                 {
                     BuildCount++;
 
-                    return (Func<string>)(() => "counted");
+                    return (Func<string>)(() => name);
                 },
                 AsyncMethod = _ =>
                 {
                     AsyncBuildCount++;
 
-                    return (Func<Task<string>>)(() => Task.FromResult("counted async"));
+                    return (Func<Task<string>>)(() => Task.FromResult(name + " async"));
                 },
             };
         }
