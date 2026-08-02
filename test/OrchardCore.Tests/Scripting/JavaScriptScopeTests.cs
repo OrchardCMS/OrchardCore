@@ -91,6 +91,83 @@ public class JavaScriptScopeTests
         Assert.Equal(0, provider.BuildCount);
     }
 
+    [Fact]
+    public void RegisteredGlobals_AreBuiltWithTheServicesOfTheScopeThatOwnsTheEngine()
+    {
+        var (engine, methods) = CreateEngineWithScopeNames();
+
+        // Both scopes are alive at the same time and share the engine that declared the global, so the
+        // engine a global is materialized on is the only thing that can tell their services apart.
+        var firstScope = engine.CreateScope(methods, CreateServices("first"), null, null);
+        var secondScope = engine.CreateScope(methods, CreateServices("second"), null, null);
+
+        Assert.Equal("second", engine.Evaluate(secondScope, "return scopeName();"));
+        Assert.Equal("first", engine.Evaluate(firstScope, "return scopeName();"));
+    }
+
+    [Fact]
+    public void RegisteredGlobals_AreBuiltWithTheServicesOfTheirOwnScope_WhenTwoEnginesAreAliveAtOnce()
+    {
+        // Each tenant has its own scripting engine, and the mapping from a Jint engine to the services it
+        // was created for belongs to one of them, so a scope of one tenant must not be visible to the other.
+        var (first, firstMethods) = CreateEngineWithScopeNames();
+        var (second, secondMethods) = CreateEngineWithScopeNames();
+
+        var firstScope = first.CreateScope(firstMethods, CreateServices("first"), null, null);
+        var secondScope = second.CreateScope(secondMethods, CreateServices("second"), null, null);
+
+        Assert.Equal("first", first.Evaluate(firstScope, "return scopeName();"));
+        Assert.Equal("second", second.Evaluate(secondScope, "return scopeName();"));
+    }
+
+    [Fact]
+    public async Task RegisteredGlobals_AreBuiltWithTheServicesOfTheScopeThatOwnsTheEngine_Asynchronously()
+    {
+        var (engine, methods) = CreateEngineWithScopeNames();
+
+        var firstScope = engine.CreateScope(methods, CreateServices("first"), null, null);
+        var secondScope = engine.CreateScope(methods, CreateServices("second"), null, null);
+
+        Assert.Equal("second async", await engine.EvaluateAsync(secondScope, "return scopeNameAsync();", TestContext.Current.CancellationToken));
+        Assert.Equal("first async", await engine.EvaluateAsync(firstScope, "return scopeNameAsync();", TestContext.Current.CancellationToken));
+    }
+
+    private static (IScriptingEngine Engine, IEnumerable<GlobalMethod> Methods) CreateEngineWithScopeNames()
+    {
+        var serviceProvider = new ServiceCollection()
+            .AddMemoryCache()
+            .AddScripting()
+            .AddJavaScriptEngine()
+            .AddSingleton<IGlobalMethodProvider, ScopeNameMethodProvider>()
+            .BuildServiceProvider();
+
+        var scriptingManager = serviceProvider.GetRequiredService<IScriptingManager>();
+
+        return (scriptingManager.GetScriptingEngine("js"), scriptingManager.GlobalMethodProviders.SelectMany(p => p.GetMethods()).ToArray());
+    }
+
+    private static ServiceProvider CreateServices(string scopeName)
+        => new ServiceCollection()
+            .AddSingleton(new ScopeName(scopeName))
+            .BuildServiceProvider();
+
+    private sealed record ScopeName(string Value);
+
+    private sealed class ScopeNameMethodProvider : IGlobalMethodProvider
+    {
+        private readonly GlobalMethod _globalMethod = new()
+        {
+            Name = "scopeName",
+
+            // The factory is handed the services of the scope the reading engine belongs to, so what it
+            // captures is what proves which scope the global was built for.
+            Method = sp => (Func<string>)(() => sp.GetRequiredService<ScopeName>().Value),
+            AsyncMethod = sp => (Func<Task<string>>)(() => Task.FromResult(sp.GetRequiredService<ScopeName>().Value + " async")),
+        };
+
+        public IEnumerable<GlobalMethod> GetMethods() => [_globalMethod];
+    }
+
     private static (IScriptingEngine Engine, IEnumerable<GlobalMethod> Methods, IServiceProvider ServiceProvider, CountingMethodProvider Provider) CreateEngine()
     {
         var provider = new CountingMethodProvider();
