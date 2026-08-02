@@ -26,12 +26,27 @@ var globalMethods = _scriptingManager.GlobalMethodProviders.SelectMany(x => x.Ge
 // Create scope for the engine
 var scope = engine.CreateScope(globalMethods, serviceProvider, null, null);
 
-// Evaluate the given script
-var date = engine.Evaluate("js: new Date().toISOString()");
+try
+{
+    // Evaluate the given script
+    var date = engine.Evaluate(scope, "new Date().toISOString()");
+}
+finally
+{
+    // A scope may hold resources the engine wants back. IScriptingScope is a marker interface, so the
+    // capability is discovered rather than required.
+    (scope as IDisposable)?.Dispose();
+}
 ```
 
 The `js:` prefix is used to describe in which language the code is written. Any module can provide
 a new scripting engine by implementing the `IScriptingEngine` interface.
+
+Release the scope when the evaluations that use it are done, and not before. The JavaScript engine reuses
+its engines between evaluations and only learns that an evaluation is over when its scope is disposed, so a
+scope that is never disposed simply keeps its engine to itself — correct, but it gives up the reuse. Dispose
+it in a `finally`, because a script that throws has still left its declarations behind. Using
+`IScriptingManager.Evaluate()` instead of talking to an engine directly does all of this for you.
 
 ### Customizing the scripting environment
 
@@ -86,6 +101,65 @@ Three kinds of method are created eagerly instead, so a factory backing one of t
 - Methods passed directly to `IScriptingEngine.CreateScope()` rather than registered through DI, such as a recipe's `variables()` or a workflow's `workflow()`. These also take precedence over a registered global of the same name.
 - A name contributed by more than one registered provider, because which provider wins depends on the order the methods are set in.
 - A method carrying an asynchronous variant whose `<name>Async` global is also claimed by a method literally named `<name>Async`.
+
+### Engines are reused between evaluations
+
+A tenant keeps a small number of idle Jint engines and hands one to each scope instead of building an
+engine per evaluated expression. When a scope is disposed, the engine's global bindings are put back exactly
+as they were when it was built, and the engine becomes available to the next evaluation of the same tenant.
+
+What the reset undoes, so that no evaluation can observe the one before it:
+
+- the variables, functions and `globalThis` properties the script declared, and any global it overwrote;
+- top-level `let`, `const` and `class` declarations, which is what lets the same script run twice on one
+  engine;
+- the methods that were installed for that scope only, such as a recipe's `variables()` or a workflow's
+  `workflow()`;
+- the registered globals, which go back to their not-yet-created state, so the next evaluation builds them
+  from *its own* service provider — this is what keeps a request's services from reaching the next request;
+- the interop wrapper caches, so a property a script set on a wrapped CLR object does not reappear the next
+  time that object is wrapped;
+- any promise that was still pending, including one waiting on a CLR `Task`. It is dropped rather than
+  resumed, so a task that completes after the evaluation ended cannot write into the next one's globals.
+
+Execution constraints are unaffected: Jint rewinds a statement counter and a timeout deadline at the start
+of every evaluation, on a reused engine exactly as on a new one.
+
+!!! warning
+    **The reset is not an isolation boundary.** It reverts the global bindings; it does not revert what a
+    script did to the built-in prototypes (`Object.prototype.x = 1`, a frozen intrinsic), to
+    `Symbol.for`, or to an object graph reachable from a global it left in place. Engines are only ever
+    reused within one tenant, whose scripts are authored by its administrators and already run at a single
+    trust level — this is the same trust level as before, not a wider one. Do not use it to run scripts that
+    distrust each other.
+
+One thing to watch when writing a caller or a global method: **the value an evaluation returns must not
+depend on the engine still being in the state that produced it.** Results are converted to CLR values, which
+detaches objects, arrays and dates, but a script that returns a *function* hands back a delegate bound to the
+engine. Invoking it after the scope was disposed runs it against whatever that engine has since been reset —
+or re-rented — to.
+
+#### Sizing the pool
+
+```csharp
+services.Configure<JavaScriptEngineOptions>(options => options.EnginePoolSize = 16);
+```
+
+The default is `8`, and `0` turns reuse off and builds a new engine for every evaluation.
+
+This is **not** a concurrency limit. An evaluation that starts while every pooled engine is in use builds
+its own and lets it go afterwards, exactly as every evaluation did before pooling existed, so the value can
+never make an evaluation wait or fail. What it bounds is *retained state*: a reused engine remembers the
+last object each member access and each call in the scripts it has run resolved against, so it can hold one
+such object — a request's `HttpContext`, a workflow execution context — per site in those scripts, until
+that site next resolves something else. It is one live object per site per engine, and it is corrected the
+next time the same script runs, but it is real, and it is the reason the default is a handful of engines
+rather than one per concurrent request.
+
+Raise it for a tenant that evaluates scripts on many concurrent requests — JavaScript layer rules are the
+usual case, because the rules evaluator holds its scope for the whole request rather than for one
+expression. Lower it, or set it to `0`, for a tenant whose global methods project large object graphs into
+script and would rather not have them outlive the request.
 
 ### Methods
 
