@@ -160,11 +160,30 @@ public class ScriptingBenchmark
     /// One request's worth of JavaScript layer rules: a single scope, reused across three distinct rules,
     /// the way <c>JavascriptConditionEvaluator</c> does it.
     /// </summary>
+    /// <remarks>
+    /// The scope is released at the end, because that is what the evaluator's own lifetime does — it is a
+    /// scoped service, so the container disposes it when the request ends. Holding the scope instead would
+    /// measure a leak: an implementation that hands out reusable engines would never get this one back, and
+    /// the row would report the cost of that mistake rather than the cost of the request.
+    /// <see langword="as"/> rather than a cast, since a scope is not required to be disposable.
+    /// </remarks>
     [Benchmark]
     public async Task<bool> LayerRule_PerRequest_ThreeRules()
     {
         var scope = _jsEngine.CreateScope(_registeredMethods, _serviceProvider, null, null);
 
+        try
+        {
+            return await EvaluateThreeRulesAsync(scope);
+        }
+        finally
+        {
+            (scope as IDisposable)?.Dispose();
+        }
+    }
+
+    private async Task<bool> EvaluateThreeRulesAsync(IScriptingScope scope)
+    {
         var a = Convert.ToBoolean(await _jsEngine.EvaluateAsync(scope, "isHomepage()"));
         var b = Convert.ToBoolean(await _jsEngine.EvaluateAsync(scope, "isAuthenticated()"));
         var c = Convert.ToBoolean(await _jsEngine.EvaluateAsync(scope, "url('/about')"));
