@@ -19,7 +19,7 @@
     <PackageVersion Include="Azure.Storage.Files.DataLake" Version="12.27.1" />
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
     <PackageVersion Include="Castle.Core" Version="5.2.1" />
-    <PackageVersion Include="Cyqwel" Version="1.0.0-local.4" />
+    <PackageVersion Include="Cyqwel" Version="1.0.0-local.5" />
     <PackageVersion Include="DocumentFormat.OpenXml" Version="3.5.1" />
     <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.19.23" />
     <PackageVersion Include="Fluid.Core" Version="2.31.0" />

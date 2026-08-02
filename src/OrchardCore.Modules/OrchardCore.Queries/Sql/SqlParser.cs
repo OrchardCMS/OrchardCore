@@ -19,6 +19,12 @@ public class SqlParser
         FunctionNameCase = FunctionNameCase.Preserve,
     };
 
+    private static readonly Cyqwel.Dialects.SqlDialect ParserDialect = SqlDialectBuilder
+        .Create("orchard")
+        .BasedOn(SqlDialects.Generic)
+        .ConfigureParser(static options => options with { SupportsParameterDefaults = true })
+        .Build();
+
     public static bool TryParse(
         string sql,
         string schema,
@@ -28,7 +34,7 @@ public class SqlParser
         out string query,
         out IEnumerable<string> messages)
     {
-        if (!SqlDialects.Generic.TryParse(sql, out var document, out var error))
+        if (!ParserDialect.TryParse(sql, out var document, out var error))
         {
             query = null;
             messages = error is null
