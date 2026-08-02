@@ -81,13 +81,9 @@ No execution constraints are configured by default, so a script such as `while (
 
 ### Global methods are created on demand
 
-The globals contributed by `IGlobalMethodProvider` implementations are declared on every engine but are not built until a script reads the name. A recipe expression such as `[js:uuid()]` therefore only pays for `uuid`, not for every registered global. This is not observable from script — the properties exist, they are non-enumerable, and the value a name resolves to is stable for the whole evaluation — but the `Func<IServiceProvider, Delegate>` you supply is invoked lazily, and not at all when the script does not use the method. Keep it free of side effects that the surrounding code depends on.
+Every global is declared on the engine but is not built until a script reads the name. A recipe expression such as `[js:uuid()]` therefore only pays for `uuid`, not for every registered global, and a workflow expression such as `[js:input('Message')]` pays for `input` rather than for all nine globals a workflow supplies. This is not observable from script — the properties exist, they are non-enumerable, and the value a name resolves to is stable for the whole evaluation — but the `Func<IServiceProvider, Delegate>` you supply is invoked lazily, and not at all when the script does not use the method. Keep it free of side effects that the surrounding code depends on.
 
-Three kinds of method are created eagerly instead, so a factory backing one of them runs once per engine whether or not the script uses it:
-
-- Methods passed directly to `IScriptingEngine.CreateScope()` rather than registered through DI, such as a recipe's `variables()` or a workflow's `workflow()`. These also take precedence over a registered global of the same name.
-- A name contributed by more than one registered provider, because which provider wins depends on the order the methods are set in.
-- A method carrying an asynchronous variant whose `<name>Async` global is also claimed by a method literally named `<name>Async`.
+That applies both to the globals contributed by registered `IGlobalMethodProvider` implementations and to the methods a caller passes to `IScriptingEngine.CreateScope()` for a single evaluation, such as a recipe's `variables()` or a workflow's `workflow()`. The two differ only in where the declaration is made — the registered ones on the shared engine options, the caller's on the engine itself — which is what keeps a caller-supplied method taking precedence over a registered global of the same name.
 
 ### Methods
 
