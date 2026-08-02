@@ -330,6 +330,34 @@ public class SqlParserTests
     }
 
     [Fact]
+    public void Validate_InvalidSyntax_ReturnsSourceLocation()
+    {
+        var messages = SqlParser.Validate("select a\n,\nfrom b");
+
+        Assert.Contains(messages, message =>
+            message.Contains("line ", StringComparison.Ordinal) &&
+            message.Contains("column ", StringComparison.Ordinal));
+    }
+
+    [Theory]
+    [InlineData("select a where a = @b:10")]
+    [InlineData("select a from b")]
+    [InlineData("select 'Don\\'t, from here'")]
+    public void Validate_SelectStatement_Succeeds(string sql)
+    {
+        Assert.Empty(SqlParser.Validate(sql));
+    }
+
+    [Theory]
+    [InlineData("delete from ContentItemIndex")]
+    [InlineData("insert into ContentItemIndex (DocumentId) values ('1')")]
+    [InlineData("update ContentItemIndex set DocumentId = '1'")]
+    public void Validate_MutationStatement_Fails(string sql)
+    {
+        Assert.Contains("Only SELECT statements are supported.", SqlParser.Validate(sql));
+    }
+
+    [Fact]
     public void Parse_ProviderSpecificSyntax_Succeeds()
     {
         const string sql = """

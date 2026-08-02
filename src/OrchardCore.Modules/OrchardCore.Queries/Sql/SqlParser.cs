@@ -1,6 +1,7 @@
 using Cyqwel.Ast;
 using Cyqwel.Dialects;
 using Cyqwel.Generation;
+using Cyqwel.Validation;
 using Cyqwel.Visitors;
 using YesSql;
 using YesSql.Provider.MySql;
@@ -24,6 +25,34 @@ public class SqlParser
         .BasedOn(SqlDialects.Generic)
         .ConfigureParser(static options => options with { SupportsParameterDefaults = true })
         .Build();
+
+    internal static IReadOnlyList<string> Validate(string sql)
+    {
+        var result = SqlValidator.Validate(
+            sql,
+            ParserDialect);
+
+        if (!result.IsValid)
+        {
+            return result.Diagnostics
+                .Where(static diagnostic => diagnostic.Severity == SqlValidationSeverity.Error)
+                .Select(static diagnostic => diagnostic.Location is { } location
+                    ? $"Parse error: {diagnostic.Message} at line {location.Line}, column {location.Column}"
+                    : $"Parse error: {diagnostic.Message}")
+                .ToArray();
+        }
+
+        if (!ParserDialect.TryParse(sql, out var document, out var error))
+        {
+            return error is null
+                ? ["Parse error: Unknown parsing error"]
+                : [$"Parse error: {error.Message} at line {error.Line}, column {error.Column}"];
+        }
+
+        return document!.Statements.Any(static statement => statement is not SqlQuery)
+            ? ["Only SELECT statements are supported."]
+            : [];
+    }
 
     public static bool TryParse(
         string sql,
