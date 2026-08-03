@@ -110,7 +110,7 @@ Recipe and deployment imports write site settings directly and do not use the ad
 When a browser reports a CORS failure:
 
 1. Confirm that the request is cross-origin. Same-origin requests do not require CORS.
-2. Confirm that `OrchardCore.Cors` and the intended policy are configured for the tenant selected by the request's host name.
+2. Confirm that `OrchardCore.Cors` and the intended policy are configured for the tenant selected by the request's hostname.
 3. Confirm that the expected policy is the default, or that the endpoint selects the intended named policy.
 4. Match the browser's `Origin` header exactly against **Allowed origins**, including the scheme and port. Remove paths and trailing slashes.
 5. For a preflight request, allow the requested method and every header named by `Access-Control-Request-Headers`.
