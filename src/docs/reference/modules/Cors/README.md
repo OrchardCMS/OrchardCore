@@ -52,7 +52,7 @@ Use `[DisableCors]` on an endpoint that must not use the global default policy. 
 | **Allow credentials** | Allows a browser to include credentials such as cookies or HTTP authentication information. The client must also opt in to credentialed requests, and normal cookie, authentication, and authorization rules still apply. |
 | **Exposed headers** | Adds the listed response headers to `Access-Control-Expose-Headers`, which makes them readable by browser client code. CORS-safelisted response headers are readable without listing them. |
 
-An empty allowed-origins, allowed-methods, or allowed-headers list permits none of that category when its corresponding **Allow any** option is disabled.
+An empty allowed-origins, allowed-methods, or allowed-headers list permits none of those categories when the corresponding **Allow any** option is disabled.
 
 !!! warning
     Using **Allow credentials** and **Allow any origin** together is insecure. The admin rejects this combination, including an `AllowedOrigins` entry of `*`, and does not save the settings. At runtime, a policy configured with both **AllowCredentials** and **AllowAnyOrigin** is not loaded.
