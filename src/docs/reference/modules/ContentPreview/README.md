@@ -219,8 +219,7 @@ The module is using its minimal fallback layout. Attach `PreviewPart` to the con
 
 The token can be missing or expired, or a different application node might not have the cache
 entry. Reopen the preview to create a current draft. For multi-node deployments, verify the shared distributed cache configuration.
-Also verify that the `PreviewPart` pattern resolves to an existing tenant route and that the
-route loads the item through Orchard Core's content manager.
+Also verify that the `PreviewPart` pattern resolves to an existing tenant route and that the route loads the item through Orchard Core's content manager.
 
 ### The preview shows an older value
 
