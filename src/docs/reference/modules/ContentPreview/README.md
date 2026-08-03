@@ -213,8 +213,7 @@ and values held only in JavaScript aren't submitted.
 
 ### The preview is unstyled or misses the site layout
 
-The module is using its minimal fallback layout. Attach `PreviewPart` to the content type and set
-its pattern to a frontend route that renders the item through the active theme.
+The module is using its minimal fallback layout. Attach `PreviewPart` to the content type and set its pattern to a frontend route that renders the item through the active theme.
 
 ### The preview returns 404
 
