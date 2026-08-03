@@ -60,7 +60,7 @@ separate application or one that bypasses Orchard Core's content manager can't l
 
 ## How live preview works
 
-The editor and preview windows communicate on a same-origin
+The editor and preview windows communicate on the same origin
 [`BroadcastChannel`](https://developer.mozilla.org/docs/Web/API/BroadcastChannel) identified by
 the content item ID.
 
