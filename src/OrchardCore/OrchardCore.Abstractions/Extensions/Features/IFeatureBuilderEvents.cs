@@ -9,6 +9,10 @@ public interface IFeatureBuilderEvents
 
 public class FeatureBuildingContext
 {
+    private string[] _featureDependencyIds;
+    private string[] _featureBeforeDependencyIds;
+    private string[] _featureAfterDependencyIds;
+
     public IManifestInfo ManifestInfo { get; set; }
     public IExtensionInfo ExtensionInfo { get; set; }
 
@@ -17,7 +21,25 @@ public class FeatureBuildingContext
     public int Priority { get; set; }
     public string Category { get; set; }
     public string Description { get; set; }
-    public string[] FeatureDependencyIds { get; set; }
+
+    public string[] FeatureBeforeDependencyIds
+    {
+        get => _featureBeforeDependencyIds ?? [];
+        set => _featureBeforeDependencyIds = value;
+    }
+
+    public string[] FeatureAfterDependencyIds
+    {
+        get => _featureAfterDependencyIds ?? [];
+        set => _featureAfterDependencyIds = value;
+    }
+
+    public string[] FeatureDependencyIds
+    {
+        get => _featureDependencyIds ?? [];
+        set => _featureDependencyIds = value;
+    }
+
     public bool DefaultTenantOnly { get; set; }
     public bool IsAlwaysEnabled { get; set; }
     public bool EnabledByDependencyOnly { get; set; }

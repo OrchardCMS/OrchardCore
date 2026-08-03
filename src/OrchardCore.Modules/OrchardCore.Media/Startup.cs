@@ -49,9 +49,6 @@ namespace OrchardCore.Media;
 
 public sealed class Startup : StartupBase
 {
-    public override int Order
-        => OrchardCoreConstants.ConfigureOrder.Media;
-
     public Startup() { }
 
     public override void ConfigureServices(IServiceCollection services)
@@ -184,14 +181,6 @@ public sealed class Startup : StartupBase
         var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
         var mediaFileStoreCache = serviceProvider.GetService<IMediaFileStoreCache>();
 
-        // Move middleware into SecureMediaStartup if it is possible to insert it between the users and media
-        // module. See issue https://github.com/OrchardCMS/OrchardCore/issues/15716.
-        // Secure media file middleware, but only if the feature is enabled.
-        if (serviceProvider.IsSecureMediaEnabled())
-        {
-            app.UseMiddleware<SecureMediaMiddleware>();
-        }
-
         // FileStore middleware before image processing, but only if a remote storage module has registered a cache provider.
         if (mediaFileStoreCache != null)
         {
@@ -318,5 +307,10 @@ public sealed class SecureMediaStartup : StartupBase
         services.AddScoped<IAuthorizationHandler, ViewMediaFolderAuthorizationHandler>();
 
         services.AddSingleton<IMediaEventHandler, SecureMediaFileStoreEventHandler>();
+    }
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        app.UseMiddleware<SecureMediaMiddleware>();
     }
 }
