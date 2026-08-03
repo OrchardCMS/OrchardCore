@@ -10,7 +10,7 @@ Enable the **CORS Configuration** feature (`OrchardCore.Cors`) for each tenant t
 
 After enabling the feature, go to **Settings** > **Security** > **Cross-Origin Resource Sharing**. Access to this page requires the security-critical **Managing CORS Settings** permission (`ManageCorsSettings`), which is granted to the Administrator role by default.
 
-CORS settings are stored in the site settings of the current tenant. Policies are isolated between tenants, and the module does not define an `appsettings.json` configuration section.
+CORS settings are stored in the current tenant's site settings. Policies are isolated between tenants, and the module does not define an `appsettings.json` configuration section.
 
 ## Create and apply a policy
 
