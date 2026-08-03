@@ -358,10 +358,10 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
     }
 
     /// <summary>
-    /// With OpenID token validation enabled, an anonymous schema fetch must carry the full
-    /// RFC-compliant challenge: 401 status, a WWW-Authenticate header, and the RFC 9457
-    /// Problem Details body attached by the validation feature's challenge handler —
-    /// matching the responses of the API endpoints the schema describes.
+    /// With OpenID token validation enabled, an anonymous schema fetch must produce the same
+    /// RFC-compliant challenge as the API endpoints the schema describes: a 401 status, a
+    /// WWW-Authenticate header advertising the Bearer scheme, and an RFC 9457 Problem Details
+    /// body.
     /// </summary>
     [Fact]
     public async Task SwaggerJsonChallengeCarriesProblemDetailsWhenValidationEnabled()
@@ -389,6 +389,7 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         var body = await response.TextAsync();
         Assert.Contains("\"status\":401", body);
         Assert.Contains("\"title\"", body);
+
         await anonPage.CloseAsync();
     }
 

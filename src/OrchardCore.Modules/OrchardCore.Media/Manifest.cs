@@ -71,6 +71,14 @@ using OrchardCore.Modules.Manifest;
     [
         "OrchardCore.Media"
     ],
+    After =
+    [
+        "OrchardCore.Users"
+    ],
+    Before =
+    [
+        "OrchardCore.Media"
+    ],
     Category = "Content Management"
 )]
 

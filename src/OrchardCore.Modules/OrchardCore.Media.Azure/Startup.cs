@@ -37,9 +37,6 @@ public sealed class Startup : Modules.StartupBase
         _configuration = configuration;
     }
 
-    public override int Order
-        => OrchardCoreConstants.ConfigureOrder.AzureMediaStorage;
-
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddPermissionProvider<Permissions>();
@@ -166,9 +163,6 @@ public sealed class MediaAzureImageCacheStartup : Modules.StartupBase
         _configuration = configuration;
         _logger = logger;
     }
-
-    public override int Order
-        => OrchardCoreConstants.ConfigureOrder.AzureResizedImageCache;
 
     public override void ConfigureServices(IServiceCollection services)
     {

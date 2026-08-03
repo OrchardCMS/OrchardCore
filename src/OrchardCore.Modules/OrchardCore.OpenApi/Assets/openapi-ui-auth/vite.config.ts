@@ -18,14 +18,14 @@ export default defineConfig({
         emptyOutDir: true,
         copyPublicDir: false,
         rollupOptions: {
-            input: path.resolve(__dirname, 'src/openapi-auth.ts'),
+            input: path.resolve(__dirname, 'src/openapi-ui-auth.ts'),
             output: {
                 // Self-bootstrapping ES module injected as <script type="module"> into the
                 // third-party Swagger and Scalar pages; configured via data-* attributes on
                 // its own script tag, no globals.
                 format: 'es',
-                entryFileNames: 'openapi-auth.js',
-                assetFileNames: 'openapi-auth.[ext]',
+                entryFileNames: 'openapi-ui-auth.js',
+                assetFileNames: 'openapi-ui-auth.[ext]',
                 // Single chunk - no code splitting for an injected script.
                 manualChunks: undefined,
             },

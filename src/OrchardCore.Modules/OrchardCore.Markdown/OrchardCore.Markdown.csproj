@@ -35,7 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Jint" />
+    <PackageReference Include="Acornima" />
     <PackageReference Include="Markdig" />
   </ItemGroup>
 

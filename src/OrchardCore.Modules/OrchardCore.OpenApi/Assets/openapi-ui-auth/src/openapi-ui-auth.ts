@@ -1,4 +1,5 @@
 import {
+  runRedirectCallback,
   runSilentRenewCallback,
   SilentAuthClient,
   type SilentAuthSettings,
@@ -12,8 +13,16 @@ import {
  * redirects anonymous visitors to /admin), so we acquire a bearer access token silently
  * (prompt=none in a hidden iframe) against the same-tenant OpenID Connect server and renew it the
  * same way — no interactive "Authorize" step. That silent core (token acquisition, renewal, the
- * silent-renew callback) lives in @bloom/services/auth/silent-oidc and is shared with the Media
- * gallery SPA; this bundle adds the OpenAPI-specific layer.
+ * silent-renew and redirect callbacks) lives in @bloom/services/auth/silent-oidc and is shared
+ * with the Media gallery SPA; this bundle adds the OpenAPI-specific layer.
+ *
+ * If the silent (prompt=none) request comes back with a standard interaction-required OIDC error —
+ * the admin has no OpenID session yet, or consent hasn't been granted because the client uses a
+ * non-implicit consent type (explicit/systematic) — the bundle falls back to a real, visible
+ * authorization flow (a full-page redirect). The OpenID server establishes the session / records
+ * consent and redirects back through the silent-renew page, which returns the browser to the doc
+ * UI; the reload's silent sign-in then succeeds. A sessionStorage flag guards against a redirect
+ * loop when the silent flow still can't complete after a visible attempt.
  *
  * The bundle is a self-bootstrapping ES module: the server injects a single
  * <script type="module" src="…" data-openapi-ui-auth data-client-id="…" …> tag (see
@@ -26,15 +35,37 @@ import {
  * in Swagger's Authorize dialog when Swagger UI is present.
  *
  * The authority and redirect URI are derived here from window.location so tenant prefixes and
- * reverse proxies resolve correctly. The silent-renew iframe loads openapi-oidc-silent.html,
- * whose copy of this script tag carries data-silent, so the bundle completes the handshake
- * instead of configuring the app; because that static page has no server-injected config,
- * bootstrap persists the resolved config to sessionStorage (shared same-origin with the iframe)
- * so the callback can rebuild a matching UserManager.
+ * reverse proxies resolve correctly. The callback page openapi-oidc-silent.html tags its copy of
+ * this script with data-silent, so the bundle completes a callback instead of configuring the app;
+ * because that static page has no server-injected config, bootstrap persists the resolved config
+ * to sessionStorage (shared same-origin with the iframe) so the callback can rebuild a matching
+ * UserManager.
  */
 
 const CONFIG_STORAGE_KEY = "openapi-ui:oidc-config";
 const LOG_LABEL = "[openapi-ui]";
+
+/**
+ * Set right before a visible authorization redirect and cleared once a silent sign-in succeeds.
+ * If we come back from the visible flow and the silent request still can't complete, its presence
+ * stops us from redirecting again (which would loop).
+ */
+const INTERACTIVE_ATTEMPT_KEY = "openapi-ui:interactive-signin";
+
+/** Doc UI URL to come back to once the visible authorization flow completes. */
+const RETURN_URL_KEY = "openapi-ui:return-url";
+
+/**
+ * Standard OAuth 2.0 / OpenID Connect error codes a prompt=none authorization request returns when
+ * the user cannot be signed in without interaction. On any of these we start a visible flow rather
+ * than failing; anything else (a real configuration/transport error) is surfaced as-is.
+ */
+const INTERACTION_REQUIRED_ERRORS = new Set([
+  "login_required",
+  "consent_required",
+  "interaction_required",
+  "account_selection_required",
+]);
 
 interface OpenApiAuthConfig {
   /** Tenant path base (e.g. "" for the Default tenant, "/team1" for a prefixed tenant). */
@@ -72,6 +103,29 @@ function toSettings(config: OpenApiAuthConfig): SilentAuthSettings {
     silentRedirectUri: redirectUri,
     tokenStore: "memory",
   };
+}
+
+function isInteractionRequired(err: unknown): boolean {
+  const code = (err as { error?: unknown } | null)?.error;
+  return typeof code === "string" && INTERACTION_REQUIRED_ERRORS.has(code);
+}
+
+/**
+ * Fallback for a silent sign-in that failed because the flow needs interaction: start a full-page
+ * redirect to the OpenID server, remembering the doc URL to come back to. Control does not return
+ * here — the callback page brings the browser back to that URL after the server completes the
+ * authorization, and the reload signs in silently. Any non-interactive error (or a second failure
+ * after a visible attempt, which would loop) is left alone: the shared core already logged it and
+ * the doc UI simply gets no token.
+ */
+function startInteractiveSignin(err: unknown): void {
+  if (!isInteractionRequired(err) || window.sessionStorage.getItem(INTERACTIVE_ATTEMPT_KEY)) {
+    return;
+  }
+
+  window.sessionStorage.setItem(INTERACTIVE_ATTEMPT_KEY, "1");
+  window.sessionStorage.setItem(RETURN_URL_KEY, window.location.href);
+  void client?.manager.signinRedirect();
 }
 
 /**
@@ -162,7 +216,7 @@ function installFetch(): void {
       headers.set("Authorization", `Bearer ${fresh}`);
       return await originalFetch(retryInput, { ...init, headers, credentials: "omit" });
     } catch (err) {
-      console.error("[openapi-ui] retry with refreshed token failed", err);
+      console.error(`${LOG_LABEL} retry with refreshed token failed`, err);
       return response;
     }
   };
@@ -213,22 +267,35 @@ function preauthorizeSwagger(): void {
 }
 
 /**
- * Completes the silent-renew handshake. Runs inside the hidden iframe that loaded
- * openapi-oidc-silent.html; rebuilds the UserManager from the persisted config and posts the
- * result back to the parent window.
+ * Completes an authorization callback on openapi-oidc-silent.html, rebuilding the UserManager from
+ * the persisted config. The same page is the redirect URI for two flows:
+ *  - loaded in the hidden renew iframe (window.parent !== window): the automaticSilentRenew
+ *    handshake — post the result back to the parent window;
+ *  - loaded top-level: the landing of the visible authorization redirect — finish it, then send the
+ *    browser back to the doc UI that started the flow.
  */
-async function handleSilentRenewCallback(): Promise<void> {
-  try {
-    const raw = window.sessionStorage.getItem(CONFIG_STORAGE_KEY);
-    if (!raw) {
-      return;
-    }
-
-    const config = JSON.parse(raw) as OpenApiAuthConfig;
-    await runSilentRenewCallback(toSettings(config), LOG_LABEL);
-  } catch (err) {
-    console.error(`${LOG_LABEL} silent renew callback failed`, err);
+async function handleCallback(): Promise<void> {
+  const raw = window.sessionStorage.getItem(CONFIG_STORAGE_KEY);
+  if (!raw) {
+    return;
   }
+
+  const config = JSON.parse(raw) as OpenApiAuthConfig;
+  const settings = toSettings(config);
+
+  if (window.parent !== window) {
+    await runSilentRenewCallback(settings, LOG_LABEL);
+    return;
+  }
+
+  // A stranded blank callback page is a dead end for the interactive flow, so return to the doc UI
+  // (or the tenant root) whether or not the exchange succeeded — its silent sign-in can retry, and
+  // the INTERACTIVE_ATTEMPT_KEY flag stops a persistent failure from redirecting in a loop.
+  await runRedirectCallback(settings, LOG_LABEL);
+
+  const returnUrl = window.sessionStorage.getItem(RETURN_URL_KEY);
+  window.sessionStorage.removeItem(RETURN_URL_KEY);
+  window.location.replace(returnUrl ?? `${window.location.origin}${config.pathBase || ""}`);
 }
 
 function bootstrap(): void {
@@ -238,10 +305,10 @@ function bootstrap(): void {
     return;
   }
 
-  // Inside the hidden silent-renew iframe (openapi-oidc-silent.html tags its copy of this script
-  // with data-silent): complete the handshake and do not configure the app.
+  // On the callback page (openapi-oidc-silent.html tags its copy of this script with data-silent):
+  // complete the handshake and do not configure the app.
   if (script.hasAttribute("data-silent")) {
-    void handleSilentRenewCallback();
+    void handleCallback();
     return;
   }
 
@@ -257,10 +324,21 @@ function bootstrap(): void {
     silentPath,
   };
 
-  // Persist so the config-less silent-renew page can rebuild a matching UserManager.
+  // Persist so the config-less callback page can rebuild a matching UserManager.
   window.sessionStorage.setItem(CONFIG_STORAGE_KEY, JSON.stringify(config));
 
-  client = new SilentAuthClient(toSettings(config), { label: LOG_LABEL });
+  client = new SilentAuthClient(toSettings(config), {
+    label: LOG_LABEL,
+    // A silent failure that needs interaction (no OpenID session yet, or consent not recorded)
+    // falls back to a visible authorization flow rather than leaving the doc UI without a token.
+    onSilentFailure: startInteractiveSignin,
+  });
+
+  // A silent sign-in succeeded, so a later interaction-required failure is a genuinely new one and
+  // may start its own visible flow.
+  client.manager.events.addUserLoaded(() => {
+    window.sessionStorage.removeItem(INTERACTIVE_ATTEMPT_KEY);
+  });
 
   installFetch();
   preauthorizeSwagger();

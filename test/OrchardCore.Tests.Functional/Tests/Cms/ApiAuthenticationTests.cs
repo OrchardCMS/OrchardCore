@@ -6,9 +6,10 @@ namespace OrchardCore.Tests.Functional.Tests.Cms;
 
 /// <summary>
 /// Verifies the shape of 401 responses produced by the shared "Api" authentication scheme:
-/// RFC 9110 §15.5.2 requires a WWW-Authenticate header on every 401 response, and when the
-/// OpenIddict validation handler issues the challenge, an RFC 9457 Problem Details body is
-/// attached alongside the RFC 6750 header so JavaScript clients get a parseable payload.
+/// RFC 9110 §15.5.2 requires a WWW-Authenticate header on every 401 response, and an RFC 9457
+/// Problem Details body is attached to it so JavaScript clients get a parseable payload,
+/// whether the challenge comes from the scheme's own fallback or from the OpenIddict
+/// validation handler.
 /// </summary>
 public sealed class ApiAuthenticationTests : CmsTestBase, IClassFixture<CmsSetupFixture>
 {
@@ -18,12 +19,12 @@ public sealed class ApiAuthenticationTests : CmsTestBase, IClassFixture<CmsSetup
 
     /// <summary>
     /// Even when no token scheme is registered (OpenID Token Validation disabled), the "Api"
-    /// scheme's fallback 401 must carry a WWW-Authenticate header. This assertion also holds
-    /// after the validation feature is enabled, where OpenIddict emits the header itself, so
-    /// it is independent of test execution order within this class.
+    /// scheme's fallback 401 must carry a WWW-Authenticate header and a Problem Details body.
+    /// These assertions also hold after the validation feature is enabled, where OpenIddict
+    /// emits the header itself, so they are independent of test execution order in this class.
     /// </summary>
     [Fact]
-    public async Task Api401AlwaysCarriesWwwAuthenticateHeader()
+    public async Task Api401AlwaysCarriesWwwAuthenticateHeaderAndProblemDetailsBody()
     {
         var page = await Fixture.CreatePageAsync();
         await AuthHelper.LoginAsync(page, $"/{Tenant.Prefix}");
@@ -38,16 +39,21 @@ public sealed class ApiAuthenticationTests : CmsTestBase, IClassFixture<CmsSetup
         Assert.True(response.Headers.TryGetValue("www-authenticate", out var challenge));
         Assert.StartsWith("Bearer", challenge);
 
+        Assert.True(response.Headers.TryGetValue("content-type", out var contentType));
+        Assert.StartsWith("application/problem+json", contentType);
+        Assert.Contains("\"status\":401", await response.TextAsync());
+
         await anonPage.CloseAsync();
     }
 
     /// <summary>
     /// With the OpenID validation feature enabled, an invalid bearer token must produce a 401
-    /// with OpenIddict's RFC 6750 WWW-Authenticate header (error="invalid_token") and an
-    /// RFC 9457 Problem Details body mirroring the error code and description.
+    /// carrying OpenIddict's RFC 6750 WWW-Authenticate header (error="invalid_token"), which is
+    /// where the error details of a resource server challenge are conveyed, plus the RFC 9457
+    /// Problem Details body attached to every "Api" scheme response.
     /// </summary>
     [Fact]
-    public async Task OpenIddict401IncludesProblemDetailsBody()
+    public async Task OpenIddict401CarriesRfc6750HeaderAndProblemDetailsBody()
     {
         var page = await Fixture.CreatePageAsync();
         await AuthHelper.LoginAsync(page, $"/{Tenant.Prefix}");
@@ -66,14 +72,12 @@ public sealed class ApiAuthenticationTests : CmsTestBase, IClassFixture<CmsSetup
         Assert.Equal(401, response.Status);
 
         Assert.True(response.Headers.TryGetValue("www-authenticate", out var challenge));
+        Assert.StartsWith("Bearer", challenge);
         Assert.Contains("error=\"invalid_token\"", challenge);
 
         Assert.True(response.Headers.TryGetValue("content-type", out var contentType));
         Assert.StartsWith("application/problem+json", contentType);
-
-        var body = await response.TextAsync();
-        Assert.Contains("\"status\":401", body);
-        Assert.Contains("invalid_token", body);
+        Assert.Contains("\"status\":401", await response.TextAsync());
 
         await anonPage.CloseAsync();
     }

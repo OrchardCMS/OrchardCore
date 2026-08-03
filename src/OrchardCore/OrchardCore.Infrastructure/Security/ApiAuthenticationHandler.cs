@@ -36,9 +36,6 @@ public class ApiAuthenticationHandler : AuthenticationHandler<ApiAuthorizationOp
 
     protected override Task HandleChallengeAsync(AuthenticationProperties properties)
     {
-        // Keep API status codes as-is in every path: without this, an empty-body 401 on an
-        // extension-less API route is re-executed into an HTML error page when the
-        // Diagnostics feature's status-code pages are enabled.
         DisableStatusCodePages();
 
         if (!_authenticationOptions.Value.SchemeMap.ContainsKey(Options.ApiAuthenticationScheme))
@@ -67,12 +64,28 @@ public class ApiAuthenticationHandler : AuthenticationHandler<ApiAuthorizationOp
         return Context.ForbidAsync(Options.ApiAuthenticationScheme);
     }
 
+    /// <summary>
+    /// Keeps API status codes as-is in every path: without this, an empty-body 401 on an
+    /// extension-less API route is re-executed into an HTML error page when the Diagnostics
+    /// feature's status-code pages are enabled. Opting out is also what tells the
+    /// <c>ApiProblemDetailsMiddleware</c> to attach an RFC 9457 body to the response.
+    /// </summary>
     private void DisableStatusCodePages()
     {
         var statusCodePagesFeature = Context.Features.Get<IStatusCodePagesFeature>();
-        if (statusCodePagesFeature != null)
+        if (statusCodePagesFeature is null)
         {
-            statusCodePagesFeature.Enabled = false;
+            // The Diagnostics feature - which registers the status code pages middleware - can be
+            // disabled: in that case, set the feature anyway so the response is still marked as
+            // one that must never be turned into an HTML error page.
+            Context.Features.Set<IStatusCodePagesFeature>(new StatusCodePagesFeature
+            {
+                Enabled = false,
+            });
+
+            return;
         }
+
+        statusCodePagesFeature.Enabled = false;
     }
 }

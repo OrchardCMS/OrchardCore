@@ -33,6 +33,8 @@ There is nothing else to configure: API authentication for the documentation UIs
 
 Orchard Core API endpoints authenticate with the `"Api"` scheme, which only accepts Bearer tokens — session cookies are never used for API calls. Instead of an interactive "Authorize" step, the Swagger and Scalar UIs acquire a token **silently**: a script injected into the pages runs an OAuth2 **authorization-code + PKCE** flow against the same tenant's OpenID Connect server in a hidden iframe (`prompt=none`), using your existing admin cookie session. The token is renewed the same way before it expires and is attached automatically to every "Try it out" / "Send" request. ReDoc is read-only documentation with no request surface, so it needs no token.
 
+If the silent request can't complete because interaction is required — the admin has no OpenID session yet, or consent hasn't been granted because the client uses a non-implicit consent type (`explicit`/`systematic`) — the script falls back to a **visible authorization flow**: a one-time full-page redirect to the OpenID server that establishes the session / records consent and returns to the documentation page, after which silent sign-in and renewal proceed as usual. This means the doc UIs work regardless of the client's configured consent type.
+
 ### Provisioning with the OpenApiPkce recipe
 
 Run the **OpenAPI Documentation — Bearer/PKCE** recipe (Configuration → Recipes). It:
