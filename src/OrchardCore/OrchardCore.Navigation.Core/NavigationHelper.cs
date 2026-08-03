@@ -77,7 +77,7 @@ public static class NavigationHelper
             shape.Level = GetLevel(parentShape) + 1;
             shape.Priority = menuItem.Priority;
             shape.Local = menuItem.LocalNav;
-            shape.Hash = ComputeStableHash(GetHash(parentShape) + menuItem.Text.Value);
+            shape.Hash = ComputeStableHash(GetHash(parentShape), menuItem.Text.Value);
             shape.Score = 0;
         }, (menuItem, parentShape, menu));
 
@@ -97,15 +97,24 @@ public static class NavigationHelper
     {
         if (string.IsNullOrEmpty(menuItem.Href) || menuItem.Href[0] != '/')
         {
-            menuItemShape.Selected = menuItemShape.Score > 0;
+            menuItemShape.Selected = false;
             return;
         }
 
-        // Strip query string from the menu item href to get a pure path for comparison.
+        // Strip query string and fragment from the menu item href to get a pure path for comparison.
         var hrefSpan = menuItem.Href.AsSpan();
         var queryIndex = hrefSpan.IndexOf('?');
+        var fragmentIndex = hrefSpan.IndexOf('#');
+
+        // Use the earliest terminator (query string or fragment) to isolate the path.
+        var pathEndIndex = queryIndex >= 0 && fragmentIndex >= 0
+            ? Math.Min(queryIndex, fragmentIndex)
+            : queryIndex >= 0 ? queryIndex
+            : fragmentIndex >= 0 ? fragmentIndex
+            : -1;
+
         var hrefPath = RemovePathBase(
-            (queryIndex >= 0 ? hrefSpan[..queryIndex] : hrefSpan).ToString(),
+            (pathEndIndex >= 0 ? hrefSpan[..pathEndIndex] : hrefSpan).ToString(),
             viewContext.HttpContext.Request.PathBase);
 
         var requestPath = RemovePathBase(
@@ -137,7 +146,7 @@ public static class NavigationHelper
 
     private static string RemovePathBase(string path, PathString pathBase)
     {
-        if (!pathBase.HasValue || pathBase == PathString.Empty)
+        if (!pathBase.HasValue)
         {
             return path;
         }
@@ -192,6 +201,71 @@ public static class NavigationHelper
         return count;
     }
 
+    /// <summary>
+    /// Returns a string with consecutive '/' characters collapsed into a single '/'.
+    /// The input span must already be trimmed of leading and trailing slashes.
+    /// </summary>
+    private static string CollapseSlashes(ReadOnlySpan<char> span)
+    {
+        // Fast path: no consecutive slashes present.
+        var hasDoubleSlash = false;
+        for (var i = 0; i < span.Length - 1; i++)
+        {
+            if (span[i] == '/' && span[i + 1] == '/')
+            {
+                hasDoubleSlash = true;
+                break;
+            }
+        }
+
+        if (!hasDoubleSlash)
+        {
+            return span.ToString();
+        }
+
+        // Pre-compute the output length so string.Create receives the correct size.
+        var outputLength = 0;
+        var prevWasSlash = false;
+        foreach (var ch in span)
+        {
+            if (ch == '/')
+            {
+                if (!prevWasSlash)
+                {
+                    outputLength++;
+                }
+                prevWasSlash = true;
+            }
+            else
+            {
+                outputLength++;
+                prevWasSlash = false;
+            }
+        }
+
+        return string.Create(outputLength, span.ToString(), static (dest, src) =>
+        {
+            var writePos = 0;
+            var prevWasSlash = false;
+            foreach (var ch in src)
+            {
+                if (ch == '/')
+                {
+                    if (!prevWasSlash)
+                    {
+                        dest[writePos++] = ch;
+                    }
+                    prevWasSlash = true;
+                }
+                else
+                {
+                    dest[writePos++] = ch;
+                    prevWasSlash = false;
+                }
+            }
+        });
+    }
+
     private static int CountLeadingMatchingPathSegments(string requestPath, string hrefPath)
     {
         if (string.IsNullOrEmpty(requestPath) || string.IsNullOrEmpty(hrefPath))
@@ -199,8 +273,11 @@ public static class NavigationHelper
             return 0;
         }
 
-        var requestSpan = requestPath.AsSpan().Trim('/');
-        var hrefSpan = hrefPath.AsSpan().Trim('/');
+        // Trim leading/trailing slashes and collapse any embedded double-slashes so that
+        // malformed paths (e.g. "/Admin//Contents") never produce empty segments that
+        // could stall the matching loop.
+        var requestSpan = CollapseSlashes(requestPath.AsSpan().Trim('/')).AsSpan();
+        var hrefSpan = CollapseSlashes(hrefPath.AsSpan().Trim('/')).AsSpan();
         var matchingSegments = 0;
         var requestPos = 0;
         var hrefPos = 0;
@@ -327,8 +404,20 @@ public static class NavigationHelper
     /// <see cref="string.GetHashCode()"/>, which is randomized per process, the result is stable
     /// across restarts and load-balanced instances.
     /// </summary>
-    private static string ComputeStableHash(string value)
-        => XxHash32.HashToUInt32(MemoryMarshal.AsBytes(value.AsSpan())).ToString();
+    private static string ComputeStableHash(string parentHash, string value)
+    {
+        if (string.IsNullOrEmpty(parentHash))
+        {
+            return XxHash32.HashToUInt32(MemoryMarshal.AsBytes(value.AsSpan())).ToString();
+        }
+
+        var hash = new XxHash32();
+
+        hash.Append(MemoryMarshal.AsBytes(parentHash.AsSpan()));
+        hash.Append(MemoryMarshal.AsBytes(value.AsSpan()));
+
+        return hash.GetCurrentHashAsUInt32().ToString();
+    }
 
     private static int GetLevel(IShape shape)
         => shape is NavigationItemViewModel menuItemShape ? menuItemShape.Level : shape.GetProperty<int>(nameof(NavigationItemViewModel.Level));
