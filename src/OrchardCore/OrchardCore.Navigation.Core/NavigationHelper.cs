@@ -115,6 +115,21 @@ public static class NavigationHelper
             viewContext.HttpContext.Request.PathBase);
         var segmentCount = hrefPath.Split('/', StringSplitOptions.RemoveEmptyEntries).Length;
 
+
+        // Ancestor paths (e.g. "/Admin" while evaluating "/Admin/Features") are not
+        // within the menu item branch and should not reuse a stale clicked hash.
+        if (!IsAncestorPath(requestPath, hrefPath))
+        {
+            // Use the selectedNavHash stored in the admin preferences cookie, which JS writes proactively when
+            // the user clicks a nav link. Give it a high score to ensure it wins over any URL-matched items.
+            var selectedNavHash = GetSelectedNavHashFromPrefs(viewContext);
+
+            if (selectedNavHash == menuItemShape.Hash)
+            {
+                menuItemShape.Score += 100;
+            }
+        }
+
         if (requestPath.Equals(hrefPath, StringComparison.OrdinalIgnoreCase))
         {
             // Exact URL match — score by path depth so deeper (more specific) links beat
@@ -126,22 +141,6 @@ public static class NavigationHelper
             // Prefix match (e.g. "/Admin/ContentTypes" matches "/Admin/ContentTypes/Edit/Blog").
             // Deeper prefix = higher score, ensuring the most specific ancestor wins.
             menuItemShape.Score += segmentCount;
-        }
-        else if (IsAncestorPath(requestPath, hrefPath))
-        {
-            // Ancestor paths (e.g. "/Admin" while evaluating "/Admin/Features") are not
-            // within the menu item branch and should not reuse a stale clicked hash.
-        }
-        else
-        { 
-            // No URL match — fall back to the selectedNavHash stored in the admin preferences
-            // cookie, which JS writes proactively when the user clicks a nav link.
-            var selectedNavHash = GetSelectedNavHashFromPrefs(viewContext);
-
-            if (selectedNavHash == menuItemShape.Hash)
-            {
-                menuItemShape.Score++;
-            }
         }
 
         menuItemShape.Selected = menuItemShape.Score > 0;
