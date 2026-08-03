@@ -178,7 +178,7 @@ public sealed class DependencyHealthCheck : IHealthCheck
 ```
 
 `RequireFeatures` prevents the startup registration from loading when the Health Checks feature is disabled.
-Alternatively, declare `OrchardCore.HealthChecks` as a dependency of the custom feature so enabling the custom feature also enables the endpoint.
+Alternatively, declare `OrchardCore.HealthChecks` as a dependency of the custom feature, so enabling the custom feature also enables the endpoint.
 
 The Orchard Core endpoint runs every registration.
 Tags supplied to `AddCheck` remain available to ASP.NET Core, but this module does not use them to create separate liveness and readiness endpoints.
