@@ -5,8 +5,7 @@ form values in a separate window without saving or publishing the content item.
 
 ## Enable Content Preview
 
-Enable the **Content Preview** feature from **Configuration** > **Features**. The feature depends
-on the Contents module.
+Enable the **Content Preview** feature from **Configuration** > **Features**. The feature depends on the Contents module.
 
 The **Preview** button appears in the action area of a content item editor when the current user
 is authorized to preview that item. Placement rules can hide the button for specific content
