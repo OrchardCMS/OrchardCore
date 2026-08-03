@@ -154,7 +154,7 @@ Background tasks are an in-process scheduler, not a durable job queue:
 
 ### Multiple application instances
 
-Without a distributed lock, every application instance can execute the same due task. To limit a task to one instance:
+Without a distributed lock, every application instance can execute the same task. To limit a task to one instance:
 
 1. Enable a distributed lock implementation, such as the [Redis Lock feature](../Redis/README.md).
 2. Set both `LockTimeout` and `LockExpiration` to values greater than zero on the attribute or in the task's advanced admin settings.
