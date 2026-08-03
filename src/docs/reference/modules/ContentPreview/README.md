@@ -224,8 +224,7 @@ Also verify that the `PreviewPart` pattern resolves to an existing tenant route 
 ### The preview shows an older value
 
 The latest editor values didn't pass validation or the editor didn't raise a live-update event.
-Correct validation errors and verify the editor integration. The window continues to display
-the last successful response until another draft renders.
+Correct validation errors and verify the editor integration. The window continues to display the last successful response until another draft renders.
 
 ## Video
 
