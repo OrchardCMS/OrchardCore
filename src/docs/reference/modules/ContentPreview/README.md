@@ -21,7 +21,7 @@ Orchard Core provides two related preview workflows:
 | Live preview | Select **Preview** while creating or editing an item | The current, unsaved values in the editor form |
 
 Live preview opens a separate window. Keep the content editor open while using it. Changes from
-supported editor controls update the preview after a short delay.
+Supported editor controls update the preview after a short delay.
 
 ## Render the frontend page
 
