@@ -9,7 +9,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media;
 public class ClamAvFileEventHandlerTests
 {
     [Fact]
-    public async Task CreatingAsync_ReturnsSeekableStream_WhenClamAvReturnsOk()
+    public async Task CreatingAsync_ClamAvReturnsOk_ReturnsSeekableStream()
     {
         await using var server = await FakeClamAvServer.StartAsync("stream: OK\n");
         using var factory = CreateFactory();
@@ -26,7 +26,7 @@ public class ClamAvFileEventHandlerTests
     }
 
     [Fact]
-    public async Task CreatingAsync_BuffersNonSeekableStreams()
+    public async Task CreatingAsync_BuffersNonSeekableStreams_Succeeds()
     {
         await using var server = await FakeClamAvServer.StartAsync("stream: OK\n");
         using var factory = CreateFactory();
@@ -46,7 +46,7 @@ public class ClamAvFileEventHandlerTests
     }
 
     [Fact]
-    public async Task CreatingAsync_ReturnsFailedResult_WhenClamAvFindsMalware()
+    public async Task CreatingAsync_ClamAvFindsMalware_ReturnsFailedResult()
     {
         await using var server = await FakeClamAvServer.StartAsync("stream: Eicar-Test-Signature FOUND\n");
         using var factory = CreateFactory();
@@ -59,7 +59,7 @@ public class ClamAvFileEventHandlerTests
     }
 
     [Fact]
-    public async Task CreatingAsync_Throws_WhenClamAvReturnsError()
+    public async Task CreatingAsync_ClamAvReturnsError_Throws()
     {
         await using var server = await FakeClamAvServer.StartAsync("INSTREAM size limit exceeded. ERROR\n");
         using var factory = CreateFactory();
@@ -72,7 +72,7 @@ public class ClamAvFileEventHandlerTests
     }
 
     [Fact]
-    public async Task CreatingAsync_Throws_WhenHostIsMissing()
+    public async Task CreatingAsync_HostIsMissing_Throws()
     {
         using var factory = CreateFactory();
         var handler = new ClamAvFileEventHandler(
@@ -90,7 +90,7 @@ public class ClamAvFileEventHandlerTests
     }
 
     [Fact]
-    public async Task CreatingAsync_ReusesTheSameTcpConnection()
+    public async Task CreatingAsync_ReusesTheSameTcpConnection_Succeeds()
     {
         await using var server = await FakeClamAvServer.StartAsync("stream: OK\n", "stream: OK\n");
         using var factory = CreateFactory();

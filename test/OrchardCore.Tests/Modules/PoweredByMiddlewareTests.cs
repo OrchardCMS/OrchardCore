@@ -5,7 +5,7 @@ namespace OrchardCore.Tests.Modules;
 public class PoweredByMiddlewareTests
 {
     [Fact]
-    public async Task InjectPoweredByHeader()
+    public async Task InjectPoweredByHeader_Default_Succeeds()
     {
         // Arrange
         string key = "X-Powered-By", value = "OrchardCore";
@@ -33,7 +33,7 @@ public class PoweredByMiddlewareTests
     }
 
     [Fact]
-    public async Task DoNotInjectPoweredByHeaderIfDisabled()
+    public async Task DoNotInjectPoweredByHeaderIfDisabled_Default_Succeeds()
     {
         // Arrange
         string key = "X-Powered-By", value = "OrchardCore";

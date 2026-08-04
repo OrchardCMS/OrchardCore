@@ -5,7 +5,7 @@ namespace OrchardCore.Tests.Apis.GraphQL;
 public class MediaFieldResizeUrlQueryTests
 {
     [Fact]
-    public async Task ResizeUrlShouldReturnAUrlThatServesAProcessedImage()
+    public async Task ResizeUrl_Default_ReturnsAUrlThatServesAProcessedImage()
     {
         using var context = new BlogContext();
         await context.InitializeAsync();

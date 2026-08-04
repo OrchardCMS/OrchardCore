@@ -12,7 +12,7 @@ namespace OrchardCore.Tests.DisplayManagement.Descriptors;
 public class ShapeAttributeBindingStrategyTests
 {
     [Fact]
-    public async Task StaticShapeMethodsDoNotResolveTheirProviderInstance()
+    public async Task StaticShapeMethodsDoNotResolveTheirProviderInstance_Default_Succeeds()
     {
         var methodInfo = typeof(StaticShapeProvider).GetMethod(nameof(StaticShapeProvider.StaticShape));
         var occurrence = new ShapeAttributeOccurrence(new ShapeAttribute(), methodInfo, typeof(StaticShapeProvider));

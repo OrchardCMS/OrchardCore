@@ -7,7 +7,7 @@ namespace OrchardCore.Tests.Apis.GraphQL;
 public class RecentBlogPostsQueryTests
 {
     [Fact]
-    public async Task ShouldListBlogPostWhenCallingAQuery()
+    public async Task List_CallingAQuery_Succeeds()
     {
         using var context = new BlogContext();
         await context.InitializeAsync();

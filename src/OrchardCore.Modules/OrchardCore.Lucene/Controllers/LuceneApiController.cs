@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using OrchardCore.Entities;
 using OrchardCore.Queries;
 using OrchardCore.Lucene.Models;
@@ -27,6 +28,7 @@ public sealed class LuceneApiController : ControllerBase
 
     [HttpGet]
     [Route("content")]
+    [EndpointName("ApiGetLuceneContent")]
     public async Task<IActionResult> Content([FromQuery] LuceneQueryModel queryModel)
     {
         if (!await _authorizationService.AuthorizeAsync(User, LuceneSearchPermissions.QueryLuceneApi))
@@ -41,6 +43,7 @@ public sealed class LuceneApiController : ControllerBase
 
     [HttpPost]
     [Route("content")]
+    [EndpointName("ApiPostLuceneContent")]
     public async Task<IActionResult> ContentPost(LuceneQueryModel queryModel)
     {
         if (!await _authorizationService.AuthorizeAsync(User, LuceneSearchPermissions.QueryLuceneApi))
@@ -55,6 +58,7 @@ public sealed class LuceneApiController : ControllerBase
 
     [HttpGet]
     [Route("documents")]
+    [EndpointName("ApiGetLuceneDocuments")]
     public async Task<IActionResult> Documents([FromQuery] LuceneQueryModel queryModel)
     {
         if (!await _authorizationService.AuthorizeAsync(User, LuceneSearchPermissions.QueryLuceneApi))
@@ -69,6 +73,7 @@ public sealed class LuceneApiController : ControllerBase
 
     [HttpPost]
     [Route("documents")]
+    [EndpointName("ApiPostLuceneDocuments")]
     public async Task<IActionResult> DocumentsPost(LuceneQueryModel queryModel)
     {
         if (!await _authorizationService.AuthorizeAsync(User, LuceneSearchPermissions.QueryLuceneApi))

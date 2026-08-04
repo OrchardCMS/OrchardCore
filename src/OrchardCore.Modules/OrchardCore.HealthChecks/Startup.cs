@@ -36,7 +36,7 @@ public sealed class Startup : StartupBase
         {
             var healthChecksResponseWriter = serviceProvider.GetService<IHealthChecksResponseWriter>();
 
-            app.UseHealthChecks(healthChecksOptions.Url, new HealthCheckOptions
+            routes.MapHealthChecks(healthChecksOptions.Url, new HealthCheckOptions
             {
                 AllowCachingResponses = false,
                 ResultStatusCodes =
@@ -50,7 +50,7 @@ public sealed class Startup : StartupBase
         }
         else
         {
-            app.UseHealthChecks(healthChecksOptions.Url);
+            routes.MapHealthChecks(healthChecksOptions.Url);
         }
     }
 }

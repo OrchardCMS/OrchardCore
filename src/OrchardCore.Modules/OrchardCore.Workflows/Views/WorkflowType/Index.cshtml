@@ -7,7 +7,7 @@
 }
 <zone Name="Title"><h1>@RenderTitleSegments(T["Manage Workflows"])</h1></zone>
 
-<form asp-action="Index" id="workflows-types-form" method="post" class="no-multisubmit">
+<form asp-action="Index" id="workflows-types-form" method="post" class="no-multisubmit" data-list-management data-selected-label="@T["selected"]">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
@@ -41,7 +41,7 @@
                         </div>
                     </div>
                     <div class="col-auto">
-                        <div class="dropdown" style="display:none" id="actions">
+                        <div class="dropdown d-none" id="actions">
                             <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 @T["Actions"]
                             </button>
@@ -101,118 +101,4 @@
 </form>
 @await DisplayAsync(Model.Pager)
 
-<script at="Foot">
-    document.addEventListener('DOMContentLoaded', function () {
-        var actions = document.getElementById("actions");
-        var items = document.getElementById("items");
-        var filters = document.querySelectorAll(".filter");
-        var selectAllCtrl = document.getElementById("select-all");
-        var selectedItems = document.getElementById("selected-items");
-        var itemsCheckboxes = document.querySelectorAll("input[type='checkbox'][name='itemIds']");
-        var submitFilterButton = document.querySelector("[name='submit.Filter']");
-        var bulkActionInput = document.querySelector("[name='Options.BulkAction']");
-        var submitBulkActionButton = document.querySelector("[name='submit.BulkAction']");
-
-        function show(element) {
-            if (element) {
-                element.style.display = '';
-            }
-        }
-
-        function hide(element) {
-            if (element) {
-                element.style.display = 'none';
-            }
-        }
-
-        function selectedItemsCount() {
-            return document.querySelectorAll("input[type='checkbox'][name='itemIds']:checked").length;
-        }
-
-        function setBulkAction(action) {
-            if (bulkActionInput && submitBulkActionButton) {
-                bulkActionInput.value = action;
-                submitBulkActionButton.click();
-            }
-        }
-
-        document.querySelectorAll(".filter-options input").forEach(function (input) {
-            input.addEventListener("change", function () {
-                submitFilterButton?.click();
-            });
-        });
-
-        document.querySelectorAll(".dropdown-menu .dropdown-item").forEach(function (item) {
-            if (!item.dataset.action) {
-                return;
-            }
-
-            item.addEventListener("click", function () {
-                if (selectedItemsCount() > 1) {
-                    switch (item.dataset.action) {
-                        case "Delete":
-                            confirmDialog({
-                                title: item.dataset.title, message: item.dataset.message, callback: function (r) {
-                                    if (r) {
-                                        setBulkAction(item.dataset.action);
-                                    }
-                                }
-                            });
-                            break;
-                        case "Export":
-                            setBulkAction(item.dataset.action);
-                            break;
-                    }
-                }
-            });
-        });
-
-        function displayActionsOrFilters() {
-            if (selectedItemsCount() > 1) {
-                show(actions);
-                filters.forEach(function (filter) {
-                    hide(filter);
-                });
-                show(selectedItems);
-                hide(items);
-            }
-            else {
-                hide(actions);
-                filters.forEach(function (filter) {
-                    show(filter);
-                });
-                hide(selectedItems);
-                show(items);
-            }
-        }
-
-        if (selectAllCtrl) {
-            selectAllCtrl.addEventListener("click", function () {
-                itemsCheckboxes.forEach(function (checkbox) {
-                    checkbox.checked = selectAllCtrl.checked;
-                });
-                if (selectedItems) {
-                    selectedItems.textContent = selectedItemsCount() + ' @T["selected"]';
-                }
-                displayActionsOrFilters();
-            });
-        }
-
-        itemsCheckboxes.forEach(function (checkbox) {
-            checkbox.addEventListener("click", function () {
-                var itemsCount = document.querySelectorAll("input[type='checkbox'][name='itemIds']").length;
-                var selectedCount = selectedItemsCount();
-
-                if (selectAllCtrl) {
-                    selectAllCtrl.checked = selectedCount == itemsCount;
-                    selectAllCtrl.indeterminate = selectedCount > 0 && selectedCount < itemsCount;
-                }
-
-                if (selectedItems) {
-                    selectedItems.textContent = selectedCount + ' @T["selected"]';
-                }
-                displayActionsOrFilters();
-            });
-        });
-    });
-</script>
+<script asp-name="list-management" at="Foot"></script>

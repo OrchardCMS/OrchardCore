@@ -100,7 +100,7 @@ public sealed class PreviewController : Controller
                 }
             }
 
-            return this.InternalServerError(new { errors });
+            return UnprocessableEntity(new { errors });
         }
 
         var previewAspect = await _contentManager.PopulateAspectAsync(contentItem, new PreviewAspect());

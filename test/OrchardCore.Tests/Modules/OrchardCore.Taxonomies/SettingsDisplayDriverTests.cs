@@ -41,7 +41,7 @@ public class SettingsDisplayDriverTests
     }
 
     [Fact]
-    public async Task TaxonomyFieldSettingsShouldDeserialize()
+    public async Task TaxonomyFieldSettings_Default_Deserialize()
     {
         var settings = new TaxonomyFieldSettings
         {
@@ -68,7 +68,7 @@ public class SettingsDisplayDriverTests
     }
 
     [Fact]
-    public async Task TaxonomyFieldTagsEditorSettingsShouldDeserialize()
+    public async Task TaxonomyFieldTagsEditorSettings_Default_Deserialize()
     {
         var settings = new TaxonomyFieldTagsEditorSettings
         {

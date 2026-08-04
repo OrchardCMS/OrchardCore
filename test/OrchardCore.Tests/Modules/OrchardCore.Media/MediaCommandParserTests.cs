@@ -66,7 +66,7 @@ public sealed class MediaCommandParserTests
     }
 
     [Fact]
-    public void Parse_SupportedWidth_NoToken_ReturnsCommands()
+    public void Parse_SupportedWidthNoToken_ReturnsCommands()
     {
         var parser = CreateParser();
         var ctx = CreateContext(("width", "1024"));
@@ -77,7 +77,7 @@ public sealed class MediaCommandParserTests
     }
 
     [Fact]
-    public void Parse_UnsupportedWidth_NoToken_ReturnsNull()
+    public void Parse_UnsupportedWidthNoToken_ReturnsNull()
     {
         var parser = CreateParser();
         var ctx = CreateContext(("width", "999"));
@@ -85,7 +85,7 @@ public sealed class MediaCommandParserTests
     }
 
     [Fact]
-    public void Parse_UnsupportedWidth_ValidToken_ReturnsCommands()
+    public void Parse_UnsupportedWidthValidToken_ReturnsCommands()
     {
         var parser = CreateParser(validateToken: true);
         var ctx = CreateContext(("width", "999"), ("token", "sometoken"));
@@ -104,7 +104,7 @@ public sealed class MediaCommandParserTests
     }
 
     [Fact]
-    public void Parse_FocalPoint_NoToken_IsStripped()
+    public void Parse_FocalPointNoToken_IsStripped()
     {
         var parser = CreateParser();
         var ctx = CreateContext(("width", "1024"), ("rxy", "0.5,0.5"));
@@ -115,7 +115,7 @@ public sealed class MediaCommandParserTests
     }
 
     [Fact]
-    public void Parse_FocalPoint_ValidToken_IsPreserved()
+    public void Parse_FocalPointValidToken_IsPreserved()
     {
         var parser = CreateParser(validateToken: true);
         var ctx = CreateContext(("width", "1024"), ("rxy", "0.7,0.3"), ("token", "tok"));
@@ -125,7 +125,7 @@ public sealed class MediaCommandParserTests
     }
 
     [Fact]
-    public void Parse_BackgroundColor_NoToken_IsStripped()
+    public void Parse_BackgroundColorNoToken_IsStripped()
     {
         var parser = CreateParser();
         var ctx = CreateContext(("width", "1024"), ("bgcolor", "ff0000"));
@@ -135,7 +135,7 @@ public sealed class MediaCommandParserTests
     }
 
     [Fact]
-    public void Parse_BackgroundColor_ValidToken_IsPreserved()
+    public void Parse_BackgroundColorValidToken_IsPreserved()
     {
         var parser = CreateParser(validateToken: true);
         var ctx = CreateContext(("width", "600"), ("bgcolor", "0000ff"), ("token", "tok"));
@@ -145,7 +145,7 @@ public sealed class MediaCommandParserTests
     }
 
     [Fact]
-    public void Parse_DefaultResizeModeIsMax()
+    public void Parse_DefaultResizeModeIsMax_Succeeds()
     {
         var parser = CreateParser();
         var ctx = CreateContext(("width", "600"));
@@ -154,7 +154,7 @@ public sealed class MediaCommandParserTests
     }
 
     [Fact]
-    public void Parse_ExplicitResizeMode_Preserved()
+    public void Parse_ExplicitResizeMode_Preservesd()
     {
         var parser = CreateParser(validateToken: true);
         var ctx = CreateContext(("width", "600"), ("rmode", "crop"), ("token", "tok"));
@@ -163,7 +163,7 @@ public sealed class MediaCommandParserTests
     }
 
     [Fact]
-    public void Parse_FormatOnly_ReturnsCommands()
+    public void Parse_MatOnly_ReturnsCommands()
     {
         var parser = CreateParser();
         var ctx = CreateContext(("format", "png"));
@@ -183,7 +183,7 @@ public sealed class MediaCommandParserTests
     }
 
     [Fact]
-    public void Parse_SupportedHeightWithUnsupportedWidth_KeepsHeight()
+    public void Parse_SupportedHeightWithUnsupportedWidth_KeepssHeight()
     {
         var parser = CreateParser();
         // width=999 stripped, height=600 kept → commands not null
@@ -195,7 +195,7 @@ public sealed class MediaCommandParserTests
     }
 
     [Fact]
-    public void Parse_BothDimensionsUnsupported_NoToken_ReturnsNull()
+    public void Parse_BothDimensionsUnsupportedNoToken_ReturnsNull()
     {
         var parser = CreateParser();
         var ctx = CreateContext(("width", "999"), ("height", "300"));
@@ -203,7 +203,7 @@ public sealed class MediaCommandParserTests
     }
 
     [Fact]
-    public void Parse_TokenizationDisabled_SupportedSize_ReturnsCommands()
+    public void Parse_TokenizationDisabledSupportedSize_ReturnsCommands()
     {
         var parser = CreateParser(useTokenizedQueryString: false);
         var ctx = CreateContext(("width", "1024"));
@@ -213,7 +213,7 @@ public sealed class MediaCommandParserTests
     }
 
     [Fact]
-    public void Parse_TokenizationDisabled_UnsupportedSize_ReturnsNull()
+    public void Parse_TokenizationDisabledUnsupportedSize_ReturnsNull()
     {
         var parser = CreateParser(useTokenizedQueryString: false);
         var ctx = CreateContext(("width", "999"));
@@ -221,7 +221,7 @@ public sealed class MediaCommandParserTests
     }
 
     [Fact]
-    public void Parse_TokenizationDisabled_FocalPoint_IsStripped()
+    public void Parse_TokenizationDisabledFocalPoint_IsStripped()
     {
         var parser = CreateParser(useTokenizedQueryString: false);
         var ctx = CreateContext(("width", "1024"), ("rxy", "0.5,0.5"));

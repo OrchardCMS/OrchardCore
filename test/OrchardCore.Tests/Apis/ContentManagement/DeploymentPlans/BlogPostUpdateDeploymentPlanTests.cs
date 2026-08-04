@@ -8,7 +8,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans;
 public class BlogPostUpdateDeploymentPlanTests
 {
     [Fact]
-    public async Task ShouldUpdateExistingContentItemVersion()
+    public async Task Update_ExistingContentItemVersion_Succeeds()
     {
         using var context = new BlogPostDeploymentContext();
 
@@ -37,7 +37,7 @@ public class BlogPostUpdateDeploymentPlanTests
     }
 
     [Fact]
-    public async Task ShouldDiscardDraftThenUpdateExistingContentItemVersion()
+    public async Task Discard_DraftThenUpdateExistingContentItemVersion_Succeeds()
     {
         using var context = new BlogPostDeploymentContext();
 
@@ -75,7 +75,7 @@ public class BlogPostUpdateDeploymentPlanTests
     }
 
     [Fact]
-    public async Task ShouldUpdateDraftThenPublishExistingContentItemVersion()
+    public async Task Update_DraftThenPublishExistingContentItemVersion_Succeeds()
     {
         using var context = new BlogPostDeploymentContext();
 

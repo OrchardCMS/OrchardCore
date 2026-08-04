@@ -2,7 +2,7 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Background Tasks"])</h1></zone>
 
-<form asp-action="Index" method="post" class="no-multisubmit">
+<form asp-action="Index" method="post" class="no-multisubmit" data-list-management>
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
 
     <div class="card text-bg-theme mb-3 position-sticky action-bar">
@@ -83,20 +83,4 @@
 
 <script asp-name="bootstrap-select" at="Foot"></script>
 
-<script at="Foot">
-    document.addEventListener('DOMContentLoaded', function () {
-        const submitFilterButton = document.querySelector("[name='submit.Filter']");
-
-        document.querySelectorAll('.selectpicker').forEach((element) => {
-            element.addEventListener('changed.bs.select', () => submitFilterButton?.click());
-        });
-
-        document.querySelectorAll('.filter-options select, .filter-options input').forEach((element) => {
-            element.addEventListener('change', () => submitFilterButton?.click());
-        });
-
-        document.querySelectorAll('.filter').forEach((element) => {
-            element.style.display = '';
-        });
-    });
-</script>
+<script asp-name="list-management" at="Foot"></script>

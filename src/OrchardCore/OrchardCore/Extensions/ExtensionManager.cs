@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Extensions.Manifests;
-using OrchardCore.Environment.Extensions.Utility;
 using OrchardCore.Modules;
 
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
@@ -165,7 +164,7 @@ public sealed class ExtensionManager : IExtensionManager
 
             var applicationContext = _serviceProvider.GetRequiredService<IApplicationContext>();
             var typeFeatureProvider = _serviceProvider.GetRequiredService<ITypeFeatureProvider>();
-            var featuresProvider = _serviceProvider.GetRequiredService<IFeaturesProvider>();
+            var featuresProviders = _serviceProvider.GetServices<IFeaturesProvider>();
 
             var extensionDependencyStrategies = _serviceProvider.GetServices<IExtensionDependencyStrategy>();
             var extensionPriorityStrategies = _serviceProvider.GetServices<IExtensionPriorityStrategy>();
@@ -184,7 +183,7 @@ public sealed class ExtensionManager : IExtensionManager
                 var manifestInfo = new ManifestInfo(module.ModuleInfo);
                 var extensionInfo = new ExtensionInfo(module.SubPath, manifestInfo, (manifestInfo, extensionInfo) =>
                 {
-                    return featuresProvider.GetFeatures(extensionInfo, manifestInfo);
+                    return featuresProviders.SelectMany(p => p.GetFeatures(extensionInfo, manifestInfo)).ToArray();
                 });
 
                 var entry = new ExtensionEntry
@@ -227,11 +226,29 @@ public sealed class ExtensionManager : IExtensionManager
             }
 
             // Feature infos and entries are ordered by priority and dependencies.
-            _featureInfos = Order(
+            _featureInfos = DependencyOrdering.Order(
                 loadedExtensions.SelectMany(extension => extension.Value.ExtensionInfo.Features),
                 extensionDependencyStrategies as IExtensionDependencyStrategy[] ?? extensionDependencyStrategies.ToArray(),
-                extensionPriorityStrategies as IExtensionPriorityStrategy[] ?? extensionPriorityStrategies.ToArray());
+                extensionPriorityStrategies as IExtensionPriorityStrategy[] ?? extensionPriorityStrategies.ToArray(),
+                out var unresolvedFeatureIds,
+                out var violatedConstraints);
             _features = _featureInfos.ToFrozenDictionary(feature => feature.Id, feature => feature);
+
+            if (unresolvedFeatureIds.Length > 0)
+            {
+                L.LogWarning(
+                    "A cyclic feature ordering constraint was detected while ordering extensions. " +
+                    "Fallback ordering was applied for unresolved features: {FeatureIds}. " +
+                    "Check feature Dependencies, Before, and After declarations.",
+                    string.Join(", ", unresolvedFeatureIds));
+            }
+
+            if (violatedConstraints.Length > 0)
+            {
+                L.LogWarning(
+                    "Feature ordering constraints could not be fully satisfied. Violated constraints: {ViolatedConstraints}",
+                    string.Join(", ", violatedConstraints));
+            }
 
             // Extensions are also ordered according to the weight of their first features.
             _extensionsInfos = _featureInfos
@@ -243,10 +260,57 @@ public sealed class ExtensionManager : IExtensionManager
 
             if (L.IsEnabled(LogLevel.Trace))
             {
-                foreach (var featureInfo in _featureInfos)
+                var sb = new System.Text.StringBuilder();
+                sb.AppendLine("Feature load order:");
+
+                var featureSet = new HashSet<string>(_featureInfos.Select(f => f.Id));
+
+                for (var i = 0; i < _featureInfos.Length; i++)
                 {
-                    L.LogTrace("Loaded feature: {ExtensionId} - {FeatureId} ({FeatureName})", featureInfo.Extension.Id, featureInfo.Id, featureInfo.Name);
+                    var f = _featureInfos[i];
+
+                    sb.Append($"  [{i + 1,4}] {f.Id}");
+
+                    if (f.Priority != 0)
+                    {
+                        sb.Append($"  (priority: {f.Priority})");
+                    }
+
+                    var edges = new List<string>();
+
+                    foreach (var dep in f.Dependencies)
+                    {
+                        if (featureSet.Contains(dep))
+                        {
+                            edges.Add($"depends on '{dep}'");
+                        }
+                    }
+
+                    foreach (var after in f.After)
+                    {
+                        if (featureSet.Contains(after))
+                        {
+                            edges.Add($"after '{after}'");
+                        }
+                    }
+
+                    foreach (var before in f.Before)
+                    {
+                        if (featureSet.Contains(before))
+                        {
+                            edges.Add($"before '{before}'");
+                        }
+                    }
+
+                    if (edges.Count > 0)
+                    {
+                        sb.Append($"  [{string.Join(", ", edges)}]");
+                    }
+
+                    sb.AppendLine();
                 }
+
+                L.LogTrace("{FeatureGraph}", sb.ToString());
             }
 
             _isInitialized = true;
@@ -349,40 +413,6 @@ public sealed class ExtensionManager : IExtensionManager
         }
 
         return list;
-    }
-
-    private static IFeatureInfo[] Order(IEnumerable<IFeatureInfo> featuresToOrder, IExtensionDependencyStrategy[] extensionDependencyStrategies, IExtensionPriorityStrategy[] extensionPriorityStrategies)
-    {
-        return featuresToOrder
-            .OrderBy(x => x.Id)
-            .OrderByDependenciesAndPriorities(
-                (feature1, feature2) => HasDependency(feature1, feature2, extensionDependencyStrategies),
-                feature => GetPriority(feature, extensionPriorityStrategies))
-            .ToArray();
-    }
-
-    private static bool HasDependency(IFeatureInfo observer, IFeatureInfo subject, IExtensionDependencyStrategy[] extensionDependencyStrategies)
-    {
-        foreach (var extensionDependencyStrategy in extensionDependencyStrategies)
-        {
-            if (extensionDependencyStrategy.HasDependency(observer, subject))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private static int GetPriority(IFeatureInfo feature, IExtensionPriorityStrategy[] extensionPriorityStrategies)
-    {
-        var sum = 0;
-        foreach (var extensionPriorityStrategy in extensionPriorityStrategies)
-        {
-            sum += extensionPriorityStrategy.GetPriority(feature);
-        }
-
-        return sum;
     }
 
     private static string GetSourceFeatureNameForType(Type type, string extensionId)

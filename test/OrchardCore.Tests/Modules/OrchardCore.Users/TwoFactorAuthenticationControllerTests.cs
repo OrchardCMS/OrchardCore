@@ -8,7 +8,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Users;
 public class TwoFactorAuthenticationControllerTests
 {
     [Fact]
-    public async Task LoginWithTwoFactorAuthentication_WhenRateLimitExceeded_ReturnsTooManyRequests()
+    public async Task LoginWithTwoFactorAuthentication_RateLimitExceededReturnsTooManyRequests_Succeeds()
     {
         // Arrange
         var context = await GetSiteContextAsync();
@@ -26,7 +26,7 @@ public class TwoFactorAuthenticationControllerTests
     }
 
     [Fact]
-    public async Task LoginWithRecoveryCode_WhenRateLimitExceeded_ReturnsTooManyRequests()
+    public async Task LoginWithRecoveryCode_RateLimitExceededReturnsTooManyRequests_Succeeds()
     {
         // Arrange
         var context = await GetSiteContextAsync();

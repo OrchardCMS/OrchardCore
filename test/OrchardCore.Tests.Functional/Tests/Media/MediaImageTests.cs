@@ -13,7 +13,7 @@ public sealed class MediaImageTests : CmsTestBase<BlogFixture>, IClassFixture<Bl
     public MediaImageTests(BlogFixture fixture) : base(fixture) { }
 
     [Fact]
-    public async Task BlogPage_RendersMediaImages()
+    public async Task BlogPage_RendersMediaImages_Succeeds()
     {
         var page = await Fixture.CreatePageAsync();
         await page.GotoAndAssertOkAsync("/");
@@ -25,7 +25,7 @@ public sealed class MediaImageTests : CmsTestBase<BlogFixture>, IClassFixture<Bl
     }
 
     [Fact]
-    public async Task MediaEndpoint_WithSupportedWidth_ReturnsImage()
+    public async Task MediaEndpoint_SupportedWidth_ReturnsImage()
     {
         var page = await Fixture.CreatePageAsync();
         await page.GotoAndAssertOkAsync("/");
@@ -73,7 +73,7 @@ public sealed class MediaImageTests : CmsTestBase<BlogFixture>, IClassFixture<Bl
     }
 
     [Fact]
-    public async Task MediaImages_RenderedWithToken_ReturnValidImageResponses()
+    public async Task MediaImages_RenderedWithToken_ReturnsValidImageResponses()
     {
         var page = await Fixture.CreatePageAsync();
         await page.GotoAndAssertOkAsync("/");

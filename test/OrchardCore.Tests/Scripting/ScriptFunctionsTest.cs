@@ -7,7 +7,7 @@ namespace OrchardCore.Tests.Scripting;
 public class ScriptFunctionsTest
 {
     [Fact]
-    public async Task TheScriptingManagerShouldEvaluateAsyncGlobalMethods()
+    public async Task TheScriptingManager_Default_EvaluateAsyncGlobalMethods()
     {
         using var context = new SiteContext();
         await context.InitializeAsync();
@@ -40,7 +40,7 @@ public class ScriptFunctionsTest
     }
 
     [Fact]
-    public async Task TheScriptingEngineShouldBeAbleToHandleJsonObject()
+    public async Task TheScriptingEngine_Default_BeAbleToHandleJsonObject()
     {
         using var context = new SiteContext();
         await context.InitializeAsync();

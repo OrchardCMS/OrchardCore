@@ -170,6 +170,7 @@ The following skills are available in `.agents/skills/` for guided workflows:
 | `orchardcore-unit-test` | Write & run tests | xUnit, SiteContext integration, Moq, Playwright functional |
 | `orchardcore-docs-writer` | Author docs | MkDocs pages, module README, nav, admonitions, redirects |
 | `orchardcore-tester` | Browser-based testing | Testing features via Playwright automation |
+| `orchardcore-nswag-regenerate` | Regenerate NSwag API clients | Updating `Services/OpenApiClient.cs`/`OpenApiClient.ts`, noisy NSwag regeneration diffs |
 
 These skills provide step-by-step guidance, code templates, and references for common tasks.
 
@@ -318,6 +319,8 @@ public class YourIndexProvider : IndexProvider<YourDocument>
 
 ### Unit Test Structure
 
+Name test methods with the `{Action}_{Condition}_{ExpectedResult}` format, for example `Write_WithinLimit_Succeeds`.
+
 ```csharp
 using Xunit;
 
@@ -326,7 +329,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.YourModule;
 public class YourServiceTests
 {
     [Fact]
-    public async Task YourMethod_ShouldDoSomething_WhenCondition()
+    public async Task YourMethod_Condition_DoesSomething()
     {
         // Arrange
         var service = new YourService();
@@ -341,7 +344,7 @@ public class YourServiceTests
     [Theory]
     [InlineData("input1", "expected1")]
     [InlineData("input2", "expected2")]
-    public void YourMethod_ShouldReturnExpected(string input, string expected)
+    public void YourMethod_Input_ReturnsExpected(string input, string expected)
     {
         // Test implementation
     }
@@ -361,7 +364,7 @@ public class YourIntegrationTests : IClassFixture<OrchardTestFixture>
     }
 
     [Fact]
-    public async Task Feature_ShouldWork()
+    public async Task Feature_DefaultRecipe_Works()
     {
         // Use _fixture to create test scenarios
     }

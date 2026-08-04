@@ -19,7 +19,7 @@ public class ContentVersionPruningSelectorTests
     }
 
     [Fact]
-    public void SelectForDeletion_SingleVersion_Keep1_ReturnsEmpty()
+    public void SelectForDeletion_SingleVersionKeep1_ReturnsEmpty()
     {
         var versions = new List<ContentItem>
         {
@@ -115,7 +115,7 @@ public class ContentVersionPruningSelectorTests
     }
 
     [Fact]
-    public void SelectForDeletion_FiltersOutLatestAndPublished()
+    public void SelectForDeletion_FiltersOutLatestAndPublished_Succeeds()
     {
         var versions = new List<ContentItem>
         {
