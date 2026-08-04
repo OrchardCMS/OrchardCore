@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -11,6 +12,8 @@ namespace OrchardCore.Media.Services;
 /// </summary>
 public sealed class ManageMediaFolderAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
 {
+    private const char PathSeparator = '/';
+
     private readonly IServiceProvider _serviceProvider;
     private readonly IMediaFileStore _fileStore;
     private readonly IUserAssetFolderNameProvider _userAssetFolderNameProvider;
@@ -87,6 +90,87 @@ public sealed class ManageMediaFolderAuthorizationHandler : AuthorizationHandler
                 context.Succeed(requirement);
             }
         }
+    }
+
+    private async Task<string> ResolveAuthorizedPathAsync(string path)
+    {
+        path = _fileStore.NormalizePath(Uri.UnescapeDataString(path));
+
+        if (string.IsNullOrEmpty(path))
+        {
+            return string.Empty;
+        }
+
+        var file = await _fileStore.GetFileInfoAsync(path);
+        if (file is not null)
+        {
+            return _fileStore.NormalizePath(file.Path);
+        }
+
+        var directory = await _fileStore.GetDirectoryInfoAsync(path);
+        if (directory is not null)
+        {
+            return _fileStore.NormalizePath(directory.Path);
+        }
+
+        return await ResolveNonExistingPathAsync(path);
+    }
+
+    private async Task<string> ResolveNonExistingPathAsync(string path)
+    {
+        var segments = path
+            .Split(PathSeparator, StringSplitOptions.RemoveEmptyEntries);
+
+        if (segments.Length == 0)
+        {
+            return string.Empty;
+        }
+
+        for (var i = segments.Length; i >= 0; i--)
+        {
+            var ancestorPath = string.Join(PathSeparator, segments[..i]);
+            var ancestor = await _fileStore.GetDirectoryInfoAsync(ancestorPath);
+            if (ancestor is null)
+            {
+                continue;
+            }
+
+            return CollapseSegments(_fileStore.NormalizePath(ancestor.Path), segments[i..]);
+        }
+
+        return CollapseSegments(string.Empty, segments);
+    }
+
+    private string CollapseSegments(string basePath, IReadOnlyList<string> extraSegments)
+    {
+        var resolvedSegments = new List<string>();
+
+        if (!string.IsNullOrEmpty(basePath))
+        {
+            resolvedSegments.AddRange(basePath.Split(PathSeparator, StringSplitOptions.RemoveEmptyEntries));
+        }
+
+        foreach (var segment in extraSegments)
+        {
+            if (string.IsNullOrEmpty(segment) || segment == ".")
+            {
+                continue;
+            }
+
+            if (segment == "..")
+            {
+                if (resolvedSegments.Count > 0)
+                {
+                    resolvedSegments.RemoveAt(resolvedSegments.Count - 1);
+                }
+
+                continue;
+            }
+
+            resolvedSegments.Add(segment);
+        }
+
+        return string.Join(PathSeparator, resolvedSegments);
     }
 
     private bool IsAuthorizedFolder(string authorizedFolder, string childPath)
