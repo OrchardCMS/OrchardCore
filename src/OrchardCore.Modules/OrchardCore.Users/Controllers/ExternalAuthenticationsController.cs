@@ -80,12 +80,16 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
     [HttpPost]
     [AllowAnonymous]
-    public IActionResult ExternalLogin(string provider, bool rememberMe = false, string returnUrl = null)
+    public IActionResult ExternalLogin(string provider, bool? rememberMe = null, string returnUrl = null)
     {
         // Request a redirect to the external login provider.
         var redirectUrl = Url.Action(nameof(ExternalLoginCallback), new { returnUrl });
         var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
-        properties.Items[nameof(LoginForm.RememberMe)] = rememberMe.ToString();
+
+        if (rememberMe.HasValue)
+        {
+            properties.Items[nameof(LoginForm.RememberMe)] = rememberMe.ToString();
+        }
 
         return Challenge(properties, provider);
     }
