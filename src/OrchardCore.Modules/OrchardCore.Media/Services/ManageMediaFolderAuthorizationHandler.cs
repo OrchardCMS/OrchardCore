@@ -143,7 +143,7 @@ public sealed class ManageMediaFolderAuthorizationHandler : AuthorizationHandler
         return CollapseSegments(string.Empty, segments);
     }
 
-    private string CollapseSegments(string basePath, IReadOnlyList<string> extraSegments)
+    private static string CollapseSegments(string basePath, IReadOnlyList<string> extraSegments)
     {
         var resolvedSegments = new List<string>();
 
