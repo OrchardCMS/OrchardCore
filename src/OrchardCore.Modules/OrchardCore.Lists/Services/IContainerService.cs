@@ -10,7 +10,7 @@ public interface IContainerService
     /// Gets the total count of content items associated with a specified list content item ID, filtered according
     /// to the provided options.
     /// </summary>
-    Task<int> GetTotalItemCount(string listContentItemId, ContainedItemOptions options);
+    Task<int> GetItemCountAsync(string listContentItemId, ContainedItemOptions options);
 
     /// <summary>
     /// Change PagerSlim to Pager and use the standard Skip and Take methods.
