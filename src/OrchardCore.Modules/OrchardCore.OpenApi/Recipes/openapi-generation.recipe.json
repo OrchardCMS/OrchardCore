@@ -13,6 +13,8 @@
       "name": "feature",
       "enable": [
         "OrchardCore.Contents",
+        "OrchardCore.Media",
+        "OrchardCore.Media.Tus",
         "OrchardCore.Queries",
         "OrchardCore.Tenants",
         "OrchardCore.Search.Lucene",

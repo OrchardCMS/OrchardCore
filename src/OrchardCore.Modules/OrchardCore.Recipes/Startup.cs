@@ -19,6 +19,7 @@ public sealed class Startup : StartupBase
         services.AddPermissionProvider<RecipesPermissionProvider>();
         services.AddRecipeExecutionStep<CommandStep>();
         services.AddRecipeExecutionStep<RecipesStep>();
+        services.AddRecipeExecutionStep<ReloadTenantStep>();
 
         services.AddDeploymentTargetHandler<RecipeDeploymentTargetHandler>();
     }

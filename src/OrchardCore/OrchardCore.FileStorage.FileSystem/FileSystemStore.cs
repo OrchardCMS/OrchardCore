@@ -8,6 +8,10 @@ public class FileSystemStore : IFileStore
     private readonly ILogger<FileSystemStore> _logger;
     private readonly string _fileSystemPath;
 
+    public string StorageName => "Local";
+
+    public IFileStoreCapabilities Capabilities { get; } = new FileStoreCapabilities(hasHierarchicalNamespace: true, supportsAtomicMove: true);
+
     public FileSystemStore(string fileSystemPath, ILogger<FileSystemStore> logger)
     {
         _logger = logger;
@@ -97,6 +101,64 @@ public class FileSystemStore : IFileStore
         catch (Exception ex)
         {
             throw new FileStoreException($"Cannot get directory content with path '{path}'.", ex);
+        }
+    }
+
+    public IAsyncEnumerable<IFileStoreEntry> GetFilesAsync(string path = null)
+    {
+        try
+        {
+            var physicalPath = GetPhysicalPath(path);
+
+            if (!Directory.Exists(physicalPath))
+            {
+                return Array.Empty<IFileStoreEntry>().ToAsyncEnumerable();
+            }
+
+            var results = Directory
+                .GetFiles(physicalPath, "*", SearchOption.TopDirectoryOnly)
+                .Select(f =>
+                {
+                    var fileSystemInfo = new PhysicalFileInfo(new FileInfo(f));
+                    var fileRelativePath = f[_fileSystemPath.Length..];
+                    var filePath = this.NormalizePath(fileRelativePath);
+                    return (IFileStoreEntry)new FileSystemStoreEntry(filePath, fileSystemInfo);
+                });
+
+            return results.ToAsyncEnumerable();
+        }
+        catch (Exception ex)
+        {
+            throw new FileStoreException($"Cannot get files with path '{path}'.", ex);
+        }
+    }
+
+    public IAsyncEnumerable<IFileStoreEntry> GetDirectoriesAsync(string path = null)
+    {
+        try
+        {
+            var physicalPath = GetPhysicalPath(path);
+
+            if (!Directory.Exists(physicalPath))
+            {
+                return Array.Empty<IFileStoreEntry>().ToAsyncEnumerable();
+            }
+
+            var results = Directory
+                .GetDirectories(physicalPath, "*", SearchOption.TopDirectoryOnly)
+                .Select(f =>
+                {
+                    var fileSystemInfo = new PhysicalDirectoryInfo(new DirectoryInfo(f));
+                    var fileRelativePath = f[_fileSystemPath.Length..];
+                    var filePath = this.NormalizePath(fileRelativePath);
+                    return (IFileStoreEntry)new FileSystemStoreEntry(filePath, fileSystemInfo);
+                });
+
+            return results.ToAsyncEnumerable();
+        }
+        catch (Exception ex)
+        {
+            throw new FileStoreException($"Cannot get directories with path '{path}'.", ex);
         }
     }
 

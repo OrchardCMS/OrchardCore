@@ -7,7 +7,10 @@
         "skipLibCheck": true,
         "noEmit": true,
         "lib": ["ES2020", "DOM", "DOM.Iterable"],
-        "types": []
+        "types": [],
+        "paths": {
+            "@bloom/*": ["../../../../../.scripts/bloom/*"]
+        }
     },
-    "include": ["src"]
+    "include": ["src", "../../../../../.scripts/bloom/services/auth/**/*.ts"]
 }
