@@ -18,6 +18,8 @@ public static class MediaPermissions
 
     public static readonly Permission ViewMediaOptions = new("ViewMediaOptions", "View Media Options");
 
+    public static readonly Permission ManageMediaApiSettings = new("ManageMediaApiSettings", "Manage Media API authentication settings");
+
     public static readonly Permission ManageAssetCache = new("ManageAssetCache", "Manage Asset Cache Folder");
 
     // Note: The ManageMediaFolder permission grants all access, so viewing must be implied by it too.

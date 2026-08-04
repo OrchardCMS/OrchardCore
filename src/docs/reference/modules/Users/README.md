@@ -108,6 +108,8 @@ User module settings can be configured using the `Settings` recipe step:
       "LoginSettings": {
         "UseSiteTheme": false,
         "DisableLocalLogin": false,
+        "AllowRememberMe": true,
+        "UsePersistentAuthenticationCookie": false,
         "AllowChangingUsername": false,
         "AllowChangingEmail": false,
         "AllowChangingPhoneNumber": true
@@ -121,6 +123,8 @@ User module settings can be configured using the `Settings` recipe step:
 |----------------------------|---------|-----------------------------------------------------------------------|
 | `UseSiteTheme`             | Boolean | Whether to use the site theme for the login page.                     |
 | `DisableLocalLogin`        | Boolean | Whether to disable local username/password login.                     |
+| `AllowRememberMe`          | Boolean | Whether to show the **Remember me** option on the login form. Default: `true`. When disabled, the `UsePersistentAuthenticationCookie` setting controls all local and external sign-ins. |
+| `UsePersistentAuthenticationCookie` | Boolean | Whether authentication cookies persist across browser sessions. When `AllowRememberMe` is enabled, this is the default value of the **Remember me** option. Default: `false`. |
 | `AllowChangingUsername`    | Boolean | Whether to allow users to change their username.                      |
 | `AllowChangingEmail`       | Boolean | Whether to allow users to change their email address.                 |
 | `AllowChangingPhoneNumber` | Boolean | Whether to allow users to change their phone number. Default: `true`. |

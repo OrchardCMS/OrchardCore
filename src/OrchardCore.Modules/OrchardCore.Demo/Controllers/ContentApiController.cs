@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents;
 
@@ -44,6 +45,7 @@ public sealed class ContentApiController : ControllerBase
     }
 
     [HttpPost]
+    [EndpointName("ApiAddDemoContent")]
     public async Task<IActionResult> AddContent(ContentItem contentItem)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.DemoAPIAccess))

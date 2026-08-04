@@ -1,59 +1,36 @@
-<script asp-name="media" at="Foot"></script>
-<style asp-name="media" at="Head"></style>
+@model OrchardCore.Media.ViewModels.MediaIndexViewModel
+@{
+    var jsLocalizations = Orchard.GetJSLocalizations("media-gallery");
+}
 
-<script at="Foot" asp-name="MediaFieldAppInitializer" depends-on="media">
-    initializeMediaApplication(true, '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })', '@Context.Request.PathBase.ToString()');
-</script>
-
-<script at="Foot">
-    @* mediaApp is absolutely positioned. When a warning is shown we need to move it down to avoid overlapping. *@
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        var messages = document.querySelectorAll('.message');
-        if (!messages.length) { return; };
-        var mediaAppInitialTop = 0;
-        var mediaAppLoaded = false;
-
-        var repositionMediaApp = function () {
-
-            var messagesHeight = 0;
-            messages.forEach(function (message) {
-                var style = window.getComputedStyle(message);
-                messagesHeight += message.offsetHeight + (parseFloat(style.marginTop) || 0) + (parseFloat(style.marginBottom) || 0);
-            });
-
-            var newTop = mediaAppInitialTop + messagesHeight;
-            var mediaApp = document.getElementById('mediaApp');
-
-            if (mediaApp) {
-                mediaApp.style.top = newTop + 'px';
-            }
-        }
-
-        window.addEventListener('resize', function () {
-            if (mediaAppLoaded) {
-                repositionMediaApp();
-            }
-        });
-
-        // before moving we need to wait until the vuejs mediaapp is loaded.
-        var checkMediaAppIsLoaded = setInterval(function () {
-            var mediaApp = document.getElementById('mediaApp');
-            if (mediaApp) {
-                mediaAppInitialTop = mediaApp.getBoundingClientRect().top + window.scrollY;
-                clearInterval(checkMediaAppIsLoaded);
-                mediaAppLoaded = true;
-                repositionMediaApp();
-            }
-        }, 100);
-    });
-</script>
+<script type="module" asp-name="media" version="2" at="Foot"></script>
+<style asp-name="media" version="2" at="Head"></style>
 
 <h1 style="display:none">@RenderTitleSegments(T["Assets"])</h1>
+
+@* Emits __RequestVerificationToken (and sets the antiforgery cookie) so the media gallery can send
+   it on writes when the Media API is in cookie authentication mode. *@
+@Html.AntiForgeryToken()
+
+<div id="media-gallery">
+    <media-gallery
+        site-id="@Model.SiteId"
+        translations="@Json.Serialize(jsLocalizations).ToString()"
+        base-path="@Href("~")"
+        upload-files-url="@Href("~/api/media/Upload")"
+        :max-upload-chunk-size="0"
+        :max-file-size="@Model.MaxFileSize"
+        allowed-extensions="@Model.AllowedExtensions"
+        tus-enabled="@(Model.TusEnabled ? "true" : "false")"
+        tus-endpoint-url="@Href("~/api/media/tus")"
+        tus-file-info-url="@Href("~/api/media/TusFileInfo")"
+        signalr-enabled="@(Model.SignalrEnabled ? "true" : "false")"
+
+        api-auth-scheme="@Model.ApiAuthenticationScheme"
+        oidc-client-id="media_gallery"
+        oidc-scope="openid email profile roles"
+
+        debug-enabled="@(Model.DebugEnabled ? "true" : "false")"
+    >
+    </media-gallery>
+</div>
