@@ -24,7 +24,10 @@ public class FileSystemStore : IFileStore
 
             if (fileInfo.Exists)
             {
-                return Task.FromResult<IFileStoreEntry>(new FileSystemStoreEntry(path, fileInfo));
+                var fileRelativePath = physicalPath[_fileSystemPath.Length..];
+                var filePath = this.NormalizePath(fileRelativePath);
+
+                return Task.FromResult<IFileStoreEntry>(new FileSystemStoreEntry(filePath, fileInfo));
             }
 
             return Task.FromResult<IFileStoreEntry>(null);
@@ -45,7 +48,10 @@ public class FileSystemStore : IFileStore
 
             if (directoryInfo.Exists)
             {
-                return Task.FromResult<IFileStoreEntry>(new FileSystemStoreEntry(path, directoryInfo));
+                var directoryRelativePath = physicalPath[_fileSystemPath.Length..];
+                var directoryPath = this.NormalizePath(directoryRelativePath);
+
+                return Task.FromResult<IFileStoreEntry>(new FileSystemStoreEntry(directoryPath, directoryInfo));
             }
 
             return Task.FromResult<IFileStoreEntry>(null);
