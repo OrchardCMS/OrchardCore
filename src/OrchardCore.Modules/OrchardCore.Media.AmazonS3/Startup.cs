@@ -153,9 +153,6 @@ public sealed class MediaAmazonS3ImageCacheStartup : Modules.StartupBase
         _logger = logger;
     }
 
-    public override int Order
-        => OrchardCoreConstants.ConfigureOrder.ResizedImageCache;
-
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddTransient<IConfigureOptions<AwsMediaImageCacheOptions>, AwsMediaImageCacheOptionsConfiguration>();
