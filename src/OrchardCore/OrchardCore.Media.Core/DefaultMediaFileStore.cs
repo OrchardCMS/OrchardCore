@@ -56,6 +56,16 @@ public class DefaultMediaFileStore : IMediaFileStore
         return _fileStore.GetDirectoryContentAsync(path, includeSubDirectories);
     }
 
+    public virtual IAsyncEnumerable<IFileStoreEntry> GetFilesAsync(string path = null)
+    {
+        return _fileStore.GetFilesAsync(path);
+    }
+
+    public virtual IAsyncEnumerable<IFileStoreEntry> GetDirectoriesAsync(string path = null)
+    {
+        return _fileStore.GetDirectoriesAsync(path);
+    }
+
     public virtual async Task<bool> TryCreateDirectoryAsync(string path)
     {
         var creatingContext = new MediaCreatingContext
@@ -145,6 +155,8 @@ public class DefaultMediaFileStore : IMediaFileStore
         }
 
         await _fileStore.CopyFileAsync(srcPath, dstPath);
+
+        await _mediaEventHandlers.InvokeAsync((handler, ctx) => handler.MediaCopiedFileAsync(ctx), new MediaMoveContext { OldPath = srcPath, NewPath = dstPath }, _logger);
     }
 
     public virtual Task<Stream> GetFileStreamAsync(string path)
@@ -234,6 +246,10 @@ public class DefaultMediaFileStore : IMediaFileStore
         return context.PermittedStorage;
     }
 
+    public IFileStoreCapabilities Capabilities => _fileStore.Capabilities;
+
+    public string StorageName => _fileStore.StorageName;
+
     private void ValidateRequestBasePath(HttpContext httpContext)
     {
         var originalPathBase = httpContext.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? PathString.Empty;
@@ -263,6 +279,10 @@ public class DefaultMediaFileStore : IMediaFileStore
     {
         await ValidateAvailableStorageAsync(stream.Length);
 
-        return await _fileStore.CreateFileFromStreamAsync(path, stream, overwrite);
+        var result = await _fileStore.CreateFileFromStreamAsync(path, stream, overwrite);
+
+        await _mediaEventHandlers.InvokeAsync((handler, ctx) => handler.MediaCreatedFileAsync(ctx), new MediaCreatedContext { Path = result }, _logger);
+
+        return result;
     }
 }

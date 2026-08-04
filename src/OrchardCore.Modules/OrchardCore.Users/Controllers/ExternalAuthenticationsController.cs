@@ -80,11 +80,16 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
     [HttpPost]
     [AllowAnonymous]
-    public IActionResult ExternalLogin(string provider, string returnUrl = null)
+    public IActionResult ExternalLogin(string provider, bool? rememberMe = null, string returnUrl = null)
     {
         // Request a redirect to the external login provider.
         var redirectUrl = Url.Action(nameof(ExternalLoginCallback), new { returnUrl });
         var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+
+        if (rememberMe.HasValue)
+        {
+            properties.Items[nameof(LoginForm.RememberMe)] = rememberMe.ToString();
+        }
 
         return Challenge(properties, provider);
     }
@@ -112,6 +117,10 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
             return RedirectToLogin(returnUrl);
         }
 
+        var loginSettings = await _siteService.GetSettingsAsync<LoginSettings>();
+
+        var rememberMe = GetRememberMe(info, loginSettings);
+
         var iUser = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
 
         CopyTempDataErrorsToModelState();
@@ -134,7 +143,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
                     }
                 }
 
-                var signInResult = await ExternalSignInAsync(iUser, info);
+                var signInResult = await ExternalSignInAsync(iUser, info, rememberMe);
 
                 if (signInResult.Succeeded)
                 {
@@ -250,7 +259,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
                 // We have created/linked to the local user, so we must verify the login.
                 // If it does not succeed, the user is not allowed to login
-                var signInResult = await ExternalSignInAsync(iUser, info);
+                var signInResult = await ExternalSignInAsync(iUser, info, rememberMe);
 
                 if (signInResult.Succeeded)
                 {
@@ -337,7 +346,8 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
                     // we have created/linked to the local user, so we must verify the login.
                     // If it does not succeed, the user is not allowed to login
-                    var signInResult = await ExternalSignInAsync(iUser, info);
+                    var loginSettings = await _siteService.GetSettingsAsync<LoginSettings>();
+                    var signInResult = await ExternalSignInAsync(iUser, info, GetRememberMe(info, loginSettings));
 
                     if (signInResult.Succeeded)
                     {
@@ -399,7 +409,9 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
                     }
                     // we have created/linked to the local user, so we must verify the login. If it does not succeed,
                     // the user is not allowed to login.
-                    if ((await ExternalSignInAsync(user, info)).Succeeded)
+                    var loginSettings = await _siteService.GetSettingsAsync<LoginSettings>();
+
+                    if ((await ExternalSignInAsync(user, info, GetRememberMe(info, loginSettings))).Succeeded)
                     {
                         return await LoggedInActionResultAsync(user, returnUrl, info);
                     }
@@ -591,7 +603,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         }
     }
 
-    private async Task<Microsoft.AspNetCore.Identity.SignInResult> ExternalSignInAsync(IUser user, ExternalLoginInfo info)
+    private async Task<Microsoft.AspNetCore.Identity.SignInResult> ExternalSignInAsync(IUser user, ExternalLoginInfo info, bool rememberMe = false)
     {
         _logger.LogInformation("Attempting to do an external sign in.");
 
@@ -622,7 +634,12 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
             await _userManager.UpdateAsync(user);
         }
 
-        var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+        var loginSettings = await _siteService.GetSettingsAsync<LoginSettings>();
+        var isPersistent = loginSettings.AllowRememberMe
+            ? rememberMe
+            : loginSettings.UsePersistentAuthenticationCookie;
+
+        var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent, bypassTwoFactor: true);
 
         if (result.Succeeded)
         {
@@ -643,6 +660,18 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         }
 
         return result;
+    }
+
+    private static bool GetRememberMe(ExternalLoginInfo info, LoginSettings loginSettings)
+    {
+        if (info?.AuthenticationProperties?.Items is not null &&
+            info.AuthenticationProperties.Items.TryGetValue(nameof(LoginForm.RememberMe), out var rememberMe) &&
+            bool.TryParse(rememberMe, out var isRememberMe))
+        {
+            return isRememberMe;
+        }
+
+        return loginSettings.UsePersistentAuthenticationCookie;
     }
 
     private void AddErrorsToModelState(IEnumerable<IdentityError> errors)

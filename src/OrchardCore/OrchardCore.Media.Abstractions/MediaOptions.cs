@@ -94,5 +94,12 @@ public class MediaOptions
     /// </summary>
     public TimeSpan TemporaryFileLifetime { get; set; }
 
+    /// <summary>
+    /// The path used to store temporary TUS upload data.
+    /// Defaults to <c>{TempPath}/TusUploads</c>.
+    /// Configure this to a shared filesystem path for multi-instance deployments.
+    /// </summary>
+    public string TusTempPath { get; set; }
+
     public const string EncryptedCommandCacheKeyPrefix = "MediaCommands:";
 }

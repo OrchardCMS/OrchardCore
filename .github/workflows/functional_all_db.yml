@@ -194,6 +194,60 @@ jobs:
           test/OrchardCore.Tests.Functional/traces
         retention-days: 3
 
+  test_functional_cms_redis_azurite:
+    name: Functional Tests - CMS Redis + Azurite
+    if: github.event_name == 'workflow_dispatch' ||
+        github.event_name == 'push' ||
+        github.event.review.state == 'APPROVED' ||
+        github.event.review.state == 'CHANGES_REQUESTED'
+    runs-on: ubuntu-24.04
+    services:
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      azurite:
+        image: mcr.microsoft.com/azure-storage/azurite
+        options: >-
+          azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --loose --skipApiVersionCheck
+        ports:
+          - 10000:10000
+          - 10001:10001
+          - 10002:10002
+    env:
+      OrchardCore__OrchardCore_Redis__Configuration: "localhost:6379"
+      OrchardCore__OrchardCore_Media_Azure__ConnectionString: "UseDevelopmentStorage=true"
+      OrchardCore__OrchardCore_Media_Azure__ContainerName: "media"
+    steps:
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+    - uses: ./.github/actions/setup-dotnet
+    - name: Build
+      run: |
+        dotnet build -c Release test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj
+    - name: Cache Playwright Browsers
+      uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-${{ hashFiles('Directory.Packages.props') }}
+    - name: Install Playwright Browsers
+      run: |
+        pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
+    - name: Functional Tests
+      run: |
+        dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Cms*"
+    - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+      if: failure()
+      with:
+        name: functional-cms-redis-azurite-failure
+        path: |
+          src/OrchardCore.Cms.Web/App_Data_Tests/logs
+        retention-days: 3
+
   test_functional_cms_mssql:
     name: Functional Tests - CMS SqlServer 2019
     if: github.event_name == 'workflow_dispatch' ||
