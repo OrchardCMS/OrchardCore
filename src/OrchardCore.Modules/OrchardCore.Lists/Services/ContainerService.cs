@@ -363,7 +363,7 @@ public class ContainerService : IContainerService
     }
 
     /// <summary>
-    /// Builds a query that retrieves content items associated with a specified list content item ID, filtered according
+    /// Get the total count of content items associated with a specified list content item ID, filtered according
     /// to the provided options.
     /// </summary>
     public Task<int> GetTotalItemCount(string listContentItemId, ContainedItemOptions options)
