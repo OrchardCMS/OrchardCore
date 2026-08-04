@@ -166,7 +166,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
                     pager,
                     containedItemOptions)).ToArray();
 
-                var totalItemCount = await _containerService.GetTotalItemCount(listPart.ContentItem.ContentItemId, containedItemOptions);
+                var totalItemCount = await _containerService.GetItemCountAsync(listPart.ContentItem.ContentItemId, containedItemOptions);
 
                 model.Pager = await _shapeFactory.PagerAsync(pager, totalItemCount);
             }
@@ -208,8 +208,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
                     containedItemOptions);
 
                 containedItemOptions.Status = ContentsStatus.Published;
-                var query = _containerService.GetTotalItemCount(listPart.ContentItem.ContentItemId, containedItemOptions);
-                var totalItemCount = await query.CountAsync();
+                var totalItemCount = await _containerService.GetItemCountAsync(listPart.ContentItem.ContentItemId, containedItemOptions);
 
                 model.Pager = await _shapeFactory.PagerAsync(pager, totalItemCount);
             }

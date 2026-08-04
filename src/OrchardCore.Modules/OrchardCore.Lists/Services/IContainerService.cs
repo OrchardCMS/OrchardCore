@@ -13,12 +13,23 @@ public interface IContainerService
     Task<int> GetItemCountAsync(string listContentItemId, ContainedItemOptions options);
 
     /// <summary>
-    /// Change PagerSlim to Pager and use the standard Skip and Take methods.
+    /// Queries contained items by page, either ordered by the created UTC timestamp or by a specified order value.
     /// </summary>
+    /// <param name="contentItemId">The ID of the content item containing the contained items.</param>
+    /// <param name="enableOrdering">A value indicating whether to enable ordering.</param>
+    /// <param name="pager">The <see cref="Pager"/> for controlling pagination.</param>
+    /// <param name="containedItemOptions">the <see cref="ContainedItemOptions"/> to filter the results</param>
+    /// <returns>The list of contained <see cref="ContentItem"/>s.</returns>
     Task<IEnumerable<ContentItem>> QueryContainedItemsAsync(string contentItemId, bool enableOrdering, Pager pager, ContainedItemOptions containedItemOptions);
+
     /// <summary>
-    /// Query contained items by page either order by the created utc or order value.
+    /// Queries contained items by page, either ordered by the created UTC timestamp or by a specified order value.
     /// </summary>
+    /// <param name="contentItemId">The ID of the content item containing the contained items.</param>
+    /// <param name="enableOrdering">A value indicating whether to enable ordering.</param>
+    /// <param name="pager">The <see cref="PagerSlim"/> for controlling pagination.</param>
+    /// <param name="containedItemOptions">the <see cref="ContainedItemOptions"/> to filter the results</param>
+    /// <returns>The list of contained <see cref="ContentItem"/>s.</returns>
     Task<IEnumerable<ContentItem>> QueryContainedItemsAsync(string contentItemId, bool enableOrdering, PagerSlim pager, ContainedItemOptions containedItemOptions);
 
     /// <summary>
