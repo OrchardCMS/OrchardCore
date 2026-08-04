@@ -66,7 +66,9 @@ public sealed class ExternalLoginFormEvents : LoginFormEventBase
                 values: model);
 
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+
             var loginSettings = await _siteService.GetSettingsAsync<LoginSettings>();
+
             properties.Items[nameof(LoginForm.RememberMe)] = loginSettings.UsePersistentAuthenticationCookie.ToString();
 
             return new ChallengeResult(
