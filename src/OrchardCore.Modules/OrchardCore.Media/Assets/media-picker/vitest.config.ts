@@ -10,6 +10,7 @@ export default mergeConfig(
     test: {
       globals: true,
       environment: 'jsdom',
+      setupFiles: ['./vitest.setup.ts'],
       exclude: [...configDefaults.exclude, 'e2e/*'],
       reporters: ['default', 'junit'],
       outputFile: './testing/vitest-results.xml',
