@@ -5,21 +5,19 @@ namespace OrchardCore.Localization.Data;
 public class DataLocalizationPermissions
 {
     private static readonly Dictionary<string, Permission> _culturePermissions = [];
-    private static readonly Permission _manageTranslationsForCulture =
-        new("ManageTranslations_{0}", "Manage {0} translations", [ManageTranslations, ViewDynamicTranslations]);
-
-    /// <summary>
-    /// Read-only permission to view translations and statistics.
-    /// </summary>
-    public static readonly Permission ViewDynamicTranslations =
-        new("ViewDynamicTranslations", "View dynamic translations and statistics");
 
     /// <summary>
     /// Permission to manage all dynamic translations.
-    /// Implies <see cref="ViewDynamicTranslations"/>.
     /// </summary>
     public static readonly Permission ManageTranslations =
-        new("ManageTranslations", "Manage all dynamic translations", [ViewDynamicTranslations]);
+        new("ManageTranslations", "Manage all dynamic translations");
+
+    /// <summary>
+    /// Read-only permission to view translations and statistics.
+    /// Implied by <see cref="ManageTranslations"/>.
+    /// </summary>
+    public static readonly Permission ViewDynamicTranslations =
+        new("ViewDynamicTranslations", "View dynamic translations and statistics", [ManageTranslations]);
 
     /// <summary>
     /// Legacy permission for managing dynamic localizations.
@@ -27,6 +25,12 @@ public class DataLocalizationPermissions
     /// </summary>
     public static readonly Permission ManageLocalization =
         new("ManageLocalization", "Manage dynamic localizations", [ManageTranslations]);
+
+    // Declared after ManageTranslations so its ImpliedBy list captures the real instance
+    // rather than the default null a forward reference would read from a static field
+    // initializer that hasn't run yet.
+    private static readonly Permission _manageTranslationsForCulture =
+        new("ManageTranslations_{0}", "Manage {0} translations", [ManageTranslations]);
 
     /// <summary>
     /// Creates a dynamic permission for managing translations in a specific culture.

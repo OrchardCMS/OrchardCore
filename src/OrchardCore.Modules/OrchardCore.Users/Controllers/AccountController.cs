@@ -90,7 +90,13 @@ public sealed class AccountController : AccountBaseController
             }
         }
 
-        var formShape = await _loginFormDisplayManager.BuildEditorAsync(_updateModelAccessor.ModelUpdater, false);
+        var loginSettings = await _siteService.GetSettingsAsync<LoginSettings>();
+        var model = new LoginForm
+        {
+            RememberMe = loginSettings.UsePersistentAuthenticationCookie,
+        };
+
+        var formShape = await _loginFormDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, false);
 
         CopyTempDataErrorsToModelState();
 
@@ -131,6 +137,9 @@ public sealed class AccountController : AccountBaseController
             if (user != null)
             {
                 var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: true);
+                var rememberMe = loginSettings.AllowRememberMe
+                    ? model.RememberMe
+                    : loginSettings.UsePersistentAuthenticationCookie;
 
                 if (result.Succeeded)
                 {
@@ -143,8 +152,6 @@ public sealed class AccountController : AccountBaseController
                             return loginResult;
                         }
                     }
-
-                    var rememberMe = loginSettings.AllowRememberMe && model.RememberMe;
 
                     result = await _signInManager.PasswordSignInAsync(user, model.Password, rememberMe, lockoutOnFailure: true);
 
@@ -167,7 +174,7 @@ public sealed class AccountController : AccountBaseController
                         new
                         {
                             returnUrl,
-                            model.RememberMe,
+                            rememberMe,
                         });
                 }
 
