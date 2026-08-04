@@ -1,17 +1,16 @@
 using OrchardCore.ContentManagement;
 using OrchardCore.Lists.Models;
 using OrchardCore.Navigation;
-using YesSql;
 
 namespace OrchardCore.Lists.Services;
 
 public interface IContainerService
 {
     /// <summary>
-    /// Builds a query that retrieves content items associated with a specified list content item ID, filtered according
+    /// Get the total count of content items associated with a specified list content item ID, filtered according
     /// to the provided options.
     /// </summary>
-    IQuery<ContentItem> BuildTotalItemCountQuery(string listContentItemId, ContainedItemOptions options);
+    Task<int> GetTotalItemCount(string listContentItemId, ContainedItemOptions options);
 
     /// <summary>
     /// Change PagerSlim to Pager and use the standard Skip and Take methods.

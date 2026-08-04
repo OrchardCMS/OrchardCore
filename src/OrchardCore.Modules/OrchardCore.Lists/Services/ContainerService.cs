@@ -366,43 +366,14 @@ public class ContainerService : IContainerService
     /// Builds a query that retrieves content items associated with a specified list content item ID, filtered according
     /// to the provided options.
     /// </summary>
-    public IQuery<ContentItem> BuildTotalItemCountQuery(string listContentItemId, ContainedItemOptions options)
+    public Task<int> GetTotalItemCount(string listContentItemId, ContainedItemOptions options)
     {
         IQuery<ContentItem> query = _session.Query<ContentItem>()
             .With<ContainedPartIndex>(x => x.ListContentItemId == listContentItemId);
 
-        if (options.Status == ContentsStatus.Published)
-        {
-            query = query.With<ContentItemIndex>(x => x.Published);
-        }
-        else if (options.Status == ContentsStatus.Latest)
-        {
-            query = query.With<ContentItemIndex>(x => x.Latest);
-        }
-        else if (options.Status == ContentsStatus.Draft)
-        {
-            query = query.With<ContentItemIndex>(x => x.Latest && !x.Published);
-        }
-        else if (options.Status == ContentsStatus.Owner)
-        {
-            var currentUserName = _httpContextAccessor.HttpContext?.User?.Identity?.Name;
+        ApplyContainedItemOptionsFilter(options, query);        
 
-            if (!string.IsNullOrEmpty(currentUserName))
-            {
-                query = query.With<ContentItemIndex>(x => x.Latest && x.Author == currentUserName);
-            }
-            else
-            {
-                query = query.With<ContentItemIndex>(x => x.Latest);
-            }
-        }
-
-        if (!string.IsNullOrWhiteSpace(options.DisplayText))
-        {
-            query = query.With<ContentItemIndex>(x => x.DisplayText.Contains(options.DisplayText));
-        }
-
-        return query;
+        return query.CountAsync();
     }
 
     private static void ApplyPagingContentIndexFilter(DateTime? before, DateTime? after, bool orderByAsc, IQuery<ContentItem> query)

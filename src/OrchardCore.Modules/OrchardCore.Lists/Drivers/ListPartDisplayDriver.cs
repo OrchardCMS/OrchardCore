@@ -1,20 +1,15 @@
 using Microsoft.AspNetCore.Http;
-using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.ContentManagement.Display.ViewModels;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Records;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Lists.Indexes;
 using OrchardCore.Lists.Models;
 using OrchardCore.Lists.Services;
 using OrchardCore.Lists.ViewModels;
 using OrchardCore.Navigation;
-using YesSql;
 using ISession = YesSql.ISession;
 
 namespace OrchardCore.Lists.Drivers;
@@ -171,9 +166,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
                     pager,
                     containedItemOptions)).ToArray();
 
-                var query = _containerService.BuildTotalItemCountQuery(listPart.ContentItem.ContentItemId, containedItemOptions);
-
-                var totalItemCount = await query.CountAsync();
+                var totalItemCount = await _containerService.GetTotalItemCount(listPart.ContentItem.ContentItemId, containedItemOptions);
 
                 model.Pager = await _shapeFactory.PagerAsync(pager, totalItemCount);
             }
@@ -215,7 +208,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
                     containedItemOptions);
 
                 containedItemOptions.Status = ContentsStatus.Published;
-                var query = _containerService.BuildTotalItemCountQuery(listPart.ContentItem.ContentItemId, containedItemOptions);
+                var query = _containerService.GetTotalItemCount(listPart.ContentItem.ContentItemId, containedItemOptions);
                 var totalItemCount = await query.CountAsync();
 
                 model.Pager = await _shapeFactory.PagerAsync(pager, totalItemCount);
