@@ -410,6 +410,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
                     // we have created/linked to the local user, so we must verify the login. If it does not succeed,
                     // the user is not allowed to login.
                     var loginSettings = await _siteService.GetSettingsAsync<LoginSettings>();
+
                     if ((await ExternalSignInAsync(user, info, GetRememberMe(info, loginSettings))).Succeeded)
                     {
                         return await LoggedInActionResultAsync(user, returnUrl, info);
