@@ -118,7 +118,9 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         }
 
         var loginSettings = await _siteService.GetSettingsAsync<LoginSettings>();
+
         var rememberMe = GetRememberMe(info, loginSettings);
+
         var iUser = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
 
         CopyTempDataErrorsToModelState();
