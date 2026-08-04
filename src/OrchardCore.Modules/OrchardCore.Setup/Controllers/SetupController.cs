@@ -53,7 +53,11 @@ public sealed class SetupController : Controller
 
     public async Task<ActionResult> Index(string token)
     {
-        var recipes = await _setupService.GetSetupRecipesAsync();
+        // Recipes tagged "hidden" (e.g. tool-only setup recipes) stay resolvable by name for
+        // programmatic setup but must not appear in the interactive setup picker.
+        var recipes = (await _setupService.GetSetupRecipesAsync())
+            .Where(recipe => recipe.Tags == null || !recipe.Tags.Contains("hidden", StringComparer.InvariantCultureIgnoreCase))
+            .ToArray();
         var defaultRecipe = recipes.FirstOrDefault(x => x.Tags.Contains("default")) ?? recipes.FirstOrDefault();
 
         if (!await ShouldProceedWithTokenAsync(token))
@@ -87,7 +91,13 @@ public sealed class SetupController : Controller
         }
 
         model.DatabaseProviders = _databaseProviderLookup.Values;
-        model.Recipes = await _setupService.GetSetupRecipesAsync();
+
+        // Resolve the selected recipe against the full setup-recipe list (so a preset/programmatic
+        // recipe still validates), but only surface non-hidden recipes in the picker.
+        var recipes = await _setupService.GetSetupRecipesAsync();
+        model.Recipes = recipes
+            .Where(recipe => recipe.Tags == null || !recipe.Tags.Contains("hidden", StringComparer.InvariantCultureIgnoreCase))
+            .ToArray();
 
         if (string.IsNullOrEmpty(model.Password))
         {
@@ -102,13 +112,13 @@ public sealed class SetupController : Controller
         RecipeDescriptor selectedRecipe = null;
         if (!string.IsNullOrEmpty(_shellSettings["RecipeName"]))
         {
-            selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == _shellSettings["RecipeName"]);
+            selectedRecipe = recipes.FirstOrDefault(x => x.Name == _shellSettings["RecipeName"]);
             if (selectedRecipe == null)
             {
                 ModelState.AddModelError(nameof(model.RecipeName), S["Invalid recipe."]);
             }
         }
-        else if (string.IsNullOrEmpty(model.RecipeName) || (selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == model.RecipeName)) == null)
+        else if (string.IsNullOrEmpty(model.RecipeName) || (selectedRecipe = recipes.FirstOrDefault(x => x.Name == model.RecipeName)) == null)
         {
             ModelState.AddModelError(nameof(model.RecipeName), S["Invalid recipe."]);
         }
