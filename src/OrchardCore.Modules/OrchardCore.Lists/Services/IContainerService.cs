@@ -7,7 +7,7 @@ namespace OrchardCore.Lists.Services;
 public interface IContainerService
 {
     /// <summary>
-    /// Get the total count of content items associated with a specified list content item ID, filtered according
+    /// Gets the total count of content items associated with a specified list content item ID, filtered according
     /// to the provided options.
     /// </summary>
     Task<int> GetTotalItemCount(string listContentItemId, ContainedItemOptions options);
