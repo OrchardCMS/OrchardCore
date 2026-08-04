@@ -1,0 +1,9 @@
+{
+  "orchardBaseUrl": "https://cms.example.com/",
+  "appBaseUrl": "https://media.example.com/",
+  "oidcClientId": "media_gallery",
+  "oidcScope": "openid email profile roles",
+  "signalrEnabled": false,
+
+  "_comment": "Copy to config.json next to index.html and edit for your deployment. orchardBaseUrl is the remote Orchard tenant origin+base (include any tenant prefix, keep the trailing slash) — issuer, API, SignalR hub and media files resolve here. appBaseUrl is THIS app's own origin+base (a DIFFERENT host — that's the point of standalone); omit it to default to the page origin (handy for local dev). Register {appBaseUrl}callback.html and {appBaseUrl}silent-callback.html as RedirectUris on the 'media_gallery' OpenID client, and configure CORS on the Orchard tenant for the Media API, /connect/token and /hubs/media. Set signalrEnabled true only once SignalR CORS is in place."
+}

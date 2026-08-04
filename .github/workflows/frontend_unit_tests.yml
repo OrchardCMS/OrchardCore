@@ -1,0 +1,45 @@
+name: Frontend Unit Tests
+
+on:
+  push:
+    paths-ignore:
+      - '**/*.md'
+      - 'mkdocs.yml'
+      - 'src/docs/**/*'
+    branches: [ main, release/** ]
+  pull_request:
+    branches: [ main, release/** ]
+
+concurrency:
+  group: ${{ github.head_ref || github.run_id }}-frontend_unit_tests
+  cancel-in-progress: true
+
+jobs:
+  vitest:
+    name: Run Vitest unit tests
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+    - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+      with:
+        node-version-file: '.node-version'
+    - name: Install packages
+      run: |
+        npm install -g corepack
+        corepack enable
+        yarn --no-check-resolutions
+    - name: Run vitest unit tests (media-gallery)
+      working-directory: src/OrchardCore.Modules/OrchardCore.Media/Assets/media-gallery
+      run: yarn vitest run
+    - name: Run vitest unit tests (media-picker)
+      working-directory: src/OrchardCore.Modules/OrchardCore.Media/Assets/media-picker
+      run: yarn vitest run
+    - name: Upload vitest test results
+      uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+      if: always()
+      with:
+        name: vitest-results
+        path: |
+          src/OrchardCore.Modules/OrchardCore.Media/Assets/media-gallery/testing/vitest-results.xml
+          src/OrchardCore.Modules/OrchardCore.Media/Assets/media-picker/testing/vitest-results.xml
+        retention-days: 30

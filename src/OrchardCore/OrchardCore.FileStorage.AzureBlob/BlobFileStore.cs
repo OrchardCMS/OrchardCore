@@ -48,17 +48,22 @@ public class BlobFileStore : IFileStore
     private readonly ILogger _logger;
     private readonly bool? _useHierarchicalNamespaceOverride;
     private readonly SemaphoreSlim _capabilitiesLock = new(1, 1);
+    private FileStoreCapabilities _capabilities;
     private bool _capabilitiesInitialized;
-    private bool? _hnsEnabled;
 
     private readonly string _basePrefix;
 
     /// <summary>
-    /// Whether the storage account has Hierarchical Namespace (ADLS Gen2) enabled, as determined by
-    /// <see cref="EnsureCapabilitiesAsync"/>. <c>null</c> until detection has run, or if it could
-    /// not determine the account type (in which case flat-namespace operations are used as a safe fallback).
+    /// The capabilities of the storage account, as determined by <see cref="EnsureCapabilitiesAsync"/>.
+    /// Returns <see cref="FileStoreCapabilities.Default"/> (all capabilities <see langword="false"/>) until
+    /// detection has run, or if it could not determine the account type (in which case flat-namespace
+    /// operations are used as a safe fallback).
     /// </summary>
-    public bool? IsHierarchicalNamespaceEnabled => _hnsEnabled;
+    public IFileStoreCapabilities Capabilities => _capabilities ?? FileStoreCapabilities.Default;
+
+    public string StorageName => _capabilities is not null && _capabilities.HasHierarchicalNamespace
+        ? "Azure Blob (Gen2)"
+        : "Azure Blob (Gen1)";
 
     public BlobFileStore(
         BlobStorageOptions options,
@@ -124,8 +129,12 @@ public class BlobFileStore : IFileStore
                         "Remove the setting to use native Gen2 operations.");
                 }
 
-                _hnsEnabled = _useHierarchicalNamespaceOverride ?? detectedHns;
-                if (_hnsEnabled.Value)
+                var hnsEnabled = _useHierarchicalNamespaceOverride ?? detectedHns;
+                _capabilities = new FileStoreCapabilities(
+                    hasHierarchicalNamespace: hnsEnabled,
+                    supportsAtomicMove: hnsEnabled);
+
+                if (hnsEnabled)
                 {
                     _logger?.LogInformation("Azure Blob Storage Hierarchical Namespace (ADLS Gen2) detected. Using native directory and atomic move operations.");
                 }
@@ -142,11 +151,13 @@ public class BlobFileStore : IFileStore
             {
                 // GetAccountInfo failed (e.g. container-scoped SAS token) but an explicit override
                 // is configured, so trust it and proceed.
-                _hnsEnabled = _useHierarchicalNamespaceOverride.Value;
+                _capabilities = new FileStoreCapabilities(
+                    hasHierarchicalNamespace: _useHierarchicalNamespaceOverride.Value,
+                    supportsAtomicMove: _useHierarchicalNamespaceOverride.Value);
                 _logger?.LogWarning(ex,
                     "Unable to validate the Azure Blob Storage account type. " +
                     "Proceeding with 'UseHierarchicalNamespace' set to '{HnsEnabled}' from configuration.",
-                    _hnsEnabled.Value);
+                    _useHierarchicalNamespaceOverride.Value);
             }
             catch (Exception ex)
             {
@@ -190,7 +201,7 @@ public class BlobFileStore : IFileStore
     {
         await EnsureCapabilitiesAsync();
 
-        if (_hnsEnabled == true)
+        if (_capabilities?.HasHierarchicalNamespace == true)
         {
             try
             {
@@ -329,7 +340,7 @@ public class BlobFileStore : IFileStore
         var prefix = this.Combine(_basePrefix, path);
         prefix = NormalizePrefix(prefix);
 
-        if (_hnsEnabled == true)
+        if (_capabilities?.HasHierarchicalNamespace == true)
         {
             var page = _blobContainer.GetBlobsAsync(BlobTraits.Metadata, BlobStates.None, prefix, CancellationToken.None);
             await foreach (var blob in page)
@@ -408,7 +419,7 @@ public class BlobFileStore : IFileStore
     {
         await EnsureCapabilitiesAsync();
 
-        if (_hnsEnabled == true)
+        if (_capabilities?.HasHierarchicalNamespace == true)
         {
             try
             {
@@ -468,7 +479,7 @@ public class BlobFileStore : IFileStore
     {
         await EnsureCapabilitiesAsync();
 
-        if (_hnsEnabled == true)
+        if (_capabilities?.HasHierarchicalNamespace == true)
         {
             try
             {
@@ -537,7 +548,7 @@ public class BlobFileStore : IFileStore
     {
         await EnsureCapabilitiesAsync();
 
-        if (_hnsEnabled == true)
+        if (_capabilities?.SupportsAtomicMove == true)
         {
             try
             {
