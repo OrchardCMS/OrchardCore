@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Security.AuthorizationHandlers;
 
@@ -8,23 +11,42 @@ namespace OrchardCore.Security.AuthorizationHandlers;
 public class PermissionHandler : AuthorizationHandler<PermissionRequirement>
 {
     private readonly IPermissionGrantingService _permissionGrantingService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public PermissionHandler(IPermissionGrantingService permissionGrantingService)
+    public PermissionHandler(IPermissionGrantingService permissionGrantingService, IHttpContextAccessor httpContextAccessor)
     {
         _permissionGrantingService = permissionGrantingService;
+        _httpContextAccessor = httpContextAccessor;
     }
 
-    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
+    protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
     {
         if (context.HasSucceeded || !(context?.User?.Identity?.IsAuthenticated ?? false))
         {
-            return Task.CompletedTask;
+            return;
         }
-        else if (_permissionGrantingService.IsGranted(requirement, context.User.Claims))
+
+        if (_permissionGrantingService.IsGranted(requirement, context.User.Claims))
         {
             context.Succeed(requirement);
         }
+        else
+        {
+            var permissionService = _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<IPermissionService>();
 
-        return Task.CompletedTask;
+            foreach (var impliedBy in await permissionService.GetImplyingPermissionsAsync(requirement.Permission.Name))
+            {
+                if (impliedBy == null)
+                {
+                    continue;
+                }
+
+                if (_permissionGrantingService.IsGranted(new PermissionRequirement(impliedBy), context.User.Claims))
+                {
+                    context.Succeed(requirement);
+                    break;
+                }
+            }
+        }
     }
 }

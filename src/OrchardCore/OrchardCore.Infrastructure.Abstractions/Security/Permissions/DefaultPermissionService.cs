@@ -29,6 +29,28 @@ public sealed class DefaultPermissionService : IPermissionService
         return null;
     }
 
+    public async ValueTask<IEnumerable<Permission>> GetImplyingPermissionsAsync(string name)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(name);
+
+        if (_permissions is null)
+        {
+            await LoadPermissionsAsync();
+        }
+
+        List<Permission> permissions = null;
+        foreach (var permission in _permissions.Values)
+        {
+            if (permission.Implies?.Any(p => string.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase)) == true)
+            {
+                permissions ??= new List<Permission>();
+                permissions.Add(permission);
+            }
+        }
+
+        return permissions ?? Enumerable.Empty<Permission>();
+    }
+
     public async ValueTask<IEnumerable<Permission>> GetPermissionsAsync()
     {
         if (_permissions == null)

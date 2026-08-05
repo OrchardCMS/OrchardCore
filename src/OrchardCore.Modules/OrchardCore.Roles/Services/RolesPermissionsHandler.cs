@@ -1,7 +1,10 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Security;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Roles;
 
@@ -13,14 +16,16 @@ public class RolesPermissionsHandler : AuthorizationHandler<PermissionRequiremen
     private readonly RoleManager<IRole> _roleManager;
     private readonly IPermissionGrantingService _permissionGrantingService;
 
-
     private IEnumerable<RoleClaim> _anonymousClaims;
     private IEnumerable<RoleClaim> _authenticatedClaims;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public RolesPermissionsHandler(
         RoleManager<IRole> roleManager,
-        IPermissionGrantingService permissionGrantingService)
+        IPermissionGrantingService permissionGrantingService,
+        IHttpContextAccessor httpContextAccessor)
     {
+        _httpContextAccessor = httpContextAccessor;
         _roleManager = roleManager;
         _permissionGrantingService = permissionGrantingService;
     }
@@ -50,7 +55,24 @@ public class RolesPermissionsHandler : AuthorizationHandler<PermissionRequiremen
         if (_permissionGrantingService.IsGranted(requirement, claims))
         {
             context.Succeed(requirement);
-            return;
+        }
+        else
+        {
+            var permissionService = _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<IPermissionService>();
+
+            foreach (var impliedBy in await permissionService.GetImplyingPermissionsAsync(requirement.Permission.Name))
+            {
+                if (impliedBy == null)
+                {
+                    continue;
+                }
+
+                if (_permissionGrantingService.IsGranted(new PermissionRequirement(impliedBy), context.User.Claims))
+                {
+                    context.Succeed(requirement);
+                    break;
+                }
+            }
         }
     }
 

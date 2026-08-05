@@ -58,6 +58,20 @@ public class Permission
     }
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="Permission"/> class with a description, implying permissions, implied by permissions, and security flag.
+    /// </summary>
+    /// <param name="name">The name of the permission.</param>
+    /// <param name="description">The description of the permission.</param>
+    /// <param name="impliedBy">The permissions implying this permission.</param>
+    /// <param name="implies">The permissions implied by this permission.</param>
+    /// <param name="isSecurityCritical">Indicates whether the permission is security critical.</param>
+    public Permission(string name, string description, IEnumerable<Permission> impliedBy, IEnumerable<Permission> implies, bool isSecurityCritical = false)
+        : this(name, description, impliedBy, isSecurityCritical)
+    {
+        Implies = implies;
+    }
+
+    /// <summary>
     /// Gets the name of the permission.
     /// </summary>
     /// <remarks>
@@ -79,6 +93,11 @@ public class Permission
     /// Gets the permissions implying this permission.
     /// </summary>
     public IEnumerable<Permission> ImpliedBy { get; }
+    
+    /// <summary>
+    /// Gets the permissions implied by this permission.
+    /// </summary>
+    public IEnumerable<Permission> Implies { get; }
 
     /// <summary>
     /// Gets a value indicating whether the permission is security critical.
