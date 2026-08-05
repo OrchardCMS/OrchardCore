@@ -24,14 +24,11 @@ public sealed class FileSizeHelper
     /// <returns>A human-readable string representing the file size.</returns>
     public string FormatSize(long bytes, int decimalPlaces = 2)
     {
-        if (bytes < 0)
-        {
-            return "-" + FormatSize(-bytes, decimalPlaces);
-        }
+        ArgumentOutOfRangeException.ThrowIfNegative(bytes, nameof(bytes));
 
         if (bytes == 0)
         {
-            return $"0 {S["Bytes"]}";
+            return S["0 Bytes"];
         }
 
         var magnitude = (int)Math.Log(bytes, 1024);
@@ -46,6 +43,6 @@ public sealed class FileSizeHelper
             formatted = formatted.TrimEnd('0').TrimEnd('.', ',');
         }
 
-        return $"{formatted} {S[unitKey]}";
+        return S["{0} {1}", formatted, S[unitKey]];
     }
 }
