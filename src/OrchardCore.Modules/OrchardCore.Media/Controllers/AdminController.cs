@@ -22,6 +22,7 @@ public sealed class AdminController : Controller
     private readonly IMediaFileStore _mediaFileStore;
     private readonly IAuthorizationService _authorizationService;
     private readonly MediaOptions _mediaOptions;
+    private readonly FileSizeHelper _fileSizeHelper;
 
     internal readonly IStringLocalizer S;
 
@@ -29,11 +30,13 @@ public sealed class AdminController : Controller
         IMediaFileStore mediaFileStore,
         IAuthorizationService authorizationService,
         IOptions<MediaOptions> options,
+        FileSizeHelper fileSizeHelper,
         IStringLocalizer<AdminController> stringLocalizer)
     {
         _mediaFileStore = mediaFileStore;
         _authorizationService = authorizationService;
         _mediaOptions = options.Value;
+        _fileSizeHelper = fileSizeHelper;
         S = stringLocalizer;
     }
 
@@ -84,7 +87,9 @@ public sealed class AdminController : Controller
         }
 
         var bytes = await _mediaFileStore.GetPermittedStorageAsync();
-        var text = bytes == null ? S["Unspecified"] : FileSizeHelpers.FormatAsBytes(bytes.Value);
+        var text = bytes == null
+            ? S["Unspecified"]
+            : _fileSizeHelper.FormatSize(bytes.Value);
 
         return Ok(new { bytes, text });
     }
