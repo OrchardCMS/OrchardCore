@@ -1,12 +1,15 @@
 using OrchardCore.FileStorage;
 using OrchardCore.Infrastructure;
 using OrchardCore.Media.Core;
+using OrchardCore.Media.Core.Helpers;
 using OrchardCore.Media.Events;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media;
 
 public class DefaultMediaFileStoreTests
 {
+    private readonly FileSizeHelper _fileSizeHelper = new FileSizeHelper(Mock.Of<IStringLocalizer<FileSizeHelper>>());
+
     [Theory]
     [InlineData("foo bar.jpg", "/media/foo%20bar.jpg")]
     [InlineData("my folder/foo bar.jpg", "/media/my%20folder/foo%20bar.jpg")]
@@ -22,6 +25,7 @@ public class DefaultMediaFileStoreTests
             "",
             [],
             [],
+            _fileSizeHelper,
             Mock.Of<ILogger<DefaultMediaFileStore>>());
 
         var result = store.MapPathToPublicUrl(path);
@@ -40,6 +44,7 @@ public class DefaultMediaFileStoreTests
             cdnBaseUrl,
             [],
             [],
+            _fileSizeHelper,
             Mock.Of<ILogger<DefaultMediaFileStore>>());
 
         var result = store.MapPathToPublicUrl(path);
@@ -64,6 +69,7 @@ public class DefaultMediaFileStoreTests
             "",
             [],
             [],
+            _fileSizeHelper,
             loggerMock.Object);
 
         var result = await store.CreateFileFromStreamAsync("test.txt", inputStream);
@@ -94,6 +100,7 @@ public class DefaultMediaFileStoreTests
             "",
             [],
             [handlerMock.Object],
+            _fileSizeHelper,
             loggerMock.Object);
 
         var result = await store.CreateFileFromStreamAsync("test.txt", inputStream);
@@ -131,6 +138,7 @@ public class DefaultMediaFileStoreTests
             "",
             [],
             [handler1.Object, handler2.Object],
+            _fileSizeHelper,
             loggerMock.Object);
 
         var result = await store.CreateFileFromStreamAsync("test.txt", inputStream);
@@ -173,6 +181,7 @@ public class DefaultMediaFileStoreTests
             "",
             [mediaEventHandler.Object],
             [mediaHandlerMock.Object],
+            _fileSizeHelper,
             loggerMock.Object);
 
         var exception = await Assert.ThrowsAsync<FileStoreException>(() =>
@@ -217,6 +226,7 @@ public class DefaultMediaFileStoreTests
             "",
             [],
             [mediaHandlerMock.Object],
+            _fileSizeHelper,
             loggerMock.Object);
 
         await store.CreateFileFromStreamAsync("test.txt", inputStream);
