@@ -38,13 +38,15 @@ public class MediaSignalREventHandler : IMediaEventHandler
 
     private async Task SendAsync(string action, string path, string newPath, bool includeItem)
     {
+        // The payload carries the affected entry so clients patch their store instead of each reloading
+        // the directory. It is resolved once here, not once per connected client.
         var message = await _eventFactory.CreateAsync(action, path, newPath, includeItem);
 
-        var oldGroup = FolderGroup(path);
+        var group = FolderGroup(path);
 
-        if (string.IsNullOrEmpty(newPath))
+        if (newPath is null)
         {
-            await _hubContext.Clients.Group(oldGroup).SendAsync("MediaChanged", message);
+            await _hubContext.Clients.Group(group).SendAsync("MediaChanged", message);
 
             return;
         }
@@ -52,14 +54,14 @@ public class MediaSignalREventHandler : IMediaEventHandler
         var newGroup = FolderGroup(newPath);
 
         // If both paths share the same parent directory, avoid sending a duplicate notification.
-        if (oldGroup == newGroup)
+        if (group == newGroup)
         {
-            await _hubContext.Clients.Group(oldGroup).SendAsync("MediaChanged", message);
+            await _hubContext.Clients.Group(group).SendAsync("MediaChanged", message);
+
+            return;
         }
-        else
-        {
-            await _hubContext.Clients.Groups(oldGroup, newGroup).SendAsync("MediaChanged", message);
-        }
+
+        await _hubContext.Clients.Groups(group, newGroup).SendAsync("MediaChanged", message);
     }
 
     // Returns the SignalR group name for the parent directory of the supplied path.
