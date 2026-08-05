@@ -3,12 +3,15 @@ using OrchardCore.FileStorage;
 using OrchardCore.Infrastructure;
 using OrchardCore.Media;
 using OrchardCore.Media.Core;
+using OrchardCore.Media.Core.Helpers;
 using OrchardCore.Media.Events;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media;
 
 public class MediaFileStoreExtensionsTests
 {
+    private readonly FileSizeHelper _fileSizeHelper = new FileSizeHelper(Mock.Of<IStringLocalizer<FileSizeHelper>>());
+
     [Fact]
     public async Task CreateFileFromStreamAsync_FileEventHandlerCanReplaceStreamBeforeSaving_Succeeds()
     {
@@ -133,6 +136,7 @@ public class MediaFileStoreExtensionsTests
             "",
             [],
             [mediaHandlerMock.Object],
+            _fileSizeHelper,
             loggerMock.Object);
 
         var fileCreationService = CreateFileCreationService(fileHandlerMock.Object);
@@ -164,6 +168,7 @@ public class MediaFileStoreExtensionsTests
             "",
             [],
             [mediaHandlerMock.Object],
+            _fileSizeHelper,
             loggerMock.Object);
 
         var fileCreationService = CreateFileCreationService(fileHandlerMock.Object);
@@ -219,6 +224,7 @@ public class MediaFileStoreExtensionsTests
             "",
             [],
             [mediaHandlerMock.Object],
+            _fileSizeHelper,
             loggerMock.Object);
 
         var fileCreationService = CreateFileCreationService(handlerMock.Object);

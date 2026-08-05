@@ -1,6 +1,7 @@
 using OrchardCore.FileStorage;
 using OrchardCore.Media;
 using OrchardCore.Media.Core;
+using OrchardCore.Media.Core.Helpers;
 using OrchardCore.Media.Services;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media;
@@ -43,6 +44,7 @@ public class MediaOrchardHelperExtensionsTests
             "",
             [],
             [],
+            new FileSizeHelper(Mock.Of<IStringLocalizer<FileSizeHelper>>()),
             Mock.Of<ILogger<DefaultMediaFileStore>>());
 
         var mediaProfileServiceMock = new Mock<IMediaProfileService>();

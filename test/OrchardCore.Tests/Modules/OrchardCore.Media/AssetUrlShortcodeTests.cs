@@ -1,6 +1,7 @@
 using OrchardCore.FileStorage;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Media.Core;
+using OrchardCore.Media.Core.Helpers;
 using OrchardCore.Media.Shortcodes;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Shortcodes.Services;
@@ -35,6 +36,7 @@ public class AssetUrlShortcodeTests
             cdnBaseUrl,
             [],
             [],
+            new FileSizeHelper(Mock.Of<IStringLocalizer<FileSizeHelper>>()),
             Mock.Of<ILogger<DefaultMediaFileStore>>());
 
         var defaultHttpContext = new DefaultHttpContext();
