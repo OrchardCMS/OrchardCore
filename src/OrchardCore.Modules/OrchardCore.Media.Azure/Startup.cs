@@ -118,7 +118,8 @@ public sealed class Startup : Modules.StartupBase
                     mediaUrlBase = fileStore.Combine(originalPathBase.Value, mediaUrlBase);
                 }
 
-                return new DefaultMediaFileStore(fileStore,
+                return new DefaultMediaFileStore(
+                    fileStore,
                     mediaUrlBase,
                     mediaOptions.CdnBaseUrl,
                     mediaEventHandlers,
