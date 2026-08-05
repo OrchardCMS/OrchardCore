@@ -42,6 +42,9 @@ public class MediaOrchardHelperExtensionsTests
         stringLocalizerMock.Setup(x => x[It.IsAny<string>()])
             .Returns((string key) => new LocalizedString(key, key));
 
+        stringLocalizerMock.Setup(x => x[It.IsAny<string>(), It.IsAny<object[]>()])
+            .Returns((string key, object[] args) => new LocalizedString(key, string.Format(key, args)));
+
         var fileStore = new DefaultMediaFileStore(
             Mock.Of<IFileStore>(),
             "/media",
