@@ -53,7 +53,7 @@ const getTenantPathBase = (dataElementId?: string): string => {
 
     // Fallback: scan for any script[type="application/json"][id$="-data"] with a pathBase.
     const scripts = document.querySelectorAll<HTMLScriptElement>('script[type="application/json"][id$="-data"]');
-    for (const script of scripts) {
+    for (const script of Array.from(scripts)) {
         try {
             const data = JSON.parse(script.textContent || "{}");
             if (typeof data.pathBase === "string") {

@@ -56,6 +56,8 @@ validation:
 # Add files here that are intentionally not in the navigation and thus omitted_files shouldn't warn about them.
 not_in_nav: |
   samples/
+  development/
+  releases/3.0.0.md
   releases/4.0.0.md
   llms.txt
 
@@ -223,6 +225,7 @@ nav:
               - Liquid: reference/modules/Liquid/README.md
               - Media:
                   - Media: reference/modules/Media/README.md
+                  - Media Gallery: reference/modules/Media/MediaGallery.md
                   - Media Slugify: reference/modules/Media.Slugify/README.md
                   - Antivirus: reference/modules/Antivirus/README.md
                   - Media Amazon S3: reference/modules/Media.AmazonS3/README.md
