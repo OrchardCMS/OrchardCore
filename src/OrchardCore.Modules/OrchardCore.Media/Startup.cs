@@ -126,7 +126,7 @@ public sealed class Startup : StartupBase
             var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
             var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
             var mediaEventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
-            var fileSizeHelper = serviceProvider.GetRequiredService<FileSizeHelper>();
+            var fileSizeHelper = serviceProvider.GetService<FileSizeHelper>();
             var mediaCreatingEventHandlers =
                 serviceProvider.GetServices<IMediaCreatingEventHandler>();
             var fileSystemStoreLogger = serviceProvider.GetRequiredService<
