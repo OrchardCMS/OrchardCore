@@ -130,6 +130,7 @@ describe("SignalR", () => {
 
     const { useSignalR } = await import("../SignalR");
     useSignalR();
+    mockConnection.invoke.mockClear();
 
     setDirectory("/New");
     await nextTick();
