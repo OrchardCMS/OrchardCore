@@ -56,7 +56,6 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Shortcodes;
-using OrchardCore.Media.Middleware;
 using tusdotnet;
 using tusdotnet.Models;
 using tusdotnet.Models.Configuration;
