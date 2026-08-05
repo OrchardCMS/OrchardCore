@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Localization;
 using OrchardCore.FileStorage;
 using OrchardCore.Infrastructure;
 using OrchardCore.Media;
@@ -10,7 +9,16 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media;
 
 public class MediaFileStoreExtensionsTests
 {
-    private readonly FileSizeHelper _fileSizeHelper = new FileSizeHelper(Mock.Of<IStringLocalizer<FileSizeHelper>>());
+    private readonly FileSizeHelper _fileSizeHelper;
+
+    public MediaFileStoreExtensionsTests()
+    {
+        var stringLocalizerMock = new Mock<IStringLocalizer<FileSizeHelper>>();
+        stringLocalizerMock.Setup(x => x[It.IsAny<string>()])
+            .Returns((string key) => new LocalizedString(key, key));
+
+        _fileSizeHelper = new FileSizeHelper(stringLocalizerMock.Object);
+    }
 
     [Fact]
     public async Task CreateFileFromStreamAsync_FileEventHandlerCanReplaceStreamBeforeSaving_Succeeds()

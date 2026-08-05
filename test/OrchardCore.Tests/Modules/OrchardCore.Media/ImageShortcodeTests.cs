@@ -41,13 +41,17 @@ public class ImageShortcodeTests
         var sanitizerOptions = new HtmlSanitizerOptions();
         sanitizerOptions.Configure.Add(opt => opt.AllowedAttributes.Add("class"));
 
+        var stringLocalizerMock = new Mock<IStringLocalizer<FileSizeHelper>>();
+        stringLocalizerMock.Setup(x => x[It.IsAny<string>()])
+            .Returns((string key) => new LocalizedString(key, key));
+
         var fileStore = new DefaultMediaFileStore(
             Mock.Of<IFileStore>(),
             "/media",
             cdnBaseUrl,
             [],
             [],
-            new FileSizeHelper(Mock.Of<IStringLocalizer<FileSizeHelper>>()),
+            new FileSizeHelper(stringLocalizerMock.Object),
             Mock.Of<ILogger<DefaultMediaFileStore>>());
 
         var fileVersionProvider = Mock.Of<IFileVersionProvider>();

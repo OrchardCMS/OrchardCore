@@ -9,11 +9,11 @@ public sealed class FileSizeHelper
 {
     private static readonly string[] _sizeUnits = ["B", "KB", "MB", "GB", "TB", "PB", "EB"];
 
-    private readonly IStringLocalizer<FileSizeHelper> _localizer;
+    private readonly IStringLocalizer<FileSizeHelper> S;
 
     public FileSizeHelper(IStringLocalizer<FileSizeHelper> localizer)
     {
-        _localizer = localizer;
+        S = localizer;
     }
 
     /// <summary>
@@ -31,15 +31,21 @@ public sealed class FileSizeHelper
 
         if (bytes == 0)
         {
-            return $"0 {_localizer["Bytes"]}";
+            return $"0 {S["Bytes"]}";
         }
 
         var magnitude = (int)Math.Log(bytes, 1024);
         var adjustedSize = bytes / Math.Pow(1024, magnitude);
 
         var unitKey = _sizeUnits[magnitude];
-        var unit = _localizer[unitKey];
 
-        return string.Format("{0:n" + decimalPlaces + "} {1}", adjustedSize, unit);
+        // Format with decimals, then trim if unnecessary
+        var formatted = adjustedSize.ToString($"N{decimalPlaces}");
+        if (formatted.Contains('.') || formatted.Contains(','))
+        {
+            formatted = formatted.TrimEnd('0').TrimEnd('.', ',');
+        }
+
+        return $"{formatted} {S[unitKey]}";
     }
 }

@@ -38,13 +38,17 @@ public class MediaOrchardHelperExtensionsTests
 
     private static TestOrchardHelper CreateOrchardHelper()
     {
+        var stringLocalizerMock = new Mock<IStringLocalizer<FileSizeHelper>>();
+        stringLocalizerMock.Setup(x => x[It.IsAny<string>()])
+            .Returns((string key) => new LocalizedString(key, key));
+
         var fileStore = new DefaultMediaFileStore(
             Mock.Of<IFileStore>(),
             "/media",
             "",
             [],
             [],
-            new FileSizeHelper(Mock.Of<IStringLocalizer<FileSizeHelper>>()),
+            new FileSizeHelper(stringLocalizerMock.Object),
             Mock.Of<ILogger<DefaultMediaFileStore>>());
 
         var mediaProfileServiceMock = new Mock<IMediaProfileService>();

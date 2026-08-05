@@ -8,7 +8,16 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media;
 
 public class DefaultMediaFileStoreTests
 {
-    private readonly FileSizeHelper _fileSizeHelper = new FileSizeHelper(Mock.Of<IStringLocalizer<FileSizeHelper>>());
+    private readonly FileSizeHelper _fileSizeHelper;
+
+    public DefaultMediaFileStoreTests()
+    {
+        var stringLocalizerMock = new Mock<IStringLocalizer<FileSizeHelper>>();
+        stringLocalizerMock.Setup(x => x[It.IsAny<string>()])
+            .Returns((string key) => new LocalizedString(key, key));
+
+        _fileSizeHelper = new FileSizeHelper(stringLocalizerMock.Object);
+    }
 
     [Theory]
     [InlineData("foo bar.jpg", "/media/foo%20bar.jpg")]
