@@ -160,6 +160,7 @@
     <Project Path="src/OrchardCore.Modules/OrchardCore.Security/OrchardCore.Security.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Settings/OrchardCore.Settings.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Setup/OrchardCore.Setup.csproj" />
+    <Project Path="src/OrchardCore.Modules/OrchardCore.SignalR/OrchardCore.SignalR.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Sms.Azure/OrchardCore.Sms.Azure.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Sms/OrchardCore.Sms.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Tenants/OrchardCore.Tenants.csproj" />
@@ -258,6 +259,7 @@
     <Project Path="src/OrchardCore/OrchardCore.Rules.Core/OrchardCore.Rules.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Scripting.JavaScript/OrchardCore.Scripting.JavaScript.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Search.Abstractions/OrchardCore.Search.Abstractions.csproj" />
+    <Project Path="src/OrchardCore/OrchardCore.SignalR.Core/OrchardCore.SignalR.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.AzureAI.Core/OrchardCore.AzureAI.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Elasticsearch.Core/OrchardCore.Elasticsearch.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Search.Lucene.Abstractions/OrchardCore.Search.Lucene.Abstractions.csproj" />

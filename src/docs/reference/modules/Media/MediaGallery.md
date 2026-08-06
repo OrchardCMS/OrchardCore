@@ -141,12 +141,12 @@ Alternatively, configure sticky sessions on your load balancer instead of a shar
 
 The SignalR feature enables real-time media updates. When enabled, changes to media files and folders (uploads, renames, moves, deletes) are broadcast to all connected clients. This keeps the Media Gallery in sync across multiple browser tabs and users.
 
-To enable, activate the **Media SignalR** feature in the admin panel.
+To enable, activate the **Media SignalR** feature in the admin panel. This feature depends on the reusable **`OrchardCore.SignalR`** feature, which provides the SignalR services, client resources, and hub authentication shared by any module that hosts a hub.
 
-For multi-instance deployments, a backplane is required. Two options are available:
+For multi-instance deployments, a backplane is required. The backplane is provided by the reusable SignalR module and applies to every hub in the tenant, so the same two features cover the Media Gallery and any other SignalR-based feature:
 
-- **`OrchardCore.Media.SignalR.Azure`** — Uses Azure SignalR Service as the backplane.
-- **`OrchardCore.Media.SignalR.Redis`** — Uses Redis as the backplane.
+- **`OrchardCore.SignalR.Azure`** — Uses Azure SignalR Service as the backplane.
+- **`OrchardCore.SignalR.Redis`** — Uses Redis as the backplane.
 
 ### Backplane Configuration
 
@@ -164,8 +164,10 @@ The Azure SignalR Service backplane is configured with its own connection string
 
 ```json
 {
-  "OrchardCore_Media_SignalR": {
-    "ConnectionString": "Endpoint=https://<your-service>.service.signalr.net;AccessKey=...;Version=1.0;"
+  "SignalR": {
+    "Azure": {
+      "ConnectionString": "Endpoint=https://<your-service>.service.signalr.net;AccessKey=...;Version=1.0;"
+    }
   }
 }
 ```
@@ -178,7 +180,7 @@ To fully scale the Media Library across multiple application instances, the foll
 
 | Component | Purpose | Configuration |
 |---|---|---|
-| **SignalR backplane** | Broadcast real-time updates across instances | Enable `OrchardCore.Media.SignalR.Azure` or `OrchardCore.Media.SignalR.Redis` |
+| **SignalR backplane** | Broadcast real-time updates across instances | Enable `OrchardCore.SignalR.Azure` or `OrchardCore.SignalR.Redis` |
 | **Sticky sessions** or **shared TUS path** | Ensure TUS upload chunks are accessible across instances | Configure session affinity on your load balancer, or set `TusTempPath` to a shared filesystem |
 | **Shared media storage** | Store media files accessible from all instances | Configure Azure Blob Storage, Amazon S3, or a shared filesystem |
 | **Shared Data Protection keys** | Let cookies, antiforgery tokens, and bearer tokens issued by one instance be validated by another | Enable `OrchardCore.Redis.DataProtection`, or configure Azure Blob key storage via `OrchardCore.DataProtection.Azure` |
@@ -191,7 +193,7 @@ To fully scale the Media Library across multiple application instances, the foll
 
 ### Reference Configuration (Redis)
 
-A single Redis instance can carry the whole cross-instance coordination load. Enable the **`OrchardCore.Redis`**, **`OrchardCore.Redis.DataProtection`**, and **`OrchardCore.Media.SignalR.Redis`** features, and configure:
+A single Redis instance can carry the whole cross-instance coordination load. Enable the **`OrchardCore.Redis`**, **`OrchardCore.Redis.DataProtection`**, and **`OrchardCore.SignalR.Redis`** features, and configure:
 
 ```json
 {
