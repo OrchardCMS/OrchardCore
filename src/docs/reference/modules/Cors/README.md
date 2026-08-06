@@ -6,7 +6,7 @@ CORS is enforced by browsers. It is not an authentication mechanism, an authoriz
 
 ## Enable the module
 
-Enable the **CORS Configuration** feature (`OrchardCore.Cors`) for each tenant that needs CORS. In the admin, go to **Configuration** > **Features**.
+Enable the **CORS Configuration** feature (`OrchardCore.Cors`) for each tenant that needs CORS. In the admin, go to **Tools** > **Features**.
 
 After enabling the feature, go to **Settings** > **Security** > **Cross-Origin Resource Sharing**. Access to this page requires the security-critical **Managing CORS Settings** permission (`ManageCorsSettings`), which is granted to the Administrator role by default.
 
