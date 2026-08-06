@@ -43,12 +43,14 @@ internal sealed class ContainedPartContentItemTypeInitializer : IContentItemType
             if (contentItemType.Fields.Any(f => f.Name == parentFieldName))
             {
                 var i = 1;
-                while (contentItemType.Fields.Any(f => f.Name == $"{parentFieldName}_{i}"))
+                string fieldName;
+                do
                 {
+                    fieldName = $"{parentFieldName}_{i}";
                     i++;
-                }
+                } while (contentItemType.Fields.Any(f => f.Name == fieldName));
 
-                parentFieldName = $"{parentFieldName}_{i}";
+                parentFieldName = fieldName;
             }
 
             contentItemType.Field<ContainedQueryObjectType>(parentFieldName)
