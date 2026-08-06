@@ -33,9 +33,55 @@ public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder ro
 }
 ```
 
+## Configuring hub options
+
+Per-hub behavior (for example, allowing long-running operations or tuning keep-alive) is configured by binding `HubOptions<T>` in `ConfigureServices`:
+
+```csharp
+services.Configure<HubOptions<MyHub>>(options =>
+{
+    options.ClientTimeoutInterval = TimeSpan.FromMinutes(10);
+    options.KeepAliveInterval = TimeSpan.FromSeconds(15);
+});
+```
+
+Global options that apply to every hub are configured with the parameterless `HubOptions` instead:
+
+```csharp
+services.Configure<HubOptions>(options =>
+{
+    options.MaximumReceiveMessageSize = 128 * 1024;
+});
+```
+
 ## Hub authentication
 
 Browsers cannot send an `Authorization` header during a WebSocket handshake, so SignalR clients send bearer tokens using the standard `access_token` query string parameter. When a hub is annotated with `AllowApiTokenAuthentication`, the module promotes that token to an `Authorization` header and authenticates the request against the Orchard Core `Api` authentication scheme before authorization runs. Hubs that are not annotated keep the default behavior, where only the host-configured schemes (such as the admin cookie) are evaluated. Cookie authenticated requests are always left untouched.
+
+Signed-in browser clients are authenticated through the regular authentication cookie, and nothing extra is required. Headless clients (single-page apps, mobile apps, and service-to-service callers) authenticate with an access token instead: enable the **OpenID Token Validation** feature (`OrchardCore.OpenId.Validation`) so the `Api` scheme can validate the token. The token is only *authenticated* — the identity behind it still needs whatever permissions the hub requires.
+
+The `AllowApiTokenAuthentication` attribute never weakens a hub's authorization requirements. A hub decorated with `[Authorize]` still rejects callers that fail the policy, and a hub that allows anonymous connections still accepts them when no token is supplied. The attribute only lets an otherwise anonymous request that carries a valid bearer token be associated with the token's user before authorization runs.
+
+Send the token from a browser client via `accessTokenFactory`:
+
+```js
+const connection = new signalR.HubConnectionBuilder()
+    .withUrl("/hubs/my-hub", {
+        accessTokenFactory: () => accessToken
+    })
+    .build();
+```
+
+Or from a .NET client via `AccessTokenProvider`:
+
+```csharp
+var connection = new HubConnectionBuilder()
+    .WithUrl("https://www.example.com/hubs/my-hub", options =>
+    {
+        options.AccessTokenProvider = () => Task.FromResult(accessToken);
+    })
+    .Build();
+```
 
 ## Backplane configuration
 
@@ -91,5 +137,21 @@ For a server-rendered view or shape template that is not part of a bundled app, 
 ```
 
 The client is vendored under `wwwroot/Scripts/` and is produced from the `@microsoft/signalr` dependency declared in `Assets/package.json` by running `yarn build` at the repository root.
+
+A script that opens a connection should declare `depends-on="signalr"` so the client is guaranteed to be on the page first:
+
+```html
+<script type="text/javascript" at="Foot" depends-on="signalr">
+    document.addEventListener("DOMContentLoaded", function () {
+        var connection = new signalR.HubConnectionBuilder()
+            .withUrl("/hubs/my-hub")
+            .build();
+
+        connection.start()
+            .then(function () { console.log("Connected to the SignalR hub."); })
+            .catch(function (error) { console.error("Connection failed:", error.message); });
+    });
+</script>
+```
 
 > The vendored resource and the Bloom bundle pin `@microsoft/signalr` independently (currently `10.0.0` and `^8.0.0` respectively). Both interoperate with the same hub because the SignalR JSON wire protocol is stable across these versions, but keep this in mind when auditing the client version an app actually ships.
