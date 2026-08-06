@@ -99,7 +99,7 @@ else
                                     @if (permission.IsSecurityCritical)
                                     {
                                         <div class="float-end">
-                                            <span class="badge text-bg-danger" data-bs-toggle="tooltip" data-html="true" title="@T["This permission could allow a user to elevate their other permissions. Grant it with extreme consideration."]">@T["Security Critical"]</span>
+                                            <span class="badge text-bg-danger" data-bs-toggle="tooltip" data-bs-html="true" title="@T["This permission could allow a user to elevate their other permissions. Grant it with extreme consideration."]">@T["Security Critical"]</span>
                                         </div>
                                     }
                                 </td>
@@ -110,7 +110,7 @@ else
                                     </div>
                                 </td>
                                 <td class="col-1">
-                                    <div class="form-check" data-bs-toggle="tooltip" data-html="true" title="@toolTip">
+                                    <div class="form-check" data-bs-toggle="tooltip" data-bs-html="true" title="@toolTip">
                                         <input type="checkbox" class="form-check-input" disabled="disabled" id="Effective.@permission.Name" name="Effective.@permission.Name" checked="@isEffective">
                                         <label class="form-check-label" for="Effective.@permission.Name"></label>
                                     </div>
