@@ -12,16 +12,13 @@ namespace OrchardCore.Media.Services;
 /// </summary>
 public sealed class ManageMediaFolderAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
 {
-    private const char PathSeparator = '/';
-
     private readonly IServiceProvider _serviceProvider;
-    private readonly AttachedMediaFieldFileService _attachedMediaFieldFileService;
     private readonly IMediaFileStore _fileStore;
-    private readonly MediaOptions _mediaOptions;
     private readonly IUserAssetFolderNameProvider _userAssetFolderNameProvider;
 
-    private string _mediaFieldsFolder;
-    private string _usersFolder;
+    private readonly char _pathSeparator;
+    private readonly string _mediaFieldsFolder;
+    private readonly string _usersFolder;
 
     public ManageMediaFolderAuthorizationHandler(IServiceProvider serviceProvider,
         AttachedMediaFieldFileService attachedMediaFieldFileService,
@@ -30,10 +27,12 @@ public sealed class ManageMediaFolderAuthorizationHandler : AuthorizationHandler
         IUserAssetFolderNameProvider userAssetFolderNameProvider)
     {
         _serviceProvider = serviceProvider;
-        _attachedMediaFieldFileService = attachedMediaFieldFileService;
         _fileStore = fileStore;
-        _mediaOptions = options.Value;
         _userAssetFolderNameProvider = userAssetFolderNameProvider;
+
+        _pathSeparator = _fileStore.Combine("a", "b").Contains('/') ? '/' : '\\';
+        _mediaFieldsFolder = EnsureTrailingSlash(attachedMediaFieldFileService.MediaFieldsFolder);
+        _usersFolder = EnsureTrailingSlash(options.Value.AssetsUsersFolder);
     }
 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
@@ -53,9 +52,6 @@ public sealed class ManageMediaFolderAuthorizationHandler : AuthorizationHandler
         {
             return;
         }
-
-        _mediaFieldsFolder = EnsureTrailingSlash(_attachedMediaFieldFileService.MediaFieldsFolder);
-        _usersFolder = EnsureTrailingSlash(_mediaOptions.AssetsUsersFolder);
 
         var path = await ResolveAuthorizedPathAsync(resourcePath);
 
@@ -121,7 +117,7 @@ public sealed class ManageMediaFolderAuthorizationHandler : AuthorizationHandler
     private async Task<string> ResolveNonExistingPathAsync(string path)
     {
         var segments = path
-            .Split(PathSeparator, StringSplitOptions.RemoveEmptyEntries);
+            .Split(_pathSeparator, StringSplitOptions.RemoveEmptyEntries);
 
         if (segments.Length == 0)
         {
@@ -130,7 +126,7 @@ public sealed class ManageMediaFolderAuthorizationHandler : AuthorizationHandler
 
         for (var i = segments.Length; i >= 0; i--)
         {
-            var ancestorPath = string.Join(PathSeparator, segments[..i]);
+            var ancestorPath = string.Join(_pathSeparator, segments[..i]);
             var ancestor = await _fileStore.GetDirectoryInfoAsync(ancestorPath);
             if (ancestor is null)
             {
@@ -143,13 +139,13 @@ public sealed class ManageMediaFolderAuthorizationHandler : AuthorizationHandler
         return CollapseSegments(string.Empty, segments);
     }
 
-    private static string CollapseSegments(string basePath, IReadOnlyList<string> extraSegments)
+    private string CollapseSegments(string basePath, IReadOnlyList<string> extraSegments)
     {
         var resolvedSegments = new List<string>();
 
         if (!string.IsNullOrEmpty(basePath))
         {
-            resolvedSegments.AddRange(basePath.Split(PathSeparator, StringSplitOptions.RemoveEmptyEntries));
+            resolvedSegments.AddRange(basePath.Split(_pathSeparator, StringSplitOptions.RemoveEmptyEntries));
         }
 
         foreach (var segment in extraSegments)
@@ -172,7 +168,7 @@ public sealed class ManageMediaFolderAuthorizationHandler : AuthorizationHandler
             resolvedSegments.Add(segment);
         }
 
-        return string.Join(PathSeparator, resolvedSegments);
+        return string.Join(_pathSeparator, resolvedSegments);
     }
 
     private bool IsAuthorizedFolder(string authorizedFolder, string childPath)
@@ -187,5 +183,5 @@ public sealed class ManageMediaFolderAuthorizationHandler : AuthorizationHandler
         => _fileStore.NormalizePath(childPath).StartsWith(authorizedFolder, StringComparison.Ordinal);
 
     private string EnsureTrailingSlash(string path)
-        => _fileStore.NormalizePath(path).TrimEnd(PathSeparator) + PathSeparator;
+        => _fileStore.NormalizePath(path) + _pathSeparator;
 }
