@@ -12,8 +12,6 @@ namespace OrchardCore.Media.Services;
 /// </summary>
 public sealed class ManageMediaFolderAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
 {
-    private const char PathSeparator = '/';
-
     private readonly IServiceProvider _serviceProvider;
     private readonly IMediaFileStore _fileStore;
     private readonly IUserAssetFolderNameProvider _userAssetFolderNameProvider;
@@ -119,7 +117,7 @@ public sealed class ManageMediaFolderAuthorizationHandler : AuthorizationHandler
     private async Task<string> ResolveNonExistingPathAsync(string path)
     {
         var segments = path
-            .Split(PathSeparator, StringSplitOptions.RemoveEmptyEntries);
+            .Split(_pathSeparator, StringSplitOptions.RemoveEmptyEntries);
 
         if (segments.Length == 0)
         {
@@ -128,7 +126,7 @@ public sealed class ManageMediaFolderAuthorizationHandler : AuthorizationHandler
 
         for (var i = segments.Length; i >= 0; i--)
         {
-            var ancestorPath = string.Join(PathSeparator, segments[..i]);
+            var ancestorPath = string.Join(_pathSeparator, segments[..i]);
             var ancestor = await _fileStore.GetDirectoryInfoAsync(ancestorPath);
             if (ancestor is null)
             {
@@ -141,13 +139,13 @@ public sealed class ManageMediaFolderAuthorizationHandler : AuthorizationHandler
         return CollapseSegments(string.Empty, segments);
     }
 
-    private static string CollapseSegments(string basePath, IReadOnlyList<string> extraSegments)
+    private string CollapseSegments(string basePath, IReadOnlyList<string> extraSegments)
     {
         var resolvedSegments = new List<string>();
 
         if (!string.IsNullOrEmpty(basePath))
         {
-            resolvedSegments.AddRange(basePath.Split(PathSeparator, StringSplitOptions.RemoveEmptyEntries));
+            resolvedSegments.AddRange(basePath.Split(_pathSeparator, StringSplitOptions.RemoveEmptyEntries));
         }
 
         foreach (var segment in extraSegments)
@@ -170,7 +168,7 @@ public sealed class ManageMediaFolderAuthorizationHandler : AuthorizationHandler
             resolvedSegments.Add(segment);
         }
 
-        return string.Join(PathSeparator, resolvedSegments);
+        return string.Join(_pathSeparator, resolvedSegments);
     }
 
     private bool IsAuthorizedFolder(string authorizedFolder, string childPath)
