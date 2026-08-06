@@ -52,6 +52,47 @@ else
                             var description = string.IsNullOrEmpty(permission.Description)
                                 ? permission.Name
                                 : permission.Description;
+
+                            var isAssigned = Model.AssignedPermissions.Contains(permission.Name);
+                            var isEffective = false;
+                            var toolTip = T["This permission is not granted to this role."];
+                            if (Model.EffectivePermissions?.TryGetValue(permission.Name, out var effectivePermission) ?? false && effectivePermission is not null)
+                            {
+                                isEffective = true;
+                                if (isAssigned)
+                                {
+                                    toolTip = T["This permission is granted to this role."];
+                                }
+                                else
+                                {
+                                    var impliedByAssigned = effectivePermission.ImpliedBy
+                                        ?.Where(p => Model.AssignedPermissions.Contains(p.Name))
+                                        .Select(p => !string.IsNullOrEmpty(p.Description) ? p.Description : p.Name)
+                                        .ToList() ?? [];
+
+                                    if (impliedByAssigned.Count > 0)
+                                    {
+                                        toolTip = T["This permission is implied by: {0}", string.Join(", ", impliedByAssigned)];
+                                    }
+                                    else
+                                    {
+                                        var grantingRoles = new List<string>();
+                                        if (Model.AnonymousGrantedPermissions.Contains(permission.Name))
+                                        {
+                                            grantingRoles.Add(T["Anonymous"].Value);
+                                        }
+                                        if (Model.AuthenticatedGrantedPermissions.Contains(permission.Name))
+                                        {
+                                            grantingRoles.Add(T["Authenticated"].Value);
+                                        }
+
+                                        toolTip = grantingRoles.Count > 0
+                                            ? T["This permission is granted by role: {0}", string.Join(", ", grantingRoles)]
+                                            : T["This permission is effective but the source could not be determined."];
+                                    }
+                                }
+                            }
+
                             <tr data-text="@D[description, permissionsContext]">
                                 <td class="col-10">
                                     @D[description, permissionsContext]
@@ -64,13 +105,13 @@ else
                                 </td>
                                 <td class="col-1">
                                     <div class="form-check">
-                                        <input type="checkbox" class="form-check-input" disabled="@(!Model.CanEdit)" id="Checkbox.@permission.Name" name="Checkbox.@permission.Name" checked="@(Model.AssignedPermissions.Contains(permission.Name))" value="true">
+                                        <input type="checkbox" class="form-check-input" disabled="@(!Model.CanEdit)" id="Checkbox.@permission.Name" name="Checkbox.@permission.Name" checked="@isAssigned" value="true">
                                         <label class="form-check-label" for="Checkbox.@permission.Name"></label>
                                     </div>
                                 </td>
                                 <td class="col-1">
-                                    <div class="form-check">
-                                        <input type="checkbox" class="form-check-input" disabled="disabled" id="Effective.@permission.Name" name="Effective.@permission.Name" checked="@(Model.EffectivePermissions.Contains(permission.Name))">
+                                    <div class="form-check" data-bs-toggle="tooltip" data-html="true" title="@toolTip">
+                                        <input type="checkbox" class="form-check-input" disabled="disabled" id="Effective.@permission.Name" name="Effective.@permission.Name" checked="@isEffective">
                                         <label class="form-check-label" for="Effective.@permission.Name"></label>
                                     </div>
                                 </td>
