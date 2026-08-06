@@ -19,24 +19,18 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IContainerService _containerService;
     private readonly IUpdateModelAccessor _updateModelAccessor;
-    private readonly ISession _session;
     private readonly IShapeFactory _shapeFactory;
-    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public ListPartDisplayDriver(
         IContentDefinitionManager contentDefinitionManager,
         IContainerService containerService,
         IUpdateModelAccessor updateModelAccessor,
-        ISession session,
-        IShapeFactory shapeFactory,
-        IHttpContextAccessor httpContextAccessor)
+        IShapeFactory shapeFactory)
     {
         _contentDefinitionManager = contentDefinitionManager;
         _containerService = containerService;
         _updateModelAccessor = updateModelAccessor;
-        _session = session;
         _shapeFactory = shapeFactory;
-        _httpContextAccessor = httpContextAccessor;
     }
 
     public override IDisplayResult Edit(ListPart part, BuildPartEditorContext context)
