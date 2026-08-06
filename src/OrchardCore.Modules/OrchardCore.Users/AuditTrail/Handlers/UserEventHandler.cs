@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,8 +16,6 @@ using OrchardCore.Users.AuditTrail.Services;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
-using System.Security.Claims;
-using System.Text.Json.Nodes;
 using YesSql;
 using ISession = YesSql.ISession;
 
@@ -33,7 +33,7 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
             nameof(User.UserTokens)
         ],
         StringComparer.OrdinalIgnoreCase);
-    
+
     private readonly IAuditTrailManager _auditTrailManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IServiceProvider _serviceProvider;
@@ -151,7 +151,7 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
         {
             UserName = userName,
             UserId = userId,
-            Snapshot = storeSnapshot && user is User fullUser 
+            Snapshot = storeSnapshot && user is User fullUser
                 ? CreateSnapshotObject(fullUser, await _siteService.GetSettingsAsync<AuditTrailUserEventSettings>())
                 : null,
         };
@@ -168,8 +168,15 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
 
         await _auditTrailManager.RecordEventAsync(context);
     }
+
     private JsonObject CreateSnapshotObject(User fullUser, AuditTrailUserEventSettings settings)
     {
+        // Without any configured redactors there are no properties allowed in the snapshot, so there is nothing to store.
+        if (settings.UserSnapshotRedactors is not { Count: > 0 })
+        {
+            return null;
+        }
+
         var redactors = _redactors.ToDictionary(item => item.GetType().Name);
 
         JsonValue Redact(string propertyName, JsonNode value)
@@ -179,7 +186,7 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
             {
                 return null;
             }
-            
+
             var redactor = redactors[settings.UserSnapshotRedactors[propertyName]];
 
             return JsonValue.Create(redactor.Redact(text));
@@ -200,10 +207,10 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
                 .Where(pair => pair.Value != null)
                 .ToDictionary(pair => pair.Key, pair => (JsonNode)pair.Value);
         }
-        
+
         // Ensure that the User object only has the allowed properties and none of the banned ones.
         var dictionary = CreateDictionary(JObject.FromObject(fullUser));
-        
+
         // Custom user settings have to be handled separately.
         dictionary[nameof(User.Properties)] = JObject.FromObject(CreateDictionary(fullUser.Properties));
 
