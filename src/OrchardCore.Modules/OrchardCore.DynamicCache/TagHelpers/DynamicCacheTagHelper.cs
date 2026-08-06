@@ -18,7 +18,7 @@ public class DynamicCacheTagHelper : TagHelper
     private const string ExpiresAfterAttributeName = "expires-after";
     private const string ExpiresSlidingAttributeName = "expires-sliding";
 
-    private static readonly char[] _splitChars = [',', ' '];
+    private static readonly char[] s_splitChars = [',', ' '];
 
     /// <summary>
     /// The default duration, from the time the cache entry was added, when it should be evicted.
@@ -104,12 +104,12 @@ public class DynamicCacheTagHelper : TagHelper
 
         if (!string.IsNullOrEmpty(VaryBy))
         {
-            cacheContext.AddContext(VaryBy.Split(_splitChars, StringSplitOptions.RemoveEmptyEntries));
+            cacheContext.AddContext(VaryBy.Split(s_splitChars, StringSplitOptions.RemoveEmptyEntries));
         }
 
         if (!string.IsNullOrEmpty(Dependencies))
         {
-            cacheContext.AddTag(Dependencies.Split(_splitChars, StringSplitOptions.RemoveEmptyEntries));
+            cacheContext.AddTag(Dependencies.Split(s_splitChars, StringSplitOptions.RemoveEmptyEntries));
         }
 
         var hasEvictionCriteria = false;

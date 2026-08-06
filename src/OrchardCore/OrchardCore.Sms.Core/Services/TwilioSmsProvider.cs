@@ -17,7 +17,7 @@ public class TwilioSmsProvider : ISmsProvider
 
     public const string ProtectorName = "Twilio";
 
-    private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
+    private static readonly JsonSerializerOptions s_jsonSerializerOptions = new()
     {
         PropertyNamingPolicy = SnakeCaseNamingPolicy.Instance,
     };
@@ -88,7 +88,7 @@ public class TwilioSmsProvider : ISmsProvider
 
             if (response.IsSuccessStatusCode)
             {
-                var result = await response.Content.ReadFromJsonAsync<TwilioMessageResponse>(_jsonSerializerOptions, cancellationToken);
+                var result = await response.Content.ReadFromJsonAsync<TwilioMessageResponse>(s_jsonSerializerOptions, cancellationToken);
 
                 if (string.Equals(result.Status, "sent", StringComparison.OrdinalIgnoreCase) ||
                     string.Equals(result.Status, "queued", StringComparison.OrdinalIgnoreCase))

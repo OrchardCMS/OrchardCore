@@ -12,9 +12,9 @@ namespace OrchardCore.Workflows.Http.Activities;
 
 public class HttpRequestTask : TaskActivity<HttpRequestTask>
 {
-    private static readonly string[] _separator = ["\r\n", "\n", "\r"];
+    private static readonly string[] s_separator = ["\r\n", "\n", "\r"];
 
-    private static readonly Dictionary<int, string> _httpStatusCodeDictionary = new()
+    private static readonly Dictionary<int, string> s_httpStatusCodeDictionary = new()
     {
         { 100, "Continue" },
         { 101, "Switching Protocols" },
@@ -147,7 +147,7 @@ public class HttpRequestTask : TaskActivity<HttpRequestTask>
             {
                 var status = int.Parse(x.Trim());
 
-                var description = _httpStatusCodeDictionary.TryGetValue(status, out var text)
+                var description = s_httpStatusCodeDictionary.TryGetValue(status, out var text)
                     ? $"{status} {text}"
                     : status.ToString()
                     ;
@@ -208,7 +208,7 @@ public class HttpRequestTask : TaskActivity<HttpRequestTask>
         }
 
         return
-            from header in text.Split(_separator, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim())
+            from header in text.Split(s_separator, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim())
             let pair = header.Split(':', 2)
             where pair.Length == 2
             select new KeyValuePair<string, string>(pair[0], pair[1]);

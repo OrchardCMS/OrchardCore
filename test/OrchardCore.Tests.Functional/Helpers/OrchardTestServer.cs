@@ -36,9 +36,9 @@ public sealed class OrchardTestServer : IAsyncDisposable
     /// Used by test helpers (e.g., CreateTenantAsync) to fill in child tenant connection strings.
     /// </summary>
     [ThreadStatic]
-    private static string _currentConnectionString;
+    private static string s_currentConnectionString;
 
-    public static string CurrentConnectionString => _currentConnectionString;
+    public static string CurrentConnectionString => s_currentConnectionString;
 
     private readonly WebApplication _app;
     private readonly FakeLogCollector _logCollector;
@@ -191,7 +191,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
             }
 
             // Store for test helpers that need the fixture-specific connection string.
-            _currentConnectionString = connectionString;
+            s_currentConnectionString = connectionString;
 
             // Write tenants.json so OrchardCore picks up the per-fixture database.
             File.WriteAllText(

@@ -6,7 +6,7 @@ namespace OrchardCore.Menu;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "contentTypeId", "Menu" },
         { "Area", "OrchardCore.Contents" },
@@ -27,7 +27,7 @@ public sealed class AdminMenu : AdminNavigationProvider
             .Add(S["Content"], design => design
                 .Add(S["Menus"], S["Menus"].PrefixPosition(), menus => menus
                     .Permission(Permissions.ManageMenu)
-                    .Action("List", "Admin", _routeValues)
+                    .Action("List", "Admin", s_routeValues)
                     .LocalNav()
                 )
             );

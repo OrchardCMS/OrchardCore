@@ -6,9 +6,9 @@ namespace OrchardCore.Antivirus.ClamAV;
 
 internal sealed class ClamAvConnectionFactory : IDisposable
 {
-    private static readonly ConcurrentDictionary<string, Lazy<ClamAvConnection>> _connections = new();
-    private static volatile int _registered;
-    private static volatile int _refCount;
+    private static readonly ConcurrentDictionary<string, Lazy<ClamAvConnection>> s_connections = new();
+    private static volatile int s_registered;
+    private static volatile int s_refCount;
 
     private readonly IHostApplicationLifetime _lifetime;
     private readonly ILoggerFactory _loggerFactory;
@@ -17,12 +17,12 @@ internal sealed class ClamAvConnectionFactory : IDisposable
         IHostApplicationLifetime lifetime,
         ILoggerFactory loggerFactory)
     {
-        Interlocked.Increment(ref _refCount);
+        Interlocked.Increment(ref s_refCount);
 
         _lifetime = lifetime;
         _loggerFactory = loggerFactory;
 
-        if (Interlocked.CompareExchange(ref _registered, 1, 0) == 0)
+        if (Interlocked.CompareExchange(ref s_registered, 1, 0) == 0)
         {
             _lifetime.ApplicationStopped.Register(Release);
         }
@@ -32,13 +32,13 @@ internal sealed class ClamAvConnectionFactory : IDisposable
     {
         var key = $"{options.Host}:{options.Port}:{options.ConnectTimeoutSeconds}:{options.TransferTimeoutSeconds}";
 
-        return _connections.GetOrAdd(key, _ => new Lazy<ClamAvConnection>(() =>
+        return s_connections.GetOrAdd(key, _ => new Lazy<ClamAvConnection>(() =>
             new ClamAvConnection(options, _loggerFactory.CreateLogger<ClamAvConnection>()))).Value;
     }
 
     public void Dispose()
     {
-        if (Interlocked.Decrement(ref _refCount) == 0 && _lifetime.ApplicationStopped.IsCancellationRequested)
+        if (Interlocked.Decrement(ref s_refCount) == 0 && _lifetime.ApplicationStopped.IsCancellationRequested)
         {
             Release();
         }
@@ -46,11 +46,11 @@ internal sealed class ClamAvConnectionFactory : IDisposable
 
     internal static void Release()
     {
-        if (Interlocked.CompareExchange(ref _refCount, 0, 0) == 0)
+        if (Interlocked.CompareExchange(ref s_refCount, 0, 0) == 0)
         {
-            var connections = _connections.Values.ToArray();
+            var connections = s_connections.Values.ToArray();
 
-            _connections.Clear();
+            s_connections.Clear();
 
             foreach (var connection in connections)
             {

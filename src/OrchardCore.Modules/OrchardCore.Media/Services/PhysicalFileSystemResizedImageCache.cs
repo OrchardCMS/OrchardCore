@@ -10,7 +10,7 @@ internal sealed class PhysicalFileSystemResizedImageCache : IResizedImageCache
 {
     internal const string CacheFolder = "media-cache";
 
-    private static readonly EnumerationOptions _enumOptions = new() { RecurseSubdirectories = true };
+    private static readonly EnumerationOptions s_enumOptions = new() { RecurseSubdirectories = true };
 
     private readonly string _cacheRoot;
     private readonly ILogger _logger;
@@ -106,7 +106,7 @@ internal sealed class PhysicalFileSystemResizedImageCache : IResizedImageCache
 
         try
         {
-            foreach (var file in Directory.EnumerateFiles(_cacheRoot, "*", _enumOptions))
+            foreach (var file in Directory.EnumerateFiles(_cacheRoot, "*", s_enumOptions))
             {
                 if (cancellationToken.IsCancellationRequested)
                 {

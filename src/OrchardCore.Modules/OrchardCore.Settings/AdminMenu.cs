@@ -7,13 +7,13 @@ namespace OrchardCore.Settings;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _generalRouteValues = new()
+    private static readonly RouteValueDictionary s_generalRouteValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", DefaultSiteSettingsDisplayDriver.GroupId },
     };
 
-    private static readonly RouteValueDictionary _debuggingRouteValues = new()
+    private static readonly RouteValueDictionary s_debuggingRouteValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", DebugSettingsDisplayDriver.GroupId },
@@ -39,14 +39,14 @@ public sealed class AdminMenu : AdminNavigationProvider
                         .Add(S["General"], "1", entry => entry
                             .AddClass("general")
                             .Id("general")
-                            .Action("Index", "Admin", _generalRouteValues)
+                            .Action("Index", "Admin", s_generalRouteValues)
                             .Permission(SettingsPermissions.ManageGroupSettings)
                             .LocalNav()
                         )
                         .Add(S["Debugging"], "2", entry => entry
                             .AddClass("debugging")
                             .Id("debugging")
-                            .Action("Index", "Admin", _debuggingRouteValues)
+                            .Action("Index", "Admin", s_debuggingRouteValues)
                             .Permission(SettingsPermissions.ManageGroupSettings)
                             .LocalNav()
                         ),
@@ -67,14 +67,14 @@ public sealed class AdminMenu : AdminNavigationProvider
                 .Add(S["General"], "before", general => general
                     .AddClass("general")
                     .Id("general")
-                    .Action("Index", "Admin", _generalRouteValues)
+                    .Action("Index", "Admin", s_generalRouteValues)
                     .Permission(SettingsPermissions.ManageGroupSettings)
                     .LocalNav()
                 )
                 .Add(S["Debugging"], "after", debugging => debugging
                     .AddClass("debugging")
                     .Id("debugging")
-                    .Action("Index", "Admin", _debuggingRouteValues)
+                    .Action("Index", "Admin", s_debuggingRouteValues)
                     .Permission(SettingsPermissions.ManageGroupSettings)
                     .LocalNav()
                 )

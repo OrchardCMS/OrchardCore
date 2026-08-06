@@ -10,7 +10,7 @@ public class LocalizationManager : ILocalizationManager
 {
     private const string CacheKeyPrefix = "CultureDictionary-";
 
-    private static readonly PluralizationRuleDelegate _defaultPluralRule = n => (n != 1 ? 1 : 0);
+    private static readonly PluralizationRuleDelegate s_defaultPluralRule = n => (n != 1 ? 1 : 0);
 
     private readonly IList<IPluralRuleProvider> _pluralRuleProviders;
     private readonly IEnumerable<ITranslationProvider> _translationProviders;
@@ -37,7 +37,7 @@ public class LocalizationManager : ILocalizationManager
     {
         var cachedDictionary = _cache.GetOrCreate(CacheKeyPrefix + culture.Name, k => new Lazy<CultureDictionary>(() =>
         {
-            var rule = _defaultPluralRule;
+            var rule = s_defaultPluralRule;
 
             foreach (var provider in _pluralRuleProviders)
             {
@@ -47,7 +47,7 @@ public class LocalizationManager : ILocalizationManager
                 }
             }
 
-            var dictionary = new CultureDictionary(culture.Name, rule ?? _defaultPluralRule);
+            var dictionary = new CultureDictionary(culture.Name, rule ?? s_defaultPluralRule);
             foreach (var translationProvider in _translationProviders)
             {
                 translationProvider.LoadTranslations(culture.Name, dictionary);

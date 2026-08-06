@@ -7,7 +7,7 @@ namespace OrchardCore.Layers;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", LayerSiteSettingsDisplayDriver.GroupId },
@@ -28,7 +28,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                 .Add(S["Design"], design => design
                     .Add(S["Settings"], settings => settings
                         .Add(S["Zones"], S["Zones"].PrefixPosition(), zones => zones
-                            .Action("Index", "Admin", _routeValues)
+                            .Action("Index", "Admin", s_routeValues)
                             .Permission(Permissions.ManageLayers)
                             .LocalNav()
                         )
@@ -53,7 +53,7 @@ public sealed class AdminMenu : AdminNavigationProvider
             )
             .Add(S["Settings"], settings => settings
                 .Add(S["Zones"], S["Zones"].PrefixPosition(), zones => zones
-                    .Action("Index", "Admin", _routeValues)
+                    .Action("Index", "Admin", s_routeValues)
                     .Permission(Permissions.ManageLayers)
                     .LocalNav()
                 )
