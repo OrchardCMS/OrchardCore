@@ -16,7 +16,7 @@ public class DuplicateEndpointNameTests
     // (LinkGenerator.GetPathByName / GetUriByName) then threw an 'InvalidOperationException' reporting
     // duplicate endpoint names.
     [Fact]
-    public async Task GetPathByName_ForAttributeRoutedApiController_DoesNotThrowOnDuplicateEndpointName()
+    public async Task GetPathByName_ForAttributeRoutedApiController_UsesSingleNamedRouteEndpoint()
     {
         // Arrange.
         using var context = new SiteContext();
