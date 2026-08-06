@@ -6,7 +6,7 @@ Rules are infrastructure. The module does not provide a standalone admin screen 
 
 ## Enable the module
 
-Enable **Rules** from **Configuration** > **Features** in the admin. Enabling a feature that depends on `OrchardCore.Rules`, such as Layers, enables it automatically.
+Enable **Rules** from **Tool** > **Features** in the admin. Enabling a feature that depends on `OrchardCore.Rules`, such as Layers, enables it automatically.
 
 The Rules feature depends on `OrchardCore.Scripting` so that JavaScript conditions can use the scripting infrastructure.
 
