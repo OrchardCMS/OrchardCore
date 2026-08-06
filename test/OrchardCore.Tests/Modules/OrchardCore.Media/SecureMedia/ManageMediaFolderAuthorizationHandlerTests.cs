@@ -19,6 +19,8 @@ public class ManageMediaFolderAuthorizationHandlerTests
     [Theory]
     [InlineData("_users/user-folder/../other-user-folder/victim-private.svg", false)]
     [InlineData("_users/user-folder/../user-folder/own-private.svg", true)]
+    [InlineData("_users/user-folder/%2e%2e/other-user-folder/victim-private.svg", false)]
+    [InlineData("_users/user-folder/%2e%2e/user-folder/own-private.svg", true)]
     public async Task OwnMediaPermissionFollowsResolvedPath(string resource, bool shouldSucceed)
     {
         // Arrange

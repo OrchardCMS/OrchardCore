@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -53,7 +52,7 @@ public sealed class ManageMediaFolderAuthorizationHandler : AuthorizationHandler
             return;
         }
 
-        var path = await ResolveAuthorizedPathAsync(resourcePath);
+        var path = await _fileStore.ResolveAuthorizedPathAsync(resourcePath);
 
         var userOwnFolder = EnsureTrailingSlash(
             _fileStore.Combine(_usersFolder, _userAssetFolderNameProvider.GetUserAssetFolderName(context.User)));
@@ -88,87 +87,6 @@ public sealed class ManageMediaFolderAuthorizationHandler : AuthorizationHandler
                 context.Succeed(requirement);
             }
         }
-    }
-
-    private async Task<string> ResolveAuthorizedPathAsync(string path)
-    {
-        path = _fileStore.NormalizePath(Uri.UnescapeDataString(path));
-
-        if (string.IsNullOrEmpty(path))
-        {
-            return string.Empty;
-        }
-
-        var file = await _fileStore.GetFileInfoAsync(path);
-        if (file is not null)
-        {
-            return _fileStore.NormalizePath(file.Path);
-        }
-
-        var directory = await _fileStore.GetDirectoryInfoAsync(path);
-        if (directory is not null)
-        {
-            return _fileStore.NormalizePath(directory.Path);
-        }
-
-        return await ResolveNonExistingPathAsync(path);
-    }
-
-    private async Task<string> ResolveNonExistingPathAsync(string path)
-    {
-        var segments = path
-            .Split(_pathSeparator, StringSplitOptions.RemoveEmptyEntries);
-
-        if (segments.Length == 0)
-        {
-            return string.Empty;
-        }
-
-        for (var i = segments.Length; i >= 0; i--)
-        {
-            var ancestorPath = string.Join(_pathSeparator, segments[..i]);
-            var ancestor = await _fileStore.GetDirectoryInfoAsync(ancestorPath);
-            if (ancestor is null)
-            {
-                continue;
-            }
-
-            return CollapseSegments(_fileStore.NormalizePath(ancestor.Path), segments[i..]);
-        }
-
-        return CollapseSegments(string.Empty, segments);
-    }
-
-    private string CollapseSegments(string basePath, IReadOnlyList<string> extraSegments)
-    {
-        var resolvedSegments = new List<string>();
-
-        if (!string.IsNullOrEmpty(basePath))
-        {
-            resolvedSegments.AddRange(basePath.Split(_pathSeparator, StringSplitOptions.RemoveEmptyEntries));
-        }
-
-        foreach (var segment in extraSegments)
-        {
-            if (string.IsNullOrEmpty(segment) || segment == ".")
-            {
-                continue;
-            }
-
-            if (segment == "..")
-            {
-                if (resolvedSegments.Count > 0)
-                {
-                    resolvedSegments.RemoveAt(resolvedSegments.Count - 1);
-                }
-
-                continue;
-            }
-
-            resolvedSegments.Add(segment);
-        }
-
-        return string.Join(_pathSeparator, resolvedSegments);
     }
 
     private bool IsAuthorizedFolder(string authorizedFolder, string childPath)
