@@ -4,7 +4,7 @@ Background tasks run scheduled work inside an Orchard Core tenant scope. The `Or
 
 ## Enable and manage background tasks
 
-Enable the **Background Tasks** feature (`OrchardCore.BackgroundTasks`) from **Configuration** > **Features** for each tenant where administrators need to manage task settings. The Orchard Core host can execute registered tasks from their code-defined defaults without this feature, but the feature is required for persisted overrides and the admin UI.
+Enable the **Background Tasks** feature (`OrchardCore.BackgroundTasks`) from **Tools** > **Features** for each tenant where administrators need to manage task settings. The Orchard Core host can execute registered tasks from their code-defined defaults without this feature, but the feature is required for persisted overrides and the admin UI.
 
 Users with the `ManageBackgroundTasks` permission can open **Tools** > **Background Tasks**. Administrators receive this permission by default. The page supports:
 
