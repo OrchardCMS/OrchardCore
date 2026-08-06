@@ -9,7 +9,7 @@ Enable and configure it independently for every tenant that needs to be monitore
 
 ## Enable the feature
 
-Enable **Health Checks** from **Configuration** > **Features** in the tenant's administration area, or enable `OrchardCore.HealthChecks` from a recipe:
+Enable **Health Checks** from **Tools** > **Features** in the tenant's administration area, or enable `OrchardCore.HealthChecks` from a recipe:
 
 ```json
 {
