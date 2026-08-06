@@ -55,17 +55,16 @@
     <input type="submit" name="submit.BulkAction" class="d-none" />
     <ul class="list-group with-checkbox mb-3">
         <li class="list-group-item text-bg-theme">
-            <div class="row gx-3">
+                <div class="row gx-3 align-items-center">
                 <div class="col">
                     @{
                         var totalFeatures = Model.Features.Count();
                     }
-                    <div id="list-summary"
-                         style="padding-top: 0.2rem !important"
+                    <span id="list-summary"
                          data-summary-text="@T["Showing {0} of {1} features", "__VISIBLE__", "__TOTAL__"]"
                          data-total-count="@totalFeatures">
                         @T["Showing {0} of {1} features", totalFeatures, totalFeatures]
-                    </div>
+                    </span>
                 </div>
                 <div class="col col-md-auto text-end">
                     <div class="btn-group filter">
