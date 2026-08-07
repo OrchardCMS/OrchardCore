@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.StaticFiles;
@@ -60,40 +62,77 @@ internal static class MediaEndpointHelpers
         };
     }
 
-    public static DirectoryTreeNodeDto ToDto(DirectoryTreeNode node)
+    public static async Task<DirectoryTreeNodeDto> ToDtoAsync(
+        IAuthorizationService authorizationService,
+        ClaimsPrincipal user,
+        DirectoryTreeNode node)
     {
+        var filteredChildren = new List<DirectoryTreeNodeDto>();
+
+        if (node.Children != null)
+        {
+            foreach (var child in node.Children)
+            {
+                // Only include sub-folders the user is permitted to access.
+                if (!await authorizationService.AuthorizeAsync(user, MediaPermissions.ManageMediaFolder, (object)child.Path))
+                {
+                    continue;
+                }
+
+                filteredChildren.Add(await ToDtoAsync(authorizationService, user, child));
+            }
+        }
+
         return new DirectoryTreeNodeDto
         {
             Name = node.Name,
             Path = node.Path,
-            HasChildren = node.HasChildren,
-            Children = node.Children?.ConvertAll(ToDto) ?? [],
+            // HasChildren reflects only accessible children.
+            HasChildren = filteredChildren.Count > 0,
+            Children = filteredChildren,
         };
     }
 
-    public static async Task<bool> HasSubDirectoriesAsync(IMediaFileStore mediaFileStore, string path)
+    public static async Task<bool> HasSubDirectoriesAsync(
+        IMediaFileStore mediaFileStore,
+        IAuthorizationService authorizationService,
+        ClaimsPrincipal user,
+        string path)
     {
-        await foreach (var _ in mediaFileStore.GetDirectoriesAsync(path))
+        await foreach (var entry in mediaFileStore.GetDirectoriesAsync(path))
         {
-            return true;
+            if (await authorizationService.AuthorizeAsync(user, MediaPermissions.ManageMediaFolder, (object)entry.Path))
+            {
+                return true;
+            }
         }
 
         return false;
     }
 
-    public static async Task<List<FileStoreEntryDto>> GetDirectoryFoldersAsync(IMediaFileStore mediaFileStore, string path)
+    public static async Task<List<FileStoreEntryDto>> GetDirectoryFoldersAsync(
+        IMediaFileStore mediaFileStore,
+        IAuthorizationService authorizationService,
+        ClaimsPrincipal user,
+        string path)
     {
         var folders = new List<FileStoreEntryDto>();
 
         await foreach (var entry in mediaFileStore.GetDirectoriesAsync(path))
         {
+            // Only include folders the user is permitted to access.
+            if (!await authorizationService.AuthorizeAsync(user, MediaPermissions.ManageMediaFolder, (object)entry.Path))
+            {
+                continue;
+            }
+
             folders.Add(CreateFolderResult(entry));
         }
 
-        // Check HasChildren concurrently.
+        // Check HasChildren concurrently, considering only accessible sub-folders.
         var hasChildrenTasks = folders.Select(async folder =>
         {
-            folder.HasChildren = await HasSubDirectoriesAsync(mediaFileStore, folder.DirectoryPath);
+            folder.HasChildren = await HasSubDirectoriesAsync(mediaFileStore, authorizationService, user, folder.DirectoryPath);
         });
         await Task.WhenAll(hasChildrenTasks);
 
@@ -125,6 +164,7 @@ internal static class MediaEndpointHelpers
 
     public static async Task CollectAllItemsRecursiveAsync(
         IMediaFileStore mediaFileStore,
+        IAuthorizationService authorizationService,
         HttpContext httpContext,
         IContentTypeProvider contentTypeProvider,
         IFileVersionProvider fileVersionProvider,
@@ -138,6 +178,12 @@ internal static class MediaEndpointHelpers
         {
             if (entry.IsDirectory)
             {
+                // Only include and recurse into folders the user is permitted to access.
+                if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMediaFolder, (object)entry.Path))
+                {
+                    continue;
+                }
+
                 allItems.Add(CreateFolderResult(entry));
                 subFolders.Add(entry);
             }
@@ -149,7 +195,7 @@ internal static class MediaEndpointHelpers
 
         foreach (var folder in subFolders)
         {
-            await CollectAllItemsRecursiveAsync(mediaFileStore, httpContext, contentTypeProvider, fileVersionProvider, folder.Path, allowedExtensions, allItems);
+            await CollectAllItemsRecursiveAsync(mediaFileStore, authorizationService, httpContext, contentTypeProvider, fileVersionProvider, folder.Path, allowedExtensions, allItems);
         }
     }
 

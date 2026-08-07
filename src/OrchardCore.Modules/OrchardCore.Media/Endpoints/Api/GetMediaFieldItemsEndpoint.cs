@@ -52,6 +52,14 @@ public static class GetMediaFieldItemsEndpoint
             return TypedResults.Ok(Array.Empty<FileStoreEntryDto>());
         }
 
+        foreach (var path in requestedPaths)
+        {
+            if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMediaFolder, (object)path))
+            {
+                return httpContext.ApiForbidProblem();
+            }
+        }
+
         var mediaItems = await Task.WhenAll(requestedPaths.Select(async path =>
         {
             var fileEntry = await mediaFileStore.GetFileInfoAsync(path);

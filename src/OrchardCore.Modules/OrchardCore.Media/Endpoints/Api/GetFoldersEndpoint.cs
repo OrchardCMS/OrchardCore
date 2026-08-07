@@ -35,14 +35,15 @@ public static class GetFoldersEndpoint
         int skip = 0,
         int take = 0)
     {
-        if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMedia))
-        {
-            return httpContext.ApiForbidProblem();
-        }
-
         if (string.IsNullOrEmpty(path))
         {
             path = string.Empty;
+        }
+
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMedia)
+            || !await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMediaFolder, (object)path))
+        {
+            return httpContext.ApiForbidProblem();
         }
 
         // Only check directory existence for non-root paths (root always exists).
@@ -58,6 +59,14 @@ public static class GetFoldersEndpoint
 
         await foreach (var entry in mediaFileStore.GetDirectoriesAsync(path))
         {
+            // Only include folders the user is permitted to access.
+            // This must happen before counting so that skip/take offsets are
+            // calculated against authorized entries only.
+            if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMediaFolder, (object)entry.Path))
+            {
+                continue;
+            }
+
             authorizedCount++;
 
             if (isPaginated)
@@ -86,10 +95,10 @@ public static class GetFoldersEndpoint
             }
         }
 
-        // Check HasChildren for the page only (not all folders).
+        // Check HasChildren for the page only (not all folders), considering only accessible sub-folders.
         var hasChildrenTasks = page.Select(async folder =>
         {
-            folder.HasChildren = await MediaEndpointHelpers.HasSubDirectoriesAsync(mediaFileStore, folder.DirectoryPath);
+            folder.HasChildren = await MediaEndpointHelpers.HasSubDirectoriesAsync(mediaFileStore, authorizationService, httpContext.User, folder.DirectoryPath);
         });
         await Task.WhenAll(hasChildrenTasks);
 
