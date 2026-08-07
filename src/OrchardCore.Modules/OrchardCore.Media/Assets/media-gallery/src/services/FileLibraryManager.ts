@@ -410,5 +410,6 @@ export function useFileLibraryManager() {
     deleteDirectory,
     getFileLibraryStoreAsync,
     loadDirectoryFiles,
+    invalidateFileCache,
   };
 }
