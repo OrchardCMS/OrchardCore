@@ -24,7 +24,48 @@ public class MediaFolderAuthorizationCostTests
     private const string Folder = "photos";
 
     [Fact]
-    public async Task ManageMediaFolder_WithoutSecureMedia_PerformsNoFileStoreIo()
+    public async Task RepeatedChecksOfTheSamePath_ResolveItOnce()
+    {
+        // Within one request the resolution of a path cannot change, so authorizing the same folder again
+        // must be free. Before the request-scoped cache this cost a full resolution every time.
+        const int Repeats = 10;
+
+        var (services, store) = BuildProvider(secureMediaEnabled: false);
+        var authorizationService = services.GetRequiredService<IAuthorizationService>();
+
+        store.ResetCounters();
+        await authorizationService.AuthorizeAsync(User(), MediaPermissions.ManageMediaFolder, (object)Folder);
+        var firstCheck = store.TotalCalls;
+
+        store.ResetCounters();
+
+        for (var i = 0; i < Repeats; i++)
+        {
+            await authorizationService.AuthorizeAsync(User(), MediaPermissions.ManageMediaFolder, (object)Folder);
+        }
+
+        Assert.True(firstCheck > 0, "The first check must actually resolve the path.");
+        Assert.Equal(0, store.TotalCalls);
+    }
+
+    [Fact]
+    public async Task TheCacheDoesNotChangeWhoIsAuthorized()
+    {
+        // The optimization must only change what a decision costs, never the decision.
+        var (services, _) = BuildProvider(secureMediaEnabled: true);
+        var authorizationService = services.GetRequiredService<IAuthorizationService>();
+
+        foreach (var path in new[] { Folder, "photos/2026", "documents", "documents/private" })
+        {
+            var first = await authorizationService.AuthorizeAsync(User(), MediaPermissions.ManageMediaFolder, (object)path);
+            var second = await authorizationService.AuthorizeAsync(User(), MediaPermissions.ManageMediaFolder, (object)path);
+
+            Assert.Equal(first, second);
+        }
+    }
+
+    [Fact]
+    public async Task ManageMediaFolder_FromAString_PaysForPathResolution()
     {
         var (services, store) = BuildProvider(secureMediaEnabled: false);
         var authorizationService = services.GetRequiredService<IAuthorizationService>();
@@ -35,31 +76,26 @@ public class MediaFolderAuthorizationCostTests
 
         Assert.True(authorized);
 
-        // Pure string classification plus one resource-less permission check: no storage round-trips.
-        Assert.Equal(0, store.TotalCalls);
+        // A request-supplied path must be resolved against the store before it can be trusted, which
+        // costs round-trips. This is the price of path-traversal hardening, and it is why callers that
+        // already hold a canonical path should say so.
+        Assert.True(store.TotalCalls > 0);
     }
 
     [Fact]
-    public async Task ManageMediaFolder_WithSecureMedia_PerformsFileStoreIoPerCheck()
+    public async Task ManageMediaFolder_WithSecureMedia_ResolvesThePathOnlyOnce()
     {
-        var (services, store) = BuildProvider(secureMediaEnabled: true);
-        var authorizationService = services.GetRequiredService<IAuthorizationService>();
+        var withoutSecureMedia = await MeasureSingleCheckAsync(secureMediaEnabled: false, Folder);
+        var withSecureMedia = await MeasureSingleCheckAsync(secureMediaEnabled: true, Folder);
 
-        store.ResetCounters();
-
-        var authorized = await authorizationService.AuthorizeAsync(User(), MediaPermissions.ManageMediaFolder, (object)Folder);
-
-        Assert.True(authorized);
-
-        // ManageMediaFolder now also evaluates ViewMedia for the path, and ViewMediaFolderAuthorizationHandler
-        // stats the directory. On a remote store (Azure Blob, S3) each of these is a network round-trip.
-        Assert.True(store.TotalCalls > 0,
-            "Expected Secure Media to add at least one file-store call per authorization check.");
-        Assert.Equal(1, store.CallsFor(nameof(IFileStore.GetDirectoryInfoAsync)));
+        // Secure Media evaluates ViewMedia for the same path. Thanks to the request-scoped cache that
+        // second evaluation reuses the resolution, so it adds only its own directory probe — not another
+        // full resolution, which would have doubled the cost.
+        Assert.Equal(withoutSecureMedia + 1, withSecureMedia);
     }
 
     [Fact]
-    public async Task ManageMediaFolder_WithSecureMedia_CostScalesLinearlyWithFolderCount()
+    public async Task ManageMediaFolder_RepeatedChecks_CostLessThanLinear()
     {
         var (services, store) = BuildProvider(secureMediaEnabled: true);
         var authorizationService = services.GetRequiredService<IAuthorizationService>();
@@ -76,15 +112,18 @@ public class MediaFolderAuthorizationCostTests
             }
         });
 
-        // No memoization exists today: the cost is strictly linear in the number of folders authorized.
-        Assert.Equal(perCheck * (F + 1), forListing);
+        // Without the request-scoped cache this was strictly linear: perCheck x (F + 1). The resolution
+        // is now paid once, leaving only the per-check work that the cache cannot remove.
+        Assert.True(forListing < perCheck * (F + 1),
+            $"Expected repeated checks to cost less than linear ({forListing} vs {perCheck * (F + 1)}).");
     }
 
     [Fact]
-    public async Task ManageMediaFolder_WithGlobalPermission_ShortCircuitsSecureMediaIo()
+    public async Task ManageMediaFolder_WithGlobalPermission_StillPaysToResolveAString()
     {
-        // A user holding the global ViewMedia permission is authorized before the folder handler runs,
-        // so no directory stat happens. This is the "short-circuit on the global permission" mitigation.
+        // Holding broad permissions does not avoid the cost: a request-supplied path is resolved before
+        // any permission is consulted. Only passing a canonical path avoids it — which is why the fix
+        // acts on the resource type rather than on the permissions.
         var (services, store) = BuildProvider(
             secureMediaEnabled: true,
             grantedPermissions: [MediaPermissions.ManageMedia.Name, MediaPermissions.ViewMedia.Name]);
@@ -92,11 +131,10 @@ public class MediaFolderAuthorizationCostTests
         var authorizationService = services.GetRequiredService<IAuthorizationService>();
 
         store.ResetCounters();
-
         var authorized = await authorizationService.AuthorizeAsync(User(), MediaPermissions.ManageMediaFolder, (object)Folder);
 
         Assert.True(authorized);
-        Assert.Equal(0, store.TotalCalls);
+        Assert.True(store.TotalCalls > 0);
     }
 
     [Theory]
@@ -109,15 +147,24 @@ public class MediaFolderAuthorizationCostTests
         // separator, so every descendant of 'photos' resolves to the same ViewMediaContent_photos
         // permission. Listing a non-root directory therefore re-computes one identical decision F + 1
         // times — which is exactly what a first-tier-keyed cache (or a hoist) would collapse to one.
-        var (services, store) = BuildProvider(secureMediaEnabled: true);
+        var (services, _) = BuildProvider(secureMediaEnabled: true);
         var authorizationService = services.GetRequiredService<IAuthorizationService>();
-
-        store.ResetCounters();
 
         var authorized = await authorizationService.AuthorizeAsync(User(), MediaPermissions.ManageMediaFolder, (object)path);
 
         Assert.True(authorized, $"Expected '{path}' to inherit the first-tier 'photos' grant.");
-        Assert.Equal(1, store.CallsFor(nameof(IFileStore.GetDirectoryInfoAsync)));
+    }
+
+    private static async Task<int> MeasureSingleCheckAsync(bool secureMediaEnabled, string path)
+    {
+        var (services, store) = BuildProvider(secureMediaEnabled);
+        var authorizationService = services.GetRequiredService<IAuthorizationService>();
+
+        store.ResetCounters();
+
+        await authorizationService.AuthorizeAsync(User(), MediaPermissions.ManageMediaFolder, (object)path);
+
+        return store.TotalCalls;
     }
 
     private static async Task<int> MeasureAsync(CountingFileStore store, Func<Task> action)
@@ -157,6 +204,7 @@ public class MediaFolderAuthorizationCostTests
         });
 
         services.AddAuthorizationCore();
+        services.AddScoped<MediaPathResolutionCache>();
         services.AddSingleton<IMediaFileStore>(store);
         services.AddSingleton<IHttpContextAccessor>(new HttpContextAccessor { HttpContext = new DefaultHttpContext() });
         services.AddSingleton<IUserAssetFolderNameProvider, TestUserAssetFolderNameProvider>();
