@@ -22,7 +22,6 @@ vi.mock("@bloom/media/api/file-data-service", () => ({
     deleteFolder: vi.fn().mockResolvedValue(undefined),
     copyMedia: vi.fn().mockResolvedValue({} as IFileLibraryItemDto),
     createFolder: vi.fn().mockResolvedValue({} as IFileLibraryItemDto),
-    listAllItems: vi.fn().mockResolvedValue([]),
     getFolders: vi.fn().mockResolvedValue([]),
     getMediaItems: vi.fn().mockResolvedValue([]),
   }); }),

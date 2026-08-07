@@ -6,7 +6,6 @@ export interface IFileDataService {
   getFileItem(path: string): Promise<IFileLibraryItemDto>;
   getFolders(path: string, skip?: number, take?: number): Promise<IPaginatedFoldersResult>;
   getMediaItems(path: string, extensions?: string): Promise<IFileLibraryItemDto[]>;
-  listAllItems(): Promise<IFileLibraryItemDto[]>;
   copyMedia(oldPath: string, newPath: string): Promise<IFileLibraryItemDto>;
   moveMedia(oldPath: string, newPath: string): Promise<void>;
   moveMediaList(mediaNames: string[], sourceFolder: string, targetFolder: string): Promise<void>;
@@ -72,15 +71,6 @@ export class FileDataService implements IFileDataService {
 
   async getMediaItems(path: string, extensions?: string): Promise<IFileLibraryItemDto[]> {
     const dtos = await this.client.apiGetMediaItems(path, extensions);
-    return dtos.map(toFileLibraryItem);
-  }
-
-  /**
-   * @deprecated Enumerates the whole media store in one request and is scheduled for removal. Nothing in
-   * the gallery calls it — load a directory at a time with {@link getDirectoryContent} instead.
-   */
-  async listAllItems(): Promise<IFileLibraryItemDto[]> {
-    const dtos = await this.client.apiGetAllMediaItems(undefined);
     return dtos.map(toFileLibraryItem);
   }
 
