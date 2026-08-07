@@ -28,7 +28,15 @@ public sealed class MediaTusUploadTests : IAsyncLifetime
 
     public ValueTask DisposeAsync()
     {
-        MediaHelper.CleanupTestFiles();
+        try
+        {
+            _fixture.AssertNoLoggedIssues();
+        }
+        finally
+        {
+            MediaHelper.CleanupTestFiles();
+        }
+
         return ValueTask.CompletedTask;
     }
 

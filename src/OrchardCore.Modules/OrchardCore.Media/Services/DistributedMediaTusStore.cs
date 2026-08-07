@@ -117,8 +117,7 @@ public sealed class DistributedMediaTusStore :
 
         var bytesWritten = await _tempStore.AppendDataAsync(fileId, stream, offset, cancellationToken);
 
-        var newOffset = offset + bytesWritten;
-        await _cache.SetStringAsync(OffsetKey(fileId), newOffset.ToString(), GetCacheOptions(), cancellationToken);
+        await SetUploadOffsetAsync(fileId, offset + bytesWritten);
 
         return bytesWritten;
     }
@@ -129,12 +128,21 @@ public sealed class DistributedMediaTusStore :
     {
         var offset = await GetUploadOffsetAsync(fileId, cancellationToken);
 
-        var bytesWritten = await _tempStore.AppendDataAsync(fileId, pipeReader, offset, cancellationToken);
+        var guardedReader = new ClientDisconnectAwarePipeReader(pipeReader);
+        var bytesWritten = await _tempStore.AppendDataAsync(fileId, guardedReader, offset, cancellationToken);
 
-        var newOffset = offset + bytesWritten;
-        await _cache.SetStringAsync(OffsetKey(fileId), newOffset.ToString(), GetCacheOptions(), cancellationToken);
+        await SetUploadOffsetAsync(fileId, offset + bytesWritten);
 
         return bytesWritten;
+    }
+
+    private async Task SetUploadOffsetAsync(string fileId, long offset)
+    {
+        await _cache.SetStringAsync(
+            OffsetKey(fileId),
+            offset.ToString(),
+            GetCacheOptions(),
+            CancellationToken.None);
     }
 
     // ITusTerminationStore
