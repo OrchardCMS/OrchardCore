@@ -219,14 +219,15 @@ public class NavigationHelperTests
     }
 
     [Fact]
-    public void MarkAsSelectedIfMatchesPath_PrefixHref_SetsSelectedForDeeperRequest()
+    public void MarkAsSelectedIfMatchesPath_SingleSegmentPrefixHref_DoesNotSetSelectedForDeeperRequest()
     {
         var item = CreateMenuItem("/Admin");
         var shape = new NavigationItemViewModel();
 
         InvokeMarkAsSelectedIfMatchesPath(item, shape, CreateViewContext("/Admin/Contents"));
 
-        Assert.True(shape.Selected);
+        Assert.False(shape.Selected);
+        Assert.Equal(0, shape.Score);
     }
 
     [Fact]
@@ -363,18 +364,16 @@ public class NavigationHelperTests
     }
 
     [Fact]
-    public void MarkAsSelectedIfMatchesPath_RequestLongerThanHref_IsNotExactMatch()
+    public void MarkAsSelectedIfMatchesPath_SingleSegmentHref_RequestLongerThanHref_DoesNotMatch()
     {
-        // /Admin does not exactly match /Admin/Contents — no exact-match score boost.
+        // /Admin should not match /Admin/Contents because only one leading segment matches.
         var item = CreateMenuItem("/Admin");
         var shape = new NavigationItemViewModel();
 
         InvokeMarkAsSelectedIfMatchesPath(item, shape, CreateViewContext("/Admin/Contents"));
 
-        // Still selected (prefix match), but Score should not include the +1 exact boost.
-        // Score == matchingSegments * 2 (no +1).
-        Assert.True(shape.Selected);
-        Assert.Equal(1 * 2, shape.Score);
+        Assert.False(shape.Selected);
+        Assert.Equal(0, shape.Score);
     }
 
     // -----------------------------------------------------------------------
