@@ -24,7 +24,10 @@ public sealed class FileSizeHelper
     /// <returns>A human-readable string representing the file size.</returns>
     public string FormatSize(long bytes, int decimalPlaces = 2)
     {
-        ArgumentOutOfRangeException.ThrowIfNegative(bytes, nameof(bytes));
+        if (bytes < 0)
+        {
+            return "-" + FormatSize(-bytes, decimalPlaces);
+        }
 
         if (bytes == 0)
         {
