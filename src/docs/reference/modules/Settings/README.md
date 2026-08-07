@@ -8,7 +8,7 @@ For user-defined settings managed from the admin without writing code, see [Cust
 
 ## General settings
 
-The built-in **General** group is available in the admin under **Settings** > **General** (requires the `Manage settings` permission). It exposes options such as:
+The built-in **General** group is available in the admin under **Settings** > **General** (requires the `Manage general settings` permission). It exposes options such as:
 
 | Setting             | Description                                                                 |
 |---------------------|-----------------------------------------------------------------------------|
@@ -29,12 +29,22 @@ A separate **Debugging** group exposes diagnostic options.
 
 ## Permissions
 
-| Permission               | Description                                                                  |
-|--------------------------|------------------------------------------------------------------------------|
-| `Manage settings`        | Grants access to all site settings groups.                                   |
-| `Manage group settings`  | Grants access to a specific settings group only. Used to scope access per section. |
+| Permission                  | Description                                                               |
+|-----------------------------|---------------------------------------------------------------------------|
+| `Manage settings`           | Grants both built-in settings permissions for backward compatibility.     |
+| `Manage general settings`   | Grants access to the built-in General settings group.                      |
+| `Manage debugging settings` | Grants access to the built-in Debugging settings group.                    |
+| `Manage group settings`     | Internal resource permission used to authorize registered and custom settings groups. |
 
-Both are granted to the `Administrator` role by default. Modules that add a settings group typically authorize against `Manage group settings` for their own group id.
+The assignable permissions are granted to the `Administrator` role by default. Modules that contribute a settings group must register the permission that grants access to the group and enforce the same permission in both the edit and update methods of their display driver:
+
+```csharp
+services
+    .AddSiteDisplayDriver<MySettingsDisplayDriver>()
+    .AddSiteSettingsPermission(MySettingsDisplayDriver.GroupId, Permissions.ManageMySettings);
+```
+
+Registering the group permission lets the shared settings controller authorize the route without requiring the broader `Manage settings` permission. The display-driver checks remain necessary to prevent unauthorized settings from rendering or updating when multiple drivers contribute to the same group.
 
 ## Accessing settings in code
 
