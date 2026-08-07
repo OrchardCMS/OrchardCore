@@ -291,7 +291,6 @@
     <Project Path="src/OrchardCore/OrchardCore.Rules.Core/OrchardCore.Rules.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Scripting.JavaScript/OrchardCore.Scripting.JavaScript.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Search.Abstractions/OrchardCore.Search.Abstractions.csproj" />
-    <Project Path="src/OrchardCore/OrchardCore.SignalR.Core/OrchardCore.SignalR.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Search.Lucene.Abstractions/OrchardCore.Search.Lucene.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Seo.Abstractions/OrchardCore.Seo.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Settings.Core/OrchardCore.Settings.Core.csproj" />
@@ -299,6 +298,7 @@
     <Project Path="src/OrchardCore/OrchardCore.Setup.Core/OrchardCore.Setup.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Shells.Azure/OrchardCore.Shells.Azure.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Shortcodes.Abstractions/OrchardCore.Shortcodes.Abstractions.csproj" />
+    <Project Path="src/OrchardCore/OrchardCore.SignalR.Core/OrchardCore.SignalR.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Sitemaps.Abstractions/OrchardCore.Sitemaps.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Sms.Abstractions/OrchardCore.Sms.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Sms.Core/OrchardCore.Sms.Core.csproj" />
