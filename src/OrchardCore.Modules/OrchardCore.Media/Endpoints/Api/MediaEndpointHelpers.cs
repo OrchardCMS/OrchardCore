@@ -22,7 +22,17 @@ namespace OrchardCore.Media.Endpoints.Api;
 /// </summary>
 internal static class MediaEndpointHelpers
 {
-    public static readonly char[] InvalidFolderNameCharacters = ['\\', '/'];
+    /// <summary>
+    /// Characters a folder name may not contain.
+    /// </summary>
+    /// <remarks>
+    /// '%' is rejected because authorization resolves paths through <see cref="Uri.UnescapeDataString"/>
+    /// to neutralize percent-encoded traversal such as <c>%2e%2e</c>. A folder literally named
+    /// <c>100%20off</c> would therefore be authorized as <c>100 off</c> — a different folder, with
+    /// different permissions. Rather than drop the traversal defence, the ambiguity is removed at the
+    /// source: a name that survives decoding unchanged cannot be misread.
+    /// </remarks>
+    public static readonly char[] InvalidFolderNameCharacters = ['\\', '/', '%'];
 
     private static readonly char[] _extensionSeparator = [' ', ','];
 

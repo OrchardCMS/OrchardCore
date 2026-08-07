@@ -7,6 +7,7 @@ using OrchardCore.Caching;
 using OrchardCore.ContentManagement;
 using OrchardCore.FileStorage;
 using OrchardCore.Media;
+using OrchardCore.Media.Endpoints.Api;
 using OrchardCore.Media.Services;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Security;
@@ -185,6 +186,40 @@ public class MediaFolderAuthorizationCostTests
         var authorized = await authorizationService.AuthorizeAsync(User(), MediaPermissions.ManageMediaFolder, (object)string.Empty);
 
         Assert.True(authorized, "A folder-scoped grant is documented to imply root access.");
+    }
+
+    [Theory]
+    [InlineData("100%20off", false)]
+    [InlineData("100 off", true)]
+    [InlineData("photos", true)]
+    [InlineData("a/b", false)]
+    [InlineData("a\\b", false)]
+    public void AFolderName_IsRejectedWhenItCouldBeMisreadAsAnotherFolder(string name, bool expectedValid)
+    {
+        // Authorization decodes paths to neutralize percent-encoded traversal (%2e%2e), so a folder
+        // literally named "100%20off" would be authorized as "100 off" — a different folder with
+        // different permissions. Names that do not survive decoding unchanged are refused outright.
+        var valid = !MediaEndpointHelpers.InvalidFolderNameCharacters.Any(name.Contains);
+
+        Assert.Equal(expectedValid, valid);
+    }
+
+    [Fact]
+    public async Task EncodedTraversal_IsStillNeutralized()
+    {
+        // The decoding that makes '%' ambiguous is also what stops %2e%2e from escaping a folder.
+        // Removing it to allow literal percent signs would reopen that hole, which is why the name is
+        // rejected instead.
+        var (services, _) = BuildProvider(secureMediaEnabled: true);
+        var authorizationService = services.GetRequiredService<IAuthorizationService>();
+
+        var escaped = await authorizationService.AuthorizeAsync(
+            User(), MediaPermissions.ManageMediaFolder, (object)"photos/%2e%2e/documents");
+
+        var direct = await authorizationService.AuthorizeAsync(
+            User(), MediaPermissions.ManageMediaFolder, (object)"documents");
+
+        Assert.Equal(direct, escaped);
     }
 
     [Fact]
