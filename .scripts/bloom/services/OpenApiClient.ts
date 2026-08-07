@@ -799,6 +799,7 @@ export interface IMediaApiClient {
      */
     apiDeleteMediaList(body: string[] | undefined,  cancelToken?: CancelToken): Promise<void>;
     /**
+     * Deprecated. Returns every media item in one unbounded request.
      * @param extensions (optional) 
      * @return OK
      */
@@ -1271,6 +1272,7 @@ export class MediaApiClient implements IMediaApiClient {
     }
 
     /**
+     * Deprecated. Returns every media item in one unbounded request.
      * @param extensions (optional) 
      * @return OK
      */
