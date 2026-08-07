@@ -3,6 +3,7 @@ using System.Text.Json;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -19,6 +20,7 @@ namespace OrchardCore.Media.Azure.Services;
 public sealed class AzureBlobTusTempStore : ITusTempStore
 {
     private const string TusTempPrefix = "_tus-uploads";
+    private const string UnexpectedEndOfRequestContent = "Unexpected end of request content.";
 
     private readonly BlobContainerClient _containerClient;
     private readonly IDistributedCache _cache;
@@ -65,6 +67,10 @@ public sealed class AzureBlobTusTempStore : ITusTempStore
             }
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            // Blocks already staged are durable and their IDs are persisted below.
+        }
+        catch (BadHttpRequestException exception) when (IsUnexpectedEndOfRequest(exception))
         {
             // Blocks already staged are durable and their IDs are persisted below.
         }
@@ -195,6 +201,12 @@ public sealed class AzureBlobTusTempStore : ITusTempStore
         // Block IDs must be the same length and Base64 encoded.
         return Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(index.ToString("D8")));
     }
+
+    private static bool IsUnexpectedEndOfRequest(BadHttpRequestException exception) =>
+        // Kestrel does not expose its internal rejection reason, so the message is the
+        // only way to distinguish a truncated body from other malformed requests.
+        exception.StatusCode == StatusCodes.Status400BadRequest
+        && string.Equals(exception.Message, UnexpectedEndOfRequestContent, StringComparison.Ordinal);
 
     private string BlockListKey(string fileId) => $"tus:blocks:{_tenantId}:{fileId}";
 
