@@ -24,6 +24,51 @@ public class MediaFolderAuthorizationCostTests
     private const string Folder = "photos";
 
     [Fact]
+    public async Task EnumeratedFolders_CostNothingToAuthorize()
+    {
+        // The whole point of the fix: a directory listing authorizes every folder it contains, and those
+        // paths came from the store's own enumeration. Declaring them as such means neither resolution
+        // nor the directory probe has to run — so the listing's authorization cost is zero round-trips,
+        // however many folders it holds.
+        const int F = 10;
+
+        var (services, store) = BuildProvider(secureMediaEnabled: true);
+        var authorizationService = services.GetRequiredService<IAuthorizationService>();
+        var pathCache = services.GetRequiredService<MediaPathResolutionCache>();
+
+        store.ResetCounters();
+
+        for (var i = 0; i <= F; i++)
+        {
+            // What MediaEndpointHelpers does for each entry it enumerates.
+            pathCache.MarkExistingDirectory(Folder);
+
+            await authorizationService.AuthorizeAsync(User(), MediaPermissions.ManageMediaFolder, (object)Folder);
+        }
+
+        Assert.Equal(0, store.TotalCalls);
+    }
+
+    [Fact]
+    public async Task EnumeratedFolders_ReachTheSameDecisionAsResolvedOnes()
+    {
+        // Declaring a path canonical must not change who is authorized, only what it costs to find out.
+        foreach (var path in new[] { Folder, "photos/2026", "documents", "documents/private" })
+        {
+            var (resolvedServices, _) = BuildProvider(secureMediaEnabled: true);
+            var resolved = await resolvedServices.GetRequiredService<IAuthorizationService>()
+                .AuthorizeAsync(User(), MediaPermissions.ManageMediaFolder, (object)path);
+
+            var (seededServices, _) = BuildProvider(secureMediaEnabled: true);
+            seededServices.GetRequiredService<MediaPathResolutionCache>().MarkExistingDirectory(path);
+            var seeded = await seededServices.GetRequiredService<IAuthorizationService>()
+                .AuthorizeAsync(User(), MediaPermissions.ManageMediaFolder, (object)path);
+
+            Assert.Equal(resolved, seeded);
+        }
+    }
+
+    [Fact]
     public async Task RepeatedChecksOfTheSamePath_ResolveItOnce()
     {
         // Within one request the resolution of a path cannot change, so authorizing the same folder again
