@@ -200,25 +200,25 @@ public class ContainerService : IContainerService
             {
                 pager.After = containedItems.Last().CreatedUtc.Value.Ticks.ToString();
             }
-                if (containedItems.Count() == pager.PageSize + 1)
+            if (containedItems.Count() == pager.PageSize + 1)
+            {
+                containedItems = containedItems.Skip(1);
+                if (enableOrdering)
                 {
-                    containedItems = containedItems.Skip(1);
-                    if (enableOrdering)
+                    if (containedItems.First().TryGet<ContainedPart>(out var firstContainedPart))
                     {
-                        if (containedItems.First().TryGet<ContainedPart>(out var firstContainedPart))
-                        {
-                            pager.Before = firstContainedPart.Order.ToString();
-                        }
-                    }
-                    else
-                    {
-                        pager.Before = containedItems.First().CreatedUtc.Value.Ticks.ToString();
+                        pager.Before = firstContainedPart.Order.ToString();
                     }
                 }
-
-                return containedItems;
+                else
+                {
+                    pager.Before = containedItems.First().CreatedUtc.Value.Ticks.ToString();
+                }
             }
-            else if (pager.After != null)
+
+            return containedItems;
+        }
+        else if (pager.After != null)
         {
             if (enableOrdering)
             {
@@ -331,9 +331,6 @@ public class ContainerService : IContainerService
         }
     }
 
-    /// <summary>
-    /// Change PagerSlim to Pager and use the standard Skip and Take methods.
-    /// </summary>
     public async Task<IEnumerable<ContentItem>> QueryContainedItemsAsync(
         string contentItemId,
         bool enableOrdering,
@@ -360,6 +357,16 @@ public class ContainerService : IContainerService
         query.Skip(startIndex).Take(pager.PageSize);
 
         return await query.ListAsync(_contentManager);
+    }
+
+    public Task<int> GetItemCountAsync(string listContentItemId, ContainedItemOptions options)
+    {
+        IQuery<ContentItem> query = _session.Query<ContentItem>()
+            .With<ContainedPartIndex>(x => x.ListContentItemId == listContentItemId);
+
+        ApplyContainedItemOptionsFilter(options, query);
+
+        return query.CountAsync();
     }
 
     private static void ApplyPagingContentIndexFilter(DateTime? before, DateTime? after, bool orderByAsc, IQuery<ContentItem> query)
