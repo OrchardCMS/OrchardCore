@@ -45,6 +45,49 @@ public sealed class MediaFolderPermissionTests : IAsyncLifetime
         await AssertAllFoldersAccessibleAsync("all-media-user");
     }
 
+    [Fact]
+    public async Task FolderScopedRole_CanReachRootAuthorizedEndpoints()
+    {
+        // https://github.com/OrchardCMS/OrchardCore/issues/19675
+        //
+        // Some media endpoints authorize ManageMediaFolder against the root path — GetPermittedStorage
+        // and the media admin page among them. SecureMediaPermissions publishes a ViewRootMediaContent
+        // permission implied by every first-level folder permission precisely so that a folder-scoped
+        // role still passes those checks. When the handler authorizes against the static permission
+        // instance instead, it does not, and a user who can manage 'alpha' cannot open the Media library
+        // at all — while the role editor shows the access as granted.
+        var prefix = $"/{_tenant.Prefix}";
+        var adminPage = await _fixture.CreatePageAsync();
+
+        await adminPage.LoginAsync(prefix);
+        await UserHelper.CreateUserAsync(adminPage, prefix, "root-scoped-user", "root-scoped@orchard.test", Password, "AlphaMediaViewer");
+        await adminPage.CloseAsync();
+
+        var page = await _fixture.CreatePageAsync();
+
+        await UserHelper.LoginAsAsync(page, prefix, "root-scoped-user", Password);
+
+        var status = await GetStatusAsync(page, $"{prefix}/api/media/GetPermittedStorage");
+
+        Assert.Equal(200, status);
+
+        await page.CloseAsync();
+    }
+
+    private static Task<int> GetStatusAsync(IPage page, string url)
+    {
+        const string getStatusScript =
+            """
+            async url => {
+                const response = await fetch(url);
+
+                return response.status;
+            }
+            """;
+
+        return page.EvaluateAsync<int>(getStatusScript, url);
+    }
+
     private async Task AssertFolderAccessAsync(string userName, string allowedFolder, string deniedFolder)
     {
         var page = await _fixture.CreatePageAsync();
