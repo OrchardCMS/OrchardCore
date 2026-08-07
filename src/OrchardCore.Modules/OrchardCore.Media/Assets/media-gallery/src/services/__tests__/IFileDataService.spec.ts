@@ -7,7 +7,6 @@ vi.mock("@bloom/services/OpenApiClient", () => ({
     getMediaItem: vi.fn(),
     getFolders: vi.fn(),
     getMediaItems: vi.fn(),
-    getAllMediaItems: vi.fn(),
     copyMedia: vi.fn(),
     moveMedia: vi.fn(),
     moveMediaList: vi.fn(),
@@ -86,22 +85,6 @@ describe("FileDataService", () => {
       const result = await service.getMediaItems("/Images");
       expect(result).toHaveLength(1);
       expect(result[0].name).toBe("photo.jpg");
-    });
-  });
-
-  describe("listAllItems", () => {
-    it("returns all items", async () => {
-      vi.spyOn(service, "listAllItems").mockResolvedValue([mockFolder, mockFile]);
-      const result = await service.listAllItems();
-      expect(result).toHaveLength(2);
-      expect(result.some((x) => x.name === "Images")).toBe(true);
-      expect(result.some((x) => x.name === "photo.jpg")).toBe(true);
-    });
-
-    it("returns empty array when no items exist", async () => {
-      vi.spyOn(service, "listAllItems").mockResolvedValue([]);
-      const result = await service.listAllItems();
-      expect(result).toHaveLength(0);
     });
   });
 
