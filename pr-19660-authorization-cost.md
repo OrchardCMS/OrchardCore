@@ -109,6 +109,39 @@ Three mitigations, in order of value. **Only the third needs a cache.**
 Per-request memoization is a safe backstop regardless: within one request the decision is deterministic,
 so repeated checks of the same path across endpoint and helper layers cost once.
 
+## 5b. Re-measured against #19653 — the cost profile changes substantially
+
+Sections 1–5 measure `main` @ `5c60562e93`. Re-running the same tests on an integration branch carrying
+**#19653** ("Improve media folder auth path resolution and security") gives materially different numbers,
+because its `MediaFileStorePathHelper.ResolveAuthorizedPathAsync` probes the store to canonicalise the
+path *before* any permission is consulted.
+
+| Scenario (per `ManageMediaFolder` check) | On `main` | With #19653 |
+| --- | --- | --- |
+| Secure Media **disabled** | 0 | **2** |
+| Secure Media **enabled**, existing folder | 1 | **3** |
+| Secure Media enabled, existing folder at depth 2 or 3 | 1 | **3** — flat, resolves on first probe |
+| Secure Media enabled, **missing** path | 1 | **grows with depth** (7 and 9 measured at depths 2 and 3) |
+| Holder of global `ViewMedia` | 0 | **2** |
+
+Three consequences:
+
+1. **Authorization is no longer free when Secure Media is off.** It now costs 2 round-trips per check
+   where it previously cost none — and #19660 performs `F + 1` of them per listing.
+2. **The "short-circuit on the global permission" mitigation no longer works.** Resolution runs *before*
+   authorization, so even an administrator pays it. Any mitigation must act on the resolution itself.
+3. **Missing paths walk their ancestors one probe at a time.** Since the path is attacker-supplied, a
+   deep non-existent path costs more than a real one — modest, but it is the resolution step, not the
+   permission check, that an attacker can drive.
+
+The listing projection in §3 therefore understates the post-merge cost. With both PRs applied, listing a
+directory with `F = 10` existing subfolders costs `(3 + F)` listing operations plus `(F + 1) × 3`
+resolution round-trips — **46** file-store operations against **13** on `main` today.
+
+None of this argues against #19653: path-traversal hardening is worth paying for. It argues for doing the
+resolution **once per request** rather than once per folder, which is mitigation 1 in §5 applied to the
+new code.
+
 ## 6. Caveats — read before quoting these numbers
 
 - **§1 and §2 are measured. §3 and §4 are derived**, by applying the measured per-check cost to the
