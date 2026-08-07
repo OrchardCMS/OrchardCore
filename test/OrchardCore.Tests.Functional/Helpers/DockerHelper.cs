@@ -13,7 +13,7 @@ public static class DockerHelper
         + "AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;"
         + "BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;";
 
-    private static bool _dockerStarted;
+    private static bool s_dockerStarted;
 
     /// <summary>
     /// Starts Redis and Azurite Docker containers if Docker is available,
@@ -25,12 +25,12 @@ public static class DockerHelper
     /// </summary>
     public static void TryStartDockerServices()
     {
-        if (_dockerStarted)
+        if (s_dockerStarted)
         {
             return;
         }
 
-        _dockerStarted = true;
+        s_dockerStarted = true;
 
         if (!IsDockerAvailable())
         {
@@ -87,7 +87,7 @@ public static class DockerHelper
     /// </summary>
     public static void StopDockerServices()
     {
-        if (!_dockerStarted)
+        if (!s_dockerStarted)
         {
             return;
         }

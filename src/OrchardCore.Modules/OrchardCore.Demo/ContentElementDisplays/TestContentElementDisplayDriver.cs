@@ -8,8 +8,8 @@ namespace OrchardCore.Demo.ContentElementDisplays;
 
 public sealed class TestContentElementDisplayDriver : ContentDisplayDriver
 {
-    private static int _creating;
-    private static int _processing;
+    private static int s_creating;
+    private static int s_processing;
 
     public override IDisplayResult Display(ContentItem contentItem, BuildDisplayContext context)
     {
@@ -25,10 +25,10 @@ public sealed class TestContentElementDisplayDriver : ContentDisplayDriver
             Dynamic("LowerDoll").Location(OrchardCoreConstants.DisplayType.Detail, "Footer"),
             // New shape
             Factory("TestContentPartA",
-                async ctx => (await ctx.New.TestContentPartA()).Creating(_creating++),
+                async ctx => (await ctx.New.TestContentPartA()).Creating(s_creating++),
                 shape =>
                 {
-                    shape.Properties["Processing"] = _processing++;
+                    shape.Properties["Processing"] = s_processing++;
 
                     return Task.CompletedTask;
                 })

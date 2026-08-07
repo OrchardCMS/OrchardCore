@@ -223,13 +223,13 @@ public class LiquidTagHelperActivator
     {
         // Create a delegate TDeclaringType -> { TDeclaringType.Property = TValue; }
         var setterAsAction = prop.SetMethod.CreateDelegate(typeof(Action<,>).MakeGenericType(type, prop.PropertyType));
-        var setterClosedGenericMethod = _callPropertySetterOpenGenericMethod.MakeGenericMethod(type, prop.PropertyType);
+        var setterClosedGenericMethod = s_callPropertySetterOpenGenericMethod.MakeGenericMethod(type, prop.PropertyType);
         var setterDelegate = setterClosedGenericMethod.CreateDelegate<Action<object, object>>(setterAsAction);
 
         return (Action<object, object>)setterDelegate;
     }
 
-    private static readonly MethodInfo _callPropertySetterOpenGenericMethod =
+    private static readonly MethodInfo s_callPropertySetterOpenGenericMethod =
         typeof(LiquidTagHelperActivator).GetTypeInfo().GetDeclaredMethod(nameof(CallPropertySetter));
 
     private static void CallPropertySetter<TDeclaringType, TValue>(Action<TDeclaringType, TValue> setter, object target, object value)
@@ -239,13 +239,13 @@ public class LiquidTagHelperActivator
     {
         // Create a delegate TDeclaringType -> { TDeclaringType.Property = TValue; }
         var getterAsFunc = prop.GetMethod.CreateDelegate(typeof(Func<,>).MakeGenericType(type, prop.PropertyType));
-        var getterClosedGenericMethod = _callPropertyGetterOpenGenericMethod.MakeGenericMethod(type, prop.PropertyType);
+        var getterClosedGenericMethod = s_callPropertyGetterOpenGenericMethod.MakeGenericMethod(type, prop.PropertyType);
         var getterDelegate = getterClosedGenericMethod.CreateDelegate<Func<object, object>>(getterAsFunc);
 
         return (Func<object, object>)getterDelegate;
     }
 
-    private static readonly MethodInfo _callPropertyGetterOpenGenericMethod =
+    private static readonly MethodInfo s_callPropertyGetterOpenGenericMethod =
         typeof(LiquidTagHelperActivator).GetTypeInfo().GetDeclaredMethod(nameof(CallPropertyGetter));
 
     private static object CallPropertyGetter<TDeclaringType, TValue>(Func<TDeclaringType, TValue> getter, object target)

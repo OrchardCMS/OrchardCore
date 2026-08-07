@@ -3,7 +3,7 @@ namespace OrchardCore;
 public static class IdGenerator
 {
     // Excludes visually ambiguous characters (i, l, o, u) per Crockford's Base32 encoding: https://www.crockford.com/base32.html
-    private static readonly char[] _encode32Chars = "0123456789abcdefghjkmnpqrstvwxyz".ToCharArray();
+    private static readonly char[] s_encode32Chars = "0123456789abcdefghjkmnpqrstvwxyz".ToCharArray();
 
     public static string GenerateId()
     {
@@ -16,7 +16,7 @@ public static class IdGenerator
             var ls = BitConverter.ToInt64(guid.Slice(8));
 
             // Using a local copy prevents additional bound checks by the JIT.
-            var encode32Chars = _encode32Chars;
+            var encode32Chars = s_encode32Chars;
 
             // A char array allows a long as the indexer, so without any cast.
             buffer[0] = encode32Chars[(hs >> 60) & 31];

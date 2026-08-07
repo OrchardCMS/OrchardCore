@@ -8,7 +8,7 @@ namespace OrchardCore.Layers.Services;
 /// </summary>
 internal static class WidgetWrapperAlternatesFactory
 {
-    private static readonly ConcurrentDictionary<WidgetWrapperAlternatesCacheKey, string[]> _cache = new();
+    private static readonly ConcurrentDictionary<WidgetWrapperAlternatesCacheKey, string[]> s_cache = new();
 
     /// <summary>
     /// Gets or creates cached alternates for a Widget_Wrapper shape configuration.
@@ -16,7 +16,7 @@ internal static class WidgetWrapperAlternatesFactory
     public static string[] GetAlternates(string contentType, string zone)
     {
         var key = new WidgetWrapperAlternatesCacheKey(contentType, zone);
-        return _cache.GetOrAdd(key, BuildAlternates);
+        return s_cache.GetOrAdd(key, BuildAlternates);
     }
 
     private static string[] BuildAlternates(WidgetWrapperAlternatesCacheKey key)

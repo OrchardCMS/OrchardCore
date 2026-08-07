@@ -17,12 +17,12 @@ public class PlacementInfo
 
     public const char ColumnDelimiter = '|';
 
-    private static readonly char[] _delimiters = [PositionDelimiter, TabDelimiter, GroupDelimiter, CardDelimiter, ColumnDelimiter];
+    private static readonly char[] s_delimiters = [PositionDelimiter, TabDelimiter, GroupDelimiter, CardDelimiter, ColumnDelimiter];
 
     /// <summary>
     /// Cache for commonly used PlacementInfo instances with only Location set.
     /// </summary>
-    private static readonly ConcurrentDictionary<string, PlacementInfo> _locationCache = new(StringComparer.OrdinalIgnoreCase);
+    private static readonly ConcurrentDictionary<string, PlacementInfo> s_locationCache = new(StringComparer.OrdinalIgnoreCase);
 
     private readonly string _position;
     private readonly bool _isLayoutZone;
@@ -204,7 +204,7 @@ public class PlacementInfo
             return Hidden;
         }
 
-        return _locationCache.GetOrAdd(location, static loc => new PlacementInfo(loc));
+        return s_locationCache.GetOrAdd(location, static loc => new PlacementInfo(loc));
     }
 
     /// <summary>
@@ -396,7 +396,7 @@ public class PlacementInfo
             location = location[1..];
         }
 
-        var firstDelimiter = location.IndexOfAny(_delimiters);
+        var firstDelimiter = location.IndexOfAny(s_delimiters);
         string zonesString;
         if (firstDelimiter == -1)
         {
@@ -411,7 +411,7 @@ public class PlacementInfo
         var positionDelimiter = location.IndexOf(PositionDelimiter);
         if (positionDelimiter != -1)
         {
-            var secondDelimiter = location.IndexOfAny(_delimiters, positionDelimiter + 1);
+            var secondDelimiter = location.IndexOfAny(s_delimiters, positionDelimiter + 1);
             if (secondDelimiter == -1)
             {
                 position = location[(positionDelimiter + 1)..];
@@ -425,7 +425,7 @@ public class PlacementInfo
         var tabDelimiter = location.IndexOf(TabDelimiter);
         if (tabDelimiter != -1)
         {
-            var nextDelimiter = location.IndexOfAny(_delimiters, tabDelimiter + 1);
+            var nextDelimiter = location.IndexOfAny(s_delimiters, tabDelimiter + 1);
             string tabString;
             if (nextDelimiter == -1)
             {
@@ -441,7 +441,7 @@ public class PlacementInfo
         var groupDelimiter = location.IndexOf(GroupDelimiter);
         if (groupDelimiter != -1)
         {
-            var nextDelimiter = location.IndexOfAny(_delimiters, groupDelimiter + 1);
+            var nextDelimiter = location.IndexOfAny(s_delimiters, groupDelimiter + 1);
             if (nextDelimiter == -1)
             {
                 group = location[(groupDelimiter + 1)..];
@@ -455,7 +455,7 @@ public class PlacementInfo
         var cardDelimiter = location.IndexOf(CardDelimiter);
         if (cardDelimiter != -1)
         {
-            var nextDelimiter = location.IndexOfAny(_delimiters, cardDelimiter + 1);
+            var nextDelimiter = location.IndexOfAny(s_delimiters, cardDelimiter + 1);
             string cardString;
             if (nextDelimiter == -1)
             {
@@ -471,7 +471,7 @@ public class PlacementInfo
         var colDelimiter = location.IndexOf(ColumnDelimiter);
         if (colDelimiter != -1)
         {
-            var nextDelimiter = location.IndexOfAny(_delimiters, colDelimiter + 1);
+            var nextDelimiter = location.IndexOfAny(s_delimiters, colDelimiter + 1);
             string columnString;
             if (nextDelimiter == -1)
             {
