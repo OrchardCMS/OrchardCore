@@ -65,7 +65,9 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
             return;
         }
 
-        path = await _fileStore.ResolveAuthorizedPathAsync(path);
+        path = await _fileStore.ResolveAuthorizedPathAsync(
+            path,
+            _serviceProvider.GetService<MediaPathResolutionCache>());
 
         // Permissions are only set for the root
         // media fields we will check sub folders too.
