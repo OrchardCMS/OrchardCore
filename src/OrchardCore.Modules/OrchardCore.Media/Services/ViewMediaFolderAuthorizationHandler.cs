@@ -65,16 +65,23 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
             return;
         }
 
-        path = await _fileStore.ResolveAuthorizedPathAsync(
-            path,
-            _serviceProvider.GetService<MediaPathResolutionCache>());
+        var pathCache = _serviceProvider.GetService<MediaPathResolutionCache>();
+
+        path = await _fileStore.ResolveAuthorizedPathAsync(path, pathCache);
 
         // Permissions are only set for the root
         // media fields we will check sub folders too.
         var i = path.IndexOf(PathSeparator);
         var folderPath = i >= 0 ? path[..i] : path;
-        var directory = await _fileStore.GetDirectoryInfoAsync(folderPath);
-        if (directory is null && path.IndexOf(PathSeparator, folderPath.Length) < 0)
+
+        // The probe below only exists to tell a new directory apart from a file in the root. When the
+        // caller enumerated this path from the store, it is known to be an existing directory, so the
+        // question cannot arise — and skipping it saves a round-trip for every folder in a listing.
+        var isKnownDirectory = pathCache?.IsExistingDirectory(path) == true;
+
+        var directory = isKnownDirectory ? null : await _fileStore.GetDirectoryInfoAsync(folderPath);
+
+        if (!isKnownDirectory && directory is null && path.IndexOf(PathSeparator, folderPath.Length) < 0)
         {
             // This could be a new directory, or a new or existing file in the root folder. As we cannot directly determine
             // whether a file is uploaded or a new directory is created, we will check against the list of allowed extensions.
