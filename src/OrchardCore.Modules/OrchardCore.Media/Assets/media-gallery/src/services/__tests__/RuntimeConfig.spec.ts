@@ -17,9 +17,18 @@ describe("resolveEmbeddedConfig", () => {
     expect(config.orchardBaseUrl).toBe(`${ORIGIN}/`);
     // API base stays the exact relative value the MediaApiClient has always received.
     expect(config.apiBaseUrl).toBe("/");
-    // Hub keeps its exact same-origin path (no tenant-prefix behavior change).
+    // Hub keeps its exact same-origin path on the default tenant.
     expect(config.hubUrl).toBe("/hubs/media");
     expect(config.authFlow).toBe("silent");
+  });
+
+  it("puts the hub under the tenant prefix", () => {
+    // Hard-coding "/hubs/media" 404'd on every prefixed tenant, so the gallery silently ran without
+    // real-time updates there while the API — which does honour the prefix — kept working.
+    const config = resolveEmbeddedConfig({ basePath: "/team-a" });
+
+    expect(config.hubUrl).toBe("/team-a/hubs/media");
+    expect(config.apiBaseUrl).toBe("/team-a");
   });
 
   it("defaults auth scheme to Cookie and only switches to Bearer when explicitly set", () => {
