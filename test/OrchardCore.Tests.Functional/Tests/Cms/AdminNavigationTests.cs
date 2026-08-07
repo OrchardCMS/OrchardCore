@@ -23,7 +23,7 @@ public sealed class AdminNavigationTests : CmsTestBase<BlogFixture>, IClassFixtu
 
         var selectedNavHash = await page.EvaluateAsync<string>("""
             () => {
-                const tenant = document.documentElement.getAttribute('data-tenant') ?? '';
+                const tenant = document.documentElement.getAttribute('data-tenant') || 'default';
                 return sessionStorage.getItem(`${tenant}-selectedNavHash`);
             }
             """);

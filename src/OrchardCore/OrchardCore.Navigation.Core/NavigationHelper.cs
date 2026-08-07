@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.IO.Hashing;
 using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Http;
@@ -201,71 +202,6 @@ public static class NavigationHelper
         return count;
     }
 
-    /// <summary>
-    /// Returns a string with consecutive '/' characters collapsed into a single '/'.
-    /// The input span must already be trimmed of leading and trailing slashes.
-    /// </summary>
-    private static string CollapseSlashes(ReadOnlySpan<char> span)
-    {
-        // Fast path: no consecutive slashes present.
-        var hasDoubleSlash = false;
-        for (var i = 0; i < span.Length - 1; i++)
-        {
-            if (span[i] == '/' && span[i + 1] == '/')
-            {
-                hasDoubleSlash = true;
-                break;
-            }
-        }
-
-        if (!hasDoubleSlash)
-        {
-            return span.ToString();
-        }
-
-        // Pre-compute the output length so string.Create receives the correct size.
-        var outputLength = 0;
-        var prevWasSlash = false;
-        foreach (var ch in span)
-        {
-            if (ch == '/')
-            {
-                if (!prevWasSlash)
-                {
-                    outputLength++;
-                }
-                prevWasSlash = true;
-            }
-            else
-            {
-                outputLength++;
-                prevWasSlash = false;
-            }
-        }
-
-        return string.Create(outputLength, span.ToString(), static (dest, src) =>
-        {
-            var writePos = 0;
-            var prevWasSlash = false;
-            foreach (var ch in src)
-            {
-                if (ch == '/')
-                {
-                    if (!prevWasSlash)
-                    {
-                        dest[writePos++] = ch;
-                    }
-                    prevWasSlash = true;
-                }
-                else
-                {
-                    dest[writePos++] = ch;
-                    prevWasSlash = false;
-                }
-            }
-        });
-    }
-
     private static int CountLeadingMatchingPathSegments(string requestPath, string hrefPath)
     {
         if (string.IsNullOrEmpty(requestPath) || string.IsNullOrEmpty(hrefPath))
@@ -273,59 +209,55 @@ public static class NavigationHelper
             return 0;
         }
 
-        // Trim leading/trailing slashes and collapse any embedded double-slashes so that
-        // malformed paths (e.g. "/Admin//Contents") never produce empty segments that
-        // could stall the matching loop.
-        var requestSpan = CollapseSlashes(requestPath.AsSpan().Trim('/')).AsSpan();
-        var hrefSpan = CollapseSlashes(hrefPath.AsSpan().Trim('/')).AsSpan();
+        var requestSpan = requestPath.AsSpan().Trim('/');
+        var hrefSpan = hrefPath.AsSpan().Trim('/');
+
         var matchingSegments = 0;
         var requestPos = 0;
         var hrefPos = 0;
 
-        while (requestPos < requestSpan.Length && hrefPos < hrefSpan.Length)
+        while (true)
         {
-            // Find the next segment boundary in both paths
-            var requestSegmentEnd = requestSpan[requestPos..].IndexOf('/');
-            var hrefSegmentEnd = hrefSpan[hrefPos..].IndexOf('/');
+            SkipSlashes(requestSpan, ref requestPos);
+            SkipSlashes(hrefSpan, ref hrefPos);
 
-            if (requestSegmentEnd == -1)
+            if (requestPos >= requestSpan.Length || hrefPos >= hrefSpan.Length)
             {
-                requestSegmentEnd = requestSpan.Length - requestPos;
+                break;
             }
 
-            if (hrefSegmentEnd == -1)
+            var requestStart = requestPos;
+            while (requestPos < requestSpan.Length && requestSpan[requestPos] != '/')
             {
-                hrefSegmentEnd = hrefSpan.Length - hrefPos;
+                requestPos++;
             }
 
-            var requestSegment = requestSpan.Slice(requestPos, requestSegmentEnd);
-            var hrefSegment = hrefSpan.Slice(hrefPos, hrefSegmentEnd);
-
-            // Skip empty segments
-            if (requestSegment.IsEmpty)
+            var hrefStart = hrefPos;
+            while (hrefPos < hrefSpan.Length && hrefSpan[hrefPos] != '/')
             {
-                requestPos += requestSegmentEnd + 1;
-                continue;
+                hrefPos++;
             }
 
-            if (hrefSegment.IsEmpty)
-            {
-                hrefPos += hrefSegmentEnd + 1;
-                continue;
-            }
+            var requestSegment = requestSpan[requestStart..requestPos];
+            var hrefSegment = hrefSpan[hrefStart..hrefPos];
 
-            // Compare segments
             if (!requestSegment.Equals(hrefSegment, StringComparison.OrdinalIgnoreCase))
             {
                 break;
             }
 
             matchingSegments++;
-            requestPos += requestSegmentEnd + 1; // +1 to skip the '/'
-            hrefPos += hrefSegmentEnd + 1;
         }
 
         return matchingSegments;
+    }
+
+    private static void SkipSlashes(ReadOnlySpan<char> path, ref int pos)
+    {
+        while (pos < path.Length && path[pos] == '/')
+        {
+            pos++;
+        }
     }
 
     /// <summary>
@@ -408,15 +340,16 @@ public static class NavigationHelper
     {
         if (string.IsNullOrEmpty(parentHash))
         {
-            return XxHash32.HashToUInt32(MemoryMarshal.AsBytes(value.AsSpan())).ToString();
+            return XxHash32.HashToUInt32(MemoryMarshal.AsBytes(value.AsSpan())).ToString(CultureInfo.InvariantCulture); 
         }
 
         var hash = new XxHash32();
 
         hash.Append(MemoryMarshal.AsBytes(parentHash.AsSpan()));
+        hash.Append(stackalloc byte[] { 0 }); // separator
         hash.Append(MemoryMarshal.AsBytes(value.AsSpan()));
 
-        return hash.GetCurrentHashAsUInt32().ToString();
+        return hash.GetCurrentHashAsUInt32().ToString(CultureInfo.InvariantCulture);
     }
 
     private static int GetLevel(IShape shape)
