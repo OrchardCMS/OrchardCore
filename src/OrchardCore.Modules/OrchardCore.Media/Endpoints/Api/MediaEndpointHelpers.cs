@@ -68,7 +68,8 @@ internal static class MediaEndpointHelpers
     public static async Task<DirectoryTreeNodeDto> ToDtoAsync(
         IAuthorizationService authorizationService,
         ClaimsPrincipal user,
-        DirectoryTreeNode node)
+        DirectoryTreeNode node,
+        MediaPathResolutionCache pathCache = null)
     {
         var filteredChildren = new List<DirectoryTreeNodeDto>();
 
@@ -76,13 +77,17 @@ internal static class MediaEndpointHelpers
         {
             foreach (var child in node.Children)
             {
+                // The path came from the cached directory tree, which was built by enumerating the
+                // store, so it needs no resolving.
+                pathCache?.MarkExistingDirectory(child.Path);
+
                 // Only include sub-folders the user is permitted to access.
                 if (!await authorizationService.AuthorizeAsync(user, MediaPermissions.ManageMediaFolder, (object)child.Path))
                 {
                     continue;
                 }
 
-                filteredChildren.Add(await ToDtoAsync(authorizationService, user, child));
+                filteredChildren.Add(await ToDtoAsync(authorizationService, user, child, pathCache));
             }
         }
 
@@ -100,10 +105,14 @@ internal static class MediaEndpointHelpers
         IMediaFileStore mediaFileStore,
         IAuthorizationService authorizationService,
         ClaimsPrincipal user,
-        string path)
+        string path,
+        MediaPathResolutionCache pathCache = null)
     {
         await foreach (var entry in mediaFileStore.GetDirectoriesAsync(path))
         {
+            // Enumerated by the store, so already canonical.
+            pathCache?.MarkExistingDirectory(entry.Path);
+
             if (await authorizationService.AuthorizeAsync(user, MediaPermissions.ManageMediaFolder, (object)entry.Path))
             {
                 return true;
@@ -117,12 +126,16 @@ internal static class MediaEndpointHelpers
         IMediaFileStore mediaFileStore,
         IAuthorizationService authorizationService,
         ClaimsPrincipal user,
-        string path)
+        string path,
+        MediaPathResolutionCache pathCache = null)
     {
         var folders = new List<FileStoreEntryDto>();
 
         await foreach (var entry in mediaFileStore.GetDirectoriesAsync(path))
         {
+            // Enumerated by the store, so already canonical.
+            pathCache?.MarkExistingDirectory(entry.Path);
+
             // Only include folders the user is permitted to access.
             if (!await authorizationService.AuthorizeAsync(user, MediaPermissions.ManageMediaFolder, (object)entry.Path))
             {
@@ -135,7 +148,7 @@ internal static class MediaEndpointHelpers
         // Check HasChildren concurrently, considering only accessible sub-folders.
         var hasChildrenTasks = folders.Select(async folder =>
         {
-            folder.HasChildren = await HasSubDirectoriesAsync(mediaFileStore, authorizationService, user, folder.DirectoryPath);
+            folder.HasChildren = await HasSubDirectoriesAsync(mediaFileStore, authorizationService, user, folder.DirectoryPath, pathCache);
         });
         await Task.WhenAll(hasChildrenTasks);
 
@@ -187,6 +200,9 @@ internal static class MediaEndpointHelpers
         {
             if (entry.IsDirectory)
             {
+                // Enumerated by the store, so already canonical.
+                httpContext.RequestServices.GetService<MediaPathResolutionCache>()?.MarkExistingDirectory(entry.Path);
+
                 // Only include and recurse into folders the user is permitted to access.
                 if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMediaFolder, (object)entry.Path))
                 {

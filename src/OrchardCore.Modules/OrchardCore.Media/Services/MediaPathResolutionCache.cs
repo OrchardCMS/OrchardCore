@@ -17,6 +17,29 @@ namespace OrchardCore.Media.Services;
 public sealed class MediaPathResolutionCache
 {
     private readonly Dictionary<string, string> _resolved = new(StringComparer.Ordinal);
+    private readonly HashSet<string> _existingDirectories = new(StringComparer.Ordinal);
+
+    /// <summary>
+    /// Declares that <paramref name="path"/> is an existing directory whose form came from the file store
+    /// itself, so it resolves to itself and needs no probing.
+    /// </summary>
+    /// <remarks>
+    /// Only call this for paths obtained by enumerating the store — never for anything derived from a
+    /// request, which must be resolved so that traversal segments are collapsed.
+    /// </remarks>
+    public void MarkExistingDirectory(string path)
+    {
+        path ??= string.Empty;
+
+        _resolved[path] = path;
+        _existingDirectories.Add(path);
+    }
+
+    /// <summary>
+    /// Whether <paramref name="path"/> was declared an existing directory by <see cref="MarkExistingDirectory"/>.
+    /// </summary>
+    public bool IsExistingDirectory(string path)
+        => _existingDirectories.Contains(path ?? string.Empty);
 
     /// <summary>
     /// Returns the cached resolution for <paramref name="path"/>, if it has already been resolved.
