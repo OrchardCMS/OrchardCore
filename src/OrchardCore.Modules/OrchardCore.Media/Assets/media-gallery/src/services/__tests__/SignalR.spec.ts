@@ -1,18 +1,31 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { nextTick, type Ref } from "vue";
+import { useGlobals } from "../Globals";
+import type { IFileLibraryItemDto } from "@bloom/media/interfaces";
 
 // Track callbacks for testing
 let onConnectSuccessCb: ((data: unknown) => void) | null = null;
 let onConnectErrorCb: ((err: unknown) => void) | null = null;
 let mediaChangedCb: ((message: unknown) => Promise<void>) | null = null;
+let onReconnectedCb: (() => void) | null = null;
 let signalRReceivedDataCb: ((data: unknown) => void) | null = null;
 
 const mockGetFileLibraryStoreAsync = vi.fn(() => Promise.resolve([]));
 const mockLoadDirectoryFiles = vi.fn(() => Promise.resolve(null));
+const { setSelectedDirectory } = useGlobals();
+
+const setDirectory = (directoryPath?: string) => {
+  setSelectedDirectory({ directoryPath } as IFileLibraryItemDto);
+};
 
 const mockConnection = {
   on: vi.fn((event: string, cb: (...args: any[]) => any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
     if (event === "MediaChanged") mediaChangedCb = cb;
   }),
+  onreconnected: vi.fn((cb: () => void) => {
+    onReconnectedCb = cb;
+  }),
+  invoke: vi.fn(() => Promise.resolve()),
   start: vi.fn(() => Promise.resolve()),
 };
 
@@ -52,7 +65,9 @@ describe("SignalR", () => {
     onConnectSuccessCb = null;
     onConnectErrorCb = null;
     mediaChangedCb = null;
+    onReconnectedCb = null;
     signalRReceivedDataCb = null;
+    setDirectory();
   });
 
   afterEach(() => {
@@ -88,6 +103,40 @@ describe("SignalR", () => {
     const { useSignalR } = await import("../SignalR");
     useSignalR();
     expect(mockConnection.on).toHaveBeenCalledWith("MediaChanged", expect.any(Function));
+  });
+
+  it("subscribes to the selected folder after connecting", async () => {
+    setDirectory("/Images");
+
+    const { useSignalR } = await import("../SignalR");
+    useSignalR();
+    onConnectSuccessCb?.({ url: "/hubs/media" });
+
+    expect(mockConnection.invoke).toHaveBeenCalledWith("SubscribePath", "/Images");
+  });
+
+  it("re-subscribes to the selected folder after reconnecting", async () => {
+    setDirectory("/Images");
+
+    const { useSignalR } = await import("../SignalR");
+    useSignalR();
+    onReconnectedCb?.();
+
+    expect(mockConnection.invoke).toHaveBeenCalledWith("SubscribePath", "/Images");
+  });
+
+  it("updates folder subscriptions when the selected folder changes", async () => {
+    setDirectory("/Old");
+
+    const { useSignalR } = await import("../SignalR");
+    useSignalR();
+    mockConnection.invoke.mockClear();
+
+    setDirectory("/New");
+    await nextTick();
+
+    expect(mockConnection.invoke).toHaveBeenNthCalledWith(1, "UnsubscribePath", "/Old");
+    expect(mockConnection.invoke).toHaveBeenNthCalledWith(2, "SubscribePath", "/New");
   });
 
   it("MediaChanged callback calls loadDirectoryFiles", async () => {

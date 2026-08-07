@@ -15,31 +15,67 @@ public class MediaSignalREventHandler : IMediaEventHandler
         _eventFactory = eventFactory;
     }
 
-    public async Task MediaDeletedFileAsync(MediaDeletedContext context)
-        => await SendAsync("fileDeleted", context.Path, includeItem: false);
+    public Task MediaDeletedFileAsync(MediaDeletedContext context)
+        => SendAsync("fileDeleted", context.Path, includeItem: false);
 
-    public async Task MediaDeletedDirectoryAsync(MediaDeletedContext context)
-        => await SendAsync("directoryDeleted", context.Path, includeItem: false);
+    public Task MediaDeletedDirectoryAsync(MediaDeletedContext context)
+        => SendAsync("directoryDeleted", context.Path, includeItem: false);
 
-    public async Task MediaMovedAsync(MediaMoveContext context)
-        => await SendAsync("fileMoved", context.OldPath, context.NewPath, includeItem: true);
+    public Task MediaMovedAsync(MediaMoveContext context)
+        => SendAsync("fileMoved", context.OldPath, context.NewPath, includeItem: true);
 
-    public async Task MediaCreatedDirectoryAsync(MediaCreatedContext context)
-        => await SendAsync("directoryCreated", context.Path, includeItem: false);
+    public Task MediaCreatedDirectoryAsync(MediaCreatedContext context)
+        => SendAsync("directoryCreated", context.Path, includeItem: false);
 
-    public async Task MediaCreatedFileAsync(MediaCreatedContext context)
-        => await SendAsync("fileUploaded", context.Path, includeItem: true);
+    public Task MediaCreatedFileAsync(MediaCreatedContext context)
+        => SendAsync("fileUploaded", context.Path, includeItem: true);
 
-    public async Task MediaCopiedFileAsync(MediaMoveContext context)
-        => await SendAsync("fileCopied", context.OldPath, context.NewPath, includeItem: true);
+    public Task MediaCopiedFileAsync(MediaMoveContext context)
+        => SendAsync("fileCopied", context.OldPath, context.NewPath, includeItem: true);
 
-    private async Task SendAsync(string action, string path, bool includeItem)
-        => await SendAsync(action, path, newPath: null, includeItem);
+    private Task SendAsync(string action, string path, bool includeItem)
+        => SendAsync(action, path, newPath: null, includeItem);
 
     private async Task SendAsync(string action, string path, string newPath, bool includeItem)
     {
+        // The payload carries the affected entry so clients patch their store instead of each reloading
+        // the directory. It is resolved once here, not once per connected client.
         var message = await _eventFactory.CreateAsync(action, path, newPath, includeItem);
 
-        await _hubContext.Clients.All.SendAsync("MediaChanged", message);
+        var group = FolderGroup(path);
+
+        if (newPath is null)
+        {
+            await _hubContext.Clients.Group(group).SendAsync("MediaChanged", message);
+
+            return;
+        }
+
+        var newGroup = FolderGroup(newPath);
+
+        // If both paths share the same parent directory, avoid sending a duplicate notification.
+        if (group == newGroup)
+        {
+            await _hubContext.Clients.Group(group).SendAsync("MediaChanged", message);
+
+            return;
+        }
+
+        await _hubContext.Clients.Groups(group, newGroup).SendAsync("MediaChanged", message);
+    }
+
+    // Returns the SignalR group name for the parent directory of the supplied path.
+    // Clients subscribe to the directory they are viewing, so file/directory events must be
+    // routed to the parent's group (e.g. a file at "/folder/img.jpg" notifies "/folder" viewers).
+    private static string FolderGroup(string path)
+        => MediaHub.GetFolderGroupName(GetParentFolderPath(path));
+
+    private static string GetParentFolderPath(string path)
+    {
+        var normalized = path.Replace('\\', '/').TrimEnd('/');
+        var lastSlash = normalized.LastIndexOf('/');
+
+        // Path is already at the root level (e.g. "/file.jpg" or "file.jpg").
+        return lastSlash <= 0 ? string.Empty : normalized[..lastSlash];
     }
 }
