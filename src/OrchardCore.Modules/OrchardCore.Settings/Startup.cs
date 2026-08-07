@@ -69,7 +69,8 @@ public sealed class Startup : StartupBase
         services.AddPermissionProvider<Permissions>();
 
         services.AddRolesCoreServices()
-            .AddScoped<IAuthorizationHandler, SuperUserHandler>();
+            .AddScoped<IAuthorizationHandler, SuperUserHandler>()
+            .AddScoped<IAuthorizationHandler, SiteSettingsAuthorizationHandler>();
 
         services.AddRecipeExecutionStep<SettingsStep>();
         services.AddSingleton<ISiteService, SiteService>();
@@ -78,6 +79,8 @@ public sealed class Startup : StartupBase
         services.AddSiteDisplayDriver<DefaultSiteSettingsDisplayDriver>();
         services.AddSiteDisplayDriver<DebugSettingsDisplayDriver>();
         services.AddSiteDisplayDriver<ButtonsSettingsDisplayDriver>();
+        services.AddSiteSettingsPermission(DefaultSiteSettingsDisplayDriver.GroupId, SettingsPermissions.ManageGeneralSettings);
+        services.AddSiteSettingsPermission(DebugSettingsDisplayDriver.GroupId, SettingsPermissions.ManageDebuggingSettings);
         services.AddNavigationProvider<AdminMenu>();
 
         services.AddScoped<ITimeZoneSelector, DefaultTimeZoneSelector>();
