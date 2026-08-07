@@ -5,10 +5,6 @@ namespace OrchardCore.Media.Services;
 internal static class MediaFileStorePathHelper
 {
     /// <summary>
-    /// Resolves and sanitizes a media path, collapsing any path-traversal segments (e.g. <c>..</c>)
-    /// against the actual file store so that the returned path can be safely used in authorization checks.
-    /// </summary>
-    /// <summary>
     /// Resolves a media path, reusing the result if the same path was already resolved during this request.
     /// </summary>
     public static async Task<string> ResolveAuthorizedPathAsync(
@@ -37,6 +33,10 @@ internal static class MediaFileStorePathHelper
         return resolved;
     }
 
+    /// <summary>
+    /// Resolves and sanitizes a media path, collapsing any path-traversal segments (e.g. <c>..</c>)
+    /// against the actual file store so that the returned path can be safely used in authorization checks.
+    /// </summary>
     public static async Task<string> ResolveAuthorizedPathAsync(this IMediaFileStore fileStore, string path)
     {
         path = fileStore.NormalizePath(Uri.UnescapeDataString(path));
