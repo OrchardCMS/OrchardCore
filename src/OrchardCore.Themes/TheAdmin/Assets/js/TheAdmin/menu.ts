@@ -29,49 +29,7 @@ const getSelectedNavHashFromDom = (nav: HTMLElement): string | null => {
         ?.dataset.adminHash ?? null;
 };
 
-const applySelectedNavFromSessionStorage = () => {
-    // Don't apply stored selection if we're at the admin root path.
-    // This handles both single-tenant (/admin) and multi-tenant (/tenant-prefix/admin) scenarios.
-    const adminPrefix = getAdminPrefix().toLowerCase();
-    const currentPath = window.location.pathname.toLowerCase();
-
-    if (currentPath === adminPrefix || currentPath === adminPrefix + '/') {
-        persistSelectedNavHash(null);
-        return true;
-    }
-
-    let selectedNavHash: string | null;
-
-    try {
-        selectedNavHash = sessionStorage.getItem(getSelectedNavHashStorageKey());
-    } catch (error) {
-        console.error('Error reading selected navigation hash', error);
-        return true;
-    }
-
-    const nav = document.getElementById('left-nav');
-
-    if (!nav) {
-        return document.readyState === 'complete';
-    }
-
-    const navLinks = nav.querySelectorAll<HTMLAnchorElement>('a[data-admin-hash]');
-
-    // Keep observing until links are present to avoid a race where #left-nav exists
-    // but its items have not been attached yet.
-    if (navLinks.length === 0) {
-        return document.readyState === 'complete';
-    }
-
-    const selectedLink = Array.from(navLinks)
-        .find(link => link.dataset.adminHash === selectedNavHash);
-
-    // Keep observing until rendering completes because matching links can appear
-    // after initial links are present.
-    if (!selectedLink) {
-        return document.readyState === 'complete';
-    }
-
+const applySelectedNavLink = (nav: HTMLElement, selectedLink: HTMLAnchorElement) => {
     nav.querySelectorAll('li.active').forEach(li => li.classList.remove('active'));
     nav.querySelectorAll<HTMLElement>('ul.collapse.show').forEach(ul => ul.classList.remove('show'));
     nav.querySelectorAll<HTMLElement>('.item-label[data-bs-toggle="collapse"][aria-expanded="true"]')
@@ -94,6 +52,61 @@ const applySelectedNavFromSessionStorage = () => {
 
         currentItem = currentItem.parentElement?.closest('li') ?? null;
     }
+};
+
+const applySelectedNavFromSessionStorage = () => {
+    // Don't apply stored selection if we're at the admin root path.
+    // This handles both single-tenant (/admin) and multi-tenant (/tenant-prefix/admin) scenarios.
+    const adminPrefix = getAdminPrefix().toLowerCase();
+    const currentPath = window.location.pathname.toLowerCase();
+
+    if (currentPath === adminPrefix || currentPath === adminPrefix + '/') {
+        persistSelectedNavHash(null);
+        return true;
+    }
+
+    let selectedNavHash: string | null;
+
+    try {
+        selectedNavHash = sessionStorage.getItem(getSelectedNavHashStorageKey());
+    } catch (error) {
+        console.error('Error reading selected navigation hash', error);
+        return true;
+    }
+
+    // No persisted selection yet: keep the server-selected menu state.
+    if (!selectedNavHash) {
+        return true;
+    }
+
+    const nav = document.getElementById('left-nav');
+
+    if (!nav) {
+        return document.readyState === 'complete';
+    }
+
+    const navLinks = nav.querySelectorAll<HTMLAnchorElement>('a[data-admin-hash]');
+
+    if (navLinks.length === 0) {
+        return document.readyState === 'complete';
+    }
+
+    const hasServerSelection = nav.querySelector('li.active a[data-admin-hash]') !== null;
+
+    // Wait until the server-side active state is present (or loading has finished)
+    // so we normalize once instead of repeatedly re-applying during incremental render.
+    if (!hasServerSelection && document.readyState !== 'complete') {
+        return false;
+    }
+
+    const selectedLink = Array.from(navLinks)
+        .find(link => link.dataset.adminHash === selectedNavHash);
+
+    if (!selectedLink) {
+        return document.readyState === 'complete';
+    }
+
+    applySelectedNavLink(nav, selectedLink);
 
     return true;
 };
