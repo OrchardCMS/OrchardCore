@@ -8,6 +8,35 @@ internal static class MediaFileStorePathHelper
     /// Resolves and sanitizes a media path, collapsing any path-traversal segments (e.g. <c>..</c>)
     /// against the actual file store so that the returned path can be safely used in authorization checks.
     /// </summary>
+    /// <summary>
+    /// Resolves a media path, reusing the result if the same path was already resolved during this request.
+    /// </summary>
+    public static async Task<string> ResolveAuthorizedPathAsync(
+        this IMediaFileStore fileStore,
+        string path,
+        MediaPathResolutionCache cache)
+    {
+        if (cache is null)
+        {
+            return await fileStore.ResolveAuthorizedPathAsync(path);
+        }
+
+        if (cache.TryGet(path, out var cached))
+        {
+            return cached;
+        }
+
+        var resolved = await fileStore.ResolveAuthorizedPathAsync(path);
+
+        cache.Set(path, resolved);
+
+        // The resolved form resolves to itself, so authorizing it again — as the nested view check does —
+        // costs nothing.
+        cache.Set(resolved, resolved);
+
+        return resolved;
+    }
+
     public static async Task<string> ResolveAuthorizedPathAsync(this IMediaFileStore fileStore, string path)
     {
         path = fileStore.NormalizePath(Uri.UnescapeDataString(path));

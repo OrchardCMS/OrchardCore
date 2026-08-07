@@ -168,6 +168,7 @@ public sealed class Startup : StartupBase
         });
 
         services.AddPermissionProvider<PermissionProvider>();
+        services.AddScoped<MediaPathResolutionCache>();
         services.AddScoped<IAuthorizationHandler, ManageMediaFolderAuthorizationHandler>();
         services.AddNavigationProvider<AdminMenu>();
 
