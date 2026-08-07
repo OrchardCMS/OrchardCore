@@ -1,9 +1,12 @@
+using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.ContentManagement;
+using OrchardCore.Environment.Cache;
 using OrchardCore.FileStorage;
 using OrchardCore.Media;
 using OrchardCore.Media.Services;
 using OrchardCore.Security;
 using OrchardCore.Security.AuthorizationHandlers;
+using OrchardCore.Security.Permissions;
 using OrchardCore.Tests.Security;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media.SecureMedia;
@@ -377,7 +380,71 @@ public class ViewMediaFolderAuthorizationHandlerTests
         Assert.True(context.HasSucceeded);
     }
 
-    private static ViewMediaFolderAuthorizationHandler CreateHandler()
+    [Theory]
+    [InlineData("")]
+    [InlineData("/")]
+    [InlineData("filename.png")]
+    public async Task SecureFolderPermissionGrantsRootViewPermission(string resource)
+    {
+        // Arrange
+        var handler = CreateHandler(withSecureMediaPermissions: true);
+        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(
+            MediaPermissions.ViewMedia,
+            ["ViewMediaContent_folder"],
+            authenticated: true,
+            resource);
+
+        // Act
+        await handler.HandleAsync(context);
+
+        // Assert
+        // The root must be viewable, otherwise the granted folder cannot be navigated to.
+        Assert.True(context.HasSucceeded);
+    }
+
+    [Theory]
+    [InlineData("otherfolder")]
+    [InlineData("otherfolder/filename.png")]
+    [InlineData(UsersFolder)]
+    [InlineData(MediafieldsFolder)]
+    public async Task SecureFolderPermissionDoesNotGrantOtherFolders(string resource)
+    {
+        // Arrange
+        var handler = CreateHandler(withSecureMediaPermissions: true);
+        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(
+            MediaPermissions.ViewMedia,
+            ["ViewMediaContent_folder"],
+            authenticated: true,
+            resource);
+
+        // Act
+        await handler.HandleAsync(context);
+
+        // Assert
+        Assert.False(context.HasSucceeded);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("/")]
+    public async Task NoFolderPermissionDoesNotGrantRootViewPermission(string resource)
+    {
+        // Arrange
+        var handler = CreateHandler(withSecureMediaPermissions: true);
+        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(
+            MediaPermissions.ViewMedia,
+            ["ViewOwnMediaContent"],
+            authenticated: true,
+            resource);
+
+        // Act
+        await handler.HandleAsync(context);
+
+        // Assert
+        Assert.False(context.HasSucceeded);
+    }
+
+    private static ViewMediaFolderAuthorizationHandler CreateHandler(bool withSecureMediaPermissions = false)
     {
         var defaultHttpContext = new DefaultHttpContext();
         var httpContextAccessor = Mock.Of<IHttpContextAccessor>(hca => hca.HttpContext == defaultHttpContext);
@@ -472,6 +539,24 @@ public class ViewMediaFolderAuthorizationHandlerTests
 
         var services = new ServiceCollection();
         services.AddTransient(sp => mockAuthorizationService.Object);
+
+        if (withSecureMediaPermissions)
+        {
+            // The root level folders the dynamic 'ViewMediaContent_{folder}' permissions are created from.
+            mockMediaFileStore
+                .Setup(fs => fs.GetDirectoryContentAsync(It.IsAny<string>(), It.IsAny<bool>()))
+                .Returns(ToAsyncEnumerable(directoryMap.Keys
+                    .Where(path => !path.Contains('/'))
+                    .Select(path => Mock.Of<IFileStoreEntry>(e => e.Path == path && e.Name == path && e.IsDirectory))));
+
+            services.AddScoped<IPermissionProvider>(sp => new SecureMediaPermissions(
+                mockMediaOptions.Object,
+                mockMediaFileStore.Object,
+                new MemoryCache(new MemoryCacheOptions()),
+                attachedMediaFieldFileService,
+                new Signal()));
+        }
+
         var serviceProvider = services.BuildServiceProvider();
 
         return new ViewMediaFolderAuthorizationHandler(
@@ -483,6 +568,16 @@ public class ViewMediaFolderAuthorizationHandlerTests
             mockUserAssetFolderNameProvider.Object,
             mockContentManager.Object
         );
+    }
+
+    private static async IAsyncEnumerable<IFileStoreEntry> ToAsyncEnumerable(IEnumerable<IFileStoreEntry> entries)
+    {
+        foreach (var entry in entries)
+        {
+            yield return entry;
+        }
+
+        await Task.CompletedTask;
     }
 }
 
