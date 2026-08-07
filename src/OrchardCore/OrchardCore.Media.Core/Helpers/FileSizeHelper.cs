@@ -7,8 +7,6 @@ namespace OrchardCore.Media.Core.Helpers;
 /// </summary>
 public sealed class FileSizeHelper
 {
-    private static readonly string[] _sizeUnits = ["B", "KB", "MB", "GB", "TB", "PB", "EB"];
-
     private readonly IStringLocalizer<FileSizeHelper> S;
 
     public FileSizeHelper(IStringLocalizer<FileSizeHelper> localizer)
@@ -31,21 +29,21 @@ public sealed class FileSizeHelper
 
         if (bytes == 0)
         {
-            return S["0 Bytes"];
+            return S["{0} KB", 0];
         }
 
         var magnitude = (int)Math.Log(bytes, 1024);
         var adjustedSize = bytes / Math.Pow(1024, magnitude);
 
-        var unitKey = _sizeUnits[magnitude];
-
-        // Format with decimals, then trim if unnecessary
-        var formatted = adjustedSize.ToString($"N{decimalPlaces}");
-        if (formatted.Contains('.') || formatted.Contains(','))
+        return magnitude switch
         {
-            formatted = formatted.TrimEnd('0').TrimEnd('.', ',');
-        }
-
-        return S["{0} {1}", formatted, S[unitKey]];
+            0 or 1 => S["{0} B", adjustedSize],
+            2 => S["{0} KB", adjustedSize],
+            3 => S["{0} MB", adjustedSize],
+            4 => S["{0} GB", adjustedSize],
+            5 => S["{0} TB", adjustedSize],
+            6 => S["{0} PB", adjustedSize],
+            _ => S["{0} EB", adjustedSize]
+        };
     }
 }
