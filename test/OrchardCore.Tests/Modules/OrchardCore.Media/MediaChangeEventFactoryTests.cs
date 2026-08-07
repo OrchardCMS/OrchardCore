@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.FileStorage;
 using OrchardCore.Media;
 using OrchardCore.Media.Realtime;
@@ -89,11 +90,16 @@ public class MediaChangeEventFactoryTests
             HttpContext = withHttpContext ? new DefaultHttpContext() : null,
         };
 
+        // The store is resolved lazily by the factory, mirroring how it avoids the circular dependency
+        // with the IMediaFileStore factory that builds the media event handlers.
+        var services = new ServiceCollection();
+        services.AddSingleton<IMediaFileStore>(store);
+
         return new MediaChangeEventFactory(
             accessor,
             new FileExtensionContentTypeProvider(),
             new PassThroughFileVersionProvider(),
-            store);
+            services.BuildServiceProvider());
     }
 
     private sealed class PassThroughFileVersionProvider : IFileVersionProvider
