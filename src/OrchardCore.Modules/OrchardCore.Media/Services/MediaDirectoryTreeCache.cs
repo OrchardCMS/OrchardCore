@@ -59,6 +59,53 @@ public class MediaDirectoryTreeCache
     }
 
     /// <summary>
+    /// Returns whether the directory at <paramref name="path"/> has sub-directories, or
+    /// <see langword="null"/> when it is not in the cached tree.
+    /// </summary>
+    /// <remarks>
+    /// Listing a directory needs this for every folder it contains, to decide whether to draw an expand
+    /// arrow. Probing the store for each one costs a round-trip per folder — a network call each on a
+    /// remote store — to re-derive something this tree already holds, and which is rebuilt whenever a
+    /// folder is created or deleted, that is, whenever the answer can change.
+    /// <para>
+    /// Returns <see langword="null"/> rather than <see langword="false"/> for a directory the tree does
+    /// not know about — one created outside the media API, say — so the caller can fall back to probing
+    /// instead of reporting it childless.
+    /// </para>
+    /// </remarks>
+    public async Task<bool?> TryGetHasChildrenAsync(string path)
+    {
+        var node = FindNode(await GetTreeAsync(), _mediaFileStore.NormalizePath(path));
+
+        return node?.HasChildren;
+    }
+
+    private static DirectoryTreeNode FindNode(DirectoryTreeNode node, string path)
+    {
+        if (node is null)
+        {
+            return null;
+        }
+
+        if (string.Equals(node.Path ?? string.Empty, path ?? string.Empty, StringComparison.Ordinal))
+        {
+            return node;
+        }
+
+        // Only descend where the target can actually be, so the walk costs the path's depth rather than
+        // the size of the tree.
+        foreach (var child in node.Children ?? [])
+        {
+            if (path is not null && (path == child.Path || path.StartsWith(child.Path + "/", StringComparison.Ordinal)))
+            {
+                return FindNode(child, path);
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>
     /// Invalidates the cached tree. The next call to <see cref="GetTreeAsync"/>
     /// will rebuild it from the file store.
     /// </summary>

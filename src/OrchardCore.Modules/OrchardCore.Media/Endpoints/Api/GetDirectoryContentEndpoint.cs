@@ -33,6 +33,7 @@ public static class GetDirectoryContentEndpoint
         HttpContext httpContext,
         IAuthorizationService authorizationService,
         MediaPathResolutionCache pathCache,
+        MediaDirectoryTreeCache treeCache,
         IMediaFileStore mediaFileStore,
         IContentTypeProvider contentTypeProvider,
         IFileVersionProvider fileVersionProvider,
@@ -62,7 +63,7 @@ public static class GetDirectoryContentEndpoint
             MediaPermissions.UploadRestrictedMedia);
 
         // Fetch folders and files concurrently.
-        var foldersTask = MediaEndpointHelpers.GetDirectoryFoldersAsync(mediaFileStore, authorizationService, httpContext.User, path, pathCache);
+        var foldersTask = MediaEndpointHelpers.GetDirectoryFoldersAsync(mediaFileStore, authorizationService, httpContext.User, path, pathCache, treeCache);
         var filesTask = MediaEndpointHelpers.GetDirectoryFilesAsync(
             mediaFileStore,
             httpContext,
