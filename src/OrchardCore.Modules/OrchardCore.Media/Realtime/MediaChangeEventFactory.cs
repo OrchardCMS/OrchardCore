@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Media.Endpoints.Api;
 using OrchardCore.Media.ViewModels;
 
@@ -25,19 +26,25 @@ public sealed class MediaChangeEventFactory
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IContentTypeProvider _contentTypeProvider;
     private readonly IFileVersionProvider _fileVersionProvider;
-    private readonly IMediaFileStore _mediaFileStore;
+    private readonly IServiceProvider _serviceProvider;
 
     public MediaChangeEventFactory(
         IHttpContextAccessor httpContextAccessor,
         IContentTypeProvider contentTypeProvider,
         IFileVersionProvider fileVersionProvider,
-        IMediaFileStore mediaFileStore)
+        IServiceProvider serviceProvider)
     {
         _httpContextAccessor = httpContextAccessor;
         _contentTypeProvider = contentTypeProvider;
         _fileVersionProvider = fileVersionProvider;
-        _mediaFileStore = mediaFileStore;
+        _serviceProvider = serviceProvider;
     }
+
+    // Resolved lazily, never in the constructor: the media event handlers are built by the
+    // IMediaFileStore factory itself, so asking for the store while it is being constructed deadlocks
+    // the container on the singleton it is in the middle of creating. By the time an event fires, the
+    // store exists.
+    private IMediaFileStore MediaFileStore => _serviceProvider.GetRequiredService<IMediaFileStore>();
 
     /// <summary>
     /// Builds a payload for an event that affects a single path, such as a file upload or a deletion.
@@ -80,7 +87,9 @@ public sealed class MediaChangeEventFactory
             return null;
         }
 
-        var entry = await _mediaFileStore.GetFileInfoAsync(path);
+        var mediaFileStore = MediaFileStore;
+
+        var entry = await mediaFileStore.GetFileInfoAsync(path);
 
         if (entry is null)
         {
@@ -92,6 +101,6 @@ public sealed class MediaChangeEventFactory
             httpContext,
             _contentTypeProvider,
             _fileVersionProvider,
-            _mediaFileStore);
+            mediaFileStore);
     }
 }
