@@ -71,9 +71,7 @@ public sealed class MediaSecurityTests : IAsyncLifetime
             await AssertRootListingsAsync(
                 page,
                 scenario.AllowedFolder,
-                scenario.AllowedFile,
-                scenario.DeniedFolder,
-                scenario.DeniedFile);
+                scenario.DeniedFolder);
 
             await AssertDirectAccessAsync(
                 page,
@@ -147,9 +145,7 @@ public sealed class MediaSecurityTests : IAsyncLifetime
     private async Task AssertRootListingsAsync(
         IPage page,
         string allowedFolder,
-        string allowedFile,
-        string deniedFolder,
-        string deniedFile)
+        string deniedFolder)
     {
         var treeResponse = await GetAsync(page, "api/media/GetDirectoryTree");
         Assert.Equal(200, treeResponse.Status);
@@ -176,17 +172,6 @@ public sealed class MediaSecurityTests : IAsyncLifetime
             var names = GetNames(folders.RootElement.GetProperty("items"));
             Assert.Contains(allowedFolder, names);
             Assert.DoesNotContain(deniedFolder, names);
-        }
-
-        var allItemsResponse = await GetAsync(page, "api/media/GetAllMediaItems?extensions=");
-        Assert.Equal(200, allItemsResponse.Status);
-        using (var allItems = JsonDocument.Parse(await allItemsResponse.TextAsync()))
-        {
-            var names = GetNames(allItems.RootElement);
-            Assert.Contains(allowedFolder, names);
-            Assert.Contains(allowedFile, names);
-            Assert.DoesNotContain(deniedFolder, names);
-            Assert.DoesNotContain(deniedFile, names);
         }
     }
 

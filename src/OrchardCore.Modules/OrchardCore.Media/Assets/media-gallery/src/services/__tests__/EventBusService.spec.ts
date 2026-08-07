@@ -14,7 +14,6 @@ vi.mock("@bloom/services/OpenApiClient", () => ({
     getMediaItem: vi.fn(),
     getFolders: vi.fn().mockResolvedValue({ items: [], hasMore: false }),
     getMediaItems: vi.fn().mockResolvedValue([]),
-    getAllMediaItems: vi.fn().mockResolvedValue([]),
     copyMedia: vi.fn(),
     moveMedia: vi.fn(),
     moveMediaList: vi.fn(),

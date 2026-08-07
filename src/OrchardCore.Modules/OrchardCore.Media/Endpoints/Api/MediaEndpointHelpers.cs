@@ -221,46 +221,6 @@ internal static class MediaEndpointHelpers
         return files;
     }
 
-    public static async Task CollectAllItemsRecursiveAsync(
-        IMediaFileStore mediaFileStore,
-        IAuthorizationService authorizationService,
-        HttpContext httpContext,
-        IContentTypeProvider contentTypeProvider,
-        IFileVersionProvider fileVersionProvider,
-        string path,
-        HashSet<string> allowedExtensions,
-        List<FileStoreEntryDto> allItems)
-    {
-        var subFolders = new List<IFileStoreEntry>();
-
-        await foreach (var entry in mediaFileStore.GetDirectoryContentAsync(path))
-        {
-            if (entry.IsDirectory)
-            {
-                // Enumerated by the store, so already canonical.
-                httpContext.RequestServices.GetService<MediaPathResolutionCache>()?.MarkExistingDirectory(entry.Path);
-
-                // Only include and recurse into folders the user is permitted to access.
-                if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMediaFolder, (object)entry.Path))
-                {
-                    continue;
-                }
-
-                allItems.Add(CreateFolderResult(entry));
-                subFolders.Add(entry);
-            }
-            else if (allowedExtensions.Count == 0 || allowedExtensions.Contains(Path.GetExtension(entry.Path)))
-            {
-                allItems.Add(CreateFileResult(entry, httpContext, contentTypeProvider, fileVersionProvider, mediaFileStore));
-            }
-        }
-
-        foreach (var folder in subFolders)
-        {
-            await CollectAllItemsRecursiveAsync(mediaFileStore, authorizationService, httpContext, contentTypeProvider, fileVersionProvider, folder.Path, allowedExtensions, allItems);
-        }
-    }
-
     public static bool IsSpecialFolder(MediaOptions mediaOptions, AttachedMediaFieldFileService attachedMediaFieldFileService, string path)
         => string.Equals(path, mediaOptions.AssetsUsersFolder, StringComparison.OrdinalIgnoreCase)
         || string.Equals(path, attachedMediaFieldFileService.MediaFieldsFolder, StringComparison.OrdinalIgnoreCase);
