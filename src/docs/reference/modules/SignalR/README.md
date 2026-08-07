@@ -2,11 +2,19 @@
 
 The SignalR module provides the shared infrastructure required to host and consume [SignalR](https://learn.microsoft.com/aspnet/core/signalr/introduction) hubs in Orchard Core. Any module that declares a hub can depend on this module instead of registering SignalR itself, which keeps hub hosting, client resources, authentication, and scale-out backplanes consistent across the application.
 
+The scale-out backplanes ship as separate modules so the base `OrchardCore.SignalR` module stays free of Redis and Azure dependencies. Install only the backplane you need:
+
+| Module | Feature | Purpose |
+| --- | --- | --- |
+| `OrchardCore.SignalR` | `OrchardCore.SignalR` | Base SignalR hosting, client resources, and hub authentication. |
+| `OrchardCore.SignalR.Redis` | `OrchardCore.SignalR.Redis` | Redis scale-out backplane. Brings the Redis dependencies. |
+| `OrchardCore.SignalR.Azure` | `OrchardCore.SignalR.Azure` | Azure SignalR Service backplane. Brings the Azure dependencies. |
+
 ## Features
 
 - **`OrchardCore.SignalR`** — Registers SignalR with a camel-cased JSON protocol, the SignalR JavaScript client as a named resource (`signalr`), and hub authentication.
-- **`OrchardCore.SignalR.Redis`** — Uses Redis as the SignalR backplane, enabling multi-instance deployments. Each tenant's traffic is isolated on a dedicated Redis channel prefix. Depends on `OrchardCore.Redis`.
-- **`OrchardCore.SignalR.Azure`** — Uses the Azure SignalR Service as the backplane, enabling multi-instance deployments.
+- **`OrchardCore.SignalR.Redis`** — Uses Redis as the SignalR backplane, enabling multi-instance deployments. Each tenant's traffic is isolated on a dedicated Redis channel prefix. Provided by the separate `OrchardCore.SignalR.Redis` module and depends on `OrchardCore.Redis`.
+- **`OrchardCore.SignalR.Azure`** — Uses the Azure SignalR Service as the backplane, enabling multi-instance deployments. Provided by the separate `OrchardCore.SignalR.Azure` module.
 
 ## Declaring a hub in another module
 
@@ -85,7 +93,7 @@ var connection = new HubConnectionBuilder()
 
 ## Backplane configuration
 
-The Redis backplane reuses the `OrchardCore.Redis` connection string (`OrchardCore_Redis:Configuration`):
+Each backplane is a separate module and only registers once its feature is enabled. The Redis backplane (`OrchardCore.SignalR.Redis`) reuses the `OrchardCore.Redis` connection string (`OrchardCore_Redis:Configuration`):
 
 ```json
 {
@@ -95,7 +103,7 @@ The Redis backplane reuses the `OrchardCore.Redis` connection string (`OrchardCo
 }
 ```
 
-The Azure SignalR Service backplane uses its own connection string:
+The Azure SignalR Service backplane (`OrchardCore.SignalR.Azure`) uses its own connection string:
 
 ```json
 {

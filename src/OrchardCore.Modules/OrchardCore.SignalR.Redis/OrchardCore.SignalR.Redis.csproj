@@ -3,11 +3,13 @@
   <PropertyGroup>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <!-- NuGet properties-->
-    <Title>OrchardCore SignalR</Title>
-    <Description>$(OCFrameworkDescription)
+    <Title>OrchardCore SignalR Redis Backplane</Title>
+    <Description>
+      $(OCFrameworkDescription)
 
-    Provides SignalR hub routing, client resources, and hub authentication that any module can reuse. Redis and Azure scale-out backplanes ship as separate features.</Description>
-    <PackageTags>$(PackageTags) OrchardCoreFramework SignalR</PackageTags>
+      Routes SignalR messages across application nodes through a tenant-qualified Redis backplane, keeping the base SignalR module free of Redis dependencies.
+    </Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework SignalR Redis</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,9 +17,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Redis.Abstractions\OrchardCore.Redis.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.SignalR.Core\OrchardCore.SignalR.Core.csproj" />
   </ItemGroup>
 

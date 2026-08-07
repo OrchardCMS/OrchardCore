@@ -6,13 +6,13 @@ using OrchardCore.Redis;
 using StackExchange.Redis;
 using SignalRRedisOptions = Microsoft.AspNetCore.SignalR.StackExchangeRedis.RedisOptions;
 
-namespace OrchardCore.SignalR;
+namespace OrchardCore.SignalR.Redis;
 
 /// <summary>
 /// Registers the tenant-qualified Redis backplane for SignalR.
 /// </summary>
 [Feature(SignalRConstants.Feature.RedisBackplane)]
-public sealed class RedisBackplaneStartup : StartupBase
+public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {

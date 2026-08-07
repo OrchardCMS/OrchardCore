@@ -161,6 +161,8 @@
     <Project Path="src/OrchardCore.Modules/OrchardCore.Settings/OrchardCore.Settings.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Setup/OrchardCore.Setup.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.SignalR/OrchardCore.SignalR.csproj" />
+    <Project Path="src/OrchardCore.Modules/OrchardCore.SignalR.Azure/OrchardCore.SignalR.Azure.csproj" />
+    <Project Path="src/OrchardCore.Modules/OrchardCore.SignalR.Redis/OrchardCore.SignalR.Redis.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Sms.Azure/OrchardCore.Sms.Azure.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Sms/OrchardCore.Sms.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Tenants/OrchardCore.Tenants.csproj" />

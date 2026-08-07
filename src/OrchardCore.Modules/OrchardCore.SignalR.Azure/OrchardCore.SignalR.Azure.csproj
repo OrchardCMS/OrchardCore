@@ -3,11 +3,13 @@
   <PropertyGroup>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <!-- NuGet properties-->
-    <Title>OrchardCore SignalR</Title>
-    <Description>$(OCFrameworkDescription)
+    <Title>OrchardCore SignalR Azure Backplane</Title>
+    <Description>
+      $(OCFrameworkDescription)
 
-    Provides SignalR hub routing, client resources, and hub authentication that any module can reuse. Redis and Azure scale-out backplanes ship as separate features.</Description>
-    <PackageTags>$(PackageTags) OrchardCoreFramework SignalR</PackageTags>
+      Routes SignalR messages across application nodes through the Azure SignalR Service, keeping the base SignalR module free of Azure dependencies.
+    </Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework SignalR Azure</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,9 +17,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.SignalR" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.SignalR.Core\OrchardCore.SignalR.Core.csproj" />
   </ItemGroup>
 
