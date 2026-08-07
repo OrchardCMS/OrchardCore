@@ -110,6 +110,52 @@ public class MediaFolderAuthorizationCostTests
     }
 
     [Fact]
+    public async Task TheCacheNeverCachesAnAuthorizationDecision()
+    {
+        // The reason this cache needs no invalidation when folder permissions change: it holds facts about
+        // the file store — a path's canonical form, and whether it is an existing directory — never who may
+        // see it. Two users sharing one cache must therefore still get their own decisions. If this ever
+        // fails, the cache has started remembering a decision and has become a cross-user leak.
+        var (services, _) = BuildProvider(
+            secureMediaEnabled: true,
+            grantedPermissions: [MediaPermissions.ManageMedia.Name, "ViewMediaContent_photos"],
+            grantsByUser: handler => handler
+                .GrantTo("alpha", MediaPermissions.ManageMedia.Name, "ViewMediaContent_photos")
+                .GrantTo("beta", MediaPermissions.ManageMedia.Name, "ViewMediaContent_documents"));
+
+        var authorizationService = services.GetRequiredService<IAuthorizationService>();
+
+        // Alpha goes first and populates the cache for both paths.
+        var alphaOnPhotos = await authorizationService.AuthorizeAsync(User("alpha"), MediaPermissions.ManageMediaFolder, (object)"photos");
+        var alphaOnDocuments = await authorizationService.AuthorizeAsync(User("alpha"), MediaPermissions.ManageMediaFolder, (object)"documents");
+
+        // Beta then reuses that cache and must still be judged on its own grants.
+        var betaOnPhotos = await authorizationService.AuthorizeAsync(User("beta"), MediaPermissions.ManageMediaFolder, (object)"photos");
+        var betaOnDocuments = await authorizationService.AuthorizeAsync(User("beta"), MediaPermissions.ManageMediaFolder, (object)"documents");
+
+        Assert.True(alphaOnPhotos);
+        Assert.False(alphaOnDocuments);
+        Assert.False(betaOnPhotos);
+        Assert.True(betaOnDocuments);
+    }
+
+    [Fact]
+    public async Task MarkingAPathAsAnExistingDirectory_GrantsNothing()
+    {
+        // Seeding is an assertion about the file store, not a grant. A folder the user cannot view stays
+        // denied even once it is declared canonical — otherwise the optimization would be a way to bypass
+        // authorization.
+        var (services, _) = BuildProvider(secureMediaEnabled: true);
+        var authorizationService = services.GetRequiredService<IAuthorizationService>();
+
+        services.GetRequiredService<MediaPathResolutionCache>().MarkExistingDirectory("documents");
+
+        var authorized = await authorizationService.AuthorizeAsync(User(), MediaPermissions.ManageMediaFolder, (object)"documents");
+
+        Assert.False(authorized, "Only 'photos' was granted, so 'documents' must stay denied.");
+    }
+
+    [Fact]
     public async Task ManageMediaFolder_FromAString_PaysForPathResolution()
     {
         var (services, store) = BuildProvider(secureMediaEnabled: false);
@@ -220,12 +266,13 @@ public class MediaFolderAuthorizationCostTests
         return store.TotalCalls;
     }
 
-    private static ClaimsPrincipal User()
-        => new(new ClaimsIdentity([new Claim(ClaimTypes.Name, "editor")], "Test"));
+    private static ClaimsPrincipal User(string name = "editor")
+        => new(new ClaimsIdentity([new Claim(ClaimTypes.Name, name)], "Test"));
 
     private static (IServiceProvider Services, CountingFileStore Store) BuildProvider(
         bool secureMediaEnabled,
-        string[] grantedPermissions = null)
+        string[] grantedPermissions = null,
+        Func<GrantedPermissionsHandler, GrantedPermissionsHandler> grantsByUser = null)
     {
         // Folder-scoped rights: the user may manage media, and may view only the 'photos' folder.
         // This is the configuration Secure Media exists for, and the one that exercises the full path.
@@ -257,7 +304,9 @@ public class MediaFolderAuthorizationCostTests
         services.AddSingleton<IContentManager>(Mock.Of<IContentManager>());
 
         // The claims-based grant must run first, mirroring OrchardCore's own permission handler.
-        services.AddSingleton<IAuthorizationHandler>(new GrantedPermissionsHandler(grantedPermissions));
+        var permissionHandler = new GrantedPermissionsHandler(grantedPermissions);
+        grantsByUser?.Invoke(permissionHandler);
+        services.AddSingleton<IAuthorizationHandler>(permissionHandler);
         services.AddScoped<IAuthorizationHandler, ManageMediaFolderAuthorizationHandler>();
         services.AddScoped<IAuthorizationHandler, ViewMediaFolderAuthorizationHandler>();
 
@@ -281,13 +330,33 @@ public class MediaFolderAuthorizationCostTests
     private sealed class GrantedPermissionsHandler : AuthorizationHandler<PermissionRequirement>
     {
         private readonly HashSet<string> _granted;
+        private readonly Dictionary<string, HashSet<string>> _grantedByUser;
 
         public GrantedPermissionsHandler(IEnumerable<string> granted)
-            => _granted = new HashSet<string>(granted, StringComparer.OrdinalIgnoreCase);
+        {
+            _granted = new HashSet<string>(granted, StringComparer.OrdinalIgnoreCase);
+            _grantedByUser = [];
+        }
+
+        /// <summary>
+        /// Grants a different set to a specific user, so a single scope can serve more than one principal.
+        /// </summary>
+        public GrantedPermissionsHandler GrantTo(string userName, params string[] permissions)
+        {
+            _grantedByUser[userName] = new HashSet<string>(permissions, StringComparer.OrdinalIgnoreCase);
+
+            return this;
+        }
 
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
         {
-            if (_granted.Contains(requirement.Permission.Name))
+            var userName = context.User?.Identity?.Name;
+
+            var granted = userName is not null && _grantedByUser.TryGetValue(userName, out var forUser)
+                ? forUser
+                : _granted;
+
+            if (granted.Contains(requirement.Permission.Name))
             {
                 context.Succeed(requirement);
             }
