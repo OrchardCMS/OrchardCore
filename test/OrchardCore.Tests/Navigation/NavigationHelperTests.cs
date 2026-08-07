@@ -1,4 +1,3 @@
-using System.Reflection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
@@ -15,36 +14,6 @@ namespace OrchardCore.Tests.Navigation;
 
 public class NavigationHelperTests
 {
-    #region Reflection helpers
-
-    private static TResult InvokePrivate<TResult>(string methodName, Type[] paramTypes, object[] args)
-    {
-        var method = typeof(NavigationHelper).GetMethod(
-            methodName,
-            BindingFlags.NonPublic | BindingFlags.Static,
-            binder: null,
-            types: paramTypes,
-            modifiers: null)
-            ?? throw new MissingMethodException(nameof(NavigationHelper), methodName);
-
-        return (TResult)method.Invoke(null, args);
-    }
-
-    private static void InvokePrivateVoid(string methodName, Type[] paramTypes, object[] args)
-    {
-        var method = typeof(NavigationHelper).GetMethod(
-            methodName,
-            BindingFlags.NonPublic | BindingFlags.Static,
-            binder: null,
-            types: paramTypes,
-            modifiers: null)
-            ?? throw new MissingMethodException(nameof(NavigationHelper), methodName);
-
-        method.Invoke(null, args);
-    }
-
-    #endregion
-
     #region Test factories
 
     private static ViewContext CreateViewContext(string requestPath, string pathBase = "")
@@ -67,16 +36,10 @@ public class NavigationHelperTests
 
     private static void InvokeMarkAsSelectedIfMatchesPath(
         MenuItem menuItem, NavigationItemViewModel shape, ViewContext viewContext) =>
-        InvokePrivateVoid(
-            "MarkAsSelectedIfMatchesPath",
-            [typeof(MenuItem), typeof(NavigationItemViewModel), typeof(ViewContext)],
-            [menuItem, shape, viewContext]);
+        NavigationHelper.MarkAsSelectedIfMatchesPath(menuItem, shape, viewContext);
 
     private static void InvokeApplySelection(IShape parentShape) =>
-        InvokePrivateVoid(
-            "ApplySelection",
-            [typeof(IShape)],
-            [parentShape]);
+        NavigationHelper.ApplySelection(parentShape);
 
     #endregion
 
@@ -120,7 +83,7 @@ public class NavigationHelperTests
     [InlineData("/a/b/c", 3)]
     public void CountPathSegments_ReturnsCorrectCount(string path, int expected)
     {
-        var result = InvokePrivate<int>("CountPathSegments", [typeof(string)], [path]);
+        var result = NavigationHelper.CountPathSegments(path);
         Assert.Equal(expected, result);
     }
 
@@ -140,10 +103,7 @@ public class NavigationHelperTests
     public void CountLeadingMatchingPathSegments_ReturnsCorrectCount(
         string requestPath, string hrefPath, int expected)
     {
-        var result = InvokePrivate<int>(
-            "CountLeadingMatchingPathSegments",
-            [typeof(string), typeof(string)],
-            [requestPath, hrefPath]);
+        var result = NavigationHelper.CountLeadingMatchingPathSegments(requestPath, hrefPath);
 
         Assert.Equal(expected, result);
     }
@@ -152,10 +112,7 @@ public class NavigationHelperTests
     public void CountLeadingMatchingPathSegments_WithDoubleSlashInRequest_MatchesNormalized()
     {
         // Fix #5 — embedded double-slashes must be collapsed before comparison.
-        var result = InvokePrivate<int>(
-            "CountLeadingMatchingPathSegments",
-            [typeof(string), typeof(string)],
-            ["/Admin//Contents", "/Admin/Contents"]);
+        var result = NavigationHelper.CountLeadingMatchingPathSegments("/Admin//Contents", "/Admin/Contents");
 
         Assert.Equal(2, result);
     }
@@ -163,10 +120,7 @@ public class NavigationHelperTests
     [Fact]
     public void CountLeadingMatchingPathSegments_WithDoubleSlashInHref_MatchesNormalized()
     {
-        var result = InvokePrivate<int>(
-            "CountLeadingMatchingPathSegments",
-            [typeof(string), typeof(string)],
-            ["/Admin/Contents", "/Admin//Contents"]);
+        var result = NavigationHelper.CountLeadingMatchingPathSegments("/Admin/Contents", "/Admin//Contents");
 
         Assert.Equal(2, result);
     }
@@ -174,10 +128,7 @@ public class NavigationHelperTests
     [Fact]
     public void CountLeadingMatchingPathSegments_MismatchAfterMatchingSegments_ReturnsMatchCount()
     {
-        var result = InvokePrivate<int>(
-            "CountLeadingMatchingPathSegments",
-            [typeof(string), typeof(string)],
-            ["/Admin/Other", "/Admin/Contents"]);
+        var result = NavigationHelper.CountLeadingMatchingPathSegments("/Admin/Other", "/Admin/Contents");
 
         Assert.Equal(1, result);
     }
@@ -196,10 +147,7 @@ public class NavigationHelperTests
     [InlineData("/myapp/Admin", "/myapp/", "/Admin")]          // trailing slash in pathBase
     public void RemovePathBase_ReturnsCorrectPath(string path, string pathBase, string expected)
     {
-        var result = InvokePrivate<string>(
-            "RemovePathBase",
-            [typeof(string), typeof(PathString)],
-            [path, new PathString(pathBase)]);
+        var result = NavigationHelper.RemovePathBase(path, new PathString(pathBase));
 
         Assert.Equal(expected, result);
     }
@@ -211,46 +159,46 @@ public class NavigationHelperTests
     [Fact]
     public void ComputeStableHash_NullParentHash_ReturnsNonEmptyString()
     {
-        var result = InvokePrivate<string>("ComputeStableHash", [typeof(string), typeof(string)], [null, "Content"]);
+        var result = NavigationHelper.ComputeStableHash(null, "Content");
         Assert.NotEmpty(result);
     }
 
     [Fact]
     public void ComputeStableHash_EmptyParentHash_ReturnsNonEmptyString()
     {
-        var result = InvokePrivate<string>("ComputeStableHash", [typeof(string), typeof(string)], ["", "Content"]);
+        var result = NavigationHelper.ComputeStableHash("", "Content");
         Assert.NotEmpty(result);
     }
 
     [Fact]
     public void ComputeStableHash_SameInputs_ReturnIdenticalHash()
     {
-        var h1 = InvokePrivate<string>("ComputeStableHash", [typeof(string), typeof(string)], [null, "Content"]);
-        var h2 = InvokePrivate<string>("ComputeStableHash", [typeof(string), typeof(string)], [null, "Content"]);
+        var h1 = NavigationHelper.ComputeStableHash(null, "Content");
+        var h2 = NavigationHelper.ComputeStableHash(null, "Content");
         Assert.Equal(h1, h2);
     }
 
     [Fact]
     public void ComputeStableHash_DifferentValues_ReturnDifferentHashes()
     {
-        var h1 = InvokePrivate<string>("ComputeStableHash", [typeof(string), typeof(string)], [null, "Content"]);
-        var h2 = InvokePrivate<string>("ComputeStableHash", [typeof(string), typeof(string)], [null, "Other"]);
+        var h1 = NavigationHelper.ComputeStableHash(null, "Content");
+        var h2 = NavigationHelper.ComputeStableHash(null, "Other");
         Assert.NotEqual(h1, h2);
     }
 
     [Fact]
     public void ComputeStableHash_WithAndWithoutParentHash_ReturnDifferentHashes()
     {
-        var withParent = InvokePrivate<string>("ComputeStableHash", [typeof(string), typeof(string)], ["parent", "Content"]);
-        var withoutParent = InvokePrivate<string>("ComputeStableHash", [typeof(string), typeof(string)], [null, "Content"]);
+        var withParent = NavigationHelper.ComputeStableHash("parent", "Content");
+        var withoutParent = NavigationHelper.ComputeStableHash(null, "Content");
         Assert.NotEqual(withParent, withoutParent);
     }
 
     [Fact]
     public void ComputeStableHash_DifferentParentHashes_ReturnDifferentHashes()
     {
-        var h1 = InvokePrivate<string>("ComputeStableHash", [typeof(string), typeof(string)], ["parent1", "Content"]);
-        var h2 = InvokePrivate<string>("ComputeStableHash", [typeof(string), typeof(string)], ["parent2", "Content"]);
+        var h1 = NavigationHelper.ComputeStableHash("parent1", "Content");
+        var h2 = NavigationHelper.ComputeStableHash("parent2", "Content");
         Assert.NotEqual(h1, h2);
     }
 

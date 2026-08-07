@@ -94,7 +94,7 @@ public static class NavigationHelper
         return menuItemShape;
     }
 
-    private static void MarkAsSelectedIfMatchesPath(MenuItem menuItem, NavigationItemViewModel menuItemShape, ViewContext viewContext)
+    internal static void MarkAsSelectedIfMatchesPath(MenuItem menuItem, NavigationItemViewModel menuItemShape, ViewContext viewContext)
     {
         if (string.IsNullOrEmpty(menuItem.Href) || menuItem.Href[0] != '/')
         {
@@ -145,7 +145,7 @@ public static class NavigationHelper
         menuItemShape.Selected = menuItemShape.Score > 0;
     }
 
-    private static string RemovePathBase(string path, PathString pathBase)
+    internal static string RemovePathBase(string path, PathString pathBase)
     {
         if (!pathBase.HasValue)
         {
@@ -167,7 +167,7 @@ public static class NavigationHelper
         return path;
     }
 
-    private static int CountPathSegments(string path)
+    internal static int CountPathSegments(string path)
     {
         if (string.IsNullOrEmpty(path))
         {
@@ -202,7 +202,7 @@ public static class NavigationHelper
         return count;
     }
 
-    private static int CountLeadingMatchingPathSegments(string requestPath, string hrefPath)
+    internal static int CountLeadingMatchingPathSegments(string requestPath, string hrefPath)
     {
         if (string.IsNullOrEmpty(requestPath) || string.IsNullOrEmpty(hrefPath))
         {
@@ -264,7 +264,7 @@ public static class NavigationHelper
     /// Ensures only one menuitem (and its ancestors) are marked as selected for the menu.
     /// </summary>
     /// <param name="parentShape">The menu shape.</param>
-    private static void ApplySelection(IShape parentShape)
+    internal static void ApplySelection(IShape parentShape)
     {
         var selectedItem = GetHighestPrioritySelectedMenuItem(parentShape);
 
@@ -336,7 +336,7 @@ public static class NavigationHelper
     /// <see cref="string.GetHashCode()"/>, which is randomized per process, the result is stable
     /// across restarts and load-balanced instances.
     /// </summary>
-    private static string ComputeStableHash(string parentHash, string value)
+    internal static string ComputeStableHash(string parentHash, string value)
     {
         if (string.IsNullOrEmpty(parentHash))
         {
