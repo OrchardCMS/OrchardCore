@@ -2,6 +2,7 @@ using System.IO.Pipelines;
 using System.Text.Json;
 using Amazon.S3;
 using Amazon.S3.Model;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -18,6 +19,7 @@ namespace OrchardCore.Media.AmazonS3.Services;
 public sealed class S3TusTempStore : ITusTempStore
 {
     private const string TusTempPrefix = "_tus-uploads";
+    private const string UnexpectedEndOfRequestContent = "Unexpected end of request content.";
 
     private readonly IAmazonS3 _s3Client;
     private readonly string _bucketName;
@@ -94,6 +96,10 @@ public sealed class S3TusTempStore : ITusTempStore
             }
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            bytesWritten = 0;
+        }
+        catch (BadHttpRequestException exception) when (IsUnexpectedEndOfRequest(exception))
         {
             bytesWritten = 0;
         }
@@ -314,6 +320,10 @@ public sealed class S3TusTempStore : ITusTempStore
             GetCacheOptions(),
             cancellationToken);
     }
+
+    private static bool IsUnexpectedEndOfRequest(BadHttpRequestException exception) =>
+        exception.StatusCode == StatusCodes.Status400BadRequest
+        && string.Equals(exception.Message, UnexpectedEndOfRequestContent, StringComparison.Ordinal);
 
     private sealed class PartInfo
     {
