@@ -40,9 +40,7 @@ public class SmsTask : TaskActivity<SmsTask>
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"], S["Failed"]);
-    }
+        => Outcome(S["Done"], S["Failed"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -54,9 +52,9 @@ public class SmsTask : TaskActivity<SmsTask>
 
         if (result.Succeeded)
         {
-            return Outcomes("Done");
+            return Outcome("Done");
         }
 
-        return Outcomes("Failed");
+        return Outcome("Failed");
     }
 }

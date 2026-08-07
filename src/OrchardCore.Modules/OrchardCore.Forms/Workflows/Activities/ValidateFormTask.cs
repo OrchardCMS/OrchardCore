@@ -27,9 +27,7 @@ public class ValidateFormTask : TaskActivity<ValidateFormTask>
     public override bool HasEditor => false;
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Valid"], S["Invalid"]);
-    }
+        => Outcome(S["Valid"], S["Invalid"]);
 
     public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -38,6 +36,7 @@ public class ValidateFormTask : TaskActivity<ValidateFormTask>
 
         var isValid = updater.ModelState.ErrorCount == 0;
         var outcome = isValid ? "Valid" : "Invalid";
-        return Outcomes(outcome);
+
+        return Outcome(outcome);
     }
 }
