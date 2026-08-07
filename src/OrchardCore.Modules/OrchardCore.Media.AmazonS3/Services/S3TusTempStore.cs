@@ -74,9 +74,9 @@ public sealed class S3TusTempStore : ITusTempStore
             // Read the entire stream into a buffer for S3 (S3 requires content-length for parts).
             using var memoryStream = new MemoryStream();
             await stream.CopyToAsync(memoryStream, cancellationToken);
-            bytesWritten = memoryStream.Length;
+            var bufferedBytes = memoryStream.Length;
 
-            if (bytesWritten > 0)
+            if (bufferedBytes > 0)
             {
                 memoryStream.Position = 0;
                 var uploadPartRequest = new UploadPartRequest
@@ -90,14 +90,15 @@ public sealed class S3TusTempStore : ITusTempStore
 
                 var response = await _s3Client.UploadPartAsync(uploadPartRequest, cancellationToken);
                 parts.Add(new PartInfo { PartNumber = partNumber, ETag = response.ETag });
+                bytesWritten = bufferedBytes;
             }
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
-            // Client disconnected. Parts already uploaded are durable.
+            bytesWritten = 0;
         }
 
-        await SavePartListAsync(fileId, parts, cancellationToken);
+        await SavePartListAsync(fileId, parts, CancellationToken.None);
 
         return bytesWritten;
     }
@@ -114,51 +115,67 @@ public sealed class S3TusTempStore : ITusTempStore
         var partNumber = parts.Count + 1;
 
         long bytesWritten = 0;
+        var clientDisconnected = false;
         try
         {
-            // Buffer the pipe data, then upload as a single part.
-            using var memoryStream = new MemoryStream();
-            while (true)
+            try
             {
-                var result = await pipeReader.ReadAsync(cancellationToken);
-                var buffer = result.Buffer;
-
-                foreach (var segment in buffer)
+                // Buffer the pipe data, then upload as a single part.
+                using var memoryStream = new MemoryStream();
+                while (true)
                 {
-                    memoryStream.Write(segment.Span);
-                    bytesWritten += segment.Length;
+                    var result = await pipeReader.ReadAsync(cancellationToken);
+                    var buffer = result.Buffer;
+
+                    foreach (var segment in buffer)
+                    {
+                        memoryStream.Write(segment.Span);
+                    }
+
+                    pipeReader.AdvanceTo(buffer.End);
+
+                    if (result.IsCanceled || cancellationToken.IsCancellationRequested)
+                    {
+                        clientDisconnected = true;
+                        break;
+                    }
+
+                    if (result.IsCompleted)
+                    {
+                        break;
+                    }
                 }
 
-                pipeReader.AdvanceTo(buffer.End);
-
-                if (result.IsCompleted)
+                var bufferedBytes = memoryStream.Length;
+                if (!clientDisconnected && bufferedBytes > 0)
                 {
-                    break;
+                    memoryStream.Position = 0;
+                    var uploadPartRequest = new UploadPartRequest
+                    {
+                        BucketName = _bucketName,
+                        Key = GetObjectKey(fileId),
+                        UploadId = uploadId,
+                        PartNumber = partNumber,
+                        InputStream = memoryStream,
+                    };
+
+                    var response = await _s3Client.UploadPartAsync(uploadPartRequest, cancellationToken);
+                    parts.Add(new PartInfo { PartNumber = partNumber, ETag = response.ETag });
+                    bytesWritten = bufferedBytes;
                 }
             }
-
-            if (bytesWritten > 0)
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
             {
-                memoryStream.Position = 0;
-                var uploadPartRequest = new UploadPartRequest
-                {
-                    BucketName = _bucketName,
-                    Key = GetObjectKey(fileId),
-                    UploadId = uploadId,
-                    PartNumber = partNumber,
-                    InputStream = memoryStream,
-                };
-
-                var response = await _s3Client.UploadPartAsync(uploadPartRequest, cancellationToken);
-                parts.Add(new PartInfo { PartNumber = partNumber, ETag = response.ETag });
+                clientDisconnected = true;
+                bytesWritten = 0;
             }
+
+            await SavePartListAsync(fileId, parts, CancellationToken.None);
         }
-        catch (OperationCanceledException)
+        finally
         {
-            // Client disconnected. Parts already uploaded are durable.
+            await pipeReader.CompleteAsync();
         }
-
-        await SavePartListAsync(fileId, parts, cancellationToken);
 
         return bytesWritten;
     }

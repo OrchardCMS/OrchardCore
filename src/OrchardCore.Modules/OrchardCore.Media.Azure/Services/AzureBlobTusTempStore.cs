@@ -64,12 +64,12 @@ public sealed class AzureBlobTusTempStore : ITusTempStore
                 bytesWritten += bytesRead;
             }
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
-            // Client disconnected. Blocks already staged are durable.
+            // Blocks already staged are durable and their IDs are persisted below.
         }
 
-        await SaveBlockListAsync(fileId, blockIds, cancellationToken);
+        await SaveBlockListAsync(fileId, blockIds, CancellationToken.None);
 
         return bytesWritten;
     }
@@ -82,39 +82,51 @@ public sealed class AzureBlobTusTempStore : ITusTempStore
         long bytesWritten = 0;
         try
         {
-            while (true)
+            try
             {
-                var result = await pipeReader.ReadAsync(cancellationToken);
-                var buffer = result.Buffer;
-
-                foreach (var segment in buffer)
+                while (true)
                 {
-                    if (segment.Length == 0)
+                    var result = await pipeReader.ReadAsync(cancellationToken);
+                    var buffer = result.Buffer;
+
+                    foreach (var segment in buffer)
                     {
-                        continue;
+                        if (segment.Length == 0)
+                        {
+                            continue;
+                        }
+
+                        var blockId = GenerateBlockId(blockIds.Count);
+                        using var blockStream = new MemoryStream(segment.ToArray());
+                        await blockBlob.StageBlockAsync(blockId, blockStream, cancellationToken: cancellationToken);
+                        blockIds.Add(blockId);
+                        bytesWritten += segment.Length;
                     }
 
-                    var blockId = GenerateBlockId(blockIds.Count);
-                    using var blockStream = new MemoryStream(segment.ToArray());
-                    await blockBlob.StageBlockAsync(blockId, blockStream, cancellationToken: cancellationToken);
-                    blockIds.Add(blockId);
-                    bytesWritten += segment.Length;
-                }
+                    pipeReader.AdvanceTo(buffer.End);
 
-                pipeReader.AdvanceTo(buffer.End);
+                    if (result.IsCanceled || cancellationToken.IsCancellationRequested)
+                    {
+                        break;
+                    }
 
-                if (result.IsCompleted)
-                {
-                    break;
+                    if (result.IsCompleted)
+                    {
+                        break;
+                    }
                 }
             }
-        }
-        catch (OperationCanceledException)
-        {
-            // Client disconnected. Blocks already staged are durable.
-        }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                // Blocks already staged are durable and their IDs are persisted below.
+            }
 
-        await SaveBlockListAsync(fileId, blockIds, cancellationToken);
+            await SaveBlockListAsync(fileId, blockIds, CancellationToken.None);
+        }
+        finally
+        {
+            await pipeReader.CompleteAsync();
+        }
 
         return bytesWritten;
     }
