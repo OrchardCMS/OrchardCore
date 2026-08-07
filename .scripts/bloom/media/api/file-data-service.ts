@@ -75,6 +75,10 @@ export class FileDataService implements IFileDataService {
     return dtos.map(toFileLibraryItem);
   }
 
+  /**
+   * @deprecated Enumerates the whole media store in one request and is scheduled for removal. Nothing in
+   * the gallery calls it — load a directory at a time with {@link getDirectoryContent} instead.
+   */
   async listAllItems(): Promise<IFileLibraryItemDto[]> {
     const dtos = await this.client.apiGetAllMediaItems(undefined);
     return dtos.map(toFileLibraryItem);

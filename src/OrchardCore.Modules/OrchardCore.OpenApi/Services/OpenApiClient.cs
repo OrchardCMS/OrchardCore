@@ -2411,6 +2411,12 @@ namespace OrchardCore.OpenApi.Services
             }
         }
 
+        /// <summary>
+        /// Deprecated. Returns every media item in one unbounded request.
+        /// </summary>
+        /// <remarks>
+        /// Deprecated and scheduled for removal in a future release. Use GetDirectoryContent to walk the library one directory at a time; this endpoint enumerates the whole store in a single request.
+        /// </remarks>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
         public virtual System.Threading.Tasks.Task<System.Collections.ObjectModel.Collection<FileStoreEntryDto>> ApiGetAllMediaItemsAsync(string extensions)
@@ -2419,6 +2425,12 @@ namespace OrchardCore.OpenApi.Services
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Deprecated. Returns every media item in one unbounded request.
+        /// </summary>
+        /// <remarks>
+        /// Deprecated and scheduled for removal in a future release. Use GetDirectoryContent to walk the library one directory at a time; this endpoint enumerates the whole store in a single request.
+        /// </remarks>
         /// <returns>OK</returns>
         /// <exception cref="SwaggerException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<System.Collections.ObjectModel.Collection<FileStoreEntryDto>> ApiGetAllMediaItemsAsync(string extensions, System.Threading.CancellationToken cancellationToken)
