@@ -40,14 +40,14 @@ public sealed class AdminMenu : AdminNavigationProvider
                             .AddClass("general")
                             .Id("general")
                             .Action("Index", "Admin", s_generalRouteValues)
-                            .Permission(SettingsPermissions.ManageGroupSettings)
+                            .Permission(SettingsPermissions.ManageGeneralSettings)
                             .LocalNav()
                         )
                         .Add(S["Debugging"], "2", entry => entry
                             .AddClass("debugging")
                             .Id("debugging")
                             .Action("Index", "Admin", s_debuggingRouteValues)
-                            .Permission(SettingsPermissions.ManageGroupSettings)
+                            .Permission(SettingsPermissions.ManageDebuggingSettings)
                             .LocalNav()
                         ),
                     priority: 1)
@@ -68,14 +68,14 @@ public sealed class AdminMenu : AdminNavigationProvider
                     .AddClass("general")
                     .Id("general")
                     .Action("Index", "Admin", s_generalRouteValues)
-                    .Permission(SettingsPermissions.ManageGroupSettings)
+                    .Permission(SettingsPermissions.ManageGeneralSettings)
                     .LocalNav()
                 )
                 .Add(S["Debugging"], "after", debugging => debugging
                     .AddClass("debugging")
                     .Id("debugging")
                     .Action("Index", "Admin", s_debuggingRouteValues)
-                    .Permission(SettingsPermissions.ManageGroupSettings)
+                    .Permission(SettingsPermissions.ManageDebuggingSettings)
                     .LocalNav()
                 )
             , priority: 1);
