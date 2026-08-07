@@ -113,8 +113,29 @@ internal static class MediaEndpointHelpers
         IAuthorizationService authorizationService,
         ClaimsPrincipal user,
         string path,
-        MediaPathResolutionCache pathCache = null)
+        MediaPathResolutionCache pathCache = null,
+        MediaDirectoryTreeCache treeCache = null,
+        bool everyFolderIsVisible = false)
     {
+        if (treeCache is not null)
+        {
+            // The cached tree is permission-agnostic, so it can only answer where permissions cannot
+            // change the answer. "No sub-directories at all" is one such case — there is nothing to be
+            // denied — and it is the common one for leaf folders.
+            var hasAny = await treeCache.TryGetHasChildrenAsync(path);
+
+            if (hasAny == false)
+            {
+                return false;
+            }
+
+            // When the caller may see every folder, the tree's answer is exact.
+            if (hasAny == true && everyFolderIsVisible)
+            {
+                return true;
+            }
+        }
+
         await foreach (var entry in mediaFileStore.GetDirectoriesAsync(path))
         {
             // Enumerated by the store, so already canonical.
@@ -134,7 +155,8 @@ internal static class MediaEndpointHelpers
         IAuthorizationService authorizationService,
         ClaimsPrincipal user,
         string path,
-        MediaPathResolutionCache pathCache = null)
+        MediaPathResolutionCache pathCache = null,
+        MediaDirectoryTreeCache treeCache = null)
     {
         var folders = new List<FileStoreEntryDto>();
 
@@ -152,15 +174,29 @@ internal static class MediaEndpointHelpers
             folders.Add(CreateFolderResult(entry));
         }
 
+        // Resolved once for the whole listing rather than per folder: a caller holding the global
+        // permissions is not subject to per-folder restrictions, so the cached tree's answer is exact
+        // and no folder has to be probed.
+        var everyFolderIsVisible = await CanSeeEveryFolderAsync(authorizationService, user);
+
         // Check HasChildren concurrently, considering only accessible sub-folders.
         var hasChildrenTasks = folders.Select(async folder =>
         {
-            folder.HasChildren = await HasSubDirectoriesAsync(mediaFileStore, authorizationService, user, folder.DirectoryPath, pathCache);
+            folder.HasChildren = await HasSubDirectoriesAsync(
+                mediaFileStore, authorizationService, user, folder.DirectoryPath, pathCache, treeCache, everyFolderIsVisible);
         });
         await Task.WhenAll(hasChildrenTasks);
 
         return folders;
     }
+
+    /// <summary>
+    /// Whether every media folder is visible to <paramref name="user"/>, making a permission-agnostic
+    /// answer about sub-directories exact for them.
+    /// </summary>
+    private static async Task<bool> CanSeeEveryFolderAsync(IAuthorizationService authorizationService, ClaimsPrincipal user)
+        => await authorizationService.AuthorizeAsync(user, MediaPermissions.ManageMedia)
+        && await authorizationService.AuthorizeAsync(user, MediaPermissions.ViewMedia);
 
     public static async Task<List<FileStoreEntryDto>> GetDirectoryFilesAsync(
         IMediaFileStore mediaFileStore,
