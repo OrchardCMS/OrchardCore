@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Caching;
 using OrchardCore.ContentManagement;
 using OrchardCore.FileStorage;
 using OrchardCore.Media;
 using OrchardCore.Media.Services;
+using OrchardCore.Environment.Cache;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
@@ -137,6 +139,52 @@ public class MediaFolderAuthorizationCostTests
         Assert.False(alphaOnDocuments);
         Assert.False(betaOnPhotos);
         Assert.True(betaOnDocuments);
+    }
+
+    [Fact]
+    public async Task AMissingPath_CostsABoundedNumberOfProbes()
+    {
+        // The path is supplied by the caller, and anchoring one that does not exist probes its ancestors
+        // one at a time. Without a bound, a request naming a deeply nested path would buy hundreds of
+        // file-store round-trips for the price of one HTTP request.
+        var (services, store) = BuildProvider(secureMediaEnabled: false);
+        var authorizationService = services.GetRequiredService<IAuthorizationService>();
+
+        var shallow = string.Join('/', Enumerable.Repeat("missing", 4));
+        var absurd = string.Join('/', Enumerable.Repeat("missing", 200));
+
+        store.ResetCounters();
+        await authorizationService.AuthorizeAsync(User(), MediaPermissions.ManageMediaFolder, (object)shallow);
+        var shallowCost = store.TotalCalls;
+
+        store.ResetCounters();
+        await authorizationService.AuthorizeAsync(User(), MediaPermissions.ManageMediaFolder, (object)absurd);
+        var absurdCost = store.TotalCalls;
+
+        Assert.True(shallowCost > 0);
+
+        // Fifty times the depth must not buy fifty times the work.
+        Assert.True(absurdCost < 25,
+            $"A 200-segment path cost {absurdCost} file-store calls; the walk is expected to be bounded.");
+    }
+
+    [Fact]
+    public async Task FolderScopedGrant_AuthorizesTheRootFolder()
+    {
+        // https://github.com/OrchardCMS/OrchardCore/issues/19675
+        // SecureMediaPermissions publishes a ViewRootMediaContent permission implied by every first-level
+        // folder permission, so holding ViewMediaContent_photos is meant to imply root access. The handler
+        // used to authorize against the static instance instead, which carries no such implication, and a
+        // folder-scoped role was denied at the root while the role editor showed it as allowed.
+        var (services, _) = BuildProvider(
+            secureMediaEnabled: true,
+            grantedPermissions: [MediaPermissions.ManageMedia.Name, "ViewMediaContent_photos"]);
+
+        var authorizationService = services.GetRequiredService<IAuthorizationService>();
+
+        var authorized = await authorizationService.AuthorizeAsync(User(), MediaPermissions.ManageMediaFolder, (object)string.Empty);
+
+        Assert.True(authorized, "A folder-scoped grant is documented to imply root access.");
     }
 
     [Fact]
@@ -296,6 +344,7 @@ public class MediaFolderAuthorizationCostTests
         });
 
         services.AddAuthorizationCore();
+        services.AddMemoryCache();
         services.AddScoped<MediaPathResolutionCache>();
         services.AddSingleton<IMediaFileStore>(store);
         services.AddSingleton<IHttpContextAccessor>(new HttpContextAccessor { HttpContext = new DefaultHttpContext() });
@@ -313,6 +362,11 @@ public class MediaFolderAuthorizationCostTests
         if (secureMediaEnabled)
         {
             services.AddSingleton<SecureMediaMarker>();
+
+            // The provider publishes the ViewRootMediaContent permission that first-level folder
+            // permissions imply. The handler must authorize against that instance, not the static one.
+            services.AddSingleton<ISignal, Signal>();
+            services.AddSingleton<IPermissionProvider, SecureMediaPermissions>();
         }
 
         return (services.BuildServiceProvider(), store);
@@ -356,12 +410,37 @@ public class MediaFolderAuthorizationCostTests
                 ? forUser
                 : _granted;
 
-            if (granted.Contains(requirement.Permission.Name))
+            // OrchardCore's own handler grants a permission when any permission that implies it is held,
+            // so the stub has to walk ImpliedBy too — otherwise implications cannot be tested at all.
+            if (IsGranted(requirement.Permission, granted, []))
             {
                 context.Succeed(requirement);
             }
 
             return Task.CompletedTask;
+        }
+
+        private static bool IsGranted(Permission permission, HashSet<string> granted, HashSet<string> visited)
+        {
+            if (permission is null || !visited.Add(permission.Name))
+            {
+                return false;
+            }
+
+            if (granted.Contains(permission.Name))
+            {
+                return true;
+            }
+
+            foreach (var impliedBy in permission.ImpliedBy ?? [])
+            {
+                if (IsGranted(impliedBy, granted, visited))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 
