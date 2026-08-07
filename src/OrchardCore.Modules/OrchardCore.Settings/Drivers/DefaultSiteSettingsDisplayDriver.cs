@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -11,21 +13,33 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
 {
     public const string GroupId = "general";
 
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAuthorizationService _authorizationService;
     private readonly IShellReleaseManager _shellReleaseManager;
-
     internal readonly IStringLocalizer S;
 
     public DefaultSiteSettingsDisplayDriver(
+        IHttpContextAccessor httpContextAccessor,
+        IAuthorizationService authorizationService,
         IShellReleaseManager shellReleaseManager,
         IStringLocalizer<DefaultSiteSettingsDisplayDriver> stringLocalizer)
     {
+        _httpContextAccessor = httpContextAccessor;
+        _authorizationService = authorizationService;
         _shellReleaseManager = shellReleaseManager;
         S = stringLocalizer;
     }
 
-    public override IDisplayResult Edit(ISite site, BuildEditorContext context)
+    public override async Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
     {
         if (!IsGeneralGroup(context))
+        {
+            return null;
+        }
+
+        if (!await _authorizationService.AuthorizeAsync(
+            _httpContextAccessor.HttpContext?.User,
+            SettingsPermissions.ManageGeneralSettings))
         {
             return null;
         }
@@ -50,6 +64,13 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
     public override async Task<IDisplayResult> UpdateAsync(ISite site, UpdateEditorContext context)
     {
         if (!IsGeneralGroup(context))
+        {
+            return null;
+        }
+
+        if (!await _authorizationService.AuthorizeAsync(
+            _httpContextAccessor.HttpContext?.User,
+            SettingsPermissions.ManageGeneralSettings))
         {
             return null;
         }
