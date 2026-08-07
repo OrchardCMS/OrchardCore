@@ -61,6 +61,18 @@ internal static class MediaFileStorePathHelper
         return await ResolveNonExistingPathAsync(fileStore, path);
     }
 
+    /// <summary>
+    /// How many ancestors are probed while anchoring a path that does not exist.
+    /// </summary>
+    /// <remarks>
+    /// The path is supplied by the caller, so without a bound a request naming a deeply nested
+    /// non-existent path would cost one file-store round-trip per segment — a network call each on a
+    /// remote store, and an inexpensive request to forge. Media hierarchies are far shallower than this
+    /// in practice; beyond it the path is collapsed lexically instead, which anchors at the root and is
+    /// the more conservative outcome.
+    /// </remarks>
+    private const int MaxProbedAncestors = 16;
+
     private static async Task<string> ResolveNonExistingPathAsync(IMediaFileStore fileStore, string path)
     {
         var separator = fileStore.Combine("a", "b").Contains('/') ? '/' : '\\';
@@ -71,7 +83,10 @@ internal static class MediaFileStorePathHelper
             return string.Empty;
         }
 
-        for (var i = segments.Length; i >= 0; i--)
+        var deepest = segments.Length;
+        var shallowest = Math.Max(0, deepest - MaxProbedAncestors);
+
+        for (var i = deepest; i >= shallowest; i--)
         {
             var ancestorPath = string.Join(separator, segments[..i]);
             var ancestor = await fileStore.GetDirectoryInfoAsync(ancestorPath);
