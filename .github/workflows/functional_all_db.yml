@@ -50,6 +50,9 @@ jobs:
       run: |
         pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
     - name: Functional Tests
+      env:
+        # The MVC app uses neither Redis nor Azurite; don't start those containers for this run.
+        ORCHARD_TEST_DOCKER_SERVICES: "false"
       run: |
         dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Mvc*"
     - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

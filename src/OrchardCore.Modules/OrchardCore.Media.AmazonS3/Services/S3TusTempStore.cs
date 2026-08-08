@@ -2,6 +2,7 @@ using System.IO.Pipelines;
 using System.Text.Json;
 using Amazon.S3;
 using Amazon.S3.Model;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -18,6 +19,7 @@ namespace OrchardCore.Media.AmazonS3.Services;
 public sealed class S3TusTempStore : ITusTempStore
 {
     private const string TusTempPrefix = "_tus-uploads";
+    private const string UnexpectedEndOfRequestContent = "Unexpected end of request content.";
 
     private readonly IAmazonS3 _s3Client;
     private readonly string _bucketName;
@@ -74,9 +76,9 @@ public sealed class S3TusTempStore : ITusTempStore
             // Read the entire stream into a buffer for S3 (S3 requires content-length for parts).
             using var memoryStream = new MemoryStream();
             await stream.CopyToAsync(memoryStream, cancellationToken);
-            bytesWritten = memoryStream.Length;
+            var bufferedBytes = memoryStream.Length;
 
-            if (bytesWritten > 0)
+            if (bufferedBytes > 0)
             {
                 memoryStream.Position = 0;
                 var uploadPartRequest = new UploadPartRequest
@@ -90,14 +92,19 @@ public sealed class S3TusTempStore : ITusTempStore
 
                 var response = await _s3Client.UploadPartAsync(uploadPartRequest, cancellationToken);
                 parts.Add(new PartInfo { PartNumber = partNumber, ETag = response.ETag });
+                bytesWritten = bufferedBytes;
             }
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
-            // Client disconnected. Parts already uploaded are durable.
+            bytesWritten = 0;
+        }
+        catch (BadHttpRequestException exception) when (IsUnexpectedEndOfRequest(exception))
+        {
+            bytesWritten = 0;
         }
 
-        await SavePartListAsync(fileId, parts, cancellationToken);
+        await SavePartListAsync(fileId, parts, CancellationToken.None);
 
         return bytesWritten;
     }
@@ -114,51 +121,67 @@ public sealed class S3TusTempStore : ITusTempStore
         var partNumber = parts.Count + 1;
 
         long bytesWritten = 0;
+        var clientDisconnected = false;
         try
         {
-            // Buffer the pipe data, then upload as a single part.
-            using var memoryStream = new MemoryStream();
-            while (true)
+            try
             {
-                var result = await pipeReader.ReadAsync(cancellationToken);
-                var buffer = result.Buffer;
-
-                foreach (var segment in buffer)
+                // Buffer the pipe data, then upload as a single part.
+                using var memoryStream = new MemoryStream();
+                while (true)
                 {
-                    memoryStream.Write(segment.Span);
-                    bytesWritten += segment.Length;
+                    var result = await pipeReader.ReadAsync(cancellationToken);
+                    var buffer = result.Buffer;
+
+                    foreach (var segment in buffer)
+                    {
+                        memoryStream.Write(segment.Span);
+                    }
+
+                    pipeReader.AdvanceTo(buffer.End);
+
+                    if (result.IsCanceled || cancellationToken.IsCancellationRequested)
+                    {
+                        clientDisconnected = true;
+                        break;
+                    }
+
+                    if (result.IsCompleted)
+                    {
+                        break;
+                    }
                 }
 
-                pipeReader.AdvanceTo(buffer.End);
-
-                if (result.IsCompleted)
+                var bufferedBytes = memoryStream.Length;
+                if (!clientDisconnected && bufferedBytes > 0)
                 {
-                    break;
+                    memoryStream.Position = 0;
+                    var uploadPartRequest = new UploadPartRequest
+                    {
+                        BucketName = _bucketName,
+                        Key = GetObjectKey(fileId),
+                        UploadId = uploadId,
+                        PartNumber = partNumber,
+                        InputStream = memoryStream,
+                    };
+
+                    var response = await _s3Client.UploadPartAsync(uploadPartRequest, cancellationToken);
+                    parts.Add(new PartInfo { PartNumber = partNumber, ETag = response.ETag });
+                    bytesWritten = bufferedBytes;
                 }
             }
-
-            if (bytesWritten > 0)
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
             {
-                memoryStream.Position = 0;
-                var uploadPartRequest = new UploadPartRequest
-                {
-                    BucketName = _bucketName,
-                    Key = GetObjectKey(fileId),
-                    UploadId = uploadId,
-                    PartNumber = partNumber,
-                    InputStream = memoryStream,
-                };
-
-                var response = await _s3Client.UploadPartAsync(uploadPartRequest, cancellationToken);
-                parts.Add(new PartInfo { PartNumber = partNumber, ETag = response.ETag });
+                clientDisconnected = true;
+                bytesWritten = 0;
             }
+
+            await SavePartListAsync(fileId, parts, CancellationToken.None);
         }
-        catch (OperationCanceledException)
+        finally
         {
-            // Client disconnected. Parts already uploaded are durable.
+            await pipeReader.CompleteAsync();
         }
-
-        await SavePartListAsync(fileId, parts, cancellationToken);
 
         return bytesWritten;
     }
@@ -297,6 +320,10 @@ public sealed class S3TusTempStore : ITusTempStore
             GetCacheOptions(),
             cancellationToken);
     }
+
+    private static bool IsUnexpectedEndOfRequest(BadHttpRequestException exception) =>
+        exception.StatusCode == StatusCodes.Status400BadRequest
+        && string.Equals(exception.Message, UnexpectedEndOfRequestContent, StringComparison.Ordinal);
 
     private sealed class PartInfo
     {
