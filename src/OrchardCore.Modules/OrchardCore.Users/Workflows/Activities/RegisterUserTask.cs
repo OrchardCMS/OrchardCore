@@ -83,9 +83,7 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>
 
     // Returns the possible outcomes of this activity.
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"], S["Valid"], S["Invalid"]);
-    }
+        => Outcome(S["Done"], S["Valid"], S["Invalid"]);
 
     // This is the heart of the activity and actually performs the work to be done.
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
@@ -93,7 +91,7 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>
         var email = GetPropertyFromContextOrForm(workflowContext, "Email");
         if (string.IsNullOrWhiteSpace(email))
         {
-            return Outcomes("Done", "Invalid");
+            return Outcome("Done", "Invalid");
         }
 
         var userName = GetPropertyFromContextOrForm(workflowContext, "UserName") ?? email.Replace('@', '+');
@@ -101,15 +99,15 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>
 
         if (user == null)
         {
-            return Outcomes("Done", "Invalid");
+            return Outcome("Done", "Invalid");
         }
 
         if (SendConfirmationEmail && !await SendConfirmationEmailAsync(user, workflowContext, email))
         {
-            return Outcomes("Done", "Invalid");
+            return Outcome("Done", "Invalid");
         }
 
-        return Outcomes("Done", "Valid");
+        return Outcome("Done", "Valid");
     }
 
     private string GetPropertyFromContextOrForm(WorkflowExecutionContext context, string key)
