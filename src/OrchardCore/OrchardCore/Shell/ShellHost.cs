@@ -51,59 +51,46 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
     /// <summary>
     /// Ensures that all the <see cref="ShellContext"/> are pre-created and available to process requests.
     /// </summary>
-    public async Task InitializeAsync()
+    public Task InitializeAsync()
     {
         if (_initialized)
         {
-            return;
+            return Task.CompletedTask;
         }
 
-        // Prevent concurrent requests from creating all shells multiple times.
-        await _initializingSemaphore.WaitAsync();
-        try
+        return Awaited(this);
+
+        static async Task Awaited(ShellHost host)
         {
-            if (!_initialized)
+            // Prevent concurrent requests from creating all shells multiple times.
+            await host._initializingSemaphore.WaitAsync();
+            try
             {
-                await PreCreateAndRegisterShellsAsync();
-                _initialized = true;
+                if (!host._initialized)
+                {
+                    await host.PreCreateAndRegisterShellsAsync();
+                    host._initialized = true;
+                }
             }
-        }
-        finally
-        {
-            _initializingSemaphore.Release();
+            finally
+            {
+                host._initializingSemaphore.Release();
+            }
         }
     }
 
     /// <summary>
     /// Returns an existing <see cref="ShellContext"/> or creates a new one if necessary.
     /// </summary>
-    public async Task<ShellContext> GetOrCreateShellContextAsync(ShellSettings settings)
+    public Task<ShellContext> GetOrCreateShellContextAsync(ShellSettings settings)
     {
         ShellContext shell = null;
+
         while (shell is null)
         {
             if (!_shellContexts.TryGetValue(settings.Name, out shell))
             {
-                var semaphore = _shellSemaphores.GetOrAdd(settings.Name, (name) => new SemaphoreSlim(1));
-
-                await semaphore.WaitAsync();
-                try
-                {
-                    if (!_shellContexts.TryGetValue(settings.Name, out shell))
-                    {
-                        if (!settings.HasConfiguration())
-                        {
-                            settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
-                        }
-
-                        shell = await CreateShellContextAsync(settings);
-                        AddAndRegisterShell(shell);
-                    }
-                }
-                finally
-                {
-                    semaphore.Release();
-                }
+                return Awaited(this, settings);
             }
 
             if (shell.Released)
@@ -115,24 +102,111 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
             }
         }
 
-        return shell;
+        return Task.FromResult(shell);
+
+        static async Task<ShellContext> Awaited(ShellHost host, ShellSettings settings)
+        {
+            ShellContext shell = null;
+            while (shell is null)
+            {
+                if (!host._shellContexts.TryGetValue(settings.Name, out shell))
+                {
+                    var semaphore = host._shellSemaphores.GetOrAdd(settings.Name, (name) => new SemaphoreSlim(1));
+
+                    await semaphore.WaitAsync();
+                    try
+                    {
+                        if (!host._shellContexts.TryGetValue(settings.Name, out shell))
+                        {
+                            if (!settings.HasConfiguration())
+                            {
+                                settings = await host._shellSettingsManager.LoadSettingsAsync(settings.Name);
+                            }
+
+                            shell = await host.CreateShellContextAsync(settings);
+                            host.AddAndRegisterShell(shell);
+                        }
+                    }
+                    finally
+                    {
+                        semaphore.Release();
+                    }
+                }
+
+                if (shell.Released)
+                {
+                    // If the context is released, it is removed from the dictionary so that the next iteration
+                    // or a new call on 'GetOrCreateShellContextAsync()' will recreate a new shell context.
+                    host._shellContexts.TryRemove(settings.Name, out _);
+                    shell = null;
+                }
+            }
+
+            return shell;
+        }
     }
 
     /// <summary>
     /// Creates a standalone service scope that can be used to resolve local services.
     /// </summary>
-    public async Task<ShellScope> GetScopeAsync(ShellSettings settings)
+    public Task<ShellScope> GetScopeAsync(ShellSettings settings)
     {
-        ShellScope scope = null;
-        while (scope is null)
+        while (true)
         {
             if (!_shellContexts.TryGetValue(settings.Name, out var shellContext))
             {
-                shellContext = await GetOrCreateShellContextAsync(settings);
+                return Awaited(this, settings);
             }
 
             // We create a scope before checking if the shell has been released.
-            scope = await shellContext.CreateScopeAsync();
+            var scopeTask = shellContext.CreateScopeAsync();
+            if (!scopeTask.IsCompletedSuccessfully)
+            {
+                return AwaitScope(this, scopeTask, settings);
+            }
+
+            // If 'CreateScope()' returned null, the shell is released. We then remove it and
+            // retry with the hope to get one that won't be released before we create a scope.
+            if (scopeTask.Result is null)
+            {
+                // If the context is released, it is removed from the dictionary so that the next
+                // iteration or a new call on 'GetScopeAsync()' will recreate a new shell context.
+                _shellContexts.TryRemove(settings.Name, out _);
+                continue;
+            }
+
+            return scopeTask;
+        }
+
+        static async Task<ShellScope> Awaited(ShellHost host, ShellSettings settings)
+        {
+            ShellScope scope = null;
+            while (scope is null)
+            {
+                if (!host._shellContexts.TryGetValue(settings.Name, out var shellContext))
+                {
+                    shellContext = await host.GetOrCreateShellContextAsync(settings);
+                }
+
+                // We create a scope before checking if the shell has been released.
+                scope = await shellContext.CreateScopeAsync();
+
+                // If 'CreateScope()' returned null, the shell is released. We then remove it and
+                // retry with the hope to get one that won't be released before we create a scope.
+                if (scope is null)
+                {
+                    // If the context is released, it is removed from the dictionary so that the next
+                    // iteration or a new call on 'GetScopeAsync()' will recreate a new shell context.
+                    host._shellContexts.TryRemove(settings.Name, out _);
+                }
+            }
+
+            return scope;
+        }
+
+        static async Task<ShellScope> AwaitScope(ShellHost host, Task<ShellScope> task, ShellSettings settings)
+        {
+            var scope = await task;
 
             // If 'CreateScope()' returned null, the shell is released. We then remove it and
             // retry with the hope to get one that won't be released before we create a scope.
@@ -140,11 +214,31 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
             {
                 // If the context is released, it is removed from the dictionary so that the next
                 // iteration or a new call on 'GetScopeAsync()' will recreate a new shell context.
-                _shellContexts.TryRemove(settings.Name, out _);
+                host._shellContexts.TryRemove(settings.Name, out _);
             }
-        }
 
-        return scope;
+            while (scope is null)
+            {
+                if (!host._shellContexts.TryGetValue(settings.Name, out var shellContext))
+                {
+                    shellContext = await host.GetOrCreateShellContextAsync(settings);
+                }
+
+                // We create a scope before checking if the shell has been released.
+                scope = await shellContext.CreateScopeAsync();
+
+                // If 'CreateScope()' returned null, the shell is released. We then remove it and
+                // retry with the hope to get one that won't be released before we create a scope.
+                if (scope is null)
+                {
+                    // If the context is released, it is removed from the dictionary so that the next
+                    // iteration or a new call on 'GetScopeAsync()' will recreate a new shell context.
+                    host._shellContexts.TryRemove(settings.Name, out _);
+                }
+            }
+
+            return scope;
+        }
     }
 
     /// <summary>

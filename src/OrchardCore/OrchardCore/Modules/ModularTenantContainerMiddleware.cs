@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Modules;
 
@@ -55,16 +56,16 @@ public class ModularTenantContainerMiddleware
                 OriginalPathBase = httpContext.Request.PathBase,
             });
 
-            await shellScope.UsingAsync(async scope =>
+            await shellScope.UsingAsync(async (scope, next, httpContext) =>
             {
-                await _next.Invoke(httpContext);
+                await next.Invoke(httpContext);
 
                 var feature = httpContext.Features.Get<IExceptionHandlerFeature>();
                 if (feature?.Error is not null)
                 {
                     await scope.HandleExceptionAsync(feature.Error);
                 }
-            });
+            }, _next, httpContext);
         }
     }
 }

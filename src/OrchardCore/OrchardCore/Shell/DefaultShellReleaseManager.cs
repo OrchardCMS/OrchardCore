@@ -24,19 +24,19 @@ public class DefaultShellReleaseManager : IShellReleaseManager
 
         _deferredTaskAdded = true;
 
-        ShellScope.AddDeferredTask(async scope =>
+        ShellScope.AddDeferredTask(async (scope, releaseManager) =>
         {
-            if (!_release)
+            if (!releaseManager._release)
             {
                 return;
             }
 
-            _release = false;
+            releaseManager._release = false;
 
             var shellHost = scope.ServiceProvider.GetRequiredService<IShellHost>();
             var shellSettings = scope.ServiceProvider.GetRequiredService<ShellSettings>();
 
             await shellHost.ReleaseShellContextAsync(shellSettings);
-        });
+        }, this);
     }
 }
