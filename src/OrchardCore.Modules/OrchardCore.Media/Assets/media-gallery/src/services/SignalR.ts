@@ -1,6 +1,7 @@
 import SignalRApp from "@bloom/services/signalr/signalr-app";
 import { signalRReceivedData } from "@bloom/services/signalr/eventbus";
 import { watch } from "vue";
+import { applyMediaChange, type IMediaChangedMessage } from "./applyMediaChange";
 import { useFileLibraryManager } from "./FileLibraryManager";
 import { useGlobals } from "./Globals";
 import { getAccessToken, isAuthConfigured } from "./media-gallery-auth";
@@ -50,6 +51,14 @@ export function useSignalR() {
   if (app.connection) {
     app.connection.on("MediaChanged", async (message: unknown) => {
       console.debug("MediaChanged event received", message);
+
+      // The payload carries the affected entry, so the store can usually be patched in place. Only fall
+      // back to a full reload when it cannot be — otherwise every client reloads the directory on every
+      // change, which costs a listing (plus a HasChildren probe per subfolder) per connected client.
+      if (applyMediaChange(message as IMediaChangedMessage)) {
+        return;
+      }
+
       await loadDirectoryFiles(selectedDirectory.value?.directoryPath ?? "", true);
     });
 
