@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Acornima.Ast;
 using Jint;
 using Jint.Native;
@@ -18,6 +19,16 @@ public sealed class JavaScriptEngine : IScriptingEngine
     // The attributes Engine.SetValue(string, Delegate) gives a global, so that a lazily declared global is
     // indistinguishable from an eagerly set one once it is materialized.
     private const PropertyFlag GlobalPropertyFlags = PropertyFlag.NonEnumerable;
+
+    // A lazily registered global is only materialized when a script reads it, which happens long after
+    // the engine was built. The delegate it wraps is produced by a factory that takes the service
+    // provider of the evaluation it belongs to, so the engine has to be able to find its scope back.
+    // The table holds the engine weakly, so an entry disappears together with the engine that keys it.
+    //
+    // It belongs to this instance rather than to the type because every write takes the table's own lock:
+    // one table for the process would make every JavaScript evaluation of every tenant queue behind a
+    // single lock, while this is a singleton of one tenant, which is as far as the contention now reaches.
+    private readonly ConditionalWeakTable<Engine, IServiceProvider> _engineServiceProviders = new();
 
     private readonly IMemoryCache _memoryCache;
     private readonly JintOptions _jintOptions;
@@ -50,7 +61,7 @@ public sealed class JavaScriptEngine : IScriptingEngine
     {
         var engine = new Engine(_jintOptions);
 
-        return new JavaScriptScope(engine, serviceProvider, methods, _lazyGlobals);
+        return new JavaScriptScope(engine, serviceProvider, methods, _lazyGlobals, _engineServiceProviders);
     }
 
     public object Evaluate(IScriptingScope scope, string script)
@@ -100,7 +111,7 @@ public sealed class JavaScriptEngine : IScriptingEngine
     /// reflected over and wrapped up front. The options replay the declarations for each engine, so a global
     /// is materialized at most once per engine, on the first read of its name.
     /// </summary>
-    private static Dictionary<string, LazyGlobalMethod> RegisterLazyGlobals(JintOptions options, IEnumerable<IGlobalMethodProvider> globalMethodProviders)
+    private Dictionary<string, LazyGlobalMethod> RegisterLazyGlobals(JintOptions options, IEnumerable<IGlobalMethodProvider> globalMethodProviders)
     {
         var candidates = new Dictionary<string, GlobalMethod>(StringComparer.Ordinal);
         var ambiguous = new HashSet<string>(StringComparer.Ordinal);
@@ -151,11 +162,11 @@ public sealed class JavaScriptEngine : IScriptingEngine
         return lazyGlobals;
     }
 
-    private static JsValue CreateGlobal(Engine engine, string name, Func<IServiceProvider, Delegate> factory)
+    private JsValue CreateGlobal(Engine engine, string name, Func<IServiceProvider, Delegate> factory)
     {
         // The factory captures the services it is given, so the delegate has to be built with the services
         // of the scope that owns this engine, and cannot be shared between engines.
-        if (!JavaScriptScope.TryGetServiceProvider(engine, out var serviceProvider))
+        if (!_engineServiceProviders.TryGetValue(engine, out var serviceProvider))
         {
             // The lazy property stores whatever this returns and never runs again, so returning a value here
             // would leave the global permanently undefined and fail as 'x is not a function' somewhere else.

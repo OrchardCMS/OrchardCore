@@ -5,14 +5,8 @@ namespace OrchardCore.Scripting.JavaScript;
 
 public class JavaScriptScope : IScriptingScope
 {
-    // A lazily registered global is only materialized when a script reads it, which happens long after
-    // the engine was built. The delegate it wraps is produced by a factory that takes the service
-    // provider of the evaluation it belongs to, so the engine has to be able to find its scope back.
-    // The table holds the engine weakly, so an entry disappears together with the engine that keys it.
-    private static readonly ConditionalWeakTable<Engine, IServiceProvider> _engineServiceProviders = new();
-
     public JavaScriptScope(Engine engine, IServiceProvider serviceProvider, IEnumerable<GlobalMethod> methods)
-        : this(engine, serviceProvider, methods, lazyGlobals: null)
+        : this(engine, serviceProvider, methods, lazyGlobals: null, engineServiceProviders: null)
     {
     }
 
@@ -20,12 +14,16 @@ public class JavaScriptScope : IScriptingScope
         Engine engine,
         IServiceProvider serviceProvider,
         IEnumerable<GlobalMethod> methods,
-        IReadOnlyDictionary<string, JavaScriptEngine.LazyGlobalMethod> lazyGlobals)
+        IReadOnlyDictionary<string, JavaScriptEngine.LazyGlobalMethod> lazyGlobals,
+        ConditionalWeakTable<Engine, IServiceProvider> engineServiceProviders)
     {
         Engine = engine;
         ServiceProvider = serviceProvider;
 
-        _engineServiceProviders.AddOrUpdate(engine, serviceProvider);
+        // Only the scripting engine that declared the lazy globals can materialize one, and the table it
+        // hands over here is how it finds this scope back when a script eventually reads such a global. A
+        // scope a caller builds around its own engine has no lazy global to serve, so it records nothing.
+        engineServiceProviders?.AddOrUpdate(engine, serviceProvider);
 
         foreach (var method in methods)
         {
@@ -56,10 +54,4 @@ public class JavaScriptScope : IScriptingScope
     public Engine Engine { get; }
 
     public IServiceProvider ServiceProvider { get; }
-
-    /// <summary>
-    /// Gets the services of the scope that owns the given engine.
-    /// </summary>
-    internal static bool TryGetServiceProvider(Engine engine, out IServiceProvider serviceProvider)
-        => _engineServiceProviders.TryGetValue(engine, out serviceProvider);
 }
