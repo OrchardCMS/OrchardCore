@@ -4,7 +4,8 @@ Purpose: understand the media permission set well enough to decide what to renam
 what to remove, before any further implementation. Companion to `media-permissions-model-plan.md`,
 whose Phase 2 onward should be re-derived from the conclusions here.
 
-Everything below is read off the code on `skrypt/media-auth-cost-fix` at commit `88c7cb9eab`.
+Everything below is read off the code on `skrypt/media-permissions-model`, which carries the Phase 0
+and Phase 1 changes on top of `skrypt/media-auth-cost-fix`.
 
 ## 1. The list mixes three unrelated things
 
