@@ -1,0 +1,9 @@
+@model ListContentTransferEntryOptions
+@using OrchardCore.ContentTransfer
+
+@if (Model.Direction == ContentTransferDirection.Export && Model.ExportableTypes?.Count > 0)
+{
+    <button type="button" class="btn btn-secondary" data-bs-toggle="collapse" data-bs-target="#export-request-panel" aria-expanded="false" aria-controls="export-request-panel">
+        @T["Export"]
+    </button>
+}

@@ -1,0 +1,9 @@
+@model EtlActivityViewModel<FieldMappingTransform>
+
+<header>
+    <h4><i class="fa-solid fa-shuffle"></i> @T["Field Mapping"]</h4>
+</header>
+@if (!string.IsNullOrEmpty(Model.Activity.MappingsJson))
+{
+    <span>@T["Mappings configured"]</span>
+}

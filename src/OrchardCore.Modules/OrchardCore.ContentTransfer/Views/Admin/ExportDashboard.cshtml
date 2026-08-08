@@ -1,0 +1,61 @@
+@model ListContentTransferEntriesViewModel
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Export Dashboard"])</h1></zone>
+
+<div class="card text-bg-theme mb-3 position-sticky action-bar">
+    <div class="card-body">
+        <div class="row gx-3">
+            <div class="col">
+                <div class="has-search">
+                    <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
+                    <input id="export-search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ul class="list-group" id="export-entries-list">
+    @if (Model.Entries.Count > 0)
+    {
+        @foreach (var entry in Model.Entries)
+        {
+            <li class="list-group-item export-entry-item">
+                @await DisplayAsync(entry)
+            </li>
+        }
+    }
+    else
+    {
+        <li class="list-group-item">
+            <div class="alert alert-info mb-0" id="no-items-message">
+                @T["No export requests found."]
+            </div>
+        </li>
+    }
+</ul>
+
+@await DisplayAsync(Model.Pager)
+
+<script at="Foot">
+    document.addEventListener('DOMContentLoaded', function () {
+        var searchBox = document.getElementById('export-search-box');
+        if (!searchBox) return;
+
+        searchBox.addEventListener('input', function () {
+            var filter = this.value.toLowerCase();
+            var items = document.querySelectorAll('.export-entry-item');
+            var visibleCount = 0;
+
+            items.forEach(function (item) {
+                var text = item.textContent.toLowerCase();
+                if (text.indexOf(filter) > -1) {
+                    item.style.display = '';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>

@@ -1,0 +1,17 @@
+@model EtlActivityViewModel<ContentItemSource>
+
+<header>
+    <h4><i class="fa-solid fa-database"></i> @T["Content Items"]</h4>
+</header>
+@if (!string.IsNullOrEmpty(Model.Activity.ContentType))
+{
+    <div>@T["Type:"] @Model.Activity.ContentType</div>
+}
+@if (!string.IsNullOrEmpty(Model.Activity.VersionScope))
+{
+    <div>@T["Versions:"] @Model.Activity.VersionScope</div>
+}
+@if (!string.IsNullOrWhiteSpace(Model.Activity.Owner))
+{
+    <div>@T["Owner:"] @Model.Activity.Owner</div>
+}

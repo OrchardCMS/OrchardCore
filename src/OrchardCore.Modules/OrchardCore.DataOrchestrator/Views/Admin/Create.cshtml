@@ -1,0 +1,28 @@
+@model EtlPipelinePropertiesViewModel
+
+<zone Name="Title"><h1>@T["Create Data Pipeline"]</h1></zone>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label">@T["Name"]</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label">@T["Description"]</label>
+        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+    </div>
+    <div class="mb-3 form-check">
+        <input asp-for="IsEnabled" class="form-check-input" />
+        <label asp-for="IsEnabled" class="form-check-label">@T["Enabled"]</label>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Schedule" class="form-label">@T["Schedule (Cron Expression)"]</label>
+        <input asp-for="Schedule" class="form-control" placeholder="*/10 * * * *" />
+        <span class="hint">@T["Leave empty for manual execution only."]</span>
+    </div>
+    <div class="mb-3">
+        <button class="btn btn-success" type="submit">@T["Create"]</button>
+        <a class="btn btn-secondary" asp-action="Index">@T["Cancel"]</a>
+    </div>
+</form>

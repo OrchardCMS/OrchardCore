@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>OrchardCore.DataOrchestrator</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore ETL Core</Title>
+    <Description>$(OCCMSDescription)
+    Core services for the ETL module.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS ETL</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.DataOrchestrator.Abstractions\OrchardCore.DataOrchestrator.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Data.YesSql.Abstractions\OrchardCore.Data.YesSql.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

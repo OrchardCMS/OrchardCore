@@ -1,0 +1,108 @@
+@model EtlPipelineEditorViewModel
+@using OrchardCore.Mvc.Utilities
+
+<zone Name="Title"><h1>@RenderTitleSegments(Model.Pipeline.Name)</h1></zone>
+
+<zone name="Breadcrumbs">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">@T["Data Pipelines"]</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Pipeline.Name</li>
+        </ol>
+    </nav>
+</zone>
+
+<div class="card text-bg-theme mb-3">
+    <div class="card-body">
+        <div class="d-flex justify-content-between">
+            <div>
+                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#activity-picker" data-picker-title="@T["Available Sources"]" data-activity-type="Sources">
+                    <i class="fa-solid fa-database"></i> @T["Add Source"]
+                </button>
+                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#activity-picker" data-picker-title="@T["Available Transformations"]" data-activity-type="Transforms">
+                    <i class="fa-solid fa-shuffle"></i> @T["Add Transformation"]
+                </button>
+                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#activity-picker" data-picker-title="@T["Available Loads"]" data-activity-type="Loads">
+                    <i class="fa-solid fa-upload"></i> @T["Add Load"]
+                </button>
+            </div>
+            <div>
+                <button class="btn btn-sm btn-success" type="submit" form="pipelineEditorForm" name="submitAction" value="run">@T["Run"]</button>
+                <a class="btn btn-sm btn-secondary" asp-action="EditProperties" asp-route-id="@Model.Pipeline.Id">@T["Properties"]</a>
+                <a class="btn btn-sm btn-secondary" asp-action="Logs" asp-route-id="@Model.Pipeline.Id">@T["Logs"]</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form asp-action="Edit" method="post" id="pipelineEditorForm" class="no-multisubmit">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="Id" value="@Model.Pipeline.Id" />
+    <div class="etl-container workflow-container text-bg-theme">
+        <div class="etl-canvas-container workflow-canvas-container">
+            <div class="etl-canvas workflow-canvas"
+                     data-pipeline="@Model.PipelineJson"
+                     data-delete-activity-prompt="@T["Are you sure you want to delete this activity?"]"
+                     data-local-id="@Model.LocalId"
+                     data-load-local-state="@Model.LoadLocalState.ToString().ToLower()">
+                    @foreach (var activityShape in Model.ActivityDesignShapes)
+                    {
+                        @await DisplayAsync(activityShape)
+                    }
+            </div>
+        </div>
+    </div>
+    <input asp-for="State" id="pipelineStateInput" type="hidden" />
+    <div class="mb-3">
+        <button class="btn btn-success save" type="submit" name="submitAction" value="save">@T["Save"]</button>
+        <button class="btn btn-secondary" type="submit" name="submitAction" value="run">@T["Run"]</button>
+        <a class="btn btn-secondary cancel" asp-action="Index">@T["Cancel"]</a>
+    </div>
+</form>
+
+@* Activity Picker Modal *@
+<div class="modal fade modal-activities" id="activity-picker" tabindex="-1" role="dialog" aria-labelledby="activity-picker-label" aria-hidden="true" data-activity-type="Sources">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="activity-picker-label">@T["Available Activities"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-3 col-md-3 col-lg-2">
+                        <div class="mb-3">
+                            <input class="form-control activity-search" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus />
+                        </div>
+                        <ul class="nav nav-pills flex-column activity-picker-categories">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#all" data-bs-toggle="pill">@T["All"]</a>
+                            </li>
+                            @foreach (var category in Model.ActivityCategories)
+                            {
+                                <li class="nav-item" data-category="@category.HtmlClassify()">
+                                    <a class="nav-link" href="#@category.HtmlClassify()" data-bs-toggle="pill">@T[category]</a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                    <div class="col-sm-9 col-md-9 col-lg-10">
+                        <div class="tab-content row row-cols-1 row-cols-md-3 g-2">
+                            @foreach (var activityShape in Model.ActivityThumbnailShapes)
+                            {
+                                @await DisplayAsync(activityShape)
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style asp-name="jsplumbtoolkit-defaults"></style>
+<style asp-name="etl-pipeline-editor"></style>
+<script asp-name="etl-pipeline-editor" at="Foot"></script>

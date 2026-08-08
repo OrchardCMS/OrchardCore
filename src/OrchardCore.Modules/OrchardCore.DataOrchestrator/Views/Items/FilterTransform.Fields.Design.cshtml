@@ -1,0 +1,9 @@
+@model EtlActivityViewModel<FilterTransform>
+
+<header>
+    <h4><i class="fa-solid fa-filter"></i> @T["Filter"]</h4>
+</header>
+@if (!string.IsNullOrEmpty(Model.Activity.Field))
+{
+    <span>@Model.Activity.Field @Model.Activity.Operator @Model.Activity.Value</span>
+}

@@ -1,0 +1,9 @@
+@model EtlActivityViewModel<QuerySource>
+
+<header>
+    <h4><i class="fa-solid fa-magnifying-glass"></i> @T["Query"]</h4>
+</header>
+@if (!string.IsNullOrEmpty(Model.Activity.QueryName))
+{
+    <div>@T["Query:"] @Model.Activity.QueryName</div>
+}

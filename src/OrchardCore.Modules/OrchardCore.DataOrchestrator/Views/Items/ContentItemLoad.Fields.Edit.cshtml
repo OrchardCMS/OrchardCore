@@ -1,0 +1,7 @@
+@model ContentItemLoadViewModel
+
+<div class="mb-3">
+    <label asp-for="ContentType" class="form-label">@T["Content Type"]</label>
+    <input asp-for="ContentType" class="form-control" />
+    <span class="hint">@T["The technical name of the content type to create."]</span>
+</div>
