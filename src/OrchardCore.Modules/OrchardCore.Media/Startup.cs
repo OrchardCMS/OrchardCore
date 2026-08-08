@@ -30,6 +30,7 @@ using OrchardCore.Liquid;
 using OrchardCore.Localization;
 using OrchardCore.Media.Controllers;
 using OrchardCore.Media.Core;
+using OrchardCore.Media.Core.Helpers;
 using OrchardCore.Media.Deployment;
 using OrchardCore.Media.Drivers;
 using OrchardCore.Media.Endpoints.Api;
@@ -40,6 +41,7 @@ using OrchardCore.Media.Handlers;
 using OrchardCore.Media.Hubs;
 using OrchardCore.Media.Indexing;
 using OrchardCore.Media.Liquid;
+using OrchardCore.Media.Middleware;
 using OrchardCore.Media.Processing;
 using OrchardCore.Media.Recipes;
 using OrchardCore.Media.Services;
@@ -54,7 +56,6 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Shortcodes;
-using OrchardCore.Media.Middleware;
 using tusdotnet;
 using tusdotnet.Models;
 using tusdotnet.Models.Configuration;
@@ -97,6 +98,7 @@ public sealed class Startup : StartupBase
         services.AddTransient<IConfigureOptions<AuthorizationOptions>, MediaApiAuthorizationOptionsConfiguration>();
         services.AddSiteDisplayDriver<MediaApiSettingsDisplayDriver>();
         services.TryAddTransient<FileCreationService>();
+        services.AddTransient<FileSizeHelper>();
 
         services.AddSingleton<IMediaFileProvider>(serviceProvider =>
         {
@@ -124,6 +126,7 @@ public sealed class Startup : StartupBase
             var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
             var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
             var mediaEventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
+            var fileSizeHelper = serviceProvider.GetService<FileSizeHelper>();
             var mediaCreatingEventHandlers =
                 serviceProvider.GetServices<IMediaCreatingEventHandler>();
             var fileSystemStoreLogger = serviceProvider.GetRequiredService<
@@ -162,6 +165,7 @@ public sealed class Startup : StartupBase
                 mediaOptions.CdnBaseUrl,
                 mediaEventHandlers,
                 mediaCreatingEventHandlers,
+                fileSizeHelper,
                 defaultMediaFileStoreLogger
             );
         });

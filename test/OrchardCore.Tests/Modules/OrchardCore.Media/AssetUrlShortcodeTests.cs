@@ -1,6 +1,7 @@
 using OrchardCore.FileStorage;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Media.Core;
+using OrchardCore.Media.Core.Helpers;
 using OrchardCore.Media.Shortcodes;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Shortcodes.Services;
@@ -29,12 +30,20 @@ public class AssetUrlShortcodeTests
     [InlineData("", @"foo <a href=""[asset_url]foo bar.jpg[/asset_url]"">baz</a>", @"foo <a href=""/media/foo%20bar.jpg"">baz</a>")]
     public async Task Process_Default_Succeeds(string cdnBaseUrl, string text, string expected)
     {
+        var stringLocalizerMock = new Mock<IStringLocalizer<FileSizeHelper>>();
+        stringLocalizerMock.Setup(x => x[It.IsAny<string>()])
+            .Returns((string key) => new LocalizedString(key, key));
+
+        stringLocalizerMock.Setup(x => x[It.IsAny<string>(), It.IsAny<object[]>()])
+            .Returns((string key, object[] args) => new LocalizedString(key, string.Format(key, args)));
+
         var fileStore = new DefaultMediaFileStore(
             Mock.Of<IFileStore>(),
             "/media",
             cdnBaseUrl,
             [],
             [],
+            new FileSizeHelper(stringLocalizerMock.Object),
             Mock.Of<ILogger<DefaultMediaFileStore>>());
 
         var defaultHttpContext = new DefaultHttpContext();

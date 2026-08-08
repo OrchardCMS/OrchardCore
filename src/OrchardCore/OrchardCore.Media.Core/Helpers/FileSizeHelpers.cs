@@ -1,5 +1,6 @@
 namespace OrchardCore.Media.Core.Helpers;
 
+[Obsolete($"This class is deprecated. Use {nameof(FileSizeHelper)} instead.")]
 public static class FileSizeHelpers
 {
     private static string[] _fileSizeUnits = ["KB", "MB", "GB", "TB", "PB", "EB"];
