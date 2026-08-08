@@ -66,6 +66,7 @@ public static class GetDirectoryContentEndpoint
         var foldersTask = MediaEndpointHelpers.GetDirectoryFoldersAsync(mediaFileStore, authorizationService, httpContext.User, path, pathCache, treeCache);
         var filesTask = MediaEndpointHelpers.GetDirectoryFilesAsync(
             mediaFileStore,
+            authorizationService,
             httpContext,
             contentTypeProvider,
             fileVersionProvider,
