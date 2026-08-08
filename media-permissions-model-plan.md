@@ -1,8 +1,10 @@
 # Media permissions model — cleanup plan
 
-Status: Phases 0 and 1 done. Phase 2 is next and needs no decision. §6.1 (what ownership means) is
-still open and gates only whether Phase 1 is the *complete* answer to "own folders only".
-Branch: `skrypt/media-auth-cost-fix`.
+Status: Phases 0 and 1 done. **Further implementation is on hold** pending
+`media-permissions-analysis.md`, which examines the whole permission set and supersedes this plan's
+Phase 2 onward — those phases should be re-derived from its §5 ordering. Phase 1 also left a
+regression on the write side (analysis F6) that must be closed before this branch is pushed.
+Branch: `skrypt/media-auth-cost-fix`, 4 commits unpushed.
 
 ## 1. Why
 
