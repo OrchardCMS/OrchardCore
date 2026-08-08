@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -77,8 +78,9 @@ public sealed class AccountController : AccountBaseController
             returnUrl = null;
         }
 
-        // Clear the existing external cookie to ensure a clean login process.
+        // Clear temporary authentication cookies to ensure a clean login process.
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+        await HttpContext.SignOutAsync(UserConstants.EmailConfirmationAuthenticationScheme);
 
         foreach (var loginFormEvent in _loginFormEvents)
         {
@@ -149,6 +151,12 @@ public sealed class AccountController : AccountBaseController
 
                         if (loginResult != null)
                         {
+                            if (loginResult is RedirectToActionResult redirectToActionResult &&
+                                IsConfirmEmailSentResult(redirectToActionResult))
+                            {
+                                await StoreEmailConfirmationAuthenticationAsync(user);
+                            }
+
                             return loginResult;
                         }
                     }
@@ -257,4 +265,18 @@ public sealed class AccountController : AccountBaseController
     [HttpGet]
     public IActionResult ChangePasswordConfirmation()
         => View();
+
+    private async Task StoreEmailConfirmationAuthenticationAsync(IUser user)
+    {
+        var identity = new ClaimsIdentity(UserConstants.EmailConfirmationAuthenticationScheme);
+        identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, await _userManager.GetUserIdAsync(user)));
+
+        await HttpContext.SignInAsync(
+            UserConstants.EmailConfirmationAuthenticationScheme,
+            new ClaimsPrincipal(identity));
+    }
+
+    private static bool IsConfirmEmailSentResult(RedirectToActionResult result)
+        => string.Equals(result.ActionName, nameof(EmailConfirmationController.ConfirmEmailSent), StringComparison.Ordinal) &&
+            string.Equals(result.ControllerName, typeof(EmailConfirmationController).ControllerName(), StringComparison.Ordinal);
 }

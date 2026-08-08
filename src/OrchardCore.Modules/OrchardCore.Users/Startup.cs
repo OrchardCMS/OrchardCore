@@ -93,7 +93,13 @@ public sealed class Startup : StartupBase
         services.AddTransient<IConfigureOptions<IdentityOptions>, IdentityOptionsConfigurations>();
         // Configure the authentication options to use the application cookie scheme as the default sign-out handler.
         // This is required for security modules like the OpenID module (that uses SignOutAsync()) to work correctly.
-        services.AddAuthentication(options => options.DefaultSignOutScheme = IdentityConstants.ApplicationScheme);
+        services.AddAuthentication(options => options.DefaultSignOutScheme = IdentityConstants.ApplicationScheme)
+            .AddCookie(UserConstants.EmailConfirmationAuthenticationScheme, options =>
+            {
+                options.Cookie.Name = "orchemail_" + HttpUtility.UrlEncode(_tenantName);
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
+                options.SlidingExpiration = false;
+            });
 
         services.AddUsers();
 
@@ -234,6 +240,17 @@ public sealed class Startup : StartupBase
             {
                 controller = _emailConfirmationControllerName,
                 action = nameof(EmailConfirmationController.ConfirmEmailSent),
+            }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "ResendEmailConfirmation",
+            areaName: UserConstants.Features.Users,
+            pattern: "ResendEmailConfirmation",
+            defaults: new
+            {
+                controller = _emailConfirmationControllerName,
+                action = nameof(EmailConfirmationController.ResendEmailConfirmation),
             }
         );
 
