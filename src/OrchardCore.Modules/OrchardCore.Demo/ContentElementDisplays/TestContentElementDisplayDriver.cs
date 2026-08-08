@@ -30,7 +30,7 @@ public sealed class TestContentElementDisplayDriver : ContentDisplayDriver
                 {
                     shape.Properties["Processing"] = _processing++;
 
-                    return Task.CompletedTask;
+                    return ValueTask.CompletedTask;
                 })
                 .Location(OrchardCoreConstants.DisplayType.Detail, "Content")
                 .Cache("lowerdoll2", cache => cache.WithExpiryAfter(TimeSpan.FromSeconds(5))),

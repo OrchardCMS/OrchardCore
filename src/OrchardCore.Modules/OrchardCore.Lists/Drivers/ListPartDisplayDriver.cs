@@ -78,7 +78,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
             model.ContainerContentTypeDefinition = context.TypePartDefinition.ContentTypeDefinition;
         })
         .Location("Content:1.5")
-        .RenderWhen(() => Task.FromResult(!context.IsNew));
+        .RenderWhen(static (context) => Task.FromResult(!context.IsNew), context);
     }
 
     private ShapeResult InitializeDisplayListPartSummaryAdminShape(ListPart listPart)
@@ -105,7 +105,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
             model.ContainedContentTypeDefinitions = (await GetContainedContentTypesAsync(settings)).ToArray();
             model.EnableOrdering = settings.EnableOrdering;
         }).Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:1")
-        .RenderWhen(() => Task.FromResult(settings.ShowHeader));
+        .RenderWhen(static (settings) => Task.FromResult(settings.ShowHeader), settings);
     }
 
     private ShapeResult InitializeDisplayListPartNavigationAdminShape(ListPart listPart, BuildPartDisplayContext context, ListPartSettings settings)
