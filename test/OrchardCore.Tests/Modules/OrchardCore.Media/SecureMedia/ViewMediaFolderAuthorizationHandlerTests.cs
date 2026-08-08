@@ -466,15 +466,60 @@ public class ViewMediaFolderAuthorizationHandlerTests
     }
 
     [Theory]
-    [InlineData("")]
-    [InlineData("/")]
-    public async Task NoFolderPermissionDoesNotGrantRootViewPermission(string resource)
+    [InlineData("ViewOwnMediaContent", "")]
+    [InlineData("ViewOwnMediaContent", "/")]
+    [InlineData("ViewOthersMediaContent", "")]
+    [InlineData("ViewOthersMediaContent", "/")]
+    public async Task OwnMediaPermissionGrantsRootTraversal(string permission, string resource)
     {
         // Arrange
         var handler = CreateHandler(withSecureMediaPermissions: true);
         var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(
             MediaPermissions.ViewMedia,
-            ["ViewOwnMediaContent"],
+            [permission],
+            authenticated: true,
+            resource);
+
+        // Act
+        await handler.HandleAsync(context);
+
+        // Assert
+        // Without this the Media Library cannot be opened at all, so a role restricted to its own
+        // folder has no way to reach it.
+        Assert.True(context.HasSucceeded);
+    }
+
+    [Theory]
+    [InlineData("ViewOwnMediaContent", "filename.png")]
+    [InlineData("ViewOwnMediaContent", "/filename.png")]
+    [InlineData("ViewOthersMediaContent", "filename.png")]
+    public async Task OwnMediaPermissionDoesNotGrantRootFiles(string permission, string resource)
+    {
+        // Arrange
+        var handler = CreateHandler(withSecureMediaPermissions: true);
+        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(
+            MediaPermissions.ViewMedia,
+            [permission],
+            authenticated: true,
+            resource);
+
+        // Act
+        await handler.HandleAsync(context);
+
+        // Assert
+        Assert.False(context.HasSucceeded);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("/")]
+    public async Task NoMediaPermissionDoesNotGrantRootViewPermission(string resource)
+    {
+        // Arrange
+        var handler = CreateHandler(withSecureMediaPermissions: true);
+        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(
+            MediaPermissions.ViewMedia,
+            ["NotAllowed"],
             authenticated: true,
             resource);
 
