@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using OrchardCore.SignalR;
 
 namespace OrchardCore.Media.Hubs;
 
 [Authorize(Policy = MediaApiConstants.AuthorizationPolicyName)]
+[AllowApiTokenAuthentication]
 public class MediaHub : Hub
 {
     private readonly IAuthorizationService _authorizationService;

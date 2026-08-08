@@ -187,6 +187,9 @@
     <Project Path="src/OrchardCore.Modules/OrchardCore.Security/OrchardCore.Security.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Settings/OrchardCore.Settings.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Setup/OrchardCore.Setup.csproj" />
+    <Project Path="src/OrchardCore.Modules/OrchardCore.SignalR/OrchardCore.SignalR.csproj" />
+    <Project Path="src/OrchardCore.Modules/OrchardCore.SignalR.Azure/OrchardCore.SignalR.Azure.csproj" />
+    <Project Path="src/OrchardCore.Modules/OrchardCore.SignalR.Redis/OrchardCore.SignalR.Redis.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Sms.Azure/OrchardCore.Sms.Azure.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Sms/OrchardCore.Sms.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Tenants/OrchardCore.Tenants.csproj" />
@@ -295,6 +298,7 @@
     <Project Path="src/OrchardCore/OrchardCore.Setup.Core/OrchardCore.Setup.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Shells.Azure/OrchardCore.Shells.Azure.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Shortcodes.Abstractions/OrchardCore.Shortcodes.Abstractions.csproj" />
+    <Project Path="src/OrchardCore/OrchardCore.SignalR.Core/OrchardCore.SignalR.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Sitemaps.Abstractions/OrchardCore.Sitemaps.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Sms.Abstractions/OrchardCore.Sms.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Sms.Core/OrchardCore.Sms.Core.csproj" />

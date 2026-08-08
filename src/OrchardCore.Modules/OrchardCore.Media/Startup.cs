@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -693,12 +692,8 @@ public sealed class MediaTusStartup : StartupBase
 [Feature("OrchardCore.Media.SignalR")]
 public sealed class MediaSignalRStartup : StartupBase
 {
-    // Run the access-token promotion middleware before UseAuthentication (Authentication == -150).
-    public override int Order => OrchardCoreConstants.ConfigureOrder.Authentication - 10;
-
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddSignalR();
         services.AddSingleton<IMediaEventHandler, MediaSignalREventHandler>();
     }
 
@@ -707,88 +702,6 @@ public sealed class MediaSignalRStartup : StartupBase
         IEndpointRouteBuilder routes,
         IServiceProvider serviceProvider)
     {
-        // The MediaHub uses the bearer "Api" scheme. SignalR sends the access token as an
-        // "access_token" query-string parameter for the WebSocket/SSE transports (which can't set
-        // request headers), so promote it to the Authorization header for the hub before
-        // authentication runs, allowing the "Api" scheme to validate it as usual.
-        app.Use(async (context, next) =>
-        {
-            if (context.Request.Path.StartsWithSegments("/hubs/media") &&
-                string.IsNullOrEmpty(context.Request.Headers.Authorization) &&
-                context.Request.Query.TryGetValue("access_token", out var accessToken))
-            {
-                context.Request.Headers.Authorization = $"Bearer {accessToken}";
-            }
-
-            await next();
-        });
-
         routes.MapHub<MediaHub>("/hubs/media");
-    }
-}
-
-[Feature("OrchardCore.Media.SignalR.Azure")]
-public sealed class MediaSignalRAzureStartup : StartupBase
-{
-    private readonly IShellConfiguration _configuration;
-    private readonly ILogger _logger;
-
-    public MediaSignalRAzureStartup(
-        IShellConfiguration configuration,
-        ILogger<MediaSignalRAzureStartup> logger)
-    {
-        _configuration = configuration;
-        _logger = logger;
-    }
-
-    public override void ConfigureServices(IServiceCollection services)
-    {
-        var connectionString = _configuration
-            .GetSection("OrchardCore_Media_SignalR")
-            .GetValue<string>("ConnectionString");
-
-        if (!string.IsNullOrEmpty(connectionString))
-        {
-            _logger.LogInformation("Azure SignalR Service is enabled for media real-time updates.");
-            services.AddSignalR().AddAzureSignalR(connectionString);
-        }
-        else
-        {
-            _logger.LogWarning(
-                "OrchardCore.Media.SignalR.Azure feature is enabled but 'OrchardCore_Media_SignalR:ConnectionString' is not configured.");
-        }
-    }
-}
-
-[Feature("OrchardCore.Media.SignalR.Redis")]
-public sealed class MediaSignalRRedisStartup : StartupBase
-{
-    private readonly IShellConfiguration _configuration;
-    private readonly ILogger _logger;
-
-    public MediaSignalRRedisStartup(
-        IShellConfiguration configuration,
-        ILogger<MediaSignalRRedisStartup> logger)
-    {
-        _configuration = configuration;
-        _logger = logger;
-    }
-
-    public override void ConfigureServices(IServiceCollection services)
-    {
-        var connectionString = _configuration
-            .GetSection("OrchardCore_Redis")
-            .GetValue<string>("Configuration");
-
-        if (!string.IsNullOrEmpty(connectionString))
-        {
-            _logger.LogInformation("Redis backplane is enabled for media SignalR.");
-            services.AddSignalR().AddStackExchangeRedis(connectionString);
-        }
-        else
-        {
-            _logger.LogWarning(
-                "OrchardCore.Media.SignalR.Redis feature is enabled but 'OrchardCore_Redis:Configuration' is not configured.");
-        }
     }
 }
