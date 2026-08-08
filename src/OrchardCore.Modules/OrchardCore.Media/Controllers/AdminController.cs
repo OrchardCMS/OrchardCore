@@ -40,9 +40,14 @@ public sealed class AdminController : Controller
     [Admin("Media", "Media.Index")]
     public async Task<IActionResult> Index()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia))
+        // Gate the page on what the gallery itself needs, so a user who cannot list anything is turned
+        // away here rather than being shown an empty library that answers every request with a error.
+        // Not found rather than forbidden: consistent with the media middleware, which hides the
+        // existence of what a user may not see.
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia) ||
+            !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)string.Empty))
         {
-            return Forbid();
+            return NotFound();
         }
 
         var tusEnabled = HttpContext.RequestServices.IsMediaTusEnabled();
