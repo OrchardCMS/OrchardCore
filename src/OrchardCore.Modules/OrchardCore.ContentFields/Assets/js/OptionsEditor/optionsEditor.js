@@ -1,6 +1,8 @@
 function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
 
     var previouslyChecked;
+    var previousIndex = -1;
+    var previousName = '';
 
     var store = {
         debug: false,
@@ -19,6 +21,25 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
         getOptionsFormattedList: function () {
             if (this.debug) { console.log('getOptionsFormattedList triggered') };
             return JSON.stringify(this.state.options.filter(function (x) { return !IsNullOrWhiteSpace(x.name) }));
+        },
+        changeName: function (index) {
+            if (previousIndex == -1) {
+                previousIndex = index;
+            }
+
+            var name = this.state.options[index].name;
+            var value = this.state.options[index].value;
+            if (index != previousIndex) {
+                previousName = value;
+            }
+
+            if (previousName == value) {
+                this.state.options[index].value = name;
+                value = name;
+            };
+
+            previousName = name;
+            previousIndex = index;
         }
     }
 
@@ -45,6 +66,9 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
             },
             getOptionsFormattedList: function () {
                 return store.getOptionsFormattedList();
+            },
+            changeName: function (index) {
+                return store.changeName(index);
             }
         }
     };
