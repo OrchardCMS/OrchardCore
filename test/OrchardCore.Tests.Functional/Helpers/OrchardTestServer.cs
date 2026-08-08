@@ -109,7 +109,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
         // The OrchardCore tenant pipeline initializes lazily on the first request.
         // Warm up the app now so tests don't race against pipeline initialization.
-        await WarmUpAsync(address, timeoutSeconds: 90);
+        await WarmUpAsync(address, loggerProvider.Collector, timeoutSeconds: 90);
 
         return new OrchardTestServer(app, address, loggerProvider.Collector);
     }
@@ -362,32 +362,89 @@ public sealed class OrchardTestServer : IAsyncDisposable
     /// OrchardCore tenant pipeline has finished its lazy first-request initialization
     /// before the Playwright tests begin.
     /// </summary>
-    private static async Task WarmUpAsync(string baseAddress, string healthPath = "/health/live", int timeoutSeconds = 30)
+    private static async Task WarmUpAsync(
+        string baseAddress,
+        FakeLogCollector logCollector,
+        string healthPath = "/health/live",
+        int timeoutSeconds = 30)
     {
-        using var client = new HttpClient();
+        // Each attempt gets a fresh connection: a single connection that the server accepts but
+        // never answers must not consume the whole budget, nor be handed back out of the pool.
+        var handler = new SocketsHttpHandler
+        {
+            PooledConnectionLifetime = TimeSpan.Zero,
+            ConnectTimeout = TimeSpan.FromSeconds(5),
+        };
+
+        using var client = new HttpClient(handler, disposeHandler: true);
+
         var deadline = DateTime.UtcNow.AddSeconds(timeoutSeconds);
+        var attempts = 0;
+        var lastFailure = "no attempt completed";
 
         while (DateTime.UtcNow < deadline)
         {
+            attempts++;
+
+            // Bound each attempt so one hung request can't eat the entire timeout, which would
+            // leave us unable to tell a hang apart from a fast, consistently failing response.
+            using var attemptCancellation = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+
             try
             {
-                var response = await client.GetAsync($"{baseAddress}{healthPath}");
+                var response = await client.GetAsync($"{baseAddress}{healthPath}", attemptCancellation.Token);
                 if (response.IsSuccessStatusCode)
                 {
                     return;
                 }
+
+                var body = await response.Content.ReadAsStringAsync(attemptCancellation.Token);
+                lastFailure = $"HTTP {(int)response.StatusCode} {response.ReasonPhrase}"
+                    + (string.IsNullOrWhiteSpace(body) ? " (empty body)" : $": {Truncate(body, 500)}");
             }
-            catch
+            catch (OperationCanceledException)
+            {
+                lastFailure = "the request did not complete within 10 seconds";
+            }
+            catch (Exception ex)
             {
                 // Server not yet accepting connections — keep waiting.
+                lastFailure = $"{ex.GetType().Name}: {ex.Message}";
             }
 
             await Task.Delay(500);
         }
 
         throw new TimeoutException(
-            $"The application at '{baseAddress}' did not respond successfully at '{healthPath}' within {timeoutSeconds} seconds.");
+            $"The application at '{baseAddress}' did not respond successfully at '{healthPath}' within "
+            + $"{timeoutSeconds} seconds after {attempts} attempt(s). Last failure: {lastFailure}."
+            + DescribeLoggedIssues(logCollector));
     }
+
+    /// <summary>
+    /// Renders the warnings and errors the host logged during startup, so a warm-up failure
+    /// reports why the app is unhealthy instead of only that it is.
+    /// </summary>
+    private static string DescribeLoggedIssues(FakeLogCollector logCollector)
+    {
+        var issues = logCollector.GetSnapshot()
+            .Where(e => e.Level >= LogLevel.Warning)
+            .ToList();
+
+        if (issues.Count == 0)
+        {
+            return $"{System.Environment.NewLine}The host logged no warnings or errors.";
+        }
+
+        var messages = issues.Select(e =>
+            $"[{e.Level}] {e.Category}: {e.Message}{(e.Exception is not null ? $" -> {e.Exception}" : string.Empty)}");
+
+        return $"{System.Environment.NewLine}The host logged {issues.Count} warning(s)/error(s):"
+            + $"{System.Environment.NewLine}{string.Join(System.Environment.NewLine, messages)}";
+    }
+
+    private static string Truncate(string value, int maxLength) =>
+        value.Length <= maxLength ? value : value[..maxLength] + "…";
 
     private static string GetListeningAddress(WebApplication app)
     {

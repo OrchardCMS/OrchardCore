@@ -45,7 +45,8 @@ public static class GetMediaItemsEndpoint
             path = string.Empty;
         }
 
-        if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMedia))
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMedia)
+            || !await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMediaFolder, (object)path))
         {
             return httpContext.ApiForbidProblem();
         }

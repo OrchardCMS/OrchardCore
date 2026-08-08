@@ -65,11 +65,9 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
             return;
         }
 
-        path = Uri.UnescapeDataString(path);
+        path = await _fileStore.ResolveAuthorizedPathAsync(path);
 
-        path = _fileStore.NormalizePath(path);
-
-        // Permissions are only set for the root and the first folder tier. Only for users and
+        // Permissions are only set for the root
         // media fields we will check sub folders too.
         var i = path.IndexOf(PathSeparator);
         var folderPath = i >= 0 ? path[..i] : path;

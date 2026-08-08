@@ -35,7 +35,8 @@ public static class GetMediaItemEndpoint
         IFileVersionProvider fileVersionProvider,
         string path)
     {
-        if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMedia))
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMedia)
+            || !await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMediaFolder, (object)(path ?? string.Empty)))
         {
             return httpContext.ApiForbidProblem();
         }

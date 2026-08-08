@@ -12,13 +12,12 @@ namespace OrchardCore.Media.Services;
 public sealed class ManageMediaFolderAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly AttachedMediaFieldFileService _attachedMediaFieldFileService;
     private readonly IMediaFileStore _fileStore;
-    private char _pathSeparator;
-    private string _mediaFieldsFolder;
-    private string _usersFolder;
-    private readonly MediaOptions _mediaOptions;
     private readonly IUserAssetFolderNameProvider _userAssetFolderNameProvider;
+
+    private readonly char _pathSeparator;
+    private readonly string _mediaFieldsFolder;
+    private readonly string _usersFolder;
 
     public ManageMediaFolderAuthorizationHandler(IServiceProvider serviceProvider,
         AttachedMediaFieldFileService attachedMediaFieldFileService,
@@ -27,10 +26,12 @@ public sealed class ManageMediaFolderAuthorizationHandler : AuthorizationHandler
         IUserAssetFolderNameProvider userAssetFolderNameProvider)
     {
         _serviceProvider = serviceProvider;
-        _attachedMediaFieldFileService = attachedMediaFieldFileService;
         _fileStore = fileStore;
-        _mediaOptions = options.Value;
         _userAssetFolderNameProvider = userAssetFolderNameProvider;
+
+        _pathSeparator = _fileStore.Combine("a", "b").Contains('/') ? '/' : '\\';
+        _mediaFieldsFolder = EnsureTrailingSlash(attachedMediaFieldFileService.MediaFieldsFolder);
+        _usersFolder = EnsureTrailingSlash(options.Value.AssetsUsersFolder);
     }
 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
@@ -46,40 +47,30 @@ public sealed class ManageMediaFolderAuthorizationHandler : AuthorizationHandler
             return;
         }
 
-        if (context.Resource == null)
+        if (context.Resource is not string resourcePath)
         {
             return;
         }
 
-        _pathSeparator = _fileStore.Combine("a", "b").Contains('/') ? '/' : '\\';
+        var path = await _fileStore.ResolveAuthorizedPathAsync(resourcePath);
 
-        // ensure end trailing slash
-        _mediaFieldsFolder = _fileStore.NormalizePath(_attachedMediaFieldFileService.MediaFieldsFolder)
-                             .TrimEnd(_pathSeparator) + _pathSeparator;
-
-        _usersFolder = _fileStore.NormalizePath(_mediaOptions.AssetsUsersFolder)
-                       .TrimEnd(_pathSeparator) + _pathSeparator;
-
-        var path = context.Resource as string;
-
-        var userOwnFolder = _fileStore.NormalizePath(
-                            _fileStore.Combine(_usersFolder, _userAssetFolderNameProvider.GetUserAssetFolderName(context.User)))
-                            .TrimEnd(_pathSeparator) + _pathSeparator;
+        var userOwnFolder = EnsureTrailingSlash(
+            _fileStore.Combine(_usersFolder, _userAssetFolderNameProvider.GetUserAssetFolderName(context.User)));
 
         var permission = MediaPermissions.ManageMedia;
 
         // Handle attached media field folder.
-        if (IsAuthorizedFolder(_mediaFieldsFolder, path) || IsDescendantOfauthorizedFolder(_mediaFieldsFolder, path))
+        if (IsAuthorizedFolder(_mediaFieldsFolder, path) || IsDescendantOfAuthorizedFolder(_mediaFieldsFolder, path))
         {
             permission = MediaPermissions.ManageAttachedMediaFieldsFolder;
         }
 
-        if (IsAuthorizedFolder(_usersFolder, path) || IsAuthorizedFolder(userOwnFolder, path) || IsDescendantOfauthorizedFolder(userOwnFolder, path))
+        if (IsAuthorizedFolder(_usersFolder, path) || IsAuthorizedFolder(userOwnFolder, path) || IsDescendantOfAuthorizedFolder(userOwnFolder, path))
         {
             permission = MediaPermissions.ManageOwnMedia;
         }
 
-        if (IsDescendantOfauthorizedFolder(_usersFolder, path) && !IsAuthorizedFolder(userOwnFolder, path) && !IsDescendantOfauthorizedFolder(userOwnFolder, path))
+        if (IsDescendantOfAuthorizedFolder(_usersFolder, path) && !IsAuthorizedFolder(userOwnFolder, path) && !IsDescendantOfAuthorizedFolder(userOwnFolder, path))
         {
             permission = MediaPermissions.ManageOthersMedia;
         }
@@ -101,15 +92,14 @@ public sealed class ManageMediaFolderAuthorizationHandler : AuthorizationHandler
     private bool IsAuthorizedFolder(string authorizedFolder, string childPath)
     {
         // Ensure end trailing slash.
-        childPath = _fileStore.NormalizePath(childPath)
-                    .TrimEnd(_pathSeparator) + _pathSeparator;
+        childPath = EnsureTrailingSlash(childPath);
 
         return childPath.Equals(authorizedFolder, StringComparison.Ordinal);
     }
 
-    private bool IsDescendantOfauthorizedFolder(string authorizedFolder, string childPath)
-    {
-        childPath = _fileStore.NormalizePath(childPath);
-        return childPath.StartsWith(authorizedFolder, StringComparison.Ordinal);
-    }
+    private bool IsDescendantOfAuthorizedFolder(string authorizedFolder, string childPath)
+        => _fileStore.NormalizePath(childPath).StartsWith(authorizedFolder, StringComparison.Ordinal);
+
+    private string EnsureTrailingSlash(string path)
+        => _fileStore.NormalizePath(path) + _pathSeparator;
 }
