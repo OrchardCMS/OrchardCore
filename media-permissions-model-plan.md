@@ -4,7 +4,8 @@ Status: Phases 0 and 1 done. **Further implementation is on hold** pending
 `media-permissions-analysis.md`, which examines the whole permission set and supersedes this plan's
 Phase 2 onward — those phases should be re-derived from its §5 ordering. Phase 1 also left a
 regression on the write side (analysis F6) that must be closed before this branch is pushed.
-Branch: `skrypt/media-auth-cost-fix`, 4 commits unpushed.
+Branch: `skrypt/media-permissions-model`, branched off `skrypt/media-auth-cost-fix` to keep these
+behaviour changes out of the pushed cost-fix branch. Unpushed.
 
 ## 1. Why
 
