@@ -383,7 +383,6 @@ public class ViewMediaFolderAuthorizationHandlerTests
     [Theory]
     [InlineData("")]
     [InlineData("/")]
-    [InlineData("filename.png")]
     public async Task SecureFolderPermissionGrantsRootViewPermission(string resource)
     {
         // Arrange
@@ -398,7 +397,49 @@ public class ViewMediaFolderAuthorizationHandlerTests
         await handler.HandleAsync(context);
 
         // Assert
-        // The root must be viewable, otherwise the granted folder cannot be navigated to.
+        // The root container must be viewable, otherwise the granted folder cannot be navigated to.
+        Assert.True(context.HasSucceeded);
+    }
+
+    [Theory]
+    [InlineData("filename.png")]
+    [InlineData("/filename.png")]
+    [InlineData("non-existing.png")]
+    public async Task SecureFolderPermissionDoesNotGrantRootFiles(string resource)
+    {
+        // Arrange
+        var handler = CreateHandler(withSecureMediaPermissions: true);
+        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(
+            MediaPermissions.ViewMedia,
+            ["ViewMediaContent_folder"],
+            authenticated: true,
+            resource);
+
+        // Act
+        await handler.HandleAsync(context);
+
+        // Assert
+        // Traversing the root is not the same as reading what is stored in it.
+        Assert.False(context.HasSucceeded);
+    }
+
+    [Theory]
+    [InlineData("filename.png")]
+    [InlineData("/filename.png")]
+    public async Task RootPermissionStillGrantsRootFiles(string resource)
+    {
+        // Arrange
+        var handler = CreateHandler(withSecureMediaPermissions: true);
+        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(
+            MediaPermissions.ViewMedia,
+            ["ViewRootMediaContent"],
+            authenticated: true,
+            resource);
+
+        // Act
+        await handler.HandleAsync(context);
+
+        // Assert
         Assert.True(context.HasSucceeded);
     }
 
