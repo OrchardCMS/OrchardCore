@@ -81,6 +81,10 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
 
         var directory = isKnownDirectory ? null : await _fileStore.GetDirectoryInfoAsync(folderPath);
 
+        // Whether the path turned out to be a file lying directly in the media root, rather than the
+        // root itself. Both end up as an empty path below, but they are not the same grant.
+        var isRootFile = false;
+
         if (!isKnownDirectory && directory is null && path.IndexOf(PathSeparator, folderPath.Length) < 0)
         {
             // This could be a new directory, or a new or existing file in the root folder. As we cannot directly determine
@@ -92,12 +96,18 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
                _mediaOptions.AllowedFileExtensions.Any(ext => path.EndsWith(ext, StringComparison.OrdinalIgnoreCase)))
             {
                 path = string.Empty;
+                isRootFile = true;
             }
         }
 
         if (IsAuthorizedFolder("/", path))
         {
-            await AuthorizeAsync(context, requirement, await GetViewRootMediaPermissionAsync());
+            // A file lying in the media root is content that no folder permission covers, so it takes the
+            // root permission itself. The root container is merely the way down to the folders below it,
+            // so any folder grant is enough to look inside it.
+            await AuthorizeAsync(context, requirement, isRootFile
+                ? MediaPermissions.ViewRootMedia
+                : await GetViewRootMediaPermissionAsync());
 
             return;
         }

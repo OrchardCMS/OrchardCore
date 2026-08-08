@@ -198,8 +198,21 @@ internal static class MediaEndpointHelpers
         => await authorizationService.AuthorizeAsync(user, MediaPermissions.ManageMedia)
         && await authorizationService.AuthorizeAsync(user, MediaPermissions.ViewMedia);
 
+    /// <summary>
+    /// Whether files stored directly in the media root may be listed for the current user.
+    /// </summary>
+    /// <remarks>
+    /// Holding any first-level folder permission is enough to open the root and reach the folders below
+    /// it, but the root's own files belong to no folder and are covered by <c>ViewRootMediaContent</c>
+    /// alone. Without Secure Media that permission does not exist, so the root behaves like any folder.
+    /// </remarks>
+    public static async Task<bool> CanListRootFilesAsync(IAuthorizationService authorizationService, HttpContext httpContext)
+        => !httpContext.RequestServices.IsSecureMediaEnabled()
+        || await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ViewRootMedia);
+
     public static async Task<List<FileStoreEntryDto>> GetDirectoryFilesAsync(
         IMediaFileStore mediaFileStore,
+        IAuthorizationService authorizationService,
         HttpContext httpContext,
         IContentTypeProvider contentTypeProvider,
         IFileVersionProvider fileVersionProvider,
@@ -209,6 +222,11 @@ internal static class MediaEndpointHelpers
     {
         var allowedExtensions = GetRequestedExtensions(mediaOptions, extensions, false);
         var files = new List<FileStoreEntryDto>();
+
+        if (path.Length == 0 && !await CanListRootFilesAsync(authorizationService, httpContext))
+        {
+            return files;
+        }
 
         await foreach (var entry in mediaFileStore.GetFilesAsync(path))
         {
