@@ -1,4 +1,7 @@
 using OrchardCore.Queries.Sql;
+using YesSql.Provider.MySql;
+using YesSql.Provider.PostgreSql;
+using YesSql.Provider.Sqlite;
 
 namespace OrchardCore.Tests.OrchardCore.Queries;
 
@@ -24,6 +27,7 @@ public class SqlParserTests
     [InlineData("SELECT a as a1, b as b1", "SELECT [a] AS a1, [b] AS b1;")]
     [InlineData("select Avg(a)", "SELECT Avg([a]);")]
     [InlineData("select Min(*)", "SELECT Min(*);")]
+    [InlineData("select count(distinct a)", "SELECT count(DISTINCT [a]);")]
     [InlineData("select distinct a", "SELECT DISTINCT [a];")]
     public void Parse_SelectClause_Succeeds(string sql, string expectedSql)
     {
@@ -310,5 +314,104 @@ public class SqlParserTests
 
         Assert.True(result, messages?.FirstOrDefault() ?? "Parse failed");
         Assert.Equal(expectedSql, FormatSql(rawQuery));
+    }
+
+    [Theory]
+    [InlineData("delete from ContentItemIndex")]
+    [InlineData("insert into ContentItemIndex (DocumentId) values ('1')")]
+    [InlineData("update ContentItemIndex set DocumentId = '1'")]
+    public void Parse_MutationStatement_Fails(string sql)
+    {
+        var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+
+        Assert.False(result);
+        Assert.Null(rawQuery);
+        Assert.NotEmpty(messages);
+    }
+
+    [Fact]
+    public void Validate_InvalidSyntax_ReturnsSourceLocation()
+    {
+        var messages = SqlParser.Validate("select a\n,\nfrom b");
+
+        Assert.Contains(messages, message =>
+            message.Contains("line ", StringComparison.Ordinal) &&
+            message.Contains("column ", StringComparison.Ordinal));
+    }
+
+    [Theory]
+    [InlineData("select a where a = @b:10")]
+    [InlineData("select a from b")]
+    [InlineData("select 'Don\\'t, from here'")]
+    public void Validate_SelectStatement_Succeeds(string sql)
+    {
+        Assert.Empty(SqlParser.Validate(sql));
+    }
+
+    [Theory]
+    [InlineData("delete from ContentItemIndex")]
+    [InlineData("insert into ContentItemIndex (DocumentId) values ('1')")]
+    [InlineData("update ContentItemIndex set DocumentId = '1'")]
+    public void Validate_MutationStatement_Fails(string sql)
+    {
+        Assert.Contains("Only SELECT statements are supported.", SqlParser.Validate(sql));
+    }
+
+    [Fact]
+    public void Parse_ProviderSpecificSyntax_Succeeds()
+    {
+        const string sql = """
+            select second(a), minute(a), hour(a), now()
+            from t
+            where b = 'foo'
+            order by random()
+            limit 10 offset 5
+            """;
+
+        var cases = new (ISqlDialect Dialect, string ExpectedSql, string ExpectedOffsetSql, string ExpectedSetOffsetSql)[]
+        {
+            (
+                new SqlServerDialect(),
+                "SELECT datepart(second, [a]), datepart(minute, [a]), datepart(hour, [a]), getUtcDate() FROM [app].[tp_t] WHERE [b] = N'foo' ORDER BY newid() OFFSET 5 ROWS FETCH NEXT 10 ROWS ONLY;",
+                "SELECT [a] OFFSET 10 ROWS;",
+                "SELECT [a] UNION SELECT [b] OFFSET 10 ROWS;"
+            ),
+            (
+                new SqliteDialect(),
+                "SELECT cast(strftime('%S', [a]) as int), cast(strftime('%M', [a]) as int), cast(strftime('%H', [a]) as int), DATETIME('now') FROM [tp_t] WHERE [b] = 'foo' ORDER BY random() LIMIT 10 OFFSET 5;",
+                "SELECT [a] LIMIT -1 OFFSET 10;",
+                "SELECT [a] UNION SELECT [b] LIMIT -1 OFFSET 10;"
+            ),
+            (
+                new PostgreSqlDialect(),
+                "SELECT extract(second from \"a\"), extract(minute from \"a\"), extract(hour from \"a\"), now() at time zone 'utc' FROM \"app\".\"tp_t\" WHERE \"b\" = 'foo' ORDER BY random() LIMIT 10 OFFSET 5;",
+                "SELECT \"a\" LIMIT all OFFSET 10;",
+                "SELECT \"a\" UNION SELECT \"b\" LIMIT all OFFSET 10;"
+            ),
+            (
+                new MySqlDialect(),
+                "SELECT second(`a`), minute(`a`), hour(`a`), UTC_TIMESTAMP() FROM `tp_t` WHERE `b` = 'foo' ORDER BY rand() LIMIT 10 OFFSET 5;",
+                "SELECT `a` LIMIT 18446744073709551610 OFFSET 10;",
+                "SELECT `a` UNION SELECT `b` LIMIT 18446744073709551610 OFFSET 10;"
+            ),
+        };
+
+        foreach (var (dialect, expectedSql, expectedOffsetSql, expectedSetOffsetSql) in cases)
+        {
+            var result = SqlParser.TryParse(sql, "app", dialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+
+            Assert.True(result, $"{dialect.Name}: {messages?.FirstOrDefault() ?? "Parse failed"}");
+            Assert.Equal(expectedSql, FormatSql(rawQuery));
+
+            result = SqlParser.TryParse("select a offset 10", "app", dialect, _defaultTablePrefix, null, out rawQuery, out messages);
+
+            Assert.True(result, $"{dialect.Name}: {messages?.FirstOrDefault() ?? "Parse failed"}");
+            Assert.Equal(expectedOffsetSql, FormatSql(rawQuery));
+
+            result = SqlParser.TryParse("select a union select b offset 10", "app", dialect, _defaultTablePrefix, null, out rawQuery, out messages);
+
+            Assert.True(result, $"{dialect.Name}: {messages?.FirstOrDefault() ?? "Parse failed"}");
+            Assert.Equal(expectedSetOffsetSql, FormatSql(rawQuery));
+        }
     }
 }
