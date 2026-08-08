@@ -129,6 +129,7 @@ nav:
   - About Orchard Core: README.md
   - Getting started:
       - Development Tools: getting-started/development-tools.md
+      - Run with the Aspire host: getting-started/aspire-host.md
       - Create a CMS Web application: getting-started/README.md
       - Test drive Orchard Core: getting-started/test-drive-orchard-core.md
       - Configure Preview package source: getting-started/preview-package-source.md
