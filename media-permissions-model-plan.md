@@ -1,6 +1,7 @@
 # Media permissions model — cleanup plan
 
-Status: draft, awaiting decisions on the open questions in §6.
+Status: Phases 0 and 1 done. Phase 2 is next and needs no decision. §6.1 (what ownership means) is
+still open and gates only whether Phase 1 is the *complete* answer to "own folders only".
 Branch: `skrypt/media-auth-cost-fix`.
 
 ## 1. Why
@@ -91,7 +92,10 @@ Authenticated stereotype gives) cannot open the Media Library. Every endpoint ga
 root traversal is satisfied only by `ViewRootMediaContent`, `ViewMediaContent`, `ManageMediaFolder`,
 or a dynamic folder permission. `ViewOwnMediaContent` implies none of them.
 
-Covered by the passing test `NoFolderPermissionDoesNotGrantRootViewPermission`.
+Was covered by `NoFolderPermissionDoesNotGrantRootViewPermission`, which asserted the denial. Phase 1
+reverses that expectation; the tests are now `OwnMediaPermissionGrantsRootTraversal` and
+`OwnMediaPermissionDoesNotGrantRootFiles`, with `NoMediaPermissionDoesNotGrantRootViewPermission`
+keeping the no-permissions case pinned.
 
 Creating a folder inside one's own folder *would* authorize correctly
 (`ManageOwnMediaContent` + `ViewOwnMediaContent`), and `IsSpecialFolder` only blocks creating
@@ -99,7 +103,7 @@ directly inside `_users` itself. So this is purely an entry-point problem.
 
 ### 3.2 Root traversal and root content were the same grant
 
-Fixed in the working tree — see §4 Phase 0.
+Fixed in Phase 0.
 
 ### 3.3 The two `ViewRootMediaContent` instances disagreed
 
@@ -107,7 +111,7 @@ Fixed and shipped in commit `eafb4e7bd8`; the handler now asks the provider for 
 
 ## 4. Phases
 
-### Phase 0 — already in the working tree, uncommitted
+### Phase 0 — done (`82dc2e4173`)
 
 Behavioural fixes that stand on their own and do not depend on the rename:
 
@@ -126,9 +130,9 @@ Behavioural fixes that stand on their own and do not depend on the rename:
 - Release note in `src/docs/releases/4.0.0.md` for the Anonymous change (§6.2) — it is breaking, so it
   ships with the change rather than waiting for Phase 5.
 
-Commit as one change before starting Phase 1.
+Shipped as one commit, with the release note.
 
-### Phase 1 — make "own folders only" work
+### Phase 1 — done (`afbda01801`) — make "own folders only" work
 
 Smallest change that closes §3.1. Root *traversal* should succeed when the user can view anything
 beneath the root, not only when they can view the root's own contents.
@@ -142,7 +146,7 @@ beneath the root, not only when they can view the root's own contents.
 
 No renames, no new types. Independent of Phases 2-4.
 
-### Phase 2 — separate the question from the grant
+### Phase 2 — next: separate the question from the grant
 
 No behaviour change; this is the structural fix.
 
