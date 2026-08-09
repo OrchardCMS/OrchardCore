@@ -7,8 +7,8 @@
     <PackageVersion Include="Acornima" Version="1.6.2" />
     <PackageVersion Include="AnyAscii" Version="0.3.3" />
     <PackageVersion Include="AngleSharp" Version="1.5.2" />
-    <PackageVersion Include="AWSSDK.S3" Version="4.0.101.3" />
-    <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.100.5" />
+    <PackageVersion Include="AWSSDK.S3" Version="4.0.101.4" />
+    <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.100.6" />
     <PackageVersion Include="Azure.Communication.Email" Version="1.1.0" />
     <PackageVersion Include="Azure.Communication.Sms" Version="1.0.2" />
     <PackageVersion Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.5.1" />
@@ -122,7 +122,7 @@
     <!-- Serilog.AspNetCore -->
     <PackageVersion Include="Serilog.AspNetCore" Version="10.0.0" />
     <PackageVersion Include="System.IO.Hashing" Version="10.0.10" />
-    <PackageVersion Include="tusdotnet" Version="2.11.1" />
+    <PackageVersion Include="tusdotnet" Version="2.11.2" />
     <PackageVersion Include="System.Text.Json" Version="10.0.10" />
   </ItemGroup>
   <ItemGroup>
