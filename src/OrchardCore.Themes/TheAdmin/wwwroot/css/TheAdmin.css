@@ -245,7 +245,6 @@ a:hover {
   --bs-btn-padding-x: 0.25rem;
 }
 
-/* @import 'components/bootstrap-select'; */
 .card.collapsed .card-header {
   border-bottom: 0;
 }
