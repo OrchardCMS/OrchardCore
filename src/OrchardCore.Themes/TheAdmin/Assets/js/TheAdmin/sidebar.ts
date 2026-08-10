@@ -1,13 +1,5 @@
-<<<<<<< HEAD:src/OrchardCore.Themes/TheAdmin/Assets/js/TheAdmin/sidebar.ts
-import { isCompactExplicit, setCompactExplicit, getAdminPreferences, setAdminPreferences, persistAdminPreferences } from '../adminPreferences';
-// When we load compact status from preferences we need to do some other tasks besides adding the class to the body.
-// UserPreferencesLoader has already added the needed class.
-$(function() {
-=======
-import { isCompactExplicit, setCompactExplicit } from '../constants';
+import { isCompactExplicit, setCompactExplicit, persistAdminPreferences } from '../adminPreferences';
 import { getTenantName, getAdminPrefix } from '@orchardcore/bloom/helpers/globals';
-import { persistAdminPreferences } from './userPreferencesPersistor';
->>>>>>> origin/main:src/OrchardCore.Themes/TheAdmin/Assets/js/TheAdmin/menu.ts
 
 let leftNav: HTMLElement | null = null;
 let menuInitialized = false;
@@ -26,32 +18,6 @@ const persistSelectedNavHash = (hash: string | null) => {
     }
 };
 
-<<<<<<< HEAD:src/OrchardCore.Themes/TheAdmin/Assets/js/TheAdmin/sidebar.ts
-$('span.title').each(function() {
-    $(this).prev('.icon').prop('title', $(this).text());
-});
-
-$('.leftbar-compactor').click(function() {
-    $('body').hasClass('left-sidebar-compact') ? unSetCompactStatus() : setCompactStatus(true);
-});
-
-$('#left-nav li.has-items').click(function() {
-    $('#left-nav li.has-items').removeClass("visible");
-    $(this).addClass("visible");
-});
-
-// When navigating via a real nav link, persist the selected item hash inside the
-// existing admin preferences cookie so the server can restore the correct selection.
-$('#left-nav').on('click', 'a[data-admin-hash][href^="/"]', function() {
-    const prefs = getAdminPreferences();
-    prefs.selectedNavHash = String($(this).data('admin-hash'));
-    setAdminPreferences(prefs);
-});
-
-$(document).on("click", function(event) {
-    var $trigger = $("#left-nav li.has-items");
-    if ($trigger !== event.target && !$trigger.has(event.target).length) {
-=======
 const getSelectedNavHashFromDom = (nav: HTMLElement): string | null => {
     const deepestLi = Array
         .from(nav.querySelectorAll<HTMLLIElement>("li.active"))
@@ -172,7 +138,6 @@ const initializeMenu = () => {
     });
 
     $('#left-nav li.has-items').on('click', function () {
->>>>>>> origin/main:src/OrchardCore.Themes/TheAdmin/Assets/js/TheAdmin/menu.ts
         $('#left-nav li.has-items').removeClass("visible");
         $(this).addClass("visible");
     });
@@ -234,7 +199,7 @@ const setCompactStatus = (explicit) => {
     if (!$('body').hasClass('left-sidebar-compact')) {
         var labels = $('#left-nav ul.menu-admin > li > figure > figcaption > .item-label');
         labels.css('background-color', 'transparent');
-        setTimeout(function() {
+        setTimeout(function () {
             labels.css('background-color', '');
         }, 200);
     }
@@ -259,7 +224,7 @@ const setCompactStatus = (explicit) => {
 
     //after menu has collapsed we set the transitions to none so that we don't do any transition
     //animation when open a sub-menu
-    setTimeout(function() {
+    setTimeout(function () {
         $('#left-nav > ul > li').css("transition", "none");
     }, 200);
 
