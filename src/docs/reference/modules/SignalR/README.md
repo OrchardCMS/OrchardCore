@@ -26,7 +26,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace MyModule.Hubs;
 
-[Authorize(AuthenticationSchemes = "Api")]
+[Authorize(AuthenticationSchemes = "Api,Identity.Application")]
 public sealed class MyHub : Hub
 {
 }
@@ -68,7 +68,13 @@ Browsers cannot send an `Authorization` header during a WebSocket handshake, so 
 
 Signed-in browser clients are authenticated through the regular authentication cookie, and nothing extra is required. Headless clients (single-page apps, mobile apps, and service-to-service callers) authenticate with an access token instead: enable the **OpenID Token Validation** feature (`OrchardCore.OpenId.Validation`) so the `Api` scheme can validate the token. The token is only *authenticated* — the identity behind it still needs whatever permissions the hub requires.
 
-Use `[Authorize(AuthenticationSchemes = "Api")]` for a hub that always uses API authentication, or a named policy that includes the `Api` scheme when the authentication mode is selected dynamically. Authorization requirements remain in effect after the token is authenticated.
+Choose the authorization schemes based on the clients the hub supports:
+
+- `[Authorize]` uses the ambient authentication configured by the host, normally the application cookie for a signed-in site user.
+- `[Authorize(AuthenticationSchemes = "Api")]` accepts API access tokens only.
+- `[Authorize(AuthenticationSchemes = "Api,Identity.Application")]` accepts either an API access token or the standard application cookie.
+
+A named policy can specify the same schemes. Any policy that includes `Api` enables the SignalR `access_token` handling described above. Authorization requirements remain in effect after the caller is authenticated.
 
 Send the token from a browser client via `accessTokenFactory`:
 

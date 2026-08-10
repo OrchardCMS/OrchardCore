@@ -141,7 +141,7 @@ Alternatively, configure sticky sessions on your load balancer instead of a shar
 
 The SignalR feature enables real-time media updates. When enabled, changes to media files and folders (uploads, renames, moves, deletes) are broadcast to all connected clients. This keeps the Media Gallery in sync across multiple browser tabs and users.
 
-To enable, activate the **Media SignalR** feature in the admin panel. This feature depends on the reusable **`OrchardCore.SignalR`** feature, which provides the SignalR services, client resources, and hub authentication shared by any module that hosts a hub.
+To enable, activate the **Media SignalR** feature in the admin panel. This feature depends on the reusable **`OrchardCore.SignalR`** feature, which provides the SignalR services, client resources, and hub authentication shared by any module that hosts a hub. The media hub accepts both the standard application cookie used by signed-in site users and API access tokens used by headless clients. API token validation requires the **OpenID Token Validation** feature (`OrchardCore.OpenId.Validation`).
 
 For multi-instance deployments, a backplane is required. The backplane is provided by the reusable SignalR module and applies to every hub in the tenant, so the same two features cover the Media Gallery and any other SignalR-based feature:
 

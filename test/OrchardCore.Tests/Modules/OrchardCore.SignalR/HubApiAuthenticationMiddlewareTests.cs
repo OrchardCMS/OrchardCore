@@ -34,14 +34,27 @@ public sealed class HubApiAuthenticationMiddlewareTests
         Assert.Null(hubType);
     }
 
-    private static DefaultHttpContext CreateContext(string authenticationScheme)
+    [Fact]
+    public async Task GetAnonymousHubUsingApiAuthenticationAsync_ApiAndCookiePolicy_ReturnsHubType()
+    {
+        // Arrange
+        var context = CreateContext("Api", "Identity.Application");
+
+        // Act
+        var hubType = await HubApiAuthenticationMiddleware.GetAnonymousHubUsingApiAuthenticationAsync(context);
+
+        // Assert
+        Assert.Equal(typeof(TestHub), hubType);
+    }
+
+    private static DefaultHttpContext CreateContext(params string[] authenticationSchemes)
     {
         var services = new ServiceCollection();
         services.AddAuthorization(options =>
         {
             options.AddPolicy("HubPolicy", policy =>
             {
-                policy.AddAuthenticationSchemes(authenticationScheme);
+                policy.AddAuthenticationSchemes(authenticationSchemes);
                 policy.RequireAuthenticatedUser();
             });
         });
