@@ -36,7 +36,7 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - uses: ./.github/actions/setup-dotnet
     - name: Build
       run: |
@@ -50,6 +50,9 @@ jobs:
       run: |
         pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
     - name: Functional Tests
+      env:
+        # The MVC app uses neither Redis nor Azurite; don't start those containers for this run.
+        ORCHARD_TEST_DOCKER_SERVICES: "false"
       run: |
         dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Mvc*"
     - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -71,7 +74,7 @@ jobs:
     env:
       OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
-    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - uses: ./.github/actions/setup-dotnet
     - name: Build
       run: |
@@ -123,7 +126,7 @@ jobs:
       OrchardCore__DatabaseProvider: "Postgres"
       OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
-    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - uses: ./.github/actions/setup-dotnet
     - name: Build
       run: |
@@ -169,7 +172,7 @@ jobs:
       OrchardCore__DatabaseProvider: "MySql"
       OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
-    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - uses: ./.github/actions/setup-dotnet
     - name: Build
       run: |
@@ -211,26 +214,23 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-      azurite:
-        image: mcr.microsoft.com/azure-storage/azurite
-        options: >-
-          azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --loose --skipApiVersionCheck
-        ports:
-          - 10000:10000
-          - 10001:10001
-          - 10002:10002
     env:
       OrchardCore__OrchardCore_Redis__Configuration: "localhost:6379"
       OrchardCore__OrchardCore_Media_Azure__ConnectionString: "UseDevelopmentStorage=true"
       OrchardCore__OrchardCore_Media_Azure__ContainerName: "media"
     steps:
-    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - uses: ./.github/actions/setup-dotnet
+    # Azurite is started here instead of as a service container because service containers
+    # can't override the image command, and its flags would be parsed as the image name.
+    - name: Start Azurite
+      run: |
+        docker run -d --name azurite -p 10000:10000 -p 10001:10001 -p 10002:10002 mcr.microsoft.com/azure-storage/azurite azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --loose --skipApiVersionCheck
     - name: Build
       run: |
         dotnet build -c Release test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj
     - name: Cache Playwright Browsers
-      uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: ~/.cache/ms-playwright
         key: playwright-${{ hashFiles('Directory.Packages.props') }}
@@ -240,7 +240,7 @@ jobs:
     - name: Functional Tests
       run: |
         dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Cms*"
-    - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+    - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       if: failure()
       with:
         name: functional-cms-redis-azurite-failure
@@ -268,7 +268,7 @@ jobs:
       OrchardCore__DatabaseProvider: "SqlConnection"
       OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
-    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - uses: ./.github/actions/setup-dotnet
     - name: Build
       run: |

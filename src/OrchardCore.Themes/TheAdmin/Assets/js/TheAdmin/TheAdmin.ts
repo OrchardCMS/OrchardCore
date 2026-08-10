@@ -1,8 +1,15 @@
+<<<<<<< HEAD
 import "./sidebar";
 import "./sidebarBreakpointDetector";
 import "./actionBar";
 import "./actionGroup";
+=======
+import { initializeMenu } from "./menu";
+import "./resizeDetector";
+>>>>>>> origin/main
 ///<reference path="@types/bootstrap/index.d.ts" />
+
+initializeMenu();
 
 function confirmDialog({ callback, ...options }: { callback: (response: boolean) => void; [key: string]: any }) {
     const defaultOptions = $("#confirmRemoveModalMetadata").data();
