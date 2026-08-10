@@ -30,14 +30,14 @@
                             data-bs-target=".action-bar-collapsible">
                             <span class="visually-hidden">@T["Show / Hide additional actions"]</span>
                         </button>
-                    <div class="action-bar-actions flex-grow-1 text-end">
+                    <div class="action-bar-actions flex-grow-1 text-end d-flex flex-wrap justify-content-end gap-1">
                         @await DisplayAsync(Model.Actions)
                         @{
                             var returnUrl = Context.Request.Query["returnUrl"];
                         }
                         @if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
                         {
-                            <a class="btn btn-secondary cancel mb-1 mb-lg-0" role="button" href="@returnUrl">@T["Cancel"]</a>
+                            <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
                         }
                     </div>
                 </div>
