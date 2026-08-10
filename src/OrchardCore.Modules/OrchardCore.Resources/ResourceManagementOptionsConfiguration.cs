@@ -462,6 +462,7 @@ public sealed class ResourceManagementOptionsConfiguration
 
         manifest
             .DefineStyle("bootstrap-select")
+            .SetDependencies("bootstrap")
             .SetUrl(
                 "~/OrchardCore.Resources/Vendor/CrestApps/bootstrap-select/bootstrap-select.min.css",
                 "~/OrchardCore.Resources/Vendor/CrestApps/bootstrap-select/bootstrap-select.css"
