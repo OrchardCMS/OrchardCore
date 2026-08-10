@@ -4,7 +4,7 @@ using OrchardCore.SignalR;
 
 namespace OrchardCore.Media.Hubs;
 
-[AuthorizeSignalR(AuthenticationSchemes = MediaApiConstants.ApiScheme)]
+[AuthorizeSignalR(AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api)]
 public sealed class MediaHub : Hub
 {
     private readonly IAuthorizationService _authorizationService;
