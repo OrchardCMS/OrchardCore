@@ -1,6 +1,6 @@
 @charset "UTF-8";
 /*!
- * Bootstrap-select v1.2.0 (https://github.com/CrestApps/bootstrap-select)
+ * Bootstrap-select v1.2.3 (https://github.com/CrestApps/bootstrap-select)
  *
  * CrestApps fork (vanilla JavaScript, Bootstrap 5+) of snapappointments/bootstrap-select
  * Copyright 2012-2018 SnapAppointments, LLC (original work)
@@ -454,29 +454,29 @@ select.selectpicker {
   padding: 4px 8px;
 }
 
-.popover-header {
+.bootstrap-select .popover-header {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.625rem 0.875rem;
+  padding: var(--bs-popover-header-padding-y, 0.5rem) var(--bs-popover-header-padding-x, 1rem) !important;
+  color: var(--bs-card-cap-color);
+  background-color: var(--bs-card-cap-bg, rgba(var(--bs-body-color-rgb, 33, 37, 41), 0.03));
+  border-bottom: var(--bs-card-border-width, var(--bs-border-width, 1px)) solid var(--bs-card-border-color, var(--bs-border-color-translucent, rgba(0, 0, 0, 0.175)));
 }
-.popover-header .popover-header-text {
+.bootstrap-select .popover-header .popover-header-text {
   flex: 1 1 auto;
   min-width: 0;
 }
-.popover-header .btn-close,
-.popover-header .close {
+.bootstrap-select .popover-header .btn-close,
+.bootstrap-select .popover-header .close {
   flex: 0 0 auto;
   margin: 0;
   margin-left: auto;
 }
-.popover-header .btn-close {
-  width: 0.875rem;
-  height: 0.875rem;
-  padding: 0.25rem;
-  background-size: 0.75rem;
+.bootstrap-select .popover-header .btn-close {
+  font-size: 0.75rem;
 }
-.popover-header .close {
+.bootstrap-select .popover-header .close {
   font-size: 0.875rem;
   line-height: 1;
 }
