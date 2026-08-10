@@ -75,7 +75,38 @@ Three things are worth knowing about how that instance is used:
 - **A limit spelled as a saturated or absent value registers nothing.** `MaxStatements(int.MaxValue)`, `LimitMemory(long.MaxValue)` and `TimeoutInterval(TimeSpan.MaxValue)` produce exactly the same engine as never calling the method, and additionally remove any limit of that kind set earlier. The same is true of `MaxStatements()` with no argument: its parameter defaults to `0`, and only a positive budget registers a constraint, so that call reads like it turns a statement limit on while leaving the statement count unlimited. Always pass the budget you mean, and omit the call rather than passing a maximum value.
 - **Do not register an `IObjectConverter` that handles `Delegate`.** Global methods are `Delegate` values, and converters are consulted before Jint's own delegate wrapping, so such a converter would change the shape of the globals that are created on demand while leaving the eagerly created ones alone.
 
-No execution constraints are configured by default, so a script such as `while (true) {}` runs until the process is recycled. Sites that let non-administrators author scripts should set at least one.
+### Default execution timeout
+
+Every script is evaluated on the thread of its caller — a layer rule, for instance, is evaluated by an `IAsyncResultFilter` while the request it applies to is being served — so a script that never returns would hold that thread for as long as the process lives, and each request reaching the same script would take another one. A timeout of 30 seconds is therefore applied by default, which is far above what any legitimate script needs while keeping a runaway script from costing a thread permanently. A script that exceeds it fails with a `TimeoutException`.
+
+The value is a tenant setting, bound from the `OrchardCore_Scripting_JavaScript` configuration section:
+
+```json
+{
+  "OrchardCore_Scripting_JavaScript": {
+    "TimeoutInterval": "00:00:05"
+  }
+}
+```
+
+| Setting           | Description                                                                                                                                |
+|-------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| `TimeoutInterval` | How long a script may run before it fails. Defaults to `00:00:30`. `00:00:00` — as well as the maximum value of a `TimeSpan` — applies no timeout at all. |
+
+The same value can be set in code, which is also how a different, or an additional, constraint is configured. The settings are applied before any configuration of `Jint.Options` the application adds, so such a call wins over them:
+
+```csharp
+services.Configure<JavaScriptEngineOptions>(options => options.TimeoutInterval = TimeSpan.FromSeconds(5));
+
+// Equivalent, expressed on Jint's own options.
+services.Configure<Jint.Options>(options => options.TimeoutInterval(TimeSpan.FromSeconds(5)));
+
+// No timeout at all. Note that this reads like the opposite of what it does: TimeSpan.MaxValue does not
+// mean "a very long deadline", it removes the constraint, as described above.
+services.Configure<Jint.Options>(options => options.TimeoutInterval(TimeSpan.MaxValue));
+```
+
+Note that a timeout is measured on the wall clock, so a script close to the budget can pass on an idle machine and fail on a loaded one. A statement budget, `MaxStatements`, is deterministic and can be added next to the timeout for the same reasons.
 
 ### Global methods are created on demand
 
