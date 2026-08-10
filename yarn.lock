@@ -3149,7 +3149,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@orchardcore/theadmin@workspace:src/OrchardCore.Themes/TheAdmin/Assets"
   dependencies:
-    "@crestapps/bootstrap-select": "npm:1.2.2"
     "@popperjs/core": "npm:2.11.8"
     "@types/jquery": "npm:3.5.32"
     "@types/js-cookie": "npm:^3.0.6"

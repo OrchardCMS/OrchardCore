@@ -10329,28 +10329,6 @@ input:not([type=checkbox]):not([type=radio]).input-validation-error {
   color: var(--bs-secondary-color);
 }
 
-.bootstrap-select .popover-header .close {
-  color: var(--bs-black);
-}
-
-.bootstrap-select > .dropdown-toggle.bs-placeholder,
-.bootstrap-select > .dropdown-toggle.bs-placeholder:hover,
-.bootstrap-select > .dropdown-toggle.bs-placeholder:focus,
-.bootstrap-select > .dropdown-toggle.bs-placeholder:active {
-  color: var(--bs-white) !important;
-}
-
-.bootstrap-select > .dropdown-toggle.bs-placeholder,
-.bootstrap-select > .dropdown-toggle.bs-placeholder:hover,
-.bootstrap-select > .dropdown-toggle.bs-placeholder:focus,
-.bootstrap-select > .dropdown-toggle.bs-placeholder:active {
-  color: var(--bs-gray-900) !important;
-}
-
-.bootstrap-select .popover-header {
-  background-color: var(--bs-secondary-bg);
-}
-
 .card {
   --bs-card-bg: var(--bs-white);
 }
@@ -10415,17 +10393,6 @@ input:not([type=checkbox]):not([type=radio]).input-validation-error {
 [data-bs-theme=dark] .ta-badge {
   background-color: var(--bs-dark);
   color: var(--bs-secondary-color);
-}
-
-[data-bs-theme=dark] .bootstrap-select > .dropdown-toggle.bs-placeholder,
-[data-bs-theme=dark] .bootstrap-select > .dropdown-toggle.bs-placeholder:hover,
-[data-bs-theme=dark] .bootstrap-select > .dropdown-toggle.bs-placeholder:focus,
-[data-bs-theme=dark] .bootstrap-select > .dropdown-toggle.bs-placeholder:active {
-  color: var(--bs-white) !important;
-}
-
-[data-bs-theme=dark] .bootstrap-select .popover-header {
-  background-color: var(--bs-secondary-bg);
 }
 
 [data-bs-theme=dark] .card {
