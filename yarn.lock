@@ -2606,6 +2606,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@microsoft/signalr@npm:10.0.0":
+  version: 10.0.0
+  resolution: "@microsoft/signalr@npm:10.0.0"
+  dependencies:
+    abort-controller: "npm:^3.0.0"
+    eventsource: "npm:^2.0.2"
+    fetch-cookie: "npm:^2.0.3"
+    node-fetch: "npm:^2.6.7"
+    ws: "npm:^7.5.10"
+  checksum: 10/4c6c877e793d43aa570c1cee3463294ef96374b6f98e947181b18a7593f0adcb43b2b0c25f0cd99b79241d55cf93eefd49c5dafac7266cc509ff164b11543793
+  languageName: node
+  linkType: hard
+
 "@microsoft/signalr@npm:^8.0.0":
   version: 8.0.17
   resolution: "@microsoft/signalr@npm:8.0.17"
@@ -3122,6 +3135,14 @@ __metadata:
   dependencies:
     "@popperjs/core": "npm:2.11.8"
     bootstrap: "npm:5.3.8"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/signalr@workspace:src/OrchardCore.Modules/OrchardCore.SignalR/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/signalr@workspace:src/OrchardCore.Modules/OrchardCore.SignalR/Assets"
+  dependencies:
+    "@microsoft/signalr": "npm:10.0.0"
   languageName: unknown
   linkType: soft
 
