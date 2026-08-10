@@ -1,5 +1,4 @@
 using OrchardCore.Modules.Manifest;
-using OrchardCore.SignalR;
 
 [assembly: Module(
     Name = "SignalR Azure Backplane",
@@ -11,12 +10,12 @@ using OrchardCore.SignalR;
 )]
 
 [assembly: Feature(
-    Id = SignalRConstants.Feature.AzureBackplane,
+    Id = "OrchardCore.SignalR.Azure",
     Name = "SignalR Azure Backplane",
     Description = "Uses the Azure SignalR Service as the SignalR backplane, enabling multi-instance deployments.",
     Category = "Infrastructure",
     Dependencies =
     [
-        SignalRConstants.Feature.Area,
+        "OrchardCore.SignalR",
     ]
 )]

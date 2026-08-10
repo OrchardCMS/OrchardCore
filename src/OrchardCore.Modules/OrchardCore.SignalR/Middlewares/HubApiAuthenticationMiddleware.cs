@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,9 +14,9 @@ namespace OrchardCore.SignalR.Middlewares;
 /// can connect to hubs the same way they call the API endpoints.
 /// </summary>
 /// <remarks>
-/// Hubs opt in by applying <see cref="AllowApiTokenAuthenticationAttribute"/>, so hubs that do not opt in are
-/// never affected. Cookie authenticated requests are left untouched. The <c>Api</c> scheme is only evaluated when
-/// the request targets an opted-in hub endpoint, the caller is still anonymous, and a bearer token was provided.
+/// Hubs opt in by using an authorization policy that includes the <c>Api</c> authentication scheme, so other hubs
+/// are never affected. Cookie authenticated requests are left untouched. The <c>Api</c> scheme is only evaluated
+/// when the request targets an opted-in hub endpoint, the caller is still anonymous, and a bearer token was provided.
 /// Browsers cannot send an <c>Authorization</c> header during a WebSocket handshake, so SignalR clients send the
 /// token using the standard <c>access_token</c> query string parameter, which this middleware promotes to an
 /// <c>Authorization</c> header before authenticating.
@@ -43,7 +44,7 @@ public sealed class HubApiAuthenticationMiddleware
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        if (IsAnonymousOptedInHubRequest(context, out var hubType))
+        if (await GetAnonymousHubUsingApiAuthenticationAsync(context) is { } hubType)
         {
             await AuthenticateAsync(context, hubType);
         }
@@ -51,13 +52,11 @@ public sealed class HubApiAuthenticationMiddleware
         await _next(context);
     }
 
-    private static bool IsAnonymousOptedInHubRequest(HttpContext context, out Type hubType)
+    internal static async ValueTask<Type> GetAnonymousHubUsingApiAuthenticationAsync(HttpContext context)
     {
-        hubType = null;
-
         if (context.User?.Identity?.IsAuthenticated == true)
         {
-            return false;
+            return null;
         }
 
         var endpoint = context.GetEndpoint();
@@ -65,19 +64,22 @@ public sealed class HubApiAuthenticationMiddleware
 
         if (hubMetadata is null)
         {
-            return false;
+            return null;
         }
 
-        // MapHub copies the hub's class level attributes onto the hub and negotiate endpoints,
-        // which makes the opt-in visible here without inspecting the hub type directly.
-        if (endpoint.Metadata.GetMetadata<AllowApiTokenAuthenticationAttribute>() is null)
+        var authorizeData = endpoint.Metadata.GetOrderedMetadata<IAuthorizeData>();
+
+        if (authorizeData.Count == 0)
         {
-            return false;
+            return null;
         }
 
-        hubType = hubMetadata.HubType;
+        var policyProvider = context.RequestServices.GetRequiredService<IAuthorizationPolicyProvider>();
+        var policy = await AuthorizationPolicy.CombineAsync(policyProvider, authorizeData);
 
-        return true;
+        return policy?.AuthenticationSchemes.Contains(ApiAuthenticationScheme, StringComparer.Ordinal) == true
+            ? hubMetadata.HubType
+            : null;
     }
 
     private async Task AuthenticateAsync(HttpContext context, Type hubType)

@@ -166,11 +166,14 @@ The Azure SignalR Service backplane is configured with its own connection string
 {
   "SignalR": {
     "Azure": {
-      "ConnectionString": "Endpoint=https://<your-service>.service.signalr.net;AccessKey=...;Version=1.0;"
+      "ConnectionString": "Endpoint=https://<your-service>.service.signalr.net;AccessKey=...;Version=1.0;",
+      "ApplicationName": "OrchardCore"
     }
   }
 }
 ```
+
+Set `ApplicationName` to a unique value when multiple Orchard Core deployments share the same Azure SignalR Service. Orchard Core automatically appends a stable tenant identifier.
 
 If a backplane feature is enabled but its connection string is missing, a warning is logged at startup and SignalR keeps working in single-instance (in-memory) mode — updates then only reach clients connected to the same instance.
 

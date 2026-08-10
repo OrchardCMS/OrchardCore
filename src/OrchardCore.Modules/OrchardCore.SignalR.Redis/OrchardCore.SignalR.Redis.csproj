@@ -24,7 +24,6 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Redis.Abstractions\OrchardCore.Redis.Abstractions.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.SignalR.Core\OrchardCore.SignalR.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

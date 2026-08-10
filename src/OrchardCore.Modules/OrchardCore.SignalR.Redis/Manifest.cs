@@ -1,5 +1,4 @@
 using OrchardCore.Modules.Manifest;
-using OrchardCore.SignalR;
 
 [assembly: Module(
     Name = "SignalR Redis Backplane",
@@ -11,13 +10,13 @@ using OrchardCore.SignalR;
 )]
 
 [assembly: Feature(
-    Id = SignalRConstants.Feature.RedisBackplane,
+    Id = "OrchardCore.SignalR.Redis",
     Name = "SignalR Redis Backplane",
     Description = "Uses Redis as the SignalR backplane, enabling multi-instance deployments with a tenant-qualified channel prefix.",
     Category = "Infrastructure",
     Dependencies =
     [
-        SignalRConstants.Feature.Area,
+        "OrchardCore.SignalR",
         "OrchardCore.Redis",
     ]
 )]

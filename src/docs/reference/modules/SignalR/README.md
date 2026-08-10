@@ -18,15 +18,15 @@ The scale-out backplanes ship as separate modules so the base `OrchardCore.Signa
 
 ## Declaring a hub in another module
 
-A module cannot reference the SignalR module directly, so the shared types it needs live in the `OrchardCore.SignalR.Core` project. Reference that project and declare the hub as usual:
+Declare the hub as usual and apply an authorization policy:
 
 ```csharp
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using OrchardCore.SignalR;
 
 namespace MyModule.Hubs;
 
-[AllowApiTokenAuthentication]
+[Authorize(AuthenticationSchemes = "Api")]
 public sealed class MyHub : Hub
 {
 }
@@ -64,11 +64,11 @@ services.Configure<HubOptions>(options =>
 
 ## Hub authentication
 
-Browsers cannot send an `Authorization` header during a WebSocket handshake, so SignalR clients send bearer tokens using the standard `access_token` query string parameter. When a hub is annotated with `AllowApiTokenAuthentication`, the module promotes that token to an `Authorization` header and authenticates the request against the Orchard Core `Api` authentication scheme before authorization runs. Hubs that are not annotated keep the default behavior, where only the host-configured schemes (such as the admin cookie) are evaluated. Cookie authenticated requests are always left untouched.
+Browsers cannot send an `Authorization` header during a WebSocket handshake, so SignalR clients send bearer tokens using the standard `access_token` query string parameter. When a hub's authorization policy includes the Orchard Core `Api` authentication scheme, the module promotes that token to an `Authorization` header and authenticates the request before authorization runs. Hubs whose policies do not include the `Api` scheme keep their default behavior. Cookie authenticated requests are always left untouched.
 
 Signed-in browser clients are authenticated through the regular authentication cookie, and nothing extra is required. Headless clients (single-page apps, mobile apps, and service-to-service callers) authenticate with an access token instead: enable the **OpenID Token Validation** feature (`OrchardCore.OpenId.Validation`) so the `Api` scheme can validate the token. The token is only *authenticated* — the identity behind it still needs whatever permissions the hub requires.
 
-The `AllowApiTokenAuthentication` attribute never weakens a hub's authorization requirements. A hub decorated with `[Authorize]` still rejects callers that fail the policy, and a hub that allows anonymous connections still accepts them when no token is supplied. The attribute only lets an otherwise anonymous request that carries a valid bearer token be associated with the token's user before authorization runs.
+Use `[Authorize(AuthenticationSchemes = "Api")]` for a hub that always uses API authentication, or a named policy that includes the `Api` scheme when the authentication mode is selected dynamically. Authorization requirements remain in effect after the token is authenticated.
 
 Send the token from a browser client via `accessTokenFactory`:
 
@@ -109,13 +109,18 @@ The Azure SignalR Service backplane (`OrchardCore.SignalR.Azure`) uses its own c
 {
   "SignalR": {
     "Azure": {
-      "ConnectionString": "Endpoint=https://<your-service>.service.signalr.net;AccessKey=...;Version=1.0;"
+      "ConnectionString": "Endpoint=https://<your-service>.service.signalr.net;AccessKey=...;Version=1.0;",
+      "ApplicationName": "OrchardCore"
     }
   }
 }
 ```
 
+`ApplicationName` is optional and defaults to `OrchardCore`. Set it to a unique value when multiple Orchard Core deployments share the same Azure SignalR Service. It must start with a letter and contain only letters, numbers, and underscores. Orchard Core appends a stable tenant identifier so hubs remain isolated between tenants.
+
 If a backplane feature is enabled but its connection string is missing, a warning is logged at startup and SignalR keeps working in single-instance (in-memory) mode — messages then only reach clients connected to the same instance.
+
+Enable only one backplane feature per tenant. Enabling both the Azure and Redis backplanes causes tenant startup to fail with a configuration error rather than selecting one provider unpredictably.
 
 ## Client integration
 

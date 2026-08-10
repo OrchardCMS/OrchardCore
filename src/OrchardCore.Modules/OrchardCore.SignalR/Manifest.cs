@@ -1,5 +1,4 @@
 using OrchardCore.Modules.Manifest;
-using OrchardCore.SignalR;
 
 [assembly: Module(
     Name = "SignalR",
@@ -11,7 +10,7 @@ using OrchardCore.SignalR;
 )]
 
 [assembly: Feature(
-    Id = SignalRConstants.Feature.Area,
+    Id = "OrchardCore.SignalR",
     Name = "SignalR",
     Description = "Registers SignalR, the SignalR client resources, and hub authentication.",
     Category = "Infrastructure"
