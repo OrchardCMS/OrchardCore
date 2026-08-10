@@ -29,9 +29,6 @@ public static class MediaApiConstants
     /// <summary>The authorization policy the Media API and TUS endpoints require.</summary>
     public const string AuthorizationPolicyName = "MediaApi";
 
-    /// <summary>The authorization policy that allows the media hub to use either API or cookie authentication.</summary>
-    public const string HubAuthorizationPolicyName = "MediaHub";
-
     /// <summary>The bearer forwarding scheme (resolves to OpenIddict validation when enabled).</summary>
     public const string ApiScheme = "Api";
 

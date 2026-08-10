@@ -1,12 +1,12 @@
 using Fluid;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -21,13 +21,11 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.FileSystem;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Localization;
-using OrchardCore.Media.Controllers;
 using OrchardCore.Media.Core;
 using OrchardCore.Media.Deployment;
 using OrchardCore.Media.Drivers;
@@ -39,6 +37,7 @@ using OrchardCore.Media.Handlers;
 using OrchardCore.Media.Hubs;
 using OrchardCore.Media.Indexing;
 using OrchardCore.Media.Liquid;
+using OrchardCore.Media.Middleware;
 using OrchardCore.Media.Processing;
 using OrchardCore.Media.Recipes;
 using OrchardCore.Media.Services;
@@ -48,15 +47,13 @@ using OrchardCore.Media.TagHelpers;
 using OrchardCore.Media.ViewModels;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
-using OrchardCore.Settings;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Settings;
 using OrchardCore.Shortcodes;
-using OrchardCore.Media.Middleware;
 using tusdotnet;
 using tusdotnet.Models;
-using tusdotnet.Models.Configuration;
 
 namespace OrchardCore.Media;
 
@@ -490,8 +487,8 @@ public sealed class MediaTusStartup : StartupBase
                     .GetSettings<MediaApiSettings>();
 
                 var authenticationScheme = mediaApiSettings.AuthenticationScheme == MediaApiAuthenticationScheme.Bearer
-                    ? MediaApiConstants.ApiScheme
-                    : MediaApiConstants.CookieScheme;
+                    ? OrchardCoreConstants.AuthenticationSchemes.Api
+                    : IdentityConstants.ApplicationScheme;
 
                 var authenticateResult = await httpContext.AuthenticateAsync(authenticationScheme);
                 if (!authenticateResult.Succeeded)

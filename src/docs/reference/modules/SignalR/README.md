@@ -21,12 +21,12 @@ The scale-out backplanes ship as separate modules so the base `OrchardCore.Signa
 Declare the hub as usual and apply an authorization policy:
 
 ```csharp
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using OrchardCore.SignalR;
 
 namespace MyModule.Hubs;
 
-[Authorize(AuthenticationSchemes = "Api,Identity.Application")]
+[AuthorizeSignalR(AuthenticationSchemes = "Api")]
 public sealed class MyHub : Hub
 {
 }
@@ -64,17 +64,18 @@ services.Configure<HubOptions>(options =>
 
 ## Hub authentication
 
-Browsers cannot send an `Authorization` header during a WebSocket handshake, so SignalR clients send bearer tokens using the standard `access_token` query string parameter. When a hub's authorization policy includes the Orchard Core `Api` authentication scheme, the module promotes that token to an `Authorization` header and authenticates the request before authorization runs. Hubs whose policies do not include the `Api` scheme keep their default behavior. Cookie authenticated requests are always left untouched.
+Browsers cannot send an `Authorization` header during a WebSocket handshake, so SignalR clients send bearer tokens using the standard `access_token` query string parameter. When a hub uses `[AuthorizeSignalR(AuthenticationSchemes = "Api")]`, the module promotes that token to an `Authorization` header and authenticates the `Api` scheme before authorization runs. Hubs without the attribute keep their default behavior.
 
 Signed-in browser clients are authenticated through the regular authentication cookie, and nothing extra is required. Headless clients (single-page apps, mobile apps, and service-to-service callers) authenticate with an access token instead: enable the **OpenID Token Validation** feature (`OrchardCore.OpenId.Validation`) so the `Api` scheme can validate the token. The token is only *authenticated* — the identity behind it still needs whatever permissions the hub requires.
 
-Choose the authorization schemes based on the clients the hub supports:
+Use `AuthorizeSignalR` to require an authenticated hub caller while adding non-default schemes and keeping the host's normal authentication flow:
 
-- `[Authorize]` uses the ambient authentication configured by the host, normally the application cookie for a signed-in site user.
-- `[Authorize(AuthenticationSchemes = "Api")]` accepts API access tokens only.
-- `[Authorize(AuthenticationSchemes = "Api,Identity.Application")]` accepts either an API access token or the standard application cookie.
+- `[AuthorizeSignalR]` uses the ambient authentication configured by the host, normally the application cookie for a signed-in site user.
+- `[AuthorizeSignalR(AuthenticationSchemes = "Api")]` accepts API access tokens and also keeps accepting the configured default authenticate scheme.
+- `[AuthorizeSignalR(AuthenticationSchemes = "Api", IncludeDefaultAuthenticateScheme = false)]` accepts API access tokens only.
+- `[AuthorizeSignalR(AuthenticationSchemes = "Api,AnotherScheme")]` tries each listed scheme in order until one authenticates the request.
 
-A named policy can specify the same schemes. Any policy that includes `Api` enables the SignalR `access_token` handling described above. Authorization requirements remain in effect after the caller is authenticated.
+`AuthorizeSignalR` inherits from `AuthorizeAttribute`, so you can also set normal authorization metadata like `Policy` and `Roles` on the same attribute. Avoid `Authorize(AuthenticationSchemes = "...")` for hubs when you want to preserve the host's default challenge behavior, because explicit authorization schemes replace that flow.
 
 Send the token from a browser client via `accessTokenFactory`:
 

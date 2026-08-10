@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using OrchardCore.SignalR;
 
 namespace OrchardCore.Media.Hubs;
 
-[Authorize(Policy = MediaApiConstants.HubAuthorizationPolicyName)]
-public class MediaHub : Hub
+[AuthorizeSignalR(AuthenticationSchemes = MediaApiConstants.ApiScheme)]
+public sealed class MediaHub : Hub
 {
     private readonly IAuthorizationService _authorizationService;
 
@@ -13,7 +14,7 @@ public class MediaHub : Hub
         _authorizationService = authorizationService;
     }
 
-    // The [Authorize] policy only guarantees an authenticated user. Require the same ManageMedia
+    // The hub attribute only guarantees an authenticated user. Require the same ManageMedia
     // permission the media API endpoints enforce, otherwise any authenticated user could subscribe
     // to the MediaChanged broadcasts (which reveal media paths across all folders).
     public override async Task OnConnectedAsync()

@@ -27,7 +27,7 @@ namespace OrchardCore.Tenants.Controllers;
 
 [Route("api/tenants")]
 [ApiController]
-[Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
+[Authorize(AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api), IgnoreAntiforgeryToken, AllowAnonymous]
 public sealed class TenantApiController : ControllerBase
 {
     private readonly IShellHost _shellHost;
@@ -96,7 +96,7 @@ public sealed class TenantApiController : ControllerBase
 
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
         {
-            return this.ChallengeOrForbid("Api");
+            return this.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
 
         _ = _shellHost.TryGetSettings(model.Name, out var settings);
@@ -174,7 +174,7 @@ public sealed class TenantApiController : ControllerBase
 
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
         {
-            return this.ChallengeOrForbid("Api");
+            return this.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
 
         ApplyPresetDatabaseConfiguration(model);
@@ -243,7 +243,7 @@ public sealed class TenantApiController : ControllerBase
 
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
         {
-            return this.ChallengeOrForbid("Api");
+            return this.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
 
         if (!_shellHost.TryGetSettings(tenantName, out var shellSettings))
@@ -273,7 +273,7 @@ public sealed class TenantApiController : ControllerBase
 
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
         {
-            return this.ChallengeOrForbid("Api");
+            return this.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
 
         if (!_shellHost.TryGetSettings(tenantName, out var shellSettings))
@@ -303,7 +303,7 @@ public sealed class TenantApiController : ControllerBase
 
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
         {
-            return this.ChallengeOrForbid("Api");
+            return this.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
 
         if (!_shellHost.TryGetSettings(tenantName, out var shellSettings))
@@ -340,12 +340,12 @@ public sealed class TenantApiController : ControllerBase
     {
         if (!_currentShellSettings.IsDefaultShell())
         {
-            return this.ChallengeOrForbid("Api");
+            return this.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
 
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
         {
-            return this.ChallengeOrForbid("Api");
+            return this.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
 
         if (!string.IsNullOrEmpty(model.UserName) && model.UserName.Any(c => !_identityOptions.User.AllowedUserNameCharacters.Contains(c)))
