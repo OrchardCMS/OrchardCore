@@ -1,5 +1,5 @@
 /*!
- * Bootstrap-select v1.2.0 (https://github.com/CrestApps/bootstrap-select)
+ * Bootstrap-select v1.2.3 (https://github.com/CrestApps/bootstrap-select)
  *
  * CrestApps fork (vanilla JavaScript, Bootstrap 5+) of snapappointments/bootstrap-select
  * Copyright 2012-2018 SnapAppointments, LLC (original work)
@@ -1962,7 +1962,6 @@ class Selectpicker {
 
         remove.className = 'bs-selected-item-remove';
         remove.setAttribute('aria-hidden', 'true');
-        remove.textContent = '\u00d7';
 
         selectedTag.appendChild(content);
         selectedTag.appendChild(remove);
