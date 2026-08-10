@@ -13,7 +13,8 @@ public static class DockerHelper
         + "AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;"
         + "BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;";
 
-    private static bool _dockerStarted;
+    private static bool _startAttempted;
+    private static bool _containersStarted;
 
     /// <summary>
     /// Starts Redis and Azurite Docker containers if Docker is available,
@@ -25,12 +26,20 @@ public static class DockerHelper
     /// </summary>
     public static void TryStartDockerServices()
     {
-        if (_dockerStarted)
+        if (_startAttempted)
         {
             return;
         }
 
-        _dockerStarted = true;
+        _startAttempted = true;
+
+        // Runs that exercise no Redis/Azurite-backed test (e.g. the MVC suite) opt out, so the
+        // containers don't compete with the host for runner resources while it boots.
+        if (System.Environment.GetEnvironmentVariable("ORCHARD_TEST_DOCKER_SERVICES") == "false")
+        {
+            Log("Docker services disabled via ORCHARD_TEST_DOCKER_SERVICES — skipping container startup.");
+            return;
+        }
 
         if (!IsDockerAvailable())
         {
@@ -78,6 +87,8 @@ public static class DockerHelper
             Log($"Started Docker container '{_azuriteContainerName}' (Azurite).");
         }
 
+        _containersStarted = true;
+
         // Remove containers when the test process exits.
         AppDomain.CurrentDomain.ProcessExit += (_, _) => StopDockerServices();
     }
@@ -87,7 +98,7 @@ public static class DockerHelper
     /// </summary>
     public static void StopDockerServices()
     {
-        if (!_dockerStarted)
+        if (!_containersStarted)
         {
             return;
         }
