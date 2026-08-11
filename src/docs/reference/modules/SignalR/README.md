@@ -6,13 +6,15 @@ The scale-out backplanes ship as separate modules so the base `OrchardCore.Signa
 
 | Module | Feature | Purpose |
 | --- | --- | --- |
-| `OrchardCore.SignalR` | `OrchardCore.SignalR` | Base SignalR hosting, client resources, and hub authentication. |
+| `OrchardCore.SignalR` | `OrchardCore.SignalR.Core` | Dependency-only core feature that provides scheme-aware endpoint authentication. |
+| `OrchardCore.SignalR` | `OrchardCore.SignalR` | Base SignalR hosting and client resources. Depends on `OrchardCore.SignalR.Core`. |
 | `OrchardCore.SignalR.Redis` | `OrchardCore.SignalR.Redis` | Redis scale-out backplane. Brings the Redis dependencies. |
 | `OrchardCore.SignalR.Azure` | `OrchardCore.SignalR.Azure` | Azure SignalR Service backplane. Brings the Azure dependencies. |
 
 ## Features
 
-- **`OrchardCore.SignalR`** — Registers SignalR with a camel-cased JSON protocol, the SignalR JavaScript client as a named resource (`signalr`), and hub authentication.
+- **`OrchardCore.SignalR.Core`** — Provides the dependency-only core feature that registers scheme-aware endpoint authentication before authorization runs.
+- **`OrchardCore.SignalR`** — Registers SignalR with a camel-cased JSON protocol and the SignalR JavaScript client as a named resource (`signalr`). This feature depends on `OrchardCore.SignalR.Core`.
 - **`OrchardCore.SignalR.Redis`** — Uses Redis as the SignalR backplane, enabling multi-instance deployments. Each tenant's traffic is isolated on a dedicated Redis channel prefix. Provided by the separate `OrchardCore.SignalR.Redis` module and depends on `OrchardCore.Redis`.
 - **`OrchardCore.SignalR.Azure`** — Uses the Azure SignalR Service as the backplane, enabling multi-instance deployments. Provided by the separate `OrchardCore.SignalR.Azure` module.
 
@@ -22,11 +24,11 @@ Declare the hub as usual and apply an authorization policy:
 
 ```csharp
 using Microsoft.AspNetCore.SignalR;
-using OrchardCore.SignalR;
+using OrchardCore.Infrastructure.Security;
 
 namespace MyModule.Hubs;
 
-[AuthorizeSignalR(AuthenticationSchemes = "Api")]
+[AuthorizeWithSchemes(AuthenticationSchemes = "Api")]
 public sealed class MyHub : Hub
 {
 }
@@ -62,20 +64,20 @@ services.Configure<HubOptions>(options =>
 });
 ```
 
-## Hub authentication
+## Scheme-aware authentication
 
-Browsers cannot send an `Authorization` header during a WebSocket handshake, so SignalR clients send bearer tokens using the standard `access_token` query string parameter. When a hub uses `[AuthorizeSignalR(AuthenticationSchemes = "Api")]`, the module promotes that token to an `Authorization` header and authenticates the `Api` scheme before authorization runs. Hubs without the attribute keep their default behavior.
+Browsers cannot send an `Authorization` header during a WebSocket handshake, so SignalR clients send bearer tokens using the standard `access_token` query string parameter. When an endpoint uses `[AuthorizeWithSchemes(AuthenticationSchemes = "Api")]`, the module authenticates the `Api` scheme before authorization runs while preserving the host's normal challenge flow. For SignalR hubs, it also promotes the `access_token` query string value to an `Authorization` header first. Endpoints without the attribute keep their default behavior.
 
 Signed-in browser clients are authenticated through the regular authentication cookie, and nothing extra is required. Headless clients (single-page apps, mobile apps, and service-to-service callers) authenticate with an access token instead: enable the **OpenID Token Validation** feature (`OrchardCore.OpenId.Validation`) so the `Api` scheme can validate the token. The token is only *authenticated* — the identity behind it still needs whatever permissions the hub requires.
 
-Use `AuthorizeSignalR` to require an authenticated hub caller while adding non-default schemes and keeping the host's normal authentication flow:
+Use `AuthorizeWithSchemes` to require an authenticated caller while adding non-default schemes and keeping the host's normal authentication flow:
 
-- `[AuthorizeSignalR]` uses the ambient authentication configured by the host, normally the application cookie for a signed-in site user.
-- `[AuthorizeSignalR(AuthenticationSchemes = "Api")]` accepts API access tokens and also keeps accepting the configured default authenticate scheme.
-- `[AuthorizeSignalR(AuthenticationSchemes = "Api", IncludeDefaultAuthenticateScheme = false)]` accepts API access tokens only.
-- `[AuthorizeSignalR(AuthenticationSchemes = "Api,AnotherScheme")]` tries each listed scheme in order until one authenticates the request.
+- `[AuthorizeWithSchemes]` uses the ambient authentication configured by the host, normally the application cookie for a signed-in site user.
+- `[AuthorizeWithSchemes(AuthenticationSchemes = "Api")]` accepts API access tokens and also keeps accepting the configured default authenticate scheme.
+- `[AuthorizeWithSchemes(AuthenticationSchemes = "Api", IncludeDefaultAuthenticateScheme = false)]` accepts API access tokens only.
+- `[AuthorizeWithSchemes(AuthenticationSchemes = "Api,AnotherScheme")]` tries each listed scheme in order until one authenticates the request.
 
-`AuthorizeSignalR` inherits from `AuthorizeAttribute`, so you can also set normal authorization metadata like `Policy` and `Roles` on the same attribute. Avoid `Authorize(AuthenticationSchemes = "...")` for hubs when you want to preserve the host's default challenge behavior, because explicit authorization schemes replace that flow.
+`AuthorizeWithSchemes` inherits from `AuthorizeAttribute`, so you can also set normal authorization metadata like `Policy` and `Roles` on the same attribute. Apply it to hub classes, MVC actions, or endpoint metadata when you want to preserve the host's default challenge behavior while still trying additional schemes. Avoid `Authorize(AuthenticationSchemes = "...")` when you want to preserve that default behavior, because explicit authorization schemes replace the normal flow.
 
 Send the token from a browser client via `accessTokenFactory`:
 

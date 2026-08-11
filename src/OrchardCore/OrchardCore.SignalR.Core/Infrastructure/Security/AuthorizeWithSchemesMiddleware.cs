@@ -7,32 +7,32 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 
-namespace OrchardCore.SignalR.Middlewares;
+namespace OrchardCore.Infrastructure.Security;
 
 /// <summary>
-/// Authenticates SignalR hub requests using the schemes configured by
-/// <see cref="AuthorizeSignalRAttribute"/> so token based clients, such as headless front-ends,
-/// mobile applications, and service-to-service callers, can connect to hubs the same way they call the
-/// API endpoints.
+/// Authenticates authorized endpoint requests using the schemes configured by
+/// <see cref="AuthorizeWithSchemesAttribute"/> so token-based clients, such as headless front-ends,
+/// mobile applications, and service-to-service callers, can use additional schemes without replacing the
+/// host's default authentication flow.
 /// </summary>
 /// <remarks>
-/// Hubs opt in by using <see cref="AuthorizeSignalRAttribute"/>, so other hubs are never affected.
+/// Endpoints opt in by using <see cref="AuthorizeWithSchemesAttribute"/>, so unrelated routes are never affected.
 /// The middleware preserves ASP.NET Core's default challenge flow by updating <see cref="HttpContext.User"/>
-/// before authorization runs instead of rewriting the hub's authorization metadata. Browsers cannot send an
-/// <c>Authorization</c> header during a WebSocket handshake, so SignalR clients send bearer tokens using the
-/// standard <c>access_token</c> query string parameter, which this middleware promotes to an
+/// before authorization runs instead of rewriting the endpoint's authorization metadata. For SignalR, browsers
+/// cannot send an <c>Authorization</c> header during a WebSocket handshake, so clients send bearer tokens using
+/// the standard <c>access_token</c> query string parameter, which this middleware promotes to an
 /// <c>Authorization</c> header before authenticating the configured schemes.
 /// </remarks>
-public sealed class SignalRAuthenticationMiddleware
+public sealed class AuthorizeWithSchemesMiddleware
 {
     private const string BearerPrefix = "Bearer ";
 
     private readonly RequestDelegate _next;
     private readonly ILogger _logger;
 
-    public SignalRAuthenticationMiddleware(
+    public AuthorizeWithSchemesMiddleware(
         RequestDelegate next,
-        ILogger<SignalRAuthenticationMiddleware> logger)
+        ILogger<AuthorizeWithSchemesMiddleware> logger)
     {
         _next = next;
         _logger = logger;
@@ -42,7 +42,7 @@ public sealed class SignalRAuthenticationMiddleware
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        if (TryGetHubAuthentication(context, out var authentication, out var hubType))
+        if (TryGetAuthentication(context, out var authentication, out var endpointDisplayName))
         {
             if (!authentication.IncludeDefaultAuthenticateScheme &&
                 context.User?.Identity?.IsAuthenticated == true)
@@ -52,25 +52,24 @@ public sealed class SignalRAuthenticationMiddleware
 
             if (context.User?.Identity?.IsAuthenticated != true)
             {
-                await AuthenticateAsync(context, hubType, authentication.AuthenticationSchemes);
+                await AuthenticateAsync(context, endpointDisplayName, authentication.AuthenticationSchemes);
             }
         }
 
         await _next(context);
     }
 
-    internal static bool TryGetHubAuthentication(
+    internal static bool TryGetAuthentication(
         HttpContext context,
-        out AuthorizeSignalRAttribute authentication,
-        out Type hubType)
+        out AuthorizeWithSchemesAttribute authentication,
+        out string endpointDisplayName)
     {
         authentication = null;
-        hubType = null;
+        endpointDisplayName = null;
 
         var endpoint = context.GetEndpoint();
-        var hubMetadata = endpoint?.Metadata.GetMetadata<HubMetadata>();
 
-        if (hubMetadata is null)
+        if (endpoint is null)
         {
             return false;
         }
@@ -82,19 +81,19 @@ public sealed class SignalRAuthenticationMiddleware
             return false;
         }
 
-        authentication = endpoint.Metadata.GetMetadata<AuthorizeSignalRAttribute>();
+        authentication = endpoint.Metadata.GetMetadata<AuthorizeWithSchemesAttribute>();
 
         if (authentication is null)
         {
             return false;
         }
 
-        hubType = hubMetadata.HubType;
+        endpointDisplayName = GetEndpointDisplayName(endpoint);
 
         return true;
     }
 
-    private async Task AuthenticateAsync(HttpContext context, Type hubType, string authenticationSchemes)
+    private async Task AuthenticateAsync(HttpContext context, string endpointDisplayName, string authenticationSchemes)
     {
         var schemes = ParseAuthenticationSchemes(authenticationSchemes);
 
@@ -132,11 +131,21 @@ public sealed class SignalRAuthenticationMiddleware
 
             if (_logger.IsEnabled(LogLevel.Debug))
             {
-                // The hub type comes from the endpoint metadata rather than from the request, so nothing
+                // The endpoint display name comes from the endpoint metadata rather than from the request, so nothing
                 // a caller controls is ever written to the log.
-                _logger.LogDebug(result.Failure, "Unable to authenticate a request for the '{Hub}' hub using the '{Scheme}' authentication scheme.", hubType, scheme);
+                _logger.LogDebug(result.Failure, "Unable to authenticate a request for the '{Endpoint}' endpoint using the '{Scheme}' authentication scheme.", endpointDisplayName, scheme);
             }
         }
+    }
+
+    private static string GetEndpointDisplayName(Endpoint endpoint)
+    {
+        if (endpoint.Metadata.GetMetadata<HubMetadata>() is { HubType: { } hubType })
+        {
+            return hubType.FullName ?? hubType.Name;
+        }
+
+        return string.IsNullOrWhiteSpace(endpoint.DisplayName) ? "endpoint" : endpoint.DisplayName;
     }
 
     private static List<string> ParseAuthenticationSchemes(string authenticationSchemes)

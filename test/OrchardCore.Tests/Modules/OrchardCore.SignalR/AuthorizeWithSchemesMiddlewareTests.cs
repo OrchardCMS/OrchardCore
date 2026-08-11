@@ -8,36 +8,53 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using OrchardCore.SignalR;
-using OrchardCore.SignalR.Middlewares;
+using OrchardCore.Infrastructure.Security;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.SignalR;
 
-public sealed class HubAuthenticationMiddlewareTests
+public sealed class AuthorizeWithSchemesMiddlewareTests
 {
     [Fact]
-    public void TryGetHubAuthentication_WithAuthorizeSignalR_ReturnsHubType()
+    public void TryGetAuthentication_WithAuthorizeWithSchemesOnHub_ReturnsHubTypeName()
     {
         // Arrange
-        var context = CreateContext(new AuthorizeSignalRAttribute
+        var context = CreateHubContext(new AuthorizeWithSchemesAttribute
         {
             AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api,
         });
 
         // Act
-        var result = SignalRAuthenticationMiddleware.TryGetHubAuthentication(context, out var authentication, out var hubType);
+        var result = AuthorizeWithSchemesMiddleware.TryGetAuthentication(context, out var authentication, out var endpointDisplayName);
 
         // Assert
         Assert.True(result);
         Assert.Equal(OrchardCoreConstants.AuthenticationSchemes.Api, authentication.AuthenticationSchemes);
-        Assert.Equal(typeof(TestHub), hubType);
+        Assert.Equal(typeof(TestHub).FullName, endpointDisplayName);
+    }
+
+    [Fact]
+    public void TryGetAuthentication_WithAuthorizeWithSchemesOnRoute_ReturnsRouteDisplayName()
+    {
+        // Arrange
+        var context = CreateRouteContext(new AuthorizeWithSchemesAttribute
+        {
+            AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api,
+        });
+
+        // Act
+        var result = AuthorizeWithSchemesMiddleware.TryGetAuthentication(context, out var authentication, out var endpointDisplayName);
+
+        // Assert
+        Assert.True(result);
+        Assert.Equal(OrchardCoreConstants.AuthenticationSchemes.Api, authentication.AuthenticationSchemes);
+        Assert.Equal("Test route", endpointDisplayName);
     }
 
     [Fact]
     public async Task InvokeAsync_WithAccessToken_AuthenticatesConfiguredScheme()
     {
         // Arrange
-        var context = CreateContext(new AuthorizeSignalRAttribute
+        var context = CreateHubContext(new AuthorizeWithSchemesAttribute
         {
             AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api,
         });
@@ -55,7 +72,7 @@ public sealed class HubAuthenticationMiddlewareTests
     public async Task InvokeAsync_IncludeDefaultAuthenticateSchemeTrue_LeavesDefaultUserUntouched()
     {
         // Arrange
-        var context = CreateContext(new AuthorizeSignalRAttribute
+        var context = CreateHubContext(new AuthorizeWithSchemesAttribute
         {
             AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api,
             IncludeDefaultAuthenticateScheme = true,
@@ -74,7 +91,7 @@ public sealed class HubAuthenticationMiddlewareTests
     public async Task InvokeAsync_IncludeDefaultAuthenticateSchemeFalse_ClearsDefaultUser()
     {
         // Arrange
-        var context = CreateContext(new AuthorizeSignalRAttribute
+        var context = CreateHubContext(new AuthorizeWithSchemesAttribute
         {
             AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api,
             IncludeDefaultAuthenticateScheme = false,
@@ -92,7 +109,7 @@ public sealed class HubAuthenticationMiddlewareTests
     public async Task InvokeAsync_IncludeDefaultAuthenticateSchemeFalse_AccessTokenReplacesDefaultUser()
     {
         // Arrange
-        var context = CreateContext(new AuthorizeSignalRAttribute
+        var context = CreateHubContext(new AuthorizeWithSchemesAttribute
         {
             AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api,
             IncludeDefaultAuthenticateScheme = false,
@@ -112,7 +129,7 @@ public sealed class HubAuthenticationMiddlewareTests
     public async Task InvokeAsync_WithMultipleAuthenticationSchemes_TriesEachSchemeUntilSuccess()
     {
         // Arrange
-        var context = CreateContext(new AuthorizeSignalRAttribute
+        var context = CreateHubContext(new AuthorizeWithSchemesAttribute
         {
             AuthenticationSchemes = "MissingScheme, AnotherScheme",
             IncludeDefaultAuthenticateScheme = false,
@@ -127,10 +144,47 @@ public sealed class HubAuthenticationMiddlewareTests
         Assert.Equal("AnotherScheme", context.User.Identity?.AuthenticationType);
     }
 
-    private static SignalRAuthenticationMiddleware CreateMiddleware()
-        => new(_ => Task.CompletedTask, NullLogger<SignalRAuthenticationMiddleware>.Instance);
+    [Fact]
+    public async Task InvokeAsync_WithAccessTokenOnRoute_AuthenticatesConfiguredScheme()
+    {
+        // Arrange
+        var context = CreateRouteContext(new AuthorizeWithSchemesAttribute
+        {
+            AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api,
+            IncludeDefaultAuthenticateScheme = false,
+        });
+        context.Request.QueryString = new QueryString("?access_token=test-token");
 
-    private static DefaultHttpContext CreateContext(AuthorizeSignalRAttribute authentication = null)
+        // Act
+        await CreateMiddleware().InvokeAsync(context);
+
+        // Assert
+        Assert.True(context.User.Identity?.IsAuthenticated);
+        Assert.Equal(OrchardCoreConstants.AuthenticationSchemes.Api, context.User.Identity?.AuthenticationType);
+    }
+
+    private static AuthorizeWithSchemesMiddleware CreateMiddleware()
+        => new(_ => Task.CompletedTask, NullLogger<AuthorizeWithSchemesMiddleware>.Instance);
+
+    private static DefaultHttpContext CreateHubContext(AuthorizeWithSchemesAttribute authentication = null)
+    {
+        var metadata = authentication is null
+            ? new EndpointMetadataCollection(new HubMetadata(typeof(TestHub)))
+            : new EndpointMetadataCollection(new HubMetadata(typeof(TestHub)), authentication);
+
+        return CreateContext(authentication, metadata);
+    }
+
+    private static DefaultHttpContext CreateRouteContext(AuthorizeWithSchemesAttribute authentication = null)
+    {
+        var metadata = authentication is null
+            ? new EndpointMetadataCollection()
+            : new EndpointMetadataCollection(authentication);
+
+        return CreateContext(authentication, metadata);
+    }
+
+    private static DefaultHttpContext CreateContext(AuthorizeWithSchemesAttribute authentication, EndpointMetadataCollection metadata)
     {
         var services = new ServiceCollection();
         services.AddLogging();
@@ -158,13 +212,8 @@ public sealed class HubAuthenticationMiddlewareTests
 
         context.SetEndpoint(new Endpoint(
             _ => Task.CompletedTask,
-            authentication is null
-                ? new EndpointMetadataCollection(
-                    new HubMetadata(typeof(TestHub)))
-                : new EndpointMetadataCollection(
-                    new HubMetadata(typeof(TestHub)),
-                    authentication),
-            "Test hub"));
+            metadata,
+            authentication is null ? "Anonymous endpoint" : metadata.GetMetadata<HubMetadata>() is null ? "Test route" : "Test hub"));
 
         return context;
     }

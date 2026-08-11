@@ -2,24 +2,17 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore;
-using OrchardCore.Json;
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Modules;
-using OrchardCore.SignalR.Middlewares;
 using OrchardCore.SignalR.Services;
 
 namespace OrchardCore.SignalR;
 
 /// <summary>
-/// Registers SignalR, the SignalR client resources, and hub authentication.
+/// Registers SignalR and the SignalR client resources.
 /// </summary>
 public sealed class Startup : StartupBase
 {
-    // The hub authentication middleware must run after the authentication middleware and before any
-    // module that authorizes hub endpoints.
-    public override int ConfigureOrder
-        => OrchardCoreConstants.ConfigureOrder.Authentication + 1;
-
     public override void ConfigureServices(IServiceCollection services)
     {
         services
@@ -36,9 +29,16 @@ public sealed class Startup : StartupBase
 
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
     }
+}
+
+[Feature("OrchardCore.SignalR.Core")]
+public sealed class CoreStartup : StartupBase
+{
+    public override int ConfigureOrder
+        => OrchardCoreConstants.ConfigureOrder.Authentication + 1;
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        app.UseMiddleware<SignalRAuthenticationMiddleware>();
+        app.UseMiddleware<AuthorizeWithSchemesMiddleware>();
     }
 }
