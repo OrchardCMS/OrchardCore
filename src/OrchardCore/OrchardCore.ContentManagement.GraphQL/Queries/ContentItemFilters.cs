@@ -30,8 +30,9 @@ public sealed class ContentItemFilters : GraphQLFilter<ContentItem>
     public override async Task<IQuery<ContentItem>> PreQueryAsync(IQuery<ContentItem> query, IResolveFieldContext context)
     {
         var contentType = ((ListGraphType)(context.FieldDefinition).ResolvedType).ResolvedType.Name;
+        var user = _httpContextAccessor.HttpContext?.User;
 
-        if (await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.ViewContent))
+        if (await _authorizationService.AuthorizeAsync(user, CommonPermissions.ViewContent))
         {
             // No additional check when the user has permission to view all contents
             return query;
@@ -41,17 +42,17 @@ public sealed class ContentItemFilters : GraphQLFilter<ContentItem>
         var contentTypePermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(CommonPermissions.ViewContent);
         var dynamicPermission = ContentTypePermissionsHelper.CreateDynamicPermission(contentTypePermission, contentTypeDefinition);
 
-        if (await _authorizationService.AuthorizeContentTypeAsync(_httpContextAccessor.HttpContext.User, dynamicPermission, contentTypeDefinition))
+        if (await _authorizationService.AuthorizeContentTypeAsync(user, dynamicPermission, contentTypeDefinition))
         {
             // User has access to view any content item of the given type.
             return query;
         }
 
-        var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userId = user?.FindFirstValue(ClaimTypes.NameIdentifier);
 
         var contentTypeOwnPermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(CommonPermissions.ViewOwnContent);
 
-        if (await _authorizationService.AuthorizeContentTypeAsync(_httpContextAccessor.HttpContext.User, contentTypeOwnPermission, contentTypeDefinition, userId))
+        if (await _authorizationService.AuthorizeContentTypeAsync(user, contentTypeOwnPermission, contentTypeDefinition, userId))
         {
             return query.With<ContentItemIndex>(x => x.ContentType == contentType && x.Owner == userId);
         }
