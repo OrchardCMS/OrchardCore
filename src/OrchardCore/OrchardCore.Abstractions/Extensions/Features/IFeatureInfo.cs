@@ -13,5 +13,6 @@ public interface IFeatureInfo
     string[] After { get; }
     string[] Dependencies { get; }
     bool IsAlwaysEnabled { get; }
+    bool IsImplicitlyEnabled { get; }
     bool EnabledByDependencyOnly { get; }
 }

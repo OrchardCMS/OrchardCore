@@ -71,7 +71,8 @@ public class ShellDescriptorManager : IShellDescriptorManager
         var configuredFeatures = new ConfiguredFeatures();
         _shellConfiguration.Bind(configuredFeatures);
 
-        var features = _alwaysEnabledFeatures
+        var features = GetImplicitlyEnabledShellFeatures()
+            .Concat(_alwaysEnabledFeatures)
             .Concat(configuredFeatures.Features.Select(id => new ShellFeature(id) { AlwaysEnabled = true }))
             .Concat(shellDescriptor.Features)
             .Distinct();
@@ -106,7 +107,10 @@ public class ShellDescriptorManager : IShellDescriptorManager
 
         shellDescriptor.SerialNumber++;
 
-        shellDescriptor.Features = _alwaysEnabledFeatures.Union(enabledFeatures).ToList();
+        shellDescriptor.Features = GetImplicitlyEnabledShellFeatures()
+            .Union(_alwaysEnabledFeatures)
+            .Union(enabledFeatures)
+            .ToList();
         foreach (var feature in shellDescriptor.Features)
         {
             if (shellDescriptor.Installed.Contains(feature))
@@ -134,6 +138,14 @@ public class ShellDescriptorManager : IShellDescriptorManager
         // So, we commit the session earlier to prevent a new shell from being built from an outdated descriptor.
         await _shellDescriptorManagerEventHandlers.InvokeAsync((handler, shellDescriptor, _shellSettings) =>
             handler.ChangedAsync(shellDescriptor, _shellSettings), shellDescriptor, _shellSettings, _logger);
+    }
+
+    private IEnumerable<ShellFeature> GetImplicitlyEnabledShellFeatures()
+    {
+        return _extensionManager
+            .GetFeatures()
+            .Where(feature => feature.IsImplicitlyEnabled)
+            .Select(feature => new ShellFeature(feature.Id, alwaysEnabled: true));
     }
 
     private sealed class ConfiguredFeatures

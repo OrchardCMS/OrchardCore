@@ -53,6 +53,7 @@ public sealed class ThemeFeaturesProvider : FeaturesProviderBase
             FeatureAfterDependencyIds = moduleInfo.After,
             DefaultTenantOnly = moduleInfo.DefaultTenantOnly,
             IsAlwaysEnabled = moduleInfo.IsAlwaysEnabled,
+            IsImplicitlyEnabled = moduleInfo.IsImplicitlyEnabled,
             EnabledByDependencyOnly = moduleInfo.EnabledByDependencyOnly,
         };
 
@@ -68,6 +69,7 @@ public sealed class ThemeFeaturesProvider : FeaturesProviderBase
             ctx.FeatureAfterDependencyIds,
             ctx.DefaultTenantOnly,
             ctx.IsAlwaysEnabled,
+            ctx.IsImplicitlyEnabled,
             ctx.EnabledByDependencyOnly));
 
         return [mainFeatureInfo];
@@ -87,6 +89,7 @@ public sealed class ThemeFeaturesProvider : FeaturesProviderBase
             string[] after,
             bool defaultTenantOnly,
             bool isAlwaysEnabled,
+            bool isImplicitlyEnabled,
             bool enabledByDependencyOnly)
         {
             Id = id;
@@ -100,6 +103,7 @@ public sealed class ThemeFeaturesProvider : FeaturesProviderBase
             After = after ?? [];
             DefaultTenantOnly = defaultTenantOnly;
             IsAlwaysEnabled = isAlwaysEnabled;
+            IsImplicitlyEnabled = isImplicitlyEnabled;
             EnabledByDependencyOnly = enabledByDependencyOnly;
         }
 
@@ -114,6 +118,7 @@ public sealed class ThemeFeaturesProvider : FeaturesProviderBase
         public string[] Before { get; }
         public string[] After { get; }
         public bool IsAlwaysEnabled { get; }
+        public bool IsImplicitlyEnabled { get; }
         public bool EnabledByDependencyOnly { get; }
     }
 }

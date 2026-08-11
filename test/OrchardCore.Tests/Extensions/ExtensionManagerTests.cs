@@ -213,6 +213,55 @@ public class ExtensionManagerTests
         Assert.Equal("BaseThemeSample", themeFeature.Id);
     }
 
+    [Fact]
+    public void GetFeatures_ExplicitFeature_PreservesImplicitEnablementFlag()
+    {
+        var module = new global::OrchardCore.Modules.Module("ModuleSample");
+        module.ModuleInfo.Features.Add(
+            new global::OrchardCore.Modules.Manifest.FeatureAttribute
+            {
+                Id = "SampleImplicit",
+                Name = "Implicit Sample Feature",
+                IsImplicitlyEnabled = true,
+            });
+
+        var applicationContext = new TestApplicationContext(new Application(s_hostingEnvironment, [module]));
+        var featureBuilderEvents = new[] { new ThemeFeatureBuilderEvents() };
+        var extensionManager = CreateExtensionManager(
+            applicationContext,
+            [new ExtensionDependencyStrategy()],
+            [new ExtensionPriorityStrategy()],
+            new TypeFeatureProvider(),
+            new FeaturesProvider(featureBuilderEvents));
+
+        var feature = Assert.Single(extensionManager.GetFeatures(), feature => feature.Id == "SampleImplicit");
+
+        Assert.True(feature.IsImplicitlyEnabled);
+    }
+
+    [Fact]
+    public void GetFeatures_ThemeWithAdditionalFeature_PreservesImplicitEnablementFlagOnSynthesizedThemeFeature()
+    {
+        var themeModule = new global::OrchardCore.Modules.Module("BaseThemeSample");
+        themeModule.ModuleInfo.IsImplicitlyEnabled = true;
+        themeModule.ModuleInfo.Features.Add(
+            new global::OrchardCore.Modules.Manifest.FeatureAttribute { Id = "BaseThemeSample.Additional" });
+
+        var applicationContext = new TestApplicationContext(new Application(s_hostingEnvironment, [themeModule]));
+        var featureBuilderEvents = new[] { new ThemeFeatureBuilderEvents() };
+        var extensionManager = CreateExtensionManager(
+            applicationContext,
+            [new ExtensionDependencyStrategy(), new ThemeExtensionDependencyStrategy()],
+            [new ExtensionPriorityStrategy()],
+            new TypeFeatureProvider(),
+            new FeaturesProvider(featureBuilderEvents),
+            new ThemeFeaturesProvider(featureBuilderEvents));
+
+        var themeFeature = Assert.Single(extensionManager.GetFeatures(), feature => feature.Extension.Id == "BaseThemeSample" && feature.IsTheme());
+
+        Assert.True(themeFeature.IsImplicitlyEnabled);
+    }
+
     /* Theme and Module Dependencies */
 
     [Fact]

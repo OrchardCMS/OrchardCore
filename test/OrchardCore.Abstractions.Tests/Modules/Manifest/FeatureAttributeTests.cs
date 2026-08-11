@@ -69,6 +69,7 @@ public class FeatureAttributeTests : FeatureAttributeTests<FeatureAttribute>
 
         Assert.Equal(defaultTenant, feature.DefaultTenantOnly);
         Assert.Equal(alwaysEnabled, feature.IsAlwaysEnabled);
+        Assert.False(feature.IsImplicitlyEnabled);
     }
 
     /// <summary>
@@ -118,6 +119,7 @@ public class FeatureAttributeTests : FeatureAttributeTests<FeatureAttribute>
 
         Assert.Equal(defaultTenant, feature.DefaultTenantOnly);
         Assert.Equal(alwaysEnabled, feature.IsAlwaysEnabled);
+        Assert.False(feature.IsImplicitlyEnabled);
     }
 
     /// <summary>
@@ -172,6 +174,17 @@ public class FeatureAttributeTests : FeatureAttributeTests<FeatureAttribute>
 
         Assert.Equal(defaultTenant, feature.DefaultTenantOnly);
         Assert.Equal(alwaysEnabled, feature.IsAlwaysEnabled);
+        Assert.False(feature.IsImplicitlyEnabled);
+    }
+
+    [Fact]
+    public void ImplicitlyEnabled_PropertyInitializer_Succeeds()
+    {
+        var feature = CreateFromFactory();
+
+        feature.IsImplicitlyEnabled = true;
+
+        Assert.True(feature.IsImplicitlyEnabled);
     }
 
     // OrchardCore.Manifest.Features

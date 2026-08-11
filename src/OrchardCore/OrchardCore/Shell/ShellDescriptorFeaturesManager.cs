@@ -45,10 +45,15 @@ public class ShellDescriptorFeaturesManager : IShellDescriptorFeaturesManager
             .Concat(shellDescriptor.Installed.Select(shellFeature => shellFeature.Id))
             .ToHashSet();
 
-        var alwaysEnabledIds = _alwaysEnabledFeatures.Select(shellFeature => shellFeature.Id).ToArray();
+        var alwaysEnabledIds = shellDescriptor.Features
+            .Where(shellFeature => shellFeature.AlwaysEnabled)
+            .Select(shellFeature => shellFeature.Id)
+            .Concat(enabledFeatures.Where(feature => feature.IsImplicitlyEnabled).Select(feature => feature.Id))
+            .Concat(_alwaysEnabledFeatures.Select(shellFeature => shellFeature.Id))
+            .ToHashSet();
 
         var byDependencyOnlyFeaturesToDisable = enabledFeatures
-            .Where(feature => feature.EnabledByDependencyOnly);
+            .Where(feature => feature.EnabledByDependencyOnly && !alwaysEnabledIds.Contains(feature.Id));
 
         var allFeaturesToDisable = featuresToDisable
             .Where(feature => !feature.EnabledByDependencyOnly && !alwaysEnabledIds.Contains(feature.Id))

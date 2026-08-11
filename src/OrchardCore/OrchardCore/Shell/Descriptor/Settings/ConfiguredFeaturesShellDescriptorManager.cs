@@ -33,7 +33,8 @@ public class ConfiguredFeaturesShellDescriptorManager : IShellDescriptorManager
             var configuredFeatures = new ConfiguredFeatures();
             _shellConfiguration.Bind(configuredFeatures);
 
-            var features = _alwaysEnabledFeatures
+            var features = GetImplicitlyEnabledShellFeatures()
+                .Concat(_alwaysEnabledFeatures)
                 .Concat(configuredFeatures.Features.Select(id => new ShellFeature(id) { AlwaysEnabled = true }))
                 .Distinct();
 
@@ -58,6 +59,14 @@ public class ConfiguredFeaturesShellDescriptorManager : IShellDescriptorManager
     public Task UpdateShellDescriptorAsync(int priorSerialNumber, IEnumerable<ShellFeature> enabledFeatures)
     {
         return Task.CompletedTask;
+    }
+
+    private IEnumerable<ShellFeature> GetImplicitlyEnabledShellFeatures()
+    {
+        return _extensionManager
+            .GetFeatures()
+            .Where(feature => feature.IsImplicitlyEnabled)
+            .Select(feature => new ShellFeature(feature.Id, alwaysEnabled: true));
     }
 
     private sealed class ConfiguredFeatures

@@ -301,6 +301,7 @@ public abstract class FeatureAttributeTests<TAttribute>
         Assert.False(feature.Dependencies.Length > 0);
         Assert.False(feature.DefaultTenantOnly);
         Assert.False(feature.IsAlwaysEnabled);
+        Assert.False(feature.IsImplicitlyEnabled);
         Assert.False(feature.Exists);
         // Indeed the default-default Id is 'null' however in more of a context I think we would actually expect a value there
         Assert.Null(feature.Id);

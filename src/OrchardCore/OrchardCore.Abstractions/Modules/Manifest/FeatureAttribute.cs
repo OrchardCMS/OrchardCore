@@ -256,6 +256,11 @@ public class FeatureAttribute : Attribute
     public virtual bool IsAlwaysEnabled { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the feature is implicitly enabled for every valid tenant.
+    /// </summary>
+    public virtual bool IsImplicitlyEnabled { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the feature can only be enabled as a dependency of another feature.
     /// </summary>
     public virtual bool EnabledByDependencyOnly { get; set; }

@@ -44,6 +44,7 @@ public sealed class FeaturesProvider : FeaturesProviderBase
                 var featureDescription = feature.Describe(manifestInfo.ModuleInfo);
                 var featureDefaultTenantOnly = feature.DefaultTenantOnly;
                 var featureIsAlwaysEnabled = feature.IsAlwaysEnabled;
+                var featureIsImplicitlyEnabled = feature.IsImplicitlyEnabled;
                 var featureEnabledByDependencyOnly = feature.EnabledByDependencyOnly;
 
                 var context = new FeatureBuildingContext
@@ -60,6 +61,7 @@ public sealed class FeaturesProvider : FeaturesProviderBase
                     FeatureAfterDependencyIds = featureAfterDependencyIds,
                     DefaultTenantOnly = featureDefaultTenantOnly,
                     IsAlwaysEnabled = featureIsAlwaysEnabled,
+                    IsImplicitlyEnabled = featureIsImplicitlyEnabled,
                     EnabledByDependencyOnly = featureEnabledByDependencyOnly,
                 };
 
@@ -75,6 +77,7 @@ public sealed class FeaturesProvider : FeaturesProviderBase
                     ctx.FeatureAfterDependencyIds,
                     ctx.DefaultTenantOnly,
                     ctx.IsAlwaysEnabled,
+                    ctx.IsImplicitlyEnabled,
                     ctx.EnabledByDependencyOnly));
 
                 featuresInfos.Add(featureInfo);
@@ -96,6 +99,7 @@ public sealed class FeaturesProvider : FeaturesProviderBase
             var featureDescription = manifestInfo.ModuleInfo.Describe();
             var featureDefaultTenantOnly = manifestInfo.ModuleInfo.DefaultTenantOnly;
             var featureIsAlwaysEnabled = manifestInfo.ModuleInfo.IsAlwaysEnabled;
+            var featureIsImplicitlyEnabled = manifestInfo.ModuleInfo.IsImplicitlyEnabled;
             var featureEnabledByDependencyOnly = manifestInfo.ModuleInfo.EnabledByDependencyOnly;
 
             var context = new FeatureBuildingContext
@@ -112,6 +116,7 @@ public sealed class FeaturesProvider : FeaturesProviderBase
                 FeatureAfterDependencyIds = featureAfterDependencyIds,
                 DefaultTenantOnly = featureDefaultTenantOnly,
                 IsAlwaysEnabled = featureIsAlwaysEnabled,
+                IsImplicitlyEnabled = featureIsImplicitlyEnabled,
                 EnabledByDependencyOnly = featureEnabledByDependencyOnly,
             };
 
@@ -127,6 +132,7 @@ public sealed class FeaturesProvider : FeaturesProviderBase
                 ctx.FeatureAfterDependencyIds,
                 ctx.DefaultTenantOnly,
                 ctx.IsAlwaysEnabled,
+                ctx.IsImplicitlyEnabled,
                 ctx.EnabledByDependencyOnly));
 
             featuresInfos.Add(featureInfo);

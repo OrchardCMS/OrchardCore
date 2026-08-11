@@ -21,7 +21,10 @@ public class AllFeaturesShellDescriptorManager : IShellDescriptorManager
     {
         _shellDescriptor ??= new ShellDescriptor
         {
-            Features = _extensionManager.GetFeatures().Select(x => new ShellFeature { Id = x.Id }).ToList(),
+            Features = _extensionManager
+                .GetFeatures()
+                .Select(feature => new ShellFeature(feature.Id, alwaysEnabled: feature.IsImplicitlyEnabled))
+                .ToList(),
         };
 
         return Task.FromResult(_shellDescriptor);

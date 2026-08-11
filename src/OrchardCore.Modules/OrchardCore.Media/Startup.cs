@@ -409,7 +409,7 @@ public sealed class SecureMediaStartup : StartupBase
 }
 
 // This startup is required to ensure that the SecureMediaFeatureEventHandler is registered all the time.
-[RequireFeatures("Application.Default")]
+[Feature("OrchardCore.Media.Implicit")]
 public sealed class FeatureEventHandlerStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)

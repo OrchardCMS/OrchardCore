@@ -42,6 +42,7 @@ public class FeatureBuildingContext
 
     public bool DefaultTenantOnly { get; set; }
     public bool IsAlwaysEnabled { get; set; }
+    public bool IsImplicitlyEnabled { get; set; }
     public bool EnabledByDependencyOnly { get; set; }
 }
 

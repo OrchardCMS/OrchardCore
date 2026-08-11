@@ -8,12 +8,20 @@ using OrchardCore.Modules.Manifest;
 )]
 
 [assembly: Feature(
+    Id = "OrchardCore.Media.Implicit",
+    Name = "Media Implicit",
+    Description = "This feature is implicitly enabled and required for the media module to function correctly.",
+    Category = "Media",
+    IsImplicitlyEnabled = true
+)]
+
+[assembly: Feature(
     Id = "OrchardCore.Media",
     Name = "Media",
     Description = "The media module adds media management support.",
     Dependencies =
     [
-        "OrchardCore.ContentTypes"
+        "OrchardCore.ContentTypes",
     ],
     Category = "Content Management"
 )]

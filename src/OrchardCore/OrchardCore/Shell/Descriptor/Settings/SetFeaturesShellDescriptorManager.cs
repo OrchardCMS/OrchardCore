@@ -24,7 +24,11 @@ public class SetFeaturesShellDescriptorManager : IShellDescriptorManager
     {
         if (_shellDescriptor == null)
         {
-            var featureIds = _shellFeatures.Distinct().Select(sf => sf.Id);
+            var features = GetImplicitlyEnabledShellFeatures()
+                .Concat(_shellFeatures)
+                .Distinct()
+                .ToArray();
+            var featureIds = features.Select(sf => sf.Id);
 
             var missingDependencies = (await _extensionManager.LoadFeaturesAsync(featureIds))
                 .Select(entry => entry.Id)
@@ -33,7 +37,7 @@ public class SetFeaturesShellDescriptorManager : IShellDescriptorManager
 
             _shellDescriptor = new ShellDescriptor
             {
-                Features = _shellFeatures
+                Features = features
                     .Concat(missingDependencies)
                     .ToList(),
             };
@@ -45,5 +49,13 @@ public class SetFeaturesShellDescriptorManager : IShellDescriptorManager
     public Task UpdateShellDescriptorAsync(int priorSerialNumber, IEnumerable<ShellFeature> enabledFeatures)
     {
         return Task.CompletedTask;
+    }
+
+    private IEnumerable<ShellFeature> GetImplicitlyEnabledShellFeatures()
+    {
+        return _extensionManager
+            .GetFeatures()
+            .Where(feature => feature.IsImplicitlyEnabled)
+            .Select(feature => new ShellFeature(feature.Id, alwaysEnabled: true));
     }
 }
