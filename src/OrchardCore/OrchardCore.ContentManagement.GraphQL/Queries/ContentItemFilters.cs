@@ -4,9 +4,11 @@ using GraphQL.Types;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents;
 using OrchardCore.Contents.Security;
+using OrchardCore.Security.Permissions;
 using YesSql;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries;
@@ -39,10 +41,8 @@ public sealed class ContentItemFilters : GraphQLFilter<ContentItem>
         }
 
         var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType);
-        var contentTypePermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(CommonPermissions.ViewContent);
-        var dynamicPermission = ContentTypePermissionsHelper.CreateDynamicPermission(contentTypePermission, contentTypeDefinition);
 
-        if (await _authorizationService.AuthorizeContentTypeAsync(user, dynamicPermission, contentTypeDefinition))
+        if (await AuthorizeDynamicPermissionAsync(user, CommonPermissions.ViewContent, contentTypeDefinition))
         {
             // User has access to view any content item of the given type.
             return query;
@@ -50,10 +50,7 @@ public sealed class ContentItemFilters : GraphQLFilter<ContentItem>
 
         var userId = user?.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        var contentTypeOwnPermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(CommonPermissions.ViewOwnContent);
-        dynamicPermission = ContentTypePermissionsHelper.CreateDynamicPermission(contentTypeOwnPermission, contentTypeDefinition);
-
-        if (await _authorizationService.AuthorizeContentTypeAsync(user, dynamicPermission, contentTypeDefinition, userId))
+        if (await AuthorizeDynamicPermissionAsync(user, CommonPermissions.ViewOwnContent, contentTypeDefinition, userId))
         {
             return query.With<ContentItemIndex>(x => x.ContentType == contentType && x.Owner == userId);
         }
@@ -79,5 +76,17 @@ public sealed class ContentItemFilters : GraphQLFilter<ContentItem>
         }
 
         return filtered;
+    }
+
+    private Task<bool> AuthorizeDynamicPermissionAsync(
+        ClaimsPrincipal user,
+        Permission basePermission,
+        ContentTypeDefinition contentTypeDefinition,
+        string userId = null)
+    {
+        var template = ContentTypePermissionsHelper.ConvertToDynamicPermission(basePermission);
+        var dynamicPermission = ContentTypePermissionsHelper.CreateDynamicPermission(template, contentTypeDefinition);
+
+        return _authorizationService.AuthorizeContentTypeAsync(user, dynamicPermission, contentTypeDefinition, userId);
     }
 }
