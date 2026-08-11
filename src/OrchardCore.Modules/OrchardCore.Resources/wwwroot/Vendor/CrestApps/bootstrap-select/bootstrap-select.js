@@ -1,5 +1,5 @@
 /*!
- * Bootstrap-select v1.2.3 (https://github.com/CrestApps/bootstrap-select)
+ * Bootstrap-select v1.2.4 (https://github.com/CrestApps/bootstrap-select)
  *
  * CrestApps fork (vanilla JavaScript, Bootstrap 5+) of snapappointments/bootstrap-select
  * Copyright 2012-2018 SnapAppointments, LLC (original work)
@@ -738,7 +738,7 @@ var changedArguments = null;
 // shared flag for spacebar selection handling (mirrors original document data flag)
 var spaceSelectFlag = false;
 
-var REMOVED_OPTIONS = ['container', 'display', 'mobile', 'styleBase', 'windowPadding'];
+var REMOVED_OPTIONS = ['display', 'mobile', 'styleBase', 'windowPadding'];
 
 function stripRemovedOptions (source) {
   if (!source || typeof source !== 'object') return source;
@@ -916,7 +916,7 @@ class Selectpicker {
     this.clickListener();
 
     var Dropdown = getDropdown();
-    this.dropdown = new Dropdown(this.button);
+    this.dropdown = new Dropdown(this.button, this.options.container ? { display: 'static' } : undefined);
 
     // store a reference to the instance for delegated handlers
     this.newElement.bootstrapSelectInstance = this;
@@ -931,6 +931,11 @@ class Selectpicker {
 
     this.setStyle();
     this.setWidth();
+
+    if (this.options.container) {
+      this.selectPosition();
+    }
+
     this._on(this.element, 'hide' + EVENT_KEY, function () {
       if (that.isVirtual()) {
         // empty menu on close
@@ -2389,8 +2394,15 @@ class Selectpicker {
     if (this.options.dropupAuto) {
       // Get the estimated height of the menu without scrollbars.
       estimate = liHeight * this.selectpicker.current.data.length + menuPadding.vert;
+      // Prefer opening downward whenever the menu can still show its controls
+      // and at least one option below the trigger. Flipping upward too early
+      // covers preceding form content such as card headers.
+      var minimumDropdownSpace = liHeight + headerHeight + searchHeight + actionsHeight + doneButtonHeight + menuPadding.vert;
+      var hasMeaningfulSpaceBelow = this.sizeInfo.selectOffsetBot >= minimumDropdownSpace;
 
-      isDropup = this.sizeInfo.selectOffsetTop - this.sizeInfo.selectOffsetBot > this.sizeInfo.menuExtras.vert && estimate + this.sizeInfo.menuExtras.vert + 50 > this.sizeInfo.selectOffsetBot;
+      isDropup = !hasMeaningfulSpaceBelow &&
+        this.sizeInfo.selectOffsetTop - this.sizeInfo.selectOffsetBot > this.sizeInfo.menuExtras.vert &&
+        estimate + this.sizeInfo.menuExtras.vert + 50 > this.sizeInfo.selectOffsetBot;
 
       // ensure dropup doesn't change while searching (so menu doesn't bounce back and forth)
       if (this.selectpicker.isSearching === true) {
@@ -2501,15 +2513,15 @@ class Selectpicker {
     this.bsContainer = createFromHTML('<div class="bs-container" />');
 
     var that = this,
-        container = resolveContainer(this.options.container),
+        container = resolveContainer(this.options.container) || document.body,
         pos,
         containerPos,
         actualHeight,
         getPlacement = function (element) {
           var Dropdown = getDropdown(),
               containerPosition = {},
-              // fall back to dropdown's default display setting if display is not manually set
-              display = that.options.display || (Dropdown.Default ? Dropdown.Default.display : false);
+              // relocated menus are positioned by bootstrap-select's container wrapper
+              display = that.dropdown && that.dropdown._config ? that.dropdown._config.display : (Dropdown.Default ? Dropdown.Default.display : false);
 
           var extraClass = element.getAttribute('class').replace(/form-control|fit-width/gi, '').trim();
           if (extraClass) that.bsContainer.classList.add.apply(that.bsContainer.classList, extraClass.split(/\s+/));
@@ -2527,9 +2539,11 @@ class Selectpicker {
 
           actualHeight = element.classList.contains(classNames.DROPUP) ? 0 : element.offsetHeight;
 
-          // Bootstrap 5 uses Popper for menu positioning
           if (display === 'static') {
             containerPosition.top = pos.top - containerPos.top + actualHeight;
+            containerPosition.left = pos.left - containerPos.left;
+          } else {
+            containerPosition.top = pos.top - containerPos.top;
             containerPosition.left = pos.left - containerPos.left;
           }
 
@@ -2720,7 +2734,6 @@ class Selectpicker {
       }
     }
   }
-
 
 
 /* eslint-disable no-undef */
@@ -3656,6 +3669,7 @@ Selectpicker.DEFAULTS = {
   showContent: true,
   dropupAuto: true,
   header: false,
+  container: false,
   liveSearch: false,
   liveSearchPlaceholder: null,
   liveSearchNormalize: false,
