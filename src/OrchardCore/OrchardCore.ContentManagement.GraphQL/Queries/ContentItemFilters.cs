@@ -29,7 +29,7 @@ public sealed class ContentItemFilters : GraphQLFilter<ContentItem>
 
     public override async Task<IQuery<ContentItem>> PreQueryAsync(IQuery<ContentItem> query, IResolveFieldContext context)
     {
-        var contentType = ((ListGraphType)(context.FieldDefinition).ResolvedType).ResolvedType.Name;
+        var contentType = ((ListGraphType)context.FieldDefinition.ResolvedType!).ResolvedType!.Name;
         var user = _httpContextAccessor.HttpContext?.User;
 
         if (await _authorizationService.AuthorizeAsync(user, CommonPermissions.ViewContent))
