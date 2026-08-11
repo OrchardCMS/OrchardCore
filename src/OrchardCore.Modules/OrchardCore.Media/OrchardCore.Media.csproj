@@ -43,8 +43,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" />
-    <PackageReference Include="Microsoft.Azure.SignalR" />
     <PackageReference Include="NetVips" />
     <PackageReference Include="NetVips.Native" />
     <PackageReference Include="Shortcodes" />
