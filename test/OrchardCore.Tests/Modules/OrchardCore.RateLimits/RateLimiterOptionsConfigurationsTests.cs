@@ -1,15 +1,12 @@
-using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
-using System.Threading.RateLimiting;
 using System.Text.Json.Nodes;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 using OrchardCore.Entities;
-using OrchardCore.Modules;
 using OrchardCore.RateLimits;
+using OrchardCore.RateLimits.Core;
 using OrchardCore.RateLimits.Models;
 using OrchardCore.RateLimits.Services;
 using OrchardCore.Users.Endpoints.EmailAuthenticator;
-using OrchardCore.RateLimits.Core;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.RateLimits;
 
@@ -126,7 +123,7 @@ public class RateLimiterOptionsConfigurationsTests
     public async Task Apply_EnabledEndpointPolicy_Succeeds()
     {
         var cancellationToken = TestContext.Current.CancellationToken;
-        var policy = CreateGlobalFixedWindowPolicy("Api", 1, 60);
+        var policy = CreateGlobalFixedWindowPolicy(OrchardCoreConstants.AuthenticationSchemes.Api, 1, 60);
         policy.Scope = RateLimitPolicyScope.Endpoint;
         policy.Path = "/api";
 
