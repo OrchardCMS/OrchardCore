@@ -51,8 +51,9 @@ public sealed class ContentItemFilters : GraphQLFilter<ContentItem>
         var userId = user?.FindFirstValue(ClaimTypes.NameIdentifier);
 
         var contentTypeOwnPermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(CommonPermissions.ViewOwnContent);
+        dynamicPermission = ContentTypePermissionsHelper.CreateDynamicPermission(contentTypeOwnPermission, contentTypeDefinition);
 
-        if (await _authorizationService.AuthorizeContentTypeAsync(user, contentTypeOwnPermission, contentTypeDefinition, userId))
+        if (await _authorizationService.AuthorizeContentTypeAsync(user, dynamicPermission, contentTypeDefinition, userId))
         {
             return query.With<ContentItemIndex>(x => x.ContentType == contentType && x.Owner == userId);
         }
