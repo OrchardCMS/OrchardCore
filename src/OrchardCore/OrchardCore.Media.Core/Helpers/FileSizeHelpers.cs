@@ -2,7 +2,7 @@ namespace OrchardCore.Media.Core.Helpers;
 
 public static class FileSizeHelpers
 {
-    private static string[] _fileSizeUnits = ["KB", "MB", "GB", "TB", "PB", "EB"];
+    private static string[] s_fileSizeUnits = ["KB", "MB", "GB", "TB", "PB", "EB"];
 
     /// <summary>
     /// Formats <paramref name="bytes"/> as text, matching the closest byte unit. For example "1050" becomes "1.02 KB". 
@@ -11,7 +11,7 @@ public static class FileSizeHelpers
     /// <param name="digits">The number of digits that may be displayed after the decimal point.</param>
     public static string FormatAsBytes(long bytes, int digits = 2)
     {
-        var result = _fileSizeUnits.Aggregate(
+        var result = s_fileSizeUnits.Aggregate(
             new { Value = (decimal)bytes, Unit = "B" },
             (item, unit) => item.Value > 1024 ? new { Value = item.Value / 1024, Unit = unit } : item);
 

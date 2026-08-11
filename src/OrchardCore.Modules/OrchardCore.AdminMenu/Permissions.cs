@@ -5,7 +5,7 @@ namespace OrchardCore.AdminMenu;
 
 public sealed class Permissions : IPermissionProvider
 {
-    private static readonly Permission _viewAdminMenu = new("ViewAdminMenu_{0}", "View Admin Menu - {0}", new[] {
+    private static readonly Permission s_viewAdminMenu = new("ViewAdminMenu_{0}", "View Admin Menu - {0}", new[] {
         AdminMenuPermissions.ManageAdminMenu,
         AdminMenuPermissions.ViewAdminMenuAll,
     });
@@ -62,8 +62,8 @@ public sealed class Permissions : IPermissionProvider
 
     public static Permission CreatePermissionForAdminMenu(string name)
         => new(
-            string.Format(_viewAdminMenu.Name, name),
-            string.Format(_viewAdminMenu.Description, name),
-            _viewAdminMenu.ImpliedBy
+            string.Format(s_viewAdminMenu.Name, name),
+            string.Format(s_viewAdminMenu.Description, name),
+            s_viewAdminMenu.ImpliedBy
         );
 }

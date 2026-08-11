@@ -9,8 +9,8 @@ namespace OrchardCore.ContentLocalization.Sitemaps;
 
 public class SitemapUrlHrefLangExtendedMetadataProvider : ISitemapContentItemExtendedMetadataProvider
 {
-    private static readonly XNamespace _extendedNamespace = "http://www.w3.org/1999/xhtml";
-    private static readonly XAttribute _extendedAttribute = new(XNamespace.Xmlns + "xhtml", _extendedNamespace);
+    private static readonly XNamespace s_extendedNamespace = "http://www.w3.org/1999/xhtml";
+    private static readonly XAttribute s_extendedAttribute = new(XNamespace.Xmlns + "xhtml", s_extendedNamespace);
 
     private readonly IContentManager _contentManager;
     private readonly IRouteableContentTypeCoordinator _routeableContentTypeCoordinator;
@@ -24,7 +24,7 @@ public class SitemapUrlHrefLangExtendedMetadataProvider : ISitemapContentItemExt
         _routeableContentTypeCoordinator = routeableContentTypeCoordinator;
     }
 
-    public XAttribute GetExtendedAttribute => _extendedAttribute;
+    public XAttribute GetExtendedAttribute => s_extendedAttribute;
 
     public async Task<bool> ApplyExtendedMetadataAsync(
         SitemapBuilderContext context,
@@ -53,7 +53,7 @@ public class SitemapUrlHrefLangExtendedMetadataProvider : ISitemapContentItemExt
 
             var hrefValue = await _routeableContentTypeCoordinator.GetRouteAsync(context, localizedPart.ContentItem);
 
-            var linkNode = new XElement(_extendedNamespace + "link",
+            var linkNode = new XElement(s_extendedNamespace + "link",
                 new XAttribute("rel", "alternate"),
                 new XAttribute("hreflang", localizedPart.Culture),
                 new XAttribute("href", hrefValue));

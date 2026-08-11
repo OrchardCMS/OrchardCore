@@ -10,7 +10,7 @@ namespace OrchardCore.ReCaptcha.Services;
 
 public sealed class ReCaptchaService
 {
-    private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
+    private static readonly JsonSerializerOptions s_jsonSerializerOptions = new()
     {
         PropertyNamingPolicy = SnakeCaseNamingPolicy.Instance,
     };
@@ -98,7 +98,7 @@ public sealed class ReCaptchaService
             var httpClient = _httpClientFactory.CreateClient(nameof(ReCaptchaService));
             var response = await httpClient.PostAsync(_verifyHost, content);
             response.EnsureSuccessStatusCode();
-            var result = await response.Content.ReadFromJsonAsync<ReCaptchaResponse>(_jsonSerializerOptions);
+            var result = await response.Content.ReadFromJsonAsync<ReCaptchaResponse>(s_jsonSerializerOptions);
 
             return result.Success;
         }

@@ -4,11 +4,11 @@ namespace OrchardCore.Tests.Functional.Helpers;
 
 public static class MediaHelper
 {
-    private static readonly string _tempDir = Path.Combine(Path.GetTempPath(), "playwright-test-files");
+    private static readonly string s_tempDir = Path.Combine(Path.GetTempPath(), "playwright-test-files");
 
     // Minimal valid 1x1 white JPEG (635 bytes). Generated files use this as a header
     // so ImageSharp can decode them without throwing UnknownImageFormatException.
-    private static readonly byte[] _jpegHeader =
+    private static readonly byte[] s_jpegHeader =
     [
         0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46, 0x00, 0x01,
         0x01, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0xFF, 0xDB, 0x00, 0x43,
@@ -48,18 +48,18 @@ public static class MediaHelper
     /// </summary>
     public static string GenerateTestFile(string name, int sizeInBytes)
     {
-        if (!Directory.Exists(_tempDir))
+        if (!Directory.Exists(s_tempDir))
         {
-            Directory.CreateDirectory(_tempDir);
+            Directory.CreateDirectory(s_tempDir);
         }
 
-        var filePath = Path.Combine(_tempDir, name);
+        var filePath = Path.Combine(s_tempDir, name);
 
         using var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write);
 
         // Write the JPEG header (without the trailing EOI marker 0xFF 0xD9).
-        var headerWithoutEoi = _jpegHeader.Length - 2;
-        fs.Write(_jpegHeader, 0, headerWithoutEoi);
+        var headerWithoutEoi = s_jpegHeader.Length - 2;
+        fs.Write(s_jpegHeader, 0, headerWithoutEoi);
 
         // Pad to the requested size (minus 2 bytes for the EOI marker).
         var remaining = sizeInBytes - headerWithoutEoi - 2;
@@ -76,7 +76,7 @@ public static class MediaHelper
         }
 
         // Write the EOI marker.
-        fs.Write(_jpegHeader, headerWithoutEoi, 2);
+        fs.Write(s_jpegHeader, headerWithoutEoi, 2);
 
         return filePath;
     }
@@ -86,9 +86,9 @@ public static class MediaHelper
     /// </summary>
     public static void CleanupTestFiles()
     {
-        if (Directory.Exists(_tempDir))
+        if (Directory.Exists(s_tempDir))
         {
-            Directory.Delete(_tempDir, recursive: true);
+            Directory.Delete(s_tempDir, recursive: true);
         }
     }
 

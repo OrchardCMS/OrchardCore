@@ -21,9 +21,9 @@ public class DefaultShapeTableManager : IShapeTableManager
 
     // FeatureShapeDescriptors are identical across tenants so they can be reused statically. Each shape table will
     // create a unique list of these per tenant.
-    private static readonly ConcurrentDictionary<string, FeatureShapeDescriptor> _shapeDescriptors = new();
+    private static readonly ConcurrentDictionary<string, FeatureShapeDescriptor> s_shapeDescriptors = new();
 
-    private static readonly object _syncLock = new();
+    private static readonly object s_syncLock = new();
 
     // Singleton cache to hold a tenant's theme ShapeTable.
     private readonly IDictionary<string, Task<ShapeTable>> _shapeTableCache;
@@ -87,9 +87,9 @@ public class DefaultShapeTableManager : IShapeTableManager
         HashSet<string> excludedFeatures;
 
         // Here we don't use a lock for thread safety but for atomicity.
-        lock (_syncLock)
+        lock (s_syncLock)
         {
-            excludedFeatures = new HashSet<string>(_shapeDescriptors.Select(kv => kv.Value.Feature.Id));
+            excludedFeatures = new HashSet<string>(s_shapeDescriptors.Select(kv => kv.Value.Feature.Id));
         }
 
         var shapeDescriptors = new Dictionary<string, FeatureShapeDescriptor>();
@@ -107,11 +107,11 @@ public class DefaultShapeTableManager : IShapeTableManager
         }
 
         // Here we don't use a lock for thread safety but for atomicity.
-        lock (_syncLock)
+        lock (s_syncLock)
         {
             foreach (var kv in shapeDescriptors)
             {
-                _shapeDescriptors[kv.Key] = kv.Value;
+                s_shapeDescriptors[kv.Key] = kv.Value;
             }
         }
 
@@ -125,7 +125,7 @@ public class DefaultShapeTableManager : IShapeTableManager
             enabledAndOrderedFeatureIds.Add(hostingEnvironment.ApplicationName);
         }
 
-        var descriptors = _shapeDescriptors
+        var descriptors = s_shapeDescriptors
             .Where(sd => enabledAndOrderedFeatureIds.Contains(sd.Value.Feature.Id))
             .Where(sd => IsModuleOrRequestedTheme(extensionManager, sd.Value.Feature, themeId))
             .OrderBy(sd => enabledAndOrderedFeatureIds.IndexOf(sd.Value.Feature.Id))
@@ -168,7 +168,7 @@ public class DefaultShapeTableManager : IShapeTableManager
                 + firstAlteration.Feature.Id
                 + firstAlteration.ShapeType.ToLower();
 
-            if (!_shapeDescriptors.ContainsKey(key))
+            if (!s_shapeDescriptors.ContainsKey(key))
             {
                 var descriptor = new FeatureShapeDescriptor
                 (

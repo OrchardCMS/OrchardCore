@@ -17,7 +17,7 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
 {
     private const char PathSeparator = '/';
 
-    private static readonly ClaimsPrincipal _anonymous = new ClaimsPrincipal(new ClaimsIdentity());
+    private static readonly ClaimsPrincipal s_anonymous = new ClaimsPrincipal(new ClaimsIdentity());
 
     private readonly IServiceProvider _serviceProvider;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -197,7 +197,7 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
         {
             // If anonymous access is also possible, we want to use default browser caching policies.
             // Otherwise we set a marker which causes a different caching policy being used.
-            if ((context.User.Identity?.IsAuthenticated ?? false) && !await authorizationService.AuthorizeAsync(_anonymous, permission, resource))
+            if ((context.User.Identity?.IsAuthenticated ?? false) && !await authorizationService.AuthorizeAsync(s_anonymous, permission, resource))
             {
                 _httpContextAccessor.HttpContext.MarkAsSecureMediaRequested();
             }

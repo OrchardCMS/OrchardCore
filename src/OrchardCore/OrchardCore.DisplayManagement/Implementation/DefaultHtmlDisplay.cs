@@ -15,7 +15,7 @@ namespace OrchardCore.DisplayManagement.Implementation;
 public class DefaultHtmlDisplay : IHtmlDisplay
 {
     private const string _separator = "__";
-    private static readonly ConcurrentDictionary<string, List<string>> _alternateShapeTypes = [];
+    private static readonly ConcurrentDictionary<string, List<string>> s_alternateShapeTypes = [];
 
     private readonly IShapeTableManager _shapeTableManager;
     private readonly IEnumerable<IShapeDisplayEvents> _shapeDisplayEvents;
@@ -321,7 +321,7 @@ public class DefaultHtmlDisplay : IHtmlDisplay
         // so the shapetype itself may contain a longer alternate forms that falls back to a shorter one.
 
         // Build a cache of such values
-        var alternateShapeTypes = _alternateShapeTypes.GetOrAdd(shapeType, shapeType =>
+        var alternateShapeTypes = s_alternateShapeTypes.GetOrAdd(shapeType, shapeType =>
         {
             var segments = new List<string>(2);
 
