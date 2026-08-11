@@ -66,6 +66,9 @@ public sealed class ContentItemFilters : GraphQLFilter<ContentItem>
         var filtered = new List<ContentItem>();
         var user = _httpContextAccessor.HttpContext?.User;
 
+        // The only way to ensure no improper disclosure with certainty is post-query filtering each result with the
+        // authorization service. Ideally, pre-query filters should have already done all the work by this point so this
+        // is just fall-back insurance.
         foreach (var item in contentItems)
         {
             if (await _authorizationService.AuthorizeAsync(user, CommonPermissions.ViewContent, item))
