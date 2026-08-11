@@ -6,7 +6,7 @@
     <Title>OrchardCore SignalR</Title>
     <Description>$(OCFrameworkDescription)
 
-    Provides SignalR hub routing, client resources, and the dependency-only core authentication feature that any module can reuse. Redis and Azure scale-out backplanes ship as separate features.</Description>
+    Provides SignalR hub routing, client resources, and the authorization policy used by secured hubs. Redis and Azure scale-out backplanes ship as separate features.</Description>
     <PackageTags>$(PackageTags) OrchardCoreFramework SignalR</PackageTags>
   </PropertyGroup>
 
@@ -16,8 +16,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.SignalR.Core\OrchardCore.SignalR.Core.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="OrchardCore.Tests" />
   </ItemGroup>
 
 </Project>

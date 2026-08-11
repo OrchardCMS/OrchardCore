@@ -1,8 +1,9 @@
 using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Infrastructure.Security;
+using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
 using OrchardCore.SignalR.Services;
 
@@ -27,6 +28,8 @@ public sealed class Startup : StartupBase
                 }
             });
 
+        services.AddTransient<IPostConfigureOptions<AuthorizationOptions>, AuthorizationOptionsConfiguration>();
+
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
     }
 }
@@ -39,6 +42,6 @@ public sealed class CoreStartup : StartupBase
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        app.UseMiddleware<AuthorizeWithSchemesMiddleware>();
+        app.UseMiddleware<AccessTokenHeaderMiddleware>();
     }
 }

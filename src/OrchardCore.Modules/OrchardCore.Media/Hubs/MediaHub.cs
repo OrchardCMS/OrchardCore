@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using OrchardCore.Infrastructure.Security;
 
 namespace OrchardCore.Media.Hubs;
 
-[AuthorizeWithSchemes(AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api)]
+[Authorize(Policy = "SignalR")]
 public sealed class MediaHub : Hub
 {
     private readonly IAuthorizationService _authorizationService;
