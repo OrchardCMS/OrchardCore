@@ -58,13 +58,15 @@ internal sealed class IndexProfileDeploymentStepDisplayDriver : DisplayDriver<De
         }
         else
         {
-            if (model.Indexes == null || model.Indexes.Length == 0)
+            var selectedIndexNames = model.Indexes?.Where(x => x.Selected).Select(x => x.Value).ToArray() ?? [];
+
+            if (selectedIndexNames.Length == 0)
             {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Indexes), S["At least one index is required."]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Indexes), S["At least one index profile is required."]);
             }
 
             step.IncludeAll = false;
-            step.IndexNames = model.Indexes.Where(x => x.Selected).Select(x => x.Value).ToArray();
+            step.IndexNames = selectedIndexNames;
         }
 
         return Edit(step, context);

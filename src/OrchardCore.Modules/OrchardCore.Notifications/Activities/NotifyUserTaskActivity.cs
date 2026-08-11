@@ -65,9 +65,21 @@ public abstract class NotifyUserTaskActivity : TaskActivity
         set => SetProperty(value);
     }
 
+    /// <summary>
+    /// Gets the workflow outcomes that can be produced by this activity.
+    /// </summary>
+    /// <param name="workflowContext">The workflow execution context.</param>
+    /// <param name="activityContext">The activity context.</param>
+    /// <returns>The possible workflow outcomes.</returns>
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         => Outcomes(S["Done"], S["Failed"], S["Failed: no user found"]);
 
+    /// <summary>
+    /// Sends the configured notification message to each resolved user.
+    /// </summary>
+    /// <param name="workflowContext">The workflow execution context.</param>
+    /// <param name="activityContext">The activity context.</param>
+    /// <returns>An <see cref="ActivityExecutionResult"/> describing the workflow outcome.</returns>
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         var users = await GetUsersAsync(workflowContext, activityContext);
@@ -83,7 +95,8 @@ public abstract class NotifyUserTaskActivity : TaskActivity
 
         foreach (var user in users)
         {
-            totalSent += await _notificationService.SendAsync(user, message);
+            var result = await _notificationService.SendAsync(user, message);
+            totalSent += result.SuccessfulCount;
         }
 
         workflowContext.LastResult = totalSent;
@@ -96,6 +109,11 @@ public abstract class NotifyUserTaskActivity : TaskActivity
         return Outcomes("Done");
     }
 
+    /// <summary>
+    /// Builds the notification message from the configured workflow expressions.
+    /// </summary>
+    /// <param name="workflowContext">The workflow execution context.</param>
+    /// <returns>The notification message to send.</returns>
     protected virtual async Task<INotificationMessage> GetMessageAsync(WorkflowExecutionContext workflowContext)
     {
         return new NotificationMessage()
@@ -112,6 +130,12 @@ public abstract class NotifyUserTaskActivity : TaskActivity
 
     public abstract override LocalizedString DisplayText { get; }
 
+    /// <summary>
+    /// Resolves the users who should receive the notification.
+    /// </summary>
+    /// <param name="workflowContext">The workflow execution context.</param>
+    /// <param name="activityContext">The activity context.</param>
+    /// <returns>The users who should receive the notification.</returns>
     protected abstract Task<IEnumerable<IUser>> GetUsersAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext);
 }
 

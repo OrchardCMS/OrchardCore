@@ -1,0 +1,31 @@
+@using OrchardCore.Workflows.ViewModels
+@model LiquidTaskViewModel
+
+<div class="ocat-wrapper" asp-validation-class-for="Expression">
+    <label asp-for="Expression" class="ocat-label">@T["Expression"]</label>
+    <div class="ocat-end">
+        <textarea asp-for="Expression" class="form-control"></textarea>
+        <span asp-validation-for="Expression"></span>
+        <span class="hint">@T["The Liquid expression to evaluate. The result is stored as the last result. Example: {0}", "{{ Workflow.Input.ContentItem.DisplayText }}"]</span>
+    </div>
+</div>
+
+<style asp-name="codemirror"></style>
+<script asp-name="codemirror" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
+<script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot" depends-on="codemirror"></script>
+<script at="Foot" depends-on="codemirror">
+    document.addEventListener('DOMContentLoaded', () => {
+        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Expression)'), {
+            autoRefresh: true,
+            lineNumbers: true,
+            lineWrapping: true,
+            matchBrackets: true,
+            styleActiveLine: true,
+            mode: { name: 'liquid' }
+        });
+    });
+</script>

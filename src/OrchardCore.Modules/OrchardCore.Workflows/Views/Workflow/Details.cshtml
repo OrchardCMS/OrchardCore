@@ -33,41 +33,51 @@
     <div id="workflow" class="tab-pane active" role="tabpanel" aria-labelledby="workflow-tab">
         <div class="card mb-3 workflow-details">
             <div class="card-body">
-                <div class="row">
-                    <div class="col">
-                        <label>@T["Workflow ID"]</label>
+                <div class="ocat-wrapper">
+                    <label class="ocat-label">@T["Workflow ID"]</label>
+                    <div class="ocat-end">
                         <span>@Model.Workflow.WorkflowId</span>
                     </div>
-                    <div class="col">
-                        <label>@T["Created"]</label>
+                </div>
+                <div class="ocat-wrapper">
+                    <label class="ocat-label">@T["Created"]</label>
+                    <div class="ocat-end">
                         <span>@await LocalClock.ConvertToLocalAsync(Model.Workflow.CreatedUtc)</span>
                     </div>
-                    <div class="col">
-                        <label>@T["Status"]</label>
+                </div>
+                <div class="ocat-wrapper">
+                    <label class="ocat-label">@T["Status"]</label>
+                    <div class="ocat-end">
                         <span>@T.GetLocalizedStatus(Model.Workflow.Status)</span>
                     </div>
-                    @if (Model.Workflow.Status == WorkflowStatus.Faulted)
-                    {
-                        <div class="col">
-                            <label>@T["Fault Message"]</label>
+                </div>
+                @if (Model.Workflow.Status == WorkflowStatus.Faulted)
+                {
+                    <div class="ocat-wrapper">
+                        <label class="ocat-label">@T["Fault Message"]</label>
+                        <div class="ocat-end">
                             <span>@Model.Workflow.FaultMessage</span>
                         </div>
-                    }
-                    <div class="col">
-                        <label>@T["Correlation ID"]</label>
+                    </div>
+                }
+                <div class="ocat-wrapper">
+                    <label class="ocat-label">@T["Correlation ID"]</label>
+                    <div class="ocat-end">
                         <span>@(Model.Workflow.CorrelationId ?? "None")</span>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="mb-3">
-            <div class="workflow-container">
-                <div class="workflow-canvas-container">
-                    <div class="workflow-canvas" data-workflow-type="@Model.WorkflowTypeJson">
-                        @foreach (var activityShape in Model.ActivityDesignShapes)
-                        {
-                            @await DisplayAsync(activityShape)
-                        }
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
+                <div class="workflow-container">
+                    <div class="workflow-canvas-container">
+                        <div class="workflow-canvas" data-workflow-type="@Model.WorkflowTypeJson">
+                            @foreach (var activityShape in Model.ActivityDesignShapes)
+                            {
+                                @await DisplayAsync(activityShape)
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
@@ -89,16 +99,18 @@
     </div>
     </div>*@
 </div>
-<div class="mb-3">
-    <a class="btn btn-secondary" asp-route-action="Index" asp-route-workflowTypeId="@Model.WorkflowType.Id">@T["Back"]</a>
-    @if (Model.Workflow.Status != WorkflowStatus.Executing
-    && Model.Workflow.Status != WorkflowStatus.Halted
-    && Model.Workflow.Status != WorkflowStatus.Resuming
-    && Model.Workflow.Status != WorkflowStatus.Starting)
-    {
-        <a asp-action="Restart" asp-route-id="@Model.Workflow.Id" class="btn btn-warning" data-title="@T["Restart"]" data-message="@T["Are you sure you want to restart this workflow instance?"]" data-url-af="RemoveUrl UnsafeUrl">@T["Restart"]</a>
-    }
-    <a class="btn btn-danger" data-message="@T["Are you sure you want to delete this workflow instance?"]" data-url-af="RemoveUrl UnsafeUrl" asp-action="Delete" asp-route-id="@Model.Workflow.Id">@T["Delete"]</a>
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <a class="btn btn-secondary" asp-route-action="Index" asp-route-workflowTypeId="@Model.WorkflowType.Id">@T["Back"]</a>
+        @if (Model.Workflow.Status != WorkflowStatus.Executing
+        && Model.Workflow.Status != WorkflowStatus.Halted
+        && Model.Workflow.Status != WorkflowStatus.Resuming
+        && Model.Workflow.Status != WorkflowStatus.Starting)
+        {
+            <a asp-action="Restart" asp-route-id="@Model.Workflow.Id" class="btn btn-warning" data-title="@T["Restart"]" data-message="@T["Are you sure you want to restart this workflow instance?"]" data-url-af="RemoveUrl UnsafeUrl">@T["Restart"]</a>
+        }
+        <a class="btn btn-danger" data-message="@T["Are you sure you want to delete this workflow instance?"]" data-url-af="RemoveUrl UnsafeUrl" asp-action="Delete" asp-route-id="@Model.Workflow.Id">@T["Delete"]</a>
+    </div>
 </div>
 
 <style asp-name="jsplumbtoolkit-defaults"></style>

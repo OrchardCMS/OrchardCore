@@ -31,11 +31,11 @@ Azure SMS settings can be configured using the `Settings` recipe step:
 }
 ```
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `IsEnabled` | Boolean | Whether the Azure SMS provider is enabled. |
-| `ConnectionString` | String | The Azure Communication Services connection string. **Required.** |
-| `PhoneNumber` | String | The phone number to send SMS messages from. **Required.** |
+| Property           | Type    | Description                                                       |
+|--------------------|---------|-------------------------------------------------------------------|
+| `IsEnabled`        | Boolean | Whether the Azure SMS provider is enabled.                        |
+| `ConnectionString` | String  | The Azure Communication Services connection string. **Required.** |
+| `PhoneNumber`      | String  | The phone number to send SMS messages from. **Required.**         |
 
 ## **Default Azure Communication Services** Provider Configuration
 

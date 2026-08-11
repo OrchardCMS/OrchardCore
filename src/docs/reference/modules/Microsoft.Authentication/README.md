@@ -1,6 +1,6 @@
 # Microsoft Authentication (`OrchardCore.Microsoft.Authentication`)
 
-This module configures Orchard to support Microsoft Account and/or Microsoft Microsoft Entra ID (Azure Active Directory) accounts.
+This module configures Orchard to support Microsoft Account and/or Microsoft Entra ID (Azure Active Directory) accounts.
 
 ## Microsoft Account
 
@@ -92,8 +92,9 @@ The Microsoft Entra ID can be set during recipes using the settings step. Here i
 
 ## User Registration
 
-- If you want to enable new users to register to the site through their Microsoft Account and/or Microsoft Microsoft Entra ID login, the `OrchardCore.Users.Registration` feature must be enabled and setup accordingly.
-- Apart from during login, existing users can link their account to their Microsoft Account and/or Microsoft Microsoft Entra ID login through the External Logins link from User menu.
+- Enable the `OrchardCore.Users.Registration` feature when you want local site registration in addition to Microsoft Account or Microsoft Entra ID authentication.
+- New external-user creation and profile generation are controlled from the Users module's [`ExternalRegistrationSettings`](../Users/README.md#external-authentication-settings).
+- Apart from during login, existing users can link their account to their Microsoft Account and/or Microsoft Entra ID login through the External Logins link from User menu.
 
 ### Settings Recipe Step
 
@@ -124,22 +125,22 @@ Both Microsoft Account and Microsoft Entra ID settings can also be configured us
 
 #### Microsoft Account Settings
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `AppId` | String | The Application ID from the Application Registration Portal. **Required.** |
-| `AppSecret` | String | The Application Secret. **Required.** |
-| `CallbackPath` | String | The request path where the user-agent will be returned after authentication. |
-| `SaveTokens` | Boolean | Whether to save the access and refresh tokens. |
+| Property       | Type    | Description                                                                  |
+|----------------|---------|------------------------------------------------------------------------------|
+| `AppId`        | String  | The Application ID from the Application Registration Portal. **Required.**   |
+| `AppSecret`    | String  | The Application Secret. **Required.**                                        |
+| `CallbackPath` | String  | The request path where the user-agent will be returned after authentication. |
+| `SaveTokens`   | Boolean | Whether to save the access and refresh tokens.                               |
 
 #### Microsoft Entra ID Settings
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `DisplayName` | String | The display name shown on the login screen. |
-| `AppId` | String | The Application (client) ID from the Azure Portal. **Required.** |
-| `TenantId` | String | The Directory (tenant) ID. Use `common` or `organizations` for multi-tenant. **Required.** |
-| `CallbackPath` | String | The request path where the user-agent will be returned after authentication. |
-| `SaveTokens` | Boolean | Whether to save the access and refresh tokens. |
+| Property       | Type    | Description                                                                                |
+|----------------|---------|--------------------------------------------------------------------------------------------|
+| `DisplayName`  | String  | The display name shown on the login screen.                                                |
+| `AppId`        | String  | The Application (client) ID from the Azure Portal. **Required.**                           |
+| `TenantId`     | String  | The Directory (tenant) ID. Use `common` or `organizations` for multi-tenant. **Required.** |
+| `CallbackPath` | String  | The request path where the user-agent will be returned after authentication.               |
+| `SaveTokens`   | Boolean | Whether to save the access and refresh tokens.                                             |
 
 ## Microsoft Account & Microsoft Entra ID (Azure Active Directory) Settings Configuration
 

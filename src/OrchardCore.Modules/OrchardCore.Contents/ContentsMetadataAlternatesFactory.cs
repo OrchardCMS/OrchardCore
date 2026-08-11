@@ -8,7 +8,7 @@ namespace OrchardCore.Contents;
 /// </summary>
 internal static class ContentsMetadataAlternatesFactory
 {
-    private static readonly ConcurrentDictionary<MetadataAlternatesCacheKey, string[]> _cache = new();
+    private static readonly ConcurrentDictionary<MetadataAlternatesCacheKey, string[]> s_cache = new();
 
     /// <summary>
     /// Gets or creates cached alternates for a ContentsMetadata shape configuration.
@@ -16,7 +16,7 @@ internal static class ContentsMetadataAlternatesFactory
     public static string[] GetAlternates(string stereotype, string displayType)
     {
         var key = new MetadataAlternatesCacheKey(stereotype ?? string.Empty, displayType ?? string.Empty);
-        return _cache.GetOrAdd(key, BuildAlternates);
+        return s_cache.GetOrAdd(key, BuildAlternates);
     }
 
     internal readonly record struct MetadataAlternatesCacheKey(

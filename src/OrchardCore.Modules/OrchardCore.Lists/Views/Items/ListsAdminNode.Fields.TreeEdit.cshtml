@@ -1,31 +1,41 @@
 @model ListsAdminNodeViewModel
+@{
+    var parentIconWrapperClasses = Model.AddContentTypeAsParent
+        ? "ocat-wrapper icon-picker-for-content-type"
+        : "ocat-wrapper icon-picker-for-content-type collapse";
+}
 
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.css" at="Head"></style>
 
 <script asp-name="vuejs" at="Foot" version="2"></script>
-<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.js" at="Foot" depends-on="bootstrap, jQuery, jQuery.nestedSortable, fontawesome-iconpicker"></script>
+<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.js" at="Foot" depends-on="bootstrap, jQuery, jQuery.nestedSortable:2.1, fontawesome-iconpicker"></script>
 
-<h5>@T["Lists"]</h5>
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <h5 class="mb-0">@T["Lists"]</h5>
+    </div>
+</div>
 
-<div class="row mb-4">
-    <div class="col-xl-6">
-        <div class="mb-3">
-            <label asp-for="ContentType" class="form-label">@T["Content type"]</label>
+<div class="mb-4">
+    <div class="ocat-wrapper">
+        <label asp-for="ContentType" class="ocat-label">@T["Content type"]</label>
+        <div class="ocat-end">
             <select asp-for="ContentType" asp-items="Model.ContentTypes" class="form-select">
                 <option value="">@T["Select a content type"]</option>
             </select>
         </div>
+    </div>
 
-        <div class="mb-3">
-            <label asp-for="IconForContentItems" class="form-label">@T["Icon for the content items"]</label>
+    <div class="ocat-wrapper">
+        <label asp-for="IconForContentItems" class="ocat-label">@T["Icon for the content items"]</label>
+        <div class="ocat-end">
             <div class="btn-toolbar icon-toolbar" role="toolbar" aria-label="Icon Selector Toolbar">
-
                 <div class="btn-group input-group me-2" role="group" aria-label="Icon Selector">
                     <button type="button" class="btn btn-primary sample-icon">
                         <i id="@("sample-icon-" + Html.IdFor(m => m.IconForContentItems))"
                            class="@(Model.IconForContentItems)"></i>
                     </button>
-                    <input type="hidden" name="@Html.NameFor(m=>m.IconForContentItems)"
+                    <input type="hidden" name="@Html.NameFor(m => m.IconForContentItems)"
                            id="@Html.IdFor(m => m.IconForContentItems)" class="icon-val"
                            value="@Model.IconForContentItems" />
                     <button type="button"
@@ -45,44 +55,44 @@
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="mb-3 row add-parent-link-fieldset">
-            <div class="col">
-                <label asp-for="AddContentTypeAsParent" class="form-label">
-                    <input asp-for="AddContentTypeAsParent" class="add-parent-link-checkbox" />
-                    @T["Add parent menu item"]
-                </label>
-                <span class="hint">Determines if there will be a parent item containing the content item links.</span>
+    <div class="ocat-wrapper add-parent-link-fieldset">
+        <div class="ocat-end-offset">
+            <div class="form-check">
+                <input asp-for="AddContentTypeAsParent" class="form-check-input add-parent-link-checkbox" />
+                <label class="form-check-label" asp-for="AddContentTypeAsParent">@T["Add parent menu item"]</label>
+                <span class="hint">@T["Determines if there will be a parent item containing the content item links."]</span>
             </div>
         </div>
-        <div class="mb-3 row @(Model.AddContentTypeAsParent ? "" : "collapse") icon-picker-for-content-type">
-            <div class="col">
-                <label asp-for="IconForParentLink" class="form-label">@T["Icon for the parent menu item"]</label>
-                <div class="btn-toolbar icon-toolbar" role="toolbar" aria-label="Icon Selector Toolbar">
+    </div>
 
-                    <div class="btn-group input-group me-2" role="group" aria-label="Icon Selector">
-                        <button type="button" class="btn btn-primary sample-icon">
-                            <i id="@("sample-icon-" + Html.IdFor(m => m.IconForParentLink))"
-                               class="@(Model.IconForParentLink)"></i>
-                        </button>
-                        <input type="hidden" name="@Html.NameFor(m=>m.IconForParentLink)"
-                               id="@Html.IdFor(m => m.IconForParentLink)" class="icon-val"
-                               value="@Model.IconForParentLink" />
-                        <button type="button"
-                                class="btn btn-primary icon-picker-trigger"
-                                data-related-node="@Html.IdFor(m => m.IconForParentLink)">
-                            @T["Icon"]
-                        </button>
-                    </div>
+    <div class="@parentIconWrapperClasses">
+        <label asp-for="IconForParentLink" class="ocat-label">@T["Icon for the parent menu item"]</label>
+        <div class="ocat-end">
+            <div class="btn-toolbar icon-toolbar" role="toolbar" aria-label="Icon Selector Toolbar">
+                <div class="btn-group input-group me-2" role="group" aria-label="Icon Selector">
+                    <button type="button" class="btn btn-primary sample-icon">
+                        <i id="@("sample-icon-" + Html.IdFor(m => m.IconForParentLink))"
+                           class="@(Model.IconForParentLink)"></i>
+                    </button>
+                    <input type="hidden" name="@Html.NameFor(m => m.IconForParentLink)"
+                           id="@Html.IdFor(m => m.IconForParentLink)" class="icon-val"
+                           value="@Model.IconForParentLink" />
+                    <button type="button"
+                            class="btn btn-primary icon-picker-trigger"
+                            data-related-node="@Html.IdFor(m => m.IconForParentLink)">
+                        @T["Icon"]
+                    </button>
+                </div>
 
-                    <div class="btn-group" role="group" aria-label="Remove Icon Button">
-                        <button type="button" class="btn btn-secondary remove-icon"
-                                data-related-node="@Html.IdFor(m => m.IconForParentLink)">
-                            <div style="pointer-events:none;">
-                                <i class="fa-solid fa-trash" aria-hidden="true"></i>
-                            </div>
-                        </button>
-                    </div>
+                <div class="btn-group" role="group" aria-label="Remove Icon Button">
+                    <button type="button" class="btn btn-secondary remove-icon"
+                            data-related-node="@Html.IdFor(m => m.IconForParentLink)">
+                        <div style="pointer-events:none;">
+                            <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                        </div>
+                    </button>
                 </div>
             </div>
         </div>
@@ -105,28 +115,50 @@
     </div>
 </div>
 
-<script at="Foot" depends-on="jquery">
-    $(function () {
-        $('.add-parent-link-checkbox').on('click', function (e) {
+<script at="Foot">
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
 
-            var iconPickerFieldSet = $(e.target).closest('.add-parent-link-fieldset').siblings('.icon-picker-for-content-type');
-
-            var selected = $(e.target).prop('checked');
-            console.log(iconPickerFieldSet[0]);
-            selected ? iconPickerFieldSet.removeClass('collapse') : iconPickerFieldSet.addClass('collapse');
-
+    onDocumentReady(function () {
+        document.querySelectorAll('.add-parent-link-checkbox').forEach(function (checkbox) {
+            checkbox.addEventListener('click', function (e) {
+                var fieldSet = e.currentTarget.closest('.add-parent-link-fieldset');
+                var iconPickerFieldSets = Array.from(fieldSet.parentElement.children).filter(function (element) {
+                    return element !== fieldSet && element.classList.contains('icon-picker-for-content-type');
+                });
+                var selected = e.currentTarget.checked;
+                console.log(iconPickerFieldSets[0]);
+                iconPickerFieldSets.forEach(function (iconPickerFieldSet) {
+                    selected ? iconPickerFieldSet.classList.remove('collapse') : iconPickerFieldSet.classList.add('collapse');
+                });
+            });
         });
 
-        $('.icon-picker-trigger').on('click', function (e) {
-
-            var node = $(e.target).data('related-node');
-            iconPickerVue.show(node, 'sample-icon-' + node);
+        document.querySelectorAll('.icon-picker-trigger').forEach(function (trigger) {
+            trigger.addEventListener('click', function (e) {
+                var node = e.currentTarget.dataset.relatedNode;
+                iconPickerVue.show(node, 'sample-icon-' + node);
+            });
         });
 
-        $('button.remove-icon').on('click', function (e) {
-            var node = $(e.target).data('related-node');
-            $('#' + node).val('');
-            $('#sample-icon-' + node).replaceWith('<i id="sample-icon-' + node + '" class=" "></i>'); // changing the class is not enough.
+        document.querySelectorAll('button.remove-icon').forEach(function (button) {
+            button.addEventListener('click', function (e) {
+                var node = e.currentTarget.dataset.relatedNode;
+                var input = document.getElementById(node);
+                if (input) {
+                    input.value = '';
+                }
+
+                var sampleIcon = document.getElementById('sample-icon-' + node);
+                if (sampleIcon) {
+                    sampleIcon.outerHTML = '<i id="sample-icon-' + node + '" class=" "></i>'; // changing the class is not enough.
+                }
+            });
         });
     });
 </script>

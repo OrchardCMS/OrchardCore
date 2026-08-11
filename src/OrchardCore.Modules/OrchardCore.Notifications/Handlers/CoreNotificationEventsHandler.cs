@@ -7,7 +7,13 @@ namespace OrchardCore.Notifications.Handlers;
 
 public class CoreNotificationEventsHandler : NotificationEventsHandler
 {
-    public override Task CreatingAsync(NotificationContext context)
+    /// <summary>
+    /// Populates the notification entity with the recipient user id and body content before it is stored.
+    /// </summary>
+    /// <param name="context">The notification context.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A completed task.</returns>
+    public override Task CreatingAsync(NotificationContext context, CancellationToken cancellationToken = default)
     {
         if (context.Notify is User user)
         {

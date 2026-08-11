@@ -8,14 +8,14 @@ namespace OrchardCore.Mvc.LocationExpander;
 
 public class ComponentViewLocationExpanderProvider : IViewLocationExpanderProvider
 {
-    private static readonly string _sharedViewsPath = "/Views/Shared/{0}" + RazorViewEngine.ViewExtension;
-    private static readonly string _sharedPagesPath = "/Pages/Shared/{0}" + RazorViewEngine.ViewExtension;
-    private static readonly string[] _razorExtensions = [RazorViewEngine.ViewExtension];
+    private static readonly string s_sharedViewsPath = "/Views/Shared/{0}" + RazorViewEngine.ViewExtension;
+    private static readonly string s_sharedPagesPath = "/Pages/Shared/{0}" + RazorViewEngine.ViewExtension;
+    private static readonly string[] s_razorExtensions = [RazorViewEngine.ViewExtension];
     private const string CacheKey = "ModuleComponentViewLocations";
-    private static List<IExtensionInfo> _modulesWithComponentViews;
-    private static List<IExtensionInfo> _modulesWithPagesComponentViews;
-    private static readonly object _synLock = new();
-    private static bool _initialized;
+    private static List<IExtensionInfo> s_modulesWithComponentViews;
+    private static List<IExtensionInfo> s_modulesWithPagesComponentViews;
+    private static readonly object s_synLock = new();
+    private static bool s_initialized;
 
     private readonly IExtensionManager _extensionManager;
     private readonly ShellDescriptor _shellDescriptor;
@@ -31,14 +31,14 @@ public class ComponentViewLocationExpanderProvider : IViewLocationExpanderProvid
         _shellDescriptor = shellDescriptor;
         _memoryCache = memoryCache;
 
-        if (_initialized)
+        if (s_initialized)
         {
             return;
         }
 
-        lock (_synLock)
+        lock (s_synLock)
         {
-            if (!_initialized)
+            if (!s_initialized)
             {
                 var modulesWithComponentViews = new List<IExtensionInfo>();
                 var modulesWithPagesComponentViews = new List<IExtensionInfo>();
@@ -50,7 +50,7 @@ public class ComponentViewLocationExpanderProvider : IViewLocationExpanderProvid
                 foreach (var module in orderedModules)
                 {
                     var moduleComponentsViewFilePaths = fileProviderAccessor.FileProvider.GetViewFilePaths(
-                        module.SubPath + "/Views/Shared/Components", _razorExtensions,
+                        module.SubPath + "/Views/Shared/Components", s_razorExtensions,
                         viewsFolder: null, inViewsFolder: true, inDepth: true);
 
                     if (moduleComponentsViewFilePaths.Any())
@@ -59,7 +59,7 @@ public class ComponentViewLocationExpanderProvider : IViewLocationExpanderProvid
                     }
 
                     var modulePagesComponentsViewFilePaths = fileProviderAccessor.FileProvider.GetViewFilePaths(
-                        module.SubPath + "/Pages/Shared/Components", _razorExtensions,
+                        module.SubPath + "/Pages/Shared/Components", s_razorExtensions,
                         viewsFolder: null, inViewsFolder: true, inDepth: true);
 
                     if (modulePagesComponentsViewFilePaths.Any())
@@ -68,10 +68,10 @@ public class ComponentViewLocationExpanderProvider : IViewLocationExpanderProvid
                     }
                 }
 
-                _modulesWithComponentViews = modulesWithComponentViews;
-                _modulesWithPagesComponentViews = modulesWithPagesComponentViews;
+                s_modulesWithComponentViews = modulesWithComponentViews;
+                s_modulesWithPagesComponentViews = modulesWithPagesComponentViews;
 
-                _initialized = true;
+                s_initialized = true;
             }
         }
     }
@@ -107,12 +107,12 @@ public class ComponentViewLocationExpanderProvider : IViewLocationExpanderProvid
                     .Select(x => x.Id)
                     .ToHashSet();
 
-                moduleComponentViewLocations = _modulesWithComponentViews
+                moduleComponentViewLocations = s_modulesWithComponentViews
                     .Where(m => enabledExtensionIds.Contains(m.Id))
-                    .Select(m => '/' + m.SubPath + _sharedViewsPath)
-                    .Concat(_modulesWithPagesComponentViews
+                    .Select(m => '/' + m.SubPath + s_sharedViewsPath)
+                    .Concat(s_modulesWithPagesComponentViews
                     .Where(m => enabledExtensionIds.Contains(m.Id))
-                    .Select(m => '/' + m.SubPath + _sharedPagesPath))
+                    .Select(m => '/' + m.SubPath + s_sharedPagesPath))
                     .ToArray();
 
                 _memoryCache.Set(CacheKey, moduleComponentViewLocations);

@@ -18,40 +18,54 @@
         @Html.HiddenFor(m => m.ShapeType)
     }
 
-    <div class="mb-3" asp-validation-class-for="ShapeType">
-        <label asp-for="ShapeType" class="form-label">@T["Shape type"]</label>
+    <div class="ocat-wrapper" asp-validation-class-for="ShapeType">
+        <label asp-for="ShapeType" class="ocat-label">@T["Shape type"]</label>
+        <div class="ocat-end">
         <input asp-for="ShapeType" asp-is-disabled="!Model.Creating" class="form-control" required autofocus />
         <span asp-validation-for="ShapeType"></span>
         <span class="hint">@T["The type of the shape."]</span>
-    </div>
-
-    <div class="mb-3" asp-validation-class-for="Nodes">
-        <label asp-for="Nodes" class="form-label">@T["Placement rules"]</label>
-        <textarea asp-for="Nodes" rows="10" class="form-control"></textarea>
-    </div>
-
-    <div class="mb-3">
-        <div class="btn-group">
-            <button type="submit" name="submit" class="btn btn-primary">@T["Save"]</button>
-            <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="visually-hidden">@T["Toggle Dropdown"]</span>
-            </button>
-            <div class="dropdown-menu">
-                <button class="dropdown-item" name="submit" type="submit" value="SaveAndContinue">@T["and continue"]</button>
-            </div>
         </div>
+    </div>
 
-        @if (!Model.Creating)
-        {
-            <a asp-route-action="Delete" asp-route-area="OrchardCore.Placements" asp-route-shapeType="@Model.ShapeType" class="btn btn-danger" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Delete"]</a>
-        }
+    <div class="ocat-wrapper" asp-validation-class-for="Nodes">
+        <label asp-for="Nodes" class="ocat-label">@T["Placement rules"]</label>
+        <div class="ocat-end">
+        <textarea asp-for="Nodes" rows="10" class="form-control"></textarea>
+        </div>
+    </div>
 
-        <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <div class="btn-group">
+                <button type="submit" name="submit" class="btn btn-primary">@T["Save"]</button>
+                <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="visually-hidden">@T["Toggle Dropdown"]</span>
+                </button>
+                <div class="dropdown-menu">
+                    <button class="dropdown-item" name="submit" type="submit" value="SaveAndContinue">@T["and continue"]</button>
+                </div>
+            </div>
+
+            @if (!Model.Creating)
+            {
+                <a asp-route-action="Delete" asp-route-area="OrchardCore.Placements" asp-route-shapeType="@Model.ShapeType" class="btn btn-danger" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Delete"]</a>
+            }
+
+            <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
+        </div>
     </div>
 </form>
 
 <script at="Foot">
-    $(function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Nodes)');
         if (optionsTextArea) {
             var editor = CodeMirror.fromTextArea(optionsTextArea, {

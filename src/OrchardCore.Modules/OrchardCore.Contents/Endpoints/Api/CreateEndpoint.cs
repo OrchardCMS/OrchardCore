@@ -16,7 +16,7 @@ namespace OrchardCore.Contents.Endpoints.Api;
 
 public static class CreateEndpoint
 {
-    private static readonly JsonMergeSettings _updateJsonMergeSettings = new()
+    private static readonly JsonMergeSettings s_updateJsonMergeSettings = new()
     {
         MergeArrayHandling = MergeArrayHandling.Replace,
     };
@@ -24,6 +24,7 @@ public static class CreateEndpoint
     public static IEndpointRouteBuilder AddCreateContentEndpoint(this IEndpointRouteBuilder builder)
     {
         builder.MapPost("api/content", HandleAsync)
+            .WithName("ApiCreateContentItem")
             .AllowAnonymous()
             .DisableAntiforgery();
 
@@ -99,7 +100,7 @@ public static class CreateEndpoint
                 return httpContext.ChallengeOrForbid("Api");
             }
 
-            contentItem.Merge(model, _updateJsonMergeSettings);
+            contentItem.Merge(model, s_updateJsonMergeSettings);
 
             await contentManager.UpdateAsync(contentItem);
             var result = await contentManager.ValidateAsync(contentItem);

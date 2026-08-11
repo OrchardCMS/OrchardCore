@@ -55,10 +55,10 @@ public sealed class HttpsSettingsDisplayDriver : SiteDisplayDriver<HttpsSettings
 
             if (!isHttpsRequest)
             {
-                await _notifier.WarningAsync(H["For safety, Enabling require HTTPS over HTTP has been prevented."]);
+                await _notifier.WarningAsync(H["For safety, changing HTTPS-only settings over HTTP has been prevented."]);
             }
 
-            model.EnableStrictTransportSecurity = settings.EnableStrictTransportSecurity;
+            model.StrictTransportSecurityMode = settings.StrictTransportSecurityMode;
             model.IsHttpsRequest = isHttpsRequest;
             model.RequireHttps = settings.RequireHttps;
             model.RequireHttpsPermanent = settings.RequireHttpsPermanent;
@@ -82,7 +82,12 @@ public sealed class HttpsSettingsDisplayDriver : SiteDisplayDriver<HttpsSettings
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        settings.EnableStrictTransportSecurity = model.EnableStrictTransportSecurity;
+        if (!_httpContextAccessor.HttpContext.Request.IsHttps)
+        {
+            return await EditAsync(site, settings, context);
+        }
+
+        settings.StrictTransportSecurityMode = model.StrictTransportSecurityMode;
         settings.RequireHttps = model.RequireHttps;
         settings.RequireHttpsPermanent = model.RequireHttpsPermanent;
         settings.SslPort = model.SslPort;

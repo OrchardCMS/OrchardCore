@@ -23,6 +23,16 @@ public interface INotifier
     ValueTask AddAsync(NotifyType type, LocalizedHtmlString message);
 
     /// <summary>
+    /// Adds a new UI notification asynchronously with additional rendering context.
+    /// </summary>
+    /// <param name="type">
+    /// The type of the notification (notifications with different types can be displayed differently).</param>
+    /// <param name="message">A localized message to display.</param>
+    /// <param name="context">Additional context used when rendering the notification.</param>
+    ValueTask AddAsync(NotifyType type, LocalizedHtmlString message, NotifyContext context)
+        => AddAsync(type, message);
+
+    /// <summary>
     /// Get all notifications added.
     /// </summary>
     IList<NotifyEntry> List();

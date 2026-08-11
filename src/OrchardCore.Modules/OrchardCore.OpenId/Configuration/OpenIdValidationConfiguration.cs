@@ -1,9 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -90,6 +92,12 @@ public sealed class OpenIdValidationConfiguration : IConfigureOptions<Authentica
         {
             return;
         }
+
+        // OpenIddict deliberately leaves challenge responses body-less: for a resource server,
+        // RFC 6750 conveys error details in the WWW-Authenticate header. Attach an RFC 9457
+        // Problem Details body alongside those headers so JavaScript API clients also get a
+        // parseable error payload.
+        options.Handlers.Add(AttachProblemDetailsResponseBody.Descriptor);
 
         // If the tokens are issued by an authorization server located in an Orchard tenant, retrieve the
         // authority and the signing key and register them in the token validation parameters to prevent
@@ -287,5 +295,78 @@ public sealed class OpenIdValidationConfiguration : IConfigureOptions<Authentica
         }
 
         return settings;
+    }
+
+    /// <summary>
+    /// Writes an RFC 9457 Problem Details body on challenge responses, after the built-in
+    /// handlers have attached the status code and the RFC 6750 WWW-Authenticate header.
+    /// The OAuth 2.0 error code, description and URI from the header are mirrored into the
+    /// body so JavaScript clients can consume them without parsing the header. The body is
+    /// written through <see cref="IProblemDetailsService"/> so app-level Problem Details
+    /// customizations are honored, with a direct write as fallback.
+    /// </summary>
+    private sealed class AttachProblemDetailsResponseBody : IOpenIddictValidationHandler<OpenIddictValidationEvents.ProcessChallengeContext>
+    {
+        public static OpenIddictValidationHandlerDescriptor Descriptor { get; }
+            = OpenIddictValidationHandlerDescriptor.CreateBuilder<OpenIddictValidationEvents.ProcessChallengeContext>()
+                .AddFilter<OpenIddictValidationAspNetCoreHandlerFilters.RequireHttpRequest>()
+                // Pass an instance so the handler is carried by the descriptor itself rather
+                // than resolved from the tenant container, where it is not registered.
+                .UseSingletonHandler(new AttachProblemDetailsResponseBody())
+                .SetOrder(OpenIddictValidationAspNetCoreHandlers.AttachWwwAuthenticateHeader<OpenIddictValidationEvents.ProcessChallengeContext>.Descriptor.Order + 250)
+                .SetType(OpenIddictValidationHandlerType.Custom)
+                .Build();
+
+        public async ValueTask HandleAsync(OpenIddictValidationEvents.ProcessChallengeContext context)
+        {
+            ArgumentNullException.ThrowIfNull(context);
+
+            var httpContext = context.Transaction.GetHttpRequest()?.HttpContext;
+            if (httpContext is null || httpContext.Response.HasStarted)
+            {
+                return;
+            }
+
+            var S = httpContext.RequestServices.GetRequiredService<IStringLocalizer<OpenIdValidationConfiguration>>();
+
+            // The status code was attached by the built-in AttachHttpResponseCode handler,
+            // which runs earlier in this same event pipeline.
+            var forbidden = httpContext.Response.StatusCode == StatusCodes.Status403Forbidden;
+
+            var problemDetails = new Microsoft.AspNetCore.Mvc.ProblemDetails
+            {
+                Status = httpContext.Response.StatusCode,
+                Title = forbidden ? S["Forbidden"] : S["Unauthorized"],
+                Detail = (string)context.Response?.ErrorDescription
+                    ?? (forbidden
+                        ? S["You do not have sufficient permissions to complete this request."].Value
+                        : S["Authentication is required to complete this request."].Value),
+            };
+
+            // Mirror the OAuth 2.0 error parameters using their standard wire names.
+            if ((string)context.Response?.Error is { } error)
+            {
+                problemDetails.Extensions["error"] = error;
+            }
+
+            if ((string)context.Response?.ErrorUri is { } errorUri)
+            {
+                problemDetails.Extensions["error_uri"] = errorUri;
+            }
+
+            var problemDetailsService = httpContext.RequestServices.GetService<IProblemDetailsService>();
+            if (problemDetailsService is not null
+                && await problemDetailsService.TryWriteAsync(new ProblemDetailsContext
+                {
+                    HttpContext = httpContext,
+                    ProblemDetails = problemDetails,
+                }))
+            {
+                return;
+            }
+
+            httpContext.Response.ContentType = "application/problem+json";
+            await httpContext.Response.WriteAsJsonAsync(problemDetails);
+        }
     }
 }

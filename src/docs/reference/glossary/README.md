@@ -1,8 +1,8 @@
 # Glossary
 
-List of terms and concepts that you can find in Orchard Core.
+A list of terms and concepts that you can find in Orchard Core.
 
-They are grouped by roles: User, Theme designer, Administrator.
+They are grouped by roles: user, theme designer, administrator.
 
 ## Authenticated users
 
@@ -12,11 +12,11 @@ A single document containing some content of a specific content type, that can b
 
 ### Content Item Version
 
-A single document that represent a specific version of a content item. These can be draft, published, or pasts versions
+A single document that represents a specific version of a content item. These can be draft, published, or past versions.
 
 ### Content Type
 
-Define the list of Content Parts and Content Fields a content item can be made of. An analogy is to compare them to classes, whose instances are the content items.
+Defines the list of Content Parts and Content Fields a content item can be made of. An analogy is to compare them to classes, whose instances are the content items.
 
 ### Content Part
 
@@ -38,7 +38,7 @@ A field can have different Editors (Ex: The value of a Numeric Field can be set 
 
 ### Autoroute
 
-A part that dynamically creates and registers a url to access a content item. It can use a Liquid pattern to be automatically generated.
+A part that dynamically creates and registers a URL to access a content item. It can use a Liquid pattern to be automatically generated.
 See [Autoroute](../modules/Autoroute/README.md)
 
 ### Bag
@@ -47,7 +47,7 @@ A collection of content items of a certain type in a parent content item. The co
 
 ### List
 
-A list of content items to a parent container (Ex: A blog contains a list of blog posts). The content items are referenced.
+A list of content items in a parent container (Ex: A blog contains a list of blog posts). The content items are referenced.
 See [Lists](../modules/Lists/README.md)
 
 ### Taxonomy
@@ -62,27 +62,27 @@ See [Admin menu](../modules/AdminMenu/README.md)
 
 ### Alias
 
-A part that allows you to specify an alias. A way to identify an item with a key that you can call to retrieve it, instead of an Id.  
+A part that allows you to specify an alias. A way to identify an item with a key that you can call to retrieve it, instead of an ID.
 See [Alias](../modules/Alias/README.md)
 
 ### Content Preview
 
-Allows to Preview and Live Edit a content.  
+Allows content preview and live editing.
 See [Content Preview](../modules/ContentPreview/README.md)
 
 ### Indexing
 
-Define the way the content will be indexed in order to search it from a query.  
+Defines the way the content will be indexed in order to search it from a query.
 See [Indexing](../modules/Indexing/README.md)
 
 ### Query
 
-Parameterized Lucene or Sql query defined in admin.  
+Parameterized Lucene or SQL query defined in admin.
 See [Queries](../modules/Queries/README.md)
 
 ### Tenant
 
-An independent subsite with its own url.  
+An independent subsite with its own URL.
 One instance can have multiple tenants.  
 They can only be managed in the Default one.  
 See [Tenants](../modules/Tenants/README.md)
@@ -91,7 +91,7 @@ See [Tenants](../modules/Tenants/README.md)
 
 ### Theme
 
-A module that contains assets (Images, Styles, Scripts) and views used to customize the display.  
+A module that contains assets (images, styles, scripts) and views used to customize the display.
 It can also contain a recipe to initialize some content types and content items.
 
 ### Liquid
@@ -101,12 +101,12 @@ See [Liquid](../modules/Liquid/README.md)
 
 ### Alternate
 
-An override of content type or part or field using a file in a Theme.  
+An override of a content type, part, or field using a file in a theme.
 See [Alternates](../modules/Templates/README.md#shape-differentiators)
 
 ### Placement
 
-A mapping file to set the order of appearance or hide contents for a specific content type or Part/Field name or display type in a Theme.  
+A mapping file to set the order of appearance or hide content for a specific content type, part/field name, or display type in a theme.
 See [Placement](../modules/Placement/README.md)
 
 ### Assets

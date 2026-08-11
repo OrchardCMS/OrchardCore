@@ -2,9 +2,41 @@
 
 The Admin module provides an admin dashboard for your site.
 
+## Extend the admin dashboard
+
+The `AdminDashboard` shape renders an `AdminDashboardContent` child shape. Features can add their own positioned content to this shape by registering a shape table provider:
+
+```csharp
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Views;
+
+public sealed class AdminDashboardShapeTableProvider : ShapeTableProvider
+{
+    public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
+    {
+        builder.Describe("AdminDashboardContent")
+            .OnDisplaying(async displaying =>
+            {
+                await displaying.Shape.AddAsync(new ShapeViewModel("MyAdminDashboardContent"), "10");
+            });
+
+        return ValueTask.CompletedTask;
+    }
+}
+```
+
+Register the provider from the feature's `Startup` class:
+
+```csharp
+services.AddShapeTableProvider<AdminDashboardShapeTableProvider>();
+```
+
+The `MyAdminDashboardContent` shape is rendered using its matching shape template. Contributions are ordered by the position passed to `AddAsync()`.
+
 ## Custom Admin prefix
 
-If you want to specify another prefix in the urls to access the admin section, you can change it by using this option in the `appsettings.json`:
+If you want to specify another prefix in the URLs to access the admin section, you can change it by using this option in the `appsettings.json`:
 
 ```json
   "OrchardCore": {
@@ -156,9 +188,9 @@ The admin settings can be configured using the `Settings` recipe step:
 }
 ```
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `DisplayThemeToggler` | Boolean | Whether to display the light/dark theme toggler in the admin. |
-| `DisplayMenuFilter` | Boolean | Whether to display the menu filter input in the admin navigation. |
-| `DisplayNewMenu` | Boolean | Whether to display the 'New' menu in the admin navigation. |
-| `DisplayTitlesInTopbar` | Boolean | Whether to display page titles in the top bar. |
+| Property                | Type    | Description                                                       |
+|-------------------------|---------|-------------------------------------------------------------------|
+| `DisplayThemeToggler`   | Boolean | Whether to display the light/dark theme toggler in the admin.     |
+| `DisplayMenuFilter`     | Boolean | Whether to display the menu filter input in the admin navigation. |
+| `DisplayNewMenu`        | Boolean | Whether to display the 'New' menu in the admin navigation.        |
+| `DisplayTitlesInTopbar` | Boolean | Whether to display page titles in the top bar.                    |

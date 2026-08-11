@@ -44,8 +44,9 @@ If no value is provided, setup Meta app to use the default path /signin-facebook
 
 ## Users Registration
 
-- If you want to enable new users to register to the site through their Meta login, the `OrchardCore.Users.Registration` feature must be enabled and setup accordingly.
-- An existing user can link his account to his Meta login through the External Logins link from User menu
+- Enable the `OrchardCore.Users.Registration` feature when you also want local site registration.
+- New external-user creation and profile generation are controlled from the Users module's [`ExternalRegistrationSettings`](../Users/README.md#external-authentication-settings).
+- An existing user can link the account through the External Logins link from the user menu.
 
 ## Meta Social Plugins Widgets
 
@@ -92,21 +93,21 @@ Facebook settings can be configured using the `Settings` recipe step:
 
 ### Core Settings
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `AppId` | String | The Facebook Application ID. **Required.** |
-| `AppSecret` | String | The Facebook Application Secret. **Required.** |
-| `FBInit` | Boolean | Whether to initialize the Facebook JavaScript SDK on the frontend. |
-| `FBInitParams` | String | Additional parameters for `FB.init()` call. |
-| `SdkJs` | String | The name of the SDK JavaScript file to load. **Required.** |
-| `Version` | String | The Facebook Graph API version to use (e.g., `v3.2`). |
+| Property       | Type    | Description                                                        |
+|----------------|---------|--------------------------------------------------------------------|
+| `AppId`        | String  | The Facebook Application ID. **Required.**                         |
+| `AppSecret`    | String  | The Facebook Application Secret. **Required.**                     |
+| `FBInit`       | Boolean | Whether to initialize the Facebook JavaScript SDK on the frontend. |
+| `FBInitParams` | String  | Additional parameters for `FB.init()` call.                        |
+| `SdkJs`        | String  | The name of the SDK JavaScript file to load. **Required.**         |
+| `Version`      | String  | The Facebook Graph API version to use (e.g., `v3.2`).              |
 
 ### Login Settings
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `CallbackPath` | String | The request path where the user-agent will be returned after authentication. |
-| `SaveTokens` | Boolean | Whether to save the access and refresh tokens. |
+| Property       | Type    | Description                                                                  |
+|----------------|---------|------------------------------------------------------------------------------|
+| `CallbackPath` | String  | The request path where the user-agent will be returned after authentication. |
+| `SaveTokens`   | Boolean | Whether to save the access and refresh tokens.                               |
 
 ## Meta Settings Configuration
 

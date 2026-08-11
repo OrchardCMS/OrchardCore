@@ -4,12 +4,12 @@ namespace OrchardCore.Tests.Functional.Helpers;
 
 public sealed class OrchardTestFixture : IAsyncDisposable
 {
-    private static int _traceCounter;
+    private static int s_traceCounter;
 
-    private static readonly bool _tracingEnabled =
+    private static readonly bool s_tracingEnabled =
         !string.IsNullOrEmpty(System.Environment.GetEnvironmentVariable("PLAYWRIGHT_TRACING"));
 
-    private static readonly string _traceDir =
+    private static readonly string s_traceDir =
         Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "traces");
 
     private readonly bool _isMvc;
@@ -80,7 +80,7 @@ public sealed class OrchardTestFixture : IAsyncDisposable
             new BrowserNewContextOptions { BaseURL = BaseUrl }
         );
 
-        if (_tracingEnabled)
+        if (s_tracingEnabled)
         {
             await context.Tracing.StartAsync(new TracingStartOptions
             {
@@ -96,18 +96,18 @@ public sealed class OrchardTestFixture : IAsyncDisposable
         {
             try
             {
-                if (_tracingEnabled)
+                if (s_tracingEnabled)
                 {
-                    var traceIndex = Interlocked.Increment(ref _traceCounter);
+                    var traceIndex = Interlocked.Increment(ref s_traceCounter);
                     var fileName = string.IsNullOrEmpty(capturedTraceName)
                         ? $"trace-{traceIndex}.zip"
                         : $"trace-{capturedTraceName}-{traceIndex}.zip";
 
-                    Directory.CreateDirectory(_traceDir);
+                    Directory.CreateDirectory(s_traceDir);
 
                     await context.Tracing.StopAsync(new TracingStopOptions
                     {
-                        Path = Path.Combine(_traceDir, fileName),
+                        Path = Path.Combine(s_traceDir, fileName),
                     });
                 }
 
@@ -158,12 +158,41 @@ public sealed class OrchardTestFixture : IAsyncDisposable
 
         if (Directory.Exists(AppDataPath))
         {
-            // Clear SQLite connection pool to release file locks before deleting.
-            global::Microsoft.Data.Sqlite.SqliteConnection.ClearPool(
-                new global::Microsoft.Data.Sqlite.SqliteConnection(
-                    $"Data Source={Path.Combine(AppDataPath, "Sites", "Default", "yessql.db")}"));
+            ClearSqlitePools();
+            await DeleteAppDataDirectoryAsync();
+        }
+    }
 
-            Directory.Delete(AppDataPath, recursive: true);
+    private void ClearSqlitePools()
+    {
+        global::Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+
+        foreach (var dbPath in Directory.EnumerateFiles(AppDataPath, "*.db", SearchOption.AllDirectories))
+        {
+            global::Microsoft.Data.Sqlite.SqliteConnection.ClearPool(
+                new global::Microsoft.Data.Sqlite.SqliteConnection($"Data Source={dbPath}"));
+        }
+    }
+
+    private async Task DeleteAppDataDirectoryAsync()
+    {
+        const int maxAttempts = 15;
+
+        for (var attempt = 1; attempt <= maxAttempts; attempt++)
+        {
+            try
+            {
+                Directory.Delete(AppDataPath, recursive: true);
+                return;
+            }
+            catch (IOException) when (attempt < maxAttempts)
+            {
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+                ClearSqlitePools();
+                await Task.Delay(TimeSpan.FromMilliseconds(250 * attempt));
+            }
         }
     }
 }

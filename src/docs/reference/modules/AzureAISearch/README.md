@@ -41,9 +41,178 @@ services.AddAzureAISearchIndexingSource("CustomSource", o =>
 });
 ```
 
-Next, you need to implement the `IIndexProfileHandler` interface. In the `CreatingAsync` and `UpdatingAsync` methods, populate or update the `context.Model.Put(new AzureAISearchIndexMetadata() { IndexMappings = new ElasticsearchIndexMap() })` to define the index fields and their types. You may use `IndexProfileHandlerBase` to simplify your implementation. 
+Next, you need to implement the `IIndexProfileHandler` interface. In the `CreatingAsync` and `UpdatingAsync` methods, populate or update `AzureAISearchIndexMetadata` to define the index fields and their types. You may use `IndexProfileHandlerBase` to simplify your implementation.
 
 If you want the UI to capture custom data related to your source, implement `DisplayDriver<IndexEntity>`.  
+
+### Indexing vector fields
+
+If your custom source emits embeddings, add a vector field to `AzureAISearchIndexMetadata.IndexMappings` and define the corresponding vector search profile in `AzureAISearchIndexMetadata.VectorSearch`.
+
+```csharp
+using OrchardCore.AzureAI;
+using OrchardCore.AzureAI.Models;
+using OrchardCore.Entities;
+using OrchardCore.Indexing;
+using OrchardCore.Indexing.Core.Handlers;
+using OrchardCore.Indexing.Models;
+using static OrchardCore.Indexing.DocumentIndex;
+
+public sealed class ProductIndexProfileHandler : IndexProfileHandlerBase
+{
+    public override Task CreatingAsync(CreatingContext<IndexProfile> context)
+    {
+        Configure(context.Model);
+        return Task.CompletedTask;
+    }
+
+    public override Task UpdatingAsync(UpdatingContext<IndexProfile> context)
+    {
+        Configure(context.Model);
+        return Task.CompletedTask;
+    }
+
+    private static void Configure(IndexProfile index)
+    {
+        var metadata = index.GetOrCreate<AzureAISearchIndexMetadata>();
+
+        metadata.IndexMappings.Clear();
+
+        metadata.IndexMappings.Add(new AzureAISearchIndexMap("documentId", Types.Text)
+        {
+            IndexingKey = "DocumentId",
+            IsKey = true,
+            IsFilterable = true,
+            IsSortable = true,
+        });
+
+        metadata.IndexMappings.Add(new AzureAISearchIndexMap("title", Types.Text)
+        {
+            IndexingKey = "Title",
+            IsSearchable = true,
+        });
+
+        metadata.IndexMappings.Add(new AzureAISearchIndexMap("embedding", Types.Vector)
+        {
+            AzureFieldKey = "Embedding",
+            IsSearchable = true,
+            VectorInfo = new AzureAISearchIndexMapVectorInfo
+            {
+                Dimensions = 1536,
+                VectorSearchConfiguration = "products-vector",
+            },
+        });
+
+        metadata.VectorSearchMappings = new VectorSearchMappings
+        {
+            Profiles =
+            [
+                new VectorSearchProfileMap
+                {
+                    Name = "default",
+                    AlgorithmConfigurationName = "products-vector",
+                },
+            ],
+            Algorithms =
+            [
+                new VectorSearchAlgorithmMap
+                {
+                    Name = "products-vector",
+                    Kind = VectorSearchAlgorithmMap.HnswKind,
+                },
+            ],
+        };
+
+        index.Put(metadata);
+    }
+}
+```
+
+When building each document, write the embedding with `DocumentIndex.Set(...)`:
+
+```csharp
+documentIndex.Set("embedding", embedding, embedding.Length, DocumentIndexOptions.Store);
+```
+
+If you want a specific vector field to use a different vector search profile, pass the profile name in the entry metadata:
+
+```csharp
+documentIndex.Set(
+    "embedding",
+    embedding,
+    embedding.Length,
+    DocumentIndexOptions.Store,
+    new Dictionary<string, object>
+    {
+        ["VectorSearchConfiguration"] = "products-vector",
+    });
+```
+
+!!! note
+    If a vector field doesn't specify `VectorSearchConfiguration`, Orchard Core uses the first configured profile from `AzureAISearchIndexMetadata.VectorSearchMappings.Profiles`. If no profile is configured, it falls back to the built-in default profile and algorithm.
+
+### Querying vector fields
+
+The built-in `ISearchService` and the Site Search UI execute full-text search. To run vector or hybrid queries, use the Azure Search SDK directly through `AzureAIClientFactory`.
+
+```csharp
+using Azure.Search.Documents;
+using Azure.Search.Documents.Models;
+using OrchardCore.AzureAI;
+using OrchardCore.AzureAI.Services;
+using OrchardCore.Indexing;
+
+public sealed class ProductVectorSearchService
+{
+    private readonly AzureAIClientFactory _clientFactory;
+    private readonly IIndexProfileStore _indexProfileStore;
+
+    public ProductVectorSearchService(
+        AzureAIClientFactory clientFactory,
+        IIndexProfileStore indexProfileStore)
+    {
+        _clientFactory = clientFactory;
+        _indexProfileStore = indexProfileStore;
+    }
+
+    public async Task<IReadOnlyList<SearchDocument>> SearchAsync(float[] embedding, CancellationToken cancellationToken)
+    {
+        var index = await _indexProfileStore.FindByIndexNameAndProviderAsync("products", AzureAISearchConstants.ProviderName)
+            ?? throw new InvalidOperationException("The 'products' Azure AI Search index profile doesn't exist.");
+
+        var client = _clientFactory.CreateSearchClient(index.IndexFullName);
+
+        var options = new SearchOptions
+        {
+            Size = 5,
+            Select = { "documentId", "title" },
+            VectorSearch = new VectorSearchOptions
+            {
+                Queries =
+                {
+                    new VectorizedQuery(embedding)
+                    {
+                        Fields = { "embedding" },
+                        KNearestNeighborsCount = 5,
+                    },
+                },
+            },
+        };
+
+        var response = await client.SearchAsync<SearchDocument>("*", options, cancellationToken);
+        var documents = new List<SearchDocument>();
+
+        await foreach (var result in response.Value.GetResultsAsync())
+        {
+            documents.Add(result.Document);
+        }
+
+        return documents.AsReadOnly();
+    }
+}
+```
+
+For hybrid search, keep the `VectorSearch` section and replace `"*"` with the full-text query you want to combine with the vector query.
 
 ## Recipes 
 

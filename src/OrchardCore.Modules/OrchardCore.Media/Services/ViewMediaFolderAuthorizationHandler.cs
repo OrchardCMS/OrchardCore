@@ -17,7 +17,7 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
 {
     private const char PathSeparator = '/';
 
-    private static readonly ClaimsPrincipal _anonymous = new ClaimsPrincipal(new ClaimsIdentity());
+    private static readonly ClaimsPrincipal s_anonymous = new ClaimsPrincipal(new ClaimsIdentity());
 
     private readonly IServiceProvider _serviceProvider;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -65,11 +65,9 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
             return;
         }
 
-        path = Uri.UnescapeDataString(path);
+        path = await _fileStore.ResolveAuthorizedPathAsync(path);
 
-        path = _fileStore.NormalizePath(path);
-
-        // Permissions are only set for the root and the first folder tier. Only for users and
+        // Permissions are only set for the root
         // media fields we will check sub folders too.
         var i = path.IndexOf(PathSeparator);
         var folderPath = i >= 0 ? path[..i] : path;
@@ -155,7 +153,7 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
             // Authorize by using the content item permission. The user must have access to the content item to allow its media
             // as well.
             var contentItemId = attachedMediaPathParts.Length > 1 ? attachedMediaPathParts[1] : null;
-            var contentItem = !string.IsNullOrEmpty(contentItemId) ? await _contentManager.GetAsync(contentItemId) : null;
+            var contentItem = !string.IsNullOrEmpty(contentItemId) ? await _contentManager.GetAsync(contentItemId, VersionOptions.Latest) : null;
 
             // Disallow if content item is not found or allowed
             if (contentItem is not null)
@@ -199,7 +197,7 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
         {
             // If anonymous access is also possible, we want to use default browser caching policies.
             // Otherwise we set a marker which causes a different caching policy being used.
-            if ((context.User.Identity?.IsAuthenticated ?? false) && !await authorizationService.AuthorizeAsync(_anonymous, permission, resource))
+            if ((context.User.Identity?.IsAuthenticated ?? false) && !await authorizationService.AuthorizeAsync(s_anonymous, permission, resource))
             {
                 _httpContextAccessor.HttpContext.MarkAsSecureMediaRequested();
             }

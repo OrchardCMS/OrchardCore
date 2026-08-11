@@ -23,6 +23,7 @@ public sealed class AdminController : Controller
     private readonly IDocumentStore _documentStore;
     private readonly RoleManager<IRole> _roleManager;
     private readonly IAuthorizationService _authorizationService;
+    private readonly IPermissionGrantingService _permissionGrantingService;
     private readonly IEnumerable<IPermissionProvider> _permissionProviders;
     private readonly ITypeFeatureProvider _typeFeatureProvider;
     private readonly IShellFeaturesManager _shellFeaturesManager;
@@ -36,6 +37,7 @@ public sealed class AdminController : Controller
         IDocumentStore documentStore,
         RoleManager<IRole> roleManager,
         IAuthorizationService authorizationService,
+        IPermissionGrantingService permissionGrantingService,
         IEnumerable<IPermissionProvider> permissionProviders,
         ITypeFeatureProvider typeFeatureProvider,
         IShellFeaturesManager shellFeaturesManager,
@@ -47,6 +49,7 @@ public sealed class AdminController : Controller
         _documentStore = documentStore;
         _roleManager = roleManager;
         _authorizationService = authorizationService;
+        _permissionGrantingService = permissionGrantingService;
         _permissionProviders = permissionProviders;
         _typeFeatureProvider = typeFeatureProvider;
         _shellFeaturesManager = shellFeaturesManager;
@@ -58,7 +61,7 @@ public sealed class AdminController : Controller
 
     public async Task<ActionResult> Index()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, RolesPermissions.ManageRoles))
+        if (!await _authorizationService.AuthorizeAsync(User, RolesPermissions.ViewRoles))
         {
             return Forbid();
         }
@@ -154,25 +157,9 @@ public sealed class AdminController : Controller
         var model = new EditRoleViewModel
         {
             Role = role,
-            Name = role.RoleName,
             RoleDescription = role.RoleDescription,
-            IsAdminRole = await _roleService.IsAdminRoleAsync(role.RoleName),
+            Permissions = await GetRolePermissionsViewModelAsync(role, canEdit: true),
         };
-
-        var installedPermissions = await GetInstalledPermissionsAsync();
-        var allPermissions = installedPermissions.SelectMany(x => x.Value);
-
-        ViewData["DuplicatedPermissions"] = allPermissions
-            .GroupBy(p => p.Name.ToUpperInvariant())
-            .Where(g => g.Count() > 1)
-            .Select(g => g.First().Name)
-            .ToArray();
-
-        if (!await _roleService.IsAdminRoleAsync(role.RoleName))
-        {
-            model.EffectivePermissions = await GetEffectivePermissions(role, allPermissions);
-            model.RoleCategoryPermissions = installedPermissions;
-        }
 
         return View(model);
     }
@@ -203,6 +190,27 @@ public sealed class AdminController : Controller
         await _notifier.SuccessAsync(H["Role updated successfully."]);
 
         return RedirectToAction(nameof(Index));
+    }
+
+    public async Task<IActionResult> Display(string id)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, RolesPermissions.ViewRoles))
+        {
+            return Forbid();
+        }
+
+        if (await _roleManager.FindByIdAsync(id) is not Role role)
+        {
+            return NotFound();
+        }
+
+        var model = new DisplayRoleViewModel
+        {
+            Role = role,
+            Permissions = await GetRolePermissionsViewModelAsync(role, canEdit: false),
+        };
+
+        return View(model);
     }
 
     [HttpPost]
@@ -237,11 +245,14 @@ public sealed class AdminController : Controller
         {
             await _documentStore.CancelAsync();
 
-            await _notifier.ErrorAsync(H["Could not delete this role."]);
-
-            foreach (var error in result.Errors)
+            var errorDescriptions = result.Errors.Select(error => error.Description).ToArray();
+            if (errorDescriptions.Length > 0)
             {
-                await _notifier.ErrorAsync(new LocalizedHtmlString(error.Description, error.Description));
+                await _notifier.ErrorAsync(H.Plural(errorDescriptions.Length, "Could not delete this role. {1}", "Could not delete this role. Errors: {1}", string.Join(", ", errorDescriptions)));
+            }
+            else
+            {
+                await _notifier.ErrorAsync(H["Could not delete this role."]);
             }
         }
 
@@ -292,9 +303,9 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        var model = await GetEditRoleViewModelAsync(role, role.RoleName, role.RoleDescription);
+        var model = await GetCloneRoleViewModelAsync(role, role.RoleName, role.RoleDescription);
 
-        return View(nameof(Edit), model);
+        return View(model);
     }
 
     [HttpPost]
@@ -344,9 +355,9 @@ public sealed class AdminController : Controller
             }
         }
 
-        var model = await GetEditRoleViewModelAsync(sourceRole, name, roleDescription);
+        var model = await GetCloneRoleViewModelAsync(sourceRole, name, roleDescription);
 
-        return View(nameof(Edit), model);
+        return View(model);
     }
 
     private async Task<bool> ValidateRoleNameAsync(string roleName)
@@ -387,7 +398,29 @@ public sealed class AdminController : Controller
         };
     }
 
-    private async Task<IEnumerable<string>> GetEffectivePermissions(Role role, IEnumerable<Permission> allPermissions)
+    private async Task<ISet<string>> GetRoleGrantedPermissionsAsync(string roleName, IEnumerable<Permission> allPermissions)
+    {
+        var role = await _roleManager.FindByNameAsync(roleName) as Role;
+        if (role == null)
+        {
+            return new HashSet<string>(StringComparer.Ordinal);
+        }
+
+        var roleClaims = role.RoleClaims.Select(c => c.ToClaim()).ToArray();
+        var result = new HashSet<string>(StringComparer.Ordinal);
+
+        foreach (var permission in allPermissions)
+        {
+            if (_permissionGrantingService.IsGranted(new PermissionRequirement(permission), roleClaims))
+            {
+                result.Add(permission.Name);
+            }
+        }
+
+        return result;
+    }
+
+    private async Task<IDictionary<string, Permission>> GetEffectivePermissions(Role role, IEnumerable<Permission> allPermissions)
     {
         // Create a fake user to check the actual permissions. If the role is anonymous
         // IsAuthenticated needs to be false.
@@ -402,13 +435,13 @@ public sealed class AdminController : Controller
 
         var fakePrincipal = new ClaimsPrincipal(fakeIdentity);
 
-        var result = new List<string>();
+        var result = new Dictionary<string, Permission>(StringComparer.Ordinal);
 
         foreach (var permission in allPermissions)
         {
             if (await _authorizationService.AuthorizeAsync(fakePrincipal, permission))
             {
-                result.Add(permission.Name);
+                result[permission.Name] = permission;
             }
         }
 
@@ -420,27 +453,65 @@ public sealed class AdminController : Controller
             .Where(key => key.StartsWith("Checkbox.", StringComparison.Ordinal) && Request.Form[key] == "true")
             .Select(key => RoleClaim.Create(key["Checkbox.".Length..]));
 
-    private async Task<EditRoleViewModel> GetEditRoleViewModelAsync(Role role, string cloneRoleName, string description)
-    {
-        var installedPermissions = await GetInstalledPermissionsAsync();
-        var allPermissions = installedPermissions.SelectMany(x => x.Value);
-
-        var model = new EditRoleViewModel
+    private async Task<CloneRoleViewModel> GetCloneRoleViewModelAsync(Role role, string cloneRoleName, string description)
+        => new CloneRoleViewModel
         {
             Role = role,
             Name = cloneRoleName,
             RoleDescription = description,
-            IsCloning = true,
-            RoleCategoryPermissions = installedPermissions,
-            EffectivePermissions = await GetEffectivePermissions(role, allPermissions),
+            Permissions = await GetRolePermissionsViewModelAsync(role, canEdit: true),
         };
 
-        ViewData["DuplicatedPermissions"] = allPermissions
-            .GroupBy(p => p.Name.ToUpperInvariant())
-            .Where(g => g.Count() > 1)
-            .Select(g => g.First().Name)
-            .ToArray();
+    private async Task<RolePermissionsViewModel> GetRolePermissionsViewModelAsync(Role role, bool canEdit)
+    {
+        var installedPermissions = await GetInstalledPermissionsAsync();
+        var allPermissions = installedPermissions.SelectMany(x => x.Value).ToArray();
+        var isAdminRole = await _roleService.IsAdminRoleAsync(role.RoleName);
 
-        return model;
+        if (canEdit)
+        {
+            ViewData["DuplicatedPermissions"] = allPermissions
+                .GroupBy(p => p.Name.ToUpperInvariant())
+                .Where(g => g.Count() > 1)
+                .Select(g => g.First().Name)
+                .ToArray();
+        }
+
+        var isAnonymousRole = string.Equals(role.RoleName, OrchardCoreConstants.Roles.Anonymous, StringComparison.OrdinalIgnoreCase);
+        var isAuthenticatedRole = string.Equals(role.RoleName, OrchardCoreConstants.Roles.Authenticated, StringComparison.OrdinalIgnoreCase);
+
+        ISet<string> anonymousGrantedPermissions = new HashSet<string>(StringComparer.Ordinal);
+        ISet<string> authenticatedGrantedPermissions = new HashSet<string>(StringComparer.Ordinal);
+
+        if (!isAdminRole && !isAnonymousRole)
+        {
+            // Anonymous role permissions are always effective for authenticated users too,
+            // so show their source even when editing the Authenticated role.
+            anonymousGrantedPermissions = await GetRoleGrantedPermissionsAsync(OrchardCoreConstants.Roles.Anonymous, allPermissions);
+
+            if (!isAuthenticatedRole)
+            {
+                // Skip Authenticated role attribution when editing that role itself.
+                authenticatedGrantedPermissions = await GetRoleGrantedPermissionsAsync(OrchardCoreConstants.Roles.Authenticated, allPermissions);
+            }
+        }
+
+        return new RolePermissionsViewModel
+        {
+            IsAdminRole = isAdminRole,
+            CanEdit = canEdit,
+            AssignedPermissions = role.RoleClaims
+                .Where(c => c.ClaimType == Permission.ClaimType)
+                .Select(c => c.ClaimValue)
+                .ToHashSet(StringComparer.Ordinal),
+            RoleCategoryPermissions = isAdminRole
+                ? null
+                : installedPermissions,
+            EffectivePermissions = isAdminRole
+                ? null
+                : await GetEffectivePermissions(role, allPermissions),
+            AnonymousGrantedPermissions = anonymousGrantedPermissions,
+            AuthenticatedGrantedPermissions = authenticatedGrantedPermissions,
+        };
     }
 }

@@ -30,7 +30,7 @@ You can disable an Admin Node and neither it nor their descendants will be shown
 
 At the time of writing this document there are 3 Admin Node Types provided out of the box by Orchard Core:
 
-1. **Link Admin Node**: It provides a simple menu item. The user can add a text, a url and a Font Awesome icon class so that the current admin theme can use them when rendering the menu item. At the moment TheAdmin theme is using that icon class only for first level menu items.
+1. **Link Admin Node**: It provides a simple menu item. The user can add a text, a URL, and a Font Awesome icon class so that the current admin theme can use them when rendering the menu item. At the moment TheAdmin theme is using that icon class only for first level menu items.
 This link is the only one provided by the OrchardCore.AdminMenu module itself.
 
 2. **Content Types Admin Node**: It provides a list of menu items containing a menu item for each content type. The links point to the Index action in the Contents Controller.
@@ -62,7 +62,7 @@ The Admin Menu that OrchardCore provides out of the box it's built broadly speak
 
 ## Deployment Plan Step and Recipe Step
 
-The module provides an Admin Menu Deployment Step. So an admin user can expend some time configuring a custom admin menu, add it to a deployment plan, export a json file, and use the generated json on a setup recipe. This way the sites that are built using that recipe will have the admin menu as the user prepared it.
+The module provides an Admin Menu Deployment Step. So an admin user can spend some time configuring a custom admin menu, add it to a deployment plan, export a JSON file, and use the generated JSON on a setup recipe. This way the sites that are built using that recipe will have the admin menu as the user prepared it.
 
 ## Permissions
 

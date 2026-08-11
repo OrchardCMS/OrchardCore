@@ -6,6 +6,7 @@ using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Liquid;
@@ -17,55 +18,55 @@ namespace OrchardCore.Benchmarks;
 [MemoryDiagnoser]
 public class FluidShapeRenderBenchmark
 {
-    private static readonly FilterArguments _filterArguments = new FilterArguments().Add("utc", new DateTimeValue(DateTime.UtcNow)).Add("format", StringValue.Create("MMMM dd, yyyy"));
-    private static readonly FluidValue _input = ObjectValue.Create(HtmlString.Empty, new TemplateOptions());
-    private static readonly LiquidFilterDelegateResolver<ShapeRenderFilter> _liquidFilterDelegateResolver;
-    private static readonly IServiceProvider _serviceProvider;
+    private static readonly FilterArguments s_filterArguments = new FilterArguments().Add("utc", new DateTimeValue(DateTime.UtcNow)).Add("format", StringValue.Create("MMMM dd, yyyy"));
+    private static readonly FluidValue s_input = ObjectValue.Create(HtmlString.Empty, new TemplateOptions());
+    private static readonly LiquidFilterDelegateResolver<ShapeRenderFilter> s_liquidFilterDelegateResolver;
+    private static readonly IServiceProvider s_serviceProvider;
 
     static FluidShapeRenderBenchmark()
     {
-        var htmlDisplay = new DefaultHtmlDisplay(null, null, null, null, null, null);
+        var htmlDisplay = new DefaultHtmlDisplay(null, null, null, null, null, Options.Create(new ShapeRenderingOptions()), null);
 
-        _serviceProvider = new ServiceCollection()
+        s_serviceProvider = new ServiceCollection()
             .AddScoped<IDisplayHelper>(sp => new DisplayHelper(htmlDisplay, null, null))
             .AddTransient<ShapeRenderFilter>()
             .BuildServiceProvider();
 
-        _liquidFilterDelegateResolver = new LiquidFilterDelegateResolver<ShapeRenderFilter>();
+        s_liquidFilterDelegateResolver = new LiquidFilterDelegateResolver<ShapeRenderFilter>();
     }
 
     [Benchmark(Baseline = true)]
 #pragma warning disable CA1822 // Mark members as static
     public async Task OriginalShapeRenderDynamic()
     {
-        var templateContext = new LiquidTemplateContext(_serviceProvider, new TemplateOptions());
-        var displayHelper = _serviceProvider.GetRequiredService<IDisplayHelper>();
+        var templateContext = new LiquidTemplateContext(s_serviceProvider, new TemplateOptions());
+        var displayHelper = s_serviceProvider.GetRequiredService<IDisplayHelper>();
         templateContext.AmbientValues["DisplayHelper"] = displayHelper;
-        await OriginalShapeRenderDynamic(_input, _filterArguments, templateContext);
+        await OriginalShapeRenderDynamic(s_input, s_filterArguments, templateContext);
     }
 
     [Benchmark]
     public async Task ShapeRenderWithAmbientValues()
     {
-        var templateContext = new LiquidTemplateContext(_serviceProvider, new TemplateOptions());
-        var displayHelper = _serviceProvider.GetRequiredService<IDisplayHelper>();
+        var templateContext = new LiquidTemplateContext(s_serviceProvider, new TemplateOptions());
+        var displayHelper = s_serviceProvider.GetRequiredService<IDisplayHelper>();
         templateContext.AmbientValues["DisplayHelper"] = displayHelper;
-        await ShapeRenderWithAmbientValues(_input, _filterArguments, templateContext);
+        await ShapeRenderWithAmbientValues(s_input, s_filterArguments, templateContext);
     }
 
     [Benchmark]
     public async Task ShapeRenderStatic()
     {
-        var templateContext = new LiquidTemplateContext(_serviceProvider, new TemplateOptions());
-        await ShapeRenderStatic(_input, _filterArguments, templateContext);
+        var templateContext = new LiquidTemplateContext(s_serviceProvider, new TemplateOptions());
+        await ShapeRenderStatic(s_input, s_filterArguments, templateContext);
     }
 
     [Benchmark]
     public async Task ShapeRenderWithResolver()
 #pragma warning restore CA1822 // Mark members as static
     {
-        var templateContext = new LiquidTemplateContext(_serviceProvider, new TemplateOptions());
-        await _liquidFilterDelegateResolver.ResolveAsync(_input, _filterArguments, templateContext);
+        var templateContext = new LiquidTemplateContext(s_serviceProvider, new TemplateOptions());
+        await s_liquidFilterDelegateResolver.ResolveAsync(s_input, s_filterArguments, templateContext);
     }
 
     private static async ValueTask<FluidValue> OriginalShapeRenderDynamic(FluidValue input, FilterArguments _, TemplateContext context)

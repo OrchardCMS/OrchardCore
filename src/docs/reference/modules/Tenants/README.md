@@ -1,6 +1,6 @@
 # Tenants (`OrchardCore.Tenants`)
 
-The `Tenants` module allows to manage tenants from the admin.
+The `Tenants` module allows you to manage tenants from the admin.
 
 ## Static File Provider Feature
 

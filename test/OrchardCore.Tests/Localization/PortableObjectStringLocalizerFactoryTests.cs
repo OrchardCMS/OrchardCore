@@ -5,7 +5,7 @@ namespace OrchardCore.Tests.Localization;
 public class PortableObjectStringLocalizerFactoryTests
 {
     [Fact]
-    public async Task LocalizerReturnsTranslationFromInnerClass()
+    public async Task LocalizerReturnsTranslationFromInnerClass_Default_Succeeds()
         => await StartupRunner.Run(typeof(PortableObjectStringLocalizerFactory), "ar", "مرحبا");
 
     public class PortableObjectStringLocalizerFactory

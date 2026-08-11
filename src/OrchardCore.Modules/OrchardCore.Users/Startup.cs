@@ -28,13 +28,13 @@ using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
+using OrchardCore.RateLimits;
 using OrchardCore.Recipes;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings.Deployment;
 using OrchardCore.Setup.Events;
-using OrchardCore.Sms;
 using OrchardCore.Users.Commands;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Core.Services;
@@ -57,8 +57,8 @@ public sealed class Startup : StartupBase
 {
     public const string CookieNamePrefix = ".OrchardCore.Authentication.";
 
-    private static readonly string _accountControllerName = typeof(AccountController).ControllerName();
-    private static readonly string _emailConfirmationControllerName = typeof(EmailConfirmationController).ControllerName();
+    private static readonly string s_accountControllerName = typeof(AccountController).ControllerName();
+    private static readonly string s_emailConfirmationControllerName = typeof(EmailConfirmationController).ControllerName();
 
     private readonly string _tenantName;
 
@@ -159,6 +159,7 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<Navbar, UserMenuNavbarDisplayDriver>();
         services.AddDisplayDriver<UserMenu, UserMenuDisplayDriver>();
         services.AddShapeTableProvider<UserMenuShapeTableProvider>();
+        services.AddShapeTableProvider<AdminDashboardShapeTableProvider>();
 
         services.AddRecipeExecutionStep<UsersStep>();
 
@@ -179,7 +180,7 @@ public sealed class Startup : StartupBase
             pattern: _userOptions.LoginPath,
             defaults: new
             {
-                controller = _accountControllerName,
+                controller = s_accountControllerName,
                 action = nameof(AccountController.Login),
             }
         );
@@ -190,7 +191,7 @@ public sealed class Startup : StartupBase
             pattern: _userOptions.ChangePasswordUrl,
             defaults: new
             {
-                controller = _accountControllerName,
+                controller = s_accountControllerName,
                 action = nameof(AccountController.ChangePassword),
             }
         );
@@ -201,7 +202,7 @@ public sealed class Startup : StartupBase
             pattern: _userOptions.ChangePasswordConfirmationUrl,
             defaults: new
             {
-                controller = _accountControllerName,
+                controller = s_accountControllerName,
                 action = nameof(AccountController.ChangePasswordConfirmation),
             }
         );
@@ -212,7 +213,7 @@ public sealed class Startup : StartupBase
             pattern: _userOptions.LogoffPath,
             defaults: new
             {
-                controller = _accountControllerName,
+                controller = s_accountControllerName,
                 action = nameof(AccountController.LogOff),
             }
         );
@@ -223,7 +224,7 @@ public sealed class Startup : StartupBase
             pattern: "ConfirmEmail",
             defaults: new
             {
-                controller = _emailConfirmationControllerName,
+                controller = s_emailConfirmationControllerName,
                 action = nameof(EmailConfirmationController.ConfirmEmail),
             }
         );
@@ -234,12 +235,23 @@ public sealed class Startup : StartupBase
             pattern: "ConfirmEmailSent",
             defaults: new
             {
-                controller = _emailConfirmationControllerName,
+                controller = s_emailConfirmationControllerName,
                 action = nameof(EmailConfirmationController.ConfirmEmailSent),
             }
         );
 
         builder.UseAuthorization();
+    }
+
+}
+
+[RequireFeatures("OrchardCore.RateLimits")]
+public sealed class RateLimitsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.Configure<RateLimitsOptions>(options =>
+            options.AddRouteRateLimit(RateLimitRouteNames.Login, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, 10)));
     }
 }
 
@@ -274,6 +286,31 @@ public sealed class ExternalAuthenticationStartup : StartupBase
                 action = nameof(ExternalAuthenticationsController.ExternalLogins),
             }
         );
+    }
+}
+
+[Feature(UserConstants.Features.ExternalAuthentication)]
+[RequireFeatures("OrchardCore.Deployment")]
+public sealed class ExternalAuthenticationDeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddSiteSettingsPropertyDeploymentStep<ExternalRegistrationSettings, ExternalAuthenticationDeploymentStartup>(S => S["External registration settings"], S => S["Exports the external registration settings."]);
+        services.AddSiteSettingsPropertyDeploymentStep<ExternalLoginSettings, ExternalAuthenticationDeploymentStartup>(S => S["External login settings"], S => S["Exports the external login settings."]);
+    }
+}
+
+[Feature(UserConstants.Features.ExternalAuthentication)]
+[RequireFeatures("OrchardCore.RateLimits")]
+public sealed class ExternalAuthenticationRateLimitsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.Configure<RateLimitsOptions>(options =>
+        {
+            options.AddRouteRateLimit(RateLimitRouteNames.RegisterExternalLogin, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.UserRegistration, 3));
+            options.AddRouteRateLimit(RateLimitRouteNames.LinkExternalLogin, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordAuthentication, 10));
+        });
     }
 }
 
@@ -497,6 +534,17 @@ public sealed class RegistrationStartup : StartupBase
 }
 
 [Feature(UserConstants.Features.UserRegistration)]
+[RequireFeatures("OrchardCore.RateLimits")]
+public sealed class RegistrationRateLimitsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.Configure<RateLimitsOptions>(options =>
+            options.AddRouteRateLimit(RateLimitRouteNames.Register, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.UserRegistration, 3)));
+    }
+}
+
+[Feature(UserConstants.Features.UserRegistration)]
 [RequireFeatures("OrchardCore.Deployment")]
 public sealed class RegistrationDeploymentStartup : StartupBase
 {
@@ -576,6 +624,20 @@ public sealed class ResetPasswordStartup : StartupBase
                 action = nameof(ResetPasswordController.ResetPasswordConfirmation),
             }
         );
+    }
+}
+
+[Feature(UserConstants.Features.ResetPassword)]
+[RequireFeatures("OrchardCore.RateLimits")]
+public sealed class ResetPasswordRateLimitsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.Configure<RateLimitsOptions>(options =>
+        {
+            options.AddRouteRateLimit(RateLimitRouteNames.ForgotPassword, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordRecovery, 5));
+            options.AddRouteRateLimit(RateLimitRouteNames.ResetPassword, HttpMethods.Post, RateLimitPartitionHelpers.CreateSlidingWindowPerIpPolicy(UserRateLimiterPolicyNames.PasswordRecovery, 5));
+        });
     }
 }
 

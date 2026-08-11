@@ -29,7 +29,7 @@ public class TenantValidatorTests : SiteContext
     [InlineData("Tenant9", "tenant9", "", "Feature Profile", new string[] { })]
     [InlineData("Tenant9", "", "example6.com", "Feature Profile", new string[] { })]
     [InlineData("Tenant9", "tenant9", "example6.com", "Feature Profile", new string[] { })]
-    public async Task TenantValidationFailsIfInvalidConfigurationsWasProvided(string name, string urlPrefix, string hostName, string featureProfile, string[] errorMessages)
+    public async Task TenantValidationFailsIfInvalidConfigurationsWasProvided_Default_Succeeds(string name, string urlPrefix, string hostName, string featureProfile, string[] errorMessages)
     {
         // Arrange
         await ShellHost.InitializeAsync();
@@ -61,7 +61,7 @@ public class TenantValidatorTests : SiteContext
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public async Task DuplicateTenantHostOrPrefixShouldFailValidation(bool isNewTenant)
+    public async Task DuplicateTenantHostOrPrefix_Default_FailssValidation(bool isNewTenant)
     {
         // Arrange
         await ShellHost.InitializeAsync();
@@ -96,7 +96,7 @@ public class TenantValidatorTests : SiteContext
     }
 
     [Fact]
-    public async Task RequireTablePrefixShouldFailValidation_WhenProviderSupportsPrefixes()
+    public async Task RequireTablePrefix_ProviderSupportsPrefixes_FailssValidation()
     {
         // Arrange
         await ShellHost.InitializeAsync();
@@ -122,7 +122,7 @@ public class TenantValidatorTests : SiteContext
     }
 
     [Fact]
-    public async Task RequireTablePrefixShouldNotFailValidation_WhenProviderDoesNotSupportPrefixes()
+    public async Task RequireTablePrefix_ProviderDoesNotSupportPrefixes_NotFailValidation()
     {
         // Arrange
         await ShellHost.InitializeAsync();
@@ -146,7 +146,7 @@ public class TenantValidatorTests : SiteContext
     }
 
     [Fact]
-    public async Task TablePrefixPatternShouldPopulatePrefix_WhenConfigured()
+    public async Task TablePrefixPattern_Configured_PopulatessPrefix()
     {
         // Arrange
         await ShellHost.InitializeAsync();
@@ -170,7 +170,7 @@ public class TenantValidatorTests : SiteContext
     }
 
     [Fact]
-    public async Task InvalidConfiguredTablePrefixPatternShouldFailValidation()
+    public async Task InvalidConfiguredTablePrefixPattern_Default_FailssValidation()
     {
         // Arrange
         await ShellHost.InitializeAsync();
@@ -195,7 +195,7 @@ public class TenantValidatorTests : SiteContext
     }
 
     [Fact]
-    public async Task InvalidSchemaShouldFailValidation()
+    public async Task InvalidSchema_Default_FailssValidation()
     {
         // Arrange
         await ShellHost.InitializeAsync();
@@ -221,11 +221,44 @@ public class TenantValidatorTests : SiteContext
         Assert.Equal("The table schema must be a valid SQL identifier using only letters, numbers, and underscores, and it must start with a letter or underscore.", error.Message);
     }
 
+    [Fact]
+    public async Task ValidateAsync_InvalidTenantName_DoesNotValidateDatabaseConnection()
+    {
+        // Arrange
+        await ShellHost.InitializeAsync();
+
+        var dbConnectionValidatorMock = new Mock<IDbConnectionValidator>();
+        var tenantValidator = CreateTenantValidator(
+            defaultTenant: false,
+            dbConnectionValidatorMock: dbConnectionValidatorMock);
+        var viewModel = new EditTenantViewModel
+        {
+            Name = "../Tenant",
+            RequestUrlPrefix = "unique-tenant-prefix",
+            RequestUrlHost = "unique.example.com",
+            DatabaseProvider = DatabaseProviderValue.Sqlite,
+            FeatureProfiles = ["Feature Profile"],
+            IsNewTenant = true,
+        };
+
+        // Act
+        var errors = await tenantValidator.ValidateAsync(viewModel);
+
+        // Assert
+        var error = Assert.Single(errors);
+        Assert.Equal(nameof(viewModel.Name), error.Key);
+        Assert.Equal("Invalid tenant name. Must contain characters only and no spaces.", error.Message);
+        dbConnectionValidatorMock.Verify(
+            validator => validator.ValidateAsync(It.IsAny<DbConnectionValidatorContext>()),
+            Times.Never);
+    }
+
     private static TenantValidator CreateTenantValidator(
         bool defaultTenant = true,
         bool requireTablePrefix = false,
         string tablePrefixPattern = null,
-        string schemaPattern = null)
+        string schemaPattern = null,
+        Mock<IDbConnectionValidator> dbConnectionValidatorMock = null)
     {
         var featureProfilesServiceMock = new Mock<IFeatureProfilesService>();
         featureProfilesServiceMock.Setup(fp => fp.GetFeatureProfilesAsync())
@@ -254,7 +287,7 @@ public class TenantValidatorTests : SiteContext
             ? ShellHost.GetSettings(ShellSettings.DefaultShellName)
             : new ShellSettings();
 
-        var dbConnectionValidatorMock = new Mock<IDbConnectionValidator>();
+        dbConnectionValidatorMock ??= new Mock<IDbConnectionValidator>();
         var validationContext = new DbConnectionValidatorContext(shellSettings);
 
         dbConnectionValidatorMock.Setup(v => v.ValidateAsync(validationContext));

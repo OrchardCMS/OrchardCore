@@ -1,4 +1,3 @@
-@using OrchardCore
 @using OrchardCore.Forms.ViewModels
 @using OrchardCore.Forms.Models
 @model FormElementLabelPartViewModel
@@ -7,9 +6,9 @@
 }
 <div class="properties-wrapper show-for-input" id="@wrapperId">
 
-    <div class="@Orchard.GetWrapperClasses("show-for-input-label")">
-        <label asp-for="LabelOption" class="@Orchard.GetLabelClasses()">@T["Label option"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper show-for-input-label">
+        <label asp-for="LabelOption" class="ocat-label">@T["Label option"]</label>
+        <div class="ocat-end">
             <select asp-for="LabelOption" class="form-select content-preview-select field-label-option-select-menu">
                 <option value="@nameof(LabelOptions.None)">@T["None"]</option>
                 <option value="@nameof(LabelOptions.Standard)">@T["Standard"]</option>
@@ -19,9 +18,9 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperClasses("d-none","label-text-container")">
-        <label asp-for="Label" class="@Orchard.GetLabelClasses()">@T["Label Text"]</label>
-        <div class="@Orchard.GetEndClasses()">
+    <div class="ocat-wrapper d-none label-text-container">
+        <label asp-for="Label" class="ocat-label">@T["Label Text"]</label>
+        <div class="ocat-end">
             <input asp-for="Label" type="text" class="form-control content-preview-text" />
             <span class="hint">@T["The text to display in the label."]</span>
         </div>

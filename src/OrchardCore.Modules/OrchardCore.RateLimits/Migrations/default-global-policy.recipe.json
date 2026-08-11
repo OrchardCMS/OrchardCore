@@ -1,0 +1,30 @@
+{
+  "steps": [
+    {
+      "name": "CreateOrUpdateRateLimitPolicies",
+      "policies": [
+        {
+          "PolicyId": "[js: uuid()]",
+          "Name": "Default Global Policy",
+          "OwnerId": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "IsEnabled": true,
+          "Scope": "Global",
+          "Limiters": [
+            {
+              "Id": "[js: uuid()]",
+              "Source": "FixedWindow",
+              "Properties": {
+                "FixedWindowRateLimiterData": {
+                  "PermitLimit": 150,
+                  "WindowSeconds": 60,
+                  "QueueLimit": 0
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

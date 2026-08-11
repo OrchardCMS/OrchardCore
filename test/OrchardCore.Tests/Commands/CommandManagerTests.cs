@@ -20,7 +20,7 @@ public class CommandManagerTests
     }
 
     [Fact]
-    public async Task ManagerCanRunACommand()
+    public async Task ManagerCanRunACommand_Default_Succeeds()
     {
         var context = new CommandParameters { Arguments = new string[] { "FooBar" }, Output = new StringWriter() };
         await _manager.ExecuteAsync(context);
@@ -28,7 +28,7 @@ public class CommandManagerTests
     }
 
     [Fact]
-    public async Task ManagerCanRunACompositeCommand()
+    public async Task ManagerCanRunACompositeCommand_Default_Succeeds()
     {
         var context = new CommandParameters { Arguments = ("Foo Bar Bleah").Split(' '), Output = new StringWriter() };
         await _manager.ExecuteAsync(context);

@@ -19,18 +19,21 @@
         <span class="text-muted form-text small">@T["Optionally specify which presets should be used for the Setup experience."]</span>
     </h6>
 }
-<div class="row row-cols-1 row-cols-md-2">
-    @if (Model.DatabaseProviderPreset)
-    {
-        <div class="mb-3 col">
-            <label asp-for="DatabaseProvider" class="form-label">@T["What type of database to use?"]</label>
+
+@if (Model.DatabaseProviderPreset)
+{
+    <div class="ocat-wrapper">
+        <label asp-for="DatabaseProvider" class="ocat-label">@T["What type of database to use?"]</label>
+        <div class="ocat-end">
             <input value="@selectedProviderName" class="form-control" readonly />
         </div>
-    }
-    else
-    {
-        <div class="mb-3 col" asp-validation-class-for="DatabaseProvider">
-            <label asp-for="DatabaseProvider" class="form-label">@T["What type of database to use?"]</label>
+    </div>
+}
+else
+{
+    <div class="ocat-wrapper">
+        <label asp-for="DatabaseProvider" class="ocat-label">@T["What type of database to use?"]</label>
+        <div class="ocat-end" asp-validation-class-for="DatabaseProvider">
             <select asp-for="DatabaseProvider" class="form-select">
                 <option value="" data-connection-string="false">@T["None"]</option>
                 @foreach (var provider in DatabaseProviders)
@@ -39,12 +42,14 @@
                 }
             </select>
         </div>
-    }
+    </div>
+}
 
-    @if (Model.HasTablePrefixPattern)
-    {
-        <div class="mb-3 col tablePrefixField" hidden="@(!selectedProviderHasTablePrefix)">
-            <label asp-for="TablePrefix" class="form-label">@T["Table Prefix"]</label>
+@if (Model.HasTablePrefixPattern)
+{
+    <div class="ocat-wrapper tablePrefixField" hidden="@(!selectedProviderHasTablePrefix)">
+        <label asp-for="TablePrefix" class="ocat-label">@T["Table Prefix"]</label>
+        <div class="ocat-end">
             <input asp-for="TablePrefix" class="form-control" readonly data-require-table-prefix="false" data-provider-has-table-prefix="@selectedProviderHasTablePrefix.ToString().ToLowerInvariant()" />
             <div class="hint">
                 @if (string.IsNullOrEmpty(Model.ResolvedTablePrefix))
@@ -57,11 +62,13 @@
                 }
             </div>
         </div>
-    }
-    else
-    {
-        <div class="mb-3 col tablePrefixField" asp-validation-class-for="TablePrefix">
-            <label asp-for="TablePrefix" class="form-label">@T["Table Prefix"]</label>
+    </div>
+}
+else
+{
+    <div class="ocat-wrapper tablePrefixField">
+        <label asp-for="TablePrefix" class="ocat-label">@T["Table Prefix"]</label>
+        <div class="ocat-end" asp-validation-class-for="TablePrefix">
             <input asp-for="TablePrefix" class="form-control" required="@(tablePrefixRequired ? "required" : null)" data-require-table-prefix="@Model.RequireTablePrefix.ToString().ToLowerInvariant()" data-provider-has-table-prefix="@selectedProviderHasTablePrefix.ToString().ToLowerInvariant()" />
             <span asp-validation-for="TablePrefix" class="text-danger"></span>
             <div class="hint">
@@ -72,12 +79,12 @@
                 }
             </div>
         </div>
-    }
-</div>
+    </div>
+}
 
-<div class="row connectionString" asp-validation-class-for="ConnectionString" hidden="@(!selectedProviderHasConnectionString)">
-    <div class="mb-3 col-md-12">
-        <label asp-for="ConnectionString" class="form-label">@T["Connection string"]</label>
+<div class="ocat-wrapper connectionString" asp-validation-class-for="ConnectionString" hidden="@(!selectedProviderHasConnectionString)">
+    <label asp-for="ConnectionString" class="ocat-label">@T["Connection string"]</label>
+    <div class="ocat-end">
         @if (Model.DatabaseConfigurationPreset)
         {
             <input id="ConnectionString" value="@displayedConnectionString" class="form-control" readonly data-provider-has-connection-string="@selectedProviderHasConnectionString.ToString().ToLowerInvariant()" data-connection-string-sample="@(selectedProviderHasConnectionString ? T["The connection string to your database instance, e.g. {0}.", selectedProvider?.SampleConnectionString] : string.Empty)" />
@@ -91,9 +98,9 @@
     </div>
 </div>
 
-<div class="row row-cols-1 row-cols-md-2">
-    <div class="mb-3 col schemaField" asp-validation-class-for="Schema" hidden="@(!selectedProviderHasTablePrefix)">
-        <label asp-for="Schema" class="form-label">@T["Table Schema"]</label>
+<div class="ocat-wrapper schemaField" hidden="@(!selectedProviderHasTablePrefix)">
+    <label asp-for="Schema" class="ocat-label">@T["Table Schema"]</label>
+    <div class="ocat-end" asp-validation-class-for="Schema">
         @if (Model.HasSchemaPattern || Model.DatabaseConfigurationPreset)
         {
             <input asp-for="Schema" class="form-control" readonly />

@@ -5,7 +5,7 @@ namespace OrchardCore.Media.Services;
 
 public class MediaProfileService : IMediaProfileService
 {
-    private static readonly IDictionary<string, string> _nullProfile = new Dictionary<string, string>();
+    private static readonly IDictionary<string, string> s_nullProfile = new Dictionary<string, string>();
     private readonly MediaProfilesManager _mediaProfilesManager;
 
     public MediaProfileService(MediaProfilesManager mediaProfilesManager)
@@ -51,11 +51,17 @@ public class MediaProfileService : IMediaProfileService
                 commands[MediaCommands.BackgroundColorCommand] = mediaProfile.BackgroundColor;
             }
 
+            // include only when the profile explicitly disables auto orient, otherwise it will be enabled by default. Keep urls shorter when auto orient is enabled.
+            if (!mediaProfile.AutoOrient)
+            {
+                commands[MediaCommands.AutoOrientCommand] = "false";
+            }
+
             return commands;
         }
         else
         {
-            return _nullProfile;
+            return s_nullProfile;
         }
     }
 }

@@ -179,9 +179,8 @@ The following example processes all files with a `.js` extension in the `Assets`
 
 ## Separate output files for each input file
 
-In many cases you will want to process many input files in the exact same way but keep them in separate output files. You could do this by declaring a separate asset group for each pair of input/output files. However this can be extremely tedious and error prone to write, and even more so to maintain over time as you add or remove assets to your extention, especially if you have a large number of asset files.
-
-The pipeline makes this easier by allowing you to use the `@` characted instead of a file name the output file path of your asset group. The `@` character disables the bundling step and basically translates to "the same filename as whatever input asset file is currently being processed". When combined with glob wildcards this can make it a lot easier to manage your assets:
+In many cases you will want to process many input files in the exact same way but keep them in separate output files. You could do this by declaring a separate asset group for each pair of input/output files. However this can be extremely tedious and error-prone to write, and even more so to maintain over time as you add or remove assets to your extension, especially if you have a large number of asset files.
+The pipeline makes this easier by allowing you to use the `@` character instead of a file name in the output file path of your asset group. The `@` character disables the bundling step and basically translates to "the same filename as whatever input asset file is currently being processed". When combined with glob wildcards this can make it a lot easier to manage your assets:
 
 ```js
 [

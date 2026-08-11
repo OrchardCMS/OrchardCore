@@ -21,11 +21,11 @@ Reverse proxy settings can be configured using the `Settings` recipe step:
 }
 ```
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `ForwardedHeaders` | String | The forwarded headers to process. Values: `None`, `XForwardedFor`, `XForwardedHost`, `XForwardedProto`, `All`. |
-| `KnownNetworks` | Array of String | The list of known network addresses. |
-| `KnownProxies` | Array of String | The list of known proxy IP addresses. |
+| Property           | Type            | Description                                                                                                    |
+|--------------------|-----------------|----------------------------------------------------------------------------------------------------------------|
+| `ForwardedHeaders` | String          | The forwarded headers to process. Values: `None`, `XForwardedFor`, `XForwardedHost`, `XForwardedProto`, `All`. |
+| `KnownNetworks`    | Array of String | The list of known network addresses.                                                                           |
+| `KnownProxies`     | Array of String | The list of known proxy IP addresses.                                                                          |
 
 ## Reverse Proxy Settings Configuration
 

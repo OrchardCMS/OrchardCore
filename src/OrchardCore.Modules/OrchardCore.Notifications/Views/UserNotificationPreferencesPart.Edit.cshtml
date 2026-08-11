@@ -3,32 +3,34 @@
     var methodsHtmlId = Html.IdFor(x => x.Methods);
 }
 
-<div class="mb-3">
-    <label asp-for="Methods" class="form-label">@T["Notification Methods"]</label>
+<div class="ocat-wrapper">
+    <label asp-for="Methods" class="ocat-label">@T["Notification Methods"]</label>
 
-    <span class="hint">
-        @T["Select all notification methods to receive."]
-    </span>
-    <ul class="list-group" id="@methodsHtmlId">
-        @foreach (var option in Model.AvailableMethods)
+    <div class="ocat-end">
+        <span class="hint">
+            @T["Select all notification methods to receive."]
+        </span>
+        <ul class="list-group" id="@methodsHtmlId">
+            @foreach (var option in Model.AvailableMethods)
+            {
+                var htmlId = $"{methodsHtmlId}_Method_{option.Value}";
+
+                <li class="list-group-item">
+                    <div class="form-check">
+                        <input type="hidden" name="@Html.NameFor(x => x.SortedMethods)" value="@option.Value" />
+                        <input class="form-check-input" type="checkbox" name="@Html.NameFor(x => x.Methods)" value="@option.Value" id="@htmlId" @(Model.Methods.Contains(option.Value, StringComparer.OrdinalIgnoreCase) ? " checked " : "")>
+                        <label class="form-check-label" for="@htmlId">
+                            @option.Text
+                        </label>
+                    </div>
+                </li>
+            }
+        </ul>
+        @if (Model.AvailableMethods.Count() > 1)
         {
-            var htmlId = $"{methodsHtmlId}_Method_{option.Value}";
-
-            <li class="list-group-item">
-                <div class="form-check">
-                    <input type="hidden" name="@Html.NameFor(x => x.SortedMethods)" value="@option.Value" />
-                    <input class="form-check-input" type="checkbox" name="@Html.NameFor(x => x.Methods)" value="@option.Value" id="@htmlId" @(Model.Methods.Contains(option.Value, StringComparer.OrdinalIgnoreCase) ? " checked " : "")>
-                    <label class="form-check-label" for="@htmlId">
-                        @option.Text
-                    </label>
-                </div>
-            </li>
+            <span class="hint">@T["From the list above, you can sort the notification priority where the most important method is on the top."]</span>
         }
-    </ul>
-    @if (Model.AvailableMethods.Count() > 1)
-    {
-        <span class="hint">@T["From the list above, you can sort the notification priority where the most important method is on the top."]</span>
-    }
+    </div>
 </div>
 
 <script at="Foot">

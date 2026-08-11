@@ -84,17 +84,17 @@ Audit trail settings can be configured using the `Settings` recipe step:
 
 ### AuditTrailSettings
 
-| Property | Type | Description |
-|----------|------|-------------|
+| Property                 | Type    | Description                                                     |
+|--------------------------|---------|-----------------------------------------------------------------|
 | `ClientIpAddressAllowed` | Boolean | Whether to record the client IP address in audit trail entries. |
-| `Categories` | Array | The list of audit trail event category configurations. |
+| `Categories`             | Array   | The list of audit trail event category configurations.          |
 
 ### AuditTrailTrimmingSettings
 
-| Property | Type | Description |
-|----------|------|-------------|
+| Property        | Type    | Description                                                                      |
+|-----------------|---------|----------------------------------------------------------------------------------|
 | `RetentionDays` | Integer | The number of days to retain audit trail entries before trimming. Default: `10`. |
-| `Disabled` | Boolean | Whether automatic trimming is disabled. |
+| `Disabled`      | Boolean | Whether automatic trimming is disabled.                                          |
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/uMBN6TVhaMg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 

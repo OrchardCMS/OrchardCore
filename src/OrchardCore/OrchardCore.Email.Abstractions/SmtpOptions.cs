@@ -32,6 +32,8 @@ public class SmtpOptions
 
     public string PickupDirectoryLocation { get; set; }
 
+    public string PickupDirectoryLocationBase { get; set; }
+
     public bool ConfigurationExists()
     {
         if (string.IsNullOrEmpty(DefaultSender))

@@ -19,13 +19,15 @@
 <zone Name="Title"><h1>@RenderTitleSegments(T["View As JSON {0}", localizedTypeDisplayName])</h1></zone>
 
 <form asp-action="Download" asp-route-contentItemId="@contentItem.ContentItemId" method="post" enctype="multipart/form-data" class="no-multisubmit">
-    <div class="mb-3">
-        <div class="d-flex flex-row-reverse">
-            <div class="btn">
-                <i class="fa-regular fa-copy" aria-hidden="true" id="json-copy-to-clipboard"></i>
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <div class="d-flex flex-row-reverse">
+                <div class="btn">
+                    <i class="fa-regular fa-copy" aria-hidden="true" id="json-copy-to-clipboard"></i>
+                </div>
             </div>
+            <textarea asp-for="ContentItemJson" class="form-control"></textarea>
         </div>
-        <textarea asp-for="ContentItemJson" class="form-control"></textarea>
     </div>
 
     <button class="btn btn-success download" type="submit">@T["Download"]</button>
@@ -38,7 +40,15 @@
 </form>
 
 <script at="Foot">
-    $(function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         var editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.ContentItemJson)'), {
             autoRefresh: true,
             lineNumbers: true,
@@ -47,12 +57,13 @@
             mode: { name: "javascript" },
         });
 
-        $('#json-copy-to-clipboard').on('click', function () {
-            var $temp = $("<textarea>");
-            $("body").append($temp);
-            $temp.val($('#@Html.IdFor(x => x.ContentItemJson)').text()).select();
+        document.getElementById('json-copy-to-clipboard')?.addEventListener('click', function () {
+            var temp = document.createElement("textarea");
+            document.body.appendChild(temp);
+            temp.value = document.getElementById('@Html.IdFor(x => x.ContentItemJson)')?.textContent || '';
+            temp.select();
             document.execCommand("copy");
-            $temp.remove();
-        })
+            temp.remove();
+        });
     });
 </script>

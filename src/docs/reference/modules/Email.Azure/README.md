@@ -48,8 +48,8 @@ Azure email settings can be configured using the `Settings` recipe step:
 }
 ```
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `IsEnabled` | Boolean | Whether the Azure email provider is enabled. |
-| `DefaultSender` | String | The default sender email address. |
-| `ConnectionString` | String | The Azure Communication Services connection string. **Required.** |
+| Property           | Type    | Description                                                       |
+|--------------------|---------|-------------------------------------------------------------------|
+| `IsEnabled`        | Boolean | Whether the Azure email provider is enabled.                      |
+| `DefaultSender`    | String  | The default sender email address.                                 |
+| `ConnectionString` | String  | The Azure Communication Services connection string. **Required.** |

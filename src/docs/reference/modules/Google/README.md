@@ -54,8 +54,9 @@ If no value is provided, setup Callback URL in Google API to use the default pat
 
 ## Users Registration
 
-+ If you want to enable new users to register to the site through their Google account, the `OrchardCore.Users.Registration` feature must be enabled and setup accordingly.
-+ An existing user can link his account to his Google account through the External Logins link from User menu.
+- Enable the `OrchardCore.Users.Registration` feature when you also want local site registration.
+- New external-user creation and profile generation are controlled from the Users module's [`ExternalRegistrationSettings`](../Users/README.md#external-authentication-settings).
+- An existing user can link the account through the External Logins link from the user menu.
 
 ## Google Settings Configuration
 
@@ -98,12 +99,12 @@ Google module settings can be configured using the `Settings` recipe step:
 }
 ```
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `ClientID` | String | The Client ID from the Google Cloud Console. **Required.** |
-| `ClientSecret` | String | The Client Secret from the Google Cloud Console. **Required.** |
-| `CallbackPath` | String | The request path where the user-agent will be returned after authentication. |
-| `SaveTokens` | Boolean | Whether to save the access and refresh tokens. |
+| Property       | Type    | Description                                                                  |
+|----------------|---------|------------------------------------------------------------------------------|
+| `ClientID`     | String  | The Client ID from the Google Cloud Console. **Required.**                   |
+| `ClientSecret` | String  | The Client Secret from the Google Cloud Console. **Required.**               |
+| `CallbackPath` | String  | The request path where the user-agent will be returned after authentication. |
+| `SaveTokens`   | Boolean | Whether to save the access and refresh tokens.                               |
 
 ### Google Analytics
 
@@ -120,8 +121,8 @@ Google module settings can be configured using the `Settings` recipe step:
 }
 ```
 
-| Property | Type | Description |
-|----------|------|-------------|
+| Property     | Type   | Description                                     |
+|--------------|--------|-------------------------------------------------|
 | `TrackingID` | String | The Google Analytics tracking ID. **Required.** |
 
 ### Google Tag Manager
@@ -139,6 +140,6 @@ Google module settings can be configured using the `Settings` recipe step:
 }
 ```
 
-| Property | Type | Description |
-|----------|------|-------------|
+| Property      | Type   | Description                                        |
+|---------------|--------|----------------------------------------------------|
 | `ContainerID` | String | The Google Tag Manager container ID. **Required.** |

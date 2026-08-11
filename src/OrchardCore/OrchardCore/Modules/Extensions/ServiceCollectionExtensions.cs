@@ -43,7 +43,7 @@ public static class ServiceCollectionExtensions
     /// <summary>
     /// Routing singleton and global config types used to isolate tenants from the host.
     /// </summary>
-    private static readonly Type[] _routingTypesToIsolate = new ServiceCollection()
+    private static readonly Type[] s_routingTypesToIsolate = new ServiceCollection()
         .AddRouting()
         .Where(sd =>
             sd.Lifetime == ServiceLifetime.Singleton ||
@@ -54,7 +54,7 @@ public static class ServiceCollectionExtensions
     /// <summary>
     /// Http client singleton types used to isolate tenants from the host.
     /// </summary>
-    private static readonly Type[] _httpClientTypesToIsolate = new ServiceCollection()
+    private static readonly Type[] s_httpClientTypesToIsolate = new ServiceCollection()
         .AddHttpClient()
         .Where(sd => sd.Lifetime == ServiceLifetime.Singleton)
         .Select(sd => sd.GetImplementationType())
@@ -67,7 +67,7 @@ public static class ServiceCollectionExtensions
     /// <summary>
     /// Metrics singletons used to isolate tenants from the host.
     /// </summary>
-    private static readonly Type[] _metricsTypesToIsolate = new ServiceCollection()
+    private static readonly Type[] s_metricsTypesToIsolate = new ServiceCollection()
         .AddMetrics()
         .Where(sd => sd.Lifetime == ServiceLifetime.Singleton)
         .Select(sd => sd.GetImplementationType())
@@ -153,6 +153,7 @@ public static class ServiceCollectionExtensions
 
         services.AddHttpContextAccessor();
         services.AddSingleton<IClock, Clock>();
+        services.TryAddSingleton<ITimeZoneSelectListProvider, DefaultTimeZoneSelectListProvider>();
         services.AddScoped<ILocalClock, LocalClock>();
 
         services.AddScoped<ILocalizationService, DefaultLocalizationService>();
@@ -305,7 +306,7 @@ public static class ServiceCollectionExtensions
             var descriptorsToRemove = collection
                 .Where(sd =>
                     sd is ClonedSingletonDescriptor &&
-                    _metricsTypesToIsolate.Contains(sd.GetImplementationType()))
+                    s_metricsTypesToIsolate.Contains(sd.GetImplementationType()))
                 .ToArray();
             // Isolate each tenant from the host.
 
@@ -336,7 +337,7 @@ public static class ServiceCollectionExtensions
                 .Where(sd =>
                     (sd is ClonedSingletonDescriptor ||
                     sd.ServiceType == typeof(IConfigureOptions<RouteOptions>)) &&
-                    _routingTypesToIsolate.Contains(sd.GetImplementationType()))
+                    s_routingTypesToIsolate.Contains(sd.GetImplementationType()))
                 .ToArray();
 
             // Isolate each tenant from the host.
@@ -371,7 +372,7 @@ public static class ServiceCollectionExtensions
             var descriptorsToRemove = collection
                 .Where(sd =>
                     sd is ClonedSingletonDescriptor &&
-                    _httpClientTypesToIsolate.Contains(sd.GetImplementationType()))
+                    s_httpClientTypesToIsolate.Contains(sd.GetImplementationType()))
                 .Concat(configurationDescriptorsToRemove)
                 .ToArray();
 

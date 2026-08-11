@@ -10,7 +10,7 @@ public class DataLocalizerFactoryTests
     }
 
     [Fact]
-    public void CreateDataLocalizer()
+    public void CreateDataLocalizer_Default_Succeeds()
     {
         // Arrange
         var context = "context";

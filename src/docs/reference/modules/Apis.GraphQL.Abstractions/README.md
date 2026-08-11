@@ -124,7 +124,7 @@ public sealed class Startup : StartupBase
 
 The main thing to take away from this class is that all Input Types must inherit off of InputObjectGraphType.
 
-When an input part is registered, it adds in that part as the parent query, in this instance the autoroutePart, as shown below;
+When an input part is registered, it adds in that part as the parent query, in this instance the autoroutePart, as shown below:
 
 ```json
 {

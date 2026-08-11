@@ -12,9 +12,9 @@
     string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
 }
 
-<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Text)_FieldWrapper">
-    <label asp-for="Url" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@localizedFieldName</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty))" id="@Html.IdFor(x => x.Text)_FieldWrapper">
+    <label asp-for="Url" class="ocat-label @(settings.Required ? "ocat-label-required" : "")">@localizedFieldName</label>
+    <div class="ocat-end">
         <div class="row">
             <div class="col-md-6" asp-validation-class-for="Url">
                 <div class="@(useFormFloating ? "form-floating" : string.Empty)">
@@ -51,12 +51,12 @@
         </div>
         <div class="row">
             <div class="col-md-6" asp-validation-class-for="Target">
-                <label asp-for="Target" class="@Orchard.GetLabelClasses()">
+                <label asp-for="Target" class="ocat-label">
                     @T["Target"]
                 </label>
-                <div class="@Orchard.GetEndClasses()">
-                    <input asp-for="Target" list="targetOptions" class="form-control" />
-                    <datalist id="targetOptions">
+                <div class="ocat-end">
+                    <input asp-for="Target" list="@Html.IdFor(m => m.Target)_targetOptions" class="form-control" />
+                    <datalist id="@Html.IdFor(m => m.Target)_targetOptions">
                         <option value="_self">@T["Opens the linked document in the same frame as it was clicked (default)."]</option>
                         <option value="_blank">@T["Opens the linked document in a new window or tab."]</option>
                         <option value="_parent">@T["Opens the linked document in the parent frame."]</option>

@@ -27,20 +27,20 @@
 
     @if (typePart.PartDefinition.IsReusable())
     {
-        <div class="mb-3">
-            <div class="w-lg-75 w-xl-50">
-                <label asp-for="DisplayName" class="form-label">@T["Display Name"]</label>
+        <div class="ocat-limited-wrapper">
+            <label asp-for="DisplayName" class="ocat-label">@T["Display Name"]</label>
+            <div class="ocat-limited">
                 <input asp-for="DisplayName" class="form-control" />
+                <span class="hint">@T["Name of the part as it will be displayed in screens."]</span>
             </div>
-            <span class="hint">@T["Name of the part as it will be displayed in screens."]</span>
         </div>
 
-        <div class="mb-3">
-            <div class="w-lg-75 w-xl-50">
-                <label asp-for="Description" class="form-label">@T["Description"]</label>
+        <div class="ocat-limited-wrapper">
+            <label asp-for="Description" class="ocat-label">@T["Description"]</label>
+            <div class="ocat-limited">
                 <input asp-for="Description" class="form-control" />
+                <span class="hint">@T["The description of the part as it will be displayed in screens."]</span>
             </div>
-            <span class="hint">@T["The description of the part as it will be displayed in screens."]</span>
         </div>
     }
 
@@ -48,85 +48,122 @@
     {
         @if (Model.Shape.Shortcuts != null)
         {
-            <div class="mb-3">
-                @await DisplayAsync(Model.Shape.Shortcuts)
+            <div class="ocat-wrapper">
+                <div class="ocat-end-offset">
+                    @await DisplayAsync(Model.Shape.Shortcuts)
+                </div>
             </div>
         }
 
-        <div class="mb-3">
-            @await DisplayAsync(Model.Shape.Content)
-        </div>
+        @await DisplayAsync(Model.Shape.Content)
 
         @if (editorShapes.Any())
         {
-            <div class="mb-3">
-                <label asp-for="Editor" class="form-label">@T["What type of editor should be used?"]</label>
-                <select asp-for="Editor" class="form-select" id="type-part-editor-select">
-                    @foreach (var editorShape in editorShapes)
-                    {
-                        var shape = await Factory.CreateAsync(editorShape);
-                        shape.Properties["Editor"] = Model.Editor;
-                        @await DisplayAsync(shape)
-                    }
-                </select>
+            <div class="ocat-wrapper">
+                <label asp-for="Editor" class="ocat-label">@T["What type of editor should be used?"]</label>
+                <div class="ocat-end">
+                    <select asp-for="Editor" class="form-select" id="type-part-editor-select">
+                        @foreach (var editorShape in editorShapes)
+                        {
+                            var shape = await Factory.CreateAsync(editorShape);
+                            shape.Properties["Editor"] = Model.Editor;
+                            @await DisplayAsync(shape)
+                        }
+                    </select>
+                </div>
             </div>
         }
 
-        <div id="type-part-editor-container" class="mb-3" style="display: none">
+        <div id="type-part-editor-container" style="display: none">
             @await DisplayAsync(Model.Shape.Editor)
         </div>
 
         @if (displayShapes.Any())
         {
-            <div class="mb-3">
-                <label asp-for="DisplayMode" class="form-label">@T["What type of display mode should be used?"]</label>
-                <select asp-for="DisplayMode" class="form-select" id="type-part-display-select">
-                    @foreach (var displayShape in displayShapes)
-                    {
-                        var shape = await Factory.CreateAsync(displayShape);
-                        shape.Properties["DisplayMode"] = Model.DisplayMode;
-                        @await DisplayAsync(shape)
-                    }
-                </select>
+            <div class="ocat-wrapper">
+                <label asp-for="DisplayMode" class="ocat-label">@T["What type of display mode should be used?"]</label>
+                <div class="ocat-end">
+                    <select asp-for="DisplayMode" class="form-select" id="type-part-display-select">
+                        @foreach (var displayShape in displayShapes)
+                        {
+                            var shape = await Factory.CreateAsync(displayShape);
+                            shape.Properties["DisplayMode"] = Model.DisplayMode;
+                            @await DisplayAsync(shape)
+                        }
+                    </select>
+                </div>
             </div>
         }
 
-        <div id="type-part-display-container" class="mb-3" style="display: none">
+        <div id="type-part-display-container" style="display: none">
             @await DisplayAsync(Model.Shape.DisplayMode)
         </div>
     }
 
-    <div class="mb-3">
-        <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
-        <a class="btn btn-secondary cancel" role="button" asp-route-action="Edit" asp-route-id="@Model.TypePartDefinition.ContentTypeDefinition.Name">@T["Cancel"]</a>
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
+            <a class="btn btn-secondary cancel" role="button" asp-route-action="Edit" asp-route-id="@Model.TypePartDefinition.ContentTypeDefinition.Name">@T["Cancel"]</a>
+        </div>
     </div>
 </form>
 
 <script at="Foot">
     //<![CDATA[
-    $(function () {
-        $('.type-part-editor').hide();
-        $('#type-part-editor-container').show();
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
 
-        var typePartEditorSelect = $('#type-part-editor-select');
-        if (typePartEditorSelect.length > 0) {
-            $('.type-part-editor-' + typePartEditorSelect.val().toLowerCase()).show();
+    onDocumentReady(function () {
+        document.querySelectorAll('.type-part-editor').forEach(function (element) {
+            element.style.display = 'none';
+        });
+        var typePartEditorContainer = document.getElementById('type-part-editor-container');
+        if (typePartEditorContainer) {
+            typePartEditorContainer.style.display = '';
+        }
 
-            typePartEditorSelect.change(function () {
-                $('.type-part-editor').hide();
-                $('.type-part-editor-' + typePartEditorSelect.val().toLowerCase()).show();
+        var typePartEditorSelect = document.getElementById('type-part-editor-select');
+        if (typePartEditorSelect) {
+            document.querySelectorAll('.type-part-editor-' + typePartEditorSelect.value.toLowerCase()).forEach(function (element) {
+                element.style.display = '';
+            });
+
+            typePartEditorSelect.addEventListener('change', function () {
+                document.querySelectorAll('.type-part-editor').forEach(function (element) {
+                    element.style.display = 'none';
+                });
+                document.querySelectorAll('.type-part-editor-' + typePartEditorSelect.value.toLowerCase()).forEach(function (element) {
+                    element.style.display = '';
+                });
             });
         }
 
-        $('.type-part-display').hide();
-        $('#type-part-display-container').show();
-        var typePartDisplaySelect = $('#type-part-display-select');
-        if (typePartDisplaySelect.length > 0) {
-            $('.type-part-display-' + typePartDisplaySelect.val().toLowerCase()).show();
+        document.querySelectorAll('.type-part-display').forEach(function (element) {
+            element.style.display = 'none';
+        });
+        var typePartDisplayContainer = document.getElementById('type-part-display-container');
+        if (typePartDisplayContainer) {
+            typePartDisplayContainer.style.display = '';
+        }
 
-            typePartDisplaySelect.change(function () {
-                $('.type-part-display').hide();
-                $('.type-part-display-' + typePartDisplaySelect.val().toLowerCase()).show();
+        var typePartDisplaySelect = document.getElementById('type-part-display-select');
+        if (typePartDisplaySelect) {
+            document.querySelectorAll('.type-part-display-' + typePartDisplaySelect.value.toLowerCase()).forEach(function (element) {
+                element.style.display = '';
+            });
+
+            typePartDisplaySelect.addEventListener('change', function () {
+                document.querySelectorAll('.type-part-display').forEach(function (element) {
+                    element.style.display = 'none';
+                });
+                document.querySelectorAll('.type-part-display-' + typePartDisplaySelect.value.toLowerCase()).forEach(function (element) {
+                    element.style.display = '';
+                });
             });
         }
     });

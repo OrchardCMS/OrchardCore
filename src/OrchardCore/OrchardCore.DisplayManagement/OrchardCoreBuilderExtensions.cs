@@ -82,6 +82,7 @@ public static class OrchardCoreBuilderExtensions
 
                 services.AddScoped(typeof(IDisplayManager<>), typeof(DisplayManager<>));
                 services.AddScoped<IHtmlDisplay, DefaultHtmlDisplay>();
+                services.AddOptions<ShapeRenderingOptions>();
                 services.AddScoped<ILayoutAccessor, LayoutAccessor>();
                 services.AddScoped<IThemeManager, ThemeManager>();
                 services.AddScoped<IPageTitleBuilder, PageTitleBuilder>();
@@ -125,6 +126,7 @@ public static class OrchardCoreBuilderExtensions
 
         services.AddTransient<IExtensionDependencyStrategy, ThemeExtensionDependencyStrategy>();
         services.AddTransient<IFeatureBuilderEvents, ThemeFeatureBuilderEvents>();
+        services.AddTransient<IFeaturesProvider, ThemeFeaturesProvider>();
 
         return builder;
     }

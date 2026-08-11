@@ -72,7 +72,11 @@
     }
     else
     {
-        li.InnerHtml.AppendHtml(await DisplayAsync(Model));
+        var figure = new TagBuilder("figure");
+        var figCaption = new TagBuilder("figcaption");
+        figCaption.InnerHtml.AppendHtml(await DisplayAsync(Model));
+        figure.InnerHtml.AppendHtml(figCaption);
+        li.InnerHtml.AppendHtml(figure);
     }
 }
 

@@ -1,10 +1,9 @@
 @using OrchardCore.DisplayManagement
 @using OrchardCore.DisplayManagement.ModelBinding
-@using OrchardCore.Environment.Shell
 @using OrchardCore.Themes.Services
-@using OrchardCore.Users.Models
 
 @inject ThemeTogglerService ThemeTogglerService
+@inject IOptions<AdminOptions> AdminOptions
 @inject IDisplayManager<Navbar> DisplayManager
 @inject IUpdateModelAccessor UpdateModelAccessor
 @{
@@ -15,7 +14,7 @@
     var navbar = await DisplayAsync(await DisplayManager.BuildDisplayAsync(UpdateModelAccessor.ModelUpdater, "DetailAdmin"));
 }
 <!DOCTYPE html>
-<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-bs-theme="@await ThemeTogglerService.CurrentTheme()" data-tenant="@ThemeTogglerService.CurrentTenant">
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-bs-theme="@await ThemeTogglerService.CurrentTheme()" data-tenant="@ThemeTogglerService.CurrentTenant" data-admin-prefix="@Url.Content("~/" + AdminOptions.Value.AdminUrlPrefix)">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <meta charset="utf-8">
@@ -75,7 +74,7 @@
             </div>
         </div>
 
-        <div class="ta-content">
+        <div class="ta-content" style="--oc-notify-offset-top: var(--oc-top-nav-height);">
             @await RenderSectionAsync("Header", required: false)
             @await RenderSectionAsync("Messages", required: false)
             @await RenderSectionAsync("Breadcrumbs", required: false)

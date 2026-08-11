@@ -32,7 +32,7 @@ public class ResilientPolymorphicJsonConverterTests
     }
 
     [Fact]
-    public void Deserialize_WithKnownDiscriminator_ReturnsCorrectDerivedType()
+    public void Deserialize_KnownDiscriminator_ReturnsCorrectDerivedType()
     {
         var options = CreateOptions(o =>
         {
@@ -52,7 +52,7 @@ public class ResilientPolymorphicJsonConverterTests
     }
 
     [Fact]
-    public void Deserialize_WithUnknownDiscriminator_WithoutFallback_ReturnsNull()
+    public void Deserialize_UnknownDiscriminatorWithoutFallback_ReturnsNull()
     {
         // No fallback registered — unrecognized discriminator returns null.
         var options = CreateOptions(RegisterDerivedType<ConcreteStepA, AbstractBaseStep>);
@@ -66,7 +66,7 @@ public class ResilientPolymorphicJsonConverterTests
     }
 
     [Fact]
-    public void Deserialize_WithUnknownDiscriminator_WithFallback_ReturnsFallbackType()
+    public void Deserialize_UnknownDiscriminatorWithFallback_ReturnsFallbackType()
     {
         var options = CreateOptions(o =>
         {
@@ -87,7 +87,7 @@ public class ResilientPolymorphicJsonConverterTests
     }
 
     [Fact]
-    public void Deserialize_WithMissingDiscriminator_WithFallback_ReturnsFallbackType()
+    public void Deserialize_MissingDiscriminatorWithFallback_ReturnsFallbackType()
     {
         var options = CreateOptions(o =>
         {
@@ -145,7 +145,7 @@ public class ResilientPolymorphicJsonConverterTests
     }
 
     [Fact]
-    public void Serialize_WithKnownDerivedType_WritesDiscriminator()
+    public void Serialize_KnownDerivedType_WritesDiscriminator()
     {
         var options = CreateOptions(o =>
         {

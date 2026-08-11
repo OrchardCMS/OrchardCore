@@ -11,7 +11,7 @@ public sealed class ElasticsearchIndexMapConverter : JsonConverter<Elasticsearch
 {
     internal readonly static Serializer _elasticsearchSerializer;
 
-    private static readonly JsonWriterOptions _writerOptions = new JsonWriterOptions
+    private static readonly JsonWriterOptions s_writerOptions = new JsonWriterOptions
     {
         SkipValidation = true,
     };
@@ -33,7 +33,7 @@ public sealed class ElasticsearchIndexMapConverter : JsonConverter<Elasticsearch
         var mappingProp = root.GetProperty(nameof(ElasticsearchIndexMap.Mapping));
 
         var mappingStream = new MemoryStream();
-        using (var writer = new Utf8JsonWriter(mappingStream, _writerOptions))
+        using (var writer = new Utf8JsonWriter(mappingStream, s_writerOptions))
         {
             mappingProp.WriteTo(writer);
         }

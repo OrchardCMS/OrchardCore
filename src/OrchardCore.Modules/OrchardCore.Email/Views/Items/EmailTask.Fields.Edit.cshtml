@@ -2,75 +2,95 @@
 @using OrchardCore.Email.Workflows.ViewModels
 @model EmailTaskViewModel
 
-<div class="mb-3" asp-validation-class-for="AuthorExpression">
-    <label asp-for="AuthorExpression" class="form-label">@T["From"]</label>
+<div class="ocat-wrapper" asp-validation-class-for="AuthorExpression">
+    <label asp-for="AuthorExpression" class="ocat-label">@T["From"]</label>
+    <div class="ocat-end">
     <input type="text" asp-for="AuthorExpression" class="form-control code" />
     <span asp-validation-for="AuthorExpression"></span>
     <span class="hint">@T["The author's email address that defines who the email is from. Leave blank to use the configured email address. With Liquid support."]</span>
+    </div>
 </div>
 
-<div class="mb-3" asp-validation-class-for="SenderExpression">
-    <label asp-for="SenderExpression" class="form-label">@T["Sender"]</label>
+<div class="ocat-wrapper" asp-validation-class-for="SenderExpression">
+    <label asp-for="SenderExpression" class="ocat-label">@T["Sender"]</label>
+    <div class="ocat-end">
     <input type="text" asp-for="SenderExpression" class="form-control code" />
     <span asp-validation-for="SenderExpression"></span>
     <span class="hint">@T["The sender's email address. Required if not the same than the \"From\" email address. With Liquid support."]</span>
+    </div>
 </div>
 
-<div class="mb-3" asp-validation-class-for="ReplyToExpression">
-    <label asp-for="SenderExpression" class="form-label">@T["ReplyTo"]</label>
+<div class="ocat-wrapper" asp-validation-class-for="ReplyToExpression">
+    <label asp-for="SenderExpression" class="ocat-label">@T["ReplyTo"]</label>
+    <div class="ocat-end">
     <input type="text" asp-for="ReplyToExpression" class="form-control code" />
     <span asp-validation-for="ReplyToExpression"></span>
     <span class="hint">@T["The \"reply to\" email address. Required if you want email replies be sent to a different address than the \"From\" address. With Liquid support."]</span>
+    </div>
 </div>
 
-<div class="mb-3" asp-validation-class-for="RecipientsExpression">
-    <label asp-for="RecipientsExpression" class="form-label">@T["Recipients"]</label>
+<div class="ocat-wrapper" asp-validation-class-for="RecipientsExpression">
+    <label asp-for="RecipientsExpression" class="ocat-label">@T["Recipients"]</label>
+    <div class="ocat-end">
     <input type="text" asp-for="RecipientsExpression" class="form-control code" />
     <span asp-validation-for="RecipientsExpression"></span>
     <span class="hint">@T["The comma-separated list of recipient email addresses. With Liquid support."]</span>
+    </div>
 </div>
 
-<div class="mb-3" asp-validation-class-for="CcExpression">
-    <label asp-for="CcExpression" class="form-label">@T["Cc"]</label>
+<div class="ocat-wrapper" asp-validation-class-for="CcExpression">
+    <label asp-for="CcExpression" class="ocat-label">@T["Cc"]</label>
+    <div class="ocat-end">
     <input type="text" asp-for="CcExpression" class="form-control code" />
     <span asp-validation-for="CcExpression"></span>
     <span class="hint">@T["The comma-separated list of carbon copy email addresses. With Liquid support."]</span>
+    </div>
 </div>
 
-<div class="mb-3" asp-validation-class-for="BccExpression">
-    <label asp-for="BccExpression" class="form-label">@T["Bcc"]</label>
+<div class="ocat-wrapper" asp-validation-class-for="BccExpression">
+    <label asp-for="BccExpression" class="ocat-label">@T["Bcc"]</label>
+    <div class="ocat-end">
     <input type="text" asp-for="BccExpression" class="form-control code" />
     <span asp-validation-for="BccExpression"></span>
     <span class="hint">@T["The comma-separated list of blind copy email addresses. With Liquid support."]</span>
+    </div>
 </div>
 
-<div class="mb-3" asp-validation-class-for="SubjectExpression">
-    <label asp-for="SubjectExpression" class="form-label">@T["Subject"]</label>
+<div class="ocat-wrapper" asp-validation-class-for="SubjectExpression">
+    <label asp-for="SubjectExpression" class="ocat-label">@T["Subject"]</label>
+    <div class="ocat-end">
     <input type="text" asp-for="SubjectExpression" class="form-control code" />
     <span asp-validation-for="SubjectExpression"></span>
     <span class="hint">@T["The subject of the email message. With Liquid support."]</span>
+    </div>
 </div>
 
-<div class="mb-3">
-    <label class="form-label">@T["Format"]</label>
+<div class="ocat-wrapper">
+    <label class="ocat-label">@T["Format"]</label>
+    <div class="ocat-end">
     <select class="form-select" asp-for="BodyFormat">
         <option selected="@(Model.BodyFormat == MailMessageBodyFormat.All)" value="@MailMessageBodyFormat.All">@T["All"]</option>
         <option selected="@(Model.BodyFormat == MailMessageBodyFormat.Text)" value="@MailMessageBodyFormat.Text">@T["Text"]</option>
         <option selected="@(Model.BodyFormat == MailMessageBodyFormat.Html)" value="@MailMessageBodyFormat.Html">@T["Html"]</option>
     </select>
     <span class="hint">@T["The format of the email message."]</span>
+    </div>
 </div>
 
-<div class="mb-3" id="textBodyDiv">
-    <label asp-for="TextBody" class="form-label">@T["Text Body"]</label>
+<div class="ocat-wrapper" id="textBodyDiv">
+    <label asp-for="TextBody" class="ocat-label">@T["Text Body"]</label>
+    <div class="ocat-end">
     <textarea asp-for="TextBody" rows="5" class="form-control"></textarea>
     <span class="hint">@T["The plain text body of the email message. With Liquid support."]</span>
+    </div>
 </div>
 
-<div class="mb-3" id="htmlBodyDiv">
-    <label asp-for="HtmlBody" class="form-label">@T["HTML Body"]</label>
+<div class="ocat-wrapper" id="htmlBodyDiv">
+    <label asp-for="HtmlBody" class="ocat-label">@T["HTML Body"]</label>
+    <div class="ocat-end">
     <textarea asp-for="HtmlBody" rows="5" class="form-control"></textarea>
     <span class="hint">@T["The HTML body of the email message. With Liquid support."]</span>
+    </div>
 </div>
 
 <style asp-name="codemirror"></style>
@@ -82,7 +102,15 @@
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
 <script at="Foot">
-    $(function () {
+    function onDocumentReady(callback) {
+        if (document.readyState !== 'loading') {
+            callback();
+        } else {
+            document.addEventListener('DOMContentLoaded', callback);
+        }
+    }
+
+    onDocumentReady(function () {
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.HtmlBody)'), {
             lineNumbers: true,
             styleActiveLine: true,
@@ -97,26 +125,49 @@
         });
         changeBodyFormat();
 
-        $('select').on('change', function () {
-            changeBodyFormat();
+        document.querySelectorAll('select').forEach(function (select) {
+            select.addEventListener('change', function () {
+                changeBodyFormat();
+            });
         });
     });
 
     function changeBodyFormat() {
-        var selectedValue = $('select').val();
+        var select = document.querySelector('select');
+
+        if (!select) {
+            return;
+        }
+
+        var selectedValue = select.value;
+        var textBodyDiv = document.getElementById('textBodyDiv');
+        var htmlBodyDiv = document.getElementById('htmlBodyDiv');
+
         switch (selectedValue) {
             case '@MailMessageBodyFormat.All':
-                $('#textBodyDiv').removeClass('d-none');
-                $('#htmlBodyDiv').removeClass('d-none');
+                removeClass(textBodyDiv, 'd-none');
+                removeClass(htmlBodyDiv, 'd-none');
                 break;
             case '@MailMessageBodyFormat.Text':
-                $('#textBodyDiv').removeClass('d-none');
-                $('#htmlBodyDiv').addClass('d-none');
+                removeClass(textBodyDiv, 'd-none');
+                addClass(htmlBodyDiv, 'd-none');
                 break;
             case '@MailMessageBodyFormat.Html':
-                $('#textBodyDiv').addClass('d-none');
-                $('#htmlBodyDiv').removeClass('d-none');
+                addClass(textBodyDiv, 'd-none');
+                removeClass(htmlBodyDiv, 'd-none');
                 break;
+        }
+    }
+
+    function addClass(element, className) {
+        if (element) {
+            element.classList.add(className);
+        }
+    }
+
+    function removeClass(element, className) {
+        if (element) {
+            element.classList.remove(className);
         }
     }
 </script>

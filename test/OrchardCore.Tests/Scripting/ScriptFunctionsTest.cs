@@ -7,7 +7,7 @@ namespace OrchardCore.Tests.Scripting;
 public class ScriptFunctionsTest
 {
     [Fact]
-    public async Task TheScriptingManagerShouldEvaluateAsyncGlobalMethods()
+    public async Task TheScriptingManager_Default_EvaluateAsyncGlobalMethods()
     {
         using var context = new SiteContext();
         await context.InitializeAsync();
@@ -16,7 +16,7 @@ public class ScriptFunctionsTest
             var syncMethodInvoked = false;
             var asyncMethod = new GlobalMethod
             {
-                Name = "getValueAsync",
+                Name = "getValue",
                 Method = sp => (Func<string>)(() =>
                 {
                     syncMethodInvoked = true;
@@ -30,15 +30,17 @@ public class ScriptFunctionsTest
             };
 
             var scriptingManager = scope.ServiceProvider.GetRequiredService<IScriptingManager>();
-            var result = await scriptingManager.EvaluateAsync("js:getValueAsync()", null, null, [new TestGlobalMethodProvider(asyncMethod)]);
 
-            Assert.Equal("async", result);
+            Assert.Equal("async", await scriptingManager.EvaluateAsync("js:getValueAsync()", null, null, [new TestGlobalMethodProvider(asyncMethod)]));
             Assert.False(syncMethodInvoked);
+
+            Assert.Equal("sync", await scriptingManager.EvaluateAsync("js:getValue()", null, null, [new TestGlobalMethodProvider(asyncMethod)]));
+            Assert.True(syncMethodInvoked);
         });
     }
 
     [Fact]
-    public async Task TheScriptingEngineShouldBeAbleToHandleJsonObject()
+    public async Task TheScriptingEngine_Default_BeAbleToHandleJsonObject()
     {
         using var context = new SiteContext();
         await context.InitializeAsync();

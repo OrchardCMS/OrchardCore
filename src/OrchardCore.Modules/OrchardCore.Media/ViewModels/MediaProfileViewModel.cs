@@ -17,6 +17,7 @@ public class MediaProfileViewModel
     public Format SelectedFormat { get; set; }
     public int Quality { get; set; } = 100;
     public string BackgroundColor { get; set; }
+    public bool AutoOrient { get; set; } = true;
 
     [BindNever]
     public List<SelectListItem> AvailableWidths { get; set; } = [];

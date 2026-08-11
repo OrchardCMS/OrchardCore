@@ -11,7 +11,7 @@ public static class ContentFieldAlternatesFactory
 {
     private const string DisplayToken = "_Display";
 
-    private static readonly ConcurrentDictionary<FieldAlternatesCacheKey, string[]> _cache = new();
+    private static readonly ConcurrentDictionary<FieldAlternatesCacheKey, string[]> s_cache = new();
 
     /// <summary>
     /// Gets or creates cached alternates for a content field configuration.
@@ -37,7 +37,7 @@ public static class ContentFieldAlternatesFactory
             shapeType,
             displayType ?? string.Empty);
 
-        return _cache.GetOrAdd(key, BuildAlternates);
+        return s_cache.GetOrAdd(key, BuildAlternates);
     }
 
     /// <summary>

@@ -12,7 +12,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId;
 public class OpenIdServerDeploymentSourceTests
 {
     [Fact]
-    public async Task ServerDeploymentSourceIsReadableByRecipe()
+    public async Task ServerDeploymentSourceIsReadableByRecipe_Default_Succeeds()
     {
         // Arrange
         var settings = CreateSettings("https://deploy.localhost", OpenIdServerSettings.TokenFormat.JsonWebToken, true);

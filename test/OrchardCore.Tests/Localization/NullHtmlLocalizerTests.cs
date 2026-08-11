@@ -15,7 +15,7 @@ public class HtmlStringLocalizerTests
     [InlineData("there are more (2) &lt;br/&gt;", 2, "there is one ({0}) {1}", "there are more ({0}) {1}", "<br/>")]
     [InlineData("1 minute ago", 1, "{0} minute ago", "{0} minutes ago")]
     [InlineData("20 minutes ago", 20, "{0} minute ago", "{0} minutes ago")]
-    public void HtmlNullLocalizerSupportsPlural(string expected, int count, string singular, string plural, params object[] arguments)
+    public void HtmlNullLocalizerSupportsPlural_Default_Succeeds(string expected, int count, string singular, string plural, params object[] arguments)
     {
         var localizer = NullHtmlLocalizer.Instance;
 

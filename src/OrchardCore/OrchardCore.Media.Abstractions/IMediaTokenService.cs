@@ -1,5 +1,3 @@
-using System.Collections.ObjectModel;
-
 namespace OrchardCore.Media;
 
 /// <summary>
@@ -9,5 +7,5 @@ namespace OrchardCore.Media;
 public interface IMediaTokenService
 {
     string AddTokenToPath(string path);
-    bool TryValidateToken(KeyedCollection<string, KeyValuePair<string, string>> commands, string token);
+    bool TryValidateToken(IEnumerable<KeyValuePair<string, string>> commands, string token);
 }

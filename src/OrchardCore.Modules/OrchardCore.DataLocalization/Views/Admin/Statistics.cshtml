@@ -74,14 +74,17 @@
 
     <!-- Progress by Category -->
     <fieldset class="mb-3">
-        <legend>
-            @T["Progress by Category"]
-            <select class="form-select form-select-sm d-inline-block ms-2" style="width: auto;" v-model="selectedCulture">
-                <option v-for="culture in stats.byCulture" :key="culture.culture" :value="culture.culture">
-                    {{ culture.displayName }}
-                </option>
-            </select>
-        </legend>
+        <legend>@T["Progress by Category"]</legend>
+        <div class="ocat-wrapper">
+            <label class="ocat-label" for="selected-culture">@T["Culture"]</label>
+            <div class="ocat-end">
+                <select id="selected-culture" class="form-select form-select-sm w-auto" v-model="selectedCulture">
+                    <option v-for="culture in stats.byCulture" :key="culture.culture" :value="culture.culture">
+                        {{ culture.displayName }}
+                    </option>
+                </select>
+            </div>
+        </div>
         <table class="table">
             <thead>
                 <tr>
@@ -121,8 +124,10 @@
     </fieldset>
 
     <!-- Action buttons -->
-    <div class="mb-3">
-        <a class="btn btn-primary" role="button" href="@Url.Action("Index", "Admin", new { area = "OrchardCore.DataLocalization" })">@T["Edit Translations"]</a>
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <a class="btn btn-primary" role="button" href="@Url.Action("Index", "Admin", new { area = "OrchardCore.DataLocalization" })">@T["Edit Translations"]</a>
+        </div>
     </div>
 </div>
 

@@ -13,14 +13,14 @@ public abstract class ActivityDisplayDriver<TActivity> : DisplayDriver<IActivity
 {
     protected static readonly string ActivityName = typeof(TActivity).Name;
 
-    private static readonly string _thumbnailShapeType = $"{ActivityName}_Fields_Thumbnail";
-    private static readonly string _designShapeType = $"{ActivityName}_Fields_Design";
+    private static readonly string s_thumbnailShapeType = $"{ActivityName}_Fields_Thumbnail";
+    private static readonly string s_designShapeType = $"{ActivityName}_Fields_Design";
 
     public override Task<IDisplayResult> DisplayAsync(TActivity activity, BuildDisplayContext context)
     {
         return CombineAsync(
-            Shape(_thumbnailShapeType, new ActivityViewModel<TActivity>(activity)).Location("Thumbnail", "Content"),
-            Shape(_designShapeType, new ActivityViewModel<TActivity>(activity)).Location("Design", "Content")
+            Shape(s_thumbnailShapeType, new ActivityViewModel<TActivity>(activity)).Location("Thumbnail", "Content"),
+            Shape(s_designShapeType, new ActivityViewModel<TActivity>(activity)).Location("Design", "Content")
         );
     }
 }
@@ -31,11 +31,11 @@ public abstract class ActivityDisplayDriver<TActivity> : DisplayDriver<IActivity
 public abstract class ActivityDisplayDriver<TActivity, TEditViewModel> : ActivityDisplayDriver<TActivity>
     where TActivity : class, IActivity where TEditViewModel : class, new()
 {
-    private static readonly string _editShapeType = $"{ActivityName}_Fields_Edit";
+    private static readonly string s_editShapeType = $"{ActivityName}_Fields_Edit";
 
     public override IDisplayResult Edit(TActivity activity, BuildEditorContext context)
     {
-        return Initialize<TEditViewModel>(_editShapeType, viewModel => EditActivityAsync(activity, viewModel))
+        return Initialize<TEditViewModel>(s_editShapeType, viewModel => EditActivityAsync(activity, viewModel))
             .Location("Content");
     }
 

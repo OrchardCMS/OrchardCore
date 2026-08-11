@@ -5,13 +5,13 @@ using OrchardCore.Modules;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.ViewModels;
 using YesSql;
-using YesSql.Filters.Abstractions.Nodes;
+using YesSql.Filters.Nodes;
 
 namespace OrchardCore.Users.Services;
 
 public sealed class DefaultUsersAdminListQueryService : IUsersAdminListQueryService
 {
-    private static readonly string[] _operators = ["OR", "AND", "||", "&&"];
+    private static readonly string[] s_operators = ["OR", "AND", "||", "&&"];
 
     private readonly ISession _session;
     private readonly IServiceProvider _serviceProvider;
@@ -45,7 +45,7 @@ public sealed class DefaultUsersAdminListQueryService : IUsersAdminListQueryServ
         {
             var value = defaultTermNode.ToString();
             if (_userAdminListFilterOptions.UseExactMatch
-                && !_operators.Any(op => value.Contains(op, StringComparison.Ordinal)))
+                && !s_operators.Any(op => value.Contains(op, StringComparison.Ordinal)))
             {
                 // Use an unary operator based on a full quoted string.
                 defaultOperator = new UnaryNode(value.Trim('"'), OperateNodeQuotes.Double);

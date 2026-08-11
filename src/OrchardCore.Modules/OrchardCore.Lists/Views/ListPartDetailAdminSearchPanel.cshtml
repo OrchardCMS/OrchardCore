@@ -11,11 +11,11 @@
        : "dropdown-menu";
 }
 
-<form>
-    <div class="card text-bg-theme mb-3 position-sticky action-bar">
-        <div class="card-body">
-            <div class="row gx-3">
-                <div class="col">
+<div class="card text-bg-theme mb-3 position-sticky action-bar">
+    <div class="card-body">
+        <div class="row gx-3">
+            <div class="col">
+                <form>
                     <div class="input-group has-filter">
                         <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fa-solid fa-filter" title="@T["Filters"]" aria-hidden="true"></i>
@@ -30,8 +30,8 @@
                         <input name="@nameof(ListPartFilterViewModel.Status)" value="@Model.ListPartFilterViewModel.Status" class="form-control" type="hidden" />
                         <input name="@nameof(ListPartFilterViewModel.DisplayText)" value="@Model.ListPartFilterViewModel.DisplayText" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     </div>
-</form>
+</div>

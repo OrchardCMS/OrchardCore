@@ -1,6 +1,13 @@
+@using OrchardCore.Workflows.Models
 @model ActivityViewModel<SetOutputTask>
+
+@{
+    var expression = Model.Activity.Syntax == WorkflowScriptSyntax.Liquid
+        ? Model.Activity.LiquidValue?.Expression
+        : Model.Activity.Value?.Expression;
+}
 
 <header>
     <h4><i class="fa-solid fa-plug" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Output via {0}", Model.Activity.OutputName])</h4>
 </header>
-<span><em>@Model.Activity.OutputName</em> = <em>@Model.Activity.Value</em></span>
+<span><em>@Model.Activity.OutputName</em> = <em>@expression</em></span>

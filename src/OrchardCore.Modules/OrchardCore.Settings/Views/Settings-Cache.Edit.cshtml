@@ -1,10 +1,14 @@
 @model SiteSettingsViewModel
 
-<h5>@T["Settings for dynamic caches"]</h5>
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <h5 class="mb-0">@T["Settings for dynamic caches"]</h5>
+    </div>
+</div>
 
-<div class="mb-3">
-    <div class="col-xl-6" asp-validation-class-for="CacheMode">
-        <label asp-for="CacheMode" class="form-label">@T["Cache Mode"]</label>
+<div class="ocat-limited-wrapper" asp-validation-class-for="CacheMode">
+    <label asp-for="CacheMode" class="ocat-label">@T["Cache Mode"]</label>
+    <div class="ocat-limited">
         <select asp-for="CacheMode" class="form-select">
             <option value="@CacheMode.FromConfiguration.ToString()">@T["From environment — enabled in Production, disabled otherwise"]</option>
             <option value="@CacheMode.Enabled.ToString()">@T["Enabled"]</option>

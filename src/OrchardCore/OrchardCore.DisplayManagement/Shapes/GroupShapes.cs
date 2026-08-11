@@ -11,8 +11,7 @@ namespace OrchardCore.DisplayManagement.Shapes;
 public class GroupShapes : IShapeAttributeProvider
 {
     [Shape]
-#pragma warning disable CA1822 // Mark members as static
-    public IHtmlContent AdminTabs(IShape shape)
+    public static IHtmlContent AdminTabs(IShape shape)
     {
         var tabsGrouping = shape.GetProperty<IList<IGrouping<string, object>>>("Tabs");
         if (tabsGrouping == null)
@@ -68,7 +67,7 @@ public class GroupShapes : IShapeAttributeProvider
     }
 
     [Shape]
-    public async Task<IHtmlContent> Card(IDisplayHelper displayAsync, GroupingViewModel shape)
+    public static async Task<IHtmlContent> Card(IDisplayHelper displayAsync, GroupingViewModel shape)
     {
         var tagBuilder = shape.GetTagBuilder("div");
         tagBuilder.AddCssClass("card-body");
@@ -117,7 +116,7 @@ public class GroupShapes : IShapeAttributeProvider
     }
 
     [Shape]
-    public async Task<IHtmlContent> CardContainer(IDisplayHelper displayAsync, GroupViewModel shape)
+    public static async Task<IHtmlContent> CardContainer(IDisplayHelper displayAsync, GroupViewModel shape)
     {
         var tagBuilder = shape.GetTagBuilder("div");
         tagBuilder.AddCssClass("mb-3");
@@ -131,7 +130,7 @@ public class GroupShapes : IShapeAttributeProvider
     }
 
     [Shape]
-    public async Task<IHtmlContent> Column(IDisplayHelper displayAsync, GroupViewModel shape)
+    public static async Task<IHtmlContent> Column(IDisplayHelper displayAsync, GroupViewModel shape)
     {
         var tagBuilder = shape.GetTagBuilder("div");
         foreach (var column in shape.Items)
@@ -143,7 +142,7 @@ public class GroupShapes : IShapeAttributeProvider
     }
 
     [Shape]
-    public async Task<IHtmlContent> ColumnContainer(IDisplayHelper displayAsync, GroupViewModel shape)
+    public static async Task<IHtmlContent> ColumnContainer(IDisplayHelper displayAsync, GroupViewModel shape)
     {
         var tagBuilder = shape.GetTagBuilder("div");
         tagBuilder.AddCssClass("row");
@@ -157,7 +156,7 @@ public class GroupShapes : IShapeAttributeProvider
     }
 
     [Shape]
-    public async Task<IHtmlContent> Tab(IDisplayHelper displayAsync, GroupingViewModel shape)
+    public static async Task<IHtmlContent> Tab(IDisplayHelper displayAsync, GroupingViewModel shape)
     {
         var tagBuilder = shape.GetTagBuilder("div");
         tagBuilder.Attributes["id"] = $"tab-{shape.Grouping.Key}-{shape.Identifier}".HtmlClassify();
@@ -173,7 +172,7 @@ public class GroupShapes : IShapeAttributeProvider
     }
 
     [Shape]
-    public async Task<IHtmlContent> TabContainer(IDisplayHelper displayAsync, GroupingsViewModel shape, IShapeFactory shapeFactory)
+    public static async Task<IHtmlContent> TabContainer(IDisplayHelper displayAsync, GroupingsViewModel shape, IShapeFactory shapeFactory)
     {
         var localNavigation = await shapeFactory.CreateAsync("LocalNavigation", Arguments.From(new LocalNavigationArguments
         {
@@ -205,7 +204,7 @@ public class GroupShapes : IShapeAttributeProvider
     }
 
     [Shape]
-    public Task<IHtmlContent> LocalNavigation(IDisplayHelper displayAsync, IShape shape)
+    public static Task<IHtmlContent> LocalNavigation(IDisplayHelper displayAsync, IShape shape)
     {
         // Morphing this shape to keep Model untouched.
         shape.Metadata.Alternates.Clear();
@@ -213,7 +212,6 @@ public class GroupShapes : IShapeAttributeProvider
 
         return displayAsync.ShapeExecuteAsync(shape);
     }
-#pragma warning restore CA1822 // Mark members as static
 }
 
 [GenerateArguments]

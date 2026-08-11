@@ -37,10 +37,12 @@ var shape = await shapeFactory.CreateAsync("MyShape", args);
 ```
 
 **Requirements:**
+
 - The class must be marked as `partial`
 - At least one public instance property with a getter
 
 **Benefits:**
+
 - ✅ **No reflection** - Direct property access via switch expressions
 - ✅ **Compile-time code generation** - Errors caught at build time
 - ✅ **Lazy evaluation** - Properties accessed on-demand
@@ -60,6 +62,7 @@ var shape = await factory.CreateAsync("MyShape", new
 ```
 
 **Requirements:**
+
 - .NET 9.0 or later
 - C# 13 or later
 
@@ -75,6 +78,43 @@ var args = Arguments.From(new { Title = "Test", Count = 5 });
 ```
 
 This is suitable for prototyping or infrequent usage where performance isn't critical.
+
+## Build-Time Analyzers
+
+`OrchardCore.SourceGenerators` also ships analyzers that catch invalid OrchardCore shape patterns during build.
+
+### OCSG001: Sealed types can't be used as proxy-based shapes
+
+OrchardCore creates strongly typed shapes by subclassing the model type with Castle DynamicProxy. If a view model used with proxy-based shape APIs is `sealed` and does not implement `IShape`, the proxy cannot be generated and shape creation fails at runtime.
+
+!!! note
+    `OCSG` stands for `OrchardCore Source Generators`.
+
+The `OCSG001` analyzer makes this discoverable at build time for APIs such as `Initialize<TModel>(...)` and proxy-based `CreateAsync<TModel>(...)` overloads.
+
+```csharp
+public sealed class DebugSettingsViewModel
+{
+    public bool WriteShapeDebugInformation { get; set; }
+}
+
+return Initialize<DebugSettingsViewModel>("DebugSettings_Edit", model =>
+{
+    model.WriteShapeDebugInformation = settings.WriteShapeDebugInformation;
+});
+```
+
+This produces a build warning similar to:
+
+```text
+warning OCSG001: Type 'DebugSettingsViewModel' is sealed and does not implement IShape, so OrchardCore can't create a proxy-based shape for this 'Initialize' call
+```
+
+**Ways to fix it:**
+
+- Remove the `sealed` modifier from the shape model.
+- Implement `IShape` on the model if it is intentionally a shape type.
+- Use a non-proxy pattern such as `View(...)`, `Copy(...)`, or `Dynamic(...)` when a proxy-backed shape is not required.
 
 
 ## Real-World Examples
@@ -146,6 +186,7 @@ public partial class MyData : PropertyBasedNamedEnumerable
 ```
 
 **Key Features:**
+
 - Extends `PropertyBasedNamedEnumerable` helper class that implements all `INamedEnumerable<object>` logic
 - Properties accessed directly via switch expression (no reflection)
 - Property names stored as static array
@@ -176,6 +217,7 @@ var shape = await factory.CreateAsync("MyShape", args);
 ```
 
 ### Benefits of Migration
+
 - ✅ **Better IntelliSense** - Strongly typed arguments with autocomplete
 - ✅ **Compile-time safety** - Typos caught at build time
 - ✅ **Reusability** - Named types can be reused across multiple shapes
@@ -204,6 +246,7 @@ return Arguments.From(
 ```
 
 This clever trick:
+
 1. Creates a "shape" instance with default values
 2. Compiler infers the anonymous type from the shape
 3. Casts the parameter to that type
@@ -232,6 +275,7 @@ obj/Debug/net10.0/generated/
 ### PropertyBasedNamedEnumerable Helper Class
 
 Generated classes extend this abstract base class which:
+
 - Implements all `INamedEnumerable<object>` members
 - Uses linear search for property lookups (simple and efficient for typical 2-15 properties)
 - Handles enumeration and collection operations
@@ -262,6 +306,7 @@ public bool TryGetValue(string key, out object value)
 **Why linear search?**
 
 For typical OrchardCore shape arguments (2-15 properties):
+
 - **Simplicity** - Easy to understand and maintain
 - **No allocation overhead** - No dictionary initialization unless needed
 - **Good cache locality** - Sequential memory access
@@ -333,6 +378,7 @@ Production code with reusable types?
 Generates `INamedEnumerable<object>` implementations for types marked with `[GenerateArguments]`.
 
 **What it generates:**
+
 - Extends `PropertyBasedNamedEnumerable` base class
 - Static property names array
 - Property count override
@@ -351,6 +397,14 @@ Intercepts `Arguments.From(anonymousType)` calls and optimizes them using type i
 **Status:** ✅ Stable (.NET 9+)
 
 **Generated Code Size:** ~20 lines per call site
+
+### SealedShapeTypeAnalyzer
+
+Reports `OCSG001` when a sealed non-`IShape` model is passed to OrchardCore APIs that create proxy-based strongly typed shapes.
+
+**Status:** ✅ Stable
+
+**Purpose:** Catch runtime Castle DynamicProxy failures at build time
 
 ## Advanced Usage
 

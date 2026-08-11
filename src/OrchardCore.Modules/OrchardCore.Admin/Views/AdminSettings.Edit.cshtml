@@ -1,33 +1,41 @@
 @model OrchardCore.Admin.ViewModels.AdminSettingsViewModel
 
-<fieldset class="mb-3" asp-validation-class-for="DisplayThemeToggler">
-    <div class="form-check">
-        <input asp-for="DisplayThemeToggler" class="form-check-input" type="checkbox" />
-        <label asp-for="DisplayThemeToggler" class="form-check-label">@T["Enable theme toggler"]</label>
+<div class="ocat-wrapper" asp-validation-class-for="DisplayThemeToggler">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input asp-for="DisplayThemeToggler" class="form-check-input" type="checkbox" />
+            <label asp-for="DisplayThemeToggler" class="form-check-label">@T["Enable theme toggler"]</label>
+        </div>
+        <span class="hint">@T["Whether or not to display a theme toggler."]</span>
     </div>
-    <span class="hint">@T["Whether or not to display a theme toggler."]</span>
-</fieldset>
+</div>
 
-<fieldset class="mb-3" asp-validation-class-for="DisplayMenuFilter">
-    <div class="form-check">
-        <input asp-for="DisplayMenuFilter" class="form-check-input" type="checkbox" />
-        <label asp-for="DisplayMenuFilter" class="form-check-label">@T["Enable Admin Menu filter"]</label>
+<div class="ocat-wrapper" asp-validation-class-for="DisplayMenuFilter">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input asp-for="DisplayMenuFilter" class="form-check-input" type="checkbox" />
+            <label asp-for="DisplayMenuFilter" class="form-check-label">@T["Enable Admin Menu filter"]</label>
+        </div>
+        <span class="hint">@T["Whether a quick search to filter the admin menu is displayed."]</span>
     </div>
-    <span class="hint">@T["Whether a quick search to filter the admin menu is displayed."]</span>
-</fieldset>
+</div>
 
-<fieldset class="mb-3" asp-validation-class-for="DisplayNewMenu">
-    <div class="form-check">
-        <input asp-for="DisplayNewMenu" class="form-check-input" type="checkbox" />
-        <label asp-for="DisplayNewMenu" class="form-check-label">@T["Display New menu"]</label>
+<div class="ocat-wrapper" asp-validation-class-for="DisplayNewMenu">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input asp-for="DisplayNewMenu" class="form-check-input" type="checkbox" />
+            <label asp-for="DisplayNewMenu" class="form-check-label">@T["Display New menu"]</label>
+        </div>
+        <span class="hint">@T["Whether a New menu is displayed in the admin menu."]</span>
     </div>
-    <span class="hint">@T["Whether a New menu is displayed in the admin menu."]</span>
-</fieldset>
+</div>
 
-<fieldset class="mb-3" asp-validation-class-for="DisplayTitlesInTopbar">
-    <div class="form-check">
-        <input asp-for="DisplayTitlesInTopbar" class="form-check-input" type="checkbox" />
-        <label asp-for="DisplayTitlesInTopbar" class="form-check-label">@T["Display titles in top bar"]</label>
+<div class="ocat-wrapper" asp-validation-class-for="DisplayTitlesInTopbar">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input asp-for="DisplayTitlesInTopbar" class="form-check-input" type="checkbox" />
+            <label asp-for="DisplayTitlesInTopbar" class="form-check-label">@T["Display titles in top bar"]</label>
+        </div>
+        <span class="hint">@T["Whether the titles are displayed in the top bar."]</span>
     </div>
-    <span class="hint">@T["Whether the titles are displayed in the top bar."]</span>
-</fieldset>
+</div>

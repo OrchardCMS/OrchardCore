@@ -15,8 +15,10 @@ public static class EmailServiceExtensions
     /// <param name="subject">The email subject.</param>
     /// <param name="htmlBody">An optional email body in HTML format.</param>
     /// <param name="textBody">An optional email body in Text format.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A <see cref="Result"/> describing whether the email was sent successfully.</returns>
     /// <exception cref="System.ArgumentException"></exception>
-    public static Task<Result> SendAsync(this IEmailService emailService, string to, string subject, string htmlBody, string textBody)
+    public static Task<Result> SendAsync(this IEmailService emailService, string to, string subject, string htmlBody, string textBody, CancellationToken cancellationToken = default)
     {
         var message = new MailMessage
         {
@@ -26,7 +28,7 @@ public static class EmailServiceExtensions
             TextBody = textBody,
         };
 
-        return emailService.SendAsync(message);
+        return emailService.SendAsync(message, providerName: null, cancellationToken);
     }
 
     /// <summary>
@@ -37,8 +39,10 @@ public static class EmailServiceExtensions
     /// <param name="subject">The email subject.</param>
     /// <param name="body">The email body.</param>
     /// <param name="isHtmlBody">Whether the <paramref name="body"/> is in HTML format or not. Defaults to <c>true</c>.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A <see cref="Result"/> describing whether the email was sent successfully.</returns>
     /// <exception cref="ArgumentException"></exception>
-    public static async Task<Result> SendAsync(this IEmailService emailService, string to, string subject, string body, bool isHtmlBody = true)
+    public static async Task<Result> SendAsync(this IEmailService emailService, string to, string subject, string body, bool isHtmlBody = true, CancellationToken cancellationToken = default)
     {
         string htmlBody = default;
         string textBody = default;
@@ -51,6 +55,6 @@ public static class EmailServiceExtensions
             textBody = body;
         }
 
-        return await emailService.SendAsync(to, subject, htmlBody, textBody);
+        return await emailService.SendAsync(to, subject, htmlBody, textBody, cancellationToken);
     }
 }

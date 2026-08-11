@@ -27,6 +27,7 @@ public class NotifyEntryConverter : JsonConverter<NotifyEntry>
         var notifyEntry = new NotifyEntry
         {
             Message = new HtmlString(jo.Value<string>("Message")),
+            DismissalMilliseconds = jo[nameof(NotifyEntry.DismissalMilliseconds)]?.GetValue<int?>(),
         };
 
         if (Enum.TryParse<NotifyType>(jo.Value<string>("Type"), out var type))
@@ -50,6 +51,11 @@ public class NotifyEntryConverter : JsonConverter<NotifyEntry>
             { nameof(NotifyEntry.Type), notifyEntry.Type.ToString() },
             { nameof(NotifyEntry.Message), notifyEntry.ToHtmlString(_htmlEncoder) },
         };
+
+        if (notifyEntry.DismissalMilliseconds.HasValue)
+        {
+            o[nameof(NotifyEntry.DismissalMilliseconds)] = notifyEntry.DismissalMilliseconds.Value;
+        }
 
         o.WriteTo(writer);
     }

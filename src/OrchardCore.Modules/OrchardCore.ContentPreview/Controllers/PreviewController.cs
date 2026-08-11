@@ -1,10 +1,13 @@
 using System.Diagnostics;
+using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Extensions.Caching.Distributed;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
+using OrchardCore.ContentPreview.Models;
 using OrchardCore.Contents;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Modules;
@@ -13,12 +16,18 @@ namespace OrchardCore.ContentPreview.Controllers;
 
 public sealed class PreviewController : Controller
 {
+    private static readonly DistributedCacheEntryOptions _draftCacheOptions = new()
+    {
+        SlidingExpiration = TimeSpan.FromMinutes(5),
+    };
+
     private readonly IContentManager _contentManager;
     private readonly IContentManagerSession _contentManagerSession;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly IClock _clock;
     private readonly IUpdateModelAccessor _updateModelAccessor;
+    private readonly IDistributedCache _distributedCache;
 
     public PreviewController(
         IContentManager contentManager,
@@ -26,7 +35,8 @@ public sealed class PreviewController : Controller
         IContentManagerSession contentManagerSession,
         IAuthorizationService authorizationService,
         IClock clock,
-        IUpdateModelAccessor updateModelAccessor)
+        IUpdateModelAccessor updateModelAccessor,
+        IDistributedCache distributedCache)
     {
         _authorizationService = authorizationService;
         _clock = clock;
@@ -34,6 +44,7 @@ public sealed class PreviewController : Controller
         _contentManager = contentManager;
         _contentManagerSession = contentManagerSession;
         _updateModelAccessor = updateModelAccessor;
+        _distributedCache = distributedCache;
     }
 
     public IActionResult Index()
@@ -42,7 +53,7 @@ public sealed class PreviewController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Render()
+    public async Task<IActionResult> Draft()
     {
         if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PreviewContent))
         {
@@ -50,7 +61,7 @@ public sealed class PreviewController : Controller
         }
 
         // Mark request as a `Preview` request so that drivers / handlers or underlying services can be aware of an active preview mode.
-        HttpContext.Features.Set(new ContentPreviewFeature());
+        HttpContext.Features.Set(ContentPreviewFeature.Instance);
 
         var contentItemType = Request.Form["ContentItemType"];
         var contentItem = await _contentManager.NewAsync(contentItemType);
@@ -89,29 +100,84 @@ public sealed class PreviewController : Controller
                 }
             }
 
-            return this.InternalServerError(new { errors });
+            return UnprocessableEntity(new { errors });
         }
 
         var previewAspect = await _contentManager.PopulateAspectAsync(contentItem, new PreviewAspect());
+        var previewUrl = previewAspect.PreviewUrl;
 
-        if (!string.IsNullOrEmpty(previewAspect.PreviewUrl))
+        if (!string.IsNullOrEmpty(previewUrl) && !previewUrl.StartsWith('/'))
         {
-            // The PreviewPart is configured, we need to set the fake content item.
-            _contentManagerSession.Store(contentItem);
+            previewUrl = "/" + previewUrl;
+        }
 
-            if (!previewAspect.PreviewUrl.StartsWith('/'))
-            {
-                previewAspect.PreviewUrl = "/" + previewAspect.PreviewUrl;
-            }
+        // Cache the draft so the Display action can restore it. For content types with a
+        // configured preview URL, PreviewStartupFilter will serve the real frontend page
+        // (full theme, scripts, data-tenant, etc.). For types without one, Display renders
+        // the shape through the MVC pipeline so _Layout.cshtml is applied correctly.
+        //
+        // Reuse the caller's token when provided so the preview URL stays stable across
+        // saves — this prevents the preview window from losing its BroadcastChannel
+        // connection and keeps the token alive via sliding expiration.
+        var existingToken = (string)Request.Form["PreviewToken"];
+        var token = string.IsNullOrEmpty(existingToken) ? Guid.NewGuid().ToString("N") : existingToken;
+        var draft = new PreviewDraft { ContentItem = contentItem, PreviewUrl = previewUrl };
 
-            Request.HttpContext.Items["PreviewPath"] = previewAspect.PreviewUrl;
+        await _distributedCache.SetAsync(
+            "contentpreview:" + token,
+            JsonSerializer.SerializeToUtf8Bytes(draft, JOptions.Default),
+            _draftCacheOptions);
 
+        return Ok(new { previewUrl = Url.Action("Display", "Preview", new { area = "OrchardCore.ContentPreview", token }), token });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Display(string token)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PreviewContent))
+        {
+            return this.ChallengeOrForbid();
+        }
+
+        var cached = await _distributedCache.GetAsync("contentpreview:" + token);
+        if (cached == null)
+        {
+            return NotFound();
+        }
+
+        PreviewDraft draft;
+        try
+        {
+            draft = JsonSerializer.Deserialize<PreviewDraft>(cached, JOptions.Default);
+        }
+        catch
+        {
+            return NotFound();
+        }
+
+        var contentItem = draft?.ContentItem;
+        if (contentItem == null)
+        {
+            return NotFound();
+        }
+
+        // Mark request as a `Preview` request so that drivers / handlers or underlying services can be aware of an active preview mode.
+        HttpContext.Features.Set(ContentPreviewFeature.Instance);
+
+        // The PreviewPart is configured, we need to set the fake content item.
+        _contentManagerSession.Store(contentItem);
+
+        if (!string.IsNullOrEmpty(draft.PreviewUrl))
+        {
+            // PreviewStartupFilter will intercept this after the pipeline and re-execute
+            // the pipeline with Request.Path set to the configured preview URL, rendering
+            // the actual content page with the draft content item in session.
+            Request.HttpContext.Items["PreviewPath"] = draft.PreviewUrl;
             return Ok();
         }
 
         var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.Detail);
-
-        return View(model);
+        return View("Render", model);
     }
 }
 

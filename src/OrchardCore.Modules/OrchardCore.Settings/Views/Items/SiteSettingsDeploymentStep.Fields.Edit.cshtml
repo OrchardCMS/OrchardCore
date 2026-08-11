@@ -5,32 +5,38 @@
     var settings = Model.Settings;
     var ignoredProperties = new HashSet<string> { "Identifier", "Properties" };
 }
-<h5>@T["Site Settings"]</h5>
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <h5>@T["Site Settings"]</h5>
+        <span class="hint">@T["The site settings to add as part of the plan."]</span>
+    </div>
+</div>
 
-<div class="mb-3">
-    <span class="hint">@T["The site settings to add as part of the plan."]</span>
-    <ul class="list-group w-sm-75 w-lg-75 w-xl-50">
-        @foreach (var setting in typeof(SiteSettings).GetProperties(BindingFlags.Public | BindingFlags.Instance))
-        {
-            if (setting.GetCustomAttributes(false).OfType<JsonIgnoreAttribute>().Any())
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <ul class="list-group">
+            @foreach (var setting in typeof(SiteSettings).GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
-                continue;
+                if (setting.GetCustomAttributes(false).OfType<JsonIgnoreAttribute>().Any())
+                {
+                    continue;
+                }
+
+                if (ignoredProperties.Contains(setting.Name))
+                {
+                    continue;
+                }
+
+                var name = setting.Name;
+                var isChecked = settings?.Contains(name);
+
+                <li class="list-group-item">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="@(Html.IdFor(m => m.Settings) + "-" + @name)" name="@Html.NameFor(m => m.Settings)" value="@name" checked="@isChecked">
+                        <label class="form-check-label" for="@(Html.IdFor(m => m.Settings) + "-" + @name)">@name</label>
+                    </div>
+                </li>
             }
-
-            if (ignoredProperties.Contains(setting.Name))
-            {
-                continue;
-            }
-
-            var name = setting.Name;
-            var isChecked = settings?.Contains(name);
-
-            <li class="list-group-item">
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="@(Html.IdFor(m => m.Settings) + "-" + @name)" name="@Html.NameFor(m => m.Settings)" value="@name" checked="@isChecked">
-                    <label class="form-check-label" for="@(Html.IdFor(m => m.Settings) + "-" + @name)">@name</label>
-                </div>
-            </li>
-        }
-    </ul>
+        </ul>
+    </div>
 </div>

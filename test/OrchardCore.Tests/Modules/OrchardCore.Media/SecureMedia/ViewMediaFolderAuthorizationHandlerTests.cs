@@ -32,7 +32,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
     [InlineData("ManageMediaFolder", "/")]
     [InlineData("ManageMediaFolder", "filename.png")]
     [InlineData("ManageMediaFolder", "/filename.png")]
-    public async Task GrantsRootViewPermission(string permission, string resource)
+    public async Task GrantsRootViewPermission_Default_Succeeds(string permission, string resource)
     {
         // Arrange
         var handler = CreateHandler();
@@ -74,7 +74,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
     [InlineData("ViewRootMediaContent", "/" + MediafieldsFolder)]
     [InlineData("ViewRootMediaContent", MediafieldsFolder + "/filename.png")]
     [InlineData("ViewRootMediaContent", "/" + MediafieldsFolder + "/filename.png")]
-    public async Task DoesNotGrantRootViewPermission(string permission, string resource)
+    public async Task DoesNotGrantRootViewPermission_Default_Succeeds(string permission, string resource)
     {
         // Arrange
         var handler = CreateHandler();
@@ -106,7 +106,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
 
     [InlineData("ManageMediaFolder", "non-existent-folder")]
     [InlineData("ManageMediaFolder", "non-existent-folder/filename.png")]
-    public async Task GrantsAllFoldersViewPermission(string permission, string resource)
+    public async Task GrantsAllFoldersViewPermission_Default_Succeeds(string permission, string resource)
     {
         // Arrange
         var handler = CreateHandler();
@@ -127,7 +127,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
     [InlineData("ViewMediaContent", UsersFolder + "/filename.png")]
     [InlineData("ViewMediaContent", MediafieldsFolder)]
     [InlineData("ViewMediaContent", MediafieldsFolder + "/filename.png")]
-    public async Task DoesNotGrantSpecialFoldersViewPermission(string permission, string resource)
+    public async Task DoesNotGrantSpecialFoldersViewPermission_Default_Succeeds(string permission, string resource)
     {
         // Arrange
         var handler = CreateHandler();
@@ -145,7 +145,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
     [InlineData("ViewMediaContent_folder", "folder/filename.png")]
     [InlineData("ViewMediaContent_folder", "/folder")]
     [InlineData("ViewMediaContent_folder", "/folder/filename.png")]
-    public async Task GrantsFolderViewPermission(string permission, string resource)
+    public async Task GrantsFolderViewPermission_Default_Succeeds(string permission, string resource)
     {
         // Arrange
         var handler = CreateHandler();
@@ -179,7 +179,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
 
     [InlineData("ViewMediaContent_folder", MediafieldsFolder)]
     [InlineData("ViewMediaContent_folder", MediafieldsFolder + "/filename.png")]
-    public async Task DoesNotGrantFolderViewPermission(string permission, string resource)
+    public async Task DoesNotGrantFolderViewPermission_Default_Succeeds(string permission, string resource)
     {
         // Arrange
         var handler = CreateHandler();
@@ -197,7 +197,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
     [Theory]
     [InlineData("ViewContent", MediafieldsFolder + "/content-type/content-item-id")]
     [InlineData("ViewContent", MediafieldsFolder + "/content-type/content-item-id" + "/filename.png")]
-    public async Task GrantsMediafieldsFolderViewPermission(string permission, string resource)
+    public async Task GrantsMediafieldsFolderViewPermission_Default_Succeeds(string permission, string resource)
     {
         // Arrange
         var handler = CreateHandler();
@@ -219,7 +219,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
 
     [InlineData("ManageMediaFolder", MediafieldsFolder)]
     [InlineData("ManageMediaFolder", MediafieldsFolder + "/filename.png")]
-    public async Task DoesNotGrantMediafieldsFolderViewPermission(string permission, string resource)
+    public async Task DoesNotGrantMediafieldsFolderViewPermission_Default_Succeeds(string permission, string resource)
     {
         // Arrange
         var handler = CreateHandler();
@@ -240,7 +240,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
 
     [InlineData("ViewOwnMediaContent", MediafieldsFolder + "/temp/user-folder/")]
     [InlineData("ViewOwnMediaContent", MediafieldsFolder + "/temp/user-folder/filename.png")]
-    public async Task GrantsOwnUserFolderViewPermission(string permission, string resource)
+    public async Task GrantsOwnUserFolderViewPermission_Default_Succeeds(string permission, string resource)
     {
         // Arrange
         var handler = CreateHandler();
@@ -259,7 +259,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
 
     [InlineData("ViewOwnMediaContent", MediafieldsFolder + "/temp/other-user-folder/")]
     [InlineData("ViewOwnMediaContent", MediafieldsFolder + "/temp/other-user-folder/filename.png")]
-    public async Task DoesNotGrantOwnUserFolderViewPermission(string permission, string resource)
+    public async Task DoesNotGrantOwnUserFolderViewPermission_Default_Succeeds(string permission, string resource)
     {
         // Arrange
         var handler = CreateHandler();
@@ -284,11 +284,91 @@ public class ViewMediaFolderAuthorizationHandlerTests
 
     [InlineData("ViewOthersMediaContent", MediafieldsFolder + "/temp/other-user-folder/")]
     [InlineData("ViewOthersMediaContent", MediafieldsFolder + "/temp/other-user-folder/filename.png")]
-    public async Task GrantsOtherUserFolderViewPermission(string permission, string resource)
+    public async Task GrantsOtherUserFolderViewPermission_Default_Succeeds(string permission, string resource)
     {
         // Arrange
         var handler = CreateHandler();
         var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(MediaPermissions.ViewMedia, [permission], true, resource);
+
+        // Act
+        await handler.HandleAsync(context);
+
+        // Assert
+        Assert.True(context.HasSucceeded);
+    }
+
+    // Path traversal tests
+
+    [Theory]
+    [InlineData(UsersFolder + "/user-folder/../other-user-folder/victim-private.svg", false)]
+    [InlineData(UsersFolder + "/user-folder/../user-folder/own-private.svg", true)]
+    [InlineData(UsersFolder + "/user-folder/%2e%2e/other-user-folder/victim-private.svg", false)]
+    [InlineData(UsersFolder + "/user-folder/%2e%2e/user-folder/own-private.svg", true)]
+    public async Task OwnMediaPermissionFollowsResolvedPath(string resource, bool shouldSucceed)
+    {
+        // Arrange
+        var handler = CreateHandler();
+        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(
+            MediaPermissions.ViewMedia,
+            ["ViewOwnMediaContent"],
+            authenticated: true,
+            resource);
+
+        // Act
+        await handler.HandleAsync(context);
+
+        // Assert
+        Assert.Equal(shouldSucceed, context.HasSucceeded);
+    }
+
+    [Fact]
+    public async Task OthersMediaPermissionAllowsResolvedTraversalTarget()
+    {
+        // Arrange
+        var handler = CreateHandler();
+        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(
+            MediaPermissions.ViewMedia,
+            ["ViewOthersMediaContent"],
+            authenticated: true,
+            "_users/user-folder/../other-user-folder/victim-private.svg");
+
+        // Act
+        await handler.HandleAsync(context);
+
+        // Assert
+        Assert.True(context.HasSucceeded);
+    }
+
+    [Theory]
+    [InlineData(UsersFolder + "/user-folder/new-folder/new-file.svg", true)]
+    [InlineData(UsersFolder + "/user-folder/../other-user-folder/new-file.svg", false)]
+    public async Task OwnMediaPermissionForNonExistingTargetsUsesResolvedAncestor(string resource, bool shouldSucceed)
+    {
+        // Arrange
+        var handler = CreateHandler();
+        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(
+            MediaPermissions.ViewMedia,
+            ["ViewOwnMediaContent"],
+            authenticated: true,
+            resource);
+
+        // Act
+        await handler.HandleAsync(context);
+
+        // Assert
+        Assert.Equal(shouldSucceed, context.HasSucceeded);
+    }
+
+    [Fact]
+    public async Task OthersMediaPermissionAllowsNonExistingResolvedTarget()
+    {
+        // Arrange
+        var handler = CreateHandler();
+        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(
+            MediaPermissions.ViewMedia,
+            ["ViewOthersMediaContent"],
+            authenticated: true,
+            "_users/user-folder/../other-user-folder/new-file.svg");
 
         // Act
         await handler.HandleAsync(context);
@@ -303,11 +383,59 @@ public class ViewMediaFolderAuthorizationHandlerTests
         var httpContextAccessor = Mock.Of<IHttpContextAccessor>(hca => hca.HttpContext == defaultHttpContext);
 
         var mockMediaFileStore = new Mock<IMediaFileStore>();
-        mockMediaFileStore.Setup(fs => fs.GetDirectoryInfoAsync(It.IsAny<string>()));
-        mockMediaFileStore.Setup(fs => fs.GetDirectoryInfoAsync(It.Is("folder", StringComparer.Ordinal))).ReturnsAsync(Mock.Of<IFileStoreEntry>(e => e.IsDirectory == true));
-        mockMediaFileStore.Setup(fs => fs.GetDirectoryInfoAsync(It.Is("otherfolder", StringComparer.Ordinal))).ReturnsAsync(Mock.Of<IFileStoreEntry>(e => e.IsDirectory == true));
-        mockMediaFileStore.Setup(fs => fs.GetFileInfoAsync(It.IsAny<string>()));
-        mockMediaFileStore.Setup(fs => fs.GetFileInfoAsync(It.Is("filename.png", StringComparer.Ordinal))).ReturnsAsync(Mock.Of<IFileStoreEntry>(e => e.IsDirectory == false));
+
+        var fileMap = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["filename.png"] = "filename.png",
+            ["folder/filename.png"] = "folder/filename.png",
+            ["otherfolder/filename.png"] = "otherfolder/filename.png",
+            ["_users/user-folder/filename.png"] = "_users/user-folder/filename.png",
+            ["_users/other-user-folder/filename.png"] = "_users/other-user-folder/filename.png",
+            ["_users/other-user-folder/victim-private.svg"] = "_users/other-user-folder/victim-private.svg",
+            ["_users/user-folder/own-private.svg"] = "_users/user-folder/own-private.svg",
+            // The file store resolves traversal paths to their canonical path.
+            ["_users/user-folder/../other-user-folder/victim-private.svg"] = "_users/other-user-folder/victim-private.svg",
+            ["_users/user-folder/../user-folder/own-private.svg"] = "_users/user-folder/own-private.svg",
+            ["mediafields/temp/user-folder/filename.png"] = "mediafields/temp/user-folder/filename.png",
+            ["mediafields/temp/other-user-folder/filename.png"] = "mediafields/temp/other-user-folder/filename.png",
+        };
+
+        mockMediaFileStore
+            .Setup(fs => fs.GetFileInfoAsync(It.IsAny<string>()))
+            .Returns((string path) =>
+            {
+                if (path != null && fileMap.TryGetValue(path, out var resolvedPath))
+                {
+                    return Task.FromResult<IFileStoreEntry>(Mock.Of<IFileStoreEntry>(e => e.Path == resolvedPath && e.IsDirectory == false));
+                }
+
+                return Task.FromResult<IFileStoreEntry>(null);
+            });
+
+        var directoryMap = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["folder"] = "folder",
+            ["otherfolder"] = "otherfolder",
+            ["_users"] = "_users",
+            ["_users/user-folder"] = "_users/user-folder",
+            ["_users/other-user-folder"] = "_users/other-user-folder",
+            ["mediafields"] = "mediafields",
+            ["mediafields/temp"] = "mediafields/temp",
+            ["mediafields/temp/user-folder"] = "mediafields/temp/user-folder",
+            ["mediafields/temp/other-user-folder"] = "mediafields/temp/other-user-folder",
+        };
+
+        mockMediaFileStore
+            .Setup(fs => fs.GetDirectoryInfoAsync(It.IsAny<string>()))
+            .Returns((string path) =>
+            {
+                if (path != null && directoryMap.TryGetValue(path, out var resolvedPath))
+                {
+                    return Task.FromResult<IFileStoreEntry>(Mock.Of<IFileStoreEntry>(e => e.Path == resolvedPath && e.IsDirectory));
+                }
+
+                return Task.FromResult<IFileStoreEntry>(null);
+            });
 
         var mockMediaOptions = new Mock<IOptions<MediaOptions>>();
         mockMediaOptions.Setup(o => o.Value).Returns(new MediaOptions

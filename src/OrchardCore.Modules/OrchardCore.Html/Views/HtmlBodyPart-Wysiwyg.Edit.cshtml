@@ -1,4 +1,3 @@
-@using OrchardCore
 @using OrchardCore.Html.Settings
 @using System.Globalization
 @using OrchardCore.Html.ViewModels
@@ -13,15 +12,15 @@
 <style asp-name="trumbowyg" version="2"></style>
 <style asp-name="trumbowyg-plugins" version="2"></style>
 <script asp-name="trumbowyg-plugins" version="2" at="Foot"></script>
-<script asp-src="~/OrchardCore.Html/Scripts/trumbowyg.media.tag.min.js" debug-src="~/OrchardCore.Html/Scripts/trumbowyg.media.tag.js" depends-on="trumbowyg" at="Foot"></script>
+<script asp-src="~/OrchardCore.Html/Scripts/trumbowyg/trumbowyg.media.tag.min.js" debug-src="~/OrchardCore.Html/Scripts/trumbowyg/trumbowyg.media.tag.js" depends-on="trumbowyg" at="Foot"></script>
 <script asp-name="trumbowyg-shortcodes" at="Foot"></script>
 <script asp-name="trumbowyg-theme" at="Foot"></script>
 
 @await DisplayAsync(await New.ShortcodeModal())
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="Html" class="@Orchard.GetLabelClasses()">@Model.TypePartDefinition.DisplayName()</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="Html" class="ocat-label">@Model.TypePartDefinition.DisplayName()</label>
+    <div class="ocat-end">
         @if (culture.IsRightToLeft())
         {
             <div style="text-align:right">
