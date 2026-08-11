@@ -12,6 +12,6 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.SignalR",
     Name = "SignalR",
-    Description = "Registers SignalR, the SignalR client resources, and hub authentication.",
+    Description = "Registers SignalR and the SignalR client resources.",
     Category = "Infrastructure"
 )]
