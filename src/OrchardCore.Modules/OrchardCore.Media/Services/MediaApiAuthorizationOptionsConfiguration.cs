@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using OrchardCore.Security;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Media.Services;
@@ -30,6 +31,13 @@ public sealed class MediaApiAuthorizationOptionsConfiguration : IConfigureOption
         options.AddPolicy(MediaApiConstants.AuthorizationPolicyName, policy =>
         {
             policy.AddAuthenticationSchemes(scheme);
+            policy.RequireAuthenticatedUser();
+        });
+
+        options.AddPolicy(MediaApiConstants.HubAuthorizationPolicyName, policy =>
+        {
+            policy.AddAuthenticationSchemes(OrchardCoreConstants.AuthenticationSchemes.Api, IdentityConstants.ApplicationScheme);
+            policy.Requirements.Add(new PermissionRequirement(MediaPermissions.ManageMedia));
             policy.RequireAuthenticatedUser();
         });
     }

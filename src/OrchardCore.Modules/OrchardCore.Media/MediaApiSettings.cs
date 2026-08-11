@@ -26,4 +26,6 @@ public static class MediaApiConstants
 {
     /// <summary>The authorization policy the Media API and TUS endpoints require.</summary>
     public const string AuthorizationPolicyName = "MediaApi";
+
+    public const string HubAuthorizationPolicyName = "MediaHub";
 }
