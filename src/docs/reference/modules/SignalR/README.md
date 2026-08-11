@@ -18,15 +18,14 @@ The scale-out backplanes ship as separate modules so the base `OrchardCore.Signa
 
 ## Declaring a hub in another module
 
-Declare the hub as usual and apply an authorization policy:
+Declare the hub as usual:
 
 ```csharp
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.SignalR;
 
 namespace MyModule.Hubs;
 
-[Authorize(Policy = "SignalR")]
+[Authorize]
 public sealed class MyHub : Hub
 {
 }
@@ -60,40 +59,6 @@ services.Configure<HubOptions>(options =>
 {
     options.MaximumReceiveMessageSize = 128 * 1024;
 });
-```
-
-## Hub authentication
-
-Browsers cannot send an `Authorization` header during a WebSocket handshake, so SignalR clients send bearer tokens using the standard `access_token` query string parameter. The module promotes that query string value to an `Authorization` header for hub requests before authorization runs, allowing bearer authentication handlers such as OpenID Token Validation to authenticate the connection.
-
-The `SignalR` authorization policy authenticates a hub caller with both:
-
-- the tenant's default authenticate scheme, typically the application cookie for a signed-in site user
-- Orchard Core's `Api` scheme, so headless clients can connect with access tokens
-
-Signed-in browser clients are authenticated through the regular authentication cookie, and nothing extra is required. Headless clients (single-page apps, mobile apps, and service-to-service callers) authenticate with an access token instead: you **must** enable the **OpenID Token Validation** feature (`OrchardCore.OpenId.Validation`) so the `Api` scheme can validate the token. Without that feature, `access_token`-based SignalR authentication will not work. The token is only *authenticated* — the identity behind it still needs whatever permissions the hub requires.
-
-Use `[Authorize(Policy = "SignalR")]` on a hub to accept either a signed-in browser user or an API access token. You can combine it with standard `AuthorizeAttribute` metadata such as `Roles` or an additional policy, and still enforce Orchard permissions inside the hub methods or `OnConnectedAsync()`.
-
-Send the token from a browser client via `accessTokenFactory`:
-
-```js
-const connection = new signalR.HubConnectionBuilder()
-    .withUrl("/hubs/my-hub", {
-        accessTokenFactory: () => accessToken
-    })
-    .build();
-```
-
-Or from a .NET client via `AccessTokenProvider`:
-
-```csharp
-var connection = new HubConnectionBuilder()
-    .WithUrl("https://www.example.com/hubs/my-hub", options =>
-    {
-        options.AccessTokenProvider = () => Task.FromResult(accessToken);
-    })
-    .Build();
 ```
 
 ## Backplane configuration
@@ -171,5 +136,3 @@ A script that opens a connection should declare `depends-on="signalr"` so the cl
     });
 </script>
 ```
-
-> The vendored resource and the Bloom bundle pin `@microsoft/signalr` independently (currently `10.0.0` and `^8.0.0` respectively). Both interoperate with the same hub because the SignalR JSON wire protocol is stable across these versions, but keep this in mind when auditing the client version an app actually ships.

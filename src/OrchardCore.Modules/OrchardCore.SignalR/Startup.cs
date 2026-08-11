@@ -1,7 +1,5 @@
 using System.Text.Json;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
 using OrchardCore.SignalR.Services;
 
@@ -25,8 +23,6 @@ public sealed class Startup : StartupBase
                     options.PayloadSerializerOptions.Converters.Add(converter);
                 }
             });
-
-        services.AddTransient<IPostConfigureOptions<AuthorizationOptions>, AuthorizationOptionsConfiguration>();
 
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
     }
