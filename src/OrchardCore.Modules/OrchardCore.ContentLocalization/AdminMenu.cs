@@ -7,13 +7,13 @@ namespace OrchardCore.ContentLocalization;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _providersRouteValues = new()
+    private static readonly RouteValueDictionary s_providersRouteValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", ContentRequestCultureProviderSettingsDriver.GroupId },
     };
 
-    private static readonly RouteValueDictionary _pickerRouteValues = new()
+    private static readonly RouteValueDictionary s_pickerRouteValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", ContentCulturePickerSettingsDriver.GroupId },
@@ -37,14 +37,14 @@ public sealed class AdminMenu : AdminNavigationProvider
                         .Add(S["Content Request Culture Provider"], S["Content Request Culture Provider"].PrefixPosition(), provider => provider
                             .AddClass("contentrequestcultureprovider")
                             .Id("contentrequestcultureprovider")
-                            .Action("Index", "Admin", _providersRouteValues)
+                            .Action("Index", "Admin", s_providersRouteValues)
                             .Permission(ContentLocalizationPermissions.ManageContentCulturePicker)
                             .LocalNav()
                         )
                         .Add(S["Content Culture Picker"], S["Content Culture Picker"].PrefixPosition(), picker => picker
                             .AddClass("contentculturepicker")
                             .Id("contentculturepicker")
-                            .Action("Index", "Admin", _pickerRouteValues)
+                            .Action("Index", "Admin", s_pickerRouteValues)
                             .Permission(ContentLocalizationPermissions.ManageContentCulturePicker)
                             .LocalNav()
                         )
@@ -61,14 +61,14 @@ public sealed class AdminMenu : AdminNavigationProvider
                     .Add(S["Content Culture"], S["Content Culture"].PrefixPosition(), provider => provider
                         .AddClass("contentrequestcultureprovider")
                         .Id("contentrequestcultureprovider")
-                        .Action("Index", "Admin", _providersRouteValues)
+                        .Action("Index", "Admin", s_providersRouteValues)
                         .Permission(ContentLocalizationPermissions.ManageContentCulturePicker)
                         .LocalNav()
                     )
                     .Add(S["Content Culture Picker"], S["Content Culture Picker"].PrefixPosition(), picker => picker
                         .AddClass("contentculturepicker")
                         .Id("contentculturepicker")
-                        .Action("Index", "Admin", _pickerRouteValues)
+                        .Action("Index", "Admin", s_pickerRouteValues)
                         .Permission(ContentLocalizationPermissions.ManageContentCulturePicker)
                         .LocalNav()
                     )

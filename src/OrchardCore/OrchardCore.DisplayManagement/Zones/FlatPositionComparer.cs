@@ -2,7 +2,7 @@ namespace OrchardCore.DisplayManagement.Zones;
 
 public sealed class FlatPositionComparer : IComparer<IPositioned>, IComparer<string>
 {
-    private static readonly char[] _splitChars = ['.', ':'];
+    private static readonly char[] s_splitChars = ['.', ':'];
 
     public static FlatPositionComparer Instance { get; private set; }
 
@@ -49,8 +49,8 @@ public sealed class FlatPositionComparer : IComparer<IPositioned>, IComparer<str
         var ySpan = GetNormalizedSpan(y);
 
 #if NET9_0_OR_GREATER
-        var xParts = xSpan.SplitAny(_splitChars);
-        var yParts = ySpan.SplitAny(_splitChars);
+        var xParts = xSpan.SplitAny(s_splitChars);
+        var yParts = ySpan.SplitAny(s_splitChars);
 #else
         var xParts = new SpanSplitEnumerator(xSpan, _splitChars);
         var yParts = new SpanSplitEnumerator(ySpan, _splitChars);

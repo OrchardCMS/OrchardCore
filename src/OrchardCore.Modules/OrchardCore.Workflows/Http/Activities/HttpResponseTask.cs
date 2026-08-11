@@ -12,7 +12,7 @@ namespace OrchardCore.Workflows.Http.Activities;
 
 public class HttpResponseTask : TaskActivity<HttpResponseTask>
 {
-    private static readonly string[] _separator = ["\r\n", "\n", "\r"];
+    private static readonly string[] s_separator = ["\r\n", "\n", "\r"];
 
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
@@ -102,7 +102,7 @@ public class HttpResponseTask : TaskActivity<HttpResponseTask>
         }
 
         return
-            from header in text.Split(_separator, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim())
+            from header in text.Split(s_separator, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim())
             let pair = header.Split(':')
             where pair.Length == 2
             select new KeyValuePair<string, StringValues>(pair[0], pair[1]);

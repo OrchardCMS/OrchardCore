@@ -7,9 +7,9 @@ public class JsonDerivedTypeInfo<TDerived, TBase> : IJsonDerivedTypeInfo
         where TDerived : class where TBase : class
 {
 
-    private static readonly JsonDerivedType _instance = new(typeof(TDerived), CreateTypeDiscriminator<TDerived>());
+    private static readonly JsonDerivedType s_instance = new(typeof(TDerived), CreateTypeDiscriminator<TDerived>());
 
-    public JsonDerivedType DerivedType => _instance;
+    public JsonDerivedType DerivedType => s_instance;
 
     public Type BaseType => typeof(TBase);
 

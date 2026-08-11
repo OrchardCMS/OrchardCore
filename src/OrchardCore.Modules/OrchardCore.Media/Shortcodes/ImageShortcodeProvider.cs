@@ -13,7 +13,7 @@ public class ImageShortcodeProvider : IShortcodeProvider
 {
     private static ValueTask<string> Null => new((string)null);
     private static ValueTask<string> ImageShortcode => new("[image]");
-    private static readonly HashSet<string> _shortcodes = new(StringComparer.OrdinalIgnoreCase)
+    private static readonly HashSet<string> s_shortcodes = new(StringComparer.OrdinalIgnoreCase)
     {
         "image",
         "media", // [media] is a deprecated shortcode, and can be removed in a future release.
@@ -41,7 +41,7 @@ public class ImageShortcodeProvider : IShortcodeProvider
 
     public ValueTask<string> EvaluateAsync(string identifier, Arguments arguments, string content, Context context)
     {
-        if (!_shortcodes.Contains(identifier))
+        if (!s_shortcodes.Contains(identifier))
         {
             return Null;
         }

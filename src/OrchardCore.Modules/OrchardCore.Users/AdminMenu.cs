@@ -8,7 +8,7 @@ namespace OrchardCore.Users;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", LoginSettingsDisplayDriver.GroupId },
@@ -40,7 +40,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                     .Add(S["Settings"], settings => settings
                         .Add(S["User Login"], S["User Login"].PrefixPosition(), login => login
                             .Permission(UsersPermissions.ManageUsers)
-                            .Action("Index", "Admin", _routeValues)
+                            .Action("Index", "Admin", s_routeValues)
                             .LocalNav()
                         )
                     )
@@ -67,7 +67,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                 .Add(S["Security"], S["Security"].PrefixPosition(), security => security
                     .Add(S["User Login"], S["User Login"].PrefixPosition(), login => login
                         .Permission(UsersPermissions.ManageUsers)
-                        .Action("Index", "Admin", _routeValues)
+                        .Action("Index", "Admin", s_routeValues)
                         .LocalNav()
                     )
                 )
