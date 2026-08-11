@@ -60,4 +60,20 @@ public sealed class ContentItemFilters : GraphQLFilter<ContentItem>
         // Since the user has no permission to this content type, return a query that returns no record.
         return query.With<ContentItemIndex>(x => true == false);
     }
+
+    public override async Task<IEnumerable<ContentItem>> PostQueryAsync(IEnumerable<ContentItem> contentItems, IResolveFieldContext context)
+    {
+        var filtered = new List<ContentItem>();
+        var user = _httpContextAccessor.HttpContext?.User;
+
+        foreach (var item in contentItems)
+        {
+            if (await _authorizationService.AuthorizeAsync(user, CommonPermissions.ViewContent, item))
+            {
+                filtered.Add(item);
+            }
+        }
+
+        return filtered;
+    }
 }
