@@ -7,7 +7,7 @@ namespace OrchardCore.OpenApi;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", OpenApiSettingsDisplayDriver.GroupId },
@@ -26,7 +26,7 @@ public sealed class AdminMenu : AdminNavigationProvider
             .Add(S["Settings"], settings => settings
                 .Add(S["OpenApi"], S["OpenApi"].PrefixPosition(), openApi => openApi
                     .Permission(OpenApiPermissions.ManageOpenApi)
-                    .Action("Index", "Admin", _routeValues)
+                    .Action("Index", "Admin", s_routeValues)
                     .LocalNav()
                 )
             );

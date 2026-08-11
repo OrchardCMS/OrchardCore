@@ -8,7 +8,7 @@ public class ModularApplicationContext : IApplicationContext
     private readonly IHostEnvironment _environment;
     private readonly IEnumerable<IModuleNamesProvider> _moduleNamesProviders;
     private Application _application;
-    private static readonly object _initLock = new();
+    private static readonly object s_initLock = new();
 
     public ModularApplicationContext(IHostEnvironment environment, IEnumerable<IModuleNamesProvider> moduleNamesProviders)
     {
@@ -29,7 +29,7 @@ public class ModularApplicationContext : IApplicationContext
     {
         if (_application == null)
         {
-            lock (_initLock)
+            lock (s_initLock)
             {
                 _application ??= new Application(_environment, GetModules());
             }

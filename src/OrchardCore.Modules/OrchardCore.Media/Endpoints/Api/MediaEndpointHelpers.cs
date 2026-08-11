@@ -24,9 +24,9 @@ internal static class MediaEndpointHelpers
 {
     public static readonly char[] InvalidFolderNameCharacters = ['\\', '/'];
 
-    private static readonly char[] _extensionSeparator = [' ', ','];
+    private static readonly char[] s_extensionSeparator = [' ', ','];
 
-    private static readonly HashSet<string> _emptySet = [];
+    private static readonly HashSet<string> s_emptySet = [];
 
     public static FileStoreEntryDto CreateFileResult(
         IFileStoreEntry mediaFile,
@@ -230,7 +230,7 @@ internal static class MediaEndpointHelpers
     {
         if (!string.IsNullOrWhiteSpace(exts))
         {
-            var extensions = exts.Split(_extensionSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            var extensions = exts.Split(s_extensionSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
             var requestedExtensions = mediaOptions.AllowedFileExtensions
                 .Intersect(extensions)
@@ -248,6 +248,6 @@ internal static class MediaEndpointHelpers
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
         }
 
-        return _emptySet;
+        return s_emptySet;
     }
 }

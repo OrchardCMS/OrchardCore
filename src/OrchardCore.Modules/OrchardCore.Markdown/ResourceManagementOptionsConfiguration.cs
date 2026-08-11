@@ -5,18 +5,18 @@ namespace OrchardCore.Markdown;
 
 public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
 {
-    private static readonly ResourceManifest _manifest;
+    private static readonly ResourceManifest s_manifest;
 
     static ResourceManagementOptionsConfiguration()
     {
-        _manifest = new ResourceManifest();
+        s_manifest = new ResourceManifest();
 
-        _manifest
+        s_manifest
             .DefineScript("easymde")
             .SetUrl("~/OrchardCore.Markdown/Scripts/easymde.min.js")
             .SetVersion("2.18.0");
 
-        _manifest
+        s_manifest
             .DefineStyle("easymde")
             .SetUrl(
                 "~/OrchardCore.Markdown/Styles/mde.min.css",
@@ -24,7 +24,7 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
             )
             .SetVersion("2.18.0");
 
-        _manifest
+        s_manifest
             .DefineScript("easymde-mediatoolbar")
             .SetDependencies("easymde", "jQuery")
             .SetUrl(
@@ -36,6 +36,6 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
 
     public void Configure(ResourceManagementOptions options)
     {
-        options.ResourceManifests.Add(_manifest);
+        options.ResourceManifests.Add(s_manifest);
     }
 }
