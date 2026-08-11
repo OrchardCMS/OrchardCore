@@ -71,7 +71,7 @@ The `SignalR` authorization policy authenticates a hub caller with both:
 - the tenant's default authenticate scheme, typically the application cookie for a signed-in site user
 - Orchard Core's `Api` scheme, so headless clients can connect with access tokens
 
-Signed-in browser clients are authenticated through the regular authentication cookie, and nothing extra is required. Headless clients (single-page apps, mobile apps, and service-to-service callers) authenticate with an access token instead: enable the **OpenID Token Validation** feature (`OrchardCore.OpenId.Validation`) so the `Api` scheme can validate the token. The token is only *authenticated* — the identity behind it still needs whatever permissions the hub requires.
+Signed-in browser clients are authenticated through the regular authentication cookie, and nothing extra is required. Headless clients (single-page apps, mobile apps, and service-to-service callers) authenticate with an access token instead: you **must** enable the **OpenID Token Validation** feature (`OrchardCore.OpenId.Validation`) so the `Api` scheme can validate the token. Without that feature, `access_token`-based SignalR authentication will not work. The token is only *authenticated* — the identity behind it still needs whatever permissions the hub requires.
 
 Use `[Authorize(Policy = "SignalR")]` on a hub to accept either a signed-in browser user or an API access token. You can combine it with standard `AuthorizeAttribute` metadata such as `Roles` or an additional policy, and still enforce Orchard permissions inside the hub methods or `OnConnectedAsync()`.
 

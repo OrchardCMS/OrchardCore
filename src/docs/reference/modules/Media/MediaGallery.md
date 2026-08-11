@@ -14,6 +14,8 @@ The gallery works out of the box: requests use the ambient same-origin admin coo
 
 The API accepts only Bearer tokens via the `"Api"` scheme, and the gallery acquires one **silently**: an OAuth2 authorization-code + PKCE flow runs in a hidden iframe (`prompt=none`) against the tenant's OpenID Connect server, using the existing admin cookie session — no interactive login. The token auto-renews and is attached to every API call, Uppy/TUS upload request, and the SignalR connection. A request rejected with `401` is retried once after a silent renewal.
 
+If you use this mode, you **must** enable the **OpenID Token Validation** feature (`OrchardCore.OpenId.Validation`) so Orchard Core can validate the `access_token` sent by the SPA and the SignalR client.
+
 To provision this mode, run the **Media API — Bearer/PKCE** recipe (Configuration → Recipes). It switches the authentication scheme to `Bearer`, enables the OpenID Server, Token Validation, and Management features, turns on the authorization-code flow with PKCE required, and registers a public (secret-less) `media_gallery` OpenID application whose redirect URI points at the gallery's silent-renew page. Adjust the recipe's `https://localhost:5001` origins to your tenant's real origin before running it, and make sure gallery users have roles granting the media permissions — the `roles` scope carries them into the token.
 
 ### Standalone external app
@@ -141,7 +143,7 @@ Alternatively, configure sticky sessions on your load balancer instead of a shar
 
 The SignalR feature enables real-time media updates. When enabled, changes to media files and folders (uploads, renames, moves, deletes) are broadcast to all connected clients. This keeps the Media Gallery in sync across multiple browser tabs and users.
 
-To enable, activate the **Media SignalR** feature in the admin panel. This feature depends on the reusable **`OrchardCore.SignalR`** feature, which provides the SignalR services, client resources, and the `SignalR` authorization policy shared by any module that hosts a hub. The media hub accepts both the standard application cookie used by signed-in site users and API access tokens used by headless clients. API token validation requires the **OpenID Token Validation** feature (`OrchardCore.OpenId.Validation`).
+To enable, activate the **Media SignalR** feature in the admin panel. This feature depends on the reusable **`OrchardCore.SignalR`** feature, which provides the SignalR services, client resources, and the `SignalR` authorization policy shared by any module that hosts a hub. The media hub accepts both the standard application cookie used by signed-in site users and API access tokens used by headless clients. If headless clients connect with `access_token`, you **must** enable the **OpenID Token Validation** feature (`OrchardCore.OpenId.Validation`).
 
 For multi-instance deployments, a backplane is required. The backplane is provided by the reusable SignalR module and applies to every hub in the tenant, so the same two features cover the Media Gallery and any other SignalR-based feature:
 
