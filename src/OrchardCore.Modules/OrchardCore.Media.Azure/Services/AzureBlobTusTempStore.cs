@@ -3,6 +3,7 @@ using System.Text.Json;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -19,6 +20,7 @@ namespace OrchardCore.Media.Azure.Services;
 public sealed class AzureBlobTusTempStore : ITusTempStore
 {
     private const string TusTempPrefix = "_tus-uploads";
+    private const string UnexpectedEndOfRequestContent = "Unexpected end of request content.";
 
     private readonly BlobContainerClient _containerClient;
     private readonly IDistributedCache _cache;
@@ -64,12 +66,16 @@ public sealed class AzureBlobTusTempStore : ITusTempStore
                 bytesWritten += bytesRead;
             }
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
-            // Client disconnected. Blocks already staged are durable.
+            // Blocks already staged are durable and their IDs are persisted below.
+        }
+        catch (BadHttpRequestException exception) when (IsUnexpectedEndOfRequest(exception))
+        {
+            // Blocks already staged are durable and their IDs are persisted below.
         }
 
-        await SaveBlockListAsync(fileId, blockIds, cancellationToken);
+        await SaveBlockListAsync(fileId, blockIds, CancellationToken.None);
 
         return bytesWritten;
     }
@@ -82,39 +88,51 @@ public sealed class AzureBlobTusTempStore : ITusTempStore
         long bytesWritten = 0;
         try
         {
-            while (true)
+            try
             {
-                var result = await pipeReader.ReadAsync(cancellationToken);
-                var buffer = result.Buffer;
-
-                foreach (var segment in buffer)
+                while (true)
                 {
-                    if (segment.Length == 0)
+                    var result = await pipeReader.ReadAsync(cancellationToken);
+                    var buffer = result.Buffer;
+
+                    foreach (var segment in buffer)
                     {
-                        continue;
+                        if (segment.Length == 0)
+                        {
+                            continue;
+                        }
+
+                        var blockId = GenerateBlockId(blockIds.Count);
+                        using var blockStream = new MemoryStream(segment.ToArray());
+                        await blockBlob.StageBlockAsync(blockId, blockStream, cancellationToken: cancellationToken);
+                        blockIds.Add(blockId);
+                        bytesWritten += segment.Length;
                     }
 
-                    var blockId = GenerateBlockId(blockIds.Count);
-                    using var blockStream = new MemoryStream(segment.ToArray());
-                    await blockBlob.StageBlockAsync(blockId, blockStream, cancellationToken: cancellationToken);
-                    blockIds.Add(blockId);
-                    bytesWritten += segment.Length;
-                }
+                    pipeReader.AdvanceTo(buffer.End);
 
-                pipeReader.AdvanceTo(buffer.End);
+                    if (result.IsCanceled || cancellationToken.IsCancellationRequested)
+                    {
+                        break;
+                    }
 
-                if (result.IsCompleted)
-                {
-                    break;
+                    if (result.IsCompleted)
+                    {
+                        break;
+                    }
                 }
             }
-        }
-        catch (OperationCanceledException)
-        {
-            // Client disconnected. Blocks already staged are durable.
-        }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                // Blocks already staged are durable and their IDs are persisted below.
+            }
 
-        await SaveBlockListAsync(fileId, blockIds, cancellationToken);
+            await SaveBlockListAsync(fileId, blockIds, CancellationToken.None);
+        }
+        finally
+        {
+            await pipeReader.CompleteAsync();
+        }
 
         return bytesWritten;
     }
@@ -183,6 +201,12 @@ public sealed class AzureBlobTusTempStore : ITusTempStore
         // Block IDs must be the same length and Base64 encoded.
         return Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(index.ToString("D8")));
     }
+
+    private static bool IsUnexpectedEndOfRequest(BadHttpRequestException exception) =>
+        // Kestrel does not expose its internal rejection reason, so the message is the
+        // only way to distinguish a truncated body from other malformed requests.
+        exception.StatusCode == StatusCodes.Status400BadRequest
+        && string.Equals(exception.Message, UnexpectedEndOfRequestContent, StringComparison.Ordinal);
 
     private string BlockListKey(string fileId) => $"tus:blocks:{_tenantId}:{fileId}";
 

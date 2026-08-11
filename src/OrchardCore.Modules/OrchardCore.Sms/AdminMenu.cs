@@ -8,7 +8,7 @@ namespace OrchardCore.Sms;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", SmsSettings.GroupId },
@@ -31,7 +31,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                         .Add(S["SMS"], S["SMS"].PrefixPosition(), sms => sms
                             .AddClass("sms")
                             .Id("sms")
-                            .Action("Index", "Admin", _routeValues)
+                            .Action("Index", "Admin", s_routeValues)
                             .Permission(SmsPermissions.ManageSmsSettings)
                             .LocalNav()
                         )
@@ -54,7 +54,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                     .Add(S["SMS"], S["SMS"].PrefixPosition(), sms => sms
                         .AddClass("sms")
                         .Id("sms")
-                        .Action("Index", "Admin", _routeValues)
+                        .Action("Index", "Admin", s_routeValues)
                         .Permission(SmsPermissions.ManageSmsSettings)
                         .LocalNav()
                     )

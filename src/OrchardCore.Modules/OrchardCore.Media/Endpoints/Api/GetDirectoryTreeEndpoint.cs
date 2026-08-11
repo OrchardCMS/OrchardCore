@@ -35,7 +35,8 @@ public static class GetDirectoryTreeEndpoint
         IUserAssetFolderNameProvider userAssetFolderNameProvider,
         MediaDirectoryTreeCache directoryTreeCache)
     {
-        if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMedia))
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMedia)
+            || !await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMediaFolder, (object)string.Empty))
         {
             return httpContext.ApiForbidProblem();
         }
@@ -51,6 +52,6 @@ public static class GetDirectoryTreeEndpoint
 
         var cached = await directoryTreeCache.GetTreeAsync();
 
-        return TypedResults.Ok(MediaEndpointHelpers.ToDto(cached));
+        return TypedResults.Ok(await MediaEndpointHelpers.ToDtoAsync(authorizationService, httpContext.User, cached));
     }
 }

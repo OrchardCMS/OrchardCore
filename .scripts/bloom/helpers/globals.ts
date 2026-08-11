@@ -2,6 +2,8 @@ import removeDiacritics from "./removeDiacritics";
 
 const getTenantName = () => document.documentElement.getAttribute("data-tenant") || "default";
 
+const getAdminPrefix = () => document.documentElement.getAttribute("data-admin-prefix") || "/admin";
+
 const getTechnicalName = (name: string) => {
     let result = "",
         c;
@@ -66,4 +68,12 @@ const getTenantPathBase = (dataElementId?: string): string => {
     return "";
 };
 
-export { getAntiForgeryToken, getTenantName, getTenantPathBase, getTechnicalName, isLetter, isNumber };
+export {
+    getAdminPrefix,
+    getAntiForgeryToken, 
+    getTechnicalName, 
+    getTenantName, 
+    getTenantPathBase, 
+    isLetter, 
+    isNumber 
+};

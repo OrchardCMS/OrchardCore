@@ -9,7 +9,7 @@ namespace OrchardCore.Mvc;
 public class SharedViewCompilerProvider : IViewCompilerProvider
 {
     private readonly object _synLock = new();
-    private static IViewCompiler _compiler;
+    private static IViewCompiler s_compiler;
     private readonly IServiceProvider _services;
 
     public SharedViewCompilerProvider(IServiceProvider services)
@@ -19,24 +19,24 @@ public class SharedViewCompilerProvider : IViewCompilerProvider
 
     public IViewCompiler GetCompiler()
     {
-        if (_compiler is not null)
+        if (s_compiler is not null)
         {
-            return _compiler;
+            return s_compiler;
         }
 
         lock (_synLock)
         {
-            if (_compiler is not null)
+            if (s_compiler is not null)
             {
-                return _compiler;
+                return s_compiler;
             }
 
-            _compiler = _services
+            s_compiler = _services
                 .GetServices<IViewCompilerProvider>()
                 .FirstOrDefault()
                 ?.GetCompiler();
         }
 
-        return _compiler;
+        return s_compiler;
     }
 }

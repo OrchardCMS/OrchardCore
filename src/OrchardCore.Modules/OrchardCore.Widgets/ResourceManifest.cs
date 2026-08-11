@@ -5,17 +5,17 @@ namespace OrchardCore.Widgets;
 
 public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
 {
-    private static readonly ResourceManifest _manifest;
+    private static readonly ResourceManifest s_manifest;
 
     static ResourceManagementOptionsConfiguration()
     {
-        _manifest = new ResourceManifest();
+        s_manifest = new ResourceManifest();
 
-        _manifest
+        s_manifest
             .DefineStyle("widgetslist-edit")
             .SetUrl("~/OrchardCore.Widgets/Styles/widgetslist.edit.min.css", "~/OrchardCore.Widgets/Styles/widgetslist.edit.css");
 
-        _manifest
+        s_manifest
             .DefineScript("widgetslist-edit")
             .SetDependencies("jQuery")
             .SetUrl("~/OrchardCore.Widgets/Scripts/widgetslist.edit.min.js", "~/OrchardCore.Widgets/Scripts/widgetslist.edit.js");
@@ -23,6 +23,6 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
 
     public void Configure(ResourceManagementOptions options)
     {
-        options.ResourceManifests.Add(_manifest);
+        options.ResourceManifests.Add(s_manifest);
     }
 }

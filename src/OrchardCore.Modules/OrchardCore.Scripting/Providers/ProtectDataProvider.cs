@@ -5,7 +5,7 @@ namespace OrchardCore.Scripting.Providers;
 
 public sealed class ProtectDataProvider : IGlobalMethodProvider
 {
-    private static readonly GlobalMethod _protect = new()
+    private static readonly GlobalMethod s_protect = new()
     {
         Name = "protect",
         Method = serviceProvider => (Func<string, string, string>)((purpose, value) =>
@@ -22,6 +22,6 @@ public sealed class ProtectDataProvider : IGlobalMethodProvider
 
     public IEnumerable<GlobalMethod> GetMethods()
     {
-        return [_protect];
+        return [s_protect];
     }
 }

@@ -9,7 +9,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email.Workflows;
 
 public class EmailTaskTests
 {
-    private static readonly IDictionary<string, object> _emptyDictionary = new Dictionary<string, object>();
+    private static readonly IDictionary<string, object> s_emptyDictionary = new Dictionary<string, object>();
 
     [Fact]
     public async Task ExecuteTask_Default_ToAndCcAndBccAreNotSetFail()
@@ -33,9 +33,9 @@ public class EmailTaskTests
         var executionContext = new WorkflowExecutionContext(
             new WorkflowType(),
             new Workflow(),
-            _emptyDictionary,
-            _emptyDictionary,
-            _emptyDictionary,
+            s_emptyDictionary,
+            s_emptyDictionary,
+            s_emptyDictionary,
             [],
             default,
             []);

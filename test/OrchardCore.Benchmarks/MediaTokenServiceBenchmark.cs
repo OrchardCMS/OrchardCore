@@ -12,8 +12,8 @@ namespace OrchardCore.Benchmarks;
 [MemoryDiagnoser]
 public class MediaTokenServiceBenchmark
 {
-    private static readonly MediaTokenService _mediaTokenService;
-    private static readonly MediaTokenService _mediaTokenServiceWithoutCache;
+    private static readonly MediaTokenService s_mediaTokenService;
+    private static readonly MediaTokenService s_mediaTokenServiceWithoutCache;
 
     static MediaTokenServiceBenchmark()
     {
@@ -26,33 +26,33 @@ public class MediaTokenServiceBenchmark
 
         var options = Options.Create(new MediaTokenOptions { HashKey = hashKey });
 
-        _mediaTokenService = new MediaTokenService(memoryCache, options);
-        _mediaTokenServiceWithoutCache = new MediaTokenService(nullCache, options);
+        s_mediaTokenService = new MediaTokenService(memoryCache, options);
+        s_mediaTokenServiceWithoutCache = new MediaTokenService(nullCache, options);
     }
 
     [Benchmark]
 #pragma warning disable CA1822 // Mark members as static
     public string AddTokenToPath()
     {
-        return _mediaTokenService.AddTokenToPath("/media/portfolio/1.jpg?width=600&height=480&rmode=stretch");
+        return s_mediaTokenService.AddTokenToPath("/media/portfolio/1.jpg?width=600&height=480&rmode=stretch");
     }
 
     [Benchmark]
     public string AddTokenToPath_NoCache()
     {
-        return _mediaTokenServiceWithoutCache.AddTokenToPath("/media/portfolio/1.jpg?width=600&height=480&rmode=stretch");
+        return s_mediaTokenServiceWithoutCache.AddTokenToPath("/media/portfolio/1.jpg?width=600&height=480&rmode=stretch");
     }
 
     [Benchmark]
     public string AddTokenToPath_LongPath()
     {
-        return _mediaTokenService.AddTokenToPath("/media/portfolio/1.jpg?width=LOOOOOOOOOOOOOOONG&height=LOOOOOOOOOOOOOOONG&rmode=LOOOOOOOOOOOOOOONG&rxy=LOOOOOOOOOOOOOOONG&rsampler=LOOOOOOOOOOOOOOONG&ranchor=LOOOOOOOOOOOOOOONG&compand=LOOOOOOOOOOOOOOONG&token=LOOOOOOOOOOOOOOONG&quality=LOOOOOOOOOOOOOOONG");
+        return s_mediaTokenService.AddTokenToPath("/media/portfolio/1.jpg?width=LOOOOOOOOOOOOOOONG&height=LOOOOOOOOOOOOOOONG&rmode=LOOOOOOOOOOOOOOONG&rxy=LOOOOOOOOOOOOOOONG&rsampler=LOOOOOOOOOOOOOOONG&ranchor=LOOOOOOOOOOOOOOONG&compand=LOOOOOOOOOOOOOOONG&token=LOOOOOOOOOOOOOOONG&quality=LOOOOOOOOOOOOOOONG");
     }
 
     [Benchmark]
     public string AddTokenToPath_LongPath_NoCache()
     {
-        return _mediaTokenServiceWithoutCache.AddTokenToPath("/media/portfolio/1.jpg?width=LOOOOOOOOOOOOOOONG&height=LOOOOOOOOOOOOOOONG&rmode=LOOOOOOOOOOOOOOONG&rxy=LOOOOOOOOOOOOOOONG&rsampler=LOOOOOOOOOOOOOOONG&ranchor=LOOOOOOOOOOOOOOONG&compand=LOOOOOOOOOOOOOOONG&token=LOOOOOOOOOOOOOOONG&quality=LOOOOOOOOOOOOOOONG");
+        return s_mediaTokenServiceWithoutCache.AddTokenToPath("/media/portfolio/1.jpg?width=LOOOOOOOOOOOOOOONG&height=LOOOOOOOOOOOOOOONG&rmode=LOOOOOOOOOOOOOOONG&rxy=LOOOOOOOOOOOOOOONG&rsampler=LOOOOOOOOOOOOOOONG&ranchor=LOOOOOOOOOOOOOOONG&compand=LOOOOOOOOOOOOOOONG&token=LOOOOOOOOOOOOOOONG&quality=LOOOOOOOOOOOOOOONG");
     }
 #pragma warning restore CA1822 // Mark members as static
 }

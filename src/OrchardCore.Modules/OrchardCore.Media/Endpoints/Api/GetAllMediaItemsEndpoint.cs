@@ -40,7 +40,8 @@ public static class GetAllMediaItemsEndpoint
         IUserAssetFolderNameProvider userAssetFolderNameProvider,
         string extensions)
     {
-        if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMedia))
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMedia)
+            || !await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMediaFolder, (object)string.Empty))
         {
             return httpContext.ApiForbidProblem();
         }
@@ -57,7 +58,7 @@ public static class GetAllMediaItemsEndpoint
         var allowedExtensions = MediaEndpointHelpers.GetRequestedExtensions(mediaOptions, extensions, false);
         var allItems = new List<FileStoreEntryDto>();
 
-        await MediaEndpointHelpers.CollectAllItemsRecursiveAsync(mediaFileStore, httpContext, contentTypeProvider, fileVersionProvider, string.Empty, allowedExtensions, allItems);
+        await MediaEndpointHelpers.CollectAllItemsRecursiveAsync(mediaFileStore, authorizationService, httpContext, contentTypeProvider, fileVersionProvider, string.Empty, allowedExtensions, allItems);
 
         return TypedResults.Ok(allItems);
     }

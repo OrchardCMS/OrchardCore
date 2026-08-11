@@ -10,7 +10,7 @@ namespace OrchardCore.AzureAI;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", AzureAISearchDefaultSettingsDisplayDriver.GroupId},
@@ -43,7 +43,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                        .Add(S["Azure AI Search"], S["Azure AI Search"].PrefixPosition(), azureAISearch => azureAISearch
                        .AddClass("azure-ai-search")
                            .Id("azureaisearch")
-                           .Action("Index", "Admin", _routeValues)
+                           .Action("Index", "Admin", s_routeValues)
                            .Permission(AzureAISearchPermissions.ManageAzureAISearchISettings)
                            .LocalNav()
                        )
@@ -59,7 +59,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                     .Add(S["Azure AI Search"], S["Azure AI Search"].PrefixPosition(), azureAISearch => azureAISearch
                     .AddClass("azure-ai-search")
                         .Id("azureaisearch")
-                        .Action("Index", "Admin", _routeValues)
+                        .Action("Index", "Admin", s_routeValues)
                         .Permission(IndexingPermissions.ManageIndexes)
                         .LocalNav()
                     )

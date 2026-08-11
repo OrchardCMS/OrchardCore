@@ -55,8 +55,8 @@ namespace OrchardCore.Users;
 
 public sealed class Startup : StartupBase
 {
-    private static readonly string _accountControllerName = typeof(AccountController).ControllerName();
-    private static readonly string _emailConfirmationControllerName = typeof(EmailConfirmationController).ControllerName();
+    private static readonly string s_accountControllerName = typeof(AccountController).ControllerName();
+    private static readonly string s_emailConfirmationControllerName = typeof(EmailConfirmationController).ControllerName();
     private readonly string _tenantName;
 
     private UserOptions _userOptions;
@@ -177,7 +177,7 @@ public sealed class Startup : StartupBase
             pattern: _userOptions.LoginPath,
             defaults: new
             {
-                controller = _accountControllerName,
+                controller = s_accountControllerName,
                 action = nameof(AccountController.Login),
             }
         );
@@ -188,7 +188,7 @@ public sealed class Startup : StartupBase
             pattern: _userOptions.ChangePasswordUrl,
             defaults: new
             {
-                controller = _accountControllerName,
+                controller = s_accountControllerName,
                 action = nameof(AccountController.ChangePassword),
             }
         );
@@ -199,7 +199,7 @@ public sealed class Startup : StartupBase
             pattern: _userOptions.ChangePasswordConfirmationUrl,
             defaults: new
             {
-                controller = _accountControllerName,
+                controller = s_accountControllerName,
                 action = nameof(AccountController.ChangePasswordConfirmation),
             }
         );
@@ -210,7 +210,7 @@ public sealed class Startup : StartupBase
             pattern: _userOptions.LogoffPath,
             defaults: new
             {
-                controller = _accountControllerName,
+                controller = s_accountControllerName,
                 action = nameof(AccountController.LogOff),
             }
         );
@@ -221,7 +221,7 @@ public sealed class Startup : StartupBase
             pattern: "ConfirmEmail",
             defaults: new
             {
-                controller = _emailConfirmationControllerName,
+                controller = s_emailConfirmationControllerName,
                 action = nameof(EmailConfirmationController.ConfirmEmail),
             }
         );
@@ -232,7 +232,7 @@ public sealed class Startup : StartupBase
             pattern: "ConfirmEmailSent",
             defaults: new
             {
-                controller = _emailConfirmationControllerName,
+                controller = s_emailConfirmationControllerName,
                 action = nameof(EmailConfirmationController.ConfirmEmailSent),
             }
         );
