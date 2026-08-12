@@ -28,26 +28,23 @@ public static class UsersPermissions
     public static readonly Permission EditOwnUser = new("ManageOwnUserInformation", "Edit own user information", [EditUsers]);
 
     public static Permission CreateEditUsersInRolePermission(string roleName) =>
-        CreateDynamicPermission(roleName, new Permission("EditUsersInRole_{0}", "Edit users in {0} role", [EditUsers], true));
+        CreateDynamicPermission(roleName, "EditUsersInRole_{0}", "Edit users in {0} role", EditUsers);
 
     public static Permission CreateDeleteUsersInRolePermission(string roleName) =>
-        CreateDynamicPermission(roleName, new Permission("DeleteUsersInRole_{0}", "Delete users in {0} role", [DeleteUsers], true));
+        CreateDynamicPermission(roleName, "DeleteUsersInRole_{0}", "Delete users in {0} role", DeleteUsers);
 
     public static Permission CreateListUsersInRolePermission(string roleName) =>
-        CreateDynamicPermission(roleName, new Permission("ListUsersInRole_{0}", "List users in {0} role", [ListUsers]));
+        CreateDynamicPermission(roleName, "ListUsersInRole_{0}", "List users in {0} role", ListUsers, isSecurityCritical: false);
 
     public static Permission CreateAssignRoleToUsersPermission(string roleName) =>
-        CreateDynamicPermission(roleName, new Permission("AssignRoleToUsers_{0}", "Assign {0} role to users", [AssignRoleToUsers], true));
+        CreateDynamicPermission(roleName, "AssignRoleToUsers_{0}", "Assign {0} role to users", AssignRoleToUsers);
 
     public static Permission CreatePermissionForManageUsersInRole(string name) =>
-        CreateDynamicPermission(name, new Permission("ManageUsersInRole_{0}", "Manage users in {0} role", [ManageUsers], true));
+        CreateDynamicPermission(name, "ManageUsersInRole_{0}", "Manage users in {0} role", ManageUsers);
 
     // Dynamic permission template.
-    private static Permission CreateDynamicPermission(string roleName, Permission permission)
-        => new(
-            string.Format(permission.Name, roleName),
-            string.Format(permission.Description, roleName),
-            permission.ImpliedBy,
-            permission.IsSecurityCritical
-        );
+    private static Permission CreateDynamicPermission(
+        string roleName, string name, string description, Permission impliedBy, bool isSecurityCritical = true) =>
+        new PermissionTemplate(name, description, Category: null, [impliedBy], isSecurityCritical)
+            .CreateDynamicPermission(roleName);
 }
