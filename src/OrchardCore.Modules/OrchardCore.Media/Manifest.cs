@@ -10,7 +10,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Media.Implicit",
     Name = "Media Implicit",
-    Description = "This feature is implicitly enabled and required for the media module to function correctly.",
+    Description = "Provides core media services.",
     Category = "Media",
     IsImplicitlyEnabled = true
 )]
