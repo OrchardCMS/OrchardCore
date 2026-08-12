@@ -50,9 +50,7 @@ public class SetPropertyTask : TaskActivity<SetPropertyTask>
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"]);
-    }
+        => Outcome(S["Done"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -65,6 +63,6 @@ public class SetPropertyTask : TaskActivity<SetPropertyTask>
 
         workflowContext.Properties[PropertyName] = value;
 
-        return Outcomes("Done");
+        return Outcome("Done");
     }
 }
