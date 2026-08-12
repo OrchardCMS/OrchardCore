@@ -38,8 +38,7 @@ public sealed class ContentItemFilters : GraphQLFilter<ContentItem>
         }
 
         var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType);
-        var contentTypePermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(CommonPermissions.ViewContent);
-        var dynamicPermission = ContentTypePermissionsHelper.CreateDynamicPermission(contentTypePermission, contentTypeDefinition);
+        var dynamicPermission = ContentTypePermissionsHelper.CreateDynamicPermissionOf(CommonPermissions.ViewContent, contentTypeDefinition);
 
         if (await _authorizationService.AuthorizeContentTypeAsync(_httpContextAccessor.HttpContext.User, dynamicPermission, contentTypeDefinition))
         {

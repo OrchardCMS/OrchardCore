@@ -118,7 +118,7 @@ public sealed class SecureMediaPermissions : IPermissionProvider
         permission = new Permission(
             string.Format(template.Name, secureFolder),
             string.Format(template.Description, secureFolder),
-            (template.ImpliedBy ?? Array.Empty<Permission>()).Select(t => CreateDynamicPermission(t, secureFolder))
+            (template.ImpliedBy ?? []).Select(t => CreateDynamicPermission(t, secureFolder))
         );
 
         var localPermissions = new Dictionary<ValueTuple<string, string>, Permission>(s_permissionsByFolder)

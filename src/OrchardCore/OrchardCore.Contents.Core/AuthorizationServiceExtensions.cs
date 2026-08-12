@@ -44,11 +44,9 @@ public static class AuthorizationServiceExtensions
 
         var permission = GetOwnerVariation(requiredPermission) ?? requiredPermission;
 
-        var contentTypePermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(permission);
-
         foreach (var contentTypeDefinition in contentTypeDefinitions)
         {
-            var dynamicPermission = ContentTypePermissionsHelper.CreateDynamicPermission(contentTypePermission, contentTypeDefinition);
+            var dynamicPermission = ContentTypePermissionsHelper.CreateDynamicPermissionOf(permission, contentTypeDefinition);
 
             if (await service.AuthorizeContentTypeAsync(user, dynamicPermission, contentTypeDefinition.Name, user.FindFirstValue(ClaimTypes.NameIdentifier)))
             {

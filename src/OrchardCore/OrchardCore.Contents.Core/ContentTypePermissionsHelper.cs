@@ -60,6 +60,7 @@ public static class ContentTypePermissionsHelper
     /// <summary>
     /// Generates a permission dynamically for a content type.
     /// </summary>
+    [Obsolete($"Use {nameof(CreateDynamicPermissionOf)} instead.")]
     public static Permission CreateDynamicPermission(Permission template, ContentTypeDefinition typeDefinition)
     {
         ArgumentNullException.ThrowIfNull(template);
@@ -74,6 +75,25 @@ public static class ContentTypePermissionsHelper
         {
             Category = $"{typeDefinition.DisplayName} Content Type - {typeDefinition.Name}",
         };
+    }
+
+    public static Permission CreateDynamicPermissionOf(Permission basePermission, ContentTypeDefinition typeDefinition) =>
+        CreateDynamicPermissionOf(basePermission.Name, typeDefinition);
+
+    public static Permission CreateDynamicPermissionOf(string basePermissionName, ContentTypeDefinition typeDefinition)
+    {
+        if (!PermissionTemplates.TryGetValue(basePermissionName, out var result))
+        {
+            return null;
+        }
+
+        var template = new PermissionTemplate(
+            result.Name,
+            result.Description,
+            $"{typeDefinition.DisplayName} Content Type - {typeDefinition.Name}",
+            result.ImpliedBy?.Select(item => CreateDynamicPermissionOf(item.Name, typeDefinition)) ?? []);
+
+        return template.CreateDynamicPermission(typeDefinition.Name, typeDefinition.DisplayName);
     }
 
     /// <summary>

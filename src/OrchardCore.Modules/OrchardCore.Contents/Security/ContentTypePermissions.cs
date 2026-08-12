@@ -23,9 +23,9 @@ public sealed class ContentTypePermissions : IPermissionProvider
 
         foreach (var typeDefinition in securableTypes)
         {
-            foreach (var permissionTemplate in ContentTypePermissionsHelper.PermissionTemplates.Values)
+            foreach (var templateNames in ContentTypePermissionsHelper.PermissionTemplates.Keys)
             {
-                result.Add(ContentTypePermissionsHelper.CreateDynamicPermission(permissionTemplate, typeDefinition));
+                result.Add(ContentTypePermissionsHelper.CreateDynamicPermissionOf(templateNames, typeDefinition));
             }
         }
 
