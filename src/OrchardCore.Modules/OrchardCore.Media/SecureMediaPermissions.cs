@@ -9,7 +9,7 @@ namespace OrchardCore.Media;
 
 public sealed class SecureMediaPermissions : IPermissionProvider
 {
-    private static readonly Permission s_viewMediaTemplate = new("ViewMediaContent_{0}", "View media content in folder '{0}'", new[] { MediaPermissions.ViewMedia });
+    private static readonly Permission s_viewMediaTemplate = new("ViewMediaContent_{0}", "View media content in folder '{0}'", [MediaPermissions.ViewMedia]);
 
     private static Dictionary<ValueTuple<string, string>, Permission> s_permissionsByFolder = new();
     private static readonly char[] s_trimSecurePathChars = ['/', '\\', ' '];
@@ -167,11 +167,6 @@ public sealed class SecureMediaPermissions : IPermissionProvider
         {
             return permissionByFolder;
         }
-
-        template = template with
-        {
-            ImpliedBy = template.ImpliedBy.Select(impliedBy => CreateDynamicPermissionOf(impliedBy.Name, secureFolder)),
-        };
 
         var permission = template.CreateDynamicPermission(secureFolder);
         var localPermissions = new Dictionary<ValueTuple<string, string>, Permission>(s_permissionsByFolder)
