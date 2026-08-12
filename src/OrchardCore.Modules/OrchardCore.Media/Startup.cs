@@ -414,7 +414,7 @@ public sealed class FeatureEventHandlerStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddSingleton<IFeatureEventHandler, SecureMediaFeatureEventHandler>();
+        services.AddScoped<IFeatureEventHandler, SecureMediaFeatureEventHandler>();
     }
 }
 
