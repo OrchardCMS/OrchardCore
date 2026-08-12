@@ -8,7 +8,7 @@ using OrchardCore.Modules.Manifest;
 )]
 
 [assembly: Feature(
-    Id = "OrchardCore.Media.Implicit",
+    Id = "OrchardCore.Media.Core",
     Name = "Media Implicit",
     Description = "Provides core media services.",
     Category = "Media",
