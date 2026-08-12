@@ -100,8 +100,11 @@ public sealed class SecureMediaPermissions : IPermissionProvider
     /// <summary>
     /// Returns a dynamic permission for a secure folder, based on a global view media permission template.
     /// </summary>
-    internal static Permission ConvertToDynamicPermission(Permission permission) => s_permissionTemplates.TryGetValue(permission.Name, out var result) ? result : null;
+    [Obsolete($"Use {nameof(CreatePermissionTemplate)} instead.")]
+    internal static Permission ConvertToDynamicPermission(Permission permission) =>
+        s_permissionTemplates.TryGetValue(permission.Name, out var result) ? result : null;
 
+    [Obsolete($"Use {nameof(CreateDynamicPermissionOf)} instead.")]
     internal static Permission CreateDynamicPermission(Permission template, string secureFolder)
     {
         ArgumentNullException.ThrowIfNull(template);
@@ -128,6 +131,55 @@ public sealed class SecureMediaPermissions : IPermissionProvider
 
         s_permissionsByFolder = localPermissions;
 
+        return permission;
+    }
+
+    /// <summary>
+    /// Create a permission template based on the template identified by the <paramref name="basePermissionName"/>.
+    /// </summary>
+    internal static PermissionTemplate CreatePermissionTemplate(string basePermissionName) =>
+        s_permissionTemplates.TryGetValue(basePermissionName, out var result)
+            ? new PermissionTemplate(
+                result.Name,
+                result.Description,
+                Category: null,
+                result.ImpliedBy ?? [])
+            : null;
+
+    /// <summary>
+    /// Create a dynamic permission specific to the provided <paramref name="secureFolder"/> using internal templates,
+    /// based on the permission identified by the <paramref name="basePermissionName"/>.
+    /// </summary>
+    /// <param name="basePermissionName"></param>
+    /// <param name="secureFolder"></param>
+    /// <returns></returns>
+    internal static Permission CreateDynamicPermissionOf(string basePermissionName, string secureFolder)
+    {
+        if (CreatePermissionTemplate(basePermissionName) is not { } template)
+        {
+            return null;
+        }
+
+        secureFolder = secureFolder?.Trim(s_trimSecurePathChars);
+        var key = new ValueTuple<string, string>(template.Name, secureFolder);
+
+        if (s_permissionsByFolder.TryGetValue(key, out var permissionByFolder))
+        {
+            return permissionByFolder;
+        }
+
+        template = template with
+        {
+            ImpliedBy = template.ImpliedBy.Select(impliedBy => CreateDynamicPermissionOf(impliedBy.Name, secureFolder)),
+        };
+
+        var permission = template.CreateDynamicPermission(secureFolder);
+        var localPermissions = new Dictionary<ValueTuple<string, string>, Permission>(s_permissionsByFolder)
+        {
+            [key] = permission,
+        };
+
+        s_permissionsByFolder = localPermissions;
         return permission;
     }
 
@@ -158,9 +210,9 @@ public sealed class SecureMediaPermissions : IPermissionProvider
 
             var folderPath = entry.Path;
 
-            foreach (var template in s_permissionTemplates)
+            foreach (var (templateName, _) in s_permissionTemplates)
             {
-                var dynamicPermission = CreateDynamicPermission(template.Value, folderPath);
+                var dynamicPermission = CreateDynamicPermissionOf(templateName, folderPath);
                 result.Add(dynamicPermission);
                 viewRootImpliedBy.Add(dynamicPermission);
             }
