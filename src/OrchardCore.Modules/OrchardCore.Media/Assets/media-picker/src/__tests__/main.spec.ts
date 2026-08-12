@@ -54,11 +54,10 @@ vi.mock("../components/MediaFieldGallery.vue", () => ({
   },
 }));
 
-// Stub PrimeVue and its theme so createFieldApp doesn't blow up
+// Stub PrimeVue so createFieldApp doesn't blow up
 vi.mock("primevue/config", () => ({
   default: { install: vi.fn() },
 }));
-vi.mock("@primevue/themes/aura", () => ({ default: {} }));
 
 // Stub FontAwesome so library.add / FontAwesomeIcon don't fail
 vi.mock("@fortawesome/fontawesome-svg-core", () => ({

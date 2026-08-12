@@ -33,22 +33,22 @@
     <VueFinalModal
       v-model="mediaTextModalVisible"
       class="tw:flex tw:items-center tw:justify-center"
-      content-class="tw:bg-[var(--bs-body-bg)] tw:text-[var(--bs-body-color)] tw:rounded-lg tw:p-0 tw:min-w-[300px] tw:max-w-[600px] tw:w-[90vw] tw:shadow-md dark:tw:bg-[#212529] dark:tw:text-[#dee2e6] dark:tw:border dark:tw:border-[#495057]"
+      content-class="mf-modal tw:min-w-[300px] tw:max-w-[600px] tw:w-[90vw]"
     >
-      <div class="tw:p-4 tw:border-b tw:border-[var(--bs-border-color)] dark:tw:border-[#495057]">
-        <h5 class="tw:m-0 tw:text-lg tw:font-medium">{{ t.editMediaText }}</h5>
+      <div class="mf-modal-header">
+        <h5 class="mf-modal-title">{{ t.editMediaText }}</h5>
       </div>
-      <div class="tw:p-4" v-if="selectedMedia">
+      <div class="mf-modal-body" v-if="selectedMedia">
         <label class="tw:block tw:text-sm tw:font-medium tw:mb-1">{{ t.mediaText }}</label>
         <textarea
           v-model="editingMediaText"
-          class="tw:block tw:w-full tw:px-3 tw:py-1.5 tw:text-sm tw:leading-normal tw:border tw:border-[var(--bs-border-color)] tw:rounded tw:bg-[var(--bs-body-bg)] tw:text-[var(--bs-body-color)] focus:tw:border-[#7bc143] focus:tw:outline-none dark:tw:bg-[#2b3035] dark:tw:text-[#dee2e6] dark:tw:border-[#495057]"
+          class="mf-form-textarea"
           rows="3"
         ></textarea>
       </div>
-      <div class="tw:flex tw:justify-end tw:gap-2 tw:px-4 tw:py-3 tw:border-t tw:border-[var(--bs-border-color)] dark:tw:border-[#495057]">
-        <button type="button" class="tw:inline-flex tw:items-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:leading-normal tw:border tw:border-[var(--bs-border-color)] tw:rounded tw:bg-[var(--bs-body-bg)] tw:text-[var(--bs-body-color)] tw:cursor-pointer hover:tw:bg-[#e9ecef] dark:tw:bg-[#2b3035] dark:tw:text-[#dee2e6] dark:tw:border-[#495057] dark:hover:tw:bg-[#343a40]" @click="cancelMediaText">{{ t.cancel }}</button>
-        <button type="button" class="tw:inline-flex tw:items-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:leading-normal tw:border tw:border-[#7bc143] tw:rounded tw:bg-[#7bc143] tw:text-white tw:cursor-pointer hover:tw:bg-[#6aab36] hover:tw:border-[#6aab36]" @click="saveMediaText">{{ t.ok }}</button>
+      <div class="mf-modal-footer">
+        <button type="button" class="mf-btn-secondary" @click="cancelMediaText">{{ t.cancel }}</button>
+        <button type="button" class="mf-btn-primary" @click="saveMediaText">{{ t.ok }}</button>
       </div>
     </VueFinalModal>
 
@@ -56,12 +56,12 @@
     <VueFinalModal
       v-model="anchorModalVisible"
       class="tw:flex tw:items-center tw:justify-center"
-      content-class="tw:bg-[var(--bs-body-bg)] tw:text-[var(--bs-body-color)] tw:rounded-lg tw:p-0 tw:min-w-[300px] tw:max-w-[800px] tw:w-[90vw] tw:shadow-md dark:tw:bg-[#212529] dark:tw:text-[#dee2e6] dark:tw:border dark:tw:border-[#495057]"
+      content-class="mf-modal tw:min-w-[300px] tw:max-w-[800px] tw:w-[90vw]"
     >
-      <div class="tw:p-4 tw:border-b tw:border-[var(--bs-border-color)] dark:tw:border-[#495057]">
-        <h5 class="tw:m-0 tw:text-lg tw:font-medium">{{ t.editAnchor }}</h5>
+      <div class="mf-modal-header">
+        <h5 class="mf-modal-title">{{ t.editAnchor }}</h5>
       </div>
-      <div class="tw:p-4 tw:relative" v-if="selectedMedia">
+      <div class="mf-modal-body tw:relative" v-if="selectedMedia">
         <div class="tw:relative tw:inline-block tw:cursor-crosshair" @click="setAnchor">
           <img
             ref="anchorImageRef"
@@ -79,10 +79,10 @@
           </div>
         </div>
       </div>
-      <div class="tw:flex tw:justify-end tw:gap-2 tw:px-4 tw:py-3 tw:border-t tw:border-[var(--bs-border-color)] dark:tw:border-[#495057]">
-        <button type="button" class="tw:inline-flex tw:items-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:leading-normal tw:border tw:border-[var(--bs-border-color)] tw:rounded tw:bg-[var(--bs-body-bg)] tw:text-[var(--bs-body-color)] tw:cursor-pointer hover:tw:bg-[#e9ecef] dark:tw:bg-[#2b3035] dark:tw:text-[#dee2e6] dark:tw:border-[#495057] dark:hover:tw:bg-[#343a40]" @click="resetAnchor">{{ t.resetAnchor }}</button>
-        <button type="button" class="tw:inline-flex tw:items-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:leading-normal tw:border tw:border-[var(--bs-border-color)] tw:rounded tw:bg-[var(--bs-body-bg)] tw:text-[var(--bs-body-color)] tw:cursor-pointer hover:tw:bg-[#e9ecef] dark:tw:bg-[#2b3035] dark:tw:text-[#dee2e6] dark:tw:border-[#495057] dark:hover:tw:bg-[#343a40]" @click="cancelAnchor">{{ t.cancel }}</button>
-        <button type="button" class="tw:inline-flex tw:items-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:leading-normal tw:border tw:border-[#7bc143] tw:rounded tw:bg-[#7bc143] tw:text-white tw:cursor-pointer hover:tw:bg-[#6aab36] hover:tw:border-[#6aab36]" @click="saveAnchor">{{ t.ok }}</button>
+      <div class="mf-modal-footer">
+        <button type="button" class="mf-btn-secondary" @click="resetAnchor">{{ t.resetAnchor }}</button>
+        <button type="button" class="mf-btn-secondary" @click="cancelAnchor">{{ t.cancel }}</button>
+        <button type="button" class="mf-btn-primary" @click="saveAnchor">{{ t.ok }}</button>
       </div>
     </VueFinalModal>
   </div>

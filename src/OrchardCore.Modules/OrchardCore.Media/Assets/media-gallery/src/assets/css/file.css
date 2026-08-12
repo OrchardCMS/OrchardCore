@@ -3,6 +3,8 @@
    Tailwind + plain CSS (no SCSS)
    ============================================================ */
 
+@import "../../../../shared/media-admin.css";
+
 /* Tailwind v4 — no preflight, tw: prefix, BS dark mode selector */
 @import "tailwindcss" prefix(tw);
 /* Explicit source globs (relative to this file) so class detection covers all of src/ regardless of
@@ -94,6 +96,90 @@
   word-wrap: break-word;
 }
 
+.ma-btn,
+.ma-btn-link,
+.ma-btn-light,
+.ma-btn-primary,
+.storage-info-btn,
+.settings-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  font: inherit;
+  line-height: 1.5;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.ma-btn {
+  padding: 0.375rem 0.75rem;
+  min-height: calc(1.5em + 0.75rem + 2px);
+  border: 1px solid transparent;
+  border-radius: var(--oc-media-border-radius);
+}
+
+.ma-btn:focus-visible,
+.ma-btn-link:focus-visible,
+.storage-info-btn:focus-visible,
+.settings-btn:focus-visible {
+  outline: 0;
+  box-shadow: var(--oc-media-focus-ring);
+}
+
+.ma-btn-light {
+  background-color: var(--oc-media-secondary-bg);
+  border-color: var(--oc-media-border-color);
+  color: var(--oc-media-body-color);
+}
+
+.ma-btn-light:hover {
+  background-color: var(--oc-media-tertiary-bg);
+}
+
+.ma-btn-primary {
+  background-color: var(--oc-media-primary);
+  border-color: var(--oc-media-primary);
+  color: #fff;
+}
+
+.ma-btn-primary:hover {
+  background-color: color-mix(in srgb, var(--oc-media-primary) 90%, #000);
+  border-color: color-mix(in srgb, var(--oc-media-primary) 84%, #000);
+}
+
+.ma-btn-link,
+.storage-info-btn,
+.settings-btn {
+  padding: 0.375rem 0.5rem;
+  border: 1px solid transparent;
+  border-radius: var(--oc-media-border-radius);
+  background: transparent;
+  color: var(--oc-media-secondary-color);
+}
+
+.ma-btn-link:hover,
+.storage-info-btn:hover,
+.settings-btn:hover {
+  color: var(--oc-media-body-color);
+  background-color: var(--oc-media-tertiary-bg);
+}
+
+.ma-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  padding: 0.25em 0.5em;
+  border-radius: 999px;
+  background-color: var(--oc-media-tertiary-bg);
+  color: var(--oc-media-body-color);
+  font-size: 0.75em;
+  font-weight: 700;
+  line-height: 1;
+}
+
 /* ============================================================
    Scoped Reset — Neutralize host Bootstrap on bare elements
    ============================================================ */
@@ -170,11 +256,16 @@
   position: relative;
   display: block;
   padding: 0.25rem 0.5rem;
+  font: inherit;
   font-size: 0.875rem;
+  line-height: 1.5;
   color: var(--media-primary, #0d6efd);
+  text-align: center;
   text-decoration: none;
   background-color: var(--surface-0, #fff);
   border: 1px solid var(--gray-300, #dee2e6);
+  appearance: none;
+  cursor: pointer;
   transition: color 0.15s, background-color 0.15s, border-color 0.15s;
 }
 
@@ -977,7 +1068,12 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 .file-app {
   width: auto !important;
   min-width: 150px !important;
-  z-index: 2100 !important;
+  z-index: var(--oc-media-menu-zindex, 2210) !important;
+  padding: 0.25rem;
+  background-color: var(--oc-media-body-bg);
+  border: 1px solid var(--oc-media-border-color);
+  border-radius: var(--oc-media-border-radius);
+  box-shadow: var(--oc-media-box-shadow);
 }
 
 .file-app .p-menu-list {
@@ -986,26 +1082,56 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
   list-style: none;
 }
 
+.file-app .p-menu-item {
+  margin: 0;
+}
+
+.file-app .p-menu-item-content {
+  border-radius: calc(var(--oc-media-border-radius) - 1px);
+}
+
+.file-app .p-menu-item-content:hover {
+  background-color: var(--oc-media-tertiary-bg);
+}
+
 .file-app .p-menu-item-label {
   white-space: nowrap;
 }
 
 .file-app .p-menu-item-link {
-  color: var(--gray-700);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  color: var(--oc-media-body-color);
   text-decoration: none;
 }
 
 .file-app .p-menu-item-link .p-menu-item-icon {
-  color: var(--mg-text-muted, var(--gray-600));
+  width: 1rem;
+  color: var(--oc-media-secondary-color);
 }
 
 .file-app .p-menu-item-link:hover {
-  color: var(--gray-1000);
+  color: var(--oc-media-body-color);
+}
+
+.file-app .p-menu-submenu-label {
+  padding: 0.375rem 0.75rem 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--oc-media-secondary-color);
+  text-transform: uppercase;
 }
 
 /* ============================================================
    Vue Final Modal
    ============================================================ */
+.vfm {
+  z-index: var(--oc-media-modal-zindex, 2200) !important;
+}
+
 .vfm--fixed {
   position: fixed;
 }
@@ -1583,7 +1709,6 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 }
 
 #file-pager .ma-page-number {
-  min-width: 34px;
   text-align: center;
 }
 
@@ -2003,8 +2128,17 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
   color: var(--mg-text);
 }
 
+[data-bs-theme="dark"] .file-app {
+  background-color: var(--oc-media-body-bg);
+  border-color: var(--oc-media-border-color);
+}
+
+[data-bs-theme="dark"] .file-app .p-menu-item-content:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
 [data-bs-theme="dark"] .file-app .p-menu-item-link:hover {
-  color: #fff;
+  color: var(--mg-text);
 }
 
 [data-bs-theme="dark"] .fileApp #file-pager .ma-page-link {

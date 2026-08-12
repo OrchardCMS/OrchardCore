@@ -11,7 +11,6 @@ import { fas } from "@fortawesome/free-solid-svg-icons";
 import { far } from "@fortawesome/free-regular-svg-icons";
 import { createVfm } from "vue-final-modal";
 import PrimeVue from "primevue/config";
-import Aura from "@primevue/themes/aura";
 import MediaFieldBasic from "./components/MediaFieldBasic.vue";
 import MediaFieldAttached from "./components/MediaFieldAttached.vue";
 import MediaFieldGallery from "./components/MediaFieldGallery.vue";
@@ -138,17 +137,7 @@ function createFieldApp(rootComponent: any, rootProps: Record<string, unknown>) 
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   app.use(PrimeVue as any, {
-    theme: {
-      preset: Aura,
-      options: {
-        prefix: "p",
-        darkModeSelector: '[data-bs-theme="dark"]',
-        cssLayer: {
-          name: "primevue",
-          order: "theme, base, primevue, utilities",
-        },
-      },
-    },
+    unstyled: true,
   });
   app.use(vfm);
 

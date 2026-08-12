@@ -9,7 +9,6 @@ import { fas } from "@fortawesome/free-solid-svg-icons";
 import { far } from "@fortawesome/free-regular-svg-icons";
 import { createVfm } from "vue-final-modal";
 import PrimeVue, { type PrimeVueConfiguration } from "primevue/config";
-import Aura from "@primevue/themes/aura";
 import Menu from "primevue/menu";
 import TreeSelect from "primevue/treeselect";
 
@@ -31,17 +30,7 @@ export function configureMediaApp(app: VueApp) {
   // PrimeVue's exported plugin type (ObjectPlugin<any[]>) doesn't structurally match Vue's
   // Plugin<[Options]> overload, so cast it; the options object is still checked.
   app.use(PrimeVue as unknown as Plugin<[PrimeVueConfiguration]>, {
-    theme: {
-      preset: Aura,
-      options: {
-        prefix: "p",
-        darkModeSelector: '[data-bs-theme="dark"]',
-        cssLayer: {
-          name: "primevue",
-          order: "theme, base, primevue, utilities",
-        },
-      },
-    },
+    unstyled: true,
   });
   app.use(vfm);
   app.use(router);
