@@ -9,7 +9,7 @@ namespace OrchardCore.AdminMenu.Services;
 // Those are classes that add new 'AdminNodes' to a 'NavigationBuilder' using custom logic specific to the module that register them.
 // This class handles their inclusion on the admin menu.
 // This class is itself one more 'INavigationProvider' so it can be called from this module's AdminMenu.cs.
-public sealed class AdminMenuNavigationProvidersCoordinator : INavigationProvider
+public sealed class AdminMenuNavigationProvidersCoordinator : AdminNavigationProvider
 {
     private readonly IAdminMenuService _adminMenuService;
     private readonly IAuthorizationService _authorizationService;
@@ -31,14 +31,8 @@ public sealed class AdminMenuNavigationProvidersCoordinator : INavigationProvide
         _logger = logger;
     }
 
-    public async ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    protected override async ValueTask BuildAsync(NavigationBuilder builder)
     {
-        // We only add them if the caller uses the string "adminMenu".
-        if (name != NavigationConstants.AdminMenuId)
-        {
-            return;
-        }
-
         var trees = (await _adminMenuService.GetAdminMenuListAsync())
             .AdminMenu.Where(m => m.Enabled && m.MenuItems.Count > 0);
 
