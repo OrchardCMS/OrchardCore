@@ -10,7 +10,10 @@ public static class LuceneIndexPermissionHelper
     private const string PermissionNamePrefix = "QueryLucene";
     private const string PermissionNameSuffix = "Index";
 
-    private static readonly Permission s_indexPermissionTemplate = new("QueryLucene{0}Index", "Query Lucene {0} Index", new[] { LuceneSearchPermissions.ManageLuceneIndexes });
+    private static readonly PermissionTemplate s_indexPermissionTemplate = new(
+        "QueryLucene{0}Index",
+        "Query Lucene {0} Index", 
+        LuceneSearchPermissions.ManageLuceneIndexes);
 
     private static readonly ConcurrentDictionary<string, Permission> s_permissions = [];
 
@@ -24,10 +27,7 @@ public static class LuceneIndexPermissionHelper
             throw new ArgumentException($"{nameof(indexName)} cannot be null or empty");
         }
 
-        return s_permissions.GetOrAdd(indexName, indexName => new Permission(
-                string.Format(s_indexPermissionTemplate.Name, indexName),
-                string.Format(s_indexPermissionTemplate.Description, indexName),
-                s_indexPermissionTemplate.ImpliedBy));
+        return s_permissions.GetOrAdd(indexName, s_indexPermissionTemplate.CreateDynamicPermission);
     }
 
     internal static bool IsLuceneIndexPermissionClaim(RoleClaim claim) =>

@@ -16,8 +16,11 @@ public record PermissionTemplate(
         : this(name, description, category: null, impliedBy)
     {
     }
-    
-    public Permission CreateDynamicPermission(string nameValue, string descriptionValue =  null) => new(
+
+    public Permission CreateDynamicPermission(string nameValue) =>
+        CreateDynamicPermission(nameValue, nameValue);
+
+    public Permission CreateDynamicPermission(string nameValue, string descriptionValue) => new(
         string.Format(Name, nameValue),
         string.Format(Description, descriptionValue ?? nameValue),
         ImpliedBy ?? [],

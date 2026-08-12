@@ -29,8 +29,8 @@ public class DataLocalizationPermissions
     // Declared after ManageTranslations so its ImpliedBy list captures the real instance
     // rather than the default null a forward reference would read from a static field
     // initializer that hasn't run yet.
-    private static readonly Permission s_manageTranslationsForCulture =
-        new("ManageTranslations_{0}", "Manage {0} translations", [ManageTranslations]);
+    private static readonly PermissionTemplate s_manageTranslationsForCulture =
+        new("ManageTranslations_{0}", "Manage {0} translations", "Data Localization", ManageTranslations);
 
     /// <summary>
     /// Creates a dynamic permission for managing translations in a specific culture.
@@ -47,14 +47,7 @@ public class DataLocalizationPermissions
             return existingPermission;
         }
 
-        var permission = new Permission(
-            string.Format(s_manageTranslationsForCulture.Name, cultureName),
-            string.Format(s_manageTranslationsForCulture.Description, cultureDisplayName),
-            s_manageTranslationsForCulture.ImpliedBy)
-        {
-            Category = "Data Localization",
-        };
-
+        var permission = s_manageTranslationsForCulture.CreateDynamicPermission(cultureName, cultureDisplayName);
         s_culturePermissions[cultureName] = permission;
 
         return permission;

@@ -11,8 +11,10 @@ public static class ElasticsearchIndexPermissionHelper
     private const string PermissionNamePrefix = "QueryElasticsearch";
     private const string PermissionNameSuffix = "Index";
 
-    private static readonly Permission s_indexPermissionTemplate =
-        new(PermissionNamePrefix + "{0}" + PermissionNameSuffix, "Query Elasticsearch {0} Index", [Permissions.ManageElasticIndexes]);
+    private static readonly PermissionTemplate s_indexPermissionTemplate = new(
+        $"{PermissionNamePrefix}{{0}}{PermissionNameSuffix}",
+        "Query Elasticsearch {0} Index",
+        Permissions.ManageElasticIndexes);
 
     private static readonly ConcurrentDictionary<string, Permission> s_permissions = [];
 
@@ -21,10 +23,7 @@ public static class ElasticsearchIndexPermissionHelper
     {
         ArgumentException.ThrowIfNullOrEmpty(indexName);
 
-        return s_permissions.GetOrAdd(indexName, indexName => new Permission(
-                string.Format(s_indexPermissionTemplate.Name, indexName),
-                string.Format(s_indexPermissionTemplate.Description, indexName),
-                s_indexPermissionTemplate.ImpliedBy));
+        return s_permissions.GetOrAdd(indexName, s_indexPermissionTemplate.CreateDynamicPermission);
     }
 
     internal static bool IsElasticsearchIndexPermissionClaim(RoleClaim claim) =>
