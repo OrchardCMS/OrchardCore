@@ -47,6 +47,7 @@ public static class ContentTypePermissionsHelper
     /// <summary>
     /// Returns a dynamic permission for a content type, based on a global content permission template.
     /// </summary>
+    [Obsolete($"Use {nameof(CreatePermissionTemplate)} instead.")]
     public static Permission ConvertToDynamicPermission(Permission permission)
     {
         if (PermissionTemplates.TryGetValue(permission.Name, out var result))
@@ -77,28 +78,10 @@ public static class ContentTypePermissionsHelper
         };
     }
 
-    public static Permission CreateDynamicPermissionOf(Permission basePermission, ContentTypeDefinition typeDefinition) =>
-        CreateDynamicPermissionOf(basePermission.Name, typeDefinition);
-
-    public static Permission CreateDynamicPermissionOf(string basePermissionName, ContentTypeDefinition typeDefinition)
-    {
-        if (!PermissionTemplates.TryGetValue(basePermissionName, out var result))
-        {
-            return null;
-        }
-
-        var template = new PermissionTemplate(
-            result.Name,
-            result.Description,
-            $"{typeDefinition.DisplayName} Content Type - {typeDefinition.Name}",
-            result.ImpliedBy?.Select(item => CreateDynamicPermissionOf(item.Name, typeDefinition)) ?? []);
-
-        return template.CreateDynamicPermission(typeDefinition.Name, typeDefinition.DisplayName);
-    }
-
     /// <summary>
     /// Generates a permission dynamically for a content type, without a display name or category.
     /// </summary>
+    [Obsolete($"Use {nameof(CreateDynamicPermissionOf)} instead.")]
     public static Permission CreateDynamicPermission(Permission template, string contentType)
     {
         ArgumentNullException.ThrowIfNull(template);
@@ -124,5 +107,60 @@ public static class ContentTypePermissionsHelper
         s_permissionsByType = localPermissions;
 
         return permission;
+    }
+
+    /// <summary>
+    /// Returns a permission template for content types, based on a global content permission with the name of <paramref
+    /// name="basePermissionName"/>.
+    /// </summary>
+    public static PermissionTemplate CreatePermissionTemplate(string basePermissionName) =>
+        PermissionTemplates.TryGetValue(basePermissionName, out var result)
+            ? new PermissionTemplate(
+                result.Name,
+                result.Description,
+                "{1} Content Type - {0}",
+                result.ImpliedBy ?? [])
+            : null;
+
+    /// <summary>
+    /// Generates a dynamic version of the provided <paramref name="basePermission"/>, that is specific to content type
+    /// indicated by the <paramref name="typeDefinition"/>.
+    /// </summary>
+    public static Permission CreateDynamicPermissionOf(Permission basePermission, ContentTypeDefinition typeDefinition) =>
+        CreateDynamicPermissionOf(basePermission.Name, typeDefinition);
+
+    /// <summary>
+    /// Generates a permission dynamically for a content type, without a display name or category.
+    /// </summary>
+    public static Permission CreateDynamicPermissionOf(string basePermissionName, string contentType) =>
+        CreateDynamicPermissionOf(basePermissionName, contentType, contentType);
+
+    /// <summary>
+    /// Generates a dynamic version of the provided permission with the name <paramref name="basePermissionName"/>,
+    /// that is specific to a content type indicated by the <paramref name="typeDefinition"/>.
+    /// </summary>
+    public static Permission CreateDynamicPermissionOf(string basePermissionName, ContentTypeDefinition typeDefinition) =>
+        CreateDynamicPermissionOf(basePermissionName, typeDefinition.Name, typeDefinition.DisplayName);
+    
+    /// <summary>
+    /// Generates a dynamic version of the provided permission with the name <paramref name="basePermissionName"/>,
+    /// that is specific to a <paramref name="contentType"/>.
+    /// </summary>
+    private static Permission CreateDynamicPermissionOf(string basePermissionName, string contentType, string contentTypeDisplayName)
+    {
+        if (CreatePermissionTemplate(basePermissionName) is not { } template)
+        {
+            return null;
+        }
+
+        template = template with
+        {
+            ImpliedBy = template
+                .ImpliedBy
+                .Select(item => CreateDynamicPermissionOf(item.Name, contentType, contentTypeDisplayName))
+                .Where(item => item != null),
+        };
+
+        return template.CreateDynamicPermission(contentType, contentTypeDisplayName);
     }
 }

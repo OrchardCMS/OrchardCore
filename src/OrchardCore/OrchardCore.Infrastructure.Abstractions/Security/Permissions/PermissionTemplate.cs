@@ -26,6 +26,6 @@ public record PermissionTemplate(
         ImpliedBy ?? [],
         IsSecurityCritical)
     {
-        Category = Category,
+        Category = string.IsNullOrEmpty(Category) ? null : string.Format(Category, nameValue, descriptionValue),
     };
 }
