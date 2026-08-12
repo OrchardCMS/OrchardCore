@@ -21,12 +21,25 @@
             </div>
         </div>
     </div>
-
-    @foreach (var contentTypeGroup in Model.Types.GroupBy(t => t.Category))
+    @if (Model.ShowGrouping)
     {
-        <h3 class="mt-3">@contentTypeGroup.Key</h3>
+        foreach (var contentTypeGroup in Model.Types.GroupBy(t => t.Category))
+        {
+            <h3 class="mt-3">@contentTypeGroup.Key</h3>
+            <ul id="list-items" class="list-group">
+                @foreach (var type in contentTypeGroup)
+                {
+                    <li class="list-group-item" data-filter-value="@D[type.DisplayName, DataLocalizationContext.ContentType]" data-type-name="@type.Name">
+                        @Html.DisplayFor(m => type)
+                    </li>
+                }
+            </ul>
+        }
+    }
+    else
+    {
         <ul id="list-items" class="list-group">
-            @foreach (var type in contentTypeGroup)
+            @foreach (var type in Model.Types)
             {
                 <li class="list-group-item" data-filter-value="@D[type.DisplayName, DataLocalizationContext.ContentType]" data-type-name="@type.Name">
                     @Html.DisplayFor(m => type)

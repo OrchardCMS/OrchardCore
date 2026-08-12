@@ -63,6 +63,7 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
         site.BaseUrl = model.BaseUrl;
         site.TimeZoneId = model.TimeZone;
         site.PageSize = model.PageSize.Value;
+        site.ShowContentTypesGrouping = model.ShowContentTypesGrouping;
         site.UseCdn = model.UseCdn;
         site.CdnBaseUrl = model.CdnBaseUrl;
         site.ResourceDebugMode = model.ResourceDebugMode;
@@ -96,6 +97,7 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
         model.BaseUrl = site.BaseUrl;
         model.TimeZone = site.TimeZoneId;
         model.PageSize = site.PageSize;
+        model.ShowContentTypesGrouping = site.ShowContentTypesGrouping;
         model.UseCdn = site.UseCdn;
         model.CdnBaseUrl = site.CdnBaseUrl;
         model.ResourceDebugMode = site.ResourceDebugMode;

@@ -12,6 +12,8 @@ public class SiteSettingsViewModel
     [Required]
     public int? PageSize { get; set; }
 
+    public bool ShowContentTypesGrouping { get; set; }
+
     public bool UseCdn { get; set; }
     public string CdnBaseUrl { get; set; }
     public ResourceDebugMode ResourceDebugMode { get; set; }
