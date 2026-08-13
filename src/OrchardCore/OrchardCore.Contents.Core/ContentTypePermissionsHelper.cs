@@ -158,7 +158,8 @@ public static class ContentTypePermissionsHelper
             ImpliedBy = template
                 .ImpliedBy
                 .Select(item => CreateDynamicPermissionOf(item.Name, contentType, contentTypeDisplayName))
-                .Where(item => item != null),
+                .Where(item => item != null)
+                .ToArray(),
         };
 
         return template.CreateDynamicPermission(contentType, contentTypeDisplayName);
