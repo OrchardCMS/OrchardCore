@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Cache;
@@ -9,14 +8,17 @@ namespace OrchardCore.Media;
 
 public sealed class SecureMediaPermissions : IPermissionProvider
 {
-    private static readonly Permission s_viewMediaTemplate = new("ViewMediaContent_{0}", "View media content in folder '{0}'", [MediaPermissions.ViewMedia]);
+    private static readonly PermissionTemplate s_viewMediaTemplate = new(
+        "ViewMediaContent_{0}",
+        "View media content in folder '{0}'",
+        MediaPermissions.ViewMedia);
 
     private static Dictionary<ValueTuple<string, string>, Permission> s_permissionsByFolder = new();
     private static readonly char[] s_trimSecurePathChars = ['/', '\\', ' '];
-    private static readonly ReadOnlyDictionary<string, Permission> s_permissionTemplates = new(new Dictionary<string, Permission>()
+    private static readonly IReadOnlyDictionary<string, PermissionTemplate> s_permissionTemplates = new Dictionary<string, PermissionTemplate>()
     {
-        { MediaPermissions.ViewMedia.Name, s_viewMediaTemplate },
-    });
+        [MediaPermissions.ViewMedia.Name] = s_viewMediaTemplate,
+    };
 
     private readonly MediaOptions _mediaOptions;
     private readonly AttachedMediaFieldFileService _attachedMediaFieldFileService;
@@ -100,9 +102,9 @@ public sealed class SecureMediaPermissions : IPermissionProvider
     /// <summary>
     /// Returns a dynamic permission for a secure folder, based on a global view media permission template.
     /// </summary>
-    [Obsolete($"Use {nameof(CreatePermissionTemplate)} instead.")]
+    [Obsolete($"Use {nameof(CreateDynamicPermissionOf)} instead.")]
     internal static Permission ConvertToDynamicPermission(Permission permission) =>
-        s_permissionTemplates.TryGetValue(permission.Name, out var result) ? result : null;
+        s_permissionTemplates.TryGetValue(permission.Name, out var result) ? result.CreateDynamicPermission("{0}") : null;
 
     [Obsolete($"Use {nameof(CreateDynamicPermissionOf)} instead.")]
     internal static Permission CreateDynamicPermission(Permission template, string secureFolder)
@@ -135,18 +137,6 @@ public sealed class SecureMediaPermissions : IPermissionProvider
     }
 
     /// <summary>
-    /// Create a permission template based on the template identified by the <paramref name="basePermissionName"/>.
-    /// </summary>
-    internal static PermissionTemplate CreatePermissionTemplate(string basePermissionName) =>
-        s_permissionTemplates.TryGetValue(basePermissionName, out var result)
-            ? new PermissionTemplate(
-                result.Name,
-                result.Description,
-                Category: null,
-                result.ImpliedBy ?? [])
-            : null;
-
-    /// <summary>
     /// Create a dynamic permission specific to the provided <paramref name="secureFolder"/> using internal templates,
     /// based on the permission identified by the <paramref name="basePermissionName"/>.
     /// </summary>
@@ -155,7 +145,7 @@ public sealed class SecureMediaPermissions : IPermissionProvider
     /// <returns></returns>
     internal static Permission CreateDynamicPermissionOf(string basePermissionName, string secureFolder)
     {
-        if (CreatePermissionTemplate(basePermissionName) is not { } template)
+        if (!s_permissionTemplates.TryGetValue(basePermissionName, out var template))
         {
             return null;
         }
