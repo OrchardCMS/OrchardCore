@@ -1,6 +1,6 @@
 namespace OrchardCore.Security.Permissions;
 
-public record PermissionTemplate(
+public sealed record PermissionTemplate(
     string Name,
     string Description,
     string Category,
