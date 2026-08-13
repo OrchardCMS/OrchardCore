@@ -140,17 +140,6 @@ public static class ContentTypePermissionsHelper
             return null;
         }
 
-        template = template with
-        {
-            ImpliedBy = template
-                .ImpliedBy
-                .Select(item => item.Name.Contains("{0}")
-                    ? item
-                    : CreateDynamicPermissionOf(item.Name, contentType, contentTypeDisplayName))
-                .Where(item => item != null)
-                .ToArray(),
-        };
-
         return template.CreateDynamicPermission(contentType, contentTypeDisplayName);
     }
     
