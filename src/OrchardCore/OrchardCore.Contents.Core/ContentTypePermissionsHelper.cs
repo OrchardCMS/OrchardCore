@@ -47,7 +47,7 @@ public static class ContentTypePermissionsHelper
     /// <summary>
     /// Returns a dynamic permission for a content type, based on a global content permission template.
     /// </summary>
-    [Obsolete($"Use {nameof(CreatePermissionTemplate)} instead.")]
+    [Obsolete($"Use {nameof(GetPermissionTemplate)} instead.")]
     public static Permission ConvertToDynamicPermission(Permission permission) =>
         PermissionTemplates.TryGetValue(permission.Name, out var result) ? result.CreateDynamicPermission("{0}") : null;
 
@@ -106,7 +106,7 @@ public static class ContentTypePermissionsHelper
     /// Returns a permission template for content types, based on a global content permission with the name of <paramref
     /// name="basePermissionName"/>.
     /// </summary>
-    public static PermissionTemplate CreatePermissionTemplate(string basePermissionName) =>
+    public static PermissionTemplate GetPermissionTemplate(string basePermissionName) =>
         PermissionTemplates.TryGetValue(basePermissionName, out var result) ? result : null;
 
     /// <summary>
@@ -135,7 +135,7 @@ public static class ContentTypePermissionsHelper
     /// </summary>
     private static Permission CreateDynamicPermissionOf(string basePermissionName, string contentType, string contentTypeDisplayName)
     {
-        if (CreatePermissionTemplate(basePermissionName) is not { } template)
+        if (GetPermissionTemplate(basePermissionName) is not { } template)
         {
             return null;
         }
