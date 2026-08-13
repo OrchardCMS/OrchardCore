@@ -4,7 +4,7 @@ namespace OrchardCore.Users;
 
 public static class UsersPermissions
 {
-    private static readonly IReadOnlyDictionary<string, PermissionTemplate> s_userPermissionTemplates;
+    private static readonly Dictionary<string, PermissionTemplate> s_userPermissionTemplates;
     
     /// <summary>
     /// When authorizing request ManageUsers and pass an <see cref="IUser"/>
