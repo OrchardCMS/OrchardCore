@@ -29,14 +29,16 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddSingleton<ISitePropertiesMapper, SitePropertiesMapper>();
         services.Configure<TemplateOptions>(o =>
         {
             o.Scope.SetValue("Site", new ObjectValue(new LiquidSiteSettingsAccessor()));
             o.MemberAccessStrategy.Register<LiquidSiteSettingsAccessor, FluidValue>(async (obj, name, context) =>
             {
                 var liquidTemplateContext = (LiquidTemplateContext)context;
+                var services = liquidTemplateContext.Services;
 
-                var siteService = liquidTemplateContext.Services.GetRequiredService<ISiteService>();
+                var siteService = services.GetRequiredService<ISiteService>();
                 var site = await siteService.GetSiteSettingsAsync();
 
                 FluidValue result = name switch
@@ -59,7 +61,7 @@ public sealed class Startup : StartupBase
                     nameof(ISite.HomeRoute) => new ObjectValue(site.HomeRoute),
                     nameof(ISite.AppendVersion) => BooleanValue.Create(site.AppendVersion),
                     nameof(ISite.CacheMode) => new StringValue(site.CacheMode.ToString()),
-                    nameof(ISite.Properties) => new ObjectValue(site.Properties),
+                    nameof(ISite.Properties) => await services.GetRequiredService<ISitePropertiesMapper>().MapAsync(site),
                     _ => NilValue.Instance
                 };
 
