@@ -205,7 +205,7 @@ public sealed class SecureMediaPermissions : IPermissionProvider
 
             var folderPath = entry.Path;
 
-            foreach (var (templateName, _) in s_permissionTemplates)
+            foreach (var templateName in s_permissionTemplates.Keys)
             {
                 var dynamicPermission = CreateDynamicPermissionOf(templateName, folderPath);
                 result.Add(dynamicPermission);
