@@ -5,10 +5,11 @@ public record PermissionTemplate(
     string Description,
     string Category,
     IEnumerable<Permission> ImpliedBy,
+    IEnumerable<PermissionTemplate> ImpliedByTemplates,
     bool IsSecurityCritical = false)
 {
     public PermissionTemplate(string name, string description, string category = null, params Permission[] impliedBy)
-        : this(name, description, category, impliedBy, IsSecurityCritical: false)
+        : this(name, description, category, impliedBy, ImpliedByTemplates: [], IsSecurityCritical: false)
     {
     }
 
@@ -23,7 +24,7 @@ public record PermissionTemplate(
     public Permission CreateDynamicPermission(string nameValue, string descriptionValue) => new(
         string.Format(Name, nameValue),
         string.Format(Description, descriptionValue ?? nameValue),
-        ImpliedBy ?? [],
+        [.. ImpliedBy, .. ImpliedByTemplates.Select(template => template.CreateDynamicPermission(nameValue, descriptionValue))],
         IsSecurityCritical)
     {
         Category = string.IsNullOrEmpty(Category) ? null : string.Format(Category, nameValue, descriptionValue),
