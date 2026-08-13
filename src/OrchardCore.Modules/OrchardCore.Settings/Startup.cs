@@ -1,11 +1,14 @@
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -64,8 +67,15 @@ public sealed class Startup : StartupBase
 [Feature("OrchardCore.Liquid.Core")]
 public sealed class LiquidStartup : StartupBase
 {
+    private readonly IShellConfiguration _configuration;
+
+    public LiquidStartup(IShellConfiguration configuration) =>
+        _configuration = configuration;
+
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.Configure<SettingsLiquidOptions>(_configuration.GetSection("OrchardCore_Settings_Liquid"));
+        
         services.AddSingleton<ISitePropertiesLiquidMapper, SitePropertiesLiquidMapper>();
         services.Configure<TemplateOptions>(o =>
         {
