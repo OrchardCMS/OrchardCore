@@ -49,7 +49,7 @@ function readConfig(el: HTMLElement): IMediaFieldConfig {
     allowedExtensions: dataset.allowedExtensions || "",
     mediaItemUrl: dataset.mediaItemUrl || "",
     mediaItemsUrl: dataset.mediaItemsUrl || "",
-    mediaAppTranslations: dataset.mediaAppTranslations || "",
+    mediaAppTranslations: dataset.mediaGalleryTranslations || dataset.mediaAppTranslations || "",
     basePath: dataset.basePath || "",
     uploadFilesUrl: dataset.uploadFilesUrl || "",
     tusEnabled: dataset.tusEnabled === "true",
