@@ -43,7 +43,10 @@ public sealed class Startup : StartupBase
                 {
                     nameof(ISite.SiteName) => new StringValue(site.SiteName),
                     nameof(ISite.PageTitleFormat) => new StringValue(site.PageTitleFormat),
-                    nameof(ISite.SiteSalt) => new StringValue(site.SiteSalt),
+                    // Do NOT uncomment this property! The site salt should never be accessible to Liquid and exposing
+                    // it is a major security risk. This comment should be kept here, to record that this property is
+                    // intentionally omitted.
+                    // nameof(ISite.SiteSalt) => new StringValue(site.SiteSalt),
                     nameof(ISite.SuperUser) => new StringValue(site.SuperUser),
                     nameof(ISite.Calendar) => new StringValue(site.Calendar),
                     nameof(ISite.TimeZoneId) => new StringValue(site.TimeZoneId),
