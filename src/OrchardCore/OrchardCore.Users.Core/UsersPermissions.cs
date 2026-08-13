@@ -15,19 +15,13 @@ public static class UsersPermissions
     /// <summary>
     /// Allows viewing user profiles.
     /// </summary>
-    public static readonly Permission ViewUsers = new("View Users", "View user profiles", [ManageUsers]);
-
-    public static readonly Permission EditUsers = new("EditUsers", "Edit any user", [ManageUsers], true);
-
-    public static readonly Permission DeleteUsers = new("DeleteUsers", "Delete any user", [ManageUsers], true);
-
-    public static readonly Permission ListUsers = new("ListUsers", "List all users", [EditUsers, DeleteUsers]);
-
-    public static readonly Permission AssignRoleToUsers = new("AssignRoleToUsers", "Assign any role to users", true);
-
-    public static readonly Permission DisableTwoFactorAuthenticationForUsers = new("DisableTwoFactorAuthenticationForUsers", "Disable two-factor authentication for any user", [ManageUsers], true);
-
-    public static readonly Permission EditOwnUser = new("ManageOwnUserInformation", "Edit own user information", [EditUsers]);
+    public static readonly Permission ViewUsers;
+    public static readonly Permission EditUsers;
+    public static readonly Permission DeleteUsers;
+    public static readonly Permission ListUsers;
+    public static readonly Permission AssignRoleToUsers;
+    public static readonly Permission DisableTwoFactorAuthenticationForUsers;
+    public static readonly Permission EditOwnUser;
 
     public static Permission CreateEditUsersInRolePermission(string roleName) =>
         s_userPermissionTemplates[EditUsers.Name].CreateDynamicPermission(roleName);
@@ -46,13 +40,24 @@ public static class UsersPermissions
 
     static UsersPermissions()
     {
+        ViewUsers = new("View Users", "View user profiles", [ManageUsers]);
+        EditUsers = new("EditUsers", "Edit any user", [ManageUsers], true);
+        DeleteUsers = new("DeleteUsers", "Delete any user", [ManageUsers], true);
+        ListUsers = new("ListUsers", "List all users", [EditUsers, DeleteUsers]);
+        AssignRoleToUsers = new("AssignRoleToUsers", "Assign any role to users", true);
+        DisableTwoFactorAuthenticationForUsers = new("DisableTwoFactorAuthenticationForUsers", "Disable two-factor authentication for any user", [ManageUsers], true);
+        EditOwnUser = new("ManageOwnUserInformation", "Edit own user information", [EditUsers]);
+        
         s_userPermissionTemplates = new Dictionary<string, PermissionTemplate>
         {
-            [EditUsers.Name] = new("EditUsersInRole_{0}", "Edit users in {0} role", null, [EditUsers], true),
-            [DeleteUsers.Name] = new("DeleteUsersInRole_{0}", "Delete users in {0} role", null, [DeleteUsers], true),
-            [ListUsers.Name] = new("ListUsersInRole_{0}", "List users in {0} role", null, [ListUsers]),
-            [AssignRoleToUsers.Name] = new("AssignRoleToUsers_{0}", "Assign {0} role to users", null, [AssignRoleToUsers], true),
-            [ManageUsers.Name] = new("ManageUsersInRole_{0}", "Manage users in {0} role", null, [ManageUsers], true),
+            [EditUsers.Name] = CreateTemplate("EditUsersInRole", "Edit users in {0} role", EditUsers),
+            [DeleteUsers.Name] = CreateTemplate("DeleteUsersInRole", "Delete users in {0} role", DeleteUsers),
+            [ListUsers.Name] = CreateTemplate("ListUsersInRole", "List users in {0} role", ListUsers),
+            [AssignRoleToUsers.Name] = CreateTemplate("AssignRoleToUsers", "Assign {0} role to users", AssignRoleToUsers),
+            [ManageUsers.Name] = CreateTemplate("ManageUsersInRole", "Manage users in {0} role", ManageUsers),
         };
     }
+
+    private static PermissionTemplate CreateTemplate(string nameBase, string description, Permission impliedBy) =>
+        new(nameBase + "_{0}", description, Category: null, [impliedBy], [], impliedBy.IsSecurityCritical);
 }
