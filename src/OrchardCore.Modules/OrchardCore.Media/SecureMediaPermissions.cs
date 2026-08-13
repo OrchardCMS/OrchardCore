@@ -101,43 +101,6 @@ public sealed class SecureMediaPermissions : IPermissionProvider
     }
 
     /// <summary>
-    /// Returns a dynamic permission for a secure folder, based on a global view media permission template.
-    /// </summary>
-    [Obsolete($"Use {nameof(CreateDynamicPermissionOf)} instead.")]
-    internal static Permission ConvertToDynamicPermission(Permission permission) =>
-        s_permissionTemplates.TryGetValue(permission.Name, out var result) ? result.CreateDynamicPermission("{0}") : null;
-
-    [Obsolete($"Use {nameof(CreateDynamicPermissionOf)} instead.")]
-    internal static Permission CreateDynamicPermission(Permission template, string secureFolder)
-    {
-        ArgumentNullException.ThrowIfNull(template);
-
-        secureFolder = secureFolder?.Trim(s_trimSecurePathChars);
-
-        var key = new ValueTuple<string, string>(template.Name, secureFolder);
-
-        if (s_permissionsByFolder.TryGetValue(key, out var permission))
-        {
-            return permission;
-        }
-
-        permission = new Permission(
-            string.Format(template.Name, secureFolder),
-            string.Format(template.Description, secureFolder),
-            (template.ImpliedBy ?? []).Select(t => CreateDynamicPermission(t, secureFolder))
-        );
-
-        var localPermissions = new Dictionary<ValueTuple<string, string>, Permission>(s_permissionsByFolder)
-        {
-            [key] = permission,
-        };
-
-        s_permissionsByFolder = localPermissions;
-
-        return permission;
-    }
-
-    /// <summary>
     /// Create a dynamic permission specific to the provided <paramref name="secureFolder"/> using internal templates,
     /// based on the permission identified by the <paramref name="basePermissionName"/>.
     /// </summary>
