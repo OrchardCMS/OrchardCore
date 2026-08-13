@@ -259,20 +259,30 @@
   font: inherit;
   font-size: 0.875rem;
   line-height: 1.5;
-  color: var(--media-primary, #0d6efd);
+  color: var(--bs-pagination-color, var(--media-primary, #0d6efd));
   text-align: center;
   text-decoration: none;
-  background-color: var(--surface-0, #fff);
-  border: 1px solid var(--gray-300, #dee2e6);
+  background-color: var(--bs-pagination-bg, var(--surface-0, #fff));
+  border: 1px solid var(--bs-pagination-border-color, var(--gray-300, #dee2e6));
   appearance: none;
   cursor: pointer;
-  transition: color 0.15s, background-color 0.15s, border-color 0.15s;
+  transition: color 0.15s, background-color 0.15s, border-color 0.15s, box-shadow 0.15s;
 }
 
 .ma-page-link:hover {
-  color: #0a58ca;
-  background-color: var(--gray-200, #e9ecef);
-  border-color: var(--gray-300, #dee2e6);
+  z-index: 2;
+  color: var(--bs-pagination-hover-color, #0a58ca);
+  background-color: var(--bs-pagination-hover-bg, var(--gray-200, #e9ecef));
+  border-color: var(--bs-pagination-hover-border-color, var(--gray-300, #dee2e6));
+}
+
+.ma-page-link:focus-visible {
+  z-index: 3;
+  color: var(--bs-pagination-focus-color, var(--bs-pagination-hover-color, #0a58ca));
+  background-color: var(--bs-pagination-focus-bg, var(--bs-pagination-hover-bg, var(--gray-200, #e9ecef)));
+  border-color: var(--bs-pagination-focus-border-color, var(--bs-pagination-hover-border-color, var(--gray-300, #dee2e6)));
+  outline: 0;
+  box-shadow: var(--bs-pagination-focus-box-shadow, var(--oc-media-focus-ring));
 }
 
 .ma-page-item:first-child .ma-page-link {
@@ -291,16 +301,16 @@
 
 .ma-page-item.active .ma-page-link {
   z-index: 3;
-  color: #fff;
-  background-color: var(--media-primary, #0d6efd);
-  border-color: var(--media-primary, #0d6efd);
+  color: var(--bs-pagination-active-color, #fff);
+  background-color: var(--bs-pagination-active-bg, var(--media-primary, #0d6efd));
+  border-color: var(--bs-pagination-active-border-color, var(--media-primary, #0d6efd));
 }
 
 .ma-page-item.is-disabled .ma-page-link {
-  color: var(--gray-400, #ced4da);
+  color: var(--bs-pagination-disabled-color, var(--gray-400, #ced4da));
   pointer-events: none;
-  background-color: #fff;
-  border-color: var(--gray-300, #dee2e6);
+  background-color: var(--bs-pagination-disabled-bg, #fff);
+  border-color: var(--bs-pagination-disabled-border-color, var(--gray-300, #dee2e6));
 }
 
 
@@ -1067,13 +1077,14 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
    ============================================================ */
 .file-app {
   width: auto !important;
-  min-width: 150px !important;
+  min-width: var(--bs-dropdown-min-width, 10rem) !important;
   z-index: var(--oc-media-menu-zindex, 2210) !important;
-  padding: 0.25rem;
-  background-color: var(--oc-media-body-bg);
-  border: 1px solid var(--oc-media-border-color);
-  border-radius: var(--oc-media-border-radius);
-  box-shadow: var(--oc-media-box-shadow);
+  padding: var(--bs-dropdown-padding-y, 0.5rem) 0;
+  color: var(--bs-dropdown-color, var(--oc-media-body-color));
+  background-color: var(--bs-dropdown-bg, var(--oc-media-body-bg));
+  border: var(--bs-dropdown-border-width, 1px) solid var(--bs-dropdown-border-color, var(--oc-media-border-color));
+  border-radius: var(--bs-dropdown-border-radius, var(--oc-media-border-radius));
+  box-shadow: var(--bs-dropdown-box-shadow, var(--oc-media-box-shadow));
 }
 
 .file-app .p-menu-list {
@@ -1087,11 +1098,12 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 }
 
 .file-app .p-menu-item-content {
-  border-radius: calc(var(--oc-media-border-radius) - 1px);
+  border-radius: 0;
 }
 
 .file-app .p-menu-item-content:hover {
-  background-color: var(--oc-media-tertiary-bg);
+  color: var(--bs-dropdown-link-hover-color, var(--oc-media-body-color));
+  background-color: var(--bs-dropdown-link-hover-bg, var(--oc-media-tertiary-bg));
 }
 
 .file-app .p-menu-item-label {
@@ -1103,18 +1115,24 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
   align-items: center;
   gap: 0.5rem;
   width: 100%;
-  padding: 0.5rem 0.75rem;
-  color: var(--oc-media-body-color);
+  padding: var(--bs-dropdown-item-padding-y, 0.25rem) var(--bs-dropdown-item-padding-x, 1rem);
+  color: var(--bs-dropdown-link-color, var(--oc-media-body-color));
+  font-size: var(--bs-dropdown-font-size, 0.875rem);
   text-decoration: none;
 }
 
 .file-app .p-menu-item-link .p-menu-item-icon {
   width: 1rem;
-  color: var(--oc-media-secondary-color);
+  color: var(--bs-dropdown-link-color, var(--oc-media-secondary-color));
 }
 
 .file-app .p-menu-item-link:hover {
-  color: var(--oc-media-body-color);
+  color: var(--bs-dropdown-link-hover-color, var(--oc-media-body-color));
+}
+
+.file-app .p-menu-item-link:focus-visible {
+  outline: 0;
+  box-shadow: none;
 }
 
 .file-app .p-menu-submenu-label {
@@ -2124,27 +2142,16 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
   color: var(--mg-text-muted);
 }
 
-[data-bs-theme="dark"] .file-app .p-menu-item-link {
-  color: var(--mg-text);
+[data-bs-theme="dark"] .fileApp #file-pager .ma-page-item:not(.active) .ma-page-link {
+  background-color: var(--bs-pagination-bg, transparent);
+  color: var(--bs-pagination-color, var(--mg-text));
+  border-color: var(--bs-pagination-border-color, var(--mg-border));
 }
 
-[data-bs-theme="dark"] .file-app {
-  background-color: var(--oc-media-body-bg);
-  border-color: var(--oc-media-border-color);
-}
-
-[data-bs-theme="dark"] .file-app .p-menu-item-content:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-[data-bs-theme="dark"] .file-app .p-menu-item-link:hover {
-  color: var(--mg-text);
-}
-
-[data-bs-theme="dark"] .fileApp #file-pager .ma-page-link {
-  background-color: transparent;
-  color: var(--mg-text);
-  border-color: var(--mg-border);
+[data-bs-theme="dark"] .fileApp #file-pager .ma-page-item.active .ma-page-link {
+  color: var(--bs-pagination-active-color, #fff);
+  background-color: var(--bs-pagination-active-bg, var(--media-primary, #0d6efd));
+  border-color: var(--bs-pagination-active-border-color, var(--media-primary, #0d6efd));
 }
 
 [data-bs-theme="dark"] .fileApp ol.file-items-grid .card {
