@@ -17,9 +17,9 @@ public class SitePropertiesLiquidMapper : ISitePropertiesLiquidMapper
 
         foreach (var name in _options.PermittedSiteProperties ?? [])
         {
-            if (site.Properties.TryGetPropertyValue(name, out var node))
+            if (site.Properties.TryGetPropertyValue(name, out var node) && node != null)
             {
-                json[name] = node;
+                json[name] = node.DeepClone();
             }
         }
 
