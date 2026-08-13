@@ -4,6 +4,8 @@ namespace OrchardCore.Users;
 
 public static class UsersPermissions
 {
+    private static readonly IReadOnlyDictionary<string, PermissionTemplate> s_userPermissionTemplates;
+    
     /// <summary>
     /// When authorizing request ManageUsers and pass an <see cref="IUser"/>
     /// Do not request a dynamic permission unless you are checking if the user can manage a specific role.
@@ -28,26 +30,29 @@ public static class UsersPermissions
     public static readonly Permission EditOwnUser = new("ManageOwnUserInformation", "Edit own user information", [EditUsers]);
 
     public static Permission CreateEditUsersInRolePermission(string roleName) =>
-        CreateDynamicPermission(roleName, new Permission("EditUsersInRole_{0}", "Edit users in {0} role", [EditUsers], true));
+        s_userPermissionTemplates[EditUsers.Name].CreateDynamicPermission(roleName);
 
     public static Permission CreateDeleteUsersInRolePermission(string roleName) =>
-        CreateDynamicPermission(roleName, new Permission("DeleteUsersInRole_{0}", "Delete users in {0} role", [DeleteUsers], true));
+        s_userPermissionTemplates[DeleteUsers.Name].CreateDynamicPermission(roleName);
 
     public static Permission CreateListUsersInRolePermission(string roleName) =>
-        CreateDynamicPermission(roleName, new Permission("ListUsersInRole_{0}", "List users in {0} role", [ListUsers]));
+        s_userPermissionTemplates[ListUsers.Name].CreateDynamicPermission(roleName);
 
     public static Permission CreateAssignRoleToUsersPermission(string roleName) =>
-        CreateDynamicPermission(roleName, new Permission("AssignRoleToUsers_{0}", "Assign {0} role to users", [AssignRoleToUsers], true));
+        s_userPermissionTemplates[AssignRoleToUsers.Name].CreateDynamicPermission(roleName);
 
     public static Permission CreatePermissionForManageUsersInRole(string name) =>
-        CreateDynamicPermission(name, new Permission("ManageUsersInRole_{0}", "Manage users in {0} role", [ManageUsers], true));
+        s_userPermissionTemplates[ManageUsers.Name].CreateDynamicPermission(name);
 
-    // Dynamic permission template.
-    private static Permission CreateDynamicPermission(string roleName, Permission permission)
-        => new(
-            string.Format(permission.Name, roleName),
-            string.Format(permission.Description, roleName),
-            permission.ImpliedBy,
-            permission.IsSecurityCritical
-        );
+    static UsersPermissions()
+    {
+        s_userPermissionTemplates = new Dictionary<string, PermissionTemplate>
+        {
+            [EditUsers.Name] = new("EditUsersInRole_{0}", "Edit users in {0} role", null, [EditUsers], true),
+            [DeleteUsers.Name] = new("DeleteUsersInRole_{0}", "Delete users in {0} role", null, [DeleteUsers], true),
+            [ListUsers.Name] = new("ListUsersInRole_{0}", "List users in {0} role", null, [ListUsers]),
+            [AssignRoleToUsers.Name] = new("AssignRoleToUsers_{0}", "Assign {0} role to users", null, [AssignRoleToUsers], true),
+            [ManageUsers.Name] = new("ManageUsersInRole_{0}", "Manage users in {0} role", null, [ManageUsers], true),
+        };
+    }
 }
