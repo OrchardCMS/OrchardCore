@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Media.Services;
 using OrchardCore.Security.Permissions;
+using System.Collections.ObjectModel;
 
 namespace OrchardCore.Media;
 
@@ -15,10 +16,10 @@ public sealed class SecureMediaPermissions : IPermissionProvider
 
     private static Dictionary<ValueTuple<string, string>, Permission> s_permissionsByFolder = new();
     private static readonly char[] s_trimSecurePathChars = ['/', '\\', ' '];
-    private static readonly IReadOnlyDictionary<string, PermissionTemplate> s_permissionTemplates = new Dictionary<string, PermissionTemplate>()
+    private static readonly ReadOnlyDictionary<string, PermissionTemplate> s_permissionTemplates = new Dictionary<string, PermissionTemplate>()
     {
         [MediaPermissions.ViewMedia.Name] = s_viewMediaTemplate,
-    };
+    }.AsReadOnly();
 
     private readonly MediaOptions _mediaOptions;
     private readonly AttachedMediaFieldFileService _attachedMediaFieldFileService;
