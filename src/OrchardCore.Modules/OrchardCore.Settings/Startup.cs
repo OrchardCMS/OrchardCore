@@ -29,7 +29,44 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddSingleton<ISitePropertiesMapper, SitePropertiesMapper>();
+        services.AddScoped<ISetupEventHandler, SetupEventHandler>();
+        services.AddPermissionProvider<Permissions>();
+
+        services.AddRolesCoreServices()
+            .AddScoped<IAuthorizationHandler, SuperUserHandler>()
+            .AddScoped<IAuthorizationHandler, SiteSettingsAuthorizationHandler>();
+
+        services.AddRecipeExecutionStep<SettingsStep>();
+        services.AddSingleton<ISiteService, SiteService>();
+
+        // Site Settings editor
+        services.AddSiteDisplayDriver<DefaultSiteSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<DebugSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<ButtonsSettingsDisplayDriver>();
+        services.AddSiteSettingsPermission(DefaultSiteSettingsDisplayDriver.GroupId, SettingsPermissions.ManageGeneralSettings);
+        services.AddSiteSettingsPermission(DebugSettingsDisplayDriver.GroupId, SettingsPermissions.ManageDebuggingSettings);
+        services.AddNavigationProvider<AdminMenu>();
+
+        services.AddScoped<ITimeZoneSelector, DefaultTimeZoneSelector>();
+
+        services.AddDeployment<SiteSettingsDeploymentSource, SiteSettingsDeploymentStep, SiteSettingsDeploymentStepDriver>();
+
+        services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentSiteNameProvider>();
+
+        services.AddTransient<IPostConfigureOptions<ResourceOptions>, ResourceOptionsConfiguration>();
+        services.AddTransient<IPostConfigureOptions<PagerOptions>, PagerOptionsConfiguration>();
+        services.AddTransient<IConfigureOptions<ShapeRenderingOptions>, ShapeRenderingOptionsConfiguration>();
+
+        services.AddScoped<IModularTenantEvents, PreloadSiteSettingsTenantEventHandler>();
+    }
+}
+
+[Feature("OrchardCore.Liquid.Core")]
+public sealed class LiquidStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddSingleton<ISitePropertiesLiquidMapper, SitePropertiesLiquidMapper>();
         services.Configure<TemplateOptions>(o =>
         {
             o.Scope.SetValue("Site", new ObjectValue(new LiquidSiteSettingsAccessor()));
@@ -61,43 +98,13 @@ public sealed class Startup : StartupBase
                     nameof(ISite.HomeRoute) => new ObjectValue(site.HomeRoute),
                     nameof(ISite.AppendVersion) => BooleanValue.Create(site.AppendVersion),
                     nameof(ISite.CacheMode) => new StringValue(site.CacheMode.ToString()),
-                    nameof(ISite.Properties) => await services.GetRequiredService<ISitePropertiesMapper>().MapAsync(site),
+                    nameof(ISite.Properties) => await services.GetRequiredService<ISitePropertiesLiquidMapper>().MapAsync(site),
                     _ => NilValue.Instance
                 };
 
                 return result;
             });
         });
-
-        services.AddScoped<ISetupEventHandler, SetupEventHandler>();
-        services.AddPermissionProvider<Permissions>();
-
-        services.AddRolesCoreServices()
-            .AddScoped<IAuthorizationHandler, SuperUserHandler>()
-            .AddScoped<IAuthorizationHandler, SiteSettingsAuthorizationHandler>();
-
-        services.AddRecipeExecutionStep<SettingsStep>();
-        services.AddSingleton<ISiteService, SiteService>();
-
-        // Site Settings editor
-        services.AddSiteDisplayDriver<DefaultSiteSettingsDisplayDriver>();
-        services.AddSiteDisplayDriver<DebugSettingsDisplayDriver>();
-        services.AddSiteDisplayDriver<ButtonsSettingsDisplayDriver>();
-        services.AddSiteSettingsPermission(DefaultSiteSettingsDisplayDriver.GroupId, SettingsPermissions.ManageGeneralSettings);
-        services.AddSiteSettingsPermission(DebugSettingsDisplayDriver.GroupId, SettingsPermissions.ManageDebuggingSettings);
-        services.AddNavigationProvider<AdminMenu>();
-
-        services.AddScoped<ITimeZoneSelector, DefaultTimeZoneSelector>();
-
-        services.AddDeployment<SiteSettingsDeploymentSource, SiteSettingsDeploymentStep, SiteSettingsDeploymentStepDriver>();
-
-        services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentSiteNameProvider>();
-
-        services.AddTransient<IPostConfigureOptions<ResourceOptions>, ResourceOptionsConfiguration>();
-        services.AddTransient<IPostConfigureOptions<PagerOptions>, PagerOptionsConfiguration>();
-        services.AddTransient<IConfigureOptions<ShapeRenderingOptions>, ShapeRenderingOptionsConfiguration>();
-
-        services.AddScoped<IModularTenantEvents, PreloadSiteSettingsTenantEventHandler>();
     }
 }
 
