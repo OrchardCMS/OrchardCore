@@ -59,5 +59,8 @@ public static class UsersPermissions
     }
 
     private static PermissionTemplate CreateTemplate(string nameBase, string description, Permission impliedBy) =>
-        new(nameBase + "_{0}", description, Category: null, [impliedBy], [], impliedBy.IsSecurityCritical);
+        new(nameBase + "_{0}", description, impliedBy)
+        {
+            IsSecurityCritical = impliedBy.IsSecurityCritical,
+        };
 }

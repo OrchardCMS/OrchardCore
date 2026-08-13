@@ -142,11 +142,14 @@ public static class ContentTypePermissionsHelper
 
         return template.CreateDynamicPermission(contentType, contentTypeDisplayName);
     }
-    
+
     private static PermissionTemplate CreateTemplate(
         string nameBase,
         string description,
         Permission impliedBy,
-        params PermissionTemplate[] impliedByTemplate) =>
-        new(nameBase + "_{0}", description, Category: "{1} Content Type - {0}", [impliedBy], impliedByTemplate);
+        params PermissionTemplate[] impliedByTemplates) =>
+        new(nameBase + "_{0}", description, "{1} Content Type - {0}", impliedBy)
+        {
+            ImpliedByTemplates = impliedByTemplates,
+        };
 }

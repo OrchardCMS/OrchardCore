@@ -1,16 +1,20 @@
 namespace OrchardCore.Security.Permissions;
 
-public sealed record PermissionTemplate(
-    string Name,
-    string Description,
-    string Category,
-    IEnumerable<Permission> ImpliedBy,
-    IEnumerable<PermissionTemplate> ImpliedByTemplates,
-    bool IsSecurityCritical = false)
+public sealed record PermissionTemplate
 {
-    public PermissionTemplate(string name, string description, string category = null, params Permission[] impliedBy)
-        : this(name, description, category, impliedBy, ImpliedByTemplates: [], IsSecurityCritical: false)
+    public string Name { get; init; }
+    public string Description { get; init; }
+    public string Category { get; init; }
+    public IEnumerable<Permission> ImpliedBy { get; init; } = [];
+    public IEnumerable<PermissionTemplate> ImpliedByTemplates { get; init; } = [];
+    public bool IsSecurityCritical { get; init; }
+    
+    public PermissionTemplate(string name, string description = null, string category = null, params Permission[] impliedBy)
     {
+        Name = name;
+        Description = description;
+        Category = category;
+        ImpliedBy = impliedBy ?? [];
     }
 
     public PermissionTemplate(string name, string description, params Permission[] impliedBy)
