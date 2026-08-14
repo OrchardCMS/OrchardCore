@@ -10,7 +10,7 @@ This skill guides you through creating new OrchardCore modules following project
 ## Prerequisites
 
 - OrchardCore repository at `D:\orchardcore`
-- .NET SDK 11.0 Preview 6+ installed
+- .NET SDK 11.0 Preview 7+ installed
 
 ## Module Creation Workflow
 

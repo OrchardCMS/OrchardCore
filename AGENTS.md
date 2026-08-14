@@ -14,7 +14,7 @@ Orchard Core is an open-source, modular, multi-tenant application framework and 
 
 ## Prerequisites
 
-- **.NET SDK**: Version 11.0 Preview 6+ (see `global.json` for exact version requirements)
+- **.NET SDK**: Version 11.0 Preview 7+ (see `global.json` for exact version requirements)
 - **Node.js**: Version 22.x (for asset compilation)
 - **Yarn**: Version 4.x (package manager for frontend assets)
 

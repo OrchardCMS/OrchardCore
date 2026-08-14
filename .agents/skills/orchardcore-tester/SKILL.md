@@ -10,7 +10,7 @@ This skill guides you through testing OrchardCore CMS features using browser aut
 ## Prerequisites
 
 - OrchardCore repository (working directory)
-- .NET SDK 11.0 Preview 6+ installed
+- .NET SDK 11.0 Preview 7+ installed
 - `playwright-cli` skill available, with a browser engine installed.
   On macOS (or any machine without Chrome) use webkit:
   ```bash
