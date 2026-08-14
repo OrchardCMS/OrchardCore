@@ -64,7 +64,7 @@ public sealed class Startup : StartupBase
     }
 }
 
-[Feature("OrchardCore.Liquid.Core")]
+[RequireFeatures("OrchardCore.Liquid.Core")]
 public sealed class LiquidStartup : StartupBase
 {
     private readonly IShellConfiguration _configuration;

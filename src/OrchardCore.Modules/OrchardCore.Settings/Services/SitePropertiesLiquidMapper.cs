@@ -4,7 +4,7 @@ using System.Text.Json.Nodes;
 
 namespace OrchardCore.Settings.Services;
 
-public class SitePropertiesLiquidMapper : ISitePropertiesLiquidMapper
+internal sealed class SitePropertiesLiquidMapper : ISitePropertiesLiquidMapper
 {
     private readonly SettingsLiquidOptions _options;
 
