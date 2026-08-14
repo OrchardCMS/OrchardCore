@@ -50,7 +50,6 @@ public class CompositionStrategy : ICompositionStrategy
             {
                 if (RequireFeaturesAttribute.IsAlwaysComposedForType(exportedType))
                 {
-                    alwaysComposedTypes.Add(exportedType);
                     continue;
                 }
 
@@ -68,7 +67,7 @@ public class CompositionStrategy : ICompositionStrategy
             }
         }
 
-        var allFeatures = _extensionManager.GetFeatures().ToArray();
+        var allFeatures = _extensionManager.GetFeatures();
         foreach (var feature in allFeatures)
         {
             foreach (var exportedType in _typeFeatureProvider.GetTypesForFeature(feature))
