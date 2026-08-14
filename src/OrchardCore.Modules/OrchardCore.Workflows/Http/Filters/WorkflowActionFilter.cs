@@ -105,13 +105,16 @@ internal sealed class WorkflowActionFilter : IAsyncActionFilter
         }
     }
 
-    private async Task ProcessWorkflowsAsync(RouteValueDictionary routeValues, IEnumerable<Models.WorkflowRoutesEntry> workflowTypeEntries, IEnumerable<Models.WorkflowRoutesEntry> workflowEntries, ActionExecutionDelegate next)
+   private async Task ProcessWorkflowsAsync(RouteValueDictionary routeValues, IEnumerable<Models.WorkflowRoutesEntry> workflowTypeEntries, IEnumerable<Models.WorkflowRoutesEntry> workflowEntries, ActionExecutionDelegate next)
+{
+    if (workflowTypeEntries.Any())
     {
-        if (workflowTypeEntries.Any())
+        var workflowTypeIds = workflowTypeEntries.Select(x => long.Parse(x.WorkflowId)).ToList();
+        var correlationId = routeValues.GetValue<string>("correlationid");
+
+        try
         {
-            var workflowTypeIds = workflowTypeEntries.Select(x => long.Parse(x.WorkflowId)).ToList();
             var workflowTypes = (await _workflowTypeStore.GetAsync(workflowTypeIds)).ToDictionary(x => x.Id);
-            var correlationId = routeValues.GetValue<string>("correlationid");
 
             foreach (var entry in workflowTypeEntries)
             {
@@ -146,12 +149,20 @@ internal sealed class WorkflowActionFilter : IAsyncActionFilter
                 }
             }
         }
-
-        if (workflowEntries.Any())
+        catch (System.Collections.Generic.KeyNotFoundException ex)
         {
-            var workflowIds = workflowEntries.Select(x => x.WorkflowId).ToList();
+            _logger.LogWarning(ex, "Stale workflow route data detected in cache. A workflow type could not be resolved from the database. Skipping workflow type execution.");
+        }
+    }
+
+    if (workflowEntries.Any())
+    {
+        var workflowIds = workflowEntries.Select(x => x.WorkflowId).ToList();
+        var correlationId = routeValues.GetValue<string>("correlationid");
+
+        try
+        {
             var workflows = (await _workflowStore.GetAsync(workflowIds)).ToDictionary(x => x.WorkflowId);
-            var correlationId = routeValues.GetValue<string>("correlationid");
 
             foreach (var entry in workflowEntries)
             {
@@ -184,7 +195,12 @@ internal sealed class WorkflowActionFilter : IAsyncActionFilter
                 }
             }
         }
-
-        await next();
+        catch (System.Collections.Generic.KeyNotFoundException ex)
+        {
+            _logger.LogWarning(ex, "Stale workflow route data detected in cache. A workflow instance could not be resolved from the database. Skipping workflow instance execution.");
+        }
     }
+
+    await next();
+}
 }
