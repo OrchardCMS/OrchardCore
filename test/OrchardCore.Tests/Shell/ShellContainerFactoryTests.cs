@@ -4,6 +4,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Builders.Models;
 using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Modules;
 using OrchardCore.Tests.Stubs;
 using StartupBase = OrchardCore.Modules.StartupBase;
 
@@ -190,6 +191,27 @@ public class ShellContainerFactoryTests
         Assert.Same(expectedFeatureInfo, typeFeatureProvider.GetFeatureForDependency(typeof(TestService)));
     }
 
+    [Fact]
+    public async Task AlwaysComposedStartupIsAssignedToApplicationDefaultFeature_Default_Succeeds()
+    {
+        var shellBlueprint = CreateBlueprint();
+        var applicationDefaultFeature = new FeatureInfo(
+            Application.DefaultFeatureId,
+            new ExtensionInfo(Application.DefaultFeatureId));
+
+        shellBlueprint.Dependencies.Add(typeof(AlwaysComposedStartup), [applicationDefaultFeature]);
+
+        var container = (await _shellContainerFactory
+            .CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint))
+            .CreateScope()
+            .ServiceProvider;
+
+        var typeFeatureProvider = _applicationServiceProvider.GetRequiredService<ITypeFeatureProvider>();
+
+        Assert.Single(container.GetServices<IAlwaysComposedService>());
+        Assert.Same(applicationDefaultFeature, typeFeatureProvider.GetFeatureForDependency(typeof(AlwaysComposedService)));
+    }
+
     private static ShellBlueprint CreateBlueprint()
     {
         return new ShellBlueprint
@@ -257,6 +279,18 @@ public class ShellContainerFactoryTests
         public override void ConfigureServices(IServiceCollection services)
         {
             services.Replace(ServiceDescriptor.Scoped(typeof(ITestService), typeof(CustomTestService)));
+        }
+    }
+
+    private interface IAlwaysComposedService { }
+
+    private sealed class AlwaysComposedService : IAlwaysComposedService { }
+
+    private sealed class AlwaysComposedStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSingleton<IAlwaysComposedService, AlwaysComposedService>();
         }
     }
 
