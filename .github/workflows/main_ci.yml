@@ -32,7 +32,7 @@ jobs:
     - name: Build
       # See pr_ci.yml for the reason why we disable NuGet audit warnings.
       run: |
-        dotnet build -c Release /p:TreatWarningsAsErrors=true --warnaserror /p:RunAnalyzers=true /p:NuGetAudit=false
+        dotnet build -c Release -p:TreatWarningsAsErrors=true --warnaserror -p:RunAnalyzers=true -p:NuGetAudit=false
     - name: Unit Tests
       run: |
         dotnet test --project ./test/OrchardCore.Tests/OrchardCore.Tests.csproj -c Release --no-build
