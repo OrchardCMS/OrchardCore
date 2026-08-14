@@ -41,7 +41,7 @@ public class CommonGeneratorMethods : IGlobalMethodProvider
         Name = "gzip",
         Method = serviceProvider => (Func<string, string>)(encoded =>
         {
-            var compressedStream = Base64.DecodedToStream(encoded);
+            var compressedStream = Base64.DecodeToStream(encoded);
 
             using var gZip = new GZipStream(compressedStream, CompressionMode.Decompress, leaveOpen: true);
 
