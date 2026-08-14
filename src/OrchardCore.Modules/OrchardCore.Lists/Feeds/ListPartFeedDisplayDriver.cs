@@ -9,10 +9,10 @@ public sealed class ListPartFeedDisplayDriver : ContentPartDisplayDriver<ListPar
 {
     public override IDisplayResult Display(ListPart listPart, BuildPartDisplayContext context)
     {
-        return Dynamic("ListPartFeed", shape =>
+        return Dynamic("ListPartFeed", static (shape, listPart) =>
         {
             shape.ContentItem = listPart.ContentItem;
-        })
+        }, listPart)
         .Location(OrchardCoreConstants.DisplayType.Detail, "Content");
     }
 

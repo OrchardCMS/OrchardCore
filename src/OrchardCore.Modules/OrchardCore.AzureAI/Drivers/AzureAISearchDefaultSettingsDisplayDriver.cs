@@ -70,7 +70,7 @@ public sealed class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDrive
             model.IdentityClientId = settings.IdentityClientId;
             model.ApiKeyExists = !string.IsNullOrEmpty(settings.ApiKey);
         }).Location("Content")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAISearchPermissions.ManageAzureAISearchISettings))
+        .RenderWhen(static (driver) => driver._authorizationService.AuthorizeAsync(driver._httpContextAccessor.HttpContext.User, AzureAISearchPermissions.ManageAzureAISearchISettings), this)
         .OnGroup(SettingsGroupId);
     }
 
