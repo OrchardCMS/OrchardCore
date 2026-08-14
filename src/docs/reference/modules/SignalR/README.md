@@ -6,27 +6,26 @@ The scale-out backplanes ship as separate modules so the base `OrchardCore.Signa
 
 | Module | Feature | Purpose |
 | --- | --- | --- |
-| `OrchardCore.SignalR` | `OrchardCore.SignalR` | Base SignalR hosting, client resources, and hub authentication. |
+| `OrchardCore.SignalR` | `OrchardCore.SignalR` | Base SignalR hosting, client resources, and the authorization policy used by secured hubs. |
 | `OrchardCore.SignalR.Redis` | `OrchardCore.SignalR.Redis` | Redis scale-out backplane. Brings the Redis dependencies. |
 | `OrchardCore.SignalR.Azure` | `OrchardCore.SignalR.Azure` | Azure SignalR Service backplane. Brings the Azure dependencies. |
 
 ## Features
 
-- **`OrchardCore.SignalR`** — Registers SignalR with a camel-cased JSON protocol, the SignalR JavaScript client as a named resource (`signalr`), and hub authentication.
+- **`OrchardCore.SignalR`** — Registers SignalR with a camel-cased JSON protocol, the SignalR JavaScript client as a named resource (`signalr`), and the `SignalR` authorization policy used by secured hubs.
 - **`OrchardCore.SignalR.Redis`** — Uses Redis as the SignalR backplane, enabling multi-instance deployments. Each tenant's traffic is isolated on a dedicated Redis channel prefix. Provided by the separate `OrchardCore.SignalR.Redis` module and depends on `OrchardCore.Redis`.
 - **`OrchardCore.SignalR.Azure`** — Uses the Azure SignalR Service as the backplane, enabling multi-instance deployments. Provided by the separate `OrchardCore.SignalR.Azure` module.
 
 ## Declaring a hub in another module
 
-Declare the hub as usual and apply an authorization policy:
+Declare the hub as usual:
 
 ```csharp
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.SignalR;
 
 namespace MyModule.Hubs;
 
-[Authorize(AuthenticationSchemes = "Api,Identity.Application")]
+[Authorize]
 public sealed class MyHub : Hub
 {
 }
@@ -60,41 +59,6 @@ services.Configure<HubOptions>(options =>
 {
     options.MaximumReceiveMessageSize = 128 * 1024;
 });
-```
-
-## Hub authentication
-
-Browsers cannot send an `Authorization` header during a WebSocket handshake, so SignalR clients send bearer tokens using the standard `access_token` query string parameter. When a hub's authorization policy includes the Orchard Core `Api` authentication scheme, the module promotes that token to an `Authorization` header and authenticates the request before authorization runs. Hubs whose policies do not include the `Api` scheme keep their default behavior. Cookie authenticated requests are always left untouched.
-
-Signed-in browser clients are authenticated through the regular authentication cookie, and nothing extra is required. Headless clients (single-page apps, mobile apps, and service-to-service callers) authenticate with an access token instead: enable the **OpenID Token Validation** feature (`OrchardCore.OpenId.Validation`) so the `Api` scheme can validate the token. The token is only *authenticated* — the identity behind it still needs whatever permissions the hub requires.
-
-Choose the authorization schemes based on the clients the hub supports:
-
-- `[Authorize]` uses the ambient authentication configured by the host, normally the application cookie for a signed-in site user.
-- `[Authorize(AuthenticationSchemes = "Api")]` accepts API access tokens only.
-- `[Authorize(AuthenticationSchemes = "Api,Identity.Application")]` accepts either an API access token or the standard application cookie.
-
-A named policy can specify the same schemes. Any policy that includes `Api` enables the SignalR `access_token` handling described above. Authorization requirements remain in effect after the caller is authenticated.
-
-Send the token from a browser client via `accessTokenFactory`:
-
-```js
-const connection = new signalR.HubConnectionBuilder()
-    .withUrl("/hubs/my-hub", {
-        accessTokenFactory: () => accessToken
-    })
-    .build();
-```
-
-Or from a .NET client via `AccessTokenProvider`:
-
-```csharp
-var connection = new HubConnectionBuilder()
-    .WithUrl("https://www.example.com/hubs/my-hub", options =>
-    {
-        options.AccessTokenProvider = () => Task.FromResult(accessToken);
-    })
-    .Build();
 ```
 
 ## Backplane configuration
@@ -172,5 +136,3 @@ A script that opens a connection should declare `depends-on="signalr"` so the cl
     });
 </script>
 ```
-
-> The vendored resource and the Bloom bundle pin `@microsoft/signalr` independently (currently `10.0.0` and `^8.0.0` respectively). Both interoperate with the same hub because the SignalR JSON wire protocol is stable across these versions, but keep this in mind when auditing the client version an app actually ships.

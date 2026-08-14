@@ -7,7 +7,7 @@ using OrchardCore.Contents;
 namespace OrchardCore.Demo.Controllers;
 
 [Route("api/demo")]
-[Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
+[Authorize(AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api), IgnoreAntiforgeryToken, AllowAnonymous]
 [ApiController]
 public sealed class ContentApiController : ControllerBase
 {
@@ -26,14 +26,14 @@ public sealed class ContentApiController : ControllerBase
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.DemoAPIAccess))
         {
-            return this.ChallengeOrForbid("Api");
+            return this.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
 
         var contentItem = await _contentManager.GetAsync(id);
 
         if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ViewContent, contentItem))
         {
-            return this.ChallengeOrForbid("Api");
+            return this.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
 
         if (contentItem == null)
@@ -50,7 +50,7 @@ public sealed class ContentApiController : ControllerBase
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.DemoAPIAccess))
         {
-            return this.ChallengeOrForbid("Api");
+            return this.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
 
         await _contentManager.CreateAsync(contentItem);
