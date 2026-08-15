@@ -50,7 +50,7 @@ public sealed class JavaScriptEngine : IScriptingEngine
     {
         var engine = new Engine(_jintOptions);
 
-        return new JavaScriptScope(engine, serviceProvider, methods, _lazyGlobals);
+        return new JavaScriptScope(engine, serviceProvider, methods, _lazyGlobals, ownsEngine: true);
     }
 
     public object Evaluate(IScriptingScope scope, string script)
@@ -154,15 +154,18 @@ public sealed class JavaScriptEngine : IScriptingEngine
     private static JsValue CreateGlobal(Engine engine, string name, Func<IServiceProvider, Delegate> factory)
     {
         // The factory captures the services it is given, so the delegate has to be built with the services
-        // of the scope that owns this engine, and cannot be shared between engines.
-        if (!JavaScriptScope.TryGetServiceProvider(engine, out var serviceProvider))
+        // of the scope that owns this engine, and cannot be shared between engines. The scope records them
+        // in the engine's [[HostDefined]] slot, which Jint reserves for the host and which no part of the
+        // engine reads.
+        if (engine.Advanced.HostDefined is not IServiceProvider serviceProvider)
         {
             // The lazy property stores whatever this returns and never runs again, so returning a value here
             // would leave the global permanently undefined and fail as 'x is not a function' somewhere else.
-            // Reaching this means an engine was built from these options without a scope, which is a defect
-            // in the caller rather than a state a script should have to cope with.
+            // Reaching this means an engine was built from these options without a scope, or that the slot
+            // already held something of the caller's own when the scope was built - either way a defect in
+            // the caller rather than a state a script should have to cope with.
             throw new InvalidOperationException(
-                $"No scripting scope is associated with the engine reading the global '{name}'. Engines that expose the globals of the registered {nameof(IGlobalMethodProvider)} instances must be created through {nameof(IScriptingEngine)}.{nameof(CreateScope)}.");
+                $"No scripting scope is associated with the engine reading the global '{name}'. Engines that expose the globals of the registered {nameof(IGlobalMethodProvider)} instances must be created through {nameof(IScriptingEngine)}.{nameof(CreateScope)}, and must not have their {nameof(Engine)}.{nameof(Engine.Advanced)}.{nameof(Engine.AdvancedOperations.HostDefined)} slot used for anything else.");
         }
 
         // This is only equivalent to what Engine.SetValue(string, Delegate) installs while no IObjectConverter
