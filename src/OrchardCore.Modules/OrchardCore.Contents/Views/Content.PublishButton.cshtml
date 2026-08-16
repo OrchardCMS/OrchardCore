@@ -1,5 +1,6 @@
 @{
     var returnUrl = Context.Request.Query["returnUrl"];
+    var contentItemId = Context.Request.RouteValues["contentItemId"]?.ToString();
 }
 
 @if (string.IsNullOrWhiteSpace(returnUrl))
@@ -14,6 +15,10 @@ else
             <span class="visually-hidden">@T["Toggle Dropdown"]</span>
         </button>
         <div class="dropdown-menu">
+            @if (string.IsNullOrEmpty(contentItemId))
+            {
+                <button class="dropdown-item publish-create" type="submit" name="submit.Publish" value="submit.PublishAndCreate">@T["and create"]</button>
+            }
             <button class="dropdown-item publish-continue" type="submit" name="submit.Publish" value="submit.PublishAndContinue">@T["and continue"]</button>
         </div>
     </div>
