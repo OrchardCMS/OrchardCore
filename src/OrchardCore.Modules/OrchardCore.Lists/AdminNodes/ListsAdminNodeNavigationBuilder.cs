@@ -58,6 +58,7 @@ public class ListsAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
 
             await builder.AddAsync(new LocalizedString(_contentType.DisplayName, _contentType.DisplayName), async listTypeMenu =>
             {
+                listTypeMenu.Id(_node.UniqueId);
                 AddPrefixToClasses(_node.IconForParentLink).ForEach(c => listTypeMenu.AddClass(c));
                 listTypeMenu.Permission(ContentTypePermissionsHelper.CreateDynamicPermission(
                     ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.EditContent.Name], _contentType));
@@ -94,6 +95,7 @@ public class ListsAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
             {
                 listTypeMenu.Add(new LocalizedString(ci.DisplayText, ci.DisplayText), itemBuilder =>
                 {
+                    itemBuilder.Id($"{_node.UniqueId}-{ci.ContentItemId}");
                     itemBuilder.MenuName(_node.MenuName);
                     itemBuilder.Action(cim.AdminRouteValues["Action"] as string, cim.AdminRouteValues["Controller"] as string, cim.AdminRouteValues);
                     itemBuilder.Resource(ci);
