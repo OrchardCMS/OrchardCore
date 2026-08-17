@@ -1,0 +1,7 @@
+{
+  "name": "@orchardcore/signalr",
+  "version": "1.0.0",
+  "dependencies": {
+    "@microsoft/signalr": "10.0.0"
+  }
+}

@@ -13,7 +13,7 @@ public sealed class LayerSiteSettingsDisplayDriver : SiteDisplayDriver<LayerSett
 {
     public const string GroupId = "zones";
 
-    private static readonly char[] _separator = [' ', ','];
+    private static readonly char[] s_separator = [' ', ','];
 
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
@@ -58,7 +58,7 @@ public sealed class LayerSiteSettingsDisplayDriver : SiteDisplayDriver<LayerSett
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        settings.Zones = (model.Zones ?? string.Empty).Split(_separator, StringSplitOptions.RemoveEmptyEntries);
+        settings.Zones = (model.Zones ?? string.Empty).Split(s_separator, StringSplitOptions.RemoveEmptyEntries);
 
         return await EditAsync(site, settings, context);
     }

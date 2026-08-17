@@ -7,9 +7,9 @@ namespace OrchardCore.Media.Services;
 
 public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
 {
-    private static readonly int[] _defaultSupportedSizes = [16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048];
+    private static readonly int[] s_defaultSupportedSizes = [16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048];
 
-    private static readonly string[] _defaultAllowedFileExtensions = [
+    private static readonly string[] s_defaultAllowedFileExtensions = [
         // Images
         ".jpg",
         ".jpeg",
@@ -53,7 +53,7 @@ public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
     private const int DefaultMaxBrowserCacheDays = 30;
     private const int DefaultSecureFilesMaxBrowserCacheDays = 0;
     private const int DefaultMaxCacheDays = 365;
-    private const int DefaultMaxFileSize = 30_000_000;
+    private const long DefaultMaxFileSize = 30_000_000;
 
     private const string DefaultAssetsPath = "Media";
     private const string DefaultAssetsUsersFolder = "_Users";
@@ -67,7 +67,7 @@ public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
 
     private const int DefaultMaxUploadChunkSize = 104_857_600; // 100MB
 
-    private static readonly TimeSpan _defaultTemporaryFileLifeTime = TimeSpan.FromHours(1);
+    private static readonly TimeSpan s_defaultTemporaryFileLifeTime = TimeSpan.FromHours(1);
 
     private readonly IShellConfiguration _shellConfiguration;
 
@@ -83,10 +83,10 @@ public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
         // Because IShellConfiguration treats arrays as key value pairs, we replace the array value,
         // rather than letting Configure merge the default array with the appsettings value.
         options.SupportedSizes = section.GetSection("SupportedSizes")
-            .Get<int[]>()?.OrderBy(s => s).ToArray() ?? _defaultSupportedSizes;
+            .Get<int[]>()?.OrderBy(s => s).ToArray() ?? s_defaultSupportedSizes;
 
         options.AllowedFileExtensions = new HashSet<string>(
-            section.GetSection("AllowedFileExtensions").Get<string[]>() ?? _defaultAllowedFileExtensions,
+            section.GetSection("AllowedFileExtensions").Get<string[]>() ?? s_defaultAllowedFileExtensions,
             StringComparer.OrdinalIgnoreCase);
 
         options.MaxBrowserCacheDays = section.GetValue("MaxBrowserCacheDays", DefaultMaxBrowserCacheDays);
@@ -101,7 +101,8 @@ public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
         options.AssetsUsersFolder = section.GetValue("AssetsUsersFolder", DefaultAssetsUsersFolder);
         options.UseTokenizedQueryString = section.GetValue("UseTokenizedQueryString", DefaultUseTokenizedQueryString);
         options.MaxUploadChunkSize = section.GetValue(nameof(options.MaxUploadChunkSize), DefaultMaxUploadChunkSize);
-        options.TemporaryFileLifetime = section.GetValue(nameof(options.TemporaryFileLifetime), _defaultTemporaryFileLifeTime);
+        options.TemporaryFileLifetime = section.GetValue(nameof(options.TemporaryFileLifetime), s_defaultTemporaryFileLifeTime);
+        options.TusTempPath = section.GetValue(nameof(options.TusTempPath), Path.Combine(Path.GetTempPath(), "TusUploads"));
 
         var contentSecurityPolicy = section.GetValue("ContentSecurityPolicy", DefaultContentSecurityPolicy);
 

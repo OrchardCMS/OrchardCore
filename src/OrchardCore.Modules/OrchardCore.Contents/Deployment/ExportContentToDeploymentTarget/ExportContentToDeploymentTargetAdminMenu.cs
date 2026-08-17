@@ -7,7 +7,7 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget;
 
 public sealed class ExportContentToDeploymentTargetAdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", ExportContentToDeploymentTargetSettingsDisplayDriver.GroupId },
@@ -29,7 +29,7 @@ public sealed class ExportContentToDeploymentTargetAdminMenu : AdminNavigationPr
                 .Add(S["Import/Export"], S["Import/Export"].PrefixPosition(), import => import
                     .Add(S["Settings"], settings => settings
                         .Add(S["Export target"], S["Export target"].PrefixPosition(), targetSettings => targetSettings
-                            .Action("Index", "Admin", _routeValues)
+                            .Action("Index", "Admin", s_routeValues)
                             .Permission(DeploymentPermissions.ManageDeploymentPlan)
                             .LocalNav()
                         )
@@ -43,7 +43,7 @@ public sealed class ExportContentToDeploymentTargetAdminMenu : AdminNavigationPr
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Deployment Targets"], S["Deployment Targets"].PrefixPosition(), targetSettings => targetSettings
-                    .Action("Index", "Admin", _routeValues)
+                    .Action("Index", "Admin", s_routeValues)
                     .Permission(DeploymentPermissions.ManageDeploymentPlan)
                     .LocalNav()
                 )

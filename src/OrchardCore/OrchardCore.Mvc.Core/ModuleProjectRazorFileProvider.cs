@@ -12,24 +12,24 @@ namespace OrchardCore.Mvc;
 /// </summary>
 public class ModuleProjectRazorFileProvider : IFileProvider
 {
-    private static List<IFileProvider> _pageFileProviders;
-    private static Dictionary<string, string> _roots;
-    private static readonly object _synLock = new();
+    private static List<IFileProvider> s_pageFileProviders;
+    private static Dictionary<string, string> s_roots;
+    private static readonly object s_synLock = new();
 
     public ModuleProjectRazorFileProvider(IApplicationContext applicationContext)
     {
-        if (_roots != null)
+        if (s_roots != null)
         {
             return;
         }
 
-        lock (_synLock)
+        lock (s_synLock)
         {
-            if (_roots == null)
+            if (s_roots == null)
             {
                 var application = applicationContext.Application;
 
-                _pageFileProviders = [];
+                s_pageFileProviders = [];
                 var roots = new Dictionary<string, string>();
 
                 // Resolve all module projects roots.
@@ -64,7 +64,7 @@ public class ModuleProjectRazorFileProvider : IFileProvider
                         {
                             // Razor pages are not watched in the same way as other razor views.
                             // We need a physical file provider on the "{ModuleProjectDirectory}".
-                            _pageFileProviders.Add(new PhysicalFileProvider(root));
+                            s_pageFileProviders.Add(new PhysicalFileProvider(root));
                         }
 
                         // Add the module project root.
@@ -72,7 +72,7 @@ public class ModuleProjectRazorFileProvider : IFileProvider
                     }
                 }
 
-                _roots = roots;
+                s_roots = roots;
             }
         }
     }
@@ -109,7 +109,7 @@ public class ModuleProjectRazorFileProvider : IFileProvider
                 var module = folder[..index];
 
                 // Try to get the module project root.
-                if (_roots.TryGetValue(module, out var root) &&
+                if (s_roots.TryGetValue(module, out var root) &&
                     // Check for a final or an intermadiate "Pages" segment.
                     (folder.EndsWith("/Pages", StringComparison.Ordinal) || folder.Contains("/Pages/")))
                 {
@@ -151,7 +151,7 @@ public class ModuleProjectRazorFileProvider : IFileProvider
                 var module = path[..index];
 
                 // Get the module root folder.
-                if (_roots.TryGetValue(module, out var root))
+                if (s_roots.TryGetValue(module, out var root))
                 {
                     // Resolve "{ModuleProjectDirectory}**/*.*".
                     var filePath = string.Concat(root, path.AsSpan(module.Length + 1));
@@ -191,7 +191,7 @@ public class ModuleProjectRazorFileProvider : IFileProvider
                 var module = path[..index];
 
                 // Get the module root folder.
-                if (_roots.TryGetValue(module, out var root))
+                if (s_roots.TryGetValue(module, out var root))
                 {
                     // Resolve "{ModuleProjectDirectory}**/*.*".
                     var filePath = string.Concat(root, path.AsSpan(module.Length + 1));
@@ -217,7 +217,7 @@ public class ModuleProjectRazorFileProvider : IFileProvider
             var changeTokens = new List<IChangeToken>();
 
             // For each module which might have pages.
-            foreach (var provider in _pageFileProviders)
+            foreach (var provider in s_pageFileProviders)
             {
                 // Watch all razor files under its "Pages" folder.
                 var changeToken = provider.Watch("Pages/**/*.cshtml");

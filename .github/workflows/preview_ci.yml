@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-24.04
     name: Build, Test, Deploy
     steps:
-    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - name: Check if should publish
       id: check-publish
       shell: pwsh
@@ -34,7 +34,7 @@ jobs:
       if: steps.check-publish.outputs.should-publish == 'true'
       # See pr_ci.yml for the reason why we disable NuGet audit warnings.
       run: |
-        dotnet build -c Release /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true /p:NuGetAudit=false
+        dotnet build -c Release -p:TreatWarningsAsErrors=true --warnaserror -p:RunAnalyzers=true -p:NuGetAudit=false
     - name: Unit Tests
       if: steps.check-publish.outputs.should-publish == 'true'
       run: |
@@ -55,6 +55,9 @@ jobs:
         dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Cms*"
     - name: Functional Tests - MVC
       if: steps.check-publish.outputs.should-publish == 'true'
+      env:
+        # The MVC app uses neither Redis nor Azurite; don't start those containers for this run.
+        ORCHARD_TEST_DOCKER_SERVICES: "false"
       run: |
         dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Mvc*"
     - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

@@ -40,6 +40,11 @@ public sealed class AdminMenu : AdminNavigationProvider
                             .Permission(MediaPermissions.ManageMediaProfiles)
                             .LocalNav()
                         )
+                        .Add(S["Media API"], S["Media API"].PrefixPosition(), api => api
+                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = MediaApiSettings.GroupId })
+                            .Permission(MediaPermissions.ManageMediaApiSettings)
+                            .LocalNav()
+                        )
                     )
                 );
 
@@ -68,6 +73,11 @@ public sealed class AdminMenu : AdminNavigationProvider
                     .Add(S["Options"], S["Options"].PrefixPosition(), options => options
                         .Action("Options", "Admin", "OrchardCore.Media")
                         .Permission(MediaPermissions.ViewMediaOptions)
+                        .LocalNav()
+                    )
+                    .Add(S["API"], S["API"].PrefixPosition(), api => api
+                        .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = MediaApiSettings.GroupId })
+                        .Permission(MediaPermissions.ManageMediaApiSettings)
                         .LocalNav()
                     )
                 )

@@ -10,13 +10,13 @@ namespace OrchardCore.Tests.Integration.Infrastructure;
 /// </summary>
 internal static class DockerSupport
 {
-    private static readonly Lazy<bool> _isAvailable = new(Probe);
+    private static readonly Lazy<bool> s_isAvailable = new(Probe);
 
     /// <summary>
     /// Gets a value indicating whether a running Docker daemon could be reached.
     /// The result is probed once and cached for the lifetime of the test run.
     /// </summary>
-    public static bool IsAvailable => _isAvailable.Value;
+    public static bool IsAvailable => s_isAvailable.Value;
 
     private static bool Probe()
     {

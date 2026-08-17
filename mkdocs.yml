@@ -56,6 +56,8 @@ validation:
 # Add files here that are intentionally not in the navigation and thus omitted_files shouldn't warn about them.
 not_in_nav: |
   samples/
+  development/
+  releases/3.0.0.md
   releases/4.0.0.md
   llms.txt
 
@@ -223,6 +225,7 @@ nav:
               - Liquid: reference/modules/Liquid/README.md
               - Media:
                   - Media: reference/modules/Media/README.md
+                  - Media Gallery: reference/modules/Media/MediaGallery.md
                   - Media Slugify: reference/modules/Media.Slugify/README.md
                   - Antivirus: reference/modules/Antivirus/README.md
                   - Media Amazon S3: reference/modules/Media.AmazonS3/README.md
@@ -295,6 +298,7 @@ nav:
               - Logging Serilog: reference/modules/Logging.Serilog/README.md
               - Mini Profiler: reference/modules/MiniProfiler/README.md
               - Modules: reference/modules/Modules/README.md
+              - OpenApi: reference/modules/OpenApi/README.md
               - OpenId: reference/modules/OpenId/README.md
               - Permissions: reference/modules/Security/Permissions.md
               - Razor Helpers: reference/modules/Razor/README.md
@@ -309,6 +313,7 @@ nav:
               - Security: reference/modules/Security/README.md
               - Setup: reference/modules/Setup/README.md
               - Shells: reference/modules/Shells/README.md
+              - SignalR: reference/modules/SignalR/README.md
               - Tenants: reference/modules/Tenants/README.md
               - Workflows: reference/modules/Workflows/README.md
               - DataProtection (Azure Storage): reference/modules/DataProtection.Azure/README.md
