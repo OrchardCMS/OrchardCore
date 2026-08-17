@@ -134,6 +134,7 @@
   <ItemGroup>
     <!-- Transitive Packages -->
     <PackageVersion Include="MessagePack" Version="3.1.8" />
+    <PackageVersion Include="SSH.NET" Version="2026.0.0" />
   </ItemGroup>
 </Project>
 

@@ -16,7 +16,8 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     internal readonly IStringLocalizer S;
 
-    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
+    public AdminMenu(
+        IStringLocalizer<AdminMenu> stringLocalizer)
     {
         S = stringLocalizer;
     }
@@ -26,7 +27,8 @@ public sealed class AdminMenu : AdminNavigationProvider
         builder
             .Add(S["Content"], design => design
                 .Add(S["Menus"], S["Menus"].PrefixPosition(), menus => menus
-                    .Permission(Permissions.ManageMenu)
+                    .Permission(Permissions.ListMenuContent)
+                    .Resource(MenuConstants.MenuContentType)
                     .Action("List", "Admin", s_routeValues)
                     .LocalNav()
                 )

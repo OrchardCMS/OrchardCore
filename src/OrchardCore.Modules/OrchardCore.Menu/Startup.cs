@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -24,6 +25,7 @@ public sealed class Startup : StartupBase
         services.AddDataMigration<Migrations>();
         services.AddShapeTableProvider<MenuShapes>();
         services.AddPermissionProvider<Permissions>();
+        services.AddScoped<IAuthorizationHandler, MenuAuthorizationHandler>();
         services.AddNavigationProvider<AdminMenu>();
 
         services.AddScoped<IStereotypesProvider, MenuItemStereotypesProvider>();
