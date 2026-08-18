@@ -5,10 +5,11 @@ namespace OrchardCore.AdminMenu;
 
 public sealed class Permissions : IPermissionProvider
 {
-    private static readonly Permission s_viewAdminMenu = new("ViewAdminMenu_{0}", "View Admin Menu - {0}", new[] {
+    private static readonly PermissionTemplate s_viewAdminMenu = new(
+        "ViewAdminMenu_{0}",
+        "View Admin Menu - {0}",
         AdminMenuPermissions.ManageAdminMenu,
-        AdminMenuPermissions.ViewAdminMenuAll,
-    });
+        AdminMenuPermissions.ViewAdminMenuAll);
 
     private readonly IEnumerable<Permission> _generalPermissions =
     [
@@ -60,10 +61,6 @@ public sealed class Permissions : IPermissionProvider
         },
     ];
 
-    public static Permission CreatePermissionForAdminMenu(string name)
-        => new(
-            string.Format(s_viewAdminMenu.Name, name),
-            string.Format(s_viewAdminMenu.Description, name),
-            s_viewAdminMenu.ImpliedBy
-        );
+    public static Permission CreatePermissionForAdminMenu(string name) =>
+        s_viewAdminMenu.CreateDynamicPermission(name);
 }

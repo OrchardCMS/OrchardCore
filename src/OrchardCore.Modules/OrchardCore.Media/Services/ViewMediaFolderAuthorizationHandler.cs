@@ -108,11 +108,9 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
         }
 
         // Create a dynamic permission for the folder path. This allows to give access to a specific folders only.
-        var template = SecureMediaPermissions.ConvertToDynamicPermission(MediaPermissions.ViewMedia);
-        if (template != null)
+        if (SecureMediaPermissions.CreateDynamicPermissionOf(MediaPermissions.ViewMedia.Name, folderPath) is { } dynamicPermission)
         {
-            var permission = SecureMediaPermissions.CreateDynamicPermission(template, folderPath);
-            await AuthorizeAsync(context, requirement, permission);
+            await AuthorizeAsync(context, requirement, dynamicPermission);
         }
         else
         {
