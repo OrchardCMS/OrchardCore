@@ -105,32 +105,73 @@ internal sealed class WorkflowActionFilter : IAsyncActionFilter
         }
     }
 
-   private async Task ProcessWorkflowsAsync(RouteValueDictionary routeValues, IEnumerable<Models.WorkflowRoutesEntry> workflowTypeEntries, IEnumerable<Models.WorkflowRoutesEntry> workflowEntries, ActionExecutionDelegate next)
-{
-    if (workflowTypeEntries.Any())
+    private async Task ProcessWorkflowsAsync(RouteValueDictionary routeValues, IEnumerable<Models.WorkflowRoutesEntry> workflowTypeEntries, IEnumerable<Models.WorkflowRoutesEntry> workflowEntries, ActionExecutionDelegate next)
     {
-        var workflowTypeIds = workflowTypeEntries.Select(x => long.Parse(x.WorkflowId)).ToList();
-        var correlationId = routeValues.GetValue<string>("correlationid");
-
-        try
+        if (workflowTypeEntries.Any())
         {
-            var workflowTypes = (await _workflowTypeStore.GetAsync(workflowTypeIds)).ToDictionary(x => x.Id);
+            var workflowTypeIds = workflowTypeEntries.Select(x => long.Parse(x.WorkflowId));
+            var correlationId = routeValues.GetValue<string>("correlationid");
 
-            foreach (var entry in workflowTypeEntries)
+            try
             {
-                if (workflowTypes.TryGetValue(long.Parse(entry.WorkflowId), out var workflowType))
-                {
-                    var activity = workflowType.Activities.SingleOrDefault(x => x.ActivityId == entry.ActivityId);
-                    if (activity is null)
-                    {
-                        _logger.LogWarning("The activity with id '{ActivityId}' could not be found in the workflow type '{WorkflowTypeId}'.", entry.ActivityId, workflowType.Id);
-                        continue;
-                    }
+                var workflowTypes = (await _workflowTypeStore.GetAsync(workflowTypeIds)).ToDictionary(x => x.Id);
 
-                    if (activity.IsStart)
+                foreach (var entry in workflowTypeEntries)
+                {
+                    if (workflowTypes.TryGetValue(long.Parse(entry.WorkflowId), out var workflowType))
                     {
-                        // If a singleton, try to acquire a lock per workflow type.
-                        (var locker, var locked) = await _distributedLock.TryAcquireWorkflowTypeLockAsync(workflowType);
+                        var activity = workflowType.Activities.SingleOrDefault(x => x.ActivityId == entry.ActivityId);
+                        if (activity is null)
+                        {
+                            _logger.LogWarning("The activity with id '{ActivityId}' could not be found in the workflow type '{WorkflowTypeId}'.", entry.ActivityId, workflowType.Id);
+                            continue;
+                        }
+
+                        if (activity.IsStart)
+                        {
+                            // If a singleton, try to acquire a lock per workflow type.
+                            (var locker, var locked) = await _distributedLock.TryAcquireWorkflowTypeLockAsync(workflowType);
+                            if (!locked)
+                            {
+                                continue;
+                            }
+
+                            await using var acquiredLock = locker;
+
+                            // Check if this is a workflow singleton and there's already an halted instance on any activity.
+                            if (workflowType.IsSingleton && await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId))
+                            {
+                                continue;
+                            }
+
+                            await _workflowManager.StartWorkflowAsync(workflowType, activity, null, correlationId);
+                        }
+                    }
+                }
+            }
+            catch (KeyNotFoundException)
+            {
+                _logger.LogWarning("Stale workflow route data detected in cache. A workflow type could not be resolved from the database. Skipping workflow type execution.");
+            }
+        }
+
+        if (workflowEntries.Any())
+        {
+            var workflowIds = workflowEntries.Select(x => x.WorkflowId);
+            var correlationId = routeValues.GetValue<string>("correlationid");
+
+            try
+            {
+                var workflows = (await _workflowStore.GetAsync(workflowIds)).ToDictionary(x => x.WorkflowId);
+
+                foreach (var entry in workflowEntries)
+                {
+                    if (workflows.TryGetValue(entry.WorkflowId, out var workflow) &&
+                        (string.IsNullOrWhiteSpace(correlationId) ||
+                        workflow.CorrelationId == correlationId))
+                    {
+                        // If atomic, try to acquire a lock per workflow instance.
+                        (var locker, var locked) = await _distributedLock.TryAcquireWorkflowLockAsync(workflow);
                         if (!locked)
                         {
                             continue;
@@ -138,69 +179,28 @@ internal sealed class WorkflowActionFilter : IAsyncActionFilter
 
                         await using var acquiredLock = locker;
 
-                        // Check if this is a workflow singleton and there's already an halted instance on any activity.
-                        if (workflowType.IsSingleton && await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId))
+                        // If atomic, check if the workflow still exists and is still correlated.
+                        var haltedWorkflow = workflow.IsAtomic ? await _workflowStore.GetAsync(workflow.Id) : workflow;
+                        if (haltedWorkflow == null || (!string.IsNullOrWhiteSpace(correlationId) && haltedWorkflow.CorrelationId != correlationId))
                         {
                             continue;
                         }
 
-                        await _workflowManager.StartWorkflowAsync(workflowType, activity, null, correlationId);
+                        // And if it is still halted on this activity.
+                        var blockingActivity = haltedWorkflow.BlockingActivities.SingleOrDefault(x => x.ActivityId == entry.ActivityId);
+                        if (blockingActivity != null)
+                        {
+                            await _workflowManager.ResumeWorkflowAsync(haltedWorkflow, blockingActivity);
+                        }
                     }
                 }
             }
-        }
-        catch (System.Collections.Generic.KeyNotFoundException ex)
-        {
-            _logger.LogWarning(ex, "Stale workflow route data detected in cache. A workflow type could not be resolved from the database. Skipping workflow type execution.");
-        }
-    }
-
-    if (workflowEntries.Any())
-    {
-        var workflowIds = workflowEntries.Select(x => x.WorkflowId).ToList();
-        var correlationId = routeValues.GetValue<string>("correlationid");
-
-        try
-        {
-            var workflows = (await _workflowStore.GetAsync(workflowIds)).ToDictionary(x => x.WorkflowId);
-
-            foreach (var entry in workflowEntries)
+            catch (KeyNotFoundException)
             {
-                if (workflows.TryGetValue(entry.WorkflowId, out var workflow) &&
-                    (string.IsNullOrWhiteSpace(correlationId) ||
-                    workflow.CorrelationId == correlationId))
-                {
-                    // If atomic, try to acquire a lock per workflow instance.
-                    (var locker, var locked) = await _distributedLock.TryAcquireWorkflowLockAsync(workflow);
-                    if (!locked)
-                    {
-                        continue;
-                    }
-
-                    await using var acquiredLock = locker;
-
-                    // If atomic, check if the workflow still exists and is still correlated.
-                    var haltedWorkflow = workflow.IsAtomic ? await _workflowStore.GetAsync(workflow.Id) : workflow;
-                    if (haltedWorkflow == null || (!string.IsNullOrWhiteSpace(correlationId) && haltedWorkflow.CorrelationId != correlationId))
-                    {
-                        continue;
-                    }
-
-                    // And if it is still halted on this activity.
-                    var blockingActivity = haltedWorkflow.BlockingActivities.SingleOrDefault(x => x.ActivityId == entry.ActivityId);
-                    if (blockingActivity != null)
-                    {
-                        await _workflowManager.ResumeWorkflowAsync(haltedWorkflow, blockingActivity);
-                    }
-                }
+                _logger.LogWarning("Stale workflow route data detected in cache. A workflow instance could not be resolved from the database. Skipping workflow instance execution.");
             }
         }
-        catch (System.Collections.Generic.KeyNotFoundException ex)
-        {
-            _logger.LogWarning(ex, "Stale workflow route data detected in cache. A workflow instance could not be resolved from the database. Skipping workflow instance execution.");
-        }
-    }
 
-    await next();
-}
+        await next();
+    }
 }
