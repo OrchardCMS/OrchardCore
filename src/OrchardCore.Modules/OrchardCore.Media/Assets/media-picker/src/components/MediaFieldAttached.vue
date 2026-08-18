@@ -102,7 +102,7 @@
     <!-- Media Text Modal -->
     <VueFinalModal
       v-model="mediaTextModalVisible"
-      class="tw:flex tw:items-center tw:justify-center"
+      class="mf-vfm tw:flex tw:items-center tw:justify-center"
       content-class="mf-modal tw:min-w-[300px] tw:max-w-[600px] tw:w-[90vw]"
     >
       <div class="mf-modal-header">
@@ -125,7 +125,7 @@
     <!-- Anchor Modal -->
     <VueFinalModal
       v-model="anchorModalVisible"
-      class="tw:flex tw:items-center tw:justify-center"
+      class="mf-vfm tw:flex tw:items-center tw:justify-center"
       content-class="mf-modal tw:min-w-[300px] tw:max-w-[800px] tw:w-[90vw]"
     >
       <div class="mf-modal-header">

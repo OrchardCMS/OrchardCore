@@ -7,17 +7,19 @@
 
 @import "../../../../shared/media-admin.css";
 
-/* Tailwind v4 — with preflight, tw: prefix, BS dark mode selector */
-@import "tailwindcss" prefix(tw);
+/* Tailwind v4 utilities without preflight, so host element styles remain untouched. */
+@import "tailwindcss/theme" prefix(tw);
+@import "tailwindcss/utilities" prefix(tw);
 @custom-variant dark (&:where([data-bs-theme="dark"], [data-bs-theme="dark"] *));
 
-/* ============================================================
-   CSS Custom Properties (Bootstrap compat tokens)
-   ============================================================ */
-:root {
-  --bs-body-bg: #fff;
-  --bs-body-color: #212529;
-  --bs-border-color: #dee2e6;
+/* Picker-owned tokens fall back to Bootstrap-compatible defaults without redefining host tokens. */
+.media-field-app,
+.mf-modal,
+.mf-picker-shell,
+.mf-upload-toast {
+  --mf-body-bg: var(--bs-body-bg, #fff);
+  --mf-body-color: var(--bs-body-color, #212529);
+  --mf-border-color: var(--bs-border-color, #dee2e6);
   --mf-accent: #7bc143;
 }
 
@@ -304,7 +306,7 @@
    VFM z-index override
    Must sit above Bootstrap sidebar (z-index: 1030)
    ============================================================ */
-.vfm {
+.mf-vfm {
   z-index: var(--mf-overlay-z-index) !important;
 }
 

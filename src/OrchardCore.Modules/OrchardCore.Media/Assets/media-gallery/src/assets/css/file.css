@@ -5,8 +5,9 @@
 
 @import "../../../../shared/media-admin.css";
 
-/* Tailwind v4 — no preflight, tw: prefix, BS dark mode selector */
-@import "tailwindcss" prefix(tw);
+/* Tailwind v4 utilities without preflight, so host element styles remain untouched. */
+@import "tailwindcss/theme" prefix(tw);
+@import "tailwindcss/utilities" prefix(tw);
 /* Explicit source globs (relative to this file) so class detection covers all of src/ regardless of
    the Vite root. The standalone build roots at standalone/, which would otherwise miss ../src/**
    and drop utilities used only in components (e.g. the toolbar buttons' bg-[var(--mg-*)]). */
@@ -65,14 +66,10 @@
 
 }
 
-/* Semantic design tokens (app-owned — the style rules below reference these, not Bootstrap).
-   Each inherits the OrchardCore admin's live Bootstrap theme variable when the app is embedded
-   (so the admin look, incl. its light/dark switching, is unchanged) and falls back to a default
-   when the app runs standalone on its own origin.
-   Defined at :root — NOT scoped to .fileApp — because modals (vue-final-modal), the PrimeVue popup
-   menus and the toasts teleport to <body>, outside .fileApp; a .fileApp scope would leave their
-   var(--mg-*) references unresolved. The --mg- prefix keeps them collision-free on the host page. */
-:root {
+/* Semantic tokens inherit the host Bootstrap theme when embedded and provide standalone defaults. */
+.fileApp,
+.ma-vfm,
+.file-app {
   --mg-surface: var(--bs-body-bg, #fff);
   --mg-surface-secondary: var(--bs-secondary-bg, #e9ecef);
   --mg-surface-tertiary: var(--bs-tertiary-bg, #f8f9fa);
@@ -317,7 +314,7 @@
 /* ============================================================
    Card (used by upload list, grid items)
    ============================================================ */
-.card {
+.ma-card {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -331,16 +328,16 @@
   margin-bottom: unset !important;
 }
 
-.card-body {
+.ma-card-body {
   flex: 1 1 auto;
   padding: 1rem;
 }
 
-.card-footer:last-child {
+.ma-card-footer:last-child {
   border-radius: 0 0 calc(0.25rem - 1px) calc(0.25rem - 1px);
 }
 
-.card-footer {
+.ma-card-footer {
   padding: 0.5rem 1rem;
   background-color: var(--media-card-footer-bg);
   border-top: 1px solid var(--surface-border);
@@ -485,54 +482,54 @@
   left: 48px;
 }
 
-.no-breadcrumb-divider::before {
+.fileApp .ma-no-breadcrumb-divider::before {
   content: none !important;
 }
 
-.breadcrumb-item::before {
+.fileApp .ma-breadcrumb-item::before {
   float: left;
   color: var(--mg-text-muted);
   content: var(--mg-breadcrumb-divider, "/");
   padding-right: 2px;
 }
 
-.breadcrumb-item + .breadcrumb-item {
+.fileApp .ma-breadcrumb-item + .ma-breadcrumb-item {
   padding-left: 2px;
 }
 
-.breadcrumb-item + .breadcrumb-item::before {
+.fileApp .ma-breadcrumb-item + .ma-breadcrumb-item::before {
   padding-right: 2px;
 }
 
 /* ============================================================
    Navbar / Action Bar
    ============================================================ */
-.action-bar {
+.fileApp .action-bar {
   border-bottom: 1px solid var(--surface-border);
   align-items: center;
 }
 
-.action-bar .ma-btn-light {
+.fileApp .action-bar .ma-btn-light {
   min-height: 38px;
 }
 
-.action-bar .ma-badge {
+.fileApp .action-bar .ma-badge {
   color: black;
 }
 
-.action-bar .file-filter svg {
+.fileApp .action-bar .file-filter svg {
   opacity: 0.6;
 }
 
-.action-bar .fileinput-button {
+.fileApp .action-bar .fileinput-button {
   cursor: pointer;
 }
 
-.action-bar .fileinput-button svg {
+.fileApp .action-bar .fileinput-button svg {
   margin-right: 6px;
 }
 
-.action-bar .fileinput-button input {
+.fileApp .action-bar .fileinput-button input {
   width: 0.1px;
   height: 0.1px;
   opacity: 0;
@@ -541,49 +538,49 @@
   z-index: -1;
 }
 
-.action-bar input[type="text"] {
+.fileApp .action-bar input[type="text"] {
   outline: none;
   box-shadow: none !important;
 }
 
-#breadcrumb {
+.fileApp #breadcrumb {
   background-color: var(--media-breadcrumb-bg);
   border-bottom: 1px solid var(--surface-border);
   border-radius: 0;
   min-height: 40px;
 }
 
-#breadcrumb .breadcrumb-path {
+.fileApp #breadcrumb .breadcrumb-path {
   flex-grow: 1;
 }
 
-#breadcrumb .breadcrumb-path .breadcrumb-item {
+.fileApp #breadcrumb .breadcrumb-path .ma-breadcrumb-item {
   display: inline-block;
 }
 
-#breadcrumb .breadcrumb-path .breadcrumb-item a {
+.fileApp #breadcrumb .breadcrumb-path .ma-breadcrumb-item a {
   color: var(--gray-700);
 }
 
-#breadcrumb .breadcrumb-buttons {
+.fileApp #breadcrumb .breadcrumb-buttons {
   justify-content: flex-start;
   flex-grow: 1;
   margin-top: -5px;
 }
 
-#breadcrumb .breadcrumb-buttons a {
+.fileApp #breadcrumb .breadcrumb-buttons a {
   border-radius: 0 !important;
   color: var(--gray-700);
 }
 
-.storage-info-btn {
+.fileApp .storage-info-btn {
   color: var(--gray-600);
   font-size: 0.9rem;
   cursor: pointer;
   text-decoration: none;
 }
 
-.storage-info-btn:hover {
+.fileApp .storage-info-btn:hover {
   color: var(--gray-800);
 }
 
@@ -623,13 +620,13 @@
 /* ============================================================
    Settings Popover
    ============================================================ */
-.settings-btn {
+.fileApp .settings-btn {
   color: var(--mg-text, #333);
   cursor: pointer;
   font-size: 1rem;
 }
 
-.settings-btn:hover {
+.fileApp .settings-btn:hover {
   color: var(--media-primary);
 }
 
@@ -677,56 +674,56 @@
 /* ============================================================
    Large Thumbnails
    ============================================================ */
-ol.file-items-grid.large-thumbs {
+.fileApp ol.file-items-grid.large-thumbs {
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 }
 
-ol.file-items-grid.large-thumbs .thumb-container {
+.fileApp ol.file-items-grid.large-thumbs .thumb-container {
   height: 260px;
 }
 
-.visibility-buttons {
+.fileApp .visibility-buttons {
   justify-content: flex-end;
   flex-grow: 0;
 }
 
-.visibility-buttons button {
+.fileApp .visibility-buttons button {
   border-radius: 0 !important;
   color: var(--gray-700);
 }
 
-.visibility-buttons .selected {
+.fileApp .visibility-buttons .selected {
   color: var(--media-primary);
 }
 
-#clear-file-filter-button {
+.fileApp #clear-file-filter-button {
   z-index: 100;
 }
 
 /* ============================================================
    Folder Tree
    ============================================================ */
-#folder-tree {
+.fileApp #folder-tree {
   list-style: none;
   padding-left: 0;
   overflow: hidden;
 }
 
-#folder-tree .treeroot {
+.fileApp #folder-tree .treeroot {
   font-weight: 600;
   height: 40px;
   border-bottom: 1px solid var(--surface-border);
 }
 
-#folder-tree .treeroot a {
+.fileApp #folder-tree .treeroot a {
   font-size: 1rem;
 }
 
-#folder-tree .treeroot a .folder-actions .action-button {
+.fileApp #folder-tree .treeroot a .folder-actions .action-button {
   font-size: 0.875rem;
 }
 
-#folder-tree .treeroot .expand {
+.fileApp #folder-tree .treeroot .expand {
   font-size: 0.875rem;
   padding: 0;
 }
@@ -853,7 +850,7 @@ ol.file-items-grid li {
   transition: box-shadow 0.2s;
 }
 
-ol.file-items-grid li .card-footer {
+ol.file-items-grid li .ma-card-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -862,7 +859,7 @@ ol.file-items-grid li .card-footer {
   min-width: 0;
 }
 
-ol.file-items-grid li .card-footer .action-button {
+ol.file-items-grid li .ma-card-footer .action-button {
   padding: 4px 0 !important;
 }
 
@@ -1351,7 +1348,7 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
   margin-left: 0.5rem;
 }
 
-.action-modal .card {
+.action-modal .ma-card {
   padding: 12px 16px;
 }
 
@@ -1382,6 +1379,10 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 }
 
 /* PrimeVue TreeSelect resets */
+.p-treeselect-overlay {
+  z-index: calc(var(--oc-media-modal-zindex, 2200) + 1) !important;
+}
+
 .p-treeselect-overlay .p-tree {
   padding: 0;
 }
@@ -1432,7 +1433,7 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 }
 
 .file-modal .modal-body #fileContainer #folder-tree a,
-.file-modal .modal-body #fileContainer .breadcrumb-item a {
+.file-modal .modal-body #fileContainer .ma-breadcrumb-item a {
   font-size: 0.9rem;
 }
 
@@ -2105,7 +2106,7 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
   border-bottom-color: var(--mg-border);
 }
 
-[data-bs-theme="dark"] .fileApp #breadcrumb .breadcrumb-item a {
+[data-bs-theme="dark"] .fileApp #breadcrumb .ma-breadcrumb-item a {
   color: var(--mg-text-muted);
 }
 
@@ -2159,12 +2160,12 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
   border-color: var(--bs-pagination-active-border-color, var(--media-primary, #0d6efd));
 }
 
-[data-bs-theme="dark"] .fileApp ol.file-items-grid .card {
+[data-bs-theme="dark"] .fileApp ol.file-items-grid .ma-card {
   background-color: var(--media-card-bg);
   border-color: var(--media-card-border);
 }
 
-[data-bs-theme="dark"] .fileApp ol.file-items-grid .card-footer {
+[data-bs-theme="dark"] .fileApp ol.file-items-grid .ma-card-footer {
   background-color: var(--media-card-footer-bg);
   border-top-color: var(--mg-border);
   color: var(--mg-text);

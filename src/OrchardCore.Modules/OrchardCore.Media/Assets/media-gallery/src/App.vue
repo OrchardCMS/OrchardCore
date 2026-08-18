@@ -23,7 +23,7 @@
           <nav id="breadcrumb" class="tw:flex tw:justify-end tw:items-center">
             <div class="breadcrumb-path tw:px-3">
               <span v-for="(breadcrumb, i) in breadcrumbs" :key="breadcrumb.directoryPath" v-cloak
-                class="breadcrumb-item">
+                class="ma-breadcrumb-item">
                 <a :href="breadcrumbs.length - i == 1 ? 'javascript:void(0)' : '#'"
                   v-on:click="clickBreadCrumb(breadcrumb)">
                   {{ breadcrumb.name }}
@@ -140,7 +140,7 @@
           <ol class="file-items-grid" :class="{ 'large-thumbs': largeThumbs }" v-show="!isLoadingFiles && filteredFileItems.length > 0 && gridView">
             <li v-for="file in itemsInPage" :key="file.filePath"
               :class="{ selected: isFileSelected(file) }"
-              class="card" draggable="true"
+              class="ma-card" draggable="true"
               @dragstart="dragFileStart(file, $event)">
               <div class="thumb-container" @click.stop="toggleFile(file)">
                 <img v-if="isImage(file)" :src="buildMediaUrl(resolveMediaUrl(file.url), thumbSize)" :alt="file.name" loading="lazy" />
@@ -156,7 +156,7 @@
                   <span class="tw:uppercase file-ext tw:text-white">{{ getFileExtension(file.name) }}</span>
                 </div>
               </div>
-              <div class="card-footer">
+              <div class="ma-card-footer">
                 <span class="tw:truncate tw:text-sm tw:grow" :title="file.name">{{ file.name }}</span>
                 <FileMenu :file-item="file" @click.stop></FileMenu>
               </div>

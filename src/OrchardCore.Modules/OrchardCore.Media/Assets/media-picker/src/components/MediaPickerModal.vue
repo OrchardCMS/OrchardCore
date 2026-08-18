@@ -5,7 +5,7 @@
 <template>
   <VueFinalModal
     v-model="visible"
-    class="tw:flex tw:items-center tw:justify-center"
+    class="mf-vfm tw:flex tw:items-center tw:justify-center"
     content-class="mf-picker-shell mf-picker-shell-lg"
     @opened="onOpened"
     @closed="onClosed"
