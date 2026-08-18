@@ -39,9 +39,7 @@ public class CorrelateTask : TaskActivity<CorrelateTask>
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"]);
-    }
+        => Outcome(S["Done"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -54,6 +52,6 @@ public class CorrelateTask : TaskActivity<CorrelateTask>
 
         workflowContext.CorrelationId = value?.Trim();
 
-        return Outcomes("Done");
+        return Outcome("Done");
     }
 }

@@ -56,16 +56,15 @@ public class TimerEvent : EventActivity
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"]);
-    }
+        => Outcome(S["Done"]);
 
     public override async Task<ActivityExecutionResult> ResumeAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         if (await IsExpiredAsync())
         {
             workflowContext.LastResult = "TimerEvent";
-            return Outcomes("Done");
+
+            return Outcome("Done");
         }
 
         return Halt();

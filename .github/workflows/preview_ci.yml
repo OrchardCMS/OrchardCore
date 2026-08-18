@@ -34,7 +34,7 @@ jobs:
       if: steps.check-publish.outputs.should-publish == 'true'
       # See pr_ci.yml for the reason why we disable NuGet audit warnings.
       run: |
-        dotnet build -c Release /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true /p:NuGetAudit=false
+        dotnet build -c Release -p:TreatWarningsAsErrors=true --warnaserror -p:RunAnalyzers=true -p:NuGetAudit=false
     - name: Unit Tests
       if: steps.check-publish.outputs.should-publish == 'true'
       run: |

@@ -11,9 +11,9 @@ public sealed class ListMetaWeblogDriver : ContentPartDisplayDriver<ListPart>
 {
     public override IDisplayResult Display(ListPart listPart, BuildPartDisplayContext context)
     {
-        return Dynamic("ListPart_RemotePublishing", shape =>
+        return Dynamic("ListPart_RemotePublishing", static (shape, listPart) =>
         {
             shape.ContentItem = listPart.ContentItem;
-        }).Location("Content");
+        }, listPart).Location("Content");
     }
 }
