@@ -5,6 +5,8 @@ namespace OrchardCore.Tests.Functional.Tests.Cms;
 
 public sealed class AdminNavigationTests : CmsTestBase<BlogFixture>, IClassFixture<BlogFixture>
 {
+    private const string Password = "Orchard1!";
+
     public AdminNavigationTests(BlogFixture fixture) : base(fixture) { }
 
     [Fact]
@@ -173,5 +175,133 @@ public sealed class AdminNavigationTests : CmsTestBase<BlogFixture>, IClassFixtu
         await Assertions.Expect(activeMenusItem).ToHaveCountAsync(0);
 
         await page.CloseAsync();
+    }
+
+    [Fact]
+    public async Task MenuPermissions_EditorCanManageMenuItemsWithoutPublishing()
+    {
+        const string menuEditorRole = "MenuEditor";
+        const string noMenuAccessRole = "NoMenuAccess";
+        const string menuEditorUser = "menu-editor";
+        const string noMenuAccessUser = "no-menu-access";
+
+        var page = await Fixture.CreatePageAsync();
+        await page.LoginAsync();
+
+        await page.GotoAndAssertOkAsync("/Admin/ContentTypes/Edit/Menu");
+        await page.Locator("#ContentTypeDefinition_Securable").CheckAsync();
+        await page.ClickSaveAsync();
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        await CreateRoleWithPermissionsAsync(
+            page,
+            menuEditorRole,
+            "AccessAdminPanel",
+            "ListContent_Menu",
+            "Edit_Menu");
+        await CreateRoleWithPermissionsAsync(page, noMenuAccessRole, "AccessAdminPanel");
+
+        await UserHelper.CreateUserAsync(page, string.Empty, menuEditorUser, "menu-editor@test.com", Password, menuEditorRole);
+        await UserHelper.CreateUserAsync(page, string.Empty, noMenuAccessUser, "no-menu-access@test.com", Password, noMenuAccessRole);
+
+        await UserHelper.LoginAsAsync(page, string.Empty, menuEditorUser, Password);
+        await page.GotoAndAssertOkAsync("/Admin");
+
+        var menusLink = page.Locator("#adminMenu a[href^=\"/Admin/Contents/ContentItems/Menu\"]");
+        await Assertions.Expect(menusLink).ToHaveCountAsync(1);
+
+        await page.GetByRole(AriaRole.Button, new() { Name = "Content", Exact = true }).ClickAsync();
+        await Assertions.Expect(menusLink).ToBeVisibleAsync();
+
+        await page.GotoAndAssertOkAsync("/Admin/Contents/ContentItems/Menu");
+        await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { Name = "Manage Content" })).ToBeVisibleAsync();
+
+        var editUrl = await page.GetByRole(AriaRole.Link, new() { Name = "Edit", Exact = true })
+            .First
+            .GetAttributeAsync("href");
+
+        Assert.NotNull(editUrl);
+        await page.GotoAndAssertOkAsync(editUrl);
+
+        var addMenuItemUrl = await page.Locator("a[href*='/Admin/Menu/Create/LinkMenuItem']")
+            .First
+            .GetAttributeAsync("href");
+
+        Assert.NotNull(addMenuItemUrl);
+        await page.GotoAndAssertOkAsync(addMenuItemUrl);
+        await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { Name = "New Link Menu Item" })).ToBeVisibleAsync();
+
+        await page.GotoAndAssertOkAsync("/Admin/Contents/ContentItems/Menu");
+        await Assertions.Expect(page.Locator("form[action*='/Publish']")).ToHaveCountAsync(0);
+        await Assertions.Expect(page.Locator("form[action*='/Delete']")).ToHaveCountAsync(0);
+
+        var contentItemId = new Uri(new Uri(Fixture.BaseUrl), editUrl)
+            .Segments
+            .SkipWhile(segment => !string.Equals(segment, "ContentItems/", StringComparison.Ordinal))
+            .Skip(1)
+            .First()
+            .TrimEnd('/');
+
+        await SubmitContentActionAsync(page, $"/Admin/Contents/ContentItems/{contentItemId}/Publish");
+        Assert.Contains("/Error/403", page.Url, StringComparison.OrdinalIgnoreCase);
+
+        await UserHelper.LoginAsAsync(page, string.Empty, noMenuAccessUser, Password);
+        await page.GotoAndAssertOkAsync("/Admin");
+        await Assertions.Expect(page.Locator("#adminMenu a[href^=\"/Admin/Contents/ContentItems/Menu\"]")).ToHaveCountAsync(0);
+
+        await page.GotoAsync("/Admin/Contents/ContentItems/Menu");
+        Assert.Contains("/Error/403", page.Url, StringComparison.OrdinalIgnoreCase);
+
+        await page.CloseAsync();
+    }
+
+    private static async Task CreateRoleWithPermissionsAsync(
+        IPage page,
+        string roleName,
+        params string[] permissionNames)
+    {
+        await page.GotoAndAssertOkAsync("/Admin/Roles/Create");
+        await page.Locator("input[name='RoleName']").FillAsync(roleName);
+        await page.ClickCreateAsync();
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        await page.GotoAndAssertOkAsync($"/Admin/Roles/Edit/{Uri.EscapeDataString(roleName)}");
+
+        foreach (var permissionName in permissionNames)
+        {
+            var permission = page.Locator($"input[id='Checkbox.{permissionName}']");
+            await permission.WaitForAsync(new() { State = WaitForSelectorState.Attached });
+            await permission.CheckAsync();
+        }
+
+        await page.ClickSaveAsync();
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+    }
+
+    private static async Task SubmitContentActionAsync(IPage page, string action)
+    {
+        await Task.WhenAll(
+            page.WaitForURLAsync("**/Error/403**"),
+            page.EvaluateAsync(
+                """
+                action => {
+                    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+                    const form = document.createElement("form");
+                    form.method = "post";
+                    form.action = action;
+
+                    const tokenInput = document.createElement("input");
+                    tokenInput.type = "hidden";
+                    tokenInput.name = "__RequestVerificationToken";
+                    tokenInput.value = token;
+
+                    form.appendChild(tokenInput);
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+                """,
+                action));
+
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 }

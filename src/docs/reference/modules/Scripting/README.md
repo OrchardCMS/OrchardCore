@@ -26,8 +26,9 @@ var globalMethods = _scriptingManager.GlobalMethodProviders.SelectMany(x => x.Ge
 // Create scope for the engine
 var scope = engine.CreateScope(globalMethods, serviceProvider, null, null);
 
-// Evaluate the given script
-var date = engine.Evaluate("js: new Date().toISOString()");
+// Evaluate the given script. The engine is already the JavaScript one, so the
+// script is passed without the `js:` prefix, which only a directive carries.
+var date = engine.Evaluate(scope, "new Date().toISOString()");
 ```
 
 The `js:` prefix is used to describe in which language the code is written. Any module can provide
