@@ -4,7 +4,7 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Acornima" Version="1.6.2" />
+    <PackageVersion Include="Acornima" Version="1.7.0" />
     <PackageVersion Include="AnyAscii" Version="0.3.3" />
     <PackageVersion Include="AngleSharp" Version="1.5.2" />
     <PackageVersion Include="AWSSDK.S3" Version="4.0.101.4" />
@@ -26,7 +26,7 @@
     <PackageVersion Include="GraphQL.DataLoader" Version="8.8.4" />
     <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.8.4" />
     <PackageVersion Include="GraphQL.SystemTextJson" Version="8.8.4" />
-    <PackageVersion Include="Jint" Version="4.15.3" />
+    <PackageVersion Include="Jint" Version="4.16.0" />
     <PackageVersion Include="JsonPath.Net" Version="2.2.0" />
     <PackageVersion Include="HtmlSanitizer" Version="9.1.893-beta" />
     <PackageVersion Include="Microsoft.Extensions.Compliance.Redaction" Version="10.8.0" />
