@@ -1,44 +1,53 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents;
 using OrchardCore.Contents.Security;
+using OrchardCore.Roles;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Menu.Services;
 
 /// <summary>
-/// Authorization handler that gates access to Menu content items through the ManageMenu permission.
-/// <para>
-/// By default, the Menu content type is not marked as securable, so generic content permissions
-/// like <c>ListContent</c> or <c>EditContent</c> would normally grant access to Menu items
-/// through the standard permission hierarchy. This handler overrides that behavior by requiring
-/// either the <c>ManageMenu</c> permission or a direct per-type permission claim (e.g.,
-/// <c>ListContent_Menu</c>) when the Menu content type is explicitly made securable by an admin.
-/// </para>
-/// <para>
-/// Authorization flow for Menu resources:
-/// <list type="bullet">
-/// <item>User has <c>ManageMenu</c> → access granted (bridges to all content permissions).</item>
-/// <item>User has a direct per-type claim such as <c>EditContent_Menu</c> (from securable) → access granted.</item>
-/// <item>User only has generic <c>ListContent</c>/<c>EditContent</c> without <c>ManageMenu</c> → access denied.</item>
-/// </list>
-/// </para>
+/// Aligns Menu content authorization with the Menu-specific permission graph.
 /// </summary>
 public sealed class MenuAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
 {
+    private static readonly Permission s_editMenuContent = ContentTypePermissionsHelper.CreateDynamicPermission(
+        ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.EditContent.Name],
+        MenuConstants.MenuContentType);
+    private static readonly Permission s_manageMenuPermission = new(Permissions.ManageMenu.Name, Permissions.ManageMenu.Description);
+
     private readonly IServiceProvider _serviceProvider;
+    private readonly ISystemRoleProvider _systemRoleProvider;
+    private readonly ISiteService _siteService;
     private IAuthorizationService _authorizationService;
 
-    public MenuAuthorizationHandler(IServiceProvider serviceProvider)
+    public MenuAuthorizationHandler(IServiceProvider serviceProvider, ISystemRoleProvider systemRoleProvider, ISiteService siteService)
     {
         _serviceProvider = serviceProvider;
+        _systemRoleProvider = systemRoleProvider;
+        _siteService = siteService;
     }
 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
     {
-        if (!IsRelevant(requirement.Permission, context.Resource))
+        if (context.HasSucceeded || !IsMenuResource(context.Resource))
+        {
+            return;
+        }
+
+        var menuPermission = GetMenuPermission(context.User, requirement.Permission, context.Resource);
+
+        if (menuPermission is null)
+        {
+            return;
+        }
+
+        if (await IsAdministratorOrSuperUserAsync(context.User))
         {
             return;
         }
@@ -46,65 +55,120 @@ public sealed class MenuAuthorizationHandler : AuthorizationHandler<PermissionRe
         // Lazy-resolve to prevent circular dependency (this handler is called by IAuthorizationService).
         _authorizationService ??= _serviceProvider.GetRequiredService<IAuthorizationService>();
 
-        // If the user has ManageMenu (directly or via ImpliedBy chain), grant access.
-        if (await _authorizationService.AuthorizeAsync(context.User, Permissions.ManageMenu))
+        var hasDirectMenuPermission = HasDirectPermission(context.User, menuPermission);
+        var hasManageMenuPermission = HasDirectPermission(context.User, s_manageMenuPermission)
+            || await _authorizationService.AuthorizeAsync(context.User, s_manageMenuPermission);
+
+        if (hasDirectMenuPermission
+            || await _authorizationService.AuthorizeAsync(context.User, new Permission(menuPermission.Name))
+            || IsListPermission(menuPermission) && hasManageMenuPermission
+            || hasManageMenuPermission && IsGrantedByEditMenu(menuPermission))
         {
             context.Succeed(requirement);
             return;
         }
 
-        // If the Menu content type has been explicitly made securable and the user's role has
-        // been granted the specific per-type permission (e.g., ListContent_Menu), allow access.
-        // We check claims directly to avoid matching generic permissions like ListContent which
-        // would otherwise imply ListContent_Menu through the standard permission hierarchy.
-        if (context.User.HasClaim(Permission.ClaimType, requirement.Permission.Name))
-        {
-            context.Succeed(requirement);
-            return;
-        }
-
-        // Deny access: the user has neither ManageMenu nor a direct per-type permission claim.
-        // This prevents generic content permissions (ListContent, EditContent, etc.) from
-        // granting implicit access to Menu content items.
-        context.Fail(new AuthorizationFailureReason(this, "ManageMenu permission is required to access Menu content items."));
+        context.Fail(new AuthorizationFailureReason(this, "The requested Menu operation is not allowed."));
     }
 
-    private static bool IsRelevant(Permission permission, object resource)
-        => IsContentPermission(permission) && IsMenuResource(resource);
-
-    private static bool IsContentPermission(Permission permission)
+    private static Permission GetMenuPermission(ClaimsPrincipal user, Permission permission, object resource)
     {
-        // Match both the dynamic content-type permissions generated for Menu (for example Edit_Menu)
-        // and the generic content permissions that are evaluated before Orchard maps them per content type.
-        if (ContentTypePermissionsHelper.PermissionTemplates.Values.Any(template =>
-            string.Equals(permission.Name, string.Format(template.Name, MenuConstants.MenuContentType), StringComparison.Ordinal)))
+        if (permission is null)
+        {
+            return null;
+        }
+
+        if (resource is ContentItem contentItem
+            && CommonPermissions.OwnerPermissionsByName.TryGetValue(permission.Name, out var ownerPermission)
+            && HasOwnership(user, contentItem))
+        {
+            permission = ownerPermission;
+        }
+
+        if (IsMenuPermission(permission))
+        {
+            return permission;
+        }
+
+        var permissionTemplate = ContentTypePermissionsHelper.ConvertToDynamicPermission(permission);
+
+        return permissionTemplate is null
+            ? null
+            : ContentTypePermissionsHelper.CreateDynamicPermission(permissionTemplate, MenuConstants.MenuContentType);
+    }
+
+    private static bool IsGrantedByEditMenu(Permission permission)
+    {
+        var grantingNames = new HashSet<string>(StringComparer.Ordinal);
+
+        AddMenuGrantingNames(permission, grantingNames);
+
+        return grantingNames.Contains(s_editMenuContent.Name);
+    }
+
+    private static void AddMenuGrantingNames(Permission permission, HashSet<string> grantingNames)
+    {
+        if (!grantingNames.Add(permission.Name) || permission.ImpliedBy is null)
+        {
+            return;
+        }
+
+        foreach (var impliedBy in permission.ImpliedBy)
+        {
+            if (!IsMenuPermission(impliedBy))
+            {
+                continue;
+            }
+
+            AddMenuGrantingNames(impliedBy, grantingNames);
+        }
+    }
+
+    private static bool HasDirectPermission(ClaimsPrincipal user, Permission permission)
+        => user.HasClaim(Permission.ClaimType, permission.Name);
+
+    private async Task<bool> IsAdministratorOrSuperUserAsync(ClaimsPrincipal user)
+    {
+        if (user is null)
+        {
+            return false;
+        }
+
+        var adminRole = _systemRoleProvider.GetAdminRole();
+
+        if (adminRole is not null && user.IsInRole(adminRole.RoleName))
         {
             return true;
         }
 
-        return permission.Name switch
+        var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (string.IsNullOrEmpty(userId))
         {
-            nameof(CommonPermissions.ListContent) => true,
-            nameof(CommonPermissions.PublishContent) => true,
-            nameof(CommonPermissions.PublishOwnContent) => true,
-            nameof(CommonPermissions.EditContent) => true,
-            nameof(CommonPermissions.EditOwnContent) => true,
-            nameof(CommonPermissions.DeleteContent) => true,
-            nameof(CommonPermissions.DeleteOwnContent) => true,
-            nameof(CommonPermissions.ViewContent) => true,
-            nameof(CommonPermissions.ViewOwnContent) => true,
-            nameof(CommonPermissions.PreviewContent) => true,
-            nameof(CommonPermissions.PreviewOwnContent) => true,
-            nameof(CommonPermissions.CloneContent) => true,
-            nameof(CommonPermissions.CloneOwnContent) => true,
-            nameof(CommonPermissions.EditContentOwner) => true,
-            _ => false,
-        };
+            return false;
+        }
+
+        var site = await _siteService.GetSiteSettingsAsync();
+
+        return string.Equals(userId, site.SuperUser, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsListPermission(Permission permission)
+        => string.Equals(permission.Name, Permissions.ListMenuContent.Name, StringComparison.Ordinal);
+
+    private static bool IsMenuPermission(Permission permission)
+    {
+        if (permission is null)
+        {
+            return false;
+        }
+
+        return ContentTypePermissionsHelper.PermissionTemplates.Values.Any(template =>
+            string.Equals(permission.Name, string.Format(template.Name, MenuConstants.MenuContentType), StringComparison.Ordinal));
     }
 
     private static bool IsMenuResource(object resource)
     {
-        // Content authorization can be evaluated against either a content item instance or the content type name.
         if (resource is ContentItem contentItem)
         {
             return string.Equals(contentItem.ContentType, MenuConstants.MenuContentType, StringComparison.Ordinal);
@@ -116,5 +180,22 @@ public sealed class MenuAuthorizationHandler : AuthorizationHandler<PermissionRe
         }
 
         return false;
+    }
+
+    private static bool HasOwnership(ClaimsPrincipal user, ContentItem content)
+    {
+        if (user == null || content == null)
+        {
+            return false;
+        }
+
+        var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(content.Owner))
+        {
+            return false;
+        }
+
+        return userId == content.Owner;
     }
 }
