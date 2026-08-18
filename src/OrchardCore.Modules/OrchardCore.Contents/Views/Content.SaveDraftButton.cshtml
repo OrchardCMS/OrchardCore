@@ -17,7 +17,7 @@ else
         <div class="dropdown-menu">
             @if (string.IsNullOrEmpty(contentItemId))
             {
-                <button class="dropdown-item draft-create" type="submit" name="submit.Save" value="submit.SaveAndCreate">@T["and create"]</button>
+                <button class="dropdown-item draft-new" type="submit" name="submit.Save" value="submit.SaveAndNew">@T["and new"]</button>
             }
             <button class="dropdown-item draft-continue" type="submit" name="submit.Save" value="submit.SaveAndContinue">@T["and continue"]</button>
         </div>

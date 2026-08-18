@@ -403,7 +403,7 @@ public sealed class AdminController : Controller, IUpdateModel
     {
         var stayOnSamePage = submitSave == "submit.SaveAndContinue";
 
-        if (submitSave == "submit.SaveAndCreate")
+        if (submitSave == "submit.SaveAndNew")
         {
             returnUrl = Url.Action(nameof(Create), new { returnUrl });
         }
@@ -442,7 +442,7 @@ public sealed class AdminController : Controller, IUpdateModel
             return Forbid();
         }
 
-        if (submitPublish == "submit.PublishAndCreate")
+        if (submitPublish == "submit.PublishAndNew")
         {
             returnUrl = Url.Action(nameof(Create), new { returnUrl });
         }
