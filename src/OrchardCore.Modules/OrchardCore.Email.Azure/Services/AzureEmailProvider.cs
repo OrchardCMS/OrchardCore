@@ -10,10 +10,10 @@ public class AzureEmailProvider : AzureEmailProviderBase
     public const string TechnicalName = "Azure";
 
     public AzureEmailProvider(
-        IOptions<AzureEmailOptions> options,
+        IOptionsMonitor<AzureEmailOptions> options,
         ILogger<AzureEmailProvider> logger,
         IStringLocalizer<AzureEmailProvider> stringLocalizer)
-        : base(options.Value, logger, stringLocalizer)
+        : base(() => options.CurrentValue, logger, stringLocalizer)
     {
     }
 

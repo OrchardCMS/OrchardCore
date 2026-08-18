@@ -13,7 +13,7 @@ public class DefaultAzureEmailProvider : AzureEmailProviderBase
         IOptions<DefaultAzureEmailOptions> options,
         ILogger<DefaultAzureEmailProvider> logger,
         IStringLocalizer<DefaultAzureEmailProvider> stringLocalizer)
-        : base(options.Value, logger, stringLocalizer)
+        : base(() => options.Value, logger, stringLocalizer)
     {
     }
 
