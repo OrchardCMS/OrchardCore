@@ -27,8 +27,10 @@ public class AzureEmailOptionsMonitorTests
         await context.UsingTenantScopeAsync(async scope =>
         {
             var shellFeaturesManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
+            var availableFeatures = await shellFeaturesManager.GetAvailableFeaturesAsync();
+            var featuresToEnable = availableFeatures.Where(feature => feature.Id == "OrchardCore.Email.Azure");
 
-            await shellFeaturesManager.EnableFeaturesAsync("OrchardCore.Email.Azure");
+            await shellFeaturesManager.EnableFeaturesAsync(featuresToEnable, force: true);
         });
 
         await context.WaitForDeferredTasksAsync(CancellationToken.None);
@@ -40,7 +42,7 @@ public class AzureEmailOptionsMonitorTests
             shellContextTicks = scope.ShellContext.UtcTicks;
 
             Assert.False(scope.ServiceProvider.GetRequiredService<IOptionsMonitor<AzureEmailOptions>>().CurrentValue.IsEnabled);
-            Assert.Null(scope.ServiceProvider.GetRequiredService<IOptionsMonitor<EmailOptions>>().CurrentValue.DefaultProviderName);
+            Assert.Equal(AzureEmailProvider.TechnicalName, scope.ServiceProvider.GetRequiredService<IOptionsMonitor<EmailOptions>>().CurrentValue.DefaultProviderName);
             Assert.False(scope.ServiceProvider.GetRequiredService<IOptionsMonitor<EmailProviderOptions>>().CurrentValue.Providers[AzureEmailProvider.TechnicalName].IsEnabled);
 
             return Task.CompletedTask;
