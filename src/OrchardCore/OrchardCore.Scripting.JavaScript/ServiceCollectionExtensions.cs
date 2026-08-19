@@ -31,6 +31,23 @@ public static class ServiceCollectionExtensions
             // cannot be cancelled - a check reads two fields and takes no timestamp, and the constraint
             // declares itself amortizable, so the interpreter's tight-loop lane stays armed either way.
             option.Constraint(static () => new OperationDeadlineConstraint());
+
+            // Scripts here are authored through the admin UI rather than shipped with the application, so
+            // the engine runs code this project did not write. Without this probe an unbounded recursion
+            // does not raise an exception at all: the native stack overflows, the runtime kills the
+            // process, and no 'catch', no logger and no error page sees it. With it the same script raises
+            // an ordinary JavaScript error, and the engine is still usable afterwards.
+            //
+            // The execution constraints a site can configure do not cover this. A budget of statements or
+            // of wall-clock time is only reached if the script survives long enough to spend it, and an
+            // overflow arrives in milliseconds - both of the settings this module's documentation offers as
+            // examples, MaxStatements(10_000) and TimeoutInterval(5s), still end in a dead process.
+            //
+            // It is set here, on the registration, rather than on the engine, so that an application that
+            // has measured the cost on its own scripts and does not want it can turn it off with its own
+            // Configure<Jint.Options> call.
+            option.Constraints.StackOverflowGuard = true;
+
             // The dynamic wrappers are unwrapped to the node they carry, because a DynamicObject exposes
             // nothing a script can read. The type Jint hands over describes the member the value was read
             // from, not the node it is replaced by, and the two are unrelated: JsonDynamicObject derives
