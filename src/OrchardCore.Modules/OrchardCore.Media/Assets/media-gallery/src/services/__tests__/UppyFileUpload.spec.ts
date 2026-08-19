@@ -8,6 +8,7 @@ const {
   mockGetFile,
   mockSetFileMeta,
   mockSetMeta,
+  mockSetFileState,
   mockUpload,
   mockClear,
   mockAddFiles,
@@ -24,6 +25,7 @@ const {
   const mockGetFile = vi.fn();
   const mockSetFileMeta = vi.fn();
   const mockSetMeta = vi.fn();
+  const mockSetFileState = vi.fn();
   const mockUpload = vi.fn(() => Promise.resolve());
   const mockClear = vi.fn();
   const mockAddFiles = vi.fn();
@@ -47,6 +49,7 @@ const {
     getFile: mockGetFile,
     setFileMeta: mockSetFileMeta,
     setMeta: mockSetMeta,
+    setFileState: mockSetFileState,
     upload: mockUpload,
     clear: mockClear,
     addFiles: mockAddFiles,
@@ -64,6 +67,7 @@ const {
     mockGetFile,
     mockSetFileMeta,
     mockSetMeta,
+    mockSetFileState,
     mockUpload,
     mockClear,
     mockAddFiles,
@@ -562,14 +566,16 @@ describe("UppyFileUpload", () => {
     });
 
     describe("files-added handler", () => {
-      it("should set meta with destinationPath in XHR mode", async () => {
+      it("should pin each file's XHR upload endpoint to the folder selected at add time", async () => {
         const wrapper = await mountWithFileUpload(xhrModel);
 
         await emitUppyEventAsync("files-added", [
           { id: "f1", name: "newfile.jpg" },
         ]);
 
-        expect(mockSetMeta).toHaveBeenCalledWith({ destinationPath: "/Images" });
+        expect(mockSetFileState).toHaveBeenCalledWith("f1", {
+          xhrUpload: { endpoint: expect.stringContaining("path=%2FImages") },
+        });
         wrapper.unmount();
       });
 

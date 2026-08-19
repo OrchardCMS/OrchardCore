@@ -304,8 +304,22 @@ export const useFileUpload = (model: IFileUploadModel): void => {
           });
         });
       } else {
-        // XHR mode: destination path is in the query string
-        uppy.setMeta({ destinationPath: destinationPath });
+        // XHR mode: destination path is a query param baked into the upload endpoint URL.
+        // uppy is a module-level singleton shared across mounts, and XHRUpload only allows
+        // ONE endpoint (mutated in place by setUppyUrl() on every folder change). With
+        // limit: 5 concurrent uploads, batches larger than 5 queue the remaining files —
+        // if the user switches folders before those queued files dequeue, they'd pick up
+        // the endpoint (and therefore folder) that is current at THAT time, not the one
+        // selected when they were added. Pin each file's own endpoint now, at add time, as
+        // a per-file XHRUpload override — @uppy/xhr-upload's getOptions() merges
+        // file.xhrUpload last, so this always wins over the shared/default endpoint
+        // regardless of later folder changes.
+        const endpointAtAddTime = uploadFilesUrl.value;
+        files.forEach((file) => {
+          uppy.setFileState(file.id, {
+            xhrUpload: { endpoint: endpointAtAddTime },
+          });
+        });
       }
 
       /* v8 ignore next 8 -- canManage is always true; server enforces auth */
