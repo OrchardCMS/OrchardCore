@@ -659,6 +659,21 @@
   gap: 16px;
 }
 
+.settings-popover .oc-media-btn-group {
+  display: inline-flex;
+}
+
+.settings-popover .oc-media-btn-group .ma-btn:not(:first-child) {
+  margin-left: -1px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.settings-popover .oc-media-btn-group .ma-btn:not(:last-child) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
 .settings-popover-label {
   font-weight: 600;
   color: var(--gray-600);
