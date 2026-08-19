@@ -33,11 +33,11 @@
       </template>
       <template v-if="action == FileAction.Copy">
         <p-treeselect v-model="fileActionEntry.inputValue" :options="treeNode" :placeholder="t.SelectFolder"
-          class="tw:w-full" />
+          class="tw:w-full" :unstyled="false" />
       </template>
       <template v-if="action == FileAction.Move">
         <p-treeselect v-model="fileActionEntry.inputValue" :options="treeNode" :placeholder="t.SelectFolder"
-          class="tw:w-full" />
+          class="tw:w-full" :unstyled="false" />
       </template>
       <div class="tw:text-red-500 tw:mt-2">{{ errorMessage }}</div>
     </div>
