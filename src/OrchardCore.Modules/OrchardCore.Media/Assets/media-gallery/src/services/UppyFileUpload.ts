@@ -36,6 +36,7 @@ function uploadHeaders(): Record<string, string> {
 }
 import { OptionalPluralizeLocale } from "@uppy/utils";
 import { useEventBus } from "./UseEventBus";
+import { invalidateFileCache } from "./FileLibraryManager";
 
 const { on, emit } = useEventBus();
 const { selectedDirectory, fileItems, uploadFilesUrl, assetsStore, setAssetsStore, setFileItems } = useGlobals();
@@ -54,6 +55,16 @@ if (culture == "fr") {
 }
 
 const uppy = new Uppy({ locale: uppyLocale });
+
+// Remembers the destination folder each file was actually targeted at, at the moment it
+// was added — keyed by uppy file id. The upload endpoint/metadata is pinned per-file at
+// add time (see files-added handler below), so the upload itself always lands in the
+// right folder even if the user switches folders mid-upload. But the completion handlers
+// below only know the file's name/path, not which folder it was destined for — without
+// this map they'd blindly splice the completed file into whatever folder is CURRENTLY
+// selected (which may have changed), showing it in the wrong folder's file list until a
+// refresh silently removes it. Cleared as each file completes/errors.
+const fileDestinations = new Map<string, string>();
 
 // Before any upload starts, refresh the bearer token so both the XHR request headers (read
 // synchronously) and the first tus chunk carry a valid token. No-op in cookie mode.
@@ -294,6 +305,13 @@ export const useFileUpload = (model: IFileUploadModel): void => {
     uppy.on("files-added", async (files) => {
       const destinationPath = selectedDirectory.value.directoryPath;
 
+      // Remember which folder each file is actually headed to, so the completion
+      // handlers below can tell whether it's safe to splice it into the currently
+      // visible list (see fileDestinations declaration for the full rationale).
+      files.forEach((file) => {
+        fileDestinations.set(file.id, destinationPath);
+      });
+
       if (isTus) {
         // TUS mode: pass destination path and file name as per-file metadata
         // (TUS metadata is sent as headers, not query params)
@@ -452,24 +470,36 @@ export const useFileUpload = (model: IFileUploadModel): void => {
                 : a
             ));
 
-            // Add the uploaded file to the file panel immediately.
-            const uploadedItem: IFileLibraryItemDto = {
-              name: serverFile.name || file.name,
-              filePath: serverFile.filePath,
-              directoryPath: serverFile.directoryPath || selectedDirectory.value.directoryPath,
-              size: serverFile.size,
-              lastModifiedUtc: serverFile.lastModifiedUtc,
-              url: serverFile.url,
-              mime: serverFile.mime,
-              isDirectory: false,
-            };
-            if (!fileItems.value.some(f => f.filePath === uploadedItem.filePath)) {
-              setFileItems([...fileItems.value, uploadedItem]);
+            // Only splice the completed file into the visible file panel if the folder
+            // the user is CURRENTLY viewing is the one this file was actually uploaded
+            // to — it may have changed since the upload started. Otherwise, just drop
+            // the destination folder's cache so it's fetched fresh from the server next
+            // time the user visits it (it already has the file — it was uploaded there
+            // correctly; we just must not show it under the wrong folder here).
+            const destinationDir = fileDestinations.get(file.id) ?? matchDir;
+            if (destinationDir === selectedDirectory.value.directoryPath) {
+              const uploadedItem: IFileLibraryItemDto = {
+                name: serverFile.name || file.name,
+                filePath: serverFile.filePath,
+                directoryPath: serverFile.directoryPath || selectedDirectory.value.directoryPath,
+                size: serverFile.size,
+                lastModifiedUtc: serverFile.lastModifiedUtc,
+                url: serverFile.url,
+                mime: serverFile.mime,
+                isDirectory: false,
+              };
+              if (!fileItems.value.some(f => f.filePath === uploadedItem.filePath)) {
+                setFileItems([...fileItems.value, uploadedItem]);
+              }
+            } else {
+              invalidateFileCache(destinationDir);
             }
           }
         } catch (err) {
           console.debug("Failed to fetch TUS file info:", err);
         }
+
+        fileDestinations.delete(file.id);
 
         // Check if this upload was resumed from a previous partial upload
         const isResumed = resumedFileIds.has(file.id);
@@ -535,21 +565,31 @@ export const useFileUpload = (model: IFileUploadModel): void => {
               return a;
             }));
 
-            // Add the uploaded files to the file panel immediately.
+            // Only splice a completed file into the visible file panel if the folder the
+            // user is CURRENTLY viewing is the one it was actually uploaded to — it may
+            // have changed since the upload started. Files destined for other folders
+            // just get their folder's cache dropped, so a later visit re-fetches from the
+            // server (which already has them — they uploaded to the right place).
             const newFileItems: IFileLibraryItemDto[] = [];
+            const staleFolders = new Set<string>();
             updates.forEach((serverFile) => {
-              const item: IFileLibraryItemDto = {
-                name: serverFile.name as string,
-                filePath: serverFile.filePath as string,
-                directoryPath: serverFile.directoryPath as string,
-                size: serverFile.size as number,
-                lastModifiedUtc: serverFile.lastModifiedUtc as string,
-                url: serverFile.url as string,
-                mime: serverFile.mime as string,
-                isDirectory: false,
-              };
-              newFileItems.push(item);
+              const destinationDir = (serverFile.directoryPath as string) ?? "";
+              if (destinationDir === selectedDirectory.value.directoryPath) {
+                newFileItems.push({
+                  name: serverFile.name as string,
+                  filePath: serverFile.filePath as string,
+                  directoryPath: serverFile.directoryPath as string,
+                  size: serverFile.size as number,
+                  lastModifiedUtc: serverFile.lastModifiedUtc as string,
+                  url: serverFile.url as string,
+                  mime: serverFile.mime as string,
+                  isDirectory: false,
+                });
+              } else {
+                staleFolders.add(destinationDir);
+              }
             });
+            staleFolders.forEach((folder) => invalidateFileCache(folder));
             if (newFileItems.length > 0) {
               // Merge: replace existing items by filePath, add new ones.
               const existingPaths = new Set(fileItems.value.map(f => f.filePath));
@@ -561,6 +601,11 @@ export const useFileUpload = (model: IFileUploadModel): void => {
             }
           }
         }
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        [...(result.successful ?? []), ...(result.failed ?? [])].forEach((file: any) => {
+          fileDestinations.delete(file.id);
+        });
 
         if (result.failed) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
