@@ -1075,7 +1075,7 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
 .file-app {
   width: auto !important;
   min-width: 150px !important;
-  z-index: 2100 !important;
+  z-index: calc(var(--oc-media-modal-zindex, 2200) + 1) !important;
   padding: 0.5rem 0;
   color: var(--mg-text, var(--gray-1000));
   background-color: var(--mg-surface, var(--surface-0));
