@@ -7,7 +7,7 @@ public sealed class Permissions : IPermissionProvider
     public static readonly Permission ManageQueries = new("ManageQueries", "Manage queries");
     public static readonly Permission ExecuteApiAll = new("ExecuteApiAll", "Execute Api - All queries", [ManageQueries]);
 
-    private static readonly Permission _executeApi = new("ExecuteApi_{0}", "Execute Api - {0}", [ManageQueries, ExecuteApiAll]);
+    private static readonly Permission s_executeApi = new("ExecuteApi_{0}", "Execute Api - {0}", [ManageQueries, ExecuteApiAll]);
 
     private readonly IQueryManager _queryManager;
     private readonly IEnumerable<Permission> _generalPermissions =
@@ -54,8 +54,8 @@ public sealed class Permissions : IPermissionProvider
 
     public static Permission CreatePermissionForQuery(string name)
         => new(
-                string.Format(_executeApi.Name, name),
-                string.Format(_executeApi.Description, name),
-                _executeApi.ImpliedBy
+                string.Format(s_executeApi.Name, name),
+                string.Format(s_executeApi.Description, name),
+                s_executeApi.ImpliedBy
             );
 }

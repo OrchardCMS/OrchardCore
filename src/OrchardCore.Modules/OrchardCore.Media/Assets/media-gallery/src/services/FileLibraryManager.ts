@@ -66,6 +66,15 @@ function directoryOf(path: string): string {
   return index >= 0 ? path.substring(0, index) : "";
 }
 
+/**
+ * Invalidates the file cache for a specific directory. Exported at module scope so
+ * other services (e.g. UppyFileUpload) can invalidate a folder's cache without going
+ * through useFileLibraryManager().
+ */
+export const invalidateFileCache = (directoryPath: string) => {
+  fileCache.delete(directoryPath);
+};
+
 export function useFileLibraryManager() {
   const fileDataService: IFileDataService = new FileDataService(basePath.value, getSharedAxios());
 
@@ -375,13 +384,6 @@ export function useFileLibraryManager() {
       }
     }
     return null;
-  };
-
-  /**
-   * Invalidates the file cache for a specific directory.
-   */
-  const invalidateFileCache = (directoryPath: string) => {
-    fileCache.delete(directoryPath);
   };
 
   /**

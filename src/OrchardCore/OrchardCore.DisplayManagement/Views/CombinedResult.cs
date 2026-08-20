@@ -8,12 +8,12 @@ public class CombinedResult : IDisplayResult
 
     public CombinedResult(params IDisplayResult[] results)
     {
-        _results = results;
+        _results = results ?? [];
     }
 
     public CombinedResult(IEnumerable<IDisplayResult> results)
     {
-        _results = results;
+        _results = results ?? [];
     }
 
     public async Task ApplyAsync(BuildDisplayContext context)

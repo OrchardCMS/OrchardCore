@@ -5,14 +5,14 @@
 <template>
   <VueFinalModal
     v-model="visible"
-    class="tw:flex tw:items-center tw:justify-center"
-    content-class="tw:bg-[var(--bs-body-bg)] tw:text-[var(--bs-body-color)] tw:rounded-lg tw:p-0 tw:min-w-[300px] tw:max-w-[90vw] tw:w-[1000px] tw:h-[85vh] tw:max-h-[85vh] tw:flex tw:flex-col tw:shadow-md"
+    class="mf-vfm tw:flex tw:items-center tw:justify-center"
+    content-class="mf-picker-shell mf-picker-shell-lg"
     @opened="onOpened"
     @closed="onClosed"
   >
-    <div class="tw:flex tw:items-center tw:justify-between tw:px-4 tw:py-2">
-      <span class="tw:text-lg tw:font-medium">{{ t.selectMedia }}</span>
-      <button type="button" class="tw:px-2 tw:py-1.5 tw:border-none tw:bg-transparent tw:cursor-pointer tw:text-[var(--bs-body-color)] hover:tw:text-[#7bc143]" @click="cancel">
+    <div class="mf-modal-header">
+      <span class="mf-modal-title">{{ t.selectMedia }}</span>
+      <button type="button" class="mf-btn-icon" @click="cancel">
         <i class="fa-solid fa-xmark" aria-hidden="true"></i>
       </button>
     </div>
@@ -30,15 +30,15 @@
       <!-- Container where the media-gallery will be mounted -->
       <div v-show="!loading && !error" ref="containerRef" class="mf-picker-media-gallery tw:flex-1 tw:min-h-0 tw:flex tw:flex-col"></div>
     </div>
-    <div class="tw:flex tw:items-center tw:justify-between tw:px-4 tw:py-3">
+    <div class="mf-modal-footer tw:justify-between">
       <span class="tw:text-sm tw:text-gray-500">
         {{ selectedCount > 0 ? `${selectedCount} selected` : '' }}
       </span>
       <div class="tw:flex tw:gap-2">
-        <button type="button" class="tw:inline-flex tw:items-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:leading-normal tw:border tw:border-[var(--bs-border-color)] tw:rounded tw:bg-[var(--bs-secondary-bg)] tw:text-[var(--bs-body-color)] tw:cursor-pointer hover:tw:bg-[var(--bs-tertiary-bg)]" @click="cancel">{{ t.cancel }}</button>
+        <button type="button" class="mf-btn-secondary" @click="cancel">{{ t.cancel }}</button>
         <button
           type="button"
-          class="tw:inline-flex tw:items-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:leading-normal tw:border tw:border-[#7bc143] tw:rounded tw:bg-[#7bc143] tw:text-white tw:cursor-pointer hover:tw:bg-[#6aab36] hover:tw:border-[#6aab36] disabled:tw:opacity-65 disabled:tw:pointer-events-none"
+          class="mf-btn-primary"
           :disabled="selectedCount === 0"
           @click="confirm"
         >

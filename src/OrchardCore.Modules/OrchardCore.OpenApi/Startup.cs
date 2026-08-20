@@ -16,7 +16,6 @@ using OrchardCore.OpenApi.Settings;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using Scalar.AspNetCore;
-using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace OrchardCore.OpenApi;
@@ -127,7 +126,7 @@ public sealed class Startup : StartupBase
                                 // (e.g. missing token) that a subsequent challenge reports as
                                 // a 401 — a cold challenge without it defaults to
                                 // insufficient_access and a 403 when OpenIddict handles it.
-                                var result = await context.AuthenticateAsync("Api");
+                                var result = await context.AuthenticateAsync(OrchardCoreConstants.AuthenticationSchemes.Api);
                                 if (result.Succeeded)
                                 {
                                     user = result.Principal;
@@ -140,7 +139,7 @@ public sealed class Startup : StartupBase
                                 // status code, so the 401 carries a WWW-Authenticate header
                                 // (RFC 9110 §15.5.2) and a Problem Details body — matching the
                                 // responses of the API endpoints the schema describes.
-                                await context.ChallengeAsync("Api");
+                                await context.ChallengeAsync(OrchardCoreConstants.AuthenticationSchemes.Api);
                                 return;
                             }
 
@@ -154,7 +153,7 @@ public sealed class Startup : StartupBase
                                 )
                             )
                             {
-                                await context.ForbidAsync("Api");
+                                await context.ForbidAsync(OrchardCoreConstants.AuthenticationSchemes.Api);
                                 return;
                             }
                         }

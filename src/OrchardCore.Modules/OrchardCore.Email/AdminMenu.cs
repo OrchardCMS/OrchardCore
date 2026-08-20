@@ -8,7 +8,7 @@ namespace OrchardCore.Email;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", EmailSettings.GroupId },
@@ -31,7 +31,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                        .Add(S["Email"], S["Email"].PrefixPosition(), entry => entry
                           .AddClass("email")
                           .Id("email")
-                          .Action("Index", "Admin", _routeValues)
+                          .Action("Index", "Admin", s_routeValues)
                           .Permission(EmailPermissions.ManageEmailSettings)
                           .LocalNav()
                         )
@@ -65,7 +65,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                     .Add(S["Email"], S["Email"].PrefixPosition(), entry => entry
                         .AddClass("email")
                         .Id("email")
-                        .Action("Index", "Admin", _routeValues)
+                        .Action("Index", "Admin", s_routeValues)
                         .Permission(EmailPermissions.ManageEmailSettings)
                         .LocalNav()
                     )

@@ -29,9 +29,9 @@ public sealed class GraphQLMiddleware
     private readonly IGraphQLTextSerializer _graphQLTextSerializer;
     private readonly IGraphQLSerializer _serializer;
     private readonly IDocumentExecuter _executer;
-    internal static readonly Encoding _utf8Encoding = new UTF8Encoding(false);
-    private static readonly MediaType _jsonMediaType = new(MediaTypeNames.Application.Json);
-    private static readonly MediaType _graphQlMediaType = new(MediaTypeNamesExtended.Application.GraphQL);
+    internal static readonly Encoding s_utf8Encoding = new UTF8Encoding(false);
+    private static readonly MediaType s_jsonMediaType = new(MediaTypeNames.Application.Json);
+    private static readonly MediaType s_graphQlMediaType = new(MediaTypeNamesExtended.Application.GraphQL);
 
     public GraphQLMiddleware(
         IOptions<GraphQLSettings> settingsOption,
@@ -62,7 +62,7 @@ public sealed class GraphQLMiddleware
     private async Task ProcessGraphQLRequestAsync(HttpContext context)
     {
         var authenticationService = context.RequestServices.GetService<IAuthenticationService>();
-        var authenticateResult = await authenticationService.AuthenticateAsync(context, "Api");
+        var authenticateResult = await authenticationService.AuthenticateAsync(context, OrchardCoreConstants.AuthenticationSchemes.Api);
         if (authenticateResult.Succeeded)
         {
             context.User = authenticateResult.Principal;
@@ -76,7 +76,7 @@ public sealed class GraphQLMiddleware
         }
         else
         {
-            await context.ChallengeAsync("Api");
+            await context.ChallengeAsync(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
     }
 
@@ -97,10 +97,10 @@ public sealed class GraphQLMiddleware
             {
                 var mediaType = new MediaType(context.Request.ContentType);
 
-                if (mediaType.IsSubsetOf(_jsonMediaType) || mediaType.IsSubsetOf(_graphQlMediaType))
+                if (mediaType.IsSubsetOf(s_jsonMediaType) || mediaType.IsSubsetOf(s_graphQlMediaType))
                 {
                     using var sr = new StreamReader(context.Request.Body, leaveOpen: true);
-                    if (mediaType.IsSubsetOf(_graphQlMediaType))
+                    if (mediaType.IsSubsetOf(s_graphQlMediaType))
                     {
                         request = new GraphQLNamedQueryRequest
                         {

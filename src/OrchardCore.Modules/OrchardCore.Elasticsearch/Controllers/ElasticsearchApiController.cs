@@ -2,17 +2,17 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using OrchardCore.Entities;
-using OrchardCore.Queries;
 using OrchardCore.Elasticsearch.Core.Services;
 using OrchardCore.Elasticsearch.Models;
 using OrchardCore.Elasticsearch.ViewModels;
+using OrchardCore.Entities;
+using OrchardCore.Queries;
 
 namespace OrchardCore.Elasticsearch;
 
 [Route("api/elasticsearch")]
 [ApiController]
-[Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
+[Authorize(AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api), IgnoreAntiforgeryToken, AllowAnonymous]
 public sealed class ElasticsearchApiController : ControllerBase
 {
     private readonly IAuthorizationService _authorizationService;
@@ -33,7 +33,7 @@ public sealed class ElasticsearchApiController : ControllerBase
     {
         if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.QueryElasticApi))
         {
-            return this.ChallengeOrForbid("Api");
+            return this.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
 
         var result = await ElasticQueryApiAsync(queryModel, returnContentItems: true);
@@ -78,7 +78,7 @@ public sealed class ElasticsearchApiController : ControllerBase
     {
         if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.QueryElasticApi))
         {
-            return this.ChallengeOrForbid("Api");
+            return this.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
 
         var result = await ElasticQueryApiAsync(queryModel);

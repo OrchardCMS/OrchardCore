@@ -9,8 +9,8 @@ namespace OrchardCore.Taxonomies;
 /// </summary>
 internal static class TermItemAlternatesFactory
 {
-    private static readonly ConcurrentDictionary<TermItemAlternatesCacheKey, string[]> _termItemCache = new();
-    private static readonly ConcurrentDictionary<TermItemAlternatesCacheKey, string[]> _termContentItemCache = new();
+    private static readonly ConcurrentDictionary<TermItemAlternatesCacheKey, string[]> s_termItemCache = new();
+    private static readonly ConcurrentDictionary<TermItemAlternatesCacheKey, string[]> s_termContentItemCache = new();
 
     /// <summary>
     /// Gets or creates cached alternates for a TermItem/TermContentItem shape configuration.
@@ -18,13 +18,13 @@ internal static class TermItemAlternatesFactory
     public static string[] GetTermItemAlternates(string contentType, string differentiator, int level)
     {
         var key = new TermItemAlternatesCacheKey(contentType ?? string.Empty, differentiator ?? string.Empty, level);
-        return _termItemCache.GetOrAdd(key, BuildTermItemAlternates);
+        return s_termItemCache.GetOrAdd(key, BuildTermItemAlternates);
     }
 
     public static string[] GetTermContentItemAlternates(string contentType, string differentiator, int level)
     {
         var key = new TermItemAlternatesCacheKey(contentType ?? string.Empty, differentiator ?? string.Empty, level);
-        return _termContentItemCache.GetOrAdd(key, BuildTermContentItemAlternates);
+        return s_termContentItemCache.GetOrAdd(key, BuildTermContentItemAlternates);
     }
 
     internal readonly record struct TermItemAlternatesCacheKey(

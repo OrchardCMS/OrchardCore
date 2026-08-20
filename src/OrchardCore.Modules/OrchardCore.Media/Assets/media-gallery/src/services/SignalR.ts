@@ -1,5 +1,6 @@
 import SignalRApp from "@bloom/services/signalr/signalr-app";
 import { signalRReceivedData } from "@bloom/services/signalr/eventbus";
+import { HubConnectionState } from "@microsoft/signalr";
 import { watch } from "vue";
 import { applyMediaChange, type IMediaChangedMessage } from "./applyMediaChange";
 import { useFileLibraryManager } from "./FileLibraryManager";
@@ -36,14 +37,27 @@ export function useSignalR() {
     ...(isAuthConfigured() ? { withCredentials: false } : {}),
   });
 
+  // Folder navigation can happen before the initial connection finishes negotiating, or during
+  // the gap while an automatic reconnect is in progress. HubConnection.invoke() throws
+  // synchronously outside the Connected state, so guard on connection.state first rather than
+  // relying on the promise rejection — that avoided throw would otherwise still spam the console
+  // on every folder switch during that window. It's safe to just skip: onConnect / onreconnected
+  // below always (re)subscribe to whatever folder is CURRENTLY selected once the connection is
+  // actually up, so no subscription is permanently lost — it's just deferred to that point.
   const subscribePath = (path: string) => {
-    app.connection?.invoke("SubscribePath", path).catch((err: unknown) => {
+    if (app.connection?.state !== HubConnectionState.Connected) {
+      return;
+    }
+    app.connection.invoke("SubscribePath", path).catch((err: unknown) => {
       console.error("SignalR SubscribePath failed:", err);
     });
   };
 
   const unsubscribePath = (path: string) => {
-    app.connection?.invoke("UnsubscribePath", path).catch((err: unknown) => {
+    if (app.connection?.state !== HubConnectionState.Connected) {
+      return;
+    }
+    app.connection.invoke("UnsubscribePath", path).catch((err: unknown) => {
       console.error("SignalR UnsubscribePath failed:", err);
     });
   };
