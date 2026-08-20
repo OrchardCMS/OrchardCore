@@ -147,7 +147,9 @@ public sealed class TwilioSettingsDisplayDriver : SiteDisplayDriver<TwilioSettin
 
         if (hasChanges)
         {
-            _optionsUpdateNotifier.RequestUpdate<SmsProviderOptions>();
+            _optionsUpdateNotifier
+                .RequestUpdate<TwilioOptions>()
+                .RequestUpdate<SmsProviderOptions>();
         }
 
         return Edit(site, settings, context);
