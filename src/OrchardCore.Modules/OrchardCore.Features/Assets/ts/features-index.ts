@@ -2,7 +2,7 @@ const EscapeKey = "Escape";
 const searchBox = document.getElementById("search-box") as HTMLInputElement | null;
 const featureGroups = Array.from(document.querySelectorAll<HTMLElement>(".feature-group"));
 const featureItems = featureGroups.flatMap((featureGroup) =>
-    Array.from(featureGroup.querySelectorAll<HTMLElement>(".list-group-item[data-search-text]")),
+    Array.from(featureGroup.querySelectorAll<HTMLElement>(".list-group-item[data-filter-value]")),
 );
 const visibilityFilter = document.getElementById("visibility-filter") as HTMLSelectElement | null;
 const statusFilter = document.getElementById("status-filter") as HTMLSelectElement | null;
@@ -73,7 +73,7 @@ function updateFeatureGroupSelectAllState(featureGroup: HTMLElement) {
 
 function refreshVisibleItemClasses() {
     featureGroups.forEach((featureGroup) => {
-        const items = Array.from(featureGroup.querySelectorAll<HTMLElement>(".list-group-item[data-search-text]"));
+        const items = Array.from(featureGroup.querySelectorAll<HTMLElement>(".list-group-item[data-filter-value]"));
         const visibleItems = items.filter((item) => isVisible(item));
 
         items.forEach((item) => item.classList.remove("last-child-visible"));
@@ -86,13 +86,15 @@ function refreshVisibleItemClasses() {
 
 function applyFilters() {
     const search = (searchBox?.value ?? "").trim().toLowerCase();
-    const selectedVisibility = Array.from(visibilityFilter?.selectedOptions ?? []).map((opt) => opt.value);
-    const hideOnDemandFeatures = selectedVisibility.includes("on-demand");
-    const hideAlwaysEnabledFeatures = selectedVisibility.includes("always-enabled");
-    const selectedStatus = statusFilter?.value ?? "any";
+    const selectedVisibilityAttributes = Array.from(visibilityFilter?.selectedOptions ?? []).map(
+        (opt) => opt.dataset.listFilterAttribute,
+    );
+    const hideOnDemandFeatures = selectedVisibilityAttributes.includes("data-is-on-demand");
+    const hideAlwaysEnabledFeatures = selectedVisibilityAttributes.includes("data-is-always-enabled");
+    const selectedStatus = statusFilter?.value ?? "";
 
     featureItems.forEach((featureItem) => {
-        const searchText = (featureItem.dataset.searchText ?? "").toLowerCase();
+        const searchText = (featureItem.dataset.filterValue ?? "").toLowerCase();
         const isOnDemandFeature = featureItem.dataset.isOnDemand === "true";
         const isAlwaysEnabledFeature = featureItem.dataset.isAlwaysEnabled === "true";
         const isEnabledFeature = featureItem.dataset.isEnabled === "true";
@@ -100,9 +102,9 @@ function applyFilters() {
         const shouldHideForOnDemandFilter = hideOnDemandFeatures && isOnDemandFeature;
         const shouldHideForAlwaysEnabledFilter = hideAlwaysEnabledFeatures && isAlwaysEnabledFeature;
         const matchesStatus =
-            selectedStatus === "any" ||
-            (selectedStatus === "enabled" && isEnabledFeature) ||
-            (selectedStatus === "disabled" && !isEnabledFeature);
+            selectedStatus === "" ||
+            (selectedStatus === "true" && isEnabledFeature) ||
+            (selectedStatus === "false" && !isEnabledFeature);
 
         featureItem.classList.toggle(
             "d-none",
@@ -111,7 +113,7 @@ function applyFilters() {
     });
 
     featureGroups.forEach((featureGroup) => {
-        const hasVisibleFeatures = featureGroup.querySelector(".list-group-item[data-search-text]:not(.d-none)") !== null;
+        const hasVisibleFeatures = featureGroup.querySelector(".list-group-item[data-filter-value]:not(.d-none)") !== null;
 
         featureGroup.classList.toggle("d-none", !hasVisibleFeatures);
         updateFeatureGroupSelectAllState(featureGroup);
