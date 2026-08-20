@@ -13,6 +13,7 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Email;
+using OrchardCore.Environment.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Localization;
 using OrchardCore.Security;
@@ -191,7 +192,7 @@ public class SettingsAuthorizationTests
         => new(
             CreateHttpContextAccessor(),
             CreateAuthorizationService(SettingsPermissions.ManageDebuggingSettings, granted),
-            Mock.Of<IShellReleaseManager>());
+            Mock.Of<IOptionsUpdateNotifier>());
 
     private static HttpContextAccessor CreateHttpContextAccessor()
         => new HttpContextAccessor
