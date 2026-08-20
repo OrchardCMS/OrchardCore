@@ -123,17 +123,75 @@ public class CompositionStrategyTests
     public void RequireFeatures_AbsentEmptyAndNamedAttributes_HaveExpectedCompositionSemantics()
     {
         Assert.Empty(RequireFeaturesAttribute.GetRequiredFeatureNamesForType(typeof(DummyType)));
-        Assert.False(RequireFeaturesAttribute.IsAlwaysComposedForType(typeof(DummyType)));
+        Assert.False(RequiredStartupAttribute.IsRequiredForType(typeof(DummyType)));
 
-        Assert.Empty(RequireFeaturesAttribute.GetRequiredFeatureNamesForType(typeof(AlwaysComposedType)));
-        Assert.True(RequireFeaturesAttribute.IsAlwaysComposedForType(typeof(AlwaysComposedType)));
+        Assert.Empty(RequireFeaturesAttribute.GetRequiredFeatureNamesForType(typeof(TypeWithEmptyRequiredFeatures)));
+        Assert.False(RequiredStartupAttribute.IsRequiredForType(typeof(TypeWithEmptyRequiredFeatures)));
 
         Assert.Equal(["FeatureA", "FeatureB"], RequireFeaturesAttribute.GetRequiredFeatureNamesForType(typeof(TypeWithMultipleRequiredFeatures)));
-        Assert.False(RequireFeaturesAttribute.IsAlwaysComposedForType(typeof(TypeWithMultipleRequiredFeatures)));
+        Assert.False(RequiredStartupAttribute.IsRequiredForType(typeof(TypeWithMultipleRequiredFeatures)));
+
+        Assert.True(RequiredStartupAttribute.IsRequiredForType(typeof(RequiredStartupTypeWithRequiredFeatures)));
     }
 
     [Fact]
-    public async Task ComposeAsync_ExplicitEmptyRequiredFeaturesAndOwningFeatureDisabled_ComposesAsApplicationFeature()
+    public async Task ComposeAsync_EmptyRequiredFeaturesAndOwningFeatureDisabled_DoesNotCompose()
+    {
+        // Arrange
+        var moduleFeature = CreateFeature("FeatureA");
+
+        var extensionManager = new Mock<IExtensionManager>();
+        extensionManager.Setup(m => m.LoadFeaturesAsync(It.IsAny<IEnumerable<string>>()))
+            .ReturnsAsync([]);
+        extensionManager.Setup(m => m.GetFeatures())
+            .Returns([moduleFeature]);
+
+        var typeFeatureProvider = new Mock<ITypeFeatureProvider>();
+        typeFeatureProvider.Setup(p => p.GetTypesForFeature(moduleFeature))
+            .Returns([typeof(TypeWithEmptyRequiredFeatures)]);
+
+        var strategy = new CompositionStrategy(extensionManager.Object, typeFeatureProvider.Object, Mock.Of<ILogger<CompositionStrategy>>());
+
+        // Act
+        var blueprint = await strategy.ComposeAsync(new ShellSettings { Name = "Test" }, new ShellDescriptor());
+
+        // Assert
+        Assert.Empty(blueprint.Dependencies);
+    }
+
+    [Fact]
+    public async Task ComposeAsync_EmptyRequiredFeaturesAndOwningFeatureEnabled_ComposesAsOwningFeature()
+    {
+        // Arrange
+        var moduleFeature = CreateFeature("FeatureA");
+
+        var extensionManager = new Mock<IExtensionManager>();
+        extensionManager.Setup(m => m.LoadFeaturesAsync(It.IsAny<IEnumerable<string>>()))
+            .ReturnsAsync([moduleFeature]);
+        extensionManager.Setup(m => m.GetFeatures())
+            .Returns([moduleFeature]);
+
+        var typeFeatureProvider = new Mock<ITypeFeatureProvider>();
+        typeFeatureProvider.Setup(p => p.GetTypesForFeature(moduleFeature))
+            .Returns([typeof(TypeWithEmptyRequiredFeatures)]);
+
+        var strategy = new CompositionStrategy(extensionManager.Object, typeFeatureProvider.Object, Mock.Of<ILogger<CompositionStrategy>>());
+        var descriptor = new ShellDescriptor
+        {
+            Features = [new ShellFeature { Id = moduleFeature.Id }],
+        };
+
+        // Act
+        var blueprint = await strategy.ComposeAsync(new ShellSettings { Name = "Test" }, descriptor);
+
+        // Assert
+        var dependency = Assert.Single(blueprint.Dependencies);
+        Assert.Equal(typeof(TypeWithEmptyRequiredFeatures), dependency.Key);
+        Assert.Equal(moduleFeature, Assert.Single(dependency.Value));
+    }
+
+    [Fact]
+    public async Task ComposeAsync_RequiredStartupAndOwningFeatureDisabled_ComposesAsApplicationFeature()
     {
         // Arrange
         var moduleFeature = CreateFeature("FeatureA");
@@ -147,7 +205,7 @@ public class CompositionStrategyTests
 
         var typeFeatureProvider = new Mock<ITypeFeatureProvider>();
         typeFeatureProvider.Setup(p => p.GetTypesForFeature(moduleFeature))
-            .Returns([typeof(AlwaysComposedType)]);
+            .Returns([typeof(RequiredStartupTypeWithRequiredFeatures)]);
         typeFeatureProvider.Setup(p => p.GetTypesForFeature(applicationFeature))
             .Returns([]);
 
@@ -158,33 +216,40 @@ public class CompositionStrategyTests
 
         // Assert
         var dependency = Assert.Single(blueprint.Dependencies);
-        Assert.Equal(typeof(AlwaysComposedType), dependency.Key);
+        Assert.Equal(typeof(RequiredStartupTypeWithRequiredFeatures), dependency.Key);
         Assert.Equal(applicationFeature, Assert.Single(dependency.Value));
     }
 
     [Fact]
-    public async Task ComposeAsync_ExplicitEmptyRequiredFeaturesAndOwningFeatureEnabled_ComposesOnceAsApplicationFeature()
+    public async Task ComposeAsync_RequiredStartupAndNamedFeaturesEnabled_ComposesOnceAsApplicationFeature()
     {
         // Arrange
         var moduleFeature = CreateFeature("FeatureA");
+        var requiredFeature = CreateFeature("FeatureB");
         var applicationFeature = CreateFeature(Application.DefaultFeatureId);
 
         var extensionManager = new Mock<IExtensionManager>();
         extensionManager.Setup(m => m.LoadFeaturesAsync(It.IsAny<IEnumerable<string>>()))
-            .ReturnsAsync([moduleFeature]);
+            .ReturnsAsync([moduleFeature, requiredFeature]);
         extensionManager.Setup(m => m.GetFeatures())
-            .Returns([moduleFeature, applicationFeature]);
+            .Returns([moduleFeature, requiredFeature, applicationFeature]);
 
         var typeFeatureProvider = new Mock<ITypeFeatureProvider>();
         typeFeatureProvider.Setup(p => p.GetTypesForFeature(moduleFeature))
-            .Returns([typeof(AlwaysComposedType)]);
+            .Returns([typeof(RequiredStartupTypeWithRequiredFeatures)]);
+        typeFeatureProvider.Setup(p => p.GetTypesForFeature(requiredFeature))
+            .Returns([]);
         typeFeatureProvider.Setup(p => p.GetTypesForFeature(applicationFeature))
             .Returns([]);
 
         var strategy = new CompositionStrategy(extensionManager.Object, typeFeatureProvider.Object, Mock.Of<ILogger<CompositionStrategy>>());
         var descriptor = new ShellDescriptor
         {
-            Features = [new ShellFeature { Id = moduleFeature.Id }],
+            Features =
+            [
+                new ShellFeature { Id = moduleFeature.Id },
+                new ShellFeature { Id = requiredFeature.Id },
+            ],
         };
 
         // Act
@@ -192,7 +257,7 @@ public class CompositionStrategyTests
 
         // Assert
         var dependency = Assert.Single(blueprint.Dependencies);
-        Assert.Equal(typeof(AlwaysComposedType), dependency.Key);
+        Assert.Equal(typeof(RequiredStartupTypeWithRequiredFeatures), dependency.Key);
         Assert.Equal(applicationFeature, Assert.Single(dependency.Value));
     }
 
@@ -394,13 +459,17 @@ public class CompositionStrategyTests
     public class DummyType;
 
     [RequireFeatures()]
-    public class AlwaysComposedType;
+    public class TypeWithEmptyRequiredFeatures;
 
     [RequireFeatures("MissingFeature")] // This feature will not be present in descriptor
     public class TypeWithRequiredFeature;
 
     [RequireFeatures("FeatureA", "FeatureB")]
     public class TypeWithMultipleRequiredFeatures;
+
+    [RequiredStartup]
+    [RequireFeatures("FeatureA", "FeatureB")]
+    public class RequiredStartupTypeWithRequiredFeatures;
 
     private static IFeatureInfo CreateFeature(string id)
     {
