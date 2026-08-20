@@ -5,28 +5,30 @@ using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using MimeKit;
 using OrchardCore.Infrastructure;
 
 namespace OrchardCore.Email.Smtp.Services;
 
-public abstract class SmtpEmailProviderBase : IEmailProvider
+public abstract class SmtpEmailProviderBase<TOptions> : IEmailProvider
+    where TOptions : SmtpOptions
 {
     private const string EmailExtension = ".eml";
 
-    private readonly SmtpOptions _providerOptions;
+    private readonly IOptionsMonitor<TOptions> _optionsMonitor;
     private readonly IEmailAddressValidator _emailAddressValidator;
     private readonly ILogger _logger;
 
     protected readonly IStringLocalizer S;
 
     public SmtpEmailProviderBase(
-        SmtpOptions options,
+        IOptionsMonitor<TOptions> optionsMonitor,
         IEmailAddressValidator emailAddressValidator,
         ILogger logger,
         IStringLocalizer stringLocalizer)
     {
-        _providerOptions = options;
+        _optionsMonitor = optionsMonitor;
         _emailAddressValidator = emailAddressValidator;
         _logger = logger;
         S = stringLocalizer;
@@ -44,13 +46,13 @@ public abstract class SmtpEmailProviderBase : IEmailProvider
     {
         ArgumentNullException.ThrowIfNull(message);
 
-        if (!_providerOptions.IsEnabled)
+        if (!_optionsMonitor.CurrentValue.IsEnabled)
         {
             return Result.Failed(S["The SMTP Email Provider is disabled."]);
         }
 
         var senderAddress = string.IsNullOrWhiteSpace(message.From)
-            ? _providerOptions.DefaultSender
+            ? _optionsMonitor.CurrentValue.DefaultSender
             : message.From;
 
         if (_logger.IsEnabled(LogLevel.Debug))
@@ -77,21 +79,21 @@ public abstract class SmtpEmailProviderBase : IEmailProvider
 
         try
         {
-            if (_providerOptions.DeliveryMethod == SmtpDeliveryMethod.Network)
+            if (_optionsMonitor.CurrentValue.DeliveryMethod == SmtpDeliveryMethod.Network)
             {
                 var response = await SendOnlineMessageAsync(mimeMessage);
 
                 return Result.Success(response);
             }
 
-            if (_providerOptions.DeliveryMethod == SmtpDeliveryMethod.SpecifiedPickupDirectory)
+            if (_optionsMonitor.CurrentValue.DeliveryMethod == SmtpDeliveryMethod.SpecifiedPickupDirectory)
             {
-                await SendOfflineMessageAsync(mimeMessage, _providerOptions.PickupDirectoryLocation);
+                await SendOfflineMessageAsync(mimeMessage, _optionsMonitor.CurrentValue.PickupDirectoryLocation);
 
                 return Result.Success();
             }
 
-            throw new NotSupportedException($"The '{_providerOptions.DeliveryMethod}' delivery method is not supported.");
+            throw new NotSupportedException($"The '{_optionsMonitor.CurrentValue.DeliveryMethod}' delivery method is not supported.");
         }
         catch (Exception ex)
         {
@@ -103,7 +105,7 @@ public abstract class SmtpEmailProviderBase : IEmailProvider
     {
         var mimeMessage = new MimeMessage();
         var submitterAddress = string.IsNullOrWhiteSpace(message.Sender)
-            ? _providerOptions.DefaultSender
+            ? _optionsMonitor.CurrentValue.DefaultSender
             : message.Sender;
 
         if (!string.IsNullOrEmpty(submitterAddress))
@@ -146,9 +148,9 @@ public abstract class SmtpEmailProviderBase : IEmailProvider
     {
         var secureSocketOptions = SecureSocketOptions.Auto;
 
-        if (!_providerOptions.AutoSelectEncryption)
+        if (!_optionsMonitor.CurrentValue.AutoSelectEncryption)
         {
-            secureSocketOptions = _providerOptions.EncryptionMethod switch
+            secureSocketOptions = _optionsMonitor.CurrentValue.EncryptionMethod switch
             {
                 SmtpEncryptionMethod.None => SecureSocketOptions.None,
                 SmtpEncryptionMethod.SslTls => SecureSocketOptions.SslOnConnect,
@@ -161,24 +163,24 @@ public abstract class SmtpEmailProviderBase : IEmailProvider
 
         client.ServerCertificateValidationCallback = CertificateValidationCallback;
 
-        await client.ConnectAsync(_providerOptions.Host, _providerOptions.Port, secureSocketOptions);
+        await client.ConnectAsync(_optionsMonitor.CurrentValue.Host, _optionsMonitor.CurrentValue.Port, secureSocketOptions);
 
-        if (_providerOptions.RequireCredentials)
+        if (_optionsMonitor.CurrentValue.RequireCredentials)
         {
-            if (_providerOptions.UseDefaultCredentials)
+            if (_optionsMonitor.CurrentValue.UseDefaultCredentials)
             {
                 // There's no notion of 'UseDefaultCredentials' in MailKit, so empty credentials is passed in.
                 await client.AuthenticateAsync(string.Empty, string.Empty);
             }
-            else if (!string.IsNullOrWhiteSpace(_providerOptions.UserName))
+            else if (!string.IsNullOrWhiteSpace(_optionsMonitor.CurrentValue.UserName))
             {
-                await client.AuthenticateAsync(_providerOptions.UserName, _providerOptions.Password);
+                await client.AuthenticateAsync(_optionsMonitor.CurrentValue.UserName, _optionsMonitor.CurrentValue.Password);
             }
         }
 
-        if (!string.IsNullOrEmpty(_providerOptions.ProxyHost))
+        if (!string.IsNullOrEmpty(_optionsMonitor.CurrentValue.ProxyHost))
         {
-            client.ProxyClient = new Socks5Client(_providerOptions.ProxyHost, _providerOptions.ProxyPort);
+            client.ProxyClient = new Socks5Client(_optionsMonitor.CurrentValue.ProxyHost, _optionsMonitor.CurrentValue.ProxyPort);
         }
 
         var response = await client.SendAsync(message);
@@ -223,6 +225,6 @@ public abstract class SmtpEmailProviderBase : IEmailProvider
             }
         }
 
-        return _providerOptions.IgnoreInvalidSslCertificate;
+        return _optionsMonitor.CurrentValue.IgnoreInvalidSslCertificate;
     }
 }
