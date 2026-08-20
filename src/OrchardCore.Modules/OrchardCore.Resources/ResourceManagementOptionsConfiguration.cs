@@ -32,7 +32,7 @@ public sealed class ResourceManagementOptionsConfiguration
         _pathBase = httpContextAccessor.HttpContext.Request.PathBase;
     }
 
-    private ResourceManifest BuildManifest()
+    private static ResourceManifest BuildManifest()
     {
         var manifest = new ResourceManifest();
 
