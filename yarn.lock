@@ -1383,12 +1383,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@crestapps/bootstrap-select@npm:1.2.1":
-  version: 1.2.1
-  resolution: "@crestapps/bootstrap-select@npm:1.2.1"
+"@crestapps/bootstrap-select@npm:1.2.4":
+  version: 1.2.4
+  resolution: "@crestapps/bootstrap-select@npm:1.2.4"
   peerDependencies:
     bootstrap: ">=5.0.0"
-  checksum: 10/be1357dc83519aa2d9cb780aa569252477cc16a2d97ddd26105b8e43c6abd8fcd4558bd55b0bdca2405fa547f48a96effa5ef5a2a4206ac3506e3b7e8afdf6f5
+  checksum: 10/a14d12a7b9103e782e6ebdb2a1961e0c76b6acb61cebf9e9372c13fcf57e864fc16808846fead36c82fcf1068af98f5ccc5b27b410e839c9426867567504cd98
   languageName: node
   linkType: hard
 
@@ -2606,6 +2606,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@microsoft/signalr@npm:10.0.0":
+  version: 10.0.0
+  resolution: "@microsoft/signalr@npm:10.0.0"
+  dependencies:
+    abort-controller: "npm:^3.0.0"
+    eventsource: "npm:^2.0.2"
+    fetch-cookie: "npm:^2.0.3"
+    node-fetch: "npm:^2.6.7"
+    ws: "npm:^7.5.10"
+  checksum: 10/4c6c877e793d43aa570c1cee3463294ef96374b6f98e947181b18a7593f0adcb43b2b0c25f0cd99b79241d55cf93eefd49c5dafac7266cc509ff164b11543793
+  languageName: node
+  linkType: hard
+
 "@microsoft/signalr@npm:^8.0.0":
   version: 8.0.17
   resolution: "@microsoft/signalr@npm:8.0.17"
@@ -3034,7 +3047,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@orchardcore/resources@workspace:src/OrchardCore.Modules/OrchardCore.Resources/Assets"
   dependencies:
-    "@crestapps/bootstrap-select": "npm:1.2.1"
+    "@crestapps/bootstrap-select": "npm:1.2.4"
     "@fortawesome/fontawesome-free": "npm:7.3.1"
     "@fortawesome/fontawesome-free-5.15.4": "npm:@fortawesome/fontawesome-free@5.15.4"
     "@fortawesome/fontawesome-free-6.6.0": "npm:@fortawesome/fontawesome-free@6.6.0"
@@ -3125,6 +3138,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@orchardcore/signalr@workspace:src/OrchardCore.Modules/OrchardCore.SignalR/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/signalr@workspace:src/OrchardCore.Modules/OrchardCore.SignalR/Assets"
+  dependencies:
+    "@microsoft/signalr": "npm:10.0.0"
+  languageName: unknown
+  linkType: soft
+
 "@orchardcore/spatial@workspace:src/OrchardCore.Modules/OrchardCore.Spatial/Assets":
   version: 0.0.0-use.local
   resolution: "@orchardcore/spatial@workspace:src/OrchardCore.Modules/OrchardCore.Spatial/Assets"
@@ -3149,7 +3170,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@orchardcore/theadmin@workspace:src/OrchardCore.Themes/TheAdmin/Assets"
   dependencies:
-    "@crestapps/bootstrap-select": "npm:1.2.1"
     "@popperjs/core": "npm:2.11.8"
     "@types/jquery": "npm:3.5.32"
     "@types/js-cookie": "npm:^3.0.6"

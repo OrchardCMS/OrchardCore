@@ -9,8 +9,8 @@ namespace OrchardCore.Menu;
 /// </summary>
 internal static class MenuItemAlternatesFactory
 {
-    private static readonly ConcurrentDictionary<MenuItemAlternatesCacheKey, string[]> _menuItemCache = new();
-    private static readonly ConcurrentDictionary<MenuItemAlternatesCacheKey, string[]> _menuItemLinkCache = new();
+    private static readonly ConcurrentDictionary<MenuItemAlternatesCacheKey, string[]> s_menuItemCache = new();
+    private static readonly ConcurrentDictionary<MenuItemAlternatesCacheKey, string[]> s_menuItemLinkCache = new();
 
     /// <summary>
     /// Gets or creates cached alternates for a MenuItem shape configuration.
@@ -18,13 +18,13 @@ internal static class MenuItemAlternatesFactory
     public static string[] GetMenuItemAlternates(string contentType, string differentiator, int level)
     {
         var key = new MenuItemAlternatesCacheKey(contentType ?? string.Empty, differentiator ?? string.Empty, level);
-        return _menuItemCache.GetOrAdd(key, BuildMenuItemAlternates);
+        return s_menuItemCache.GetOrAdd(key, BuildMenuItemAlternates);
     }
 
     public static string[] GetMenuItemLinkAlternates(string contentType, string differentiator, int level)
     {
         var key = new MenuItemAlternatesCacheKey(contentType ?? string.Empty, differentiator ?? string.Empty, level);
-        return _menuItemLinkCache.GetOrAdd(key, BuildMenuItemLinkAlternates);
+        return s_menuItemLinkCache.GetOrAdd(key, BuildMenuItemLinkAlternates);
     }
 
     internal readonly record struct MenuItemAlternatesCacheKey(

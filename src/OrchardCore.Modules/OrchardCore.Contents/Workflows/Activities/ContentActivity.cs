@@ -48,7 +48,7 @@ public abstract class ContentActivity : Activity
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        return Outcomes(S["Done"]);
+        return Outcome(S["Done"]);
     }
 
     public override Task OnInputReceivedAsync(WorkflowExecutionContext workflowContext, IDictionary<string, object> input)
@@ -69,9 +69,7 @@ public abstract class ContentActivity : Activity
     }
 
     public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes("Done");
-    }
+        => Outcome("Done");
 
     public override async Task OnWorkflowRestartingAsync(WorkflowExecutionContext workflowContext, CancellationToken cancellationToken = default)
     {

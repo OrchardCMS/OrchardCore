@@ -1,12 +1,10 @@
-using Microsoft.AspNetCore.Identity;
-
 namespace OrchardCore.Media;
 
 /// <summary>
-/// The authentication scheme the Media API (the api/media endpoints, the tus upload endpoint and
-/// the media SignalR hub) authenticates against. Exactly one is active at a time — never both — so
-/// the Media Gallery works out of the box with the ambient admin cookie and can opt into bearer
-/// tokens (OAuth2 + PKCE) once OpenID is configured.
+/// The authentication scheme used by the Media API and TUS upload endpoint. Exactly one is active
+/// at a time so the Media Gallery works out of the box with the ambient admin cookie and can opt
+/// into bearer tokens (OAuth2 + PKCE) once OpenID is configured. The media SignalR hub accepts
+/// either scheme.
 /// </summary>
 public enum MediaApiAuthenticationScheme
 {
@@ -21,17 +19,13 @@ public class MediaApiSettings
 {
     public const string GroupId = "mediaApi";
 
-    public MediaApiAuthenticationScheme AuthenticationScheme { get; set; } = MediaApiAuthenticationScheme.Cookie;
+    public MediaApiAuthenticationScheme AuthenticationScheme { get; set; }
 }
 
 public static class MediaApiConstants
 {
-    /// <summary>The authorization policy the Media API endpoints, tus endpoint and hub require.</summary>
+    /// <summary>The authorization policy the Media API and TUS endpoints require.</summary>
     public const string AuthorizationPolicyName = "MediaApi";
 
-    /// <summary>The bearer forwarding scheme (resolves to OpenIddict validation when enabled).</summary>
-    public const string ApiScheme = "Api";
-
-    /// <summary>The same-origin admin cookie scheme.</summary>
-    public static readonly string CookieScheme = IdentityConstants.ApplicationScheme;
+    public const string HubAuthorizationPolicyName = "MediaHub";
 }

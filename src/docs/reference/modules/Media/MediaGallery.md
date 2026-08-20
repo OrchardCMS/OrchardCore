@@ -14,6 +14,8 @@ The gallery works out of the box: requests use the ambient same-origin admin coo
 
 The API accepts only Bearer tokens via the `"Api"` scheme, and the gallery acquires one **silently**: an OAuth2 authorization-code + PKCE flow runs in a hidden iframe (`prompt=none`) against the tenant's OpenID Connect server, using the existing admin cookie session — no interactive login. The token auto-renews and is attached to every API call, Uppy/TUS upload request, and the SignalR connection. A request rejected with `401` is retried once after a silent renewal.
 
+If you use this mode, you **must** enable the **OpenID Token Validation** feature (`OrchardCore.OpenId.Validation`) so Orchard Core can validate the `access_token` sent by the SPA and the SignalR client.
+
 To provision this mode, run the **Media API — Bearer/PKCE** recipe (Configuration → Recipes). It switches the authentication scheme to `Bearer`, enables the OpenID Server, Token Validation, and Management features, turns on the authorization-code flow with PKCE required, and registers a public (secret-less) `media_gallery` OpenID application whose redirect URI points at the gallery's silent-renew page. Adjust the recipe's `https://localhost:5001` origins to your tenant's real origin before running it, and make sure gallery users have roles granting the media permissions — the `roles` scope carries them into the token.
 
 ### Standalone external app
@@ -141,12 +143,12 @@ Alternatively, configure sticky sessions on your load balancer instead of a shar
 
 The SignalR feature enables real-time media updates. When enabled, changes to media files and folders (uploads, renames, moves, deletes) are broadcast to all connected clients. This keeps the Media Gallery in sync across multiple browser tabs and users.
 
-To enable, activate the **Media SignalR** feature in the admin panel.
+To enable, activate the **Media SignalR** feature in the admin panel. This feature depends on the reusable **`OrchardCore.SignalR`** feature, which provides the SignalR services, client resources, and the `SignalR` authorization policy shared by any module that hosts a hub. The media hub accepts both the standard application cookie used by signed-in site users and API access tokens used by headless clients. If headless clients connect with `access_token`, you **must** enable the **OpenID Token Validation** feature (`OrchardCore.OpenId.Validation`).
 
-For multi-instance deployments, a backplane is required. Two options are available:
+For multi-instance deployments, a backplane is required. The backplane is provided by the reusable SignalR module and applies to every hub in the tenant, so the same two features cover the Media Gallery and any other SignalR-based feature:
 
-- **`OrchardCore.Media.SignalR.Azure`** — Uses Azure SignalR Service as the backplane.
-- **`OrchardCore.Media.SignalR.Redis`** — Uses Redis as the backplane.
+- **`OrchardCore.SignalR.Azure`** — Uses Azure SignalR Service as the backplane.
+- **`OrchardCore.SignalR.Redis`** — Uses Redis as the backplane.
 
 ### Backplane Configuration
 
@@ -164,11 +166,16 @@ The Azure SignalR Service backplane is configured with its own connection string
 
 ```json
 {
-  "OrchardCore_Media_SignalR": {
-    "ConnectionString": "Endpoint=https://<your-service>.service.signalr.net;AccessKey=...;Version=1.0;"
+  "SignalR": {
+    "Azure": {
+      "ConnectionString": "Endpoint=https://<your-service>.service.signalr.net;AccessKey=...;Version=1.0;",
+      "ApplicationName": "OrchardCore"
+    }
   }
 }
 ```
+
+Set `ApplicationName` to a unique value when multiple Orchard Core deployments share the same Azure SignalR Service. Orchard Core automatically appends a stable tenant identifier.
 
 If a backplane feature is enabled but its connection string is missing, a warning is logged at startup and SignalR keeps working in single-instance (in-memory) mode — updates then only reach clients connected to the same instance.
 
@@ -178,7 +185,7 @@ To fully scale the Media Library across multiple application instances, the foll
 
 | Component | Purpose | Configuration |
 |---|---|---|
-| **SignalR backplane** | Broadcast real-time updates across instances | Enable `OrchardCore.Media.SignalR.Azure` or `OrchardCore.Media.SignalR.Redis` |
+| **SignalR backplane** | Broadcast real-time updates across instances | Enable `OrchardCore.SignalR.Azure` or `OrchardCore.SignalR.Redis` |
 | **Sticky sessions** or **shared TUS path** | Ensure TUS upload chunks are accessible across instances | Configure session affinity on your load balancer, or set `TusTempPath` to a shared filesystem |
 | **Shared media storage** | Store media files accessible from all instances | Configure Azure Blob Storage, Amazon S3, or a shared filesystem |
 | **Shared Data Protection keys** | Let cookies, antiforgery tokens, and bearer tokens issued by one instance be validated by another | Enable `OrchardCore.Redis.DataProtection`, or configure Azure Blob key storage via `OrchardCore.DataProtection.Azure` |
@@ -191,7 +198,7 @@ To fully scale the Media Library across multiple application instances, the foll
 
 ### Reference Configuration (Redis)
 
-A single Redis instance can carry the whole cross-instance coordination load. Enable the **`OrchardCore.Redis`**, **`OrchardCore.Redis.DataProtection`**, and **`OrchardCore.Media.SignalR.Redis`** features, and configure:
+A single Redis instance can carry the whole cross-instance coordination load. Enable the **`OrchardCore.Redis`**, **`OrchardCore.Redis.DataProtection`**, and **`OrchardCore.SignalR.Redis`** features, and configure:
 
 ```json
 {

@@ -32,7 +32,7 @@ vi.mock("@media-gallery", () => ({
 vi.mock("../components/MediaFieldBasic.vue", () => ({
   default: {
     name: "MediaFieldBasic",
-    template: "<div class='stub-basic'></div>",
+    template: "<div class='stub-basic' :data-media-app-translations='config?.mediaAppTranslations'></div>",
     props: ["config", "inputName"],
   },
 }));
@@ -54,11 +54,10 @@ vi.mock("../components/MediaFieldGallery.vue", () => ({
   },
 }));
 
-// Stub PrimeVue and its theme so createFieldApp doesn't blow up
+// Stub PrimeVue so createFieldApp doesn't blow up
 vi.mock("primevue/config", () => ({
   default: { install: vi.fn() },
 }));
-vi.mock("@primevue/themes/aura", () => ({ default: {} }));
 
 // Stub FontAwesome so library.add / FontAwesomeIcon don't fail
 vi.mock("@fortawesome/fontawesome-svg-core", () => ({
@@ -128,6 +127,7 @@ describe("main.ts", () => {
         allowMediaText: "true",
         allowAnchors: "true",
         allowedExtensions: ".jpg,.png",
+        mediaGalleryTranslations: '{"Rename":"Umbenennen"}',
         basePath: "/media",
         uploadFilesUrl: "/api/upload",
       });
@@ -135,6 +135,19 @@ describe("main.ts", () => {
       // Mounting should succeed and call setTranslations
       main.mountMediaField(el);
       expect(mockSetTranslations).toHaveBeenCalled();
+    });
+
+    it("reads media-gallery translations from the rendered data attribute", () => {
+      const el = createMountEl("basic", {
+        mediaGalleryTranslations: '{"Rename":"Umbenennen","PagerFirstButton":"Erste"}',
+      });
+
+      const app = main.mountMediaField(el);
+
+      expect(app).toBeDefined();
+      expect(el.querySelector(".stub-basic")?.getAttribute("data-media-app-translations")).toBe(
+        '{"Rename":"Umbenennen","PagerFirstButton":"Erste"}'
+      );
     });
 
     it("reads translations with defaults when data-translations is absent", () => {

@@ -39,15 +39,15 @@ public sealed class LinkMenuItemPartDisplayDriver : ContentPartDisplayDriver<Lin
     public override IDisplayResult Display(LinkMenuItemPart part, BuildPartDisplayContext context)
     {
         return Combine(
-            Dynamic("LinkMenuItemPart_Admin", shape =>
+            Dynamic("LinkMenuItemPart_Admin", static (shape, part) =>
             {
                 shape.MenuItemPart = part;
-            })
+            }, part)
             .Location("Admin", "Content:10"),
-            Dynamic("LinkMenuItemPart_Thumbnail", shape =>
+            Dynamic("LinkMenuItemPart_Thumbnail", static (shape, part) =>
             {
                 shape.MenuItemPart = part;
-            })
+            }, part)
             .Location("Thumbnail", "Content:10")
         );
     }

@@ -30,9 +30,9 @@ public sealed class AdminController : Controller
 {
     private const string PublishedPolicyLimiterMessage = "This policy is enabled and cannot be modified. To modify it, disable it first or create another policy.";
     private const string DefaultClonedPolicyName = "Policy";
-    private static readonly Regex _indexedNameRegex = new(@"^(.*?)(?:\s*\((\d+)\))$", RegexOptions.Compiled);
+    private static readonly Regex s_indexedNameRegex = new(@"^(.*?)(?:\s*\((\d+)\))$", RegexOptions.Compiled);
 
-    private static readonly string[] _rateLimiterSourceNames =
+    private static readonly string[] s_rateLimiterSourceNames =
     [
         FixedWindowRateLimiterSource.SourceName,
         SlidingWindowRateLimiterSource.SourceName,
@@ -649,7 +649,7 @@ public sealed class AdminController : Controller
     {
         return
         [
-            .. _rateLimiterSourceNames
+            .. s_rateLimiterSourceNames
                 .Select(sourceName => _serviceProvider.GetKeyedService<IRateLimiterSource>(sourceName))
                 .Where(static source => source is not null)
                 .OrderBy(x => x.DisplayName.Value, StringComparer.OrdinalIgnoreCase)
@@ -801,7 +801,7 @@ public sealed class AdminController : Controller
             ? DefaultClonedPolicyName
             : name.Trim();
 
-        var match = _indexedNameRegex.Match(trimmedName);
+        var match = s_indexedNameRegex.Match(trimmedName);
         if (match.Success && int.TryParse(match.Groups[2].Value, out var number))
         {
             var prefix = match.Groups[1].Value.TrimEnd();

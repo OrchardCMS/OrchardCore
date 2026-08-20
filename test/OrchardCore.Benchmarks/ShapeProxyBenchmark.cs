@@ -26,15 +26,15 @@ namespace OrchardCore.Benchmarks;
     Justification = "BenchmarkDotNet needs all benchmark methods to be instance-level.")]
 public class ShapeProxyBenchmark
 {
-    private static readonly ConcurrentDictionary<Type, Type> _proxyTypesCache = [];
-    private static readonly ProxyGenerator _proxyGenerator = new();
-    private static readonly Type _proxyType;
+    private static readonly ConcurrentDictionary<Type, Type> s_proxyTypesCache = [];
+    private static readonly ProxyGenerator s_proxyGenerator = new();
+    private static readonly Type s_proxyType;
 
     static ShapeProxyBenchmark()
     {
         var options = new ProxyGenerationOptions();
         options.AddMixinInstance(new ShapeViewModel());
-        _proxyType = _proxyGenerator.CreateClassProxy<MenuItem>(options).GetType();
+        s_proxyType = s_proxyGenerator.CreateClassProxy<MenuItem>(options).GetType();
     }
 
     [Benchmark]
@@ -49,23 +49,23 @@ public class ShapeProxyBenchmark
     {
         var options = new ProxyGenerationOptions();
         options.AddMixinInstance(new ShapeViewModel());
-        return (IShape)_proxyGenerator.CreateClassProxy<MenuItem>(options);
+        return (IShape)s_proxyGenerator.CreateClassProxy<MenuItem>(options);
     }
 
     [Benchmark]
     public object CreateCachedProxy()
     {
-        if (_proxyTypesCache.TryGetValue(typeof(MenuItem), out var _))
+        if (s_proxyTypesCache.TryGetValue(typeof(MenuItem), out var _))
         {
             var model = new ShapeViewModel();
-            return (IShape)Activator.CreateInstance(_proxyType, model, model, Array.Empty<IInterceptor>());
+            return (IShape)Activator.CreateInstance(s_proxyType, model, model, Array.Empty<IInterceptor>());
         }
 
         var options = new ProxyGenerationOptions();
         options.AddMixinInstance(new ShapeViewModel());
-        var shape = (IShape)_proxyGenerator.CreateClassProxy<MenuItem>(options);
+        var shape = (IShape)s_proxyGenerator.CreateClassProxy<MenuItem>(options);
 
-        _proxyTypesCache.TryAdd(typeof(MenuItem), shape.GetType());
+        s_proxyTypesCache.TryAdd(typeof(MenuItem), shape.GetType());
 
         return shape;
     }

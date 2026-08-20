@@ -167,8 +167,8 @@ public interface IFileStore
 
 public static class IFileStoreExtensions
 {
-    private static readonly char[] _pathSeparators = ['\\', '/'];
-    private static readonly char[] _trimChars = ['/', ' '];
+    private static readonly char[] s_pathSeparators = ['\\', '/'];
+    private static readonly char[] s_trimChars = ['/', ' '];
 
     /// <summary>
     /// Combines multiple path parts using the path delimiter semantics of the abstract virtual file store.
@@ -213,7 +213,7 @@ public static class IFileStoreExtensions
             return null;
         }
 
-        return path.Replace('\\', '/').Trim(_trimChars);
+        return path.Replace('\\', '/').Trim(s_trimChars);
     }
 
     /// <summary>
@@ -232,7 +232,7 @@ public static class IFileStoreExtensions
         }
 
         var normalizedParts = path
-                .Split(_pathSeparators, StringSplitOptions.RemoveEmptyEntries)
+                .Split(s_pathSeparators, StringSplitOptions.RemoveEmptyEntries)
                 .Select(Uri.EscapeDataString);
 
         return string.Join('/', normalizedParts);

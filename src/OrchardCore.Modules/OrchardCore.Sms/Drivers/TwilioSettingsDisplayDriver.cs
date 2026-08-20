@@ -62,7 +62,7 @@ public sealed class TwilioSettingsDisplayDriver : SiteDisplayDriver<TwilioSettin
             model.AccountSID = settings.AccountSID;
             model.HasAuthToken = !string.IsNullOrEmpty(settings.AuthToken);
         }).Location("Content:5#Twilio")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, SmsPermissions.ManageSmsSettings))
+        .RenderWhen(static (driver) => driver._authorizationService.AuthorizeAsync(driver._httpContextAccessor.HttpContext?.User, SmsPermissions.ManageSmsSettings), this)
         .OnGroup(SettingsGroupId);
     }
 

@@ -34,10 +34,11 @@ public abstract class ContentEventDisplayDriver<TActivity, TViewModel> : Activit
     public override Task<IDisplayResult> DisplayAsync(TActivity activity, BuildDisplayContext context)
     {
         return CombineAsync(
-            Shape($"{typeof(TActivity).Name}_Fields_Thumbnail", new ContentEventViewModel<TActivity>(activity)).Location("Thumbnail", "Content"),
-            Factory($"{typeof(TActivity).Name}_Fields_Design", async ctx =>
+            Factory($"{typeof(TActivity).Name}_Fields_Thumbnail", static (TActivity a) => new ContentEventViewModel<TActivity>(a), activity).Location("Thumbnail", "Content"),
+            Factory($"{typeof(TActivity).Name}_Fields_Design", static async (ctx, state) =>
             {
-                var contentTypeDefinitions = (await ContentDefinitionManager.ListTypeDefinitionsAsync()).ToDictionary(x => x.Name);
+                var (activity, contentDefinitionManager) = state;
+                var contentTypeDefinitions = (await contentDefinitionManager.ListTypeDefinitionsAsync()).ToDictionary(x => x.Name);
                 var selectedContentTypeDefinitions = activity.ContentTypeFilter.Select(x => contentTypeDefinitions[x]).ToList();
 
                 var shape = new ContentEventViewModel<TActivity>
@@ -47,7 +48,7 @@ public abstract class ContentEventDisplayDriver<TActivity, TViewModel> : Activit
                 };
 
                 return shape;
-            }).Location("Design", "Content")
+            }, (activity, ContentDefinitionManager)).Location("Design", "Content")
         );
     }
 

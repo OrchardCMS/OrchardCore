@@ -1,4 +1,5 @@
 using System.IO.Pipelines;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
@@ -49,16 +50,18 @@ public sealed class DiskTusTempStore : ITusTempStore
             await stream.CopyToAsync(fs, cancellationToken);
             bytesWritten = fs.Position - offset;
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
-            // Client disconnected (pause or browser refresh). Flush buffered data
-            // and read the stream position to persist correct progress.
-            try { fs.Flush(); } catch { /* best effort */ }
             bytesWritten = fs.Position - offset;
             if (bytesWritten < 0)
             {
                 bytesWritten = 0;
             }
+        }
+        catch (BadHttpRequestException exception)
+            when (ClientDisconnectAwarePipeReader.IsUnexpectedEndOfRequest(exception))
+        {
+            bytesWritten = Math.Max(0, fs.Position - offset);
         }
         finally
         {
@@ -91,26 +94,35 @@ public sealed class DiskTusTempStore : ITusTempStore
 
                 pipeReader.AdvanceTo(buffer.End);
 
-                if (result.IsCompleted)
+                if (result.IsCanceled || result.IsCompleted)
                 {
                     break;
                 }
             }
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
-            // Client disconnected (pause or browser refresh). Flush buffered data
-            // and use stream position as the most accurate byte count.
-            try { fs.Flush(); } catch { /* best effort */ }
             bytesWritten = fs.Position - offset;
             if (bytesWritten < 0)
             {
                 bytesWritten = 0;
             }
         }
+        catch (BadHttpRequestException exception)
+            when (ClientDisconnectAwarePipeReader.IsUnexpectedEndOfRequest(exception))
+        {
+            bytesWritten = Math.Max(0, fs.Position - offset);
+        }
         finally
         {
-            await fs.DisposeAsync();
+            try
+            {
+                await pipeReader.CompleteAsync();
+            }
+            finally
+            {
+                await fs.DisposeAsync();
+            }
         }
 
         return bytesWritten;
