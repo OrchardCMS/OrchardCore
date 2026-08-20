@@ -8,23 +8,23 @@ namespace OrchardCore.Users.Handlers;
 
 internal sealed class EmailConfirmationRegistrationFormEvents : RegistrationFormEventsBase
 {
-    private readonly RegistrationOptions _registrationOptions;
+    private readonly IOptionsMonitor<RegistrationOptions> _registrationOptions;
     private readonly UserManager<IUser> _userManager;
     private readonly UserEmailService _userEmailConfirmationService;
 
     public EmailConfirmationRegistrationFormEvents(
-        IOptions<RegistrationOptions> registrationOptions,
+        IOptionsMonitor<RegistrationOptions> registrationOptions,
         UserManager<IUser> userManager,
         UserEmailService userEmailConfirmationService)
     {
-        _registrationOptions = registrationOptions.Value;
+        _registrationOptions = registrationOptions;
         _userManager = userManager;
         _userEmailConfirmationService = userEmailConfirmationService;
     }
 
     public override async Task RegisteringAsync(UserRegisteringContext context)
     {
-        if (!_registrationOptions.UsersMustValidateEmail || await _userManager.IsEmailConfirmedAsync(context.User))
+        if (!_registrationOptions.CurrentValue.UsersMustValidateEmail || await _userManager.IsEmailConfirmedAsync(context.User))
         {
             return;
         }
