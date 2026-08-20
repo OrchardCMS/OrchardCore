@@ -8,6 +8,7 @@ using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Locking;
+using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement.Descriptors;
 
@@ -96,13 +97,15 @@ public class DefaultShapeTableManager : IShapeTableManager
 
         foreach (var bindingStrategy in bindingStrategies)
         {
+            var requiredFeatureIds = RequireFeaturesAttribute.GetRequiredFeatureNamesForType(bindingStrategy.GetType()).ToArray();
+
             foreach (var strategyFeature in typeFeatureProvider.GetFeaturesForDependency(bindingStrategy.GetType()))
             {
                 var builder = new ShapeTableBuilder(strategyFeature, excludedFeatures);
                 await bindingStrategy.DiscoverAsync(builder);
                 var builtAlterations = builder.BuildAlterations();
 
-                BuildDescriptors(bindingStrategy, builtAlterations, shapeDescriptors);
+                BuildDescriptors(bindingStrategy, builtAlterations, shapeDescriptors, requiredFeatureIds);
             }
         }
 
@@ -127,6 +130,7 @@ public class DefaultShapeTableManager : IShapeTableManager
 
         var descriptors = s_shapeDescriptors
             .Where(sd => enabledAndOrderedFeatureIds.Contains(sd.Value.Feature.Id))
+            .Where(sd => sd.Value.RequiredFeatureIds.Count == 0 || sd.Value.RequiredFeatureIds.All(enabledAndOrderedFeatureIds.Contains))
             .Where(sd => IsModuleOrRequestedTheme(extensionManager, sd.Value.Feature, themeId))
             .OrderBy(sd => enabledAndOrderedFeatureIds.IndexOf(sd.Value.Feature.Id))
             .GroupBy(sd => sd.Value.ShapeType, StringComparer.OrdinalIgnoreCase)
@@ -156,7 +160,8 @@ public class DefaultShapeTableManager : IShapeTableManager
     private static void BuildDescriptors(
         IShapeTableProvider bindingStrategy,
         IEnumerable<ShapeAlteration> builtAlterations,
-        Dictionary<string, FeatureShapeDescriptor> shapeDescriptors)
+        Dictionary<string, FeatureShapeDescriptor> shapeDescriptors,
+        IReadOnlyCollection<string> requiredFeatureIds)
     {
         var alterationSets = builtAlterations.GroupBy(a => a.Feature.Id + a.ShapeType);
 
@@ -173,7 +178,8 @@ public class DefaultShapeTableManager : IShapeTableManager
                 var descriptor = new FeatureShapeDescriptor
                 (
                     firstAlteration.Feature,
-                    firstAlteration.ShapeType
+                    firstAlteration.ShapeType,
+                    requiredFeatureIds
                 );
 
                 foreach (var alteration in alterations)
