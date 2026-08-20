@@ -287,8 +287,8 @@ public class EmailTests
 
     private static SmtpEmailProvider CreateSmtpService(SmtpOptions smtpOptions)
     {
-        var options = new Mock<IOptions<SmtpOptions>>();
-        options.Setup(o => o.Value)
+        var options = new Mock<IOptionsMonitor<SmtpOptions>>();
+        options.Setup(o => o.CurrentValue)
             .Returns(smtpOptions);
 
         var logger = new Mock<ILogger<SmtpEmailProvider>>();

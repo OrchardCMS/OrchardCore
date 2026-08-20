@@ -9,11 +9,11 @@ public class SmtpEmailProvider : SmtpEmailProviderBase
     public const string TechnicalName = "SMTP";
 
     public SmtpEmailProvider(
-        IOptions<SmtpOptions> options,
+        IOptionsMonitor<SmtpOptions> options,
         IEmailAddressValidator emailAddressValidator,
         ILogger<SmtpEmailProvider> logger,
         IStringLocalizer<SmtpEmailProvider> stringLocalizer)
-        : base(options.Value, emailAddressValidator, logger, stringLocalizer)
+        : base(options.CurrentValue, emailAddressValidator, logger, stringLocalizer)
     {
     }
 
