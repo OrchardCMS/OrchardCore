@@ -10,11 +10,11 @@ public sealed class AzureSmsProvider : AzureSmsProviderBase
     public const string TechnicalName = "Azure";
 
     public AzureSmsProvider(
-        IOptions<AzureSmsOptions> options,
+        IOptionsMonitor<AzureSmsOptions> options,
         IPhoneFormatValidator phoneFormatValidator,
         ILogger<AzureSmsProvider> logger,
         IStringLocalizer<AzureSmsProvider> stringLocalizer)
-        : base(options.Value, phoneFormatValidator, logger, stringLocalizer)
+        : base(options.CurrentValue, phoneFormatValidator, logger, stringLocalizer)
     {
     }
 
