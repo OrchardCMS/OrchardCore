@@ -5,15 +5,15 @@ using OrchardCore.Email.Azure.Models;
 
 namespace OrchardCore.Email.Azure.Services;
 
-public class DefaultAzureEmailProvider : AzureEmailProviderBase
+public class DefaultAzureEmailProvider : AzureEmailProviderBase<DefaultAzureEmailOptions>
 {
     public const string TechnicalName = "DefaultAzure";
 
     public DefaultAzureEmailProvider(
-        IOptions<DefaultAzureEmailOptions> options,
+        IOptionsMonitor<DefaultAzureEmailOptions> options,
         ILogger<DefaultAzureEmailProvider> logger,
         IStringLocalizer<DefaultAzureEmailProvider> stringLocalizer)
-        : base(() => options.Value, logger, stringLocalizer)
+        : base(options, logger, stringLocalizer)
     {
     }
 

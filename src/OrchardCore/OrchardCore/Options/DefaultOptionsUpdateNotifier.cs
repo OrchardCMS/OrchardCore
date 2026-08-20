@@ -17,7 +17,10 @@ public sealed class DefaultOptionsUpdateNotifier : IOptionsUpdateNotifier
     private bool _commitSucceeded;
     private bool _deferredTaskAdded;
 
-    public DefaultOptionsUpdateNotifier(IDocumentStore documentStore) => _documentStore = documentStore;
+    public DefaultOptionsUpdateNotifier(IDocumentStore documentStore)
+    {
+        _documentStore = documentStore;
+    }
 
     public IOptionsUpdateNotifier RequestUpdate<TOptions>(string name = "") where TOptions : class
     {
