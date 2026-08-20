@@ -6,13 +6,13 @@
 // localized "selected" text, all read from data-* attributes on the root element.
 const show = (element: HTMLElement | null) => {
     if (element) {
-        element.style.display = "";
+        element.classList.remove("d-none");
     }
 };
 
 const hide = (element: HTMLElement | null) => {
     if (element) {
-        element.style.display = "none";
+        element.classList.add("d-none");
     }
 };
 
