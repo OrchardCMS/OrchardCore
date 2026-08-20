@@ -29,7 +29,6 @@ public sealed class AccountController : AccountBaseController
     private readonly ILogger _logger;
     private readonly ISiteService _siteService;
     private readonly IEnumerable<ILoginFormEvent> _loginFormEvents;
-    private readonly RegistrationOptions _registrationOptions;
     private readonly IDisplayManager<LoginForm> _loginFormDisplayManager;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly INotifier _notifier;
@@ -47,7 +46,6 @@ public sealed class AccountController : AccountBaseController
         IHtmlLocalizer<AccountController> htmlLocalizer,
         IStringLocalizer<AccountController> stringLocalizer,
         IEnumerable<ILoginFormEvent> loginFormEvents,
-        IOptions<RegistrationOptions> registrationOptions,
         INotifier notifier,
         IDisplayManager<LoginForm> loginFormDisplayManager,
         IUpdateModelAccessor updateModelAccessor,
@@ -59,7 +57,6 @@ public sealed class AccountController : AccountBaseController
         _logger = logger;
         _siteService = siteService;
         _loginFormEvents = loginFormEvents;
-        _registrationOptions = registrationOptions.Value;
         _notifier = notifier;
         _loginFormDisplayManager = loginFormDisplayManager;
         _updateModelAccessor = updateModelAccessor;
