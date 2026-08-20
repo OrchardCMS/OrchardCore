@@ -1,7 +1,13 @@
+using System.Security.Claims;
+using GraphQL;
+using GraphQL.Execution;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,12 +15,17 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
+using OrchardCore.Apis.GraphQL;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
+using OrchardCore.Modules.FileProviders;
 using OrchardCore.RateLimits;
 using OrchardCore.RateLimits.Core;
 using OrchardCore.RateLimits.Models;
 using OrchardCore.RateLimits.Services;
+using OrchardCore.Seo;
+using OrchardCore.Seo.Services;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.RateLimits;
 
@@ -145,6 +156,50 @@ public class RateLimiterMiddlewareTests
         Assert.Equal("other-tenant-response", await otherTenantResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
     }
 
+    [Fact]
+    public async Task Apply_EndpointSpecificPoliciesToRobotsTxt_Succeeds()
+    {
+        using var host = await CreateSeoHostAsync(
+            [
+                CreateEndpointFixedWindowPolicy("Robots", "/robots.txt", 1, 60),
+            ],
+            TestContext.Current.CancellationToken);
+
+        var client = host.GetTestClient();
+
+        var firstRobotsResponse = await client.GetAsync("/robots.txt", TestContext.Current.CancellationToken);
+        var secondRobotsResponse = await client.GetAsync("/robots.txt", TestContext.Current.CancellationToken);
+        var otherResponse = await client.GetAsync("/other", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, firstRobotsResponse.StatusCode);
+        Assert.Equal("User-agent: *\nDisallow:\n", (await firstRobotsResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken)).Replace("\r\n", "\n"));
+        Assert.Equal(HttpStatusCode.TooManyRequests, secondRobotsResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, otherResponse.StatusCode);
+        Assert.Equal("other-response", await otherResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task Apply_EndpointSpecificPoliciesToGraphQL_Succeeds()
+    {
+        using var host = await CreateGraphQLHostAsync(
+            [
+                CreateEndpointSlidingWindowPolicy("GraphQL", "/api/graphql", 10, 59, 1),
+            ],
+            TestContext.Current.CancellationToken);
+
+        var client = host.GetTestClient();
+
+        for (var i = 0; i < 10; i++)
+        {
+            var response = await client.GetAsync("/api/graphql?query=%7Bping%7D", TestContext.Current.CancellationToken);
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        var rejectedResponse = await client.GetAsync("/api/graphql?query=%7Bping%7D", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.TooManyRequests, rejectedResponse.StatusCode);
+    }
+
     private static async Task<IHost> CreateHostAsync(
         string staticAssetPath,
         Action<RateLimitsOptions> configureRouteLimits,
@@ -197,6 +252,100 @@ public class RateLimiterMiddlewareTests
                         endpoints.MapGet("/tenant/other", () => Results.Text("other-tenant-response"))
                             .WithName("OtherTenantRoute");
                     });
+                });
+            });
+
+        return await builder.StartAsync(cancellationToken);
+    }
+
+    private static async Task<IHost> CreateSeoHostAsync(
+        IEnumerable<RateLimitPolicy> enabledPolicies,
+        CancellationToken cancellationToken)
+    {
+        var seoStartup = new global::OrchardCore.Seo.Startup();
+        var builder = Host.CreateDefaultBuilder()
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseTestServer();
+                webBuilder.ConfigureServices(services =>
+                {
+                    services.AddRouting();
+                    services.AddRateLimiter();
+                    services.AddTransient<IConfigureOptions<RateLimiterOptions>, RateLimiterOptionsConfigurations>();
+                    services.AddSingleton(CreatePolicyStore(enabledPolicies ?? []));
+                    services.AddSingleton(new FixedWindowRateLimiterSource(Mock.Of<IStringLocalizer<FixedWindowRateLimiterSource>>()));
+                    services.AddSingleton(new SlidingWindowRateLimiterSource(Mock.Of<IStringLocalizer<SlidingWindowRateLimiterSource>>()));
+                    services.AddSingleton(new ConcurrencyRateLimiterSource(Mock.Of<IStringLocalizer<ConcurrencyRateLimiterSource>>()));
+                    services.AddSingleton(new TokenBucketRateLimiterSource(Mock.Of<IStringLocalizer<TokenBucketRateLimiterSource>>()));
+                    services.AddKeyedSingleton<IRateLimiterSource>(FixedWindowRateLimiterSource.SourceName, static (sp, _) => sp.GetRequiredService<FixedWindowRateLimiterSource>());
+                    services.AddKeyedSingleton<IRateLimiterSource>(SlidingWindowRateLimiterSource.SourceName, static (sp, _) => sp.GetRequiredService<SlidingWindowRateLimiterSource>());
+                    services.AddKeyedSingleton<IRateLimiterSource>(ConcurrencyRateLimiterSource.SourceName, static (sp, _) => sp.GetRequiredService<ConcurrencyRateLimiterSource>());
+                    services.AddKeyedSingleton<IRateLimiterSource>(TokenBucketRateLimiterSource.SourceName, static (sp, _) => sp.GetRequiredService<TokenBucketRateLimiterSource>());
+                    services.AddSingleton<IStaticFileProvider>(new TestStaticFileProvider());
+                    services.AddSingleton<IRobotsProvider>(new TestRobotsProvider());
+                });
+
+                webBuilder.Configure(app =>
+                {
+                    app.UseRouting();
+
+                    var routes = (IEndpointRouteBuilder)app.Properties["__EndpointRouteBuilder"];
+                    seoStartup.Configure(app, routes, app.ApplicationServices);
+
+                    app.UseRateLimiter();
+                    app.UseEndpoints(endpoints =>
+                    {
+                        endpoints.MapGet("/other", () => Results.Text("other-response"));
+                    });
+                });
+            });
+
+        return await builder.StartAsync(cancellationToken);
+    }
+
+    private static async Task<IHost> CreateGraphQLHostAsync(
+        IEnumerable<RateLimitPolicy> enabledPolicies,
+        CancellationToken cancellationToken)
+    {
+        var graphQLStartup = new global::OrchardCore.Apis.GraphQL.Startup(Mock.Of<IHostEnvironment>());
+        var builder = Host.CreateDefaultBuilder()
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseTestServer();
+                webBuilder.ConfigureServices(services =>
+                {
+                    services.AddRouting();
+                    services.AddRateLimiter();
+                    services.AddTransient<IConfigureOptions<RateLimiterOptions>, RateLimiterOptionsConfigurations>();
+                    services.AddSingleton(CreatePolicyStore(enabledPolicies ?? []));
+                    services.AddSingleton(new FixedWindowRateLimiterSource(Mock.Of<IStringLocalizer<FixedWindowRateLimiterSource>>()));
+                    services.AddSingleton(new SlidingWindowRateLimiterSource(Mock.Of<IStringLocalizer<SlidingWindowRateLimiterSource>>()));
+                    services.AddSingleton(new ConcurrencyRateLimiterSource(Mock.Of<IStringLocalizer<ConcurrencyRateLimiterSource>>()));
+                    services.AddSingleton(new TokenBucketRateLimiterSource(Mock.Of<IStringLocalizer<TokenBucketRateLimiterSource>>()));
+                    services.AddKeyedSingleton<IRateLimiterSource>(FixedWindowRateLimiterSource.SourceName, static (sp, _) => sp.GetRequiredService<FixedWindowRateLimiterSource>());
+                    services.AddKeyedSingleton<IRateLimiterSource>(SlidingWindowRateLimiterSource.SourceName, static (sp, _) => sp.GetRequiredService<SlidingWindowRateLimiterSource>());
+                    services.AddKeyedSingleton<IRateLimiterSource>(ConcurrencyRateLimiterSource.SourceName, static (sp, _) => sp.GetRequiredService<ConcurrencyRateLimiterSource>());
+                    services.AddKeyedSingleton<IRateLimiterSource>(TokenBucketRateLimiterSource.SourceName, static (sp, _) => sp.GetRequiredService<TokenBucketRateLimiterSource>());
+                    services.AddOptions<GraphQLSettings>();
+                    services.AddSingleton<GraphQLMiddleware>();
+                    services.AddSingleton(Mock.Of<IDocumentExecuter>());
+                    services.AddSingleton(Mock.Of<IGraphQLSerializer>());
+                    services.AddSingleton(Mock.Of<IGraphQLTextSerializer>());
+                    services.AddSingleton(Mock.Of<ISchemaFactory>());
+                    services.AddSingleton(Mock.Of<IDocumentExecutionListener>());
+                    services.AddSingleton<IAuthenticationService>(new TestAuthenticationService());
+                    services.AddSingleton<IAuthorizationService>(new DenyAllAuthorizationService());
+                });
+
+                webBuilder.Configure(app =>
+                {
+                    app.UseRouting();
+
+                    var routes = (IEndpointRouteBuilder)app.Properties["__EndpointRouteBuilder"];
+                    graphQLStartup.Configure(app, routes, app.ApplicationServices);
+
+                    app.UseRateLimiter();
+                    app.UseEndpoints(_ => { });
                 });
             });
 
@@ -259,6 +408,63 @@ public class RateLimiterMiddlewareTests
         return limiter;
     }
 
+    private static RateLimitPolicy CreateEndpointSlidingWindowPolicy(string name, string path, int permitLimit, int windowSeconds, int segmentsPerWindow)
+    {
+        var limiter = new RateLimitLimiter
+        {
+            Id = IdGenerator.GenerateId(),
+            Source = SlidingWindowRateLimiterSource.SourceName,
+        };
+
+        limiter.Put(new SlidingWindowRateLimiterData
+        {
+            PermitLimit = permitLimit,
+            QueueLimit = 0,
+            WindowSeconds = windowSeconds,
+            SegmentsPerWindow = segmentsPerWindow,
+        });
+
+        return new RateLimitPolicy
+        {
+            Name = name,
+            IsEnabled = true,
+            EnabledUtc = DateTime.UtcNow,
+            Scope = RateLimitPolicyScope.Endpoint,
+            Path = path,
+            Limiters = [limiter],
+        };
+    }
+
+    private sealed class TestAuthenticationService : IAuthenticationService
+    {
+        public Task<AuthenticateResult> AuthenticateAsync(HttpContext context, string scheme)
+            => Task.FromResult(AuthenticateResult.NoResult());
+
+        public Task ChallengeAsync(HttpContext context, string scheme, AuthenticationProperties properties)
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return Task.CompletedTask;
+        }
+
+        public Task ForbidAsync(HttpContext context, string scheme, AuthenticationProperties properties)
+            => Task.CompletedTask;
+
+        public Task SignInAsync(HttpContext context, string scheme, ClaimsPrincipal principal, AuthenticationProperties properties)
+            => Task.CompletedTask;
+
+        public Task SignOutAsync(HttpContext context, string scheme, AuthenticationProperties properties)
+            => Task.CompletedTask;
+    }
+
+    private sealed class DenyAllAuthorizationService : IAuthorizationService
+    {
+        public Task<AuthorizationResult> AuthorizeAsync(ClaimsPrincipal user, object resource, IEnumerable<IAuthorizationRequirement> requirements)
+            => Task.FromResult(AuthorizationResult.Failed());
+
+        public Task<AuthorizationResult> AuthorizeAsync(ClaimsPrincipal user, object resource, string policyName)
+            => Task.FromResult(AuthorizationResult.Failed());
+    }
+
     private sealed class StaticAssetDirectory : IDisposable
     {
         public StaticAssetDirectory()
@@ -277,5 +483,19 @@ public class RateLimiterMiddlewareTests
                 Directory.Delete(Path, recursive: true);
             }
         }
+    }
+
+    private sealed class TestStaticFileProvider : IStaticFileProvider
+    {
+        public IDirectoryContents GetDirectoryContents(string subpath) => NotFoundDirectoryContents.Singleton;
+
+        public IFileInfo GetFileInfo(string subpath) => new NotFoundFileInfo(subpath);
+
+        public IChangeToken Watch(string filter) => NullChangeToken.Singleton;
+    }
+
+    private sealed class TestRobotsProvider : IRobotsProvider
+    {
+        public Task<string> GetContentAsync() => Task.FromResult("User-agent: *\nDisallow:");
     }
 }

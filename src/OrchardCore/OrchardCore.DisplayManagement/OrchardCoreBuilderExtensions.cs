@@ -126,6 +126,7 @@ public static class OrchardCoreBuilderExtensions
 
         services.AddTransient<IExtensionDependencyStrategy, ThemeExtensionDependencyStrategy>();
         services.AddTransient<IFeatureBuilderEvents, ThemeFeatureBuilderEvents>();
+        services.AddTransient<IFeaturesProvider, ThemeFeaturesProvider>();
 
         return builder;
     }

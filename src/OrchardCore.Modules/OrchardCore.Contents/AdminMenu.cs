@@ -16,13 +16,13 @@ namespace OrchardCore.Contents;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Contents" },
         { "contentTypeId", string.Empty },
     };
 
-    private static readonly RouteValueDictionary _adminListRouteValues = new()
+    private static readonly RouteValueDictionary s_adminListRouteValues = new()
     {
         { "area", "OrchardCore.Contents" },
         { "controller", "Admin" },
@@ -72,7 +72,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                     contentItems.Permission(CommonPermissions.ListContent);
                 }
 
-                contentItems.Action(nameof(AdminController.List), typeof(AdminController).ControllerName(), _routeValues);
+                contentItems.Action(nameof(AdminController.List), typeof(AdminController).ControllerName(), s_routeValues);
                 contentItems.LocalNav();
             });
         }, priority: 1);
@@ -93,7 +93,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                         var ci = await _contentManager.NewAsync(contentTypeDefinition.Name);
                         var cim = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(ci);
                         var createRouteValues = cim.CreateRouteValues;
-                        createRouteValues.Add("returnUrl", _linkGenerator.GetPathByRouteValues(context, string.Empty, _adminListRouteValues));
+                        createRouteValues.Add("returnUrl", _linkGenerator.GetPathByRouteValues(context, string.Empty, s_adminListRouteValues));
 
                         if (createRouteValues.Count > 0)
                         {

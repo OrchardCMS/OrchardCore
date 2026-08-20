@@ -5,7 +5,7 @@ namespace OrchardCore.Tests.Functional.Tests.Cms;
 
 public abstract class CmsRecipeFixture : IAsyncLifetime
 {
-    private static int _instanceCounter;
+    private static int s_instanceCounter;
     private readonly OrchardTestFixture _testFixture;
 
     protected abstract string RecipeName { get; }
@@ -15,7 +15,7 @@ public abstract class CmsRecipeFixture : IAsyncLifetime
 
     protected CmsRecipeFixture()
     {
-        _testFixture = new OrchardTestFixture(instanceId: $"{GetType().Name}_{_instanceCounter++}");
+        _testFixture = new OrchardTestFixture(instanceId: $"{GetType().Name}_{s_instanceCounter++}");
     }
 
     public async ValueTask InitializeAsync()

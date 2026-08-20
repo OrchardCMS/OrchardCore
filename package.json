@@ -2,7 +2,7 @@
   "name": "@orchardcore/root",
   "private": true,
   "version": "1.0.0",
-  "packageManager": "yarn@4.13.0",
+  "packageManager": "yarn@4.17.0",
   "scripts": {
     "build": "assets-manager build",
     "host": "assets-manager host",
@@ -37,6 +37,6 @@
     "source-map": "^0.7.4",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.24.0",
-    "vue-tsc": "^2.2.4"
+    "vue-tsc": "^3.3.7"
   }
 }

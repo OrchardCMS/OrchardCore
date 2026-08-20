@@ -10,9 +10,9 @@ public interface IAdminNodeProviderFactory
 
 public class AdminNodeProviderFactory<TAdminNode> : IAdminNodeProviderFactory where TAdminNode : AdminNode, new()
 {
-    private static readonly string _typeName = typeof(TAdminNode).Name;
+    private static readonly string s_typeName = typeof(TAdminNode).Name;
 
-    public string Name => _typeName;
+    public string Name => s_typeName;
 
     public AdminNode Create()
     {

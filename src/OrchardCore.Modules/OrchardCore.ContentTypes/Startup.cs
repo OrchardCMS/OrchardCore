@@ -60,7 +60,6 @@ public sealed class Startup : StartupBase
         services.AddRecipeExecutionStep<DeleteContentDefinitionStep>();
 
         services.AddTransient<IRecipeEventHandler, LuceneRecipeEventHandler>();
-        services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
     }
 }
 

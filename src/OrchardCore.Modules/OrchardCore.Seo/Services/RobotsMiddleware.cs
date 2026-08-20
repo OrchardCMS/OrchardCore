@@ -7,7 +7,7 @@ using OrchardCore.Modules.FileProviders;
 
 namespace OrchardCore.Seo.Services;
 
-public class RobotsMiddleware
+public sealed class RobotsMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly IStaticFileProvider _staticFileProvider;

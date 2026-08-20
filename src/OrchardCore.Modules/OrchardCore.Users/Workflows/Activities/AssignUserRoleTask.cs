@@ -45,9 +45,7 @@ public class AssignUserRoleTask : TaskActivity<AssignUserRoleTask>
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"], S["Failed"]);
-    }
+        => Outcome(S["Done"], S["Failed"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -63,11 +61,11 @@ public class AssignUserRoleTask : TaskActivity<AssignUserRoleTask>
                 await _userManager.AddToRoleAsync(user, roleName);
             }
 
-            return Outcomes("Done");
+            return Outcome("Done");
         }
         else
         {
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
     }
 }

@@ -26,8 +26,9 @@ var globalMethods = _scriptingManager.GlobalMethodProviders.SelectMany(x => x.Ge
 // Create scope for the engine
 var scope = engine.CreateScope(globalMethods, serviceProvider, null, null);
 
-// Evaluate the given script
-var date = engine.Evaluate("js: new Date().toISOString()");
+// Evaluate the given script. The engine is already the JavaScript one, so the
+// script is passed without the `js:` prefix, which only a directive carries.
+var date = engine.Evaluate(scope, "new Date().toISOString()");
 ```
 
 The `js:` prefix is used to describe in which language the code is written. Any module can provide
@@ -55,7 +56,37 @@ The File scripting engine provides methods to read file contents.
 
 ## JavaScript `OrchardCore.Scripting.JavaScript`
 
-The JavaScript scripting module implements a `IScriptingEngine` that uses [Esprima.NET](https://github.com/sebastienros/esprima-dotnet) to evaluate scripts.
+The JavaScript scripting module implements an `IScriptingEngine` that uses [Jint](https://github.com/sebastienros/jint) to evaluate scripts.
+
+### Configuring the JavaScript engine
+
+The engine is configured through Jint's own options type, which is registered as `IOptions<Jint.Options>`:
+
+```csharp
+services.Configure<Jint.Options>(options =>
+{
+    options.MaxStatements(10_000);
+    options.TimeoutInterval(TimeSpan.FromSeconds(5));
+});
+```
+
+Three things are worth knowing about how that instance is used:
+
+- **One `Jint.Options` instance is shared by every engine of the tenant.** Configure only settings that make sense for the whole tenant, since the same options serve recipe execution, workflow scripts and layer rules alike. Use the constraint helpers shown above (`MaxStatements`, `TimeoutInterval`, `LimitMemory`, `CancellationToken`): each of them registers a *factory*, so every engine gets its own counter and its own deadline and the shared instance stays safe for concurrent requests. Registering a constraint *instance* — `options.Constraint(new MyConstraint())` — shares that instance, and with it its per-execution state, across every concurrently running engine of the tenant. Derive from `Jint.Constraint` and register it with the factory overload, `options.Constraint(() => new MyConstraint())`, instead.
+- **A limit spelled as a saturated or absent value registers nothing.** `MaxStatements(int.MaxValue)`, `LimitMemory(long.MaxValue)` and `TimeoutInterval(TimeSpan.MaxValue)` produce exactly the same engine as never calling the method, and additionally remove any limit of that kind set earlier. The same is true of `MaxStatements()` with no argument: its parameter defaults to `0`, and only a positive budget registers a constraint, so that call reads like it turns a statement limit on while leaving the statement count unlimited. Always pass the budget you mean, and omit the call rather than passing a maximum value.
+- **Do not register an `IObjectConverter` that handles `Delegate`.** Global methods are `Delegate` values, and converters are consulted before Jint's own delegate wrapping, so such a converter would change the shape of the globals that are created on demand while leaving the eagerly created ones alone.
+
+No execution constraints are configured by default, so a script such as `while (true) {}` runs until the process is recycled. Sites that let non-administrators author scripts should set at least one.
+
+### Global methods are created on demand
+
+The globals contributed by `IGlobalMethodProvider` implementations are declared on every engine but are not built until a script reads the name. A recipe expression such as `[js:uuid()]` therefore only pays for `uuid`, not for every registered global. This is not observable from script — the properties exist, they are non-enumerable, and the value a name resolves to is stable for the whole evaluation — but the `Func<IServiceProvider, Delegate>` you supply is invoked lazily, and not at all when the script does not use the method. Keep it free of side effects that the surrounding code depends on.
+
+Three kinds of method are created eagerly instead, so a factory backing one of them runs once per engine whether or not the script uses it:
+
+- Methods passed directly to `IScriptingEngine.CreateScope()` rather than registered through DI, such as a recipe's `variables()` or a workflow's `workflow()`. These also take precedence over a registered global of the same name.
+- A name contributed by more than one registered provider, because which provider wins depends on the order the methods are set in.
+- A method carrying an asynchronous variant whose `<name>Async` global is also claimed by a method literally named `<name>Async`.
 
 ### Methods
 

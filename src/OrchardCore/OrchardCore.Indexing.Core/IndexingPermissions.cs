@@ -10,18 +10,18 @@ public static class IndexingPermissions
 
     public static readonly Permission ManageIndexes = new("ManageIndexes", "Manage Indexes");
 
-    private static readonly Permission _indexPermissionTemplate =
+    private static readonly Permission s_indexPermissionTemplate =
         new("QueryIndex_{0}", "Query '{0}' Index", [ManageIndexes, QuerySearchIndex]);
 
-    private static readonly ConcurrentDictionary<string, Permission> _permissions = [];
+    private static readonly ConcurrentDictionary<string, Permission> s_permissions = [];
 
     public static Permission CreateDynamicPermission(IndexProfile indexProfile)
     {
         ArgumentNullException.ThrowIfNull(indexProfile);
 
-        return _permissions.GetOrAdd(indexProfile.Id, indexId => new Permission(
-            string.Format(_indexPermissionTemplate.Name, indexProfile.Name),
-            string.Format(_indexPermissionTemplate.Description, indexProfile.Name),
-            _indexPermissionTemplate.ImpliedBy));
+        return s_permissions.GetOrAdd(indexProfile.Id, indexId => new Permission(
+            string.Format(s_indexPermissionTemplate.Name, indexProfile.Name),
+            string.Format(s_indexPermissionTemplate.Description, indexProfile.Name),
+            s_indexPermissionTemplate.ImpliedBy));
     }
 }

@@ -1,9 +1,11 @@
-import "./menu";
+import { initializeMenu } from "./menu";
 import "./resizeDetector";
 
 // Bootstrap is loaded as a shared global script resource (see ResourceManagementOptionsConfiguration.cs),
 // not bundled here — this brings in its types only, with no runtime import/bundling.
 declare const bootstrap: typeof import("bootstrap");
+
+initializeMenu();
 
 type ConfirmDialogCallback = (response: boolean) => void;
 

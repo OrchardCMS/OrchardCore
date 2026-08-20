@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,10 +13,12 @@ using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.AzureBlob;
+using OrchardCore.Media.Azure.Filters;
 using OrchardCore.Media.Azure.Services;
 using OrchardCore.Media.Core;
 using OrchardCore.Media.Core.Events;
 using OrchardCore.Media.Events;
+using OrchardCore.Media.Services;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
@@ -33,9 +36,6 @@ public sealed class Startup : Modules.StartupBase
         _logger = logger;
         _configuration = configuration;
     }
-
-    public override int Order
-        => OrchardCoreConstants.ConfigureOrder.AzureMediaStorage;
 
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -84,20 +84,27 @@ public sealed class Startup : Modules.StartupBase
             services.AddSingleton<IMediaFileStoreCache>(serviceProvider =>
                 serviceProvider.GetRequiredService<IMediaFileStoreCacheFileProvider>());
 
+            // Register the blob file store as a singleton so it can be injected for async initialization.
+            services.AddSingleton(serviceProvider =>
+            {
+                var blobStorageOptions = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
+                var clock = serviceProvider.GetRequiredService<IClock>();
+                var contentTypeProvider = serviceProvider.GetRequiredService<IContentTypeProvider>();
+                var blobLogger = serviceProvider.GetRequiredService<ILogger<BlobFileStore>>();
+
+                return new BlobFileStore(blobStorageOptions, clock, contentTypeProvider, blobLogger);
+            });
+
             // Replace the default media file store with a blob file store.
             services.Replace(ServiceDescriptor.Singleton<IMediaFileStore>(serviceProvider =>
             {
-                var blobStorageOptions = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
-                var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
+                var fileStore = serviceProvider.GetRequiredService<BlobFileStore>();
                 var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
                 var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
-                var clock = serviceProvider.GetRequiredService<IClock>();
-                var contentTypeProvider = serviceProvider.GetRequiredService<IContentTypeProvider>();
                 var mediaEventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
                 var mediaCreatingEventHandlers = serviceProvider.GetServices<IMediaCreatingEventHandler>();
                 var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStore>>();
 
-                var fileStore = new BlobFileStore(blobStorageOptions, clock, contentTypeProvider);
                 var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, mediaOptions.AssetsRequestPath);
 
                 var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext
@@ -115,6 +122,8 @@ public sealed class Startup : Modules.StartupBase
             services.AddSingleton<IMediaEventHandler, DefaultMediaFileStoreCacheEventHandler>();
 
             services.AddScoped<IModularTenantEvents, MediaBlobContainerTenantEvents>();
+
+            services.Configure<MvcOptions>(options => options.Filters.Add<MediaGalleryCapabilitiesFilter>());
         }
     }
 
@@ -155,9 +164,6 @@ public sealed class MediaAzureImageCacheStartup : Modules.StartupBase
         _logger = logger;
     }
 
-    public override int Order
-        => OrchardCoreConstants.ConfigureOrder.AzureResizedImageCache;
-
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddTransient<IConfigureOptions<MediaBlobImageCacheOptions>, MediaBlobImageCacheOptionsConfiguration>();
@@ -196,6 +202,16 @@ public sealed class MediaAzureImageCacheStartup : Modules.StartupBase
         }
 
         return optionsAreValid;
+    }
+}
+
+[Feature("OrchardCore.Media.Azure.Storage")]
+[RequireFeatures("OrchardCore.Media.Tus")]
+public sealed class MediaAzureTusStartup : Modules.StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.Replace(ServiceDescriptor.Singleton<ITusTempStore, AzureBlobTusTempStore>());
     }
 }
 

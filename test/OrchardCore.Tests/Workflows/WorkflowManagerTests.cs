@@ -511,9 +511,9 @@ public class WorkflowManagerTests
     private static JavaScriptWorkflowScriptEvaluator CreateWorkflowScriptEvaluator(IServiceProvider serviceProvider)
     {
         var memoryCache = new MemoryCache(new MemoryCacheOptions());
-        var javaScriptEngine = new JavaScriptEngine(memoryCache, Options.Create(new Jint.Options()));
-        var workflowContextHandlers = new Resolver<IEnumerable<IWorkflowExecutionContextHandler>>(serviceProvider);
         var globalMethodProviders = Array.Empty<IGlobalMethodProvider>();
+        var javaScriptEngine = new JavaScriptEngine(memoryCache, Options.Create(new Jint.Options()), globalMethodProviders);
+        var workflowContextHandlers = new Resolver<IEnumerable<IWorkflowExecutionContextHandler>>(serviceProvider);
         var scriptingManager = new DefaultScriptingManager(new[] { javaScriptEngine }, globalMethodProviders);
 
         return new JavaScriptWorkflowScriptEvaluator(
@@ -597,15 +597,13 @@ public class WorkflowManagerTests
         public override LocalizedString Category => new("Test", "Test");
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        {
-            return Outcomes(new LocalizedString("Done", "Done"));
-        }
+            => Outcome(new LocalizedString("Done", "Done"));
 
         public override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             _onExecute();
 
-            return Task.FromResult(Outcomes("Done"));
+            return Task.FromResult(Outcome("Done"));
         }
     }
 

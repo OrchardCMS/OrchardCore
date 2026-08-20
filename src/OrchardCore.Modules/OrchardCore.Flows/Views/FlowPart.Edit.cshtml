@@ -12,7 +12,7 @@
 
 @{
     var widgetContentTypes = Model.ContainedContentTypeDefinitions;
-    var widgetTypesStringified = string.Join(";", widgetContentTypes);
+    var widgetTypesStringified = string.Join(";", widgetContentTypes.Select(x => x.Name));
     var widgetTemplatePlaceholderId = Html.Id("widgetTemplatePlaceholder");
     var htmlFieldPrefix = ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
     var parentContentType = Model.FlowPart.ContentItem.ContentType;

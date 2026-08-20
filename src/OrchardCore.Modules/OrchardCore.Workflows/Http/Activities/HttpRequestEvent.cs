@@ -82,14 +82,14 @@ public class HttpRequestEvent : EventActivity
             workflowContext.Output[WorkflowConstants.HttpFormLocationOutputKeyName] = formLocation;
         }
 
-        return Task.FromResult(Outcomes("Done"));
+        return Task.FromResult(Outcome("Done"));
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        => Outcomes(S["Done"]);
+        => Outcome(S["Done"]);
 
     public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        => Outcomes("Done");
+        => Outcome("Done");
 
     private static string GetLocationUrl(string value)
     {

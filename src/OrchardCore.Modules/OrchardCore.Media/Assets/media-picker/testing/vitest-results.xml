@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="18" failures="0" errors="0" time="0.4256205">
+    <testsuite name="src/__tests__/main.spec.ts" timestamp="2026-08-13T12:20:26.568Z" hostname="CPC-georg-04PZF" tests="18" failures="0" errors="0" skipped="0" time="0.4256205">
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; mountMediaField &gt; mounts a Vue app on the given element" time="0.2900341">
+        </testcase>
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; mountMediaField &gt; reads config from data attributes" time="0.0062249">
+        </testcase>
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; mountMediaField &gt; reads media-gallery translations from the rendered data attribute" time="0.0046565">
+        </testcase>
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; mountMediaField &gt; reads translations with defaults when data-translations is absent" time="0.0044193">
+        </testcase>
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; mountMediaField &gt; reads custom translations from data-translations" time="0.0048614">
+        </testcase>
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; mountAttachedMediaField &gt; reads attached config including uploadAction and tempUploadFolder" time="0.0064538">
+        </testcase>
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; mountAttachedMediaField &gt; handles missing attached-specific attributes gracefully" time="0.0031908">
+        </testcase>
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; mountGalleryMediaField &gt; mounts a gallery field on the element" time="0.0058027">
+        </testcase>
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; readConfig (via mountMediaField) &gt; parses paths JSON" time="0.0038814">
+        </testcase>
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; readConfig (via mountMediaField) &gt; handles invalid JSON for paths without throwing" time="0.0033334">
+        </testcase>
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; readConfig (via mountMediaField) &gt; reads boolean attributes correctly" time="0.0048425">
+        </testcase>
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; readTranslations (via mountMediaField) &gt; falls back to defaults when data-translations is missing" time="0.0027468">
+        </testcase>
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; readTranslations (via mountMediaField) &gt; falls back to defaults when data-translations contains invalid JSON" time="0.003968">
+        </testcase>
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; readTranslations (via mountMediaField) &gt; merges custom translations over defaults" time="0.0030782">
+        </testcase>
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; autoMount &gt; auto-mounts elements with data-media-field-type on import" time="0.0063237">
+        </testcase>
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; autoMount &gt; auto-mounts multiple element types" time="0.0248356">
+        </testcase>
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; autoMount &gt; skips elements that are already mounted" time="0.027579">
+        </testcase>
+        <testcase classname="src/__tests__/main.spec.ts" name="main.ts &gt; autoMount &gt; ignores elements with unknown media-field-type" time="0.0151807">
+        </testcase>
+    </testsuite>
+</testsuites>

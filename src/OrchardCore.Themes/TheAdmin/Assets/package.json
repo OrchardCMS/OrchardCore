@@ -5,7 +5,6 @@
     "check": "vue-tsc --noEmit"
   },
   "dependencies": {
-    "@crestapps/bootstrap-select": "1.2.0",
     "@popperjs/core": "2.11.8",
     "@types/js-cookie": "^3.0.6",
     "bootstrap": "5.3.8",

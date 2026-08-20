@@ -56,6 +56,8 @@ validation:
 # Add files here that are intentionally not in the navigation and thus omitted_files shouldn't warn about them.
 not_in_nav: |
   samples/
+  development/
+  releases/3.0.0.md
   releases/4.0.0.md
   llms.txt
 
@@ -165,13 +167,26 @@ nav:
   - Key Topics:
       - Manage your Content: topics/content-management/README.md
       - Content Relationships: topics/content-relationships/README.md
-      - Customize the Display: topics/display/README.md
+      - Customize the Display:
+          - Overview: topics/display/README.md
+          - Shapes: topics/display/shapes.md
+          - Create a Theme from an HTML Template: topics/display/theme-from-html-template.md
       - Localize your site: topics/localize/README.md
-      - Handle the Media: topics/media/README.md
+      - Handle the Media:
+          - Overview: topics/media/README.md
+          - Media Picker: topics/media/media-picker.md
       - Navigate between pages: topics/navigation/README.md
       - Query and Search data: topics/search/README.md
-      - Secure your application: topics/security/README.md
-      - Data: topics/data/README.md
+      - Secure your application:
+          - Overview: topics/security/README.md
+          - Users: topics/security/users.md
+          - Roles and Permissions: topics/security/roles.md
+          - Login: topics/security/login.md
+          - Registration: topics/security/registration.md
+          - Security Settings: topics/security/security-settings.md
+      - Data:
+          - Overview: topics/data/README.md
+          - How YesSql works: topics/data/yessql.md
       - Configuration: topics/configuration/README.md
       - Workflows: topics/workflows/README.md
       - Publishing a new release: topics/publishing-releases/README.md
@@ -210,6 +225,7 @@ nav:
               - Liquid: reference/modules/Liquid/README.md
               - Media:
                   - Media: reference/modules/Media/README.md
+                  - Media Gallery: reference/modules/Media/MediaGallery.md
                   - Media Slugify: reference/modules/Media.Slugify/README.md
                   - Antivirus: reference/modules/Antivirus/README.md
                   - Media Amazon S3: reference/modules/Media.AmazonS3/README.md
@@ -282,6 +298,7 @@ nav:
               - Logging Serilog: reference/modules/Logging.Serilog/README.md
               - Mini Profiler: reference/modules/MiniProfiler/README.md
               - Modules: reference/modules/Modules/README.md
+              - OpenApi: reference/modules/OpenApi/README.md
               - OpenId: reference/modules/OpenId/README.md
               - Permissions: reference/modules/Security/Permissions.md
               - Razor Helpers: reference/modules/Razor/README.md
@@ -296,6 +313,7 @@ nav:
               - Security: reference/modules/Security/README.md
               - Setup: reference/modules/Setup/README.md
               - Shells: reference/modules/Shells/README.md
+              - SignalR: reference/modules/SignalR/README.md
               - Tenants: reference/modules/Tenants/README.md
               - Workflows: reference/modules/Workflows/README.md
               - DataProtection (Azure Storage): reference/modules/DataProtection.Azure/README.md
@@ -306,6 +324,7 @@ nav:
       - Libraries: reference/libraries/README.md
       - Glossary: reference/glossary/README.md
   - Releases Notes:
+      - 3.0.1: releases/3.0.1.md
       - 3.0.0: releases/3.0.0.md
       - 2.2.1: releases/2.2.1.md
       - 2.2.0: releases/2.2.0.md
