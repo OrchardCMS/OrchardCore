@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Email.Smtp.Services;
 
-public class SmtpEmailProvider : SmtpEmailProviderBase
+public class SmtpEmailProvider : SmtpEmailProviderBase<SmtpOptions>
 {
     public const string TechnicalName = "SMTP";
 
@@ -13,7 +13,7 @@ public class SmtpEmailProvider : SmtpEmailProviderBase
         IEmailAddressValidator emailAddressValidator,
         ILogger<SmtpEmailProvider> logger,
         IStringLocalizer<SmtpEmailProvider> stringLocalizer)
-        : base(options.CurrentValue, emailAddressValidator, logger, stringLocalizer)
+        : base(options, emailAddressValidator, logger, stringLocalizer)
     {
     }
 
