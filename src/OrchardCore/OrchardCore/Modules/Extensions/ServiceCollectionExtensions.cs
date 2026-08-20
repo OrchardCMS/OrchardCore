@@ -25,6 +25,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Environment.Options;
 using OrchardCore.Extensions;
 using OrchardCore.Json;
 using OrchardCore.Localization;
@@ -204,6 +205,7 @@ public static class ServiceCollectionExtensions
 
         builder.ConfigureServices(shellServices =>
         {
+            shellServices.AddScoped<IOptionsUpdateNotifier, DefaultOptionsUpdateNotifier>();
             shellServices.AddScoped<IShellReleaseManager, DefaultShellReleaseManager>();
             shellServices.AddTransient<IConfigureOptions<ShellContextOptions>, ShellContextOptionsSetup>();
             shellServices.AddNullFeatureProfilesService();
