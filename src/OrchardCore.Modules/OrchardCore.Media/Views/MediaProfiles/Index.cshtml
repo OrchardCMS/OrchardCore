@@ -8,7 +8,7 @@
 <zone Name="Title"><h1>@RenderTitleSegments(T["Media Profiles"])</h1></zone>
 
 @* the form is necessary to generate and antiforgery token for the delete action *@
-<form asp-action="Index">
+<form asp-action="Index" data-list-management data-selected-label="@T["selected"]">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
@@ -42,7 +42,7 @@
                         </div>
                     </div>
                     <div class="col-auto">
-                        <div class="dropdown" style="display:none" id="actions">
+                        <div class="dropdown d-none" id="actions">
                             <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 @T["Actions"]
                             </button>

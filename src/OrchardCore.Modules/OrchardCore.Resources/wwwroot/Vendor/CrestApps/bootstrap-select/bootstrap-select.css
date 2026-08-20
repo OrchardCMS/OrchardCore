@@ -1,6 +1,6 @@
 @charset "UTF-8";
 /*!
- * Bootstrap-select v1.2.0 (https://github.com/CrestApps/bootstrap-select)
+ * Bootstrap-select v1.2.4 (https://github.com/CrestApps/bootstrap-select)
  *
  * CrestApps fork (vanilla JavaScript, Bootstrap 5+) of snapappointments/bootstrap-select
  * Copyright 2012-2018 SnapAppointments, LLC (original work)
@@ -34,11 +34,30 @@ select.selectpicker {
   align-items: center;
   justify-content: space-between;
 }
-.bootstrap-select > .dropdown-toggle:after {
-  margin-top: -1px;
+.bootstrap-select > .dropdown-toggle::after {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 12px;
+  margin-top: 0;
+  margin-left: 0.5rem;
+  content: "";
+  border: 0;
+  transition: transform 0.15s ease-in-out;
+  background-color: currentColor;
+  -webkit-mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+  mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: 16px 12px;
+  mask-size: 16px 12px;
+}
+.bootstrap-select > .dropdown-toggle[aria-expanded=true]::after {
+  transform: rotate(180deg);
 }
 .bootstrap-select > .dropdown-toggle.bs-placeholder, .bootstrap-select > .dropdown-toggle.bs-placeholder:hover, .bootstrap-select > .dropdown-toggle.bs-placeholder:focus, .bootstrap-select > .dropdown-toggle.bs-placeholder:active {
-  color: #999;
+  color: var(--bs-secondary-color, #6c757d);
 }
 .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary:hover, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary:focus, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary:active, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-secondary, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-secondary:hover, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-secondary:focus, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-secondary:active, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-success, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-success:hover, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-success:focus, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-success:active, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-danger, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-danger:hover, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-danger:focus, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-danger:active, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-info, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-info:hover, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-info:focus, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-info:active, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-dark, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-dark:hover, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-dark:focus, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-dark:active {
   color: rgba(255, 255, 255, 0.5);
@@ -63,19 +82,36 @@ select.selectpicker {
   z-index: 2 !important;
 }
 .has-error .bootstrap-select .dropdown-toggle, .error .bootstrap-select .dropdown-toggle, .bootstrap-select.is-invalid .dropdown-toggle, .was-validated .bootstrap-select select:invalid + .dropdown-toggle {
-  border-color: rgb(185, 74, 72);
+  border-color: var(--bs-form-invalid-border-color, var(--bs-danger, rgb(185, 74, 72)));
 }
 .bootstrap-select.is-valid .dropdown-toggle, .was-validated .bootstrap-select select:valid + .dropdown-toggle {
-  border-color: #28a745;
+  border-color: var(--bs-form-valid-border-color, var(--bs-success, #28a745));
 }
 .bootstrap-select:not([class*=col-]):not([class*=form-control]):not(.input-group-btn) {
   width: 100%;
 }
 .bootstrap-select > select.mobile-device:focus + .dropdown-toggle,
-.bootstrap-select .dropdown-toggle:focus {
-  outline: thin dotted #333333 !important;
-  outline: 5px auto -webkit-focus-ring-color !important;
-  outline-offset: -2px;
+.bootstrap-select .dropdown-toggle:focus,
+.bootstrap-select .dropdown-toggle:focus-visible {
+  outline: 0 !important;
+  border-color: var(--bs-primary, #86b7fe);
+  box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb, 13, 110, 253), 0.25);
+}
+
+.bootstrap-select > .dropdown-toggle.btn-light {
+  --bs-btn-color: var(--bs-body-color, #212529);
+  --bs-btn-bg: var(--bs-body-bg, #fff);
+  --bs-btn-border-color: var(--bs-border-color, #dee2e6);
+  --bs-btn-hover-color: var(--bs-body-color, #212529);
+  --bs-btn-hover-bg: var(--bs-body-bg, #fff);
+  --bs-btn-hover-border-color: var(--bs-border-color, #dee2e6);
+  --bs-btn-active-color: var(--bs-body-color, #212529);
+  --bs-btn-active-bg: var(--bs-body-bg, #fff);
+  --bs-btn-active-border-color: var(--bs-border-color, #dee2e6);
+  --bs-btn-disabled-color: var(--bs-secondary-color, #6c757d);
+  --bs-btn-disabled-bg: var(--bs-secondary-bg, #e9ecef);
+  --bs-btn-disabled-border-color: var(--bs-border-color, #dee2e6);
+  --bs-btn-focus-shadow-rgb: var(--bs-primary-rgb, 13, 110, 253);
 }
 
 .bootstrap-select.form-control {
@@ -216,6 +252,7 @@ select.selectpicker {
   color: rgba(255, 255, 255, 0.5) !important;
 }
 .bootstrap-select .dropdown-menu li.disabled a {
+  color: var(--bs-dropdown-link-disabled-color, rgba(var(--bs-emphasis-color-rgb, 33, 37, 41), 0.5));
   cursor: not-allowed;
 }
 .bootstrap-select .dropdown-menu li a {
@@ -244,8 +281,9 @@ select.selectpicker {
   margin: 0 2%;
   min-height: 26px;
   padding: 3px 5px;
-  background: rgb(245, 245, 245);
-  border: 1px solid rgb(227, 227, 227);
+  background: var(--bs-tertiary-bg, rgb(245, 245, 245));
+  color: var(--bs-secondary-color, inherit);
+  border: 1px solid var(--bs-border-color, rgb(227, 227, 227));
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
   pointer-events: none;
   opacity: 0.9;
@@ -256,7 +294,8 @@ select.selectpicker {
 }
 .bootstrap-select .no-results {
   padding: 3px;
-  background: #f5f5f5;
+  background: var(--bs-tertiary-bg, #f5f5f5);
+  color: var(--bs-secondary-color, inherit);
   margin: 0 5px;
   white-space: nowrap;
 }
@@ -320,12 +359,17 @@ select.selectpicker {
 }
 .bootstrap-select.selection-indicator-checkbox.show-tick .dropdown-menu .selected span.check-mark::after {
   content: "";
-  width: 0.3rem;
-  height: 0.55rem;
-  border: solid currentColor;
-  border-width: 0 0.14rem 0.14rem 0;
-  transform: rotate(45deg);
-  margin-top: -0.05rem;
+  width: 0.75rem;
+  height: 0.75rem;
+  background-color: currentColor;
+  -webkit-mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m3.5 8.5 3 3 6-6.5'/%3e%3c/svg%3e");
+  mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m3.5 8.5 3 3 6-6.5'/%3e%3c/svg%3e");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
 }
 .bootstrap-select.selection-indicator-radio.show-tick .dropdown-menu li a span.check-mark {
   border-radius: 50%;
@@ -344,12 +388,17 @@ select.selectpicker {
 .bootstrap-select .bs-ok-default:after {
   content: "";
   display: block;
-  width: 0.5em;
+  width: 1em;
   height: 1em;
-  border-style: solid;
-  border-width: 0 0.26em 0.26em 0;
-  transform-style: preserve-3d;
-  transform: rotate(45deg);
+  background-color: currentColor;
+  -webkit-mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m3.5 8.5 3 3 6-6.5'/%3e%3c/svg%3e");
+  mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m3.5 8.5 3 3 6-6.5'/%3e%3c/svg%3e");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
 }
 
 .bootstrap-select.show-menu-arrow.open > .dropdown-toggle, .bootstrap-select.show-menu-arrow.show > .dropdown-toggle {
@@ -405,29 +454,29 @@ select.selectpicker {
   padding: 4px 8px;
 }
 
-.popover-header {
+.bootstrap-select .popover-header {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.625rem 0.875rem;
+  padding: var(--bs-popover-header-padding-y, 0.5rem) var(--bs-popover-header-padding-x, 1rem) !important;
+  color: var(--bs-card-cap-color);
+  background-color: var(--bs-card-cap-bg, rgba(var(--bs-body-color-rgb, 33, 37, 41), 0.03));
+  border-bottom: var(--bs-card-border-width, var(--bs-border-width, 1px)) solid var(--bs-card-border-color, var(--bs-border-color-translucent, rgba(0, 0, 0, 0.175)));
 }
-.popover-header .popover-header-text {
+.bootstrap-select .popover-header .popover-header-text {
   flex: 1 1 auto;
   min-width: 0;
 }
-.popover-header .btn-close,
-.popover-header .close {
+.bootstrap-select .popover-header .btn-close,
+.bootstrap-select .popover-header .close {
   flex: 0 0 auto;
   margin: 0;
   margin-left: auto;
 }
-.popover-header .btn-close {
-  width: 0.875rem;
-  height: 0.875rem;
-  padding: 0.25rem;
-  background-size: 0.75rem;
+.bootstrap-select .popover-header .btn-close {
+  font-size: 0.75rem;
 }
-.popover-header .close {
+.bootstrap-select .popover-header .close {
   font-size: 0.875rem;
   line-height: 1;
 }
@@ -441,6 +490,18 @@ select.selectpicker {
 }
 .bs-actionsbox .btn-group button {
   width: 50%;
+}
+.bs-actionsbox .btn-light {
+  --bs-btn-color: var(--bs-body-color, #212529);
+  --bs-btn-bg: var(--bs-tertiary-bg, #f8f9fa);
+  --bs-btn-border-color: var(--bs-border-color, #dee2e6);
+  --bs-btn-hover-color: var(--bs-body-color, #212529);
+  --bs-btn-hover-bg: var(--bs-secondary-bg, #e9ecef);
+  --bs-btn-hover-border-color: var(--bs-border-color, #dee2e6);
+  --bs-btn-active-color: var(--bs-body-color, #212529);
+  --bs-btn-active-bg: var(--bs-secondary-bg, #e9ecef);
+  --bs-btn-active-border-color: var(--bs-border-color, #dee2e6);
+  --bs-btn-focus-shadow-rgb: var(--bs-primary-rgb, 13, 110, 253);
 }
 
 .bs-donebutton {
@@ -463,7 +524,7 @@ select.selectpicker {
   border-bottom: 1px solid var(--bs-border-color-translucent, rgba(0, 0, 0, 0.1));
 }
 .bs-searchbox + .bs-actionsbox {
-  padding: 0 8px 4px;
+  padding: 0.5rem 0.75rem 0.25rem;
 }
 .bs-searchbox .form-control {
   margin-bottom: 0;
@@ -474,15 +535,15 @@ select.selectpicker {
 .bs-searchbox .bs-create-option {
   display: block;
   padding: 0.5rem 0.75rem;
-  border: 1px dashed rgba(13, 110, 253, 0.45);
+  border: 1px dashed rgba(var(--bs-primary-rgb, 13, 110, 253), 0.45);
   border-radius: 0.375rem;
-  background: rgba(13, 110, 253, 0.06);
+  background: rgba(var(--bs-primary-rgb, 13, 110, 253), 0.06);
   color: var(--bs-primary, #0d6efd);
   white-space: normal;
   text-align: left;
 }
 .bs-searchbox .bs-create-option:hover, .bs-searchbox .bs-create-option:focus {
-  background: rgba(13, 110, 253, 0.12);
+  background: rgba(var(--bs-primary-rgb, 13, 110, 253), 0.12);
   color: var(--bs-primary-text-emphasis, var(--bs-primary, #0d6efd));
 }
 
@@ -532,9 +593,9 @@ select.selectpicker {
 
 .bs-selected-item:hover,
 .bs-selected-item:focus {
-  border-color: rgba(13, 110, 253, 0.35);
+  border-color: rgba(var(--bs-primary-rgb, 13, 110, 253), 0.35);
   background-color: var(--bs-secondary-bg, #e9ecef);
-  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.12);
+  box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb, 13, 110, 253), 0.12);
   outline: 0;
 }
 
@@ -545,19 +606,27 @@ select.selectpicker {
 }
 
 .bs-selected-item-remove {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.125rem;
-  height: 1.125rem;
-  border-radius: 999px;
-  background: rgba(108, 117, 125, 0.14);
-  color: var(--bs-secondary-color, #6c757d);
-  font-size: 0.875rem;
-  font-weight: 900;
-  line-height: 1;
+  width: 0.75rem;
+  height: 0.75rem;
   flex: 0 0 auto;
-  padding-bottom: 0;
+  color: var(--bs-secondary-color, #6c757d);
+  opacity: 0.85;
+  transition: opacity 0.15s ease-in-out, color 0.15s ease-in-out;
+  background-color: currentColor;
+  -webkit-mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M4 4 12 12M12 4 4 12'/%3e%3c/svg%3e");
+  mask-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M4 4 12 12M12 4 4 12'/%3e%3c/svg%3e");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+.bs-selected-item:hover .bs-selected-item-remove,
+.bs-selected-item:focus .bs-selected-item-remove {
+  color: var(--bs-body-color, inherit);
+  opacity: 1;
 }
 
 .bootstrap-select.selected-items-style-list .bs-selected-items {
@@ -613,12 +682,9 @@ select.selectpicker {
 }
 
 .bootstrap-select.selected-items-style-list .bs-selected-item-remove {
-  width: auto;
-  height: auto;
+  width: 0.875rem;
+  height: 0.875rem;
   margin-left: auto;
-  border-radius: 0;
-  background: transparent;
-  font-size: 1rem;
   color: var(--bs-secondary-color, #6c757d);
 }
 
@@ -631,8 +697,8 @@ select.selectpicker {
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 .form-floating > .bootstrap-select.show-selected-tags:focus-within, .form-floating > .bootstrap-select.show-selected-tags.show {
-  border-color: #86b7fe;
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  border-color: var(--bs-primary, #86b7fe);
+  box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb, 13, 110, 253), 0.25);
 }
 .form-floating > .bootstrap-select.show-selected-tags > .dropdown-toggle {
   min-height: 0;

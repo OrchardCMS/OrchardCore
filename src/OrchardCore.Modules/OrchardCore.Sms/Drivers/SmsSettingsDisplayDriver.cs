@@ -50,7 +50,7 @@ public sealed class SmsSettingsDisplayDriver : SiteDisplayDriver<SmsSettings>
             .ToArray();
 
         }).Location("Content:1#Providers")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, SmsPermissions.ManageSmsSettings))
+        .RenderWhen(static (driver) => driver._authorizationService.AuthorizeAsync(driver._httpContextAccessor.HttpContext?.User, SmsPermissions.ManageSmsSettings), this)
         .OnGroup(SettingsGroupId);
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, SmsSettings settings, UpdateEditorContext context)

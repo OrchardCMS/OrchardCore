@@ -16,7 +16,7 @@ namespace OrchardCore.OpenId.YesSql.Stores;
 public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApplication>
     where TApplication : OpenIdApplication, new()
 {
-    private static readonly JsonSerializerOptions _serializerOptions = new()
+    private static readonly JsonSerializerOptions s_serializerOptions = new()
     {
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
         WriteIndented = false,
@@ -372,7 +372,7 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
 
         if (set is not null)
         {
-            application.JsonWebKeySet = JObject.Parse(JsonSerializer.Serialize(set, _serializerOptions));
+            application.JsonWebKeySet = JObject.Parse(JsonSerializer.Serialize(set, s_serializerOptions));
 
             return default;
         }

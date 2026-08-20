@@ -19,6 +19,12 @@
     ]
   },
   {
+    "action": "min",
+    "name": "list-management",
+    "source": "Assets/js/list-management.js",
+    "tags": [ "admin", "resources", "js" ]
+  },
+  {
     "action": "copy",
     "name": "bootstrap",
     "source": [
@@ -72,10 +78,7 @@
       "node_modules/@crestapps/bootstrap-select/dist/js/bootstrap-select.min.js.map"
     ],
     "dest": "wwwroot/Vendor/CrestApps/bootstrap-select/",
-    "tags": [
-      "resources",
-      "js"
-    ]
+    "tags": [ "resources", "bootstrap-select", "js" ]
   },
   {
     "action": "copy",
@@ -85,10 +88,7 @@
       "node_modules/@crestapps/bootstrap-select/dist/css/bootstrap-select.min.css"
     ],
     "dest": "wwwroot/Vendor/CrestApps/bootstrap-select/",
-    "tags": [
-      "resources",
-      "css"
-    ]
+    "tags": [ "resources", "bootstrap-select", "css" ]
   },
   {
     "action": "min",

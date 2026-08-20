@@ -131,9 +131,13 @@
                         if (originsSeparatorIndex > -1)
                         {
                             originType = value.Substring(0, originsSeparatorIndex);
-                            allowedOrigins = value.Substring(originsSeparatorIndex + 1);
+                            allowedOrigins = value.Substring(originsSeparatorIndex + 1).Trim();
                         }
                     }
+
+                    var policyValue = originType == PermissionsPolicyOriginValue.Self && allowedOrigins.Length > 0
+                        ? originType + " " + allowedOrigins
+                        : originType;
 
                     <tr>
                         <td>@GetPermissionPolicyName(key)</td>

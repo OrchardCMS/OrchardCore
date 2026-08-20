@@ -79,6 +79,21 @@ If you want to specify custom paths to access the authentication related urls, y
   }
 ```
 
+## Audit Trail Integration
+
+By enabling the "Users Audit Trail" feature within this module, user events such as user creation, updating, or deletion are logged in Admin > Tools > Audit Trail. By default, the event stores the user's name and ID beyond the common Audit Trail data.
+
+It's also possible to include a partial JSON snapshot of the `User` object. To prevent storing particularly sensitive data, this functionality is limited out of the box. You have to go to Admin > Settings > Security > User Audit Trail and select which properties or custom user settings should be stored. The following options are available:
+
+- Store: Stores the value of the property as a string.
+- ErasingRedactor: Stores an empty string instead of the value. This is to indicate that the property exists for the `User` object in question.
+- PartialAsteriskRedactor: Stores the value as a string, but the middle characters are redacted. For example, `SampleUser` becomes `S********r`.
+- HmacRedactor: Uses "HMAC SHA-256" to encode the data before storing it, as a hash or fingerprint. This redactor is only available when both `HmacRedactorOptions.Key` and `HmacRedactorOptions.KeyId` are configured. For security reasons, these values should be unique per tenant. For the options to be loaded, you need to bind the settings manually.
+
+You can also create your own redactor simply by adding a singleton [`Redactor`](https://learn.microsoft.com/dotnet/api/microsoft.extensions.compliance.redaction.redactor) service.
+
+Note that when a user is deleted, all `User` snapshots are cleared out from existing Audit Trail events to comply with regulations about personal information retention.
+
 ## Recipe Configuration
 
 User module settings can be configured using the `Settings` recipe step:
@@ -93,6 +108,8 @@ User module settings can be configured using the `Settings` recipe step:
       "LoginSettings": {
         "UseSiteTheme": false,
         "DisableLocalLogin": false,
+        "AllowRememberMe": true,
+        "UsePersistentAuthenticationCookie": false,
         "AllowChangingUsername": false,
         "AllowChangingEmail": false,
         "AllowChangingPhoneNumber": true
@@ -106,6 +123,8 @@ User module settings can be configured using the `Settings` recipe step:
 |----------------------------|---------|-----------------------------------------------------------------------|
 | `UseSiteTheme`             | Boolean | Whether to use the site theme for the login page.                     |
 | `DisableLocalLogin`        | Boolean | Whether to disable local username/password login.                     |
+| `AllowRememberMe`          | Boolean | Whether to show the **Remember me** option on the login form. Default: `true`. When disabled, the `UsePersistentAuthenticationCookie` setting controls all local and external sign-ins. |
+| `UsePersistentAuthenticationCookie` | Boolean | Whether authentication cookies persist across browser sessions. When `AllowRememberMe` is enabled, this is the default value of the **Remember me** option. Default: `false`. |
 | `AllowChangingUsername`    | Boolean | Whether to allow users to change their username.                      |
 | `AllowChangingEmail`       | Boolean | Whether to allow users to change their email address.                 |
 | `AllowChangingPhoneNumber` | Boolean | Whether to allow users to change their phone number. Default: `true`. |
@@ -229,6 +248,33 @@ User module settings can be configured using the `Settings` recipe step:
         "Body": "Your verification code is {{ Code }}"
       }
     }
+  ]
+}
+```
+
+## Commands
+
+The Users module registers the `createUser` command, which you can run from a recipe's [`command` step](../Recipes/README.md#command).
+
+```text
+createUser /UserName:<username> /Password:<password> /Email:<email> /PhoneNumber:<phonenumber> /Roles:{rolename,rolename,...}
+```
+
+| Switch        | Description                                                                        |
+|---------------|-----------------------------------------------------------------------------------|
+| `UserName`    | The username of the new user.                                                     |
+| `Password`    | The password of the new user. It has to satisfy the configured password rules.    |
+| `Email`       | The email address of the new user, which is marked as confirmed on creation.      |
+| `PhoneNumber` | The phone number of the new user. Optional.                                       |
+| `Roles`       | A comma-separated list of the roles to assign to the user. Optional.              |
+
+For example, to create an administrator during setup from a recipe:
+
+```json
+{
+  "name": "command",
+  "Commands": [
+    "createUser /UserName:admin /Password:Password1! /Email:admin@example.com /Roles:Administrator"
   ]
 }
 ```

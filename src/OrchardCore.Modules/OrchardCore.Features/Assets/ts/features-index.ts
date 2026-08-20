@@ -176,6 +176,12 @@ badgeShowMoreButtons.forEach((button) =>
 
         transitiveDependencies.classList.toggle("d-none");
         button.classList.toggle("d-none");
+
+        const tooltip = bootstrap.Tooltip.getInstance(button);
+
+        if (tooltip) {
+            tooltip.dispose();
+        }
     }),
 );
 

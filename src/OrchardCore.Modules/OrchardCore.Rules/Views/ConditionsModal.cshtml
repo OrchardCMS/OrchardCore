@@ -3,7 +3,7 @@
     var thumbnails = (Dictionary<string, dynamic>)Model.Thumbnails;
 }
 
-<div class="modal fade" id="modalConditions" tabindex="-1" role="dialog" aria-labelledby="available-rules-title" aria-hidden="true">
+<div class="modal fade" id="modalConditions" tabindex="-1" role="dialog" aria-labelledby="available-rules-title" aria-hidden="true" data-list-management data-client-side-search="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -18,7 +18,7 @@
                     <div class="row row-cols-1 row-cols-md-2 g-2">
                         @foreach (var thumbnail in thumbnails.OrderBy(t => t.Key))
                         {
-                            <div class="col item">
+                            <div class="col item" data-filter-value="@thumbnail.Key">
                                 @await DisplayAsync(thumbnail.Value)
                             </div>
                         }

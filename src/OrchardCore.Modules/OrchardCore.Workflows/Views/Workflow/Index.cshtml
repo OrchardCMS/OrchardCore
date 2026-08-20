@@ -6,6 +6,7 @@
     int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
     int endIndex = startIndex + Model.Workflows.Count - 1;
 }
+<style asp-name="bootstrap-select" at="Head"></style>
 <script asp-name="bootstrap-select" at="Foot"></script>
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["{0} Instances", Model.WorkflowType.Name])</h1></zone>
@@ -39,7 +40,7 @@
                                     <label id="selected-items" class="text-muted" for="select-all"></label>
                                 </div>
                             </div>
-                            <div class="col-2 mb-1" style="display:none" id="actions">
+                            <div class="col-2 mb-1 d-none" id="actions">
                                 <div class="dropdown float-end mt-1">
                                     <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         @T["Actions"]

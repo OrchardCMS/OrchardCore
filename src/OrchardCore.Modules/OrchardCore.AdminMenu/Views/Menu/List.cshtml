@@ -11,7 +11,7 @@
 <zone Name="Title"><h1>@RenderTitleSegments(T["Admin Menus"])</h1></zone>
 
 @* the form is necessary to generate an antiforgery token for the delete and toggle actions *@
-<form asp-action="List">
+<form asp-action="List" data-list-management data-selected-label="@T["selected"]">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
@@ -46,7 +46,7 @@
                         </div>
                     </div>
                     <div class="col col-md-auto text-end">
-                        <div class="dropdown" style="display:none" id="actions">
+                        <div class="dropdown d-none" id="actions">
                             <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 @T["Actions"]
                             </button>

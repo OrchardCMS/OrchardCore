@@ -1,6 +1,7 @@
 @model OrchardCore.Queries.Sql.ViewModels.AdminQueryViewModel
 @using OrchardCore.ContentManagement
 @using OrchardCore.Infrastructure
+
 @inject IContentManager ContentManager
 
 @{
@@ -27,9 +28,6 @@
 }
 
 <style asp-name="codemirror"></style>
-<script asp-name="codemirror" at="Foot"></script>
-<script asp-name="codemirror-mode-javascript" at="Foot"></script>
-<script asp-name="codemirror-mode-sql" at="Foot"></script>
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["SQL Query"])</h1></zone>
 

@@ -13,6 +13,7 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(title)</h1></zone>
 
+<style asp-name="bootstrap-select" at="Head"></style>
 <script asp-name="bootstrap-select" at="Foot"></script>
 
 <form autocomplete="off" class="position-sticky action-bar">
@@ -50,27 +51,27 @@
     <input type="submit" name="submit.BulkAction" class="d-none" />
     <ul class="list-group with-checkbox mb-3">
         <li class="list-group-item text-bg-theme">
-            <div class="row gx-3">
+                <div class="row gx-3 align-items-center">
                 <div class="col">
                     @{
                         var totalFeatures = Model.Features.Count();
                     }
-                    <span id="features-summary"
-                          data-summary-text="@T["Showing {0} of {1} features", "__VISIBLE__", "__TOTAL__"]"
-                          data-total-count="@totalFeatures">
+                    <span id="list-summary"
+                         data-summary-text="@T["Showing {0} of {1} features", "__VISIBLE__", "__TOTAL__"]"
+                         data-total-count="@totalFeatures">
                         @T["Showing {0} of {1} features", totalFeatures, totalFeatures]
                     </span>
                 </div>
                 <div class="col col-md-auto text-end">
                     <div class="btn-group filter">
-                        <select id="visibility-filter" class="selectpicker show-tick nosubmit me-2" multiple data-header="@T["Filter by visibility"]" data-selected-text-format="static" data-width="fit" title="@T["Visibility"]" data-style="btn-sm">
-                            <option value="on-demand" selected>@T["Hide on demand"]</option>
-                            <option value="always-enabled" selected>@T["Hide always enabled"]</option>
+                        <select id="visibility-filter" class="selectpicker show-tick nosubmit me-2" multiple data-list-filter data-header="@T["Filter by visibility"]" data-selected-text-format="static" data-width="fit" title="@T["Visibility"]" data-style="btn-sm">
+                            <option value="true" data-list-filter-attribute="data-is-on-demand" data-list-filter-mode="exclude" selected>@T["Hide on demand"]</option>
+                            <option value="true" data-list-filter-attribute="data-is-always-enabled" data-list-filter-mode="exclude" selected>@T["Hide always enabled"]</option>
                         </select>
-                        <select id="status-filter" class="selectpicker show-tick nosubmit" data-header="@T["Filter by status"]" data-selected-text-format="static" data-width="fit" title="@T["Status"]" data-style="btn-sm">
-                            <option value="any" selected>@T["Any status"]</option>
-                            <option value="enabled">@T["Enabled only"]</option>
-                            <option value="disabled">@T["Disabled only"]</option>
+                        <select id="status-filter" class="selectpicker show-tick nosubmit" data-list-filter data-list-filter-attribute="data-is-enabled" data-header="@T["Filter by status"]" data-selected-text-format="static" data-width="fit" title="@T["Status"]" data-style="btn-sm">
+                            <option value="" selected>@T["Any status"]</option>
+                            <option value="true">@T["Enabled only"]</option>
+                            <option value="false">@T["Disabled only"]</option>
                         </select>
                     </div>
                 </div>
@@ -79,20 +80,21 @@
     </ul>
     @{
         var featureGroups = Model.Features.GroupBy(f => f.Descriptor.Category).OrderBy(o => o.Key).ToArray();
-        foreach (var featureGroup in featureGroups)
+        for (var i = 0; i < featureGroups.Length; i++)
         {
+            var featureGroup = featureGroups[i];
             var categoryName = featureGroup.FirstOrDefault()?.Descriptor.Category ?? T["Uncategorized"].Value;
             var features = featureGroup.OrderBy(f => f.Descriptor.Name);
             var categoryCheckboxId = Html.GenerateIdFromName($"select-all-{categoryName}");
 
-            <div class="feature-group">
-                <h4 class="mb-1 mt-3">@categoryName</h4>
+            <div class="feature-group list-management-group@(i < featureGroups.Length - 1 ? " mb-3" : "")">
+                <h3 class="mb-2">@categoryName</h3>
                 <ul class="list-group with-checkbox">
-                    <li class="list-group-item text-bg-theme feature-group-toggle-container">
+                    <li class="list-group-item text-bg-theme list-group-select-all-container">
                         <div class="form-check">
-                            <input type="checkbox" class="form-check-input feature-group-select-all" id="@categoryCheckboxId">
-                            <label class="form-check-label feature-group-select-all-label" for="@categoryCheckboxId" data-select-all-text="@T["Select all {0} features grouped under {1} category", "__COUNT__", categoryName]">
-                                <span class="feature-group-select-all-text">@T["Select all {0} features grouped under {1} category", 0, categoryName]</span>
+                            <input type="checkbox" class="form-check-input list-group-select-all" id="@categoryCheckboxId">
+                            <label class="form-check-label list-group-select-all-label" for="@categoryCheckboxId" data-select-all-text="@T["Select all {0} features grouped under {1} category", "__COUNT__", categoryName]">
+                                <span class="list-group-select-all-text">@T["Select all {0} features grouped under {1} category", 0, categoryName]</span>
                             </label>
                         </div>
                     </li>
@@ -111,23 +113,13 @@
                         var dependencies = (from d in feature.FeatureDependencies
                                             select (from f in Model.Features where f.Descriptor.Id == d.Id select f).SingleOrDefault()).Where(f => f != null).OrderBy(f => f.Descriptor.Name);
 
-                        var dependenciesNames = string.Join(" ", dependencies.Select(d => d.Descriptor.Name));
-
                         var missingDependencies = feature.FeatureDependencies
                             .Where(d => !Model.Features.Any(f => f.Descriptor.Id == d.Id));
                         var showDisable = !feature.Descriptor.EnabledByDependencyOnly && !isAlwaysEnabled && categoryName != "Core" && featureName != Application.ModuleName;
                         var showEnable = !feature.Descriptor.EnabledByDependencyOnly && !missingDependencies.Any() && featureId != "OrchardCore.Setup" && featureId != "OrchardCore.AutoSetup";
-                        var featureSearchText = string.Join(" ", [
-                            categoryName,
-                            featureName,
-                            featureId,
-                            feature.Descriptor.Description ?? string.Empty,
-                            dependenciesNames,
-                            string.Join(" ", missingDependencies.Select(d => d.Id)),
-                        ]);
 
                         <li class="list-group-item"
-                            data-search-text="@featureSearchText"
+                            data-filter-value="@featureName @featureId @feature.Descriptor.Description"
                             data-is-on-demand="@feature.Descriptor.EnabledByDependencyOnly.ToString().ToLowerInvariant()"
                             data-is-always-enabled="@isAlwaysEnabled.ToString().ToLowerInvariant()"
                             data-is-enabled="@feature.IsEnabled.ToString().ToLowerInvariant()">
@@ -153,14 +145,18 @@
                                             <div class="d-inline direct-dependencies">
                                                 @foreach (var dependencyId in feature.Descriptor.Dependencies)
                                                 {
-                                                    var dependencyName = Model.Features
+                                                    var dependency = Model.Features
                                                         .Where(f => f.Descriptor.Id == dependencyId)
                                                         .OrderBy(f => f.Descriptor.Name)
-                                                        .Select(f => f.Descriptor.Name)
-                                                        .FirstOrDefault() ?? string.Empty;
+                                                        .FirstOrDefault();
+                                                        
+                                                    if (dependency == null)
+                                                    {
+                                                        continue;
+                                                    }
 
-                                                    <span class="badge ta-badge fw-normal">
-                                                        @dependencyName
+                                                    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip"  data-bs-title="@dependency.Descriptor.Description">
+                                                        @dependency.Descriptor.Name
                                                     </span>
                                                 }
                                             </div>
@@ -170,7 +166,7 @@
                                                     <span class="d-none d-md-inline fw-light">|</span>
                                                     @foreach (var d in dependencies.Where(d => !feature.Descriptor.Dependencies.Contains(d.Descriptor.Id)))
                                                     {
-                                                        <span class="badge ta-badge fw-normal">
+                                                        <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" data-bs-title="@d.Descriptor.Description">
                                                             @(string.IsNullOrEmpty(d.Descriptor.Name) ? d.Descriptor.Id : d.Descriptor.Name)
                                                         </span>
                                                     }
@@ -188,7 +184,7 @@
                                             @foreach (var d in missingDependencies)
                                             {
                                                 <span class="badge text-bg-warning fw-normal">
-                                                    @d
+                                                    @d.Name
                                                 </span>
                                             }
                                         </div>

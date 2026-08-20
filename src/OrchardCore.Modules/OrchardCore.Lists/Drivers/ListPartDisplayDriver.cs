@@ -1,20 +1,15 @@
 using Microsoft.AspNetCore.Http;
-using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.ContentManagement.Display.ViewModels;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Records;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Lists.Indexes;
 using OrchardCore.Lists.Models;
 using OrchardCore.Lists.Services;
 using OrchardCore.Lists.ViewModels;
 using OrchardCore.Navigation;
-using YesSql;
 using ISession = YesSql.ISession;
 
 namespace OrchardCore.Lists.Drivers;
@@ -24,24 +19,18 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IContainerService _containerService;
     private readonly IUpdateModelAccessor _updateModelAccessor;
-    private readonly ISession _session;
     private readonly IShapeFactory _shapeFactory;
-    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public ListPartDisplayDriver(
         IContentDefinitionManager contentDefinitionManager,
         IContainerService containerService,
         IUpdateModelAccessor updateModelAccessor,
-        ISession session,
-        IShapeFactory shapeFactory,
-        IHttpContextAccessor httpContextAccessor)
+        IShapeFactory shapeFactory)
     {
         _contentDefinitionManager = contentDefinitionManager;
         _containerService = containerService;
         _updateModelAccessor = updateModelAccessor;
-        _session = session;
         _shapeFactory = shapeFactory;
-        _httpContextAccessor = httpContextAccessor;
     }
 
     public override IDisplayResult Edit(ListPart part, BuildPartEditorContext context)
@@ -64,7 +53,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
             InitializeDisplayListPartNavigationAdminShape(listPart, context, settings),
             InitializeDisplayListPartDetailAdminSearchPanelShape(),
             InitializeDisplayListPartHeaderAdminShape(listPart, settings),
-            InitializeDisplayListPartSummaryAdmin(listPart)
+            InitializeDisplayListPartSummaryAdminShape(listPart)
         );
     }
 
@@ -89,13 +78,23 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
             model.ContainerContentTypeDefinition = context.TypePartDefinition.ContentTypeDefinition;
         })
         .Location("Content:1.5")
-        .RenderWhen(() => Task.FromResult(!context.IsNew));
+        .RenderWhen(static (context) => Task.FromResult(!context.IsNew), context);
     }
 
-    private ShapeResult InitializeDisplayListPartSummaryAdmin(ListPart listPart)
+    private ShapeResult InitializeDisplayListPartSummaryAdminShape(ListPart listPart)
     {
-        return Initialize<ContentItemViewModel>("ListPartSummaryAdmin", model => model.ContentItem = listPart.ContentItem)
-            .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:4");
+        return Initialize<ListPartSummaryAdminViewModel>("ListPartSummaryAdmin", async model =>
+        {
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(listPart.ContentItem.ContentType);
+
+            var listPartSettings = contentTypeDefinition.Parts
+                .FirstOrDefault(part => part.Name == nameof(ListPart))
+                ?.GetSettings<ListPartSettings>();
+
+            model.ContentItem = listPart.ContentItem;
+            model.ContainedContentTypes = listPartSettings?.ContainedContentTypes ?? Array.Empty<string>();
+        })
+        .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:4");
     }
 
     private ShapeResult InitializeDisplayListPartHeaderAdminShape(ListPart listPart, ListPartSettings settings)
@@ -106,7 +105,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
             model.ContainedContentTypeDefinitions = (await GetContainedContentTypesAsync(settings)).ToArray();
             model.EnableOrdering = settings.EnableOrdering;
         }).Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:1")
-        .RenderWhen(() => Task.FromResult(settings.ShowHeader));
+        .RenderWhen(static (settings) => Task.FromResult(settings.ShowHeader), settings);
     }
 
     private ShapeResult InitializeDisplayListPartNavigationAdminShape(ListPart listPart, BuildPartDisplayContext context, ListPartSettings settings)
@@ -161,9 +160,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
                     pager,
                     containedItemOptions)).ToArray();
 
-                var query = BuildTotalItemCountQuery(listPart.ContentItem.ContentItemId, containedItemOptions);
-
-                var totalItemCount = await query.CountAsync();
+                var totalItemCount = await _containerService.GetItemCountAsync(listPart.ContentItem.ContentItemId, containedItemOptions);
 
                 model.Pager = await _shapeFactory.PagerAsync(pager, totalItemCount);
             }
@@ -205,8 +202,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
                     containedItemOptions);
 
                 containedItemOptions.Status = ContentsStatus.Published;
-                var query = BuildTotalItemCountQuery(listPart.ContentItem.ContentItemId, containedItemOptions);
-                var totalItemCount = await query.CountAsync();
+                var totalItemCount = await _containerService.GetItemCountAsync(listPart.ContentItem.ContentItemId, containedItemOptions);
 
                 model.Pager = await _shapeFactory.PagerAsync(pager, totalItemCount);
             }
@@ -224,49 +220,6 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
             }
         })
         .Location(OrchardCoreConstants.DisplayType.Detail, "Content:10");
-    }
-
-    /// <summary>
-    /// Builds a query that retrieves content items associated with a specified list content item ID, filtered according
-    /// to the provided options.
-    /// </summary>
-    private IQuery<ContentItem> BuildTotalItemCountQuery(string listContentItemId, ContainedItemOptions options)
-    {
-        IQuery<ContentItem> query = _session.Query<ContentItem>()
-            .With<ContainedPartIndex>(x => x.ListContentItemId == listContentItemId);
-
-        if (options.Status == ContentsStatus.Published)
-        {
-            query = query.With<ContentItemIndex>(x => x.Published);
-        }
-        else if (options.Status == ContentsStatus.Latest)
-        {
-            query = query.With<ContentItemIndex>(x => x.Latest);
-        }
-        else if (options.Status == ContentsStatus.Draft)
-        {
-            query = query.With<ContentItemIndex>(x => x.Latest && !x.Published);
-        }
-        else if (options.Status == ContentsStatus.Owner)
-        {
-            var currentUserName = _httpContextAccessor.HttpContext?.User?.Identity?.Name;
-
-            if (!string.IsNullOrEmpty(currentUserName))
-            {
-                query = query.With<ContentItemIndex>(x => x.Latest && x.Author == currentUserName);
-            }
-            else
-            {
-                query = query.With<ContentItemIndex>(x => x.Latest);
-            }
-        }
-
-        if (!string.IsNullOrWhiteSpace(options.DisplayText))
-        {
-            query = query.With<ContentItemIndex>(x => x.DisplayText.Contains(options.DisplayText));
-        }
-
-        return query;
     }
 
     private static async Task<PagerSlim> GetPagerSlimAsync(BuildPartDisplayContext context)

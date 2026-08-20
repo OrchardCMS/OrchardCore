@@ -33,36 +33,40 @@ public sealed class LuceneQueryDisplayDriver : DisplayDriver<Query>
         }
 
         return Combine(
-            Dynamic("LuceneQuery_SummaryAdmin", model => { model.Query = query; })
+            Dynamic("LuceneQuery_SummaryAdmin", static (model, query) => { model.Query = query; }, query)
                 .Location("Content:5"),
-            Dynamic("LuceneQuery_Buttons_SummaryAdmin", model => { model.Query = query; })
+            Dynamic("LuceneQuery_Buttons_SummaryAdmin", static (model, query) => { model.Query = query; }, query)
                 .Location("Actions:2")
         );
     }
 
-    public override IDisplayResult Edit(Query query, BuildEditorContext context)
+    public override async Task<IDisplayResult> EditAsync(Query query, BuildEditorContext context)
     {
         if (query.Source != LuceneQuerySource.SourceName)
         {
             return null;
         }
 
+        // Create model object here, to make sure that TryUpdateModelAsync work on a specific object type, not over a proxied one
+        var viewModel = new LuceneQueryViewModel();
+        if (query.TryGet<LuceneQueryMetadata>(out var metadata))
+        {
+            viewModel.Query = metadata.Template;
+            viewModel.Index = metadata.Index;
+        }
+
+        // Extract query from the query string if we come from the main query editor.
+        if (string.IsNullOrEmpty(viewModel.Query))
+        {
+            await context.Updater.TryUpdateModelAsync(viewModel, string.Empty, m => m.Query);
+        }
+
         return Initialize<LuceneQueryViewModel>("LuceneQuery_Edit", async model =>
         {
-            if (query.TryGet<LuceneQueryMetadata>(out var metadata))
-            {
-                model.Query = metadata.Template;
-                model.Index = metadata.Index;
-            }
-
-            model.ReturnContentItems = query.ReturnContentItems;
+            model.Query = viewModel.Query;
+            model.Index = viewModel.Index;
             model.Indexes = (await _indexStore.GetByProviderAsync(LuceneConstants.ProviderName)).Select(x => new SelectListItem(x.Name, x.Name)).ToArray();
-
-            // Extract query from the query string if we come from the main query editor.
-            if (string.IsNullOrEmpty(model.Query))
-            {
-                await context.Updater.TryUpdateModelAsync(model, string.Empty, m => m.Query);
-            }
+            model.ReturnContentItems = query.ReturnContentItems;
         }).Location("Content:5");
     }
 
@@ -96,6 +100,6 @@ public sealed class LuceneQueryDisplayDriver : DisplayDriver<Query>
             Index = viewModel.Index,
         });
 
-        return Edit(query, context);
+        return await EditAsync(query, context);
     }
 }

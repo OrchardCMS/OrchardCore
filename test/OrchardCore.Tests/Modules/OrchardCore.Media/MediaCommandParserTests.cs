@@ -11,7 +11,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media;
 
 public sealed class MediaCommandParserTests
 {
-    private static readonly int[] _supportedSizes = [16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048];
+    private static readonly int[] s_supportedSizes = [16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048];
 
     private static MediaCommandParser CreateParser(
         bool validateToken = false,
@@ -28,7 +28,7 @@ public sealed class MediaCommandParserTests
         var mediaOptions = Options.Create(new MediaOptions
         {
             UseTokenizedQueryString = useTokenizedQueryString,
-            SupportedSizes = supportedSizes ?? _supportedSizes,
+            SupportedSizes = supportedSizes ?? s_supportedSizes,
         });
 
         return new MediaCommandParser(tokenServiceMock.Object, mediaOptions);

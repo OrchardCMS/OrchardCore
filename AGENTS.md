@@ -15,7 +15,7 @@ Orchard Core is an open-source, modular, multi-tenant application framework and 
 ## Prerequisites
 
 - **.NET SDK**: Version 10.0+ (see `global.json` for exact version requirements)
-- **Node.js**: Version 22.x (for asset compilation)
+- **Node.js**: Version 24.x LTS (for asset compilation)
 - **Yarn**: Version 4.x (package manager for frontend assets)
 
 ## Building the Project
@@ -170,6 +170,7 @@ The following skills are available in `.agents/skills/` for guided workflows:
 | `orchardcore-unit-test` | Write & run tests | xUnit, SiteContext integration, Moq, Playwright functional |
 | `orchardcore-docs-writer` | Author docs | MkDocs pages, module README, nav, admonitions, redirects |
 | `orchardcore-tester` | Browser-based testing | Testing features via Playwright automation |
+| `orchardcore-nswag-regenerate` | Regenerate NSwag API clients | Updating `Services/OpenApiClient.cs`/`OpenApiClient.ts`, noisy NSwag regeneration diffs |
 
 These skills provide step-by-step guidance, code templates, and references for common tasks.
 

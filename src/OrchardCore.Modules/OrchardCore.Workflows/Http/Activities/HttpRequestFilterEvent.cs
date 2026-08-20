@@ -79,14 +79,10 @@ public class HttpRequestFilterEvent : EventActivity
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Matched"]);
-    }
+        => Outcome(S["Matched"]);
 
     public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes("Matched");
-    }
+        => Outcome("Matched");
 
     private void SetRouteValue<T>(string name, T value)
     {

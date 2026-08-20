@@ -180,16 +180,16 @@ public class RedisLock : IDistributedLock
         }
     }
 
-    private static readonly double _baseDelay = 100;
-    private static readonly double _maxDelay = 10000;
+    private static readonly double s_baseDelay = 100;
+    private static readonly double s_maxDelay = 10000;
 
     private static TimeSpan GetDelay(double retries)
     {
-        var delay = _baseDelay
+        var delay = s_baseDelay
             * (1.0 + ((Math.Pow(1.8, retries - 1.0) - 1.0)
                 * (0.6 + new Random().NextDouble() * 0.4)));
 
-        return TimeSpan.FromMilliseconds(Math.Min(delay, _maxDelay));
+        return TimeSpan.FromMilliseconds(Math.Min(delay, s_maxDelay));
 
         // 2 examples with 10 retries
         // --------------------------

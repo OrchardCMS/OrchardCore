@@ -9,11 +9,12 @@
     int endIndex = startIndex + Model.ShellSettingsEntries.Count - 1;
 }
 
+<style asp-name="bootstrap-select" at="Head"></style>
 <script asp-name="bootstrap-select" at="Foot"></script>
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Tenants"])</h1></zone>
 
-<form asp-action="Index" method="post" class="no-multisubmit">
+<form asp-action="Index" method="post" class="no-multisubmit" data-list-management data-selected-label="@T["selected"]">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
     <input name="BulkAction" type="hidden" />
@@ -45,7 +46,7 @@
                     </div>
                 </div>
                 <div class="col-auto">
-                    <div class="dropdown" style="display:none" id="actions">
+                    <div class="dropdown d-none" id="actions">
                         <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             @T["Actions"]
                         </button>

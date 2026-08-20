@@ -17,7 +17,7 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
 {
     private const char PathSeparator = '/';
 
-    private static readonly ClaimsPrincipal _anonymous = new ClaimsPrincipal(new ClaimsIdentity());
+    private static readonly ClaimsPrincipal s_anonymous = new ClaimsPrincipal(new ClaimsIdentity());
 
     private readonly IServiceProvider _serviceProvider;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -65,11 +65,9 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
             return;
         }
 
-        path = Uri.UnescapeDataString(path);
+        path = await _fileStore.ResolveAuthorizedPathAsync(path);
 
-        path = _fileStore.NormalizePath(path);
-
-        // Permissions are only set for the root and the first folder tier. Only for users and
+        // Permissions are only set for the root
         // media fields we will check sub folders too.
         var i = path.IndexOf(PathSeparator);
         var folderPath = i >= 0 ? path[..i] : path;
@@ -90,7 +88,7 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
 
         if (IsAuthorizedFolder("/", path))
         {
-            await AuthorizeAsync(context, requirement, MediaPermissions.ViewRootMedia);
+            await AuthorizeAsync(context, requirement, await GetViewRootMediaPermissionAsync());
 
             return;
         }
@@ -121,6 +119,35 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
             // Not a secure file
             context.Succeed(requirement);
         }
+    }
+
+    /// <summary>
+    /// Returns the <c>ViewRootMediaContent</c> permission as built by <see cref="SecureMediaPermissions"/>.
+    /// </summary>
+    /// <remarks>
+    /// The provider constructs its own instance whose <c>ImpliedBy</c> list carries every first-level
+    /// folder permission, so that holding <c>ViewMediaContent_Alpha</c> implies root access. The static
+    /// <see cref="MediaPermissions.ViewRootMedia"/> instance is implied only by the global
+    /// <c>ViewMediaContent</c>, so authorizing against it makes a role with folder-scoped grants fail at
+    /// the root while the role editor shows it as allowed. Ask the provider for the instance it published
+    /// rather than assuming the two agree.
+    /// </remarks>
+    private async Task<Permission> GetViewRootMediaPermissionAsync()
+    {
+        var provider = _serviceProvider.GetServices<IPermissionProvider>()
+            .OfType<SecureMediaPermissions>()
+            .FirstOrDefault();
+
+        if (provider is null)
+        {
+            return MediaPermissions.ViewRootMedia;
+        }
+
+        // Cached by the provider, so this does not re-enumerate the media folders on every check.
+        var permissions = await provider.GetPermissionsAsync();
+
+        return permissions.FirstOrDefault(permission => permission.Name == MediaPermissions.ViewRootMedia.Name)
+            ?? MediaPermissions.ViewRootMedia;
     }
 
     private async Task AuthorizeAttachedMediaFieldsFolderAsync(AuthorizationHandlerContext context, PermissionRequirement requirement, string path)
@@ -199,7 +226,7 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
         {
             // If anonymous access is also possible, we want to use default browser caching policies.
             // Otherwise we set a marker which causes a different caching policy being used.
-            if ((context.User.Identity?.IsAuthenticated ?? false) && !await authorizationService.AuthorizeAsync(_anonymous, permission, resource))
+            if ((context.User.Identity?.IsAuthenticated ?? false) && !await authorizationService.AuthorizeAsync(s_anonymous, permission, resource))
             {
                 _httpContextAccessor.HttpContext.MarkAsSecureMediaRequested();
             }

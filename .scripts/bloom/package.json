@@ -6,6 +6,11 @@
         "check": "vue-tsc --noEmit"
     },
     "dependencies": {
-        "monaco-editor": "0.52.2"
+        "@microsoft/signalr": "^8.0.0",
+        "axios": "^1.7.0",
+        "debug": "^4.3.4",
+        "mitt": "^3.0.0",
+        "monaco-editor": "0.52.2",
+        "oidc-client-ts": "^3.1.0"
     }
 }

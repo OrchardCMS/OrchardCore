@@ -15,7 +15,7 @@ else
 }
 
 @* the form is necessary to generate and antiforgery token for the delete action *@
-<form asp-action="@formAction">
+<form asp-action="@formAction" data-list-management data-selected-label="@T["selected"]">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input asp-for="Options.AdminTemplates" type="hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
@@ -50,7 +50,7 @@ else
                         </div>
                     </div>
                     <div class="col-auto">
-                        <div class="dropdown" style="display:none" id="actions">
+                        <div class="dropdown d-none" id="actions">
                             <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 @T["Actions"]
                             </button>

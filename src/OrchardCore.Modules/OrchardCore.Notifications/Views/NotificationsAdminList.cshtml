@@ -1,5 +1,6 @@
 @model ListNotificationsViewModel
 
+<div data-list-management data-selected-label="@T["selected"]">
 <!-- Hidden submit button do not remove -->
 <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
 <input type="submit" name="submit.BulkAction" class="visually-hidden" />
@@ -67,5 +68,8 @@
 
 @await DisplayAsync(Model.Pager)
 
+</div>
+
+<style asp-name="bootstrap-select" at="Head"></style>
 <script asp-name="bootstrap-select" at="Foot"></script>
 <script asp-src="~/OrchardCore.Notifications/Scripts/notifications-admin-list/notifications-admin-list.min.js" debug-src="~/OrchardCore.Notifications/Scripts/notifications-admin-list/notifications-admin-list.js" at="Foot" type="module"></script>
