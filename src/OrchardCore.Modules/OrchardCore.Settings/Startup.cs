@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Options;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Liquid;
@@ -55,6 +56,7 @@ public sealed class Startup : StartupBase
         services.AddDeployment<SiteSettingsDeploymentSource, SiteSettingsDeploymentStep, SiteSettingsDeploymentStepDriver>();
 
         services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentSiteNameProvider>();
+        services.AddSignalOptionsChangeTokenSource<ShapeRenderingOptions>();
 
         services.AddTransient<IPostConfigureOptions<ResourceOptions>, ResourceOptionsConfiguration>();
         services.AddTransient<IPostConfigureOptions<PagerOptions>, PagerOptionsConfiguration>();
