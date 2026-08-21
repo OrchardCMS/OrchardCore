@@ -35,6 +35,7 @@ public class CompositionStrategy : ICompositionStrategy
         var features = await _extensionManager.LoadFeaturesAsync(featureNames);
 
         var entries = new Dictionary<Type, IEnumerable<IFeatureInfo>>();
+        var alwaysComposedTypes = new HashSet<Type>();
 
         foreach (var feature in features)
         {
@@ -47,6 +48,11 @@ public class CompositionStrategy : ICompositionStrategy
 
             foreach (var exportedType in _typeFeatureProvider.GetTypesForFeature(feature))
             {
+                if (RequiredStartupAttribute.IsRequiredForType(exportedType))
+                {
+                    continue;
+                }
+
                 var requiredFeatures = RequireFeaturesAttribute.GetRequiredFeatureNamesForType(exportedType);
 
                 if (!requiredFeatures.All(x => featureNames.Contains(x)))
@@ -58,6 +64,38 @@ public class CompositionStrategy : ICompositionStrategy
                     ? featureDependencies.Append(feature).ToArray()
                     : [feature];
 
+            }
+        }
+
+        var allFeatures = _extensionManager.GetFeatures();
+        foreach (var feature in allFeatures)
+        {
+            foreach (var exportedType in _typeFeatureProvider.GetTypesForFeature(feature))
+            {
+                if (!RequiredStartupAttribute.IsRequiredForType(exportedType))
+                {
+                    continue;
+                }
+
+                var requiredFeatures = RequireFeaturesAttribute.GetRequiredFeatureNamesForType(exportedType);
+
+                if (!requiredFeatures.All(x => featureNames.Contains(x)))
+                {
+                    continue;
+                }
+
+                alwaysComposedTypes.Add(exportedType);
+            }
+        }
+
+        if (alwaysComposedTypes.Count > 0)
+        {
+            var applicationFeature = allFeatures.FirstOrDefault(feature => feature.Id == Application.DefaultFeatureId)
+                ?? throw new InvalidOperationException($"The '{Application.DefaultFeatureId}' feature is not registered.");
+
+            foreach (var exportedType in alwaysComposedTypes)
+            {
+                entries[exportedType] = [applicationFeature];
             }
         }
 
