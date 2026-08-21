@@ -12,10 +12,10 @@ using OrchardCore.Tests.Apis.Context;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Sms;
 
-public class SmsProviderOptionsMonitorTests
+public class TwilioOptionsMonitorTests
 {
     [Fact]
-    public async Task RequestUpdate_ShouldRefreshSmsProviderOptionsWithoutReleasingTenant()
+    public async Task RequestUpdate_ShouldRefreshTwilioOptionsWithoutReleasingTenant()
     {
         using var context = new SiteContext()
             .WithRecipe("SaaS");
@@ -39,7 +39,7 @@ public class SmsProviderOptionsMonitorTests
         {
             shellContextTicks = scope.ShellContext.UtcTicks;
 
-            Assert.False(scope.ServiceProvider.GetRequiredService<IOptionsMonitor<SmsProviderOptions>>().CurrentValue.Providers[TwilioSmsProvider.TechnicalName].IsEnabled);
+            Assert.False(scope.ServiceProvider.GetRequiredService<IOptionsMonitor<TwilioOptions>>().CurrentValue.IsEnabled);
 
             return Task.CompletedTask;
         });
@@ -76,6 +76,12 @@ public class SmsProviderOptionsMonitorTests
         await context.UsingTenantScopeAsync(async scope =>
         {
             Assert.Equal(shellContextTicks, scope.ShellContext.UtcTicks);
+
+            var twilioOptions = scope.ServiceProvider.GetRequiredService<IOptionsMonitor<TwilioOptions>>().CurrentValue;
+            Assert.True(twilioOptions.IsEnabled);
+            Assert.Equal("+15555555555", twilioOptions.PhoneNumber);
+            Assert.Equal("account-sid", twilioOptions.AccountSID);
+            Assert.Equal("auth-token", twilioOptions.AuthToken);
 
             var providerOptions = scope.ServiceProvider.GetRequiredService<IOptionsMonitor<SmsProviderOptions>>().CurrentValue;
             Assert.True(providerOptions.Providers[TwilioSmsProvider.TechnicalName].IsEnabled);
