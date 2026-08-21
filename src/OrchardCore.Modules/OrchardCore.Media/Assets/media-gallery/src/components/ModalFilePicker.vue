@@ -13,7 +13,7 @@
     <slot></slot>
     <ul class="tw:list-none tw:m-0 tw:p-0">
       <p-treeselect @update:modelValue="onFileChange" v-model="fileActionEntry.inputValue" :options="treeNode" :placeholder="t.SelectFile"
-        class="tw:md:w-80 tw:w-full" />
+        class="tw:md:w-80 tw:w-full" :unstyled="false" />
       <div class="tw:text-red-500 tw:mt-2">{{ errorMessage }}</div>
     </ul>
     <div class="tw:mt-3 tw:flex tw:flex-row tw:justify-end tw:gap-2">
