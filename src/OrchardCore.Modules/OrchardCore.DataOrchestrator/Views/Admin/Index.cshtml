@@ -1,0 +1,85 @@
+@model EtlPipelineListViewModel
+
+<zone Name="Title"><h1>@T["Data Pipelines"]</h1></zone>
+
+<form asp-action="Index" method="get" class="mb-3">
+    <div class="card text-bg-theme position-sticky action-bar">
+        <div class="card-body">
+            <div class="row gx-3">
+                <div class="col">
+                    <div class="has-search">
+                        <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
+                        <input class="form-control" name="q" value="@Model.Search" placeholder="@T["Search pipelines"]" type="search" autofocus />
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <a class="btn btn-secondary create" asp-action="Create">
+                        @T["Create Pipeline"]
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@if (Model.Pipelines.Count == 0)
+{
+    <ul class="list-group">
+        <li class="list-group-item">
+            <div class="alert alert-info mb-0" role="alert">
+                @if (string.IsNullOrWhiteSpace(Model.Search))
+                {
+                    @T["<strong>Nothing here!</strong> There are no data pipelines for the moment."]
+                }
+                else
+                {
+                    @T["<strong>No matches.</strong> No data pipelines matched your search."]
+                }
+            </div>
+        </li>
+    </ul>
+}
+else
+{
+    <ul class="list-group">
+        @foreach (var pipeline in Model.Pipelines)
+        {
+            <li class="list-group-item">
+                <div class="properties">
+                    <div class="float-end d-flex flex-wrap gap-2">
+                        <form asp-action="Execute" asp-route-id="@pipeline.Id" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-success btn-sm">@T["Run"]</button>
+                        </form>
+                        <a class="btn btn-secondary btn-sm" asp-action="Logs" asp-route-id="@pipeline.Id">@T["Logs"]</a>
+                        <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-id="@pipeline.Id">@T["Edit"]</a>
+                        <form asp-action="Delete" asp-route-id="@pipeline.Id" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('@T["Are you sure?"]')">@T["Delete"]</button>
+                        </form>
+                    </div>
+
+                    <a asp-action="Edit" asp-route-id="@pipeline.Id">@pipeline.Name</a>
+                    @if (!pipeline.IsEnabled)
+                    {
+                        <span class="badge text-danger"><i class="fa-solid fa-power-off" aria-hidden="true"></i> @T["Disabled"]</span>
+                    }
+                    else
+                    {
+                        <span class="badge ta-badge">@T["Enabled"]</span>
+                    }
+
+                    <div class="metadata">
+                        <span class="me-3"><strong>@T["Schedule:"]</strong> @(pipeline.Schedule ?? T["Manual"].Value)</span>
+                        <span><strong>@T["Last run:"]</strong> @(pipeline.LastRunUtc?.ToString("g") ?? T["Never"].Value)</span>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(pipeline.Description))
+                    {
+                        <div class="text-muted mt-1">@pipeline.Description</div>
+                    }
+                </div>
+            </li>
+        }
+    </ul>
+}

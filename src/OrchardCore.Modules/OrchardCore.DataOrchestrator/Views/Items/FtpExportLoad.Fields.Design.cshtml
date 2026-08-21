@@ -1,0 +1,10 @@
+@model EtlActivityViewModel<FtpExportLoad>
+
+<header>
+    <h4><i class="fa-solid fa-server"></i> @T["FTP / FTPS Export"]</h4>
+</header>
+@if (!string.IsNullOrEmpty(Model.Activity.Host))
+{
+    <div>@T["Host:"] @Model.Activity.Host</div>
+}
+<div>@T["Format:"] @Model.Activity.Format</div>

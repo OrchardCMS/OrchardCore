@@ -1,0 +1,37 @@
+@model JoinDataSetsTransformViewModel
+
+<div class="mb-3">
+    <label asp-for="JoinSourceActivityId" class="form-label">@T["Join Source"]</label>
+    <select asp-for="JoinSourceActivityId" asp-items="Model.AvailableJoinSources" class="form-select">
+        <option value="">@T["Select a source activity"]</option>
+    </select>
+    <span class="hint">@T["Choose the source activity that provides the right-side records for the join."]</span>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="LeftField" class="form-label">@T["Left Field"]</label>
+        <input asp-for="LeftField" class="form-control" />
+        <span class="hint">@T["Field from the current stream, e.g. `ContentItemId`."]</span>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label asp-for="RightField" class="form-label">@T["Right Field"]</label>
+        <input asp-for="RightField" class="form-control" />
+        <span class="hint">@T["Field from the selected join source to match against."]</span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="JoinType" class="form-label">@T["Join Type"]</label>
+        <select asp-for="JoinType" class="form-select">
+            <option value="@JoinDataSetsTransform.LeftJoin">@T["Left Join"]</option>
+            <option value="@JoinDataSetsTransform.InnerJoin">@T["Inner Join"]</option>
+        </select>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label asp-for="RightPrefix" class="form-label">@T["Right Prefix"]</label>
+        <input asp-for="RightPrefix" class="form-control" />
+        <span class="hint">@T["Prefix applied to joined fields to avoid collisions, e.g. `Author_`."]</span>
+    </div>
+</div>

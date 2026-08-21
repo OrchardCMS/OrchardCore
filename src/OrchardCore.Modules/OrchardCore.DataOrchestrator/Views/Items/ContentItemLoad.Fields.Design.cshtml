@@ -1,0 +1,9 @@
+@model EtlActivityViewModel<ContentItemLoad>
+
+<header>
+    <h4><i class="fa-solid fa-file-import"></i> @T["Content Item"]</h4>
+</header>
+@if (!string.IsNullOrEmpty(Model.Activity.ContentType))
+{
+    <span>@T["Type:"] @Model.Activity.ContentType</span>
+}
