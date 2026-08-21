@@ -27,6 +27,7 @@ const mockConnection = {
   }),
   invoke: vi.fn(() => Promise.resolve()),
   start: vi.fn(() => Promise.resolve()),
+  state: "Connected",
 };
 
 const mockApp = {
@@ -137,6 +138,38 @@ describe("SignalR", () => {
 
     expect(mockConnection.invoke).toHaveBeenNthCalledWith(1, "UnsubscribePath", "/Old");
     expect(mockConnection.invoke).toHaveBeenNthCalledWith(2, "SubscribePath", "/New");
+  });
+
+  it("does not invoke SubscribePath when the connection is not Connected (avoids the synchronous throw)", async () => {
+    setDirectory("/Images");
+    const { useSignalR } = await import("../SignalR");
+    useSignalR();
+
+    mockConnection.state = "Connecting";
+    mockConnection.invoke.mockClear();
+    onConnectSuccessCb?.({ url: "/hubs/media" });
+
+    expect(mockConnection.invoke).not.toHaveBeenCalled();
+
+    mockConnection.state = "Connected";
+  });
+
+  it("does not invoke UnsubscribePath/SubscribePath on folder change while reconnecting (issue: console spam)", async () => {
+    setDirectory("/Old");
+
+    const { useSignalR } = await import("../SignalR");
+    useSignalR();
+
+    // Simulate the automatic-reconnect window: the connection briefly leaves the
+    // Connected state while the user keeps navigating folders.
+    mockConnection.state = "Reconnecting";
+    mockConnection.invoke.mockClear();
+    setDirectory("/New");
+    await nextTick();
+
+    expect(mockConnection.invoke).not.toHaveBeenCalled();
+
+    mockConnection.state = "Connected";
   });
 
   it("MediaChanged callback calls loadDirectoryFiles", async () => {

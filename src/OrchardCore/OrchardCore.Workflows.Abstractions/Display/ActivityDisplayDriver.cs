@@ -19,8 +19,8 @@ public abstract class ActivityDisplayDriver<TActivity> : DisplayDriver<IActivity
     public override Task<IDisplayResult> DisplayAsync(TActivity activity, BuildDisplayContext context)
     {
         return CombineAsync(
-            Shape(s_thumbnailShapeType, new ActivityViewModel<TActivity>(activity)).Location("Thumbnail", "Content"),
-            Shape(s_designShapeType, new ActivityViewModel<TActivity>(activity)).Location("Design", "Content")
+            Factory(s_thumbnailShapeType, static (TActivity a) => new ActivityViewModel<TActivity>(a), activity).Location("Thumbnail", "Content"),
+            Factory(s_designShapeType, static (TActivity a) => new ActivityViewModel<TActivity>(a), activity).Location("Design", "Content")
         );
     }
 }

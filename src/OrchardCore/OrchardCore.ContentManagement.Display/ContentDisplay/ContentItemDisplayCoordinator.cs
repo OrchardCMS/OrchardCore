@@ -105,16 +105,17 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
             {
                 var shapeType = context.DisplayType != OrchardCoreConstants.DisplayType.Detail ? "ContentPart_" + context.DisplayType : "ContentPart";
 
-                var shapeResult = new ShapeResult(
+                var shapeResult = ShapeResult.Create(
                     shapeType,
-                    ctx => ctx.ShapeFactory.CreateAsync(
-                        shapeType,
+                    static (ctx, buildShapeType) => ctx.ShapeFactory.CreateAsync(
+                        buildShapeType,
                         static shapeContext =>
                             ValueTask.FromResult<IShape>(
                                 new ZoneHolding<IShapeFactory>(
                                     static factory => factory.CreateAsync("Zone"),
                                     shapeContext.ShapeFactory)),
-                        ctx));
+                        ctx),
+                    shapeType);
 
                 shapeResult.Differentiator(partName);
                 shapeResult.Name(partName);
@@ -375,7 +376,7 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
         var partName = typePartDefinition.Name;
         var isNamedPart = typePartDefinition.PartDefinition.IsReusable() && partName != partTypeName;
 
-        var typePartShapeResult = new ShapeResult(shapeType, _ => ValueTask.FromResult<IShape>(new ContentPartShapeViewModel()));
+        var typePartShapeResult = ShapeResult.Create(shapeType, static (_, _) => ValueTask.FromResult<IShape>(new ContentPartShapeViewModel()), shapeType);
         typePartShapeResult.Differentiator($"{contentType}-{partName}");
         typePartShapeResult.Name(partName);
         typePartShapeResult.Location($"Parts:{partPosition}");

@@ -24,12 +24,10 @@ public class ForkTask : TaskActivity<ForkTask>
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Forks.Select(x => Outcome(S[x]));
-    }
+        => Forks.SelectMany(f => Outcome(S[f]));
 
     public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        return Outcomes(Forks);
+        return Outcome(Forks);
     }
 }
