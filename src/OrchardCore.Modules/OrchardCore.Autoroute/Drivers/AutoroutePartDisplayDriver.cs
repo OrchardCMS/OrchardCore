@@ -45,24 +45,24 @@ public sealed class AutoroutePartDisplayDriver : ContentPartDisplayDriver<Autoro
 
     public override IDisplayResult Edit(AutoroutePart autoroutePart, BuildPartEditorContext context)
     {
-        return Initialize<AutoroutePartViewModel>("AutoroutePart_Edit", async model =>
+        return Initialize<AutoroutePartViewModel, AutoroutePartDisplayDriver, AutoroutePart, BuildPartEditorContext>("AutoroutePart_Edit", static async (model, driver, autoroutePart, context) =>
         {
             model.Path = autoroutePart.Path;
             model.AutoroutePart = autoroutePart;
             model.ContentItem = autoroutePart.ContentItem;
             model.SetHomepage = false;
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
+            var siteSettings = await driver._siteService.GetSiteSettingsAsync();
             var homeRoute = siteSettings.HomeRoute;
 
-            if (homeRoute != null && homeRoute.TryGetValue(_options.ContainedContentItemIdKey, out var containedContentItemId))
+            if (homeRoute != null && homeRoute.TryGetValue(driver._options.ContainedContentItemIdKey, out var containedContentItemId))
             {
                 if (string.Equals(autoroutePart.ContentItem.ContentItemId, containedContentItemId.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
                     model.IsHomepage = true;
                 }
             }
-            else if (string.Equals(autoroutePart.ContentItem.ContentItemId, homeRoute?[_options.ContentItemIdKey]?.ToString(), StringComparison.OrdinalIgnoreCase))
+            else if (string.Equals(autoroutePart.ContentItem.ContentItemId, homeRoute?[driver._options.ContentItemIdKey]?.ToString(), StringComparison.OrdinalIgnoreCase))
             {
                 model.IsHomepage = true;
             }
@@ -72,7 +72,7 @@ public sealed class AutoroutePartDisplayDriver : ContentPartDisplayDriver<Autoro
             model.RouteContainedItems = autoroutePart.RouteContainedItems;
 
             model.Settings = context.TypePartDefinition.GetSettings<AutoroutePartSettings>();
-        });
+        }, this, autoroutePart, context);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(AutoroutePart model, UpdatePartEditorContext context)

@@ -95,9 +95,7 @@ public class ForLoopTask : TaskActivity<ForLoopTask>
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Iterate"], S["Done"]);
-    }
+        => Outcome(S["Iterate"], S["Done"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -115,12 +113,14 @@ public class ForLoopTask : TaskActivity<ForLoopTask>
             workflowContext.LastResult = Index;
             workflowContext.Properties[LoopVariableName] = Index;
             Index += step;
-            return Outcomes("Iterate");
+
+            return Outcome("Iterate");
         }
         else
         {
             Index = from;
-            return Outcomes("Done");
+
+            return Outcome("Done");
         }
     }
 

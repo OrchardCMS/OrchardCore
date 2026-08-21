@@ -47,9 +47,7 @@ public class IfElseTask : TaskActivity<IfElseTask>
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["True"], S["False"]);
-    }
+        => Outcome(S["True"], S["False"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -60,6 +58,6 @@ public class IfElseTask : TaskActivity<IfElseTask>
             _ => throw new NotSupportedException($"The syntax {Syntax} isn't supported for IfElseTask.")
         };
 
-        return Outcomes(result ? "True" : "False");
+        return Outcome(result ? "True" : "False");
     }
 }

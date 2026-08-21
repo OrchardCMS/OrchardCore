@@ -21,6 +21,8 @@ public sealed class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
+        services.AddSignalOptionsChangeTokenSource<AzureEmailOptions>();
+
         services.AddTransient<IConfigureOptions<AzureEmailOptions>, AzureEmailOptionsConfiguration>();
 
         services.AddEmailProviderOptionsConfiguration<AzureEmailProviderOptionsConfigurations>()
