@@ -27,7 +27,6 @@ using OrchardCore.Sitemaps.Builders;
 
 namespace OrchardCore.ContentLocalization;
 
-[RequiredStartup]
 public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
@@ -44,11 +43,19 @@ public sealed class Startup : StartupBase
 
         services.AddPermissionProvider<Permissions>();
         services.AddScoped<IAuthorizationHandler, LocalizeContentAuthorizationHandler>();
-        services.AddScoped<IFeatureEventHandler, ContentLocalizationFeatureEventHandler>();
 
         services.AddScoped<IContentsAdminListFilter, LocalizationPartContentsAdminListFilter>();
         services.AddTransient<IContentsAdminListFilterProvider, LocalizationPartContentsAdminListFilterProvider>();
         services.AddDisplayDriver<ContentOptionsViewModel, LocalizationContentsAdminListDisplayDriver>();
+    }
+}
+
+[RequiredStartup]
+public sealed class RequiredStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IFeatureEventHandler, ContentLocalizationFeatureEventHandler>();
     }
 }
 
