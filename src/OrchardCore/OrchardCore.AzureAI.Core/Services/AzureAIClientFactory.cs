@@ -7,17 +7,20 @@ using OrchardCore.AzureAI.Models;
 
 namespace OrchardCore.AzureAI.Services;
 
-public class AzureAIClientFactory
+public sealed class AzureAIClientFactory : IDisposable
 {
-    private readonly AzureAISearchDefaultOptions _defaultOptions;
+    private readonly IOptionsMonitor<AzureAISearchDefaultOptions> _defaultOptions;
+    private readonly IDisposable _optionsChangeRegistration;
+    private readonly object _syncLock = new();
 
     private SearchIndexClient _searchIndexClient;
 
     private ConcurrentDictionary<string, SearchClient> _clients;
 
-    public AzureAIClientFactory(IOptions<AzureAISearchDefaultOptions> defaultOptions)
+    public AzureAIClientFactory(IOptionsMonitor<AzureAISearchDefaultOptions> defaultOptions)
     {
-        _defaultOptions = defaultOptions.Value;
+        _defaultOptions = defaultOptions;
+        _optionsChangeRegistration = _defaultOptions.OnChange((_, _) => ResetClients());
     }
 
     public SearchClient CreateSearchClient(string indexFullName)
@@ -25,26 +28,27 @@ public class AzureAIClientFactory
         ArgumentException.ThrowIfNullOrWhiteSpace(indexFullName, nameof(indexFullName));
 
         _clients ??= [];
+        var defaultOptions = _defaultOptions.CurrentValue;
 
         if (!_clients.TryGetValue(indexFullName, out var client))
         {
-            if (!_defaultOptions.ConfigurationExists())
+            if (!defaultOptions.ConfigurationExists())
             {
                 throw new Exception("Azure AI was not configured.");
             }
 
-            if (!Uri.TryCreate(_defaultOptions.Endpoint, UriKind.Absolute, out var endpoint))
+            if (!Uri.TryCreate(defaultOptions.Endpoint, UriKind.Absolute, out var endpoint))
             {
                 throw new Exception("The Endpoint provided to Azure AI Options contains invalid value.");
             }
 
-            if (_defaultOptions.AuthenticationType == AzureAIAuthenticationType.ApiKey && _defaultOptions.Credential != null)
+            if (defaultOptions.AuthenticationType == AzureAIAuthenticationType.ApiKey && defaultOptions.Credential != null)
             {
-                client = new SearchClient(endpoint, indexFullName, _defaultOptions.Credential);
+                client = new SearchClient(endpoint, indexFullName, defaultOptions.Credential);
             }
-            else if (_defaultOptions.AuthenticationType == AzureAIAuthenticationType.ManagedIdentity)
+            else if (defaultOptions.AuthenticationType == AzureAIAuthenticationType.ManagedIdentity)
             {
-                client = new SearchClient(endpoint, indexFullName, GetManagedIdentityCredential());
+                client = new SearchClient(endpoint, indexFullName, GetManagedIdentityCredential(defaultOptions));
             }
             else
             {
@@ -59,25 +63,27 @@ public class AzureAIClientFactory
 
     public SearchIndexClient CreateSearchIndexClient()
     {
+        var defaultOptions = _defaultOptions.CurrentValue;
+
         if (_searchIndexClient == null)
         {
-            if (!_defaultOptions.ConfigurationExists())
+            if (!defaultOptions.ConfigurationExists())
             {
                 throw new Exception("Azure AI was not configured.");
             }
 
-            if (!Uri.TryCreate(_defaultOptions.Endpoint, UriKind.Absolute, out var endpoint))
+            if (!Uri.TryCreate(defaultOptions.Endpoint, UriKind.Absolute, out var endpoint))
             {
                 throw new Exception("The Endpoint provided to Azure AI Options contains invalid value.");
             }
 
-            if (_defaultOptions.AuthenticationType == AzureAIAuthenticationType.ApiKey && _defaultOptions.Credential != null)
+            if (defaultOptions.AuthenticationType == AzureAIAuthenticationType.ApiKey && defaultOptions.Credential != null)
             {
-                _searchIndexClient = new SearchIndexClient(endpoint, _defaultOptions.Credential);
+                _searchIndexClient = new SearchIndexClient(endpoint, defaultOptions.Credential);
             }
-            else if (_defaultOptions.AuthenticationType == AzureAIAuthenticationType.ManagedIdentity)
+            else if (defaultOptions.AuthenticationType == AzureAIAuthenticationType.ManagedIdentity)
             {
-                _searchIndexClient = new SearchIndexClient(endpoint, GetManagedIdentityCredential());
+                _searchIndexClient = new SearchIndexClient(endpoint, GetManagedIdentityCredential(defaultOptions));
             }
             else
             {
@@ -88,8 +94,20 @@ public class AzureAIClientFactory
         return _searchIndexClient;
     }
 
-    private ManagedIdentityCredential GetManagedIdentityCredential()
-        => !string.IsNullOrEmpty(_defaultOptions.IdentityClientId)
-        ? new(ManagedIdentityId.FromUserAssignedClientId(_defaultOptions.IdentityClientId))
+    public void Dispose()
+        => _optionsChangeRegistration.Dispose();
+
+    private static ManagedIdentityCredential GetManagedIdentityCredential(AzureAISearchDefaultOptions defaultOptions)
+        => !string.IsNullOrEmpty(defaultOptions.IdentityClientId)
+        ? new(ManagedIdentityId.FromUserAssignedClientId(defaultOptions.IdentityClientId))
         : new(ManagedIdentityId.SystemAssigned);
+
+    private void ResetClients()
+    {
+        lock (_syncLock)
+        {
+            _clients = null;
+            _searchIndexClient = null;
+        }
+    }
 }
