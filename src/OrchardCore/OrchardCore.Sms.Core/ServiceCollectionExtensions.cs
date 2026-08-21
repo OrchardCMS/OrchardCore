@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Options;
 using OrchardCore.Sms.Services;
 
 namespace OrchardCore.Sms;
@@ -11,6 +12,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<ISmsService, SmsService>();
         services.AddScoped<ISmsProviderResolver, DefaultSmsProviderResolver>();
+        services.AddSignalOptionsChangeTokenSource<SmsProviderOptions>();
         services.AddTransient<IPostConfigureOptions<SmsSettings>, SmsSettingsConfiguration>();
 
         return services;
