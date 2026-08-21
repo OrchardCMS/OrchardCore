@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Admin.Models;
 using OrchardCore.ContentLocalization.Drivers;
+using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentLocalization.Indexing;
 using OrchardCore.ContentLocalization.Liquid;
 using OrchardCore.ContentLocalization.Security;
@@ -15,6 +16,7 @@ using OrchardCore.ContentLocalization.ViewModels;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
@@ -25,6 +27,7 @@ using OrchardCore.Sitemaps.Builders;
 
 namespace OrchardCore.ContentLocalization;
 
+[RequiredStartup]
 public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
@@ -41,6 +44,7 @@ public sealed class Startup : StartupBase
 
         services.AddPermissionProvider<Permissions>();
         services.AddScoped<IAuthorizationHandler, LocalizeContentAuthorizationHandler>();
+        services.AddScoped<IFeatureEventHandler, ContentLocalizationFeatureEventHandler>();
 
         services.AddScoped<IContentsAdminListFilter, LocalizationPartContentsAdminListFilter>();
         services.AddTransient<IContentsAdminListFilterProvider, LocalizationPartContentsAdminListFilterProvider>();
