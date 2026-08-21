@@ -6,6 +6,11 @@ namespace OrchardCore.DisplayManagement.Descriptors;
 
 public sealed class FeatureShapeDescriptor : ShapeDescriptor
 {
+    public FeatureShapeDescriptor(IFeatureInfo feature, string shapeType)
+        : this(feature, shapeType, requiredFeatureIds: null)
+    {
+    }
+
     public FeatureShapeDescriptor(IFeatureInfo feature, string shapeType, IReadOnlyCollection<string> requiredFeatureIds = null)
     {
         Feature = feature;
