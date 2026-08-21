@@ -205,7 +205,7 @@ public class CompositionStrategyTests
 
         var typeFeatureProvider = new Mock<ITypeFeatureProvider>();
         typeFeatureProvider.Setup(p => p.GetTypesForFeature(moduleFeature))
-            .Returns([typeof(RequiredStartupTypeWithRequiredFeatures)]);
+            .Returns([typeof(RequiredStartupType)]);
         typeFeatureProvider.Setup(p => p.GetTypesForFeature(applicationFeature))
             .Returns([]);
 
@@ -216,8 +216,36 @@ public class CompositionStrategyTests
 
         // Assert
         var dependency = Assert.Single(blueprint.Dependencies);
-        Assert.Equal(typeof(RequiredStartupTypeWithRequiredFeatures), dependency.Key);
+        Assert.Equal(typeof(RequiredStartupType), dependency.Key);
         Assert.Equal(applicationFeature, Assert.Single(dependency.Value));
+    }
+
+    [Fact]
+    public async Task ComposeAsync_RequiredStartupAndNamedFeaturesDisabled_DoesNotCompose()
+    {
+        // Arrange
+        var moduleFeature = CreateFeature("FeatureA");
+        var applicationFeature = CreateFeature(Application.DefaultFeatureId);
+
+        var extensionManager = new Mock<IExtensionManager>();
+        extensionManager.Setup(m => m.LoadFeaturesAsync(It.IsAny<IEnumerable<string>>()))
+            .ReturnsAsync([]);
+        extensionManager.Setup(m => m.GetFeatures())
+            .Returns([moduleFeature, applicationFeature]);
+
+        var typeFeatureProvider = new Mock<ITypeFeatureProvider>();
+        typeFeatureProvider.Setup(p => p.GetTypesForFeature(moduleFeature))
+            .Returns([typeof(RequiredStartupTypeWithRequiredFeatures)]);
+        typeFeatureProvider.Setup(p => p.GetTypesForFeature(applicationFeature))
+            .Returns([]);
+
+        var strategy = new CompositionStrategy(extensionManager.Object, typeFeatureProvider.Object, Mock.Of<ILogger<CompositionStrategy>>());
+
+        // Act
+        var blueprint = await strategy.ComposeAsync(new ShellSettings { Name = "Test" }, new ShellDescriptor());
+
+        // Assert
+        Assert.Empty(blueprint.Dependencies);
     }
 
     [Fact]
@@ -466,6 +494,9 @@ public class CompositionStrategyTests
 
     [RequireFeatures("FeatureA", "FeatureB")]
     public class TypeWithMultipleRequiredFeatures;
+
+    [RequiredStartup]
+    public class RequiredStartupType;
 
     [RequiredStartup]
     [RequireFeatures("FeatureA", "FeatureB")]

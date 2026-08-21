@@ -72,10 +72,19 @@ public class CompositionStrategy : ICompositionStrategy
         {
             foreach (var exportedType in _typeFeatureProvider.GetTypesForFeature(feature))
             {
-                if (RequiredStartupAttribute.IsRequiredForType(exportedType))
+                if (!RequiredStartupAttribute.IsRequiredForType(exportedType))
                 {
-                    alwaysComposedTypes.Add(exportedType);
+                    continue;
                 }
+
+                var requiredFeatures = RequireFeaturesAttribute.GetRequiredFeatureNamesForType(exportedType);
+
+                if (!requiredFeatures.All(x => featureNames.Contains(x)))
+                {
+                    continue;
+                }
+
+                alwaysComposedTypes.Add(exportedType);
             }
         }
 
