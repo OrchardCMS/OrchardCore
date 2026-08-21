@@ -97,7 +97,7 @@ public class DefaultShapeTableManager : IShapeTableManager
 
         foreach (var bindingStrategy in bindingStrategies)
         {
-            var requiredFeatureIds = RequireFeaturesAttribute.GetRequiredFeatureNamesForType(bindingStrategy.GetType()).ToArray();
+            var requiredFeatureIds = RequireFeaturesAttribute.GetRequiredFeatureNamesForType(bindingStrategy.GetType());
 
             foreach (var strategyFeature in typeFeatureProvider.GetFeaturesForDependency(bindingStrategy.GetType()))
             {
@@ -161,7 +161,7 @@ public class DefaultShapeTableManager : IShapeTableManager
         IShapeTableProvider bindingStrategy,
         IEnumerable<ShapeAlteration> builtAlterations,
         Dictionary<string, FeatureShapeDescriptor> shapeDescriptors,
-        IReadOnlyCollection<string> requiredFeatureIds)
+        IList<string> requiredFeatureIds)
     {
         var alterationSets = builtAlterations.GroupBy(a => a.Feature.Id + a.ShapeType);
 
