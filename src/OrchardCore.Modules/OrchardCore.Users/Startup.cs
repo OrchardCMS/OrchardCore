@@ -267,6 +267,7 @@ public sealed class ExternalAuthenticationStartup : StartupBase
         services.AddDisplayDriver<UserMenu, ExternalAuthenticationUserMenuDisplayDriver>();
         services.AddSiteDisplayDriver<ExternalRegistrationSettingsDisplayDriver>();
         services.AddSiteDisplayDriver<ExternalLoginSettingsDisplayDriver>();
+        services.AddSignalOptionsChangeTokenSource<ExternalLoginOptions>();
         services.AddTransient<IConfigureOptions<ExternalLoginOptions>, ExternalLoginOptionsConfigurations>();
     }
 
