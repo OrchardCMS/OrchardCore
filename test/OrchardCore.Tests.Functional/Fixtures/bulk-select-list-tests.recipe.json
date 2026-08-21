@@ -1,0 +1,290 @@
+{
+  "name": "BulkSelectListTests",
+  "displayName": "BulkSelectListTests",
+  "description": "Seeds 2+ rows on every admin list view that shares the bulk-select-list.ts component (select-all + per-row checkbox + bulk-action dropdown, see .scripts/bloom/components/bulk-select-list.ts), so BulkSelectListTests.cs can verify the shared component still toggles #actions/#items/#selected-items correctly on each of them after the ES-module conversion.",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0",
+  "issetuprecipe": true,
+  "categories": [ "tests" ],
+  "tags": [ "tests" ],
+
+  "steps": [
+    {
+      "name": "feature",
+      "enable": [
+        "OrchardCore.HomeRoute",
+        "OrchardCore.Admin",
+        "OrchardCore.Navigation",
+        "OrchardCore.Recipes",
+        "OrchardCore.Resources",
+        "OrchardCore.Roles",
+        "OrchardCore.Security",
+        "OrchardCore.Settings",
+        "OrchardCore.Themes",
+        "OrchardCore.Users",
+
+        "OrchardCore.AdminMenu",
+        "OrchardCore.Autoroute",
+        "OrchardCore.ContentTypes",
+        "OrchardCore.Contents",
+        "OrchardCore.Deployment",
+        "OrchardCore.Deployment.Remote",
+        "OrchardCore.Media",
+        "OrchardCore.Placements",
+        "OrchardCore.Queries",
+        "OrchardCore.Queries.Sql",
+        "OrchardCore.Shortcodes.Templates",
+        "OrchardCore.Sitemaps",
+        "OrchardCore.Templates",
+        "OrchardCore.Tenants",
+        "OrchardCore.Tenants.FeatureProfiles",
+        "OrchardCore.Title",
+        "OrchardCore.UrlRewriting",
+
+        "TheAdmin",
+        "SafeMode"
+      ]
+    },
+    {
+      "name": "themes",
+      "admin": "TheAdmin",
+      "site": "TheAdmin"
+    },
+    {
+      "name": "ContentDefinition",
+      "ContentTypes": [
+        {
+          "Name": "BulkSelectTestPage",
+          "DisplayName": "Bulk Select Test Page",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Creatable": true,
+              "Listable": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "content",
+      "Data": [
+        {
+          "ContentType": "BulkSelectTestPage",
+          "ContentItemId": "bulkselecttestpageone000000000001",
+          "DisplayText": "Bulk Select Test Page One",
+          "Latest": true,
+          "Published": true,
+          "TitlePart": {
+            "Title": "Bulk Select Test Page One"
+          }
+        },
+        {
+          "ContentType": "BulkSelectTestPage",
+          "ContentItemId": "bulkselecttestpagetwo000000000002",
+          "DisplayText": "Bulk Select Test Page Two",
+          "Latest": true,
+          "Published": true,
+          "TitlePart": {
+            "Title": "Bulk Select Test Page Two"
+          }
+        }
+      ]
+    },
+    {
+      "name": "MediaProfiles",
+      "MediaProfiles": {
+        "banner": {
+          "Hint": "A banner image",
+          "Width": 2048,
+          "Height": 600,
+          "Mode": 2,
+          "Format": 0,
+          "Quality": 100
+        },
+        "thumbnail": {
+          "Hint": "A thumbnail image",
+          "Width": 128,
+          "Height": 128,
+          "Mode": 2,
+          "Format": 0,
+          "Quality": 90
+        }
+      }
+    },
+    {
+      "name": "Templates",
+      "Templates": {
+        "BulkSelectTestTemplateOne": {
+          "Content": "<p>First test template.</p>",
+          "Description": "First test template."
+        },
+        "BulkSelectTestTemplateTwo": {
+          "Content": "<p>Second test template.</p>",
+          "Description": "Second test template."
+        }
+      }
+    },
+    {
+      "name": "ShortcodeTemplates",
+      "ShortcodeTemplates": {
+        "bulk-select-test-one": {
+          "Content": "<strong>{{ Content }}</strong>",
+          "Usage": "First test shortcode.",
+          "Hint": "First test shortcode.",
+          "Categories": [ "Test" ],
+          "DefaultValue": ""
+        },
+        "bulk-select-test-two": {
+          "Content": "<em>{{ Content }}</em>",
+          "Usage": "Second test shortcode.",
+          "Hint": "Second test shortcode.",
+          "Categories": [ "Test" ],
+          "DefaultValue": ""
+        }
+      }
+    },
+    {
+      "name": "Queries",
+      "Queries": [
+        {
+          "Source": "Sql",
+          "Name": "BulkSelectTestQueryOne",
+          "Template": "SELECT DocumentId FROM ContentItemIndex WHERE ContentType='BulkSelectTestPage'",
+          "ReturnContentItems": false
+        },
+        {
+          "Source": "Sql",
+          "Name": "BulkSelectTestQueryTwo",
+          "Template": "SELECT DocumentId FROM ContentItemIndex WHERE ContentType='BulkSelectTestPage'",
+          "ReturnContentItems": false
+        }
+      ]
+    },
+    {
+      "name": "Placements",
+      "Placements": {
+        "BulkSelectTestPlacementOne": [
+          {
+            "place": "Content"
+          }
+        ],
+        "BulkSelectTestPlacementTwo": [
+          {
+            "place": "Content"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AdminMenu",
+      "data": [
+        {
+          "Id": "e3f7a3f4b1b74e9c9f7e2f1b6a2c1d10",
+          "Name": "Bulk Select Test Menu One",
+          "Enabled": true,
+          "MenuItems": []
+        },
+        {
+          "Id": "e3f7a3f4b1b74e9c9f7e2f1b6a2c1d11",
+          "Name": "Bulk Select Test Menu Two",
+          "Enabled": true,
+          "MenuItems": []
+        }
+      ]
+    },
+    {
+      "name": "FeatureProfiles",
+      "FeatureProfiles": {
+        "BulkSelectTestProfileOne": {
+          "Id": "BulkSelectTestProfileOne",
+          "Name": "Bulk Select Test Profile One",
+          "FeatureRules": []
+        },
+        "BulkSelectTestProfileTwo": {
+          "Id": "BulkSelectTestProfileTwo",
+          "Name": "Bulk Select Test Profile Two",
+          "FeatureRules": []
+        }
+      }
+    },
+    {
+      "name": "UrlRewriting",
+      "Rules": [
+        {
+          "Name": "Bulk Select Test Rule One",
+          "Source": "Redirect",
+          "Pattern": "^/bulk-select-test-one$",
+          "SubstitutionPattern": "/"
+        },
+        {
+          "Name": "Bulk Select Test Rule Two",
+          "Source": "Redirect",
+          "Pattern": "^/bulk-select-test-two$",
+          "SubstitutionPattern": "/"
+        }
+      ]
+    },
+    {
+      "name": "Sitemaps",
+      "Data": [
+        {
+          "$type": "OrchardCore.Sitemaps.Models.Sitemap, OrchardCore.Sitemaps.Abstractions",
+          "SitemapId": "bulkselecttestsitemapone",
+          "Name": "Bulk Select Test Sitemap One",
+          "Enabled": true,
+          "Path": "bulk-select-test-sitemap-one",
+          "SitemapSources": []
+        },
+        {
+          "$type": "OrchardCore.Sitemaps.Models.Sitemap, OrchardCore.Sitemaps.Abstractions",
+          "SitemapId": "bulkselecttestsitemaptwo",
+          "Name": "Bulk Select Test Sitemap Two",
+          "Enabled": true,
+          "Path": "bulk-select-test-sitemap-two",
+          "SitemapSources": []
+        },
+        {
+          "$type": "OrchardCore.Sitemaps.Models.SitemapIndex, OrchardCore.Sitemaps",
+          "SitemapId": "bulkselecttestsitemapindexone",
+          "Name": "Bulk Select Test Sitemap Index One",
+          "Enabled": true,
+          "Path": "bulk-select-test-sitemap-index-one",
+          "SitemapSources": []
+        },
+        {
+          "$type": "OrchardCore.Sitemaps.Models.SitemapIndex, OrchardCore.Sitemaps",
+          "SitemapId": "bulkselecttestsitemapindextwo",
+          "Name": "Bulk Select Test Sitemap Index Two",
+          "Enabled": true,
+          "Path": "bulk-select-test-sitemap-index-two",
+          "SitemapSources": []
+        }
+      ]
+    },
+    {
+      "name": "deployment",
+      "Plans": [
+        {
+          "Name": "Bulk Select Test Plan One",
+          "Steps": []
+        },
+        {
+          "Name": "Bulk Select Test Plan Two",
+          "Steps": []
+        }
+      ]
+    }
+  ]
+}
