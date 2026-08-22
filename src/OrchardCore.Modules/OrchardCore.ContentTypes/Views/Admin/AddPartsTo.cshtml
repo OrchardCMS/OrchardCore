@@ -46,16 +46,4 @@
     </div>
 </form>
 
-<script at="Foot">
-    document.addEventListener('DOMContentLoaded', function () {
-        const addSelectedPartsButton = document.getElementById('add-selected-parts-button');
-        const partSelectionCheckboxes = document.querySelectorAll('input[type="checkbox"][name$=".IsSelected"]');
-
-        const updateAddSelectedPartsButton = () => {
-            addSelectedPartsButton.hidden = !Array.from(partSelectionCheckboxes).some((checkbox) => checkbox.checked);
-        };
-
-        partSelectionCheckboxes.forEach((checkbox) => checkbox.addEventListener('change', updateAddSelectedPartsButton));
-        updateAddSelectedPartsButton();
-    });
-</script>
+<script asp-src="~/OrchardCore.ContentTypes/Scripts/content-type-editors/add-parts-to.min.js" debug-src="~/OrchardCore.ContentTypes/Scripts/content-type-editors/add-parts-to.js" at="Foot" type="module"></script>

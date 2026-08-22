@@ -2622,6 +2622,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@orchardcore/alias@workspace:src/OrchardCore.Modules/OrchardCore.Alias/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/alias@workspace:src/OrchardCore.Modules/OrchardCore.Alias/Assets"
+  languageName: unknown
+  linkType: soft
+
 "@orchardcore/apis-graphql@workspace:src/OrchardCore.Modules/OrchardCore.Apis.GraphQL/Assets":
   version: 0.0.0-use.local
   resolution: "@orchardcore/apis-graphql@workspace:src/OrchardCore.Modules/OrchardCore.Apis.GraphQL/Assets"
@@ -3008,6 +3014,12 @@ __metadata:
     vue-3.5.13: "npm:vue@3.5.13"
     vue-multiselect: "npm:3.2.0"
     vuedraggable: "npm:^4.1.0"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/roles@workspace:src/OrchardCore.Modules/OrchardCore.Roles/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/roles@workspace:src/OrchardCore.Modules/OrchardCore.Roles/Assets"
   languageName: unknown
   linkType: soft
 

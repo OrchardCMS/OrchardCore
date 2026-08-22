@@ -1,0 +1,9 @@
+[
+  {
+    "action": "parcel",
+    "name": "alias-part-settings",
+    "source": "Assets/ts/alias-part-settings.ts",
+    "dest": "wwwroot/Scripts/alias-part-settings/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

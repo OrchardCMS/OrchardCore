@@ -27,7 +27,7 @@
             </div>
         </div>
     </div>
-    <ul class="list-group with-checkbox">
+    <ul class="list-group with-checkbox bulk-select-list" data-selected-text="@T["selected"]">
         @if (Model.Queries.Any())
         {
             <li class="list-group-item text-bg-theme">
@@ -112,4 +112,4 @@
     </div>
 </div>
 
-<script asp-name="list-management" at="Foot"></script>
+<script asp-src="~/OrchardCore.Queries/Scripts/queries-index/queries-index.min.js" debug-src="~/OrchardCore.Queries/Scripts/queries-index/queries-index.js" at="Foot" type="module"></script>

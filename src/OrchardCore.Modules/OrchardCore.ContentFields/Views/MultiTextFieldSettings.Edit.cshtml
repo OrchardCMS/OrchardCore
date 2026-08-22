@@ -21,9 +21,7 @@
 <script asp-src="~/OrchardCore.ContentFields/Scripts/optionsEditor.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/optionsEditor.js" asp-name="optionsEditor" at="Foot" depends-on="vuejs:2, vue-draggable:2"></script>
 <style asp-src="~/OrchardCore.ContentFields/Styles/optionsEditor.min.css" debug-src="~/OrchardCore.ContentFields/Styles/optionsEditor.css"></style>
 
-<script at="Foot">
-    initializeOptionsEditor(document.getElementById('@Html.IdFor(m => m)'), @Html.Raw(Model.Options), '', document.getElementsByClassName('@Html.IdFor(m => m)-ModalBody'));
-</script>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/options-editor-fields/options-editor-fields.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/options-editor-fields/options-editor-fields.js" at="Foot" depends-on="optionsEditor" type="module"></script>
 
 <script type="text/x-template" id="options-table">
     <table class="table table-bordered table-sm options-table">
@@ -100,7 +98,7 @@
     </div>
 </script>
 
-<div id="@Html.IdFor(m => m)">
+<div id="@Html.IdFor(m => m)" class="options-editor-wrapper" data-options="@Model.Options">
     <div class="ocat-limited-wrapper">
         <label asp-for="Options" class="ocat-label">@T["Options"]</label>
         <div class="ocat-limited">

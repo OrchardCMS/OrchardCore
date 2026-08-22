@@ -20,12 +20,6 @@ interface Snap {
     y: number;
 }
 
-declare global {
-    interface Window {
-        initDashboard: (updateUrl: string) => void;
-    }
-}
-
 const HELPER_CLASS = "dashboard-resize-helper";
 const HANDLE_TYPES = ["s", "e", "se"] as const;
 
@@ -43,10 +37,11 @@ function snapTo(original: Size, updated: Size, gridSize: CellSize): Snap {
     return { x: snapX, y: snapY };
 }
 
-window.initDashboard = function initDashboard(updateUrl: string) {
+(function initDashboard() {
     const container = document.getElementById("container");
+    const updateUrl = container?.dataset.updateUrl;
 
-    if (!container || typeof Sortable === "undefined") {
+    if (!container || !updateUrl || typeof Sortable === "undefined") {
         return;
     }
 
@@ -105,7 +100,7 @@ window.initDashboard = function initDashboard(updateUrl: string) {
             });
         });
 
-        fetch(updateUrl, { method: "POST", body })
+        fetch(updateUrl!, { method: "POST", body })
             .then((response) => {
                 if (!response.ok) {
                     throw new Error("Request failed");
@@ -240,4 +235,4 @@ window.initDashboard = function initDashboard(updateUrl: string) {
     });
 
     window.addEventListener("resize", calculateCellSize);
-};
+})();

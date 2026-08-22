@@ -4,5 +4,17 @@
       "name": "templates",
       "source": "Assets/js/templatepreview.edit.js",
       "tags": ["admin", "dashboard", "js"]
+    },
+    {
+      "action": "parcel",
+      "name": "template-editors",
+      "source": [
+        "Assets/ts/template-create.ts",
+        "Assets/ts/template-edit.ts",
+        "Assets/ts/template-index.ts",
+        "Assets/ts/template-preview.ts"
+      ],
+      "dest": "wwwroot/Scripts/template-editors/",
+      "tags": ["admin", "dashboard", "js"]
     }
 ]

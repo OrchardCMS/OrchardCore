@@ -75,10 +75,6 @@
                                 @await DisplayAsync(contentCard)
                             }
                         }
-
-                            <script at="Foot">
-                                initWidgetsListSortable('@widgetTemplatePlaceholderId', 'widgetslist-widgets');
-                            </script>
                         </div>
                         <div class="btn-widget-add-below-wrapper w-100 my-2">
                             <div class="btn-widget-add-below w-100 border border-info">
@@ -124,4 +120,6 @@
         <script asp-name="widgetslist-edit" at="Foot"></script>
         <style asp-name="widgetslist-edit" at="Head"></style>
     }
+
+    <script asp-src="~/OrchardCore.Widgets/Scripts/widgets-list-part/widgets-list-part.min.js" debug-src="~/OrchardCore.Widgets/Scripts/widgets-list-part/widgets-list-part.js" at="Foot" depends-on="widgets" type="module"></script>
 </div>

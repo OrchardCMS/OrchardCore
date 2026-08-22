@@ -1,5 +1,3 @@
-export {};
-
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.css";
 // Parcel can't code-split a dynamic import() whose path is only known at
@@ -9,12 +7,7 @@ import "flatpickr/dist/flatpickr.css";
 // avoids a broken relative path a per-language dynamic import would need.
 import localeMap from "flatpickr/dist/l10n/index.js";
 import type { CustomLocale } from "flatpickr/dist/types/locale";
-
-declare global {
-    interface Window {
-        initDateFieldLocalized: (inputId: string, language: string, shortDatePattern: string) => void;
-    }
-}
+import observeAndInit from "@orchardcore/bloom/helpers/observeAndInit";
 
 // Maps .NET custom date format tokens (e.g. "dd/MM/yyyy", the current UI
 // culture's ShortDatePattern) to flatpickr's own format-token syntax (e.g.
@@ -41,13 +34,10 @@ function toFlatpickrFormat(pattern: string): string {
     return pattern.replace(NET_TOKEN_PATTERN, (token) => NET_TO_FLATPICKR_TOKENS[token]);
 }
 
-window.initDateFieldLocalized = function initDateFieldLocalized(inputId: string, language: string, shortDatePattern: string) {
-    const input = document.getElementById(inputId) as HTMLInputElement | null;
-
-    if (!input) {
-        return;
-    }
-
+observeAndInit(".datepicker", (element) => {
+    const input = element as HTMLInputElement;
+    const language = input.dataset.language ?? "";
+    const shortDatePattern = input.dataset.shortDatePattern ?? "";
     const altFormat = toFlatpickrFormat(shortDatePattern);
     const locale: CustomLocale | undefined = (localeMap as Record<string, CustomLocale>)[language];
 
@@ -62,4 +52,4 @@ window.initDateFieldLocalized = function initDateFieldLocalized(inputId: string,
         altFormat,
         locale,
     });
-};
+});

@@ -1,4 +1,5 @@
 import initSortableWidgets from "@orchardcore/bloom/components/sortable-widgets";
+import evalScripts from "@orchardcore/bloom/helpers/evalScripts";
 
 // confirmDialog is a global defined by TheAdmin's own script (already loaded on
 // every admin page); declared here rather than imported since it isn't bundled.
@@ -8,22 +9,6 @@ declare global {
     interface Window {
         initWidgetsListSortable: (containerId: string, groupName: string) => void;
     }
-}
-
-// Browsers don't execute <script> tags inserted via innerHTML, so scripts are extracted
-// server-side into a separate markup fragment and re-created here as real <script> elements,
-// which do execute when appended to the document (mirrors jQuery's $.globalEval trick).
-function evalScripts(html: string) {
-    const container = document.createElement("div");
-    container.innerHTML = html;
-    container.querySelectorAll("script").forEach((oldScript) => {
-        const newScript = document.createElement("script");
-        for (let i = 0; i < oldScript.attributes.length; i++) {
-            newScript.setAttribute(oldScript.attributes[i].name, oldScript.attributes[i].value);
-        }
-        newScript.textContent = oldScript.textContent;
-        document.body.appendChild(newScript);
-    });
 }
 
 function getIndexes(targetId: string, htmlFieldPrefix: string) {
