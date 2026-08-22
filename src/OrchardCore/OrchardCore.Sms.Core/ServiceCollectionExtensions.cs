@@ -1,6 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Options;
+using OrchardCore.Sms.Models;
 using OrchardCore.Sms.Services;
 
 namespace OrchardCore.Sms;
@@ -11,6 +13,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<ISmsService, SmsService>();
         services.AddScoped<ISmsProviderResolver, DefaultSmsProviderResolver>();
+        services.AddSignalOptionsChangeTokenSource<SmsProviderOptions>();
         services.AddTransient<IPostConfigureOptions<SmsSettings>, SmsSettingsConfiguration>();
 
         return services;
@@ -45,7 +48,9 @@ public static class ServiceCollectionExtensions
             client.BaseAddress = new Uri("https://api.twilio.com/2010-04-01/Accounts/");
         }).AddStandardResilienceHandler();
 
-        return services.AddSmsProviderOptionsConfiguration<TwilioProviderOptionsConfigurations>();
+        return services.AddSignalOptionsChangeTokenSource<TwilioOptions>()
+            .AddSmsProviderOptionsConfiguration<TwilioProviderOptionsConfigurations>()
+            .AddTransient<IConfigureOptions<TwilioOptions>, TwilioOptionsConfiguration>();
     }
 
     public static IServiceCollection AddLogSmsProvider(this IServiceCollection services)

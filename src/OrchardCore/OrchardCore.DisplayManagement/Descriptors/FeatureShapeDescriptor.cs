@@ -6,7 +6,12 @@ namespace OrchardCore.DisplayManagement.Descriptors;
 
 public sealed class FeatureShapeDescriptor : ShapeDescriptor
 {
-    public FeatureShapeDescriptor(IFeatureInfo feature, string shapeType, IReadOnlyCollection<string> requiredFeatureIds = null)
+    public FeatureShapeDescriptor(IFeatureInfo feature, string shapeType)
+        : this(feature, shapeType, requiredFeatureIds: null)
+    {
+    }
+
+    public FeatureShapeDescriptor(IFeatureInfo feature, string shapeType, IList<string> requiredFeatureIds = null)
     {
         Feature = feature;
         ShapeType = shapeType;
@@ -26,7 +31,7 @@ public sealed class FeatureShapeDescriptor : ShapeDescriptor
     /// gate (e.g. a shape provider attributed to its owning extension's feature id because it has no
     /// explicit [Feature] attribute of its own).
     /// </summary>
-    public IReadOnlyCollection<string> RequiredFeatureIds { get; }
+    public IList<string> RequiredFeatureIds { get; }
 }
 
 public sealed class ShapeDescriptorIndex : ShapeDescriptor

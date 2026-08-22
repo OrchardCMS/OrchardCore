@@ -78,6 +78,14 @@ Three things are worth knowing about how that instance is used:
 
 No execution constraints are configured by default, so a script such as `while (true) {}` runs until the process is recycled. Sites that let non-administrators author scripts should set at least one.
 
+One constraint *is* registered, and it bounds nothing until asked to. `IScriptingManager.EvaluateAsync()` and `IScriptingEngine.EvaluateAsync()` take a `CancellationToken`, and Jint's own `EvaluateAsync` observes a token only while awaiting promise settlement — the script is interpreted to completion first. Forwarding the token there therefore bounded an evaluation that awaits something and nothing at all for one that does not, which is the case that matters. `AddJavaScriptEngine()` registers a `Jint.Constraints.OperationDeadlineConstraint` factory, and `JavaScriptEngine.EvaluateAsync()` arms that engine's instance with the token for the duration of the call. Three things follow:
+
+- **Cancelling the token stops the script**, not only the promise settlement. It surfaces as `OperationCanceledException` carrying the token — the type the rest of a .NET call stack already filters on — rather than as a scripting error.
+- **A token cancelled before the call is observed before the script starts.** One cancelled while the script is running is observed on the engine's amortized constraint cadence, so a runaway script stops within a bounded number of statements rather than at the exact statement cancellation arrived. That cadence is why the interpreter keeps its tight-loop fast path, and it is the same cadence the built-in `CancellationToken()` and `TimeoutInterval()` constraints are checked on.
+- **No time budget is introduced.** The constraint is armed with `Timeout.InfiniteTimeSpan`, its cancellation-only shape. How long a script may run stays a policy for the site to set with the helpers above. A disarmed `OperationDeadlineConstraint` — every synchronous evaluation, and every asynchronous one whose token cannot be cancelled — reads two fields and takes no timestamp.
+
+The built-in `CancellationToken()` helper cannot serve this: it takes the token when the options are configured, and one `Jint.Options` instance serves every engine of the tenant for the tenant's lifetime, while the token belongs to a single evaluation.
+
 ### Global methods are created on demand
 
 The globals contributed by `IGlobalMethodProvider` implementations are declared on every engine but are not built until a script reads the name. A recipe expression such as `[js:uuid()]` therefore only pays for `uuid`, not for every registered global. This is not observable from script — the properties exist, they are non-enumerable, and the value a name resolves to is stable for the whole evaluation — but the `Func<IServiceProvider, Delegate>` you supply is invoked lazily, and not at all when the script does not use the method. Keep it free of side effects that the surrounding code depends on.

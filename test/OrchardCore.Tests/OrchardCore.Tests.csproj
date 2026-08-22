@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
@@ -60,7 +60,7 @@
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Apis.GraphQL.Abstractions\OrchardCore.Apis.GraphQL.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Apis.GraphQL.Client\OrchardCore.Apis.GraphQL.Client.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Media.Core\OrchardCore.Media.Core.csproj" />
-    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.SourceGenerators\OrchardCore.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.SourceGenerators\OrchardCore.SourceGenerators.csproj" OutputItemType="Analyzer" />
   </ItemGroup>
 
   <ItemGroup>
@@ -74,6 +74,7 @@
   <ItemGroup>
     <PackageReference Include="AngleSharp" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
     <PackageReference Include="Moq" />
     <PackageReference Include="NetVips" />
     <PackageReference Include="xunit.v3.mtp-v2" />

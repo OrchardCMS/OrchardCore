@@ -1,8 +1,7 @@
 using System.Net.Http.Headers;
 using System.Text;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using OrchardCore.Settings;
+using Microsoft.Extensions.Options;
 using OrchardCore.Sms.Models;
 using OrchardCore.Sms.Services;
 
@@ -11,20 +10,17 @@ namespace OrchardCore.Sms.HealthChecks;
 internal sealed class SmsHealthCheck : IHealthCheck
 {
     private readonly ISmsService _smsService;
-    private readonly ISiteService _siteService;
     private readonly IHttpClientFactory _httpClientFactory;
-    private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IOptionsMonitor<TwilioOptions> _twilioOptions;
 
     public SmsHealthCheck(
         ISmsService smsService,
-        ISiteService siteService,
         IHttpClientFactory httpClientFactory,
-        IDataProtectionProvider dataProtectionProvider)
+        IOptionsMonitor<TwilioOptions> twilioOptions)
     {
         _smsService = smsService;
-        _siteService = siteService;
         _httpClientFactory = httpClientFactory;
-        _dataProtectionProvider = dataProtectionProvider;
+        _twilioOptions = twilioOptions;
     }
 
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
@@ -36,11 +32,9 @@ internal sealed class SmsHealthCheck : IHealthCheck
                 return HealthCheckResult.Unhealthy(description: $"The service '{nameof(ISmsService)}' isn't registered.");
             }
 
-            var settings = await _siteService.GetSettingsAsync<TwilioSettings>();
+            var settings = _twilioOptions.CurrentValue;
 
-            var dataProtector = _dataProtectionProvider.CreateProtector(TwilioSmsProvider.ProtectorName);
-
-            if (await ValidateTwilioCredentialsAsync(settings.AccountSID, dataProtector.Unprotect(settings.AuthToken)))
+            if (await ValidateTwilioCredentialsAsync(settings.AccountSID, settings.AuthToken))
             {
                 return HealthCheckResult.Healthy();
             }
