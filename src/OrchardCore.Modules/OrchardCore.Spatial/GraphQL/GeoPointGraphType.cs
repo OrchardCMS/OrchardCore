@@ -1,15 +1,16 @@
 using System.Text.Json;
 using GraphQL.Types;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Spatial.Fields;
 
 namespace OrchardCore.Spatial.GraphQL;
 
 public class GeoPointGraphType : ScalarGraphType
 {
-    public GeoPointGraphType()
+    public GeoPointGraphType(IStringLocalizer<GeoPointGraphType> S)
     {
         Name = "GeoPoint";
-        Description = "Representa a geo location with latitude and longitude.";
+        Description = S["Represent a geo location with latitude and longitude."];
     }
 
     public override object Serialize(object value)
