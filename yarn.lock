@@ -2613,7 +2613,6 @@ __metadata:
     "@popperjs/core": "npm:2.11.8"
     bootstrap: "npm:5.3.8"
     fontawesome-iconpicker: "npm:3.2.0"
-    vue: "npm:2.7.16"
   languageName: unknown
   linkType: soft
 
@@ -17000,7 +16999,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue-2.7.16@npm:vue@2.7.16, vue@npm:2.7.16, vue@npm:^2.6.14":
+"vue-2.7.16@npm:vue@2.7.16, vue@npm:^2.6.14":
   version: 2.7.16
   resolution: "vue@npm:2.7.16"
   dependencies:
