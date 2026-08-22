@@ -78,50 +78,15 @@
     @{
         var selectedItems = JConvert.SerializeObject(Model.SelectedItems, JOptions.CamelCase);
         var allItems = JConvert.SerializeObject(Model.AllItems, JOptions.CamelCase);
+        var translations = Orchard.GetJSLocalizations("permission-picker");
+        var translationsJson = Json.Serialize(translations).ToString();
     }
 
-    <script asp-name="admin-menu-permission-picker" asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-permission-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-permission-picker.js" at="Foot" depends-on="vuejs:2, vue-multiselect:2"></script>
-    <style asp-name="admin-menu-permission-picker" asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-permission-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-permission-picker.css" depends-on="vue-multiselect:2"></style>
+    <style asp-name="admin-menu-permission-picker" asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-permission-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-permission-picker.css"></style>
 
     <label asp-for="SelectedPermissionNames" class="ocat-label">@T["Permissions"]</label>
     <div class="ocat-end">
-        <div id="PermissionPicker" class="vue-multiselect" data-selected-items="@selectedItems" data-all-items="@allItems" v-cloak>
-            <ul class="mb-1 list-group w-xl-50 permission-picker-default__list" v-show="arrayOfItems.length">
-                <li v-for="(item, i) in arrayOfItems"
-                    class="list-group-item permission-picker-default__list-item d-flex align-items-start justify-content-between"
-                    :key="item.name">
-                    <div class="align-items-center align-self-center"><span>{{ item.displayText }}</span></div>
-
-                    <div class="btn-group btn-group-sm align-items-center" role="group">
-                        <button v-on:click="remove(item)" type="button" class="btn btn-secondary permission-picker-default__list-item__delete"><i class="fa-solid fa-trash fa-sm" aria-hidden="true"></i></button>
-                    </div>
-                </li>
-            </ul>
-
-            <div class="w-xl-50 mt-3">
-                <input asp-for="SelectedPermissionNames" type="hidden" v-model="selectedNames" />
-                <vue-multiselect v-model="value"
-                                 :options="options"
-                                 track-by="name"
-                                 label="displayText"
-                                 placeholder="@T["Type to search"]"
-                                 @@select="onSelect"
-                                 :searchable="true"
-                                 :close-on-select="true"
-                                 :reset-after="true"
-                                 :show-labels="true"
-                                 :hide-selected="false"
-                                 select-label="@T["Select"]"
-                                 deselect-label="@T["Remove"]">
-                    <template slot="option" slot-scope="props">
-                        <div v-cloak><span>{{ props.option.displayText }}</span></div>
-                    </template>
-                    <template slot="noResult">
-                        @T["No result found"]
-                    </template>
-                </vue-multiselect>
-                <span class="hint">@T["The permissions required to display this menu item (optional)."]</span>
-            </div>
+        <div id="PermissionPicker" class="vue-multiselect" data-selected-items="@selectedItems" data-all-items="@allItems" data-translations="@translationsJson" data-selected-names-input-id="@Html.IdFor(m => m.SelectedPermissionNames)" data-selected-names-input-name="@Html.NameFor(m => m.SelectedPermissionNames)" data-hint-text="@T["The permissions required to display this menu item (optional)."]" v-cloak>
         </div>
     </div>
 </div>
@@ -142,4 +107,4 @@
     </div>
 </div>
 
-<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-node-editors/link-admin-node.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-node-editors/link-admin-node.js" depends-on="admin-menu-permission-picker" at="Foot" type="module"></script>
+<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-node-editors/link-admin-node.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-node-editors/link-admin-node.js" depends-on="vuejs, vue-multiselect" at="Foot" type="module"></script>
