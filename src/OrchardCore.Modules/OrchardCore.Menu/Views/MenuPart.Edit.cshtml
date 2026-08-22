@@ -84,25 +84,4 @@
 
 <input asp-for="Hierarchy" type="hidden" value="" />
 
-<script at="Foot">
-    var menuItemId;
-
-    document.getElementById('modalMenuItems').addEventListener('show.bs.modal', function (event) {
-        var button = event.relatedTarget; // Button that triggered the modal
-        menuItemId = button.dataset.menuitemid; // Extract info from data-* attributes
-    });
-
-    document.addEventListener('click', function (event) {
-        var link = event.target.closest('.thumbnail-link-create');
-        if (!link) {
-            return;
-        }
-
-        // there is no value for a new root menu item
-        if (menuItemId) {
-            var href = link.getAttribute('href');
-            href += '&menuitemid=' + menuItemId;
-            link.setAttribute('href', href);
-        }
-    });
-</script>
+<script asp-src="~/OrchardCore.Menu/Scripts/menu-part/menu-part.min.js" debug-src="~/OrchardCore.Menu/Scripts/menu-part/menu-part.js" at="Foot" type="module"></script>

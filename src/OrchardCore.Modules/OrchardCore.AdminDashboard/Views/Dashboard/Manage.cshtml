@@ -54,15 +54,11 @@
     @T["Dashboard successfully updated."]&nbsp;<a href="#"><strong>@T["Undo"]</strong></a>.
 </div>
 
-<div class="dashboard-container" id="container" style="--dashboard-columns: calc( @(settings.ColumnScale) * var(--dashboard-columns-default));">
+<div class="dashboard-container" id="container" data-update-url="@Url.Action("Update")" style="--dashboard-columns: calc( @(settings.ColumnScale) * var(--dashboard-columns-default));">
     @foreach (var dashboard in Model.Dashboards)
     {
         @await DisplayAsync(dashboard)
     }
 </div>
 
-<script asp-src="~/OrchardCore.AdminDashboard/Scripts/dashboard/dashboard.min.js" debug-src="~/OrchardCore.AdminDashboard/Scripts/dashboard/dashboard.js" at="Foot" depends-on="Sortable"></script>
-
-<script at="Foot">
-    initDashboard('@Url.Action("Update")');
-</script>
+<script asp-src="~/OrchardCore.AdminDashboard/Scripts/dashboard/dashboard.min.js" debug-src="~/OrchardCore.AdminDashboard/Scripts/dashboard/dashboard.js" at="Foot" depends-on="Sortable" type="module"></script>
