@@ -9,7 +9,7 @@ public sealed class SeoJSLocalizer(IStringLocalizer<SeoJSLocalizer> S) : IJSLoca
 {
     public IDictionary<string, string> GetLocalizations(string group)
     {
-        if (string.Equals(group, "options-table-editor", StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(group, "seo-meta-tags-editor", StringComparison.OrdinalIgnoreCase))
         {
             return new Dictionary<string, string>
             {

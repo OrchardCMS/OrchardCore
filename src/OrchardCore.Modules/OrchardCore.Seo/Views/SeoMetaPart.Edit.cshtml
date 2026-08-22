@@ -57,7 +57,7 @@
 
 @if (Model.Settings.DisplayCustomMetaTags)
 {
-    var translations = Orchard.GetJSLocalizations("options-table-editor");
+    var translations = Orchard.GetJSLocalizations("seo-meta-tags-editor");
     var translationsJson = Json.Serialize(translations).ToString();
 
     <style asp-src="~/OrchardCore.Seo/Styles/customMetaTagsEditor.min.css" debug-src="~/OrchardCore.Seo/Styles/customMetaTagsEditor.css"></style>

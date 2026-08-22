@@ -9,7 +9,7 @@ public sealed class OpenIdJSLocalizer(IStringLocalizer<OpenIdJSLocalizer> S) : I
 {
     public IDictionary<string, string> GetLocalizations(string group)
     {
-        if (string.Equals(group, "options-table-editor", StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(group, "openid-parameters-editor", StringComparison.OrdinalIgnoreCase))
         {
             return new Dictionary<string, string>
             {

@@ -9,7 +9,7 @@ public sealed class ContentFieldsJSLocalizer(IStringLocalizer<ContentFieldsJSLoc
 {
     public IDictionary<string, string> GetLocalizations(string group)
     {
-        if (string.Equals(group, "options-table-editor", StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(group, "content-fields-options-editor", StringComparison.OrdinalIgnoreCase))
         {
             return new Dictionary<string, string>
             {
