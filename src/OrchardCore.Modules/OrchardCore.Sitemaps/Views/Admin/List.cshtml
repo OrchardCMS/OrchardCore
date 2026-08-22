@@ -32,7 +32,7 @@
             </div>
         </div>
     </div>
-    <ul class="list-group with-checkbox">
+    <ul class="list-group with-checkbox bulk-select-list" data-checkbox-name="itemIds" data-bulk-action-name="Options.BulkAction" data-selected-text="@T["selected"]">
         @if (Model.Sitemaps.Any())
         {
             <li class="list-group-item text-bg-theme">
@@ -105,4 +105,4 @@
 
 @await DisplayAsync(Model.Pager)
 
-<script asp-name="list-management" at="Foot"></script>
+<script asp-src="~/OrchardCore.Sitemaps/Scripts/sitemap-list/sitemap-list.min.js" debug-src="~/OrchardCore.Sitemaps/Scripts/sitemap-list/sitemap-list.js" at="Foot" type="module"></script>

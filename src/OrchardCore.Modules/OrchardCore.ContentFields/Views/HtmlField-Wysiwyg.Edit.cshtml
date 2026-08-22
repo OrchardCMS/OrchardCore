@@ -18,7 +18,7 @@
 <script asp-name="trumbowyg-shortcodes" at="Foot"></script>
 <script asp-name="trumbowyg-theme" at="Foot"></script>
 
-<div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty))" id="@Html.IdFor(x => x.Html)_FieldWrapper">
+<div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty) + " html-field-wysiwyg-editor")" id="@Html.IdFor(x => x.Html)_FieldWrapper" data-language-code="@culture.TwoLetterISOLanguageName" data-is-rtl="@(culture.GetLanguageDirection() == LanguageDirection.RTL ? "true" : "false")" data-language-direction="@culture.GetLanguageDirection()">
     <label asp-for="Html" class="ocat-label">@localizedFieldName</label>
     <div class="ocat-end">
         @await DisplayAsync(await New.ShortcodeModal())
@@ -40,51 +40,4 @@
     </div>
 </div>
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        @* set dir while keeping trumbowg translations dictionary intact *@
-        @if (culture.GetLanguageDirection() == LanguageDirection.RTL)
-        {
-        <text>
-            var langs = jQuery.trumbowyg.langs.@culture.TwoLetterISOLanguageName;
-
-            if (!langs) {
-                cloned = {
-                    ...jQuery.trumbowyg.langs['en'],
-                    _dir: '@culture.GetLanguageDirection()'
-                };
-                jQuery.trumbowyg.langs['@culture.TwoLetterISOLanguageName'] = cloned;
-            }
-        </text>
-        }
-
-        @* Extend trumbowyg default buttons. Only use for the wysiwyg editor which gets all buttons by default *@
-        var defaultButtons = jQuery.trumbowyg.defaultOptions.btns;
-        if (defaultButtons[6] !== "insertShortcode") {
-            defaultButtons.splice(6, 0, "insertShortcode");
-        }
-        defaultButtons.forEach(group => {
-            if (group.includes("undo") && group.includes("redo")) {
-                group[group.indexOf("undo")] = "historyUndo";
-                group[group.indexOf("redo")] = "historyRedo";
-            }
-        });
-
-        var settings = {
-            lang: '@culture.TwoLetterISOLanguageName',
-            semantic: false
-        }
-
-        $('#@Html.IdFor(m => m.Html)').trumbowyg(settings).on('tbwchange', function () {
-            document.dispatchEvent(new CustomEvent('contentpreview:render'));
-        });
-    });
-</script>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/text-field-editors/html-field-wysiwyg.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/text-field-editors/html-field-wysiwyg.js" at="Foot" type="module"></script>

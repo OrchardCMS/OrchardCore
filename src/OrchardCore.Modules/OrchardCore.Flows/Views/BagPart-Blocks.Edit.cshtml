@@ -21,9 +21,10 @@
 
 <div class="mb-3">
     <div id="@widgetTemplatePlaceholderId"
-         class="widget-template-placeholder widget-template-placeholder-bagpart bagpart-@partName.HtmlClassify() row mx-0"
+         class="widget-template-placeholder widget-template-placeholder-bagpart bagpart-@partName.HtmlClassify() row mx-0 bagpart-blocks-sortable-placeholder"
          data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })"
-         data-content-types="@contentTypesStringified">
+         data-content-types="@contentTypesStringified"
+         data-part-name="@partName">
         @{
             var index = 0;
         }
@@ -74,9 +75,28 @@
     else if (totalItems > 1)
     {
         @* Multiple content types - show content type picker modal *@
+        var contentTypesJson = JsonSerializer.Serialize(
+            Model.ContainedContentTypeDefinitions.Select(t => new {
+                name = t.Name,
+                displayName = t.DisplayName,
+                description = t.GetSettings<ContentTypeSettings>()?.Description ?? "",
+                category = t.GetCategory(),
+                thumbnail = t.GetThumbnail()
+            }),
+            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
+        );
         <button type="button"
                 id="@buttonId"
-                class="btn btn-primary btn-sm">
+                class="btn btn-primary btn-sm flow-widget-picker-button bagpart-blocks-picker-button"
+                data-target-id="@widgetTemplatePlaceholderId"
+                data-content-types="@contentTypesJson"
+                data-html-field-prefix="@htmlFieldPrefix"
+                data-prefixes-name="@Html.NameFor(x => x.Prefixes)"
+                data-content-types-name="@Html.NameFor(x => x.ContentTypes)"
+                data-content-items-name="@Html.NameFor(x => x.ContentItems)"
+                data-parent-content-type="@parentContentType"
+                data-part-name="@partName"
+                data-modal-title="@(string.IsNullOrEmpty(Model.ModalTitleText) ? T["Select Block"].Value : Model.ModalTitleText)">
             <i class="fa fa-plus" aria-hidden="true"></i> @(string.IsNullOrEmpty(Model.AddButtonText) ? T["Add Block"] : Model.AddButtonText)
         </button>
     }
@@ -97,7 +117,7 @@
     <script asp-name="content-type-picker" at="Foot"></script>
 
     @* Shared modal with embedded Vue app - only added to DOM if not already present *@
-    <template id="contentTypePickerModalTemplate">
+    <template id="contentTypePickerModalTemplate" data-path-base="@Context.Request.PathBase">
         <div class="modal fade modal-content-type-picker"
              id="contentTypePickerModal"
              tabindex="-1"
@@ -117,23 +137,6 @@
         </div>
     </template>
 
-    <script at="Foot">
-        (function() {
-            // Only add modal to DOM if it doesn't already exist
-            if (!document.getElementById('contentTypePickerModal')) {
-                var template = document.getElementById('contentTypePickerModalTemplate');
-                if (template) {
-                    document.body.appendChild(template.content.cloneNode(true));
-                    template.remove();
-                }
-            } else {
-                // Remove the template since modal already exists
-                var template = document.getElementById('contentTypePickerModalTemplate');
-                if (template) template.remove();
-            }
-            initializeContentTypePickerApplication('@Context.Request.PathBase');
-        })();
-    </script>
 }
 
 @* Render mock widgets to ensure resources are included *@
@@ -147,44 +150,4 @@
     }
 }
 
-@* Instance-specific initialization for content type picker *@
-@if (totalItems > 1)
-{
-    <script at="Foot">
-    (function() {
-        var button = document.getElementById('@buttonId');
-        if (!button) return;
-
-        var contentTypes = @Html.Raw(JsonSerializer.Serialize(
-            Model.ContainedContentTypeDefinitions.Select(t => new {
-                name = t.Name,
-                displayName = t.DisplayName,
-                description = t.GetSettings<ContentTypeSettings>()?.Description ?? "",
-                category = t.GetCategory(),
-                thumbnail = t.GetThumbnail()
-            }),
-            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
-        ));
-
-        button.addEventListener('click', function() {
-            showContentTypePicker({
-                targetId: '@widgetTemplatePlaceholderId',
-                htmlFieldPrefix: '@htmlFieldPrefix',
-                prefixesName: '@Html.NameFor(x => x.Prefixes)',
-                contentTypesName: '@Html.NameFor(x => x.ContentTypes)',
-                contentItemsName: '@Html.NameFor(x => x.ContentItems)',
-                parentContentType: '@parentContentType',
-                partName: '@partName',
-                contentTypes: contentTypes,
-                modalTitle: '@(string.IsNullOrEmpty(Model.ModalTitleText) ? T["Select Block"].Value : Model.ModalTitleText)',
-                onContentTypeSelected: contentTypePickerSelectContentType
-            });
-        });
-    })();
-    </script>
-}
-
-@* Sortable initialization - always needed *@
-<script at="Foot">
-    initFlowSortableWidgets('@widgetTemplatePlaceholderId', 'contentTypes', 'bagpart-widgets', '@partName');
-</script>
+<script asp-src="~/OrchardCore.Flows/Scripts/flow-blocks-editors/bag-part-blocks.min.js" debug-src="~/OrchardCore.Flows/Scripts/flow-blocks-editors/bag-part-blocks.js" depends-on="flowpart-edit, content-type-picker" at="Foot" type="module"></script>

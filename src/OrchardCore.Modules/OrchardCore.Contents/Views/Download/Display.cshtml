@@ -39,31 +39,4 @@
 
 </form>
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        var editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.ContentItemJson)'), {
-            autoRefresh: true,
-            lineNumbers: true,
-            styleActiveLine: true,
-            matchBrackets: true,
-            mode: { name: "javascript" },
-        });
-
-        document.getElementById('json-copy-to-clipboard')?.addEventListener('click', function () {
-            var temp = document.createElement("textarea");
-            document.body.appendChild(temp);
-            temp.value = document.getElementById('@Html.IdFor(x => x.ContentItemJson)')?.textContent || '';
-            temp.select();
-            document.execCommand("copy");
-            temp.remove();
-        });
-    });
-</script>
+<script asp-src="~/OrchardCore.Contents/Scripts/download-editors/download-display.min.js" debug-src="~/OrchardCore.Contents/Scripts/download-editors/download-display.js" at="Foot" type="module"></script>

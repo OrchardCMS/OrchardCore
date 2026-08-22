@@ -19,7 +19,7 @@
                 @* The value is rendered in ISO 8601 rather than via asp-for's culture-formatted
                    output, since that's the exact format the datepicker keeps this input's posted
                    value in regardless of locale (see date-field-localized.ts). *@
-                <input type="text" name="@Html.NameFor(m => m.Value)" id="@datepickerId" value="@(Model.Value?.ToString("yyyy-MM-dd"))" class="form-control content-preview-select datepicker" />
+                <input type="text" name="@Html.NameFor(m => m.Value)" id="@datepickerId" value="@(Model.Value?.ToString("yyyy-MM-dd"))" class="form-control content-preview-select datepicker" data-language="@language" data-short-date-pattern="@shortDatePattern" />
                 <span asp-validation-for="Value"></span>
             </div>
         </div>
@@ -31,7 +31,4 @@
 </div>
 
 <style asp-src="~/OrchardCore.ContentFields/Scripts/date-field-localized/date-field-localized.css" at="Head"></style>
-<script asp-src="~/OrchardCore.ContentFields/Scripts/date-field-localized/date-field-localized.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/date-field-localized/date-field-localized.js" at="Foot"></script>
-<script at="Foot">
-    initDateFieldLocalized('@datepickerId', '@language', '@shortDatePattern');
-</script>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/date-field-localized/date-field-localized.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/date-field-localized/date-field-localized.js" at="Foot" type="module"></script>

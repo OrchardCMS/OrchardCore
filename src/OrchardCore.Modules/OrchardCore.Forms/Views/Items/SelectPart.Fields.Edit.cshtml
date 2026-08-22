@@ -107,7 +107,7 @@
 @{
     var widgetId = Html.IdFor(m => m);
 }
-<div class="select-part-properties-wrapper" id="@widgetId">
+<div class="select-part-properties-wrapper select-part-editor" id="@widgetId">
 
     <div class="ocat-wrapper show-for-input">
         <label asp-for="Editor" class="ocat-label">@T["Editor"]</label>
@@ -121,7 +121,7 @@
         </div>
     </div>
 
-    <div class="ocat-wrapper field-options-wrapper" id="@(widgetId)-selectOptions" data-defaultValue="@Model.DefaultValue">
+    <div class="ocat-wrapper field-options-wrapper" id="@(widgetId)-selectOptions" data-defaultValue="@Model.DefaultValue" data-options="@Model.Options">
         <label asp-for="Options" class="ocat-label">@T["Options"]</label>
 
         <div class="ocat-end">
@@ -147,12 +147,4 @@
     </div>
 </div>
 
-<script at="Foot" depends-on="selectOptionsEditor">
-    selectOptionsEditor.initilizeElement('@(widgetId)-selectOptions', @Html.Raw(Model.Options), '@Model.DefaultValue');
-
-    var wrapper = document.getElementById('@Html.IdFor(m => m)');
-    if (wrapper != null) {
-        // at this point, we know this wrapper was added after page load, let's initilize it
-        selectOptionsEditor.initilizeFieldType(wrapper);
-    }
-</script>
+<script asp-src="~/OrchardCore.Forms/Scripts/select-part/select-part.min.js" debug-src="~/OrchardCore.Forms/Scripts/select-part/select-part.js" depends-on="selectOptionsEditor" at="Foot" type="module"></script>

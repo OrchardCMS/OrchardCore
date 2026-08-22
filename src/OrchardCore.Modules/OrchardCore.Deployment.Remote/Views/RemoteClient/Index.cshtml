@@ -31,7 +31,7 @@
             </div>
         </div>
     </div>
-    <ul class="list-group with-checkbox">
+    <ul class="list-group with-checkbox bulk-select-list" data-selected-text="@T["selected"]">
         @if (Model.RemoteClients.Count > 0)
         {
             <li class="list-group-item text-bg-theme">
@@ -93,4 +93,4 @@
 
 @await DisplayAsync(Model.Pager)
 
-<script asp-name="list-management" at="Foot"></script>
+<script asp-src="~/OrchardCore.Deployment.Remote/Scripts/deployment-remote-admin-lists/remote-client-index.min.js" debug-src="~/OrchardCore.Deployment.Remote/Scripts/deployment-remote-admin-lists/remote-client-index.js" at="Foot" type="module"></script>

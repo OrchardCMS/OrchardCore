@@ -80,7 +80,5 @@ and call @await DisplayAsync(await New.ShortcodeModal()) from the fields view
             </div>
         </div>
     </zone>
-    <script depends-on="shortcodes" at="Foot">
-        initializeShortcodesApp(document.getElementById("shortcodeModal"));
-    </script>
+    <script asp-src="~/OrchardCore.Shortcodes/Scripts/shortcodes-modal/shortcodes-modal.min.js" debug-src="~/OrchardCore.Shortcodes/Scripts/shortcodes-modal/shortcodes-modal.js" at="Foot" depends-on="shortcodes" type="module"></script>
 }

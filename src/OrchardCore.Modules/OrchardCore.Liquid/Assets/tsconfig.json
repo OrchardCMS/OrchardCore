@@ -1,4 +1,4 @@
 {
   "extends": "../../../../.scripts/tsconfig.base.json",
-  "include": ["monaco/**/*.ts"]
+  "include": ["monaco/**/*.ts", "ts/**/*.ts", "../../../../.scripts/bloom/ambient.d.ts"]
 }

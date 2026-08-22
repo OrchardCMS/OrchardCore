@@ -20,16 +20,12 @@ declare const Sortable: {
     create(el: HTMLElement, options: Record<string, unknown>): unknown;
 };
 
-declare global {
-    interface Window {
-        initAdminMenuNodeList: (treeId: string, moveNodeUrl: string) => void;
-    }
-}
-
-window.initAdminMenuNodeList = function initAdminMenuNodeList(treeId: string, moveNodeUrl: string) {
+(function initAdminMenuNodeList() {
     const root = document.getElementById("menu");
+    const treeId = root?.dataset.treeId;
+    const moveNodeUrl = root?.dataset.moveNodeUrl;
 
-    if (!root || typeof Sortable === "undefined") {
+    if (!root || !treeId || !moveNodeUrl || typeof Sortable === "undefined") {
         return;
     }
 
@@ -37,13 +33,13 @@ window.initAdminMenuNodeList = function initAdminMenuNodeList(treeId: string, mo
         const token = document.querySelector<HTMLInputElement>("input[name='__RequestVerificationToken']")!.value;
         const body = new URLSearchParams({
             __RequestVerificationToken: token,
-            treeId,
+            treeId: treeId!,
             nodeToMoveId,
             destinationNodeId,
             position: String(position),
         });
 
-        fetch(moveNodeUrl, { method: "POST", body })
+        fetch(moveNodeUrl!, { method: "POST", body })
             .then((response) => {
                 if (!response.ok) {
                     throw new Error("Request failed");
@@ -83,4 +79,4 @@ window.initAdminMenuNodeList = function initAdminMenuNodeList(treeId: string, mo
             },
         });
     });
-};
+})();

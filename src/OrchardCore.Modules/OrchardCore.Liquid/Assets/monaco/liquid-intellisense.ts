@@ -1,10 +1,4 @@
-// monaco-editor ships monaco.d.ts as a pure ambient declaration file with no "types" entry in its
-// package.json, so `import` (or `/// <reference types="monaco-editor" />`) can't resolve it - a
-// path reference is the only way to bring the ambient `monaco` namespace into scope. `monaco` is a
-// runtime global here too (loaded via Monaco's own AMD loader, not bundled), so there is nothing to
-// import at the value level either.
-// eslint-disable-next-line @typescript-eslint/triple-slash-reference
-/// <reference path="../../../../../node_modules/monaco-editor/monaco.d.ts" />
+import type * as Monaco from "monaco-editor";
 
 const liquidTags = [
     "if",
@@ -94,7 +88,7 @@ interface ILiquidContextInfo {
     inObject: boolean;
 }
 
-function getLiquidContextInfo(model: monaco.editor.ITextModel, position: monaco.Position): ILiquidContextInfo {
+function getLiquidContextInfo(model: Monaco.editor.ITextModel, position: Monaco.Position): ILiquidContextInfo {
     let inTag: boolean = false;
     let inObject: boolean = false;
     let showTags: boolean = false;
@@ -137,9 +131,13 @@ function getLiquidContextInfo(model: monaco.editor.ITextModel, position: monaco.
     } as ILiquidContextInfo;
 }
 
-const completionItemProvider: monaco.languages.CompletionItemProvider = {
+// A factory rather than a module-level constant: `new monaco.Range(...)` and the
+// CompletionItemKind/InsertTextRule enums below are real values, not just types, so this needs the
+// actual `monaco` instance passed into ConfigureLiquidIntellisense - captured here via closure -
+// rather than a bare global (the ES module build doesn't expose one, unlike the old AMD loader).
+const createCompletionItemProvider = (monaco: typeof Monaco): Monaco.languages.CompletionItemProvider => ({
     triggerCharacters: [" "],
-    provideCompletionItems: (model: monaco.editor.ITextModel, position: monaco.Position, context: monaco.languages.CompletionContext) => {
+    provideCompletionItems: (model: Monaco.editor.ITextModel, position: Monaco.Position, context: Monaco.languages.CompletionContext) => {
         let items: string[] = [];
 
         if (context.triggerCharacter == " ") {
@@ -164,16 +162,16 @@ const completionItemProvider: monaco.languages.CompletionItemProvider = {
                 kind: monaco.languages.CompletionItemKind.Keyword,
                 insertText: value,
                 insertTextRules: monaco.languages.CompletionItemInsertTextRule.KeepWhitespace,
-            } as monaco.languages.CompletionItem;
+            } as Monaco.languages.CompletionItem;
         });
 
-        return { suggestions } as monaco.languages.ProviderResult<monaco.languages.CompletionList>;
+        return { suggestions } as Monaco.languages.ProviderResult<Monaco.languages.CompletionList>;
     },
-};
+});
 
-function ConfigureLiquidIntellisense(monaco: typeof globalThis.monaco, suggestHtml: boolean = true) {
+function ConfigureLiquidIntellisense(monaco: typeof Monaco, suggestHtml: boolean = true) {
     if (suggestHtml) {
-        const modeConfiguration: monaco.languages.html.ModeConfiguration = {
+        const modeConfiguration: Monaco.languages.html.ModeConfiguration = {
             completionItems: true,
             colors: true,
             foldingRanges: true,
@@ -182,19 +180,19 @@ function ConfigureLiquidIntellisense(monaco: typeof globalThis.monaco, suggestHt
             documentFormattingEdits: true,
             documentRangeFormattingEdits: true,
         };
-        const options: monaco.languages.html.Options = {
+        const options: Monaco.languages.html.Options = {
             format: monaco.languages.html.htmlDefaults.options.format,
             suggest: { html5: true },
         };
         monaco.languages.html.registerHTMLLanguageService("liquid", options, modeConfiguration);
     }
 
-    monaco.languages.registerCompletionItemProvider("liquid", completionItemProvider);
+    monaco.languages.registerCompletionItemProvider("liquid", createCompletionItemProvider(monaco));
 }
 
 declare global {
     interface Window {
-        ConfigureLiquidIntellisense: (monaco: typeof globalThis.monaco, suggestHtml?: boolean) => void;
+        ConfigureLiquidIntellisense: (monaco: typeof Monaco, suggestHtml?: boolean) => void;
         liquidFilters: string[];
         liquidTags: string[];
     }

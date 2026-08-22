@@ -1,0 +1,9 @@
+[
+  {
+    "action": "parcel",
+    "name": "custom-settings-deployment-step",
+    "source": "Assets/ts/custom-settings-deployment-step.ts",
+    "dest": "wwwroot/Scripts/custom-settings-deployment-step/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

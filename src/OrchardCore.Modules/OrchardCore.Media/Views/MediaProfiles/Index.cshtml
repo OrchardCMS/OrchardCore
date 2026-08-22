@@ -28,7 +28,7 @@
             </div>
         </div>
     </div>
-    <ul class="list-group">
+    <ul class="list-group bulk-select-list" data-selected-text="@T["selected"]">
         @if (Model.MediaProfiles.Count > 0)
         {
             <li class="list-group-item text-bg-theme">
@@ -90,4 +90,4 @@
 
 @await DisplayAsync(Model.Pager)
 
-<script asp-name="list-management" at="Foot"></script>
+<script asp-src="~/OrchardCore.Media/Scripts/media-profiles-index/media-profiles-index.min.js" debug-src="~/OrchardCore.Media/Scripts/media-profiles-index/media-profiles-index.js" at="Foot" type="module"></script>

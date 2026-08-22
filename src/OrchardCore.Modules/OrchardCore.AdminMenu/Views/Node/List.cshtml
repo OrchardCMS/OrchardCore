@@ -9,7 +9,7 @@
 }
 
 <script asp-name="Sortable" at="Foot"></script>
-<script asp-src="~/OrchardCore.AdminMenu/Scripts/node-list/admin-menu-node-list.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/node-list/admin-menu-node-list.js" at="Foot" depends-on="Sortable"></script>
+<script asp-src="~/OrchardCore.AdminMenu/Scripts/node-list/admin-menu-node-list.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/node-list/admin-menu-node-list.js" at="Foot" depends-on="Sortable" type="module"></script>
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css"></style>
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Nodes for '{0}'", localizedAdminMenuName])</h1></zone>
@@ -34,7 +34,7 @@
     {
         var updater = ModelUpdaterAccessor.ModelUpdater;
 
-        <ol id="menu" data-treenode-id="content-preset" class="list-group mb-3">
+        <ol id="menu" data-treenode-id="content-preset" data-tree-id="@Model.AdminMenu.Id" data-move-node-url="@Url.Action("MoveNode", "Node", new { area = "OrchardCore.AdminMenu" })" class="list-group mb-3">
             @foreach (var menuItem in Model.AdminMenu.MenuItems)
             {
                 if (menuItem != null)
@@ -87,7 +87,3 @@
 </div>
 
 <div id="move-error-message" class="d-none" data-message="@T["There was an error when moving the tree node."]"></div>
-
-<script at="Foot">
-    initAdminMenuNodeList('@Model.AdminMenu.Id', '@Url.Action("MoveNode", "Node", new { area = "OrchardCore.AdminMenu"})');
-</script>

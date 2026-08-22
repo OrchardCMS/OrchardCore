@@ -129,7 +129,19 @@ public sealed class OrchardTestFixture : IAsyncDisposable
             return null;
         }
 
-        var invalidChars = Path.GetInvalidFileNameChars();
+        // Path.GetInvalidFileNameChars() is OS-dependent - on Linux (the CI runner), '"' isn't
+        // actually invalid for a filesystem path, so a trace file for a [Theory]/[InlineData]
+        // test whose display name contains a quoted string argument (xUnit wraps string
+        // parameters in literal quotes when building it, e.g. `(adminUrl: "/Admin/Templates", ...)`)
+        // writes to disk just fine there. actions/upload-artifact enforces its own stricter,
+        // cross-platform-safe character set on top of that regardless of OS though, so the same
+        // name that saved locally can still fail the artifact upload step later - denylist that
+        // full set explicitly instead of relying on the OS's (looser) rules.
+        var invalidChars = Path.GetInvalidFileNameChars()
+            .Concat(['"', ':', '<', '>', '|', '*', '?', '\u000D', '\u000A'])
+            .Distinct()
+            .ToArray();
+
         return string.Concat(name.Select(c => Array.IndexOf(invalidChars, c) >= 0 ? '_' : c));
     }
 

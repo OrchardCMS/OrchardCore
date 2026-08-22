@@ -99,9 +99,9 @@
 <div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty))" id="@(fieldId)_FieldWrapper">
     <label for="@(fieldId)_color" class="ocat-label @(settings.Required ? "ocat-label-required" : "") d-block">@localizedFieldName</label>
     <div id="@(fieldId)_color_wrapper" class="color_wrapper">
-        <input id="@(fieldId)" asp-for="Text" type="hidden">
-        <input id="@(fieldId)_color" class="color" oninput="setColorField('@fieldId')" type="color" value="@color" @(settings.Type == FieldBehaviorType.GeneratedDisabled ? "disabled" : "")>
-        <input id="@(fieldId)_color_opacity" title="@T["Opacity"]" class="color_opacity" oninput="setColorField('@fieldId')" type="range" min="0" max="255" step="1" value="@alpha" @(settings.Type == FieldBehaviorType.GeneratedDisabled ? "disabled" : "")>
+        <input id="@(fieldId)" asp-for="Text" type="hidden" class="color-field-value">
+        <input id="@(fieldId)_color" class="color" type="color" value="@color" @(settings.Type == FieldBehaviorType.GeneratedDisabled ? "disabled" : "")>
+        <input id="@(fieldId)_color_opacity" title="@T["Opacity"]" class="color_opacity" type="range" min="0" max="255" step="1" value="@alpha" @(settings.Type == FieldBehaviorType.GeneratedDisabled ? "disabled" : "")>
     </div>
     <span asp-validation-for="Text"></span>
     @if (!string.IsNullOrEmpty(settings.Hint))
@@ -110,48 +110,4 @@
     }
 </div>
 
-<script>
-    (function() {
-        const currentFieldId = '@fieldId';
-
-        function onDocumentReady(fn) {
-            if (document.readyState === "loading") {
-                document.addEventListener("DOMContentLoaded", fn);
-            } else {
-                fn();
-            }
-        }
-
-        // Define the global function only once
-        if (!window.setColorField) {
-            window.setColorField = function(fieldId) {
-                const colorField = document.querySelector('#' + fieldId);
-                const colorPicker = document.querySelector('#' + fieldId + '_color');
-                const colorWrapper = document.querySelector('#' + fieldId + '_color_wrapper');
-                const colorOpacity = document.querySelector('#' + fieldId + '_color_opacity');
-
-                if (!colorField || !colorPicker || !colorWrapper || !colorOpacity) {
-                    return;
-                }
-
-                var colorAlpha = colorOpacity.value == 255
-                    ? ""
-                    : parseInt(colorOpacity.value).toString(16).padStart(2, "0");
-                colorWrapper.style.backgroundColor = colorPicker.value + colorAlpha;
-                colorField.value = colorPicker.value + colorAlpha;
-            };
-
-            // Initialize all color fields on document ready (for initial page load)
-            onDocumentReady(function() {
-                const colorWrappers = document.querySelectorAll('.color_wrapper');
-                colorWrappers.forEach(function(wrapper) {
-                    const fieldId = wrapper.id.replace('_color_wrapper', '');
-                    window.setColorField(fieldId);
-                });
-            });
-        }
-
-        // Also initialize this specific field immediately (for dynamic injection)
-        window.setColorField(currentFieldId);
-    })();
-</script>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/text-field-editors/text-field-color.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/text-field-editors/text-field-color.js" at="Foot" type="module"></script>

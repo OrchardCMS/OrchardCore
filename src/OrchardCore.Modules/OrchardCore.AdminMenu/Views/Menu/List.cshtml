@@ -32,7 +32,7 @@
         </div>
     </div>
 
-    <ul class="list-group with-checkbox">
+    <ul class="list-group with-checkbox bulk-select-list" data-selected-text="@T["selected"]">
         @if (Model.AdminMenu.Any())
         {
             <li class="list-group-item text-bg-theme">
@@ -99,4 +99,4 @@
 
 @await DisplayAsync(Model.Pager)
 
-<script asp-name="list-management" at="Foot"></script>
+<script asp-src="~/OrchardCore.AdminMenu/Scripts/menu-list/menu-list.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/menu-list/menu-list.js" at="Foot" type="module"></script>

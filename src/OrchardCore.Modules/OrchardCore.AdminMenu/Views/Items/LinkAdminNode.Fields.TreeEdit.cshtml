@@ -124,19 +124,6 @@
             </div>
         </div>
     </div>
-    <script at="Foot" depends-on="admin-menu-permission-picker">
-        function onDocumentReady(callback) {
-            if (document.readyState !== 'loading') {
-                callback();
-            } else {
-                document.addEventListener('DOMContentLoaded', callback);
-            }
-        }
-
-        onDocumentReady(() => {
-            initAdminMenuPermissionsPicker(document.querySelector("#PermissionPicker"));
-        });
-    </script>
 </div>
 
 <div id="iconPickerVue">
@@ -155,30 +142,4 @@
     </div>
 </div>
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        document.querySelectorAll('.icon-picker-trigger').forEach(function (trigger) {
-            trigger.addEventListener('click', function (e) {
-                var node = e.currentTarget.dataset.relatedNode;
-                iconPickerVue.show(node, 'sample-icon-' + node);
-            });
-        });
-
-        document.querySelectorAll('button.remove-icon').forEach(function (button) {
-            button.addEventListener('click', function (e) {
-                var node = e.currentTarget.dataset.relatedNode;
-                document.getElementById(node).value = '';
-                // Changing the class to empty string is not enough, the icon needs to be recreated.
-                document.getElementById('sample-icon-' + node).outerHTML = '<i id="sample-icon-' + node + '" class=" "></i>';
-            });
-        });
-    });
-</script>
+<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-node-editors/link-admin-node.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-node-editors/link-admin-node.js" depends-on="admin-menu-permission-picker" at="Foot" type="module"></script>

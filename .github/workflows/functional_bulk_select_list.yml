@@ -1,0 +1,74 @@
+name: Functional Tests - Bulk Select List UI Regression
+
+# Covers the shared bulk-select-list.ts admin-list component (select-all + per-row
+# checkboxes + #actions/#items/#selected-items toggling) across every real consumer
+# view (BulkSelectListTests.cs, plus TenantsBulkSelectTests.cs which already runs in
+# pr_ci.yml's fast "*Cms*" filter). This is UI-regression coverage for the
+# onDocumentReady -> ES module conversion (see PR #19522) and any future changes to
+# the shared component or the 11+ views built on it - it is not something that needs
+# checking on every single commit, so unlike pr_ci.yml this workflow deliberately does
+# NOT run on every PR push. Follows the same low-frequency trigger pattern as
+# functional_all_db.yml: manual dispatch, on PR review submission (so it's checked
+# before a human actually approves/merges), and on push to main/release branches as a
+# post-merge safety net.
+
+on:
+  # Manual trigger.
+  workflow_dispatch:
+  pull_request_review:
+    types: [submitted]
+  # Run it on main and release pushes too, in case we merge from a branch that's not
+  # up-to-date with the target branch and breaks something after merge.
+  push:
+    paths:
+      - '.scripts/bloom/components/bulk-select-list.ts'
+      - 'src/*/*/Assets/ts/*-list.ts'
+      - 'src/*/*/Assets/ts/*-index.ts'
+      - 'test/OrchardCore.Tests.Functional/Tests/Cms/BulkSelectListTests.cs'
+      - 'test/OrchardCore.Tests.Functional/Fixtures/bulk-select-list-tests.recipe.json'
+    branches: [ main, release/** ]
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  PLAYWRIGHT_TRACING: true
+  ASPNETCORE_ENVIRONMENT: Production
+
+permissions:
+  contents: read
+
+jobs:
+  test_functional_bulk_select_list:
+    name: Functional Tests - Bulk Select List
+    # These conditions are needed because the workflow triggers on individual PR
+    # comments too, see https://github.com/orgs/community/discussions/124396.
+    if: github.event_name == 'workflow_dispatch' ||
+        github.event_name == 'push' ||
+        github.event.review.state == 'APPROVED' ||
+        github.event.review.state == 'CHANGES_REQUESTED'
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+    - uses: ./.github/actions/setup-dotnet
+    - name: Build
+      run: |
+        dotnet build -c Release test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj
+    - name: Cache Playwright Browsers
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-${{ hashFiles('Directory.Packages.props') }}
+    - name: Install Playwright Browsers
+      run: |
+        pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
+    - name: Functional Tests
+      run: |
+        dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*BulkSelectListTests*" --filter-class "*TenantsBulkSelectTests*"
+    - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      if: failure()
+      with:
+        name: functional-bulk-select-list-failure
+        path: |
+          src/OrchardCore.Cms.Web/App_Data_Tests_*/logs
+          test/OrchardCore.Tests.Functional/traces
+        retention-days: 3

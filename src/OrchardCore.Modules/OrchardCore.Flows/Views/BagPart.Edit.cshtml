@@ -17,7 +17,7 @@
     var totalItems = Model.ContainedContentTypeDefinitions.Count();
 }
 <div>
-    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-bagpart bagpart-@partName.HtmlClassify() row mx-0" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })" data-content-types="@contentTypesStringified">
+    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-bagpart bagpart-@partName.HtmlClassify() bagpart-sortable-placeholder row mx-0" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })" data-content-types="@contentTypesStringified" data-part-name="@partName">
         @{
             var index = 0;
             foreach (var widget in Model.AccessibleWidgets)
@@ -118,7 +118,5 @@
         }
     }
 
-    <script at="Foot">
-        initFlowSortableWidgets('@widgetTemplatePlaceholderId', 'contentTypes', 'bagpart-widgets', '@partName');
-    </script>
+    <script asp-src="~/OrchardCore.Flows/Scripts/flow-part-editors/bag-part.min.js" debug-src="~/OrchardCore.Flows/Scripts/flow-part-editors/bag-part.js" at="Foot" depends-on="flows" type="module"></script>
 </div>

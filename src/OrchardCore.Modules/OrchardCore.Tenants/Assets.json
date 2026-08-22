@@ -1,0 +1,29 @@
+[
+  {
+    "action": "parcel",
+    "name": "feature-profile-editor",
+    "source": "Assets/ts/feature-profile-editor.ts",
+    "dest": "wwwroot/Scripts/feature-profile-editor/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "tenants-admin-lists",
+    "source": [
+      "Assets/ts/tenants-admin-list.ts",
+      "Assets/ts/feature-profiles-admin-list.ts"
+    ],
+    "dest": "wwwroot/Scripts/tenants-admin-lists/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "tenant-task-editors",
+    "source": [
+      "Assets/ts/create-tenant-task.ts",
+      "Assets/ts/setup-tenant-task.ts"
+    ],
+    "dest": "wwwroot/Scripts/tenant-task-editors/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]
