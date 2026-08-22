@@ -13,7 +13,7 @@
 
 @model UserNotificationNavbarViewModel
 
-<li class="nav-item dropdown text-end">
+<li class="nav-item dropdown text-end notification-navbar-container" data-mark-as-read-url="@Url.RouteUrl(MarkAsReadEndpoints.RouteName, new { area = NotificationConstants.Features.Notifications }))">
     <a type="button" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" aria-label="@T["Notifications"]">
         @if (Model.TotalUnread > 0)
         {
@@ -70,11 +70,7 @@
     </ul>
 </li>
 
-<script at="Foot" asp-name="notification-manager-initializes" depends-on="notification-manager">
-    (function () {
-        notificationManager.initializeContainer('@Url.RouteUrl(MarkAsReadEndpoints.RouteName, new { area = NotificationConstants.Features.Notifications }))', '#UnreadNotificationBadge')
-    })();
-</script>
+<script asp-src="~/TheTheme/js/user-notification-navbar/UserNotificationNavbar.min.js" debug-src="~/TheTheme/js/user-notification-navbar/UserNotificationNavbar.js" depends-on="notification-manager" at="Foot" type="module"></script>
 
 <style at="Head">
     #UnreadNotificationBadge {

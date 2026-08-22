@@ -32,7 +32,7 @@
     </div>
 </div>
 
-<div class="ocat-limited-wrapper" id="patternEditor">
+<div class="ocat-limited-wrapper" id="patternEditor" data-generated-options="@nameof(TitlePartOptions.GeneratedDisabled),@nameof(TitlePartOptions.GeneratedHidden)">
     <label asp-for="Pattern" class="ocat-label">@T["Pattern"]</label>
     <div class="ocat-limited">
         <textarea asp-for="Pattern" rows="5" class="form-control"></textarea>
@@ -48,34 +48,4 @@
     </div>
 </div>
 
-<script at="Foot">
-    document.addEventListener('DOMContentLoaded', function () {
-        editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Pattern)'), {
-            autoRefresh: true,
-            lineNumbers: true,
-            styleActiveLine: true,
-            matchBrackets: true,
-            mode: { name: "liquid" },
-        });
-
-        setPatternVisibility();
-
-        document.getElementById('@Html.IdFor(x => x.Options)').addEventListener('change', function () {
-            setPatternVisibility();
-        });
-    });
-
-    function setPatternVisibility() {
-        var selectedValue = document.getElementById('@Html.IdFor(x => x.Options)').value;
-        var patternEditor = document.getElementById('patternEditor');
-        switch (selectedValue) {
-            case '@nameof(TitlePartOptions.GeneratedDisabled)':
-            case '@nameof(TitlePartOptions.GeneratedHidden)':
-                patternEditor.classList.remove('d-none');
-                break;
-            default:
-                patternEditor.classList.add('d-none');
-                break;
-        }
-    }
-</script>
+<script asp-src="~/OrchardCore.Title/Scripts/title-part-settings/title-part-settings.min.js" debug-src="~/OrchardCore.Title/Scripts/title-part-settings/title-part-settings.js" at="Foot" type="module"></script>

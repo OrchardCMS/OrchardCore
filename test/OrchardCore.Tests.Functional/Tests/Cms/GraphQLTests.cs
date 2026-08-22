@@ -65,20 +65,25 @@ public sealed class GraphQLTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await page.GotoAndAssertOkAsync(createUrl);
         await page.GetByRole(AriaRole.Textbox, new() { Name = "Name", Exact = true }).FillAsync(QueryName);
 
-        await page.WaitForFunctionAsync(
-            "() => window.monaco?.editor?.getModels().length > 0 && document.querySelector('.CodeMirror')?.CodeMirror");
-        await page.EvaluateAsync(
-            """
-            values => {
-                monaco.editor.getModels()[0].setValue(values.schema);
-                document.querySelector(".CodeMirror").CodeMirror.setValue(values.query);
-            }
-            """,
-            new
-            {
-                schema = """{ "type": "object", "properties": { "Value": { "type": "string" } } }""",
-                query = "SELECT 'Allowed' AS Value",
-            });
+        // Drives both editors via real keyboard input (click + type) rather than reaching into
+        // window.monaco/CodeMirror internals directly. That reach-in pattern broke once this
+        // branch's ES-module refactor converted Query.Fields.Edit.cshtml's Schema field from the
+        // old inline `require(['vs/editor/editor.main'], ...)` AMD bootstrap (which exposed a bare
+        // `window.monaco` global) to the shared monaco-json-settings-editor bloom component, which
+        // only exposes `window.__orchardCoreMonacoReady` (a Promise) - `window.monaco` is never a
+        // global on this branch anymore, so the old wait/eval pattern could time out or silently
+        // target the wrong (non-existent) API depending on load timing. Typing through the visible
+        // editor surface, as MonacoLiquidIntelliSenseTests.cs already does for the same reason,
+        // works regardless of what internals the editor happens to expose.
+        var schemaEditor = page.Locator(".monaco-json-settings-editor-container .monaco-editor");
+        await Assertions.Expect(schemaEditor).ToBeVisibleAsync();
+        await schemaEditor.ClickAsync();
+        await page.Keyboard.TypeAsync("""{ "type": "object", "properties": { "Value": { "type": "string" } } }""");
+
+        var queryEditor = page.Locator(".codemirror-query-editor").Locator("xpath=following-sibling::div[contains(@class, 'CodeMirror')]");
+        await Assertions.Expect(queryEditor).ToBeVisibleAsync();
+        await queryEditor.ClickAsync();
+        await page.Keyboard.TypeAsync("SELECT 'Allowed' AS Value");
 
         await page.ClickSaveAsync();
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);

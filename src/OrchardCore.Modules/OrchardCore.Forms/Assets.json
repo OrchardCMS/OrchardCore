@@ -24,5 +24,40 @@
     "source": "Assets/js/form-visibility-rules.js",
     "output": "wwwroot/Scripts/form-visibility-rules.js",
     "tags": [ "forms", "js" ]
+  },
+  {
+    "action": "parcel",
+    "name": "form-input-element-visibility",
+    "source": "Assets/ts/form-input-element-visibility.ts",
+    "dest": "wwwroot/Scripts/form-input-element-visibility/",
+    "tags": [ "forms", "js" ]
+  },
+  {
+    "action": "parcel",
+    "name": "form-input-element-visibility-part-visibility",
+    "source": "Assets/ts/form-input-element-visibility-part-visibility.ts",
+    "dest": "wwwroot/Scripts/form-input-element-visibility-part-visibility/",
+    "tags": [ "forms", "js" ]
+  },
+  {
+    "action": "parcel",
+    "name": "input-part",
+    "source": "Assets/ts/input-part.ts",
+    "dest": "wwwroot/Scripts/input-part/",
+    "tags": [ "forms", "js" ]
+  },
+  {
+    "action": "parcel",
+    "name": "form-element-label-part",
+    "source": "Assets/ts/form-element-label-part.ts",
+    "dest": "wwwroot/Scripts/form-element-label-part/",
+    "tags": [ "forms", "js" ]
+  },
+  {
+    "action": "parcel",
+    "name": "select-part",
+    "source": "Assets/ts/select-part.ts",
+    "dest": "wwwroot/Scripts/select-part/",
+    "tags": [ "forms", "js" ]
   }
 ]

@@ -21,11 +21,11 @@
     <div class="ocat-end">
         @if (settings.Type == FieldBehaviorType.GeneratedDisabled)
         {
-            <textarea asp-for="Text" rows="5" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()" disabled></textarea>
+            <textarea asp-for="Text" rows="5" class="form-control content-preview-text text-field-codemirror" dir="@culture.GetLanguageDirection()" disabled></textarea>
         }
         else
         {
-            <textarea asp-for="Text" rows="5" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()"></textarea>
+            <textarea asp-for="Text" rows="5" class="form-control content-preview-text text-field-codemirror" dir="@culture.GetLanguageDirection()"></textarea>
         }
         <span asp-validation-for="Text"></span>
         @if (!string.IsNullOrEmpty(settings.Hint))
@@ -44,33 +44,4 @@
 <script asp-name="codemirror-mode-htmlmixed" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Text)');
-        // When part rendered by a flow part only the elements scripts are rendered, so the html element will not exist.
-        if (optionsTextArea) {
-            var editor = CodeMirror.fromTextArea(optionsTextArea, {
-                autoCloseTags: true,
-                autoRefresh: true,
-                lineNumbers: true,
-                lineWrapping: true,
-                matchBrackets: true,
-                styleActiveLine: true,
-                mode: { name: "htmlmixed" }
-            });
-
-            editor.on('change', function (cmEditor) {
-                cmEditor.save();
-                document.dispatchEvent(new Event('contentpreview:render'));
-            });
-        }
-    });
-</script>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/text-field-editors/text-field-codemirror.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/text-field-editors/text-field-codemirror.js" at="Foot" type="module"></script>

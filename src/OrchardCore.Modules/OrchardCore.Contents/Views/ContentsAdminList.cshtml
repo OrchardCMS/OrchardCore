@@ -21,7 +21,7 @@
         </div>
     </div>
 </div>
-<ul class="list-group with-checkbox">
+<ul class="list-group with-checkbox bulk-select-list" data-checkbox-name="itemIds" data-bulk-action-name="Options.BulkAction" data-selected-text="@T["selected"]">
     <li class="list-group-item text-bg-theme">
         <div class="row gx-3">
             <div class="col">
@@ -53,6 +53,4 @@
 
 @await DisplayAsync(Model.Pager)
 
-</div>
-
-<script asp-name="list-management" at="Foot"></script>
+<script asp-src="~/OrchardCore.Contents/Scripts/contents-admin-list/contents-admin-list.min.js" debug-src="~/OrchardCore.Contents/Scripts/contents-admin-list/contents-admin-list.js" at="Foot" type="module"></script>

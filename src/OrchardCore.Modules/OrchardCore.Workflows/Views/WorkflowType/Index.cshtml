@@ -7,7 +7,7 @@
 }
 <zone Name="Title"><h1>@RenderTitleSegments(T["Manage Workflows"])</h1></zone>
 
-<form asp-action="Index" id="workflows-types-form" method="post" class="no-multisubmit" data-list-management data-selected-label="@T["selected"]">
+<form asp-action="Index" id="workflows-types-form" method="post" class="no-multisubmit workflow-bulk-select-list" data-selected-text="@T["selected"]">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
@@ -101,4 +101,4 @@
 </form>
 @await DisplayAsync(Model.Pager)
 
-<script asp-name="list-management" at="Foot"></script>
+<script asp-src="~/OrchardCore.Workflows/Scripts/workflow-index-editors/workflow-type-index.min.js" debug-src="~/OrchardCore.Workflows/Scripts/workflow-index-editors/workflow-type-index.js" at="Foot" type="module"></script>

@@ -138,36 +138,4 @@
         </div>
     </div>
 </div>
-<script asp-name="list-management" at="Foot"></script>
-
-<script at="Foot">
-    document.addEventListener('DOMContentLoaded', () => {
-        var modalSteps = document.getElementById('modalSteps');
-        var searchBox = document.getElementById('search-box');
-
-        if (modalSteps) {
-            modalSteps.addEventListener('shown.bs.modal', function () {
-                if (searchBox) {
-                    searchBox.focus();
-                }
-
-                modalSteps.dispatchEvent(new CustomEvent('listmanagement:update'));
-            });
-
-            modalSteps.addEventListener('hidden.bs.modal', function () {
-                if (searchBox) {
-                    searchBox.value = '';
-                }
-                document.querySelectorAll('#deployment-step-categories .nav-link').forEach(function (link) {
-                    link.classList.remove('active');
-                });
-                var allCategory = document.querySelector('#deployment-step-categories .nav-link[data-list-filter-value="all"]');
-                if (allCategory) {
-                    allCategory.classList.add('active');
-                }
-
-                modalSteps.dispatchEvent(new CustomEvent('listmanagement:update'));
-            });
-        }
-    });
-</script>
+<script asp-src="~/OrchardCore.Deployment/Scripts/deployment-plan-display/deployment-plan-display.min.js" debug-src="~/OrchardCore.Deployment/Scripts/deployment-plan-display/deployment-plan-display.js" at="Foot" type="module"></script>

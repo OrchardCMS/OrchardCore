@@ -42,11 +42,4 @@
     </div>
 </div>
 
-<script at="Foot">
-    document.getElementById('@Html.IdFor(i => i.OverrideSitemapConfig)').addEventListener('change', function (e) {
-        var checked = e.target.checked;
-        document.querySelectorAll('.sitemap-form-g').forEach(function (element) {
-            element.style.display = checked ? '' : 'none';
-        });
-    });
-</script>
+<script asp-src="~/OrchardCore.Sitemaps/Scripts/sitemap-part/sitemap-part.min.js" debug-src="~/OrchardCore.Sitemaps/Scripts/sitemap-part/sitemap-part.js" at="Foot" type="module"></script>

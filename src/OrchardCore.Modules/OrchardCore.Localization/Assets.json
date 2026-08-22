@@ -4,5 +4,19 @@
     "name": "loc-optionsEditor",
     "source": "Assets/js/*.js",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "admin-culture-selector",
+    "source": "Assets/ts/admin-culture-selector.ts",
+    "dest": "wwwroot/Scripts/admin-culture-selector/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "localization-settings",
+    "source": "Assets/ts/localization-settings.ts",
+    "dest": "wwwroot/Scripts/localization-settings/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

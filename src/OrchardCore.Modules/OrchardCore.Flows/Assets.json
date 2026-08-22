@@ -13,9 +13,38 @@
     "tags": ["admin", "dashboard", "css"]
   },
   {
-    "action": "min",
+    "action": "parcel",
     "name": "content-type-picker",
-    "source": "Assets/js/content-type-picker.js",
+    "source": "Assets/ts/content-type-picker.ts",
+    "dest": "wwwroot/Scripts/content-type-picker/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "bag-part-settings",
+    "source": "Assets/ts/bag-part-settings.ts",
+    "dest": "wwwroot/Scripts/bag-part-settings/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "flow-blocks-editors",
+    "source": [
+      "Assets/ts/bag-part-blocks.ts",
+      "Assets/ts/flow-part-blocks.ts",
+      "Assets/ts/content-card-flow-part-blocks.ts"
+    ],
+    "dest": "wwwroot/Scripts/flow-blocks-editors/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "flow-part-editors",
+    "source": [
+      "Assets/ts/bag-part.ts",
+      "Assets/ts/flow-part.ts"
+    ],
+    "dest": "wwwroot/Scripts/flow-part-editors/",
     "tags": ["admin", "dashboard", "js"]
   }
 ]

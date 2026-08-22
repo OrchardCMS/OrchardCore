@@ -1,0 +1,12 @@
+[
+  {
+    "action": "parcel",
+    "name": "background-task-editors",
+    "source": [
+      "Assets/ts/background-task-edit.ts",
+      "Assets/ts/background-task-index.ts"
+    ],
+    "dest": "wwwroot/Scripts/background-task-editors/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

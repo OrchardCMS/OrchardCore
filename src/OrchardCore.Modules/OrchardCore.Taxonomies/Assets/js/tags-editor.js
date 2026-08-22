@@ -1,11 +1,16 @@
 window.initializeTagsEditor = function (element) {
     if (element) {
 
-        var elementId = element.id;
+        // Mounts onto the inner .tags-vue-root, not `element` itself: Vue 2's el-mount replaces
+        // the mounted node, and `element` is the node observeAndInit's shared MutationObserver
+        // tracks by identity to decide whether it has already been initialized. Mounting directly
+        // onto `element` would make its Vue-rendered replacement (which still carries the same
+        // "tags" class) look unmatched to that tracker, triggering an endless re-mount loop.
+        var vueRoot = element.querySelector('.tags-vue-root');
         var vueMultiselect = Vue.component('vue-multiselect', window.VueMultiselect.default);
 
         var vm = new Vue({
-            el: '#' + elementId,
+            el: vueRoot,
             components: { 'vue-multiselect': vueMultiselect },
             data: function () {
                 // All terms generate a model binding.

@@ -7,88 +7,15 @@
 
 @await DisplayAsync(await New.ShortcodeModal())
 
-<div class="row mb-3">
+<div class="row mb-3 html-monaco-editor" data-options="@(string.IsNullOrWhiteSpace(monacoSettings.Options) ? "{}" : monacoSettings.Options)">
     <label asp-for="Html" class="ocat-label">@Model.TypePartDefinition.DisplayName()</label>
     <div class="ocat-end">
-        <div id="@Html.IdFor(x => x.Html)_editor" asp-for="Text" style="min-height: 400px;" class="form-control" dir="@culture.GetLanguageDirection()"></div>
-        <textarea asp-for="Html" class="content-preview-text" hidden>@Html.Raw(Model.Html)</textarea>
+        <div id="@Html.IdFor(x => x.Html)_editor" asp-for="Text" style="min-height: 400px;" class="form-control html-monaco-editor-container" dir="@culture.GetLanguageDirection()"></div>
+        <textarea asp-for="Html" class="content-preview-text html-monaco-editor-value" hidden>@Html.Raw(Model.Html)</textarea>
         <span class="hint">@T["The body of the content item."]</span>
     </div>
 </div>
 
+<style asp-name="monaco"></style>
 <script asp-name="monaco" at="Foot"></script>
-<script at="Foot" depends-on="monaco">
-    function onDocumentReady(fn) {
-        if (document.readyState === "loading") {
-            document.addEventListener("DOMContentLoaded", fn);
-        } else {
-            fn();
-        }
-    }
-
-    onDocumentReady(function () {
-        const divEditor = document.getElementById('@Html.IdFor(x => x.Html)_editor');
-
-        if (!divEditor) {
-            return;
-        }
-        require(['vs/editor/editor.main'], function () {
-            var settings = @Html.Raw(string.IsNullOrWhiteSpace(monacoSettings.Options) ? "{}" : monacoSettings.Options);
-            if (settings.automaticLayout == undefined) {
-                settings.automaticLayout = true;
-            }
-            settings.language = 'html';
-
-            var html = document.documentElement;
-            const mutationObserver = new MutationObserver(setTheme);
-            mutationObserver.observe(html, { attributes: true });
-
-            function setTheme() {
-                var theme = html.dataset.bsTheme;
-                if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                    monaco.editor.setTheme('vs-dark')
-                } else {
-                    monaco.editor.setTheme('vs')
-                }
-            }
-
-            setTheme();
-
-            var editor = monaco.editor.create(divEditor, settings);
-            var textArea = document.getElementById('@Html.IdFor(x => x.Html)');
-
-            editor.getModel().onDidChangeContent((event) => {
-                textArea.value = editor.getValue();
-                document.dispatchEvent(new Event('contentpreview:render'));
-            });
-
-            const shortcodesAction = {
-                id: "shortcodes",
-                label: "Add Shortcode",
-                run: function (editor) {
-                    shortcodesApp.init(function (value) {
-                        if (value) {
-                            var selection = editor.getSelection();
-                            var text = value;
-                            var op = { range: selection, text: text, forceMoveMarkers: true };
-                            editor.executeEdits("shortcodes", [op]);
-                        }
-                        editor.focus();
-                    })
-                },
-                contextMenuGroupId: 'orchardcore',
-                contextMenuOrder: 0,
-                keybindings: [
-                    monaco.KeyMod.Alt | monaco.KeyCode.KeyS,
-                ]
-            }
-            editor.addAction(shortcodesAction);
-
-            editor.getModel().setValue(textArea.value);
-
-            window.addEventListener("submit", function () {
-                textArea.value = editor.getValue();
-            });
-        });
-    });
-</script>
+<script asp-src="~/OrchardCore.Html/Scripts/html-body-part-editors/html-body-part-monaco.min.js" debug-src="~/OrchardCore.Html/Scripts/html-body-part-editors/html-body-part-monaco.js" depends-on="monaco" at="Foot" type="module"></script>
