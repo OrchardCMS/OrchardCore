@@ -100,11 +100,24 @@ Do **not** attempt a single flag-day PR converting all 17 call sites at once - t
 
 **Objective:** Resolve the open compatibility-notes question before it's independently re-decided 5 different ways across 5 different PRs.
 
+**Status: DECIDED.** See "## Vue-draggable replacement decision" below.
+
 **Steps:**
 1. Read `.scripts/bloom/components/sortable-menu.ts` in full to understand the existing hand-rolled SortableJS pattern this repo already committed to for Menu/Taxonomies.
 2. Evaluate `vuedraggable@next` (Vue 3 build) vs. reusing/extending SortableJS directly for the 5 vue-draggable consumers (rows 2, 3, 5, 6, 8 in the table above) - these are all simple flat reorderable lists (option rows, parameter rows, meta-tag rows), not nested trees, so a much smaller SortableJS wrapper than `sortable-menu.ts` would suffice if going that route.
 3. Write the decision (with rationale) as a short `## Vue-draggable replacement decision` addendum to this plan file before starting Task 3 (the first list-editor migration) - do not silently decide per-file.
 4. No code changes in this task - it's a decision checkpoint only.
+
+## Vue-draggable replacement decision
+
+**Decision (confirmed with user 2026-08-22): use `vuedraggable@next` (the Vue 3 build of `vuedraggable`), not a hand-rolled SortableJS component.**
+
+Rationale: `sortable-menu.ts` (read in full per step 1) solves a genuinely harder problem - a single flat depth-tagged list standing in for a nested tree, with live indent/outdent preview and detached-subtree reinsertion, none of which any of the 5 `vue-draggable` consumers need. Their shape is uniformly "reorder N flat rows of a simple object array" (options, parameters, meta-tags), which is exactly `vuedraggable`'s own primary use case, not one that benefits from bespoke logic. `vuedraggable@next` wraps SortableJS under the hood, so this doesn't reintroduce jQuery UI or move away from the SortableJS foundation the rest of the app already standardized on - it's the same underlying library, just via the maintained Vue-binding rather than a second hand-written wrapper alongside `sortable-menu.ts`. Trade-off accepted: one additional npm dependency (`vuedraggable@next`), in exchange for less new code to write and maintain across Task 3's shared `options-table-editor.vue` and Task 5's `vue-multiselect-userpicker` (which also uses `vue-draggable` alongside `vue-multiselect`).
+
+Practical implications for Task 3/Task 4/Task 5:
+- Add `vuedraggable` (the `next` dist-tag / Vue-3-compatible major version) to whichever `package.json` ends up hosting `options-table-editor.vue` (see Task 3's build-location decision) and to `ContentFields`' `vue-multiselect-userpicker` migration target.
+- Replace the old global `<draggable v-model="data.options" :tag="'tbody'">` (Vue 2 UMD registration via `vue-draggable:2`) with a real `import draggable from "vuedraggable"` + local component registration; `v-model` binding stays conceptually the same (row array in, reordered array out) but confirm the exact prop name (`v-model` vs `modelValue`/`list`) against the installed package's actual API before assuming parity, same caution as vue-multiselect's own 2→3 jump.
+- The old global `vue-draggable:2` / `vue-draggable-2.24.3` `ResourceManagementOptionsConfiguration.cs` DefineScript and vendor files are retired in Task 7 once no consumer references them anymore (unchanged from the original plan).
 
 ### Task 2: Migrate the Flows content-type-picker (single-file, no extraction needed)
 
