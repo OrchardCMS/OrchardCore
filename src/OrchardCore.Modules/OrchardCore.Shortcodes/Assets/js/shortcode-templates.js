@@ -1,4 +1,4 @@
-window.initializeShortcodesTemplateEditor = function (categoriesElement, contentElement, usageElement, previewElement, nameElement, hintElement) {
+window.initializeShortcodeCodeMirrorEditors = function (contentElement, usageElement, previewElement, nameElement, hintElement) {
     if (contentElement) {
         CodeMirror.fromTextArea(contentElement, {
             autoCloseTags: true,
@@ -45,33 +45,5 @@ window.initializeShortcodesTemplateEditor = function (categoriesElement, content
         };
         hintElement.addEventListener('keyup', updateHintPreview);
         hintElement.addEventListener('paste', updateHintPreview);
-    }
-
-    if (categoriesElement) {
-        var vueMultiselect = Vue.component('vue-multiselect', window.VueMultiselect["default"]);
-        var vm = new Vue({
-            el: categoriesElement,
-            components: {
-                'vue-multiselect': vueMultiselect
-            },
-            data: function data() {
-                var allCategories = JSON.parse(categoriesElement.dataset.categories || "[]");
-                var selectedCategories = JSON.parse(categoriesElement.dataset.selectedCategories || "[]");
-                return {
-                    value: selectedCategories,
-                    options: allCategories
-                };
-            },
-            methods: {
-                getSelectedCategories() {
-                    return JSON.stringify(this.value);
-                },
-                addCategory(category) {
-                    this.options.push(category);
-                    this.value.push(category);
-                }
-            }
-        });
-        return vm;
     }
 };
