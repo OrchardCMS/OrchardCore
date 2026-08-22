@@ -10,10 +10,6 @@ declare const formVisibilityGroups: {
     }): void;
 };
 
-declare const Vue: {
-    config: { productionTip: boolean; devtools: boolean };
-};
-
 // Zero Razor-computed values in this file's original inline script, so this is a purely
 // mechanical move. The MutationObserver's own semantics (re-running actionVisibilitySettings on
 // EVERY .main-group-container on every mutation batch, not just newly-added ones) are preserved
@@ -45,9 +41,6 @@ const flowWidgetObserver = new MutationObserver((mutationsList) => {
 });
 
 flowWidgetObserver.observe(document.body, { childList: true, subtree: true });
-
-Vue.config.productionTip = false;
-Vue.config.devtools = false;
 
 const containers = [...document.querySelectorAll(".main-group-container")];
 
