@@ -24,12 +24,6 @@
     "tags": [ "admin", "dashboard", "css" ]
   },
   {
-    "action": "min",
-    "name": "contentfields",
-    "source": "Assets/js/OptionsEditor/*.js",
-    "tags": [ "admin", "dashboard", "js" ]
-  },
-  {
     "action": "parcel",
     "name": "contentfields",
     "source": [
