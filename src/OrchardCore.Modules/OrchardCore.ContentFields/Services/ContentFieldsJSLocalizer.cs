@@ -31,6 +31,30 @@ public sealed class ContentFieldsJSLocalizer(IStringLocalizer<ContentFieldsJSLoc
             };
         }
 
+        if (string.Equals(group, "content-fields-multiselect-picker", StringComparison.OrdinalIgnoreCase))
+        {
+            return new Dictionary<string, string>
+            {
+                { "TypeToSearch", S["Type to search"].Value },
+                { "Select", S["Select"].Value },
+                { "Remove", S["Remove"].Value },
+                { "NoResultFound", S["No result found"].Value },
+                { "NotPublished", S["Not published"].Value },
+                { "NotEnabled", S["Not enabled"].Value },
+            };
+        }
+
+        if (string.Equals(group, "content-fields-multitextfield-picker", StringComparison.OrdinalIgnoreCase))
+        {
+            return new Dictionary<string, string>
+            {
+                { "TypeToSearch", S["Type to search"].Value },
+                { "Select", S["Select"].Value },
+                { "Remove", S["Remove"].Value },
+                { "NoValuesFound", S["No values found"].Value },
+            };
+        }
+
         return null;
     }
 }
