@@ -7,13 +7,13 @@ const featureItems = featureGroups.flatMap((featureGroup) =>
 const visibilityFilter = document.getElementById("visibility-filter") as HTMLSelectElement | null;
 const statusFilter = document.getElementById("status-filter") as HTMLSelectElement | null;
 const listAlert = document.getElementById("list-alert");
-const featuresSummary = document.getElementById("features-summary");
+const featuresSummary = document.getElementById("list-summary");
 const bulkActionInput = document.querySelector<HTMLInputElement>("input[name='BulkAction']");
 const bulkActionSubmit = document.querySelector<HTMLInputElement>("input[name='submit.BulkAction']");
 const bulkActionLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>("a[data-action]"));
 const badgeShowMoreButtons = Array.from(document.querySelectorAll<HTMLElement>(".badge-show-more"));
 const featureGroupSelectAllCheckboxes = Array.from(
-    document.querySelectorAll<HTMLInputElement>(".feature-group-select-all"),
+    document.querySelectorAll<HTMLInputElement>(".list-group-select-all"),
 );
 
 function isVisible(element: Element) {
@@ -31,8 +31,8 @@ function getVisibleFeatureItemCheckboxes(featureGroup: HTMLElement) {
 }
 
 function updateFeatureGroupSelectAllState(featureGroup: HTMLElement) {
-    const featureGroupSelectAllCheckbox = featureGroup.querySelector<HTMLInputElement>(".feature-group-select-all");
-    const featureGroupToggleContainer = featureGroup.querySelector<HTMLElement>(".feature-group-toggle-container");
+    const featureGroupSelectAllCheckbox = featureGroup.querySelector<HTMLInputElement>(".list-group-select-all");
+    const featureGroupToggleContainer = featureGroup.querySelector<HTMLElement>(".list-group-select-all-container");
 
     if (!featureGroupSelectAllCheckbox || !featureGroupToggleContainer) {
         return;
@@ -43,8 +43,8 @@ function updateFeatureGroupSelectAllState(featureGroup: HTMLElement) {
     const allVisibleFeatureCheckboxesChecked =
         hasVisibleFeatureCheckboxes && visibleFeatureCheckboxes.every((checkbox) => checkbox.checked);
     const hasAnyVisibleFeatureCheckboxChecked = visibleFeatureCheckboxes.some((checkbox) => checkbox.checked);
-    const featureGroupSelectAllLabel = featureGroup.querySelector<HTMLElement>(".feature-group-select-all-label");
-    const featureGroupSelectAllText = featureGroup.querySelector<HTMLElement>(".feature-group-select-all-text");
+    const featureGroupSelectAllLabel = featureGroup.querySelector<HTMLElement>(".list-group-select-all-label");
+    const featureGroupSelectAllText = featureGroup.querySelector<HTMLElement>(".list-group-select-all-text");
 
     const isHidden = !hasVisibleFeatureCheckboxes;
     featureGroupToggleContainer.classList.toggle("d-none", isHidden);
