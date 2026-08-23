@@ -96,3 +96,8 @@ public sealed class BulkSelectListTestsFixture : CmsRecipeFixture
     protected override string RecipeName => "BulkSelectListTests";
 }
 
+public sealed class FormsFieldEditorTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "FormsFieldEditorTests";
+}
+

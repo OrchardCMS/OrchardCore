@@ -10,7 +10,14 @@ declare const Vue: {
     createApp(options: Record<string, unknown>): { mount(selector: string | Element): void };
 };
 
-declare const vuedraggable: { default: Record<string, unknown> };
+// Loaded globally as the "vue-draggable" UMD resource (vuedraggable@4.1.0). The UMD wrapper's
+// trailing `})["default"]` unwraps webpack's `__webpack_exports__["default"]` one level before
+// assigning to `root["vuedraggable"]`, so `window.vuedraggable` IS the component itself, not an
+// ES-module-shaped `{ default: ... }` namespace object (confirmed by runtime inspection: the
+// unwrapped-one-too-many `vuedraggable.default` read is `undefined`, which silently registers
+// `draggable` as an unresolved component - Vue then renders the literal, non-reactive
+// `<draggable>` tag instead of the real one, and drag/rows/click all become permanent no-ops).
+declare const vuedraggable: Record<string, unknown>;
 
 export interface SelectOption {
     text: string;
@@ -99,7 +106,7 @@ const selectOptionsRow = {
 };
 
 const selectOptionsTable = {
-    components: { draggable: vuedraggable.default, "select-options-row": selectOptionsRow },
+    components: { draggable: vuedraggable, "select-options-row": selectOptionsRow },
     props: {
         data: { type: Object, required: true },
     },
