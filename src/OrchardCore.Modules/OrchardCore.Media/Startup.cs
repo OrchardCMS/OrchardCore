@@ -35,6 +35,7 @@ using OrchardCore.Media.Fields;
 using OrchardCore.Media.Filters;
 using OrchardCore.Media.Handlers;
 using OrchardCore.Media.Hubs;
+using OrchardCore.Media.Realtime;
 using OrchardCore.Media.Indexing;
 using OrchardCore.Media.Liquid;
 using OrchardCore.Media.Middleware;
@@ -163,6 +164,7 @@ public sealed class Startup : StartupBase
         });
 
         services.AddPermissionProvider<PermissionProvider>();
+        services.AddScoped<MediaPathResolutionCache>();
         services.AddScoped<IAuthorizationHandler, ManageMediaFolderAuthorizationHandler>();
         services.AddNavigationProvider<AdminMenu>();
 
@@ -236,7 +238,6 @@ public sealed class Startup : StartupBase
             .AddGetDirectoryContentEndpoint()
             .AddGetMediaItemEndpoint()
             .AddGetMediaFieldItemsEndpoint()
-            .AddGetAllMediaItemsEndpoint()
             .AddCopyMediaEndpoint()
             .AddDeleteFolderEndpoint()
             .AddDeleteMediaEndpoint()
@@ -691,6 +692,8 @@ public sealed class MediaSignalRStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddSignalR();
+        services.AddSingleton<MediaChangeEventFactory>();
         services.AddSingleton<IMediaEventHandler, MediaSignalREventHandler>();
     }
 

@@ -96,8 +96,10 @@ export function resolveEmbeddedConfig(source: IEmbeddedConfigSource): IMediaRunt
     orchardBaseUrl: appBaseUrl,
     // Keep the relative base the MediaApiClient has always received.
     apiBaseUrl: source.basePath,
-    // Keep the exact same-origin hub path used before the origin split.
-    hubUrl: "/hubs/media",
+    // Same origin, but the hub lives under the tenant like every other endpoint. Hard-coding
+    // "/hubs/media" worked on the default tenant and 404'd on every prefixed one, leaving the gallery
+    // silently without real-time updates.
+    hubUrl: `${base}hubs/media`,
     authority: source.oidcAuthority || stripTrailingSlash(appBaseUrl),
     clientId: source.oidcClientId || DEFAULT_CLIENT_ID,
     scope: source.oidcScope || DEFAULT_SCOPE,

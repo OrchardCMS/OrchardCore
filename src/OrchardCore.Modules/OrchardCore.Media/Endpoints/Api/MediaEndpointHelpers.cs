@@ -22,7 +22,17 @@ namespace OrchardCore.Media.Endpoints.Api;
 /// </summary>
 internal static class MediaEndpointHelpers
 {
-    public static readonly char[] InvalidFolderNameCharacters = ['\\', '/'];
+    /// <summary>
+    /// Characters a folder name may not contain.
+    /// </summary>
+    /// <remarks>
+    /// '%' is rejected because authorization resolves paths through <see cref="Uri.UnescapeDataString(string)"/>
+    /// to neutralize percent-encoded traversal such as <c>%2e%2e</c>. A folder literally named
+    /// <c>100%20off</c> would therefore be authorized as <c>100 off</c> — a different folder, with
+    /// different permissions. Rather than drop the traversal defence, the ambiguity is removed at the
+    /// source: a name that survives decoding unchanged cannot be misread.
+    /// </remarks>
+    public static readonly char[] InvalidFolderNameCharacters = ['\\', '/', '%'];
 
     private static readonly char[] s_extensionSeparator = [' ', ','];
 
@@ -65,7 +75,8 @@ internal static class MediaEndpointHelpers
     public static async Task<DirectoryTreeNodeDto> ToDtoAsync(
         IAuthorizationService authorizationService,
         ClaimsPrincipal user,
-        DirectoryTreeNode node)
+        DirectoryTreeNode node,
+        MediaPathResolutionCache pathCache = null)
     {
         var filteredChildren = new List<DirectoryTreeNodeDto>();
 
@@ -73,13 +84,17 @@ internal static class MediaEndpointHelpers
         {
             foreach (var child in node.Children)
             {
+                // The path came from the cached directory tree, which was built by enumerating the
+                // store, so it needs no resolving.
+                pathCache?.MarkExistingDirectory(child.Path);
+
                 // Only include sub-folders the user is permitted to access.
                 if (!await authorizationService.AuthorizeAsync(user, MediaPermissions.ManageMediaFolder, (object)child.Path))
                 {
                     continue;
                 }
 
-                filteredChildren.Add(await ToDtoAsync(authorizationService, user, child));
+                filteredChildren.Add(await ToDtoAsync(authorizationService, user, child, pathCache));
             }
         }
 
@@ -97,10 +112,35 @@ internal static class MediaEndpointHelpers
         IMediaFileStore mediaFileStore,
         IAuthorizationService authorizationService,
         ClaimsPrincipal user,
-        string path)
+        string path,
+        MediaPathResolutionCache pathCache = null,
+        MediaDirectoryTreeCache treeCache = null,
+        bool everyFolderIsVisible = false)
     {
+        if (treeCache is not null)
+        {
+            // The cached tree is permission-agnostic, so it can only answer where permissions cannot
+            // change the answer. "No sub-directories at all" is one such case — there is nothing to be
+            // denied — and it is the common one for leaf folders.
+            var hasAny = await treeCache.TryGetHasChildrenAsync(path);
+
+            if (hasAny == false)
+            {
+                return false;
+            }
+
+            // When the caller may see every folder, the tree's answer is exact.
+            if (hasAny == true && everyFolderIsVisible)
+            {
+                return true;
+            }
+        }
+
         await foreach (var entry in mediaFileStore.GetDirectoriesAsync(path))
         {
+            // Enumerated by the store, so already canonical.
+            pathCache?.MarkExistingDirectory(entry.Path);
+
             if (await authorizationService.AuthorizeAsync(user, MediaPermissions.ManageMediaFolder, (object)entry.Path))
             {
                 return true;
@@ -114,12 +154,17 @@ internal static class MediaEndpointHelpers
         IMediaFileStore mediaFileStore,
         IAuthorizationService authorizationService,
         ClaimsPrincipal user,
-        string path)
+        string path,
+        MediaPathResolutionCache pathCache = null,
+        MediaDirectoryTreeCache treeCache = null)
     {
         var folders = new List<FileStoreEntryDto>();
 
         await foreach (var entry in mediaFileStore.GetDirectoriesAsync(path))
         {
+            // Enumerated by the store, so already canonical.
+            pathCache?.MarkExistingDirectory(entry.Path);
+
             // Only include folders the user is permitted to access.
             if (!await authorizationService.AuthorizeAsync(user, MediaPermissions.ManageMediaFolder, (object)entry.Path))
             {
@@ -129,18 +174,45 @@ internal static class MediaEndpointHelpers
             folders.Add(CreateFolderResult(entry));
         }
 
+        // Resolved once for the whole listing rather than per folder: a caller holding the global
+        // permissions is not subject to per-folder restrictions, so the cached tree's answer is exact
+        // and no folder has to be probed.
+        var everyFolderIsVisible = await CanSeeEveryFolderAsync(authorizationService, user);
+
         // Check HasChildren concurrently, considering only accessible sub-folders.
         var hasChildrenTasks = folders.Select(async folder =>
         {
-            folder.HasChildren = await HasSubDirectoriesAsync(mediaFileStore, authorizationService, user, folder.DirectoryPath);
+            folder.HasChildren = await HasSubDirectoriesAsync(
+                mediaFileStore, authorizationService, user, folder.DirectoryPath, pathCache, treeCache, everyFolderIsVisible);
         });
         await Task.WhenAll(hasChildrenTasks);
 
         return folders;
     }
 
+    /// <summary>
+    /// Whether every media folder is visible to <paramref name="user"/>, making a permission-agnostic
+    /// answer about sub-directories exact for them.
+    /// </summary>
+    private static async Task<bool> CanSeeEveryFolderAsync(IAuthorizationService authorizationService, ClaimsPrincipal user)
+        => await authorizationService.AuthorizeAsync(user, MediaPermissions.ManageMedia)
+        && await authorizationService.AuthorizeAsync(user, MediaPermissions.ViewMedia);
+
+    /// <summary>
+    /// Whether files stored directly in the media root may be listed for the current user.
+    /// </summary>
+    /// <remarks>
+    /// Holding any first-level folder permission is enough to open the root and reach the folders below
+    /// it, but the root's own files belong to no folder and are covered by <c>ViewRootMediaContent</c>
+    /// alone. Without Secure Media that permission does not exist, so the root behaves like any folder.
+    /// </remarks>
+    public static async Task<bool> CanListRootFilesAsync(IAuthorizationService authorizationService, HttpContext httpContext)
+        => !httpContext.RequestServices.IsSecureMediaEnabled()
+        || await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ViewRootMedia);
+
     public static async Task<List<FileStoreEntryDto>> GetDirectoryFilesAsync(
         IMediaFileStore mediaFileStore,
+        IAuthorizationService authorizationService,
         HttpContext httpContext,
         IContentTypeProvider contentTypeProvider,
         IFileVersionProvider fileVersionProvider,
@@ -151,6 +223,11 @@ internal static class MediaEndpointHelpers
         var allowedExtensions = GetRequestedExtensions(mediaOptions, extensions, false);
         var files = new List<FileStoreEntryDto>();
 
+        if (path.Length == 0 && !await CanListRootFilesAsync(authorizationService, httpContext))
+        {
+            return files;
+        }
+
         await foreach (var entry in mediaFileStore.GetFilesAsync(path))
         {
             if (allowedExtensions.Count == 0 || allowedExtensions.Contains(Path.GetExtension(entry.Path)))
@@ -160,43 +237,6 @@ internal static class MediaEndpointHelpers
         }
 
         return files;
-    }
-
-    public static async Task CollectAllItemsRecursiveAsync(
-        IMediaFileStore mediaFileStore,
-        IAuthorizationService authorizationService,
-        HttpContext httpContext,
-        IContentTypeProvider contentTypeProvider,
-        IFileVersionProvider fileVersionProvider,
-        string path,
-        HashSet<string> allowedExtensions,
-        List<FileStoreEntryDto> allItems)
-    {
-        var subFolders = new List<IFileStoreEntry>();
-
-        await foreach (var entry in mediaFileStore.GetDirectoryContentAsync(path))
-        {
-            if (entry.IsDirectory)
-            {
-                // Only include and recurse into folders the user is permitted to access.
-                if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMediaFolder, (object)entry.Path))
-                {
-                    continue;
-                }
-
-                allItems.Add(CreateFolderResult(entry));
-                subFolders.Add(entry);
-            }
-            else if (allowedExtensions.Count == 0 || allowedExtensions.Contains(Path.GetExtension(entry.Path)))
-            {
-                allItems.Add(CreateFileResult(entry, httpContext, contentTypeProvider, fileVersionProvider, mediaFileStore));
-            }
-        }
-
-        foreach (var folder in subFolders)
-        {
-            await CollectAllItemsRecursiveAsync(mediaFileStore, authorizationService, httpContext, contentTypeProvider, fileVersionProvider, folder.Path, allowedExtensions, allItems);
-        }
     }
 
     public static bool IsSpecialFolder(MediaOptions mediaOptions, AttachedMediaFieldFileService attachedMediaFieldFileService, string path)
