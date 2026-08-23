@@ -6,12 +6,6 @@
     "tags": ["admin", "dashboard", "css"]
   },
   {
-    "action": "min",
-    "name": "parametersEditor",
-    "source": "Assets/js/parametersEditor/parametersEditor.js",
-    "tags": ["admin", "dashboard", "js"]
-  },
-  {
     "action": "parcel",
     "name": "openid-settings",
     "source": [

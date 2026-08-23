@@ -13,6 +13,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
@@ -49,6 +50,7 @@ public sealed class Startup : StartupBase
         services.AddDataMigration<Migrations>();
         services.AddShapeTableProvider<TermShapes>();
         services.AddPermissionProvider<Permissions>();
+        services.AddScoped<IJSLocalizer, TaxonomiesJSLocalizer>();
 
         // Taxonomy Part
         services.AddContentPart<TaxonomyPart>()

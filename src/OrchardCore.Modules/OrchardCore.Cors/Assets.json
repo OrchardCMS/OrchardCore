@@ -1,11 +1,5 @@
 [
   {
-    "action": "min",
-    "name": "cors",
-    "source": "Assets/Admin/cors-admin.js",
-    "tags": ["admin", "dashboard", "js"]
-  },
-  {
     "action": "parcel",
     "name": "cors-admin-index",
     "source": "Assets/ts/cors-admin-index.ts",

@@ -1,20 +1,46 @@
 import observeAndInit from "@orchardcore/bloom/helpers/observeAndInit";
-
-// Defined by OrchardCore.Forms (Assets/js/SelectOptionsEditor/selectOptionsEditor.js), consumed here.
-declare const selectOptionsEditor: {
-    initilizeElement(elementId: string, options: unknown, defaultValue: string): void;
-    initilizeFieldType(wrapper: HTMLElement): void;
-};
+import { getDatasetJson } from "@orchardcore/bloom/helpers/dataset";
+import initSelectPartEditor, { SelectOption } from "./select-part-editor";
 
 observeAndInit(".select-part-editor", (wrapper) => {
     const fieldOptionsWrapper = wrapper.querySelector<HTMLElement>(".field-options-wrapper");
 
     if (fieldOptionsWrapper) {
-        const options = JSON.parse(fieldOptionsWrapper.dataset.options ?? "[]");
-        const defaultValue = fieldOptionsWrapper.dataset.defaultvalue ?? "";
+        const options = getDatasetJson<SelectOption[]>(fieldOptionsWrapper, "options") ?? [];
+        const defaultValue = fieldOptionsWrapper.dataset.defaultValue ?? "";
+        const translations = getDatasetJson<Record<string, string>>(fieldOptionsWrapper, "translations");
 
-        selectOptionsEditor.initilizeElement(fieldOptionsWrapper.id, options, defaultValue);
+        if (translations) {
+            initSelectPartEditor({
+                element: fieldOptionsWrapper,
+                options,
+                defaultValue,
+                translations,
+                hiddenDefaultValueInputId: fieldOptionsWrapper.dataset.defaultValueInputId ?? "",
+                hiddenDefaultValueInputName: fieldOptionsWrapper.dataset.defaultValueInputName ?? "",
+                hiddenOptionsInputId: fieldOptionsWrapper.dataset.optionsInputId ?? "",
+                hiddenOptionsInputName: fieldOptionsWrapper.dataset.optionsInputName ?? "",
+            });
+        }
     }
 
-    selectOptionsEditor.initilizeFieldType(wrapper);
+    const selectMenus = wrapper.getElementsByClassName("field-type-select-menu");
+    for (let i = 0; i < selectMenus.length; i++) {
+        const selectMenu = selectMenus[i] as HTMLSelectElement;
+        selectMenu.addEventListener("change", (e) => {
+            const widgetWrapper = (e.target as HTMLElement).closest(".widget-editor-body");
+            const visibleForInputContainers = widgetWrapper?.getElementsByClassName("show-for-input") ?? [];
+
+            for (let j = 0; j < visibleForInputContainers.length; j++) {
+                const container = visibleForInputContainers[j];
+                const value = (e.target as HTMLSelectElement).value;
+                if (value === "reset" || value === "submit" || value === "hidden") {
+                    container.classList.add("d-none");
+                } else {
+                    container.classList.remove("d-none");
+                }
+            }
+        });
+        selectMenu.dispatchEvent(new Event("change"));
+    }
 });
