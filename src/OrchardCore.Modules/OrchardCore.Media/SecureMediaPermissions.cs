@@ -86,14 +86,11 @@ public sealed class SecureMediaPermissions : IPermissionProvider
                     MediaPermissions.ViewOwnMedia,
                 },
             },
-            new PermissionStereotype
-            {
-                Name = OrchardCoreConstants.Roles.Anonymous,
-                Permissions = new[]
-                {
-                    MediaPermissions.ViewMedia,
-                },
-            },
+            // Note: No stereotype for the Anonymous role. Secure Media exists to decide who may see which
+            // media, so enabling it must not hand every folder to the public up front. An administrator
+            // grants 'ViewMediaContent', or the folder permissions below it, to whatever should stay
+            // publicly readable. Anonymous claims are evaluated for authenticated users too, so a grant
+            // here would also silently override every folder-scoped restriction on signed-in roles.
         };
     }
 
