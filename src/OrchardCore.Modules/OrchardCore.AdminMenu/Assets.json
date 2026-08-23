@@ -6,12 +6,6 @@
     "tags": ["admin", "dashboard", "css"]
   },
   {
-    "action": "min",
-    "name": "admin-menu-permission-picker",
-    "source": "Assets/js/admin-menu-permission-picker.js",
-    "tags": ["admin", "dashboard", "js"]
-  },
-  {
     "action": "sass",
     "name": "admin-menu",
     "source": "Assets/scss/admin-menu.scss",

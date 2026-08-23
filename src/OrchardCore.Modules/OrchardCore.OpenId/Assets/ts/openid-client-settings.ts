@@ -1,4 +1,5 @@
 import { getDatasetJson } from "@orchardcore/bloom/helpers/dataset";
+import initOptionsTableEditor, { setTranslations } from "@orchardcore/bloom/components/options-table-editor";
 
 const setCollapse = (element: Element | null, action: "show" | "hide") => {
     if (element) {
@@ -64,7 +65,31 @@ document
 const parametersEditor = document.querySelector<HTMLElement>(".openid-parameters-editor");
 
 if (parametersEditor) {
-    const parameters = getDatasetJson(parametersEditor, "parameters") ?? [];
+    const rows = getDatasetJson<Record<string, string>[]>(parametersEditor, "parameters") ?? [];
+    const translations = getDatasetJson<Record<string, string>>(parametersEditor, "translations");
     const modalBodyElements = document.getElementsByClassName("openid-parameters-editor-modal-body");
-    initializeParametersEditor(parametersEditor, parameters, modalBodyElements);
+
+    if (translations) {
+        setTranslations(translations);
+
+        initOptionsTableEditor({
+            element: parametersEditor,
+            rows,
+            columns: [
+                { key: "name", labelKey: "ParameterNameColumn", placeholderKey: "EnterAParameter" },
+                { key: "value", labelKey: "ValueColumn", placeholderKey: "EnterAValue" },
+            ],
+            filterEmptyKey: "name",
+            addKey: "AddAParameter",
+            editDataKey: "EditData",
+            okKey: "Ok",
+            cancelKey: "Cancel",
+            removeRowKey: "RemoveParameterFromList",
+            jsonTextareaLabelKey: "Parameters",
+            jsonTextareaHintKey: "ParametersJsonHint",
+            hiddenInputId: parametersEditor.dataset.parametersInputId ?? "",
+            hiddenInputName: parametersEditor.dataset.parametersInputName ?? "",
+            modalBodyElements,
+        });
+    }
 }

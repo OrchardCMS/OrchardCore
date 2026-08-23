@@ -1127,22 +1127,6 @@ public sealed class ResourceManagementOptionsConfiguration
         manifest
             .DefineScript("vuejs")
             .SetUrl(
-                "~/OrchardCore.Resources/Vendor/vue-2.7.16/vue.min.js",
-                "~/OrchardCore.Resources/Vendor/vue-2.7.16/vue.js"
-            )
-            .SetCdn(
-                "https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.min.js",
-                "https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"
-            )
-            .SetCdnIntegrity(
-                "sha384-YVYXhPGIH/Gmcr0W5Rin4PcpcsG1a4pcdUUod1CnbDEJut7XiUaJtSlNKeRLJBPk",
-                "sha384-smVS78N63G0uFpVH9bKdb+2YIW7Q9eFrle79imo+AWW6YLluQxAEK7kxLOt1bNex"
-            )
-            .SetVersion("2.7.16");
-
-        manifest
-            .DefineScript("vuejs")
-            .SetUrl(
                 "~/OrchardCore.Resources/Scripts/vue.global.prod.js",
                 "~/OrchardCore.Resources/Scripts/vue.global.js"
             )
@@ -1158,25 +1142,7 @@ public sealed class ResourceManagementOptionsConfiguration
 
         manifest
             .DefineScript("vue-multiselect")
-            .SetDependencies("vuejs:2")
-            .SetUrl("~/OrchardCore.Resources/Vendor/vue-multiselect-2.1.6/vue-multiselect.min.js")
-            .SetCdn(
-                "https://cdn.jsdelivr.net/npm/vue-multiselect@2.1.6/dist/vue-multiselect.min.js"
-            )
-            .SetCdnIntegrity(
-                "sha384-a4eXewRTYCwYdFtSnMCZTNtiXrfdul6aQdueRgHPAx2y1Ldp0QaFdCTpOx0ycsXU"
-            )
-            .SetVersion("2.1.6");
-
-        manifest
-            .DefineScript("vue-multiselect-wrapper")
-            .SetUrl("~/OrchardCore.Resources/Scripts/vue-multiselect-wrapper.min.js", "~/OrchardCore.Resources/Scripts/vue-multiselect-wrapper.js")
-            .SetDependencies("vuejs:2", "vue-multiselect:2", "vue-draggable:2")
-            .SetVersion("1.0.0");
-
-        manifest
-            .DefineScript("vue-multiselect")
-            .SetDependencies("vuejs:3")
+            .SetDependencies("vuejs")
             .SetUrl(
                 "~/OrchardCore.Resources/Scripts/vue-multiselect.umd.min.js",
                 "~/OrchardCore.Resources/Scripts/vue-multiselect.umd.js"
@@ -1190,17 +1156,6 @@ public sealed class ResourceManagementOptionsConfiguration
                 "sha384-7EnWodE8EplOPsNbw/n7oUIXVb0xsbUhgfxnzJc+MGgbzzLpJwlA0OccVdY0EU/w"
             )
             .SetVersion("3.2.0");
-
-        manifest
-            .DefineStyle("vue-multiselect")
-            .SetUrl("~/OrchardCore.Resources/Vendor/vue-multiselect-2.1.6/vue-multiselect.min.css")
-            .SetCdn(
-                "https://cdn.jsdelivr.net/npm/vue-multiselect@2.1.6/dist/vue-multiselect.min.css"
-            )
-            .SetCdnIntegrity(
-                "sha384-PPH/T7V86Z1+B4eMPef4FJXLD5fsTpObWoCoK3CiNtSX7aji+5qxpOCn1f2TDYAM"
-            )
-            .SetVersion("2.1.6");
 
         manifest
             .DefineStyle("vue-multiselect")
@@ -1236,24 +1191,7 @@ public sealed class ResourceManagementOptionsConfiguration
 
         manifest
             .DefineScript("vue-draggable")
-            .SetDependencies("vuejs:2", "Sortable")
-            .SetUrl(
-                "~/OrchardCore.Resources/Vendor/vue-draggable-2.24.3/vuedraggable.umd.min.js",
-                "~/OrchardCore.Resources/Vendor/vue-draggable-2.24.3/vuedraggable.umd.js"
-            )
-            .SetCdn(
-                "https://cdn.jsdelivr.net/npm/vuedraggable@2.24.3/dist/vuedraggable.umd.min.js",
-                "https://cdn.jsdelivr.net/npm/vuedraggable@2.24.3/dist/vuedraggable.umd.js"
-            )
-            .SetCdnIntegrity(
-                "sha384-qUA1xXJiX23E4GOeW/XHtsBkV9MUcHLSjhi3FzO08mv8+W8bv5AQ1cwqLskycOTs",
-                "sha384-+jB9vXc/EaIJTlNiZG2tv+TUpKm6GR9HCRZb3VkI3lscZWqrCYDbX2ZXffNJldL9"
-            )
-            .SetVersion("2.24.3");
-
-        manifest
-            .DefineScript("vue-draggable")
-            .SetDependencies("vuejs:3", "Sortable")
+            .SetDependencies("vuejs", "Sortable")
             .SetUrl(
                 "~/OrchardCore.Resources/Scripts/vuedraggable.umd.min.js",
                 "~/OrchardCore.Resources/Scripts/vuedraggable.umd.js"

@@ -1,11 +1,5 @@
 [
   {
-    "action": "min",
-    "name": "loc-optionsEditor",
-    "source": "Assets/js/*.js",
-    "tags": ["admin", "dashboard", "js"]
-  },
-  {
     "action": "parcel",
     "name": "admin-culture-selector",
     "source": "Assets/ts/admin-culture-selector.ts",

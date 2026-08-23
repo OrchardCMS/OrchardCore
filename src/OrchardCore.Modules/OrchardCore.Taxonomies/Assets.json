@@ -25,12 +25,6 @@
     "tags": ["admin", "dashboard", "js"]
   },
   {
-    "action": "min",
-    "name": "taxonomies-tags-editor",
-    "source": "Assets/js/tags-editor.js",
-    "tags": ["admin", "dashboard", "js"]
-  },
-  {
     "action": "parcel",
     "name": "taxonomy-field-tags",
     "source": "Assets/ts/taxonomy-field-tags.ts",

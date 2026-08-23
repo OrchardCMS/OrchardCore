@@ -8,7 +8,6 @@
   "dependencies": {
     "@popperjs/core": "2.11.8",
     "bootstrap": "5.3.8",
-    "fontawesome-iconpicker": "3.2.0",
-    "vue": "2.7.16"
+    "fontawesome-iconpicker": "3.2.0"
   }
 }

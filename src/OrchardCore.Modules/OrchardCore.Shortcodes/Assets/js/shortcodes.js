@@ -55,10 +55,7 @@ var shortcodesApp;
 
 window.initializeShortcodesApp = function (element) {
     if (element && !shortcodesApp) {
-        var elementId = element.id;
-
-        shortcodesApp = new Vue({
-            el: '#' + elementId,
+        shortcodesApp = Vue.createApp({
             data : function () {
                 
                 var shortcodes = JSON.parse(element.dataset.shortcodes || "[]");
@@ -121,7 +118,7 @@ window.initializeShortcodesApp = function (element) {
                     this.onClose(this.defaultValue);
                 }
             }
-        });
+        }).mount(element);
 
         return shortcodesApp;
     }

@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Cors.Services;
 using OrchardCore.Cors.Settings;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
@@ -28,6 +29,7 @@ public sealed class Startup : StartupBase
         services.AddNavigationProvider<AdminMenu>();
         services.AddPermissionProvider<Permissions>();
         services.AddSingleton<CorsService>();
+        services.AddScoped<IJSLocalizer, CorsJSLocalizer>();
 
         services.AddTransient<IConfigureOptions<CorsOptions>, CorsOptionsConfiguration>();
     }

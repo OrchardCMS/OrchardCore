@@ -1,17 +1,5 @@
 [
   {
-    "action": "min",
-    "name": "contentfields",
-    "source": "Assets/js/vue-multiselect-userpicker.js",
-    "tags": [ "admin", "dashboard", "js" ]
-  },
-  {
-    "action": "min",
-    "name": "contentfields",
-    "source": "Assets/js/vue-multiselect-multitextfieldpicker.js",
-    "tags": [ "admin", "dashboard", "js" ]
-  },
-  {
     "action": "sass",
     "name": "contentfields",
     "source": "Assets/scss/optionsEditor.scss",
@@ -22,12 +10,6 @@
     "name": "contentfields",
     "source": "Assets/scss/fontawesome-iconpicker.scss",
     "tags": [ "admin", "dashboard", "css" ]
-  },
-  {
-    "action": "min",
-    "name": "contentfields",
-    "source": "Assets/js/OptionsEditor/*.js",
-    "tags": [ "admin", "dashboard", "js" ]
   },
   {
     "action": "parcel",
