@@ -1,4 +1,5 @@
 @model ShortcodeTemplateViewModel
+@using System.Text.Json
 @inject IDisplayManager<ShortcodeDescriptor> ShortcodeDescriptorDisplayManager
 @inject IShortcodeDescriptorManager ShortcodeDescriptorManager
 
@@ -12,6 +13,8 @@
 
     var jCategories = JConvert.SerializeObject(categories);
     var jSelectedCategories = JConvert.SerializeObject(Model.Categories);
+    var translations = Orchard.GetJSLocalizations("shortcodes-categories-editor");
+    var translationsJson = Json.Serialize(translations).ToString();
 }
 
 <style asp-name="codemirror"></style>
@@ -31,9 +34,9 @@
 
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
-<style asp-name="vue-multiselect" version="2"></style>
+<style asp-name="vue-multiselect" at="Foot"></style>
 <style asp-src="~/OrchardCore.Shortcodes/Styles/shortcodes.min.css" debug-src="~/OrchardCore.Shortcodes/Styles/shortcodes.css" asp-name="shortcodes"></style>
-<script asp-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.min.js" debug-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.js" at="Foot" depends-on="vuejs:2, vue-multiselect:2"></script>
+<script asp-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.min.js" debug-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.js" at="Foot" depends-on="vuejs, vue-multiselect"></script>
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Shortcode"])</h1></zone>
 
@@ -69,30 +72,10 @@
             </div>
 
             @* Do not move app from here, it is specific to categories, and causes conflicts with codemirror due to dom rewrites. *@
-            <div class="ocat-wrapper" asp-validation-class-for="SelectedCategories" id="shortcodeCategories" data-categories="@jCategories" data-selected-categories="@jSelectedCategories">
+            <div class="ocat-wrapper" asp-validation-class-for="SelectedCategories" id="shortcodeCategories" data-categories="@jCategories" data-selected-categories="@jSelectedCategories" data-translations="@translationsJson" data-hidden-input-id="@Html.IdFor(x => x.SelectedCategories)" data-hidden-input-name="@Html.NameFor(x => x.SelectedCategories)">
                 <label asp-for="SelectedCategories" class="ocat-label">@T["Categories"]</label>
                 <div class="ocat-end">
-                <input class="form-control" asp-for="SelectedCategories" type="hidden" v-bind:value="getSelectedCategories()" />
-                <vue-multiselect v-model="value"
-                                 placeholder="@T["Type to search"]"
-                                 select-label="@T["Select"]"
-                                 deselect-label="@T["Remove"]"
-                                 :options="options"
-                                 :multiple="true"
-                                 :show-labels="false"
-                                 :close-on-select="false"
-                                 :clear-on-select="false"
-                                 :taggable="true"
-                                 tag-position="bottom"
-                                 tag-placeholder="@T["Press enter to add a category"]"
-                                 @@tag="addCategory">
-                    <template slot="noResult">
-                        @T["No categories found"]
-                    </template>
-                    <template slot="noOptions">
-                        @T["No categories found"]
-                    </template>
-                </vue-multiselect>
+                <div class="shortcode-categories-mount"></div>
                 <span class="hint">@T["The categories for this shortcode."]</span>
                 </div>
             </div>
@@ -150,3 +133,4 @@
 </form>
 
 <script asp-src="~/OrchardCore.Shortcodes/Scripts/shortcode-template-editor/shortcode-template-editor.min.js" debug-src="~/OrchardCore.Shortcodes/Scripts/shortcode-template-editor/shortcode-template-editor.js" at="Foot" type="module"></script>
+

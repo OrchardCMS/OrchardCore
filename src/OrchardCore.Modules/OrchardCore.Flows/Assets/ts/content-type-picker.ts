@@ -2,10 +2,13 @@ import evalScripts from "@orchardcore/bloom/helpers/evalScripts";
 
 declare const bootstrap: typeof import("bootstrap");
 
-// Loaded globally as a UMD script (asp-name="vuejs" version="2"), not the npm "vue"
-// package referenced elsewhere in this repo (v3, a different API) - typed narrowly to
-// just what this file uses rather than pulling in a mismatched version's types.
-declare const Vue: new (options: Record<string, unknown>) => VueInstance;
+// Loaded globally as the "vuejs" UMD resource (v3 - see ResourceManifest.cs), the
+// same pattern already used by OrchardCore.DataLocalization/Assets/ts/translation-editor.ts.
+// `app.mount(selector)` returns the root component's reactive proxy, which is why
+// VueInstance below is typed as the mounted app's exposed shape rather than void.
+declare const Vue: {
+    createApp(options: Record<string, unknown>): { mount(selector: string): VueInstance };
+};
 
 interface ContentTypePickerContentType {
     name: string;
@@ -73,8 +76,7 @@ window.initializeContentTypePickerApplication = function initializeContentTypePi
 
     contentTypePickerInitialized = true;
 
-    contentTypePickerApp = new Vue({
-        el: "#contentTypePickerApp",
+    contentTypePickerApp = Vue.createApp({
         data() {
             return {
                 contentTypes: [] as ContentTypePickerContentType[],
@@ -145,7 +147,7 @@ window.initializeContentTypePickerApplication = function initializeContentTypePi
                 return null;
             },
         },
-    });
+    }).mount("#contentTypePickerApp");
 
     // Set up shared modal.
     const modalElement = document.getElementById("contentTypePickerModal");
