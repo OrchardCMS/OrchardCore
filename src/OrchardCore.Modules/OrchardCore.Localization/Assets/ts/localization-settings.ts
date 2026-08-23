@@ -1,23 +1,26 @@
 import { getDatasetJson } from "@orchardcore/bloom/helpers/dataset";
-
-// Defined by this module's own Assets/js/optionsEditor.js - a separate, unrelated component
-// from ContentFields' options editor of the same name (this one edits the site's supported
-// culture list, not a field's predefined value list).
-declare function initializeOptionsEditor(
-    element: HTMLElement,
-    supportedCultures: unknown,
-    defaultCulture: string,
-    selectedCulture: string,
-    allCultures: unknown,
-): void;
+import initCultureSettingsEditor, { CultureOption } from "@orchardcore/bloom/components/culture-settings-editor";
 
 const wrapper = document.querySelector<HTMLElement>(".localization-settings-wrapper");
 
 if (wrapper) {
-    const supportedCultures = getDatasetJson(wrapper, "supportedCultures") ?? [];
-    const allCultures = getDatasetJson(wrapper, "allCultures") ?? [];
-    const defaultCulture = wrapper.dataset.defaultCulture ?? "";
-    const selectedCulture = wrapper.dataset.selectedCulture ?? "";
+    const supportedCultures = getDatasetJson<string[]>(wrapper, "supportedCultures") ?? [];
+    const allCultures = getDatasetJson<CultureOption[]>(wrapper, "allCultures") ?? [];
+    const translations = getDatasetJson<Record<string, string>>(wrapper, "translations");
 
-    initializeOptionsEditor(wrapper, supportedCultures, defaultCulture, selectedCulture, allCultures);
+    if (translations) {
+        initCultureSettingsEditor({
+            element: wrapper,
+            supportedCultures,
+            allCultures,
+            defaultCulture: wrapper.dataset.defaultCulture ?? "",
+            selectedCulture: wrapper.dataset.selectedCulture ?? "",
+            invariantCultureDisplayName: wrapper.dataset.invariantCultureDisplayName ?? "",
+            hiddenSupportedCulturesInputId: wrapper.dataset.supportedCulturesInputId ?? "",
+            hiddenSupportedCulturesInputName: wrapper.dataset.supportedCulturesInputName ?? "",
+            hiddenDefaultCultureInputId: wrapper.dataset.defaultCultureInputId ?? "",
+            hiddenDefaultCultureInputName: wrapper.dataset.defaultCultureInputName ?? "",
+            translations,
+        });
+    }
 }

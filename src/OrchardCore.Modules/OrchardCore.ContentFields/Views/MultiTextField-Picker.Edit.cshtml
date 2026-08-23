@@ -26,40 +26,22 @@
 
     var valuesKey = Html.NameFor(x => x.Values);
     string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
+    var translations = Orchard.GetJSLocalizations("content-fields-multitextfield-picker");
+    var translationsJson = Json.Serialize(translations).ToString();
 }
 
-<script asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-multitextfieldpicker.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-multitextfieldpicker.js" asp-name="multitextfieldpicker" at="Foot" depends-on="vuejs:2,vue-multiselect:2"></script>
-<style asp-name="vue-multiselect" version="2" at="Foot"></style>
+<style asp-name="vue-multiselect" at="Foot"></style>
 
 <div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty))" id="@Html.IdFor(x => x.Values)_FieldWrapper">
     <label class="ocat-label @(settings.Required ? "ocat-label-required" : "")">@localizedFieldName</label>
     <div class="ocat-end">
-        <div id="@vueElementId" class="multitextfieldpicker" data-selectedvalues="@jSelectedValues" data-options="@jOptions" data-valueskey="@valuesKey">
-            <div class="w-xl-50">
-                <input v-for="v in value" v-bind:name="valuesKey" v-bind:value="v.value" type="hidden" />
-                <vue-multiselect v-model="value"
-                                 placeholder="@T["Type to search"]"
-                                 select-label="@T["Select"]"
-                                 deselect-label="@T["Remove"]"
-                                 track-by="value"
-                                 label="name"
-                                 :options="options"
-                                 :multiple="true"
-                                 :show-labels="false"
-                                 :close-on-select="false"
-                                 :taggable="true"
-                                 tag-position="bottom">
-                    <template slot="noOptions">
-                        @T["No values found"]
-                    </template>
-                </vue-multiselect>
-            </div>
-            @if (!string.IsNullOrEmpty(settings.Hint))
-            {
-                <span class="hint">@settings.Hint</span>
-            }
+        <div id="@vueElementId" class="multitextfieldpicker" data-selectedvalues="@jSelectedValues" data-options="@jOptions" data-valueskey="@valuesKey" data-translations="@translationsJson">
         </div>
+        @if (!string.IsNullOrEmpty(settings.Hint))
+        {
+            <span class="hint">@settings.Hint</span>
+        }
     </div>
 </div>
 
-<script asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-fields/vue-multiselect-fields.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-fields/vue-multiselect-fields.js" at="Foot" depends-on="multitextfieldpicker" type="module"></script>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-fields/vue-multiselect-fields.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-fields/vue-multiselect-fields.js" at="Foot" depends-on="vuejs, vue-multiselect" type="module"></script>

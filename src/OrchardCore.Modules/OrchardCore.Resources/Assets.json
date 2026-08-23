@@ -1,16 +1,6 @@
 [
   {
     "action": "min",
-    "name": "contentfields",
-    "source": "Assets/js/vue-multiselect-wrapper.js",
-    "tags": [
-      "admin",
-      "dashboard",
-      "js"
-    ]
-  },
-  {
-    "action": "min",
     "name": "credential-helpers",
     "source": "Assets/js/credential-helpers.js",
     "tags": [
@@ -375,28 +365,8 @@
   },
   {
     "action": "copy",
-    "name": "vue2",
-    "source": "node_modules/vue-2.7.16/dist/*.js",
-    "dest": "wwwroot/Vendor/vue-2.7.16/",
-    "tags": [
-      "resources",
-      "js"
-    ]
-  },
-  {
-    "action": "copy",
     "name": "vue3",
     "source": "node_modules/vue-3.5.13/dist/*.js",
-    "tags": [
-      "resources",
-      "js"
-    ]
-  },
-  {
-    "action": "copy",
-    "name": "vue-multiselect-2.1.6",
-    "source": "node_modules/vue-multiselect-2.1.6/dist/**",
-    "dest": "wwwroot/Vendor/vue-multiselect-2.1.6/",
     "tags": [
       "resources",
       "js"
@@ -734,16 +704,6 @@
     "name": "popper-1.16.1",
     "source": "node_modules/popper.js/dist/umd/**",
     "dest": "wwwroot/Vendor/popper-1.16.1/",
-    "tags": [
-      "resources",
-      "js"
-    ]
-  },
-  {
-    "action": "copy",
-    "name": "vue-draggable-2.24.3",
-    "source": "node_modules/vuedraggable-2.24.3/dist/**",
-    "dest": "wwwroot/Vendor/vue-draggable-2.24.3/",
     "tags": [
       "resources",
       "js"

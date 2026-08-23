@@ -2613,7 +2613,6 @@ __metadata:
     "@popperjs/core": "npm:2.11.8"
     bootstrap: "npm:5.3.8"
     fontawesome-iconpicker: "npm:3.2.0"
-    vue: "npm:2.7.16"
   languageName: unknown
   linkType: soft
 
@@ -3006,12 +3005,9 @@ __metadata:
     trumbowyg: "npm:2.31.0"
     typescript-json-schema: "npm:^0.51.0"
     vue: "npm:^3.5.40"
-    vue-2.7.16: "npm:vue@2.7.16"
     vue-3.5.13: "npm:vue@3.5.13"
     vue-multiselect: "npm:3.2.0"
-    vue-multiselect-2.1.6: "npm:vue-multiselect@2.1.6"
     vuedraggable: "npm:^4.1.0"
-    vuedraggable-2.24.3: "npm:vuedraggable@2.24.3"
   languageName: unknown
   linkType: soft
 
@@ -15591,13 +15587,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sortablejs@npm:1.10.2":
-  version: 1.10.2
-  resolution: "sortablejs@npm:1.10.2"
-  checksum: 10/9bffed8c94980db6e3f4630d0a97a2c97a37e6e8950f787a234848242c4eca73b222b4537464ba2cd8524b61a9300ebab1af70c93dee75c9c25ff483bf644220
-  languageName: node
-  linkType: hard
-
 "sortablejs@npm:1.14.0":
   version: 1.14.0
   resolution: "sortablejs@npm:1.14.0"
@@ -17000,16 +16989,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue-2.7.16@npm:vue@2.7.16, vue@npm:2.7.16, vue@npm:^2.6.14":
-  version: 2.7.16
-  resolution: "vue@npm:2.7.16"
-  dependencies:
-    "@vue/compiler-sfc": "npm:2.7.16"
-    csstype: "npm:^3.1.0"
-  checksum: 10/0371f7bfafd9c6f58ffee6f291fc4ca045033f163e090d8afdfb7550fb9ba71770fe673941083038c88b4a45effe45bb8560c235dc3953c1ff8596f0ad4e4d88
-  languageName: node
-  linkType: hard
-
 "vue-3.5.13@npm:vue@3.5.13":
   version: 3.5.13
   resolution: "vue@npm:3.5.13"
@@ -17088,13 +17067,6 @@ __metadata:
   version: 2.3.4
   resolution: "vue-hot-reload-api@npm:2.3.4"
   checksum: 10/948b0a44a1727b297bff86979e0dcb38615b45f9e7760a7b8c57929b4eda0ea7b4eb0393bf33c0d88be1432eff92615b497a2a9b6b418dd9cb38b48f40138e47
-  languageName: node
-  linkType: hard
-
-"vue-multiselect-2.1.6@npm:vue-multiselect@2.1.6":
-  version: 2.1.6
-  resolution: "vue-multiselect@npm:2.1.6"
-  checksum: 10/4697da187cce2e0f6f7db5f265629c098d3fcb0d267835c4ce49aaa2558c9029f0144984ae9f2ac5cbbbd07c55cbce6ce0e27f96b0a491f2c12464c02a9a475b
   languageName: node
   linkType: hard
 
@@ -17196,6 +17168,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"vue@npm:^2.6.14":
+  version: 2.7.16
+  resolution: "vue@npm:2.7.16"
+  dependencies:
+    "@vue/compiler-sfc": "npm:2.7.16"
+    csstype: "npm:^3.1.0"
+  checksum: 10/0371f7bfafd9c6f58ffee6f291fc4ca045033f163e090d8afdfb7550fb9ba71770fe673941083038c88b4a45effe45bb8560c235dc3953c1ff8596f0ad4e4d88
+  languageName: node
+  linkType: hard
+
 "vue@npm:^3.5.40":
   version: 3.5.41
   resolution: "vue@npm:3.5.41"
@@ -17211,15 +17193,6 @@ __metadata:
     typescript:
       optional: true
   checksum: 10/37daaba61bb0dc20470411a22beb0c06bd29025d8c2696e9be15cdda637d5e3a175c5c011b277de6540d99b442fe08bfcb494b552afcb1825a45b8b9a5f0b3e0
-  languageName: node
-  linkType: hard
-
-"vuedraggable-2.24.3@npm:vuedraggable@2.24.3":
-  version: 2.24.3
-  resolution: "vuedraggable@npm:2.24.3"
-  dependencies:
-    sortablejs: "npm:1.10.2"
-  checksum: 10/b7497e66eb0dce7a552e49b482884f14d158b7f5a91ef2c4f77f69dc830f42565beaa8bc45019b088ef1aa62d7dc16994d4f7595b0aabcdb3d83580f789dd545
   languageName: node
   linkType: hard
 

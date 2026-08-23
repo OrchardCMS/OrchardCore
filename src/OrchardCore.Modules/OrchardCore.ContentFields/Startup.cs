@@ -14,6 +14,7 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Users;
 
@@ -24,6 +25,7 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
+        services.AddScoped<IJSLocalizer, ContentFieldsJSLocalizer>();
 
         services.Configure<TemplateOptions>(o =>
         {
