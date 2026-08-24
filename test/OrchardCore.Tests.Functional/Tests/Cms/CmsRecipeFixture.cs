@@ -151,3 +151,8 @@ public sealed class NotificationPreferencesTestsFixture : CmsRecipeFixture
     protected override string RecipeName => "NotificationPreferencesTests";
 }
 
+public sealed class SitemapCacheTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "SitemapCacheTests";
+}
+
