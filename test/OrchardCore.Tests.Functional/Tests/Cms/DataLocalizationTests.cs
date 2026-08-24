@@ -6,6 +6,17 @@ namespace OrchardCore.Tests.Functional.Tests.Cms;
 // Covers OrchardCore.DataLocalization's translation-editor.ts, a net-new (not migrated)
 // interactive Vue 3 editor with search/filter/auto-save added as part of this Vue2-to-Vue3
 // migration effort - 285 lines, never previously covered by any functional test.
+//
+// Also guards against a real crash bug found while writing this test: OrchardCore.Contents'
+// DataLocalizationStartup used to unconditionally register
+// ContentTypesAdminNodeDataLocalizationProvider, which requires IAdminMenuAccessor - a
+// service only registered when OrchardCore.AdminMenu is enabled, with no feature dependency
+// declared anywhere. Enabling OrchardCore.Contents + OrchardCore.DataLocalization without
+// OrchardCore.AdminMenu threw an unhandled DI resolution exception (500) on every
+// /Admin/DataLocalization/Index request. Fixed by splitting that provider's registration
+// into its own [RequireFeatures("OrchardCore.DataLocalization", "OrchardCore.AdminMenu")]
+// startup class (see Contents/Startup.cs) - this test's recipe deliberately does NOT enable
+// OrchardCore.AdminMenu, so it directly exercises the now-fixed code path.
 public sealed class DataLocalizationTests : CmsTestBase<DataLocalizationTestsFixture>, IClassFixture<DataLocalizationTestsFixture>
 {
     public DataLocalizationTests(DataLocalizationTestsFixture fixture) : base(fixture) { }
@@ -41,7 +52,7 @@ public sealed class DataLocalizationTests : CmsTestBase<DataLocalizationTestsFix
         var saveResponse = await saveResponseTask;
         if (!saveResponse.Ok)
         {
-            throw new Exception($"DEBUG save failed: {saveResponse.Status} {await saveResponse.TextAsync()}");
+            throw new Exception($"Save request failed: {saveResponse.Status} {await saveResponse.TextAsync()}");
         }
 
         // The save button re-disables once the fetch POST resolves and isDirty resets -

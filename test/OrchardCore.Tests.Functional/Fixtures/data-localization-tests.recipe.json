@@ -28,8 +28,6 @@
         "OrchardCore.ContentTypes",
         "OrchardCore.DataLocalization",
 
-        "OrchardCore.AdminMenu",
-
         "TheAdmin",
         "SafeMode"
       ]
