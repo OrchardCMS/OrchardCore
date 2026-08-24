@@ -1,0 +1,39 @@
+{
+  "name": "AzureAiSearchSettingsTests",
+  "displayName": "AzureAiSearchSettingsTests",
+  "description": "Testing OrchardCore.AzureAI's azure-ai-search-default-settings.ts auth-type-dropdown-toggle logic.",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0",
+  "issetuprecipe": true,
+  "categories": [ "tests" ],
+  "tags": [ "tests" ],
+
+  "steps": [
+    {
+      "name": "feature",
+      "enable": [
+        "OrchardCore.HomeRoute",
+        "OrchardCore.Admin",
+        "OrchardCore.Navigation",
+        "OrchardCore.Recipes",
+        "OrchardCore.Resources",
+        "OrchardCore.Roles",
+        "OrchardCore.Security",
+        "OrchardCore.Settings",
+        "OrchardCore.Themes",
+        "OrchardCore.Users",
+
+        "OrchardCore.AzureAI",
+
+        "TheAdmin",
+        "SafeMode"
+      ]
+    },
+    {
+      "name": "themes",
+      "admin": "TheAdmin",
+      "site": "TheAdmin"
+    }
+  ]
+}

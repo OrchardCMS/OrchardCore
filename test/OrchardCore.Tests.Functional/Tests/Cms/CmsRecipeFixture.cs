@@ -121,3 +121,8 @@ public sealed class DeploymentPlanStepOrderTestsFixture : CmsRecipeFixture
     protected override string RecipeName => "DeploymentPlanStepOrderTests";
 }
 
+public sealed class AzureAiSearchSettingsTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "AzureAiSearchSettingsTests";
+}
+
