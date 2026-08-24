@@ -101,3 +101,8 @@ public sealed class FormsFieldEditorTestsFixture : CmsRecipeFixture
     protected override string RecipeName => "FormsFieldEditorTests";
 }
 
+public sealed class SeoMetaPartTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "SeoMetaPartTests";
+}
+
