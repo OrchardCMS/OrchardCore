@@ -131,3 +131,8 @@ public sealed class RecipesIndexTestsFixture : CmsRecipeFixture
     protected override string RecipeName => "RecipesIndexTests";
 }
 
+public sealed class ContentTypesEditorTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "ContentTypesEditorTests";
+}
+
