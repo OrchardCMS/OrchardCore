@@ -126,3 +126,8 @@ public sealed class AzureAiSearchSettingsTestsFixture : CmsRecipeFixture
     protected override string RecipeName => "AzureAiSearchSettingsTests";
 }
 
+public sealed class RecipesIndexTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "RecipesIndexTests";
+}
+
