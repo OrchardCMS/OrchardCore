@@ -156,3 +156,8 @@ public sealed class SitemapCacheTestsFixture : CmsRecipeFixture
     protected override string RecipeName => "SitemapCacheTests";
 }
 
+public sealed class UrlRewritingRulesTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "UrlRewritingRulesTests";
+}
+
