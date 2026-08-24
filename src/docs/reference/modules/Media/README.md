@@ -598,17 +598,26 @@ The `ViewMediaContent`, `ViewRootMediaContent`, `ViewOthersMediaContent`, and `V
 
 The Secure Media feature enhances security and control over media files within the Media module.
 
-When enabled, administrators can add finer-grained view permissions for the root media folder and each first-level folder within the media root. This allows access to be restricted by folder even inside the Media Library, ensuring that only authorized users can view or manage media files in specific locations.
+!!! warning
+    When you enable **Secure Media** for the first time, access changes immediately.
 
-New permissions to allow users to view their own media files, view media files uploaded by others, or both are created too. These are additional permissions on top of `ManageMediaContent`, not a replacement for it. You can manage them among the other permissions with the [Roles module](../Roles/README.md).
+    - Users without newly assigned view permissions lose access to media files.
+    - By default, only **Administrators** can view all media.
+    - The **Authenticated** role gets `ViewOwnMediaContent` by default, which allows access only to the user's own media.
+
+    After enabling the feature, review and update role permissions in the [Roles module](../Roles/README.md).
+
+When enabled, administrators can assign finer-grained view permissions for the root media folder and each first-level folder within the media root. This allows access to be restricted by folder even inside the Media Library, ensuring that only authorized users can view media files in specific locations.
+
+Additional view permissions are available to control whether users can view their own media files, media files uploaded by others, or both. These are additional permissions on top of `ManageMediaContent`, not a replacement for it.
 
 These view permissions only exist when the **Secure Media** feature is enabled.
 
-Media files attached to content items will also adhere to the `ViewContent` permission of the respective content item automatically.
+Media files attached to content items also adhere to the `ViewContent` permission of the respective content item automatically.
 
 ### Handling Unauthorized Access
 
-A middleware component returns a 404 NotFound response for unauthenticated access attempts to secured media files. This not only restricts access but also conceals the existence of the file, enhancing privacy and security.
+A middleware component validates access to secure media requests and returns `404 Not Found` for any unauthorized request (including unauthenticated requests). This both restricts access and conceals file existence.
 
 ### Configurable Cache-Control for Secured Files
 
