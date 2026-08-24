@@ -1,7 +1,11 @@
 import initLiquidPatternEditor from "@orchardcore/bloom/components/liquid-pattern-editor";
 
-const htmlBody = document.getElementById("HtmlBody") as HTMLTextAreaElement | null;
-const textBody = document.getElementById("TextBody") as HTMLTextAreaElement | null;
+// The DisplayDriver prefixes generated ids, so hardcoded getElementById("HtmlBody")/
+// getElementById("TextBody") never match - use attribute selectors against the field-name
+// suffix instead. "textBodyDiv"/"htmlBodyDiv" are plain unprefixed id="" on <div>s, not
+// asp-for targets, so they're unaffected and stay getElementById lookups.
+const htmlBody = document.querySelector<HTMLTextAreaElement>("textarea[id$='HtmlBody']");
+const textBody = document.querySelector<HTMLTextAreaElement>("textarea[id$='TextBody']");
 
 if (htmlBody) {
     initLiquidPatternEditor(htmlBody);
