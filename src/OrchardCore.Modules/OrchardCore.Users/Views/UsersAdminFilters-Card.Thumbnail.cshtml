@@ -1,6 +1,8 @@
 @model IShape
-<div class="card mb-3">
-    <div class="card-body">
-        @Model.Metadata.ChildContent
+<div class="col">
+    <div class="card h-100">
+        <div class="card-body d-flex flex-column">
+            @Model.Metadata.ChildContent
+        </div>
     </div>
 </div>
