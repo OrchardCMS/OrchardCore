@@ -106,3 +106,8 @@ public sealed class SeoMetaPartTestsFixture : CmsRecipeFixture
     protected override string RecipeName => "SeoMetaPartTests";
 }
 
+public sealed class CorsAdminTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "CorsAdminTests";
+}
+
