@@ -90,17 +90,46 @@ public sealed class HtmlBodyPartDisplayDriver : ContentPartDisplayDriver<HtmlBod
 
         var settings = context.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
 
-        if (settings.RenderLiquid)
+        await UpdateModelHtmlAsync(
+            _liquidTemplateManager,
+            _htmlEncoder,
+            _shortcodeService,
+            _htmlSanitizerService,
+            model,
+            settings.RenderLiquid,
+            new Context { ["TypePartDefinition"] = context.TypePartDefinition },
+            settings.SanitizeHtml);
+    }
+
+    public static async Task UpdateModelHtmlAsync<TModel>(
+        ILiquidTemplateManager liquidTemplateManager,
+        HtmlEncoder htmlEncoder,
+        IShortcodeService shortcodeService,
+        IHtmlSanitizerService htmlSanitizerService,
+        TModel model,
+        bool renderLiquid,
+        Context shortcodeContext,
+        bool sanitizeHtml)
+        where TModel : HtmlViewModelBase
+    {
+        if (renderLiquid)
         {
-            model.Html = await _liquidTemplateManager.RenderStringAsync(htmlBodyPart.Html, _htmlEncoder, model,
-                new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
+            model.Html = await liquidTemplateManager.RenderStringAsync(model.Html, htmlEncoder, model,
+                new Dictionary<string, FluidValue>
+                {
+                    [nameof(model.ContentItem)] = new ObjectValue(model.ContentItem),
+                });
         }
 
-        model.Html = await _shortcodeService.ProcessAsync(model.Html,
-            new Context
-            {
-                ["ContentItem"] = htmlBodyPart.ContentItem,
-                ["TypePartDefinition"] = context.TypePartDefinition,
-            });
+        if (shortcodeContext != null)
+        {
+            shortcodeContext[nameof(model.ContentItem)] = model.ContentItem;
+            model.Html = await shortcodeService.ProcessAsync(model.Html, shortcodeContext);
+        }
+        
+        if (sanitizeHtml)
+        {
+            model.Html = htmlSanitizerService.Sanitize(model.Html);
+        }
     }
 }
