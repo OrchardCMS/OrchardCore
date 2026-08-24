@@ -53,7 +53,7 @@ public sealed class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField
             if (settings.RenderLiquid)
             {
                 model.Html = await driver._liquidTemplateManager.RenderStringAsync(field.Html, driver._htmlEncoder, model,
-                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(field.ContentItem) });
+                    new Dictionary<string, FluidValue> { ["ContentItem"] = new ObjectValue(field.ContentItem) });
             }
 
             model.Html = await driver._shortcodeService.ProcessAsync(model.Html,
@@ -63,6 +63,10 @@ public sealed class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField
                     ["PartFieldDefinition"] = context.PartFieldDefinition,
                 });
 
+            if (settings.SanitizeHtml)
+            {
+                model.Html = _htmlSanitizerService.Sanitize(field.Html);
+            }
         }, this, field, context)
         .Location(OrchardCoreConstants.DisplayType.Detail, "Content")
         .Location(OrchardCoreConstants.DisplayType.Summary, "Content");
