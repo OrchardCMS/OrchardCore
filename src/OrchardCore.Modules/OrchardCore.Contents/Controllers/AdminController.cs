@@ -533,17 +533,7 @@ public sealed class AdminController : Controller, IUpdateModel
     public async Task<IActionResult> EditAndPublishPOST(
         string contentItemId,
         [Bind(Prefix = "submit.Publish")] string submitPublish,
-        string returnUrl)
-    {
-        if (submitPublish == "submit.PublishAndNew")
-        {
-            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
-
-            returnUrl = Url.Action(nameof(Create), new { id = contentItem.ContentType });
-        }
-
-        return await PublishOrUnpublishAsync(submitPublish == "submit.PublishAndContinue", contentItemId, returnUrl, publish: true);
-    }
+        string returnUrl) => await PublishOrUnpublishAsync(submitPublish, contentItemId, returnUrl, publish: true);
 
     [HttpPost]
     [ActionName(nameof(Edit))]
@@ -551,7 +541,7 @@ public sealed class AdminController : Controller, IUpdateModel
     public async Task<IActionResult> EditAndUnpublishPOST(
     string contentItemId,
     [Bind(Prefix = "submit.Unpublish")] string submitUnpublish,
-    string returnUrl) => await PublishOrUnpublishAsync(submitUnpublish == "submit.UnpublishAndContinue", contentItemId, returnUrl, publish: false);
+    string returnUrl) => await PublishOrUnpublishAsync(submitUnpublish, contentItemId, returnUrl, publish: false);
 
     [HttpPost]
     public async Task<IActionResult> Delete(string contentItemId, string returnUrl)
@@ -931,18 +921,27 @@ public sealed class AdminController : Controller, IUpdateModel
         return RedirectToAction(nameof(List));
     }
 
-    private async Task<IActionResult> PublishOrUnpublishAsync(bool stayOnSamePage, string contentItemId, string returnUrl, bool publish)
+    private async Task<IActionResult> PublishOrUnpublishAsync(string action, string contentItemId, string returnUrl, bool publish)
     {
-        var content = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
+        var stayOnSamePage = publish
+            ? action == "submit.PublishAndContinue"
+            : action == "submit.UnpublishAndContinue";
 
-        if (content == null)
+        var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
+
+        if (contentItem == null)
         {
             return NotFound();
         }
 
-        if (!await IsAuthorizedAsync(CommonPermissions.PublishContent, content))
+        if (!await IsAuthorizedAsync(CommonPermissions.PublishContent, contentItem))
         {
             return Forbid();
+        }
+
+        if (publish && action == "submit.PublishAndNew")
+        {
+            returnUrl = Url.Action(nameof(Create), new { id = contentItem.ContentType });
         }
 
         return await EditInternalAsync(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
