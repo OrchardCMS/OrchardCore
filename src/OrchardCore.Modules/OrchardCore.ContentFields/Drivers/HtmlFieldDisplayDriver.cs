@@ -1,5 +1,4 @@
 using System.Text.Encodings.Web;
-using Fluid.Values;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
@@ -8,6 +7,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Html.Drivers;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Mvc.ModelBinding;
@@ -50,23 +50,15 @@ public sealed class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField
 
             var settings = context.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
 
-            if (settings.RenderLiquid)
-            {
-                model.Html = await driver._liquidTemplateManager.RenderStringAsync(field.Html, driver._htmlEncoder, model,
-                    new Dictionary<string, FluidValue> { ["ContentItem"] = new ObjectValue(field.ContentItem) });
-            }
-
-            model.Html = await driver._shortcodeService.ProcessAsync(model.Html,
-                new Context
-                {
-                    ["ContentItem"] = field.ContentItem,
-                    ["PartFieldDefinition"] = context.PartFieldDefinition,
-                });
-
-            if (settings.SanitizeHtml)
-            {
-                model.Html = driver._htmlSanitizerService.Sanitize(field.Html);
-            }
+            await HtmlBodyPartDisplayDriver.UpdateModelHtmlAsync(
+                driver._liquidTemplateManager,
+                driver._htmlEncoder,
+                driver._shortcodeService,
+                driver._htmlSanitizerService,
+                model,
+                settings.RenderLiquid,
+                new Context { ["PartFieldDefinition"] = context.PartFieldDefinition },
+                settings.SanitizeHtml);
         }, this, field, context)
         .Location(OrchardCoreConstants.DisplayType.Detail, "Content")
         .Location(OrchardCoreConstants.DisplayType.Summary, "Content");
