@@ -116,3 +116,8 @@ public sealed class DataLocalizationTestsFixture : CmsRecipeFixture
     protected override string RecipeName => "DataLocalizationTests";
 }
 
+public sealed class DeploymentPlanStepOrderTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "DeploymentPlanStepOrderTests";
+}
+
