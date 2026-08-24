@@ -533,7 +533,17 @@ public sealed class AdminController : Controller, IUpdateModel
     public async Task<IActionResult> EditAndPublishPOST(
         string contentItemId,
         [Bind(Prefix = "submit.Publish")] string submitPublish,
-        string returnUrl) => await PublishOrUnpublishAsync(submitPublish == "submit.PublishAndContinue", contentItemId, returnUrl, publish: true);
+        string returnUrl)
+    {
+        if (submitPublish == "submit.PublishAndNew")
+        {
+            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
+
+            returnUrl = Url.Action(nameof(Create), new { id = contentItem.ContentType });
+        }
+
+        return await PublishOrUnpublishAsync(submitPublish == "submit.PublishAndContinue", contentItemId, returnUrl, publish: true);
+    }
 
     [HttpPost]
     [ActionName(nameof(Edit))]
