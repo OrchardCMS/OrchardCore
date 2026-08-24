@@ -21,6 +21,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Commands;
+using OrchardCore.Environment.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Scope;
@@ -266,6 +267,7 @@ public sealed class ExternalAuthenticationStartup : StartupBase
         services.AddDisplayDriver<UserMenu, ExternalAuthenticationUserMenuDisplayDriver>();
         services.AddSiteDisplayDriver<ExternalRegistrationSettingsDisplayDriver>();
         services.AddSiteDisplayDriver<ExternalLoginSettingsDisplayDriver>();
+        services.AddSignalOptionsChangeTokenSource<ExternalLoginOptions>();
         services.AddTransient<IConfigureOptions<ExternalLoginOptions>, ExternalLoginOptionsConfigurations>();
     }
 
@@ -485,6 +487,7 @@ public sealed class RegistrationStartup : StartupBase
         services.AddDisplayDriver<User, UserRegistrationAdminDisplayDriver>();
         services.AddSiteDisplayDriver<RegistrationSettingsDisplayDriver>();
         services.AddNavigationProvider<RegistrationAdminMenu>();
+        services.AddSignalOptionsChangeTokenSource<RegistrationOptions>();
 
         services.AddDisplayDriver<LoginForm, RegisterUserLoginFormDisplayDriver>();
         services.AddDisplayDriver<RegisterUserForm, RegisterUserFormDisplayDriver>();

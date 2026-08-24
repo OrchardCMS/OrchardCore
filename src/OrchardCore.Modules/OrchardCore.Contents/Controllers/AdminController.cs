@@ -402,6 +402,12 @@ public sealed class AdminController : Controller, IUpdateModel
         string returnUrl)
     {
         var stayOnSamePage = submitSave == "submit.SaveAndContinue";
+
+        if (submitSave == "submit.SaveAndNew")
+        {
+            returnUrl = Url.Action(nameof(Create), new { returnUrl });
+        }
+
         return CreateInternalAsync(id, returnUrl, stayOnSamePage, async contentItem =>
         {
             await _contentManager.SaveDraftAsync(contentItem);
@@ -434,6 +440,11 @@ public sealed class AdminController : Controller, IUpdateModel
         if (!await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.PublishContent, id, CurrentUserId()))
         {
             return Forbid();
+        }
+
+        if (submitPublish == "submit.PublishAndNew")
+        {
+            returnUrl = Url.Action(nameof(Create), new { returnUrl });
         }
 
         return await CreateInternalAsync(id, returnUrl, stayOnSamePage, async contentItem =>

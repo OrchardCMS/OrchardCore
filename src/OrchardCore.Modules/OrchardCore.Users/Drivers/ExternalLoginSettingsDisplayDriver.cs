@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Options;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 
@@ -13,16 +13,16 @@ public sealed class ExternalLoginSettingsDisplayDriver : SiteDisplayDriver<Exter
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IShellReleaseManager _shellReleaseManager;
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
 
     public ExternalLoginSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IShellReleaseManager shellReleaseManager)
+        IOptionsUpdateNotifier optionsUpdateNotifier)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
-        _shellReleaseManager = shellReleaseManager;
+        _optionsUpdateNotifier = optionsUpdateNotifier;
     }
 
     protected override string SettingsGroupId
@@ -53,7 +53,7 @@ public sealed class ExternalLoginSettingsDisplayDriver : SiteDisplayDriver<Exter
 
         if (valueBefore != settings.UseExternalProviderIfOnlyOneDefined)
         {
-            _shellReleaseManager.RequestRelease();
+            _optionsUpdateNotifier.RequestUpdate<ExternalLoginOptions>();
         }
 
         return Edit(site, settings, context);
