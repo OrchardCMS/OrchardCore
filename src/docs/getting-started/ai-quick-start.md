@@ -143,6 +143,9 @@ Any client that supports remote (HTTP) MCP servers can connect. Look for an "MCP
 
 Beyond the MCP server, you can teach your assistant repeatable, Orchard Core–specific workflows using **AI Skills**. The [CrestApps.AgentSkills](https://github.com/CrestApps/CrestApps.AgentSkills) project provides a curated set of skills and plugins for building Orchard Core solutions with AI.
 
+!!! note
+    [CrestApps.AgentSkills](https://github.com/CrestApps/CrestApps.AgentSkills) is a community project. It is maintained by the community and is not an official part of Orchard Core.
+
 You can install these as plugins for either the **Claude** CLI or the **GitHub Copilot** CLI, which is an alternative way to power your AI tool with reusable skills. Follow the instructions in the [CrestApps.AgentSkills repository](https://github.com/CrestApps/CrestApps.AgentSkills) to install the plugin for your CLI of choice.
 
 !!! tip
