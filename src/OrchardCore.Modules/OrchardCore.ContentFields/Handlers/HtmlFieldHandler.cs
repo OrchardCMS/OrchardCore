@@ -8,15 +8,10 @@ namespace OrchardCore.ContentFields.Handlers;
 [Obsolete("This handler is no longer used.")]
 public class HtmlFieldHandler : ContentFieldHandler<HtmlField>
 {
-    private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly IHtmlSanitizerService _htmlSanitizerService;
-
     public HtmlFieldHandler(
         IContentDefinitionManager contentDefinitionManager,
         IHtmlSanitizerService htmlSanitizerService)
     {
-        _contentDefinitionManager = contentDefinitionManager;
-        _htmlSanitizerService = htmlSanitizerService;
     }
 
     public override Task ImportedAsync(ImportContentFieldContext context, HtmlField field)
