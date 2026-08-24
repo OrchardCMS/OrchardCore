@@ -408,6 +408,16 @@ public sealed class SecureMediaStartup : StartupBase
     }
 }
 
+// This startup is required to ensure that the SecureMediaFeatureEventHandler is registered all the time.
+[RequiredStartup]
+public sealed class FeatureEventHandlerStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IFeatureEventHandler, SecureMediaFeatureEventHandler>();
+    }
+}
+
 [Feature("OrchardCore.Media.Tus")]
 public sealed class MediaTusStartup : StartupBase
 {
