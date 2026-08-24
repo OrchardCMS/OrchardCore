@@ -65,7 +65,7 @@ public sealed class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField
 
             if (settings.SanitizeHtml)
             {
-                model.Html = _htmlSanitizerService.Sanitize(field.Html);
+                model.Html = driver._htmlSanitizerService.Sanitize(field.Html);
             }
         }, this, field, context)
         .Location(OrchardCoreConstants.DisplayType.Detail, "Content")
