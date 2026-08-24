@@ -2,6 +2,7 @@ using System.Collections.Frozen;
 using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL.Queries.Types;
 using OrchardCore.ContentFields.Fields;
@@ -86,8 +87,7 @@ public class ContentFieldsProvider : IContentFieldProvider
             new FieldTypeDescriptor
             {
                 Description = S => S["Time field"],
-                FieldType = typeof(TimeSpanGraphType),
-                ResolvedType = new TimeSpanGraphType(),
+                FieldType = typeof(TimeSpanGraphType),                
                 UnderlyingType = typeof(TimeField),
                 FieldAccessor = field => ((TimeField)field).Value,
                 IndexType = typeof(TimeFieldIndex),
@@ -108,10 +108,12 @@ public class ContentFieldsProvider : IContentFieldProvider
     }.ToFrozenDictionary();
 
     protected readonly IStringLocalizer S;
-
-    public ContentFieldsProvider(IStringLocalizer<ContentFieldsProvider> stringLocalizer)
+    public ContentFieldsProvider(IServiceProvider serviceProvider)
     {
-        S = stringLocalizer;
+        S = serviceProvider.GetRequiredService<IStringLocalizer<ContentFieldsProvider>>();
+        var timeSpanGraphType = serviceProvider.GetRequiredService<TimeSpanGraphType>();
+        var descriptor = s_contentFieldTypeMappings[nameof(TimeField)];
+        descriptor.ResolvedType = timeSpanGraphType;
     }
 
     public FieldType GetField(ISchema schema, ContentPartFieldDefinition field, string namedPartTechnicalName, string customFieldName)
@@ -177,7 +179,7 @@ public class ContentFieldsProvider : IContentFieldProvider
 
         public Type UnderlyingType { get; set; }
 
-        public required IGraphType ResolvedType { get; set; }
+        public IGraphType ResolvedType { get; set; }
 
         public Func<ContentElement, object> FieldAccessor { get; set; }
 

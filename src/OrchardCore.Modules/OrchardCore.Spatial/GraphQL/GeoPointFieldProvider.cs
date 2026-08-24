@@ -1,7 +1,9 @@
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Spatial.Fields;
@@ -10,10 +12,12 @@ namespace OrchardCore.Spatial.GraphQL;
 
 public class GeoPointFieldProvider : IContentFieldProvider
 {
+    private readonly IServiceProvider _serviceProvider;
     protected readonly IStringLocalizer S;
-    public GeoPointFieldProvider(IStringLocalizer<GeoPointFieldProvider> stringLocalizer)
+    public GeoPointFieldProvider(IServiceProvider serviceProvider)
     {
-        S = stringLocalizer;
+        _serviceProvider = serviceProvider;
+        S = serviceProvider.GetRequiredService<IStringLocalizer<GeoPointFieldProvider>>();
     }
 
     private static object HandleFieldResolving(ContentElement field)
@@ -31,7 +35,7 @@ public class GeoPointFieldProvider : IContentFieldProvider
             Name = customFieldName ?? schema.NameConverter.NameForField(field.Name, null),
             Description = S["Geo point field"],
             Type = typeof(GeoPointGraphType),
-            ResolvedType = new GeoPointGraphType(),
+            ResolvedType = new GeoPointGraphType(_serviceProvider.GetRequiredService<IStringLocalizer<GeoPointGraphType>>()),
             Resolver = new FuncFieldResolver<ContentElement, object>(context =>
             {
                 // Check if part has been collapsed by trying to get the parent part.

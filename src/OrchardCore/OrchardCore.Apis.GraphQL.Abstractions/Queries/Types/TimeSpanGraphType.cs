@@ -1,15 +1,16 @@
 using System.Globalization;
 using GraphQL.Types;
 using GraphQLParser.AST;
+using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Apis.GraphQL.Queries.Types;
 
 public class TimeSpanGraphType : ScalarGraphType
 {
-    public TimeSpanGraphType()
+    public TimeSpanGraphType(IStringLocalizer<TimeSpanGraphType> S)
     {
         Name = "TimeSpan";
-        Description = "Represents a time interval.";
+        Description = S["Represent a time interval."];
     }
 
     public override object Serialize(object value)
