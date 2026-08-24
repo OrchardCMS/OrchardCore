@@ -111,3 +111,8 @@ public sealed class CorsAdminTestsFixture : CmsRecipeFixture
     protected override string RecipeName => "CorsAdminTests";
 }
 
+public sealed class DataLocalizationTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "DataLocalizationTests";
+}
+
