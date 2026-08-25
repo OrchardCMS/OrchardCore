@@ -11,15 +11,18 @@ internal sealed class ClamAvFileEventHandler : IFileEventHandler
 {
     private readonly ClamAvOptions _options;
     private readonly ClamAvConnectionFactory _connectionFactory;
+    private readonly ITempWorkspace _tempWorkspace;
     private readonly ILogger _logger;
 
     public ClamAvFileEventHandler(
         IOptions<ClamAvOptions> options,
         ClamAvConnectionFactory connectionFactory,
+        ITempWorkspace tempWorkspace,
         ILogger<ClamAvFileEventHandler> logger)
     {
         _options = options.Value;
         _connectionFactory = connectionFactory;
+        _tempWorkspace = tempWorkspace;
         _logger = logger;
     }
 
@@ -98,9 +101,9 @@ internal sealed class ClamAvFileEventHandler : IFileEventHandler
     public Task CreatedAsync(IFileStoreEntry fileInfo, CancellationToken cancellationToken = default)
         => Task.CompletedTask;
 
-    private static async Task<Stream> CreateSeekableStreamAsync(Stream stream, CancellationToken cancellationToken)
+    private async Task<Stream> CreateSeekableStreamAsync(Stream stream, CancellationToken cancellationToken)
     {
-        var tempFilePath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var tempFilePath = _tempWorkspace.GetTempFileName();
         var tempStream = new FileStream(
             tempFilePath,
             FileMode.CreateNew,

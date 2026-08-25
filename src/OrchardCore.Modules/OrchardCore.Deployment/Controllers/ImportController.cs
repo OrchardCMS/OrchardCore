@@ -25,6 +25,7 @@ public sealed class ImportController : Controller
     private readonly INotifier _notifier;
     private readonly ILogger _logger;
     private readonly FileCreationService _fileCreationService;
+    private readonly ITempWorkspace _tempWorkspace;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -33,6 +34,7 @@ public sealed class ImportController : Controller
         IDeploymentManager deploymentManager,
         IAuthorizationService authorizationService,
         FileCreationService fileCreationService,
+        ITempWorkspace tempWorkspace,
         INotifier notifier,
         ILogger<ImportController> logger,
         IHtmlLocalizer<ImportController> htmlLocalizer,
@@ -42,6 +44,7 @@ public sealed class ImportController : Controller
         _deploymentManager = deploymentManager;
         _authorizationService = authorizationService;
         _fileCreationService = fileCreationService;
+        _tempWorkspace = tempWorkspace;
         _notifier = notifier;
         _logger = logger;
         H = htmlLocalizer;
@@ -68,8 +71,8 @@ public sealed class ImportController : Controller
 
         if (importedPackage != null)
         {
-            var tempArchiveName = PathExtensions.GetTempFileName() + Path.GetExtension(importedPackage.FileName);
-            var tempArchiveFolder = PathExtensions.GetTempFileName();
+            var tempArchiveName = _tempWorkspace.GetTempFileName(Path.GetExtension(importedPackage.FileName));
+            var tempArchiveFolder = _tempWorkspace.GetTempFileName();
 
             try
             {
@@ -169,11 +172,10 @@ public sealed class ImportController : Controller
 
         if (ModelState.IsValid)
         {
-            var tempArchiveFolder = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            var tempArchiveFolder = _tempWorkspace.CreateTempSubdirectory();
 
             try
             {
-                Directory.CreateDirectory(tempArchiveFolder);
                 System.IO.File.WriteAllText(Path.Combine(tempArchiveFolder, "Recipe.json"), model.Json);
 
                 await _deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));

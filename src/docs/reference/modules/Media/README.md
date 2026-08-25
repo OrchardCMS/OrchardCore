@@ -400,12 +400,25 @@ The following configuration values are used by default and can be customized:
     "MaxUploadChunkSize": 104857600,
     // The lifetime of temporary files created during upload. Defaults to 1 hour.
     "TemporaryFileLifetime": "01:00:00",
-    // The path used to store temporary TUS upload data. Defaults to {TempPath}/TusUploads.
+    // The path used to store temporary TUS upload data. When omitted, the globally configured
+    // temporary file store location is used (a TusUploads sub-directory of OrchardCore:TempWorkspace:TempPath).
     // Configure this to a shared filesystem path for multi-instance deployments.
     "TusTempPath": "/mnt/shared/TusUploads"
   }
 }
 ```
+
+### Temporary upload storage location
+
+When files are uploaded, in-progress data (chunked uploads, resumable TUS uploads) is written to a temporary
+directory before being committed to the media store. By default this lives under the operating system temporary
+directory (`Path.GetTempPath()`), whose available space is often limited. When many users upload large files at the
+same time this can exhaust the temporary volume.
+
+The base location is configurable through the framework-level `OrchardCore:TempWorkspace` section, so you can point
+temporary storage at a larger or shared volume (such as a mounted Azure Files or AWS EFS/FSx share). This setting
+applies to all temporary file consumers, not just media. See [Temporary File Storage](../../core/temporary-file-storage.md)
+for configuration, mount instructions, and how to consume `ITempWorkspace` from your own code.
 
 To configure the `StaticFileOptions` in more detail, including event handlers, for the Media Library `StaticFileMiddleware` apply:
 

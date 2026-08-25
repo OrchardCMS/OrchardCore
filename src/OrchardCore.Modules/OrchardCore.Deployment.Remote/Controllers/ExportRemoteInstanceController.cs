@@ -8,6 +8,7 @@ using OrchardCore.Deployment.Remote.Services;
 using OrchardCore.Deployment.Remote.ViewModels;
 using OrchardCore.Deployment.Services;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.FileStorage;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Recipes.Models;
 using YesSql;
@@ -23,6 +24,7 @@ public sealed class ExportRemoteInstanceController : Controller
     private readonly RemoteInstanceService _service;
     private readonly INotifier _notifier;
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly ITempWorkspace _tempWorkspace;
 
     internal readonly IHtmlLocalizer H;
 
@@ -33,6 +35,7 @@ public sealed class ExportRemoteInstanceController : Controller
         IDeploymentManager deploymentManager,
         INotifier notifier,
         IHttpClientFactory httpClientFactory,
+        ITempWorkspace tempWorkspace,
         IHtmlLocalizer<ExportRemoteInstanceController> localizer)
     {
         _authorizationService = authorizationService;
@@ -41,6 +44,7 @@ public sealed class ExportRemoteInstanceController : Controller
         _service = service;
         _notifier = notifier;
         _httpClientFactory = httpClientFactory;
+        _tempWorkspace = tempWorkspace;
         H = localizer;
     }
 
@@ -69,9 +73,11 @@ public sealed class ExportRemoteInstanceController : Controller
         string archiveFileName;
         var filename = deploymentPlan.Name.ToSafeName() + ".zip";
 
-        using (var fileBuilder = new TemporaryFileBuilder())
+        var tempRoot = _tempWorkspace.GetRootDirectory();
+
+        using (var fileBuilder = new TemporaryFileBuilder(tempRoot))
         {
-            archiveFileName = PathExtensions.Combine(Path.GetTempPath(), filename);
+            archiveFileName = PathExtensions.Combine(tempRoot, filename);
 
             var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, new RecipeDescriptor());
             await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);

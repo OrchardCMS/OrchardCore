@@ -96,7 +96,8 @@ public class MediaOptions
 
     /// <summary>
     /// The path used to store temporary TUS upload data.
-    /// Defaults to <c>{TempPath}/TusUploads</c>.
+    /// When not set, the globally configured temporary file store location is used
+    /// (a <c>TusUploads</c> sub-directory of <c>OrchardCore:TempWorkspace:TempPath</c>).
     /// Configure this to a shared filesystem path for multi-instance deployments.
     /// </summary>
     public string TusTempPath { get; set; }

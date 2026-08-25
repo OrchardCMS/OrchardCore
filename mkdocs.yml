@@ -273,6 +273,7 @@ nav:
               - Auto Setup: reference/modules/AutoSetup/README.md
               - Features: reference/modules/Features/README.md
               - File Upload Security: reference/core/file-upload-security.md
+              - Temporary File Storage: reference/core/temporary-file-storage.md
               - Contents: reference/modules/Contents/README.md
               - Configuration: reference/modules/Configuration/README.md
               - Cors: reference/modules/Cors/README.md

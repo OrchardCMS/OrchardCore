@@ -3,27 +3,37 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
+using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.Services;
 
 /// <summary>
-/// Default <see cref="ITusTempStore"/> implementation that stores partial upload
-/// data on disk. The base path is configurable via <see cref="MediaOptions.TusTempPath"/>
-/// (defaults to <c>Path.GetTempPath()/TusUploads</c>).
-/// Configure this to a shared filesystem path for multi-instance deployments.
+/// Default <see cref="ITusTempStore"/> implementation that stores partial upload data on disk.
+/// By default the base path is the tenant-scoped <see cref="ITempWorkspace"/> location (a <c>TusUploads</c>
+/// sub-directory), so it follows the globally configured <c>OrchardCore:TempWorkspace:TempPath</c>.
+/// An explicit <see cref="MediaOptions.TusTempPath"/> still takes precedence, for example to point partial
+/// uploads at a dedicated shared filesystem path for multi-instance deployments.
 /// </summary>
 public sealed class DiskTusTempStore : ITusTempStore
 {
+    private const string s_tusTempSubdirectory = "TusUploads";
+
     private readonly string _tempDirectory;
     private readonly ILogger _logger;
 
     public DiskTusTempStore(
         IOptions<MediaOptions> mediaOptions,
         ShellSettings shellSettings,
+        ITempWorkspace tempWorkspace,
         ILogger<DiskTusTempStore> logger)
     {
         _logger = logger;
-        _tempDirectory = Path.Combine(mediaOptions.Value.TusTempPath, shellSettings.TenantId);
+
+        var tusTempPath = mediaOptions.Value.TusTempPath;
+
+        _tempDirectory = string.IsNullOrWhiteSpace(tusTempPath)
+            ? tempWorkspace.GetOrCreateSubdirectory(s_tusTempSubdirectory)
+            : Path.Combine(tusTempPath, shellSettings.TenantId);
     }
 
     public Task CreateFileAsync(string fileId, CancellationToken cancellationToken)

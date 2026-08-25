@@ -27,6 +27,7 @@ using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Options;
 using OrchardCore.Extensions;
+using OrchardCore.FileStorage;
 using OrchardCore.Json;
 using OrchardCore.Localization;
 using OrchardCore.Localization.Data;
@@ -154,6 +155,7 @@ public static class ServiceCollectionExtensions
 
         services.AddHttpContextAccessor();
         services.AddSingleton<IClock, Clock>();
+        services.TryAddSingleton<ITempWorkspace, DefaultTempWorkspace>();
         services.TryAddSingleton<ITimeZoneSelectListProvider, DefaultTimeZoneSelectListProvider>();
         services.AddScoped<ILocalClock, LocalClock>();
 
@@ -178,6 +180,7 @@ public static class ServiceCollectionExtensions
             var configuration = serviceProvider.GetService<IShellConfiguration>();
 
             services.Configure<CultureOptions>(configuration.GetSection("OrchardCore_Localization_CultureOptions"));
+            services.Configure<TempWorkspaceOptions>(configuration.GetSection("TempWorkspace"));
         });
 
         services.AddSingleton(new FluidParser());

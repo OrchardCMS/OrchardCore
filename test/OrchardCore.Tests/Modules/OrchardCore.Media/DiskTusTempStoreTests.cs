@@ -3,6 +3,7 @@ using System.IO.Pipelines;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
+using OrchardCore.FileStorage;
 using OrchardCore.Media;
 using OrchardCore.Media.Services;
 
@@ -18,9 +19,11 @@ public sealed class DiskTusTempStoreTests : IDisposable
     [Fact]
     public async Task AppendDataAsync_CanceledPipeReader_PersistsPartialData()
     {
+        var shellSettings = new ShellSettings { Name = "tenant", VersionId = "tenant" };
         var store = new DiskTusTempStore(
             Options.Create(new MediaOptions { TusTempPath = _tempPath }),
-            new ShellSettings { VersionId = "tenant" },
+            shellSettings,
+            new DefaultTempWorkspace(Options.Create(new TempWorkspaceOptions()), shellSettings),
             NullLogger<DiskTusTempStore>.Instance);
         var data = "partial upload"u8.ToArray();
         var reader = new CanceledPipeReader(data);

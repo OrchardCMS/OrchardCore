@@ -7,6 +7,7 @@ using OrchardCore.Deployment.Core.Mvc;
 using OrchardCore.Deployment.Core.Services;
 using OrchardCore.Deployment.Services;
 using OrchardCore.Deployment.Steps;
+using OrchardCore.FileStorage;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Recipes.Models;
 using YesSql;
@@ -19,15 +20,18 @@ public sealed class ExportFileController : Controller
     private readonly IDeploymentManager _deploymentManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly ISession _session;
+    private readonly ITempWorkspace _tempWorkspace;
 
     public ExportFileController(
         IAuthorizationService authorizationService,
         ISession session,
-        IDeploymentManager deploymentManager)
+        IDeploymentManager deploymentManager,
+        ITempWorkspace tempWorkspace)
     {
         _authorizationService = authorizationService;
         _deploymentManager = deploymentManager;
         _session = session;
+        _tempWorkspace = tempWorkspace;
     }
 
     [HttpPost]
@@ -49,7 +53,7 @@ public sealed class ExportFileController : Controller
         string archiveFileName;
         var filename = deploymentPlan.Name.ToSafeName() + ".zip";
 
-        using (var fileBuilder = new TemporaryFileBuilder())
+        using (var fileBuilder = new TemporaryFileBuilder(_tempWorkspace.GetRootDirectory()))
         {
             archiveFileName = fileBuilder.Folder + ".zip";
 
