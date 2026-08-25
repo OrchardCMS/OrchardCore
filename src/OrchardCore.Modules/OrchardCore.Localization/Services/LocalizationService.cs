@@ -9,8 +9,15 @@ namespace OrchardCore.Localization.Services;
 /// </summary>
 public class LocalizationService : ILocalizationService
 {
-    private static readonly string s_defaultCulture = CultureInfo.InstalledUICulture.Name;
-    private static readonly string[] s_supportedCultures = [CultureInfo.InstalledUICulture.Name];
+    // CultureInfo.InstalledUICulture.Name is empty when the OS/runtime has no configured
+    // UI culture (e.g. invariant globalization mode, or a POSIX "C"/"C.UTF-8" locale, common
+    // on Linux CI runners and containers) - falling back to "en" keeps GetSupportedCulturesAsync
+    // from ever returning an empty culture name, which callers (e.g.
+    // CultureInfo.GetCultureInfo(cultureName)) treat as invalid input and throw on.
+    private static readonly string s_defaultCulture = string.IsNullOrEmpty(CultureInfo.InstalledUICulture.Name)
+        ? "en"
+        : CultureInfo.InstalledUICulture.Name;
+    private static readonly string[] s_supportedCultures = [s_defaultCulture];
 
     private static readonly CultureInfo[] s_cultureAliases =
     [
