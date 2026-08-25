@@ -428,6 +428,7 @@ public sealed class AdminController : Controller, IUpdateModel
     public async Task<IActionResult> CreateAndPublishPOST(
         string id,
         [Bind(Prefix = "submit.Publish")] string submitPublish,
+        string queryString,
         string returnUrl)
     {
         if (string.IsNullOrEmpty(id))
@@ -444,7 +445,7 @@ public sealed class AdminController : Controller, IUpdateModel
 
         if (submitPublish == "submit.PublishAndNew")
         {
-            returnUrl = Url.Action(nameof(Create), new { returnUrl });
+            returnUrl = Url.Action(nameof(Create)) + queryString;
         }
 
         return await CreateInternalAsync(id, returnUrl, stayOnSamePage, async contentItem =>
