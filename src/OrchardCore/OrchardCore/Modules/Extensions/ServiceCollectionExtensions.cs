@@ -155,7 +155,6 @@ public static class ServiceCollectionExtensions
 
         services.AddHttpContextAccessor();
         services.AddSingleton<IClock, Clock>();
-        services.TryAddSingleton<ITempWorkspace, DefaultTempWorkspace>();
         services.TryAddSingleton<ITimeZoneSelectListProvider, DefaultTimeZoneSelectListProvider>();
         services.AddScoped<ILocalClock, LocalClock>();
 
@@ -176,6 +175,10 @@ public static class ServiceCollectionExtensions
             services.AddSingleton<LocalLock>();
             services.AddSingleton<ILocalLock>(sp => sp.GetRequiredService<LocalLock>());
             services.AddSingleton<IDistributedLock>(sp => sp.GetRequiredService<LocalLock>());
+
+            // Registered as a tenant-level singleton (not a host singleton) because it depends on the
+            // tenant's ShellSettings, which is not resolvable from the shared application container.
+            services.TryAddSingleton<ITempWorkspace, DefaultTempWorkspace>();
 
             var configuration = serviceProvider.GetService<IShellConfiguration>();
 
