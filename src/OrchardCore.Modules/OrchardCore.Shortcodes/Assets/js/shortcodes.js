@@ -89,9 +89,14 @@ window.initializeShortcodesApp = function (element) {
                         this.onClose = onClose;
                     }
                     this.selectedValue = '';
-                    this.modal = new bootstrap.Modal(this.$el);
+                    // Vue 3's mount() renders the app's template INSIDE the container element
+                    // rather than replacing it (unlike Vue 2, where this.$el was the container
+                    // itself) - this.$el is now the modal-dialog div, not the .modal container,
+                    // so bootstrap.Modal must target the actual container (`element`, closed
+                    // over from initializeShortcodesApp's parameter) instead.
+                    this.modal = new bootstrap.Modal(element);
                     this.modal.show();
-                    this.$el.addEventListener('shown.bs.modal', () => {
+                    element.addEventListener('shown.bs.modal', () => {
                         this.$refs.filter.focus();
                     });
                 },

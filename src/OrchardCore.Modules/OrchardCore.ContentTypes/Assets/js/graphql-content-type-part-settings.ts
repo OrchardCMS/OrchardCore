@@ -1,7 +1,10 @@
-const collapseCheckbox = document.getElementById("Settings_Collapse") as HTMLInputElement | null;
-const preventFieldNameCollisionCheckbox = document.getElementById(
-    "Settings_PreventFieldNameCollision",
-) as HTMLInputElement | null;
+// The DisplayDriver prefixes generated ids, so hardcoded getElementById("Settings_Collapse")/
+// getElementById("Settings_PreventFieldNameCollision") never match - use attribute
+// selectors against the field-name suffix instead.
+const collapseCheckbox = document.querySelector<HTMLInputElement>("input[id$='Settings_Collapse']");
+const preventFieldNameCollisionCheckbox = document.querySelector<HTMLInputElement>(
+    "input[id$='Settings_PreventFieldNameCollision']",
+);
 
 if (collapseCheckbox && preventFieldNameCollisionCheckbox) {
     const setFieldVisibility = (checked: boolean) => {

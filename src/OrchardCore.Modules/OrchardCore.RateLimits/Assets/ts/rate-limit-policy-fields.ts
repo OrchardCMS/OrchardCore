@@ -1,5 +1,10 @@
 const root = document.querySelector<HTMLElement>(".rate-limit-policy-fields");
-const scopeElement = document.getElementById("Scope") as HTMLSelectElement | null;
+// The DisplayDriver prefixes generated ids (RateLimitPolicyDisplayDriver's default prefix
+// is its model type name, "RateLimitPolicy"), so a hardcoded getElementById("Scope") never
+// matches - use an attribute selector against the field-name suffix instead. "Path_group"/
+// "GroupName_group" are plain unprefixed id="" on <div>s, not asp-for targets, so they're
+// unaffected and stay getElementById lookups.
+const scopeElement = document.querySelector<HTMLSelectElement>("select[id$='Scope']");
 const pathGroup = document.getElementById("Path_group");
 const rateLimitGroup = document.getElementById("GroupName_group");
 
