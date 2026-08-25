@@ -344,14 +344,15 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
         return result;
     }
 
-    private static string GenerateRelativeUniquePath(List<AutorouteEntry> entries, string path, AutoroutePart context)
+    internal static string GenerateRelativeUniquePath(List<AutorouteEntry> entries, string path, AutoroutePart context)
     {
         var version = 1;
         var unversionedPath = path;
 
         var versionSeparatorPosition = path.LastIndexOf('-');
-        if (versionSeparatorPosition > -1 && int.TryParse(path[versionSeparatorPosition..].TrimStart('-'), out version))
+        if (versionSeparatorPosition > -1 && int.TryParse(path[versionSeparatorPosition..].TrimStart('-'), out var parsedVersion))
         {
+            version = parsedVersion;
             unversionedPath = path[..versionSeparatorPosition];
         }
 
@@ -367,7 +368,12 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
             var versionedPath = $"{unversionedPath}-{version++}";
             if (IsRelativePathUnique(entries, versionedPath, context))
             {
-                var entry = entries.FirstOrDefault(e => e.ContainedContentItemId == context.ContentItem.ContentItemId);
+                var entry = entries.SingleOrDefault(e => e.ContainedContentItemId == context.ContentItem.ContentItemId);
+                {
+                   // Add new entry for this contained item if it doesn't exist yet, preventing a null reference exception
+                    entry = new AutorouteEntry(context.ContentItem.ContentItemId, versionedPath, context.ContentItem.ContentItemId);
+                    entries.Add(entry);
+                }
                 entry.Path = versionedPath;
 
                 return versionedPath;
