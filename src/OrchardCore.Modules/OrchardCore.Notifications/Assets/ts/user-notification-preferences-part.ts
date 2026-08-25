@@ -1,4 +1,7 @@
-const list = document.getElementById("Methods");
+// The DisplayDriver prefixes generated ids, so a hardcoded getElementById("Methods")
+// never matches the real @Html.IdFor(x => x.Methods)-generated id - use an attribute
+// selector against the field-name suffix instead.
+const list = document.querySelector<HTMLElement>("ul[id$='Methods']");
 
 const getMouseOffset = (evt: DragEvent) => {
     const targetRect = (evt.target as HTMLElement).getBoundingClientRect();
