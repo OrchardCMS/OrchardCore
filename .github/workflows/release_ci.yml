@@ -79,7 +79,7 @@ jobs:
     - name: NuGet login
       if: matrix.os == 'ubuntu-24.04'  
       id: nuget-login
-      uses: NuGet/login@v1
+      uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1
       with:
         user: Orchard        
     - name: Deploy release NuGet packages
