@@ -103,4 +103,56 @@ public sealed class AdminMenuTreeTests : CmsTestBase<BlogFixture>, IClassFixture
 
         await page.CloseAsync();
     }
+
+    // Covers the shared Vue 3 permission-picker.ts component (initPermissionPicker,
+    // src/.scripts/bloom/components/permission-picker.ts) mounted on LinkAdminNode's
+    // #PermissionPicker element - vue-multiselect-backed search/select, an "arrayOfItems"
+    // list with per-item remove buttons, and a hidden SelectedPermissionNames input kept in
+    // sync via a computed property. Same component (byte-identical Vue instance) is reused
+    // by OrchardCore.Menu's MenuItemPermissionPart.Edit.cshtml.
+    [Fact]
+    public async Task AdminMenuPermissionPicker_SelectAndRemove_UpdatesHiddenInput()
+    {
+        var page = await Fixture.CreatePageAsync();
+        await page.LoginAsync();
+        await OpenAdminMenusTreeAsync(page);
+
+        await TreeNode(page, BlogNodeId).Locator("a.btn-primary").Filter(new LocatorFilterOptions { HasText = "Edit" }).ClickAsync();
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        var picker = page.Locator("#PermissionPicker");
+        await picker.WaitForAsync();
+
+        // The Blog node ships with an empty PermissionNames array (see blog.recipe.json),
+        // so the picker starts with no selected-permission list items.
+        var itemList = picker.Locator("ul.permission-picker-default__list");
+        await Assertions.Expect(itemList).ToBeHiddenAsync();
+
+        var hiddenInputId = await picker.GetAttributeAsync("data-selected-names-input-id");
+        Assert.False(string.IsNullOrEmpty(hiddenInputId));
+        var hiddenInput = page.Locator($"#{hiddenInputId}");
+        Assert.Equal(string.Empty, await hiddenInput.InputValueAsync());
+
+        // Open the vue-multiselect dropdown and select its first available option.
+        await picker.Locator(".multiselect").ClickAsync();
+        var firstOption = picker.Locator(".multiselect__option").First;
+        await firstOption.WaitForAsync();
+        var selectedDisplayText = (await firstOption.TextContentAsync())!.Trim();
+        await firstOption.ClickAsync();
+
+        await Assertions.Expect(itemList).ToBeVisibleAsync();
+        var listItems = itemList.Locator("li.list-group-item");
+        await Assertions.Expect(listItems).ToHaveCountAsync(1);
+        Assert.Contains(selectedDisplayText, (await listItems.First.TextContentAsync())!);
+
+        var selectedName = await hiddenInput.InputValueAsync();
+        Assert.False(string.IsNullOrEmpty(selectedName));
+
+        // Removing it via the list item's own delete button clears the hidden input again.
+        await listItems.First.Locator("button.permission-picker-default__list-item__delete").ClickAsync();
+        await Assertions.Expect(itemList).ToBeHiddenAsync();
+        Assert.Equal(string.Empty, await hiddenInput.InputValueAsync());
+
+        await page.CloseAsync();
+    }
 }

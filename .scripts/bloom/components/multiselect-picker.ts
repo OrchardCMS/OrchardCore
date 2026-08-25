@@ -26,11 +26,15 @@ declare global {
     }
 }
 
-// Loaded globally as the "vue-draggable" UMD resource - the Vue 3 build of vuedraggable, per the
-// Task 1 decision. See options-table-editor.ts for the full rationale/precedent.
-declare const vuedraggable: {
-    default: Record<string, unknown>;
-};
+// Loaded globally as the "vue-draggable" UMD resource - the Vue 3 build of vuedraggable. The UMD
+// wrapper's trailing `})["default"]` unwraps webpack's `__webpack_exports__["default"]` one level
+// before assigning to `root["vuedraggable"]`, so `window.vuedraggable` IS the component itself,
+// not an ES-module-shaped `{ default: ... }` namespace object - confirmed by runtime inspection
+// (see select-part-editor.ts's comment for the full story; `vuedraggable.default` reads as
+// `undefined`, silently registering `draggable` as an unresolved component, so Vue renders the
+// literal non-reactive `<draggable>` tag instead of the real one and drag/rows/click become
+// permanent no-ops).
+declare const vuedraggable: Record<string, unknown>;
 
 export interface MultiselectPickerItem {
     id: string;
@@ -109,7 +113,7 @@ const initMultiselectPicker = (config: MultiselectPickerConfig): void => {
 
     const app = Vue.createApp({
         components: {
-            draggable: vuedraggable.default,
+            draggable: vuedraggable,
             "vue-multiselect": window["vue-multiselect"].default,
         },
         data() {

@@ -33,12 +33,15 @@ declare const bootstrap: typeof import("bootstrap");
 // ResourceManifest changes) - the Vue 3 build of vuedraggable (vuedraggable@4.1.0, per
 // ResourceManagementOptionsConfiguration.cs), per the Task 1 decision recorded in
 // .hermes/plans/2026-08-22_023850-vue2-to-vue3-vite-ts-migration.md ("## Vue-draggable
-// replacement decision"). The UMD bundle exposes itself as window.vuedraggable (lowercase,
-// matching its npm package name) with the actual component on its `.default` property - typed
-// narrowly to the props this component actually passes.
-declare const vuedraggable: {
-    default: Record<string, unknown>;
-};
+// replacement decision"). The UMD wrapper's trailing `})["default"]` unwraps webpack's
+// `__webpack_exports__["default"]` one level before assigning to `root["vuedraggable"]`, so
+// `window.vuedraggable` IS the component itself, not an ES-module-shaped `{ default: ... }`
+// namespace object - confirmed by runtime inspection: reading `vuedraggable.default` is
+// `undefined`, which silently registers `draggable` as an unresolved component, so Vue renders
+// the literal non-reactive `<draggable>` tag instead of the real one and drag/rows/click become
+// permanent no-ops (caught while writing functional test coverage for issue #19772 - see
+// select-part-editor.ts for the fix this mirrors).
+declare const vuedraggable: Record<string, unknown>;
 
 export interface OptionsTableColumn {
     key: string;
@@ -147,7 +150,7 @@ const optionsTableComponent = {
         </table>
         <a v-on:click="add()" class="btn btn-light w-100 btn-sm"><i class="fa-solid fa-plus small" aria-hidden="true"></i> {{ t[addKey] }}</a>
     `,
-    components: { draggable: vuedraggable.default },
+    components: { draggable: vuedraggable },
     props: {
         rows: { type: Array, required: true },
         columns: { type: Array, required: true },

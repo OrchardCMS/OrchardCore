@@ -1,12 +1,16 @@
 import initLiquidPatternEditor from "@orchardcore/bloom/components/liquid-pattern-editor";
 
-const patternTextArea = document.getElementById("Pattern") as HTMLTextAreaElement | null;
+// The DisplayDriver prefixes generated ids, so hardcoded getElementById("Pattern")/
+// getElementById("ManageContainedItemRoutes") never match - use attribute selectors
+// against the field-name suffix instead, matching how @Html.IdFor(...) resolved them
+// before this script was extracted from an inline @Html.IdFor-based Razor block.
+const patternTextArea = document.querySelector<HTMLTextAreaElement>("textarea[id$='Pattern']");
 
 if (patternTextArea) {
     initLiquidPatternEditor(patternTextArea);
 }
 
-const manageContainedItemRoutesElement = document.getElementById("ManageContainedItemRoutes") as HTMLInputElement | null;
+const manageContainedItemRoutesElement = document.querySelector<HTMLInputElement>("input[id$='ManageContainedItemRoutes']");
 
 manageContainedItemRoutesElement?.addEventListener("change", (e) => {
     const checked = (e.target as HTMLInputElement).checked;

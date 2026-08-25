@@ -16,5 +16,8 @@ const initializeEditor = (textArea: HTMLTextAreaElement | null) => {
     });
 };
 
-initializeEditor(document.getElementById("Summary") as HTMLTextAreaElement | null);
-initializeEditor(document.getElementById("HtmlBody") as HTMLTextAreaElement | null);
+// The DisplayDriver prefixes generated ids, so hardcoded getElementById("Summary")/
+// getElementById("HtmlBody") never match - use attribute selectors against the
+// field-name suffix instead.
+initializeEditor(document.querySelector<HTMLTextAreaElement>("textarea[id$='Summary']"));
+initializeEditor(document.querySelector<HTMLTextAreaElement>("textarea[id$='HtmlBody']"));
