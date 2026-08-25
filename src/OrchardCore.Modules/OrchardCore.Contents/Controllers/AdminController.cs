@@ -513,7 +513,7 @@ public sealed class AdminController : Controller, IUpdateModel
         string returnUrl)
     {
         var stayOnSamePage = submitSave == "submit.SaveAndContinue";
-        return EditInternalAsync(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
+        return EditInternalAsync(submitSave, contentItemId, returnUrl, stayOnSamePage, async contentItem =>
         {
             await _contentManager.SaveDraftAsync(contentItem);
 
@@ -794,6 +794,7 @@ public sealed class AdminController : Controller, IUpdateModel
     }
 
     private async Task<IActionResult> EditInternalAsync(
+        string action,
         string contentItemId,
         string returnUrl,
         bool stayOnSamePage,
@@ -809,6 +810,11 @@ public sealed class AdminController : Controller, IUpdateModel
         if (!await IsAuthorizedAsync(CommonPermissions.EditContent, contentItem))
         {
             return Forbid();
+        }
+
+        if (action == "submit.SaveAndNew")
+        {
+            returnUrl = Url.Action(nameof(Create), new { id = contentItem.ContentType });
         }
 
         var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, false);
@@ -944,7 +950,7 @@ public sealed class AdminController : Controller, IUpdateModel
             returnUrl = Url.Action(nameof(Create), new { id = contentItem.ContentType });
         }
 
-        return await EditInternalAsync(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
+        return await EditInternalAsync(action, contentItemId, returnUrl, stayOnSamePage, async contentItem =>
         {
             var hasBeenPublishedOrUnpublished = publish
                 ? await _contentManager.PublishAsync(contentItem)
