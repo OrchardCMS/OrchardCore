@@ -1,4 +1,3 @@
-using System.Text.Encodings.Web;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
@@ -7,11 +6,10 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Html.Core.Helpers;
+using OrchardCore.Html.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Mvc.ModelBinding;
-using OrchardCore.Shortcodes.Services;
 using Shortcodes;
 
 namespace OrchardCore.ContentFields.Drivers;
@@ -19,23 +17,20 @@ namespace OrchardCore.ContentFields.Drivers;
 public sealed class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField>
 {
     private readonly ILiquidTemplateManager _liquidTemplateManager;
-    private readonly HtmlEncoder _htmlEncoder;
+    private readonly IHtmlDisplayService _htmlDisplayService;
     private readonly IHtmlSanitizerService _htmlSanitizerService;
-    private readonly IShortcodeService _shortcodeService;
 
     internal readonly IStringLocalizer S;
 
     public HtmlFieldDisplayDriver(
         ILiquidTemplateManager liquidTemplateManager,
-        HtmlEncoder htmlEncoder,
+        IHtmlDisplayService htmlDisplayService,
         IHtmlSanitizerService htmlSanitizerService,
-        IShortcodeService shortcodeService,
         IStringLocalizer<HtmlFieldDisplayDriver> localizer)
     {
         _liquidTemplateManager = liquidTemplateManager;
-        _htmlEncoder = htmlEncoder;
+        _htmlDisplayService = htmlDisplayService;
         _htmlSanitizerService = htmlSanitizerService;
-        _shortcodeService = shortcodeService;
         S = localizer;
     }
 
@@ -50,11 +45,7 @@ public sealed class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField
 
             var settings = context.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
 
-            await HtmlHelper.UpdateModelHtmlAsync(
-                driver._liquidTemplateManager,
-                driver._htmlEncoder,
-                driver._shortcodeService,
-                driver._htmlSanitizerService,
+            await driver._htmlDisplayService.UpdateModelHtmlAsync(
                 model,
                 settings.RenderLiquid,
                 new Context { ["PartFieldDefinition"] = context.PartFieldDefinition },

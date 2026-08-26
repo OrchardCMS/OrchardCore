@@ -13,6 +13,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
+using OrchardCore.Html;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using OrchardCore.Users;
@@ -23,6 +24,8 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddHtmlCore();
+        
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
 
         services.Configure<TemplateOptions>(o =>
