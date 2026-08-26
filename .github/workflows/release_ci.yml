@@ -17,6 +17,10 @@ jobs:
   test:
     runs-on: ${{ matrix.os }}
     name: Build, Test, Deploy
+    environment: release
+    permissions:
+      contents: read
+      id-token: write
     strategy:
       fail-fast: false
       matrix:
@@ -72,11 +76,17 @@ jobs:
           src/OrchardCore.Mvc.Web/App_Data_Tests/logs
           test/OrchardCore.Tests.Functional/traces
         retention-days: 3
+    - name: NuGet login
+      if: matrix.os == 'ubuntu-24.04'  
+      id: nuget-login
+      uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1
+      with:
+        user: Orchard        
     - name: Deploy release NuGet packages
       if: matrix.os == 'ubuntu-24.04'
       run: |
         dotnet pack -c Release --no-build -p:Version=${{ steps.get_version.outputs.VERSION }} -p:TreatWarningsAsErrors=false
-        dotnet nuget push './src/**/*.nupkg' -t 600 -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json --skip-duplicate
+        dotnet nuget push './src/**/*.nupkg' -t 600 --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}" -s https://api.nuget.org/v3/index.json --skip-duplicate
     - name: Set up Docker Buildx
       if: matrix.os == 'ubuntu-24.04'
       uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
