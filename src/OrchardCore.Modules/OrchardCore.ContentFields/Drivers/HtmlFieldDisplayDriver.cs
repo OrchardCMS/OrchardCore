@@ -7,7 +7,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Html.Drivers;
+using OrchardCore.Html.Core.Helpers;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Mvc.ModelBinding;
@@ -50,7 +50,7 @@ public sealed class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField
 
             var settings = context.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
 
-            await HtmlBodyPartDisplayDriver.UpdateModelHtmlAsync(
+            await HtmlHelper.UpdateModelHtmlAsync(
                 driver._liquidTemplateManager,
                 driver._htmlEncoder,
                 driver._shortcodeService,

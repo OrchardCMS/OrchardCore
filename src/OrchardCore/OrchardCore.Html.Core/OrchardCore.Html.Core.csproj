@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Title>OrchardCore Html Core</Title>
+    <Description>
+      $(OCCMSDescription)
+
+      Core project for the Html module.
+    </Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.ContentManagement.Abstractions\OrchardCore.ContentManagement.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Liquid.Abstractions\OrchardCore.Liquid.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Shortcodes.Abstractions\OrchardCore.Shortcodes.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

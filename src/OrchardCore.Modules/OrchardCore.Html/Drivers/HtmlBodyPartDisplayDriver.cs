@@ -5,6 +5,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Html.Core.Helpers;
 using OrchardCore.Html.Models;
 using OrchardCore.Html.Settings;
 using OrchardCore.Html.ViewModels;
@@ -90,7 +91,7 @@ public sealed class HtmlBodyPartDisplayDriver : ContentPartDisplayDriver<HtmlBod
 
         var settings = context.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
 
-        await UpdateModelHtmlAsync(
+        await HtmlHelper.UpdateModelHtmlAsync(
             _liquidTemplateManager,
             _htmlEncoder,
             _shortcodeService,
@@ -99,37 +100,5 @@ public sealed class HtmlBodyPartDisplayDriver : ContentPartDisplayDriver<HtmlBod
             settings.RenderLiquid,
             new Context { ["TypePartDefinition"] = context.TypePartDefinition },
             settings.SanitizeHtml);
-    }
-
-    public static async Task UpdateModelHtmlAsync<TModel>(
-        ILiquidTemplateManager liquidTemplateManager,
-        HtmlEncoder htmlEncoder,
-        IShortcodeService shortcodeService,
-        IHtmlSanitizerService htmlSanitizerService,
-        TModel model,
-        bool renderLiquid,
-        Context shortcodeContext,
-        bool sanitizeHtml)
-        where TModel : HtmlViewModelBase
-    {
-        if (renderLiquid)
-        {
-            model.Html = await liquidTemplateManager.RenderStringAsync(model.Html, htmlEncoder, model,
-                new Dictionary<string, FluidValue>
-                {
-                    [nameof(model.ContentItem)] = new ObjectValue(model.ContentItem),
-                });
-        }
-
-        if (shortcodeContext != null)
-        {
-            shortcodeContext[nameof(model.ContentItem)] = model.ContentItem;
-            model.Html = await shortcodeService.ProcessAsync(model.Html, shortcodeContext);
-        }
-        
-        if (sanitizeHtml)
-        {
-            model.Html = htmlSanitizerService.Sanitize(model.Html);
-        }
     }
 }
