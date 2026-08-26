@@ -1,5 +1,6 @@
 @{
     var returnUrl = Context.Request.Query["returnUrl"];
+    var createUrl = Context.Request.Query["createUrl"];
 }
 
 @if (string.IsNullOrWhiteSpace(returnUrl))
@@ -14,7 +15,10 @@ else
             <span class="visually-hidden">@T["Toggle Dropdown"]</span>
         </button>
         <div class="dropdown-menu">
-            <button class="dropdown-item draft-new" type="submit" name="submit.Save" value="submit.SaveAndNew">@T["and new"]</button>
+            @if (!string.IsNullOrEmpty(createUrl) && Url.IsLocalUrl(createUrl))
+            {
+                <button class="dropdown-item draft-new" type="submit" name="submit.Save" value="submit.SaveAndNew">@T["and new"]</button>
+            }
             <button class="dropdown-item draft-continue" type="submit" name="submit.Save" value="submit.SaveAndContinue">@T["and continue"]</button>
         </div>
     </div>

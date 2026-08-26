@@ -10,7 +10,7 @@
 
 @if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
 {
-    <a edit-for="@contentItem" asp-route-returnUrl="@FullRequestPath" class="btn btn-sm btn-primary edit"><span>@T["Edit"]</span></a>
+    <a edit-for="@contentItem" asp-route-returnUrl="@FullRequestPath" asp-route-createUrl="@Url.Action("Create", "Admin", new { id = contentItem.ContentType })" class="btn btn-sm btn-primary edit"><span>@T["Edit"]</span></a>
 }
 
 @if (hasPublished)

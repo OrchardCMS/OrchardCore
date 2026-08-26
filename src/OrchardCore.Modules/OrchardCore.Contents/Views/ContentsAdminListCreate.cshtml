@@ -22,7 +22,7 @@ else
         <ul class="dropdown-menu dropdown-menu-end scrollable">
             @foreach (var item in Model.CreatableTypes)
             {
-                <li><a class="dropdown-item" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value, returnUrl = FullRequestPath })">@D[item.Text, "Content Types"]</a></li>
+                <li><a class="dropdown-item" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value, returnUrl = FullRequestPath, createUrl = Url.Action("Create", "Admin", new { id = item.Value }) })">@D[item.Text, "Content Types"]</a></li>
             }
         </ul>
     </div>

@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
@@ -399,16 +401,21 @@ public sealed class AdminController : Controller, IUpdateModel
     public Task<IActionResult> CreatePOST(
         string id,
         [Bind(Prefix = "submit.Save")] string submitSave,
-        string returnUrl)
+        string returnUrl,
+        string createUrl)
     {
         var stayOnSamePage = submitSave == "submit.SaveAndContinue";
 
-        if (submitSave == "submit.SaveAndNew")
+        if (submitSave == "submit.SaveAndNew" && !string.IsNullOrEmpty(createUrl) && Url.IsLocalUrl(createUrl))
         {
-            returnUrl = Url.Action(nameof(Create), new { returnUrl });
+            returnUrl = QueryHelpers.AddQueryString(createUrl, new[]
+            {
+                new KeyValuePair<string, string>("createUrl", createUrl),
+                new KeyValuePair<string, string>("returnUrl", returnUrl),
+            });
         }
 
-        return CreateInternalAsync(id, returnUrl, stayOnSamePage, async contentItem =>
+        return CreateInternalAsync(id, returnUrl, createUrl, stayOnSamePage, async contentItem =>
         {
             await _contentManager.SaveDraftAsync(contentItem);
 
@@ -428,27 +435,32 @@ public sealed class AdminController : Controller, IUpdateModel
     public async Task<IActionResult> CreateAndPublishPOST(
         string id,
         [Bind(Prefix = "submit.Publish")] string submitPublish,
-        string queryString,
-        string returnUrl)
+        string returnUrl,
+        string createUrl)
     {
         if (string.IsNullOrEmpty(id))
         {
             return NotFound();
         }
 
-        var stayOnSamePage = submitPublish == "submit.PublishAndContinue";
         // Pass a dummy content item to the authorization check to check for "own" variations permissions.
         if (!await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.PublishContent, id, CurrentUserId()))
         {
             return Forbid();
         }
 
-        if (submitPublish == "submit.PublishAndNew")
+        var stayOnSamePage = submitPublish == "submit.PublishAndContinue";
+
+        if (submitPublish == "submit.PublishAndNew" && !string.IsNullOrEmpty(createUrl) && Url.IsLocalUrl(createUrl))
         {
-            returnUrl = Url.Action(nameof(Create)) + queryString;
+            returnUrl = QueryHelpers.AddQueryString(createUrl, new[]
+            {
+                new KeyValuePair<string, string>("createUrl", createUrl),
+                new KeyValuePair<string, string>("returnUrl", returnUrl),
+            });
         }
 
-        return await CreateInternalAsync(id, returnUrl, stayOnSamePage, async contentItem =>
+        return await CreateInternalAsync(id, returnUrl, createUrl, stayOnSamePage, async contentItem =>
         {
             if (await _contentManager.PublishAsync(contentItem))
             {
@@ -511,10 +523,10 @@ public sealed class AdminController : Controller, IUpdateModel
     public Task<IActionResult> EditPOST(
         string contentItemId,
         [Bind(Prefix = "submit.Save")] string submitSave,
-        string returnUrl)
+        string returnUrl,
+        string createUrl)
     {
-        var stayOnSamePage = submitSave == "submit.SaveAndContinue";
-        return EditInternalAsync(submitSave, contentItemId, returnUrl, stayOnSamePage, async contentItem =>
+        return EditInternalAsync(submitSave, contentItemId, returnUrl, createUrl, async contentItem =>
         {
             await _contentManager.SaveDraftAsync(contentItem);
 
@@ -534,15 +546,19 @@ public sealed class AdminController : Controller, IUpdateModel
     public async Task<IActionResult> EditAndPublishPOST(
         string contentItemId,
         [Bind(Prefix = "submit.Publish")] string submitPublish,
-        string returnUrl) => await PublishOrUnpublishAsync(submitPublish, contentItemId, returnUrl, publish: true);
+        string returnUrl,
+        string createUrl)
+        => await PublishOrUnpublishAsync(submitPublish, contentItemId, returnUrl, createUrl, publish: true);
 
     [HttpPost]
     [ActionName(nameof(Edit))]
     [FormValueRequired("submit.Unpublish")]
     public async Task<IActionResult> EditAndUnpublishPOST(
-    string contentItemId,
-    [Bind(Prefix = "submit.Unpublish")] string submitUnpublish,
-    string returnUrl) => await PublishOrUnpublishAsync(submitUnpublish, contentItemId, returnUrl, publish: false);
+        string contentItemId,
+        [Bind(Prefix = "submit.Unpublish")] string submitUnpublish,
+        string returnUrl,
+        string createUrl)
+        => await PublishOrUnpublishAsync(submitUnpublish, contentItemId, returnUrl, createUrl, publish: false);
 
     [HttpPost]
     public async Task<IActionResult> Delete(string contentItemId, string returnUrl)
@@ -756,6 +772,7 @@ public sealed class AdminController : Controller, IUpdateModel
     private async Task<IActionResult> CreateInternalAsync(
         string id,
         string returnUrl,
+        string createUrl,
         bool stayOnSamePage,
         Func<ContentItem, Task<bool>> conditionallyPublish)
     {
@@ -791,6 +808,11 @@ public sealed class AdminController : Controller, IUpdateModel
             adminRouteValues.Add("returnUrl", returnUrl);
         }
 
+        if (!string.IsNullOrEmpty(createUrl))
+        {
+            adminRouteValues.Add("createUrl", createUrl);
+        }
+
         return RedirectToRoute(adminRouteValues);
     }
 
@@ -798,7 +820,7 @@ public sealed class AdminController : Controller, IUpdateModel
         string action,
         string contentItemId,
         string returnUrl,
-        bool stayOnSamePage,
+        string createUrl,
         Func<ContentItem, Task<bool>> conditionallyPublish)
     {
         var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.DraftRequired);
@@ -813,9 +835,16 @@ public sealed class AdminController : Controller, IUpdateModel
             return Forbid();
         }
 
-        if (action == "submit.SaveAndNew")
+        var stayOnSamePage = action == "submit.SaveAndContinue";
+
+        if (action == "submit.SaveAndNew" && !string.IsNullOrEmpty(createUrl) && Url.IsLocalUrl(createUrl))
         {
-            returnUrl = Url.Action(nameof(Create), new { id = contentItem.ContentType });
+            returnUrl = QueryHelpers.AddQueryString(createUrl, new[]
+            {
+                new KeyValuePair<string, string>("id", contentItem.ContentType),
+                new KeyValuePair<string, string>("createUrl", createUrl),
+                new KeyValuePair<string, string>("returnUrl", returnUrl),
+            });
         }
 
         var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, false);
@@ -836,6 +865,7 @@ public sealed class AdminController : Controller, IUpdateModel
             return RedirectToAction(nameof(Edit), new RouteValueDictionary
             {
                 { "ContentItemId", contentItem.ContentItemId },
+                { "createUrl", createUrl },
             });
         }
 
@@ -845,6 +875,7 @@ public sealed class AdminController : Controller, IUpdateModel
             {
                 { "ContentItemId", contentItem.ContentItemId },
                 { "returnUrl", returnUrl },
+                { "createUrl", createUrl },
             });
         }
 
@@ -928,7 +959,7 @@ public sealed class AdminController : Controller, IUpdateModel
         return RedirectToAction(nameof(List));
     }
 
-    private async Task<IActionResult> PublishOrUnpublishAsync(string action, string contentItemId, string returnUrl, bool publish)
+    private async Task<IActionResult> PublishOrUnpublishAsync(string action, string contentItemId, string returnUrl, string createUrl, bool publish)
     {
         var stayOnSamePage = publish
             ? action == "submit.PublishAndContinue"
@@ -948,10 +979,10 @@ public sealed class AdminController : Controller, IUpdateModel
 
         if (publish && action == "submit.PublishAndNew")
         {
-            returnUrl = Url.Action(nameof(Create), new { id = contentItem.ContentType });
+            action = "submit.SaveAndNew";
         }
 
-        return await EditInternalAsync(action, contentItemId, returnUrl, stayOnSamePage, async contentItem =>
+        return await EditInternalAsync(action, contentItemId, returnUrl, createUrl, async contentItem =>
         {
             var hasBeenPublishedOrUnpublished = publish
                 ? await _contentManager.PublishAsync(contentItem)
