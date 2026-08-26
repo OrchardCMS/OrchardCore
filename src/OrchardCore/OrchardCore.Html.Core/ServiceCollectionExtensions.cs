@@ -1,12 +1,11 @@
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Html.Services;
 
-namespace OrchardCore.Html;
+namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddHtmlCore(this IServiceCollection services)
+    public static IServiceCollection AddHtmlServices(this IServiceCollection services)
     {
         services.TryAddScoped<IHtmlDisplayService, HtmlDisplayService>();
 
