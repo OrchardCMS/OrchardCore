@@ -81,7 +81,7 @@ public class HtmlDisplayServiceTests
         return services.BuildServiceProvider();
     }
 
-    private class Model : HtmlViewModelBase
+    private sealed class Model : HtmlViewModelBase
     {
         public Model(string html)
         {
