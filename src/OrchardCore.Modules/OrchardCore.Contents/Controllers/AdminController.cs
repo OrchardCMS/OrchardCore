@@ -403,11 +403,6 @@ public sealed class AdminController : Controller, IUpdateModel
     {
         var stayOnSamePage = submitSave == "submit.SaveAndContinue";
 
-        if (submitSave == "submit.SaveAndNew")
-        {
-            returnUrl = Url.Action(nameof(Create), new { returnUrl });
-        }
-
         return CreateInternalAsync(id, returnUrl, stayOnSamePage, async contentItem =>
         {
             await _contentManager.SaveDraftAsync(contentItem);
