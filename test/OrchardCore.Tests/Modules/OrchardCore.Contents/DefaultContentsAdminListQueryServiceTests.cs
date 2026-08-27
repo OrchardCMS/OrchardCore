@@ -52,6 +52,7 @@ public class DefaultContentsAdminListQueryServiceTests
 
         await service.QueryAsync(model, Mock.Of<IUpdateModel>());
 
+        // Assert
         var restoredNode = Assert.Single(model.FilterResult.OfType<DefaultTermNode>());
         Assert.Equal(ContentsAdminListFilterOptions.DefaultTermName, restoredNode.TermName);
         Assert.Same(originalNode, restoredNode);
