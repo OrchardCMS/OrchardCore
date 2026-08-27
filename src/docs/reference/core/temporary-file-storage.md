@@ -1,8 +1,8 @@
 # Temporary File Storage
 
-When Orchard Core needs to write a file temporarily — an in-progress chunked or resumable (TUS) upload, an extracted deployment/recipe archive, or a recipe written to disk before setup — it goes through the `ITempWorkspace` abstraction (`OrchardCore.FileStorage`) instead of writing directly to the operating system temporary directory.
+When Orchard Core needs to write a file temporarily — an in-progress chunked or resumable (TUS) upload, an extracted deployment/recipe archive, or a recipe written to disk before setup — it goes through the `ITempDirectoryProvider` abstraction (`OrchardCore.FileStorage`) instead of writing directly to the operating system temporary directory.
 
-The default implementation, `DefaultTempWorkspace`, is filesystem based. It stores everything under a **tenant-scoped** sub-directory of a configurable base path, so operators can relocate temporary storage onto a larger or shared volume, and every tenant's temporary files stay separated from one another.
+The default implementation, `DefaultTempDirectoryProvider`, is filesystem based. It stores everything under a **tenant-scoped** sub-directory of a configurable base path, so operators can relocate temporary storage onto a larger or shared volume, and every tenant's temporary files stay separated from one another.
 
 ## Why this exists
 
@@ -10,30 +10,30 @@ Previously these consumers wrote to `Path.GetTempPath()`, whose available space 
 
 ## Configuration
 
-The base location is controlled globally by the `OrchardCore:TempWorkspace` configuration section:
+The base location is controlled globally by the `OrchardCore:TempDirectory` configuration section:
 
 ```json
 {
   "OrchardCore": {
-    "TempWorkspace": {
+    "TempDirectory": {
       // Base path under which tenant-scoped temporary files are stored.
       // When omitted, the operating system temporary directory (Path.GetTempPath()) is used.
-      "TempPath": "/mnt/shared/temp"
+      "Path": "/mnt/shared/temp"
     }
   }
 }
 ```
 
-Files are laid out as `{TempPath}/{TenantName}/...`. The tenant sub-directory is added automatically; you never compose it yourself. When `TempPath` is not set, the store falls back to the operating system temporary directory, preserving the previous behavior.
+Files are laid out as `{Path}/{TenantName}/...`. The tenant sub-directory is added automatically; you never compose it yourself. When `Path` is not set, the store falls back to the operating system temporary directory, preserving the previous behavior.
 
 This one setting applies to every temporary file consumer: media chunked uploads, TUS uploads, deployment and recipe imports/exports, and tenant recipe uploads.
 
 !!! note
-    `OrchardCore.Media`'s `MediaOptions.TusTempPath` still lets you target resumable (TUS) partial uploads at a different path. When it is left unset, the TUS disk store follows `OrchardCore:TempWorkspace:TempPath` (in a `TusUploads` sub-directory). An explicitly configured `TusTempPath` takes precedence.
+    Resumable (TUS) partial uploads are stored in a `TusUploads` sub-directory of this location, so they follow `OrchardCore:TempDirectory:Path` like every other temporary file.
 
 ## Using a mounted file share (Azure Files, AWS EFS/FSx)
 
-Because `DefaultTempWorkspace` uses plain `System.IO` operations, **any storage that presents itself as a mounted filesystem path works with no code changes** — local disk, a SAN/NAS volume, an SMB share (Azure Files), or an NFS share (AWS EFS/FSx). Mount it at the operating system level, then set `TempPath` to the mount point.
+Because `DefaultTempDirectoryProvider` uses plain `System.IO` operations, **any storage that presents itself as a mounted filesystem path works with no code changes** — local disk, a SAN/NAS volume, an SMB share (Azure Files), or an NFS share (AWS EFS/FSx). Mount it at the operating system level, then set `Path` to the mount point.
 
 === "Linux / containers (SMB)"
 
@@ -44,7 +44,7 @@ Because `DefaultTempWorkspace` uses plain `System.IO` operations, **any storage 
     ```
 
     ```json
-    { "OrchardCore": { "TempWorkspace": { "TempPath": "/mnt/octemp" } } }
+    { "OrchardCore": { "TempDirectory": { "Path": "/mnt/octemp" } } }
     ```
 
 === "Windows"
@@ -54,21 +54,21 @@ Because `DefaultTempWorkspace` uses plain `System.IO` operations, **any storage 
     ```
 
     ```json
-    { "OrchardCore": { "TempWorkspace": { "TempPath": "Z:\\octemp" } } }
+    { "OrchardCore": { "TempDirectory": { "Path": "Z:\\octemp" } } }
     ```
 
 === "Azure App Service / Container Apps"
 
-    Use the platform's Azure Files mount (App Service: *Configuration → Path mappings → Azure Storage Mounts*; Container Apps: an `AzureFile` volume). Then set `TempPath` to the platform mount path (e.g. `/mounts/octemp`). The platform manages the credentials and reconnection.
+    Use the platform's Azure Files mount (App Service: *Configuration → Path mappings → Azure Storage Mounts*; Container Apps: an `AzureFile` volume). Then set `Path` to the platform mount path (e.g. `/mounts/octemp`). The platform manages the credentials and reconnection.
 
 !!! warning
-    Point `TempPath` at a mounted **file share**, not object storage. The temporary file consumers require real, seekable local files — for example the chunked-upload path does `Seek`/`SetLength` and reopens the same file across requests, and deployment import uses `ZipFile.ExtractToDirectory` and `PhysicalFileProvider`. Azure Files (SMB) and AWS EFS/FSx support this; Azure Blob and AWS S3 object storage do not. Resumable (TUS) uploads are the exception: they can target object storage through the `ITusTempStore` implementations in the `OrchardCore.Media.Azure` and `OrchardCore.Media.AmazonS3` features.
+    Point `Path` at a mounted **file share**, not object storage. The temporary file consumers require real, seekable local files — for example the chunked-upload path does `Seek`/`SetLength` and reopens the same file across requests, and deployment import uses `ZipFile.ExtractToDirectory` and `PhysicalFileProvider`. Azure Files (SMB) and AWS EFS/FSx support this; Azure Blob and AWS S3 object storage do not. Resumable (TUS) uploads are the exception: they can target object storage through the `ITusTempStore` implementations in the `OrchardCore.Media.Azure` and `OrchardCore.Media.AmazonS3` features.
 
 Operational notes: make sure the mount is writable by the identity the application runs as; keep the share in the same region to limit latency; and note that existing cleanup (such as the media `TemporaryFileLifetime` purge) now runs against the configured path.
 
-## Consuming `ITempWorkspace`
+## Consuming `ITempDirectoryProvider`
 
-If your feature writes temporary files, inject `ITempWorkspace` instead of calling `Path.GetTempPath()`. This keeps your temporary files under the configured, tenant-scoped location automatically.
+If your feature writes temporary files, inject `ITempDirectoryProvider` instead of calling `Path.GetTempPath()`. This keeps your temporary files under the configured, tenant-scoped location automatically.
 
 | Member | Use it for |
 | --- | --- |
@@ -82,18 +82,18 @@ using OrchardCore.FileStorage;
 
 public sealed class MyImportService
 {
-    private readonly ITempWorkspace _tempWorkspace;
+    private readonly ITempDirectoryProvider _tempDirectoryProvider;
 
-    public MyImportService(ITempWorkspace tempWorkspace)
-        => _tempWorkspace = tempWorkspace;
+    public MyImportService(ITempDirectoryProvider tempDirectoryProvider)
+        => _tempDirectoryProvider = tempDirectoryProvider;
 
     public async Task ImportAsync(IFormFile package, CancellationToken cancellationToken)
     {
-        // A unique file path under {TempPath}/{TenantName}/ to save the upload.
-        var archivePath = _tempWorkspace.GetTempFileName(Path.GetExtension(package.FileName));
+        // A unique file path under {Path}/{TenantName}/ to save the upload.
+        var archivePath = _tempDirectoryProvider.GetTempFileName(Path.GetExtension(package.FileName));
 
         // A dedicated directory to extract into.
-        var extractPath = _tempWorkspace.CreateTempSubdirectory();
+        var extractPath = _tempDirectoryProvider.CreateTempSubdirectory();
 
         try
         {
@@ -118,14 +118,14 @@ public sealed class MyImportService
 The store hands out paths only; you remain responsible for creating, writing, and cleaning up the files themselves. Delete temporary files when you are done with them — the store does not track or expire them on your behalf.
 
 !!! warning
-    `ITempWorkspace` is for *temporary* storage, and it does not scan uploads. When the temporary file comes from a user upload, still run it through [`FileCreationService`](file-upload-security.md) before you store it permanently.
+    `ITempDirectoryProvider` is for *temporary* storage, and it does not scan uploads. When the temporary file comes from a user upload, still run it through [`FileCreationService`](file-upload-security.md) before you store it permanently.
 
 ## Replacing the implementation
 
-`DefaultTempWorkspace` is registered per tenant with `TryAddSingleton`, so a module can substitute its own implementation:
+`DefaultTempDirectoryProvider` is registered per tenant with `TryAddSingleton`, so a module can substitute its own implementation:
 
 ```csharp
-services.Replace(ServiceDescriptor.Singleton<ITempWorkspace, MyTempWorkspace>());
+services.Replace(ServiceDescriptor.Singleton<ITempDirectoryProvider, MyTempDirectoryProvider>());
 ```
 
-Any replacement must honor the same contract: return **real local filesystem paths** that support random access and directory enumeration. This is why there is no Azure Blob or AWS S3 implementation of `ITempWorkspace` — those object stores cannot satisfy the path-based, seekable contract the consumers depend on. To move temporary storage to the cloud, mount a file share (Azure Files, AWS EFS/FSx) and configure `TempPath`, as described above.
+Any replacement must honor the same contract: return **real local filesystem paths** that support random access and directory enumeration. This is why there is no Azure Blob or AWS S3 implementation of `ITempDirectoryProvider` — those object stores cannot satisfy the path-based, seekable contract the consumers depend on. To move temporary storage to the cloud, mount a file share (Azure Files, AWS EFS/FSx) and configure `Path`, as described above.

@@ -19,7 +19,7 @@ public sealed class ChunkFileUploadService : IChunkFileUploadService
     private readonly IClock _clock;
     private readonly ILogger _logger;
     private readonly IOptions<MediaOptions> _options;
-    private readonly ITempWorkspace _tempWorkspace;
+    private readonly ITempDirectoryProvider _tempDirectoryProvider;
     private readonly string _tempFileNamePrefix;
 
     public ChunkFileUploadService(
@@ -27,12 +27,12 @@ public sealed class ChunkFileUploadService : IChunkFileUploadService
         IClock clock,
         ILogger<ChunkFileUploadService> logger,
         IOptions<MediaOptions> options,
-        ITempWorkspace tempWorkspace)
+        ITempDirectoryProvider tempDirectoryProvider)
     {
         _clock = clock;
         _logger = logger;
         _options = options;
-        _tempWorkspace = tempWorkspace;
+        _tempDirectoryProvider = tempDirectoryProvider;
 
         _tempFileNamePrefix = $"{shellSettings.TenantId}_";
     }
@@ -148,7 +148,7 @@ public sealed class ChunkFileUploadService : IChunkFileUploadService
 
     private FileStream GetOrCreateTemporaryFile(Guid uploadId, IFormFile formFile, long size)
     {
-        // GetTempFilePath resolves the tenant-scoped temp folder via ITempWorkspace, which ensures it exists.
+        // GetTempFilePath resolves the tenant-scoped temp folder via ITempDirectoryProvider, which ensures it exists.
         var tempFilePath = GetTempFilePath(uploadId, formFile);
 
         return File.Exists(tempFilePath) switch
@@ -172,8 +172,14 @@ public sealed class ChunkFileUploadService : IChunkFileUploadService
         };
     }
 
-    private string GetTempFolderPath() =>
-        _tempWorkspace.GetOrCreateSubdirectory(s_tempFolderName);
+    private string GetTempFolderPath()
+    {
+        var tempFolderPath = Path.Combine(_tempDirectoryProvider.GetRootDirectory(), s_tempFolderName);
+
+        Directory.CreateDirectory(tempFolderPath);
+
+        return tempFolderPath;
+    }
 
     private string GetTempFilePath(Guid uploadId, IFormFile formFile) =>
         Path.Combine(

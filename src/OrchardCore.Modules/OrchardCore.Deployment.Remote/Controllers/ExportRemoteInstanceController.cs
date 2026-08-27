@@ -24,7 +24,7 @@ public sealed class ExportRemoteInstanceController : Controller
     private readonly RemoteInstanceService _service;
     private readonly INotifier _notifier;
     private readonly IHttpClientFactory _httpClientFactory;
-    private readonly ITempWorkspace _tempWorkspace;
+    private readonly ITempDirectoryProvider _tempDirectoryProvider;
 
     internal readonly IHtmlLocalizer H;
 
@@ -35,7 +35,7 @@ public sealed class ExportRemoteInstanceController : Controller
         IDeploymentManager deploymentManager,
         INotifier notifier,
         IHttpClientFactory httpClientFactory,
-        ITempWorkspace tempWorkspace,
+        ITempDirectoryProvider tempDirectoryProvider,
         IHtmlLocalizer<ExportRemoteInstanceController> localizer)
     {
         _authorizationService = authorizationService;
@@ -44,7 +44,7 @@ public sealed class ExportRemoteInstanceController : Controller
         _service = service;
         _notifier = notifier;
         _httpClientFactory = httpClientFactory;
-        _tempWorkspace = tempWorkspace;
+        _tempDirectoryProvider = tempDirectoryProvider;
         H = localizer;
     }
 
@@ -73,7 +73,7 @@ public sealed class ExportRemoteInstanceController : Controller
         string archiveFileName;
         var filename = deploymentPlan.Name.ToSafeName() + ".zip";
 
-        var tempRoot = _tempWorkspace.GetRootDirectory();
+        var tempRoot = _tempDirectoryProvider.GetRootDirectory();
 
         using (var fileBuilder = new TemporaryFileBuilder(tempRoot))
         {

@@ -49,7 +49,7 @@ public sealed class WorkflowTypeController : Controller
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IShapeFactory _shapeFactory;
     private readonly JsonSerializerOptions _documentJsonSerializerOptions;
-    private readonly ITempWorkspace _tempWorkspace;
+    private readonly ITempDirectoryProvider _tempDirectoryProvider;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -69,7 +69,7 @@ public sealed class WorkflowTypeController : Controller
         IStringLocalizer<WorkflowTypeController> stringLocalizer,
         IHtmlLocalizer<WorkflowTypeController> htmlLocalizer,
         IUpdateModelAccessor updateModelAccessor,
-        ITempWorkspace tempWorkspace,
+        ITempDirectoryProvider tempDirectoryProvider,
         IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions)
     {
         _pagerOptions = pagerOptions.Value;
@@ -83,7 +83,7 @@ public sealed class WorkflowTypeController : Controller
         _notifier = notifier;
         _updateModelAccessor = updateModelAccessor;
         _shapeFactory = shapeFactory;
-        _tempWorkspace = tempWorkspace;
+        _tempDirectoryProvider = tempDirectoryProvider;
         S = stringLocalizer;
         H = htmlLocalizer;
         _documentJsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
@@ -577,7 +577,7 @@ public sealed class WorkflowTypeController : Controller
 
     private async Task<IActionResult> ExportWorkflows(params long[] itemIds)
     {
-        using var fileBuilder = new TemporaryFileBuilder(_tempWorkspace.GetRootDirectory());
+        using var fileBuilder = new TemporaryFileBuilder(_tempDirectoryProvider.GetRootDirectory());
         var archiveFileName = fileBuilder.Folder + ".zip";
         var recipeDescriptor = new RecipeDescriptor();
         var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor);

@@ -476,7 +476,7 @@ public class ApiControllerTests
             databaseProviders,
             tenantValidator,
             tenantDatabasePatternResolver,
-            Mock.Of<ITempWorkspace>(),
+            Mock.Of<ITempDirectoryProvider>(),
             tenantApiLocalizerMock.Object,
             Mock.Of<ILogger<TenantApiController>>())
         {

@@ -45,7 +45,7 @@ public sealed class TenantApiController : ControllerBase
     private readonly Dictionary<string, DatabaseProvider> _databaseProviderLookup;
     private readonly ITenantValidator _tenantValidator;
     private readonly TenantDatabasePatternResolver _tenantDatabasePatternResolver;
-    private readonly ITempWorkspace _tempWorkspace;
+    private readonly ITempDirectoryProvider _tempDirectoryProvider;
     private readonly ILogger _logger;
 
     internal readonly IStringLocalizer S;
@@ -65,7 +65,7 @@ public sealed class TenantApiController : ControllerBase
         IEnumerable<DatabaseProvider> databaseProviders,
         ITenantValidator tenantValidator,
         TenantDatabasePatternResolver tenantDatabasePatternResolver,
-        ITempWorkspace tempWorkspace,
+        ITempDirectoryProvider tempDirectoryProvider,
         IStringLocalizer<TenantApiController> stringLocalizer,
         ILogger<TenantApiController> logger)
     {
@@ -83,7 +83,7 @@ public sealed class TenantApiController : ControllerBase
         _databaseProviderLookup = databaseProviders.ToDictionary(provider => provider.Value, StringComparer.OrdinalIgnoreCase);
         _tenantValidator = tenantValidator;
         _tenantDatabasePatternResolver = tenantDatabasePatternResolver;
-        _tempWorkspace = tempWorkspace;
+        _tempDirectoryProvider = tempDirectoryProvider;
         S = stringLocalizer;
         _logger = logger;
     }
@@ -482,7 +482,7 @@ public sealed class TenantApiController : ControllerBase
                 return BadRequest(S["Either a 'recipe' file or 'RecipeName' is required."]);
             }
 
-            var tempFilename = _tempWorkspace.GetTempFileName();
+            var tempFilename = _tempDirectoryProvider.GetTempFileName();
 
             await System.IO.File.WriteAllTextAsync(tempFilename, model.Recipe);
 

@@ -122,9 +122,9 @@ public class ClamAvFileEventHandlerTests
             CreateWorkspace(),
             NullLogger<ClamAvFileEventHandler>.Instance);
 
-    private static DefaultTempWorkspace CreateWorkspace()
-        => new DefaultTempWorkspace(
-            Options.Create(new TempWorkspaceOptions()),
+    private static DefaultTempDirectoryProvider CreateWorkspace()
+        => new DefaultTempDirectoryProvider(
+            Options.Create(new TempDirectoryOptions()),
             new ShellSettings { Name = "clamav-test" });
 
     private static ClamAvConnectionFactory CreateFactory()

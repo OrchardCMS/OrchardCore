@@ -25,7 +25,7 @@ public sealed class ImportController : Controller
     private readonly INotifier _notifier;
     private readonly ILogger _logger;
     private readonly FileCreationService _fileCreationService;
-    private readonly ITempWorkspace _tempWorkspace;
+    private readonly ITempDirectoryProvider _tempDirectoryProvider;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -34,7 +34,7 @@ public sealed class ImportController : Controller
         IDeploymentManager deploymentManager,
         IAuthorizationService authorizationService,
         FileCreationService fileCreationService,
-        ITempWorkspace tempWorkspace,
+        ITempDirectoryProvider tempDirectoryProvider,
         INotifier notifier,
         ILogger<ImportController> logger,
         IHtmlLocalizer<ImportController> htmlLocalizer,
@@ -44,7 +44,7 @@ public sealed class ImportController : Controller
         _deploymentManager = deploymentManager;
         _authorizationService = authorizationService;
         _fileCreationService = fileCreationService;
-        _tempWorkspace = tempWorkspace;
+        _tempDirectoryProvider = tempDirectoryProvider;
         _notifier = notifier;
         _logger = logger;
         H = htmlLocalizer;
@@ -71,8 +71,8 @@ public sealed class ImportController : Controller
 
         if (importedPackage != null)
         {
-            var tempArchiveName = _tempWorkspace.GetTempFileName(Path.GetExtension(importedPackage.FileName));
-            var tempArchiveFolder = _tempWorkspace.GetTempFileName();
+            var tempArchiveName = _tempDirectoryProvider.GetTempFileName(Path.GetExtension(importedPackage.FileName));
+            var tempArchiveFolder = _tempDirectoryProvider.GetTempFileName();
 
             try
             {
@@ -172,7 +172,7 @@ public sealed class ImportController : Controller
 
         if (ModelState.IsValid)
         {
-            var tempArchiveFolder = _tempWorkspace.CreateTempSubdirectory();
+            var tempArchiveFolder = _tempDirectoryProvider.CreateTempSubdirectory();
 
             try
             {

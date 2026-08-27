@@ -178,12 +178,12 @@ public static class ServiceCollectionExtensions
 
             // Registered as a tenant-level singleton (not a host singleton) because it depends on the
             // tenant's ShellSettings, which is not resolvable from the shared application container.
-            services.TryAddSingleton<ITempWorkspace, DefaultTempWorkspace>();
+            services.TryAddSingleton<ITempDirectoryProvider, DefaultTempDirectoryProvider>();
 
             var configuration = serviceProvider.GetService<IShellConfiguration>();
 
             services.Configure<CultureOptions>(configuration.GetSection("OrchardCore_Localization_CultureOptions"));
-            services.Configure<TempWorkspaceOptions>(configuration.GetSection("TempWorkspace"));
+            services.Configure<TempDirectoryOptions>(configuration.GetSection("TempDirectory"));
         });
 
         services.AddSingleton(new FluidParser());

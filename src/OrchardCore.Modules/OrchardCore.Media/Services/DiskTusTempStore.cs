@@ -1,18 +1,15 @@
 using System.IO.Pipelines;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell;
 using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.Services;
 
 /// <summary>
-/// Default <see cref="ITusTempStore"/> implementation that stores partial upload data on disk.
-/// By default the base path is the tenant-scoped <see cref="ITempWorkspace"/> location (a <c>TusUploads</c>
-/// sub-directory), so it follows the globally configured <c>OrchardCore:TempWorkspace:TempPath</c>.
-/// An explicit <see cref="MediaOptions.TusTempPath"/> still takes precedence, for example to point partial
-/// uploads at a dedicated shared filesystem path for multi-instance deployments.
+/// Default <see cref="ITusTempStore"/> implementation that stores partial upload data on disk, under a
+/// <c>TusUploads</c> sub-directory of the tenant-scoped <see cref="ITempDirectoryProvider"/> location. It therefore
+/// follows the globally configured <c>OrchardCore:TempDirectory:Path</c>; point that at a shared filesystem
+/// path (for example a mounted Azure Files or AWS EFS share) for multi-instance deployments.
 /// </summary>
 public sealed class DiskTusTempStore : ITusTempStore
 {
@@ -22,18 +19,13 @@ public sealed class DiskTusTempStore : ITusTempStore
     private readonly ILogger _logger;
 
     public DiskTusTempStore(
-        IOptions<MediaOptions> mediaOptions,
-        ShellSettings shellSettings,
-        ITempWorkspace tempWorkspace,
+        ITempDirectoryProvider tempDirectoryProvider,
         ILogger<DiskTusTempStore> logger)
     {
         _logger = logger;
 
-        var tusTempPath = mediaOptions.Value.TusTempPath;
-
-        _tempDirectory = string.IsNullOrWhiteSpace(tusTempPath)
-            ? tempWorkspace.GetOrCreateSubdirectory(s_tusTempSubdirectory)
-            : Path.Combine(tusTempPath, shellSettings.TenantId);
+        // The directory is created on demand by EnsureTempDirectory.
+        _tempDirectory = Path.Combine(tempDirectoryProvider.GetRootDirectory(), s_tusTempSubdirectory);
     }
 
     public Task CreateFileAsync(string fileId, CancellationToken cancellationToken)

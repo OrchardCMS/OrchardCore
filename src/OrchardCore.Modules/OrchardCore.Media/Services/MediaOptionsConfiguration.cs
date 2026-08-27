@@ -102,8 +102,6 @@ public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
         options.UseTokenizedQueryString = section.GetValue("UseTokenizedQueryString", DefaultUseTokenizedQueryString);
         options.MaxUploadChunkSize = section.GetValue(nameof(options.MaxUploadChunkSize), DefaultMaxUploadChunkSize);
         options.TemporaryFileLifetime = section.GetValue(nameof(options.TemporaryFileLifetime), s_defaultTemporaryFileLifeTime);
-        // When left unset, DiskTusTempStore falls back to the globally configured ITempWorkspace location.
-        options.TusTempPath = section.GetValue<string>(nameof(options.TusTempPath));
 
         var contentSecurityPolicy = section.GetValue("ContentSecurityPolicy", DefaultContentSecurityPolicy);
 

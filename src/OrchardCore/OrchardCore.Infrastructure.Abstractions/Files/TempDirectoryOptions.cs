@@ -1,10 +1,10 @@
 namespace OrchardCore.FileStorage;
 
 /// <summary>
-/// Options controlling where <see cref="ITempWorkspace"/> places temporary files.
-/// Bound from the <c>OrchardCore:TempWorkspace</c> configuration section.
+/// Options controlling where <see cref="ITempDirectoryProvider"/> places temporary files.
+/// Bound from the <c>OrchardCore:TempDirectory</c> configuration section.
 /// </summary>
-public class TempWorkspaceOptions
+public class TempDirectoryOptions
 {
     /// <summary>
     /// The base path under which tenant-scoped temporary files are stored. When not set, the operating system
@@ -14,5 +14,5 @@ public class TempWorkspaceOptions
     /// Point this to a larger or shared volume (for example a mounted Azure Files or AWS EFS share) to avoid
     /// exhausting the limited space that is typically available in the system temporary directory.
     /// </remarks>
-    public string TempPath { get; set; }
+    public string Path { get; set; }
 }

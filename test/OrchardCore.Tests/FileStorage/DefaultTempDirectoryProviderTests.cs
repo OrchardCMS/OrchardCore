@@ -3,16 +3,16 @@ using OrchardCore.FileStorage;
 
 namespace OrchardCore.Tests.FileStorage;
 
-public sealed class DefaultTempWorkspaceTests : IDisposable
+public sealed class DefaultTempDirectoryProviderTests : IDisposable
 {
     private readonly string _basePath = Path.Combine(
         Path.GetTempPath(),
-        nameof(DefaultTempWorkspaceTests),
+        nameof(DefaultTempDirectoryProviderTests),
         Guid.NewGuid().ToString("N"));
 
-    private DefaultTempWorkspace CreateStore(string tenantName = "TestTenant", string tempPath = null)
+    private DefaultTempDirectoryProvider CreateStore(string tenantName = "TestTenant", string tempPath = null)
         => new(
-            Options.Create(new TempWorkspaceOptions { TempPath = tempPath ?? _basePath }),
+            Options.Create(new TempDirectoryOptions { Path = tempPath ?? _basePath }),
             new ShellSettings { Name = tenantName });
 
     [Fact]
@@ -38,8 +38,8 @@ public sealed class DefaultTempWorkspaceTests : IDisposable
     [Fact]
     public void EmptyTempPath_FallsBackToSystemTempPath()
     {
-        var store = new DefaultTempWorkspace(
-            Options.Create(new TempWorkspaceOptions { TempPath = null }),
+        var store = new DefaultTempDirectoryProvider(
+            Options.Create(new TempDirectoryOptions { Path = null }),
             new ShellSettings { Name = "Gamma" });
 
         var root = store.GetRootDirectory();
@@ -48,28 +48,6 @@ public sealed class DefaultTempWorkspaceTests : IDisposable
 
         // Cleanup this one since it is created outside _basePath.
         Directory.Delete(root, recursive: true);
-    }
-
-    [Fact]
-    public void GetOrCreateSubdirectory_CreatesNestedDirectoryUnderRoot()
-    {
-        var store = CreateStore();
-
-        var sub = store.GetOrCreateSubdirectory("ChunkedFileUploads");
-
-        Assert.Equal(Path.Combine(_basePath, "TestTenant", "ChunkedFileUploads"), sub);
-        Assert.True(Directory.Exists(sub));
-    }
-
-    [Theory]
-    [InlineData("../escape")]
-    [InlineData("../../escape")]
-    [InlineData("nested/../../escape")]
-    public void GetOrCreateSubdirectory_RejectsPathTraversal(string name)
-    {
-        var store = CreateStore();
-
-        Assert.Throws<InvalidOperationException>(() => store.GetOrCreateSubdirectory(name));
     }
 
     [Fact]
@@ -111,6 +89,18 @@ public sealed class DefaultTempWorkspaceTests : IDisposable
         Assert.True(Directory.Exists(first));
         Assert.True(Directory.Exists(second));
         Assert.StartsWith(Path.Combine(_basePath, "TestTenant"), first);
+    }
+
+    [Fact]
+    public void CreateTempSubdirectory_AppliesPrefixToDirectoryName()
+    {
+        var store = CreateStore();
+
+        var path = store.CreateTempSubdirectory("upload-");
+
+        Assert.True(Directory.Exists(path));
+        Assert.Equal(Path.Combine(_basePath, "TestTenant"), Path.GetDirectoryName(path));
+        Assert.StartsWith("upload-", Path.GetFileName(path));
     }
 
     public void Dispose()

@@ -94,13 +94,5 @@ public class MediaOptions
     /// </summary>
     public TimeSpan TemporaryFileLifetime { get; set; }
 
-    /// <summary>
-    /// The path used to store temporary TUS upload data.
-    /// When not set, the globally configured temporary file store location is used
-    /// (a <c>TusUploads</c> sub-directory of <c>OrchardCore:TempWorkspace:TempPath</c>).
-    /// Configure this to a shared filesystem path for multi-instance deployments.
-    /// </summary>
-    public string TusTempPath { get; set; }
-
     public const string EncryptedCommandCacheKeyPrefix = "MediaCommands:";
 }

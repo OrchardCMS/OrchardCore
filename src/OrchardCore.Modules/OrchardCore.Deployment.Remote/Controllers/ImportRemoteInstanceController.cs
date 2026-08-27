@@ -24,7 +24,7 @@ public sealed class ImportRemoteInstanceController : Controller
     private readonly ILogger _logger;
     private readonly IDataProtector _dataProtector;
     private readonly FileCreationService _fileCreationService;
-    private readonly ITempWorkspace _tempWorkspace;
+    private readonly ITempDirectoryProvider _tempDirectoryProvider;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -34,7 +34,7 @@ public sealed class ImportRemoteInstanceController : Controller
         RemoteClientService remoteClientService,
         IDeploymentManager deploymentManager,
         FileCreationService fileCreationService,
-        ITempWorkspace tempWorkspace,
+        ITempDirectoryProvider tempDirectoryProvider,
         INotifier notifier,
         IHtmlLocalizer<ImportRemoteInstanceController> htmlLocalizer,
         IStringLocalizer<ImportRemoteInstanceController> stringLocalizer,
@@ -42,7 +42,7 @@ public sealed class ImportRemoteInstanceController : Controller
     {
         _deploymentManager = deploymentManager;
         _fileCreationService = fileCreationService;
-        _tempWorkspace = tempWorkspace;
+        _tempDirectoryProvider = tempDirectoryProvider;
         _notifier = notifier;
         _logger = logger;
         _remoteClientService = remoteClientService;
@@ -76,10 +76,10 @@ public sealed class ImportRemoteInstanceController : Controller
         }
 
         // Create a temporary filename to save the archive
-        var tempArchiveName = _tempWorkspace.GetTempFileName(".zip");
+        var tempArchiveName = _tempDirectoryProvider.GetTempFileName(".zip");
 
         // Create a temporary folder to extract the archive to
-        var tempArchiveFolder = _tempWorkspace.GetTempFileName();
+        var tempArchiveFolder = _tempDirectoryProvider.GetTempFileName();
 
         try
         {

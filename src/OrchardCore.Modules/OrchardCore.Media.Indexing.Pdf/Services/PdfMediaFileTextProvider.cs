@@ -6,11 +6,11 @@ namespace OrchardCore.Media.Indexing;
 
 public class PdfMediaFileTextProvider : IMediaFileTextProvider
 {
-    private readonly ITempWorkspace _tempWorkspace;
+    private readonly ITempDirectoryProvider _tempDirectoryProvider;
 
-    public PdfMediaFileTextProvider(ITempWorkspace tempWorkspace)
+    public PdfMediaFileTextProvider(ITempDirectoryProvider tempDirectoryProvider)
     {
-        _tempWorkspace = tempWorkspace;
+        _tempDirectoryProvider = tempDirectoryProvider;
     }
 
     public async Task<string> GetTextAsync(string path, Stream fileStream)
@@ -24,7 +24,7 @@ public class PdfMediaFileTextProvider : IMediaFileTextProvider
         {
             if (!fileStream.CanSeek)
             {
-                seekableStream = new FileStream(_tempWorkspace.GetTempFileName(), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.DeleteOnClose);
+                seekableStream = new FileStream(_tempDirectoryProvider.GetTempFileName(), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
                 await fileStream.CopyToAsync(seekableStream);
 

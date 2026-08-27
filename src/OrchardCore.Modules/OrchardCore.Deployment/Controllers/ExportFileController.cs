@@ -20,18 +20,18 @@ public sealed class ExportFileController : Controller
     private readonly IDeploymentManager _deploymentManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly ISession _session;
-    private readonly ITempWorkspace _tempWorkspace;
+    private readonly ITempDirectoryProvider _tempDirectoryProvider;
 
     public ExportFileController(
         IAuthorizationService authorizationService,
         ISession session,
         IDeploymentManager deploymentManager,
-        ITempWorkspace tempWorkspace)
+        ITempDirectoryProvider tempDirectoryProvider)
     {
         _authorizationService = authorizationService;
         _deploymentManager = deploymentManager;
         _session = session;
-        _tempWorkspace = tempWorkspace;
+        _tempDirectoryProvider = tempDirectoryProvider;
     }
 
     [HttpPost]
@@ -53,7 +53,7 @@ public sealed class ExportFileController : Controller
         string archiveFileName;
         var filename = deploymentPlan.Name.ToSafeName() + ".zip";
 
-        using (var fileBuilder = new TemporaryFileBuilder(_tempWorkspace.GetRootDirectory()))
+        using (var fileBuilder = new TemporaryFileBuilder(_tempDirectoryProvider.GetRootDirectory()))
         {
             archiveFileName = fileBuilder.Folder + ".zip";
 
