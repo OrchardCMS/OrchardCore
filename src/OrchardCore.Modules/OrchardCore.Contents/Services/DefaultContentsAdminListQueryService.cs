@@ -90,7 +90,7 @@ public sealed class DefaultContentsAdminListQueryService : IContentsAdminListQue
 
         if (hasFilterResult &&
             defaultTermNode is not null &&
-            (defaultTermName != defaultTermNode.TermName || defaultOperator != defaultTermNode.Operation))
+            (defaultTermName != defaultTermNode?.TermName || defaultOperator != defaultTermNode?.Operation))
         {
             // Restore the original 'defaultTermNode'.
             model.FilterResult.TryRemove(defaultTermName);
