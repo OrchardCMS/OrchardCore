@@ -10,6 +10,35 @@ using JintOptions = Jint.Options;
 
 namespace OrchardCore.Scripting.JavaScript;
 
+/// <summary>
+/// Evaluates JavaScript with Jint.
+/// </summary>
+/// <remarks>
+/// <para>
+/// Engines are reused between evaluations. A scope returns its engine to a pool when it is disposed, after
+/// the engine's global bindings have been reset to the state they were captured in when it was built, so a
+/// later evaluation starts from the same global surface a brand-new engine would have given it. Reuse also
+/// keeps the engine's warm-up caches, which is where most of the saving comes from: the parsed form of a
+/// script is already shared through <see cref="IMemoryCache"/>, but the interpreter state Jint builds while
+/// running it is per engine and used to be thrown away after a single evaluation.
+/// </para>
+/// <para>
+/// <b>Reuse is confined to one tenant.</b> This service is registered per tenant, so the pool is too, and an
+/// engine can only ever be handed to another evaluation of the tenant it was built for. That matters because
+/// resetting the global bindings is not an isolation boundary: it does not undo what a script did to the
+/// built-in prototypes, to <c>Symbol.for</c>, or to an object graph reachable from a global it left in
+/// place. Scripts within a tenant are authored by its administrators and already run at one trust level —
+/// this is the same trust level as before, not a wider one — but two tenants must never share an engine, and
+/// nothing here lets them.
+/// </para>
+/// <para>
+/// One consequence is worth knowing when writing a global method or a caller. The value an evaluation
+/// returns must not depend on the engine still being in the state that produced it. <see cref="Evaluate"/>
+/// converts its result to CLR values, which detaches objects, arrays and dates, but a script that returns a
+/// <em>function</em> hands back a delegate bound to the engine. Invoking it after the scope has been
+/// disposed runs it against whatever the engine has been reset — or re-rented — to.
+/// </para>
+/// </remarks>
 public sealed class JavaScriptEngine : IScriptingEngine
 {
     private static readonly MemoryCacheEntryOptions ScriptCacheEntryOptions = new MemoryCacheEntryOptions()
@@ -24,34 +53,79 @@ public sealed class JavaScriptEngine : IScriptingEngine
     private readonly JintOptions _jintOptions;
     private readonly Dictionary<string, LazyGlobalMethod> _lazyGlobals;
 
+    // Null when engine reuse is turned off, in which case every scope gets an engine of its own.
+    private readonly JavaScriptEnginePool _pool;
+
     public JavaScriptEngine(
         IMemoryCache memoryCache,
         IOptions<JintOptions> jintOptions,
         IEnumerable<IGlobalMethodProvider> globalMethodProviders)
+        : this(memoryCache, jintOptions, globalMethodProviders, engineOptions: null)
+    {
+    }
+
+    public JavaScriptEngine(
+        IMemoryCache memoryCache,
+        IOptions<JintOptions> jintOptions,
+        IEnumerable<IGlobalMethodProvider> globalMethodProviders,
+        IOptions<JavaScriptEngineOptions> engineOptions)
     {
         _memoryCache = memoryCache;
         _jintOptions = jintOptions.Value;
         _jintOptions.ExperimentalFeatures |= ExperimentalFeature.TaskInterop;
         _lazyGlobals = RegisterLazyGlobals(_jintOptions, globalMethodProviders);
+
+        var poolSize = engineOptions?.Value?.EnginePoolSize ?? JavaScriptEngineOptions.DefaultEnginePoolSize;
+
+        // This instance is resolved once per tenant, so the pool it holds is per tenant as well. Engines
+        // must never be shared across tenants and this is the only thing that keeps them from being.
+        _pool = poolSize > 0 ? new JavaScriptEnginePool(_jintOptions, poolSize) : null;
     }
 
     public string Prefix => "js";
 
     /// <summary>
-    /// Creates a scope backed by a new engine.
+    /// Creates a scope backed by an engine, either reused from the tenant's pool or newly built.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// The globals of the registered <see cref="IGlobalMethodProvider"/> instances are installed on every
     /// engine as lazy properties, whether or not <paramref name="methods"/> contains them. A lazy property
     /// only builds its delegate when a script actually reads the name, so the ones a script does not use
     /// cost nothing. Methods that are not registered by a provider, such as the ones a caller adds for a
     /// single evaluation, are installed eagerly and take precedence over a registered global of the same name.
+    /// </para>
+    /// <para>
+    /// <b>Dispose the returned scope</b> when the evaluations that use it are done, and not before — an
+    /// engine is single-threaded, and disposing releases it to the next evaluation. Disposing is what makes
+    /// the engine reusable; a scope that is never disposed still behaves correctly, its engine is simply
+    /// collected instead of reused.
+    /// </para>
     /// </remarks>
     public IScriptingScope CreateScope(IEnumerable<GlobalMethod> methods, IServiceProvider serviceProvider, IFileProvider fileProvider, string basePath)
     {
-        var engine = new Engine(_jintOptions);
+        var pool = _pool;
 
-        return new JavaScriptScope(engine, serviceProvider, methods, _lazyGlobals);
+        if (pool is null)
+        {
+            return new JavaScriptScope(new Engine(_jintOptions), serviceProvider, methods, _lazyGlobals, pool: null, rental: null);
+        }
+
+        var rental = pool.Rent();
+
+        try
+        {
+            return new JavaScriptScope(rental.Engine, serviceProvider, methods, _lazyGlobals, pool, rental);
+        }
+        catch
+        {
+            // Building the eagerly installed globals is the only thing that can fail here, and it fails
+            // having already installed some of them. Hand the engine back so that the reset removes them,
+            // rather than leaking a half-configured engine that no scope owns.
+            pool.Return(rental);
+
+            throw;
+        }
     }
 
     public object Evaluate(IScriptingScope scope, string script)
