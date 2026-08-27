@@ -18,6 +18,7 @@ public class DefaultContentsAdminListQueryServiceTests
     [Fact]
     public async Task QueryAsync_NameOnlyDefaultTermRewrite_RestoresOriginalNode()
     {
+       // Arrange
         var query = Mock.Of<IQuery<ContentItem>>();
         var rootQuery = new Mock<IQuery>();
         rootQuery
