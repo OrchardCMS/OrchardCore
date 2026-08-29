@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.Extensions.Options;
+using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
 
 namespace OrchardCore.Media.Endpoints.Api;
@@ -34,7 +34,7 @@ public static class GetDirectoryContentEndpoint
         IMediaFileStore mediaFileStore,
         IContentTypeProvider contentTypeProvider,
         IFileVersionProvider fileVersionProvider,
-        IOptions<MediaOptions> options,
+        IMediaFileExtensionPolicy mediaFileExtensionPolicy,
         string path,
         string extensions)
     {
@@ -55,9 +55,11 @@ public static class GetDirectoryContentEndpoint
             return httpContext.ApiNotFoundProblem();
         }
 
+        var allowedFileExtensions = await mediaFileExtensionPolicy.GetAllowedFileExtensionsAsync(httpContext.User);
+
         // Fetch folders and files concurrently.
         var foldersTask = MediaEndpointHelpers.GetDirectoryFoldersAsync(mediaFileStore, authorizationService, httpContext.User, path);
-        var filesTask = MediaEndpointHelpers.GetDirectoryFilesAsync(mediaFileStore, httpContext, contentTypeProvider, fileVersionProvider, options.Value, path, extensions);
+        var filesTask = MediaEndpointHelpers.GetDirectoryFilesAsync(mediaFileStore, httpContext, contentTypeProvider, fileVersionProvider, allowedFileExtensions, path, extensions);
 
         await Task.WhenAll(foldersTask, filesTask);
 

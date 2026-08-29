@@ -3,6 +3,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.FileStorage;
+using OrchardCore.Media.Services;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -30,7 +31,7 @@ public sealed class MediaStep : NamedRecipeStepHandler
     {
         _mediaFileStore = mediaFileStore;
         _fileCreationService = fileCreationService;
-        _allowedFileExtensions = options.Value.AllowedFileExtensions;
+        _allowedFileExtensions = MediaFileExtensionPolicy.GetConfiguredFileExtensions(options.Value);
         _httpClientFactory = httpClientFactory;
         S = stringLocalizer;
     }

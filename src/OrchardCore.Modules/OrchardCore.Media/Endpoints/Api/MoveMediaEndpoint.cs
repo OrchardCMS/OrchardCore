@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
+using OrchardCore.Media.Services;
 
 namespace OrchardCore.Media.Endpoints.Api;
 
@@ -35,7 +35,7 @@ public static class MoveMediaEndpoint
         HttpContext httpContext,
         IAuthorizationService authorizationService,
         IMediaFileStore mediaFileStore,
-        IOptions<MediaOptions> options,
+        IMediaFileExtensionPolicy mediaFileExtensionPolicy,
         IServiceProvider serviceProvider,
         IStringLocalizer<MediaApiEndpoints> localizer,
         string oldPath,
@@ -60,7 +60,7 @@ public static class MoveMediaEndpoint
 
         var newExtension = Path.GetExtension(newPath);
 
-        if (!options.Value.AllowedFileExtensions.Contains(newExtension, StringComparer.OrdinalIgnoreCase))
+        if (!await mediaFileExtensionPolicy.IsAllowedAsync(httpContext.User, newExtension))
         {
             return httpContext.ApiValidationProblem(detail: localizer["This file extension is not allowed: {0}", newExtension]);
         }

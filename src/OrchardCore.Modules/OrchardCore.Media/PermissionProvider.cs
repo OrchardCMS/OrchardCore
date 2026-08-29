@@ -11,6 +11,7 @@ public sealed class PermissionProvider : IPermissionProvider
         MediaPermissions.ManageOthersMedia,
         MediaPermissions.ManageOwnMedia,
         MediaPermissions.ManageAttachedMediaFieldsFolder,
+        MediaPermissions.UploadRestrictedMedia,
         MediaPermissions.ManageMediaProfiles,
         MediaPermissions.ViewMediaOptions,
         MediaPermissions.ManageMediaApiSettings,
@@ -31,6 +32,7 @@ public sealed class PermissionProvider : IPermissionProvider
             Permissions =
             [
                 MediaPermissions.ManageMediaFolder,
+                MediaPermissions.UploadRestrictedMedia,
                 MediaPermissions.ManageMediaProfiles,
                 MediaPermissions.ViewMediaOptions,
                 MediaPermissions.ManageMediaApiSettings,

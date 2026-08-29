@@ -6,6 +6,7 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Media.Fields;
+using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
 using OrchardCore.Mvc.ModelBinding;
 
@@ -41,8 +42,9 @@ public sealed class MediaFieldSettingsDriver : ContentPartFieldDefinitionDisplay
             model.AllowAnchors = settings.AllowAnchors;
             model.AllowAllDefaultMediaTypes = settings.AllowedExtensions == null || settings.AllowedExtensions.Length == 0;
 
+            var configuredFileExtensions = MediaFileExtensionPolicy.GetConfiguredFileExtensions(_mediaOptions);
             var items = new List<MediaTypeViewModel>();
-            foreach (var extension in _mediaOptions.AllowedFileExtensions)
+            foreach (var extension in configuredFileExtensions)
             {
                 if (_contentTypeProvider.TryGetContentType(extension, out var contentType))
                 {
@@ -84,7 +86,8 @@ public sealed class MediaFieldSettingsDriver : ContentPartFieldDefinitionDisplay
 
         if (!model.AllowAllDefaultMediaTypes)
         {
-            var selectedExtensions = model.MediaTypes.Where(vm => vm.IsSelected && _mediaOptions.AllowedFileExtensions.Contains(vm.Extension))
+            var configuredFileExtensions = MediaFileExtensionPolicy.GetConfiguredFileExtensions(_mediaOptions);
+            var selectedExtensions = model.MediaTypes.Where(vm => vm.IsSelected && configuredFileExtensions.Contains(vm.Extension))
                 .Select(x => x.Extension)
                 .ToArray();
 

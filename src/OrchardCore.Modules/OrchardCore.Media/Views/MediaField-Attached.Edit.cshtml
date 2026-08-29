@@ -3,6 +3,7 @@
 @inject IOptions<MediaOptions> MediaOptions
 @inject IDataLocalizer D
 @inject IHostEnvironment HostEnvironment
+@inject IMediaFileExtensionPolicy MediaFileExtensionPolicy
 
 @{
     var tusEnabled = Context.RequestServices.IsMediaTusEnabled();
@@ -13,6 +14,11 @@
     var mediaAppLocalizations = Orchard.GetJSLocalizations("media-gallery");
     var translationsJson = System.Text.Json.JsonSerializer.Serialize(jsLocalizations);
     var mediaAppTranslationsJson = System.Text.Json.JsonSerializer.Serialize(mediaAppLocalizations);
+    var effectiveAllowedExtensions = await MediaFileExtensionPolicy.GetAllowedFileExtensionsAsync(User);
+    var allowedExtensions = Model.AllowedExtensions.Length > 0
+        ? effectiveAllowedExtensions.Intersect(Model.AllowedExtensions, StringComparer.OrdinalIgnoreCase)
+        : effectiveAllowedExtensions;
+    var allowedExtensionsAttribute = allowedExtensions.Any() ? string.Join(',', allowedExtensions) : ".__none__";
     string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
 }
 
@@ -35,7 +41,7 @@
              data-multiple="@(settings.Multiple ? "true" : "false")"
              data-allow-media-text="@(settings.AllowMediaText ? "true" : "false")"
              data-allow-anchors="@(settings.AllowAnchors ? "true" : "false")"
-             data-allowed-extensions="@string.Join(',', Model.AllowedExtensions)"
+             data-allowed-extensions="@allowedExtensionsAttribute"
              data-media-item-url="@Url.Content("~/api/media/GetMediaItem")"
              data-media-items-url="@Url.Content("~/api/media/GetMediaFieldItems")"
              data-upload-action="@Url.Content("~/api/media/Upload")"

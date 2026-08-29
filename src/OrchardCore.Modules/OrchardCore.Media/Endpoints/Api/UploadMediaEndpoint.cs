@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -15,7 +14,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.FileStorage;
-using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
 
 namespace OrchardCore.Media.Endpoints.Api;
@@ -48,6 +46,7 @@ public static class UploadMediaEndpoint
         FileCreationService fileCreationService,
         IServiceProvider serviceProvider,
         IOptions<MediaOptions> options,
+        IMediaFileExtensionPolicy mediaFileExtensionPolicy,
         ILogger<MediaApiEndpoints> logger,
         IStringLocalizer<MediaApiEndpoints> localizer,
         string path,
@@ -70,7 +69,10 @@ public static class UploadMediaEndpoint
         // configured MaxFileSize before the form is read by the chunk upload service.
         ApplyMediaSizeLimit(httpContext, mediaOptions.MaxFileSize);
 
-        var allowedExtensions = MediaEndpointHelpers.GetRequestedExtensions(mediaOptions, extensions, true);
+        var allowedExtensions = MediaEndpointHelpers.GetRequestedExtensions(
+            await mediaFileExtensionPolicy.GetAllowedFileExtensionsAsync(httpContext.User),
+            extensions,
+            true);
 
         var actionResult = await chunkFileUploadService.ProcessRequestAsync(
             httpContext.Request,
@@ -84,7 +86,10 @@ public static class UploadMediaEndpoint
                 // Loop through each file in the request.
                 foreach (var file in files)
                 {
-                    var extension = Path.GetExtension(file.FileName);
+                    var fileName = MediaEndpointHelpers.GetFileName(
+                        mediaFileStore,
+                        mediaNameNormalizerService.NormalizeFileName(file.FileName));
+                    var extension = Path.GetExtension(fileName);
 
                     if (!allowedExtensions.Contains(extension))
                     {
@@ -103,8 +108,6 @@ public static class UploadMediaEndpoint
 
                         continue;
                     }
-
-                    var fileName = mediaNameNormalizerService.NormalizeFileName(file.FileName);
 
                     Stream stream = null;
                     try
