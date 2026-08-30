@@ -350,7 +350,7 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
             unversionedPath = path[..versionSeparatorPosition];
         }
 
-        lock (entries)
+        while (true)
         {
             // Find the max version already used for this unversionedPath in entries
             var maxVersion = entries
