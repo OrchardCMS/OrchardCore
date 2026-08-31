@@ -45,6 +45,7 @@ public sealed class PermissionProvider : IPermissionProvider
             [
                 MediaPermissions.ManageMedia,
                 MediaPermissions.ManageOwnMedia,
+                MediaPermissions.UploadRestrictedMedia,
             ],
         },
         new PermissionStereotype

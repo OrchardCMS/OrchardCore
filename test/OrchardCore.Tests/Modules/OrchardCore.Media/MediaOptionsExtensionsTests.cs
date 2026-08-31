@@ -6,6 +6,18 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media;
 
 public class MediaOptionsExtensionsTests
 {
+    [Fact]
+    public void UploadRestrictedMedia_IsSecurityCriticalAndGrantedToEditors()
+    {
+        Assert.True(MediaPermissions.UploadRestrictedMedia.IsSecurityCritical);
+
+        var editor = new PermissionProvider()
+            .GetDefaultStereotypes()
+            .Single(stereotype => stereotype.Name == OrchardCoreConstants.Roles.Editor);
+
+        Assert.Contains(MediaPermissions.UploadRestrictedMedia, editor.Permissions);
+    }
+
     [Theory]
     [InlineData(".jpg")]
     [InlineData(".JPG")]

@@ -14,7 +14,10 @@ public static class MediaPermissions
 
     public static readonly Permission ManageMedia = new("ManageMediaContent", "Manage Media", [ManageOwnMedia, ManageAttachedMediaFieldsFolder]);
 
-    public static readonly Permission UploadRestrictedMedia = new("UploadRestrictedMedia", "Upload media file extensions requiring additional permission");
+    public static readonly Permission UploadRestrictedMedia = new(
+        "UploadRestrictedMedia",
+        "Upload media file extensions requiring additional permission",
+        isSecurityCritical: true);
 
     public static readonly Permission ManageMediaProfiles = new("ManageMediaProfiles", "Manage Media Profiles");
 
