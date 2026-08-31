@@ -20,7 +20,8 @@
         : string.Join(',', MediaOptions.Value.AllowedFileExtensions);
     if (Model.AllowedExtensions.Length == 0 && canUploadRestrictedMedia && MediaOptions.Value.RestrictedFileExtensions.Count > 0)
     {
-        allowedExtensionsAttribute += "," + string.Join(',', MediaOptions.Value.RestrictedFileExtensions);
+        allowedExtensionsAttribute += (allowedExtensionsAttribute.Length > 0 ? "," : string.Empty)
+            + string.Join(',', MediaOptions.Value.RestrictedFileExtensions);
     }
     if (allowedExtensionsAttribute.Length == 0)
     {

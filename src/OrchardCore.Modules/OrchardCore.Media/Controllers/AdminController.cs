@@ -57,7 +57,8 @@ public sealed class AdminController : Controller
         var allowedExtensions = string.Join(',', _mediaOptions.AllowedFileExtensions);
         if (canUploadRestrictedMedia && _mediaOptions.RestrictedFileExtensions.Count > 0)
         {
-            allowedExtensions += "," + string.Join(',', _mediaOptions.RestrictedFileExtensions);
+            allowedExtensions += (allowedExtensions.Length > 0 ? "," : string.Empty)
+                + string.Join(',', _mediaOptions.RestrictedFileExtensions);
         }
 
         var model = new MediaIndexViewModel
