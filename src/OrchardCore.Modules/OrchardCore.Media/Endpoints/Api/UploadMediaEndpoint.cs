@@ -46,7 +46,6 @@ public static class UploadMediaEndpoint
         FileCreationService fileCreationService,
         IServiceProvider serviceProvider,
         IOptions<MediaOptions> options,
-        IMediaFileExtensionPolicy mediaFileExtensionPolicy,
         ILogger<MediaApiEndpoints> logger,
         IStringLocalizer<MediaApiEndpoints> localizer,
         string path,
@@ -64,15 +63,15 @@ public static class UploadMediaEndpoint
         }
 
         var mediaOptions = options.Value;
+        var canUploadRestrictedMedia = await authorizationService.AuthorizeAsync(
+            httpContext.User,
+            MediaPermissions.UploadRestrictedMedia);
 
         // Replicate the [MediaSizeLimit] filter: cap the multipart body / request size using the
         // configured MaxFileSize before the form is read by the chunk upload service.
         ApplyMediaSizeLimit(httpContext, mediaOptions.MaxFileSize);
 
-        var allowedExtensions = MediaEndpointHelpers.GetRequestedExtensions(
-            await mediaFileExtensionPolicy.GetAllowedFileExtensionsAsync(httpContext.User),
-            extensions,
-            true);
+        var requestedExtensions = MediaEndpointHelpers.GetRequestedExtensions(extensions);
 
         var actionResult = await chunkFileUploadService.ProcessRequestAsync(
             httpContext.Request,
@@ -91,7 +90,8 @@ public static class UploadMediaEndpoint
                         mediaNameNormalizerService.NormalizeFileName(file.FileName));
                     var extension = Path.GetExtension(fileName);
 
-                    if (!allowedExtensions.Contains(extension))
+                    if (!mediaOptions.IsFileExtensionAllowed(extension, canUploadRestrictedMedia)
+                        || (requestedExtensions.Count > 0 && !requestedExtensions.Contains(extension)))
                     {
                         result.Add(new UploadFileResultDto
                         {

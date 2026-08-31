@@ -21,7 +21,6 @@ public sealed class AdminController : Controller
 {
     private readonly IMediaFileStore _mediaFileStore;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IMediaFileExtensionPolicy _mediaFileExtensionPolicy;
     private readonly MediaOptions _mediaOptions;
 
     internal readonly IStringLocalizer S;
@@ -29,13 +28,11 @@ public sealed class AdminController : Controller
     public AdminController(
         IMediaFileStore mediaFileStore,
         IAuthorizationService authorizationService,
-        IMediaFileExtensionPolicy mediaFileExtensionPolicy,
         IOptions<MediaOptions> options,
         IStringLocalizer<AdminController> stringLocalizer)
     {
         _mediaFileStore = mediaFileStore;
         _authorizationService = authorizationService;
-        _mediaFileExtensionPolicy = mediaFileExtensionPolicy;
         _mediaOptions = options.Value;
         S = stringLocalizer;
     }
@@ -54,14 +51,22 @@ public sealed class AdminController : Controller
         var hostEnvironment = HttpContext.RequestServices.GetRequiredService<IHostEnvironment>();
         var mediaApiSettings = HttpContext.RequestServices.GetRequiredService<ISiteService>().GetSettings<MediaApiSettings>();
 
-        var allowedFileExtensions = await _mediaFileExtensionPolicy.GetAllowedFileExtensionsAsync(User);
+        var canUploadRestrictedMedia = await _authorizationService.AuthorizeAsync(
+            User,
+            MediaPermissions.UploadRestrictedMedia);
+        var allowedExtensions = string.Join(',', _mediaOptions.AllowedFileExtensions);
+        if (canUploadRestrictedMedia && _mediaOptions.AllowedFileExtensionsWithPermission.Count > 0)
+        {
+            allowedExtensions += "," + string.Join(',', _mediaOptions.AllowedFileExtensionsWithPermission);
+        }
+
         var model = new MediaIndexViewModel
         {
             SiteId = shellSettings.TenantId,
             MaxFileSize = _mediaOptions.MaxFileSize,
-            AllowedExtensions = allowedFileExtensions.Count == 0
+            AllowedExtensions = allowedExtensions.Length == 0
                 ? ".__none__"
-                : string.Join(',', allowedFileExtensions),
+                : allowedExtensions,
             TusEnabled = tusEnabled,
             SignalrEnabled = signalrEnabled,
             DebugEnabled = hostEnvironment.IsDevelopment(),

@@ -409,7 +409,7 @@ The following configuration values are used by default and can be customized:
 }
 ```
 
-`AllowedFileExtensions` and `AllowedFileExtensionsWithPermission` are case-insensitive and must not overlap. An overlap causes Media options validation to fail when the tenant starts; restricted handling also takes precedence if options are changed programmatically after validation. Extensions in neither list are rejected.
+`AllowedFileExtensions` and `AllowedFileExtensionsWithPermission` are case-insensitive and must not overlap. An overlap causes Media options validation to fail when the tenant starts. Extensions in neither list are rejected.
 
 Configuration arrays replace the defaults rather than extending them. When setting either extension array, include every extension that should remain available in that category.
 

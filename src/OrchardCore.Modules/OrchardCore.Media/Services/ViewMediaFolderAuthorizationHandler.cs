@@ -80,8 +80,7 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
             // Note: The file path is currently not authorized during upload, only the folder is checked. Therefore checking 
             // the file extensions is not actually required, but let's leave this in case we add an authorization call later.
             if (await _fileStore.GetFileInfoAsync(folderPath) is not null ||
-               MediaFileExtensionPolicy.GetConfiguredFileExtensions(_mediaOptions)
-                   .Any(ext => path.EndsWith(ext, StringComparison.OrdinalIgnoreCase)))
+               _mediaOptions.IsFileExtensionAllowed(Path.GetExtension(path), hasAdditionalPermission: true))
             {
                 path = string.Empty;
             }

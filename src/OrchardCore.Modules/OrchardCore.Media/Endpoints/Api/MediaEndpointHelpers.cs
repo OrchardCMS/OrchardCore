@@ -145,12 +145,16 @@ internal static class MediaEndpointHelpers
         HttpContext httpContext,
         IContentTypeProvider contentTypeProvider,
         IFileVersionProvider fileVersionProvider,
-        HashSet<string> allowedFileExtensions,
+        MediaOptions mediaOptions,
+        bool canUploadRestrictedMedia,
         string path,
         string extensions)
     {
         var filterByExtensions = !string.IsNullOrWhiteSpace(extensions);
-        var allowedExtensions = GetRequestedExtensions(allowedFileExtensions, extensions, false);
+        var allowedExtensions = GetRequestedExtensions(
+            mediaOptions,
+            extensions,
+            canUploadRestrictedMedia);
         var files = new List<FileStoreEntryDto>();
 
         await foreach (var entry in mediaFileStore.GetFilesAsync(path))
@@ -229,23 +233,26 @@ internal static class MediaEndpointHelpers
         }
     }
 
-    public static HashSet<string> GetRequestedExtensions(HashSet<string> allowedFileExtensions, string exts, bool fallback)
+    public static HashSet<string> GetRequestedExtensions(
+        MediaOptions mediaOptions,
+        string extensions,
+        bool canUploadRestrictedMedia)
     {
-        if (!string.IsNullOrWhiteSpace(exts))
+        if (!string.IsNullOrWhiteSpace(extensions))
         {
-            var extensions = exts.Split(s_extensionSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-
-            return allowedFileExtensions
-                .Intersect(extensions, StringComparer.OrdinalIgnoreCase)
-                .ToHashSet(StringComparer.OrdinalIgnoreCase);
-        }
-
-        if (fallback)
-        {
-            return allowedFileExtensions
+            return extensions
+                .Split(s_extensionSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Where(extension => mediaOptions.IsFileExtensionAllowed(extension, canUploadRestrictedMedia))
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
         }
 
         return s_emptySet;
     }
+
+    public static HashSet<string> GetRequestedExtensions(string extensions)
+        => string.IsNullOrWhiteSpace(extensions)
+            ? s_emptySet
+            : extensions
+                .Split(s_extensionSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
 }

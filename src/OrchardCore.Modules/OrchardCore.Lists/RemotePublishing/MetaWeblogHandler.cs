@@ -3,6 +3,7 @@ using System.Xml.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -30,7 +31,7 @@ public class MetaWeblogHandler : IXmlRpcHandler
     private readonly IAuthorizationService _authorizationService;
     private readonly IMediaFileStore _mediaFileStore;
     private readonly FileCreationService _fileCreationService;
-    private readonly IMediaFileExtensionPolicy _mediaFileExtensionPolicy;
+    private readonly MediaOptions _mediaOptions;
     private readonly IMembershipService _membershipService;
     private readonly IEnumerable<IMetaWeblogDriver> _metaWeblogDrivers;
     private readonly ISession _session;
@@ -44,7 +45,7 @@ public class MetaWeblogHandler : IXmlRpcHandler
         IContentDefinitionManager contentDefinitionManager,
         IMediaFileStore mediaFileStore,
         FileCreationService fileCreationService,
-        IMediaFileExtensionPolicy mediaFileExtensionPolicy,
+        IOptions<MediaOptions> mediaOptions,
         IEnumerable<IMetaWeblogDriver> metaWeblogDrivers,
         IStringLocalizer<MetaWeblogHandler> localizer)
     {
@@ -55,7 +56,7 @@ public class MetaWeblogHandler : IXmlRpcHandler
         _session = session;
         _mediaFileStore = mediaFileStore;
         _fileCreationService = fileCreationService;
-        _mediaFileExtensionPolicy = mediaFileExtensionPolicy;
+        _mediaOptions = mediaOptions.Value;
         _membershipService = membershipService;
         S = localizer;
     }
@@ -180,7 +181,12 @@ public class MetaWeblogHandler : IXmlRpcHandler
         }
 
         var extension = Path.GetExtension(filePath);
-        if (!await _mediaFileExtensionPolicy.IsAllowedAsync(user, extension))
+        var canUploadRestrictedMedia = await _authorizationService.AuthorizeAsync(
+            user,
+            MediaPermissions.UploadRestrictedMedia);
+        if (!_mediaOptions.AllowedFileExtensions.Contains(extension)
+            && (!canUploadRestrictedMedia
+                || !_mediaOptions.AllowedFileExtensionsWithPermission.Contains(extension)))
         {
             throw new InvalidOperationException(S["This file extension is not allowed: {0}", extension].Value);
         }

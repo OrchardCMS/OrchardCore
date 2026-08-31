@@ -25,9 +25,12 @@ public class MediaEndpointHelpersTests
     [Fact]
     public void GetRequestedExtensions_RestrictedFieldFilter_DoesNotFallBackToAllExtensions()
     {
-        var allowedExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { ".jpg", ".png" };
+        var options = CreateOptions();
 
-        var result = MediaEndpointHelpers.GetRequestedExtensions(allowedExtensions, ".svg", true);
+        var result = MediaEndpointHelpers.GetRequestedExtensions(
+            options,
+            ".svg",
+            canUploadRestrictedMedia: false);
 
         Assert.Empty(result);
     }
@@ -35,12 +38,21 @@ public class MediaEndpointHelpersTests
     [Fact]
     public void GetRequestedExtensions_MixedCaseFilter_IntersectsCaseInsensitively()
     {
-        var allowedExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { ".jpg", ".png" };
+        var options = CreateOptions();
 
-        var result = MediaEndpointHelpers.GetRequestedExtensions(allowedExtensions, ".JPG,.svg", true);
+        var result = MediaEndpointHelpers.GetRequestedExtensions(
+            options,
+            ".JPG,.svg",
+            canUploadRestrictedMedia: false);
 
         Assert.Equal(".jpg", Assert.Single(result), ignoreCase: true);
     }
+
+    private static MediaOptions CreateOptions() => new()
+    {
+        AllowedFileExtensions = new(StringComparer.OrdinalIgnoreCase) { ".jpg", ".png" },
+        AllowedFileExtensionsWithPermission = new(StringComparer.OrdinalIgnoreCase) { ".svg" },
+    };
 
     [Fact]
     public async Task ToDtoAsync_UnauthorizedDescendants_FiltersTree()

@@ -38,7 +38,6 @@ public static class GetAllMediaItemsEndpoint
         IContentTypeProvider contentTypeProvider,
         IFileVersionProvider fileVersionProvider,
         IOptions<MediaOptions> options,
-        IMediaFileExtensionPolicy mediaFileExtensionPolicy,
         IUserAssetFolderNameProvider userAssetFolderNameProvider,
         string extensions)
     {
@@ -57,10 +56,13 @@ public static class GetAllMediaItemsEndpoint
             await mediaFileStore.TryCreateDirectoryAsync(mediaFileStore.Combine(mediaOptions.AssetsUsersFolder, userAssetFolderNameProvider.GetUserAssetFolderName(httpContext.User)));
         }
 
+        var canUploadRestrictedMedia = await authorizationService.AuthorizeAsync(
+            httpContext.User,
+            MediaPermissions.UploadRestrictedMedia);
         var allowedExtensions = MediaEndpointHelpers.GetRequestedExtensions(
-            await mediaFileExtensionPolicy.GetAllowedFileExtensionsAsync(httpContext.User),
+            mediaOptions,
             extensions,
-            false);
+            canUploadRestrictedMedia);
         var filterByExtensions = !string.IsNullOrWhiteSpace(extensions);
         var allItems = new List<FileStoreEntryDto>();
 

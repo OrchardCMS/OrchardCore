@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
 
@@ -39,7 +40,7 @@ public static class CopyMediaEndpoint
         IMediaFileStore mediaFileStore,
         IContentTypeProvider contentTypeProvider,
         IFileVersionProvider fileVersionProvider,
-        IMediaFileExtensionPolicy mediaFileExtensionPolicy,
+        IOptions<MediaOptions> options,
         IStringLocalizer<MediaApiEndpoints> localizer,
         string oldPath,
         string newPath)
@@ -62,8 +63,11 @@ public static class CopyMediaEndpoint
         }
 
         var newExtension = Path.GetExtension(newPath);
+        var canUploadRestrictedMedia = await authorizationService.AuthorizeAsync(
+            httpContext.User,
+            MediaPermissions.UploadRestrictedMedia);
 
-        if (!await mediaFileExtensionPolicy.IsAllowedAsync(httpContext.User, newExtension))
+        if (!options.Value.IsFileExtensionAllowed(newExtension, canUploadRestrictedMedia))
         {
             return httpContext.ApiValidationProblem(detail: localizer["This file extension is not allowed: {0}", newExtension]);
         }

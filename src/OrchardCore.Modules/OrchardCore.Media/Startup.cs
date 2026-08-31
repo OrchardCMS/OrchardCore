@@ -89,7 +89,6 @@ public sealed class Startup : StartupBase
 
         services.AddTransient<IConfigureOptions<MediaOptions>, MediaOptionsConfiguration>();
         services.AddSingleton<IValidateOptions<MediaOptions>, MediaOptionsValidator>();
-        services.AddScoped<IMediaFileExtensionPolicy, MediaFileExtensionPolicy>();
 
         // Builds the "MediaApi" authorization policy from MediaApiSettings (cookie default / bearer).
         services.AddTransient<IConfigureOptions<AuthorizationOptions>, MediaApiAuthorizationOptionsConfiguration>();
@@ -523,14 +522,16 @@ public sealed class MediaTusStartup : StartupBase
                     httpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
                     return null;
                 }
+                var canUploadRestrictedMedia = await authService.AuthorizeAsync(
+                    httpContext.User,
+                    MediaPermissions.UploadRestrictedMedia
+                );
 
                 var store =
                     httpContext.RequestServices.GetRequiredService<DistributedMediaTusStore>();
                 var mediaOptions = httpContext.RequestServices.GetRequiredService<
                     IOptions<MediaOptions>
                 >();
-                var mediaFileExtensionPolicy =
-                    httpContext.RequestServices.GetRequiredService<IMediaFileExtensionPolicy>();
                 var mediaFileStore =
                     httpContext.RequestServices.GetRequiredService<IMediaFileStore>();
                 var mediaNameNormalizerService =
@@ -567,7 +568,7 @@ public sealed class MediaTusStartup : StartupBase
                             fileName = MediaEndpointHelpers.GetFileName(mediaFileStore, fileName);
                             var extension = Path.GetExtension(fileName);
 
-                            if (!await mediaFileExtensionPolicy.IsAllowedAsync(httpContext.User, extension))
+                            if (!mediaOptions.Value.IsFileExtensionAllowed(extension, canUploadRestrictedMedia))
                             {
                                 ctx.FailRequest($"File extension not allowed: {extension}");
                                 return;
@@ -649,9 +650,9 @@ public sealed class MediaTusStartup : StartupBase
                                     MediaPermissions.ManageMediaFolder,
                                     (object)entry.DestinationPath
                                 )
-                                || !await mediaFileExtensionPolicy.IsAllowedAsync(
-                                    httpContext.User,
-                                    Path.GetExtension(entry.FileName)
+                                || !mediaOptions.Value.IsFileExtensionAllowed(
+                                    Path.GetExtension(entry.FileName),
+                                    canUploadRestrictedMedia
                                 )
                             )
                             {

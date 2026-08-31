@@ -16,7 +16,7 @@ public sealed class MediaStep : NamedRecipeStepHandler
 {
     private readonly IMediaFileStore _mediaFileStore;
     private readonly FileCreationService _fileCreationService;
-    private readonly HashSet<string> _allowedFileExtensions;
+    private readonly MediaOptions _mediaOptions;
     private readonly IHttpClientFactory _httpClientFactory;
 
     internal readonly IStringLocalizer S;
@@ -31,7 +31,7 @@ public sealed class MediaStep : NamedRecipeStepHandler
     {
         _mediaFileStore = mediaFileStore;
         _fileCreationService = fileCreationService;
-        _allowedFileExtensions = MediaFileExtensionPolicy.GetConfiguredFileExtensions(options.Value);
+        _mediaOptions = options.Value;
         _httpClientFactory = httpClientFactory;
         S = stringLocalizer;
     }
@@ -42,7 +42,7 @@ public sealed class MediaStep : NamedRecipeStepHandler
 
         foreach (var file in model.Files)
         {
-            if (!_allowedFileExtensions.Contains(Path.GetExtension(file.TargetPath), StringComparer.OrdinalIgnoreCase))
+            if (!_mediaOptions.IsFileExtensionAllowed(Path.GetExtension(file.TargetPath), hasAdditionalPermission: true))
             {
                 context.Errors.Add(S["File extension not allowed: '{0}'", file.TargetPath]);
 

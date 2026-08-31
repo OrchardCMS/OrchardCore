@@ -1,6 +1,7 @@
 @model OrchardCore.Media.ViewModels.EditMediaFieldViewModel
 @inject IDataLocalizer D
-@inject IMediaFileExtensionPolicy MediaFileExtensionPolicy
+@inject IOptions<MediaOptions> MediaOptions
+@inject Microsoft.AspNetCore.Authorization.IAuthorizationService AuthorizationService
 @{
     var tusEnabled = Context.RequestServices.IsMediaTusEnabled();
     var apiAuthScheme = Context.RequestServices.GetRequiredService<ISiteService>().GetSettings<MediaApiSettings>().AuthenticationScheme.ToString();
@@ -10,11 +11,18 @@
     var mediaAppLocalizations = Orchard.GetJSLocalizations("media-gallery");
     var translationsJson = System.Text.Json.JsonSerializer.Serialize(jsLocalizations);
     var mediaAppTranslationsJson = System.Text.Json.JsonSerializer.Serialize(mediaAppLocalizations);
-    var effectiveAllowedExtensions = await MediaFileExtensionPolicy.GetAllowedFileExtensionsAsync(User);
-    var allowedExtensions = Model.AllowedExtensions.Length > 0
-        ? effectiveAllowedExtensions.Intersect(Model.AllowedExtensions, StringComparer.OrdinalIgnoreCase)
-        : effectiveAllowedExtensions;
-    var allowedExtensionsAttribute = allowedExtensions.Any() ? string.Join(',', allowedExtensions) : ".__none__";
+    var canUploadRestrictedMedia = await AuthorizationService.AuthorizeAsync(User, MediaPermissions.UploadRestrictedMedia);
+    var allowedExtensionsAttribute = Model.AllowedExtensions.Length > 0
+        ? string.Join(',', Model.AllowedExtensions.Where(extension => MediaOptions.Value.IsFileExtensionAllowed(extension, canUploadRestrictedMedia)))
+        : string.Join(',', MediaOptions.Value.AllowedFileExtensions);
+    if (Model.AllowedExtensions.Length == 0 && canUploadRestrictedMedia && MediaOptions.Value.AllowedFileExtensionsWithPermission.Count > 0)
+    {
+        allowedExtensionsAttribute += "," + string.Join(',', MediaOptions.Value.AllowedFileExtensionsWithPermission);
+    }
+    if (allowedExtensionsAttribute.Length == 0)
+    {
+        allowedExtensionsAttribute = ".__none__";
+    }
     string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
 }
 
