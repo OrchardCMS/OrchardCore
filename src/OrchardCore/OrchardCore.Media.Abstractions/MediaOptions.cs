@@ -23,7 +23,7 @@ public class MediaOptions
     /// The list of file extensions that require the <c>UploadRestrictedMedia</c> permission in addition to the
     /// standard media upload permissions.
     /// </summary>
-    public HashSet<string> AllowedFileExtensionsWithPermission { get; set; }
+    public HashSet<string> RestrictedFileExtensions { get; set; }
 
     /// <summary>
     /// The default number of days for the media cache control header.

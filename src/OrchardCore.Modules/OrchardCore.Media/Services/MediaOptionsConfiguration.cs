@@ -89,8 +89,8 @@ public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
             section.GetSection("AllowedFileExtensions").Get<string[]>() ?? s_defaultAllowedFileExtensions,
             StringComparer.OrdinalIgnoreCase);
 
-        options.AllowedFileExtensionsWithPermission = new HashSet<string>(
-            section.GetSection("AllowedFileExtensionsWithPermission").Get<string[]>() ?? [],
+        options.RestrictedFileExtensions = new HashSet<string>(
+            section.GetSection("RestrictedFileExtensions").Get<string[]>() ?? [],
             StringComparer.OrdinalIgnoreCase);
 
         options.MaxBrowserCacheDays = section.GetValue("MaxBrowserCacheDays", DefaultMaxBrowserCacheDays);

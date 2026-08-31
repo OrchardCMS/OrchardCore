@@ -7,5 +7,5 @@ internal static class MediaOptionsExtensions
         string extension,
         bool hasAdditionalPermission)
         => options.AllowedFileExtensions.Contains(extension)
-            || (hasAdditionalPermission && options.AllowedFileExtensionsWithPermission.Contains(extension));
+            || (hasAdditionalPermission && options.RestrictedFileExtensions.Contains(extension));
 }

@@ -44,7 +44,7 @@ public sealed class MediaFieldSettingsDriver : ContentPartFieldDefinitionDisplay
 
             var items = new List<MediaTypeViewModel>();
             AddMediaTypes(_mediaOptions.AllowedFileExtensions, settings, items);
-            AddMediaTypes(_mediaOptions.AllowedFileExtensionsWithPermission, settings, items);
+            AddMediaTypes(_mediaOptions.RestrictedFileExtensions, settings, items);
 
             model.MediaTypes = items
                 .OrderBy(vm => vm.ContentType)

@@ -186,7 +186,7 @@ public class MetaWeblogHandler : IXmlRpcHandler
             MediaPermissions.UploadRestrictedMedia);
         if (!_mediaOptions.AllowedFileExtensions.Contains(extension)
             && (!canUploadRestrictedMedia
-                || !_mediaOptions.AllowedFileExtensionsWithPermission.Contains(extension)))
+                || !_mediaOptions.RestrictedFileExtensions.Contains(extension)))
         {
             throw new InvalidOperationException(S["This file extension is not allowed: {0}", extension].Value);
         }

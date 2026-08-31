@@ -395,7 +395,7 @@ The following configuration values are used by default and can be customized:
       ".webm"
     ],
     // The list of file extensions that also require the UploadRestrictedMedia permission.
-    "AllowedFileExtensionsWithPermission": [],
+    "RestrictedFileExtensions": [],
     // The Content Security Policy to apply to assets served from the media library.
     "ContentSecurityPolicy": "default-src 'self'; style-src 'unsafe-inline'",
     // The maximum chunk size when uploading files in bytes. If 0, no chunked upload is used. This is useful to work around request size limitations of a hosting environment.
@@ -409,7 +409,7 @@ The following configuration values are used by default and can be customized:
 }
 ```
 
-`AllowedFileExtensions` and `AllowedFileExtensionsWithPermission` are case-insensitive and must not overlap. An overlap causes Media options validation to fail when the tenant starts. Extensions in neither list are rejected.
+`AllowedFileExtensions` and `RestrictedFileExtensions` are case-insensitive and must not overlap. An overlap causes Media options validation to fail when the tenant starts. Extensions in neither list are rejected.
 
 Configuration arrays replace the defaults rather than extending them. When setting either extension array, include every extension that should remain available in that category.
 
@@ -419,12 +419,12 @@ For example, to require the additional permission for SVG files, remove `.svg` f
 {
   "OrchardCore_Media": {
     "AllowedFileExtensions": [".jpg", ".jpeg", ".png", ".gif", ".ico", ".webp"],
-    "AllowedFileExtensionsWithPermission": [".svg"]
+    "RestrictedFileExtensions": [".svg"]
   }
 }
 ```
 
-Users need the existing media upload and folder permissions for all uploads. They additionally need `UploadRestrictedMedia` for extensions in `AllowedFileExtensionsWithPermission`. The Media Gallery publishes the effective extension list for the current user, and the server enforces the same policy for regular uploads, API copy/rename operations, remote publishing, and TUS uploads, including completion.
+Users need the existing media upload and folder permissions for all uploads. They additionally need `UploadRestrictedMedia` for extensions in `RestrictedFileExtensions`. The Media Gallery publishes the effective extension list for the current user, and the server enforces the same policy for regular uploads, API copy/rename operations, remote publishing, and TUS uploads, including completion.
 
 !!! warning
     Permission-gating risky or active file types is defense in depth, not file sanitization. Validate file contents separately, use a restrictive content security policy, and configure the web server and storage provider appropriately for the file types you accept.
@@ -606,7 +606,7 @@ The available media permissions are:
 | `ManageOwnMediaContent` | Manage Own Media | Implied by `ManageOthersMediaContent`. Lets a user manage their own media. |
 | `ManageAttachedMediaFieldsFolder` | Manage Attached Media Fields Folder | Implied by `ManageMediaFolder`. Used for files stored under `mediafields/`. |
 | `ManageMediaContent` | Manage Media | Minimum permission for opening the Media Library. Implied by `ManageOwnMediaContent` and `ManageAttachedMediaFieldsFolder`. |
-| `UploadRestrictedMedia` | Upload media file extensions requiring additional permission | Required in addition to the standard media upload and folder permissions for extensions configured in `AllowedFileExtensionsWithPermission`. |
+| `UploadRestrictedMedia` | Upload media file extensions requiring additional permission | Required in addition to the standard media upload and folder permissions for extensions configured in `RestrictedFileExtensions`. |
 | `ManageMediaProfiles` | Manage Media Profiles | Controls media profile management. |
 | `ViewMediaOptions` | View Media Options | Controls visibility of media options. |
 | `ManageAssetCache` | Manage Asset Cache Folder | Controls the media asset cache folder. |

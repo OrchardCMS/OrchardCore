@@ -3,7 +3,7 @@
 @{
     var supportedSizes = string.Join(", ", Model.SupportedSizes.Select(s => s.ToString()).ToArray());
     var allowedFileExtensions = string.Join(", ", Model.AllowedFileExtensions.Select(s => s.ToString()).ToArray());
-    var allowedFileExtensionsWithPermission = string.Join(", ", Model.AllowedFileExtensionsWithPermission.Select(s => s.ToString()).ToArray());
+    var restrictedFileExtensions = string.Join(", ", Model.RestrictedFileExtensions.Select(s => s.ToString()).ToArray());
     var storageName = MediaFileStore.StorageName;
     var hasHierarchicalNamespace = MediaFileStore.Capabilities.HasHierarchicalNamespace;
     var supportsAtomicMove = MediaFileStore.Capabilities.SupportsAtomicMove;
@@ -26,9 +26,9 @@
 </div>
 
 <div class="mb-3 row">
-    <label asp-for="AllowedFileExtensionsWithPermission" class="col-sm-2 col-form-label">@T["Allowed file extensions with permission"]</label>
+    <label asp-for="RestrictedFileExtensions" class="col-sm-2 col-form-label">@T["Restricted file extensions"]</label>
     <div class="col-sm-10">
-        <code><input type="text" class="form-control-plaintext" value="@allowedFileExtensionsWithPermission" readonly /></code>
+        <code><input type="text" class="form-control-plaintext" value="@restrictedFileExtensions" readonly /></code>
         <span class="hint">@T["The list of file extensions that require the Upload Restricted Media permission."]</span>
     </div>
 </div>

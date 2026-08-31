@@ -51,7 +51,7 @@ public class MediaEndpointHelpersTests
     private static MediaOptions CreateOptions() => new()
     {
         AllowedFileExtensions = new(StringComparer.OrdinalIgnoreCase) { ".jpg", ".png" },
-        AllowedFileExtensionsWithPermission = new(StringComparer.OrdinalIgnoreCase) { ".svg" },
+        RestrictedFileExtensions = new(StringComparer.OrdinalIgnoreCase) { ".svg" },
     };
 
     [Fact]
