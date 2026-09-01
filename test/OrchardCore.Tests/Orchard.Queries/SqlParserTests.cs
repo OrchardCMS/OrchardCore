@@ -327,6 +327,7 @@ public class SqlParserTests
     [InlineData("create index IX_ContentItemIndex_DocumentId on ContentItemIndex (DocumentId)")]
     [InlineData("create view PublishedContent as select * from ContentItemIndex")]
     [InlineData("merge into ContentItemIndex as target using OtherIndex as source on target.DocumentId = source.DocumentId when matched then delete")]
+    [InlineData("call UpdateContent('1')")]
     [InlineData("select * from ContentItemIndex; delete from ContentItemIndex")]
     public void Parse_MutationStatement_Fails(string sql)
     {
@@ -381,6 +382,7 @@ public class SqlParserTests
     [InlineData("create index IX_ContentItemIndex_DocumentId on ContentItemIndex (DocumentId)")]
     [InlineData("create view PublishedContent as select * from ContentItemIndex")]
     [InlineData("merge into ContentItemIndex as target using OtherIndex as source on target.DocumentId = source.DocumentId when matched then delete")]
+    [InlineData("call UpdateContent('1')")]
     [InlineData("select * from ContentItemIndex; delete from ContentItemIndex")]
     public void Validate_MutationStatement_Fails(string sql)
     {
