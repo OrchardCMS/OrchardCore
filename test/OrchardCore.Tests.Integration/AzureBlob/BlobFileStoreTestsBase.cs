@@ -366,6 +366,39 @@ public abstract class BlobFileStoreTestsBase : IAsyncLifetime
     }
 
     [AzuriteFact]
+    public async Task GetDirectoryContent_PreservesPlusSignInFileName()
+    {
+        // Regression test for #17764: BlobFileStore used to run blob names through
+        // WebUtility.UrlDecode(), which turns a literal "+" into a space, corrupting the
+        // reported entry name for files such as "My+File.jpg".
+        await CreateTestFileAsync("plus-test/My+File.jpg");
+
+        var entries = new List<IFileStoreEntry>();
+        await foreach (var entry in _store.GetDirectoryContentAsync("plus-test"))
+        {
+            entries.Add(entry);
+        }
+
+        Assert.Contains(entries, e => !e.IsDirectory && e.Name == "My+File.jpg");
+        Assert.DoesNotContain(entries, e => !e.IsDirectory && e.Name == "My File.jpg");
+    }
+
+    [AzuriteFact]
+    public async Task GetDirectoryContent_Flat_PreservesPlusSignInFileName()
+    {
+        await CreateTestFileAsync("plus-flat/My+File.jpg");
+
+        var entries = new List<IFileStoreEntry>();
+        await foreach (var entry in _store.GetDirectoryContentAsync("plus-flat", includeSubDirectories: true))
+        {
+            entries.Add(entry);
+        }
+
+        Assert.Contains(entries, e => !e.IsDirectory && e.Name == "My+File.jpg");
+        Assert.DoesNotContain(entries, e => !e.IsDirectory && e.Name == "My File.jpg");
+    }
+
+    [AzuriteFact]
     public async Task CreateDirectory_AlreadyExists_ReturnsFalse()
     {
         await _store.TryCreateDirectoryAsync("existing-dir");

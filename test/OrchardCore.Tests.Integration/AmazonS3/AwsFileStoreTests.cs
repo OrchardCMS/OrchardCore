@@ -375,5 +375,23 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
             Directory.Delete(cacheRoot, true);
         }
     }
+
+    [DockerFact]
+    public async Task GetDirectoryContent_PreservesPlusSignInFileName()
+    {
+        // Regression test for #17764: AwsFileStore used to run object keys through
+        // WebUtility.UrlDecode(), which turns a literal "+" into a space, corrupting the
+        // reported entry name for files such as "My+File.jpg".
+        await CreateTestFileAsync("plus-test/My+File.jpg");
+
+        var entries = new List<IFileStoreEntry>();
+        await foreach (var entry in _store.GetDirectoryContentAsync("plus-test"))
+        {
+            entries.Add(entry);
+        }
+
+        Assert.Contains(entries, e => !e.IsDirectory && e.Name == "My+File.jpg");
+        Assert.DoesNotContain(entries, e => !e.IsDirectory && e.Name == "My File.jpg");
+    }
 }
 
