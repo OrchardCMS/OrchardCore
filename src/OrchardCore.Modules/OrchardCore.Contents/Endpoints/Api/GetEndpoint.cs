@@ -14,13 +14,14 @@ public static class GetEndpoint
     public static IEndpointRouteBuilder AddGetContentEndpoint(this IEndpointRouteBuilder builder)
     {
         builder.MapGet("api/content/{contentItemId}", HandleAsync)
+            .WithName("ApiGetContentItem")
             .AllowAnonymous()
             .DisableAntiforgery();
 
         return builder;
     }
 
-    [Authorize(AuthenticationSchemes = "Api")]
+    [Authorize(AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api)]
     private static async Task<IResult> HandleAsync(
         string contentItemId,
         IContentManager contentManager,
@@ -30,7 +31,7 @@ public static class GetEndpoint
     {
         if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.AccessContentApi))
         {
-            return httpContext.ChallengeOrForbid("Api");
+            return httpContext.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
 
         var contentItem = await contentManager.GetAsync(contentItemId);
@@ -42,7 +43,7 @@ public static class GetEndpoint
 
         if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.ViewContent, contentItem))
         {
-            return httpContext.ChallengeOrForbid("Api");
+            return httpContext.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
 
         return Results.Json(contentItem, options.Value.SerializerOptions);

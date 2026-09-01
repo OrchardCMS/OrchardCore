@@ -1,5 +1,6 @@
 using Acornima.Ast;
 using Jint;
+using Jint.Constraints;
 using Jint.Native;
 using Jint.Runtime.Descriptors;
 using Microsoft.Extensions.Caching.Memory;
@@ -50,7 +51,7 @@ public sealed class JavaScriptEngine : IScriptingEngine
     {
         var engine = new Engine(_jintOptions);
 
-        return new JavaScriptScope(engine, serviceProvider, methods, _lazyGlobals);
+        return new JavaScriptScope(engine, serviceProvider, methods, _lazyGlobals, ownsEngine: true);
     }
 
     public object Evaluate(IScriptingScope scope, string script)
@@ -62,13 +63,73 @@ public sealed class JavaScriptEngine : IScriptingEngine
         return result;
     }
 
+    /// <summary>
+    /// Evaluates a script, observing <paramref name="cancellationToken"/> for the whole evaluation.
+    /// </summary>
+    /// <remarks>
+    /// Jint's own <c>EvaluateAsync</c> observes the token only while awaiting promise settlement — the
+    /// script is interpreted to completion first — so forwarding it there bounds an evaluation that awaits
+    /// something and nothing at all for one that does not. A script that never yields is the case that
+    /// matters, and it was the case the token did not cover.
+    /// <para>
+    /// The interpreter is bounded instead by the engine's <see cref="OperationDeadlineConstraint"/>, armed
+    /// here with the token and disarmed in the <see langword="finally"/>. It is armed with
+    /// <see cref="Timeout.InfiniteTimeSpan"/>, which is that constraint's cancellation-only shape: no time
+    /// budget is introduced, because how long a script may run is a policy for the site to set through
+    /// <c>IOptions&lt;Jint.Options&gt;</c> and not for this method to invent.
+    /// </para>
+    /// <para>
+    /// Cancellation surfaces as <see cref="OperationCanceledException"/> carrying the token, the type the
+    /// rest of a .NET call stack already filters on, rather than as a scripting error. A token cancelled
+    /// before the call is observed before the script starts; one cancelled while the script is running is
+    /// observed on the engine's amortized constraint cadence, so a runaway script is stopped within a
+    /// bounded number of statements rather than at the exact statement the cancellation arrived. That
+    /// cadence is what keeps the interpreter's tight-loop lane armed, and it is the same one the built-in
+    /// <c>CancellationToken</c> and <c>TimeoutInterval</c> constraints are checked on.
+    /// </para>
+    /// </remarks>
     public async Task<object> EvaluateAsync(IScriptingScope scope, string script, CancellationToken cancellationToken = default)
     {
+        // A token that is already cancelled means the work should not start, and saying so here is what
+        // makes that deterministic: the constraint below is amortized, so it is consulted on a statement
+        // cadence rather than at every statement, and a script small enough to finish inside that cadence
+        // would otherwise run to completion.
+        cancellationToken.ThrowIfCancellationRequested();
+
         var jsScope = GetJavaScriptScope(scope);
+        var preparedScript = PrepareScript(script);
 
-        var result = await jsScope.Engine.EvaluateAsync(PrepareScript(script), cancellationToken);
+        // Find() walks the engine's constraints, so it is only worth asking when there is a token that can
+        // actually be cancelled. CancellationToken.None never can, which is what every caller in this
+        // repository passes today.
+        var deadline = cancellationToken.CanBeCanceled
+            ? jsScope.Engine.Constraints.Find<OperationDeadlineConstraint>()
+            : null;
 
-        return result.ToObject();
+        if (deadline is null)
+        {
+            // Either there is nothing to observe, or a site has replaced the constraints this module
+            // registers. Neither is a reason to fail the evaluation; it behaves as it did before.
+            var unbounded = await jsScope.Engine.EvaluateAsync(preparedScript, cancellationToken);
+
+            return unbounded.ToObject();
+        }
+
+        deadline.Begin(Timeout.InfiniteTimeSpan, cancellationToken);
+
+        try
+        {
+            var result = await jsScope.Engine.EvaluateAsync(preparedScript, cancellationToken);
+
+            return result.ToObject();
+        }
+        finally
+        {
+            // Awaited rather than returned, so the constraint is disarmed once the evaluation has actually
+            // finished rather than once its Task exists. An engine that outlives this call - a scope held
+            // for a whole request - must not carry a finished evaluation's token into the next one.
+            deadline.End();
+        }
     }
 
     private Prepared<Script> PrepareScript(string script)
@@ -154,15 +215,18 @@ public sealed class JavaScriptEngine : IScriptingEngine
     private static JsValue CreateGlobal(Engine engine, string name, Func<IServiceProvider, Delegate> factory)
     {
         // The factory captures the services it is given, so the delegate has to be built with the services
-        // of the scope that owns this engine, and cannot be shared between engines.
-        if (!JavaScriptScope.TryGetServiceProvider(engine, out var serviceProvider))
+        // of the scope that owns this engine, and cannot be shared between engines. The scope records them
+        // in the engine's [[HostDefined]] slot, which Jint reserves for the host and which no part of the
+        // engine reads.
+        if (engine.Advanced.HostDefined is not IServiceProvider serviceProvider)
         {
             // The lazy property stores whatever this returns and never runs again, so returning a value here
             // would leave the global permanently undefined and fail as 'x is not a function' somewhere else.
-            // Reaching this means an engine was built from these options without a scope, which is a defect
-            // in the caller rather than a state a script should have to cope with.
+            // Reaching this means an engine was built from these options without a scope, or that the slot
+            // already held something of the caller's own when the scope was built - either way a defect in
+            // the caller rather than a state a script should have to cope with.
             throw new InvalidOperationException(
-                $"No scripting scope is associated with the engine reading the global '{name}'. Engines that expose the globals of the registered {nameof(IGlobalMethodProvider)} instances must be created through {nameof(IScriptingEngine)}.{nameof(CreateScope)}.");
+                $"No scripting scope is associated with the engine reading the global '{name}'. Engines that expose the globals of the registered {nameof(IGlobalMethodProvider)} instances must be created through {nameof(IScriptingEngine)}.{nameof(CreateScope)}, and must not have their {nameof(Engine)}.{nameof(Engine.Advanced)}.{nameof(Engine.AdvancedOperations.HostDefined)} slot used for anything else.");
         }
 
         // This is only equivalent to what Engine.SetValue(string, Delegate) installs while no IObjectConverter

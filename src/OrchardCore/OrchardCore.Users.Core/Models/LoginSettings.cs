@@ -14,6 +14,12 @@ public class LoginSettings
 
     public bool AllowRememberMe { get; set; } = true;
 
+    /// <summary>
+    /// Gets or sets a value indicating the default for whether the authentication cookie
+    /// should be persistent across browser sessions.
+    /// </summary>
+    public bool UsePersistentAuthenticationCookie { get; set; }
+
     [DefaultValue(true)]
     public bool AllowChangingPhoneNumber { get; set; } = true;
 }

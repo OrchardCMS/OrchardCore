@@ -16,7 +16,7 @@ internal static class RequiredAttributeParser
     {
         private const char RequiredAttributeWildcardSuffix = '*';
 
-        private static readonly Dictionary<char, RequiredAttributeDescriptor.ValueComparisonMode> _cssValueComparisons =
+        private static readonly Dictionary<char, RequiredAttributeDescriptor.ValueComparisonMode> s_cssValueComparisons =
             new()
             {
                 { '=', RequiredAttributeDescriptor.ValueComparisonMode.FullMatch },
@@ -24,13 +24,13 @@ internal static class RequiredAttributeParser
                 { '$', RequiredAttributeDescriptor.ValueComparisonMode.SuffixMatch },
             };
 
-        private static readonly char[] _invalidPlainAttributeNameCharacters = [' ', '\t', ',', RequiredAttributeWildcardSuffix];
+        private static readonly char[] s_invalidPlainAttributeNameCharacters = [' ', '\t', ',', RequiredAttributeWildcardSuffix];
 
-        private static readonly char[] _invalidCssAttributeNameCharacters = (new[] { ' ', '\t', ',', ']' })
-            .Concat(_cssValueComparisons.Keys)
+        private static readonly char[] s_invalidCssAttributeNameCharacters = (new[] { ' ', '\t', ',', ']' })
+            .Concat(s_cssValueComparisons.Keys)
             .ToArray();
 
-        private static readonly char[] _invalidCssQuotelessValueCharacters = [' ', '\t', ']'];
+        private static readonly char[] s_invalidCssQuotelessValueCharacters = [' ', '\t', ']'];
 
         private int _index;
         private readonly string _requiredAttributes;
@@ -104,7 +104,7 @@ internal static class RequiredAttributeParser
 
         private void ParsePlainSelector(RequiredAttributeDescriptorBuilder attributeBuilder)
         {
-            var nameEndIndex = _requiredAttributes.IndexOfAny(_invalidPlainAttributeNameCharacters, _index);
+            var nameEndIndex = _requiredAttributes.IndexOfAny(s_invalidPlainAttributeNameCharacters, _index);
             string attributeName;
 
             var nameComparison = RequiredAttributeDescriptor.NameComparisonMode.FullMatch;
@@ -134,7 +134,7 @@ internal static class RequiredAttributeParser
         private void ParseCssAttributeName(RequiredAttributeDescriptorBuilder builder)
         {
             var nameStartIndex = _index;
-            var nameEndIndex = _requiredAttributes.IndexOfAny(_invalidCssAttributeNameCharacters, _index);
+            var nameEndIndex = _requiredAttributes.IndexOfAny(s_invalidCssAttributeNameCharacters, _index);
             nameEndIndex = nameEndIndex == -1 ? _requiredAttributes.Length : nameEndIndex;
             _index = nameEndIndex;
 
@@ -147,7 +147,7 @@ internal static class RequiredAttributeParser
         {
             Debug.Assert(!AtEnd);
 
-            if (_cssValueComparisons.TryGetValue(Current, out valueComparison))
+            if (s_cssValueComparisons.TryGetValue(Current, out valueComparison))
             {
                 var op = Current;
                 _index++;
@@ -203,7 +203,7 @@ internal static class RequiredAttributeParser
             else
             {
                 valueStart = _index;
-                var valueEndIndex = _requiredAttributes.IndexOfAny(_invalidCssQuotelessValueCharacters, _index);
+                var valueEndIndex = _requiredAttributes.IndexOfAny(s_invalidCssQuotelessValueCharacters, _index);
                 valueEnd = valueEndIndex == -1 ? _requiredAttributes.Length : valueEndIndex;
                 _index = valueEnd;
             }

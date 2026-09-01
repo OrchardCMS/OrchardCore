@@ -12,7 +12,7 @@ public class UserTimeZoneService : IUserTimeZoneService
 {
     private const string EmptyTimeZone = "NoTimeZoneFound";
 
-    private static readonly DistributedCacheEntryOptions _slidingExpiration = new()
+    private static readonly DistributedCacheEntryOptions s_slidingExpiration = new()
     {
         SlidingExpiration = TimeSpan.FromHours(1),
     };
@@ -81,7 +81,7 @@ public class UserTimeZoneService : IUserTimeZoneService
                 timeZoneId = EmptyTimeZone;
             }
 
-            await _distributedCache.SetStringAsync(key, timeZoneId, _slidingExpiration);
+            await _distributedCache.SetStringAsync(key, timeZoneId, s_slidingExpiration);
         }
 
         // If TimeZoneId matches the placeholder value, we return null instead of the placeholder itself.

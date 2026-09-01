@@ -19,8 +19,18 @@ public static class UrlHelperExtensions
 
     public static string ToAbsoluteUrl(this IUrlHelper url, string virtualPath)
     {
+        // The virtual path may already be an absolute URL, e.g. when media is served from a
+        // CDN (IMediaFileStore.MapPathToPublicUrl() prefixes the CDN base URL). In that case,
+        // prefixing it with the site's own base URL would produce an invalid, concatenated URL.
+        if (virtualPath.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+            virtualPath.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+        {
+            return virtualPath;
+        }
+
         var baseUrl = url.GetBaseUrl();
         var path = url.Content(virtualPath);
+
         return $"{baseUrl}{path}";
     }
 }

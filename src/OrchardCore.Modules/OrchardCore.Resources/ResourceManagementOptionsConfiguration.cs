@@ -462,19 +462,20 @@ public sealed class ResourceManagementOptionsConfiguration
 
         manifest
             .DefineStyle("bootstrap-select")
+            .SetDependencies("bootstrap")
             .SetUrl(
                 "~/OrchardCore.Resources/Vendor/CrestApps/bootstrap-select/bootstrap-select.min.css",
                 "~/OrchardCore.Resources/Vendor/CrestApps/bootstrap-select/bootstrap-select.css"
             )
             .SetCdn(
-                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.2.0/dist/css/bootstrap-select.min.css",
-                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.2.0/dist/css/bootstrap-select.css"
+                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.2.4/dist/css/bootstrap-select.min.css",
+                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.2.4/dist/css/bootstrap-select.css"
             )
             .SetCdnIntegrity(
-                "sha384-7yj05Iamc4rfesLo160W11ywhuIME+BcB43waDx0Y1rI1LEyCK368ml0MI9Lwzr7",
-                "sha384-jN5x01dkUiVJwxGy3x+e/53AB0jN9D9bBomsrbCJehtMMCIK5vOzd7aTNXV3/bze"
+                "sha384-sQr5Em/mpvLjnu2huY8PDGrpItq+8qR2NHsVB4Kq4Zqb+LrBExUL7pid7pCJf10K",
+                "sha384-mG0OUnrbVYDYdq8PTDcpU2GSTM4bxIPJrOke74gIoPsH3T9qfC+rZe5DzkIuaMQc"
             )
-            .SetVersion("1.2.1");
+            .SetVersion("1.2.4");
 
         manifest
             .DefineScript("bootstrap-select")
@@ -484,14 +485,14 @@ public sealed class ResourceManagementOptionsConfiguration
                 "~/OrchardCore.Resources/Vendor/CrestApps/bootstrap-select/bootstrap-select.js"
             )
             .SetCdn(
-                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.2.1/dist/js/bootstrap-select.min.js",
-                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.2.1/dist/js/bootstrap-select.js"
+                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.2.4/dist/js/bootstrap-select.min.js",
+                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.2.4/dist/js/bootstrap-select.js"
             )
             .SetCdnIntegrity(
-                "sha384-R7aQ+h/YwfYWxwVbXnRupt5dDCEB+GFE5kGRXdMRqqTb8a44gKz4FhiTVCIl1utj",
-                "sha384-OoRqHGsY2f8cxSKpRli5U/ioHYo5CO4Nqz9+jMhs/Ah3slKOn36MzgaO3Dixk2D0"
+                "sha384-Bw1T257yCrZ7XkIute3Z7uYC0tE5602dCse3aVwTmy0Pnl7wRPorXO+dHH2m8n3p",
+                "sha384-uxbBuZEWDbdH0t6Lxy2N98Ix+6IzIp0lorXXkc1J4mjbINsZ0ALaNAMiaj+wojmJ"
             )
-            .SetVersion("1.2.1");
+            .SetVersion("1.2.4");
 
         manifest
             .DefineStyle("nouislider")
@@ -1113,7 +1114,7 @@ public sealed class ResourceManagementOptionsConfiguration
             .SetVersion("1.0.0");
 
         // List Management
-        
+
         manifest
             .DefineScript("list-management")
             .SetUrl(

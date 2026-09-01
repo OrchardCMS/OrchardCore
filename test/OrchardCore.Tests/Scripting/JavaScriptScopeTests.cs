@@ -1,5 +1,7 @@
+using Jint;
 using OrchardCore.Scripting;
 using OrchardCore.Scripting.JavaScript;
+using JintOptions = Jint.Options;
 
 namespace OrchardCore.Tests.Scripting;
 
@@ -89,6 +91,125 @@ public class JavaScriptScopeTests
 
         // The synchronous variant of the same method was not touched.
         Assert.Equal(0, provider.BuildCount);
+    }
+
+    [Fact]
+    public void RegisteredGlobals_AreBuiltWithTheServicesOfTheScopeThatOwnsTheEngine()
+    {
+        var (engine, methods, _) = CreateEngineWithScopeNames();
+
+        // Both scopes are alive at the same time and share the engine that declared the global, so the
+        // engine a global is materialized on is the only thing that can tell their services apart.
+        var firstScope = engine.CreateScope(methods, CreateServices("first"), null, null);
+        var secondScope = engine.CreateScope(methods, CreateServices("second"), null, null);
+
+        Assert.Equal("second", engine.Evaluate(secondScope, "return scopeName();"));
+        Assert.Equal("first", engine.Evaluate(firstScope, "return scopeName();"));
+    }
+
+    [Fact]
+    public void RegisteredGlobals_AreBuiltWithTheServicesOfTheirOwnScope_WhenTwoEnginesAreAliveAtOnce()
+    {
+        // Each tenant has its own scripting engine, and the services an engine was created for are recorded
+        // on the engine itself, so a scope of one tenant must not be visible to the other.
+        var (first, firstMethods, _) = CreateEngineWithScopeNames();
+        var (second, secondMethods, _) = CreateEngineWithScopeNames();
+
+        var firstScope = first.CreateScope(firstMethods, CreateServices("first"), null, null);
+        var secondScope = second.CreateScope(secondMethods, CreateServices("second"), null, null);
+
+        Assert.Equal("first", first.Evaluate(firstScope, "return scopeName();"));
+        Assert.Equal("second", second.Evaluate(secondScope, "return scopeName();"));
+    }
+
+    [Fact]
+    public async Task RegisteredGlobals_AreBuiltWithTheServicesOfTheScopeThatOwnsTheEngine_Asynchronously()
+    {
+        var (engine, methods, _) = CreateEngineWithScopeNames();
+
+        var firstScope = engine.CreateScope(methods, CreateServices("first"), null, null);
+        var secondScope = engine.CreateScope(methods, CreateServices("second"), null, null);
+
+        Assert.Equal("second async", await engine.EvaluateAsync(secondScope, "return scopeNameAsync();", TestContext.Current.CancellationToken));
+        Assert.Equal("first async", await engine.EvaluateAsync(firstScope, "return scopeNameAsync();", TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public void PublicConstructor_RecordsTheServicesOnAnEngineWhoseHostSlotIsFree()
+    {
+        // An engine built from the tenant's own Jint options carries the declarations for the registered
+        // globals. A method this constructor is handed is set eagerly and never reaches the declaration, so
+        // the shape where the slot matters is a global the caller does not pass: it stays lazy, and the
+        // services it is eventually built from can only come from the engine.
+        var (engine, _, tenantServices) = CreateEngineWithScopeNames();
+        var callerEngine = CreateEngineFromTenantOptions(tenantServices);
+        var callerServices = CreateServices("caller");
+
+        var scope = new JavaScriptScope(callerEngine, callerServices, []);
+
+        Assert.Same(callerServices, callerEngine.Advanced.HostDefined);
+        Assert.Equal("caller", engine.Evaluate(scope, "return scopeName();"));
+    }
+
+    [Fact]
+    public void PublicConstructor_LeavesAHostSlotThatIsAlreadyInUseAlone()
+    {
+        // The slot belongs to whoever built the engine. Overwriting it would silently destroy their state
+        // to make our globals work, so a registered global says so instead of the caller losing theirs.
+        var (engine, _, tenantServices) = CreateEngineWithScopeNames();
+        var callerEngine = CreateEngineFromTenantOptions(tenantServices);
+        var callerState = new object();
+        callerEngine.Advanced.HostDefined = callerState;
+
+        var scope = new JavaScriptScope(callerEngine, CreateServices("caller"), []);
+
+        Assert.Same(callerState, callerEngine.Advanced.HostDefined);
+
+        var exception = Assert.Throws<InvalidOperationException>(() => engine.Evaluate(scope, "return scopeName();"));
+        Assert.Contains("scopeName", exception.Message);
+    }
+
+    private static (IScriptingEngine Engine, IEnumerable<GlobalMethod> Methods, IServiceProvider Services) CreateEngineWithScopeNames()
+    {
+        var serviceProvider = new ServiceCollection()
+            .AddMemoryCache()
+            .AddScripting()
+            .AddJavaScriptEngine()
+            .AddSingleton<IGlobalMethodProvider, ScopeNameMethodProvider>()
+            .BuildServiceProvider();
+
+        var scriptingManager = serviceProvider.GetRequiredService<IScriptingManager>();
+
+        // Resolving the scripting engine is what declares the registered globals on the shared options, so
+        // an engine built from them afterwards carries those declarations.
+        var engine = scriptingManager.GetScriptingEngine("js");
+
+        return (engine, scriptingManager.GlobalMethodProviders.SelectMany(p => p.GetMethods()).ToArray(), serviceProvider);
+    }
+
+    private static Engine CreateEngineFromTenantOptions(IServiceProvider tenantServices)
+        => new(tenantServices.GetRequiredService<IOptions<JintOptions>>().Value);
+
+    private static ServiceProvider CreateServices(string scopeName)
+        => new ServiceCollection()
+            .AddSingleton(new ScopeName(scopeName))
+            .BuildServiceProvider();
+
+    private sealed record ScopeName(string Value);
+
+    private sealed class ScopeNameMethodProvider : IGlobalMethodProvider
+    {
+        private readonly GlobalMethod _globalMethod = new()
+        {
+            Name = "scopeName",
+
+            // The factory is handed the services of the scope the reading engine belongs to, so what it
+            // captures is what proves which scope the global was built for.
+            Method = sp => (Func<string>)(() => sp.GetRequiredService<ScopeName>().Value),
+            AsyncMethod = sp => (Func<Task<string>>)(() => Task.FromResult(sp.GetRequiredService<ScopeName>().Value + " async")),
+        };
+
+        public IEnumerable<GlobalMethod> GetMethods() => [_globalMethod];
     }
 
     private static (IScriptingEngine Engine, IEnumerable<GlobalMethod> Methods, IServiceProvider ServiceProvider, CountingMethodProvider Provider) CreateEngine()

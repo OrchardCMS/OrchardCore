@@ -7,7 +7,7 @@ namespace OrchardCore.Antivirus.ClamAV;
 internal sealed class ClamAvConnection : IDisposable
 {
     private const int BufferSize = 81920;
-    private static readonly byte[] _scanCommand = "nINSTREAM\n"u8.ToArray();
+    private static readonly byte[] s_scanCommand = "nINSTREAM\n"u8.ToArray();
 
     private readonly ClamAvOptions _options;
     private readonly ILogger _logger;
@@ -35,7 +35,7 @@ internal sealed class ClamAvConnection : IDisposable
                 using var transferCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
                 transferCancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(_options.TransferTimeoutSeconds));
 
-                await _networkStream.WriteAsync(_scanCommand, transferCancellationTokenSource.Token);
+                await _networkStream.WriteAsync(s_scanCommand, transferCancellationTokenSource.Token);
 
                 var buffer = new byte[BufferSize];
                 int bytesRead;

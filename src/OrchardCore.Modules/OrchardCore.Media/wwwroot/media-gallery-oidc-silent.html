@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <title>Media gallery — silent sign-in</title>
+</head>
+<body>
+    <!--
+      Loaded in a hidden iframe by oidc-client-ts to complete a silent (prompt=none) token
+      renewal for the media gallery. It sets a marker the media bundle checks (see
+      src/main.ts) so the bundle runs handleSilentRenewCallback() instead of mounting the app.
+      The redirect URI ending in this file's path must be registered on the OIDC client
+      (see the MediaApiPkce recipe).
+    -->
+    <script>window.__mediaGalleryOidcSilent = true;</script>
+    <script type="module" src="Scripts/media2.min.js"></script>
+</body>
+</html>

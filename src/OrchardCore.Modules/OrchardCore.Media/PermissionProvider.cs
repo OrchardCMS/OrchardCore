@@ -13,6 +13,7 @@ public sealed class PermissionProvider : IPermissionProvider
         MediaPermissions.ManageAttachedMediaFieldsFolder,
         MediaPermissions.ManageMediaProfiles,
         MediaPermissions.ViewMediaOptions,
+        MediaPermissions.ManageMediaApiSettings,
     ];
 
     private readonly IEnumerable<Permission> _generalPermissions =
@@ -20,8 +21,7 @@ public sealed class PermissionProvider : IPermissionProvider
         MediaPermissions.ManageOwnMedia,
     ];
 
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
+    public Task<IEnumerable<Permission>> GetPermissionsAsync() => Task.FromResult(_allPermissions);
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
     [
@@ -33,6 +33,7 @@ public sealed class PermissionProvider : IPermissionProvider
                 MediaPermissions.ManageMediaFolder,
                 MediaPermissions.ManageMediaProfiles,
                 MediaPermissions.ViewMediaOptions,
+                MediaPermissions.ManageMediaApiSettings,
             ],
         },
         new PermissionStereotype

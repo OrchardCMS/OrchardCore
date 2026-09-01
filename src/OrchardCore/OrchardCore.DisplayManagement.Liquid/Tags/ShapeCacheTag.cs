@@ -6,7 +6,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags;
 
 public class ShapeCacheTag
 {
-    private static readonly char[] _separators = [',', ' '];
+    private static readonly char[] s_separators = [',', ' '];
 
     public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, IReadOnlyList<FilterArgument>> arguments, TextWriter _1, TextEncoder _2, TemplateContext context)
     {
@@ -25,13 +25,13 @@ public class ShapeCacheTag
 
             if (expressions.HasNamed("cache_context"))
             {
-                var contexts = (await expressions["cache_context"].EvaluateAsync(context)).ToStringValue().Split(_separators, StringSplitOptions.RemoveEmptyEntries);
+                var contexts = (await expressions["cache_context"].EvaluateAsync(context)).ToStringValue().Split(s_separators, StringSplitOptions.RemoveEmptyEntries);
                 metadata.Cache().AddContext(contexts);
             }
 
             if (expressions.HasNamed("cache_tag"))
             {
-                var tags = (await expressions["cache_tag"].EvaluateAsync(context)).ToStringValue().Split(_separators, StringSplitOptions.RemoveEmptyEntries);
+                var tags = (await expressions["cache_tag"].EvaluateAsync(context)).ToStringValue().Split(s_separators, StringSplitOptions.RemoveEmptyEntries);
                 metadata.Cache().AddTag(tags);
             }
 

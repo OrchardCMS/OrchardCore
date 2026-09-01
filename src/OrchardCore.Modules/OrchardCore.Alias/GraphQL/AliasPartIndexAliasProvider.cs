@@ -5,7 +5,7 @@ namespace OrchardCore.Alias.GraphQL;
 
 public class AliasPartIndexAliasProvider : IIndexAliasProvider
 {
-    private static readonly IndexAlias[] _aliases =
+    private static readonly IndexAlias[] s_aliases =
     [
         new IndexAlias
         {
@@ -17,6 +17,6 @@ public class AliasPartIndexAliasProvider : IIndexAliasProvider
 
     public ValueTask<IEnumerable<IndexAlias>> GetAliasesAsync()
     {
-        return ValueTask.FromResult<IEnumerable<IndexAlias>>(_aliases);
+        return ValueTask.FromResult<IEnumerable<IndexAlias>>(s_aliases);
     }
 }
