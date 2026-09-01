@@ -2,6 +2,7 @@ using System.Text.Json.Dynamic;
 using System.Text.Json.Nodes;
 using Fluid;
 using Fluid.Values;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,9 +18,11 @@ using OrchardCore.Liquid.Filters;
 using OrchardCore.Liquid.Handlers;
 using OrchardCore.Liquid.Indexing;
 using OrchardCore.Liquid.Models;
+using OrchardCore.Liquid.Security;
 using OrchardCore.Liquid.Services;
 using OrchardCore.Liquid.ViewModels;
 using OrchardCore.Modules;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Liquid;
 
@@ -91,6 +94,8 @@ public sealed class LiquidStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddLiquidCoreServices();
+        services.AddPermissionProvider<Permissions>();
+        services.AddScoped<IAuthorizationHandler, LiquidContentAuthorizationHandler>();
     }
 }
 
@@ -107,6 +112,15 @@ public sealed class LiquidPartStartup : StartupBase
 
         services.AddDataMigration<Migrations>();
         services.AddScoped<IContentPartIndexHandler, LiquidPartIndexHandler>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Roles")]
+public sealed class RolesStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDataMigration<PermissionMigrations>();
     }
 }
 

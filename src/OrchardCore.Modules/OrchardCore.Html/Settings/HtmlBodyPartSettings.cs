@@ -5,7 +5,7 @@ namespace OrchardCore.Html.Settings;
 public class HtmlBodyPartSettings
 {
     /// <summary>
-    /// Whether to sanitize the Html input.
+    /// Whether to sanitize the rendered HTML.
     /// </summary>
     [DefaultValue(true)]
     public bool SanitizeHtml { get; set; } = true;

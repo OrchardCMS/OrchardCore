@@ -8,6 +8,7 @@ using OrchardCore.ContentPreview;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Settings;
 using OrchardCore.Templates.ViewModels;
+using LiquidPermissions = OrchardCore.Liquid.Permissions;
 
 namespace OrchardCore.Templates.Controllers;
 
@@ -39,15 +40,20 @@ public sealed class PreviewController : Controller
         _homeUrl = httpContextAccessor.HttpContext.Request.PathBase.Add("/");
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
+        if (!await IsAuthorizedAsync())
+        {
+            return this.ChallengeOrForbid();
+        }
+
         return View();
     }
 
     [HttpPost]
     public async Task<IActionResult> Render()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
+        if (!await IsAuthorizedAsync())
         {
             return this.ChallengeOrForbid();
         }
@@ -97,4 +103,8 @@ public sealed class PreviewController : Controller
 
         return View(model);
     }
+
+    private async Task<bool> IsAuthorizedAsync() =>
+        await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates) &&
+        await _authorizationService.AuthorizeAsync(User, LiquidPermissions.ManageLiquidTemplates);
 }

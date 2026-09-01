@@ -8,7 +8,7 @@
 
     TagBuilder tag = Tag(Model, "a");
 
-    var url = htmlMenuItemPart.Url;
+    var url = htmlMenuItemPart.Url ?? string.Empty;
     if (url.StartsWith('/'))
     {
         url = '~' + url;
