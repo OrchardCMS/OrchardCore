@@ -1,8 +1,11 @@
 using Amazon.S3;
 using Amazon.S3.Model;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.AmazonS3;
+using OrchardCore.Media.Core;
 using OrchardCore.Modules;
 using OrchardCore.Tests.Integration.Infrastructure;
 using Xunit;
@@ -304,6 +307,73 @@ public sealed class AwsFileStoreTests : IAsyncLifetime
 
         Assert.Contains(entries, e => e.Name == "root-file.txt" && !e.IsDirectory);
         Assert.Contains(entries, e => e.Name == "sub-dir" && e.IsDirectory);
+    }
+
+    // -- NTFS-incompatible names, see https://github.com/OrchardCMS/OrchardCore/issues/17644 --
+
+    private const string NtfsInvalidFolder = "test:asdf";
+
+    [DockerFact]
+    public async Task CreateFile_FolderWithNtfsInvalidCharacters_RoundTrips()
+    {
+        // S3 object keys allow names that are invalid on NTFS, such as ':'.
+        var path = $"{NtfsInvalidFolder}/file.txt";
+        await CreateTestFileAsync(path, "ntfs invalid");
+
+        var info = await _store.GetFileInfoAsync(path);
+        Assert.NotNull(info);
+        Assert.Equal(path, info.Path);
+        Assert.Equal("ntfs invalid", await ReadFileContentAsync(path));
+
+        var entries = new List<IFileStoreEntry>();
+        await foreach (var entry in _store.GetDirectoryContentAsync(NtfsInvalidFolder))
+        {
+            entries.Add(entry);
+        }
+
+        Assert.Contains(entries, e => e.Name == "file.txt" && !e.IsDirectory);
+    }
+
+    [DockerFact]
+    public async Task SetCache_FolderWithNtfsInvalidCharacters_CachesServesAndDeletes()
+    {
+        // The remote-store to local media cache flow from issue #17644: the cache must be able
+        // to mirror a remote folder name that the local file system (NTFS) rejects.
+        var path = $"{NtfsInvalidFolder}/cached.txt";
+        await CreateTestFileAsync(path, "cache me");
+        var entry = await _store.GetFileInfoAsync(path);
+        Assert.NotNull(entry);
+
+        var cacheRoot = Directory.CreateTempSubdirectory("ms-cache-tests").FullName;
+        try
+        {
+            using var cache = new DefaultMediaFileStoreCacheFileProvider(
+                NullLogger<DefaultMediaFileStoreCacheFileProvider>.Instance,
+                "/media",
+                cacheRoot);
+
+            await using (var stream = await _store.GetFileStreamAsync(entry))
+            {
+                await cache.SetCacheAsync(stream, entry, CancellationToken.None);
+            }
+
+            Assert.True(await cache.IsCachedAsync(path));
+
+            // The static file middleware serves cached media through IFileProvider.
+            var fileInfo = ((IFileProvider)cache).GetFileInfo('/' + path);
+            Assert.True(fileInfo.Exists);
+            using (var reader = new StreamReader(fileInfo.CreateReadStream()))
+            {
+                Assert.Equal("cache me", await reader.ReadToEndAsync());
+            }
+
+            Assert.True(await cache.TryDeleteDirectoryAsync(NtfsInvalidFolder));
+            Assert.False(await cache.IsCachedAsync(path));
+        }
+        finally
+        {
+            Directory.Delete(cacheRoot, true);
+        }
     }
 }
 

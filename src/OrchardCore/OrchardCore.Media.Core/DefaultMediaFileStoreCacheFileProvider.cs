@@ -33,6 +33,20 @@ public class DefaultMediaFileStoreCacheFileProvider : PhysicalFileProvider, IMed
 
     public PathString VirtualPathBase { get; }
 
+    /// <summary>
+    /// Resolves a media path to its cache location, escaping characters that are invalid on the
+    /// local file system (e.g. ':' on NTFS) so any remote media path can be mirrored locally.
+    /// <see cref="PhysicalFileProvider.GetFileInfo"/> is not virtual, so this relies on interface
+    /// re-implementation: all consumers resolve this class through <see cref="IFileProvider"/> or
+    /// call it directly, and both bind to this method.
+    /// </summary>
+    public new IFileInfo GetFileInfo(string subpath)
+        => base.GetFileInfo(MediaCachePathEscaper.Escape(subpath));
+
+    /// <inheritdoc cref="GetFileInfo"/>
+    public new IDirectoryContents GetDirectoryContents(string subpath)
+        => base.GetDirectoryContents(MediaCachePathEscaper.Escape(subpath));
+
     public Task<bool> IsCachedAsync(string path)
     {
         // Opportunity here to save metadata and/or provide cache validation / integrity checks.
@@ -45,18 +59,21 @@ public class DefaultMediaFileStoreCacheFileProvider : PhysicalFileProvider, IMed
     {
         // File store semantics may include a leading slash.
         // Trailing slash would create an empty directory instead of a file.
-        var cachePath = Path.Combine(Root, fileStoreEntry.Path.Trim('/'));
-        var directory = Path.GetDirectoryName(cachePath);
-
-        if (!Directory.Exists(directory))
-        {
-            Directory.CreateDirectory(directory);
-        }
+        // Characters that are invalid on the local file system are escaped, so remote paths
+        // that NTFS rejects (e.g. 'test:asdf') can still be cached.
+        var cachePath = Path.Combine(Root, MediaCachePathEscaper.Escape(fileStoreEntry.Path.Trim('/')));
 
         // A file download may fail, so a partially downloaded file should be deleted so the next request can reprocess.
         // All exceptions here are recaught by the MediaFileStoreResolverMiddleware.
         try
         {
+            var directory = Path.GetDirectoryName(cachePath);
+
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
             if (File.Exists(cachePath))
             {
                 File.Delete(cachePath);
