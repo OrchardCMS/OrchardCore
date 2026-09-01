@@ -103,6 +103,7 @@ public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
         options.MaxUploadChunkSize = section.GetValue(nameof(options.MaxUploadChunkSize), DefaultMaxUploadChunkSize);
         options.TemporaryFileLifetime = section.GetValue(nameof(options.TemporaryFileLifetime), s_defaultTemporaryFileLifeTime);
         options.TusTempPath = section.GetValue(nameof(options.TusTempPath), Path.Combine(Path.GetTempPath(), "TusUploads"));
+        options.DisableThumbnails = section.GetValue(nameof(options.DisableThumbnails), false);
 
         var contentSecurityPolicy = section.GetValue("ContentSecurityPolicy", DefaultContentSecurityPolicy);
 

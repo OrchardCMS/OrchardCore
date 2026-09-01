@@ -59,6 +59,7 @@ public sealed class AdminController : Controller
             TusEnabled = tusEnabled,
             SignalrEnabled = signalrEnabled,
             DebugEnabled = hostEnvironment.IsDevelopment(),
+            DisableThumbnails = _mediaOptions.DisableThumbnails,
             ApiAuthenticationScheme = mediaApiSettings.AuthenticationScheme.ToString(),
         };
 
