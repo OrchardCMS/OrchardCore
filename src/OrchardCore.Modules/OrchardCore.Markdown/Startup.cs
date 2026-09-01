@@ -68,6 +68,7 @@ public sealed class Startup : StartupBase
         });
 
         services.AddScoped<IMarkdownService, DefaultMarkdownService>();
+        services.AddScoped<IMarkdownDisplayService, MarkdownDisplayService>();
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
     }
 }

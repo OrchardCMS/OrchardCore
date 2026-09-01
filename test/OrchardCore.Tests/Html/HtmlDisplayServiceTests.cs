@@ -1,76 +1,67 @@
-using Fluid.Values;
-using Microsoft.Extensions.WebEncoders.Testing;
 using OrchardCore.ContentManagement;
 using OrchardCore.Html.Services;
 using OrchardCore.Html.ViewModels;
 using OrchardCore.Infrastructure.Html;
-using OrchardCore.Liquid;
 using OrchardCore.Shortcodes.Services;
-using System.Text.RegularExpressions;
 
 namespace OrchardCore.Tests.Html;
 
 public class HtmlDisplayServiceTests
 {
-    // An example from https://github.com/OrchardCMS/OrchardCore/issues/19767 for HTML that breaks when sanitized before
-    // rendering Liquid first, because it contains a Liquid tag inside the HTML element.
-    private const string InputWithLiquidInHtml =
-        "<img src=\"{{ \"~/theme/images/logo.png\" | href }}\" class=\"overlay-container\">";
-    
     [Theory]
-    [InlineData(InputWithLiquidInHtml, true, true, "<img src=\"LIQUID\" class=\"overlay-container\">")]
-    [InlineData(InputWithLiquidInHtml, false, false, InputWithLiquidInHtml)]
+    [InlineData("<script>alert('xss')</script><p>Safe</p>", true, "<p>Safe</p>")]
+    [InlineData("<script>alert('xss')</script><p>Safe</p>", false, "<script>alert('xss')</script><p>Safe</p>")]
     public async Task HtmlDisplayService_Processing_Succeeds(
         string html,
-        bool renderLiquid,
         bool sanitizeHtml,
         string expected)
     {
         // Arrange
         var service = SetupServices().GetRequiredService<IHtmlDisplayService>();
         var model = new Model(html);
-        
+
         // Act
-        await service.UpdateModelHtmlAsync(model, renderLiquid, new Context(), sanitizeHtml);
+        await service.UpdateModelHtmlAsync(model, new Context(), sanitizeHtml);
         var output = model.Html;
 
         // Assert
         Assert.Equal(expected, output);
     }
-    
+
     [Fact]
-    public async Task HtmlDisplayService_Processing_Misconfiguration()
+    public async Task HtmlDisplayService_LiquidSyntax_IsNotExecuted()
     {
         // Arrange
         var service = SetupServices().GetRequiredService<IHtmlDisplayService>();
-        var model = new Model(InputWithLiquidInHtml);
-        
-        // Act: If the service is misconfigured, it should only fail in the expected way.
-        await service.UpdateModelHtmlAsync(model, renderLiquid: false, shortcodeContext: null, sanitizeHtml: true);
+        const string html = "<p>{{ ContentItem.DisplayText }}</p>";
+        var model = new Model(html);
+
+        await service.UpdateModelHtmlAsync(model, shortcodeContext: null, sanitizeHtml: false);
         var output = model.Html;
 
-        // Assert
-        Assert.Equal("<img src=\"{{ \" href=\"\" class=\"overlay-container\">", output);
+        Assert.Equal(html, output);
     }
 
-    private static ServiceProvider SetupServices()
+    [Theory]
+    [InlineData(true, "<p>Safe</p>")]
+    [InlineData(false, "<script>alert('xss')</script><p>Safe</p>")]
+    public async Task HtmlDisplayService_SanitizesAfterShortcodes(
+        bool sanitizeHtml,
+        string expected)
+    {
+        var service = SetupServices(new UnsafeShortcodeService()).GetRequiredService<IHtmlDisplayService>();
+        var model = new Model("[unsafe]<p>Safe</p>");
+
+        await service.UpdateModelHtmlAsync(model, new Context(), sanitizeHtml);
+
+        Assert.Equal(expected, model.Html);
+    }
+
+    private static ServiceProvider SetupServices(IShortcodeService shortcodeService = null)
     {
         var services = new ServiceCollection();
 
-        // Pretend to do Liquid processing, so we don't have to include all dependencies of the template manager.
-        var liquidTemplateManagerMock = new Mock<ILiquidTemplateManager>();
-        liquidTemplateManagerMock
-            .Setup(mock => mock.RenderStringAsync(
-                It.IsAny<string>(),
-                It.IsAny<HtmlEncoder>(),
-                It.IsAny<object>(),
-                It.IsAny<IEnumerable<KeyValuePair<string, FluidValue>>>()))
-            .ReturnsAsync<string, HtmlEncoder, object, IEnumerable<KeyValuePair<string, FluidValue>>, ILiquidTemplateManager, string>(
-                (template, _, _, _) => Regex.Replace(template, @"\{\{[^{}]+\}\}", "LIQUID"));
-        services.AddSingleton(liquidTemplateManagerMock.Object);
-
-        services.AddSingleton<HtmlEncoder>(new HtmlTestEncoder());
-        services.AddSingleton<IShortcodeService, ShortcodeService>();
+        services.AddSingleton(shortcodeService ?? new PassthroughShortcodeService());
 
         services.AddOptions<HtmlSanitizerOptions>();
         services.ConfigureHtmlSanitizer(sanitizer => sanitizer.AllowedAttributes.Add("class"));
@@ -79,6 +70,18 @@ public class HtmlDisplayServiceTests
         services.AddScoped<IHtmlDisplayService, HtmlDisplayService>();
 
         return services.BuildServiceProvider();
+    }
+
+    private sealed class UnsafeShortcodeService : IShortcodeService
+    {
+        public ValueTask<string> ProcessAsync(string input, Context context = null)
+            => ValueTask.FromResult(input.Replace("[unsafe]", "<script>alert('xss')</script>"));
+    }
+
+    private sealed class PassthroughShortcodeService : IShortcodeService
+    {
+        public ValueTask<string> ProcessAsync(string input, Context context = null)
+            => ValueTask.FromResult(input);
     }
 
     private sealed class Model : HtmlViewModelBase

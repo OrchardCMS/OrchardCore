@@ -34,7 +34,7 @@ public sealed class Migrations : DataMigration
             .WithDescription("Provides an HTML Body for your content item."));
 
         // Shortcut other migration steps on new content definition schemas.
-        return 6;
+        return 7;
     }
 
     // This code can be removed in a later version.
@@ -72,7 +72,7 @@ public sealed class Migrations : DataMigration
         {
             var contentItemVersions = await _session.Query<ContentItem, ContentItemIndex>(x => x.DocumentId > lastDocumentId).Take(10).ListAsync();
 
-            if (!contentItemVersions.Any())
+            if (contentItemVersions.Count == 0)
             {
                 // No more content item version to process
                 break;
@@ -129,24 +129,36 @@ public sealed class Migrations : DataMigration
         return 5; // Returning 5 instead of 4, because UpdateFrom5 is no longer needed, see below why.
     }
 
-    // Previously, Liquid rendering was enabled by not having Html sanitization enabled and UpdateFrom5Async disabled
-    // sanitization to ensure that HtmlBodyParts kept Liquid rendering enabled. Since Liquid rendering is now controlled
-    // by a separate setting, disabling sanitization is no longer necessary.
-
     public async Task<int> UpdateFrom5Async()
     {
-        // To keep the same behavior as before, RenderLiquid is initialized to the opposite of SanitizeHtml.
+        await WarnAboutLiquidTemplatesAsync();
+
+        return 7;
+    }
+
+    public async Task<int> UpdateFrom6Async()
+    {
+        await WarnAboutLiquidTemplatesAsync();
+
+        return 7;
+    }
+
+    private async Task WarnAboutLiquidTemplatesAsync()
+    {
         foreach (var contentType in await _contentDefinitionManager.LoadTypeDefinitionsAsync())
         {
-            if (contentType.Parts.Any(p => p.PartDefinition.Name == "HtmlBodyPart"))
+            foreach (var typePart in contentType.Parts.Where(
+                part => string.Equals(part.PartDefinition.Name, "HtmlBodyPart", StringComparison.Ordinal)))
             {
-                await _contentDefinitionManager.AlterTypeDefinitionAsync(contentType.Name, t => t.WithPart("HtmlBodyPart", part =>
+                if (typePart.Settings[nameof(HtmlBodyPartSettings)]?["RenderLiquid"]?.GetValue<bool>() is true)
                 {
-                    part.MergeSettings<HtmlBodyPartSettings>(s => s.RenderLiquid = !s.SanitizeHtml);
-                }));
+                    _logger.LogWarning(
+                        "Content type '{ContentType}' part '{Part}' has RenderLiquid enabled. Liquid syntax remains stored but is no longer executed by HtmlBodyPart. Migrate the authored source manually to LiquidPart.",
+                        contentType.Name,
+                        typePart.Name);
+                }
             }
         }
-
-        return 6;
     }
+
 }
