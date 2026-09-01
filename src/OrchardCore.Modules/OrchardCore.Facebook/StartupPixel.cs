@@ -47,7 +47,8 @@ public sealed class StartupPixel : StartupBase
     }
 }
 
-[RequireFeatures(FacebookConstants.Features.Pixel, "OrchardCore.Workflows")]
+[Feature(FacebookConstants.Features.Pixel)]
+[RequireFeatures("OrchardCore.Workflows")]
 public sealed class StartupPixelWorkflows : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
