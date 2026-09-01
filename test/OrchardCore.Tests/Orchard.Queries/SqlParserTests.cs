@@ -320,13 +320,21 @@ public class SqlParserTests
     [InlineData("delete from ContentItemIndex")]
     [InlineData("insert into ContentItemIndex (DocumentId) values ('1')")]
     [InlineData("update ContentItemIndex set DocumentId = '1'")]
+    [InlineData("truncate table ContentItemIndex")]
+    [InlineData("drop table ContentItemIndex")]
+    [InlineData("create table NewTable (Id integer)")]
+    [InlineData("alter table ContentItemIndex add NewColumn integer")]
+    [InlineData("create index IX_ContentItemIndex_DocumentId on ContentItemIndex (DocumentId)")]
+    [InlineData("create view PublishedContent as select * from ContentItemIndex")]
+    [InlineData("merge into ContentItemIndex as target using OtherIndex as source on target.DocumentId = source.DocumentId when matched then delete")]
+    [InlineData("select * from ContentItemIndex; delete from ContentItemIndex")]
     public void Parse_MutationStatement_Fails(string sql)
     {
         var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
 
         Assert.False(result);
         Assert.Null(rawQuery);
-        Assert.NotEmpty(messages);
+        Assert.Contains("Only SELECT statements are supported.", messages);
     }
 
     [Fact]
@@ -352,6 +360,14 @@ public class SqlParserTests
     [InlineData("delete from ContentItemIndex")]
     [InlineData("insert into ContentItemIndex (DocumentId) values ('1')")]
     [InlineData("update ContentItemIndex set DocumentId = '1'")]
+    [InlineData("truncate table ContentItemIndex")]
+    [InlineData("drop table ContentItemIndex")]
+    [InlineData("create table NewTable (Id integer)")]
+    [InlineData("alter table ContentItemIndex add NewColumn integer")]
+    [InlineData("create index IX_ContentItemIndex_DocumentId on ContentItemIndex (DocumentId)")]
+    [InlineData("create view PublishedContent as select * from ContentItemIndex")]
+    [InlineData("merge into ContentItemIndex as target using OtherIndex as source on target.DocumentId = source.DocumentId when matched then delete")]
+    [InlineData("select * from ContentItemIndex; delete from ContentItemIndex")]
     public void Validate_MutationStatement_Fails(string sql)
     {
         Assert.Contains("Only SELECT statements are supported.", SqlParser.Validate(sql));
