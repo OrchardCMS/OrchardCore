@@ -54,6 +54,8 @@ export interface IMediaPickerConfig {
   // Disables the thumbnails (grid) view in the picker's library browser.
   // Driven by the OrchardCore_Media:DisableThumbnails appsettings option.
   disableThumbnails?: boolean | string;
+  /** Connect to the MediaHub for real-time media updates while the picker is open. */
+  signalrEnabled?: boolean;
 }
 
 export function mountMediaAppAsPicker(
@@ -100,6 +102,7 @@ export function mountMediaAppAsPicker(
         allowMultipleSelection: pickerAllowsMultiple,
         maxUploadChunkSize: config.maxUploadChunkSize ?? 0,
         disableThumbnails: parseBoolean(config.disableThumbnails, false) ? "true" : "false",
+        signalrEnabled: config.signalrEnabled ? "true" : "false",
       }),
   });
 
@@ -142,5 +145,4 @@ export function mountMediaAppAsPicker(
     },
   };
 }
-
 

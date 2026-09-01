@@ -32,7 +32,7 @@ vi.mock("@media-gallery", () => ({
 vi.mock("../components/MediaFieldBasic.vue", () => ({
   default: {
     name: "MediaFieldBasic",
-    template: "<div class='stub-basic' :data-media-app-translations='config?.mediaAppTranslations' :data-disable-thumbnails='config?.disableThumbnails'></div>",
+    template: "<div class='stub-basic' :data-media-app-translations='config?.mediaAppTranslations' :data-disable-thumbnails='config?.disableThumbnails' :data-signalr-enabled='config?.signalrEnabled'></div>",
     props: ["config", "inputName"],
   },
 }));
@@ -268,6 +268,17 @@ describe("main.ts", () => {
       const el = createMountEl("basic");
       main.mountMediaField(el);
       expect(el.querySelector(".stub-basic")?.getAttribute("data-disable-thumbnails")).toBe("false");
+    });
+
+    it("parses data-signalr-enabled into config.signalrEnabled", () => {
+      const elOn = createMountEl("basic", { signalrEnabled: "true" });
+      main.mountMediaField(elOn);
+      expect(elOn.querySelector(".stub-basic")?.getAttribute("data-signalr-enabled")).toBe("true");
+
+      // Absent attribute must default to disabled.
+      const elOff = createMountEl("basic");
+      main.mountMediaField(elOff);
+      expect(elOff.querySelector(".stub-basic")?.getAttribute("data-signalr-enabled")).toBe("false");
     });
   });
 

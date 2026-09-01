@@ -46,7 +46,7 @@ public sealed class AdminController : Controller
         }
 
         var tusEnabled = HttpContext.RequestServices.IsMediaTusEnabled();
-        var signalrEnabled = HttpContext.RequestServices.GetService<IHubContext<MediaHub>>() is not null;
+        var signalrEnabled = HttpContext.RequestServices.IsMediaSignalREnabled();
         var shellSettings = HttpContext.RequestServices.GetRequiredService<ShellSettings>();
         var hostEnvironment = HttpContext.RequestServices.GetRequiredService<IHostEnvironment>();
         var mediaApiSettings = HttpContext.RequestServices.GetRequiredService<ISiteService>().GetSettings<MediaApiSettings>();

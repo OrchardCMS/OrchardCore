@@ -3,8 +3,12 @@
   embedded inside for browsing, uploading, and selecting media items.
 -->
 <template>
+  <!-- focus-trap must stay off: the embedded gallery's own dialogs (rename, move, copy…)
+       teleport to <body>, and an active trap on this modal would yank focus back out of
+       their inputs, making them impossible to type in. -->
   <VueFinalModal
     v-model="visible"
+    :focus-trap="false"
     class="mf-vfm tw:flex tw:items-center tw:justify-center"
     content-class="mf-picker-shell mf-picker-shell-lg"
     @opened="onOpened"
@@ -61,6 +65,8 @@ const props = defineProps<{
   fieldId?: string;
   allowedExtensions: string;
   allowMultiple?: boolean;
+  /** Enables real-time media updates (MediaHub) inside the embedded gallery. */
+  signalrEnabled?: boolean;
   /** JSON-serialized translations for the media-gallery */
   mediaAppTranslations: string;
   /** Base path (e.g., "/") */
@@ -154,6 +160,7 @@ async function onOpened() {
       allowedExtensions: props.allowedExtensions,
       allowMultiple: allowMultipleSelection.value,
       disableThumbnails: props.disableThumbnails ?? false,
+      signalrEnabled: props.signalrEnabled === true,
       onSelectionChange: (count: number) => {
         selectedCount.value = count;
       },
