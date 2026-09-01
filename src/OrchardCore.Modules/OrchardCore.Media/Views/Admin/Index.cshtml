@@ -25,6 +25,7 @@
         tus-endpoint-url="@Href("~/api/media/tus")"
         tus-file-info-url="@Href("~/api/media/TusFileInfo")"
         signalr-enabled="@(Model.SignalrEnabled ? "true" : "false")"
+        disable-thumbnails="@(Model.DisableThumbnails ? "true" : "false")"
 
         api-auth-scheme="@Model.ApiAuthenticationScheme"
         oidc-client-id="media_gallery"
