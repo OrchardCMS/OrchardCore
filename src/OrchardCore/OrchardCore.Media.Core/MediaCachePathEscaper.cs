@@ -16,6 +16,8 @@ namespace OrchardCore.Media.Core;
 public static class MediaCachePathEscaper
 {
     private const char EscapeCharacter = '%';
+    private const string CompactEscapePrefix = "%~";
+    private const int MaximumComponentLength = 255;
 
     // Characters that are invalid in NTFS/FAT file names (except '/', which is the path
     // delimiter), plus the escape character itself. Control characters are escaped too.
@@ -27,6 +29,7 @@ public static class MediaCachePathEscaper
         "CON", "PRN", "AUX", "NUL",
         "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
         "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9",
+        "COM¹", "COM²", "COM³", "LPT¹", "LPT²", "LPT³",
     ];
 
     /// <summary>
@@ -34,8 +37,17 @@ public static class MediaCachePathEscaper
     /// Returns the original instance when nothing needs escaping, which is the common case.
     /// </summary>
     public static string Escape(string path)
+        => Escape(path, preserveGlobPatterns: false);
+
+    /// <summary>
+    /// Escapes a file-provider glob pattern while retaining glob wildcards.
+    /// </summary>
+    public static string EscapeGlob(string pattern)
+        => Escape(pattern, preserveGlobPatterns: true);
+
+    private static string Escape(string path, bool preserveGlobPatterns)
     {
-        if (string.IsNullOrEmpty(path) || !NeedsEscaping(path))
+        if (string.IsNullOrEmpty(path) || !NeedsEscaping(path, preserveGlobPatterns))
         {
             return path;
         }
@@ -46,7 +58,7 @@ public static class MediaCachePathEscaper
         {
             var separatorIndex = path.IndexOf('/', start);
             var end = separatorIndex >= 0 ? separatorIndex : path.Length;
-            AppendEscapedSegment(builder, path.AsSpan(start, end - start));
+            AppendEscapedSegment(builder, path.AsSpan(start, end - start), preserveGlobPatterns);
             if (separatorIndex < 0)
             {
                 return builder.ToString();
@@ -58,7 +70,7 @@ public static class MediaCachePathEscaper
     }
 
     /// <summary>
-    /// Reverses <see cref="Escape"/>. A '%' that is not followed by two hex digits is kept as-is,
+    /// Reverses <see cref="Escape(string)"/>. A '%' that is not followed by two hex digits is kept as-is,
     /// so paths that were never escaped unescape to themselves.
     /// </summary>
     public static string Unescape(string path)
@@ -68,44 +80,45 @@ public static class MediaCachePathEscaper
             return path;
         }
 
-        var index = path.IndexOf(EscapeCharacter);
-        if (index < 0)
+        if (path.IndexOf(EscapeCharacter) < 0)
         {
             return path;
         }
 
         var builder = new StringBuilder(path.Length);
-        var lastCopied = 0;
-        while (index >= 0)
+        var start = 0;
+        while (true)
         {
-            builder.Append(path, lastCopied, index - lastCopied);
-            if (index + 2 < path.Length && Uri.IsHexDigit(path[index + 1]) && Uri.IsHexDigit(path[index + 2]))
+            var separatorIndex = path.IndexOf('/', start);
+            var end = separatorIndex >= 0 ? separatorIndex : path.Length;
+            var segment = path.AsSpan(start, end - start);
+            if (TryUnescapeCompactSegment(segment, out var unescaped))
             {
-                builder.Append((char)((Uri.FromHex(path[index + 1]) << 4) | Uri.FromHex(path[index + 2])));
-                lastCopied = index + 3;
+                builder.Append(unescaped);
             }
             else
             {
-                builder.Append(EscapeCharacter);
-                lastCopied = index + 1;
+                AppendUnescapedSegment(builder, segment);
             }
 
-            index = path.IndexOf(EscapeCharacter, lastCopied);
+            if (separatorIndex < 0)
+            {
+                return builder.ToString();
+            }
+
+            builder.Append('/');
+            start = separatorIndex + 1;
         }
-
-        builder.Append(path, lastCopied, path.Length - lastCopied);
-
-        return builder.ToString();
     }
 
-    private static bool NeedsEscaping(string path)
+    private static bool NeedsEscaping(string path, bool preserveGlobPatterns)
     {
         var start = 0;
         while (true)
         {
             var separatorIndex = path.IndexOf('/', start);
             var end = separatorIndex >= 0 ? separatorIndex : path.Length;
-            if (SegmentNeedsEscaping(path.AsSpan(start, end - start)))
+            if (SegmentNeedsEscaping(path.AsSpan(start, end - start), preserveGlobPatterns))
             {
                 return true;
             }
@@ -119,16 +132,19 @@ public static class MediaCachePathEscaper
         }
     }
 
-    private static bool SegmentNeedsEscaping(ReadOnlySpan<char> segment)
+    private static bool SegmentNeedsEscaping(ReadOnlySpan<char> segment, bool preserveGlobPatterns)
     {
         if (segment.IsEmpty)
         {
             return false;
         }
 
-        if (segment.IndexOfAny(s_escapedCharacters) >= 0)
+        foreach (var c in segment)
         {
-            return true;
+            if (s_escapedCharacters.Contains(c) && (!preserveGlobPatterns || (c != '*' && c != '?')))
+            {
+                return true;
+            }
         }
 
         foreach (var c in segment)
@@ -150,7 +166,7 @@ public static class MediaCachePathEscaper
         return IsReservedName(segment);
     }
 
-    private static void AppendEscapedSegment(StringBuilder builder, ReadOnlySpan<char> segment)
+    private static void AppendEscapedSegment(StringBuilder builder, ReadOnlySpan<char> segment, bool preserveGlobPatterns)
     {
         if (segment.IsEmpty)
         {
@@ -164,21 +180,103 @@ public static class MediaCachePathEscaper
             trailingStart--;
         }
 
+        var escaped = new StringBuilder(segment.Length + 8);
+
         // Escaping the first character is enough to void a reserved device name.
         var escapeFirst = IsReservedName(segment);
 
         for (var i = 0; i < segment.Length; i++)
         {
             var c = segment[i];
-            if (c < ' ' || s_escapedCharacters.Contains(c) || i >= trailingStart || (i == 0 && escapeFirst))
+            if (c < ' ' ||
+                (s_escapedCharacters.Contains(c) && (!preserveGlobPatterns || (c != '*' && c != '?'))) ||
+                i >= trailingStart ||
+                (i == 0 && escapeFirst))
             {
-                builder.Append(EscapeCharacter);
-                builder.Append(((int)c).ToString("X2", CultureInfo.InvariantCulture));
+                escaped.Append(EscapeCharacter);
+                escaped.Append(((int)c).ToString("X2", CultureInfo.InvariantCulture));
             }
             else
             {
-                builder.Append(c);
+                escaped.Append(c);
             }
+        }
+
+        if (escaped.Length > MaximumComponentLength)
+        {
+            builder.Append(CompactEscapePrefix);
+            builder.Append(segment.Length.ToString(CultureInfo.InvariantCulture));
+            builder.Append(EscapeCharacter);
+            builder.Append(ToBase64Url(Encoding.UTF8.GetBytes(segment.ToString())));
+        }
+        else
+        {
+            builder.Append(escaped);
+        }
+    }
+
+    private static void AppendUnescapedSegment(StringBuilder builder, ReadOnlySpan<char> segment)
+    {
+        var index = segment.IndexOf(EscapeCharacter);
+        var lastCopied = 0;
+        while (index >= 0)
+        {
+            builder.Append(segment[lastCopied..index]);
+            if (index + 2 < segment.Length && Uri.IsHexDigit(segment[index + 1]) && Uri.IsHexDigit(segment[index + 2]))
+            {
+                builder.Append((char)((Uri.FromHex(segment[index + 1]) << 4) | Uri.FromHex(segment[index + 2])));
+                lastCopied = index + 3;
+            }
+            else
+            {
+                builder.Append(EscapeCharacter);
+                lastCopied = index + 1;
+            }
+
+            index = segment[lastCopied..].IndexOf(EscapeCharacter);
+            if (index >= 0)
+            {
+                index += lastCopied;
+            }
+        }
+
+        builder.Append(segment[lastCopied..]);
+    }
+
+    private static string ToBase64Url(byte[] bytes)
+        => Convert.ToBase64String(bytes).TrimEnd('=').Replace('+', '-').Replace('/', '_');
+
+    private static bool TryUnescapeCompactSegment(ReadOnlySpan<char> segment, out string value)
+    {
+        try
+        {
+            value = null;
+            if (!segment.StartsWith(CompactEscapePrefix, StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            var separatorIndex = segment[CompactEscapePrefix.Length..].IndexOf(EscapeCharacter);
+            if (separatorIndex < 1 ||
+                !int.TryParse(segment.Slice(CompactEscapePrefix.Length, separatorIndex), CultureInfo.InvariantCulture, out var length))
+            {
+                return false;
+            }
+
+            var base64 = segment[(CompactEscapePrefix.Length + separatorIndex + 1)..].ToString().Replace('-', '+').Replace('_', '/');
+            var bytes = Convert.FromBase64String(base64.PadRight(base64.Length + ((4 - base64.Length % 4) % 4), '='));
+            value = new UTF8Encoding(false, true).GetString(bytes);
+            return value.Length == length;
+        }
+        catch (FormatException)
+        {
+            value = null;
+            return false;
+        }
+        catch (DecoderFallbackException)
+        {
+            value = null;
+            return false;
         }
     }
 

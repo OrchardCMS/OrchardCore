@@ -73,6 +73,17 @@ public class DefaultMediaFileStoreCacheFileProviderTests : IDisposable
     }
 
     [Fact]
+    public async Task GetDirectoryContents_NtfsInvalidPath_ReturnsTraversableLogicalName()
+    {
+        await SetCacheAsync("test:asdf/pic.png");
+
+        var directory = Assert.Single(_provider.GetDirectoryContents(string.Empty));
+
+        Assert.Equal("test:asdf", directory.Name);
+        Assert.True(_provider.GetFileInfo(directory.Name + "/pic.png").Exists);
+    }
+
+    [Fact]
     public async Task SetCache_ValidPath_KeepsVerbatimLayout()
     {
         await SetCacheAsync("folder/pic.png");

@@ -11,6 +11,42 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media;
 public class MediaEndpointHelpersTests
 {
     [Fact]
+    public async Task PreCacheRemoteMedia_StreamRetrievalFails_DoesNotPropagate()
+    {
+        var entry = Mock.Of<IFileStoreEntry>(item => item.Path == "file.txt");
+        var mediaFileStore = new Mock<IMediaFileStore>();
+        var cache = new Mock<IMediaFileStoreCache>();
+        mediaFileStore.Setup(store => store.GetFileStreamAsync(entry)).ThrowsAsync(new IOException());
+
+        await MediaEndpointHelpers.PreCacheRemoteMediaAsync(
+            entry,
+            mediaFileStore.Object,
+            cache.Object,
+            new DefaultHttpContext(),
+            NullLogger.Instance);
+    }
+
+    [Fact]
+    public async Task PreCacheRemoteMedia_CacheWritingFails_DisposesStreamAndDoesNotPropagate()
+    {
+        var entry = Mock.Of<IFileStoreEntry>(item => item.Path == "file.txt");
+        var stream = new MemoryStream();
+        var mediaFileStore = new Mock<IMediaFileStore>();
+        var cache = new Mock<IMediaFileStoreCache>();
+        mediaFileStore.Setup(store => store.GetFileStreamAsync(entry)).ReturnsAsync(stream);
+        cache.Setup(item => item.SetCacheAsync(stream, entry, It.IsAny<CancellationToken>())).ThrowsAsync(new IOException());
+
+        await MediaEndpointHelpers.PreCacheRemoteMediaAsync(
+            entry,
+            mediaFileStore.Object,
+            cache.Object,
+            new DefaultHttpContext(),
+            NullLogger.Instance);
+
+        Assert.Throws<ObjectDisposedException>(() => stream.ReadByte());
+    }
+
+    [Fact]
     public async Task ToDtoAsync_UnauthorizedDescendants_FiltersTree()
     {
         var user = new ClaimsPrincipal();

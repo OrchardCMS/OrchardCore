@@ -206,11 +206,11 @@ internal static class MediaEndpointHelpers
 
     public static async Task PreCacheRemoteMediaAsync(
         IFileStoreEntry mediaFile,
-        IServiceProvider serviceProvider,
         IMediaFileStore mediaFileStore,
-        HttpContext httpContext)
+        IMediaFileStoreCache mediaFileStoreCache,
+        HttpContext httpContext,
+        ILogger logger)
     {
-        var mediaFileStoreCache = serviceProvider.GetService<IMediaFileStoreCache>();
         if (mediaFileStoreCache == null)
         {
             return;
@@ -232,7 +232,6 @@ internal static class MediaEndpointHelpers
         }
         catch (Exception ex)
         {
-            var logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(typeof(MediaEndpointHelpers));
             logger.LogError(ex, "Error pre-caching remote media with path {Path}.", mediaFile.Path);
         }
     }

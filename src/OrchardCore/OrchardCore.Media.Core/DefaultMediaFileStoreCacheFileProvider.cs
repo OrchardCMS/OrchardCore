@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.Core;
@@ -45,7 +46,14 @@ public class DefaultMediaFileStoreCacheFileProvider : PhysicalFileProvider, IMed
 
     /// <inheritdoc cref="GetFileInfo"/>
     public new IDirectoryContents GetDirectoryContents(string subpath)
-        => base.GetDirectoryContents(MediaCachePathEscaper.Escape(subpath));
+    {
+        var contents = base.GetDirectoryContents(MediaCachePathEscaper.Escape(subpath));
+        return contents.Exists ? new UnescapedDirectoryContents(contents) : contents;
+    }
+
+    /// <inheritdoc cref="GetFileInfo"/>
+    public new IChangeToken Watch(string filter)
+        => base.Watch(MediaCachePathEscaper.EscapeGlob(filter));
 
     public Task<bool> IsCachedAsync(string path)
     {
@@ -181,10 +189,45 @@ public class DefaultMediaFileStoreCacheFileProvider : PhysicalFileProvider, IMed
                 _logger.LogError(ex, "Error deleting cache file {Path}", fileInfo.PhysicalPath);
                 return Task.FromResult(false);
             }
+
         }
         else
         {
             return Task.FromResult(false);
         }
+    }
+
+    private sealed class UnescapedDirectoryContents : IDirectoryContents
+    {
+        private readonly IDirectoryContents _contents;
+
+        public UnescapedDirectoryContents(IDirectoryContents contents) => _contents = contents;
+
+        public bool Exists => _contents.Exists;
+
+        public IEnumerator<IFileInfo> GetEnumerator()
+        {
+            foreach (var fileInfo in _contents)
+            {
+                yield return new UnescapedFileInfo(fileInfo);
+            }
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
+    private sealed class UnescapedFileInfo : IFileInfo
+    {
+        private readonly IFileInfo _fileInfo;
+
+        public UnescapedFileInfo(IFileInfo fileInfo) => _fileInfo = fileInfo;
+
+        public bool Exists => _fileInfo.Exists;
+        public bool IsDirectory => _fileInfo.IsDirectory;
+        public DateTimeOffset LastModified => _fileInfo.LastModified;
+        public long Length => _fileInfo.Length;
+        public string Name => MediaCachePathEscaper.Unescape(_fileInfo.Name);
+        public string PhysicalPath => _fileInfo.PhysicalPath;
+        public Stream CreateReadStream() => _fileInfo.CreateReadStream();
     }
 }

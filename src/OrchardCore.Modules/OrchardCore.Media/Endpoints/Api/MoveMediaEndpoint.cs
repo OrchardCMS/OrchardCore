@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Media.Endpoints.Api;
@@ -37,6 +38,7 @@ public static class MoveMediaEndpoint
         IMediaFileStore mediaFileStore,
         IOptions<MediaOptions> options,
         IServiceProvider serviceProvider,
+        ILogger<MediaApiEndpoints> logger,
         IStringLocalizer<MediaApiEndpoints> localizer,
         string oldPath,
         string newPath)
@@ -73,7 +75,12 @@ public static class MoveMediaEndpoint
         await mediaFileStore.MoveFileAsync(oldPath, newPath);
 
         var movedFile = await mediaFileStore.GetFileInfoAsync(newPath);
-        await MediaEndpointHelpers.PreCacheRemoteMediaAsync(movedFile, serviceProvider, mediaFileStore, httpContext);
+        await MediaEndpointHelpers.PreCacheRemoteMediaAsync(
+            movedFile,
+            mediaFileStore,
+            serviceProvider.GetService(typeof(IMediaFileStoreCache)) as IMediaFileStoreCache,
+            httpContext,
+            logger);
 
         return TypedResults.Ok();
     }

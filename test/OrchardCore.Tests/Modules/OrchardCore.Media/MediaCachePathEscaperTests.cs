@@ -27,6 +27,8 @@ public class MediaCachePathEscaperTests
     [InlineData("CON", "%43ON")]
     [InlineData("con.txt", "%63on.txt")]
     [InlineData("lpt1.config.json", "%6Cpt1.config.json")]
+    [InlineData("COM¹", "%43OM¹")]
+    [InlineData("lpt³.txt", "%6Cpt³.txt")]
     [InlineData("CONSOLE.txt", "CONSOLE.txt")]
     [InlineData("COM10.txt", "COM10.txt")]
     public void Escape_NtfsInvalidName_EscapesOffendingCharacters(string path, string expected)
@@ -42,6 +44,7 @@ public class MediaCachePathEscaperTests
     [InlineData("trailing./file.png")]
     [InlineData("dots.../x")]
     [InlineData("CON/aux.txt")]
+    [InlineData("COM¹/lpt³.txt")]
     [InlineData("images/photo.png")]
     public void Unescape_EscapedPath_RoundTrips(string path)
         => Assert.Equal(path, MediaCachePathEscaper.Unescape(MediaCachePathEscaper.Escape(path)));
@@ -51,7 +54,23 @@ public class MediaCachePathEscaperTests
     [InlineData("a%3a.png", "a:.png")] // Lowercase hex is accepted.
     [InlineData("%", "%")]
     [InlineData("%2", "%2")]
+    [InlineData("%~invalid", "%~invalid")]
     [InlineData("test%3Aasdf/pic.png", "test:asdf/pic.png")]
     public void Unescape_Input_ReturnsExpected(string path, string expected)
         => Assert.Equal(expected, MediaCachePathEscaper.Unescape(path));
+
+    [Fact]
+    public void Escape_ExpandedSegmentExceedsLimit_UsesBoundedRoundTrippableName()
+    {
+        var path = new string('%', 86);
+
+        var escaped = MediaCachePathEscaper.Escape(path);
+
+        Assert.True(escaped.Length <= 255);
+        Assert.Equal(path, MediaCachePathEscaper.Unescape(escaped));
+    }
+
+    [Fact]
+    public void EscapeGlob_InvalidCharactersAndWildcards_MapsOnlyInvalidCharacters()
+        => Assert.Equal("folder%25/*%3A?.png", MediaCachePathEscaper.EscapeGlob("folder%/*:?.png"));
 }
