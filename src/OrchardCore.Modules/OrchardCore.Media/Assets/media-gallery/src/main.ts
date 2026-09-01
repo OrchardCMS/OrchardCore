@@ -51,6 +51,8 @@ export interface IMediaPickerConfig {
   allowedExtensions?: string;
   allowMultiple?: boolean;
   maxUploadChunkSize?: number;
+  /** Connect to the MediaHub for real-time media updates while the picker is open. */
+  signalrEnabled?: boolean;
 }
 
 export function mountMediaAppAsPicker(
@@ -96,6 +98,7 @@ export function mountMediaAppAsPicker(
         allowedExtensions: config.allowedExtensions ?? "",
         allowMultipleSelection: pickerAllowsMultiple,
         maxUploadChunkSize: config.maxUploadChunkSize ?? 0,
+        signalrEnabled: config.signalrEnabled ? "true" : "false",
       }),
   });
 
