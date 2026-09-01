@@ -337,6 +337,20 @@ public class SqlParserTests
         Assert.Contains("Only SELECT statements are supported.", messages);
     }
 
+    [Theory]
+    [InlineData("with deleted as (delete from ContentItemIndex returning DocumentId) select * from deleted")]
+    [InlineData("select * from (delete from ContentItemIndex returning DocumentId) as deleted")]
+    [InlineData("select * from ContentItemIndex where DocumentId in (delete from ContentItemIndex returning DocumentId)")]
+    public void Parse_MutationInNestedQuery_Fails(string sql)
+    {
+        var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);
+
+        Assert.False(result);
+        Assert.Null(rawQuery);
+        Assert.NotEmpty(messages);
+        Assert.NotEmpty(SqlParser.Validate(sql));
+    }
+
     [Fact]
     public void Validate_InvalidSyntax_ReturnsSourceLocation()
     {

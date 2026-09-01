@@ -49,7 +49,7 @@ public class SqlParser
                 : [$"Parse error: {error.Message} at line {error.Line}, column {error.Column}"];
         }
 
-        return document!.Statements.Any(static statement => statement is not SqlQuery)
+        return ContainsNonQueryStatement(document!)
             ? ["Only SELECT statements are supported."]
             : [];
     }
@@ -72,7 +72,7 @@ public class SqlParser
             return false;
         }
 
-        if (document.Statements.Any(static statement => statement is not SqlQuery))
+        if (ContainsNonQueryStatement(document!))
         {
             query = null;
             messages = ["Only SELECT statements are supported."];
@@ -110,6 +110,9 @@ public class SqlParser
             return false;
         }
     }
+
+    private static bool ContainsNonQueryStatement(SqlNode node) =>
+        node.DescendantsAndSelf().OfType<SqlStatement>().Any(static statement => statement is not SqlQuery);
 
     private sealed class SqlNameCollector : SqlVisitor
     {
