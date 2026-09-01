@@ -24,10 +24,6 @@ vi.mock("@bloom/media/api/file-data-service", () => ({
     createFolder: vi.fn().mockResolvedValue({
       name: "Test 2", filePath: "/Test2", directoryPath: "/Test2", isDirectory: true,
     } as IFileLibraryItemDto),
-    listAllItems: vi.fn().mockResolvedValue([
-      { name: "Test", filePath: "/Test", directoryPath: "/Test", isDirectory: true },
-      { name: "Test 2", filePath: "/Test2", directoryPath: "/Test2", isDirectory: true },
-    ] as IFileLibraryItemDto[]),
     getFolders: vi.fn().mockResolvedValue([]),
     getMediaItems: vi.fn().mockResolvedValue([]),
   }); }),
