@@ -27,7 +27,7 @@ public class MetaConversionsApiServiceTests
             ConversionsApiAccessToken = Protect("token"),
         });
 
-        var result = await service.SendEventAsync(new MetaConversionEvent());
+        var result = await service.SendEventAsync(new MetaConversionEvent(), TestContext.Current.CancellationToken);
 
         Assert.False(result.Succeeded);
     }
@@ -40,7 +40,7 @@ public class MetaConversionsApiServiceTests
             ConversionsApiAccessToken = Protect("token"),
         });
 
-        var result = await service.SendEventAsync(new MetaConversionEvent { EventName = "Lead" });
+        var result = await service.SendEventAsync(new MetaConversionEvent { EventName = "Lead" }, TestContext.Current.CancellationToken);
 
         Assert.False(result.Succeeded);
     }
@@ -53,7 +53,7 @@ public class MetaConversionsApiServiceTests
             PixelId = "123",
         });
 
-        var result = await service.SendEventAsync(new MetaConversionEvent { EventName = "Lead" });
+        var result = await service.SendEventAsync(new MetaConversionEvent { EventName = "Lead" }, TestContext.Current.CancellationToken);
 
         Assert.False(result.Succeeded);
     }
@@ -76,7 +76,7 @@ public class MetaConversionsApiServiceTests
             EventSourceUrl = "https://example.com/checkout",
             ActionSource = MetaActionSource.Website,
             EventId = "order-42",
-        });
+        }, TestContext.Current.CancellationToken);
 
         Assert.True(result.Succeeded);
         Assert.NotNull(handler.LastRequest);
@@ -109,7 +109,7 @@ public class MetaConversionsApiServiceTests
             ConversionsApiAccessToken = Protect("token"),
         });
 
-        var result = await service.SendEventAsync(new MetaConversionEvent { EventName = "Lead" });
+        var result = await service.SendEventAsync(new MetaConversionEvent { EventName = "Lead" }, TestContext.Current.CancellationToken);
 
         Assert.True(result.Succeeded);
 
@@ -129,7 +129,7 @@ public class MetaConversionsApiServiceTests
             ConversionsApiAccessToken = Protect("token"),
         });
 
-        var result = await service.SendEventAsync(new MetaConversionEvent { EventName = "Lead" });
+        var result = await service.SendEventAsync(new MetaConversionEvent { EventName = "Lead" }, TestContext.Current.CancellationToken);
 
         Assert.False(result.Succeeded);
     }
