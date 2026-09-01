@@ -56,4 +56,6 @@ export interface IMediaFieldConfig {
   tusEndpointUrl?: string;
   /** TUS file info endpoint URL for fetching metadata after upload */
   tusFileInfoUrl?: string;
+  /** Disables the thumbnails (grid) view in the field gallery and the picker's library browser */
+  disableThumbnails?: boolean;
 }

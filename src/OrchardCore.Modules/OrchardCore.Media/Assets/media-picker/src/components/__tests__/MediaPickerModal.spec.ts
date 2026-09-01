@@ -247,6 +247,38 @@ describe("MediaPickerModal", () => {
     expect(callArgs.allowedExtensions).toBe(".jpg,.png");
   });
 
+  it("passes disableThumbnails to media picker mount config", async () => {
+    const wrapper = createWrapper({ disableThumbnails: true });
+    (wrapper.vm as any).open();
+    await nextTick();
+
+    setContainerRef(wrapper);
+
+    const modal = wrapper.findComponent({ name: "VueFinalModal" });
+    modal.vm.$emit("opened");
+    await flushPromises();
+
+    expect(mockMountMediaAppAsPicker).toHaveBeenCalled();
+    const callArgs = mockMountMediaAppAsPicker.mock.calls[0][1];
+    expect(callArgs.disableThumbnails).toBe(true);
+  });
+
+  it("defaults disableThumbnails to false in the mount config", async () => {
+    const wrapper = createWrapper();
+    (wrapper.vm as any).open();
+    await nextTick();
+
+    setContainerRef(wrapper);
+
+    const modal = wrapper.findComponent({ name: "VueFinalModal" });
+    modal.vm.$emit("opened");
+    await flushPromises();
+
+    expect(mockMountMediaAppAsPicker).toHaveBeenCalled();
+    const callArgs = mockMountMediaAppAsPicker.mock.calls[0][1];
+    expect(callArgs.disableThumbnails).toBe(false);
+  });
+
   it("onSelectionChange callback updates selectedCount", async () => {
     const wrapper = createWrapper();
     (wrapper.vm as any).open();

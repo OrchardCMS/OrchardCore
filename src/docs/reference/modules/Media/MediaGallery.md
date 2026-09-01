@@ -66,6 +66,8 @@ The grid (thumbnails) view can be disabled site-wide, e.g. for security or perfo
 
 When enabled, the gallery always uses the list view: the grid/list toggle and the thumbnail size setting are hidden, and any grid view preference persisted from a previous session is ignored. The default is `false`.
 
+The option applies to every media browsing surface: the Media Library admin page, the media picker modal opened from media fields and from the HTML/Markdown editors, and the media field gallery editor (whose own grid/list toggle is hidden and locked to the list view as well).
+
 ## Storage Information
 
 The storage info popover (accessible from the toolbar) displays information about the configured storage provider:
