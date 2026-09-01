@@ -22,10 +22,8 @@ public static class UrlHelperExtensions
         // The virtual path may already be an absolute URL, e.g. when media is served from a
         // CDN (IMediaFileStore.MapPathToPublicUrl() prefixes the CDN base URL). In that case,
         // prefixing it with the site's own base URL would produce an invalid, concatenated URL.
-        // Note: Uri.TryCreate(..., UriKind.Absolute, ...) also accepts rooted paths like
-        // "/media/image.jpg" as a valid "file://" URI, so the scheme must be checked explicitly.
-        if (Uri.TryCreate(virtualPath, UriKind.Absolute, out var uri) &&
-            (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
+        if (virtualPath.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+            virtualPath.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
         {
             return virtualPath;
         }

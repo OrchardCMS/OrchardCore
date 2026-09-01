@@ -50,10 +50,9 @@ public class UrlHelperExtensionsTests
     }
 
     [Fact]
-    public void ToAbsoluteUrlDoesNotMistakeARootedPathForAFileUri()
+    public void ToAbsoluteUrlDoesNotMistakeARootedPathForAnAbsoluteUrl()
     {
-        // Uri.TryCreate(path, UriKind.Absolute, ...) happily parses a rooted local path like
-        // "/media/image.jpg" as a valid "file://" URI. Guard against treating it as already
+        // Guard against treating an ordinary rooted local path (no scheme) as already
         // absolute, or local/relative media paths would never get the site base URL prefixed.
         var urlHelper = CreateUrlHelper("www.mydomain.com");
         urlHelper.Setup(x => x.Content("/media/image.jpg")).Returns("/media/image.jpg");
@@ -61,6 +60,19 @@ public class UrlHelperExtensionsTests
         var result = urlHelper.Object.ToAbsoluteUrl("/media/image.jpg");
 
         Assert.Equal("https://www.mydomain.com/media/image.jpg", result);
+    }
+
+    [Theory]
+    [InlineData("HTTP://cdn.mydomain.com/media/image.jpg")]
+    [InlineData("HTTPS://cdn.mydomain.com/media/image.jpg")]
+    [InlineData("Https://cdn.mydomain.com/media/image.jpg")]
+    public void ToAbsoluteUrlSchemeCheckIsCaseInsensitive(string absoluteUrl)
+    {
+        var urlHelper = CreateUrlHelper("www.mydomain.com");
+
+        var result = urlHelper.Object.ToAbsoluteUrl(absoluteUrl);
+
+        Assert.Equal(absoluteUrl, result);
     }
 
     private static Mock<IUrlHelper> CreateUrlHelper(string host)
