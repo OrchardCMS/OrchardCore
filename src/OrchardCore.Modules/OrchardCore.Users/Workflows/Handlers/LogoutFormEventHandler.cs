@@ -14,7 +14,7 @@ public sealed class LogoutFormEventHandler : LogoutFormEventBase
         _workflowManager = workflowManager;
     }
 
-    public override Task LoggedOutAsync(IUser user)
+    public override Task LoggedOutAsync(IUser user, CancellationToken cancellationToken = default)
     {
         if (user is not User u)
         {
