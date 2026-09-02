@@ -16,7 +16,6 @@ public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
         ".png",
         ".gif",
         ".ico",
-        ".svg",
         ".webp",
 
         // Documents
@@ -48,6 +47,12 @@ public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
         ".ogv", // (Ogg)
         ".3gp", // (3GPP)
         ".webm",
+    ];
+
+    private static readonly string[] s_defaultRestrictedFileExtensions = [
+        ".css",
+        ".js",
+        ".svg",
     ];
 
     private const int DefaultMaxBrowserCacheDays = 30;
@@ -87,6 +92,10 @@ public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
 
         options.AllowedFileExtensions = new HashSet<string>(
             section.GetSection("AllowedFileExtensions").Get<string[]>() ?? s_defaultAllowedFileExtensions,
+            StringComparer.OrdinalIgnoreCase);
+
+        options.RestrictedFileExtensions = new HashSet<string>(
+            section.GetSection("RestrictedFileExtensions").Get<string[]>() ?? s_defaultRestrictedFileExtensions,
             StringComparer.OrdinalIgnoreCase);
 
         options.MaxBrowserCacheDays = section.GetValue("MaxBrowserCacheDays", DefaultMaxBrowserCacheDays);

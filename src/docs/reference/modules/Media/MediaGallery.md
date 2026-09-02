@@ -73,7 +73,9 @@ The `MaxFileSize` setting is enforced at multiple layers:
 
 ### File Extension Validation
 
-The `AllowedFileExtensions` setting is enforced both client-side and server-side. Files with disallowed extensions are rejected before upload begins in the Media Gallery. The server also validates extensions on all upload endpoints.
+The `AllowedFileExtensions` setting is enforced both client-side and server-side. Extensions configured in `RestrictedFileExtensions` additionally require the `UploadRestrictedMedia` permission. The Media Gallery receives the effective list for the current user, while the server remains authoritative for regular, API, and TUS uploads.
+
+Field-level extension settings intersect with the effective global list and can only further restrict uploads. They cannot make a globally disallowed or permission-gated extension uploadable.
 
 ### Concurrent Uploads
 

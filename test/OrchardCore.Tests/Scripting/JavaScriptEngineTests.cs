@@ -1,5 +1,6 @@
 using System.Text.Json.Dynamic;
 using System.Text.Json.Nodes;
+using Jint.Runtime;
 using OrchardCore.Scripting;
 using OrchardCore.Scripting.JavaScript;
 
@@ -50,6 +51,50 @@ public class JavaScriptEngineTests
         Assert.Equal("""["a","b","c"]""", engine.Evaluate(scope, "return JSON.stringify(dynamicArray());"));
 
         Assert.Equal("42", engine.Evaluate(scope, "return String(dynamicValue());"));
+    }
+
+    [Theory]
+    // A plain call, and then the routes that reach a function body without one. The engine's older
+    // recursion lanes are probed at the call expression, so only the first of these was ever covered;
+    // the stack probe measures the stack itself and sees all four.
+    [InlineData("function f() { return 1 + f(); } f();")]
+    [InlineData("var o = { get boom() { return o.boom + 1; } }; o.boom;")]
+    [InlineData("function C() { new C(); } new C();")]
+    [InlineData("var o = { valueOf: function () { return o + 1; } }; o + 1;")]
+    public void Evaluate_UnboundedRecursion_RaisesAnErrorInsteadOfKillingTheProcess(string script)
+    {
+        var (engine, scope) = CreateScope();
+
+        // Without Constraints.StackOverflowGuard this does not throw: the process is killed by a native
+        // stack overflow, so there is nothing for a test to assert and the whole run disappears. That is
+        // exactly what makes it worth pinning - the failure mode is the absence of a failure.
+        var exception = Assert.Throws<JavaScriptException>(() => engine.Evaluate(scope, script));
+
+        Assert.Contains("Maximum call stack size exceeded", exception.Message);
+    }
+
+    [Fact]
+    public void Evaluate_AfterUnboundedRecursion_TheEngineIsStillUsable()
+    {
+        var (engine, scope) = CreateScope();
+
+        Assert.Throws<JavaScriptException>(() => engine.Evaluate(scope, "function f() { return 1 + f(); } f();"));
+
+        // The point of turning a process kill into an error value: the request that ran the script is the
+        // only thing that fails, and the scope it failed in still works.
+        Assert.Equal(2, Convert.ToInt32(engine.Evaluate(scope, "return 1 + 1;")));
+    }
+
+    [Fact]
+    public void Evaluate_UnboundedRecursion_IsCatchableByTheScriptItself()
+    {
+        var (engine, scope) = CreateScope();
+
+        // A RangeError, not a host-only exception, so a script that wants to recurse to its own limit can.
+        Assert.Equal("RangeError", engine.Evaluate(scope, """
+            function f() { return 1 + f(); }
+            try { f(); return 'no error'; } catch (e) { return e.constructor.name; }
+            """));
     }
 
     private static GlobalMethod Method(string name, Func<dynamic> value)

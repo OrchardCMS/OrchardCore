@@ -1,9 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -27,6 +25,9 @@ internal static class MediaEndpointHelpers
     private static readonly char[] s_extensionSeparator = [' ', ','];
 
     private static readonly HashSet<string> s_emptySet = [];
+
+    public static string GetFileName(IMediaFileStore mediaFileStore, string path)
+        => Path.GetFileName(mediaFileStore.NormalizePath(path));
 
     public static FileStoreEntryDto CreateFileResult(
         IFileStoreEntry mediaFile,
@@ -145,15 +146,20 @@ internal static class MediaEndpointHelpers
         IContentTypeProvider contentTypeProvider,
         IFileVersionProvider fileVersionProvider,
         MediaOptions mediaOptions,
+        bool canUploadRestrictedMedia,
         string path,
         string extensions)
     {
-        var allowedExtensions = GetRequestedExtensions(mediaOptions, extensions, false);
+        var filterByExtensions = !string.IsNullOrWhiteSpace(extensions);
+        var allowedExtensions = GetRequestedExtensions(
+            mediaOptions,
+            extensions,
+            canUploadRestrictedMedia);
         var files = new List<FileStoreEntryDto>();
 
         await foreach (var entry in mediaFileStore.GetFilesAsync(path))
         {
-            if (allowedExtensions.Count == 0 || allowedExtensions.Contains(Path.GetExtension(entry.Path)))
+            if (!filterByExtensions || allowedExtensions.Contains(Path.GetExtension(entry.Path)))
             {
                 files.Add(CreateFileResult(entry, httpContext, contentTypeProvider, fileVersionProvider, mediaFileStore));
             }
@@ -170,6 +176,7 @@ internal static class MediaEndpointHelpers
         IFileVersionProvider fileVersionProvider,
         string path,
         HashSet<string> allowedExtensions,
+        bool filterByExtensions,
         List<FileStoreEntryDto> allItems)
     {
         var subFolders = new List<IFileStoreEntry>();
@@ -187,7 +194,7 @@ internal static class MediaEndpointHelpers
                 allItems.Add(CreateFolderResult(entry));
                 subFolders.Add(entry);
             }
-            else if (allowedExtensions.Count == 0 || allowedExtensions.Contains(Path.GetExtension(entry.Path)))
+            else if (!filterByExtensions || allowedExtensions.Contains(Path.GetExtension(entry.Path)))
             {
                 allItems.Add(CreateFileResult(entry, httpContext, contentTypeProvider, fileVersionProvider, mediaFileStore));
             }
@@ -195,7 +202,7 @@ internal static class MediaEndpointHelpers
 
         foreach (var folder in subFolders)
         {
-            await CollectAllItemsRecursiveAsync(mediaFileStore, authorizationService, httpContext, contentTypeProvider, fileVersionProvider, folder.Path, allowedExtensions, allItems);
+            await CollectAllItemsRecursiveAsync(mediaFileStore, authorizationService, httpContext, contentTypeProvider, fileVersionProvider, folder.Path, allowedExtensions, filterByExtensions, allItems);
         }
     }
 
@@ -226,28 +233,26 @@ internal static class MediaEndpointHelpers
         }
     }
 
-    public static HashSet<string> GetRequestedExtensions(MediaOptions mediaOptions, string exts, bool fallback)
+    public static HashSet<string> GetRequestedExtensions(
+        MediaOptions mediaOptions,
+        string extensions,
+        bool canUploadRestrictedMedia)
     {
-        if (!string.IsNullOrWhiteSpace(exts))
+        if (!string.IsNullOrWhiteSpace(extensions))
         {
-            var extensions = exts.Split(s_extensionSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-
-            var requestedExtensions = mediaOptions.AllowedFileExtensions
-                .Intersect(extensions)
-                .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-            if (requestedExtensions.Count > 0)
-            {
-                return requestedExtensions;
-            }
-        }
-
-        if (fallback)
-        {
-            return mediaOptions.AllowedFileExtensions
+            return extensions
+                .Split(s_extensionSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Where(extension => mediaOptions.IsFileExtensionAllowed(extension, canUploadRestrictedMedia))
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
         }
 
         return s_emptySet;
     }
+
+    public static HashSet<string> GetRequestedExtensions(string extensions)
+        => string.IsNullOrWhiteSpace(extensions)
+            ? s_emptySet
+            : extensions
+                .Split(s_extensionSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
 }
