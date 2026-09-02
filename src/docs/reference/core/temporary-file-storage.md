@@ -24,7 +24,7 @@ The base location is controlled globally by the `OrchardCore:TempDirectory` conf
 }
 ```
 
-Files are laid out as `{Path}/{TenantName}/...`. The tenant sub-directory is added automatically; you never compose it yourself. When `Path` is not set, the store falls back to the operating system temporary directory, preserving the previous behavior.
+Files are laid out as `{Path}/{TenantName}/...`. The tenant sub-directory is added automatically; you never compose it yourself. On Unix-like operating systems, a newly created tenant directory uses owner-only permissions (`700`), matching `Directory.CreateTempSubdirectory()`. When `Path` is not set, the store falls back to the operating system temporary directory, preserving the previous behavior.
 
 This one setting applies to every temporary file consumer: media chunked uploads, TUS uploads, deployment and recipe imports/exports, and tenant recipe uploads.
 
@@ -73,9 +73,8 @@ If your feature writes temporary files, inject `ITempDirectoryProvider` instead 
 | Member | Use it for |
 | --- | --- |
 | `GetRootDirectory()` | The tenant-scoped root directory (created on demand). Use as the base for tools that need a directory, such as a `TemporaryFileBuilder`. |
-| `GetOrCreateSubdirectory(name)` | A named, reusable sub-directory (e.g. a per-feature bucket). Path traversal outside the root is rejected. |
 | `GetTempFileName(extension)` | A unique file path (not created) for writing a single temporary file. Optional extension, with or without a leading dot. |
-| `CreateTempSubdirectory()` | A newly created, unique sub-directory — for extracting an archive into, or exposing through a `PhysicalFileProvider`. |
+| `CreateTempSubdirectory(prefix)` | A newly created, unique sub-directory — for extracting an archive into, or exposing through a `PhysicalFileProvider`. An optional prefix can be prepended to its generated name. |
 
 ```csharp
 using OrchardCore.FileStorage;

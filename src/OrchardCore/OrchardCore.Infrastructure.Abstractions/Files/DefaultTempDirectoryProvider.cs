@@ -29,14 +29,14 @@ public sealed class DefaultTempDirectoryProvider : ITempDirectoryProvider
 
     public string GetRootDirectory()
     {
-        Directory.CreateDirectory(_rootPath);
+        CreateRootDirectory();
 
         return _rootPath;
     }
 
     public string CreateTempSubdirectory(string prefix = null)
     {
-        Directory.CreateDirectory(_rootPath);
+        CreateRootDirectory();
 
         string path;
 
@@ -53,7 +53,7 @@ public sealed class DefaultTempDirectoryProvider : ITempDirectoryProvider
 
     public string GetTempFileName(string extension = null)
     {
-        Directory.CreateDirectory(_rootPath);
+        CreateRootDirectory();
 
         var name = Path.GetRandomFileName();
 
@@ -63,5 +63,19 @@ public sealed class DefaultTempDirectoryProvider : ITempDirectoryProvider
         }
 
         return Path.Combine(_rootPath, name);
+    }
+
+    private void CreateRootDirectory()
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            Directory.CreateDirectory(_rootPath);
+        }
+        else
+        {
+            Directory.CreateDirectory(
+                _rootPath,
+                UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
+        }
     }
 }
