@@ -111,7 +111,6 @@ public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
         options.UseTokenizedQueryString = section.GetValue("UseTokenizedQueryString", DefaultUseTokenizedQueryString);
         options.MaxUploadChunkSize = section.GetValue(nameof(options.MaxUploadChunkSize), DefaultMaxUploadChunkSize);
         options.TemporaryFileLifetime = section.GetValue(nameof(options.TemporaryFileLifetime), s_defaultTemporaryFileLifeTime);
-        options.TusTempPath = section.GetValue(nameof(options.TusTempPath), Path.Combine(Path.GetTempPath(), "TusUploads"));
 
         var contentSecurityPolicy = section.GetValue("ContentSecurityPolicy", DefaultContentSecurityPolicy);
 

@@ -404,13 +404,22 @@ The following configuration values are used by default and can be customized:
     // The maximum chunk size when uploading files in bytes. If 0, no chunked upload is used. This is useful to work around request size limitations of a hosting environment.
     "MaxUploadChunkSize": 104857600,
     // The lifetime of temporary files created during upload. Defaults to 1 hour.
-    "TemporaryFileLifetime": "01:00:00",
-    // The path used to store temporary TUS upload data. Defaults to {TempPath}/TusUploads.
-    // Configure this to a shared filesystem path for multi-instance deployments.
-    "TusTempPath": "/mnt/shared/TusUploads"
+    "TemporaryFileLifetime": "01:00:00"
   }
 }
 ```
+
+### Temporary upload storage location
+
+When files are uploaded, in-progress data (chunked uploads, resumable TUS uploads) is written to a temporary
+directory before being committed to the media store. By default this lives under the operating system temporary
+directory (`Path.GetTempPath()`), whose available space is often limited. When many users upload large files at the
+same time this can exhaust the temporary volume.
+
+The base location is configurable through the framework-level `OrchardCore:TempDirectory` section, so you can point
+temporary storage at a larger or shared volume (such as a mounted Azure Files or AWS EFS/FSx share). This setting
+applies to all temporary file consumers, not just media. See [Temporary File Storage](../../core/temporary-file-storage.md)
+for configuration, mount instructions, and how to consume `ITempDirectoryProvider` from your own code.
 
 `AllowedFileExtensions` and `RestrictedFileExtensions` are case-insensitive and must not overlap. An overlap causes Media options validation to fail when the tenant starts. Extensions in neither list are rejected.
 
