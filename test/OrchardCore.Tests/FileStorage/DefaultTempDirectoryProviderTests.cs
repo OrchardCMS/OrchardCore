@@ -29,16 +29,18 @@ public sealed class DefaultTempDirectoryProviderTests : IDisposable
     [Fact]
     public void GetRootDirectory_OnUnix_CreatesWithOwnerOnlyPermissions()
     {
-        if (OperatingSystem.IsWindows())
+        if (!OperatingSystem.IsWindows())
         {
-            Assert.Skip("Unix file permissions are not supported on Windows.");
+            var root = CreateStore("Alpha").GetRootDirectory();
+
+            Assert.Equal(
+                UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute,
+                File.GetUnixFileMode(root));
+
+            return;
         }
 
-        var root = CreateStore("Alpha").GetRootDirectory();
-
-        Assert.Equal(
-            UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute,
-            File.GetUnixFileMode(root));
+        Assert.Skip("Unix file permissions are not supported on Windows.");
     }
 
     [Fact]
