@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using OrchardCore.Media.Services;
 
 namespace OrchardCore.Media.Endpoints.Api;
 
@@ -59,8 +60,11 @@ public static class MoveMediaEndpoint
         }
 
         var newExtension = Path.GetExtension(newPath);
+        var canUploadRestrictedMedia = await authorizationService.AuthorizeAsync(
+            httpContext.User,
+            MediaPermissions.UploadRestrictedMedia);
 
-        if (!options.Value.AllowedFileExtensions.Contains(newExtension, StringComparer.OrdinalIgnoreCase))
+        if (!options.Value.IsFileExtensionAllowed(newExtension, canUploadRestrictedMedia))
         {
             return httpContext.ApiValidationProblem(detail: localizer["This file extension is not allowed: {0}", newExtension]);
         }

@@ -256,6 +256,7 @@
     <Project Path="src/OrchardCore/OrchardCore.FileStorage.FileSystem/OrchardCore.FileStorage.FileSystem.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Flows.Core/OrchardCore.Flows.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.HealthChecks.Abstractions/OrchardCore.HealthChecks.Abstractions.csproj" />
+    <Project Path="src/OrchardCore/OrchardCore.Html.Core/OrchardCore.Html.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Indexing.Abstractions/OrchardCore.Indexing.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Indexing.Core/OrchardCore.Indexing.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Infrastructure.Abstractions/OrchardCore.Infrastructure.Abstractions.csproj" />

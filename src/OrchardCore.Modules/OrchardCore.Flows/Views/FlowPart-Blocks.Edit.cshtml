@@ -258,9 +258,7 @@
                     }
                 }
 
-                if (lastContainer[0] != this) {
-                    $(document).trigger('contentpreview:render');
-                }
+                $(document).trigger('contentpreview:render');
 
                 // Clear the global variables
                 widgetDragItem = null;

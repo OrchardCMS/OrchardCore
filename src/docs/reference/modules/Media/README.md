@@ -345,7 +345,7 @@ The following configuration values are used by default and can be customized:
     "AssetsPath": "Media",
     // Whether to use a token in the query string to prevent disc filling.
     "UseTokenizedQueryString": true,
-    // The list of allowed file extensions
+    // The list of file extensions that require the standard media upload permissions.
     "AllowedFileExtensions": [
       // Images
       ".jpg",
@@ -353,7 +353,6 @@ The following configuration values are used by default and can be customized:
       ".png",
       ".gif",
       ".ico",
-      ".svg",
       // Documents
       ".pdf",
       // Portable Document Format; Adobe Acrobat
@@ -394,18 +393,44 @@ The following configuration values are used by default and can be customized:
       // 3GPP
       ".webm"
     ],
+    // The list of file extensions that also require the UploadRestrictedMedia permission.
+    "RestrictedFileExtensions": [
+      ".css",
+      ".js",
+      ".svg"
+    ],
     // The Content Security Policy to apply to assets served from the media library.
     "ContentSecurityPolicy": "default-src 'self'; style-src 'unsafe-inline'",
     // The maximum chunk size when uploading files in bytes. If 0, no chunked upload is used. This is useful to work around request size limitations of a hosting environment.
     "MaxUploadChunkSize": 104857600,
     // The lifetime of temporary files created during upload. Defaults to 1 hour.
-    "TemporaryFileLifetime": "01:00:00",
-    // The path used to store temporary TUS upload data. Defaults to {TempPath}/TusUploads.
-    // Configure this to a shared filesystem path for multi-instance deployments.
-    "TusTempPath": "/mnt/shared/TusUploads"
+    "TemporaryFileLifetime": "01:00:00"
   }
 }
 ```
+
+### Temporary upload storage location
+
+When files are uploaded, in-progress data (chunked uploads, resumable TUS uploads) is written to a temporary
+directory before being committed to the media store. By default this lives under the operating system temporary
+directory (`Path.GetTempPath()`), whose available space is often limited. When many users upload large files at the
+same time this can exhaust the temporary volume.
+
+The base location is configurable through the framework-level `OrchardCore:TempDirectory` section, so you can point
+temporary storage at a larger or shared volume (such as a mounted Azure Files or AWS EFS/FSx share). This setting
+applies to all temporary file consumers, not just media. See [Temporary File Storage](../../core/temporary-file-storage.md)
+for configuration, mount instructions, and how to consume `ITempDirectoryProvider` from your own code.
+
+`AllowedFileExtensions` and `RestrictedFileExtensions` are case-insensitive and must not overlap. An overlap causes Media options validation to fail when the tenant starts. Extensions in neither list are rejected.
+
+Configuration arrays replace the defaults rather than extending them. When setting either extension array, include every extension that should remain available in that category.
+
+Users need the existing media upload and folder permissions for all uploads. They additionally need `UploadRestrictedMedia` for extensions in `RestrictedFileExtensions`. The Media Gallery publishes the effective extension list for the current user, and the server enforces the same policy for regular uploads, API copy/rename operations, remote publishing, and TUS uploads, including completion.
+
+!!! warning
+    Permission-gating risky or active file types is defense in depth, not file sanitization. Validate file contents separately, use a restrictive content security policy, and configure the web server and storage provider appropriately for the file types you accept.
+
+Recipe media imports are trusted system operations and do not use an ambient HTTP user. They may import extensions from either configured list, but extensions absent from both lists are rejected.
 
 To configure the `StaticFileOptions` in more detail, including event handlers, for the Media Library `StaticFileMiddleware` apply:
 
@@ -582,6 +607,7 @@ The available media permissions are:
 | `ManageOwnMediaContent` | Manage Own Media | Implied by `ManageOthersMediaContent`. Lets a user manage their own media. |
 | `ManageAttachedMediaFieldsFolder` | Manage Attached Media Fields Folder | Implied by `ManageMediaFolder`. Used for files stored under `mediafields/`. |
 | `ManageMediaContent` | Manage Media | Minimum permission for opening the Media Library. Implied by `ManageOwnMediaContent` and `ManageAttachedMediaFieldsFolder`. |
+| `UploadRestrictedMedia` | Upload media file extensions requiring additional permission | Security-sensitive permission required in addition to the standard media upload and folder permissions for extensions configured in `RestrictedFileExtensions`. Granted to Editors and Administrators by default. |
 | `ManageMediaProfiles` | Manage Media Profiles | Controls media profile management. |
 | `ViewMediaOptions` | View Media Options | Controls visibility of media options. |
 | `ManageAssetCache` | Manage Asset Cache Folder | Controls the media asset cache folder. |

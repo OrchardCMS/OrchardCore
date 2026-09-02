@@ -3,6 +3,7 @@
 @inject IOptions<MediaOptions> MediaOptions
 @inject IDataLocalizer D
 @inject IHostEnvironment HostEnvironment
+@inject Microsoft.AspNetCore.Authorization.IAuthorizationService AuthorizationService
 
 @{
     var tusEnabled = Context.RequestServices.IsMediaTusEnabled();
@@ -13,6 +14,19 @@
     var mediaAppLocalizations = Orchard.GetJSLocalizations("media-gallery");
     var translationsJson = System.Text.Json.JsonSerializer.Serialize(jsLocalizations);
     var mediaAppTranslationsJson = System.Text.Json.JsonSerializer.Serialize(mediaAppLocalizations);
+    var canUploadRestrictedMedia = await AuthorizationService.AuthorizeAsync(User, MediaPermissions.UploadRestrictedMedia);
+    var allowedExtensionsAttribute = Model.AllowedExtensions.Length > 0
+        ? string.Join(',', Model.AllowedExtensions.Where(extension => MediaOptions.Value.IsFileExtensionAllowed(extension, canUploadRestrictedMedia)))
+        : string.Join(',', MediaOptions.Value.AllowedFileExtensions);
+    if (Model.AllowedExtensions.Length == 0 && canUploadRestrictedMedia && MediaOptions.Value.RestrictedFileExtensions.Count > 0)
+    {
+        allowedExtensionsAttribute += (allowedExtensionsAttribute.Length > 0 ? "," : string.Empty)
+            + string.Join(',', MediaOptions.Value.RestrictedFileExtensions);
+    }
+    if (allowedExtensionsAttribute.Length == 0)
+    {
+        allowedExtensionsAttribute = ".__none__";
+    }
     string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
 }
 
@@ -35,7 +49,7 @@
              data-multiple="@(settings.Multiple ? "true" : "false")"
              data-allow-media-text="@(settings.AllowMediaText ? "true" : "false")"
              data-allow-anchors="@(settings.AllowAnchors ? "true" : "false")"
-             data-allowed-extensions="@string.Join(',', Model.AllowedExtensions)"
+             data-allowed-extensions="@allowedExtensionsAttribute"
              data-media-item-url="@Url.Content("~/api/media/GetMediaItem")"
              data-media-items-url="@Url.Content("~/api/media/GetMediaFieldItems")"
              data-upload-action="@Url.Content("~/api/media/Upload")"

@@ -2,7 +2,7 @@
   "servers": {
     "orchardcore": {
       "type": "http",
-      "url": "https://ai.orchardcore.net"
+      "url": "https://ai.orchardcore.net/mcp"
     }
   }
 }
