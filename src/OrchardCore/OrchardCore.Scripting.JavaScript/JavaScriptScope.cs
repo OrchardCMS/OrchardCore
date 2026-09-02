@@ -1,18 +1,11 @@
-using System.Runtime.CompilerServices;
 using Jint;
 
 namespace OrchardCore.Scripting.JavaScript;
 
 public class JavaScriptScope : IScriptingScope
 {
-    // A lazily registered global is only materialized when a script reads it, which happens long after
-    // the engine was built. The delegate it wraps is produced by a factory that takes the service
-    // provider of the evaluation it belongs to, so the engine has to be able to find its scope back.
-    // The table holds the engine weakly, so an entry disappears together with the engine that keys it.
-    private static readonly ConditionalWeakTable<Engine, IServiceProvider> _engineServiceProviders = new();
-
     public JavaScriptScope(Engine engine, IServiceProvider serviceProvider, IEnumerable<GlobalMethod> methods)
-        : this(engine, serviceProvider, methods, lazyGlobals: null)
+        : this(engine, serviceProvider, methods, lazyGlobals: null, ownsEngine: false)
     {
     }
 
@@ -20,12 +13,27 @@ public class JavaScriptScope : IScriptingScope
         Engine engine,
         IServiceProvider serviceProvider,
         IEnumerable<GlobalMethod> methods,
-        IReadOnlyDictionary<string, JavaScriptEngine.LazyGlobalMethod> lazyGlobals)
+        IReadOnlyDictionary<string, JavaScriptEngine.LazyGlobalMethod> lazyGlobals,
+        bool ownsEngine)
     {
         Engine = engine;
         ServiceProvider = serviceProvider;
 
-        _engineServiceProviders.AddOrUpdate(engine, serviceProvider);
+        // A lazily registered global is only materialized when a script reads it, which happens long after
+        // the engine was built. The delegate it wraps is produced by a factory that takes the service
+        // provider of the evaluation it belongs to, so the engine has to be able to find its scope back.
+        // Jint reserves [[HostDefined]] on an engine for exactly this, so the engine carries the services
+        // of the evaluation it is serving.
+        //
+        // An engine this scope was not given by JavaScriptEngine belongs to whoever built it, and that
+        // slot is theirs. Claiming it while it is empty keeps a caller who wraps an engine of their own
+        // working as before; refusing to claim it while it is in use means a registered global on such an
+        // engine fails with the exception in JavaScriptEngine.CreateGlobal, rather than the caller's own
+        // state being destroyed to make one work.
+        if (ownsEngine || engine.Advanced.HostDefined is null)
+        {
+            engine.Advanced.HostDefined = serviceProvider;
+        }
 
         foreach (var method in methods)
         {
@@ -56,10 +64,4 @@ public class JavaScriptScope : IScriptingScope
     public Engine Engine { get; }
 
     public IServiceProvider ServiceProvider { get; }
-
-    /// <summary>
-    /// Gets the services of the scope that owns the given engine.
-    /// </summary>
-    internal static bool TryGetServiceProvider(Engine engine, out IServiceProvider serviceProvider)
-        => _engineServiceProviders.TryGetValue(engine, out serviceProvider);
 }
