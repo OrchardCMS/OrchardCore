@@ -108,6 +108,13 @@ public sealed class BackgroundTaskController : Controller
             new SelectListItem(S["Disabled"], "disabled")
         ];
 
+        options.BulkActions =
+        [
+            new SelectListItem(S["Enable"], nameof(BackgroundTaskBulkAction.Enable)),
+            new SelectListItem(S["Disable"], nameof(BackgroundTaskBulkAction.Disable)),
+            new SelectListItem(S["Toggle"], nameof(BackgroundTaskBulkAction.Toggle)),
+        ];
+
         var taskItems = items.ToList();
         var routeData = new RouteData();
 
@@ -142,6 +149,64 @@ public sealed class BackgroundTaskController : Controller
             { _optionsSearch, model.Options.Search },
             { _optionsStatus, model.Options.Status },
         });
+
+    [HttpPost, ActionName(nameof(Index))]
+    [FormValueRequired("submit.BulkAction")]
+    public async Task<IActionResult> IndexBulkActionPOST(AdminIndexOptions options, IEnumerable<string> taskNames)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
+        {
+            return Forbid();
+        }
+
+        if (taskNames == null || !taskNames.Any())
+        {
+            await _notifier.WarningAsync(H["Please select one or more tasks."]);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        var document = await _backgroundTaskManager.LoadDocumentAsync();
+
+        foreach (var name in taskNames)
+        {
+            var task = _backgroundTasks.GetTaskByName(name);
+            if (task == null)
+            {
+                continue;
+            }
+
+            if (!document.Settings.TryGetValue(name, out var settings))
+            {
+                settings = task.GetDefaultSettings();
+            }
+
+            settings.Enable = options.BulkAction switch
+            {
+                BackgroundTaskBulkAction.Enable => true,
+                BackgroundTaskBulkAction.Disable => false,
+                BackgroundTaskBulkAction.Toggle => !settings.Enable,
+                _ => settings.Enable,
+            };
+
+            await _backgroundTaskManager.UpdateAsync(name, settings);
+        }
+
+        switch (options.BulkAction)
+        {
+            case BackgroundTaskBulkAction.Enable:
+                await _notifier.SuccessAsync(H["The tasks have been enabled."]);
+                break;
+            case BackgroundTaskBulkAction.Disable:
+                await _notifier.SuccessAsync(H["The tasks have been disabled."]);
+                break;
+            case BackgroundTaskBulkAction.Toggle:
+                await _notifier.SuccessAsync(H["The tasks have been toggled."]);
+                break;
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
 
     public async Task<IActionResult> Edit(string name)
     {
