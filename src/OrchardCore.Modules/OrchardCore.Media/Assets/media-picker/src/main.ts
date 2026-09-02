@@ -55,6 +55,7 @@ function readConfig(el: HTMLElement): IMediaFieldConfig {
     tusEnabled: dataset.tusEnabled === "true",
     tusEndpointUrl: dataset.tusEndpointUrl || "",
     tusFileInfoUrl: dataset.tusFileInfoUrl || "",
+    signalrEnabled: dataset.signalrEnabled === "true",
   };
 }
 
