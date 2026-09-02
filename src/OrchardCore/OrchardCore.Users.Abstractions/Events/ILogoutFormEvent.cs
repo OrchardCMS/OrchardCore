@@ -9,11 +9,11 @@ public interface ILogoutFormEvent
     /// Occurs when the user is logging out, before the user is signed out.
     /// </summary>
     /// <param name="user">The <see cref="IUser"/> that is being signed out.</param>
-    Task LoggingOutAsync(IUser user);
+    Task LoggingOutAsync(IUser user, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Occurs when the user has logged out, after the user is signed out.
     /// </summary>
     /// <param name="user">The <see cref="IUser"/> that was signed out.</param>
-    Task LoggedOutAsync(IUser user);
+    Task LoggedOutAsync(IUser user, CancellationToken cancellationToken = default);
 }
