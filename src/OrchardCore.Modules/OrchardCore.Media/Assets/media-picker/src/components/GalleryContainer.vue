@@ -4,10 +4,10 @@
 <template>
   <div>
     <!-- Toolbar (only for multiple mode) -->
-    <div v-if="allowMultiple" class="tw:flex tw:items-center tw:gap-2 tw:mb-2 tw:flex-wrap">
+    <div v-if="allowMultiple" class="mf-toolbar">
       <button
         type="button"
-        class="mf-btn-primary tw:inline-flex tw:items-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:leading-normal tw:border tw:border-[#7bc143] tw:rounded tw:bg-[#7bc143] tw:text-white tw:cursor-pointer hover:tw:bg-[#6aab36] hover:tw:border-[#6aab36]"
+        class="mf-btn-primary"
         @click="$emit('showPicker')"
       >
         <i class="fa-solid fa-plus" aria-hidden="true"></i>
@@ -15,11 +15,11 @@
       </button>
 
       <!-- View toggles -->
-      <div class="tw:flex tw:items-center tw:gap-1 tw:ml-auto">
+      <div class="tw:flex tw:items-center tw:gap-1 mf-toolbar-spacer">
         <button
           type="button"
-          class="tw:px-2 tw:py-1.5 tw:border-none tw:bg-transparent tw:cursor-pointer tw:text-[var(--bs-body-color)] hover:tw:text-[#7bc143] dark:tw:text-[#dee2e6]"
-          :class="{ 'tw:text-[#7bc143]!': !gridView }"
+          class="mf-btn-icon"
+          :class="{ 'tw:text-[var(--oc-media-primary)]!': !gridView }"
           title="List view"
           @click="gridView = false"
         >
@@ -27,8 +27,8 @@
         </button>
         <button
           type="button"
-          class="tw:px-2 tw:py-1.5 tw:border-none tw:bg-transparent tw:cursor-pointer tw:text-[var(--bs-body-color)] hover:tw:text-[#7bc143] dark:tw:text-[#dee2e6]"
-          :class="{ 'tw:text-[#7bc143]!': gridView }"
+          class="mf-btn-icon"
+          :class="{ 'tw:text-[var(--oc-media-primary)]!': gridView }"
           title="Grid view"
           @click="gridView = true"
         >
@@ -37,8 +37,8 @@
         <button
           v-show="gridView"
           type="button"
-          class="tw:px-2 tw:py-1.5 tw:border-none tw:bg-transparent tw:cursor-pointer tw:text-[var(--bs-body-color)] hover:tw:text-[#7bc143] dark:tw:text-[#dee2e6]"
-          :class="{ 'tw:text-[#7bc143]!': size === 'sm' }"
+          class="mf-btn-icon"
+          :class="{ 'tw:text-[var(--oc-media-primary)]!': size === 'sm' }"
           title="Small thumbnails"
           @click="size = 'sm'"
         >
@@ -47,8 +47,8 @@
         <button
           v-show="gridView"
           type="button"
-          class="tw:px-2 tw:py-1.5 tw:border-none tw:bg-transparent tw:cursor-pointer tw:text-[var(--bs-body-color)] hover:tw:text-[#7bc143] dark:tw:text-[#dee2e6]"
-          :class="{ 'tw:text-[#7bc143]!': size === 'lg' }"
+          class="mf-btn-icon"
+          :class="{ 'tw:text-[var(--oc-media-primary)]!': size === 'lg' }"
           title="Large thumbnails"
           @click="size = 'lg'"
         >
@@ -58,7 +58,7 @@
     </div>
 
     <!-- List view -->
-    <ol v-if="!gridView" class="mf-gallery-list tw:list-none tw:p-0 tw:m-0 tw:border tw:border-[var(--bs-border-color)] tw:rounded tw:overflow-hidden dark:tw:border-[#495057]">
+    <ol v-if="!gridView" class="mf-gallery-list tw:list-none tw:p-0 tw:m-0 tw:border tw:border-[var(--oc-media-border-color)] tw:rounded tw:overflow-hidden">
       <GalleryListItem
         v-for="media in uniqueItems"
         :key="media.vuekey ?? media.name"
@@ -75,7 +75,7 @@
       />
       <li
         v-if="uniqueItems.length === 0"
-        class="mf-gallery-list-empty tw:p-4 tw:text-center tw:cursor-pointer tw:text-[var(--bs-secondary-color)] hover:tw:bg-[var(--bs-tertiary-bg)] hover:tw:text-[#7bc143]"
+        class="mf-gallery-list-empty mf-empty-card tw:p-4 tw:text-center tw:cursor-pointer hover:tw:text-[var(--oc-media-primary)]"
         @click="$emit('showPicker')"
       >
         <i class="fa-solid fa-plus tw:mr-1" aria-hidden="true"></i>
@@ -106,7 +106,7 @@
         :class="['mf-gallery-add-card', size === 'sm' ? 'tw:w-[120px]' : 'tw:w-[200px]']"
         @click="$emit('showPicker')"
       >
-        <div class="tw:border tw:border-dashed tw:border-[var(--bs-border-color)] tw:rounded tw:overflow-hidden tw:flex tw:flex-col tw:h-full tw:cursor-pointer hover:tw:border-[#7bc143] hover:tw:bg-[rgba(123,193,67,0.05)]">
+        <div class="mf-empty-card tw:border-dashed tw:overflow-hidden tw:flex tw:flex-col tw:h-full tw:cursor-pointer hover:tw:border-[var(--oc-media-primary)] hover:tw:bg-[rgba(var(--oc-media-primary-rgb),0.05)]">
           <div class="tw:aspect-square tw:flex tw:items-center tw:justify-center tw:overflow-hidden tw:bg-[var(--bs-tertiary-bg)]">
             <div class="tw:flex tw:flex-col tw:items-center tw:justify-center tw:w-full tw:h-full tw:p-2 tw:text-[var(--bs-secondary-color)]">
               <i class="fa-solid fa-plus fa-2x" aria-hidden="true"></i>

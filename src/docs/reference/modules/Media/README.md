@@ -345,7 +345,7 @@ The following configuration values are used by default and can be customized:
     "AssetsPath": "Media",
     // Whether to use a token in the query string to prevent disc filling.
     "UseTokenizedQueryString": true,
-    // The list of allowed file extensions
+    // The list of file extensions that require the standard media upload permissions.
     "AllowedFileExtensions": [
       // Images
       ".jpg",
@@ -353,7 +353,6 @@ The following configuration values are used by default and can be customized:
       ".png",
       ".gif",
       ".ico",
-      ".svg",
       // Documents
       ".pdf",
       // Portable Document Format; Adobe Acrobat
@@ -394,6 +393,12 @@ The following configuration values are used by default and can be customized:
       // 3GPP
       ".webm"
     ],
+    // The list of file extensions that also require the UploadRestrictedMedia permission.
+    "RestrictedFileExtensions": [
+      ".css",
+      ".js",
+      ".svg"
+    ],
     // The Content Security Policy to apply to assets served from the media library.
     "ContentSecurityPolicy": "default-src 'self'; style-src 'unsafe-inline'",
     // The maximum chunk size when uploading files in bytes. If 0, no chunked upload is used. This is useful to work around request size limitations of a hosting environment.
@@ -406,6 +411,17 @@ The following configuration values are used by default and can be customized:
   }
 }
 ```
+
+`AllowedFileExtensions` and `RestrictedFileExtensions` are case-insensitive and must not overlap. An overlap causes Media options validation to fail when the tenant starts. Extensions in neither list are rejected.
+
+Configuration arrays replace the defaults rather than extending them. When setting either extension array, include every extension that should remain available in that category.
+
+Users need the existing media upload and folder permissions for all uploads. They additionally need `UploadRestrictedMedia` for extensions in `RestrictedFileExtensions`. The Media Gallery publishes the effective extension list for the current user, and the server enforces the same policy for regular uploads, API copy/rename operations, remote publishing, and TUS uploads, including completion.
+
+!!! warning
+    Permission-gating risky or active file types is defense in depth, not file sanitization. Validate file contents separately, use a restrictive content security policy, and configure the web server and storage provider appropriately for the file types you accept.
+
+Recipe media imports are trusted system operations and do not use an ambient HTTP user. They may import extensions from either configured list, but extensions absent from both lists are rejected.
 
 To configure the `StaticFileOptions` in more detail, including event handlers, for the Media Library `StaticFileMiddleware` apply:
 
@@ -582,6 +598,7 @@ The available media permissions are:
 | `ManageOwnMediaContent` | Manage Own Media | Implied by `ManageOthersMediaContent`. Lets a user manage their own media. |
 | `ManageAttachedMediaFieldsFolder` | Manage Attached Media Fields Folder | Implied by `ManageMediaFolder`. Used for files stored under `mediafields/`. |
 | `ManageMediaContent` | Manage Media | Minimum permission for opening the Media Library. Implied by `ManageOwnMediaContent` and `ManageAttachedMediaFieldsFolder`. |
+| `UploadRestrictedMedia` | Upload media file extensions requiring additional permission | Security-sensitive permission required in addition to the standard media upload and folder permissions for extensions configured in `RestrictedFileExtensions`. Granted to Editors and Administrators by default. |
 | `ManageMediaProfiles` | Manage Media Profiles | Controls media profile management. |
 | `ViewMediaOptions` | View Media Options | Controls visibility of media options. |
 | `ManageAssetCache` | Manage Asset Cache Folder | Controls the media asset cache folder. |
@@ -598,17 +615,26 @@ The `ViewMediaContent`, `ViewRootMediaContent`, `ViewOthersMediaContent`, and `V
 
 The Secure Media feature enhances security and control over media files within the Media module.
 
-When enabled, administrators can add finer-grained view permissions for the root media folder and each first-level folder within the media root. This allows access to be restricted by folder even inside the Media Library, ensuring that only authorized users can view or manage media files in specific locations.
+!!! warning
+    When you enable **Secure Media** for the first time, access changes immediately.
 
-New permissions to allow users to view their own media files, view media files uploaded by others, or both are created too. These are additional permissions on top of `ManageMediaContent`, not a replacement for it. You can manage them among the other permissions with the [Roles module](../Roles/README.md).
+    - Users without newly assigned view permissions lose access to media files.
+    - By default, only **Administrators** can view all media.
+    - The **Authenticated** role gets `ViewOwnMediaContent` by default, which allows access only to the user's own media.
+
+    After enabling the feature, review and update role permissions in the [Roles module](../Roles/README.md).
+
+When enabled, administrators can assign finer-grained view permissions for the root media folder and each first-level folder within the media root. This allows access to be restricted by folder even inside the Media Library, ensuring that only authorized users can view media files in specific locations.
+
+Additional view permissions are available to control whether users can view their own media files, media files uploaded by others, or both. These are additional permissions on top of `ManageMediaContent`, not a replacement for it.
 
 These view permissions only exist when the **Secure Media** feature is enabled.
 
-Media files attached to content items will also adhere to the `ViewContent` permission of the respective content item automatically.
+Media files attached to content items also adhere to the `ViewContent` permission of the respective content item automatically.
 
 ### Handling Unauthorized Access
 
-A middleware component returns a 404 NotFound response for unauthenticated access attempts to secured media files. This not only restricts access but also conceals the existence of the file, enhancing privacy and security.
+A middleware component validates access to secure media requests and returns `404 Not Found` for any unauthorized request (including unauthenticated requests). This both restricts access and conceals file existence.
 
 ### Configurable Cache-Control for Secured Files
 

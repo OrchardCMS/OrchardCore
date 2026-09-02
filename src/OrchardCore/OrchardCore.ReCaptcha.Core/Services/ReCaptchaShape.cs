@@ -17,18 +17,18 @@ namespace OrchardCore.ReCaptcha.Services;
 [Feature("OrchardCore.ReCaptcha")]
 public sealed class ReCaptchaShape : IShapeAttributeProvider
 {
-    private readonly ReCaptchaSettings _settings;
+    private readonly IOptionsMonitor<ReCaptchaSettings> _settings;
     private readonly ILocalizationService _localizationService;
     private readonly IResourceManager _resourceManager;
     private readonly ILogger _logger;
 
     public ReCaptchaShape(
-        IOptions<ReCaptchaSettings> options,
+        IOptionsMonitor<ReCaptchaSettings> options,
         ILocalizationService localizationService,
         IResourceManager resourceManager,
         ILogger<ReCaptchaShape> logger)
     {
-        _settings = options.Value;
+        _settings = options;
         _localizationService = localizationService;
         _resourceManager = resourceManager;
         _logger = logger;
@@ -37,19 +37,21 @@ public sealed class ReCaptchaShape : IShapeAttributeProvider
     [Shape]
     public async Task<IHtmlContent> ReCaptcha(string language, string onload)
     {
-        if (!_settings.ConfigurationExists())
+        var settings = _settings.CurrentValue;
+
+        if (!settings.ConfigurationExists())
         {
             return HtmlString.Empty;
         }
 
         var script = new TagBuilder("script");
-        script.MergeAttribute("src", await GetReCaptchaScriptUrlAsync(_settings.ReCaptchaScriptUri, language, onload));
+        script.MergeAttribute("src", await GetReCaptchaScriptUrlAsync(settings.ReCaptchaScriptUri, language, onload));
 
         _resourceManager.RegisterFootScript(script);
 
         var div = new TagBuilder("div");
         div.AddCssClass("g-recaptcha");
-        div.MergeAttribute("data-sitekey", _settings.SiteKey);
+        div.MergeAttribute("data-sitekey", settings.SiteKey);
 
         return div;
     }

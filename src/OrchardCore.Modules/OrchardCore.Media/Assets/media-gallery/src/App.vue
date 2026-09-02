@@ -23,61 +23,61 @@
           <nav id="breadcrumb" class="tw:flex tw:justify-end tw:items-center">
             <div class="breadcrumb-path tw:px-3">
               <span v-for="(breadcrumb, i) in breadcrumbs" :key="breadcrumb.directoryPath" v-cloak
-                class="breadcrumb-item">
+                class="ma-breadcrumb-item">
                 <a :href="breadcrumbs.length - i == 1 ? 'javascript:void(0)' : '#'"
                   v-on:click="clickBreadCrumb(breadcrumb)">
                   {{ breadcrumb.name }}
                 </a>
               </span>
             </div>
-            <div class="tw:relative tw:px-3">
+            <div class="tw:relative tw:px-1">
               <a href="javascript:void(0)" class="storage-info-btn" :title="t.StorageInfo || 'Storage Info'"
                 @click="toggleStoragePopover">
                 <fa-icon icon="fa-solid fa-hard-drive"></fa-icon>
               </a>
-              <div v-if="showStoragePopover" class="storage-popover">
-                <div class="storage-popover-content" v-if="storageLoading">
+              <div v-if="showStoragePopover" class="storage-popover oc-media-popover">
+                <div class="storage-popover-content oc-media-popover-content" v-if="storageLoading">
                   <span>{{ t.Loading || 'Loading...' }}</span>
                 </div>
-                <div class="storage-popover-content" v-else-if="storageInfo">
-                  <div class="storage-popover-row">
-                    <span class="storage-popover-label">{{ t.AvailableStorage || 'Available Storage' }}</span>
+                <div class="storage-popover-content oc-media-popover-content" v-else-if="storageInfo">
+                  <div class="storage-popover-row oc-media-popover-row">
+                    <span class="storage-popover-label oc-media-popover-label">{{ t.AvailableStorage || 'Available Storage' }}</span>
                     <span>{{ storageInfo.text }}</span>
                   </div>
                 </div>
-                <div class="storage-popover-content" v-else>
+                <div class="storage-popover-content oc-media-popover-content" v-else>
                   <span>{{ t.Unavailable || 'Unavailable' }}</span>
                 </div>
               </div>
             </div>
-            <div class="tw:relative tw:px-3">
+            <div class="tw:relative tw:px-1">
               <a href="javascript:void(0)" class="settings-btn" :title="t.Settings || 'Settings'"
                 @click="toggleSettingsPopover">
                 <fa-icon icon="fa-solid fa-gear"></fa-icon>
               </a>
-              <div v-if="showSettingsPopover" class="settings-popover">
-                <div class="settings-popover-content">
-                  <div class="settings-popover-row">
-                    <label class="settings-popover-label" for="settings-page-size">{{ t.ItemsPerPage || 'Items per page' }}</label>
-                    <select id="settings-page-size" class="tw:block tw:w-full tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:text-[var(--mg-text)] tw:bg-[var(--mg-surface)] tw:border tw:border-[var(--mg-border)] tw:rounded-md tw:transition-colors focus:tw:border-[#0d6efd] focus:tw:outline-none settings-select" v-model.number="pageSize">
+              <div v-if="showSettingsPopover" class="settings-popover oc-media-popover">
+                <div class="settings-popover-content oc-media-popover-content">
+                  <div class="settings-popover-row oc-media-popover-row">
+                    <label class="settings-popover-label oc-media-popover-label" for="settings-page-size">{{ t.ItemsPerPage || 'Items per page' }}</label>
+                    <select id="settings-page-size" class="oc-media-form-select settings-select" v-model.number="pageSize">
                       <option :value="10">10</option>
                       <option :value="20">20</option>
                       <option :value="50">50</option>
                       <option :value="100">100</option>
                     </select>
                   </div>
-                  <div class="settings-popover-row">
-                    <span class="settings-popover-label">{{ t.ThumbnailSize || 'Thumbnail size' }}</span>
-                    <div class="tw:inline-flex tw:align-middle">
+                  <div class="settings-popover-row oc-media-popover-row">
+                    <span class="settings-popover-label oc-media-popover-label">{{ t.ThumbnailSize || 'Thumbnail size' }}</span>
+                    <div class="oc-media-btn-group">
                       <button type="button"
-                        class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:px-2 tw:py-1 tw:text-[0.8125rem] tw:font-normal tw:leading-normal tw:cursor-pointer tw:select-none tw:border tw:rounded-md tw:rounded-r-none tw:transition-colors"
-                        :class="!largeThumbs ? 'tw:text-white tw:bg-[#0d6efd] tw:border-[#0d6efd] hover:tw:bg-[#0b5ed7]' : 'tw:text-[var(--mg-text)] tw:bg-[var(--mg-surface-secondary)] tw:border-[var(--mg-border)] hover:tw:bg-[var(--mg-surface-tertiary)]'"
+                        class="ma-btn"
+                        :class="!largeThumbs ? 'ma-btn-primary' : 'ma-btn-light'"
                         @click="largeThumbs = false">
                         {{ t.Normal || 'Normal' }}
                       </button>
                       <button type="button"
-                        class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:px-2 tw:py-1 tw:text-[0.8125rem] tw:font-normal tw:leading-normal tw:cursor-pointer tw:select-none tw:border tw:rounded-md tw:rounded-l-none tw:-ml-px tw:transition-colors"
-                        :class="largeThumbs ? 'tw:text-white tw:bg-[#0d6efd] tw:border-[#0d6efd] hover:tw:bg-[#0b5ed7]' : 'tw:text-[var(--mg-text)] tw:bg-[var(--mg-surface-secondary)] tw:border-[var(--mg-border)] hover:tw:bg-[var(--mg-surface-tertiary)]'"
+                        class="ma-btn"
+                        :class="largeThumbs ? 'ma-btn-primary' : 'ma-btn-light'"
                         @click="largeThumbs = true">
                         {{ t.Large || 'Large' }}
                       </button>
@@ -90,26 +90,26 @@
           <div class="action-bar tw:py-3 tw:px-4 tw:flex tw:flex-wrap tw:gap-y-3">
             <div class="tw:mr-auto">
               <div v-show="canManage" class="tw:flex tw:items-stretch tw:flex-wrap">
-                  <label :title="t.UploadFiles" for="fileupload" class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:text-center tw:cursor-pointer tw:select-none tw:border tw:rounded-md tw:transition-colors tw:text-white tw:bg-[#0d6efd] tw:border-[#0d6efd] hover:tw:bg-[#0b5ed7] hover:tw:border-[#0a58ca] tw:no-underline tw:mr-2 fileinput-button upload-button">
+                  <label :title="t.UploadFiles" for="fileupload" class="ma-btn ma-btn-primary tw:mr-2 fileinput-button upload-button">
                     <input id="fileupload" type="file" name="files" multiple />
                     <fa-icon icon="fa-solid fa-cloud-arrow-up"></fa-icon>
                     {{ t.UploadFiles }}
                   </label>
-                <a :title="t.DeleteAll" href="javascript:void(0)" class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:text-center tw:cursor-pointer tw:select-none tw:border tw:rounded-md tw:transition-colors tw:text-[var(--mg-text)] tw:bg-[var(--mg-surface-secondary)] tw:border-[var(--mg-border)] hover:tw:bg-[var(--mg-surface-tertiary)] tw:no-underline tw:mr-2"
+                <a :title="t.DeleteAll" href="javascript:void(0)" class="ma-btn ma-btn-light tw:no-underline tw:mr-2"
                   @click="() => deleteSelectedFiles()" :class="{ 'tw:cursor-default tw:pointer-events-none tw:opacity-65': selectedFiles.length < 1 }">
                   <fa-icon icon="fa-solid fa-trash"></fa-icon>
-                  <span class="tw:inline-flex tw:items-center tw:justify-center tw:px-[0.65em] tw:py-[0.25em] tw:text-[0.75em] tw:font-bold tw:leading-none tw:text-[var(--mg-text)] tw:bg-[var(--mg-surface-tertiary)] tw:rounded-full tw:ml-1" v-show="selectedFiles.length > 0">{{ selectedFiles.length
+                  <span class="ma-badge tw:ml-1" v-show="selectedFiles.length > 0">{{ selectedFiles.length
                     }}</span>
                 </a>
-                <a :title="t.DownloadAll" href="javascript:void(0)" class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:text-center tw:cursor-pointer tw:select-none tw:border tw:rounded-md tw:transition-colors tw:text-[var(--mg-text)] tw:bg-[var(--mg-surface-secondary)] tw:border-[var(--mg-border)] hover:tw:bg-[var(--mg-surface-tertiary)] tw:no-underline tw:mr-2"
+                <a :title="t.DownloadAll" href="javascript:void(0)" class="ma-btn ma-btn-light tw:no-underline tw:mr-2"
                   @click="() => downloadSelectedFiles()"
                   :class="{ 'tw:cursor-default tw:pointer-events-none tw:opacity-65': selectedFiles.length < 1 || isDownloading }">
                   <fa-icon icon="fa-solid fa-download"></fa-icon>
-                  <span class="tw:inline-flex tw:items-center tw:justify-center tw:px-[0.65em] tw:py-[0.25em] tw:text-[0.75em] tw:font-bold tw:leading-none tw:text-[var(--mg-text)] tw:bg-[var(--mg-surface-tertiary)] tw:rounded-full tw:ml-1" v-show="selectedFiles.length > 0">{{ selectedFiles.length
+                  <span class="ma-badge tw:ml-1" v-show="selectedFiles.length > 0">{{ selectedFiles.length
                     }}</span>
                 </a>
                 <a :title="gridView ? (t.TableView ?? 'Table view') : (t.GridView ?? 'Grid view')"
-                  href="javascript:void(0)" class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:text-center tw:cursor-pointer tw:select-none tw:border tw:rounded-md tw:transition-colors tw:text-[var(--mg-text)] tw:bg-[var(--mg-surface-secondary)] tw:border-[var(--mg-border)] hover:tw:bg-[var(--mg-surface-tertiary)] tw:no-underline tw:mr-2"
+                  href="javascript:void(0)" class="ma-btn ma-btn-light tw:no-underline tw:mr-2"
                   @click="gridView = !gridView">
                   <fa-icon :icon="gridView ? 'fa-solid fa-list' : 'fa-solid fa-grip'"></fa-icon>
                 </a>
@@ -117,13 +117,13 @@
             </div>
             <div>
               <div class="file-filter">
-                <div class="tw:flex tw:flex-nowrap tw:items-stretch tw:w-full">
-                  <span class="tw:flex tw:items-center tw:px-3 tw:border tw:border-r-0 tw:border-[var(--mg-border)] tw:bg-[var(--mg-surface-tertiary)] tw:text-[var(--mg-text-muted)] tw:rounded-l-md">
+                <div class="oc-media-input-group">
+                  <span class="oc-media-input-group-text">
                     <fa-icon icon="fa-solid fa-filter"></fa-icon>
                   </span>
-                  <input type="text" id="file-filter-input" v-model="fileFilter" class="tw:flex-auto tw:min-w-0 tw:block tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:text-[var(--mg-text)] tw:bg-[var(--mg-surface)] tw:border tw:border-[var(--mg-border)] tw:rounded-none tw:transition-colors focus:tw:border-[#0d6efd] focus:tw:outline-none input-filter"
+                  <input type="text" id="file-filter-input" v-model="fileFilter" class="oc-media-form-control input-filter"
                     :placeholder="t.Filter" :aria-label="t.Filter" />
-                  <button id="clear-file-filter-button" class="tw:inline-flex tw:items-center tw:justify-center tw:gap-1.5 tw:px-3 tw:py-1.5 tw:text-sm tw:font-normal tw:leading-normal tw:cursor-pointer tw:select-none tw:border tw:border-l-0 tw:rounded-r-md tw:transition-colors tw:text-[var(--mg-text-muted)] tw:border-[var(--mg-border)] tw:bg-[var(--mg-surface-tertiary)] hover:tw:text-[var(--mg-text)] hover:tw:bg-[var(--mg-surface-secondary)]" :disabled="fileFilter == ''"
+                  <button id="clear-file-filter-button" class="ma-btn ma-btn-light" :disabled="fileFilter == ''"
                     v-on:click="fileFilter = ''">
                     <fa-icon icon="fa-solid fa-times"></fa-icon>
                   </button>
@@ -140,7 +140,7 @@
           <ol class="file-items-grid" :class="{ 'large-thumbs': largeThumbs }" v-show="!isLoadingFiles && filteredFileItems.length > 0 && gridView">
             <li v-for="file in itemsInPage" :key="file.filePath"
               :class="{ selected: isFileSelected(file) }"
-              class="card" draggable="true"
+              class="ma-card" draggable="true"
               @dragstart="dragFileStart(file, $event)">
               <div class="thumb-container" @click.stop="toggleFile(file)">
                 <img v-if="isImage(file)" :src="buildMediaUrl(resolveMediaUrl(file.url), thumbSize)" :alt="file.name" loading="lazy" />
@@ -156,7 +156,7 @@
                   <span class="tw:uppercase file-ext tw:text-white">{{ getFileExtension(file.name) }}</span>
                 </div>
               </div>
-              <div class="card-footer">
+              <div class="ma-card-footer">
                 <span class="tw:truncate tw:text-sm tw:grow" :title="file.name">{{ file.name }}</span>
                 <FileMenu :file-item="file" @click.stop></FileMenu>
               </div>

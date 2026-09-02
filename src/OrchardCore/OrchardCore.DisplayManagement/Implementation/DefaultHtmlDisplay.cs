@@ -23,7 +23,7 @@ public class DefaultHtmlDisplay : IHtmlDisplay
     private readonly IThemeManager _themeManager;
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger _logger;
-    private readonly ShapeRenderingOptions _shapeRenderingOptions;
+    private readonly IOptionsMonitor<ShapeRenderingOptions> _shapeRenderingOptions;
 
     public DefaultHtmlDisplay(
         IEnumerable<IShapeDisplayEvents> shapeDisplayEvents,
@@ -31,7 +31,7 @@ public class DefaultHtmlDisplay : IHtmlDisplay
         IShapeTableManager shapeTableManager,
         IServiceProvider serviceProvider,
         ILogger<DefaultHtmlDisplay> logger,
-        IOptions<ShapeRenderingOptions> shapeRenderingOptions,
+        IOptionsMonitor<ShapeRenderingOptions> shapeRenderingOptions,
         IThemeManager themeManager)
     {
         _shapeTableManager = shapeTableManager;
@@ -40,7 +40,7 @@ public class DefaultHtmlDisplay : IHtmlDisplay
         _themeManager = themeManager;
         _serviceProvider = serviceProvider;
         _logger = logger;
-        _shapeRenderingOptions = shapeRenderingOptions.Value;
+        _shapeRenderingOptions = shapeRenderingOptions;
     }
 
     public async Task<IHtmlContent> ExecuteAsync(DisplayContext context)
@@ -191,7 +191,7 @@ public class DefaultHtmlDisplay : IHtmlDisplay
             await _shapeDisplayEvents.InvokeAsync((e, displayContext) => e.DisplayingFinalizedAsync(displayContext), displayContext, _logger);
         }
 
-        if (_shapeRenderingOptions.WriteShapeDebugInformation)
+        if (_shapeRenderingOptions.CurrentValue.WriteShapeDebugInformation)
         {
             return AddShapeDebugInformation(shapeMetadata.ChildContent, shapeMetadata.Type, actualBinding, wrapperBindings);
         }
