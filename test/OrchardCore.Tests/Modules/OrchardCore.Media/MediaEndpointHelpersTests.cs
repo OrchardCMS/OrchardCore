@@ -10,6 +10,50 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media;
 
 public class MediaEndpointHelpersTests
 {
+    [Theory]
+    [InlineData("../unauthorized/file.jpg", "file.jpg")]
+    [InlineData(@"..\unauthorized\file.jpg", "file.jpg")]
+    public void GetFileName_PathSegments_ReturnsOnlyFileName(string path, string expected)
+    {
+        var mediaFileStore = new Mock<IMediaFileStore>();
+
+        var result = MediaEndpointHelpers.GetFileName(mediaFileStore.Object, path);
+
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void GetRequestedExtensions_RestrictedFieldFilter_DoesNotFallBackToAllExtensions()
+    {
+        var options = CreateOptions();
+
+        var result = MediaEndpointHelpers.GetRequestedExtensions(
+            options,
+            ".svg",
+            canUploadRestrictedMedia: false);
+
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    public void GetRequestedExtensions_MixedCaseFilter_IntersectsCaseInsensitively()
+    {
+        var options = CreateOptions();
+
+        var result = MediaEndpointHelpers.GetRequestedExtensions(
+            options,
+            ".JPG,.svg",
+            canUploadRestrictedMedia: false);
+
+        Assert.Equal(".jpg", Assert.Single(result), ignoreCase: true);
+    }
+
+    private static MediaOptions CreateOptions() => new()
+    {
+        AllowedFileExtensions = new(StringComparer.OrdinalIgnoreCase) { ".jpg", ".png" },
+        RestrictedFileExtensions = new(StringComparer.OrdinalIgnoreCase) { ".svg" },
+    };
+
     [Fact]
     public async Task ToDtoAsync_UnauthorizedDescendants_FiltersTree()
     {

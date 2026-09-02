@@ -51,11 +51,23 @@ public sealed class AdminController : Controller
         var hostEnvironment = HttpContext.RequestServices.GetRequiredService<IHostEnvironment>();
         var mediaApiSettings = HttpContext.RequestServices.GetRequiredService<ISiteService>().GetSettings<MediaApiSettings>();
 
+        var canUploadRestrictedMedia = await _authorizationService.AuthorizeAsync(
+            User,
+            MediaPermissions.UploadRestrictedMedia);
+        var allowedExtensions = string.Join(',', _mediaOptions.AllowedFileExtensions);
+        if (canUploadRestrictedMedia && _mediaOptions.RestrictedFileExtensions.Count > 0)
+        {
+            allowedExtensions += (allowedExtensions.Length > 0 ? "," : string.Empty)
+                + string.Join(',', _mediaOptions.RestrictedFileExtensions);
+        }
+
         var model = new MediaIndexViewModel
         {
             SiteId = shellSettings.TenantId,
             MaxFileSize = _mediaOptions.MaxFileSize,
-            AllowedExtensions = string.Join(',', _mediaOptions.AllowedFileExtensions),
+            AllowedExtensions = allowedExtensions.Length == 0
+                ? ".__none__"
+                : allowedExtensions,
             TusEnabled = tusEnabled,
             SignalrEnabled = signalrEnabled,
             DebugEnabled = hostEnvironment.IsDevelopment(),
