@@ -323,6 +323,12 @@
   flex-direction: column;
 }
 
+/* The picker shell already draws the modal frame; the gallery's own outer
+   border would double it. Internal separators (tree/footer) are kept. */
+.mf-picker-media-gallery .fileApp #fileContainer {
+  border: none;
+}
+
 /* ============================================================
    Anchor marker
    Uses transform translate(-50%, -50%) + text-shadow; both are

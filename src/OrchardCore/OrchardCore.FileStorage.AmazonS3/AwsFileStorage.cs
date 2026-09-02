@@ -86,7 +86,7 @@ public class AwsFileStore : IFileStore
 
         foreach (var file in listObjectsResponse.S3Objects ?? [])
         {
-            var itemName = Path.GetFileName(WebUtility.UrlDecode(file.Key));
+            var itemName = Path.GetFileName(file.Key);
 
             if (includeSubDirectories || !string.IsNullOrEmpty(itemName))
             {

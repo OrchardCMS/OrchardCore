@@ -1,4 +1,3 @@
-using System.Net;
 using System.Net.Mime;
 using Azure;
 using Azure.Storage.Blobs;
@@ -305,7 +304,7 @@ public class BlobFileStore : IFileStore
                 continue;
             }
 
-            var itemName = Path.GetFileName(WebUtility.UrlDecode(blob.Blob.Name)).Trim('/');
+            var itemName = Path.GetFileName(blob.Blob.Name).Trim('/');
 
             // Gen2 (HNS) empty directories are returned as a blob at exactly the directory's path
             // (nothing exists beneath them to be grouped into a prefix), identified by this metadata flag.
@@ -387,7 +386,7 @@ public class BlobFileStore : IFileStore
         var flatPage = _blobContainer.GetBlobsAsync(BlobTraits.Metadata, BlobStates.None, prefix, CancellationToken.None);
         await foreach (var blob in flatPage)
         {
-            var name = WebUtility.UrlDecode(blob.Name);
+            var name = blob.Name;
 
             // A flat blob listing does not return a folder hierarchy.
             // We can infer a hierarchy by examining the paths returned for the file contents

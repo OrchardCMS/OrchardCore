@@ -94,6 +94,76 @@ You can also create your own redactor simply by adding a singleton [`Redactor`](
 
 Note that when a user is deleted, all `User` snapshots are cleared out from existing Audit Trail events to comply with regulations about personal information retention.
 
+## Documenting Filters in the Admin UI
+
+The users admin list (**Security** → **Users**) has a **Filters** dropdown next to the search box. Its **Filter syntax** entry opens the **Available Filters** dialog, which lists every filter a user can type into the search box (`name:`, `email:`, `status:`, `role:`, `sort:`, …) as a compact grid of cards. Each card shows the filter title, its capability icons, the syntax token, and a short description.
+
+The list works exactly like the [content items admin list filters](../Contents/README.md#documenting-filters-in-the-admin-ui); only the model type differs. There are two independent extension points: the filter *logic* and the filter *card* that documents it in the dialog.
+
+### Registering the filter logic
+
+Implement `IUsersAdminListFilterProvider` and add your terms to the `QueryEngineBuilder<User>`:
+
+```csharp
+public sealed class SsnUsersAdminListFilterProvider : IUsersAdminListFilterProvider
+{
+    public void Build(QueryEngineBuilder<User> builder)
+    {
+        builder
+            .WithNamedTerm("ssn", builder => builder
+                .OneCondition((val, query) =>
+                    query.With<UserProfileIndex>(i => i.Ssn != null && i.Ssn.Contains(val))));
+    }
+}
+```
+
+Register it in your module's `Startup`:
+
+```csharp
+services.AddScoped<IUsersAdminListFilterProvider, SsnUsersAdminListFilterProvider>();
+```
+
+### Registering the filter card
+
+Implement a `DisplayDriver<UserIndexOptions>` and return a `View` result placed in the `Content` zone of the `Thumbnail` display type. The position after `Content:` controls the order the card appears in.
+
+```csharp
+public sealed class SsnUsersAdminListDisplayDriver : DisplayDriver<UserIndexOptions>
+{
+    public override IDisplayResult Display(UserIndexOptions model, BuildDisplayContext context)
+    {
+        return View("UsersAdminFilters_Thumbnail__Ssn", model)
+            .Location("Thumbnail", "Content:35");
+    }
+}
+```
+
+```csharp
+services.AddDisplayDriver<UserIndexOptions, SsnUsersAdminListDisplayDriver>();
+```
+
+### The card template
+
+The shape name `UsersAdminFilters_Thumbnail__Ssn` resolves to a Razor view named `UsersAdminFilters-Ssn.Thumbnail.cshtml` placed under `Views/Items/`. Each card is automatically wrapped in a Bootstrap card and laid out in the responsive grid, so the template only supplies the card's inner content: a title with its capability icons on the first line, the filter token below it, and a short description.
+
+```html
+@model ShapeViewModel<UserIndexOptions>
+@{
+    var term = Model.Value.FilterResult.FirstOrDefault(x => x.TermName == "ssn");
+}
+
+<div class="d-flex justify-content-between align-items-center gap-2">
+    <h6 class="card-title fw-semibold mb-0">@T["SSN"]</h6>
+    <span class="text-primary text-nowrap">
+        <i class="fa-solid fa-sm fa-minus" title="@T["Accepts a single value"]" aria-hidden="true"></i>
+    </span>
+</div>
+<div class="mt-1"><code class="small text-nowrap">@(term?.ToString() ?? "ssn:...")</code></div>
+<p class="card-text small text-body-secondary mt-1 mb-0">@T["Filters on a user's social security number."]</p>
+```
+
+Use the same capability icons the built-in filters use so the shared legend at the bottom of the dialog stays accurate: `fa-check` (**Default** — may be entered with or without the term name), `fa-minus` (**Single** — accepts a single value), and `fa-bars` (**Multiple** — supports the `AND`, `OR`, and `NOT` operators and groups).
+
 ## Recipe Configuration
 
 User module settings can be configured using the `Settings` recipe step:
