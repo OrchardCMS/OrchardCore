@@ -565,4 +565,191 @@ public class FlatPositionComparerTests
     }
 
     #endregion
+
+    #region Terminal Sentinel Tests (start / end)
+
+    [Theory]
+    // `start` sorts before every non-sentinel position.
+    [InlineData("start", "before", -1)]
+    [InlineData("before", "start", 1)]
+    [InlineData("start", "0", -1)]
+    [InlineData("0", "start", 1)]
+    [InlineData("start", "1", -1)]
+    [InlineData("start", "after", -1)]
+    [InlineData("after", "start", 1)]
+    [InlineData("start", "end", -1)]
+    [InlineData("end", "start", 1)]
+    // `end` sorts after every non-sentinel position.
+    [InlineData("end", "before", 1)]
+    [InlineData("before", "end", -1)]
+    [InlineData("end", "0", 1)]
+    [InlineData("end", "999", 1)]
+    [InlineData("end", "after", 1)]
+    [InlineData("after", "end", -1)]
+    public void Compare_TerminalSentinels_OrderAtTheExtremes(string x, string y, int expected)
+    {
+        // Act
+        var result = _comparer.Compare(x, y);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Theory]
+    // Free-text positions (e.g. what PrefixPosition() produces) sort after `after` but the
+    // terminal sentinels still bracket them: `start` < text < `end`.
+    [InlineData("start", "am-workspace", -1)]
+    [InlineData("am-workspace", "start", 1)]
+    [InlineData("am-workspace", "end", -1)]
+    [InlineData("end", "am-workspace", 1)]
+    [InlineData("after", "am-workspace", -1)] // documents the pre-existing wart: text sorts after `after`.
+    public void Compare_TerminalSentinels_BracketFreeText(string x, string y, int expected)
+    {
+        // Act
+        var result = _comparer.Compare(x, y);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Theory]
+    [InlineData("start", "START", 0)]
+    [InlineData("end", "END", 0)]
+    [InlineData("EnD", "end", 0)]
+    [InlineData("StArT", "end", -1)]
+    [InlineData("END", "start", 1)]
+    public void Compare_TerminalSentinels_AreCaseInsensitive(string x, string y, int expected)
+    {
+        // Act
+        var result = _comparer.Compare(x, y);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Theory]
+    // Sentinels support sub-ordering just like `before`/`after`.
+    [InlineData("end.50", "end.100", -1)]
+    [InlineData("end.100", "end.50", 1)]
+    [InlineData("end.50", "end.50", 0)]
+    [InlineData("end", "end.1", -1)]
+    [InlineData("end.1", "end", 1)]
+    [InlineData("start.1", "start.2", -1)]
+    [InlineData("start.2", "start.1", 1)]
+    [InlineData("start", "start.1", -1)]
+    public void Compare_TerminalSentinels_SubOrderNumerically(string x, string y, int expected)
+    {
+        // Act
+        var result = _comparer.Compare(x, y);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void OrderBy_FullOrdering_StartBeforeAfterTextEnd()
+    {
+        // Arrange - one value from every band, shuffled.
+        var positions = new[] { "end", "after", "am-beta", "before", "1.5", "start", "10", "0", "am-alpha", "1" };
+
+        // Act
+        var ordered = positions.OrderBy(x => x, _comparer).ToArray();
+
+        // Assert - start < before < numbers < after < free-text (alphabetical) < end.
+        Assert.Equal(
+            ["start", "before", "0", "1", "1.5", "10", "after", "am-alpha", "am-beta", "end"],
+            ordered);
+    }
+
+    [Fact]
+    public void OrderBy_AdminMenuScenario_CustomMenuLandsBeforeToolsAndSettings()
+    {
+        // Arrange - simulates root admin-menu positions: numbered built-ins, a module contributing a
+        // top-level item via PrefixPosition() ("am-..."), and Tools/Settings pinned to the end.
+        var positions = new[] { "end.100", "am-SMS Workspace", "1", "end.50", "2", "100" };
+
+        // Act
+        var ordered = positions.OrderBy(x => x, _comparer).ToArray();
+
+        // Assert - the custom (free-text) item now sorts before Tools (end.50) and Settings (end.100).
+        Assert.Equal(
+            ["1", "2", "100", "am-SMS Workspace", "end.50", "end.100"],
+            ordered);
+    }
+
+    #endregion
+
+    #region Comparer Honesty (total order) Tests
+
+    // A representative value from every band, in strictly ascending canonical order.
+    // Within a band, a bare sentinel sorts before its sub-positions (e.g. `end` < `end.50`),
+    // mirroring how bare `after` sorts before `after.50`.
+    private static readonly string[] s_ascending =
+    [
+        "start", "start.1", "start.2", "before", "before.5", "0", "1", "1.5", "2", "10",
+        "after", "after.50", "am-alpha", "am-beta", "end", "end.50", "end.100",
+    ];
+
+    [Fact]
+    public void Compare_IsAntisymmetric_AcrossEveryBand()
+    {
+        // For any pair, sign(Compare(a, b)) must equal -sign(Compare(b, a)).
+        for (var i = 0; i < s_ascending.Length; i++)
+        {
+            for (var j = 0; j < s_ascending.Length; j++)
+            {
+                var a = s_ascending[i];
+                var b = s_ascending[j];
+
+                var ab = Math.Sign(_comparer.Compare(a, b));
+                var ba = Math.Sign(_comparer.Compare(b, a));
+
+                Assert.True(ab == -ba, $"Antisymmetry violated for '{a}' vs '{b}': {ab} / {ba}");
+            }
+        }
+    }
+
+    [Fact]
+    public void Compare_IsReflexive_AcrossEveryBand()
+    {
+        foreach (var value in s_ascending)
+        {
+            // Use distinct string instances to avoid the ReferenceEquals fast path.
+            var copy = new string(value.ToCharArray());
+            Assert.Equal(0, _comparer.Compare(value, copy));
+        }
+    }
+
+    [Fact]
+    public void Compare_IsTransitive_AcrossEveryBand()
+    {
+        // The canonical array is strictly ascending, so every earlier item must compare less than
+        // every later item (which, with antisymmetry, guarantees a consistent transitive order).
+        for (var i = 0; i < s_ascending.Length; i++)
+        {
+            for (var j = i + 1; j < s_ascending.Length; j++)
+            {
+                var earlier = s_ascending[i];
+                var later = s_ascending[j];
+
+                Assert.True(_comparer.Compare(earlier, later) < 0, $"Expected '{earlier}' < '{later}'.");
+                Assert.True(_comparer.Compare(later, earlier) > 0, $"Expected '{later}' > '{earlier}'.");
+            }
+        }
+    }
+
+    [Fact]
+    public void OrderBy_ShuffledCanonicalList_RestoresCanonicalOrder()
+    {
+        // Arrange - a deterministic shuffle of the canonical order.
+        var shuffled = s_ascending.OrderBy(x => x.Length).ThenByDescending(x => x, StringComparer.Ordinal).ToArray();
+
+        // Act
+        var ordered = shuffled.OrderBy(x => x, _comparer).ToArray();
+
+        // Assert
+        Assert.Equal(s_ascending, ordered);
+    }
+
+    #endregion
 }
