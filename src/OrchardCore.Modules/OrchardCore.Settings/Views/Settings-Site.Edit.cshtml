@@ -70,9 +70,9 @@
     </div>
 </div>
 
-<div class="ocat-limited-wrapper @(Model.AllowPageSizeSelection ? "" : "d-none")" id="pageSizeOptionsWrapper" asp-validation-class-for="PageSizeOptions">
+<div class="ocat-wrapper @(Model.AllowPageSizeSelection ? "" : "d-none")" id="pageSizeOptionsWrapper" asp-validation-class-for="PageSizeOptions">
     <label asp-for="PageSizeOptions" class="ocat-label">@T["Page size options"]</label>
-    <div class="ocat-limited">
+    <div class="ocat-end">
         <input asp-for="PageSizeOptions" class="form-control" placeholder="10, 25, 50, 100" />
         <span asp-validation-for="PageSizeOptions"></span>
         <span class="hint">@T["A comma-separated list of the page size values users can select from, for example 10, 25, 50, 100."]</span>
