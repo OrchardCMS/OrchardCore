@@ -10,6 +10,7 @@ using OrchardCore.Html.Models;
 using OrchardCore.Html.Settings;
 using OrchardCore.Liquid;
 using OrchardCore.Liquid.Models;
+using OrchardCore.Localization;
 using OrchardCore.Markdown.Models;
 using OrchardCore.Markdown.Settings;
 using OrchardCore.Security;
@@ -26,6 +27,8 @@ public class LiquidContentAuthorizationTests
     [Fact]
     public async Task ContentApiShouldRequireLiquidPermissionAndPreserveAuthoredSource()
     {
+        using var cultureScope = CultureScope.Create("en");
+
         var permissionsContext = new PermissionsContext
         {
             UsePermissionsContext = true,
