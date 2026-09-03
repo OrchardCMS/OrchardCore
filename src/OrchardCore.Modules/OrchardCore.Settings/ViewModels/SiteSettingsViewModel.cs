@@ -16,6 +16,8 @@ public class SiteSettingsViewModel
 
     public string PageSizeOptions { get; set; }
 
+    public int MaxPageSize { get; set; }
+
     public bool UseCdn { get; set; }
     public string CdnBaseUrl { get; set; }
     public ResourceDebugMode ResourceDebugMode { get; set; }

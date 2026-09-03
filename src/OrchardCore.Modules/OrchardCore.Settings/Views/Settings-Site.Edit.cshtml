@@ -75,7 +75,13 @@
     <div class="ocat-end">
         <input asp-for="PageSizeOptions" class="form-control" placeholder="10, 25, 50, 100" />
         <span asp-validation-for="PageSizeOptions"></span>
-        <span class="hint">@T["A comma-separated list of the page size values users can select from, for example 10, 25, 50, 100."]</span>
+        <span class="hint">
+            @T["A comma-separated list of the page size values users can select from, for example 10, 25, 50, 100."]
+            @if (Model.MaxPageSize > 0)
+            {
+                @T["Values cannot exceed the maximum page size of {0}.", Model.MaxPageSize]
+            }
+        </span>
     </div>
 </div>
 

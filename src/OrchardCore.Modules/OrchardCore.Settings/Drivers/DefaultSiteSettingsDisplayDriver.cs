@@ -109,6 +109,11 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSizeOptions), S["Enter at least one page size when page size selection is allowed."]);
             }
+
+            if (site.MaxPageSize > 0 && Array.Exists(pageSizeOptions, size => size > site.MaxPageSize))
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSizeOptions), S["The page size options must be less than or equal to {0}.", site.MaxPageSize]);
+            }
         }
         else
         {
@@ -136,6 +141,7 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
         model.PageSizeOptions = site.PageSizeOptions is { Length: > 0 }
             ? string.Join(", ", site.PageSizeOptions)
             : string.Empty;
+        model.MaxPageSize = site.MaxPageSize;
         model.UseCdn = site.UseCdn;
         model.CdnBaseUrl = site.CdnBaseUrl;
         model.ResourceDebugMode = site.ResourceDebugMode;

@@ -182,7 +182,9 @@ public class PagerShapes : IShapeAttributeProvider
             var singlePageContent = await displayContext.DisplayHelper.ShapeExecuteAsync(shape);
 
             // Still offer the page size selector so the user can change how many items are displayed.
-            return WrapWithPageSizeSelector(singlePageContent, BuildPageSizeSelector(displayContext, pageSize));
+            var singlePageSelector = await RenderPageSizeSelectorAsync(displayContext, shapeFactory, pageSize);
+
+            return WrapWithPageSizeSelector(singlePageContent, singlePageSelector);
         }
 
         var firstText = FirstText ?? S["<<"];
@@ -358,8 +360,9 @@ public class PagerShapes : IShapeAttributeProvider
         await shape.AddAsync(pagerLastItem);
 
         var pagerContent = await displayContext.DisplayHelper.ShapeExecuteAsync(shape);
+        var pageSizeSelector = await RenderPageSizeSelectorAsync(displayContext, shapeFactory, pageSize);
 
-        return WrapWithPageSizeSelector(pagerContent, BuildPageSizeSelector(displayContext, pageSize));
+        return WrapWithPageSizeSelector(pagerContent, pageSizeSelector);
     }
 
     [Shape]
@@ -451,8 +454,9 @@ public class PagerShapes : IShapeAttributeProvider
         var pagerContent = await displayContext.DisplayHelper.ShapeExecuteAsync(shape);
 
         var currentPageSize = shape.TryGetProperty("PageSize", out int pageSize) ? pageSize : 0;
+        var pageSizeSelector = await RenderPageSizeSelectorAsync(displayContext, shapeFactory, currentPageSize);
 
-        return WrapWithPageSizeSelector(pagerContent, BuildPageSizeSelector(displayContext, currentPageSize));
+        return WrapWithPageSizeSelector(pagerContent, pageSizeSelector);
     }
 
     [Shape]
@@ -570,7 +574,27 @@ public class PagerShapes : IShapeAttributeProvider
         return wrapper;
     }
 
-    private IHtmlContent BuildPageSizeSelector(DisplayContext displayContext, int currentPageSize)
+    // Renders the customizable "Pager_PageSizeSelector" shape so themes can override its markup,
+    // just like the other pager sub-shapes (Pager_Links, Pager_Next, ...).
+    private static async Task<IHtmlContent> RenderPageSizeSelectorAsync(DisplayContext displayContext, IShapeFactory shapeFactory, int currentPageSize)
+    {
+        var items = BuildPageSizeOptions(displayContext, currentPageSize);
+
+        if (items is null)
+        {
+            return null;
+        }
+
+        var selectorShape = await shapeFactory.CreateAsync("Pager_PageSizeSelector", Arguments.From(new
+        {
+            Items = items,
+            CurrentPageSize = currentPageSize,
+        }));
+
+        return await displayContext.DisplayHelper.ShapeExecuteAsync(selectorShape);
+    }
+
+    private static List<SelectListItem> BuildPageSizeOptions(DisplayContext displayContext, int currentPageSize)
     {
         var serviceProvider = displayContext.ServiceProvider;
         var pagerOptions = serviceProvider.GetService<IOptions<PagerOptions>>()?.Value;
@@ -609,10 +633,7 @@ public class PagerShapes : IShapeAttributeProvider
             }
         }
 
-        var select = new TagBuilder("select");
-        select.AddCssClass("form-select form-select-sm w-auto");
-        select.Attributes["aria-label"] = S["Items per page"].Value;
-        select.Attributes["onchange"] = "if (this.value) { window.location.href = this.value; }";
+        var items = new List<SelectListItem>(pagerOptions.PageSizeOptions.Length);
 
         foreach (var size in pagerOptions.PageSizeOptions)
         {
@@ -621,28 +642,15 @@ public class PagerShapes : IShapeAttributeProvider
                 new("pageSize", size.ToString(CultureInfo.InvariantCulture)),
             };
 
-            var option = new TagBuilder("option");
-            option.Attributes["value"] = QueryHelpers.AddQueryString(basePath, optionParams);
-
-            if (size == currentPageSize)
+            items.Add(new SelectListItem
             {
-                option.Attributes["selected"] = "selected";
-            }
-
-            option.InnerHtml.Append(size.ToString(CultureInfo.InvariantCulture));
-            select.InnerHtml.AppendHtml(option);
+                Text = size.ToString(CultureInfo.InvariantCulture),
+                Value = QueryHelpers.AddQueryString(basePath, optionParams),
+                Selected = size == currentPageSize,
+            });
         }
 
-        var label = new TagBuilder("label");
-        label.AddCssClass("col-form-label text-nowrap me-2");
-        label.InnerHtml.Append(S["Items per page"].Value);
-
-        var container = new TagBuilder("div");
-        container.AddCssClass("pager-page-size d-flex align-items-center ms-auto");
-        container.InnerHtml.AppendHtml(label);
-        container.InnerHtml.AppendHtml(select);
-
-        return container;
+        return items;
     }
 
     private static IHtmlContent CoerceHtmlString(object value)
