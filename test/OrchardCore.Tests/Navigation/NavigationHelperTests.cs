@@ -1,10 +1,7 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
-using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Navigation;
@@ -42,31 +39,6 @@ public class NavigationHelperTests
         NavigationHelper.ApplySelection(parentShape);
 
     #endregion
-
-    // -----------------------------------------------------------------------
-    // UseLegacyFormat
-    // -----------------------------------------------------------------------
-
-    [Fact]
-    public void UseLegacyFormat_WhenSwitchDisabled_ReturnsFalse()
-    {
-        AppContext.SetSwitch(NavigationConstants.LegacyAdminMenuNavigationSwitchKey, false);
-        Assert.False(NavigationHelper.UseLegacyFormat());
-    }
-
-    [Fact]
-    public void UseLegacyFormat_WhenSwitchEnabled_ReturnsTrue()
-    {
-        AppContext.SetSwitch(NavigationConstants.LegacyAdminMenuNavigationSwitchKey, true);
-        try
-        {
-            Assert.True(NavigationHelper.UseLegacyFormat());
-        }
-        finally
-        {
-            AppContext.SetSwitch(NavigationConstants.LegacyAdminMenuNavigationSwitchKey, false);
-        }
-    }
 
     // -----------------------------------------------------------------------
     // CountPathSegments
