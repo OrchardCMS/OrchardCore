@@ -112,7 +112,6 @@ public sealed class BackgroundTaskController : Controller
         [
             new SelectListItem(S["Enable"], nameof(BackgroundTaskBulkAction.Enable)),
             new SelectListItem(S["Disable"], nameof(BackgroundTaskBulkAction.Disable)),
-            new SelectListItem(S["Toggle"], nameof(BackgroundTaskBulkAction.Toggle)),
         ];
 
         var taskItems = items.ToList();
@@ -185,7 +184,6 @@ public sealed class BackgroundTaskController : Controller
             {
                 BackgroundTaskBulkAction.Enable => true,
                 BackgroundTaskBulkAction.Disable => false,
-                BackgroundTaskBulkAction.Toggle => !settings.Enable,
                 _ => settings.Enable,
             };
 
@@ -199,9 +197,6 @@ public sealed class BackgroundTaskController : Controller
                 break;
             case BackgroundTaskBulkAction.Disable:
                 await _notifier.SuccessAsync(H["The tasks have been disabled."]);
-                break;
-            case BackgroundTaskBulkAction.Toggle:
-                await _notifier.SuccessAsync(H["The tasks have been toggled."]);
                 break;
         }
 

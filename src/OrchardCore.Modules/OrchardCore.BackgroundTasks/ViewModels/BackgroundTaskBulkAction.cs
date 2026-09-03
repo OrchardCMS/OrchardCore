@@ -5,5 +5,4 @@ public enum BackgroundTaskBulkAction
     None,
     Enable,
     Disable,
-    Toggle,
 }
