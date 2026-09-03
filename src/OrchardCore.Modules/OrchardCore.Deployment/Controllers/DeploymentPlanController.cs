@@ -72,7 +72,7 @@ public sealed class DeploymentPlanController : Controller
             return Forbid();
         }
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
 
         var deploymentPlans = _session.Query<DeploymentPlan, DeploymentPlanIndex>();
 

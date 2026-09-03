@@ -121,7 +121,7 @@ public sealed class BackgroundTaskController : Controller
             routeData.Values.TryAdd(_optionsStatus, options.Status);
         }
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
         var pagerShape = await _shapeFactory.PagerAsync(pager, taskItems.Count, routeData);
 
         var model = new BackgroundTaskIndexViewModel

@@ -84,6 +84,8 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
         site.BaseUrl = model.BaseUrl;
         site.TimeZoneId = model.TimeZone;
         site.PageSize = model.PageSize.Value;
+        site.AllowPageSizeSelection = model.AllowPageSizeSelection;
+        site.PageSizeOptions = ParsePageSizeOptions(model.PageSizeOptions);
         site.UseCdn = model.UseCdn;
         site.CdnBaseUrl = model.CdnBaseUrl;
         site.ResourceDebugMode = model.ResourceDebugMode;
@@ -98,6 +100,11 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
         if (site.MaxPageSize > 0 && model.PageSize.Value > site.MaxPageSize)
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), S["The page size must be less than or equal to {0}.", site.MaxPageSize]);
+        }
+
+        if (model.AllowPageSizeSelection && (site.PageSizeOptions is null || site.PageSizeOptions.Length == 0))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSizeOptions), S["Enter at least one valid page size when page size selection is allowed."]);
         }
 
         if (!string.IsNullOrEmpty(site.BaseUrl) && !Uri.TryCreate(site.BaseUrl, UriKind.Absolute, out _))
@@ -117,6 +124,10 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
         model.BaseUrl = site.BaseUrl;
         model.TimeZone = site.TimeZoneId;
         model.PageSize = site.PageSize;
+        model.AllowPageSizeSelection = site.AllowPageSizeSelection;
+        model.PageSizeOptions = site.PageSizeOptions is { Length: > 0 }
+            ? string.Join(", ", site.PageSizeOptions)
+            : string.Empty;
         model.UseCdn = site.UseCdn;
         model.CdnBaseUrl = site.CdnBaseUrl;
         model.ResourceDebugMode = site.ResourceDebugMode;
@@ -126,4 +137,20 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
 
     private static bool IsGeneralGroup(BuildEditorContext context)
         => context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase);
+
+    private static int[] ParsePageSizeOptions(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return [];
+        }
+
+        return value
+            .Split([',', ';', ' '], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(part => int.TryParse(part, out var size) ? size : 0)
+            .Where(size => size > 0)
+            .Distinct()
+            .OrderBy(size => size)
+            .ToArray();
+    }
 }
