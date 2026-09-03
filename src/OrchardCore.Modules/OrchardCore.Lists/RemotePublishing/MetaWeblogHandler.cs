@@ -265,6 +265,8 @@ public class MetaWeblogHandler : IXmlRpcHandler
         var postType = (await GetContainedContentTypesAsync(list)).FirstOrDefault();
         var contentItem = await _contentManager.NewAsync(postType.Name);
 
+        await CheckAccessAsync(CommonPermissions.EditContent, user, contentItem);
+
         contentItem.Alter<ContainedPart>(x => x.ListContentItemId = list.ContentItemId);
 
         foreach (var driver in _metaWeblogDrivers)

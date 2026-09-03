@@ -15,13 +15,12 @@ The following shapes are rendered when the `HtmlBodyPart` is attached to a conte
 
 The following properties are available on the `HtmlBodyPartViewModel` class:
 
-| Property           | Type                   | Description                                           |
-|--------------------|------------------------|-------------------------------------------------------|
-| `Body`             | `string`               | The content that was edited. It might contain tokens. |
-| `Html`             | `string`               | The HTML content once all tokens have been processed. |
-| `ContentItem`      | `ContentItem`          | The content item of the part.                         |
-| `HtmlBodyPart`     | `HtmlBodyPart`         | The `HtmlBodyPart` instance.                          |
-| `TypePartSettings` | `HtmlBodyPartSettings` | The settings of the part.                             |
+| Property             | Type                        | Description                                                                 |
+|----------------------|-----------------------------|-----------------------------------------------------------------------------|
+| `Html`               | `string`                    | The rendered HTML after Liquid, shortcodes, and optional sanitization.      |
+| `ContentItem`        | `ContentItem`               | The content item of the part.                                               |
+| `HtmlBodyPart`       | `HtmlBodyPart`              | The `HtmlBodyPart` instance containing the exact authored source.           |
+| `TypePartDefinition` | `ContentTypePartDefinition` | The definition of the part on the content type.                             |
 
 ### HtmlBodyPart
 
@@ -29,15 +28,17 @@ The following properties are available on `HtmlBodyPart`:
 
 | Name          | Type                                   | Description                                                                                                                                                          |
 |---------------|----------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `Body`        | `string`                               | The HTML content in the body. It can contain Liquid tags so using it directly might result in unexpected results. Prefer rendering the `HtmlBodyPart` shape instead. |
+| `Html`        | `string`                               | The exact authored HTML source. It can contain Liquid tags, so prefer a framework-rendered output such as the `HtmlBodyPart` shape or `BodyAspect`.                  |
 | `Content`     | The raw content of the part.           |
 | `ContentItem` | The content item containing this part. |
 
 ## Sanitization
 
-By default all HTML input is sanitized when the `HtmlBodyPart` is saved.
+The exact authored HTML is persisted. When `Sanitize HTML` is enabled, sanitization is applied to the final rendered HTML after Liquid and shortcodes have been processed. This also protects previously stored content when it is rendered.
 
-You can disable this by unchecking the `Sanitize HTML` setting, or further configuring the [HTML Sanitizer](../Sanitizer/README.md)
+You can disable this trusted-output safeguard by unchecking the `Sanitize HTML` setting, or further configure the [HTML Sanitizer](../Sanitizer/README.md).
+
+Enabling `Render Liquid` makes the source executable and requires the security-critical `ManageLiquidTemplates` permission to configure or edit the content.
 
 ## Editors
 

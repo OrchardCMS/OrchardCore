@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
+using LiquidPermissions = OrchardCore.Liquid.Permissions;
 
 namespace OrchardCore.Templates;
 
@@ -19,6 +20,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                 .Add(S["Templates"], S["Templates"].PrefixPosition(), import => import
                     .Action("Index", "Template", "OrchardCore.Templates")
                     .Permission(Permissions.ManageTemplates)
+                    .Permission(LiquidPermissions.ManageLiquidTemplates)
                     .LocalNav()
                 )
             );

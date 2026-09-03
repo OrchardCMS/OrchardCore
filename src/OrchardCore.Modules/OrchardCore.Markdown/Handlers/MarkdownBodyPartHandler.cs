@@ -66,7 +66,7 @@ public class MarkdownBodyPartHandler : ContentPartHandler<MarkdownBodyPart>
 
                 // The default Markdown option is to entity escape html so filters must be run after the markdown has
                 // been processed.
-                var html = _markdownService.ToHtml(part.Markdown ?? string.Empty);
+                var html = _markdownService.ToHtml(markdown);
 
                 html = await _shortcodeService.ProcessAsync(html,
                     new Context
