@@ -41,6 +41,7 @@ public class LiquidContentAuthorizationTests
         };
         using var context = new SiteContext().WithPermissionsContext(permissionsContext);
         await context.InitializeAsync();
+        context.Client.DefaultRequestHeaders.AcceptLanguage.ParseAdd("en");
 
         await context.UsingTenantScopeAsync(async scope =>
         {
