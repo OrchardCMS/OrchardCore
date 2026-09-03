@@ -90,6 +90,54 @@ public class PagerOptionsTests
     }
 
     [Fact]
+    public void PageSizeOptions_DefaultsToCommonValues()
+    {
+        var options = new PagerOptions();
+
+        Assert.Equal([10, 25, 50, 100], options.PageSizeOptions);
+    }
+
+    [Fact]
+    public void GetPageSize_WithExplicitDefault_HonorsAllowedSelectedValue()
+    {
+        var options = new PagerOptions
+        {
+            PageSize = 10,
+            AllowPageSizeSelection = true,
+            PageSizeOptions = [10, 25, 50, 100],
+        };
+
+        // The explicit default (a list's own page size) is used only as a fallback.
+        Assert.Equal(50, options.GetPageSize(50, 20));
+    }
+
+    [Fact]
+    public void GetPageSize_WithExplicitDefault_FallsBackWhenNotAllowed()
+    {
+        var options = new PagerOptions
+        {
+            PageSize = 10,
+            AllowPageSizeSelection = true,
+            PageSizeOptions = [10, 25, 50, 100],
+        };
+
+        Assert.Equal(20, options.GetPageSize(33, 20));
+    }
+
+    [Fact]
+    public void GetPageSize_WithExplicitDefault_FallsBackWhenDisabled()
+    {
+        var options = new PagerOptions
+        {
+            PageSize = 10,
+            AllowPageSizeSelection = false,
+            PageSizeOptions = [10, 25, 50, 100],
+        };
+
+        Assert.Equal(20, options.GetPageSize(50, 20));
+    }
+
+    [Fact]
     public void PagerConstructor_UsesResolvedPageSizeFromOptions()
     {
         var options = new PagerOptions

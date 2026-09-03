@@ -1,45 +1,8 @@
-@using Microsoft.AspNetCore.WebUtilities
-@inject Microsoft.Extensions.Options.IOptions<OrchardCore.Navigation.PagerOptions> PagerOptions
 @{
     Model.Metadata.Alternates.Clear();
     Model.Metadata.Type = "Pager_Links";
-
-    var pagerOptions = PagerOptions.Value;
-    var showPageSizeSelector = pagerOptions.AllowPageSizeSelection && pagerOptions.PageSizeOptions is { Length: > 0 };
-    int currentPageSize = Model.PageSize == null ? pagerOptions.GetPageSize() : (int)Model.PageSize;
 }
 
-<nav aria-label="@T["Listing pages"]" class="d-flex flex-wrap align-items-center gap-2">
+<nav aria-label="@T["Listing pages"]">
     @await DisplayAsync(Model)
-
-    @if (showPageSizeSelector)
-    {
-        // Preserve the current query string but reset the page number and override the page size.
-        var queryValues = QueryHelpers.ParseQuery(Context.Request.QueryString.Value);
-        queryValues.Remove("pagenum");
-        queryValues.Remove("PageNum");
-        queryValues.Remove("pageSize");
-        queryValues.Remove("PageSize");
-
-        var baseParams = queryValues
-            .SelectMany(pair => pair.Value.Select(value => new KeyValuePair<string, string>(pair.Key, value)))
-            .ToList();
-
-        <div class="pager-page-size d-flex align-items-center gap-2 ms-auto">
-            <label for="pagerPageSize" class="col-form-label text-nowrap">@T["Items per page"]</label>
-            <select id="pagerPageSize" class="form-select form-select-sm w-auto" aria-label="@T["Items per page"]" onchange="if (this.value) { window.location.href = this.value; }">
-                @foreach (var size in pagerOptions.PageSizeOptions)
-                {
-                    var optionParams = new List<KeyValuePair<string, string>>(baseParams)
-                    {
-                        new("pageSize", size.ToString()),
-                    };
-
-                    var url = QueryHelpers.AddQueryString((Context.Request.PathBase + Context.Request.Path).Value, optionParams);
-
-                    <option value="@url" selected="@(size == currentPageSize)">@size</option>
-                }
-            </select>
-        </div>
-    }
 </nav>

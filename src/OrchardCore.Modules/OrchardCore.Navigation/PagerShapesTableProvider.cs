@@ -1,12 +1,15 @@
 #pragma warning disable CA1707 // Remove the underscores from member name
 
+using System.Globalization;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Html;
@@ -176,7 +179,10 @@ public class PagerShapes : IShapeAttributeProvider
         if (totalPageCount < 2)
         {
             shape.Metadata.Type = "List";
-            return await displayContext.DisplayHelper.ShapeExecuteAsync(shape);
+            var singlePageContent = await displayContext.DisplayHelper.ShapeExecuteAsync(shape);
+
+            // Still offer the page size selector so the user can change how many items are displayed.
+            return WrapWithPageSizeSelector(singlePageContent, BuildPageSizeSelector(displayContext, pageSize));
         }
 
         var firstText = FirstText ?? S["<<"];
@@ -351,7 +357,9 @@ public class PagerShapes : IShapeAttributeProvider
 
         await shape.AddAsync(pagerLastItem);
 
-        return await displayContext.DisplayHelper.ShapeExecuteAsync(shape);
+        var pagerContent = await displayContext.DisplayHelper.ShapeExecuteAsync(shape);
+
+        return WrapWithPageSizeSelector(pagerContent, BuildPageSizeSelector(displayContext, pageSize));
     }
 
     [Shape]
@@ -440,7 +448,11 @@ public class PagerShapes : IShapeAttributeProvider
             routeData.Remove("after");
         }
 
-        return await displayContext.DisplayHelper.ShapeExecuteAsync(shape);
+        var pagerContent = await displayContext.DisplayHelper.ShapeExecuteAsync(shape);
+
+        var currentPageSize = shape.TryGetProperty("PageSize", out int pageSize) ? pageSize : 0;
+
+        return WrapWithPageSizeSelector(pagerContent, BuildPageSizeSelector(displayContext, currentPageSize));
     }
 
     [Shape]
@@ -541,6 +553,96 @@ public class PagerShapes : IShapeAttributeProvider
         var parentTag = shape.GetProperty<TagBuilder>("Tag");
         parentTag.AddCssClass("disabled");
         return displayContext.DisplayHelper.ShapeExecuteAsync(shape);
+    }
+
+    private static IHtmlContent WrapWithPageSizeSelector(IHtmlContent pagerContent, IHtmlContent selector)
+    {
+        if (selector is null)
+        {
+            return pagerContent;
+        }
+
+        var wrapper = new TagBuilder("div");
+        wrapper.AddCssClass("pager-wrapper d-flex flex-wrap align-items-center justify-content-between gap-2");
+        wrapper.InnerHtml.AppendHtml(pagerContent);
+        wrapper.InnerHtml.AppendHtml(selector);
+
+        return wrapper;
+    }
+
+    private IHtmlContent BuildPageSizeSelector(DisplayContext displayContext, int currentPageSize)
+    {
+        var serviceProvider = displayContext.ServiceProvider;
+        var pagerOptions = serviceProvider.GetService<IOptions<PagerOptions>>()?.Value;
+
+        if (pagerOptions is null || !pagerOptions.AllowPageSizeSelection || pagerOptions.PageSizeOptions is not { Length: > 0 })
+        {
+            return null;
+        }
+
+        var httpContext = serviceProvider.GetService<IHttpContextAccessor>()?.HttpContext;
+
+        if (httpContext is null)
+        {
+            return null;
+        }
+
+        var request = httpContext.Request;
+        var basePath = (request.PathBase + request.Path).Value;
+
+        // Preserve the current query string, but reset the page number and cursor and override the page size.
+        var preserved = new List<KeyValuePair<string, string>>();
+
+        foreach (var pair in QueryHelpers.ParseQuery(request.QueryString.Value))
+        {
+            if (string.Equals(pair.Key, "pagenum", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(pair.Key, "pageSize", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(pair.Key, "before", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(pair.Key, "after", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            foreach (var value in pair.Value)
+            {
+                preserved.Add(new KeyValuePair<string, string>(pair.Key, value));
+            }
+        }
+
+        var select = new TagBuilder("select");
+        select.AddCssClass("form-select form-select-sm w-auto");
+        select.Attributes["aria-label"] = S["Items per page"].Value;
+        select.Attributes["onchange"] = "if (this.value) { window.location.href = this.value; }";
+
+        foreach (var size in pagerOptions.PageSizeOptions)
+        {
+            var optionParams = new List<KeyValuePair<string, string>>(preserved)
+            {
+                new("pageSize", size.ToString(CultureInfo.InvariantCulture)),
+            };
+
+            var option = new TagBuilder("option");
+            option.Attributes["value"] = QueryHelpers.AddQueryString(basePath, optionParams);
+
+            if (size == currentPageSize)
+            {
+                option.Attributes["selected"] = "selected";
+            }
+
+            option.InnerHtml.Append(size.ToString(CultureInfo.InvariantCulture));
+            select.InnerHtml.AppendHtml(option);
+        }
+
+        var label = new TagBuilder("label");
+        label.AddCssClass("col-form-label text-nowrap me-2");
+        label.InnerHtml.Append(S["Items per page"].Value);
+
+        var container = new TagBuilder("div");
+        container.AddCssClass("pager-page-size d-flex align-items-center ms-auto");
+        container.InnerHtml.AppendHtml(label);
+        container.InnerHtml.AppendHtml(select);
+
+        return container;
     }
 
     private static IHtmlContent CoerceHtmlString(object value)

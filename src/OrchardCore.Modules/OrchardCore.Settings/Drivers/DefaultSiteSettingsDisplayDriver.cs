@@ -85,7 +85,6 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
         site.TimeZoneId = model.TimeZone;
         site.PageSize = model.PageSize.Value;
         site.AllowPageSizeSelection = model.AllowPageSizeSelection;
-        site.PageSizeOptions = ParsePageSizeOptions(model.PageSizeOptions);
         site.UseCdn = model.UseCdn;
         site.CdnBaseUrl = model.CdnBaseUrl;
         site.ResourceDebugMode = model.ResourceDebugMode;
@@ -102,9 +101,18 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), S["The page size must be less than or equal to {0}.", site.MaxPageSize]);
         }
 
-        if (model.AllowPageSizeSelection && (site.PageSizeOptions is null || site.PageSizeOptions.Length == 0))
+        if (TryParsePageSizeOptions(model.PageSizeOptions, out var pageSizeOptions))
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSizeOptions), S["Enter at least one valid page size when page size selection is allowed."]);
+            site.PageSizeOptions = pageSizeOptions;
+
+            if (model.AllowPageSizeSelection && pageSizeOptions.Length == 0)
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSizeOptions), S["Enter at least one page size when page size selection is allowed."]);
+            }
+        }
+        else
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSizeOptions), S["The page size options must be a comma-separated list of positive numbers."]);
         }
 
         if (!string.IsNullOrEmpty(site.BaseUrl) && !Uri.TryCreate(site.BaseUrl, UriKind.Absolute, out _))
@@ -138,19 +146,33 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
     private static bool IsGeneralGroup(BuildEditorContext context)
         => context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase);
 
-    private static int[] ParsePageSizeOptions(string value)
+    private static bool TryParsePageSizeOptions(string value, out int[] result)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
-            return [];
+            result = [];
+
+            return true;
         }
 
-        return value
-            .Split([',', ';', ' '], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .Select(part => int.TryParse(part, out var size) ? size : 0)
-            .Where(size => size > 0)
-            .Distinct()
-            .OrderBy(size => size)
-            .ToArray();
+        var tokens = value.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var sizes = new List<int>();
+
+        foreach (var token in tokens)
+        {
+            if (!int.TryParse(token, out var size) || size <= 0)
+            {
+                result = null;
+
+                return false;
+            }
+
+            sizes.Add(size);
+        }
+
+        // Always persist a sorted, distinct list.
+        result = sizes.Distinct().Order().ToArray();
+
+        return true;
     }
 }

@@ -20,7 +20,7 @@ public class PagerOptions
     /// Gets or sets the page size values a user is allowed to select from when
     /// <see cref="AllowPageSizeSelection"/> is enabled.
     /// </summary>
-    public int[] PageSizeOptions { get; set; }
+    public int[] PageSizeOptions { get; set; } = [10, 25, 50, 100];
 
     public int GetPageSize()
     {
@@ -40,9 +40,21 @@ public class PagerOptions
     /// <param name="selectedPageSize">The page size requested for the current listing, or <c>null</c> when none was provided.</param>
     /// <returns>The page size to use.</returns>
     public int GetPageSize(int? selectedPageSize)
+        => GetPageSize(selectedPageSize, GetPageSize());
+
+    /// <summary>
+    /// Resolves the effective page size for a request, honoring the user selected value only when
+    /// page size selection is enabled and the requested value is one of the configured
+    /// <see cref="PageSizeOptions"/>. Any other value falls back to <paramref name="defaultPageSize"/>.
+    /// </summary>
+    /// <param name="selectedPageSize">The page size requested for the current listing, or <c>null</c> when none was provided.</param>
+    /// <param name="defaultPageSize">The page size to use when the requested value is not allowed.</param>
+    /// <returns>The page size to use.</returns>
+    public int GetPageSize(int? selectedPageSize, int defaultPageSize)
     {
         if (AllowPageSizeSelection &&
             selectedPageSize.HasValue &&
+            selectedPageSize.Value > 0 &&
             PageSizeOptions is { Length: > 0 } &&
             Array.IndexOf(PageSizeOptions, selectedPageSize.Value) >= 0)
         {
@@ -51,12 +63,9 @@ public class PagerOptions
                 return MaxPageSize;
             }
 
-            if (selectedPageSize.Value > 0)
-            {
-                return selectedPageSize.Value;
-            }
+            return selectedPageSize.Value;
         }
 
-        return GetPageSize();
+        return defaultPageSize;
     }
 }
