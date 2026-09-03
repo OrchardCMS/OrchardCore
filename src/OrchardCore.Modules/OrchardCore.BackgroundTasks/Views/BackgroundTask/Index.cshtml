@@ -2,8 +2,10 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Background Tasks"])</h1></zone>
 
-<form asp-action="Index" method="post" class="no-multisubmit" data-list-management>
+<form asp-action="Index" method="post" class="no-multisubmit" data-list-management data-selected-label="@T["selected"]">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
+    <input asp-for="Options.BulkAction" type="hidden" />
+    <input type="submit" name="submit.BulkAction" class="visually-hidden" />
 
     <div class="card text-bg-theme mb-3 position-sticky action-bar">
         <div class="card-body">
@@ -20,12 +22,32 @@
         </div>
     </div>
 
-    <ul class="list-group">
+    <ul class="list-group with-checkbox">
         <li class="list-group-item text-bg-theme">
-            <div class="row gx-3">
+            <div class="row gx-3 align-items-center">
                 <div class="col">
+                    @if (Model.Tasks.Count > 0)
+                    {
+                        <div class="form-check my-1">
+                            <input type="checkbox" class="form-check-input" id="select-all">
+                            <label class="form-check-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
+                            <label id="items" for="select-all">@T["{0} tasks", Model.Tasks.Count]</label>
+                            <label id="selected-items" class="text-muted" for="select-all"></label>
+                        </div>
+                    }
                 </div>
                 <div class="col-auto">
+                    <div class="dropdown d-none" id="actions">
+                        <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            @T["Actions"]
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            @foreach (var action in Model.Options.BulkActions)
+                            {
+                                <li><a class="dropdown-item" href="javascript:void(0)" data-action="@action.Value">@action.Text</a></li>
+                            }
+                        </ul>
+                    </div>
                     <div class="btn-group filter">
                         <select asp-for="Options.Status" asp-items="@Model.Options.Statuses" class="selectpicker show-tick me-2" data-header="@T["Filter by status"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Status"]" data-style="btn-sm"></select>
                     </div>
@@ -36,34 +58,44 @@
         {
             foreach (var task in Model.Tasks)
             {
+                var checkboxId = Html.GenerateIdFromName(task.Name);
+
                 <li class="list-group-item">
                     <div class="d-flex">
-                        <div class="me-auto">
-                            <span class="text-primary" title="@T["Settings"]"><i class="fa-solid fa-gear" aria-hidden="true"></i></span>
-                            <span class="text-primary"><a asp-action="Edit" asp-route-name="@task.Name">@task.Title</a></span>
+                        <div class="form-check pe-2">
+                            <input type="checkbox" class="form-check-input" name="taskNames" value="@task.Name" id="@checkboxId">
+                            <label class="form-check-label" for="@checkboxId">&nbsp;</label>
                         </div>
-                        <div>
-                            <a asp-action="Edit" asp-route-name="@task.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                        <div class="flex-grow-1">
+                            <div class="d-flex">
+                                <div class="me-auto">
+                                    <span class="text-primary" title="@T["Settings"]"><i class="fa-solid fa-gear" aria-hidden="true"></i></span>
+                                    <span class="text-primary"><a asp-action="Edit" asp-route-name="@task.Name">@task.Title</a></span>
+                                </div>
+                                <div>
+                                    <a asp-action="Edit" asp-route-name="@task.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
 
-                            @if (task.Enable)
+                                    @if (task.Enable)
+                                    {
+                                        <a asp-action="Disable" asp-route-name="@task.Name" class="btn btn-sm btn-danger" data-url-af="UnsafeUrl">@T["Disable"]</a>
+                                    }
+                                    else
+                                    {
+                                        <a asp-action="Enable" asp-route-name="@task.Name" class="btn btn-sm btn-success" data-url-af="UnsafeUrl">@T["Enable"]</a>
+                                    }
+                                </div>
+                            </div>
+
+                            @if (!string.IsNullOrWhiteSpace(task.Description))
                             {
-                                <a asp-action="Disable" asp-route-name="@task.Name" class="btn btn-sm btn-danger" data-url-af="UnsafeUrl">@T["Disable"]</a>
-                            }
-                            else
-                            {
-                                <a asp-action="Enable" asp-route-name="@task.Name" class="btn btn-sm btn-success" data-url-af="UnsafeUrl">@T["Enable"]</a>
+                                <div class="row">
+                                    <div class="col">
+                                        <p class="mb-0"><small class="text-muted">@task.Description</small></p>
+                                    </div>
+                                </div>
                             }
                         </div>
                     </div>
-
-                    @if (!string.IsNullOrWhiteSpace(task.Description))
-                    {
-                        <div class="row">
-                            <div class="col">
-                                <p class="mb-0"><small class="text-muted">@task.Description</small></p>
-                            </div>
-                        </div>
-                    }
                 </li>
             }
         }
