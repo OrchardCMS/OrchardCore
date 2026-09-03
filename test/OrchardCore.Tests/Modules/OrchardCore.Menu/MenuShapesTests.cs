@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using OrchardCore.ContentManagement;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Menu;
@@ -45,8 +46,8 @@ public class MenuShapesTests
             _sanitizer,
             HtmlEncoder.Default);
 
-        var sourcePart = contentItem.As<HtmlMenuItemPart>();
-        var renderedPart = renderedContentItem.As<HtmlMenuItemPart>();
+        var sourcePart = contentItem.Get<HtmlMenuItemPart>(nameof(HtmlMenuItemPart));
+        var renderedPart = renderedContentItem.Get<HtmlMenuItemPart>(nameof(HtmlMenuItemPart));
 
         Assert.Equal(html, sourcePart.Html);
         Assert.Equal(url, sourcePart.Url);
@@ -74,7 +75,7 @@ public class MenuShapesTests
             _sanitizer,
             HtmlEncoder.Default);
 
-        var renderedPart = renderedContentItem.As<HtmlMenuItemPart>();
+        var renderedPart = renderedContentItem.Get<HtmlMenuItemPart>(nameof(HtmlMenuItemPart));
 
         Assert.Equal(html, renderedPart.Html);
         Assert.Equal("/safe", renderedPart.Url);

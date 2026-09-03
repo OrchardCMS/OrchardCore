@@ -100,7 +100,7 @@ public class LiquidContentAuthorizationTests
         response.EnsureSuccessStatusCode();
         var savedContentItem = await response.Content.ReadAsAsync<ContentItem>();
 
-        Assert.Equal(source, savedContentItem.As<HtmlBodyPart>().Html);
+        Assert.Equal(source, savedContentItem.Get<HtmlBodyPart>(nameof(HtmlBodyPart)).Html);
 
         await context.UsingTenantScopeAsync(async scope =>
         {
@@ -109,7 +109,7 @@ public class LiquidContentAuthorizationTests
                 savedContentItem.ContentItemId,
                 VersionOptions.Latest);
 
-            Assert.Equal(source, storedContentItem.As<HtmlBodyPart>().Html);
+            Assert.Equal(source, storedContentItem.Get<HtmlBodyPart>(nameof(HtmlBodyPart)).Html);
 
             var bodyAspect = await contentManager.PopulateAspectAsync<BodyAspect>(storedContentItem);
             var renderedHtml = bodyAspect.Body.ToString();
@@ -149,7 +149,7 @@ public class LiquidContentAuthorizationTests
         markdownResponse.EnsureSuccessStatusCode();
         var savedMarkdownContentItem = await markdownResponse.Content.ReadAsAsync<ContentItem>();
 
-        Assert.Equal(markdownSource, savedMarkdownContentItem.As<MarkdownBodyPart>().Markdown);
+        Assert.Equal(markdownSource, savedMarkdownContentItem.Get<MarkdownBodyPart>(nameof(MarkdownBodyPart)).Markdown);
 
         await context.UsingTenantScopeAsync(async scope =>
         {
@@ -158,7 +158,7 @@ public class LiquidContentAuthorizationTests
                 savedMarkdownContentItem.ContentItemId,
                 VersionOptions.Latest);
 
-            Assert.Equal(markdownSource, storedContentItem.As<MarkdownBodyPart>().Markdown);
+            Assert.Equal(markdownSource, storedContentItem.Get<MarkdownBodyPart>(nameof(MarkdownBodyPart)).Markdown);
 
             var bodyAspect = await contentManager.PopulateAspectAsync<BodyAspect>(storedContentItem);
             var renderedHtml = bodyAspect.Body.ToString();
