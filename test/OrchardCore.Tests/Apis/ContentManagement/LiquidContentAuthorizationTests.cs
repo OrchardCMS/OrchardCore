@@ -10,7 +10,6 @@ using OrchardCore.Html.Models;
 using OrchardCore.Html.Settings;
 using OrchardCore.Liquid;
 using OrchardCore.Liquid.Models;
-using OrchardCore.Localization;
 using OrchardCore.Markdown.Models;
 using OrchardCore.Markdown.Settings;
 using OrchardCore.Security;
@@ -27,8 +26,6 @@ public class LiquidContentAuthorizationTests
     [Fact]
     public async Task ContentApiShouldRequireLiquidPermissionAndPreserveAuthoredSource()
     {
-        using var cultureScope = CultureScope.Create("en");
-
         var permissionsContext = new PermissionsContext
         {
             UsePermissionsContext = true,
@@ -41,7 +38,6 @@ public class LiquidContentAuthorizationTests
         };
         using var context = new SiteContext().WithPermissionsContext(permissionsContext);
         await context.InitializeAsync();
-        context.Client.DefaultRequestHeaders.AcceptLanguage.ParseAdd("en");
 
         await context.UsingTenantScopeAsync(async scope =>
         {
@@ -80,7 +76,7 @@ public class LiquidContentAuthorizationTests
         await SetHtmlBodyPartSettingsAsync(context, sanitizeHtml: true);
 
         const string source =
-            "[locale 'en']<script>alert(1)</script><p>{{ ContentItem.DisplayText }}</p>[/locale]";
+            "<script>alert(1)</script><p>{{ ContentItem.DisplayText }}</p>[locale 'en']localized[/locale]";
         var contentItem = new ContentItem
         {
             ContentType = "LiquidArticle",
@@ -173,7 +169,7 @@ public class LiquidContentAuthorizationTests
         });
 
         const string graphQlSource =
-            "[locale 'en']<script>alert(3)</script><p>{{ ContentItem.DisplayText }}</p>[/locale]";
+            "<script>alert(3)</script><p>{{ ContentItem.DisplayText }}</p>[locale 'en']localized[/locale]";
 
         await context.UsingTenantScopeAsync(async scope =>
         {
