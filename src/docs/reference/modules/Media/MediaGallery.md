@@ -50,7 +50,7 @@ The gallery supports the following operations on files:
 
 ## Display Modes
 
-The gallery opens in the **list view** by default: a table showing a file-type icon, name, last modified date and size, without downloading or rendering the media files themselves. The toolbar toggle switches to the **grid view**, which renders thumbnails for images (other file types show an icon with the file extension). The chosen view and the thumbnail size (from the settings popover) are persisted per user in the browser.
+The gallery opens in the **list view** by default: a table showing a file-type icon, name, last modified date and size, without downloading or rendering the media files themselves. The toolbar toggle switches to the **grid view**, which renders thumbnails for images (other file types show an icon with the file extension). The chosen view and the thumbnail size (from the settings popover) are persisted in the browser (per device/profile) using local storage.
 
 ### Disabling thumbnails
 
