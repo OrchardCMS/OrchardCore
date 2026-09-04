@@ -24,6 +24,8 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddHtmlServices();
+        
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
         services.AddScoped<IJSLocalizer, ContentFieldsJSLocalizer>();
 
@@ -71,8 +73,7 @@ public sealed class Startup : StartupBase
 
         // Html Field
         services.AddContentField<HtmlField>()
-            .UseDisplayDriver<HtmlFieldDisplayDriver>()
-            .AddHandler<HtmlFieldHandler>();
+            .UseDisplayDriver<HtmlFieldDisplayDriver>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, HtmlFieldSettingsDriver>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, HtmlFieldTrumbowygEditorSettingsDriver>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, HtmlFieldMonacoEditorSettingsDriver>();

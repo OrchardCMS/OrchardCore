@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Options;
+using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
 
 namespace OrchardCore.Media.Endpoints.Api;
@@ -55,9 +56,21 @@ public static class GetDirectoryContentEndpoint
             return httpContext.ApiNotFoundProblem();
         }
 
+        var canUploadRestrictedMedia = await authorizationService.AuthorizeAsync(
+            httpContext.User,
+            MediaPermissions.UploadRestrictedMedia);
+
         // Fetch folders and files concurrently.
         var foldersTask = MediaEndpointHelpers.GetDirectoryFoldersAsync(mediaFileStore, authorizationService, httpContext.User, path);
-        var filesTask = MediaEndpointHelpers.GetDirectoryFilesAsync(mediaFileStore, httpContext, contentTypeProvider, fileVersionProvider, options.Value, path, extensions);
+        var filesTask = MediaEndpointHelpers.GetDirectoryFilesAsync(
+            mediaFileStore,
+            httpContext,
+            contentTypeProvider,
+            fileVersionProvider,
+            options.Value,
+            canUploadRestrictedMedia,
+            path,
+            extensions);
 
         await Task.WhenAll(foldersTask, filesTask);
 

@@ -1,0 +1,12 @@
+@using OrchardCore.Workflows.ViewModels
+@using OrchardCore.Facebook.Activities
+@using OrchardCore.Workflows.Helpers
+
+@model ActivityViewModel<MetaConversionsApiEventTask>
+
+<header>
+    <h4>
+        <i class="fa-brands fa-meta" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Meta Conversions API Event"])
+    </h4>
+</header>
+<em>@Model.Activity.EventName</em>

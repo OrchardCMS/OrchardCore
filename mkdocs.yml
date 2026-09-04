@@ -128,6 +128,7 @@ plugins:
 nav:
   - About Orchard Core: README.md
   - Getting started:
+      - AI Quick Start: getting-started/ai-quick-start.md
       - Development Tools: getting-started/development-tools.md
       - Create a CMS Web application: getting-started/README.md
       - Test drive Orchard Core: getting-started/test-drive-orchard-core.md
@@ -273,6 +274,7 @@ nav:
               - Auto Setup: reference/modules/AutoSetup/README.md
               - Features: reference/modules/Features/README.md
               - File Upload Security: reference/core/file-upload-security.md
+              - Temporary File Storage: reference/core/temporary-file-storage.md
               - Contents: reference/modules/Contents/README.md
               - Configuration: reference/modules/Configuration/README.md
               - Cors: reference/modules/Cors/README.md

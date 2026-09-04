@@ -29,6 +29,7 @@ public sealed class AccountController : AccountBaseController
     private readonly ILogger _logger;
     private readonly ISiteService _siteService;
     private readonly IEnumerable<ILoginFormEvent> _loginFormEvents;
+    private readonly IEnumerable<ILogoutFormEvent> _logoutFormEvents;
     private readonly IDisplayManager<LoginForm> _loginFormDisplayManager;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly INotifier _notifier;
@@ -46,6 +47,7 @@ public sealed class AccountController : AccountBaseController
         IHtmlLocalizer<AccountController> htmlLocalizer,
         IStringLocalizer<AccountController> stringLocalizer,
         IEnumerable<ILoginFormEvent> loginFormEvents,
+        IEnumerable<ILogoutFormEvent> logoutFormEvents,
         INotifier notifier,
         IDisplayManager<LoginForm> loginFormDisplayManager,
         IUpdateModelAccessor updateModelAccessor,
@@ -57,6 +59,7 @@ public sealed class AccountController : AccountBaseController
         _logger = logger;
         _siteService = siteService;
         _loginFormEvents = loginFormEvents;
+        _logoutFormEvents = logoutFormEvents;
         _notifier = notifier;
         _loginFormDisplayManager = loginFormDisplayManager;
         _updateModelAccessor = updateModelAccessor;
@@ -212,9 +215,22 @@ public sealed class AccountController : AccountBaseController
     [HttpPost]
     public async Task<IActionResult> LogOff(string returnUrl = null)
     {
+        // Resolve the authenticated user before signing out, while the principal is still available.
+        var user = await _userService.GetAuthenticatedUserAsync(User);
+
+        if (user != null)
+        {
+            await _logoutFormEvents.InvokeAsync((e, user) => e.LoggingOutAsync(user), user, _logger);
+        }
+
         await _signInManager.SignOutAsync();
 
         _logger.LogInformation(4, "User logged out.");
+
+        if (user != null)
+        {
+            await _logoutFormEvents.InvokeAsync((e, user) => e.LoggedOutAsync(user), user, _logger);
+        }
 
         return RedirectToLocal(returnUrl);
     }

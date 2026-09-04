@@ -49,10 +49,11 @@
     </div>
 }
 
-<div class="ocat-wrapper">
+<div class="ocat-wrapper" asp-validation-class-for="Query">
     <label asp-for="Query" class="ocat-label">@T["Query"]</label>
     <div class="ocat-end">
         <textarea asp-for="Query" rows="12" class="form-control codemirror-query-editor" data-mode="@MediaTypeNamesExtended.Text.PostgreSQL" data-options="@JsonSerializer.Serialize(queryEditorOptions)"></textarea>
+        <span asp-validation-for="Query"></span>
         <span class="hint">@T["The SQL query to execute."]</span>
     </div>
 </div>

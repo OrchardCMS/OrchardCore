@@ -8,4 +8,8 @@ public class AdminIndexOptions
 
     public string Status { get; set; }
     public List<SelectListItem> Statuses { get; internal set; }
+
+    public BackgroundTaskBulkAction BulkAction { get; set; }
+
+    public List<SelectListItem> BulkActions { get; internal set; }
 }

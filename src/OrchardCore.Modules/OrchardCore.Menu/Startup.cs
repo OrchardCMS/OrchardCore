@@ -47,8 +47,7 @@ public sealed class Startup : StartupBase
 
         // HtmlMenuItemPart
         services.AddContentPart<HtmlMenuItemPart>()
-            .UseDisplayDriver<HtmlMenuItemPartDisplayDriver>()
-            .AddHandler<HtmlMenuItemPartHandler>();
+            .UseDisplayDriver<HtmlMenuItemPartDisplayDriver>();
 
         services.AddContentPart<MenuItemPermissionPart>()
             .UseDisplayDriver<MenuItemPermissionPartDisplayDriver>();
