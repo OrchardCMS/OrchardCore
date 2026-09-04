@@ -11,5 +11,4 @@ public enum FeaturesBulkAction
     None,
     Enable,
     Disable,
-    Toggle,
 }

@@ -2,6 +2,7 @@ using System.Buffers.Binary;
 using System.Net.Sockets;
 using OrchardCore.Antivirus;
 using OrchardCore.Antivirus.ClamAV;
+using OrchardCore.Environment.Shell;
 using OrchardCore.FileStorage;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media;
@@ -81,6 +82,7 @@ public class ClamAvFileEventHandlerTests
                 Host = "",
             }),
             factory,
+            CreateWorkspace(),
             NullLogger<ClamAvFileEventHandler>.Instance);
 
         var exception = await Assert.ThrowsAsync<AntivirusScanningException>(() =>
@@ -117,7 +119,13 @@ public class ClamAvFileEventHandlerTests
                 TransferTimeoutSeconds = 5,
             }),
             factory,
+            CreateWorkspace(),
             NullLogger<ClamAvFileEventHandler>.Instance);
+
+    private static DefaultTempDirectoryProvider CreateWorkspace()
+        => new DefaultTempDirectoryProvider(
+            Options.Create(new TempDirectoryOptions()),
+            new ShellSettings { Name = "clamav-test" });
 
     private static ClamAvConnectionFactory CreateFactory()
         => new(Mock.Of<IHostApplicationLifetime>(l => l.ApplicationStopped == CancellationToken.None), NullLoggerFactory.Instance);

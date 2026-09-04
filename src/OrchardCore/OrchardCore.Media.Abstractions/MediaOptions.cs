@@ -20,6 +20,12 @@ public class MediaOptions
     public HashSet<string> AllowedFileExtensions { get; set; }
 
     /// <summary>
+    /// The list of file extensions that require the <c>UploadRestrictedMedia</c> permission in addition to the
+    /// standard media upload permissions.
+    /// </summary>
+    public HashSet<string> RestrictedFileExtensions { get; set; }
+
+    /// <summary>
     /// The default number of days for the media cache control header.
     /// </summary>
     public int MaxBrowserCacheDays { get; set; }
@@ -93,13 +99,6 @@ public class MediaOptions
     /// The lifetime of temporary files created during upload. Defaults to 1 hour.
     /// </summary>
     public TimeSpan TemporaryFileLifetime { get; set; }
-
-    /// <summary>
-    /// The path used to store temporary TUS upload data.
-    /// Defaults to <c>{TempPath}/TusUploads</c>.
-    /// Configure this to a shared filesystem path for multi-instance deployments.
-    /// </summary>
-    public string TusTempPath { get; set; }
 
     /// <summary>
     /// Disables the thumbnails (grid) view in the media gallery, e.g. for security or performance

@@ -93,7 +93,9 @@ The `MaxFileSize` setting is enforced at multiple layers:
 
 ### File Extension Validation
 
-The `AllowedFileExtensions` setting is enforced both client-side and server-side. Files with disallowed extensions are rejected before upload begins in the Media Gallery. The server also validates extensions on all upload endpoints.
+The `AllowedFileExtensions` setting is enforced both client-side and server-side. Extensions configured in `RestrictedFileExtensions` additionally require the `UploadRestrictedMedia` permission. The Media Gallery receives the effective list for the current user, while the server remains authoritative for regular, API, and TUS uploads.
+
+Field-level extension settings intersect with the effective global list and can only further restrict uploads. They cannot make a globally disallowed or permission-gated extension uploadable.
 
 ### Concurrent Uploads
 
@@ -115,24 +117,28 @@ When TUS is enabled:
 The TUS endpoint is available at `/api/media/tus`.
 
 !!! warning
-    TUS stores partial upload data on local disk by default. In multi-instance deployments, you must ensure that all upload chunks for a given file reach the same server instance. This can be achieved by configuring `TusTempPath` to a **shared filesystem** path accessible from all instances, or by enabling **sticky sessions** (session affinity) on your load balancer. Without this, a chunked upload that spans multiple instances will fail because the second instance cannot find the partial file created by the first.
+    TUS stores partial upload data on local disk by default. In multi-instance deployments, you must ensure that all upload chunks for a given file reach the same server instance. This can be achieved by configuring the temporary file location (`OrchardCore:TempDirectory:Path`) to a **shared filesystem** path accessible from all instances, or by enabling **sticky sessions** (session affinity) on your load balancer. Without this, a chunked upload that spans multiple instances will fail because the second instance cannot find the partial file created by the first.
 
-To configure a shared path for TUS uploads:
+To configure a shared temporary file location (used by TUS and all other temporary files):
 
 ```json
 {
-  "OrchardCore_Media": {
-    "TusTempPath": "/mnt/shared/TusUploads"
+  "OrchardCore": {
+    "TempDirectory": {
+      "Path": "/mnt/shared/temp"
+    }
   }
 }
 ```
 
-For Docker deployments, set `TusTempPath` to a path inside a shared volume:
+For Docker deployments, set `Path` to a path inside a shared volume:
 
 ```json
 {
-  "OrchardCore_Media": {
-    "TusTempPath": "/app/data/TusUploads"
+  "OrchardCore": {
+    "TempDirectory": {
+      "Path": "/app/data/temp"
+    }
   }
 }
 ```
@@ -206,7 +212,7 @@ To fully scale the Media Library across multiple application instances, the foll
 | Component | Purpose | Configuration |
 |---|---|---|
 | **SignalR backplane** | Broadcast real-time updates across instances | Enable `OrchardCore.SignalR.Azure` or `OrchardCore.SignalR.Redis` |
-| **Sticky sessions** or **shared TUS path** | Ensure TUS upload chunks are accessible across instances | Configure session affinity on your load balancer, or set `TusTempPath` to a shared filesystem |
+| **Sticky sessions** or **shared TUS path** | Ensure TUS upload chunks are accessible across instances | Configure session affinity on your load balancer, or set `OrchardCore:TempDirectory:Path` to a shared filesystem |
 | **Shared media storage** | Store media files accessible from all instances | Configure Azure Blob Storage, Amazon S3, or a shared filesystem |
 | **Shared Data Protection keys** | Let cookies, antiforgery tokens, and bearer tokens issued by one instance be validated by another | Enable `OrchardCore.Redis.DataProtection`, or configure Azure Blob key storage via `OrchardCore.DataProtection.Azure` |
 
@@ -225,8 +231,8 @@ A single Redis instance can carry the whole cross-instance coordination load. En
   "OrchardCore_Redis": {
     "Configuration": "your-redis-host:6379,password=...,ssl=true"
   },
-  "OrchardCore_Media": {
-    "TusTempPath": "/mnt/shared/TusUploads"
+  "TempDirectory": {
+    "Path": "/mnt/shared/temp"
   }
 }
 ```

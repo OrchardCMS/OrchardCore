@@ -65,6 +65,28 @@ It defines the following widgets:
 
 This feature provides you a way to add Meta Pixel tracking to your site. Simply navigate to _Settings -> Integrations -> Meta Pixel_ settings and provide your `Pixel Identifier`.
 
+### Meta Conversions API
+
+The Meta Pixel feature also lets you configure the [Meta Conversions API](https://developers.facebook.com/docs/marketing-api/conversions-api), which sends events to Meta directly from the server instead of (or in addition to) the browser-side pixel. This is useful for events that should not depend on client-side JavaScript, such as events triggered from a background process or ones affected by ad blockers/browser tracking prevention.
+
+From the _Settings -> Integrations -> Meta Pixel_ settings page, in addition to the `Pixel Identifier`, you can configure:
+
+- **Conversions API Access Token**: The access token generated from the [Events Manager](https://business.facebook.com/events_manager2) for the pixel's dataset. This value is stored encrypted.
+- **Test Event Code**: Optional. The test event code from the Events Manager's "Test Events" tab. When set, events are sent tagged for testing and show up in the test console instead of counting as production data. Remove it before going live.
+
+#### Meta Conversions API Event workflow task
+
+When the `OrchardCore.Workflows` feature is also enabled, a **Meta Conversions API Event** task becomes available in the workflow editor, under the **Meta** category. Add it to any workflow to send a server-side event (e.g. `Purchase`, `Lead`) to Meta when that workflow runs.
+
+The task accepts:
+
+- **Event Name**: The [standard or custom event name](https://developers.facebook.com/docs/meta-pixel/reference) to send (e.g. `Purchase`, `Lead`). Supports workflow expressions.
+- **Event Source URL**: Optional. The URL of the page or resource associated with the event. Supports workflow expressions.
+- **Action Source**: Where the event happened, e.g. `Website`, `App`, `Email`, etc., as required by the Conversions API.
+- **Event ID**: Optional. A unique identifier for the event, used to [deduplicate](https://developers.facebook.com/docs/meta-pixel/implementation/conversions-api-deduplicate) events also sent by the browser-side Meta Pixel for the same action. Supports workflow expressions.
+
+The task produces two outcomes, `Done` and `Failed`, depending on whether the API call succeeded.
+
 ## Recipe Configuration
 
 Facebook settings can be configured using the `Settings` recipe step:
@@ -85,6 +107,11 @@ Facebook settings can be configured using the `Settings` recipe step:
       "FacebookLoginSettings": {
         "CallbackPath": "/signin-facebook",
         "SaveTokens": false
+      },
+      "FacebookPixelSettings": {
+        "PixelId": "your-pixel-id",
+        "ConversionsApiAccessToken": "your-conversions-api-access-token",
+        "ConversionsApiTestEventCode": "TEST12345"
       }
     }
   ]
@@ -108,6 +135,14 @@ Facebook settings can be configured using the `Settings` recipe step:
 |----------------|---------|------------------------------------------------------------------------------|
 | `CallbackPath` | String  | The request path where the user-agent will be returned after authentication. |
 | `SaveTokens`   | Boolean | Whether to save the access and refresh tokens.                               |
+
+### Pixel Settings
+
+| Property                      | Type   | Description                                                                                          |
+|-------------------------------|--------|--------------------------------------------------------------------------------------------------------|
+| `PixelId`                     | String | The Meta Pixel identifier.                                                                             |
+| `ConversionsApiAccessToken`   | String | The Meta Conversions API access token, generated from the Events Manager. Stored encrypted.            |
+| `ConversionsApiTestEventCode` | String | Optional test event code from the Events Manager "Test Events" tab. Remove it before going live.       |
 
 ## Meta Settings Configuration
 
