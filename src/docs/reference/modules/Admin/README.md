@@ -86,7 +86,7 @@ Here are samples using logo and favicon from media module.
 
 ## Quick Search
 
-The `TheAdmin` theme provides a quick search command palette to jump to any admin page from the keyboard. Press <kbd>Ctrl</kbd>+<kbd>K</kbd> (<kbd>Cmd</kbd>+<kbd>K</kbd> on macOS) anywhere in the admin, or click the magnifier icon in the top navbar, to open it. Typing filters the admin menu items as you type; the match is case- and accent-insensitive and also looks at the parent menu names, which are displayed as a breadcrumb under each result. Use the arrow keys to move the highlight, <kbd>Enter</kbd> to open the highlighted page and <kbd>Esc</kbd> to close the palette.
+The `TheAdmin` theme provides a quick search command palette to jump to any admin page from the keyboard. Press <kbd>Ctrl</kbd>+<kbd>K</kbd> (<kbd>Cmd</kbd>+<kbd>K</kbd> on macOS) anywhere in the admin, or click the magnifier icon in the top navbar to open it. Typing filters the admin menu items as you type; the match is case- and accent-insensitive and also looks at the parent menu names, which are displayed as a breadcrumb under each result. Use the arrow keys to move the highlight, <kbd>Enter</kbd> to open the highlighted page, and <kbd>Esc</kbd> to close the palette.
 
 The palette indexes the admin menu that is rendered in the left navigation, so it only lists the items the current user is allowed to see. The shortcut is not intercepted while the focus is inside a rich text or code editor, which use <kbd>Ctrl</kbd>+<kbd>K</kbd> for their own commands.
 
