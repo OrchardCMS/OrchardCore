@@ -88,7 +88,7 @@ Here are samples using logo and favicon from media module.
 
 The `TheAdmin` theme provides a quick search command palette to jump to any admin page from the keyboard. Press <kbd>Ctrl</kbd>+<kbd>K</kbd> (<kbd>Cmd</kbd>+<kbd>K</kbd> on macOS) anywhere in the admin, or click the magnifier icon in the top navbar to open it. Typing filters the admin menu items as you type; the match is case- and accent-insensitive and also looks at the parent menu names, which are displayed as a breadcrumb under each result. Use the arrow keys to move the highlight, <kbd>Enter</kbd> to open the highlighted page, and <kbd>Esc</kbd> to close the palette.
 
-The palette indexes the admin menu that is rendered in the left navigation, so it only lists the items the current user is allowed to see. The shortcut is not intercepted while the focus is inside a rich text or code editor, which use <kbd>Ctrl</kbd>+<kbd>K</kbd> for their own commands.
+The palette indexes the admin menu that is rendered in the left navigation, so it only lists the items the current user is allowed to see. The shortcut is not intercepted while the focus is inside a rich text or code editor, which uses <kbd>Ctrl</kbd>+<kbd>K</kbd> for its own commands.
 
 The feature is enabled by default and can be turned off from **Configuration → Settings → Admin** (**Enable quick search**) or with the `DisplayQuickSearch` admin setting (see [Recipe Configuration](#recipe-configuration)). The navbar item is rendered by a `DisplayDriver<Navbar>` in `TheAdmin`; a custom admin theme can provide its own quick search navbar item and gate it on the same setting.
 
