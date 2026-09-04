@@ -17,6 +17,7 @@ using OrchardCore.Media.Azure.Filters;
 using OrchardCore.Media.Azure.Services;
 using OrchardCore.Media.Core;
 using OrchardCore.Media.Core.Events;
+using OrchardCore.Media.Core.Helpers;
 using OrchardCore.Media.Events;
 using OrchardCore.Media.Services;
 using OrchardCore.Modules;
@@ -102,6 +103,7 @@ public sealed class Startup : Modules.StartupBase
                 var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
                 var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
                 var mediaEventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
+                var fileSizeHelper = serviceProvider.GetService<FileSizeHelper>();
                 var mediaCreatingEventHandlers = serviceProvider.GetServices<IMediaCreatingEventHandler>();
                 var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStore>>();
 
@@ -116,7 +118,14 @@ public sealed class Startup : Modules.StartupBase
                     mediaUrlBase = fileStore.Combine(originalPathBase.Value, mediaUrlBase);
                 }
 
-                return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl, mediaEventHandlers, mediaCreatingEventHandlers, logger);
+                return new DefaultMediaFileStore(
+                    fileStore,
+                    mediaUrlBase,
+                    mediaOptions.CdnBaseUrl,
+                    mediaEventHandlers,
+                    mediaCreatingEventHandlers,
+                    fileSizeHelper,
+                    logger);
             }));
 
             services.AddSingleton<IMediaEventHandler, DefaultMediaFileStoreCacheEventHandler>();
