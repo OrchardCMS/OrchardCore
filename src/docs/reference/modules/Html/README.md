@@ -17,8 +17,8 @@ The following properties are available on the `HtmlBodyPartViewModel` class:
 
 | Property           | Type                   | Description                                           |
 |--------------------|------------------------|-------------------------------------------------------|
-| `Body`             | `string`               | The content that was edited. It might contain tokens. |
-| `Html`             | `string`               | The HTML content once all tokens have been processed. |
+| `Body`             | `string`               | The exact authored HTML source.                        |
+| `Html`             | `string`               | The HTML after shortcodes and sanitization.            |
 | `ContentItem`      | `ContentItem`          | The content item of the part.                         |
 | `HtmlBodyPart`     | `HtmlBodyPart`         | The `HtmlBodyPart` instance.                          |
 | `TypePartSettings` | `HtmlBodyPartSettings` | The settings of the part.                             |
@@ -29,15 +29,15 @@ The following properties are available on `HtmlBodyPart`:
 
 | Name          | Type                                   | Description                                                                                                                                                          |
 |---------------|----------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `Body`        | `string`                               | The HTML content in the body. It can contain Liquid tags so using it directly might result in unexpected results. Prefer rendering the `HtmlBodyPart` shape instead. |
+| `Body`        | `string`                               | The exact authored HTML source. Liquid syntax is not executed. |
 | `Content`     | The raw content of the part.           |
 | `ContentItem` | The content item containing this part. |
 
 ## Sanitization
 
-By default all HTML input is sanitized when the `HtmlBodyPart` is saved.
+By default, rendered HTML is sanitized after shortcodes are processed. The authored source is persisted unchanged.
 
-You can disable this by unchecking the `Sanitize HTML` setting, or further configuring the [HTML Sanitizer](../Sanitizer/README.md)
+You can disable final-output sanitization for trusted content by unchecking the `Sanitize HTML` setting, or further configure the [HTML Sanitizer](../Sanitizer/README.md).
 
 ## Editors
 

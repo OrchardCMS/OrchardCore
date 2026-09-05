@@ -4,6 +4,14 @@ This module provides a way to create templates securely from the admin site.
 For more information about the Liquid syntax, please refer to this site: <https://shopify.github.io/liquid/>.
 Liquid syntax is powered by Fluid. Check <https://github.com/sebastienros/fluid> for extra examples and custom filters.
 
+## Liquid content
+
+The module provides both `LiquidPart` and `LiquidField`. Their authored `Liquid` source is stored exactly as submitted and rendered when the corresponding shape, body aspect, or GraphQL field is requested. Because Liquid can produce HTML, JSON, XML, plain text, or another format, these components do not expose a `Sanitize HTML` setting.
+
+Editing Liquid parts, fields, Templates, Admin Templates, and template previews requires the security-critical `ManageLiquidTemplates` permission. The permission is granted to the Administrator and Editor roles by default.
+
+Use `LiquidPart` or `LiquidField` whenever authored content needs Liquid execution. `HtmlBodyPart`, `HtmlField`, `MarkdownBodyPart`, and `MarkdownField` treat Liquid syntax as ordinary source text.
+
 ## General concepts
 
 ### HTML escaping

@@ -4,7 +4,9 @@
 @using OrchardCore.ContentFields.Settings
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore.Localization.Data
+@using OrchardCore.Infrastructure.Html
 @inject IDataLocalizer D
+@inject IHtmlSanitizerService HtmlSanitizerService
 @{
     var settings = Model.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
     var trumbowygSettings = Model.PartFieldDefinition.GetSettings<HtmlFieldTrumbowygEditorSettings>();
@@ -70,7 +72,7 @@ else
         @if (!string.IsNullOrEmpty(trumbowygSettings.Options))
         {
             <text>
-            var settings = @Html.Raw(trumbowygSettings.Options);
+            var settings = JSON.parse(@Json.Serialize(string.IsNullOrWhiteSpace(trumbowygSettings.Options) ? "{}" : trumbowygSettings.Options));
             settings['lang'] = '@culture.TwoLetterISOLanguageName';
             </text>
         }
@@ -83,8 +85,20 @@ else
             </text>
         }
 
-        $('#@Html.IdFor(m => m.Html)').trumbowyg(settings).on('tbwchange', function () {
+        const editor = $('#@Html.IdFor(m => m.Html)');
+        const originalHtml = editor.val();
+        let editorChanged = false;
+
+        editor.val(@Json.Serialize(HtmlSanitizerService.Sanitize(Model.Html ?? string.Empty)));
+        editor.trumbowyg(settings).on('tbwchange', function () {
+            editorChanged = true;
             $(document).trigger('contentpreview:render');
+        });
+
+        editor.closest('form').on('submit', function () {
+            if (!editorChanged) {
+                editor.val(originalHtml);
+            }
         });
     });
 </script>
