@@ -35,7 +35,7 @@
     <div class="ocat-end">
         @if (!string.IsNullOrEmpty(taxonomySettings.Hint))
         {
-            <div class="hint dashed mt-lg-2">@taxonomySettings.Hint</div>
+            @await DisplayAsync(await New.Hint_Admin(Hint: taxonomySettings.Hint))
         }
 
         @if (Model.Taxonomy == null)
