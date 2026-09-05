@@ -16,6 +16,9 @@ public class SiteSettings : DocumentEntity, ISite
     public int MaxPagedCount { get; set; }
     public int MaxPageSize { get; set; }
     public int PageSize { get; set; }
+
+    public bool ShowContentTypesGrouping { get; set; }
+
     public string TimeZoneId { get; set; }
     public ResourceDebugMode ResourceDebugMode { get; set; }
     public string SiteName { get; set; }
