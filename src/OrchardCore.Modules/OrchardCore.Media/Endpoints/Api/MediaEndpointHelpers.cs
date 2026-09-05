@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using OrchardCore.FileStorage;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
@@ -212,24 +213,33 @@ internal static class MediaEndpointHelpers
 
     public static async Task PreCacheRemoteMediaAsync(
         IFileStoreEntry mediaFile,
-        IServiceProvider serviceProvider,
         IMediaFileStore mediaFileStore,
-        HttpContext httpContext)
+        IMediaFileStoreCache mediaFileStoreCache,
+        HttpContext httpContext,
+        ILogger logger)
     {
-        var mediaFileStoreCache = serviceProvider.GetService<IMediaFileStoreCache>();
         if (mediaFileStoreCache == null)
         {
             return;
         }
 
-        var stream = await mediaFileStore.GetFileStreamAsync(mediaFile);
+        // Pre-caching is an optimization; a cache failure must not fail the upload or move
+        // that already succeeded in the remote store.
         try
         {
-            await mediaFileStoreCache.SetCacheAsync(stream, mediaFile, httpContext.RequestAborted);
+            var stream = await mediaFileStore.GetFileStreamAsync(mediaFile);
+            try
+            {
+                await mediaFileStoreCache.SetCacheAsync(stream, mediaFile, httpContext.RequestAborted);
+            }
+            finally
+            {
+                stream?.Dispose();
+            }
         }
-        finally
+        catch (Exception ex)
         {
-            stream?.Dispose();
+            logger.LogError(ex, "Error pre-caching remote media with path {Path}.", mediaFile.Path);
         }
     }
 
