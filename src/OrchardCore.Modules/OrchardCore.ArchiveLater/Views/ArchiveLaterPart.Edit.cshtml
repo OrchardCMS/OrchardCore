@@ -6,7 +6,7 @@
 
 @if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, Model.ContentItem))
 {
-    <div class="btn-group mb-1">
+    <div class="btn-group action-bar-collapsible d-md-inline-block">
         <div class="input-group">
             <input asp-for="ScheduledArchiveLocalDateTime" type="datetime-local" class="form-control content-preview-select" />
             <button class="btn btn-outline-primary text-nowrap btn-archive-later" type="submit" name="submit.Publish" value="submit.ArchiveLater">@T["Archive Later"]</button>
@@ -15,7 +15,7 @@
 
     @if (Model.ScheduledArchiveUtc.HasValue)
     {
-        <div class="btn-group mb-1">
+        <div class="btn-group action-bar-collapsible d-md-inline-block">
             <button class="btn btn-warning text-nowrap btn-archive-later" type="submit" name="submit.Publish" value="submit.CancelArchiveLater">@T["Cancel Archive Later"]</button>
         </div>
     }

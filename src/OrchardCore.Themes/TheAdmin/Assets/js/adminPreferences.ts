@@ -1,6 +1,13 @@
 import { getTenantName } from '@orchardcore/bloom/helpers/globals';
 import Cookies from 'js-cookie';
 
+export interface AdminPreferences {
+    leftSidebarCompact: boolean;
+    isCompactExplicit: boolean;
+    actionGroups?: Record<string, string>;
+    actionBarCollapsed?: boolean;
+}
+
 let isCompactExplicit = false;
 
 const setCompactExplicit = (value: boolean) => {
@@ -9,22 +16,22 @@ const setCompactExplicit = (value: boolean) => {
 
 const getAdminPreferenceKey = () => getTenantName() + '-adminPreferences';
 
-const getAdminPreferences = () => {
+const getAdminPreferences = (): AdminPreferences => {
     const storedValue = localStorage.getItem(getAdminPreferenceKey());
 
     if (!storedValue) {
-        return {};
+        return {} as AdminPreferences;
     }
 
     try {
-        return JSON.parse(storedValue);
+        return JSON.parse(storedValue) as AdminPreferences;
     } catch (ex) {
         console.error('Error retrieving admin preferences', ex);
-        return {};
+        return {} as AdminPreferences;
     }
 };
 
-const setAdminPreferences = (adminPreferences) => {
+const setAdminPreferences = (adminPreferences: AdminPreferences) => {
     if (adminPreferences == null) {
         console.error('Error setting admin preferences, argument is null');
         return;
@@ -40,10 +47,21 @@ const setAdminPreferences = (adminPreferences) => {
     }
 };
 
+// Snapshots the current UI state and writes it to storage.
+// Called whenever the user changes a persistent preference (sidebar, action bar, action groups).
+const persistAdminPreferences = () => {
+    setTimeout(() => {
+        const adminPreferences = getAdminPreferences();
+        adminPreferences.leftSidebarCompact = document.body.classList.contains('left-sidebar-compact');
+        adminPreferences.isCompactExplicit = isCompactExplicit;
+        setAdminPreferences(adminPreferences);
+    }, 200);
+}
+
 export {
     isCompactExplicit,
     setCompactExplicit,
     getAdminPreferences,
-    setAdminPreferences
+    setAdminPreferences,
+    persistAdminPreferences,
 }
-
