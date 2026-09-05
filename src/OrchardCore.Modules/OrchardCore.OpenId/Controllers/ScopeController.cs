@@ -49,7 +49,7 @@ public sealed class ScopeController : Controller
             return Forbid();
         }
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
         var count = await _scopeManager.CountAsync();
 
         var model = new OpenIdScopeIndexViewModel

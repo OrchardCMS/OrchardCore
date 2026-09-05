@@ -58,3 +58,42 @@
         <span class="hint">@T["The default page size."]</span>
     </div>
 </div>
+
+<div class="ocat-wrapper" asp-validation-class-for="AllowPageSizeSelection">
+    <label class="ocat-label">@T["Page size selection"]</label>
+    <div class="ocat-end">
+        <div class="form-check">
+            <input asp-for="AllowPageSizeSelection" type="checkbox" class="form-check-input" data-toggle-page-size-options />
+            <label asp-for="AllowPageSizeSelection" class="form-check-label">@T["Allow users to change the page size on listing pages"]</label>
+        </div>
+        <span class="hint">@T["When enabled, a selector is shown on listing pages so users can choose how many items are displayed per page."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper @(Model.AllowPageSizeSelection ? "" : "d-none")" id="pageSizeOptionsWrapper" asp-validation-class-for="PageSizeOptions">
+    <label asp-for="PageSizeOptions" class="ocat-label">@T["Page size options"]</label>
+    <div class="ocat-end">
+        <input asp-for="PageSizeOptions" class="form-control" placeholder="10, 25, 50, 100" />
+        <span asp-validation-for="PageSizeOptions"></span>
+        <span class="hint">
+            @T["A comma-separated list of the page size values users can select from, for example 10, 25, 50, 100."]
+            @if (Model.MaxPageSize > 0)
+            {
+                @T["Values cannot exceed the maximum page size of {0}.", Model.MaxPageSize]
+            }
+        </span>
+    </div>
+</div>
+
+<script at="Foot">
+    document.addEventListener('DOMContentLoaded', function () {
+        var toggle = document.querySelector('[data-toggle-page-size-options]');
+        var wrapper = document.getElementById('pageSizeOptionsWrapper');
+
+        if (toggle && wrapper) {
+            toggle.addEventListener('change', function () {
+                wrapper.classList.toggle('d-none', !this.checked);
+            });
+        }
+    });
+</script>
