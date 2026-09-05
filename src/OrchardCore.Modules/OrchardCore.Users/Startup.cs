@@ -56,8 +56,11 @@ namespace OrchardCore.Users;
 
 public sealed class Startup : StartupBase
 {
+    public const string CookieNamePrefix = ".OrchardCore.Authentication.";
+
     private static readonly string s_accountControllerName = typeof(AccountController).ControllerName();
     private static readonly string s_emailConfirmationControllerName = typeof(EmailConfirmationController).ControllerName();
+
     private readonly string _tenantName;
 
     private UserOptions _userOptions;
@@ -102,7 +105,7 @@ public sealed class Startup : StartupBase
         {
             var userOptions = ShellScope.Services.GetRequiredService<IOptions<UserOptions>>();
 
-            options.Cookie.Name = "orchauth_" + HttpUtility.UrlEncode(_tenantName);
+            options.Cookie.Name = CookieNamePrefix + HttpUtility.UrlEncode(_tenantName);
 
             // Don't set the cookie builder 'Path' so that it uses the 'IAuthenticationFeature' value
             // set by the pipeline and coming from the request 'PathBase' which already ends with the
