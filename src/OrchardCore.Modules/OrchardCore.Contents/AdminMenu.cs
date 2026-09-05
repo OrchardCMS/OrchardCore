@@ -62,7 +62,7 @@ public sealed class AdminMenu : AdminNavigationProvider
 
         var contentTypeDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
         var listableContentTypes = contentTypeDefinitions.Where(ctd => ctd.IsListable());
-        await builder.AddAsync(S["Content"], NavigationConstants.AdminMenuContentPosition, async content =>
+        await builder.AddAsync(S["Content"], S["Content"].PrefixPosition(), async content =>
         {
             content.AddClass("content").Id("content");
             await content.AddAsync(S["Content Items"], "before", async contentItems =>
