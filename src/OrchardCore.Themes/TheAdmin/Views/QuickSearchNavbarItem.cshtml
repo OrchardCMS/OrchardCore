@@ -1,0 +1,24 @@
+<li class="nav-item">
+    <button type="button" class="btn btn-link nav-link" id="adminQuickSearchToggle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@T["Quick search (Ctrl+K)"]" aria-label="@T["Quick search"]" aria-haspopup="dialog" aria-controls="adminQuickSearchModal">
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+    </button>
+    <div class="modal fade" id="adminQuickSearchModal" tabindex="-1" role="dialog" aria-labelledby="adminQuickSearchLabel" aria-hidden="true" data-no-results="@T["No results"]" data-max-results="15">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content admin-quick-search">
+                <h2 id="adminQuickSearchLabel" class="visually-hidden">@T["Quick search"]</h2>
+                <div class="modal-body p-0">
+                    <div class="admin-quick-search-input">
+                        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                        <input type="search" id="adminQuickSearchInput" class="form-control form-control-lg border-0 shadow-none" placeholder="@T["Search the admin menu…"]" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="true" aria-controls="adminQuickSearchResults" />
+                    </div>
+                    <ul id="adminQuickSearchResults" class="admin-quick-search-results list-unstyled mb-0" role="listbox" aria-label="@T["Search results"]"></ul>
+                    <div class="admin-quick-search-footer d-none d-md-flex">
+                        <span><kbd>↑</kbd><kbd>↓</kbd> @T["to navigate"]</span>
+                        <span><kbd>↵</kbd> @T["to open"]</span>
+                        <span><kbd>Esc</kbd> @T["to close"]</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</li>

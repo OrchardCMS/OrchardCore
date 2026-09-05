@@ -84,6 +84,14 @@ Here are samples using logo and favicon from media module.
     </a>
     ```
 
+## Quick Search
+
+The `TheAdmin` theme provides a quick search command palette to jump to any admin page from the keyboard. Press <kbd>Ctrl</kbd>+<kbd>K</kbd> (<kbd>Cmd</kbd>+<kbd>K</kbd> on macOS) anywhere in the admin, or click the magnifier icon in the top navbar to open it. Typing filters the admin menu items as you type; the match is case- and accent-insensitive and also looks at the parent menu names, which are displayed as a breadcrumb under each result. Use the arrow keys to move the highlight, <kbd>Enter</kbd> to open the highlighted page, and <kbd>Esc</kbd> to close the palette.
+
+The palette indexes the admin menu that is rendered in the left navigation, so it only lists the items the current user is allowed to see. The shortcut is not intercepted while the focus is inside a rich text or code editor, which uses <kbd>Ctrl</kbd>+<kbd>K</kbd> for its own commands.
+
+The feature is enabled by default and can be turned off from **Configuration → Settings → Admin** (**Enable quick search**) or with the `DisplayQuickSearch` admin setting (see [Recipe Configuration](#recipe-configuration)). The navbar item is rendered by a `DisplayDriver<Navbar>` in `TheAdmin`; a custom admin theme can provide its own quick search navbar item and gate it on the same setting.
+
 ## Navbar Shape
 
 The navigation bar shape is available in two display types `Detail` for the frontend and `DetailAdmin` for the backend admin. The `Navbar` shape is composed and used `TheAdmin` and `TheTheme` themes. If you wish to compose and use the `Navbar` shape in other themes, you may create it using two steps
@@ -180,6 +188,7 @@ The admin settings can be configured using the `Settings` recipe step:
       "AdminSettings": {
         "DisplayThemeToggler": true,
         "DisplayMenuFilter": true,
+        "DisplayQuickSearch": true,
         "DisplayNewMenu": true,
         "DisplayTitlesInTopbar": true
       }
@@ -192,5 +201,6 @@ The admin settings can be configured using the `Settings` recipe step:
 |-------------------------|---------|-------------------------------------------------------------------|
 | `DisplayThemeToggler`   | Boolean | Whether to display the light/dark theme toggler in the admin.     |
 | `DisplayMenuFilter`     | Boolean | Whether to display the menu filter input in the admin navigation. |
+| `DisplayQuickSearch`    | Boolean | Whether to display the quick search command palette (Ctrl+K / Cmd+K) in the admin navbar. Defaults to `true`. |
 | `DisplayNewMenu`        | Boolean | Whether to display the 'New' menu in the admin navigation.        |
 | `DisplayTitlesInTopbar` | Boolean | Whether to display page titles in the top bar.                    |
