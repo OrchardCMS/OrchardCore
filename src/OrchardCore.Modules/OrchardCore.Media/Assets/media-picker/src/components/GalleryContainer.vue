@@ -15,7 +15,7 @@
       </button>
 
       <!-- View toggles -->
-      <div class="tw:flex tw:items-center tw:gap-1 mf-toolbar-spacer">
+      <div v-if="!disableThumbnails" class="tw:flex tw:items-center tw:gap-1 mf-toolbar-spacer">
         <button
           type="button"
           class="mf-btn-icon"
@@ -134,6 +134,8 @@ const props = defineProps<{
   allowMediaText: boolean;
   allowAnchors: boolean;
   idPrefix: string;
+  /** Forces the list view and hides the view toggles (OrchardCore_Media:DisableThumbnails). */
+  disableThumbnails?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -146,7 +148,7 @@ const emit = defineEmits<{
 
 const t = getTranslations();
 
-const gridView = ref(true);
+const gridView = ref(!props.disableThumbnails);
 const size = ref<"sm" | "lg">("lg");
 
 // De-duplicate by mediaPath
@@ -161,7 +163,13 @@ onMounted(() => {
     if (saved) {
       const state = JSON.parse(saved);
       size.value = state.size || "lg";
-      gridView.value = !props.allowMultiple ? true : (state.gridView ?? true);
+      // The site-wide DisableThumbnails option overrides any persisted grid preference
+      // (and the single-item default, which is otherwise the grid view).
+      if (props.disableThumbnails) {
+        gridView.value = false;
+      } else {
+        gridView.value = !props.allowMultiple ? true : (state.gridView ?? true);
+      }
     }
   } catch {
     // ignore

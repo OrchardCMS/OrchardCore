@@ -48,6 +48,26 @@ The gallery supports the following operations on files:
 - **Sort** — Sort by name, size, MIME type, or last modified date in ascending or descending order.
 - **Pagination** — The file list is paginated. Page size can be configured via the settings popover.
 
+## Display Modes
+
+The gallery opens in the **list view** by default: a table showing a file-type icon, name, last modified date and size, without downloading or rendering the media files themselves. The toolbar toggle switches to the **grid view**, which renders thumbnails for images (other file types show an icon with the file extension). The chosen view and the thumbnail size (from the settings popover) are persisted in the browser (per device/profile) using local storage.
+
+### Disabling thumbnails
+
+The grid (thumbnails) view can be disabled site-wide, e.g. for security or performance reasons, with the `DisableThumbnails` option in the [`OrchardCore_Media` configuration](README.md#configuration) section of `appsettings.json`:
+
+```json
+{
+  "OrchardCore_Media": {
+    "DisableThumbnails": true
+  }
+}
+```
+
+When enabled, the gallery always uses the list view: the grid/list toggle and the thumbnail size setting are hidden, and any grid view preference persisted from a previous session is ignored. The default is `false`.
+
+The option applies to every media browsing surface: the Media Library admin page, the media picker modal opened from media fields and from the HTML/Markdown editors, and the media field gallery editor (whose own grid/list toggle is hidden and locked to the list view as well).
+
 ## Storage Information
 
 The storage info popover (accessible from the toolbar) displays information about the configured storage provider:
