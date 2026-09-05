@@ -1,4 +1,4 @@
-notificationManager = function () {
+window.notificationManager = function () {
 
     const removeItem = (values, value) => {
         const index = values.indexOf(value);

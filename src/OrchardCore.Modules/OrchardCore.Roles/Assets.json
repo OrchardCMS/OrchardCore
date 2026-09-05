@@ -1,0 +1,12 @@
+[
+  {
+    "action": "parcel",
+    "name": "roles-editors",
+    "source": [
+      "Assets/ts/roles-edit.ts",
+      "Assets/ts/roles-index.ts"
+    ],
+    "dest": "wwwroot/Scripts/roles-editors/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

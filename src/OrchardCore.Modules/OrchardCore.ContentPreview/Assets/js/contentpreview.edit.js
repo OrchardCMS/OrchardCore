@@ -1,32 +1,41 @@
-$(function () {
-    $(document)
-        .on('input', '.content-preview-text', function () {
-            $(document).trigger('contentpreview:render');
-        })
-        .on('propertychange', '.content-preview-text', function () {
-            $(document).trigger('contentpreview:render');
-        })
-        .on('keyup', '.content-preview-text', function (e) {
-            // handle backspace
-            if (e.key === 'Backspace' || e.ctrlKey) {
-                $(document).trigger('contentpreview:render');
-            }
-        })
-        .on('change', '.content-preview-select', function () {
-            $(document).trigger('contentpreview:render');
-        });
+document.addEventListener('DOMContentLoaded', function () {
+    function renderPreview() {
+        document.dispatchEvent(new CustomEvent('contentpreview:render'));
+    }
+
+    document.addEventListener('input', function (e) {
+        if (e.target.closest('.content-preview-text')) {
+            renderPreview();
+        }
+    });
+    document.addEventListener('propertychange', function (e) {
+        if (e.target.closest('.content-preview-text')) {
+            renderPreview();
+        }
+    });
+    document.addEventListener('keyup', function (e) {
+        // handle backspace
+        if ((e.key === 'Backspace' || e.ctrlKey) && e.target.closest('.content-preview-text')) {
+            renderPreview();
+        }
+    });
+    document.addEventListener('change', function (e) {
+        if (e.target.closest('.content-preview-select')) {
+            renderPreview();
+        }
+    });
 });
 
-$(function () {
-    var previewButton, contentItemType, previewId, previewContentItemId, previewContentItemVersionId, draftUrl, form, channel, draftTimer, currentXHR, currentToken;
+document.addEventListener('DOMContentLoaded', function () {
+    var previewButton, contentItemType, previewId, previewContentItemId, previewContentItemVersionId, draftUrl, form, channel, draftTimer, currentAbortController, currentToken;
 
     previewButton = document.getElementById('previewButton');
-    contentItemType = $(document.getElementById('contentItemType')).data('value');
-    previewId = $(document.getElementById('previewId')).data('value');
-    previewContentItemId = $(document.getElementById('previewContentItemId')).data('value');
-    previewContentItemVersionId = $(document.getElementById('previewContentItemVersionId')).data('value');
-    draftUrl = $(document.getElementById('draftUrl')).data('value');
-    form = $(previewButton).closest('form');
+    contentItemType = document.getElementById('contentItemType').dataset.value;
+    previewId = document.getElementById('previewId').dataset.value;
+    previewContentItemId = document.getElementById('previewContentItemId').dataset.value;
+    previewContentItemVersionId = document.getElementById('previewContentItemVersionId').dataset.value;
+    draftUrl = document.getElementById('draftUrl').dataset.value;
+    form = previewButton.closest('form');
     channel = new BroadcastChannel('contentpreview-' + previewId);
 
     // When the preview window signals it is ready, send the current draft immediately.
@@ -42,38 +51,66 @@ $(function () {
     // edit a field first, and clears the "Preview Disconnected" banner automatically.
     channel.postMessage({ type: 'hello' });
 
+    function serializeFormArray(formElement) {
+        var result = [];
+        new FormData(formElement).forEach(function (value, name) {
+            // Matches jQuery's serializeArray(), which skips file inputs (it can't serialize a File
+            // into a name/value string pair) - FormData yields File objects for those.
+            if (typeof value === 'string') {
+                result.push({ name: name, value: value });
+            }
+        });
+        return result;
+    }
+
     function sendDraft() {
         // Cancel any in-flight request so stale responses don't overwrite a newer preview.
-        if (currentXHR) {
-            currentXHR.abort();
-            currentXHR = null;
+        if (currentAbortController) {
+            currentAbortController.abort();
+            currentAbortController = null;
         }
 
-        var formData = form.serializeArray();
+        var formData = serializeFormArray(form);
         formData.push({ name: 'ContentItemType', value: contentItemType });
         formData.push({ name: 'PreviewContentItemId', value: previewContentItemId });
         formData.push({ name: 'PreviewContentItemVersionId', value: previewContentItemVersionId });
         formData.push({ name: 'PreviewToken', value: currentToken });
 
-        currentXHR = $.post(draftUrl, $.param(formData))
-            .done(function (data) {
-                currentXHR = null;
+        var abortController = new AbortController();
+        currentAbortController = abortController;
+
+        fetch(draftUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams(formData.map(function (item) { return [item.name, item.value]; })).toString(),
+            signal: abortController.signal
+        }).then(function (response) {
+            currentAbortController = null;
+            if (!response.ok) {
+                if (response.status !== 422) {
+                    console.error('Preview draft request failed', response.status, response.statusText);
+                }
+                return;
+            }
+            return response.json().then(function (data) {
                 if (data.previewUrl) {
                     currentToken = data.token;
                     channel.postMessage({ type: 'token', previewUrl: data.previewUrl });
                 }
-            })
-            .fail(function (data) {
-                currentXHR = null;
-                if (data.statusText !== 'abort' && data.status !== 422) {
-                    console.error('Preview draft request failed', data.status, data.statusText);
-                }
             });
+        }).catch(function (err) {
+            currentAbortController = null;
+            if (err.name !== 'AbortError') {
+                console.error('Preview draft request failed', err);
+            }
+        });
     }
 
     // 500ms debounce: collapses rapid keystrokes (e.g. from a WYSIWYG editor) into a
     // single draft submission after the user pauses, preventing server spam.
-    $(document).on('contentpreview:render', function () {
+    document.addEventListener('contentpreview:render', function () {
         clearTimeout(draftTimer);
         draftTimer = setTimeout(sendDraft, 500);
     });
@@ -81,7 +118,7 @@ $(function () {
     // 'pagehide' is the modern, reliable replacement for the deprecated 'unload' event;
     // it fires on navigation away (including when the page enters the bfcache), letting us
     // notify the preview window that the editor is disconnecting.
-    $(window).on('pagehide', function () {
+    window.addEventListener('pagehide', function () {
         channel.postMessage({ type: 'disconnected' });
         channel.close();
     });

@@ -8,4 +8,35 @@
     cursor: move;
     border: none;
     padding: 0;
+    // Dragging via forceFallback (see menu.js) is mouse-simulated rather than
+    // native HTML5 drag, which normally prevents text selection on its own;
+    // without this, dragging over an item's text selects it like a click-drag.
+    user-select: none;
+    // Depth-based indentation (see menu.js applyDepth()) changes on every drag,
+    // so animate it rather than letting items snap to their new indent level.
+    transition: margin-left 0.1s ease-out;
+}
+
+// While dragging (forceFallback), the item stays in place in the list as a
+// "ghost" placeholder - showing where it would land if dropped now - while a
+// separate floating clone (.sortable-fallback) follows the cursor. Hide it
+// visually but keep its layout box (opacity, not display:none): removing it
+// from layout entirely would reflow every following item up to fill the gap
+// the instant a drag starts, shifting the pointer's target out from under it.
+#menu .sortable-ghost:not(.sortable-fallback) {
+    opacity: 0;
+}
+
+// Live preview shown while dragging (see menu.js), mirroring how the original
+// jQuery UI nestedSortable gave feedback: once the pointer has moved far enough
+// sideways to trigger a nesting-depth change, shift the item to hint at where
+// it would land and highlight whichever item would become its new parent.
+.menu-item-pending-shift {
+    transform: var(--pending-shift);
+    transition: transform 0.1s ease-out;
+}
+
+.menu-item-pending-parent > .menu-item-title {
+    outline: 2px solid var(--bs-primary, #0d6efd);
+    outline-offset: 2px;
 }

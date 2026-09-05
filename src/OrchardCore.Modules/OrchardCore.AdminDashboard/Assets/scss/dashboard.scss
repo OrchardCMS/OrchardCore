@@ -50,10 +50,11 @@
     grid-gap: 1rem;
 
     .dashboard-wrapper {
+        position: relative;
         grid-column: span var(--dashboard-width);
         overflow-x: hidden;
         grid-row: span var(--dashboard-height);
-        overflow-y: auto;
+        overflow-y: hidden;
 
         & .card {
             & .card-header {
@@ -64,17 +65,6 @@
                 border-top: none !important;
             }
         }
-    }
-
-    .dashboard-wrapper.ui-resizable {
-        overflow-y: hidden;
-        overflow-x: hidden;
-    }
-
-    .dashboard-wrapper:not(.ui-resizable) {
-        scrollbar-width: thin;
-        overflow-y: auto;
-        overflow-x: hidden;
     }
 }
 
@@ -96,18 +86,47 @@
     }
 }
 
-.dashboard-dragdrop-placeholder {
-    margin-top: 6px;
-    margin-bottom: 6px;
-    min-height: 6px;
-    display: inline-block;
+// SortableJS keeps the dragged item's own element in place at its current
+// slot during the drag (rather than a synthetic placeholder), so its
+// content is hidden here to leave the same empty dashed-outline box that
+// the previous jQuery UI Sortable placeholder showed.
+.dashboard-container .sortable-ghost {
     border: 1px dashed orange;
-    grid-column: span var(--dashboard-width);
-    overflow-x: hidden;
-    grid-row: span var(--dashboard-height);
-    overflow-y: hidden;
+
+    > * {
+        visibility: hidden;
+    }
 }
 
-.ui-resizable-helper {
+.dashboard-resize-helper {
     border: 1px dashed orange;
+    z-index: 1050;
+}
+
+.dashboard-resize-handle {
+    position: absolute;
+
+    &-s {
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 7px;
+        cursor: s-resize;
+    }
+
+    &-e {
+        top: 0;
+        right: 0;
+        width: 7px;
+        height: 100%;
+        cursor: e-resize;
+    }
+
+    &-se {
+        bottom: 0;
+        right: 0;
+        width: 12px;
+        height: 12px;
+        cursor: se-resize;
+    }
 }

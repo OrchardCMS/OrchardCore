@@ -1,28 +1,33 @@
 function updateStepOrders(oldIndex, newIndex) {
-    var url = $('#stepOrderUrl').data("url");
-    var id = $('#deploymentPlanId').data("id");
+    var url = document.getElementById('stepOrderUrl').dataset.url;
+    var id = document.getElementById('deploymentPlanId').dataset.id;
 
-    $.ajax({
-        url: url,
+    fetch(url, {
         method: 'POST',
-        data: {
-            __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({
+            __RequestVerificationToken: document.querySelector("input[name='__RequestVerificationToken']").value,
             id: id,
             newIndex: newIndex,
             oldIndex: oldIndex,
-        },
-        error: function (error) {
-            alert($('#stepOrderErrorMessage').data("message"));
+        })
+    }).then(function (response) {
+        if (!response.ok) {
+            throw new Error('Request failed');
         }
+    }).catch(function () {
+        alert(document.getElementById('stepOrderErrorMessage').dataset.message);
     });
 }
 
-$(function () {
+document.addEventListener('DOMContentLoaded', function () {
     var sortable = document.getElementById("stepOrder");
     if (!sortable) {
         return;
     }
-    var sortable = Sortable.create(sortable, {
+    sortable = Sortable.create(sortable, {
         handle: ".ui-sortable-handle",
         onSort: function (evt) {
             var oldIndex = evt.oldIndex;

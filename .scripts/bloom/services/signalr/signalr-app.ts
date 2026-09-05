@@ -78,7 +78,7 @@ export default class SignalRApp {
         }
 
         this.connection.onreconnecting((error: Error | undefined) => {
-            signalRLogger.emit(`Connection lost due to error \"${error}\". Reconnecting.`);
+            signalRLogger.emit(`Connection lost due to error "${error}". Reconnecting.`);
             debug("On reconnecting", error);
         });
 

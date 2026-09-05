@@ -183,7 +183,7 @@ function runSass(config) {
                                     console.log(`RTL (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(normalTarget), chalk.cyan(normalTarget));
                                 }
 
-                                let { code, map } = transform({
+                                let { code } = transform({
                                     code: Buffer.from(scssResult.css, 'utf-8'),
                                     minify: true,
                                     sourceMap: true,

@@ -1,0 +1,8 @@
+{
+  "name": "@orchardcore/queries",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "check": "vue-tsc --noEmit"
+  }
+}

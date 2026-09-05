@@ -2,7 +2,7 @@
 
 @model EditIndexProfileViewModel
 
-<div class="ocat-wrapper" asp-validation-class-for="IndexName">
+<div class="ocat-wrapper @(Model.IsNew ? "index-profile-technical-name-generator" : "")" asp-validation-class-for="IndexName" data-display-id="@Html.IdFor(m => m.IndexName)" data-name-id="@Html.IdFor(m => m.Name)">
     <label asp-for="IndexName" class="ocat-label">@T["Index Name"]</label>
     <div class="ocat-end">
     <input asp-for="IndexName" class="form-control" asp-is-disabled="!Model.IsNew" />
@@ -22,7 +22,5 @@
 @if (Model.IsNew)
 {
     <script asp-src="~/OrchardCore.Indexing/Scripts/technical-name-generator.min.js" debug-src="~/OrchardCore.Indexing/Scripts/technical-name-generator.js" asp-name="technical-name-generator" at="Foot"></script>
-    <script at="Foot" depends-on="technical-name-generator">
-        TechnicalNameGenerator.initialize('@Html.IdFor(m => m.IndexName)', '@Html.IdFor(m => m.Name)');
-    </script>
+    <script asp-src="~/OrchardCore.Indexing/Scripts/index-profile-fields/index-profile-fields.min.js" debug-src="~/OrchardCore.Indexing/Scripts/index-profile-fields/index-profile-fields.js" at="Foot" depends-on="technical-name-generator" type="module"></script>
 }

@@ -1,15 +1,16 @@
-///<reference path='../Lib/jquery/typings.d.ts' />
+// typings.d.ts is a pure ambient declaration file (global interfaces, no exports), so there's
+// nothing to `import` - a path reference is the only way to bring it into scope.
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
 ///<reference path='../Lib/jsplumb/typings.d.ts' />
 
-import './workflow-models';
+import { WorkflowType, Activity, Outcome } from './workflow-models';
 import WorkflowCanvas from './workflow-canvas';
 
 class WorkflowViewer extends WorkflowCanvas {
-    private jsPlumbInstance: jsPlumbInstance;
+    private jsPlumbInstance!: jsPlumbInstance;
 
-    constructor(protected container: HTMLElement, protected workflowType: Workflows.WorkflowType) {
+    constructor(protected container: HTMLElement, protected workflowType: WorkflowType) {
         super(container, workflowType);
-        const self = this;
 
         jsPlumb.ready(() => {
             jsPlumb.importDefaults(this.getDefaults());
@@ -17,15 +18,15 @@ class WorkflowViewer extends WorkflowCanvas {
             const plumber = this.createJsPlumbInstance();
 
             // Listen for new connections.
-            plumber.bind('connection', function (connInfo, originalEvent) {
-                const connection: Connection = connInfo.connection;
-                const outcome: Workflows.Outcome = connection.getParameters().outcome;
+            plumber.bind('connection', (connInfo: { connection: Connection; sourceEndpoint: Endpoint }) => {
+                const connection = connInfo.connection;
+                const outcome: Outcome = connection.getParameters().outcome;
 
-                const label: any = connection.getOverlay('label');
+                const label: Overlay = connection.getOverlay('label');
                 label.setLabel(outcome.displayName);
 
                 // Change anchor to Continuous for better routing when connected
-                const sourceEndpoint: any = connInfo.sourceEndpoint;
+                const sourceEndpoint = connInfo.sourceEndpoint;
                 if (sourceEndpoint && sourceEndpoint.setAnchor) {
                     sourceEndpoint.setAnchor('Continuous');
                 }
@@ -37,41 +38,18 @@ class WorkflowViewer extends WorkflowCanvas {
                         sourceEndpoint.hideOverlay('outcome-label');
                     }
                 }
-                
+
                 // Re-orient labels after connection
                 requestAnimationFrame(() => {
-                    self.orientOutcomeLabels();
+                    this.orientOutcomeLabels();
                 });
             });
 
-            let activityElements = this.getActivityElements();
-
-            var areEqualOutcomes = function (outcomes1: Workflows.Outcome[], outcomes2: Workflows.Outcome[]): boolean {
-                if (outcomes1.length != outcomes2.length) {
-                    return false;
-                }
-
-                for (let i = 0; i < outcomes1.length; i++) {
-                    const outcome1 = outcomes1[i];
-                    const outcome2 = outcomes2[i];
-
-                    if (outcome1.name != outcome2.displayName || outcome1.displayName != outcome2.displayName) {
-                        return false;
-                    }
-                }
-
-                return true;
-            }
+            const activityElements = this.getActivityElements();
 
             // Suspend drawing and initialize.
             plumber.batch(() => {
-                var workflowId: number = this.workflowType.id;
-
-                activityElements.each((_, activityElement) => {
-                    const $activityElement = $(activityElement);
-                    const activityId = $activityElement.data('activity-id');
-                    const activity = this.getActivity(activityId);
-
+                activityElements.forEach((activityElement) => {
                     // Configure the activity as a target.
                     plumber.makeTarget(activityElement, {
                         dropOptions: { hoverClass: 'hover' },
@@ -80,8 +58,10 @@ class WorkflowViewer extends WorkflowCanvas {
                     });
                 });
 
-                // Make all activity elements visible
-                activityElements.show();
+                // Make all activity elements visible. The ".activity" class defaults to "display: none"
+                // so newly added activities stay hidden until positioned here; clearing the inline style
+                // would just fall back to that CSS default instead of showing the element.
+                activityElements.forEach((activityElement) => activityElement.style.display = 'block');
 
                 this.updateCanvasHeight();
             });
@@ -89,13 +69,12 @@ class WorkflowViewer extends WorkflowCanvas {
             // Wait for layout to complete before adding endpoints and connections
             setTimeout(() => {
                 plumber.batch(() => {
-                    activityElements.each((_, activityElement) => {
-                        const $activityElement = $(activityElement);
-                        const activityId = $activityElement.data('activity-id');
+                    activityElements.forEach((activityElement) => {
+                        const activityId = activityElement.dataset.activityId as string;
                         const activity = this.getActivity(activityId);
 
                         // Add source endpoints after layout is complete
-                        for (let outcome of activity.outcomes) {
+                        for (const outcome of activity.outcomes) {
                             const sourceEndpointOptions = this.getSourceEndpointOptions(activity, outcome);
                             const endpoint = plumber.addEndpoint(activityElement, { connectorOverlays: [['Label', { label: outcome.displayName, cssClass: 'connection-label' }]] }, sourceEndpointOptions);
                             this.endpointMap.push({ endpoint, activityElement });
@@ -116,22 +95,20 @@ class WorkflowViewer extends WorkflowCanvas {
         });
     }
 
-    protected getEndpointColor = (activity: Workflows.Activity) => {
+    protected getEndpointColor = (activity: Activity) => {
         return activity.isBlocking ? '#7ab02c' : activity.isEvent ? '#3a8acd' : '#7ab02c';
     }
 }
 
-$.fn.workflowViewer = function (this: JQuery): JQuery {
-    this.each((index, element) => {
-        var $element = $(element);
-        var workflowType: Workflows.WorkflowType = $element.data('workflow-type');
+const workflowViewerInstances = new WeakMap<HTMLElement, WorkflowViewer>();
 
-        $element.data('workflowViewer', new WorkflowViewer(element, workflowType));
-    });
+function initWorkflowViewer(element: HTMLElement): WorkflowViewer {
+    const workflowType: WorkflowType = JSON.parse(element.dataset.workflowType ?? '{}');
+    const instance = new WorkflowViewer(element, workflowType);
+    workflowViewerInstances.set(element, instance);
+    return instance;
+}
 
-    return this;
-};
-
-$(document).ready(function () {
-    const workflowViewer: WorkflowViewer = $('.workflow-canvas').workflowViewer().data('workflowViewer');
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll<HTMLElement>('.workflow-canvas').forEach((element) => initWorkflowViewer(element));
 });

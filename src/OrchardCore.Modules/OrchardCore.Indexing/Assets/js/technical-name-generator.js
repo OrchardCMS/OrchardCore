@@ -1,4 +1,4 @@
-var TechnicalNameGenerator = (function () {
+window.TechnicalNameGenerator = (function () {
 
     function toLowercaseHyphenated(value) {
         return (value || '')

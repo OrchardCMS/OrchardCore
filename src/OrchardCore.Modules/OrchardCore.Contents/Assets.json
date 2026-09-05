@@ -22,5 +22,64 @@
     "name": "content-localization",
     "source": "Assets/js/content-type-check-all.js",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "deployment-modals",
+    "source": [
+      "Assets/ts/add-to-deployment-plan-action.ts",
+      "Assets/ts/add-to-deployment-plan-bulk.ts",
+      "Assets/ts/add-to-deployment-plan-bulk-button.ts",
+      "Assets/ts/export-to-deployment-target-action.ts",
+      "Assets/ts/export-to-deployment-target-bulk.ts",
+      "Assets/ts/export-to-deployment-target-bulk-button.ts"
+    ],
+    "dest": "wwwroot/Scripts/deployment-modals/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "content-types-sitemap-source",
+    "source": "Assets/ts/content-types-sitemap-source.ts",
+    "dest": "wwwroot/Scripts/content-types-sitemap-source/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "contents-admin-list",
+    "source": "Assets/ts/contents-admin-list.ts",
+    "dest": "wwwroot/Scripts/contents-admin-list/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "download-editors",
+    "source": [
+      "Assets/ts/download-display.ts",
+      "Assets/ts/download-button-actions.ts"
+    ],
+    "dest": "wwwroot/Scripts/download-editors/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "content-types-admin-node",
+    "source": "Assets/ts/content-types-admin-node.ts",
+    "dest": "wwwroot/Scripts/content-types-admin-node/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "full-text-aspect-settings",
+    "source": "Assets/ts/full-text-aspect-settings.ts",
+    "dest": "wwwroot/Scripts/full-text-aspect-settings/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "content-task-editor",
+    "source": "Assets/ts/content-task-editor.ts",
+    "dest": "wwwroot/Scripts/content-task-editor/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

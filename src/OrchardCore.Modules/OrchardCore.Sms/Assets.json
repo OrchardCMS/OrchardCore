@@ -1,0 +1,9 @@
+[
+  {
+    "action": "parcel",
+    "name": "sms-task",
+    "source": "Assets/ts/sms-task.ts",
+    "dest": "wwwroot/Scripts/sms-task/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

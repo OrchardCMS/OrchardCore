@@ -1,4 +1,7 @@
-$(document).on('click', '.iconpicker-item', function (e) {
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.iconpicker-item')) {
+        return;
+    }
     e.preventDefault();
-    return false;
+    e.stopPropagation();
 });

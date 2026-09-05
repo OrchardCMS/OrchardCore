@@ -1,0 +1,9 @@
+[
+  {
+    "action": "parcel",
+    "name": "email-task",
+    "source": "Assets/ts/email-task.ts",
+    "dest": "wwwroot/Scripts/email-task/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

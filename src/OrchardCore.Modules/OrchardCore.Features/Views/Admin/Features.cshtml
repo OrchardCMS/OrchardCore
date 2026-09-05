@@ -16,11 +16,6 @@
 <style asp-name="bootstrap-select" at="Head"></style>
 <script asp-name="bootstrap-select" at="Foot"></script>
 
-<div data-list-management
-     data-client-side-search="true"
-     data-min-selected-items="1"
-     data-filter-selector=".list-management-unused"
-     >
 <form autocomplete="off" class="position-sticky action-bar">
     <div class="card text-bg-theme mb-3">
         <div class="card-body">
@@ -245,29 +240,4 @@
         @T["<strong>Nothing here!</strong> Your search or filters returned no results."]
     </div>
 </form>
-</div>
-<script asp-name="list-management" at="Foot"></script>
-<script at="Foot">
-    document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('.badge-show-more').forEach((button) => {
-            button.addEventListener('click', (e) => {
-                e.preventDefault();
-
-                const transitiveDependencies = button.previousElementSibling;
-
-                if (!transitiveDependencies?.classList.contains('transitive-dependencies')) {
-                    return;
-                }
-
-                transitiveDependencies.classList.toggle('d-none');
-                button.classList.toggle('d-none');
-
-                const tooltip = bootstrap.Tooltip.getInstance(button);
-
-                if (tooltip) {
-                    tooltip.dispose();
-                }
-            });
-        });
-    });
-</script>
+<script asp-src="~/OrchardCore.Features/Scripts/features-index/features-index.min.js" debug-src="~/OrchardCore.Features/Scripts/features-index/features-index.js" at="Foot" type="module"></script>

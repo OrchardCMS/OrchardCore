@@ -2,7 +2,8 @@
     Main shape for Admin display types of MenuItem stereotype items, which is used to render
     a menu item in the hierarchy editor.
     It is recursive so that if the menu item has MenuItemsListPart the sub items will also
-    be rendered.
+    be rendered - as flat siblings (with a "data-depth" attribute conveying nesting level)
+    rather than in a nested <ol>, so the whole tree is a single flat drag-and-drop list.
 *@
 
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
@@ -12,9 +13,10 @@
     ContentItem contentItem = Model.ContentItem;
     contentItem.TryGet<MenuItemsListPart>(out var menuItems);
     var index = 0;
+    int depth = Model.Depth;
 }
 
-<li class="menu-item list-group-item" id="menu-id-@Model.Index" data-index="@Model.Index">
+<li class="menu-item list-group-item" id="menu-id-@Model.Index" data-index="@Model.Index" data-depth="@depth" style="margin-left: @(depth * 1.5)rem">
     <div class="menu-item menu-item-title border rounded p-2 ps-3 mb-1 d-flex flex-row justify-content-between align-items-center">
         @if (Model.Content != null)
         {
@@ -48,19 +50,18 @@
             </a>
         </div>
     </div>
-
-    @if (menuItems != null)
-    {
-        var updater = ModelUpdaterAccessor.ModelUpdater;
-
-        <ol class="menu-item menu-item-links">
-            @foreach (var menuItem in menuItems.MenuItems)
-            {
-                var menuItemShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Admin");
-                menuItemShape.Properties["MenuPart"] = Model.MenuPart;
-                menuItemShape.Properties["Index"] = Model.Index + "-" + index++;
-                @await DisplayAsync(menuItemShape)
-            }
-        </ol>
-    }
 </li>
+
+@if (menuItems != null)
+{
+    var updater = ModelUpdaterAccessor.ModelUpdater;
+
+    @foreach (var menuItem in menuItems.MenuItems)
+    {
+        var menuItemShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Admin");
+        menuItemShape.Properties["MenuPart"] = Model.MenuPart;
+        menuItemShape.Properties["Index"] = Model.Index + "-" + index++;
+        menuItemShape.Properties["Depth"] = depth + 1;
+        @await DisplayAsync(menuItemShape)
+    }
+}

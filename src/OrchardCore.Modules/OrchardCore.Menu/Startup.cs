@@ -5,6 +5,7 @@ using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement;
+using OrchardCore.Localization;
 using OrchardCore.Menu.Drivers;
 using OrchardCore.Menu.Handlers;
 using OrchardCore.Menu.Models;
@@ -25,6 +26,7 @@ public sealed class Startup : StartupBase
         services.AddShapeTableProvider<MenuShapes>();
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
+        services.AddScoped<IJSLocalizer, MenuJSLocalizer>();
 
         services.AddScoped<IStereotypesProvider, MenuItemStereotypesProvider>();
 
