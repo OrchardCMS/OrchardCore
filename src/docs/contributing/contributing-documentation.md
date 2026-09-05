@@ -29,6 +29,10 @@ Do the following if you're adding docs for a newly developed extension, or if yo
 4. Link to the `README.md` file from the `mkdocs.yml` file in the repository root.
 5. If the module contains content parts, also link the `README.md` file from `reference/modules/ContentParts/README.md`.
 
+## Documentation versioning
+
+The documentation supports multiple versions via [mike](https://github.com/jimporter/mike) and the [mkdocs-material version selector](https://squidfunk.github.io/mkdocs-material/setup/setting-up-versioning/). A dropdown in the site header lets readers switch between versions. See [Publishing a new release](../topics/publishing-releases/README.md) for the procedure to add a new documentation version.
+
 ## Running the documentation site locally
 
 With MkDocs you can get the full docs.orchardcore.net experience locally too. If you are looking to contribute substantial amount of docs then please do run the site locally to make sure what you write will actually look like it should.
