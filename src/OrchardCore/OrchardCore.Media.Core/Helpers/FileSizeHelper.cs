@@ -18,13 +18,13 @@ public sealed class FileSizeHelper
     /// Formats the given file size in bytes into a human-readable string with appropriate units.
     /// </summary>
     /// <param name="bytes">The file size in bytes.</param>
-    /// <param name="decimalPlaces">The number of decimal places to include in the formatted string.</param>
+    /// <param name="digits">The number of fractional digits in the size value..</param>
     /// <returns>A human-readable string representing the file size.</returns>
-    public string FormatSize(long bytes, int decimalPlaces = 2)
+    public string FormatSize(long bytes, int digits = 2)
     {
         if (bytes < 0)
         {
-            return "-" + FormatSize(-bytes, decimalPlaces);
+            return "-" + FormatSize(-bytes, digits);
         }
 
         if (bytes == 0)
@@ -33,7 +33,7 @@ public sealed class FileSizeHelper
         }
 
         var magnitude = (int)Math.Log(bytes, 1024);
-        var adjustedSize = bytes / Math.Pow(1024, magnitude);
+        var adjustedSize = Math.Round(bytes / Math.Pow(1024, magnitude), digits);
 
         return magnitude switch
         {
