@@ -33,7 +33,7 @@ public sealed class FileSizeHelper
         }
 
         var magnitude = (int)Math.Log(bytes, 1024);
-        var adjustedSize = bytes / Math.Pow(1024, magnitude);
+        var adjustedSize = Math.Round(bytes / Math.Pow(1024, magnitude), decimalPlaces);
 
         return magnitude switch
         {
