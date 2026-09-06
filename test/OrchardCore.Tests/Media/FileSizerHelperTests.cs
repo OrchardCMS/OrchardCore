@@ -50,7 +50,7 @@ public class FileSizeHelperTests
 
         // Act & Assert
         Assert.Equal("1 B", fileSizeHelper.FormatSize(1));
-        Assert.Equal("1.5 B", fileSizeHelper.FormatSize(1536));
+        Assert.Equal($"{Math.Round(1536d / 1024, 2).ToString(CultureInfo.CurrentCulture)} B", fileSizeHelper.FormatSize(1536));
         Assert.Equal("2 B", fileSizeHelper.FormatSize(2048));
     }
 
@@ -92,7 +92,7 @@ public class FileSizeHelperTests
             6 => "PB",
             _ => "EB"
         };
-        var expected = string.Format(CultureInfo.InvariantCulture, "{0} " + unit, adjustedSize);
+        var expected = $"{Math.Round(adjustedSize, 2).ToString(CultureInfo.CurrentCulture)} {unit}";
 
         // Act
         var result = fileSizeHelper.FormatSize(bytes);
@@ -102,15 +102,13 @@ public class FileSizeHelperTests
     }
 
     [Fact]
-    public void DecimalPlacesParameter_IsIgnored_ByCurrentImplementation()
+    public void DigitsParameter_IsHandledCorrectly()
     {
         // Arrange
         var fileSizeHelper = new FileSizeHelper(_stringLocalizerMock.Object);
 
         // Act & Assert
-        var a = fileSizeHelper.FormatSize(1536, digits: 0);
-        var b = fileSizeHelper.FormatSize(1536, digits: 5);
-
-        Assert.Equal(a, b);
+        Assert.Equal("2 B", fileSizeHelper.FormatSize(1536, digits: 0));
+        Assert.Equal($"{Math.Round(1536d / 1024, 5).ToString(CultureInfo.CurrentCulture)} B", fileSizeHelper.FormatSize(1536, digits: 5));
     }
 }
