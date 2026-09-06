@@ -108,8 +108,8 @@ public class FileSizeHelperTests
         var fileSizeHelper = new FileSizeHelper(_stringLocalizerMock.Object);
 
         // Act & Assert
-        var a = fileSizeHelper.FormatSize(1536, decimalPlaces: 0);
-        var b = fileSizeHelper.FormatSize(1536, decimalPlaces: 5);
+        var a = fileSizeHelper.FormatSize(1536, digits: 0);
+        var b = fileSizeHelper.FormatSize(1536, digits: 5);
 
         Assert.Equal(a, b);
     }
