@@ -698,7 +698,7 @@ Here is an example of how to use the `TrackingConsent` object in a Liquid templa
 {% endif %}
 ```
 
-## Localization Filters
+## Data Localization Filters
 
 ### `d`
 
