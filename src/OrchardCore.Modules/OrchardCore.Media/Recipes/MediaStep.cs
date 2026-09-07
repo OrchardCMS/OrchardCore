@@ -2,13 +2,14 @@ using System.Text.Json.Nodes;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using OrchardCore.Media.Services;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Media.Recipes;
 
 /// <summary>
-/// This recipe step creates a set of queries.
+/// Imports files into the tenant's media store using relative target paths.
 /// </summary>
 public sealed class MediaStep : NamedRecipeStepHandler
 {
@@ -37,6 +38,13 @@ public sealed class MediaStep : NamedRecipeStepHandler
 
         foreach (var file in model.Files)
         {
+            if (!MediaFileStorePathHelper.IsValidRelativePath(file.TargetPath))
+            {
+                context.Errors.Add(S["Media target path must be a relative file path without traversal segments: '{0}'", file.TargetPath]);
+
+                continue;
+            }
+
             if (!_allowedFileExtensions.Contains(Path.GetExtension(file.TargetPath), StringComparer.OrdinalIgnoreCase))
             {
                 context.Errors.Add(S["File extension not allowed: '{0}'", file.TargetPath]);
