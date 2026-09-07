@@ -341,7 +341,7 @@ The following configuration values are used by default and can be customized:
     "CdnBaseUrl": "https://your-cdn.com",
     // The path used when serving media assets.
     "AssetsRequestPath": "/media",
-    // The name of the folder used to store media assets inside the App_Data folder.
+    // The relative subdirectory used to store media assets inside the tenant's data directory.
     "AssetsPath": "Media",
     // Whether to use a token in the query string to prevent disc filling.
     "UseTokenizedQueryString": true,
@@ -409,6 +409,20 @@ The following configuration values are used by default and can be customized:
 }
 ```
 
+### Media storage location
+
+`AssetsPath` is relative to the current tenant's data directory, which defaults to `App_Data/Sites/{tenant}`.
+The default value `Media` therefore stores files in `App_Data/Sites/{tenant}/Media`. Nested directories such as
+`Assets/Media` are supported, and both `/` and `\` can be used as separators.
+
+Absolute paths, drive prefixes (including drive-relative paths such as `C:Media`), empty paths or segments,
+and segments ending in a dot or space (including `.` and `..`) are rejected. A trailing directory separator is
+allowed. Invalid configuration fails Media options validation instead of exposing another tenant's data or
+the application directory through the media store or static file provider.
+
+To relocate tenant data to another volume, configure the host's application data location (for example, with
+the `ORCHARD_APP_DATA` environment variable) rather than using an absolute path or traversal in `AssetsPath`.
+
 ### Temporary upload storage location
 
 When files are uploaded, in-progress data (chunked uploads, resumable TUS uploads) is written to a temporary
@@ -431,6 +445,11 @@ Users need the existing media upload and folder permissions for all uploads. The
     Permission-gating risky or active file types is defense in depth, not file sanitization. Validate file contents separately, use a restrictive content security policy, and configure the web server and storage provider appropriately for the file types you accept.
 
 Recipe media imports are trusted system operations and do not use an ambient HTTP user. They may import extensions from either configured list, but extensions absent from both lists are rejected.
+The `TargetPath` (or its `Path` alias) must be a relative file path within the media store. Rooted paths,
+drive prefixes, empty segments, and segments ending in a dot or space (including `.` and `..`) are rejected
+before any source is read or file is overwritten. This applies equally to `Base64`, `SourcePath`, and `SourceUrl`
+imports. Valid imports can overwrite existing media files, but cannot target application assemblies or files
+outside the tenant's media directory.
 
 To configure the `StaticFileOptions` in more detail, including event handlers, for the Media Library `StaticFileMiddleware` apply:
 
