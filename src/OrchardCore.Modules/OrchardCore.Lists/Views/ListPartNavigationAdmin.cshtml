@@ -37,7 +37,7 @@
                 }
             }
 
-            @if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, Model.Container))
+            @if (actionName != "Edit" && await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, Model.Container))
             {
                 <a class="btn btn-primary me-1" asp-action="Edit" asp-controller="Admin" asp-route-contentItemId="@Model.Container.ContentItemId" asp-route-area="OrchardCore.Contents">
                     @T["Edit {0}", D[Model.ContainerContentTypeDefinition?.DisplayName, DataLocalizationContext.ContentType]]

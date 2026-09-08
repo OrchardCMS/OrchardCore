@@ -7,7 +7,7 @@ namespace OrchardCore.Localization.Models;
 /// </summary>
 public class LocalizationSettings
 {
-    private static readonly string[] _defaultSupportedCultures = [CultureInfo.InstalledUICulture.Name];
+    private static readonly string[] s_defaultSupportedCultures = [CultureInfo.InstalledUICulture.Name];
 
     /// <summary>
     /// Creates a new instance of the <see cref="LocalizationSettings"/>.
@@ -15,7 +15,7 @@ public class LocalizationSettings
     public LocalizationSettings()
     {
         DefaultCulture = CultureInfo.InstalledUICulture.Name;
-        SupportedCultures = _defaultSupportedCultures;
+        SupportedCultures = s_defaultSupportedCultures;
     }
 
     /// <summary>

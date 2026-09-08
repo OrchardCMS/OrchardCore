@@ -108,7 +108,7 @@ public sealed class SessionStartup : StartupBase
     }
 }
 
-[Feature("OrchardCore.Liquid")]
+[RequireFeatures("OrchardCore.Liquid")]
 public sealed class LiquidStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)

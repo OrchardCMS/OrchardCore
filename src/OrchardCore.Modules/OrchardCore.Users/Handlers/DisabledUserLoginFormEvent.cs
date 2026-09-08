@@ -17,19 +17,19 @@ internal sealed class DisabledUserLoginFormEvent : LoginFormEventBase
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ITempDataDictionaryFactory _tempDataDictionaryFactory;
-    private readonly RegistrationOptions _registrationOptions;
+    private readonly IOptionsMonitor<RegistrationOptions> _registrationOptions;
 
     private readonly IStringLocalizer S;
 
     public DisabledUserLoginFormEvent(
         IHttpContextAccessor httpContextAccessor,
         ITempDataDictionaryFactory tempDataDictionaryFactory,
-        IOptions<RegistrationOptions> registrationOptions,
+        IOptionsMonitor<RegistrationOptions> registrationOptions,
         IStringLocalizer<DisabledUserLoginFormEvent> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _tempDataDictionaryFactory = tempDataDictionaryFactory;
-        _registrationOptions = registrationOptions.Value;
+        _registrationOptions = registrationOptions;
         S = stringLocalizer;
     }
 
@@ -44,7 +44,7 @@ internal sealed class DisabledUserLoginFormEvent : LoginFormEventBase
 
         // When user moderation is enabled, newly registered users are created disabled by design;
         // UserModerationLoginFormEvent handles redirecting them to the RegistrationPending page.
-        if (_registrationOptions.UsersAreModerated)
+        if (_registrationOptions.CurrentValue.UsersAreModerated)
         {
             return null;
         }

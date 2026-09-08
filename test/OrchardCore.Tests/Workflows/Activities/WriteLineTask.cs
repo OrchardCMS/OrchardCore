@@ -29,14 +29,13 @@ public class WriteLineTask : TaskActivity<WriteLineTask>
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"]);
-    }
+        => Outcome(S["Done"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         var text = await _scriptEvaluator.EvaluateAsync(Text, workflowContext);
         await _output.WriteLineAsync(text);
-        return Outcomes("Done");
+
+        return Outcome("Done");
     }
 }

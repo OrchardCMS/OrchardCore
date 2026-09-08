@@ -14,8 +14,8 @@ public abstract class TenantTaskDisplayDriver<TActivity, TViewModel> : ActivityD
     public override Task<IDisplayResult> DisplayAsync(TActivity activity, BuildDisplayContext context)
     {
         return CombineAsync(
-            Shape($"{typeof(TActivity).Name}_Fields_Thumbnail", new TenantTaskViewModel<TActivity>(activity)).Location("Thumbnail", "Content"),
-            Shape($"{typeof(TActivity).Name}_Fields_Design", new TenantTaskViewModel<TActivity>(activity)).Location("Design", "Content")
+            Factory($"{typeof(TActivity).Name}_Fields_Thumbnail", static (TActivity a) => new TenantTaskViewModel<TActivity>(a), activity).Location("Thumbnail", "Content"),
+            Factory($"{typeof(TActivity).Name}_Fields_Design", static (TActivity a) => new TenantTaskViewModel<TActivity>(a), activity).Location("Design", "Content")
         );
     }
 }

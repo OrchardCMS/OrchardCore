@@ -10,7 +10,7 @@ public interface ISitemapSourceFactory
 
 public class SitemapSourceFactory<TSitemapSource> : ISitemapSourceFactory where TSitemapSource : SitemapSource, new()
 {
-    private static readonly string _typeName = typeof(TSitemapSource).Name;
+    private static readonly string s_typeName = typeof(TSitemapSource).Name;
 
     private readonly ISitemapIdGenerator _sitemapIdGenerator;
 
@@ -19,7 +19,7 @@ public class SitemapSourceFactory<TSitemapSource> : ISitemapSourceFactory where 
         _sitemapIdGenerator = sitemapIdGenerator;
     }
 
-    public string Name => _typeName;
+    public string Name => s_typeName;
 
     public SitemapSource Create()
     {

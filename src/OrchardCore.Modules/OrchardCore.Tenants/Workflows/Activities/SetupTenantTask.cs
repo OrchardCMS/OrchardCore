@@ -105,37 +105,35 @@ public class SetupTenantTask : TenantTask
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"], S["Failed"]);
-    }
+        => Outcome(S["Done"], S["Failed"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         if (!ShellScope.Context.Settings.IsDefaultShell())
         {
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
 
         var tenantName = (await ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext, null))?.Trim();
 
         if (string.IsNullOrWhiteSpace(tenantName))
         {
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
 
         if (!ShellHost.TryGetSettings(tenantName, out var shellSettings))
         {
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
 
         if (shellSettings.IsRunning())
         {
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
 
         if (!shellSettings.IsUninitialized())
         {
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
 
         var siteName = (await ExpressionEvaluator.EvaluateAsync(SiteName, workflowContext, null))?.Trim();
@@ -144,12 +142,12 @@ public class SetupTenantTask : TenantTask
 
         if (string.IsNullOrEmpty(adminUsername) || adminUsername.Any(c => !_identityOptions.User.AllowedUserNameCharacters.Contains(c)))
         {
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
 
         if (string.IsNullOrEmpty(adminEmail) || !_emailAddressValidator.Validate(adminEmail))
         {
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
 
         var adminPassword = (await ExpressionEvaluator.EvaluateAsync(AdminPassword, workflowContext, null))?.Trim();
@@ -220,9 +218,9 @@ public class SetupTenantTask : TenantTask
                 updater.ModelState.AddModelError(error.Key, error.Value);
             }
 
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
 
-        return Outcomes("Done");
+        return Outcome("Done");
     }
 }

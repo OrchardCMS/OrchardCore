@@ -131,9 +131,13 @@
                         if (originsSeparatorIndex > -1)
                         {
                             originType = value.Substring(0, originsSeparatorIndex);
-                            allowedOrigins = value.Substring(originsSeparatorIndex + 1);
+                            allowedOrigins = value.Substring(originsSeparatorIndex + 1).Trim();
                         }
                     }
+
+                    var policyValue = originType == PermissionsPolicyOriginValue.Self && allowedOrigins.Length > 0
+                        ? originType + " " + allowedOrigins
+                        : originType;
 
                     <tr>
                         <td>@GetPermissionPolicyName(key)</td>
@@ -155,7 +159,7 @@
                         <td>
                             <div class="mb-0">
                                 <input class="form-control d-@(originType == PermissionsPolicyOriginValue.Self ? "block" : "none")" id="@(key)AllowedOrigins" placeholder="https://www.domain.com https://www.another.domain.com" value="@allowedOrigins" oninput="changeAllowedOrigins(this)" />
-                                <input id="@Html.IdFor(m => m.PermissionsPolicy[key])" name="@Html.NameFor(m => m.PermissionsPolicy[key])" type="hidden" value="@originType" />
+                                <input id="@Html.IdFor(m => m.PermissionsPolicy[key])" name="@Html.NameFor(m => m.PermissionsPolicy[key])" type="hidden" value="@policyValue" />
                             </div>
                         </td>
                     </tr>
@@ -195,7 +199,8 @@
         var permissionValue = e.parentElement.querySelector('input[type="hidden"]');
 
         if (permissionValue && permissionValue.value.startsWith('self')) {
-            permissionValue.value = 'self ' + e.value.trim();
+            var origins = e.value.trim();
+            permissionValue.value = origins ? 'self ' + origins : 'self';
         }
     }
 </script>

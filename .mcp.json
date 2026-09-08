@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "orchardcore": {
+      "type": "http",
+      "url": "https://ai.orchardcore.net"
+    }
+  }
+}

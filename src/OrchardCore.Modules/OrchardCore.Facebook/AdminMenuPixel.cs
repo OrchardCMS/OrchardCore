@@ -6,7 +6,7 @@ namespace OrchardCore.Facebook;
 
 public sealed class AdminMenuPixel : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", FacebookConstants.PixelSettingsGroupId },
@@ -30,7 +30,7 @@ public sealed class AdminMenuPixel : AdminNavigationProvider
                        .Add(S["Meta Pixel"], S["Meta Pixel"].PrefixPosition(), pixel => pixel
                            .AddClass("facebookPixel")
                            .Id("facebookPixel")
-                           .Action("Index", "Admin", _routeValues)
+                           .Action("Index", "Admin", s_routeValues)
                            .Permission(FacebookConstants.ManageFacebookPixelPermission)
                            .LocalNav()
                        )
@@ -46,7 +46,7 @@ public sealed class AdminMenuPixel : AdminNavigationProvider
                     .Add(S["Meta Pixel"], S["Meta Pixel"].PrefixPosition(), pixel => pixel
                         .AddClass("facebookPixel")
                         .Id("facebookPixel")
-                        .Action("Index", "Admin", _routeValues)
+                        .Action("Index", "Admin", s_routeValues)
                         .Permission(FacebookConstants.ManageFacebookPixelPermission)
                         .LocalNav()
                     )

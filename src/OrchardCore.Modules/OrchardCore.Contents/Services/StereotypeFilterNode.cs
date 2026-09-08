@@ -9,6 +9,15 @@ public class StereotypeFilterNode : TermOperationNode
     {
     }
 
+    /// <summary>
+    /// Initializes a filter node for the specified stereotypes.
+    /// </summary>
+    /// <param name="stereotypes">The stereotypes to filter.</param>
+    public StereotypeFilterNode(string[] stereotypes)
+        : this(string.Join(',', stereotypes))
+    {
+    }
+
     public override string ToNormalizedString()
         => string.Empty;
 

@@ -29,9 +29,7 @@ public class BindModelStateTask : TaskActivity<BindModelStateTask>
     public override LocalizedString Category => S["Validation"];
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"]);
-    }
+        => Outcome(S["Done"]);
 
     public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -60,6 +58,6 @@ public class BindModelStateTask : TaskActivity<BindModelStateTask>
             updater.ModelState.SetModelValue(item.Key, rawValue, item.Value.ToString());
         }
 
-        return Outcomes("Done");
+        return Outcome("Done");
     }
 }

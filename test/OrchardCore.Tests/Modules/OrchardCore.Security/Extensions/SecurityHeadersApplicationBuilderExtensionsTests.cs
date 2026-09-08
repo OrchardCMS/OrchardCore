@@ -59,7 +59,7 @@ public class SecurityHeadersApplicationBuilderExtensionsTests
         // Assert
         Assert.Equal("child-src 'none';connect-src 'self' https://www.domain1.com https://www.domain2.com;default-src *", context.Response.Headers[SecurityHeaderNames.ContentSecurityPolicy]);
         Assert.Equal(ContentTypeOptionsValue.NoSniff, context.Response.Headers[SecurityHeaderNames.XContentTypeOptions]);
-        Assert.Equal("camera=self;microphone=*;speaker-selection=self https://www.domain1.com https://www.domain2.com", context.Response.Headers[SecurityHeaderNames.PermissionsPolicy]);
+        Assert.Equal("camera=self,microphone=*,speaker-selection=(self \"https://www.domain1.com\" \"https://www.domain2.com\")", context.Response.Headers[SecurityHeaderNames.PermissionsPolicy]);
         Assert.Equal(ReferrerPolicyValue.Origin, context.Response.Headers[SecurityHeaderNames.ReferrerPolicy]);
     }
 
@@ -92,8 +92,39 @@ public class SecurityHeadersApplicationBuilderExtensionsTests
         // Assert
         Assert.Equal("child-src 'none';connect-src 'self' https://www.domain1.com https://www.domain2.com;default-src *", context.Response.Headers[SecurityHeaderNames.ContentSecurityPolicy]);
         Assert.Equal(ContentTypeOptionsValue.NoSniff, context.Response.Headers[SecurityHeaderNames.XContentTypeOptions]);
-        Assert.Equal("camera=self;microphone=*;speaker=self https://www.domain1.com https://www.domain2.com", context.Response.Headers[SecurityHeaderNames.PermissionsPolicy]);
+        Assert.Equal("camera=self,microphone=*,speaker=(self \"https://www.domain1.com\" \"https://www.domain2.com\")", context.Response.Headers[SecurityHeaderNames.PermissionsPolicy]);
         Assert.Equal(ReferrerPolicyValue.Origin, context.Response.Headers[SecurityHeaderNames.ReferrerPolicy]);
+    }
+
+    [Fact]
+    public void SecurityHeaders_PermissionsPolicy_OmitsNoneFeaturesAndSerializesAllowListsAsStructuredField()
+    {
+        // Arrange
+        var context = new DefaultHttpContext();
+        var applicationBuilder = CreateApplicationBuilder();
+
+        // Act
+        applicationBuilder.UseSecurityHeaders(config =>
+        {
+            config.AddPermissionsPolicy(new Dictionary<string, string>
+            {
+                { PermissionsPolicyValue.Camera, PermissionsPolicyOriginValue.Self },
+                { PermissionsPolicyValue.Microphone, PermissionsPolicyOriginValue.Any },
+                { PermissionsPolicyValue.Geolocation, PermissionsPolicyOriginValue.None },
+                { PermissionsPolicyValue.Payment, $"{PermissionsPolicyOriginValue.Self} https://www.domain1.com https://www.domain2.com" },
+                { PermissionsPolicyValue.FullScreen, "https://www.domain1.com" },
+            });
+        });
+
+        applicationBuilder
+            .Build()
+            .Invoke(context);
+
+        // Assert: 'self' and '*' stay bare tokens, features set to 'None' are omitted, and
+        // allowlists containing origins become parenthesized inner lists with quoted origins.
+        Assert.Equal(
+            "camera=self,microphone=*,payment=(self \"https://www.domain1.com\" \"https://www.domain2.com\"),fullscreen=(\"https://www.domain1.com\")",
+            context.Response.Headers[SecurityHeaderNames.PermissionsPolicy]);
     }
 
     private static ApplicationBuilder CreateApplicationBuilder()

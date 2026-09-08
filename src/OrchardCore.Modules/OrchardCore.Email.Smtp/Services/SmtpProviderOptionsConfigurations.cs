@@ -5,14 +5,14 @@ namespace OrchardCore.Email.Smtp.Services;
 
 public sealed class SmtpProviderOptionsConfigurations : IConfigureOptions<EmailProviderOptions>
 {
-    private readonly SmtpOptions _smtpOptions;
+    private readonly IOptionsMonitor<SmtpOptions> _smtpOptions;
     private readonly DefaultSmtpOptions _defaultSmtpOptions;
 
     public SmtpProviderOptionsConfigurations(
-        IOptions<SmtpOptions> smtpOptions,
+        IOptionsMonitor<SmtpOptions> smtpOptions,
         IOptions<DefaultSmtpOptions> defaultSmtpOptions)
     {
-        _smtpOptions = smtpOptions.Value;
+        _smtpOptions = smtpOptions;
         _defaultSmtpOptions = defaultSmtpOptions.Value;
     }
 
@@ -30,7 +30,7 @@ public sealed class SmtpProviderOptionsConfigurations : IConfigureOptions<EmailP
     {
         var typeOptions = new EmailProviderTypeOptions(typeof(SmtpEmailProvider))
         {
-            IsEnabled = _smtpOptions.IsEnabled,
+            IsEnabled = _smtpOptions.CurrentValue.IsEnabled,
         };
 
         options.TryAddProvider(SmtpEmailProvider.TechnicalName, typeOptions);

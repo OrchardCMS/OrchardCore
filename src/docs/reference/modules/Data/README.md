@@ -1,198 +1,192 @@
 # Data (`OrchardCore.Data`)
 
-## Configuring Databases
+Orchard Core uses [YesSql](https://github.com/sebastienros/yessql) to store documents and indexes in a relational database. The Data services configure YesSql for each tenant and provide access to the tenant's database connection, SQL dialect, schema, and table naming conventions.
 
-Most database configuration is handled automatically, but there are limited options which can affect the way the database works.
+For an introduction to documents, indexes, and sessions, see [How YesSql works](../../../topics/data/yessql.md).
 
-### Sqlite
+## Database providers
 
-#### `DatabaseName`
+You select a database provider during tenant setup. Orchard Core includes these providers:
 
-This setting represents the name of the file used to store the SQLite database. By default, it is set to `OrchardCore.db`. You can change this value to specify a different file name for your SQLite database.
+| Database | Provider value | Connection string | Table prefix and schema |
+| --- | --- | --- | --- |
+| SQLite | `Sqlite` | Not used | Not used |
+| SQL Server | `SqlConnection` | Required | Supported |
+| MySQL | `MySql` | Required | Supported |
+| PostgreSQL | `Postgres` | Required | Supported |
 
-!!!note
-    This value is stored in the `ShellSettings` of a tenant, so it can be different for each tenant in the application.
+For SQL Server, MySQL, and PostgreSQL, create the database before running setup and grant the configured account permission to create and modify tables. Orchard Core validates the connection and then creates its tables; it doesn't create the database itself.
 
-#### `UseConnectionPooling` (boolean)
+The provider, connection string, table prefix, and schema are tenant settings. You can enter them on the setup screen or preconfigure them through `IShellConfiguration`. See [Setup](../Setup/README.md) for setup parameters and [Configuration](../Configuration/README.md) for tenant configuration sources and shared-database guidance.
 
-By default in `.NET 6`, `Microsoft.Data.Sqlite` pools connections to the database. It achieves this by putting locking the database file and leaving connections open to be reused. If the lock is preventing tasks like backups, this functionality can be disabled.
+## SQLite options
 
-There may be a performance penalty associated with disabling connection pooling.
+SQLite is the default provider and stores each tenant's database file in that tenant's shell data directory.
 
-See the [`Microsoft.Data.Sqlite` documentation](https://docs.microsoft.com/en-us/dotnet/standard/data/sqlite/connection-strings#pooling) for more details.
+### Database name
 
-##### `appsettings.json`
+The `DatabaseName` shell setting controls the file name. Setup uses `OrchardCore.db` when no name is provided. Because the value belongs to the tenant's `ShellSettings`, each tenant can use a different file name.
+
+### Connection pooling
+
+`Microsoft.Data.Sqlite` connection pooling is enabled by default. Pooled connections can keep the database file open, which may interfere with operations such as copying or replacing the file for a backup. Set `UseConnectionPooling` to `false` when you need those operations to release the file; disabling pooling can reduce performance.
+
+In the root web application's `appsettings.json`, configure the option under the `OrchardCore` section:
 
 ```json
 {
-  "OrchardCore_Data_Sqlite": {
-    "UseConnectionPooling": false
+  "OrchardCore": {
+    "OrchardCore_Data_Sqlite": {
+      "UseConnectionPooling": false
+    }
   }
 }
 ```
 
-## Configuring YesSql
+See the [`Microsoft.Data.Sqlite` connection string documentation](https://learn.microsoft.com/dotnet/standard/data/sqlite/connection-strings#pooling) for details about pooling.
 
-OrchardCore uses the `YesSql` library to interact with the configured database provider. `YesSql` is shipped with configuration that is suitable for most use cases. However, you can change these settings by configuring `YesSqlOptions`. `YesSqlOptions` provides the following configurable options.
+## YesSql options
 
-| Setting                     | Description                                                                                                                                   |
-|-----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
-| `CommandsPageSize`          | Gets or sets the command page size. If you have to many queries in one command, `YesSql` will split the large command into multiple commands. |
-| `QueryGatingEnabled`        | Gets or sets the `QueryGatingEnabled` option in `YesSql`.                                                                                     |
-| `IdGenerator`               | You can provide your own implementation for generating ids.                                                                                   |
-| `IdentifierAccessorFactory` | You can provide your own value accessor factory.                                                                                              |
-| `VersionAccessorFactory`    | You can provide your own version accessor factory.                                                                                            |
-| `ContentSerializer`         | You can provide your own content serializer.                                                                                                  |
-| `EnableThreadSafetyChecks`  | Gets or sets the `EnableThreadSafetyChecks` option in YesSql, which aids in diagnosing concurrency or race condition issues.                  |
-| `IsolationLevel`            | Gets or sets the transaction isolation level to use by default. The default value is `ReadCommitted`.                                         |
+Orchard Core binds the `OrchardCore_YesSql` configuration section to `YesSqlOptions`.
 
-For example, you can change the default command-page-size from `500` to `1000` by adding the following code to your startup code.
+| Setting | Default | Description |
+| --- | --- | --- |
+| `CommandsPageSize` | `500` | Sets the maximum number of commands in a YesSql command page. YesSql splits larger sets into multiple pages. |
+| `QueryGatingEnabled` | `true` | Coalesces identical concurrent query work so YesSql executes it once and shares the result. |
+| `EnableThreadSafetyChecks` | `false` | Enables checks that help diagnose concurrent use of a YesSql session. |
+| `IsolationLevel` | `ReadCommitted` | Sets the default transaction isolation level passed to the configured provider. |
 
-```C#
+Configure these values through any supported tenant configuration source. For example:
+
+```json
+{
+  "OrchardCore": {
+    "OrchardCore_YesSql": {
+      "CommandsPageSize": 1000,
+      "QueryGatingEnabled": true,
+      "EnableThreadSafetyChecks": false,
+      "IsolationLevel": "ReadCommitted"
+    }
+  }
+}
+```
+
+`YesSqlOptions` also exposes `IdGenerator`, `IdentifierAccessorFactory`, `VersionAccessorFactory`, and `ContentSerializer` for service implementations that can't be created by configuration binding. Configure those options in code:
+
+```csharp
+using OrchardCore.Data.YesSql;
+
 services.Configure<YesSqlOptions>(options =>
 {
     options.CommandsPageSize = 1000;
 });
 ```
 
-You may configure `CommandsPageSize`, `QueryGatingEnabled`, and `EnableThreadSafetyChecks` options using a configuration provider like `appsettings.json` using the following
+## Table naming presets
+
+The `OrchardCore_Data_TableOptions` section defines presets that Orchard Core copies into a tenant's shell settings during initial setup.
+
+| Setting | Default for a new tenant | Description |
+| --- | --- | --- |
+| `DefaultDocumentTable` | `Document` | Sets the name of the default YesSql document table. |
+| `DefaultTableNameSeparator` | `_` | Sets the separator between a table prefix or collection name and the table name. Use one or more underscores, or `NULL` for no separator. |
+| `DefaultIdentityColumnSize` | `Int64` | Sets identity columns to `Int32` or `Int64`. |
 
 ```json
 {
-  "OrchardCore_YesSql": {
-    "CommandsPageSize": 500,
-    "QueryGatingEnabled": true,
-    "EnableThreadSafetyChecks": false
+  "OrchardCore": {
+    "OrchardCore_Data_TableOptions": {
+      "DefaultDocumentTable": "Document",
+      "DefaultTableNameSeparator": "_",
+      "DefaultIdentityColumnSize": "Int64"
+    }
   }
 }
 ```
 
-## Database table
+!!! warning
+    Configure these presets before setting up a tenant. Changing them later doesn't rename existing tables or alter existing identity columns.
 
-The following database table settings, only used as presets before a given tenant is setup, can be provided from any configuration source.
-
-| Setting                     | Description                                                                            |
-|-----------------------------|----------------------------------------------------------------------------------------|
-| `DefaultDocumentTable`      | Document table name, defaults to 'Document'.                                           |
-| `DefaultTableNameSeparator` | Table name separator, one or multiple '_', "NULL" means no separator, defaults to '_'. |
-| `DefaultIdentityColumnSize` | Identity column size, 'Int32' or 'Int64', defaults to 'Int64'.                         |
-
-#### Configuration Source (ex., `appsettings.json`)
-
-```json
-{
-  "OrchardCore_Data_TableOptions": {
-    "DefaultDocumentTable": "Document",
-    "DefaultTableNameSeparator": "_",
-    "DefaultIdentityColumnSize": "Int64"
-  }
-}
-```
+The examples above show the root web application's `appsettings.json` shape. In a tenant-local `App_Data/Sites/{tenant}/appsettings.json` file, omit the outer `OrchardCore` section. See [Configuration](../Configuration/README.md) for the complete configuration source hierarchy.
 
 ## Running SQL queries
 
-### Creating a `DbConnection` instance
+Prefer `IContentManager` for content items and `ISession` for YesSql documents and indexes. Use raw SQL only when you need to work directly with relational tables.
 
-To get a new `DbConnection` pointing to the same database as the running site, use `IDbConnectionAccessor` from the `OrchardCore.Data` namespace in the `Orchard.Data.Abstractions` package..
+`IDbConnectionAccessor` from the `OrchardCore.Data` namespace creates a `DbConnection` for the current tenant. The interface is provided by the `OrchardCore.Data.Abstractions` package. Resolve `IStore` from the `YesSql` namespace to access the configured SQL dialect, schema, and table prefix.
 
-### Writing database provider agnostic queries
+Create custom relational tables through a [data migration](../Migrations/README.md) so Orchard Core can apply their schema consistently.
 
-Once a connection has been created, a custom `ISqlDialect` can be obtained from `IStore` from the `YesSql` namespace in the `YesSql.Abstractions` package.
-This service provides methods to build SQL queries that can will be use the syntax of the underlying connection.
+### Quote table names
 
-### Handling prefixed tables
-
-Each tenant in an Orchard Core application can have a table prefix. When building custom queries it
-is necessary to take it into account. It is available by resolving `ShellSettings` and accessing the `TablePrefix` setting.
-It is available from the `OrchardCore.Environment.Shell` namespace in the `OrchardCore.Abstractions` package.
-
-## Example
-
-The following example uses Dapper to execute a SQL query.
+Database providers use different identifier syntax. Build table names from the YesSql store configuration and quote them with `ISqlDialect`:
 
 ```csharp
 using Dapper;
 using OrchardCore.Data;
-using OrchardCore.Environment.Shell
+using YesSql;
 
-public sealed class AdminController : Controller
+public sealed class CustomTableReader
 {
-    private readonly IDbConnectionAccessor _dbAccessor;
+    private readonly IDbConnectionAccessor _dbConnectionAccessor;
     private readonly IStore _store;
-    private readonly string _tablePrefix;
 
-    public AdminController(IDbConnectionAccessor dbAccessor, IStore store, ShellSettings settings)
+    public CustomTableReader(IDbConnectionAccessor dbConnectionAccessor, IStore store)
     {
-        _dbAccessor = dbAccessor;
+        _dbConnectionAccessor = dbConnectionAccessor;
         _store = store;
-        _tablePrefix = settings["TablePrefix"];
     }
 
-    public async Task<ActionResult> Query()
+    public async Task<IReadOnlyList<CustomRow>> ListAsync(
+        CancellationToken cancellationToken)
     {
-       await using (var connection = _dbAccessor.CreateConnection())
-       {
-            var dialect = _store.Configuration.SqlDialect;
-            var customTable = dialect.QuoteForTableName($"{_tablePrefix}CustomTable");
+        await using var connection = _dbConnectionAccessor.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
 
-            var model = await connection.QueryAsync<CustomTable>($"SELECT * FROM {customTable};");
+        var configuration = _store.Configuration;
+        var tableName = configuration.SqlDialect.QuoteForTableName(
+            $"{configuration.TablePrefix}CustomTable",
+            configuration.Schema);
 
-            return View(model);
-        }
-    }
+        var command = new CommandDefinition(
+            $"SELECT * FROM {tableName};",
+            cancellationToken: cancellationToken);
 
-    public async Task<ActionResult> DeleteUsingTransaction()
-    {
-       await using (var connection = _dbAccessor.CreateConnection())
-       {
-           using (var transaction = await connection.BeginTransactionAsync())
-           {
-               try 
-               {
-                    var dialect = _store.Configuration.SqlDialect;
-                    var customTable1 = dialect.QuoteForTableName($"{_tablePrefix}CustomTable1");
-                    var customTable2 = dialect.QuoteForTableName($"{_tablePrefix}CustomTable2");
-
-                    var command1 = $"DELETE FROM {customTable1};";
-                    var command2 = $"DELETE FROM {customTable2};";
-
-                    await connection.ExecuteAsync(command1);
-                    await connection.ExecuteAsync(command2);
-                    
-                    await transaction.CommitAsync();
-                } 
-                catch 
-                {
-                    // If an exception occurs the transaction is rollbacked
-                    await transaction.RollbackAsync();
-                }
-
-                return Content("Done!");
-            }
-        }
-    }
-
-    public async Task<ActionResult> DeleteNoTransaction()
-    {
-       await using (var connection = _dbAccessor.CreateConnection())
-       {
-            var dialect = _store.Configuration.SqlDialect;
-            var customTable1 = dialect.QuoteForTableName($"{_tablePrefix}CustomTable1");
-            var customTable2 = dialect.QuoteForTableName($"{_tablePrefix}CustomTable2");
-
-            var command = $"DELETE FROM {customTable1}; DELETE FROM {customTable2};";
-
-            await connection.ExecuteAsync(command);
-
-            return Content("Done!");
-        }
+        return (await connection.QueryAsync<CustomRow>(command)).AsList();
     }
 }
 ```
 
-!!!note
-    Make sure you create the database for the following providers *before* running the setup process; otherwise, the connection will fail, and the setup process will not be able to create the database for you.
+`IStore.Configuration.TablePrefix` already includes the configured table-name separator. Pass `IStore.Configuration.Schema` when quoting a table so the query also works for tenants that use a non-default schema.
 
-    - SQL Server
-    - MySQL
-    - PostgreSQL
+Table names can't be supplied as SQL parameters, so only compose identifiers from trusted application and tenant configuration. Pass data values to Dapper as parameters instead of interpolating them into SQL.
+
+### Use transactions for related writes
+
+Open the connection before beginning a transaction, pass the transaction to every Dapper command, and rethrow failures after rollback:
+
+```csharp
+await using var connection = _dbConnectionAccessor.CreateConnection();
+await connection.OpenAsync(cancellationToken);
+await using var transaction = await connection.BeginTransactionAsync(cancellationToken);
+
+try
+{
+    await connection.ExecuteAsync(new CommandDefinition(
+        firstCommand,
+        transaction: transaction,
+        cancellationToken: cancellationToken));
+
+    await connection.ExecuteAsync(new CommandDefinition(
+        secondCommand,
+        transaction: transaction,
+        cancellationToken: cancellationToken));
+
+    await transaction.CommitAsync(cancellationToken);
+}
+catch
+{
+    await transaction.RollbackAsync(cancellationToken);
+    throw;
+}
+```

@@ -7,7 +7,7 @@ using OrchardCore;
 public static class MediaOrchardHelperExtensions
 #pragma warning restore CA1050 // Declare types in namespaces
 {
-    private static readonly HashSet<string> _imageExtensions = new(StringComparer.OrdinalIgnoreCase)
+    private static readonly HashSet<string> s_imageExtensions = new(StringComparer.OrdinalIgnoreCase)
     {
         ".bmp",
         ".gif",
@@ -25,6 +25,6 @@ public static class MediaOrchardHelperExtensions
     /// <returns>true if the path is an image file. Otherwise false.</returns>
     public static bool IsImageFile(this IOrchardHelper _, string path)
     {
-        return _imageExtensions.Contains(Path.GetExtension(path));
+        return s_imageExtensions.Contains(Path.GetExtension(path));
     }
 }

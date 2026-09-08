@@ -6,7 +6,7 @@ namespace OrchardCore.OpenId;
 
 public sealed class ClientAdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _clientRouteValues = new()
+    private static readonly RouteValueDictionary s_clientRouteValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", "OrchardCore.OpenId.Client" },
@@ -31,7 +31,7 @@ public sealed class ClientAdminMenu : AdminNavigationProvider
                        .Id("openid")
                        .Add(S["Settings"], S["Settings"].PrefixPosition(), settings => settings
                            .Add(S["Authentication Client"], S["Authentication Client"].PrefixPosition(), client => client
-                               .Action("Index", "Admin", _clientRouteValues)
+                               .Action("Index", "Admin", s_clientRouteValues)
                                .Permission(OpenIdPermissions.ManageClientSettings)
                                .LocalNav()
                            )
@@ -46,7 +46,7 @@ public sealed class ClientAdminMenu : AdminNavigationProvider
             .Add(S["Settings"], settings => settings
                 .Add(S["OpenID Connect"], S["OpenID Connect"].PrefixPosition(), openId => openId
                     .Add(S["Authentication Client"], S["Authentication Client"].PrefixPosition(), client => client
-                        .Action("Index", "Admin", _clientRouteValues)
+                        .Action("Index", "Admin", s_clientRouteValues)
                         .Permission(OpenIdPermissions.ManageClientSettings)
                         .LocalNav()
                     )

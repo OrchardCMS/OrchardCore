@@ -338,43 +338,58 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
         }
     }
 
+    internal static string GenerateRelativeUniquePath(List<AutorouteEntry> entries, string path, AutoroutePart context)
+    {
+        var version = 1;
+        var unversionedPath = path;
+
+        var versionSeparatorPosition = path.LastIndexOf('-');
+        if (versionSeparatorPosition > -1 && int.TryParse(path[versionSeparatorPosition..].TrimStart('-'), out var parsedVersion))
+        {
+            version = parsedVersion;
+            unversionedPath = path[..versionSeparatorPosition];
+        }
+
+        while (true)
+        {
+            // Find the max version already used for this unversionedPath in entries
+            var maxVersion = entries
+                .Where(e => e.Path.StartsWith(unversionedPath + "-", StringComparison.OrdinalIgnoreCase))
+                .Select(e => int.TryParse(e.Path[(unversionedPath.Length + 1)..], out var v) ? v : 0)
+                .DefaultIfEmpty(0)
+                .Max();
+
+            var nextVersion = Math.Max(version, maxVersion) + 1;
+
+            while (true)
+            {
+                var versionedPath = $"{unversionedPath}-{nextVersion}";
+                if (IsRelativePathUnique(entries, versionedPath, context))
+                {
+                    var entry = entries.SingleOrDefault(e => e.ContainedContentItemId == context.ContentItem.ContentItemId);
+                    if (entry == null)
+                    {
+                        // Add new entry for this contained item if it doesn't exist yet, preventing a null reference exception
+                        entry = new AutorouteEntry(context.ContentItem.ContentItemId, versionedPath, context.ContentItem.ContentItemId);
+                        entries.Add(entry);
+                    }
+                    entry.Path = versionedPath;
+
+                    return versionedPath;
+                }
+                nextVersion++;
+            }
+        }
+    }
+
+
     private static bool IsRelativePathUnique(List<AutorouteEntry> entries, string path, AutoroutePart context)
     {
         var result = !entries.Any(e => context.ContentItem.ContentItemId != e.ContainedContentItemId && string.Equals(e.Path.Trim('/'), path.Trim('/'), StringComparison.OrdinalIgnoreCase));
         return result;
     }
 
-    private static string GenerateRelativeUniquePath(List<AutorouteEntry> entries, string path, AutoroutePart context)
-    {
-        var version = 1;
-        var unversionedPath = path;
-
-        var versionSeparatorPosition = path.LastIndexOf('-');
-        if (versionSeparatorPosition > -1 && int.TryParse(path[versionSeparatorPosition..].TrimStart('-'), out version))
-        {
-            unversionedPath = path[..versionSeparatorPosition];
-        }
-
-        while (true)
-        {
-            // Unversioned length + separator char + version length.
-            var quantityCharactersToTrim = unversionedPath.Length + 1 + version.ToString().Length - AutoroutePart.MaxPathLength;
-            if (quantityCharactersToTrim > 0)
-            {
-                unversionedPath = unversionedPath[..^quantityCharactersToTrim];
-            }
-
-            var versionedPath = $"{unversionedPath}-{version++}";
-            if (IsRelativePathUnique(entries, versionedPath, context))
-            {
-                var entry = entries.FirstOrDefault(e => e.ContainedContentItemId == context.ContentItem.ContentItemId);
-                entry.Path = versionedPath;
-
-                return versionedPath;
-            }
-        }
-    }
-
+    
     private async Task GenerateContainerPathFromPatternAsync(AutoroutePart part)
     {
         // Compute the Path only if it's empty.

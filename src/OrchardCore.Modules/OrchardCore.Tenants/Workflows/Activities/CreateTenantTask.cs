@@ -81,27 +81,25 @@ public class CreateTenantTask : TenantTask
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"], S["Failed"]);
-    }
+        => Outcome(S["Done"], S["Failed"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         if (!ShellScope.Context.Settings.IsDefaultShell())
         {
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
 
         var tenantName = (await ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext, null))?.Trim();
 
         if (string.IsNullOrEmpty(tenantName))
         {
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
 
         if (ShellHost.TryGetSettings(tenantName, out _))
         {
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
 
         var description = (await ExpressionEvaluator.EvaluateAsync(Description, workflowContext, null))?.Trim();
@@ -177,6 +175,6 @@ public class CreateTenantTask : TenantTask
         workflowContext.LastResult = reloadedSettings;
         workflowContext.CorrelationId = reloadedSettings.Name;
 
-        return Outcomes("Done");
+        return Outcome("Done");
     }
 }

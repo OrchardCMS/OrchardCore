@@ -10,7 +10,7 @@ public class ContentSecurityPolicyHeaderPolicyProvider : HeaderPolicyProvider
     {
         if (Options.ContentSecurityPolicy.Length > 0)
         {
-            _policy = string.Join(SecurityHeaderDefaults.PoliciesSeparator, Options.ContentSecurityPolicy);
+            _policy = string.Join(SecurityHeaderDefaults.ContentSecurityPolicySeparator, Options.ContentSecurityPolicy);
         }
     }
 

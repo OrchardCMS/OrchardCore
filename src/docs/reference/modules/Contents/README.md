@@ -582,6 +582,63 @@ Now, when a user searches for a product's serial number in the administration UI
 
 The `UseExactMatch` option in the `ContentsAdminListFilterOptions` class modifies the default search behavior by enclosing searched terms within quotation marks, creating an exact match search by default, this unless if the search text explicitly uses 'OR' or 'AND' operators.
 
+## Documenting Filters in the Admin UI
+
+The content items admin list has a **Filters** dropdown next to the search box. Its **Filter syntax** entry opens the **Available Filters** dialog, which lists every filter a user can type into the search box (`text:`, `type:`, `status:`, `sort:`, …) as a compact grid of cards.
+
+Each card is a shape rendered with the `Thumbnail` display type of the `ContentOptionsViewModel`. The cards are provided by display drivers, so a module can add its own card without replacing any existing view. This only documents a filter for the end user; the filter itself still has to be implemented with an `IContentsAdminListFilterProvider` (see [Full-Text Search for Admin UI](#full-text-search-for-admin-ui) above).
+
+### Registering a filter card
+
+Implement a `DisplayDriver<ContentOptionsViewModel>` and return a `View` result placed in the `Content` zone of the `Thumbnail` display type. The position after `Content:` controls the order the card appears in.
+
+```csharp
+public sealed class ProductContentsAdminListDisplayDriver : DisplayDriver<ContentOptionsViewModel>
+{
+    public override IDisplayResult Display(ContentOptionsViewModel model, BuildDisplayContext context)
+    {
+        // The first argument is the shape type; the second is the display type/position.
+        return View("ContentsAdminFilters_Thumbnail__Product", model)
+            .Location("Thumbnail", "Content:35");
+    }
+}
+```
+
+Register the driver in your module's `Startup`:
+
+```csharp
+services.AddDisplayDriver<ContentOptionsViewModel, ProductContentsAdminListDisplayDriver>();
+```
+
+### The card template
+
+The shape name `ContentsAdminFilters_Thumbnail__Product` resolves to a Razor view named `ContentsAdminFilters-Product.Thumbnail.cshtml` placed under `Views/Items/`. Each card is automatically wrapped in a Bootstrap card and laid out in the responsive grid, so the template only supplies the card's inner content: a title with its capability icons on the first line, the filter token below it, and a short description.
+
+```html
+@model ShapeViewModel<ContentOptionsViewModel>
+@{
+    var term = Model.Value.FilterResult.FirstOrDefault(x => x.TermName == "product");
+}
+
+<div class="d-flex justify-content-between align-items-center gap-2">
+    <h6 class="card-title fw-semibold mb-0">@T["Product"]</h6>
+    <span class="text-primary text-nowrap">
+        <i class="fa-solid fa-sm fa-bars" title="@T["Supports logical operators and groups"]" aria-hidden="true"></i>
+    </span>
+</div>
+<div class="mt-1"><code class="small text-nowrap">@(term?.ToString() ?? "product:...")</code></div>
+<p class="card-text small text-body-secondary mt-1 mb-0">@T["Filters on a product serial number."]</p>
+```
+
+The capability icons next to the title summarize what the filter accepts. Use the same icons the built-in filters use so the shared legend at the bottom of the dialog stays accurate:
+
+| Icon | Font Awesome class | Meaning |
+|------|--------------------|---------|
+| ✓ | `fa-check` | **Default** term &mdash; may be entered with or without the term name. |
+| − | `fa-minus` | **Single** &mdash; accepts a single value. |
+| ☰ | `fa-bars` | **Multiple** &mdash; supports logical operators (`AND`, `OR`, `NOT`) and groups. |
+
+The same pattern is used by the [users admin list](../Users/README.md#documenting-filters-in-the-admin-ui) (`UserIndexOptions`) and the audit trail admin list (`AuditTrailIndexOptions`); provide a `DisplayDriver<UserIndexOptions>` or `DisplayDriver<AuditTrailIndexOptions>` and matching `UsersAdminFilters-*.Thumbnail.cshtml` / `AuditTrailAdminFilters-*.Thumbnail.cshtml` views to extend those dialogs.
 
 ## Content Version Pruning
 

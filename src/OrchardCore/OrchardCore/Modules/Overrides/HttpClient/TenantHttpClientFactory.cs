@@ -16,7 +16,7 @@ namespace Microsoft.Extensions.Http;
 
 internal sealed class TenantHttpClientFactory : IHttpClientFactory, IHttpMessageHandlerFactory, IDisposable
 {
-    private static readonly TimerCallback _cleanupCallback = (s) => ((TenantHttpClientFactory)s!).CleanupTimer_Tick();
+    private static readonly TimerCallback s_cleanupCallback = (s) => ((TenantHttpClientFactory)s!).CleanupTimer_Tick();
     private IServiceProvider? _services;
     private IServiceScopeFactory? _scopeFactory;
     private IOptionsMonitor<HttpClientFactoryOptions>? _optionsMonitor;
@@ -247,7 +247,7 @@ internal sealed class TenantHttpClientFactory : IHttpClientFactory, IHttpMessage
     {
         lock (_cleanupTimerLock)
         {
-            _cleanupTimer ??= NonCapturingTimer.Create(_cleanupCallback, this, _defaultCleanupInterval, Timeout.InfiniteTimeSpan);
+            _cleanupTimer ??= NonCapturingTimer.Create(s_cleanupCallback, this, _defaultCleanupInterval, Timeout.InfiniteTimeSpan);
         }
     }
 
@@ -378,22 +378,22 @@ internal sealed class TenantHttpClientFactory : IHttpClientFactory, IHttpMessage
             public static readonly EventId HandlerExpired = new(103, "HandlerExpired");
         }
 
-        private static readonly Action<ILogger, int, Exception?> _cleanupCycleStart = LoggerMessage.Define<int>(
+        private static readonly Action<ILogger, int, Exception?> s_cleanupCycleStart = LoggerMessage.Define<int>(
             LogLevel.Debug,
             EventIds.CleanupCycleStart,
             "Starting HttpMessageHandler cleanup cycle with {InitialCount} items");
 
-        private static readonly Action<ILogger, double, int, int, Exception?> _cleanupCycleEnd = LoggerMessage.Define<double, int, int>(
+        private static readonly Action<ILogger, double, int, int, Exception?> s_cleanupCycleEnd = LoggerMessage.Define<double, int, int>(
             LogLevel.Debug,
             EventIds.CleanupCycleEnd,
             "Ending HttpMessageHandler cleanup cycle after {ElapsedMilliseconds}ms - processed: {DisposedCount} items - remaining: {RemainingItems} items");
 
-        private static readonly Action<ILogger, string, Exception?> _cleanupItemFailed = LoggerMessage.Define<string>(
+        private static readonly Action<ILogger, string, Exception?> s_cleanupItemFailed = LoggerMessage.Define<string>(
             LogLevel.Error,
             EventIds.CleanupItemFailed,
             "HttpMessageHandler.Dispose() threw an unhandled exception for client: '{ClientName}'");
 
-        private static readonly Action<ILogger, double, string, Exception?> _handlerExpired = LoggerMessage.Define<double, string>(
+        private static readonly Action<ILogger, double, string, Exception?> s_handlerExpired = LoggerMessage.Define<double, string>(
             LogLevel.Debug,
             EventIds.HandlerExpired,
             "HttpMessageHandler expired after {HandlerLifetime}ms for client '{ClientName}'");
@@ -403,7 +403,7 @@ internal sealed class TenantHttpClientFactory : IHttpClientFactory, IHttpMessage
         {
             if (TryGetLogger(loggerLazy, out var logger))
             {
-                _cleanupCycleStart(logger, initialCount, null);
+                s_cleanupCycleStart(logger, initialCount, null);
             }
         }
 
@@ -411,7 +411,7 @@ internal sealed class TenantHttpClientFactory : IHttpClientFactory, IHttpMessage
         {
             if (TryGetLogger(loggerLazy, out var logger))
             {
-                _cleanupCycleEnd(logger, duration.TotalMilliseconds, disposedCount, finalCount, null);
+                s_cleanupCycleEnd(logger, duration.TotalMilliseconds, disposedCount, finalCount, null);
             }
         }
 
@@ -419,7 +419,7 @@ internal sealed class TenantHttpClientFactory : IHttpClientFactory, IHttpMessage
         {
             if (TryGetLogger(loggerLazy, out var logger))
             {
-                _cleanupItemFailed(logger, clientName, exception);
+                s_cleanupItemFailed(logger, clientName, exception);
             }
         }
 
@@ -427,7 +427,7 @@ internal sealed class TenantHttpClientFactory : IHttpClientFactory, IHttpMessage
         {
             if (TryGetLogger(loggerLazy, out var logger))
             {
-                _handlerExpired(logger, lifetime.TotalMilliseconds, clientName, null);
+                s_handlerExpired(logger, lifetime.TotalMilliseconds, clientName, null);
             }
         }
 

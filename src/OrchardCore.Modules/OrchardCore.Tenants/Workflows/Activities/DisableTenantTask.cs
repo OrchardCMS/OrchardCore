@@ -21,41 +21,39 @@ public class DisableTenantTask : TenantTask
     public override LocalizedString DisplayText => S["Disable Tenant Task"];
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Disabled"], S["Failed"]);
-    }
+        => Outcome(S["Disabled"], S["Failed"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         if (!ShellScope.Context.Settings.IsDefaultShell())
         {
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
 
         var tenantName = (await ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext, null))?.Trim();
 
         if (string.IsNullOrEmpty(tenantName))
         {
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
 
         if (!ShellHost.TryGetSettings(tenantName, out var shellSettings))
         {
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
 
         if (shellSettings.IsDefaultShell())
         {
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
 
         if (!shellSettings.IsRunning())
         {
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
 
         await ShellHost.UpdateShellSettingsAsync(shellSettings.AsDisabled());
 
-        return Outcomes("Disabled");
+        return Outcome("Disabled");
     }
 }

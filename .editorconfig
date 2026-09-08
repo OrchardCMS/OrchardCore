@@ -141,6 +141,29 @@ dotnet_naming_rule.private_fields_should_be_camel_case_leading_underscore.severi
 dotnet_naming_rule.private_fields_should_be_camel_case_leading_underscore.symbols = private_fields
 dotnet_naming_rule.private_fields_should_be_camel_case_leading_underscore.style = camel_case_leading_underscore
 
+# Define the 'static_fields_should_be_camel_case_and_prefixed' naming rule.
+dotnet_naming_style.static_fields_should_be_camel_case_and_prefixed.prefix = s_
+dotnet_naming_style.static_fields_should_be_camel_case_and_prefixed.capitalization = camel_case
+
+# Define the 'static_fields_should_be_camel_case_and_prefixed' symbol group.
+dotnet_naming_symbols.private_static_fields.applicable_kinds = field
+dotnet_naming_symbols.private_static_fields.applicable_accessibilities = private, internal, private_protected
+dotnet_naming_symbols.private_static_fields.required_modifiers = static
+
+dotnet_naming_rule.private_static_fields_should_have_prefix.severity = warning
+dotnet_naming_rule.private_static_fields_should_have_prefix.symbols = private_static_fields
+dotnet_naming_rule.private_static_fields_should_have_prefix.style = static_camel_case_and_prefix
+
+# Define the 'constant_fields_should_be_pascal_case' rule.
+dotnet_naming_rule.constant_fields_should_be_pascal_case.severity = warning
+dotnet_naming_rule.constant_fields_should_be_pascal_case.symbols  = constant_fields
+dotnet_naming_rule.constant_fields_should_be_pascal_case.style    = pascal_case_style
+
+# Define the 'constant_fields_should_be_pascal_case' symbol group.
+dotnet_naming_symbols.constant_fields.applicable_kinds   = field
+dotnet_naming_symbols.constant_fields.required_modifiers = const
+dotnet_naming_style.pascal_case_style.capitalization = pascal_case
+
 # Define the 'private_const_fields' symbol group.
 dotnet_naming_symbols.private_const_fields.applicable_kinds = field
 dotnet_naming_symbols.private_const_fields.applicable_accessibilities = private

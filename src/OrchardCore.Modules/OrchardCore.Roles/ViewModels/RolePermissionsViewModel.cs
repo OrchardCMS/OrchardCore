@@ -15,8 +15,14 @@ public class RolePermissionsViewModel
     public IDictionary<PermissionGroupKey, IEnumerable<Permission>> RoleCategoryPermissions { get; set; }
 
     [BindNever]
-    public IEnumerable<string> EffectivePermissions { get; set; }
+    public IDictionary<string, Permission> EffectivePermissions { get; set; }
 
     [BindNever]
     public ISet<string> AssignedPermissions { get; set; }
+
+    [BindNever]
+    public ISet<string> AnonymousGrantedPermissions { get; set; }
+
+    [BindNever]
+    public ISet<string> AuthenticatedGrantedPermissions { get; set; }
 }

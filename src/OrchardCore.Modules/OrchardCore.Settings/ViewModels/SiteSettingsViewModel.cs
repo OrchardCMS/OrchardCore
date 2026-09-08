@@ -13,6 +13,11 @@ public class SiteSettingsViewModel
     public int? PageSize { get; set; }
 
     public bool ShowContentTypesGrouping { get; set; }
+    public bool AllowPageSizeSelection { get; set; }
+
+    public string PageSizeOptions { get; set; }
+
+    public int MaxPageSize { get; set; }
 
     public bool UseCdn { get; set; }
     public string CdnBaseUrl { get; set; }

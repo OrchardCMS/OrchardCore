@@ -22,8 +22,6 @@ namespace OrchardCore.RateLimits;
 
 public sealed class Startup : StartupBase
 {
-    public override int ConfigureOrder => OrchardCoreConstants.ConfigureOrder.RateLimiter;
-
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddRateLimiter();

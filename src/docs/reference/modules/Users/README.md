@@ -79,6 +79,91 @@ If you want to specify custom paths to access the authentication related urls, y
   }
 ```
 
+## Audit Trail Integration
+
+By enabling the "Users Audit Trail" feature within this module, user events such as user creation, updating, or deletion are logged in Admin > Tools > Audit Trail. By default, the event stores the user's name and ID beyond the common Audit Trail data.
+
+It's also possible to include a partial JSON snapshot of the `User` object. To prevent storing particularly sensitive data, this functionality is limited out of the box. You have to go to Admin > Settings > Security > User Audit Trail and select which properties or custom user settings should be stored. The following options are available:
+
+- Store: Stores the value of the property as a string.
+- ErasingRedactor: Stores an empty string instead of the value. This is to indicate that the property exists for the `User` object in question.
+- PartialAsteriskRedactor: Stores the value as a string, but the middle characters are redacted. For example, `SampleUser` becomes `S********r`.
+- HmacRedactor: Uses "HMAC SHA-256" to encode the data before storing it, as a hash or fingerprint. This redactor is only available when both `HmacRedactorOptions.Key` and `HmacRedactorOptions.KeyId` are configured. For security reasons, these values should be unique per tenant. For the options to be loaded, you need to bind the settings manually.
+
+You can also create your own redactor simply by adding a singleton [`Redactor`](https://learn.microsoft.com/dotnet/api/microsoft.extensions.compliance.redaction.redactor) service.
+
+Note that when a user is deleted, all `User` snapshots are cleared out from existing Audit Trail events to comply with regulations about personal information retention.
+
+## Documenting Filters in the Admin UI
+
+The users admin list (**Security** → **Users**) has a **Filters** dropdown next to the search box. Its **Filter syntax** entry opens the **Available Filters** dialog, which lists every filter a user can type into the search box (`name:`, `email:`, `status:`, `role:`, `sort:`, …) as a compact grid of cards. Each card shows the filter title, its capability icons, the syntax token, and a short description.
+
+The list works exactly like the [content items admin list filters](../Contents/README.md#documenting-filters-in-the-admin-ui); only the model type differs. There are two independent extension points: the filter *logic* and the filter *card* that documents it in the dialog.
+
+### Registering the filter logic
+
+Implement `IUsersAdminListFilterProvider` and add your terms to the `QueryEngineBuilder<User>`:
+
+```csharp
+public sealed class SsnUsersAdminListFilterProvider : IUsersAdminListFilterProvider
+{
+    public void Build(QueryEngineBuilder<User> builder)
+    {
+        builder
+            .WithNamedTerm("ssn", builder => builder
+                .OneCondition((val, query) =>
+                    query.With<UserProfileIndex>(i => i.Ssn != null && i.Ssn.Contains(val))));
+    }
+}
+```
+
+Register it in your module's `Startup`:
+
+```csharp
+services.AddScoped<IUsersAdminListFilterProvider, SsnUsersAdminListFilterProvider>();
+```
+
+### Registering the filter card
+
+Implement a `DisplayDriver<UserIndexOptions>` and return a `View` result placed in the `Content` zone of the `Thumbnail` display type. The position after `Content:` controls the order the card appears in.
+
+```csharp
+public sealed class SsnUsersAdminListDisplayDriver : DisplayDriver<UserIndexOptions>
+{
+    public override IDisplayResult Display(UserIndexOptions model, BuildDisplayContext context)
+    {
+        return View("UsersAdminFilters_Thumbnail__Ssn", model)
+            .Location("Thumbnail", "Content:35");
+    }
+}
+```
+
+```csharp
+services.AddDisplayDriver<UserIndexOptions, SsnUsersAdminListDisplayDriver>();
+```
+
+### The card template
+
+The shape name `UsersAdminFilters_Thumbnail__Ssn` resolves to a Razor view named `UsersAdminFilters-Ssn.Thumbnail.cshtml` placed under `Views/Items/`. Each card is automatically wrapped in a Bootstrap card and laid out in the responsive grid, so the template only supplies the card's inner content: a title with its capability icons on the first line, the filter token below it, and a short description.
+
+```html
+@model ShapeViewModel<UserIndexOptions>
+@{
+    var term = Model.Value.FilterResult.FirstOrDefault(x => x.TermName == "ssn");
+}
+
+<div class="d-flex justify-content-between align-items-center gap-2">
+    <h6 class="card-title fw-semibold mb-0">@T["SSN"]</h6>
+    <span class="text-primary text-nowrap">
+        <i class="fa-solid fa-sm fa-minus" title="@T["Accepts a single value"]" aria-hidden="true"></i>
+    </span>
+</div>
+<div class="mt-1"><code class="small text-nowrap">@(term?.ToString() ?? "ssn:...")</code></div>
+<p class="card-text small text-body-secondary mt-1 mb-0">@T["Filters on a user's social security number."]</p>
+```
+
+Use the same capability icons the built-in filters use so the shared legend at the bottom of the dialog stays accurate: `fa-check` (**Default** — may be entered with or without the term name), `fa-minus` (**Single** — accepts a single value), and `fa-bars` (**Multiple** — supports the `AND`, `OR`, and `NOT` operators and groups).
+
 ## Recipe Configuration
 
 User module settings can be configured using the `Settings` recipe step:
@@ -93,6 +178,8 @@ User module settings can be configured using the `Settings` recipe step:
       "LoginSettings": {
         "UseSiteTheme": false,
         "DisableLocalLogin": false,
+        "AllowRememberMe": true,
+        "UsePersistentAuthenticationCookie": false,
         "AllowChangingUsername": false,
         "AllowChangingEmail": false,
         "AllowChangingPhoneNumber": true
@@ -106,6 +193,8 @@ User module settings can be configured using the `Settings` recipe step:
 |----------------------------|---------|-----------------------------------------------------------------------|
 | `UseSiteTheme`             | Boolean | Whether to use the site theme for the login page.                     |
 | `DisableLocalLogin`        | Boolean | Whether to disable local username/password login.                     |
+| `AllowRememberMe`          | Boolean | Whether to show the **Remember me** option on the login form. Default: `true`. When disabled, the `UsePersistentAuthenticationCookie` setting controls all local and external sign-ins. |
+| `UsePersistentAuthenticationCookie` | Boolean | Whether authentication cookies persist across browser sessions. When `AllowRememberMe` is enabled, this is the default value of the **Remember me** option. Default: `false`. |
 | `AllowChangingUsername`    | Boolean | Whether to allow users to change their username.                      |
 | `AllowChangingEmail`       | Boolean | Whether to allow users to change their email address.                 |
 | `AllowChangingPhoneNumber` | Boolean | Whether to allow users to change their phone number. Default: `true`. |
@@ -229,6 +318,33 @@ User module settings can be configured using the `Settings` recipe step:
         "Body": "Your verification code is {{ Code }}"
       }
     }
+  ]
+}
+```
+
+## Commands
+
+The Users module registers the `createUser` command, which you can run from a recipe's [`command` step](../Recipes/README.md#command).
+
+```text
+createUser /UserName:<username> /Password:<password> /Email:<email> /PhoneNumber:<phonenumber> /Roles:{rolename,rolename,...}
+```
+
+| Switch        | Description                                                                        |
+|---------------|-----------------------------------------------------------------------------------|
+| `UserName`    | The username of the new user.                                                     |
+| `Password`    | The password of the new user. It has to satisfy the configured password rules.    |
+| `Email`       | The email address of the new user, which is marked as confirmed on creation.      |
+| `PhoneNumber` | The phone number of the new user. Optional.                                       |
+| `Roles`       | A comma-separated list of the roles to assign to the user. Optional.              |
+
+For example, to create an administrator during setup from a recipe:
+
+```json
+{
+  "name": "command",
+  "Commands": [
+    "createUser /UserName:admin /Password:Password1! /Email:admin@example.com /Roles:Administrator"
   ]
 }
 ```

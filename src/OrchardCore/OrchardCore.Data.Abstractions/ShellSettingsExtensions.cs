@@ -9,7 +9,7 @@ public static class ShellSettingsExtensions
     private const string DefaultTableNameSeparator = $"{DatabaseTableOptions}:DefaultTableNameSeparator";
     private const string DefaultIdentityColumnSize = $"{DatabaseTableOptions}:DefaultIdentityColumnSize";
 
-    private static readonly string[] _identityColumnSizes = [nameof(Int64), nameof(Int32)];
+    private static readonly string[] s_identityColumnSizes = [nameof(Int64), nameof(Int32)];
 
     public static DatabaseTableOptions GetDatabaseTableOptions(this ShellSettings shellSettings) =>
         new()
@@ -80,7 +80,7 @@ public static class ShellSettingsExtensions
         {
             identityColumnSize = !shellSettings.IsInitialized() ? nameof(Int64) : nameof(Int32);
         }
-        else if (!_identityColumnSizes.Contains(identityColumnSize))
+        else if (!s_identityColumnSizes.Contains(identityColumnSize))
         {
             throw new InvalidOperationException($"The configured identity column size '{identityColumnSize}' is invalid.");
         }

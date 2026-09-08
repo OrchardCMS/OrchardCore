@@ -19,5 +19,7 @@ public class PagerOptionsConfiguration : IPostConfigureOptions<PagerOptions>
         options.MaxPageSize = site.MaxPageSize;
         options.MaxPagedCount = site.MaxPagedCount;
         options.PageSize = site.PageSize;
+        options.AllowPageSizeSelection = site.AllowPageSizeSelection;
+        options.PageSizeOptions = site.PageSizeOptions;
     }
 }

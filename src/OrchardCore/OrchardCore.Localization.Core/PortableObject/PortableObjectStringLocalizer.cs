@@ -10,8 +10,8 @@ namespace OrchardCore.Localization.PortableObject;
 /// </summary>
 public class PortableObjectStringLocalizer : IPluralStringLocalizer
 {
-    private static readonly string _dataAnnotationsDefaultErrorMessagesContext = typeof(DataAnnotationsDefaultErrorMessages).FullName;
-    private static readonly string _localizedDataAnnotationsMvcOptionsContext = typeof(LocalizedDataAnnotationsMvcOptions).FullName;
+    private static readonly string s_dataAnnotationsDefaultErrorMessagesContext = typeof(DataAnnotationsDefaultErrorMessages).FullName;
+    private static readonly string s_localizedDataAnnotationsMvcOptionsContext = typeof(LocalizedDataAnnotationsMvcOptions).FullName;
 
     private readonly ILocalizationManager _localizationManager;
     private readonly bool _fallBackToParentCulture;
@@ -194,10 +194,10 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
                     var key = CultureDictionaryRecord.GetKey(name, context);
 
                     // Extract translation from data annotations attributes.
-                    if (context == _localizedDataAnnotationsMvcOptionsContext)
+                    if (context == s_localizedDataAnnotationsMvcOptionsContext)
                     {
                         // Extract translation with context.
-                        key = CultureDictionaryRecord.GetKey(name, _dataAnnotationsDefaultErrorMessagesContext);
+                        key = CultureDictionaryRecord.GetKey(name, s_dataAnnotationsDefaultErrorMessagesContext);
                         translation = dictionary[key];
 
                         if (translation != null)

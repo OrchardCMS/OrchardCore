@@ -5,14 +5,14 @@ namespace OrchardCore.Taxonomies;
 
 internal static class TermAlternatesFactory
 {
-    private static readonly ConcurrentDictionary<TermPartAlternatesCacheKey, string[]> _termPartCache = new();
-    private static readonly ConcurrentDictionary<TermAlternatesCacheKey, string[]> _termCache = new();
+    private static readonly ConcurrentDictionary<TermPartAlternatesCacheKey, string[]> s_termPartCache = new();
+    private static readonly ConcurrentDictionary<TermAlternatesCacheKey, string[]> s_termCache = new();
 
     public static string[] GetTermPartAlternates(string contentType, string displayType)
     {
         var key = new TermPartAlternatesCacheKey(contentType ?? string.Empty, displayType ?? string.Empty);
 
-        return _termPartCache.GetOrAdd(key, static k =>
+        return s_termPartCache.GetOrAdd(key, static k =>
         [
             $"TermPart_{k.DisplayType}",
             $"{k.ContentType}__TermPart",
@@ -24,7 +24,7 @@ internal static class TermAlternatesFactory
     {
         var key = new TermAlternatesCacheKey(differentiator ?? string.Empty, termContentType ?? string.Empty);
 
-        return _termCache.GetOrAdd(key, static k =>
+        return s_termCache.GetOrAdd(key, static k =>
         {
             var encodedContentType = k.TermContentType.EncodeAlternateElement();
 

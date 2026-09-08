@@ -17,7 +17,7 @@ public sealed class ExternalAuthenticationUserMenuDisplayDriver : DisplayDriver<
     public override IDisplayResult Display(UserMenu model, BuildDisplayContext context)
     {
         return View("UserMenuItems__ExternalLogins", model)
-            .RenderWhen(async () => (await _signInManager.GetExternalAuthenticationSchemesAsync()).Any())
+            .RenderWhen(static async (signInManager) => (await signInManager.GetExternalAuthenticationSchemesAsync()).Any(), _signInManager)
             .Location(OrchardCoreConstants.DisplayType.Detail, "Content:10")
             .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:10")
             .Differentiator("ExternalLogins");

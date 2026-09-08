@@ -6,7 +6,7 @@ namespace OrchardCore.Features;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", FeaturesConstants.FeatureId },
         // Since features admin accepts tenant, always pass empty string to create valid link for current tenant.
@@ -27,7 +27,7 @@ public sealed class AdminMenu : AdminNavigationProvider
             builder
                 .Add(S["Configuration"], configuration => configuration
                     .Add(S["Features"], S["Features"].PrefixPosition(), deployment => deployment
-                        .Action("Features", "Admin", _routeValues)
+                        .Action("Features", "Admin", s_routeValues)
                         .Permission(FeaturesPermissions.ManageFeatures)
                         .LocalNav()
                     )
@@ -39,7 +39,7 @@ public sealed class AdminMenu : AdminNavigationProvider
         builder
             .Add(S["Tools"], tools => tools
                 .Add(S["Features"], S["Features"].PrefixPosition(), deployment => deployment
-                    .Action("Features", "Admin", _routeValues)
+                    .Action("Features", "Admin", s_routeValues)
                     .Permission(FeaturesPermissions.ManageFeatures)
                     .LocalNav()
                 )

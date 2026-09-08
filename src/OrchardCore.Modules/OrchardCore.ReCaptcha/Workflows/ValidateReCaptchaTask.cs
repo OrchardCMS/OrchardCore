@@ -31,9 +31,7 @@ public class ValidateReCaptchaTask : TaskActivity<ValidateReCaptchaTask>
     public override bool HasEditor => false;
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"], S["Valid"], S["Invalid"]);
-    }
+        => Outcome(S["Done"], S["Valid"], S["Invalid"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -47,6 +45,6 @@ public class ValidateReCaptchaTask : TaskActivity<ValidateReCaptchaTask>
             updater?.ModelState.TryAddModelError(Constants.ReCaptchaServerResponseHeaderName, S["Captcha validation failed. Try again."]);
         });
 
-        return Outcomes("Done", outcome);
+        return Outcome("Done", outcome);
     }
 }

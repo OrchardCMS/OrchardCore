@@ -42,9 +42,7 @@ public class HttpRedirectTask : TaskActivity<HttpRedirectTask>
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"]);
-    }
+        => Outcome(S["Done"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -53,6 +51,6 @@ public class HttpRedirectTask : TaskActivity<HttpRedirectTask>
         _httpContextAccessor.HttpContext.Response.Redirect(location.ToUriComponents(), Permanent);
         _httpContextAccessor.HttpContext.Items[WorkflowHttpResult.Instance] = WorkflowHttpResult.Instance;
 
-        return Outcomes("Done");
+        return Outcome("Done");
     }
 }

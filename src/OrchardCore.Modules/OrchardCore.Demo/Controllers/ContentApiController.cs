@@ -1,12 +1,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents;
 
 namespace OrchardCore.Demo.Controllers;
 
 [Route("api/demo")]
-[Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
+[Authorize(AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api), IgnoreAntiforgeryToken, AllowAnonymous]
 [ApiController]
 public sealed class ContentApiController : ControllerBase
 {
@@ -21,30 +22,18 @@ public sealed class ContentApiController : ControllerBase
         _contentManager = contentManager;
     }
 
-    public async Task<IActionResult> GetById(string id)
-    {
-        var contentItem = await _contentManager.GetAsync(id);
-
-        if (contentItem == null)
-        {
-            return NotFound();
-        }
-
-        return new ObjectResult(contentItem);
-    }
-
     public async Task<IActionResult> GetAuthorizedById(string id)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.DemoAPIAccess))
         {
-            return this.ChallengeOrForbid("Api");
+            return this.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
 
         var contentItem = await _contentManager.GetAsync(id);
 
         if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ViewContent, contentItem))
         {
-            return this.ChallengeOrForbid("Api");
+            return this.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
 
         if (contentItem == null)
@@ -56,11 +45,12 @@ public sealed class ContentApiController : ControllerBase
     }
 
     [HttpPost]
+    [EndpointName("ApiAddDemoContent")]
     public async Task<IActionResult> AddContent(ContentItem contentItem)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.DemoAPIAccess))
         {
-            return this.ChallengeOrForbid("Api");
+            return this.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
 
         await _contentManager.CreateAsync(contentItem);

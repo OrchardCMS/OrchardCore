@@ -24,14 +24,14 @@ public sealed class LinkAdminNodeDriver : DisplayDriver<MenuItem, LinkAdminNode>
 
     public override IDisplayResult Edit(LinkAdminNode treeNode, BuildEditorContext context)
     {
-        return Initialize<LinkAdminNodeViewModel>("LinkAdminNode_Fields_TreeEdit", async model =>
+        return Initialize<LinkAdminNodeViewModel, LinkAdminNode, IPermissionService>("LinkAdminNode_Fields_TreeEdit", static async (model, treeNode, permissionService) =>
         {
             model.LinkText = treeNode.LinkText;
             model.LinkUrl = treeNode.LinkUrl;
             model.IconClass = treeNode.IconClass;
             model.Target = treeNode.Target;
 
-            var selectedPermissions = await _permissionService.FindByNamesAsync(treeNode.PermissionNames);
+            var selectedPermissions = await permissionService.FindByNamesAsync(treeNode.PermissionNames);
 
             model.SelectedItems = selectedPermissions
                 .Select(p => new PermissionViewModel
@@ -40,7 +40,7 @@ public sealed class LinkAdminNodeDriver : DisplayDriver<MenuItem, LinkAdminNode>
                     DisplayText = p.Description,
                 }).ToArray();
 
-            var permissions = await _permissionService.GetPermissionsAsync();
+            var permissions = await permissionService.GetPermissionsAsync();
 
             model.AllItems = permissions
                 .Select(p => new PermissionViewModel
@@ -48,7 +48,7 @@ public sealed class LinkAdminNodeDriver : DisplayDriver<MenuItem, LinkAdminNode>
                     Name = p.Name,
                     DisplayText = p.Description,
                 }).ToArray();
-        }).Location("Content");
+        }, treeNode, _permissionService).Location("Content");
     }
 
     public override async Task<IDisplayResult> UpdateAsync(LinkAdminNode treeNode, UpdateEditorContext context)

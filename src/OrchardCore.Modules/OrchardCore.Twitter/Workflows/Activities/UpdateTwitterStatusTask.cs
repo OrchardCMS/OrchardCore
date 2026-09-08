@@ -38,9 +38,7 @@ public class UpdateTwitterStatusTask : TaskActivity<UpdateTwitterStatusTask>
 
     // Returns the possible outcomes of this activity.
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"], S["Failed"]);
-    }
+        => Outcome(S["Done"], S["Failed"]);
 
     // This is the heart of the activity and actually performs the work to be done.
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
@@ -51,11 +49,8 @@ public class UpdateTwitterStatusTask : TaskActivity<UpdateTwitterStatusTask>
         var result = await _twitterClient.UpdateStatus(status);
         workflowContext.Properties.Add("TwitterResponse", await result.Content.ReadAsStringAsync());
 
-        if (!result.IsSuccessStatusCode)
-        {
-            return Outcomes("Failed");
-        }
-
-        return Outcomes("Done");
+        return result.IsSuccessStatusCode
+            ? Outcome("Done")
+            : Outcome("Failed");
     }
 }

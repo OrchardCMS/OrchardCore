@@ -12,7 +12,7 @@ namespace OrchardCore.Workflows.Http.Activities;
 
 public class HttpResponseTask : TaskActivity<HttpResponseTask>
 {
-    private static readonly string[] _separator = ["\r\n", "\n", "\r"];
+    private static readonly string[] s_separator = ["\r\n", "\n", "\r"];
 
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
@@ -61,9 +61,7 @@ public class HttpResponseTask : TaskActivity<HttpResponseTask>
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"]);
-    }
+        => Outcome(S["Done"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -91,7 +89,8 @@ public class HttpResponseTask : TaskActivity<HttpResponseTask>
         }
 
         _httpContextAccessor.HttpContext.Items[WorkflowHttpResult.Instance] = WorkflowHttpResult.Instance;
-        return Outcomes("Done");
+
+        return Outcome("Done");
     }
 
     private static IEnumerable<KeyValuePair<string, StringValues>> ParseHeaders(string text)
@@ -102,7 +101,7 @@ public class HttpResponseTask : TaskActivity<HttpResponseTask>
         }
 
         return
-            from header in text.Split(_separator, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim())
+            from header in text.Split(s_separator, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim())
             let pair = header.Split(':')
             where pair.Length == 2
             select new KeyValuePair<string, StringValues>(pair[0], pair[1]);

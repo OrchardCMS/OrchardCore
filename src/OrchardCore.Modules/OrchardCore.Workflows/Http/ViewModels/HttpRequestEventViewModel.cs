@@ -4,7 +4,7 @@ namespace OrchardCore.Workflows.Http.ViewModels;
 
 public class HttpRequestEventViewModel
 {
-    private static readonly IEnumerable<string> _availableHttpMethods = new[]
+    private static readonly IEnumerable<string> s_availableHttpMethods = new[]
         {
             "GET",
             "POST",
@@ -25,5 +25,5 @@ public class HttpRequestEventViewModel
     public string FormLocationKey { get; set; }
 
     public static IList<SelectListItem> GetAvailableHttpMethods()
-        => _availableHttpMethods.Select(x => new SelectListItem { Text = x, Value = x }).ToList();
+        => s_availableHttpMethods.Select(x => new SelectListItem { Text = x, Value = x }).ToList();
 }

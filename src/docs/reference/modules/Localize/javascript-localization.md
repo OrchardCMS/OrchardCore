@@ -148,14 +148,14 @@ The Vue 3 Media App on `skrypt/vue-3` uses the helper in a framework-agnostic wa
 
 ```cshtml
 @{
-    var jsLocalizations = Orchard.GetJSLocalizations("media-app");
+    var jsLocalizations = Orchard.GetJSLocalizations("media-gallery");
 }
 
-<div id="media-app">
-    <media-app
+<div id="media-gallery">
+    <media-gallery
         translations="@Json.Serialize(jsLocalizations).ToString()"
         base-path="@Href("~")">
-    </media-app>
+    </media-gallery>
 </div>
 ```
 

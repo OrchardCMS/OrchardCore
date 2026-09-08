@@ -221,6 +221,156 @@ public sealed class ProductController : Controller
 }
 ```
 
+## Content Definition Handlers
+
+The `IContentDefinitionHandler` interface allows you to intercept and modify content definitions as they are being built by the `IContentDefinitionManager`, before they are cached. This provides fine-grained control over the shape of content types, parts, and fields, and enables scenarios such as injecting parts into a content type programmatically.
+
+!!! note
+    `IContentDefinitionHandler` is invoked while the definition is being *built* (read) from its stored records. It is different from `IContentDefinitionEventHandler`, which is invoked when definitions are *altered* (created, updated, removed, imported).
+
+The following methods are available:
+
+| Method | Description |
+|--------|-------------|
+| `ContentTypeBuilding(ContentTypeBuildingContext context)` | Invoked while a content type is being built. |
+| `ContentPartBuilding(ContentPartBuildingContext context)` | Invoked while a content part definition is being built. |
+| `ContentTypePartBuilding(ContentTypePartBuildingContext context)` | Invoked while a part attached to a content type is being built. |
+| `ContentPartFieldBuilding(ContentPartFieldBuildingContext context)` | Invoked while a field on a content part is being built. |
+
+Each context exposes a mutable `Record` property that you can modify. Setting `context.Record` to `null` removes the corresponding type, part, or field from the built definition. When a part or field is requested but no record exists yet, `context.Record` is `null` on entry, allowing a handler to create a definition on demand.
+
+### Registering a handler
+
+Register your implementation with the dependency injection container from a `Startup` class:
+
+```csharp
+using OrchardCore.ContentTypes.Events;
+
+public sealed class Startup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IContentDefinitionHandler, MyContentDefinitionHandler>();
+    }
+}
+```
+
+## System-Defined Types, Parts, and Fields
+
+Content definition handlers make it possible to designate a content type, part, or field as **system-defined**. A system-defined element is one that is required by a feature and must always be present with a consistent structure. System-defined elements:
+
+- Cannot be removed or modified by users through the admin UI.
+- Cannot be removed or altered through recipes.
+- Can be injected programmatically so they are always part of the definition, even if they were never persisted.
+
+An element is marked as system-defined by storing a `ContentSettings` with `IsSystemDefined` set to `true` in the `Settings` of its record, from within a content definition handler:
+
+```csharp
+using OrchardCore.ContentManagement.Metadata.Settings;
+
+context.Record.Settings[nameof(ContentSettings)] = JObject.FromObject(new ContentSettings
+{
+    IsSystemDefined = true,
+});
+```
+
+When reading a built definition, you can inspect the flag with `GetSettings<ContentSettings>()`, for example `typeDefinition.GetSettings<ContentSettings>().IsSystemDefined`.
+
+When an element is system-defined, the admin UI hides the corresponding **Remove** action and displays a tooltip explaining that it is integral to the system. Attempting to remove a system-defined type, part, or field (for example through the `IContentDefinitionService`) throws an `InvalidOperationException`.
+
+### Example: injecting a system-defined part
+
+The `DashboardPart` is injected into every content type that uses the `DashboardWidget` stereotype, without the user having to attach it manually. This is implemented by the `DashboardPartContentTypeDefinitionHandler` in the `OrchardCore.AdminDashboard` module.
+
+```csharp
+public sealed class DashboardPartContentTypeDefinitionHandler : IContentDefinitionHandler
+{
+    // Adds the DashboardPart to the content type when the stereotype is 'DashboardWidget'.
+    public void ContentTypeBuilding(ContentTypeBuildingContext context)
+    {
+        if (context?.Record?.Settings is null ||
+            !context.Record.Settings.TryGetPropertyValue(nameof(ContentTypeSettings), out var node))
+        {
+            return;
+        }
+
+        var settings = node.ToObject<ContentTypeSettings>();
+
+        if (!string.Equals(settings.Stereotype, "DashboardWidget", StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        // Don't add the part twice.
+        if (context.Record.ContentTypePartDefinitionRecords.Any(x => x.Name.EqualsOrdinalIgnoreCase(nameof(DashboardPart))))
+        {
+            return;
+        }
+
+        context.Record.ContentTypePartDefinitionRecords.Add(new ContentTypePartDefinitionRecord
+        {
+            Name = nameof(DashboardPart),
+            PartName = nameof(DashboardPart),
+            Settings = new JsonObject
+            {
+                [nameof(ContentSettings)] = JObject.FromObject(new ContentSettings
+                {
+                    IsSystemDefined = true,
+                }),
+            },
+        });
+    }
+
+    // Ensures the part attached to the type stays marked as system-defined.
+    public void ContentTypePartBuilding(ContentTypePartBuildingContext context)
+    {
+        if (context?.Record?.Settings is null || !context.Record.PartName.EqualsOrdinalIgnoreCase(nameof(DashboardPart)))
+        {
+            return;
+        }
+
+        var settings = context.Record.Settings[nameof(ContentSettings)]?.ToObject<ContentSettings>()
+            ?? new ContentSettings();
+
+        settings.IsSystemDefined = true;
+
+        context.Record.Settings[nameof(ContentSettings)] = JObject.FromObject(settings);
+    }
+
+    // Creates the DashboardPart definition on demand when it has never been persisted.
+    public void ContentPartBuilding(ContentPartBuildingContext context)
+    {
+        if (context.Record is not null || context.PartName != nameof(DashboardPart))
+        {
+            return;
+        }
+
+        context.Record = new ContentPartDefinitionRecord
+        {
+            Name = context.PartName,
+            Settings = new JsonObject
+            {
+                [nameof(ContentPartSettings)] = JObject.FromObject(new ContentPartSettings
+                {
+                    Attachable = false,
+                    Reusable = false,
+                }),
+                [nameof(ContentSettings)] = JObject.FromObject(new ContentSettings
+                {
+                    IsSystemDefined = true,
+                }),
+            },
+        };
+    }
+
+    public void ContentPartFieldBuilding(ContentPartFieldBuildingContext context)
+    {
+    }
+}
+```
+
+With this handler registered, assigning the `DashboardWidget` stereotype to a content type is enough to make it behave as an admin dashboard widget — the `DashboardPart` is always present, is marked as system-defined, and cannot be detached by the user.
+
 ## Content Type Settings for Block Pickers
 
 Content types can be configured with a category and thumbnail for use in block picker modals (such as those used by the [Flows module](../Flow/README.md#blocks-editor)).

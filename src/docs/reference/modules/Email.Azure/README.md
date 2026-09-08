@@ -29,6 +29,10 @@ For more information about configurations, please refer to [Configuration](../Co
 !!! note
     Configuration of the **Default Azure Communication Services** provider is not possible through Admin Settings. Utilize the configuration provider for the necessary setup. The provider will appear only if the configuration exists.
 
+## Runtime updates
+
+`AzureEmailOptions` is populated from tenant site settings, so custom services that need to observe admin changes without reloading the tenant should inject `IOptionsMonitor<AzureEmailOptions>` instead of `IOptions<AzureEmailOptions>`. The module registers a signal-backed `IOptionsChangeTokenSource<AzureEmailOptions>`, and when the Azure email settings are updated Orchard Core invalidates the relevant option monitors after the YesSql session commits successfully, allowing running nodes to rebuild the provider options from the committed settings.
+
 ## Recipe Configuration
 
 Azure email settings can be configured using the `Settings` recipe step:

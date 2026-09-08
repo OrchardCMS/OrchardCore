@@ -6,6 +6,7 @@ using OrchardCore.Infrastructure.Html;
 
 namespace OrchardCore.ContentFields.Handlers;
 
+[Obsolete("This handler is no longer used.")]
 public class HtmlFieldHandler : ContentFieldHandler<HtmlField>
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
@@ -25,7 +26,7 @@ public class HtmlFieldHandler : ContentFieldHandler<HtmlField>
 
         if (settings?.SanitizeHtml == true)
         {
-context.ContentItem.Content[context.ContentPartFieldDefinition.PartDefinition.Name][context.ContentPartFieldDefinition.Name].Html =
+            context.ContentItem.Content[context.ContentPartFieldDefinition.PartDefinition.Name][context.ContentPartFieldDefinition.Name].Html =
                 _htmlSanitizerService.Sanitize(field.Html);
         }
 

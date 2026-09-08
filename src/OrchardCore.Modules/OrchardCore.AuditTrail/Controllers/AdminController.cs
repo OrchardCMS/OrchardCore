@@ -76,7 +76,7 @@ public sealed class AdminController : Controller
             options.FilterResult.TryAddOrReplace(new CorrelationIdFilterNode(options.CorrelationId));
         }
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
 
         // With the options populated we filter the query, allowing the filters to alter the options.
         var result = await _auditTrailAdminListQueryService.QueryAsync(pager.Page, pager.PageSize, options);

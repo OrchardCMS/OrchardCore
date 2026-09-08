@@ -8,13 +8,13 @@ namespace OrchardCore.AuditTrail.Navigation;
 
 public sealed class AuditTrailAdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.AuditTrail" },
         { "correlationId", string.Empty },
     };
 
-    private static readonly RouteValueDictionary _settingsRouteValues = new()
+    private static readonly RouteValueDictionary s_settingsRouteValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", AuditTrailSettingsGroup.Id },
@@ -35,7 +35,7 @@ public sealed class AuditTrailAdminMenu : AdminNavigationProvider
                 .Add(S["Audit Trail"], NavigationConstants.AdminMenuAuditTrailPosition, configuration => configuration
                     .AddClass("audittrail")
                     .Id("audittrail")
-                    .Action(nameof(AdminController.Index), "Admin", _routeValues)
+                    .Action(nameof(AdminController.Index), "Admin", s_routeValues)
                     .Permission(AuditTrailPermissions.ViewAuditTrail)
                     .LocalNav()
                 , priority: 1)
@@ -44,7 +44,7 @@ public sealed class AuditTrailAdminMenu : AdminNavigationProvider
                         .Add(S["Audit Trail"], S["Audit Trail"].PrefixPosition(), auditTrail => auditTrail
                             .AddClass("audittrail")
                             .Id("audittrailSettings")
-                            .Action("Index", "Admin", _routeValues)
+                            .Action("Index", "Admin", s_routeValues)
                             .Permission(AuditTrailPermissions.ManageAuditTrailSettings)
                             .LocalNav()
                         )
@@ -59,7 +59,7 @@ public sealed class AuditTrailAdminMenu : AdminNavigationProvider
                 .Add(S["Audit Trail"], S["Audit Trail"].PrefixPosition(), configuration => configuration
                     .AddClass("audittrail")
                     .Id("audittrail")
-                    .Action(nameof(AdminController.Index), "Admin", _routeValues)
+                    .Action(nameof(AdminController.Index), "Admin", s_routeValues)
                     .Permission(AuditTrailPermissions.ViewAuditTrail)
                     .LocalNav()
                 )
@@ -68,7 +68,7 @@ public sealed class AuditTrailAdminMenu : AdminNavigationProvider
                 .Add(S["Audit Trail"], S["Audit Trail"].PrefixPosition(), auditTrail => auditTrail
                     .AddClass("audittrail")
                     .Id("audittrailSettings")
-                    .Action("Index", "Admin", _settingsRouteValues)
+                    .Action("Index", "Admin", s_settingsRouteValues)
                     .Permission(AuditTrailPermissions.ManageAuditTrailSettings)
                     .LocalNav()
                 )

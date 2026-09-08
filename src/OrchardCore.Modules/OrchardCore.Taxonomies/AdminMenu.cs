@@ -7,7 +7,7 @@ namespace OrchardCore.Taxonomies;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", TaxonomyContentsAdminListSettingsDisplayDriver.GroupId },
@@ -31,7 +31,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                         .AddClass("taxonomyfilters")
                         .Id("taxonomyfilters")
                         .Permission(Permissions.ManageTaxonomies)
-                        .Action("Index", "Admin", _routeValues)
+                        .Action("Index", "Admin", s_routeValues)
                         .LocalNav()
                     )
                 )
@@ -46,7 +46,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                     .AddClass("taxonomyfilters")
                     .Id("taxonomyfilters")
                     .Permission(Permissions.ManageTaxonomies)
-                    .Action("Index", "Admin", _routeValues)
+                    .Action("Index", "Admin", s_routeValues)
                     .LocalNav()
                 )
             );

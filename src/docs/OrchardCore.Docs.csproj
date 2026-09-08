@@ -5,8 +5,4 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="reference\modules\AzureAISearch\images\" />
-  </ItemGroup>
-
 </Project>

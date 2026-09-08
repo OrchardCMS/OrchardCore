@@ -9,7 +9,7 @@ namespace OrchardCore.Tests.Apis.Context;
 /// </remarks>
 internal sealed class TablePrefixGenerator
 {
-    private static readonly char[] _charList = "abcdefghijklmnopqrstuvwxyz".ToCharArray();
+    private static readonly char[] s_charList = "abcdefghijklmnopqrstuvwxyz".ToCharArray();
 
 #pragma warning disable CA1822 // Mark members as static
     internal async Task<string> GeneratePrefixAsync()
@@ -21,8 +21,8 @@ internal sealed class TablePrefixGenerator
         var result = new StringBuilder();
         while (ticks != 0)
         {
-            result.Append(_charList[ticks % _charList.Length]);
-            ticks /= _charList.Length;
+            result.Append(s_charList[ticks % s_charList.Length]);
+            ticks /= s_charList.Length;
         }
 
         return result.ToString();

@@ -7,6 +7,7 @@ using OrchardCore.Environment.Extensions;
 using OrchardCore.Localization;
 using OrchardCore.Tests.Stubs;
 using Microsoft.Extensions.Options;
+using Moq;
 
 namespace OrchardCore.Tests.DisplayManagement;
 
@@ -44,7 +45,7 @@ public class DefaultDisplayManagerTests
 
         serviceCollection.AddSingleton(_defaultShapeTable);
         serviceCollection.AddSingleton(_additionalBindings);
-        serviceCollection.AddSingleton<IOptions<ShapeRenderingOptions>>(Options.Create(_shapeRenderingOptions));
+        serviceCollection.AddSingleton(Mock.Of<IOptionsMonitor<ShapeRenderingOptions>>(x => x.CurrentValue == _shapeRenderingOptions));
         serviceCollection.AddWebEncoders();
 
         _serviceProvider = serviceCollection.BuildServiceProvider();

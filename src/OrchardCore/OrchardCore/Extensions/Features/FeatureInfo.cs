@@ -7,6 +7,8 @@ public class FeatureInfo : IFeatureInfo
         Id = Name = id;
         Extension = extensionInfo;
         Dependencies = [];
+        Before = [];
+        After = [];
     }
 
     public FeatureInfo(
@@ -20,6 +22,35 @@ public class FeatureInfo : IFeatureInfo
         bool defaultTenantOnly,
         bool isAlwaysEnabled,
         bool enabledByDependencyOnly)
+        : this(
+            id,
+            name,
+            priority,
+            category,
+            description,
+            extension,
+            dependencies,
+            [],
+            [],
+            defaultTenantOnly,
+            isAlwaysEnabled,
+            enabledByDependencyOnly)
+    {
+    }
+
+    public FeatureInfo(
+        string id,
+        string name,
+        int priority,
+        string category,
+        string description,
+        IExtensionInfo extension,
+        string[] dependencies,
+        string[] before,
+        string[] after,
+        bool defaultTenantOnly,
+        bool isAlwaysEnabled,
+        bool enabledByDependencyOnly)
     {
         Id = id;
         Name = name;
@@ -27,7 +58,9 @@ public class FeatureInfo : IFeatureInfo
         Category = category;
         Description = description;
         Extension = extension;
-        Dependencies = dependencies;
+        Dependencies = dependencies ?? [];
+        Before = before ?? [];
+        After = after ?? [];
         DefaultTenantOnly = defaultTenantOnly;
         IsAlwaysEnabled = isAlwaysEnabled;
         EnabledByDependencyOnly = enabledByDependencyOnly;
@@ -41,6 +74,8 @@ public class FeatureInfo : IFeatureInfo
     public bool DefaultTenantOnly { get; }
     public IExtensionInfo Extension { get; }
     public string[] Dependencies { get; }
+    public string[] Before { get; }
+    public string[] After { get; }
     public bool IsAlwaysEnabled { get; }
     public bool EnabledByDependencyOnly { get; }
 }

@@ -9,7 +9,7 @@ namespace OrchardCore.Resources.Liquid;
 
 public class StyleTag
 {
-    private static readonly char[] _separators = [',', ' '];
+    private static readonly char[] s_separators = [',', ' '];
 
     public static async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, TextWriter writer, TextEncoder _, TemplateContext context)
     {
@@ -69,12 +69,12 @@ public class StyleTag
 
             if (!string.IsNullOrEmpty(culture))
             {
-                definition.SetCultures(culture.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
+                definition.SetCultures(culture.Split(s_separators, StringSplitOptions.RemoveEmptyEntries));
             }
 
             if (!string.IsNullOrEmpty(dependsOn))
             {
-                definition.SetDependencies(dependsOn.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
+                definition.SetDependencies(dependsOn.Split(s_separators, StringSplitOptions.RemoveEmptyEntries));
             }
 
             if (appendversion.HasValue)
@@ -168,7 +168,7 @@ public class StyleTag
             // This allows additions to the pre registered style dependencies.
             if (!string.IsNullOrEmpty(dependsOn))
             {
-                setting.SetDependencies(dependsOn.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
+                setting.SetDependencies(dependsOn.Split(s_separators, StringSplitOptions.RemoveEmptyEntries));
             }
 
             if (at == ResourceLocation.Inline)

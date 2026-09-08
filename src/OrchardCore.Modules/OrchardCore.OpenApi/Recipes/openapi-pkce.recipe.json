@@ -1,0 +1,52 @@
+{
+  "name": "OpenApiPkce",
+  "displayName": "OpenAPI Documentation — Bearer/PKCE",
+  "description": "Configures OpenID Connect so the Swagger and Scalar documentation UIs can silently acquire an OAuth2 authorization-code + PKCE access token (using the signed-in admin session) and call the bearer-only API. Enables the OpenApi, OpenID Server, Token Validation and Management features, turns on authorization-code flow with PKCE required, enables local (same-tenant) token validation for the 'Api' scheme (Tenant must be the name of the tenant where this recipe runs — 'Default' here — because OpenIdValidationSettings requires exactly one of Tenant or Authority; leaving both empty makes the settings invalid, so the validation scheme silently never registers and every bearer call 401s), and registers a public (secret-less) PKCE client. The OpenIdServerSettings and OpenIdApplication steps are handled by the OpenID Server feature and OpenIdValidationSettings by the Validation feature, so they must stay after the feature step (a step with no registered handler is silently skipped). IMPORTANT: replace the https://localhost:5001 host in RedirectUris/PostLogoutRedirectUris with your tenant's real origin (the RedirectUris path — /OrchardCore.OpenApi/openapi-oidc-silent.html — is the silent-renew page the documentation UIs use and must match exactly, including any tenant prefix), and make sure signed-in users have roles — the 'roles' scope carries them into the token, which the API permission checks require.",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0",
+  "issetuprecipe": false,
+  "categories": [ "security" ],
+  "tags": [ "openid", "oauth2", "pkce", "openapi", "api" ],
+  "steps": [
+    {
+      "name": "feature",
+      "enable": [
+        "OrchardCore.OpenApi",
+        "OrchardCore.OpenId.Management",
+        "OrchardCore.OpenId.Server",
+        "OrchardCore.OpenId.Validation"
+      ]
+    },
+    {
+      "name": "OpenIdServerSettings",
+      "EnableTokenEndpoint": true,
+      "EnableAuthorizationEndpoint": true,
+      "EnableLogoutEndpoint": true,
+      "EnableUserInfoEndpoint": true,
+      "AllowAuthorizationCodeFlow": true,
+      "RequireProofKeyForCodeExchange": true
+    },
+    {
+      "name": "OpenIdValidationSettings",
+      "Tenant": "Default"
+    },
+    {
+      "name": "OpenIdApplication",
+      "ClientId": "openapi",
+      "DisplayName": "OpenAPI Interactive UI",
+      "Type": "public",
+      "ConsentType": "implicit",
+      "AllowAuthorizationCodeFlow": true,
+      "AllowLogoutEndpoint": true,
+      "RequireProofKeyForCodeExchange": true,
+      "RedirectUris": "https://localhost:5001/OrchardCore.OpenApi/openapi-oidc-silent.html",
+      "PostLogoutRedirectUris": "https://localhost:5001/",
+      "ScopeEntries": [
+        { "Name": "email" },
+        { "Name": "profile" },
+        { "Name": "roles" }
+      ]
+    }
+  ]
+}

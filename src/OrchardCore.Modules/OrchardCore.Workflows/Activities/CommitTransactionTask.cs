@@ -27,18 +27,17 @@ public class CommitTransactionTask : TaskActivity<CommitTransactionTask>
     public override LocalizedString Category => S["Session"];
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"], S["Valid"], S["Invalid"]);
-    }
+        => Outcome(S["Done"], S["Valid"], S["Invalid"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         if (!_updateModelAccessor.ModelUpdater.ModelState.IsValid)
         {
-            return Outcomes("Done", "Invalid");
+            return Outcome("Done", "Invalid");
         }
 
         await _session.SaveChangesAsync();
-        return Outcomes("Done", "Valid");
+
+        return Outcome("Done", "Valid");
     }
 }

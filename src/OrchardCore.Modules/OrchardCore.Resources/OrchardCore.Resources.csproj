@@ -19,8 +19,4 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement.Core\OrchardCore.ResourceManagement.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Assets\Vendor\deprecated\" />
-  </ItemGroup>
-
 </Project>

@@ -34,8 +34,8 @@ public sealed class ElasticsearchQueryDisplayDriver : DisplayDriver<Query>
         }
 
         return Combine(
-            Dynamic("ElasticQuery_SummaryAdmin", model => { model.Query = query; }).Location("Content:5"),
-            Dynamic("ElasticQuery_Buttons_SummaryAdmin", model => { model.Query = query; }).Location("Actions:2")
+            Dynamic("ElasticQuery_SummaryAdmin", static (model, query) => { model.Query = query; }, query).Location("Content:5"),
+            Dynamic("ElasticQuery_Buttons_SummaryAdmin", static (model, query) => { model.Query = query; }, query).Location("Actions:2")
         );
     }
 

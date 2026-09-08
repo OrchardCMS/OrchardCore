@@ -47,9 +47,7 @@ public class WhileLoopTask : TaskActivity<WhileLoopTask>
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Iterate"], S["Done"]);
-    }
+        => Outcome(S["Iterate"], S["Done"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -60,6 +58,6 @@ public class WhileLoopTask : TaskActivity<WhileLoopTask>
             _ => throw new NotSupportedException($"The syntax {Syntax} isn't supported for WhileLoopTask.")
         };
 
-        return Outcomes(loop ? "Iterate" : "Done");
+        return Outcome(loop ? "Iterate" : "Done");
     }
 }

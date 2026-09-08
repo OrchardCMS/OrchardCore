@@ -36,11 +36,11 @@ public abstract class UserActivity : Activity
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        return Outcomes(S["Done"]);
+        return Outcome(S["Done"]);
     }
 
     public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        return Outcomes("Done");
+        return Outcome("Done");
     }
 }

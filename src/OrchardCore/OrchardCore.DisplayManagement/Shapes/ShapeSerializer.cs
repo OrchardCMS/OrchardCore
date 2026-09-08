@@ -12,7 +12,7 @@ namespace OrchardCore.DisplayManagement.Shapes;
 /// </remarks>
 public class ShapeSerializer
 {
-    private static readonly JsonSerializerOptions _shapeJsonSerializer = new()
+    private static readonly JsonSerializerOptions s_shapeJsonSerializer = new()
     {
         ReferenceHandler = ReferenceHandler.IgnoreCycles,
     };
@@ -48,23 +48,23 @@ public class ShapeSerializer
 
         jObject.Add("Shape", displayText);
 
-        var metadata = JObject.FromObject(_shape.Metadata, _shapeJsonSerializer);
+        var metadata = JObject.FromObject(_shape.Metadata, s_shapeJsonSerializer);
 
         jObject.Add(nameof(ShapeMetadata), metadata);
 
         if (_shape.Classes != null && _shape.Classes.Any())
         {
-            jObject.Add(nameof(_shape.Classes), JArray.FromObject(_shape.Classes, _shapeJsonSerializer));
+            jObject.Add(nameof(_shape.Classes), JArray.FromObject(_shape.Classes, s_shapeJsonSerializer));
         }
 
         if (_shape.Attributes != null && _shape.Attributes.Any())
         {
-            jObject.Add(nameof(_shape.Attributes), JObject.FromObject(_shape.Attributes, _shapeJsonSerializer));
+            jObject.Add(nameof(_shape.Attributes), JObject.FromObject(_shape.Attributes, s_shapeJsonSerializer));
         }
 
         if (_shape.Properties != null && _shape.Properties.Any())
         {
-            jObject.Add(nameof(_shape.Properties), JObject.FromObject(_shape.Properties, _shapeJsonSerializer));
+            jObject.Add(nameof(_shape.Properties), JObject.FromObject(_shape.Properties, s_shapeJsonSerializer));
             FindShapesInProperties(_shape);
         }
 

@@ -37,15 +37,13 @@ public class ScriptTask : TaskActivity<ScriptTask>
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(AvailableOutcomes.Select(x => S[x]).ToArray());
-    }
+        => Outcome(AvailableOutcomes.Select(x => S[x]).ToArray());
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         var outcomes = new List<string>();
         workflowContext.LastResult = await _scriptEvaluator.EvaluateAsync(Script, workflowContext, new OutcomeMethodProvider(outcomes));
 
-        return Outcomes(outcomes);
+        return Outcome(outcomes);
     }
 }

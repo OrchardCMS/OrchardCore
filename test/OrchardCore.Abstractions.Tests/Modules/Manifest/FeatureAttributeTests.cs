@@ -64,6 +64,8 @@ public class FeatureAttributeTests : FeatureAttributeTests<FeatureAttribute>
 
         Assert.NotNull(feature.Dependencies);
         Assert.Equal(deps, feature.Dependencies);
+        Assert.Empty(feature.Before);
+        Assert.Empty(feature.After);
 
         Assert.Equal(defaultTenant, feature.DefaultTenantOnly);
         Assert.Equal(alwaysEnabled, feature.IsAlwaysEnabled);
@@ -111,6 +113,8 @@ public class FeatureAttributeTests : FeatureAttributeTests<FeatureAttribute>
 
         Assert.NotNull(feature.Dependencies);
         Assert.Equal(deps, feature.Dependencies);
+        Assert.Empty(feature.Before);
+        Assert.Empty(feature.After);
 
         Assert.Equal(defaultTenant, feature.DefaultTenantOnly);
         Assert.Equal(alwaysEnabled, feature.IsAlwaysEnabled);
@@ -163,6 +167,8 @@ public class FeatureAttributeTests : FeatureAttributeTests<FeatureAttribute>
 
         Assert.NotNull(feature.Dependencies);
         Assert.Equal(deps, feature.Dependencies);
+        Assert.Empty(feature.Before);
+        Assert.Empty(feature.After);
 
         Assert.Equal(defaultTenant, feature.DefaultTenantOnly);
         Assert.Equal(alwaysEnabled, feature.IsAlwaysEnabled);
@@ -370,6 +376,20 @@ public class FeatureAttributeTests : FeatureAttributeTests<FeatureAttribute>
         Assert.Equal(expected, alpha.Categorize(bravo, alpha));
         Assert.Equal(expected, alpha.Categorize(alpha, bravo));
         Assert.Equal("Uncategorized", alpha.Categorize(alpha, alpha));
+    }
+
+    [Fact]
+    public void Dependencies_Are_Independent_From_Before_And_After()
+    {
+        var feature = CreateFromFactory();
+
+        feature.Dependencies = ["Alpha", "Beta", "Alpha"];
+        feature.After = ["Gamma"];
+        feature.Before = ["Delta"];
+
+        Assert.Equal(["Alpha", "Beta"], feature.Dependencies);
+        Assert.Equal(["Gamma"], feature.After);
+        Assert.Equal(["Delta"], feature.Before);
     }
 
     /// <summary>

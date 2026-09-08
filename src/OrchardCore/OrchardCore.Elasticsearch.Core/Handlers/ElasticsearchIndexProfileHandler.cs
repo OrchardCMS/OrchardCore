@@ -17,7 +17,7 @@ namespace OrchardCore.Elasticsearch.Core.Handlers;
 
 public sealed class ElasticsearchIndexProfileHandler : IndexProfileHandlerBase
 {
-    private static readonly JsonWriterOptions _writerOptions = new()
+    private static readonly JsonWriterOptions s_writerOptions = new()
     {
         SkipValidation = true,
     };
@@ -83,7 +83,7 @@ public sealed class ElasticsearchIndexProfileHandler : IndexProfileHandlerBase
         if (indexMappings is not null)
         {
             using var mappingStream = new MemoryStream();
-            using (var writer = new Utf8JsonWriter(mappingStream, _writerOptions))
+            using (var writer = new Utf8JsonWriter(mappingStream, s_writerOptions))
             {
                 indexMappings.WriteTo(writer);
             }

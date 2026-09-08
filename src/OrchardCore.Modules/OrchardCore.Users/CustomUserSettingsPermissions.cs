@@ -7,7 +7,7 @@ namespace OrchardCore.Users;
 public sealed class CustomUserSettingsPermissions : IPermissionProvider
 {
     // This permission is never checked it is only used as a template.
-    private static readonly Permission _manageOwnCustomUserSettings = new("ManageOwnCustomUserSettings_{0}", "Manage Own Custom User Settings - {0}", new[] { Permissions.ManageUsers });
+    private static readonly Permission s_manageOwnCustomUserSettings = new("ManageOwnCustomUserSettings_{0}", "Manage Own Custom User Settings - {0}", new[] { Permissions.ManageUsers });
 
     private readonly IContentDefinitionManager _contentDefinitionManager;
 
@@ -26,8 +26,8 @@ public sealed class CustomUserSettingsPermissions : IPermissionProvider
 
     public static Permission CreatePermissionForType(ContentTypeDefinition type) =>
         new(
-            string.Format(_manageOwnCustomUserSettings.Name, type.Name),
-            string.Format(_manageOwnCustomUserSettings.Description, type.DisplayName),
-            _manageOwnCustomUserSettings.ImpliedBy
+            string.Format(s_manageOwnCustomUserSettings.Name, type.Name),
+            string.Format(s_manageOwnCustomUserSettings.Description, type.DisplayName),
+            s_manageOwnCustomUserSettings.ImpliedBy
         );
 }

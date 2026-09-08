@@ -26,7 +26,7 @@ public class HttpRedirectToFormLocationTask : TaskActivity<HttpRedirectToFormLoc
     public override LocalizedString Category => S["HTTP"];
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        => Outcomes(S["Done"], S["Failed"]);
+        => Outcome(S["Done"], S["Failed"]);
 
     public string FormLocationKey
     {
@@ -43,10 +43,10 @@ public class HttpRedirectToFormLocationTask : TaskActivity<HttpRedirectToFormLoc
             {
                 _httpContextAccessor.HttpContext.Items[WorkflowConstants.FormOriginatedLocationItemsKey] = path;
 
-                return Task.FromResult(Outcomes("Done"));
+                return Task.FromResult(Outcome("Done"));
             }
         }
 
-        return Task.FromResult(Outcomes("Failed"));
+        return Task.FromResult(Outcome("Failed"));
     }
 }

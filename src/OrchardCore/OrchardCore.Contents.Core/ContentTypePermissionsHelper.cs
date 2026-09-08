@@ -9,40 +9,40 @@ namespace OrchardCore.Contents.Security;
 /// </summary>
 public static class ContentTypePermissionsHelper
 {
-    private static readonly Permission _publishContent = new("Publish_{0}", "Publish or unpublish {0} for others", [CommonPermissions.PublishContent]);
-    private static readonly Permission _publishOwnContent = new("PublishOwn_{0}", "Publish or unpublish {0}", [_publishContent, CommonPermissions.PublishOwnContent]);
-    private static readonly Permission _editContent = new("Edit_{0}", "Edit {0} for others", [_publishContent, CommonPermissions.EditContent]);
-    private static readonly Permission _editOwnContent = new("EditOwn_{0}", "Edit {0}", [_editContent, _publishOwnContent, CommonPermissions.EditOwnContent]);
-    private static readonly Permission _deleteContent = new("Delete_{0}", "Delete {0} for others", [CommonPermissions.DeleteContent]);
-    private static readonly Permission _deleteOwnContent = new("DeleteOwn_{0}", "Delete {0}", [_deleteContent, CommonPermissions.DeleteOwnContent]);
-    private static readonly Permission _viewContent = new("View_{0}", "View {0} by others", [_editContent, CommonPermissions.ViewContent]);
-    private static readonly Permission _viewOwnContent = new("ViewOwn_{0}", "View own {0}", [_viewContent, CommonPermissions.ViewOwnContent]);
-    private static readonly Permission _previewContent = new("Preview_{0}", "Preview {0} by others", [_editContent, CommonPermissions.PreviewContent]);
-    private static readonly Permission _previewOwnContent = new("PreviewOwn_{0}", "Preview own {0}", [_previewContent, CommonPermissions.PreviewOwnContent]);
-    private static readonly Permission _cloneContent = new("Clone_{0}", "Clone {0} by others", [_editContent, CommonPermissions.CloneContent]);
-    private static readonly Permission _cloneOwnContent = new("CloneOwn_{0}", "Clone own {0}", [_cloneContent, CommonPermissions.CloneOwnContent]);
-    private static readonly Permission _listContent = new("ListContent_{0}", "List {0} content items", [CommonPermissions.ListContent]);
-    private static readonly Permission _editContentOwner = new("EditContentOwner_{0}", "Edit the owner of a {0} content item", [CommonPermissions.EditContentOwner]);
+    private static readonly Permission s_publishContent = new("Publish_{0}", "Publish or unpublish {0} for others", [CommonPermissions.PublishContent]);
+    private static readonly Permission s_publishOwnContent = new("PublishOwn_{0}", "Publish or unpublish {0}", [s_publishContent, CommonPermissions.PublishOwnContent]);
+    private static readonly Permission s_editContent = new("Edit_{0}", "Edit {0} for others", [s_publishContent, CommonPermissions.EditContent]);
+    private static readonly Permission s_editOwnContent = new("EditOwn_{0}", "Edit {0}", [s_editContent, s_publishOwnContent, CommonPermissions.EditOwnContent]);
+    private static readonly Permission s_deleteContent = new("Delete_{0}", "Delete {0} for others", [CommonPermissions.DeleteContent]);
+    private static readonly Permission s_deleteOwnContent = new("DeleteOwn_{0}", "Delete {0}", [s_deleteContent, CommonPermissions.DeleteOwnContent]);
+    private static readonly Permission s_viewContent = new("View_{0}", "View {0} by others", [s_editContent, CommonPermissions.ViewContent]);
+    private static readonly Permission s_viewOwnContent = new("ViewOwn_{0}", "View own {0}", [s_viewContent, CommonPermissions.ViewOwnContent]);
+    private static readonly Permission s_previewContent = new("Preview_{0}", "Preview {0} by others", [s_editContent, CommonPermissions.PreviewContent]);
+    private static readonly Permission s_previewOwnContent = new("PreviewOwn_{0}", "Preview own {0}", [s_previewContent, CommonPermissions.PreviewOwnContent]);
+    private static readonly Permission s_cloneContent = new("Clone_{0}", "Clone {0} by others", [s_editContent, CommonPermissions.CloneContent]);
+    private static readonly Permission s_cloneOwnContent = new("CloneOwn_{0}", "Clone own {0}", [s_cloneContent, CommonPermissions.CloneOwnContent]);
+    private static readonly Permission s_listContent = new("ListContent_{0}", "List {0} content items", [CommonPermissions.ListContent]);
+    private static readonly Permission s_editContentOwner = new("EditContentOwner_{0}", "Edit the owner of a {0} content item", [CommonPermissions.EditContentOwner]);
 
     public static readonly Dictionary<string, Permission> PermissionTemplates = new()
     {
-        { CommonPermissions.PublishContent.Name, _publishContent },
-        { CommonPermissions.PublishOwnContent.Name, _publishOwnContent },
-        { CommonPermissions.EditContent.Name, _editContent },
-        { CommonPermissions.EditOwnContent.Name, _editOwnContent },
-        { CommonPermissions.DeleteContent.Name, _deleteContent },
-        { CommonPermissions.DeleteOwnContent.Name, _deleteOwnContent },
-        { CommonPermissions.ViewContent.Name, _viewContent },
-        { CommonPermissions.ViewOwnContent.Name, _viewOwnContent },
-        { CommonPermissions.PreviewContent.Name, _previewContent },
-        { CommonPermissions.PreviewOwnContent.Name, _previewOwnContent },
-        { CommonPermissions.CloneContent.Name, _cloneContent },
-        { CommonPermissions.CloneOwnContent.Name, _cloneOwnContent },
-        { CommonPermissions.ListContent.Name, _listContent },
-        { CommonPermissions.EditContentOwner.Name, _editContentOwner },
+        { CommonPermissions.PublishContent.Name, s_publishContent },
+        { CommonPermissions.PublishOwnContent.Name, s_publishOwnContent },
+        { CommonPermissions.EditContent.Name, s_editContent },
+        { CommonPermissions.EditOwnContent.Name, s_editOwnContent },
+        { CommonPermissions.DeleteContent.Name, s_deleteContent },
+        { CommonPermissions.DeleteOwnContent.Name, s_deleteOwnContent },
+        { CommonPermissions.ViewContent.Name, s_viewContent },
+        { CommonPermissions.ViewOwnContent.Name, s_viewOwnContent },
+        { CommonPermissions.PreviewContent.Name, s_previewContent },
+        { CommonPermissions.PreviewOwnContent.Name, s_previewOwnContent },
+        { CommonPermissions.CloneContent.Name, s_cloneContent },
+        { CommonPermissions.CloneOwnContent.Name, s_cloneOwnContent },
+        { CommonPermissions.ListContent.Name, s_listContent },
+        { CommonPermissions.EditContentOwner.Name, s_editContentOwner },
     };
 
-    private static Dictionary<ValueTuple<string, string>, Permission> _permissionsByType = [];
+    private static Dictionary<ValueTuple<string, string>, Permission> s_permissionsByType = [];
 
     /// <summary>
     /// Returns a dynamic permission for a content type, based on a global content permission template.
@@ -85,7 +85,7 @@ public static class ContentTypePermissionsHelper
 
         var key = new ValueTuple<string, string>(template.Name, contentType);
 
-        if (_permissionsByType.TryGetValue(key, out var permission))
+        if (s_permissionsByType.TryGetValue(key, out var permission))
         {
             return permission;
         }
@@ -96,12 +96,12 @@ public static class ContentTypePermissionsHelper
             (template.ImpliedBy ?? []).Select(t => CreateDynamicPermission(t, contentType))
         );
 
-        var localPermissions = new Dictionary<ValueTuple<string, string>, Permission>(_permissionsByType)
+        var localPermissions = new Dictionary<ValueTuple<string, string>, Permission>(s_permissionsByType)
         {
             [key] = permission,
         };
 
-        _permissionsByType = localPermissions;
+        s_permissionsByType = localPermissions;
 
         return permission;
     }

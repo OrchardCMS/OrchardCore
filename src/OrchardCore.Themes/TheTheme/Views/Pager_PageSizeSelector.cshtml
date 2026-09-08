@@ -1,0 +1,16 @@
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    var items = Model.Items as List<SelectListItem>;
+}
+@if (items is { Count: > 0 })
+{
+    <div class="pager-page-size d-flex align-items-center ms-auto">
+        <label class="col-form-label text-nowrap me-2">@T["Items per page"]</label>
+        <select class="form-select form-select-sm w-auto" aria-label="@T["Items per page"]" onchange="if (this.value) { window.location.href = this.value; }">
+            @foreach (var item in items)
+            {
+                <option value="@item.Value" selected="@item.Selected">@item.Text</option>
+            }
+        </select>
+    </div>
+}

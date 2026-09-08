@@ -1,7 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Options;
 using OrchardCore.Settings.ViewModels;
 
 namespace OrchardCore.Settings.Drivers;
@@ -10,19 +13,31 @@ public sealed class DebugSettingsDisplayDriver : SiteDisplayDriver<DebugSettings
 {
     public const string GroupId = "debugging";
 
-    private readonly IShellReleaseManager _shellReleaseManager;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAuthorizationService _authorizationService;
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
 
     protected override string SettingsGroupId
         => GroupId;
 
-    public DebugSettingsDisplayDriver(IShellReleaseManager shellReleaseManager)
+    public DebugSettingsDisplayDriver(
+        IHttpContextAccessor httpContextAccessor,
+        IAuthorizationService authorizationService,
+        IOptionsUpdateNotifier optionsUpdateNotifier)
     {
-        _shellReleaseManager = shellReleaseManager;
+        _httpContextAccessor = httpContextAccessor;
+        _authorizationService = authorizationService;
+        _optionsUpdateNotifier = optionsUpdateNotifier;
     }
 
-    public override IDisplayResult Edit(ISite site, DebugSettings settings, BuildEditorContext context)
+    public override async Task<IDisplayResult> EditAsync(ISite site, DebugSettings settings, BuildEditorContext context)
     {
-        context.AddTenantReloadWarningWrapper();
+        if (!await _authorizationService.AuthorizeAsync(
+            _httpContextAccessor.HttpContext?.User,
+            SettingsPermissions.ManageDebuggingSettings))
+        {
+            return null;
+        }
 
         return Initialize<DebugSettingsViewModel>("DebugSettings_Edit", model =>
         {
@@ -33,17 +48,24 @@ public sealed class DebugSettingsDisplayDriver : SiteDisplayDriver<DebugSettings
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, DebugSettings settings, UpdateEditorContext context)
     {
+        if (!await _authorizationService.AuthorizeAsync(
+            _httpContextAccessor.HttpContext?.User,
+            SettingsPermissions.ManageDebuggingSettings))
+        {
+            return null;
+        }
+
         var model = new DebugSettingsViewModel();
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
         if (settings.WriteShapeDebugInformation != model.WriteShapeDebugInformation)
         {
-            _shellReleaseManager.RequestRelease();
+            _optionsUpdateNotifier.RequestUpdate<ShapeRenderingOptions>();
         }
 
         settings.WriteShapeDebugInformation = model.WriteShapeDebugInformation;
 
-        return Edit(site, settings, context);
+        return await EditAsync(site, settings, context);
     }
 }

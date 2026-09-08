@@ -24,12 +24,12 @@ public sealed class PlaceholderAdminNodeDriver : DisplayDriver<MenuItem, Placeho
 
     public override IDisplayResult Edit(PlaceholderAdminNode treeNode, BuildEditorContext context)
     {
-        return Initialize<PlaceholderAdminNodeViewModel>("PlaceholderAdminNode_Fields_TreeEdit", async model =>
+        return Initialize<PlaceholderAdminNodeViewModel, PlaceholderAdminNode, IPermissionService>("PlaceholderAdminNode_Fields_TreeEdit", static async (model, treeNode, permissionService) =>
         {
             model.LinkText = treeNode.LinkText;
             model.IconClass = treeNode.IconClass;
 
-            var selectedPermissions = await _permissionService.FindByNamesAsync(treeNode.PermissionNames);
+            var selectedPermissions = await permissionService.FindByNamesAsync(treeNode.PermissionNames);
 
             model.SelectedItems = selectedPermissions
                 .Select(p => new PermissionViewModel
@@ -38,7 +38,7 @@ public sealed class PlaceholderAdminNodeDriver : DisplayDriver<MenuItem, Placeho
                     DisplayText = p.Description,
                 }).ToArray();
 
-            var permissions = await _permissionService.GetPermissionsAsync();
+            var permissions = await permissionService.GetPermissionsAsync();
 
             model.AllItems = permissions
                 .Select(p => new PermissionViewModel
@@ -46,7 +46,7 @@ public sealed class PlaceholderAdminNodeDriver : DisplayDriver<MenuItem, Placeho
                     Name = p.Name,
                     DisplayText = p.Description,
                 }).ToArray();
-        }).Location("Content");
+        }, treeNode, _permissionService).Location("Content");
     }
 
     public override async Task<IDisplayResult> UpdateAsync(PlaceholderAdminNode treeNode, UpdateEditorContext context)

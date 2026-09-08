@@ -159,6 +159,8 @@ public sealed class LuceneQueryFieldTypeProvider : ISchemaBuilder
             Type = typeof(ListGraphType<ObjectGraphType<JsonObject>>),
         };
 
+        fieldType.RequirePermission(QueryPermissions.CreatePermissionForQuery(query.Name));
+
         async ValueTask<object> ResolveAsync(IResolveFieldContext<object> context)
         {
             var queryManager = context.RequestServices.GetRequiredService<IQueryManager>();
@@ -199,6 +201,8 @@ public sealed class LuceneQueryFieldTypeProvider : ISchemaBuilder
             Resolver = new LockedAsyncFieldResolver<object, object>(ResolveAsync),
             Type = typeType.Type,
         };
+
+        fieldType.RequirePermission(QueryPermissions.CreatePermissionForQuery(query.Name));
 
         async ValueTask<object> ResolveAsync(IResolveFieldContext<object> context)
         {

@@ -6,13 +6,13 @@ namespace OrchardCore.Workflows;
 public sealed class ResourceManagementOptionsConfiguration
     : IConfigureOptions<ResourceManagementOptions>
 {
-    private static readonly ResourceManifest _manifest;
+    private static readonly ResourceManifest s_manifest;
 
     static ResourceManagementOptionsConfiguration()
     {
-        _manifest = new ResourceManifest();
+        s_manifest = new ResourceManifest();
 
-        _manifest
+        s_manifest
             .DefineScript("jsplumb")
             .SetDependencies("jQuery")
             .SetUrl(
@@ -29,7 +29,7 @@ public sealed class ResourceManagementOptionsConfiguration
             )
             .SetVersion("2.15.5");
 
-        _manifest
+        s_manifest
             .DefineStyle("jsplumbtoolkit-defaults")
             .SetUrl(
                 "~/OrchardCore.Workflows/Styles/jsplumbtoolkit-defaults.min.css",
@@ -45,7 +45,7 @@ public sealed class ResourceManagementOptionsConfiguration
             )
             .SetVersion("2.15.5");
 
-        _manifest
+        s_manifest
             .DefineScript("workflow-editor")
             .SetDependencies("jsplumb", "bootstrap")
             .SetUrl(
@@ -54,7 +54,7 @@ public sealed class ResourceManagementOptionsConfiguration
             )
             .SetVersion("1.0.0");
 
-        _manifest
+        s_manifest
             .DefineScript("workflow-viewer")
             .SetDependencies("jsplumb", "bootstrap")
             .SetUrl(
@@ -63,7 +63,7 @@ public sealed class ResourceManagementOptionsConfiguration
             )
             .SetVersion("1.0.0");
 
-        _manifest
+        s_manifest
             .DefineScript("workflow-url-generator")
             .SetDependencies("jQuery")
             .SetUrl(
@@ -75,6 +75,6 @@ public sealed class ResourceManagementOptionsConfiguration
 
     public void Configure(ResourceManagementOptions options)
     {
-        options.ResourceManifests.Add(_manifest);
+        options.ResourceManifests.Add(s_manifest);
     }
 }

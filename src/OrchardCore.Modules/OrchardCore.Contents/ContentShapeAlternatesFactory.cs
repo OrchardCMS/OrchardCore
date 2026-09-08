@@ -12,7 +12,7 @@ namespace OrchardCore.Contents;
 /// </summary>
 internal static class ContentShapeAlternatesFactory
 {
-    private static readonly ConcurrentDictionary<ContentAlternatesCacheKey, ContentAlternatesCacheEntry> _cache = new();
+    private static readonly ConcurrentDictionary<ContentAlternatesCacheKey, ContentAlternatesCacheEntry> s_cache = new();
 
     /// <summary>
     /// Gets or creates a cached entry for the given content type and display type combination.
@@ -21,7 +21,7 @@ internal static class ContentShapeAlternatesFactory
     internal static ContentAlternatesCacheEntry GetEntry(string contentType, string? displayType)
     {
         var key = new ContentAlternatesCacheKey(contentType, displayType ?? string.Empty);
-        return _cache.GetOrAdd(key, static k => BuildEntry(k));
+        return s_cache.GetOrAdd(key, static k => BuildEntry(k));
     }
 
     internal readonly record struct ContentAlternatesCacheKey(

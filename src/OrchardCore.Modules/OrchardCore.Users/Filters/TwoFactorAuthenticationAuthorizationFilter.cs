@@ -10,7 +10,7 @@ namespace OrchardCore.Users.Filters;
 
 public sealed class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthorizationFilter
 {
-    private static readonly string[] _allowedControllerNames =
+    private static readonly string[] s_allowedControllerNames =
     [
         typeof(EmailConfirmationController).ControllerName(),
         typeof(TwoFactorAuthenticationController).ControllerName(),
@@ -51,7 +51,7 @@ public sealed class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthoriza
         {
             var controllerName = routeValues["controller"]?.ToString();
 
-            if (controllerName != null && _allowedControllerNames.Contains(controllerName, StringComparer.OrdinalIgnoreCase))
+            if (controllerName != null && s_allowedControllerNames.Contains(controllerName, StringComparer.OrdinalIgnoreCase))
             {
                 return;
             }

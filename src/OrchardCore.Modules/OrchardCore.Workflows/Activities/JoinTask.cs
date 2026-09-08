@@ -36,9 +36,7 @@ public class JoinTask : TaskActivity<JoinTask>
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Joined"]);
-    }
+        => Outcome(S["Joined"]);
 
     public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -70,7 +68,7 @@ public class JoinTask : TaskActivity<JoinTask>
 
         if (done)
         {
-            return Outcomes("Joined");
+            return Outcome("Joined");
         }
 
         return Noop();

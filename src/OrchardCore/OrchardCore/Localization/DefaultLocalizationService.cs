@@ -7,17 +7,17 @@ namespace OrchardCore.Localization;
 /// </summary>
 public class DefaultLocalizationService : ILocalizationService
 {
-    private static readonly Task<string> _defaultCulture = Task.FromResult(CultureInfo.InstalledUICulture.Name);
-    private static readonly Task<string[]> _supportedCultures = Task.FromResult(new[] { CultureInfo.InstalledUICulture.Name });
+    private static readonly Task<string> s_defaultCulture = Task.FromResult(CultureInfo.InstalledUICulture.Name);
+    private static readonly Task<string[]> s_supportedCultures = Task.FromResult(new[] { CultureInfo.InstalledUICulture.Name });
 
     /// <inheritdocs />
     public bool FallBackToParentCultures => true;
 
     /// <inheritdocs />
-    public Task<string> GetDefaultCultureAsync() => _defaultCulture;
+    public Task<string> GetDefaultCultureAsync() => s_defaultCulture;
 
     /// <inheritdocs />
-    public Task<string[]> GetSupportedCulturesAsync() => _supportedCultures;
+    public Task<string[]> GetSupportedCulturesAsync() => s_supportedCultures;
 
     public IEnumerable<CultureInfo> GetAllCulturesAndAliases() => CultureInfo.GetCultures(CultureTypes.AllCultures);
 }

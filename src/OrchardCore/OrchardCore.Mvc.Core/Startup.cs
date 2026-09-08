@@ -37,6 +37,23 @@ public sealed class Startup : StartupBase
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
+        routes.MapControllers().Add(builder =>
+        {
+            // Dynamic controller routes make MVC create an inert endpoint for every action. MVC
+            // copies action metadata to these placeholders, but they cannot be used for link
+            // generation and must not own endpoint names.
+            if (builder is not RouteEndpointBuilder)
+            {
+                for (var i = builder.Metadata.Count - 1; i >= 0; i--)
+                {
+                    if (builder.Metadata[i] is IEndpointNameMetadata)
+                    {
+                        builder.Metadata.RemoveAt(i);
+                    }
+                }
+            }
+        });
+
         var descriptors = serviceProvider.GetRequiredService<IActionDescriptorCollectionProvider>()
             .ActionDescriptors.Items
             .OfType<ControllerActionDescriptor>()

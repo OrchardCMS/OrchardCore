@@ -397,7 +397,7 @@ public class OpenIdAuthenticationTests
         {
             var tokenResult = await tokenResponse.Content.ReadFromJsonAsync<JsonObject>();
 
-            var accessToken = tokenResult["access_token"]?.ToString();
+            var accessToken = tokenResult[OrchardCoreConstants.TokenNames.AccessToken]?.ToString();
 
             Assert.NotEmpty(accessToken);
 

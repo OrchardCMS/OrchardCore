@@ -8,7 +8,7 @@ namespace OrchardCore.Users;
 
 public static class UserManagerExtensions
 {
-    private static readonly JsonMergeSettings _jsonMergeSettings = new()
+    private static readonly JsonMergeSettings s_jsonMergeSettings = new()
     {
         MergeArrayHandling = MergeArrayHandling.Replace,
         MergeNullValueHandling = MergeNullValueHandling.Merge,
@@ -29,7 +29,7 @@ public static class UserManagerExtensions
         if (context.PropertiesToUpdate != null)
         {
             var currentProperties = user.Properties.DeepClone();
-            user.Properties.Merge(context.PropertiesToUpdate, _jsonMergeSettings);
+            user.Properties.Merge(context.PropertiesToUpdate, s_jsonMergeSettings);
             userNeedUpdate = !JsonNode.DeepEquals(currentProperties, user.Properties);
         }
 

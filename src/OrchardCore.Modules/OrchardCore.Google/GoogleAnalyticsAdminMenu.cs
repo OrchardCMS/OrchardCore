@@ -6,7 +6,7 @@ namespace OrchardCore.Google;
 
 public sealed class GoogleAnalyticsAdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", GoogleConstants.Features.GoogleAnalytics },
@@ -28,7 +28,7 @@ public sealed class GoogleAnalyticsAdminMenu : AdminNavigationProvider
                 .Add(S["Settings"], settings => settings
                     .Add(S["Google Analytics"], S["Google Analytics"].PrefixPosition(), google => google
                         .AddClass("googleAnalytics").Id("googleAnalytics")
-                        .Action("Index", "Admin", _routeValues)
+                        .Action("Index", "Admin", s_routeValues)
                         .Permission(Permissions.ManageGoogleAnalytics)
                         .LocalNav()
                     )
@@ -43,7 +43,7 @@ public sealed class GoogleAnalyticsAdminMenu : AdminNavigationProvider
                 .Add(S["Integrations"], S["Integrations"].PrefixPosition(), integrations => integrations
                     .Add(S["Google Analytics"], S["Google Analytics"].PrefixPosition(), google => google
                         .AddClass("googleAnalytics").Id("googleAnalytics")
-                        .Action("Index", "Admin", _routeValues)
+                        .Action("Index", "Admin", s_routeValues)
                         .Permission(Permissions.ManageGoogleAnalytics)
                         .LocalNav()
                     )

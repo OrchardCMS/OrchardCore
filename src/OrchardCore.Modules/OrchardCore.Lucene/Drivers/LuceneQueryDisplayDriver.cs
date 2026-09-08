@@ -33,9 +33,9 @@ public sealed class LuceneQueryDisplayDriver : DisplayDriver<Query>
         }
 
         return Combine(
-            Dynamic("LuceneQuery_SummaryAdmin", model => { model.Query = query; })
+            Dynamic("LuceneQuery_SummaryAdmin", static (model, query) => { model.Query = query; }, query)
                 .Location("Content:5"),
-            Dynamic("LuceneQuery_Buttons_SummaryAdmin", model => { model.Query = query; })
+            Dynamic("LuceneQuery_Buttons_SummaryAdmin", static (model, query) => { model.Query = query; }, query)
                 .Location("Actions:2")
         );
     }

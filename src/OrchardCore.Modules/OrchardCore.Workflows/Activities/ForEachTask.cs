@@ -76,9 +76,7 @@ public class ForEachTask : TaskActivity<ForEachTask>
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Iterate"], S["Done"]);
-    }
+        => Outcome(S["Iterate"], S["Done"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -99,12 +97,14 @@ public class ForEachTask : TaskActivity<ForEachTask>
             workflowContext.Properties[LoopVariableName] = current;
             workflowContext.LastResult = current;
             Index++;
-            return Outcomes("Iterate");
+
+            return Outcome("Iterate");
         }
         else
         {
             Index = 0;
-            return Outcomes("Done");
+
+            return Outcome("Done");
         }
     }
 

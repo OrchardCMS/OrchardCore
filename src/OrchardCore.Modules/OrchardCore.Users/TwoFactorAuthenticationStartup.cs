@@ -24,7 +24,7 @@ namespace OrchardCore.Users;
 [Feature(UserConstants.Features.TwoFactorAuthentication)]
 public sealed class TwoFactorAuthenticationStartup : StartupBase
 {
-    private static readonly string _twoFactorControllerName = typeof(TwoFactorAuthenticationController).ControllerName();
+    private static readonly string s_twoFactorControllerName = typeof(TwoFactorAuthenticationController).ControllerName();
 
     private UserOptions _userOptions;
 
@@ -53,7 +53,7 @@ public sealed class TwoFactorAuthenticationStartup : StartupBase
                 pattern: "LoginWithTwoFactorAuthentication",
                 defaults: new
                 {
-                    controller = _twoFactorControllerName,
+                    controller = s_twoFactorControllerName,
                     action = nameof(TwoFactorAuthenticationController.LoginWithTwoFactorAuthentication),
                 }
             );
@@ -64,7 +64,7 @@ public sealed class TwoFactorAuthenticationStartup : StartupBase
             pattern: _userOptions.TwoFactorAuthenticationPath,
             defaults: new
             {
-                controller = _twoFactorControllerName,
+                controller = s_twoFactorControllerName,
                 action = nameof(TwoFactorAuthenticationController.Index),
             }
         );
@@ -75,7 +75,7 @@ public sealed class TwoFactorAuthenticationStartup : StartupBase
             pattern: "LoginWithRecoveryCode",
             defaults: new
             {
-                controller = _twoFactorControllerName,
+                controller = s_twoFactorControllerName,
                 action = nameof(TwoFactorAuthenticationController.LoginWithRecoveryCode),
             }
         );
@@ -86,7 +86,7 @@ public sealed class TwoFactorAuthenticationStartup : StartupBase
             pattern: "GenerateRecoveryCodes",
             defaults: new
             {
-                controller = _twoFactorControllerName,
+                controller = s_twoFactorControllerName,
                 action = nameof(TwoFactorAuthenticationController.GenerateRecoveryCodes),
             }
         );
@@ -97,7 +97,7 @@ public sealed class TwoFactorAuthenticationStartup : StartupBase
             pattern: "ShowRecoveryCodes",
             defaults: new
             {
-                controller = _twoFactorControllerName,
+                controller = s_twoFactorControllerName,
                 action = nameof(TwoFactorAuthenticationController.ShowRecoveryCodes),
             }
         );
@@ -108,7 +108,7 @@ public sealed class TwoFactorAuthenticationStartup : StartupBase
             pattern: "DisableTwoFactorAuthentication",
             defaults: new
             {
-                controller = _twoFactorControllerName,
+                controller = s_twoFactorControllerName,
                 action = nameof(TwoFactorAuthenticationController.DisableTwoFactorAuthentication),
             }
         );

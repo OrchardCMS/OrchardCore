@@ -12,23 +12,23 @@ namespace OrchardCore.Users.Handlers;
 
 internal sealed class UserModerationLoginFormEvent : LoginFormEventBase
 {
-    private readonly RegistrationOptions _registrationOptions;
+    private readonly IOptionsMonitor<RegistrationOptions> _registrationOptions;
     private readonly UserManager<IUser> _userManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     public UserModerationLoginFormEvent(
-        IOptions<RegistrationOptions> registrationOptions,
+        IOptionsMonitor<RegistrationOptions> registrationOptions,
         UserManager<IUser> userManager,
         IHttpContextAccessor httpContextAccessor)
     {
-        _registrationOptions = registrationOptions.Value;
+        _registrationOptions = registrationOptions;
         _userManager = userManager;
         _httpContextAccessor = httpContextAccessor;
     }
 
     public override Task<IActionResult> ValidatingLoginAsync(IUser user)
     {
-        if (!_registrationOptions.UsersAreModerated || user is not User u || u.IsEnabled)
+        if (!_registrationOptions.CurrentValue.UsersAreModerated || user is not User u || u.IsEnabled)
         {
             return Task.FromResult<IActionResult>(null);
         }
