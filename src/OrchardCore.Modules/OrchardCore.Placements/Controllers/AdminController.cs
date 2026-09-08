@@ -63,7 +63,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
 
         var shapeTypes = await _placementsManager.ListShapePlacementsAsync();
 

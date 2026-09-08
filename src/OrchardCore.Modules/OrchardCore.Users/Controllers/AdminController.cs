@@ -107,7 +107,7 @@ public sealed class AdminController : Controller
         // Populate route values to maintain previous route data when generating page links.
         options.RouteValues.TryAdd("q", options.FilterResult.ToString());
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
 
         var count = await users.CountAsync();
 

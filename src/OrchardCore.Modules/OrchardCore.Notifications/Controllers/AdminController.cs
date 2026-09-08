@@ -107,7 +107,7 @@ public sealed class AdminController : Controller, IUpdateModel
             new(S["Remove"], nameof(NotificationBulkAction.Remove)),
         ];
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
 
         var queryResult = await _notificationsAdminListQueryService.QueryAsync(pager.Page, pager.PageSize, options, this);
 
