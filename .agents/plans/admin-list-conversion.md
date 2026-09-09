@@ -65,6 +65,18 @@ The **Manage Content** list is the reference for how a row looks. Match it, not 
 | `Meta` | Badges too (date, author) | Plain text |
 | `Actions` / `ActionsMenu` | Through `AdminListActions`. Menu items are **bare** `<a>` or `<button>` with `.dropdown-item` | Wrapping menu items in `<li>` — see below |
 
+**The shape of a row** (settled with the Templates review, then applied to every list): one
+`row g-0 align-items-center` holding a `col` and a `col-auto`. The `col` stacks the title line —
+`title d-flex align-items-center` with the handle, the selection and the `summary` — over the
+`Description` zone; the `col-auto` holds `AdminListActions`. The row centres the actions on the whole
+row, and the description stops where they begin instead of running under them. The columns are `col`
+and `col-auto` at every width, so the actions stay beside the row on a narrow screen rather than
+dropping onto a full-width line of their own.
+
+The `Table` and `Grid` layouts stack into the same shape under `$oc-admin-list-stack-width`: the
+selection and the title cell take the first line with the actions at its end, and every other cell
+takes a line under them, the way the `summary` of the List layout stacks below `md`.
+
 > **Never wrap ActionsMenu items in `<li>`.** `AdminListActions` renders the zone inside a
 > `<div class="dropdown-menu">`, and the `List` layout puts the whole row inside an `<li>`. A `<div>` does
 > not stop the HTML parser closing an open `<li>`, so nested `<li>` items are hoisted out and render as
