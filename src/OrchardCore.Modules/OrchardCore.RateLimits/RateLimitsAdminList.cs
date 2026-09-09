@@ -34,7 +34,7 @@ public static class RateLimitsAdminList
             Name = "Name",
             Position = "20",
             Title = S["Name"],
-            Zones = ["Content"],
+            Zones = ["Content", "Description"],
         },
         new()
         {

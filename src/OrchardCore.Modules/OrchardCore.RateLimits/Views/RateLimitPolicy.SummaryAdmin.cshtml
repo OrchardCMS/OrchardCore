@@ -33,3 +33,13 @@
         @await DisplayAsync(await New.AdminListActions(Row: Model))
     </div>
 </div>
+
+@if (Model.Description != null)
+{
+    @* The description takes its own row, so the badges beside the title keep the same offset on every row. *@
+    <div class="row g-0">
+        <div class="col-12">
+            @await DisplayAsync(Model.Description)
+        </div>
+    </div>
+}

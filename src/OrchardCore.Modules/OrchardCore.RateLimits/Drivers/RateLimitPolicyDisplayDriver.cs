@@ -13,6 +13,8 @@ public sealed class RateLimitPolicyDisplayDriver : DisplayDriver<RateLimitPolicy
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Checkbox:1"),
             View("RateLimitPolicy_Fields_SummaryAdmin", model)
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Content:1"),
+            View("RateLimitPolicy_Description_SummaryAdmin", model)
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Description:5"),
             View("RateLimitPolicy_DefaultTags_SummaryAdmin", model)
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Tags:5"),
             View("RateLimitPolicy_DefaultMeta_SummaryAdmin", model)
