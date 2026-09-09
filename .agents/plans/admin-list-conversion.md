@@ -186,7 +186,7 @@ the layout setting applies; the toolbar can omit bulk actions.
 
 | # | Screen | Route | View | Why it is more work |
 |---|--------|-------|------|---------------------|
-| 4.1 | Themes | `Themes` | `OrchardCore.Themes/Views/Admin/Index.cshtml` | Renders a Bootstrap card grid via `ThemeEntryDisplayDriver`, not a list. The `Grid` layout is exactly this presentation, so it converts cleanly — but it needs a per-list default layout so it keeps looking like cards. See decision 1 |
+| 4.1 | ~~Themes~~ | | | **Moved to B.11** — the card gallery has no equivalent among the List, Table and Grid layouts |
 | 4.2 | Features | `Features/{tenant?}` | `OrchardCore.Features/Views/Admin/Features.cshtml` | Server-rendered (`@foreach`), so it is convertible. But rows are grouped by category with a per-category select-all, checkboxes are named `featureIds` (not `itemIds`), and each row carries dependency badges, "always enabled" tooltips and enable/disable state. Plan: one `AdminList` per category, a `FeaturesAdminList` with `Select`/`Name`/`Dependencies`/`State`/`Actions` columns, and the bulk-action name kept as `featureIds` |
 | 4.3 | Layers | `Layers` | `OrchardCore.Layers/Views/Admin/Index.cshtml` | Convert the **Layers list pane only**. The widget-by-zone pane on the same page is **not eligible**, see B.3. The layers list is sortable, so decision 3 applies |
 
@@ -211,6 +211,7 @@ new decision recorded here first.
 | B.8 | GraphQL | `GraphQL` | `OrchardCore.Apis.GraphQL/Views/Admin/Index.cshtml` | Hosts the GraphiQL explorer. No records | None |
 | B.9 | Dashboard | `dashboard/manage` | `OrchardCore.AdminDashboard/Views/Dashboard/Index.cshtml` | A resizable widget canvas | None |
 | B.10 | Media Cache | `MediaCache` | `OrchardCore.Media/Views/MediaCache/Index.cshtml` | Not a list: it renders one "Purge All" action inside a list-group. There are no records, so there is nothing for a row to be | None |
+| B.11 | Themes | `Themes` | `OrchardCore.Themes/Views/Admin/Index.cshtml` | A gallery of cards, each with a screenshot, tags and two footers. **Moved here from 4.1**: the `Grid` layout is a column grid, not a card gallery, so converting the page as it stands would trade the screenshots for a row of cells. It needs a `Cards` layout first — see decision 1 | Awaiting decision 1 |
 
 > If a screen in Part A proves to belong here during implementation, move its row into this table with
 > a written reason and update the tracker in section 6. Do not silently skip it.
@@ -320,7 +321,7 @@ Rewriting renders the Table layout when Grid is configured. See open decision 3.
 | 3.5 Sitemap Cache | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | 3.7 Workflow Instances | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 | 3.8 List Part contents | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
-| 4.1 Themes | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| 4.1 Themes | — | — | — | — | — | — | — | — | — | — | *(moved to B.11, see decision 1)* |
 | 4.2 Features | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | 4.3 Layers | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 
@@ -332,11 +333,20 @@ Part B screens are not tracked here. Their optional cosmetic fixes land in Batch
 
 Resolve each before the batch that needs it, and record the answer here.
 
-1. **Themes (4.1)** — the theme cards must keep looking like cards. Convert with `Grid` as the
-   per-list default (needs decision 2), or leave the page bespoke and move it to Part B?
-   *Decision: pending.*
+1. **Themes (B.11)** — the theme cards must keep looking like cards.
+   *Correction to the premise of this decision:* the `Grid` layout is not a card gallery. It renders
+   the same columns as `Table` with a CSS grid, with a header row and one cell per column, so a theme
+   would lose its screenshot and its footers. The real options are:
+   - add a `Cards` layout to the `AdminList` shape (one card per row shape, in a responsive column
+     grid) and make it the default of the `Themes` list, which needs decision 2; or
+   - leave the page as it is. It is parked in Part B (B.11) until this is decided.
+   *Recommendation: the `Cards` layout.* It is the presentation this page already has, several other
+   pages pick cards for the same reason (the recipe and rule pickers, the shortcodes table), and it
+   would give every list a fourth layout to switch to.
+   *Decision: pending — nothing was built for it.*
 2. **Per-list default layout** — should `AdminListOptions` support a default per list name
-   (Themes → Grid) rather than one site-wide default?
+   (Themes → Cards) rather than one site-wide default? Needed by decision 1, and by any list whose
+   rows only make sense in one layout, e.g. a sortable one.
    *Decision: pending.*
 3. **Sortable lists** — URL Rewriting (1.1), List Part ordering (3.8) and the Layers list (4.3) are
    drag-sortable. The rows container differs per layout (`<ul>`, `<tbody>`, `.admin-list-grid-body`),
