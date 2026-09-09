@@ -288,6 +288,9 @@ Legend: ☐ not started · ◐ in progress · ☑ converted, validated and pushe
 ¹ The Grid layout cannot host a drag-sortable list (its rows are `display: contents`), so URL
 Rewriting renders the Table layout when Grid is configured. See open decision 3.
 
+² The contents of a List content item follow the configured layout, except while drag-ordering is
+enabled: ordering is expressed by the List layout, which then wins.
+
 | Screen | Driver | Columns | Controller | View | List | Table | Grid | Buttons | Menu | Pushed |
 |--------|:------:|:-------:|:----------:|:----:|:----:|:-----:|:----:|:-------:|:----:|:------:|
 | Manage Content | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
@@ -319,8 +322,8 @@ Rewriting renders the Table layout when Grid is configured. See open decision 3.
 | 3.3 Content Parts | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | 3.4 Recipes | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | 3.5 Sitemap Cache | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 3.7 Workflow Instances | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
-| 3.8 List Part contents | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| 3.7 Workflow Instances | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 3.8 List Part contents | ☑ | ☑ | ☑ | ☑ | ☑ | ☑² | ☑² | ☑ | ☑ | ☑ |
 | 4.1 Themes | — | — | — | — | — | — | — | — | — | — | *(moved to B.11, see decision 1)* |
 | 4.2 Features | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | 4.3 Layers | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
@@ -376,24 +379,27 @@ Resolve each before the batch that needs it, and record the answer here.
 
 ## 8. Cross-cutting work (Batch G)
 
-- [ ] Sweep for any remaining `row gx-3` inside an `.action-bar` and change it to `gx-2`.
+- [x] Sweep for any remaining `row gx-3` inside an `.action-bar` and change it to `gx-2`.
 - [x] Sweep every `*.Fields.SummaryAdmin.cshtml` for `<h5>`/heading titles and replace with a plain
       link, per the row template conventions in section 1. Indexes and URL Rewriting are done; the
       `<h6>` of the rate limiters and the `<h4>` of the shortcode cards are not row titles and stay.
-- [ ] Sweep every row template for `<span class="hint">` used to convey a fact (source, type, state)
-      and convert it to a `ta-badge`.
-- [ ] Sweep for `has-search` without `input-group` or without a Go button, including the Part B
-      screens listed as having a cosmetic fix (B.2, B.4, B.7).
-- [ ] Confirm `_admin-list.scss` container queries cover every new column set, and that no layout
-      gained a viewport-based `d-md-none`.
-- [ ] `src/docs/reference/modules/Admin/README.md` — document every converted list name and its
+- [x] Sweep every row template for `<span class="hint">` used to convey a fact (source, type, state)
+      and convert it to a `ta-badge`. The scheduled publish and archive dates were the last two.
+- [x] Sweep for `has-search` without `input-group` or without a Go button, including the Part B
+      screens listed as having a cosmetic fix (B.2, B.4, B.7). Only the CORS policies (B.7) are left
+      without a Go button, on purpose: their filter is applied live by Vue and the search box sits
+      inside the settings form, where a submit button would save the policies.
+- [x] Confirm `_admin-list.scss` container queries cover every new column set, and that no layout
+      gained a viewport-based `d-md-none`. The stacking rules are per cell, not per column set, so
+      the new columns (handle, dependencies, status) stack with the rest.
+- [x] `src/docs/reference/modules/Admin/README.md` — document every converted list name and its
       default columns, so module authors know the names to target with `IAdminListColumnProvider`.
       Also document the Part B exclusion list so nobody re-opens it.
-- [ ] `src/docs/releases/4.0.0.md` — list the converted screens and note the breaking change for
+- [x] `src/docs/releases/4.0.0.md` — list the converted screens and note the breaking change for
       anyone overriding the old row templates.
-- [ ] Unit tests: extend `DefaultAdminListServiceTests` and `AdminListShapeTableProviderTests` with a
-      test per new list name asserting the default columns.
-- [ ] Note in the release doc that per-type row templates (for example
+- [x] Unit tests: `AdminListDefinitionsTests` finds every list by reflection instead of one test per
+      name, so a list added later is checked without touching the test.
+- [x] Note in the release doc that per-type row templates (for example
       `Content-BlogPost.SummaryAdmin.cshtml`) only apply in the `List` layout; customising Table and
       Grid uses `AdminListCell-{List}-{Column}.cshtml`.
 

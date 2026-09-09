@@ -1,4 +1,4 @@
-# Admin (`OrchardCore.Admin`)
+﻿# Admin (`OrchardCore.Admin`)
 
 The Admin module provides an admin dashboard for your site.
 
@@ -312,6 +312,48 @@ public sealed class CultureColumnProvider : IAdminListColumnProvider
 ```csharp
 services.AddAdminListColumnProvider<CultureColumnProvider>();
 ```
+
+### The lists to target
+
+A list is named by the constant its module publishes next to its default columns, e.g. `QueriesAdminList.Name`. The same name selects the columns a provider configures, the `AdminList__{Name}` alternate and the `AdminListCell__{Name}__{Column}` alternates. The pages that render one list per group, e.g. the features by category and the recipes by feature, give every group the same name.
+
+| Name | Declared by | Module |
+| --- | --- | --- |
+| `AdminMenus` | `AdminMenusAdminList` | `OrchardCore.AdminMenu` |
+| `AuditTrail` | `AuditTrailAdminList` | `OrchardCore.AuditTrail` |
+| `BackgroundTasks` | `BackgroundTasksAdminList` | `OrchardCore.BackgroundTasks` |
+| `ContentParts` | `ContentPartsAdminList` | `OrchardCore.ContentTypes` |
+| `ContentTypes` | `ContentTypesAdminList` | `OrchardCore.ContentTypes` |
+| `Contents` | `ContentsAdminList` | `OrchardCore.Contents` |
+| `DeploymentPlans` | `DeploymentPlansAdminList` | `OrchardCore.Deployment` |
+| `FeatureProfiles` | `FeatureProfilesAdminList` | `OrchardCore.Tenants` |
+| `Features` | `FeaturesAdminList` | `OrchardCore.Features` |
+| `Indexes` | `IndexingAdminList` | `OrchardCore.Indexing` |
+| `Layers` | `LayersAdminList` | `OrchardCore.Layers` |
+| `ListPartContents` | `ListPartContentsAdminList` | `OrchardCore.Lists` |
+| `MediaProfiles` | `MediaProfilesAdminList` | `OrchardCore.Media` |
+| `Notifications` | `NotificationsAdminList` | `OrchardCore.Notifications` |
+| `OpenIdApplications` | `OpenIdApplicationsAdminList` | `OrchardCore.OpenId` |
+| `OpenIdScopes` | `OpenIdScopesAdminList` | `OrchardCore.OpenId` |
+| `Placements` | `PlacementsAdminList` | `OrchardCore.Placements` |
+| `Queries` | `QueriesAdminList` | `OrchardCore.Queries` |
+| `RateLimits` | `RateLimitsAdminList` | `OrchardCore.RateLimits` |
+| `Recipes` | `RecipesAdminList` | `OrchardCore.Recipes` |
+| `RemoteClients` | `RemoteClientsAdminList` | `OrchardCore.Deployment.Remote` |
+| `RemoteInstances` | `RemoteInstancesAdminList` | `OrchardCore.Deployment.Remote` |
+| `Roles` | `RolesAdminList` | `OrchardCore.Roles` |
+| `Shortcodes` | `ShortcodesAdminList` | `OrchardCore.Shortcodes` |
+| `SitemapCache` | `SitemapCacheAdminList` | `OrchardCore.Sitemaps` |
+| `SitemapIndexes` | `SitemapIndexesAdminList` | `OrchardCore.Sitemaps` |
+| `Sitemaps` | `SitemapsAdminList` | `OrchardCore.Sitemaps` |
+| `Templates` | `TemplatesAdminList` | `OrchardCore.Templates` |
+| `Tenants` | `TenantsAdminList` | `OrchardCore.Tenants` |
+| `UrlRewriting` | `UrlRewritingAdminList` | `OrchardCore.UrlRewriting` |
+| `Users` | `UsersAdminList` | `OrchardCore.Users` |
+| `WorkflowInstances` | `WorkflowInstancesAdminList` | `OrchardCore.Workflows` |
+| `WorkflowTypes` | `WorkflowTypesAdminList` | `OrchardCore.Workflows` |
+
+A few admin pages are deliberately not lists and have no name: the media library, the widgets by zone of the layers page, the admin menu node tree, the dashboard, the CORS policies, the data localization table, the media cache and the themes gallery. They are edited or arranged rather than listed, so they keep their own presentation.
 
 ## Admin Routes
 
