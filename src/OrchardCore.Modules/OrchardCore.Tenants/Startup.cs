@@ -18,6 +18,9 @@ using OrchardCore.Setup;
 using OrchardCore.Tenants.Deployment;
 using OrchardCore.Tenants.Recipes;
 using OrchardCore.Tenants.Services;
+using OrchardCore.Tenants.ViewModels;
+using OrchardCore.Tenants.Drivers;
+using OrchardCore.DisplayManagement.Handlers;
 
 namespace OrchardCore.Tenants;
 
@@ -111,6 +114,9 @@ public sealed class FeatureProfilesStartup : StartupBase
     {
         services.AddNavigationProvider<FeatureProfilesAdminMenu>();
         services.AddScoped<FeatureProfilesManager>();
+
+        // Builds the rows of the feature profiles admin list.
+        services.AddDisplayDriver<FeatureProfileEntry, FeatureProfileEntryDisplayDriver>();
         services.AddScoped<IFeatureProfilesService, FeatureProfilesService>();
         services.AddScoped<IFeatureProfilesSchemaService, FeatureProfilesSchemaService>();
         services.AddShapeTableProvider<TenantFeatureProfileShapeTableProvider>();

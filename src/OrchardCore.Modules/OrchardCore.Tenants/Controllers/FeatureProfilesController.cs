@@ -8,6 +8,8 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
@@ -54,7 +56,12 @@ public sealed class FeatureProfilesController : Controller
     }
 
     [Admin("TenantFeatureProfiles", "TenantFeatureProfilesIndex")]
-    public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(
+        ContentOptions options,
+        PagerParameters pagerParameters,
+        [FromServices] IDisplayManager<FeatureProfileEntry> displayManager,
+        [FromServices] IUpdateModelAccessor updateModelAccessor,
+        [FromServices] IAdminListService adminListService)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenantFeatureProfiles))
         {
@@ -103,6 +110,35 @@ public sealed class FeatureProfilesController : Controller
         [
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
+
+        var rows = new List<object>(model.FeatureProfiles.Count);
+
+        foreach (var entry in model.FeatureProfiles)
+        {
+            rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
+        }
+
+        var toolbar = await _shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
+        {
+            ItemsCount = model.FeatureProfiles.Count,
+            TotalItemCount = count,
+            StartIndex = model.FeatureProfiles.Count > 0 ? pager.GetStartIndex() + 1 : 0,
+            EndIndex = pager.GetStartIndex() + model.FeatureProfiles.Count,
+            BulkActions = model.Options.ContentsBulkAction,
+        }));
+
+        // The AdminList shape renders the profiles with the configured layout (List, Table, ...).
+        model.List = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        {
+            Name = FeatureProfilesAdminList.Name,
+            Layout = await adminListService.GetLayoutAsync(FeatureProfilesAdminList.Name, cancellationToken: HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(FeatureProfilesAdminList.Name, FeatureProfilesAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Rows = rows,
+            Toolbar = toolbar,
+            Pager = model.Pager,
+            ItemCssClass = "list-group-item",
+            EmptyMessage = H["<strong>Nothing here!</strong> There are no feature profiles for the moment."],
+        }));
 
         return View(model);
     }
