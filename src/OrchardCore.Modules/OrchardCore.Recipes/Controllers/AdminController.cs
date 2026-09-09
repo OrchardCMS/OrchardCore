@@ -10,6 +10,9 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Recipes.ViewModels;
 
 namespace OrchardCore.Recipes.Controllers;
@@ -57,7 +60,11 @@ public sealed class AdminController : Controller
     }
 
     [Admin("Recipes", "Recipes")]
-    public async Task<ActionResult> Index()
+    public async Task<ActionResult> Index(
+        [FromServices] IShapeFactory shapeFactory,
+        [FromServices] IDisplayManager<RecipeEntry> displayManager,
+        [FromServices] IUpdateModelAccessor updateModelAccessor,
+        [FromServices] IAdminListService adminListService)
     {
         if (!await _authorizationService.AuthorizeAsync(User, RecipePermissions.ManageRecipes))
         {
@@ -67,7 +74,7 @@ public sealed class AdminController : Controller
         var features = await _shellFeaturesManager.GetAvailableFeaturesAsync();
         var recipes = await GetRecipesAsync(features);
 
-        var model = recipes.Select(recipe => new RecipeViewModel
+        var entries = recipes.Select(recipe => new RecipeEntry
         {
             Name = recipe.Name,
             DisplayName = recipe.DisplayName,
@@ -78,6 +85,44 @@ public sealed class AdminController : Controller
             Feature = features.FirstOrDefault(f => recipe.BasePath.Contains(f.Extension.SubPath))?.Name ?? "Application",
             Description = recipe.Description,
         }).ToArray();
+
+        var columns = await adminListService.GetColumnsAsync(RecipesAdminList.Name, RecipesAdminList.GetDefaultColumns(S), HttpContext.RequestAborted);
+        var layout = await adminListService.GetLayoutAsync(RecipesAdminList.Name, cancellationToken: HttpContext.RequestAborted);
+
+        var model = new RecipesIndexViewModel();
+
+        // The page keeps one list per feature, and every list follows the configured layout.
+        foreach (var group in entries.GroupBy(entry => entry.Feature).OrderBy(group => group.Key))
+        {
+            var rows = new List<object>();
+
+            foreach (var entry in group.OrderBy(entry => entry.DisplayName))
+            {
+                var shape = await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin);
+
+                // The rows carry the attributes used by the client-side search of the list-management script.
+                if (shape is Shape rowShape)
+                {
+                    rowShape.Attributes["data-filter-value"] = group.Key + " " + entry.DisplayName;
+                }
+
+                rows.Add(shape);
+            }
+
+            model.Groups.Add(new RecipeGroupViewModel
+            {
+                Feature = group.Key,
+                FilterValue = group.Key + " " + string.Join(' ', group.Select(entry => entry.DisplayName)),
+                List = await shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+                {
+                    Name = RecipesAdminList.Name,
+                    Layout = layout,
+                    Columns = columns,
+                    Rows = rows,
+                    ItemCssClass = "list-group-item",
+                })),
+            });
+        }
 
         return View(model);
     }
