@@ -2,9 +2,10 @@
 
 @model ListNotificationOptions
 
-<div class="has-search">
+<div class="input-group has-search">
     <input asp-for="OriginalSearchText" type="hidden" />
     <label asp-for="SearchText" class="visually-hidden">@T["Search"]</label>
     <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
     <input asp-for="SearchText" class="form-control" placeholder="@T["Search"]" inputmode="search" type="search" autofocus />
+    <button type="submit" name="submit.Filter" class="btn btn-outline-secondary" title="@T["Search"]">@T["Go"]</button>
 </div>
