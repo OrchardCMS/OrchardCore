@@ -73,10 +73,10 @@ The **Manage Content** list is the reference for how a row looks. Match it, not 
 > `ContentLocalization/Views/LocalizationPart.SummaryAdminLinks.cshtml` — check that one when its list is
 > converted.
 
-> **Known debt**: `IndexProfile.Fields.SummaryAdmin.cshtml` (Indexes, already shipped) and
-> `RewriteRule.Fields.SummaryAdmin.cshtml` (URL Rewriting) both use `<h5>` for the title and so do not
-> match Manage Content. Fix both to a plain link — Indexes as its own follow-up commit, URL Rewriting
-> as part of its conversion.
+> **Settled**: `IndexProfile.Fields.SummaryAdmin.cshtml` (Indexes) and
+> `RewriteRule.Fields.SummaryAdmin.cshtml` (URL Rewriting) used `<h5>` for the title. Both are plain
+> links now. The remaining headings in a row are not titles: the `<h6>` of the rate limiter of a
+> policy sits under the policy name, and the shortcodes list is a card whose name is its usage token.
 
 ### Anti-patterns to remove while converting
 
@@ -357,17 +357,19 @@ Resolve each before the batch that needs it, and record the answer here.
    `AdminListToolbar`. Confirm we are not consolidating these into one before Batch D starts.
    *Decision: pending.*
 5. **Features bulk-action input name (4.2)** — the Features page posts `featureIds`, every other list
-   posts `itemIds`. Keep `featureIds` and parameterise the `list-management` script, or rename and
-   update the controller?
-   *Decision: pending.*
+   posts `itemIds`.
+   *Decision: settled with the Features conversion.* `featureIds` is kept: the `list-management`
+   script already takes the name from the first item checkbox it finds, so nothing had to change.
+   URL Rewriting keeps `ruleIds` for the same reason.
 
 ---
 
 ## 8. Cross-cutting work (Batch G)
 
 - [ ] Sweep for any remaining `row gx-3` inside an `.action-bar` and change it to `gx-2`.
-- [ ] Sweep every `*.Fields.SummaryAdmin.cshtml` for `<h5>`/heading titles and replace with a plain
-      link, per the row template conventions in section 1. Known: Indexes, URL Rewriting.
+- [x] Sweep every `*.Fields.SummaryAdmin.cshtml` for `<h5>`/heading titles and replace with a plain
+      link, per the row template conventions in section 1. Indexes and URL Rewriting are done; the
+      `<h6>` of the rate limiters and the `<h4>` of the shortcode cards are not row titles and stay.
 - [ ] Sweep every row template for `<span class="hint">` used to convey a fact (source, type, state)
       and convert it to a `ta-badge`.
 - [ ] Sweep for `has-search` without `input-group` or without a Go button, including the Part B
