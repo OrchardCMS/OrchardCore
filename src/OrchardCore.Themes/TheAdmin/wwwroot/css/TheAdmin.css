@@ -275,11 +275,6 @@ a:hover {
   vertical-align: middle;
 }
 
-.admin-list-table .badge + .badge,
-.admin-list-grid .badge + .badge {
-  margin-inline-start: 0.25rem;
-}
-
 .admin-list-table .admin-list-select .form-check,
 .admin-list-grid .admin-list-select .form-check {
   margin-bottom: 0;
@@ -379,6 +374,10 @@ a:hover {
   border-bottom-left-radius: var(--bs-border-radius);
 }
 
+.admin-list-table .badge + .badge {
+  margin-inline-start: 0.25rem;
+}
+
 .admin-list-table tr:has(.dropdown-menu.show:not(.inner)) {
   position: relative;
   z-index: var(--oc-zindex-dropdown);
@@ -457,6 +456,7 @@ a:hover {
   display: flex;
   align-items: center;
   min-width: 0;
+  gap: 0.375rem;
   padding: var(--oc-admin-list-cell-padding-y) var(--oc-admin-list-cell-padding-x);
   border-bottom: var(--bs-border-width) solid var(--bs-border-color);
 }

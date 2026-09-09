@@ -133,7 +133,8 @@
             {
                 <tr class="admin-list-empty">
                     <td colspan="@Math.Max(columns.Count, 1)">
-                        <div class="alert alert-info mb-0">
+                        @* No mb-0: the cell has no padding, so the alert is spaced by the .admin-list-empty rule in _admin-list.scss. *@
+                        <div class="alert alert-info">
                             @(Model.EmptyMessage ?? T["No results found."])
                         </div>
                     </td>

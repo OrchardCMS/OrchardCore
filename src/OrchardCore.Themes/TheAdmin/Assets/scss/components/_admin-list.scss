@@ -57,12 +57,6 @@ $oc-admin-list-stack-width: 48rem;
         vertical-align: middle;
     }
 
-    // Badges rendered side by side in the same cell keep a small gap. A grid cell is a flex container, so the
-    // whitespace the templates leave between them is dropped and they would otherwise sit flush.
-    .badge + .badge {
-        margin-inline-start: 0.25rem;
-    }
-
     .admin-list-select .form-check {
         margin-bottom: 0;
         min-height: 0;
@@ -155,6 +149,12 @@ $oc-admin-list-stack-width: 48rem;
         }
     }
 
+    // A table cell is not a flex container, so the whitespace between two badges survives; this only widens
+    // the gap slightly so it matches the one the grid layout gets from its cell gap.
+    .badge + .badge {
+        margin-inline-start: 0.25rem;
+    }
+
     // Same stacking fix as the list-group: an open dropdown must render above the sticky action bar.
     tr:has(.dropdown-menu.show:not(.inner)) {
         position: relative;
@@ -239,6 +239,9 @@ $oc-admin-list-stack-width: 48rem;
         display: flex;
         align-items: center;
         min-width: 0;
+        // A cell is a flex container, so the whitespace the templates leave between the shapes of a zone is
+        // dropped: a title followed by a hint or a badge would otherwise sit flush against it.
+        gap: 0.375rem;
         padding: var(--oc-admin-list-cell-padding-y) var(--oc-admin-list-cell-padding-x);
         border-bottom: var(--bs-border-width) solid var(--bs-border-color);
 

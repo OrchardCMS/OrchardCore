@@ -137,7 +137,8 @@
             else
             {
                 <div class="admin-list-grid-row admin-list-empty">
-                    <div class="alert alert-info mb-0">
+                    @* No mb-0: the row has no padding, so the alert is spaced by the .admin-list-empty rule in _admin-list.scss. *@
+                    <div class="alert alert-info">
                         @(Model.EmptyMessage ?? T["No results found."])
                     </div>
                 </div>
