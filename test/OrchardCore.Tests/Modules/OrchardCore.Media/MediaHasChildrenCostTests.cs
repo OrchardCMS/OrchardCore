@@ -93,9 +93,9 @@ public class MediaHasChildrenCostTests
     private static ClaimsPrincipal User()
         => new(new ClaimsIdentity([new Claim(ClaimTypes.Name, "editor")], "Test"));
 
-    private static IAuthorizationService GrantAll() => new StubAuthorizationService(true);
+    private static StubAuthorizationService GrantAll() => new(true);
 
-    private static IAuthorizationService DenyAll() => new StubAuthorizationService(false);
+    private static StubAuthorizationService DenyAll() => new(false);
 
     private static (CountingDirectoryStore Store, MediaDirectoryTreeCache TreeCache) BuildStore(params string[] directories)
     {
