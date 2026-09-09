@@ -1,4 +1,4 @@
-/*
+﻿/*
  Admin lists rendered by the AdminList shape.
 
  .admin-list-list  is the default 'List' layout (a list-group, see _list-group.scss).
@@ -205,20 +205,38 @@ $oc-admin-list-stack-width: 48rem;
                 width: auto;
                 border: 0;
                 padding: 0;
+                // A cell can hold an unbreakable token, e.g. the id of a feature, which would otherwise
+                // push the row past the width of the list.
+                overflow-wrap: anywhere;
                 text-align: start !important;
                 white-space: normal;
                 background-color: transparent;
                 box-shadow: none;
 
-                // The title takes the first line, the badges wrap to the next one.
+                // The title takes the space the other cells leave, down to a floor that keeps it readable,
+                // and its secondary line sits under it inside the same cell.
                 &.admin-list-column-fill {
-                    flex: 1 1 auto;
-                    min-width: 50%;
+                    flex: 1 1 0;
+                    min-width: 40%;
                 }
 
-                // The actions go to the end of their line.
+                // The actions end the first line, where the row centres them on the title and its
+                // secondary line, so every row of the list holds them in the same place.
                 &.text-end {
-                    margin-inline-start: auto;
+                    // No auto margin here: it would eat the free space of the line, which belongs to the
+                    // title cell. The title grows instead, which pushes the actions to the end.
+                    text-align: end !important;
+                }
+
+                // Everything else, e.g. the badges of a row, takes a line under that first one, the way
+                // the summary of the List layout stacks them. The order only moves them past the actions
+                // visually: they keep their place in the document. A list with a second wide column, e.g.
+                // the dependencies of a feature, stacks that one as well: only the first is the title.
+                &:not(.admin-list-column-fill):not(.admin-list-select):not(.admin-list-column-handle):not(.text-end),
+                &.admin-list-column-fill ~ .admin-list-column-fill {
+                    order: 1;
+                    flex: 0 0 100%;
+                    min-width: 0;
                 }
             }
 
@@ -251,6 +269,9 @@ $oc-admin-list-stack-width: 48rem;
     .admin-list-grid-cell {
         display: flex;
         align-items: center;
+        // A cell can hold an unbreakable token, e.g. the id of a feature, which would otherwise push the
+        // row past the width of the list.
+        overflow-wrap: anywhere;
         // A secondary line (.admin-list-secondary) takes the full width of the cell, so the cell has to wrap.
         flex-wrap: wrap;
         min-width: 0;
@@ -337,15 +358,30 @@ $oc-admin-list-stack-width: 48rem;
             padding: 0;
             border-bottom: 0;
 
-            // The title takes the first line, the badges wrap to the next one.
+            // The title takes the space the other cells leave, down to a floor that keeps it readable,
+            // and its secondary line sits under it inside the same cell.
             &.admin-list-column-fill {
-                flex: 1 1 auto;
-                min-width: 50%;
+                flex: 1 1 0;
+                min-width: 40%;
             }
 
-            // The actions go to the end of their line.
+            // The actions end the first line, where the row centres them on the title and its
+            // secondary line, so every row of the list holds them in the same place.
             &.admin-list-align-end {
-                margin-inline-start: auto;
+                // No auto margin here: it would eat the free space of the line, which belongs to the
+                // title cell. The title grows instead, which pushes the actions to the end.
+                text-align: end;
+            }
+
+            // Everything else, e.g. the badges of a row, takes a line under that first one, the way
+            // the summary of the List layout stacks them. The order only moves them past the actions
+            // visually: they keep their place in the document. A list with a second wide column, e.g.
+            // the dependencies of a feature, stacks that one as well: only the first is the title.
+            &:not(.admin-list-column-fill):not(.admin-list-select):not(.admin-list-column-handle):not(.admin-list-align-end),
+            &.admin-list-column-fill ~ .admin-list-column-fill {
+                order: 1;
+                flex: 0 0 100%;
+                min-width: 0;
             }
         }
 

@@ -425,6 +425,7 @@ a:hover {
     width: auto;
     border: 0;
     padding: 0;
+    overflow-wrap: anywhere;
     text-align: start !important;
     white-space: normal;
     background-color: transparent;
@@ -432,12 +433,18 @@ a:hover {
   }
 
   .admin-list-table .table td.admin-list-column-fill {
-    flex: 1 1 auto;
-    min-width: 50%;
+    flex: 1 1 0;
+    min-width: 40%;
   }
 
   .admin-list-table .table td.text-end {
-    margin-inline-start: auto;
+    text-align: end !important;
+  }
+
+  .admin-list-table .table td:not(.admin-list-column-fill):not(.admin-list-select):not(.admin-list-column-handle):not(.text-end), .admin-list-table .table td.admin-list-column-fill ~ .admin-list-column-fill {
+    order: 1;
+    flex: 0 0 100%;
+    min-width: 0;
   }
 
   .admin-list-table .table tr.admin-list-empty {
@@ -465,6 +472,7 @@ a:hover {
 .admin-list-grid .admin-list-grid-cell {
   display: flex;
   align-items: center;
+  overflow-wrap: anywhere;
   flex-wrap: wrap;
   min-width: 0;
   gap: 0.375rem;
@@ -561,12 +569,18 @@ a:hover {
   }
 
   .admin-list-grid .admin-list-grid-cell.admin-list-column-fill {
-    flex: 1 1 auto;
-    min-width: 50%;
+    flex: 1 1 0;
+    min-width: 40%;
   }
 
   .admin-list-grid .admin-list-grid-cell.admin-list-align-end {
-    margin-inline-start: auto;
+    text-align: end;
+  }
+
+  .admin-list-grid .admin-list-grid-cell:not(.admin-list-column-fill):not(.admin-list-select):not(.admin-list-column-handle):not(.admin-list-align-end), .admin-list-grid .admin-list-grid-cell.admin-list-column-fill ~ .admin-list-column-fill {
+    order: 1;
+    flex: 0 0 100%;
+    min-width: 0;
   }
 
   .admin-list-grid .admin-list-grid-row.admin-list-empty {
