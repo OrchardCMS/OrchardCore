@@ -9,6 +9,7 @@ using OrchardCore.Admin;
 using OrchardCore.Deployment.Indexes;
 using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Utilities;
@@ -60,7 +61,12 @@ public sealed class DeploymentPlanController : Controller
         H = htmlLocalizer;
     }
 
-    public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(
+        ContentOptions options,
+        PagerParameters pagerParameters,
+        [FromServices] IDisplayManager<DeploymentPlanEntry> displayManager,
+        [FromServices] IUpdateModelAccessor updateModelAccessor,
+        [FromServices] IAdminListService adminListService)
     {
         if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageDeploymentPlan))
         {
@@ -110,6 +116,35 @@ public sealed class DeploymentPlanController : Controller
         [
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Delete)),
         ];
+
+        var rows = new List<object>(model.DeploymentPlans.Count);
+
+        foreach (var entry in model.DeploymentPlans)
+        {
+            rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
+        }
+
+        var toolbar = await _shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
+        {
+            ItemsCount = model.DeploymentPlans.Count,
+            TotalItemCount = count,
+            StartIndex = model.DeploymentPlans.Count > 0 ? pager.GetStartIndex() + 1 : 0,
+            EndIndex = pager.GetStartIndex() + model.DeploymentPlans.Count,
+            BulkActions = model.Options.DeploymentPlansBulkAction,
+        }));
+
+        // The AdminList shape renders the plans with the configured layout (List, Table, ...).
+        model.List = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        {
+            Name = DeploymentPlansAdminList.Name,
+            Layout = await adminListService.GetLayoutAsync(DeploymentPlansAdminList.Name, cancellationToken: HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(DeploymentPlansAdminList.Name, DeploymentPlansAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Rows = rows,
+            Toolbar = toolbar,
+            Pager = model.Pager,
+            ItemCssClass = "list-group-item",
+            EmptyMessage = H["<strong>Nothing here!</strong> There are no deployment plans at the moment."],
+        }));
 
         return View(model);
     }

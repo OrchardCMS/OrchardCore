@@ -12,6 +12,7 @@ using OrchardCore.Deployment.Steps;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.FileStorage;
 using OrchardCore.Modules;
+using OrchardCore.Deployment.ViewModels;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
@@ -44,6 +45,9 @@ public sealed class Startup : StartupBase
         services.AddDataMigration<Migrations>();
 
         services.AddScoped<IDeploymentPlanService, DeploymentPlanService>();
+
+        // Builds the rows of the deployment plans admin list.
+        services.AddDisplayDriver<DeploymentPlanEntry, DeploymentPlanEntryDisplayDriver>();
 
         services.AddRecipeExecutionStep<DeploymentPlansRecipeStep>();
 
