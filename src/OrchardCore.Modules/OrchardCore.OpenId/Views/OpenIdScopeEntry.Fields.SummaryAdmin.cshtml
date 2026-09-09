@@ -1,0 +1,9 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.OpenId.ViewModels
+
+@model ShapeViewModel<OpenIdScopeEntry>
+
+@* Plain link, like the title of a content item in the Manage Content list. The description is deliberately
+   not shown: it is long prose that would stretch the cell and push the badges of each row to a different
+   offset. It is on the edit screen. *@
+<a asp-action="Edit" asp-controller="Scope" asp-route-id="@Model.Value.Id">@Model.Value.DisplayName</a>

@@ -1,0 +1,9 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.OpenId.ViewModels
+
+@model ShapeViewModel<OpenIdScopeEntry>
+
+@if (!string.IsNullOrWhiteSpace(Model.Value.Description))
+{
+    <div class="admin-list-secondary">@Model.Value.Description</div>
+}
