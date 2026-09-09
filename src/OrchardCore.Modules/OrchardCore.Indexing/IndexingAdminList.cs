@@ -9,7 +9,7 @@ namespace OrchardCore.Indexing;
 public static class IndexingAdminList
 {
     /// <summary>
-    /// The name of the list, used by <see cref="OrchardCore.Admin.IAdminListColumnProvider"/> and the
+    /// The name of the list, used by <see cref="Admin.IAdminListColumnProvider"/> and the
     /// <c>AdminList__Indexes</c> and <c>AdminListCell__Indexes__{Column}</c> alternates.
     /// </summary>
     public const string Name = "Indexes";
