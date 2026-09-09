@@ -63,7 +63,15 @@ The **Manage Content** list is the reference for how a row looks. Match it, not 
 | `Content` | The title as a **plain link** to the edit page, normal weight | `<h5>`, `<strong>`, or any heading — it makes the row shout next to Manage Content |
 | `Tags` | One `<span class="badge ta-badge fw-normal">` per fact, with a leading `<i>` icon and a `title` tooltip naming the fact | A bare `<span class="hint">`, plain text, or a parenthetical |
 | `Meta` | Badges too (date, author) | Plain text |
-| `Actions` / `ActionsMenu` | Through `AdminListActions` | Hand-written button groups |
+| `Actions` / `ActionsMenu` | Through `AdminListActions`. Menu items are **bare** `<a>` or `<button>` with `.dropdown-item` | Wrapping menu items in `<li>` — see below |
+
+> **Never wrap ActionsMenu items in `<li>`.** `AdminListActions` renders the zone inside a
+> `<div class="dropdown-menu">`, and the `List` layout puts the whole row inside an `<li>`. A `<div>` does
+> not stop the HTML parser closing an open `<li>`, so nested `<li>` items are hoisted out and render as
+> stray bullets after the row. Symptom: the dropdown is empty and its items appear at the bottom of the
+> list. Every module already emits bare items except `RateLimits` (fixed during its conversion) and
+> `ContentLocalization/Views/LocalizationPart.SummaryAdminLinks.cshtml` — check that one when its list is
+> converted.
 
 > **Known debt**: `IndexProfile.Fields.SummaryAdmin.cshtml` (Indexes, already shipped) and
 > `RewriteRule.Fields.SummaryAdmin.cshtml` (URL Rewriting) both use `<h5>` for the title and so do not
@@ -87,6 +95,14 @@ The **Manage Content** list is the reference for how a row looks. Match it, not 
 
 1. **Driver** — if the entity has no `DisplayDriver<T>`, write one and register it in `Startup`.
    Split the row into zone shapes: `Checkbox`, `Content`, `Tags`, `Meta`, `Actions`, `ActionsMenu`.
+
+   > **The model type name is the shape type.** `DisplayManager<TModel>` uses `typeof(TModel).Name`
+   > verbatim and offers no override, so a driver registered against `FooViewModel` produces
+   > `FooViewModel_SummaryAdmin` and forces theme authors to override
+   > `FooViewModel-SummaryAdmin.cshtml`. Register the driver against a domain model named exactly what
+   > the shape should be called (`ShapePlacement`, not `ShapePlacementViewModel`), adding one under
+   > `Models/` when only a view model exists. Missing templates surface as
+   > `InvalidOperationException: The shape type '...' is not found for the theme 'TheAdmin'`.
 2. **Row template** — `{Entity}.SummaryAdmin.cshtml` renders zones only. The actions zone uses
    `@await DisplayAsync(await New.AdminListActions(Row: Model))`.
 3. **Columns** — add `{Module}AdminList.cs` with `Name` and `GetDefaultColumns(S)`.
@@ -121,7 +137,7 @@ the checkbox and buttons into zones, adding the columns class, and rewriting the
 |---|--------|-------|------|--------|-----------------|
 | 1.1 | URL Rewriting | `UrlRewriting` | `OrchardCore.UrlRewriting/Views/Admin/Index.cshtml` | `RewriteRulesDisplayDriver` — already has `Fields`/`Buttons`/`DefaultMeta`/`DefaultTags` shapes | `gx-3`→`gx-2`, Go button, `Checkbox` zone, hand-written toolbar `<li>`, `UrlRewritingAdminList.cs`, controller wiring. **Blocked on decision 3**: the rules are a drag-sortable pipeline (`sortingListManager`, `#rewrite-rules-sortable-list`, `SortRulesEndpoint`) and the rows container differs per layout, so the shape needs a sortable-container hook first. Bulk-action inputs are named `ruleIds`, not `itemIds` |
 | 1.2 | Queries | `Queries` | `OrchardCore.Queries/Views/Admin/Index.cshtml` | `QueryDisplayDriver` plus `SqlQueryDisplayDriver`, `LuceneQueryDisplayDriver`, `ElasticsearchQueryDisplayDriver` | `gx-3`→`gx-2`, Go button, `Checkbox` zone, new `Tags` zone for the source badge, hand-written toolbar `<li>`, `QueriesAdminList.cs`, controller wiring. No sortable, no naming variance — **start here**. Per-source row templates only apply in the `List` layout |
-| 1.3 | Placements | `Placements` | `OrchardCore.Placements/Views/Admin/Index.cshtml` | shape-based rows | `gx-3`→`gx-2`, Go button, columns, controller wiring |
+| 1.3 | ~~Placements~~ | | | | **Re-tiered to A.2 #2.16** — its rows are hard-coded `<li>` markup, not driver shapes. The survey grep that put it here matched `DisplayAsync(Model.Pager)`, not a row shape |
 | 1.4 | Rate Limits | `RateLimits` | `OrchardCore.RateLimits/Views/Admin/Index.cshtml` | `RateLimitPolicyDisplayDriver` — has `ActionsMenuItems`, `DefaultMeta`, `Buttons` | Same. The page also lists limiters nested under each policy — the nested list stays as-is |
 | 1.5 | Audit Trail | `AuditTrail` | `OrchardCore.AuditTrail/Views/AuditTrailAdminList.cshtml` | `AuditTrailEventDisplayDriver` — has `Meta`/`Tags`/`Actions` shapes | `Header` (options editor) pattern; `gx-3`→`gx-2`; add the Go button to `AuditTrailAdminListSearch.cshtml`; no bulk actions |
 | 1.6 | Notifications | `notifications` | `OrchardCore.Notifications/Views/NotificationsAdminList.cshtml` | `NotificationDisplayDriver` | `Header` pattern like Contents — pass `Header` instead of `Toolbar`; `gx-3`→`gx-2`; Go button goes in the search shape |
@@ -148,6 +164,7 @@ All share the same shape: `list-group with-checkbox`, a hand-written toolbar `<l
 | 2.13 | Sitemap Indexes | `SitemapIndexes/List` | `OrchardCore.Sitemaps/Views/SitemapIndex/List.cshtml` | `SitemapIndex` |
 | 2.14 | Workflow Types | `Workflows/Types` | `OrchardCore.Workflows/Views/WorkflowType/Index.cshtml` | `WorkflowType`. The workflow **designer** is not a list and is out of scope, see B.6 |
 | 2.15 | Tenants | `Tenants` | `OrchardCore.Tenants/Views/Admin/Index.cshtml` | `ShellSettingsEntry` — partially shape-based already (`TenantActionTags`, `TenantActionButtons`), so promote those into zones rather than writing them from scratch |
+| 2.16 | Placements | `Placements` | `OrchardCore.Placements/Views/Admin/Index.cshtml` | `ShapePlacementViewModel`. Moved here from A.1 once the rows turned out to be hard-coded. Only one field (the shape type), so the list is Select / Shape type / Actions |
 
 ## A.3 — Simple lists, no pager and/or no bulk actions (low to medium effort)
 
@@ -205,7 +222,7 @@ One screen per commit, pushed before the next starts (section 0). The order lets
 previous batch's learning.
 
 **Batch A — prove the recipe on driver-backed lists**
-1.2 Queries → 1.3 Placements → 1.4 Rate Limits → *(sortable-container hook, own commit)* → 1.1 URL Rewriting
+1.2 Queries → 2.16 Placements → 1.4 Rate Limits → *(sortable-container hook, own commit)* → 1.1 URL Rewriting
 
 > URL Rewriting moved to the end of Batch A: it is a drag-sortable pipeline, so it needs the shared
 > sortable-container hook (decision 3) landed first. Queries leads instead — same driver-backed
@@ -273,9 +290,9 @@ Legend: ☐ not started · ◐ in progress · ☑ converted, validated and pushe
 | Indexes | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | 1.1 URL Rewriting | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 | 1.2 Queries | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 1.3 Placements | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
-| 1.4 Rate Limits | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
-| 1.5 Audit Trail | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| 2.16 Placements | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 1.4 Rate Limits | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 1.5 Audit Trail | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | 1.6 Notifications | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 | 2.1 OpenID Applications | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 | 2.2 OpenID Scopes | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
