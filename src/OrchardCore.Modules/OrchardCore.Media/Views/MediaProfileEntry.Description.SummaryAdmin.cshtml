@@ -1,0 +1,9 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Media.ViewModels
+
+@model ShapeViewModel<MediaProfileEntry>
+
+@if (!string.IsNullOrWhiteSpace(Model.Value.MediaProfile?.Hint))
+{
+    <div class="admin-list-secondary">@Model.Value.MediaProfile.Hint</div>
+}
