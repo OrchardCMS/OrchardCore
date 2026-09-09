@@ -292,6 +292,16 @@ a:hover {
   margin: var(--oc-admin-list-cell-padding-y) var(--oc-admin-list-cell-padding-x);
 }
 
+/* A description under the title, in every layout. It always takes its own line, so the badges beside the
+   title stay at the same offset on every row instead of being pushed along by however long the description
+   happens to be. The Grid layout needs the width because a cell is a flex container. */
+.admin-list .admin-list-secondary {
+  flex-basis: 100%;
+  width: 100%;
+  font-size: 0.875rem;
+  color: var(--bs-secondary-color);
+}
+
 /* Row actions (AdminListActions shape), used by every layout. */
 .admin-list-actions {
   display: inline-flex;
@@ -455,6 +465,7 @@ a:hover {
 .admin-list-grid .admin-list-grid-cell {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   min-width: 0;
   gap: 0.375rem;
   padding: var(--oc-admin-list-cell-padding-y) var(--oc-admin-list-cell-padding-x);
