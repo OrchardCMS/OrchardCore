@@ -8,6 +8,8 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Templates.Models;
@@ -51,16 +53,26 @@ public sealed class TemplateController : Controller
         H = htmlLocalizer;
     }
 
-    public Task<IActionResult> Admin(ContentOptions options, PagerParameters pagerParameters)
+    public Task<IActionResult> Admin(
+        ContentOptions options,
+        PagerParameters pagerParameters,
+        [FromServices] IDisplayManager<TemplateEntry> displayManager,
+        [FromServices] IUpdateModelAccessor updateModelAccessor,
+        [FromServices] IAdminListService adminListService)
     {
         options.AdminTemplates = true;
 
         // Used to provide a different url such that the Admin Templates menu entry doesn't collide with the Templates ones.
-        return Index(options, pagerParameters);
+        return Index(options, pagerParameters, displayManager, updateModelAccessor, adminListService);
     }
 
     [Admin("Templates", "Templates.Index")]
-    public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(
+        ContentOptions options,
+        PagerParameters pagerParameters,
+        [FromServices] IDisplayManager<TemplateEntry> displayManager,
+        [FromServices] IUpdateModelAccessor updateModelAccessor,
+        [FromServices] IAdminListService adminListService)
     {
         if (!options.AdminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
         {
@@ -102,7 +114,7 @@ public sealed class TemplateController : Controller
         var pagerShape = await _shapeFactory.PagerAsync(pager, count, routeData);
         var model = new TemplateIndexViewModel
         {
-            Templates = templates.Select(x => new TemplateEntry { Name = x.Key, Template = x.Value }).ToList(),
+            Templates = templates.Select(x => new TemplateEntry { Name = x.Key, Template = x.Value, AdminTemplates = options.AdminTemplates }).ToList(),
             Options = options,
             Pager = pagerShape,
         };
@@ -111,6 +123,35 @@ public sealed class TemplateController : Controller
         [
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
+
+        var rows = new List<object>(model.Templates.Count);
+
+        foreach (var entry in model.Templates)
+        {
+            rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
+        }
+
+        var toolbar = await _shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
+        {
+            ItemsCount = model.Templates.Count,
+            TotalItemCount = count,
+            StartIndex = model.Templates.Count > 0 ? pager.GetStartIndex() + 1 : 0,
+            EndIndex = pager.GetStartIndex() + model.Templates.Count,
+            BulkActions = model.Options.ContentsBulkAction,
+        }));
+
+        // The AdminList shape renders the templates with the configured layout (List, Table, ...).
+        model.List = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        {
+            Name = TemplatesAdminList.Name,
+            Layout = await adminListService.GetLayoutAsync(TemplatesAdminList.Name, cancellationToken: HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(TemplatesAdminList.Name, TemplatesAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Rows = rows,
+            Toolbar = toolbar,
+            Pager = model.Pager,
+            ItemCssClass = "list-group-item",
+            EmptyMessage = H["<strong>Nothing here!</strong> There are no templates for the moment. <a class=\"seedoc\" href=\"{0}reference/modules/Templates\" target=\"_blank\">See documentation</a>", OrchardCore.Admin.Constants.DocsUrl],
+        }));
 
         // The 'Admin' action redirect the user to the 'Index' action.
         // To ensure we render the same 'Index' view in both cases, we have to explicitly specify the name of the view that should be rendered.
