@@ -20,9 +20,10 @@
         <div class="card-body">
             <div class="row gx-2">
                 <div class="col">
-                    <div class="has-search">
+                    <div class="input-group has-search">
                         <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
                         <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus autocomplete="off" />
+                        <button type="submit" name="submit.Filter" class="btn btn-outline-secondary" title="@T["Search"]">@T["Go"]</button>
                     </div>
                 </div>
                 <div class="col-auto">
@@ -32,13 +33,11 @@
         </div>
     </div>
 
-    <div class="mb-3">
-        @* The index profiles, the toolbar and the pager are rendered by the AdminList shape using the configured layout (List, Table, ...). *@
-        @await DisplayAsync(Model.List)
+    @* The index profiles, the toolbar and the pager are rendered by the AdminList shape using the configured layout (List, Table, ...). *@
+    @await DisplayAsync(Model.List)
 
-        <div id="list-alert" class="alert alert-info my-3 d-none text-center" role="alert">
-            @T["Your search returned no results."]
-        </div>
+    <div id="list-alert" class="alert alert-info my-3 d-none text-center" role="alert">
+        @T["Your search returned no results."]
     </div>
 </form>
 

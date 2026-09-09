@@ -11,7 +11,7 @@
     // when a shape named AdminListLayout_Option__{Layout} exists, e.g. AdminListLayout-Table.Option.cshtml.
     var shapeTable = await ThemeManager.GetShapeTableAsync(ShapeTableManager);
     var layoutOptionShapes = shapeTable.Bindings.Keys
-        .Where(x => x.StartsWith(AdminListLayouts.OptionShapePrefix, StringComparison.OrdinalIgnoreCase))
+        .Where(x => x.StartsWith(AdminListConstants.OptionShapePrefix, StringComparison.OrdinalIgnoreCase))
         .OrderBy(x => x, StringComparer.OrdinalIgnoreCase);
 
     // Same convention for the layouts of the row actions: AdminListActions_Option__{Layout}.
@@ -70,7 +70,7 @@
             @await DisplayAsync(optionShape)
         }
     </select>
-    <span class="hint">@T["The default layout used to render the admin lists, e.g. the content items list."]</span>
+    <span class="hint">@T["How the admin lists are rendered, e.g. the content items list. When left unchanged, the value configured for this site in appsettings.json under {0} is used.", "OrchardCore:AdminList:DefaultLayout"]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="ListActionsLayout">
@@ -83,5 +83,5 @@
             @await DisplayAsync(optionShape)
         }
     </select>
-    <span class="hint">@T["How the actions of each row are displayed: as buttons, or in a single compact menu."]</span>
+    <span class="hint">@T["How the actions of each row are displayed: as buttons, or in a single compact menu. When left unchanged, the value configured for this site in appsettings.json under {0} is used.", "OrchardCore:AdminList:DefaultActionsLayout"]</span>
 </div>

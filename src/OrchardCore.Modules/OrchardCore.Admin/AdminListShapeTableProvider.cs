@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Admin.Models;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Admin;
 
@@ -19,7 +20,7 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
 {
     public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
     {
-        builder.Describe(AdminListLayouts.ShapeType)
+        builder.Describe(AdminListConstants.ShapeType)
             .OnDisplaying(context =>
             {
                 var shape = context.Shape;
@@ -29,15 +30,17 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
 
                 if (!shape.TryGetProperty<string>("Layout", out var layout) || string.IsNullOrEmpty(layout))
                 {
-                    layout = AdminListLayouts.List;
+                    layout = AdminListConstants.DefaultLayout;
                 }
 
-                alternates.Add($"{AdminListLayouts.ShapeType}__{layout}");
+                alternates.Add($"{AdminListConstants.ShapeType}__{layout}");
 
                 if (!string.IsNullOrEmpty(name))
                 {
-                    alternates.Add($"{AdminListLayouts.ShapeType}__{name}");
-                    alternates.Add($"{AdminListLayouts.ShapeType}__{name}__{layout}");
+                    var n = name.ToSafeName();
+
+                    alternates.Add($"{AdminListConstants.ShapeType}__{n}");
+                    alternates.Add($"{AdminListConstants.ShapeType}__{n}__{layout}");
                 }
             });
 
@@ -71,7 +74,7 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
                 }
             });
 
-        builder.Describe(AdminListLayouts.CellShapeType)
+        builder.Describe(AdminListConstants.CellShapeType)
             .OnDisplaying(context =>
             {
                 var shape = context.Shape;
@@ -83,11 +86,11 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
 
                 var alternates = shape.Metadata.Alternates;
 
-                alternates.Add($"{AdminListLayouts.CellShapeType}__{column.Name}");
+                alternates.Add($"{AdminListConstants.CellShapeType}__{column.Name}");
 
                 if (shape.TryGetProperty<string>("ListName", out var listName) && !string.IsNullOrEmpty(listName))
                 {
-                    alternates.Add($"{AdminListLayouts.CellShapeType}__{listName}__{column.Name}");
+                    alternates.Add($"{AdminListConstants.CellShapeType}__{listName}__{column.Name}");
                 }
             });
 

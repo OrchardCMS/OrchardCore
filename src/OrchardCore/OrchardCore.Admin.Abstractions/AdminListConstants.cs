@@ -1,7 +1,7 @@
 namespace OrchardCore.Admin;
 
 /// <summary>
-/// Well-known admin list layouts and the shape naming conventions used to discover them.
+/// Well-known admin list layouts and shape names, and the naming conventions used to discover them.
 /// </summary>
 /// <remarks>
 /// A layout is a named presentation of an admin list. It is rendered by the <c>AdminList</c> shape using the
@@ -9,7 +9,7 @@ namespace OrchardCore.Admin;
 /// admin settings when a shape named <c>AdminListLayout_Option__{Layout}</c> exists (e.g. <c>AdminListLayout-Table.Option.cshtml</c>),
 /// which mirrors how content field editors are discovered.
 /// </remarks>
-public static class AdminListLayouts
+public static class AdminListConstants
 {
     /// <summary>
     /// The default layout, rendering the items as a vertical list.
@@ -17,13 +17,18 @@ public static class AdminListLayouts
     public const string List = "List";
 
     /// <summary>
+    /// The default layout, rendering the items as a vertical list.
+    /// </summary>
+    public const string DefaultLayout = List;
+
+    /// <summary>
     /// Renders the items as a table, one column per <see cref="Models.AdminListColumn"/>.
     /// </summary>
     public const string Table = "Table";
 
     /// <summary>
-    /// Renders the items with the same columns as <see cref="Table"/> but with flex rows instead of a table,
-    /// which stack on small screens.
+    /// Renders the items with the same columns as <see cref="Table"/> but with a CSS grid instead of a table,
+    /// so the header always lines up with the data.
     /// </summary>
     public const string Grid = "Grid";
 

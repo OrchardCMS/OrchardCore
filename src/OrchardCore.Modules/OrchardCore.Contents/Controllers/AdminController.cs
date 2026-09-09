@@ -260,11 +260,11 @@ public sealed class AdminController : Controller, IUpdateModel
         var header = await _contentOptionsDisplayManager.BuildEditorAsync(options, this, false, string.Empty, string.Empty);
 
         // The AdminList shape renders the items with the configured layout (List, Table, ...).
-        var listShape = await shapeFactory.CreateAsync(AdminListLayouts.ShapeType, Arguments.From(new
+        var listShape = await shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
         {
             Name = ContentsAdminList.Name,
-            Layout = await adminListService.GetLayoutAsync(ContentsAdminList.Name),
-            Columns = await adminListService.GetColumnsAsync(ContentsAdminList.Name, ContentsAdminList.GetDefaultColumns(S)),
+            Layout = await adminListService.GetLayoutAsync(ContentsAdminList.Name, cancellationToken: HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(ContentsAdminList.Name, ContentsAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
             Rows = contentItemSummaries,
             Header = header,
             Pager = pagerShape,

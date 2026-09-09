@@ -1,59 +1,61 @@
 using System.Globalization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.Admin.Models;
 using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Modules;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Admin.Services;
 
 public sealed class DefaultAdminListService : IAdminListService
 {
-    private readonly ISiteService _siteService;
     private readonly IEnumerable<IAdminListColumnProvider> _columnProviders;
+    private readonly IOptionsMonitor<AdminListOptions> _options;
     private readonly ILogger _logger;
 
     public DefaultAdminListService(
-        ISiteService siteService,
         IEnumerable<IAdminListColumnProvider> columnProviders,
+        IOptionsMonitor<AdminListOptions> options,
         ILogger<DefaultAdminListService> logger)
     {
-        _siteService = siteService;
         _columnProviders = columnProviders;
+        _options = options;
         _logger = logger;
     }
 
-    public async Task<string> GetLayoutAsync(string listName, string requestedLayout = null)
+    // The options carry the effective defaults: the tenant configuration, overridden by the site settings.
+    // They are guarded so a blank value cannot leave a list without a layout.
+    private string DefaultLayout
+        => string.IsNullOrWhiteSpace(_options.CurrentValue.DefaultLayout)
+            ? AdminListConstants.List
+            : _options.CurrentValue.DefaultLayout.Trim();
+
+    private string DefaultActionsLayout
+        => string.IsNullOrWhiteSpace(_options.CurrentValue.DefaultActionsLayout)
+            ? AdminListActionsLayouts.Buttons
+            : _options.CurrentValue.DefaultActionsLayout.Trim();
+
+    public Task<string> GetLayoutAsync(string listName, string requestedLayout = null, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrEmpty(listName);
 
-        if (!string.IsNullOrWhiteSpace(requestedLayout))
-        {
-            return requestedLayout.Trim();
-        }
+        cancellationToken.ThrowIfCancellationRequested();
 
-        var settings = await _siteService.GetSettingsAsync<AdminSettings>();
-
-        return string.IsNullOrWhiteSpace(settings.ListLayout)
-            ? AdminListLayouts.List
-            : settings.ListLayout.Trim();
+        return Task.FromResult(string.IsNullOrWhiteSpace(requestedLayout)
+            ? DefaultLayout
+            : requestedLayout.Trim());
     }
 
-    public async Task<string> GetActionsLayoutAsync(string listName = null, string requestedLayout = null)
+    public Task<string> GetActionsLayoutAsync(string listName = null, string requestedLayout = null, CancellationToken cancellationToken = default)
     {
-        if (!string.IsNullOrWhiteSpace(requestedLayout))
-        {
-            return requestedLayout.Trim();
-        }
+        cancellationToken.ThrowIfCancellationRequested();
 
-        var settings = await _siteService.GetSettingsAsync<AdminSettings>();
-
-        return string.IsNullOrWhiteSpace(settings.ListActionsLayout)
-            ? AdminListActionsLayouts.Buttons
-            : settings.ListActionsLayout.Trim();
+        return Task.FromResult(string.IsNullOrWhiteSpace(requestedLayout)
+            ? DefaultActionsLayout
+            : requestedLayout.Trim());
     }
 
-    public async Task<IList<AdminListColumn>> GetColumnsAsync(string listName, IEnumerable<AdminListColumn> defaultColumns)
+    public async Task<IList<AdminListColumn>> GetColumnsAsync(string listName, IEnumerable<AdminListColumn> defaultColumns, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrEmpty(listName);
 
@@ -71,7 +73,11 @@ public sealed class DefaultAdminListService : IAdminListService
 
         var context = new AdminListColumnsContext(listName, columns);
 
-        await _columnProviders.InvokeAsync((provider, context) => provider.BuildAsync(context), context, _logger);
+        await _columnProviders.InvokeAsync(
+            static (provider, context, cancellationToken) => provider.BuildAsync(context, cancellationToken),
+            context,
+            cancellationToken,
+            _logger);
 
         // Columns added without a position go after all the positioned ones. The sort is stable, so columns
         // sharing a position keep the order they were added in.

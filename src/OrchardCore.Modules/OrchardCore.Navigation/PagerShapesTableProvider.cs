@@ -587,7 +587,9 @@ public class PagerShapes : IShapeAttributeProvider
 
         var selectorShape = await shapeFactory.CreateAsync("Pager_PageSizeSelector", Arguments.From(new
         {
-            Items = items,
+            // Not "Items": Shape already exposes an "Items" property for its child shapes, so a property with
+            // that name is shadowed by it and the template would always read an empty collection.
+            PageSizes = items,
             CurrentPageSize = currentPageSize,
         }));
 

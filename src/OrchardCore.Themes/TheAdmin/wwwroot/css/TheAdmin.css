@@ -10343,6 +10343,15 @@ ul.pager {
   justify-content: center;
 }
 
+/*
+ When the page size selector is rendered, the pager and the selector share one flex row
+ (see PagerShapesTableProvider.WrapWithPageSizeSelector). The pager keeps filling the free space so it stays
+ centered instead of collapsing to the start of the row, and the selector sits at the end.
+*/
+.pager-wrapper ul.pager {
+  flex: 1 1 auto;
+}
+
 .g-recaptcha {
   margin-bottom: 1rem;
 }

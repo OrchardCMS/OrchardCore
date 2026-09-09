@@ -17,6 +17,11 @@ public static class AdminListActionsLayouts
     public const string Buttons = "Buttons";
 
     /// <summary>
+    /// The default layout: the action buttons followed by an "Actions" dropdown for the secondary actions.
+    /// </summary>
+    public const string DefaultLayout = "Buttons";
+
+    /// <summary>
     /// A compact layout: a single dropdown, opened by an ellipsis button, holding every action.
     /// </summary>
     public const string Menu = "Menu";

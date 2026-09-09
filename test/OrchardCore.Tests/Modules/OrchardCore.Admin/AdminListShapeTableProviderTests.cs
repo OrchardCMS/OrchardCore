@@ -13,11 +13,11 @@ public class AdminListShapeTableProviderTests
     public async Task AdminList_AddsLayoutAndNameAlternates_MostSpecificLast()
     {
         var shape = new Shape();
-        shape.Metadata.Type = AdminListLayouts.ShapeType;
+        shape.Metadata.Type = AdminListConstants.ShapeType;
         shape.Properties["Name"] = "Contents";
-        shape.Properties["Layout"] = AdminListLayouts.Table;
+        shape.Properties["Layout"] = AdminListConstants.Table;
 
-        await DisplayAsync(AdminListLayouts.ShapeType, shape);
+        await DisplayAsync(AdminListConstants.ShapeType, shape);
 
         Assert.Equal(
             ["AdminList__Table", "AdminList__Contents", "AdminList__Contents__Table"],
@@ -28,9 +28,9 @@ public class AdminListShapeTableProviderTests
     public async Task AdminList_DefaultsToListLayout_WhenLayoutIsMissing()
     {
         var shape = new Shape();
-        shape.Metadata.Type = AdminListLayouts.ShapeType;
+        shape.Metadata.Type = AdminListConstants.ShapeType;
 
-        await DisplayAsync(AdminListLayouts.ShapeType, shape);
+        await DisplayAsync(AdminListConstants.ShapeType, shape);
 
         Assert.Equal(["AdminList__List"], shape.Metadata.Alternates.ToArray());
     }
@@ -66,11 +66,11 @@ public class AdminListShapeTableProviderTests
     public async Task AdminListCell_AddsColumnAndListAlternates()
     {
         var shape = new Shape();
-        shape.Metadata.Type = AdminListLayouts.CellShapeType;
+        shape.Metadata.Type = AdminListConstants.CellShapeType;
         shape.Properties["ListName"] = "Contents";
         shape.Properties["Column"] = new AdminListColumn { Name = "Actions" };
 
-        await DisplayAsync(AdminListLayouts.CellShapeType, shape);
+        await DisplayAsync(AdminListConstants.CellShapeType, shape);
 
         Assert.Equal(
             ["AdminListCell__Actions", "AdminListCell__Contents__Actions"],
@@ -81,9 +81,9 @@ public class AdminListShapeTableProviderTests
     public async Task AdminListCell_AddsNoAlternates_WithoutColumn()
     {
         var shape = new Shape();
-        shape.Metadata.Type = AdminListLayouts.CellShapeType;
+        shape.Metadata.Type = AdminListConstants.CellShapeType;
 
-        await DisplayAsync(AdminListLayouts.CellShapeType, shape);
+        await DisplayAsync(AdminListConstants.CellShapeType, shape);
 
         Assert.Empty(shape.Metadata.Alternates);
     }

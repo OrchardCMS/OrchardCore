@@ -151,7 +151,7 @@ You can change it by overriding 'VisitSiteNavbarItem' shape, either from a [cust
 
 ## Admin List Layouts
 
-Admin lists such as the content items list are rendered by the `AdminList` shape, which supports several layouts. Two layouts are built in:
+Admin lists such as the content items list are rendered by the `AdminList` shape, which supports several layouts. Three layouts are built in:
 
 | Layout  | Description                                                                                         |
 | ------- | --------------------------------------------------------------------------------------------------- |
@@ -161,7 +161,20 @@ Admin lists such as the content items list are rendered by the `AdminList` shape
 
 Both column layouts use a CSS container query on the list itself: when the list is narrower than 48rem (whatever the viewport, the admin sidebar takes part of it), the headers disappear and each row becomes a compact wrapped line, checkbox and title first, badges after, actions at the end, so the page never scrolls horizontally. The cells keep a `data-title` attribute with the column title for themes that want to show it.
 
-The default layout is selected in **Configuration → Settings → Admin** under **List layout**, and stored in `AdminSettings.ListLayout`.
+The layout is selected in **Configuration → Settings → Admin** under **List layout**, and stored in `AdminSettings.ListLayout`. When that setting is empty the value comes from `AdminListOptions.DefaultLayout`, which a site can set per tenant in `appsettings.json`:
+
+```json
+  "OrchardCore": {
+    "AdminList": {
+      "DefaultLayout": "Table",
+      "DefaultActionsLayout": "Menu"
+    }
+  }
+```
+
+`AdminListOptions` is the single place the shipped defaults are decided, so changing them for a site never means editing a template or a driver. The values are `List`, `Table` and `Grid` for `DefaultLayout`, and `Buttons` or `Menu` for `DefaultActionsLayout`. A blank or missing value falls back to `List` and `Buttons`.
+
+The options follow Orchard Core's signal-backed options pattern. `AdminListOptionsConfiguration` layers the site settings on top of the configuration section, the module registers `AddSignalOptionsChangeTokenSource<AdminListOptions>()`, and the settings driver calls `IOptionsUpdateNotifier.RequestUpdate<AdminListOptions>()` when the choice changes. Consumers inject `IOptionsMonitor<AdminListOptions>` and read `CurrentValue`, so saving the settings takes effect without releasing the shell.
 
 ### How it works
 
@@ -185,11 +198,11 @@ The `AdminList` shape is created by the owner of the list with these properties:
 | `EmptyMessage` | Optional. The message displayed when there are no items.                                       |
 
 ```csharp
-var listShape = await shapeFactory.CreateAsync(AdminListLayouts.ShapeType, Arguments.From(new
+var listShape = await shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
 {
     Name = "Contents",
-    Layout = await adminListService.GetLayoutAsync("Contents"),
-    Columns = await adminListService.GetColumnsAsync("Contents", defaultColumns),
+    Layout = await adminListService.GetLayoutAsync("Contents", cancellationToken: HttpContext.RequestAborted),
+    Columns = await adminListService.GetColumnsAsync("Contents", defaultColumns, HttpContext.RequestAborted),
     Rows = contentItemSummaries,
     Header = header,
     Pager = pagerShape,
@@ -239,7 +252,7 @@ new AdminListColumn
 
 ### Row actions
 
-The `Actions` and `ActionsMenu` zones of a row are rendered by the `AdminListActions` shape in the layout selected under **Configuration → Settings → Admin → List actions layout** (`AdminSettings.ListActionsLayout`). Two layouts are built in:
+The `Actions` and `ActionsMenu` zones of a row are rendered by the `AdminListActions` shape in the layout selected under **Configuration → Settings → Admin → List actions layout** (`AdminSettings.ListActionsLayout`), falling back to `AdminListOptions.DefaultActionsLayout`. Two layouts are built in:
 
 | Layout    | Description                                                                                                   |
 | --------- | ------------------------------------------------------------------------------------------------------------- |
@@ -276,7 +289,7 @@ public sealed class CultureColumnProvider : IAdminListColumnProvider
         S = stringLocalizer;
     }
 
-    public Task BuildAsync(AdminListColumnsContext context)
+    public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancellationToken = default)
     {
         if (context.ListName == "Contents")
         {

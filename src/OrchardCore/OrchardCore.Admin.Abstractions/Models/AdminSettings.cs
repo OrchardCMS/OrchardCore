@@ -14,14 +14,14 @@ public class AdminSettings
     public bool DisplayTitlesInTopbar { get; set; }
 
     /// <summary>
-    /// The default layout used to render admin lists, e.g. <see cref="AdminListLayouts.List"/> or <see cref="AdminListLayouts.Table"/>.
+    /// The layout used to render admin lists, e.g. <see cref="AdminListConstants.List"/> or <see cref="AdminListConstants.Table"/>.
+    /// When empty, <see cref="AdminListOptions.DefaultLayout"/> is used.
     /// </summary>
-    [DefaultValue(AdminListLayouts.List)]
-    public string ListLayout { get; set; } = AdminListLayouts.List;
+    public string ListLayout { get; set; }
 
     /// <summary>
-    /// The default layout of the row actions of admin lists, e.g. <see cref="AdminListActionsLayouts.Buttons"/> or <see cref="AdminListActionsLayouts.Menu"/>.
+    /// The layout of the row actions of admin lists, e.g. <see cref="AdminListActionsLayouts.Buttons"/> or <see cref="AdminListActionsLayouts.Menu"/>.
+    /// When empty, <see cref="AdminListOptions.DefaultActionsLayout"/> is used.
     /// </summary>
-    [DefaultValue(AdminListActionsLayouts.Buttons)]
-    public string ListActionsLayout { get; set; } = AdminListActionsLayouts.Buttons;
+    public string ListActionsLayout { get; set; }
 }

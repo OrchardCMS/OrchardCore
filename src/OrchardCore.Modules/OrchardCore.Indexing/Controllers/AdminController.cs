@@ -155,11 +155,11 @@ public sealed class AdminController : Controller
         }));
 
         // The AdminList shape renders the index profiles with the configured layout (List, Table, ...).
-        viewModel.List = await shapeFactory.CreateAsync(AdminListLayouts.ShapeType, Arguments.From(new
+        viewModel.List = await shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
         {
             Name = IndexingAdminList.Name,
-            Layout = await adminListService.GetLayoutAsync(IndexingAdminList.Name),
-            Columns = await adminListService.GetColumnsAsync(IndexingAdminList.Name, IndexingAdminList.GetDefaultColumns(S)),
+            Layout = await adminListService.GetLayoutAsync(IndexingAdminList.Name, cancellationToken: HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(IndexingAdminList.Name, IndexingAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             Pager = viewModel.Pager,
