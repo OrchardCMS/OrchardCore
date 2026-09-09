@@ -2,9 +2,11 @@ sortingListManager = function () {
 
     const saveOrders = (evt, url, errorMessage) => {
 
+        // The server orders are 1-based, and only the draggable rows are ordered: the other elements of the
+        // container, e.g. the toolbar of the list layout, must not offset the indexes.
         var data = {
-            oldIndex: evt.oldIndex,
-            newIndex: evt.newIndex
+            oldIndex: evt.oldDraggableIndex + 1,
+            newIndex: evt.newDraggableIndex + 1
         };
         fetch(url, {
             method: 'POST',

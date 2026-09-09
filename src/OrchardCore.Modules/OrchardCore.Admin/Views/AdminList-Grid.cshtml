@@ -1,4 +1,4 @@
-@*
+﻿@*
     The 'Grid' layout of an admin list: the same columns as the 'Table' layout, rendered with a CSS grid instead of a
     <table>. The header, the body and the rows are `display: contents` (see _admin-list.scss), so every cell shares
     the tracks computed here from the column widths and the header always lines up with the data. When the list is
@@ -10,17 +10,23 @@
         Columns       The AdminListColumn collection, usually built by IAdminListService.GetColumnsAsync().
         Rows          The row shapes, usually built with the "SummaryAdmin" display type. (Not "Items": that name is the shape's own child collection.)
                       The Classes and Attributes of a row shape (e.g. data-filter-value for client-side search) are rendered on its row element.
+        RowsAttributes Optional attributes rendered on the rows container, e.g. the id a sortable list needs.
         Header        The options editor shape whose Summary and Actions zones are rendered above the rows.
         Toolbar       Alternative to Header: a shape rendered as is above the rows, e.g. AdminListToolbar.
         Pager         The pager shape.
         EmptyMessage  Optional message displayed when there are no items.
 *@
 @using Microsoft.AspNetCore.Mvc.Rendering
+@using System.Text.Encodings.Web
+@using Microsoft.AspNetCore.Html
 @using OrchardCore.Admin.Models
 @using OrchardCore.DisplayManagement.Shapes
 @using OrchardCore.Mvc.Utilities
 @{
     var rows = ((IEnumerable<object>)Model.Rows ?? []).ToList();
+    // Optional attributes for the element wrapping the rows, e.g. the id a sortable list needs.
+    var rowsAttributes = (IDictionary<string, string>)Model.RowsAttributes ?? new Dictionary<string, string>();
+    var rowsAttributesHtml = new HtmlString(string.Join(' ', rowsAttributes.Select(attribute => $"{attribute.Key}=\"{HtmlEncoder.Default.Encode(attribute.Value)}\"")));
     var columns = ((IEnumerable<AdminListColumn>)Model.Columns ?? []).ToList();
     var header = Model.Header;
     var toolbar = Model.Toolbar;
@@ -90,7 +96,7 @@
                 <div class="@ColumnCssClass(column)" role="columnheader">@column.Title</div>
             }
         </div>
-        <div class="admin-list-grid-body" role="rowgroup">
+        <div class="admin-list-grid-body" role="rowgroup" @rowsAttributesHtml>
             @if (rows.Count > 0)
             {
                 foreach (var row in rows)

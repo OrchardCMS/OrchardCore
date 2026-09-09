@@ -284,12 +284,15 @@ Record the outcome in section 6. Reset the layout setting to **List** before sta
 
 Legend: ☐ not started · ◐ in progress · ☑ converted, validated and pushed
 
+¹ The Grid layout cannot host a drag-sortable list (its rows are `display: contents`), so URL
+Rewriting renders the Table layout when Grid is configured. See open decision 3.
+
 | Screen | Driver | Columns | Controller | View | List | Table | Grid | Buttons | Menu | Pushed |
 |--------|:------:|:-------:|:----------:|:----:|:----:|:-----:|:----:|:-------:|:----:|:------:|
 | Manage Content | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | Users | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | Indexes | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 1.1 URL Rewriting | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| 1.1 URL Rewriting | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | n/a¹ | ☑ | ☑ | ☑ |
 | 1.2 Queries | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | 2.16 Placements | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | 1.4 Rate Limits | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
@@ -337,14 +340,19 @@ Resolve each before the batch that needs it, and record the answer here.
    *Decision: pending.*
 3. **Sortable lists** — URL Rewriting (1.1), List Part ordering (3.8) and the Layers list (4.3) are
    drag-sortable. The rows container differs per layout (`<ul>`, `<tbody>`, `.admin-list-grid-body`),
-   so `sortingListManager.create(selector)` has no stable target today.
-   Investigated during the Queries conversion: SortableJS computes `oldIndex`/`newIndex` by counting
-   only siblings matching its `draggable` selector (`.item`), and the toolbar row never carries
-   `.item`, so **the indices stay correct in all three layouts** — the only missing piece is a stable
-   container hook. Proposal: add a `RowsAttributes` (or `RowsCssClass`) property to the `AdminList`
-   shape, rendered on the rows container in all three layouts, so the page can mark it sortable.
-   Land that as its own commit before 1.1.
-   *Decision: pending.*
+   so `sortingListManager.create(selector)` had no stable target.
+   *Decision: settled with the URL Rewriting conversion.* The `AdminList` shape takes a
+   `RowsAttributes` dictionary, rendered on the rows container of all three layouts, so a page can
+   give that container the id its sortable script needs.
+   Two things found while validating it, contradicting the earlier note here:
+   - SortableJS `evt.oldIndex`/`evt.newIndex` count **every** sibling, so the toolbar `<li>` of the
+     List layout offset them by one — which is why the 1-based `ResortOrderAsync` used to line up in
+     the List layout and silently ignored the first row in the Table layout. `sortable-rules.js` now
+     sends `oldDraggableIndex`/`newDraggableIndex` + 1, which counts only the `.item` rows and is
+     therefore the same in every layout.
+   - The Grid layout cannot be dragged at all: its rows are `display: contents`, so they have no box
+     for SortableJS to pick up. A sortable list must fall back to `Table` when `Grid` is configured
+     (URL Rewriting does this in its controller), or force `List` the way List Part ordering does.
 4. **Toolbar vs Header** — screens with an options editor use `Header`, the rest use
    `AdminListToolbar`. Confirm we are not consolidating these into one before Batch D starts.
    *Decision: pending.*
