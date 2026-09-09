@@ -69,6 +69,7 @@ public sealed class AdminController : Controller, IUpdateModel
         [FromServices] IOptions<PagerOptions> pagerOptions,
         [FromServices] IShapeFactory shapeFactory,
         [FromServices] IContentsAdminListQueryService contentsAdminListQueryService,
+        [FromServices] IAdminListService adminListService,
         [ModelBinder(BinderType = typeof(ContentItemFilterEngineModelBinder), Name = "q")] QueryFilterResult<ContentItem> queryFilterResult,
         ContentOptionsViewModel options,
         PagerParameters pagerParameters,
@@ -258,12 +259,24 @@ public sealed class AdminController : Controller, IUpdateModel
 
         var header = await _contentOptionsDisplayManager.BuildEditorAsync(options, this, false, string.Empty, string.Empty);
 
+        // The AdminList shape renders the items with the configured layout (List, Table, ...).
+        var listShape = await shapeFactory.CreateAsync(AdminListLayouts.ShapeType, Arguments.From(new
+        {
+            Name = ContentsAdminList.Name,
+            Layout = await adminListService.GetLayoutAsync(ContentsAdminList.Name),
+            Columns = await adminListService.GetColumnsAsync(ContentsAdminList.Name, ContentsAdminList.GetDefaultColumns(S)),
+            Rows = contentItemSummaries,
+            Header = header,
+            Pager = pagerShape,
+        }));
+
         var shapeViewModel = await shapeFactory.CreateAsync<ListContentsViewModel>("ContentsAdminList", viewModel =>
         {
             viewModel.ContentItems = contentItemSummaries;
             viewModel.Pager = pagerShape;
             viewModel.Options = options;
             viewModel.Header = header;
+            viewModel.List = listShape;
         });
 
         if (TempData.TryGetValue(nameof(ModelState), out var modelStateJson) && modelStateJson is string)

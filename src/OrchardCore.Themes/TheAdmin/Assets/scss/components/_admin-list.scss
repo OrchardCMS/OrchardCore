@@ -1,0 +1,338 @@
+/*
+ Admin lists rendered by the AdminList shape.
+
+ .admin-list-list  is the default 'List' layout (a list-group, see _list-group.scss).
+ .admin-list-table is the 'Table' layout: a toolbar (count, select-all, filters, bulk actions) above a <table>
+                   with one column per AdminListColumn.
+ .admin-list-grid  is the 'Grid' layout: the same columns rendered with a CSS grid instead of a <table>. The header,
+                   the body and the rows are `display: contents`, so every cell of every row shares the same tracks
+                   (--oc-admin-list-grid-columns, computed by AdminList-Grid.cshtml from the column widths) and the
+                   header always lines up with the data.
+
+ Both column layouts are laid out for a wide list by default, and a container query on the list itself (not on the
+ viewport, the admin sidebar takes a good part of it) collapses them when the list is narrower than
+ $oc-admin-list-stack-width: the headers disappear and each row becomes a compact wrapped line, checkbox and title
+ first, badges after, actions at the end, like the 'List' layout.
+
+ Keep every narrow rule inside the container query and every wide rule outside it. A narrow rule left outside the
+ query wins over its wide counterpart inside it (a container query adds no specificity), which silently breaks the
+ alignment of the columns.
+
+ Column widths come from AdminListColumn.Width: "auto" hugs the content (.admin-list-column-auto), a value is a
+ fixed width (.admin-list-column-fixed), none shares the remaining space (.admin-list-column-fill).
+
+ The containers must not clip their overflow: the row action dropdowns open past the last row.
+*/
+
+$oc-admin-list-stack-width: 48rem;
+
+// Column headers, in both layouts.
+@mixin admin-list-header-cell {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--bs-secondary-color);
+    white-space: nowrap;
+}
+
+.admin-list-table,
+.admin-list-grid {
+    --oc-admin-list-cell-padding-y: 0.5rem;
+    --oc-admin-list-cell-padding-x: 0.75rem;
+
+    container-type: inline-size;
+    container-name: admin-list;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+
+    .admin-list-toolbar {
+        padding: 0.75rem var(--oc-admin-list-cell-padding-x);
+        border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+        border-radius: var(--bs-border-radius) var(--bs-border-radius) 0 0;
+    }
+
+    // Badges rendered inside cells (status, dates, author) align with the text baseline.
+    .badge {
+        vertical-align: middle;
+    }
+
+    // Badges rendered side by side in the same cell keep a small gap. A grid cell is a flex container, so the
+    // whitespace the templates leave between them is dropped and they would otherwise sit flush.
+    .badge + .badge {
+        margin-inline-start: 0.25rem;
+    }
+
+    .admin-list-select .form-check {
+        margin-bottom: 0;
+        min-height: 0;
+    }
+
+    // Part summaries placed under the title keep a secondary weight.
+    .contentpart {
+        font-size: 0.875rem;
+        color: var(--bs-secondary-color);
+    }
+
+    .admin-list-empty .alert {
+        margin: var(--oc-admin-list-cell-padding-y) var(--oc-admin-list-cell-padding-x);
+    }
+}
+
+/* Row actions (AdminListActions shape), used by every layout. */
+.admin-list-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    white-space: nowrap;
+
+    // Some modules render their menu items as <li> (Users), others as bare <a> (Contents): both live in a <div class="dropdown-menu">.
+    .dropdown-menu > li {
+        list-style: none;
+    }
+}
+
+// 'Menu' layout: the buttons of the 'Actions' zone are restyled as dropdown items, so modules do not need a
+// second template for their action buttons.
+.admin-list-actions-menu {
+    .admin-list-actions-primary {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .admin-list-actions-primary .btn {
+        display: block;
+        width: 100%;
+        margin: 0;
+        padding: var(--bs-dropdown-item-padding-y) var(--bs-dropdown-item-padding-x);
+        border: 0;
+        border-radius: 0;
+        background-color: transparent;
+        color: var(--bs-dropdown-link-color);
+        font-size: var(--bs-dropdown-font-size);
+        font-weight: 400;
+        text-align: start;
+        box-shadow: none;
+
+        &:hover,
+        &:focus {
+            background-color: var(--bs-dropdown-link-hover-bg);
+            color: var(--bs-dropdown-link-hover-color);
+        }
+
+        &:active {
+            background-color: var(--bs-dropdown-link-active-bg);
+            color: var(--bs-dropdown-link-active-color);
+        }
+    }
+}
+
+/* Table layout */
+.admin-list-table {
+    .table {
+        margin-bottom: 0;
+
+        > :not(caption) > * > * {
+            padding: var(--oc-admin-list-cell-padding-y) var(--oc-admin-list-cell-padding-x);
+        }
+
+        thead th {
+            @include admin-list-header-cell;
+            border-bottom-width: calc(var(--bs-border-width) * 2);
+        }
+
+        tbody tr:last-child > * {
+            border-bottom: 0;
+        }
+
+        tbody tr:last-child > :first-child {
+            border-bottom-left-radius: var(--bs-border-radius);
+        }
+
+        tbody tr:last-child > :last-child {
+            border-bottom-right-radius: var(--bs-border-radius);
+        }
+    }
+
+    // Same stacking fix as the list-group: an open dropdown must render above the sticky action bar.
+    tr:has(.dropdown-menu.show:not(.inner)) {
+        position: relative;
+        z-index: var(--oc-zindex-dropdown);
+    }
+
+    @container admin-list (max-width: #{$oc-admin-list-stack-width}) {
+        .table {
+            display: block;
+
+            thead {
+                display: none;
+            }
+
+            tbody {
+                display: block;
+                width: 100%;
+            }
+
+            tr {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 0.25rem 0.75rem;
+                padding: var(--oc-admin-list-cell-padding-y) var(--oc-admin-list-cell-padding-x);
+                border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+
+                &:last-child {
+                    border-bottom: 0;
+                }
+            }
+
+            td {
+                display: block;
+                width: auto;
+                border: 0;
+                padding: 0;
+                text-align: start !important;
+                white-space: normal;
+                background-color: transparent;
+                box-shadow: none;
+
+                // The title takes the first line, the badges wrap to the next one.
+                &.admin-list-column-fill {
+                    flex: 1 1 auto;
+                    min-width: 50%;
+                }
+
+                // The actions go to the end of their line.
+                &.text-end {
+                    margin-inline-start: auto;
+                }
+            }
+
+            tr.admin-list-empty {
+                display: block;
+                padding: 0;
+
+                td {
+                    display: block;
+                }
+            }
+        }
+    }
+}
+
+/* Grid layout */
+.admin-list-grid {
+    // Wide: one CSS grid shared by the header and every row, so the columns always line up.
+    .admin-list-grid-table {
+        display: grid;
+        grid-template-columns: var(--oc-admin-list-grid-columns, minmax(0, 1fr));
+    }
+
+    .admin-list-grid-header,
+    .admin-list-grid-body,
+    .admin-list-grid-row {
+        display: contents;
+    }
+
+    .admin-list-grid-cell {
+        display: flex;
+        align-items: center;
+        min-width: 0;
+        padding: var(--oc-admin-list-cell-padding-y) var(--oc-admin-list-cell-padding-x);
+        border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+
+        &.admin-list-align-center {
+            justify-content: center;
+        }
+
+        &.admin-list-align-end {
+            justify-content: flex-end;
+        }
+    }
+
+    .admin-list-grid-header .admin-list-grid-cell {
+        @include admin-list-header-cell;
+        border-bottom-width: calc(var(--bs-border-width) * 2);
+    }
+
+    .admin-list-grid-label {
+        display: none;
+    }
+
+    .admin-list-grid-row:hover > .admin-list-grid-cell {
+        background-color: var(--bs-tertiary-bg);
+    }
+
+    .admin-list-grid-row:last-child > .admin-list-grid-cell {
+        border-bottom: 0;
+
+        &:first-child {
+            border-bottom-left-radius: var(--bs-border-radius);
+        }
+
+        &:last-child {
+            border-bottom-right-radius: var(--bs-border-radius);
+        }
+    }
+
+    // Same stacking fix as the list-group: an open dropdown must render above the sticky action bar.
+    .admin-list-grid-row:has(.dropdown-menu.show:not(.inner)) > .admin-list-grid-cell {
+        position: relative;
+        z-index: var(--oc-zindex-dropdown);
+    }
+
+    .admin-list-grid-row.admin-list-empty {
+        display: block;
+        grid-column: 1/-1;
+    }
+
+    // Narrow: compact wrapped rows, no headers, no labels.
+    @container admin-list (max-width: #{$oc-admin-list-stack-width}) {
+        .admin-list-grid-table {
+            display: block;
+        }
+
+        .admin-list-grid-header {
+            display: none;
+        }
+
+        .admin-list-grid-body {
+            display: block;
+        }
+
+        .admin-list-grid-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.25rem 0.75rem;
+            padding: var(--oc-admin-list-cell-padding-y) var(--oc-admin-list-cell-padding-x);
+            border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+
+            &:last-child {
+                border-bottom: 0;
+            }
+        }
+
+        .admin-list-grid-cell {
+            display: block;
+            padding: 0;
+            border-bottom: 0;
+
+            // The title takes the first line, the badges wrap to the next one.
+            &.admin-list-column-fill {
+                flex: 1 1 auto;
+                min-width: 50%;
+            }
+
+            // The actions go to the end of their line.
+            &.admin-list-align-end {
+                margin-inline-start: auto;
+            }
+        }
+
+        .admin-list-grid-row.admin-list-empty {
+            padding: 0;
+        }
+    }
+}

@@ -31,9 +31,11 @@ public sealed class ContentsDriver : ContentDisplayDriver
         // We add custom alternates. This could be done generically to all shapes coming from ContentDisplayDriver but right now it's
         // only necessary on this shape. Otherwise c.f. ContentPartDisplayDriver.
 
-        var results = new List<IDisplayResult>(6)
+        var results = new List<IDisplayResult>(8)
         {
             Factory("ContentsCheckbox_SummaryAdmin", static item => new ContentItemViewModel(item), contentItem).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Checkbox:10"),
+            Factory("ContentsTitle_SummaryAdmin", static item => new ContentItemViewModel(item), contentItem).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Title:10"),
+            Factory("ContentsType_SummaryAdmin", static item => new ContentItemViewModel(item), contentItem).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Type:10"),
             Factory("ContentsTags_SummaryAdmin", static item => new ContentItemViewModel(item), contentItem).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Tags:10"),
             Factory("ContentsMeta_SummaryAdmin", static item => new ContentItemViewModel(item), contentItem).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Meta:20"),
         };

@@ -1,0 +1,62 @@
+@*
+    A generic toolbar for admin lists that do not have an options editor shape: the item count,
+    the select-all checkbox and the bulk actions dropdown used by the list-management script.
+
+    Properties:
+        ItemsCount      The number of items displayed.
+        TotalItemCount  The total number of items, defaults to ItemsCount.
+        StartIndex      The index of the first displayed item, defaults to 1.
+        EndIndex        The index of the last displayed item, defaults to StartIndex + ItemsCount - 1.
+        BulkActions     Optional SelectListItem collection of bulk actions; each Value is the action name passed to the form.
+        Actions         Optional shape rendered at the end of the toolbar, e.g. filters.
+*@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    int itemsCount = Model.ItemsCount ?? 0;
+    int totalItemCount = Model.TotalItemCount ?? itemsCount;
+    int startIndex = Model.StartIndex ?? (itemsCount > 0 ? 1 : 0);
+    int endIndex = Model.EndIndex ?? (startIndex + itemsCount - 1);
+    var bulkActions = ((IEnumerable<SelectListItem>)Model.BulkActions ?? []).ToList();
+}
+
+<div class="row gx-2">
+    <div class="col">
+        <div class="form-check my-1">
+            <input type="checkbox" class="form-check-input" id="select-all">
+            <label class="form-check-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
+            <label id="items" for="select-all">
+                @T.Plural(itemsCount, "{0} item", "{0} items")
+                <span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">
+                    @T.Plural(totalItemCount, " / {0} item in total", " / {0} items in total")
+                </span>
+            </label>
+            <label id="selected-items" class="text-muted" for="select-all"></label>
+        </div>
+    </div>
+    @if (bulkActions.Count > 0 || Model.Actions != null)
+    {
+        <div class="col-auto d-flex align-items-center gap-2">
+            @if (Model.Actions != null)
+            {
+                @await DisplayAsync(Model.Actions)
+            }
+            @if (bulkActions.Count > 0)
+            {
+                <div class="dropdown d-none" id="actions">
+                    <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        @T["Actions"]
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        @foreach (var item in bulkActions)
+                        {
+                            <li>
+                                <a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", item.Text.ToLower()]">@item.Text</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
+    }
+</div>

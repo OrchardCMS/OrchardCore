@@ -1,0 +1,11 @@
+@*
+    The 'Actions' column of an admin list in the 'Table' and 'Grid' layouts: delegates to the AdminListActions shape,
+    which renders the 'Actions' and 'ActionsMenu' zones of the row in the configured layout (Buttons, Menu, ...).
+*@
+@{
+    string listName = Model.ListName;
+}
+@if (Model.Row != null)
+{
+    @await DisplayAsync(await New.AdminListActions(Row: Model.Row, ListName: listName))
+}

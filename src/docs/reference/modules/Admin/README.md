@@ -149,6 +149,157 @@ You can change it by overriding 'VisitSiteNavbarItem' shape, either from a [cust
     </li>
     ```
 
+## Admin List Layouts
+
+Admin lists such as the content items list are rendered by the `AdminList` shape, which supports several layouts. Two layouts are built in:
+
+| Layout  | Description                                                                                         |
+| ------- | --------------------------------------------------------------------------------------------------- |
+| `List`  | The default. The items are rendered in a vertical list, each item by its own `SummaryAdmin` shape. |
+| `Table` | The items are rendered in a table, one column per `AdminListColumn`.                               |
+| `Grid`  | The same columns as `Table`, rendered with a CSS grid instead of a `<table>`. The header, the body and the rows are `display: contents`, so every cell shares the tracks computed from the column widths and the header always lines up with the data. |
+
+Both column layouts use a CSS container query on the list itself: when the list is narrower than 48rem (whatever the viewport, the admin sidebar takes part of it), the headers disappear and each row becomes a compact wrapped line, checkbox and title first, badges after, actions at the end, so the page never scrolls horizontally. The cells keep a `data-title` attribute with the column title for themes that want to show it.
+
+The default layout is selected in **Configuration → Settings → Admin** under **List layout**, and stored in `AdminSettings.ListLayout`.
+
+### How it works
+
+The rows of a list are shapes built with the `SummaryAdmin` display type, e.g. `Content_SummaryAdmin`. Display drivers and `placement.json` place shapes in the zones of these rows (`Checkbox`, `Title`, `Type`, `Header`, `Tags`, `Meta`, `Actions`, `ActionsMenu`, `Content`, ...). The layout only decides how a row is presented:
+
+- In the `List` layout the row shape is rendered as a whole, so its template (e.g. `Content.SummaryAdmin.cshtml` or `Content-BlogPost.SummaryAdmin.cshtml`) decides the look.
+- In the `Table` layout each column renders one or more zones of the row in an `AdminListCell` shape. The row template is not used.
+
+The `AdminList` shape is created by the owner of the list with these properties:
+
+| Property       | Description                                                                                    |
+| -------------- | ---------------------------------------------------------------------------------------------- |
+| `Name`         | The name of the list, e.g. `Contents`.                                                         |
+| `Layout`       | The layout name, usually resolved with `IAdminListService.GetLayoutAsync()`.                  |
+| `Columns`      | The `AdminListColumn` collection, usually built with `IAdminListService.GetColumnsAsync()`.   |
+| `Rows`         | The row shapes. (`Items` cannot be used: it is the shape's own child collection.) The `Classes` and `Attributes` of a row shape are rendered on its `<li>` or `<tr>`, e.g. `data-filter-value` for the client-side search of the `list-management` script. |
+| `Header`       | The options editor shape whose `Summary` and `Actions` zones are rendered above the items.     |
+| `Toolbar`      | Alternative to `Header` for lists without an options editor: a shape rendered as is above the items. The `AdminListToolbar` shape renders the item count, the select-all checkbox and a bulk actions dropdown from its `ItemsCount`, `TotalItemCount`, `StartIndex`, `EndIndex` and `BulkActions` properties. |
+| `Pager`        | The pager shape.                                                                               |
+| `ItemCssClass` | Optional. The CSS classes of each item in the `List` layout.                                   |
+| `EmptyMessage` | Optional. The message displayed when there are no items.                                       |
+
+```csharp
+var listShape = await shapeFactory.CreateAsync(AdminListLayouts.ShapeType, Arguments.From(new
+{
+    Name = "Contents",
+    Layout = await adminListService.GetLayoutAsync("Contents"),
+    Columns = await adminListService.GetColumnsAsync("Contents", defaultColumns),
+    Rows = contentItemSummaries,
+    Header = header,
+    Pager = pagerShape,
+}));
+```
+
+### Overriding templates
+
+The following alternates are available, from the least to the most specific:
+
+| Shape           | Alternates                                                                     | Template examples                                                        |
+| --------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| `AdminList`     | `AdminList__{Layout}`, `AdminList__{Name}`, `AdminList__{Name}__{Layout}`      | `AdminList-Table.cshtml`, `AdminList-Contents.cshtml`, `AdminList-Contents-Table.cshtml` |
+| `AdminListCell` | `AdminListCell__{Column}`, `AdminListCell__{Name}__{Column}`                   | `AdminListCell-Actions.cshtml`, `AdminListCell-Contents-Title.cshtml`    |
+
+### Column properties
+
+| Property    | Description                                                                                                                                                                  |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Name`      | The technical name, used for the `AdminListCell__{Name}` alternates and the `admin-list-column-{name}` CSS class.                                                            |
+| `Title`     | The localized header text. `null` for a column without a header, e.g. the selection checkbox.                                                                                |
+| `Position`  | The position in the placement syntax (`10`, `25`, `35.5`, or `end` to stay last). Columns are sorted by position once every provider ran, so several features can insert columns between the defaults without knowing each other. Default columns without a position get `10`, `20`, ...; a provider column without a position goes after all positioned columns. |
+| `Zones`     | The zones of the row shape rendered in the cell, in order.                                                                                                                   |
+| `Width`     | Any CSS width (`20%`, `12rem`), or `AdminListColumn.AutoWidth` (`auto`) to make the column as narrow as its content. Columns without a width share the remaining space.        |
+| `Alignment` | `Start` (default), `Center` or `End`. Applied to the header and the cells.                                                                                                   |
+| `NoWrap`    | Prevents the cell content from wrapping, e.g. dates and badges.                                                                                                              |
+| `CssClass`  | Extra CSS classes added to the header and the cells.                                                                                                                         |
+
+```csharp
+new AdminListColumn
+{
+    Name = "Modified",
+    Title = S["Last modified"],
+    Zones = ["Meta"],
+    Width = "18%",
+    NoWrap = true,
+},
+new AdminListColumn
+{
+    Name = "Actions",
+    Title = S["Actions"],
+    Zones = ["Actions", "ActionsMenu"],
+    Width = AdminListColumn.AutoWidth,
+    Alignment = AdminListColumnAlignment.End,
+},
+```
+
+### Row actions
+
+The `Actions` and `ActionsMenu` zones of a row are rendered by the `AdminListActions` shape in the layout selected under **Configuration → Settings → Admin → List actions layout** (`AdminSettings.ListActionsLayout`). Two layouts are built in:
+
+| Layout    | Description                                                                                                   |
+| --------- | ------------------------------------------------------------------------------------------------------------- |
+| `Buttons` | The default. The shapes of the `Actions` zone as buttons, followed by an "Actions" dropdown for `ActionsMenu`. |
+| `Menu`    | A single dropdown opened by an ellipsis button, holding the `Actions` shapes (restyled as menu items) and the `ActionsMenu` shapes. |
+
+Row templates render it with `@await DisplayAsync(await New.AdminListActions(Row: Model))`, and the `Table` and `Grid` layouts render it in the `Actions` column, so the actions layout applies to every list layout. The alternates are `AdminListActions__{Layout}`, `AdminListActions__{ListName}` and `AdminListActions__{ListName}__{Layout}`. An actions layout is discovered like a list layout: add `AdminListActions-Icons.cshtml` to render it and `AdminListActions-Icons.Option.cshtml` to make it selectable.
+
+### Adding a layout
+
+A layout is discovered from the shape table, like a content field editor. To add a `Cards` layout, add two templates to a module or a theme:
+
+- `AdminList-Cards.cshtml` renders the list. The `Rows` are the row shapes, so the template can display a row as a whole with `@await DisplayAsync(item)`, or read its zones through `IZoneHolding`, like `AdminList-Table.cshtml` does.
+- `AdminListLayout-Cards.Option.cshtml` renders an `<option>` element so the layout can be selected in the admin settings:
+
+```html
+@{
+    string current = Model.ListLayout;
+}
+<option value="Cards" selected="@(current == "Cards")">@T["Cards"]</option>
+```
+
+### Adding a column
+
+Implement `IAdminListColumnProvider` to add, remove or reorder the columns of a list. Each column names the zones of the row shape it renders and its `Position` decides where it goes, whatever the order the providers run in. `context.Find(name)` and `context.Remove(name)` help altering existing columns:
+
+```csharp
+public sealed class CultureColumnProvider : IAdminListColumnProvider
+{
+    private readonly IStringLocalizer S;
+
+    public CultureColumnProvider(IStringLocalizer<CultureColumnProvider> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
+    public Task BuildAsync(AdminListColumnsContext context)
+    {
+        if (context.ListName == "Contents")
+        {
+            // Between "Title" (20) and "Type" (30), regardless of the other providers.
+            context.Columns.Add(new AdminListColumn
+            {
+                Name = "Culture",
+                Position = "25",
+                Title = S["Culture"],
+                Zones = ["Culture"],
+                Width = "10%",
+            });
+        }
+
+        return Task.CompletedTask;
+    }
+}
+```
+
+```csharp
+services.AddScoped<IAdminListColumnProvider, CultureColumnProvider>();
+```
+
 ## Admin Routes
 
 The `[Admin]` attribute has optional parameters for a custom route template and route name. It works just like the `[Route(template, name)]` attribute, except it prepends the configured admin prefix. You can apply it to the controller or the action; if both are specified then the action's template takes precedence. The route name can contain `{area}`, `{controller}`, and `{action}`, which are substituted during mapping so the names can be unique for each action. This means you don't have to define these admin routes in your module's `Startup` class anymore, but that option is still available and supported. Take a look at this example:

@@ -1,0 +1,79 @@
+@*
+    The default 'List' layout of an admin list.
+
+    Properties:
+        Name          The name of the list, e.g. "Contents". Used for the AdminList__{Name} alternates.
+        Layout        The layout name, "List" here.
+        Rows          The row shapes, usually built with the "SummaryAdmin" display type. (Not "Items": that name is the shape's own child collection.)
+                      The Classes and Attributes of a row shape (e.g. data-filter-value for client-side search) are rendered on its list item.
+        Header        The options editor shape whose Summary and Actions zones are rendered above the items.
+        Toolbar       Alternative to Header: a shape rendered as is above the items, e.g. AdminListToolbar.
+        Pager         The pager shape.
+        ItemCssClass  Optional CSS classes of each item, defaults to "list-group-item list-group-item-action".
+        EmptyMessage  Optional message displayed when there are no items.
+*@
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using OrchardCore.DisplayManagement.Shapes
+@{
+    var rows = ((IEnumerable<object>)Model.Rows ?? []).ToList();
+    var header = Model.Header;
+    var toolbar = Model.Toolbar;
+    string itemCssClass = Model.ItemCssClass ?? "list-group-item list-group-item-action";
+}
+
+<ul class="list-group with-checkbox admin-list admin-list-list">
+    @if (toolbar != null)
+    {
+        <li class="list-group-item text-bg-theme">
+            @await DisplayAsync(toolbar)
+        </li>
+    }
+    else if (header != null)
+    {
+        <li class="list-group-item text-bg-theme">
+            <div class="row gx-2">
+                <div class="col">
+                    @await DisplayAsync(header.Summary)
+                </div>
+                <div class="col col-md-auto text-end">
+                    @await DisplayAsync(header.Actions)
+                </div>
+            </div>
+        </li>
+    }
+    @if (rows.Count > 0)
+    {
+        foreach (var row in rows)
+        {
+            var item = new TagBuilder("li");
+            item.AddCssClass(itemCssClass);
+
+            if (row is Shape rowShape)
+            {
+                foreach (var cssClass in rowShape.Classes)
+                {
+                    item.AddCssClass(cssClass);
+                }
+
+                item.MergeAttributes(rowShape.Attributes);
+            }
+
+            item.InnerHtml.AppendHtml(await DisplayAsync(row));
+
+            @item
+        }
+    }
+    else
+    {
+        <li class="list-group-item">
+            <div class="alert alert-info mb-0">
+                @(Model.EmptyMessage ?? T["No results found."])
+            </div>
+        </li>
+    }
+</ul>
+
+@if (Model.Pager != null)
+{
+    @await DisplayAsync(Model.Pager)
+}

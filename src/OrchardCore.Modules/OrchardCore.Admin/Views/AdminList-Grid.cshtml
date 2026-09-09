@@ -1,0 +1,152 @@
+@*
+    The 'Grid' layout of an admin list: the same columns as the 'Table' layout, rendered with a CSS grid instead of a
+    <table>. The header, the body and the rows are `display: contents` (see _admin-list.scss), so every cell shares
+    the tracks computed here from the column widths and the header always lines up with the data. When the list is
+    narrow the headers disappear and each row becomes a compact wrapped line.
+
+    Properties:
+        Name          The name of the list, e.g. "Contents". Used for the AdminList__{Name} and AdminListCell__{Name}__{Column} alternates.
+        Layout        The layout name, "Grid" here.
+        Columns       The AdminListColumn collection, usually built by IAdminListService.GetColumnsAsync().
+        Rows          The row shapes, usually built with the "SummaryAdmin" display type. (Not "Items": that name is the shape's own child collection.)
+                      The Classes and Attributes of a row shape (e.g. data-filter-value for client-side search) are rendered on its row element.
+        Header        The options editor shape whose Summary and Actions zones are rendered above the rows.
+        Toolbar       Alternative to Header: a shape rendered as is above the rows, e.g. AdminListToolbar.
+        Pager         The pager shape.
+        EmptyMessage  Optional message displayed when there are no items.
+*@
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using OrchardCore.Admin.Models
+@using OrchardCore.DisplayManagement.Shapes
+@using OrchardCore.Mvc.Utilities
+@{
+    var rows = ((IEnumerable<object>)Model.Rows ?? []).ToList();
+    var columns = ((IEnumerable<AdminListColumn>)Model.Columns ?? []).ToList();
+    var header = Model.Header;
+    var toolbar = Model.Toolbar;
+    string name = Model.Name;
+
+    static string ColumnCssClass(AdminListColumn column)
+    {
+        var classes = new List<string> { "admin-list-grid-cell", $"admin-list-column-{column.Name.HtmlClassify()}" };
+
+        if (!string.IsNullOrEmpty(column.CssClass))
+        {
+            classes.Add(column.CssClass);
+        }
+
+        // The alignment classes only apply when the cells are laid out in the grid (see _admin-list.scss).
+        classes.Add(column.Alignment switch
+        {
+            AdminListColumnAlignment.Center => "admin-list-align-center",
+            AdminListColumnAlignment.End => "admin-list-align-end",
+            _ => "admin-list-align-start",
+        });
+
+        if (column.NoWrap || column.HasAutoWidth)
+        {
+            classes.Add("text-nowrap");
+        }
+
+        classes.Add(column.HasAutoWidth
+            ? "admin-list-column-auto"
+            : string.IsNullOrEmpty(column.Width) ? "admin-list-column-fill" : "admin-list-column-fixed");
+
+        return string.Join(' ', classes);
+    }
+
+    // One track per column: "auto" hugs the widest cell of the column, a width is used as is, and the columns
+    // without a width share the remaining space.
+    static string GridTemplateColumns(IEnumerable<AdminListColumn> columns)
+        => string.Join(' ', columns.Select(column => column.HasAutoWidth
+            ? "max-content"
+            : string.IsNullOrEmpty(column.Width) ? "minmax(0, 1fr)" : column.Width));
+}
+
+<div class="admin-list admin-list-grid">
+    @if (toolbar != null)
+    {
+        <div class="admin-list-toolbar text-bg-theme">
+            @await DisplayAsync(toolbar)
+        </div>
+    }
+    else if (header != null)
+    {
+        <div class="admin-list-toolbar text-bg-theme">
+            <div class="row gx-2">
+                <div class="col">
+                    @await DisplayAsync(header.Summary)
+                </div>
+                <div class="col col-md-auto text-end">
+                    @await DisplayAsync(header.Actions)
+                </div>
+            </div>
+        </div>
+    }
+    <div class="admin-list-grid-table" role="table" style="--oc-admin-list-grid-columns: @GridTemplateColumns(columns);">
+        <div class="admin-list-grid-header" role="row">
+            @foreach (var column in columns)
+            {
+                <div class="@ColumnCssClass(column)" role="columnheader">@column.Title</div>
+            }
+        </div>
+        <div class="admin-list-grid-body" role="rowgroup">
+            @if (rows.Count > 0)
+            {
+                foreach (var row in rows)
+                {
+                    var rowTag = new TagBuilder("div");
+                    rowTag.AddCssClass("admin-list-grid-row");
+                    rowTag.Attributes["role"] = "row";
+
+                    if (row is Shape rowShape)
+                    {
+                        foreach (var cssClass in rowShape.Classes)
+                        {
+                            rowTag.AddCssClass(cssClass);
+                        }
+
+                        rowTag.MergeAttributes(rowShape.Attributes);
+                    }
+
+                    foreach (var column in columns)
+                    {
+                        var cell = await New.AdminListCell(ListName: name, Row: row, Column: column);
+                        var cellTag = new TagBuilder("div");
+                        cellTag.AddCssClass(ColumnCssClass(column));
+                        cellTag.Attributes["role"] = "cell";
+
+                        // Kept for themes that want to show the column title when the rows are stacked.
+                        if (column.Title != null && !string.IsNullOrEmpty(column.Title.Value))
+                        {
+                            cellTag.Attributes["data-title"] = column.Title.Value;
+
+                            var label = new TagBuilder("span");
+                            label.AddCssClass("admin-list-grid-label");
+                            label.InnerHtml.Append(column.Title.Value);
+                            cellTag.InnerHtml.AppendHtml(label);
+                        }
+
+                        cellTag.InnerHtml.AppendHtml(await DisplayAsync(cell));
+                        rowTag.InnerHtml.AppendHtml(cellTag);
+                    }
+
+                    @rowTag
+                }
+            }
+            else
+            {
+                <div class="admin-list-grid-row admin-list-empty">
+                    <div class="alert alert-info mb-0">
+                        @(Model.EmptyMessage ?? T["No results found."])
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@if (Model.Pager != null)
+{
+    @await DisplayAsync(Model.Pager)
+}

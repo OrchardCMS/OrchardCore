@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin.Controllers;
 using OrchardCore.Admin.Drivers;
 using OrchardCore.Admin.Models;
+using OrchardCore.Admin.Services;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -60,6 +61,8 @@ public sealed class Startup : StartupBase
         services.AddSingleton<IPageRouteModelProvider, AdminPageRouteModelProvider>();
         services.AddDisplayDriver<Navbar, VisitSiteNavbarDisplayDriver>();
         services.AddShapeTableProvider<AdminDashboardShapeTableProvider>();
+        services.AddShapeTableProvider<AdminListShapeTableProvider>();
+        services.AddScoped<IAdminListService, DefaultAdminListService>();
 
         services.Configure<AdminOptions>(_configuration.GetSection("OrchardCore_Admin"));
     }

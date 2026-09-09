@@ -1,3 +1,9 @@
+@if (Model.Checkbox != null)
+{
+    <div class="float-start">
+        @await DisplayAsync(Model.Checkbox)
+    </div>
+}
 <div class="d-flex justify-content-between flex-wrap">
     <div class="d-flex flex-column">
         <div>
@@ -21,22 +27,8 @@
     </div>
 
     <div>
-        @if (Model.Actions != null)
-        {
-            @await DisplayAsync(Model.Actions)
-        }
-
-        @if (Model.ActionsMenu != null && Model.ActionsMenu.HasItems)
-        {
-            <div class="btn-group" title="@T["Actions"]">
-                <button type="button" class="btn btn-sm btn-secondary dropdown-toggle actions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <span>@T["Actions"]</span>
-                </button>
-                <ul class="actions-menu dropdown-menu dropdown-menu-end">
-                    @await DisplayAsync(Model.ActionsMenu)
-                </ul>
-            </div>
-        }
+        @* The Actions and ActionsMenu zones are rendered in the layout configured in the admin settings (Buttons, Menu, ...). *@
+        @await DisplayAsync(await New.AdminListActions(Row: Model))
     </div>
 
     @if (Model.Content != null)

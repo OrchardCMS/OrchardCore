@@ -42,6 +42,8 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
             model.DisplayMenuFilter = settings.DisplayMenuFilter;
             model.DisplayNewMenu = settings.DisplayNewMenu;
             model.DisplayTitlesInTopbar = settings.DisplayTitlesInTopbar;
+            model.ListLayout = string.IsNullOrWhiteSpace(settings.ListLayout) ? AdminListLayouts.List : settings.ListLayout;
+            model.ListActionsLayout = string.IsNullOrWhiteSpace(settings.ListActionsLayout) ? AdminListActionsLayouts.Buttons : settings.ListActionsLayout;
         }, settings).Location("Content:3")
         .OnGroup(SettingsGroupId);
     }
@@ -63,6 +65,8 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
         settings.DisplayMenuFilter = model.DisplayMenuFilter;
         settings.DisplayNewMenu = model.DisplayNewMenu;
         settings.DisplayTitlesInTopbar = model.DisplayTitlesInTopbar;
+        settings.ListLayout = string.IsNullOrWhiteSpace(model.ListLayout) ? AdminListLayouts.List : model.ListLayout.Trim();
+        settings.ListActionsLayout = string.IsNullOrWhiteSpace(model.ListActionsLayout) ? AdminListActionsLayouts.Buttons : model.ListActionsLayout.Trim();
 
         return await EditAsync(site, settings, context);
     }

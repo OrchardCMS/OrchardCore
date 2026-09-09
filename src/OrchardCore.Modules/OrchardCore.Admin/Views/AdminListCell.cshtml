@@ -1,0 +1,20 @@
+@*
+    Renders one cell of an admin list in the 'Table' layout: the zones of the row shape listed by the column.
+    Override per column with AdminListCell-{Column}.cshtml or per list with AdminListCell-{ListName}-{Column}.cshtml.
+*@
+@using OrchardCore.Admin.Models
+@using OrchardCore.DisplayManagement.Zones
+@{
+    var column = (AdminListColumn)Model.Column;
+    var row = Model.Row as IZoneHolding;
+}
+@if (row != null)
+{
+    foreach (var zone in column.Zones)
+    {
+        if (row.Zones.IsNotEmpty(zone))
+        {
+            @await DisplayAsync(row.Zones[zone])
+        }
+    }
+}

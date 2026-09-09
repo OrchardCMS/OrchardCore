@@ -1,0 +1,4 @@
+@{
+    string current = Model.ListLayout;
+}
+<option value="@AdminListLayouts.List" selected="@(string.IsNullOrEmpty(current) || string.Equals(current, AdminListLayouts.List, StringComparison.OrdinalIgnoreCase))">@T["List"]</option>

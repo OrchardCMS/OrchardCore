@@ -9,4 +9,8 @@ public class AdminSettingsViewModel
     public bool DisplayNewMenu { get; set; }
 
     public bool DisplayTitlesInTopbar { get; set; }
+
+    public string ListLayout { get; set; }
+
+    public string ListActionsLayout { get; set; }
 }
