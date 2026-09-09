@@ -117,6 +117,7 @@ public sealed class FeatureProfilesStartup : StartupBase
 
         // Builds the rows of the feature profiles admin list.
         services.AddDisplayDriver<FeatureProfileEntry, FeatureProfileEntryDisplayDriver>();
+        services.AddDisplayDriver<ShellSettingsEntry, ShellSettingsEntryDisplayDriver>();
         services.AddScoped<IFeatureProfilesService, FeatureProfilesService>();
         services.AddScoped<IFeatureProfilesSchemaService, FeatureProfilesSchemaService>();
         services.AddShapeTableProvider<TenantFeatureProfileShapeTableProvider>();

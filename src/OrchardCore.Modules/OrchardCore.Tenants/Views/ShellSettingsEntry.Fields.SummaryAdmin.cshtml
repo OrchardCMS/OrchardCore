@@ -1,0 +1,7 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Tenants.ViewModels
+
+@model ShapeViewModel<ShellSettingsEntry>
+
+@* The tenant name and its state badges, contributed by the TenantActionTags shape. *@
+@await DisplayAsync(await New.TenantActionTags(ShellSettingsEntry: Model.Value))
