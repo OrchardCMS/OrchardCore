@@ -10,6 +10,9 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Roles.ViewModels;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
@@ -59,7 +62,11 @@ public sealed class AdminController : Controller
         H = htmlLocalizer;
     }
 
-    public async Task<ActionResult> Index()
+    public async Task<ActionResult> Index(
+        [FromServices] IShapeFactory shapeFactory,
+        [FromServices] IDisplayManager<RoleEntry> displayManager,
+        [FromServices] IUpdateModelAccessor updateModelAccessor,
+        [FromServices] IAdminListService adminListService)
     {
         if (!await _authorizationService.AuthorizeAsync(User, RolesPermissions.ViewRoles))
         {
@@ -89,6 +96,33 @@ public sealed class AdminController : Controller
 
             model.RoleEntries.Add(entry);
         }
+
+        var rows = new List<object>(model.RoleEntries.Count);
+
+        foreach (var entry in model.RoleEntries)
+        {
+            var shape = await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin);
+
+            // The rows carry the attributes used by the client-side search of the list-management script.
+            if (shape is Shape rowShape)
+            {
+                rowShape.Classes.Add("item");
+                rowShape.Attributes["data-filter-value"] = entry.Name?.ToLowerInvariant() ?? string.Empty;
+            }
+
+            rows.Add(shape);
+        }
+
+        // The AdminList shape renders the roles with the configured layout (List, Table, ...).
+        model.List = await shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        {
+            Name = RolesAdminList.Name,
+            Layout = await adminListService.GetLayoutAsync(RolesAdminList.Name, cancellationToken: HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(RolesAdminList.Name, RolesAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Rows = rows,
+            ItemCssClass = "list-group-item",
+            EmptyMessage = H["<strong>Nothing here!</strong> There are no roles for the moment."],
+        }));
 
         return View(model);
     }
