@@ -1,0 +1,15 @@
+@using OrchardCore.BackgroundTasks.ViewModels
+@using OrchardCore.DisplayManagement.Views
+
+@model ShapeViewModel<BackgroundTaskEntry>
+
+<a asp-action="Edit" asp-controller="BackgroundTask" asp-route-name="@Model.Value.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
+
+@if (Model.Value.Enable)
+{
+    <a asp-action="Disable" asp-controller="BackgroundTask" asp-route-name="@Model.Value.Name" class="btn btn-sm btn-danger" data-url-af="UnsafeUrl">@T["Disable"]</a>
+}
+else
+{
+    <a asp-action="Enable" asp-controller="BackgroundTask" asp-route-name="@Model.Value.Name" class="btn btn-sm btn-success" data-url-af="UnsafeUrl">@T["Enable"]</a>
+}
