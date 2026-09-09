@@ -10,7 +10,7 @@
 
 <div class="card mb-3 text-bg-theme position-sticky action-bar">
     <div class="card-body">
-        <div class="row gx-3">
+        <div class="row gx-2">
             <div class="col">
                 @await DisplayAsync(Model.Header.Search)
             </div>
@@ -18,37 +18,8 @@
     </div>
 </div>
 
-<ul class="list-group with-checkbox">
-    <li class="list-group-item text-bg-theme">
-        <div class="row gx-3">
-            <div class="col">
-                @await DisplayAsync(Model.Header.Summary)
-            </div>
-            <div class="col col-md-auto text-end">
-                @await DisplayAsync(Model.Header.Actions)
-            </div>
-        </div>
-    </li>
-    @if (Model.Events.Count > 0)
-    {
-        @foreach (var shape in Model.Events)
-        {
-            <li class="list-group-item list-group-item-action">
-                @await DisplayAsync(shape)
-            </li>
-        }
-    }
-    else
-    {
-        <li class="list-group-item">
-            <div class="alert alert-info mb-0">
-                @T["No results found."]
-            </div>
-        </li>
-    }
-</ul>
-
-@await DisplayAsync(Model.Pager)
+@* The events, the header and the pager are rendered by the AdminList shape using the configured layout (List, Table, ...). *@
+@await DisplayAsync(Model.List)
 </div>
 
 <script asp-name="list-management" at="Foot"></script>

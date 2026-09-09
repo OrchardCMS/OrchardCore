@@ -9,6 +9,7 @@ using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using YesSql.Filters.Query;
@@ -51,7 +52,7 @@ public sealed class AdminController : Controller
     }
 
     [Admin("AuditTrail/{correlationId?}", "AuditTrailIndex")]
-    public async Task<ActionResult> Index([ModelBinder(BinderType = typeof(AuditTrailFilterEngineModelBinder), Name = "q")] QueryFilterResult<AuditTrailEvent> queryFilterResult, PagerParameters pagerParameters, string correlationId = "")
+    public async Task<ActionResult> Index([ModelBinder(BinderType = typeof(AuditTrailFilterEngineModelBinder), Name = "q")] QueryFilterResult<AuditTrailEvent> queryFilterResult, PagerParameters pagerParameters, [FromServices] IAdminListService adminListService, string correlationId = "")
     {
         if (!await _authorizationService.AuthorizeAsync(User, AuditTrailPermissions.ViewAuditTrail))
         {
@@ -106,12 +107,25 @@ public sealed class AdminController : Controller
 
         var header = await _auditTrailOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
 
+        // The AdminList shape renders the events with the configured layout (List, Table, ...).
+        var list = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        {
+            Name = AuditTrailAdminList.Name,
+            Layout = await adminListService.GetLayoutAsync(AuditTrailAdminList.Name, cancellationToken: HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(AuditTrailAdminList.Name, AuditTrailAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Rows = items,
+            Header = header,
+            Pager = pagerShape,
+            ItemCssClass = "list-group-item list-group-item-action",
+        }));
+
         var shapeViewModel = await _shapeFactory.CreateAsync<AuditTrailListViewModel>("AuditTrailAdminList", viewModel =>
         {
             viewModel.Events = items;
             viewModel.Pager = pagerShape;
             viewModel.Options = options;
             viewModel.Header = header;
+            viewModel.List = list;
         });
 
         return View(shapeViewModel);
