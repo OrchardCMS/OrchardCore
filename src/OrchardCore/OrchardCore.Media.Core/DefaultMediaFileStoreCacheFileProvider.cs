@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.Core;
@@ -33,6 +34,27 @@ public class DefaultMediaFileStoreCacheFileProvider : PhysicalFileProvider, IMed
 
     public PathString VirtualPathBase { get; }
 
+    /// <summary>
+    /// Resolves a media path to its cache location, escaping characters that are invalid on the
+    /// local file system (e.g. ':' on NTFS) so any remote media path can be mirrored locally.
+    /// <see cref="PhysicalFileProvider.GetFileInfo"/> is not virtual, so this relies on interface
+    /// re-implementation: all consumers resolve this class through <see cref="IFileProvider"/> or
+    /// call it directly, and both bind to this method.
+    /// </summary>
+    public new IFileInfo GetFileInfo(string subpath)
+        => base.GetFileInfo(MediaCachePathEscaper.Escape(subpath));
+
+    /// <inheritdoc cref="GetFileInfo"/>
+    public new IDirectoryContents GetDirectoryContents(string subpath)
+    {
+        var contents = base.GetDirectoryContents(MediaCachePathEscaper.Escape(subpath));
+        return contents.Exists ? new UnescapedDirectoryContents(contents) : contents;
+    }
+
+    /// <inheritdoc cref="GetFileInfo"/>
+    public new IChangeToken Watch(string filter)
+        => base.Watch(MediaCachePathEscaper.EscapeGlob(filter));
+
     public Task<bool> IsCachedAsync(string path)
     {
         // Opportunity here to save metadata and/or provide cache validation / integrity checks.
@@ -45,18 +67,21 @@ public class DefaultMediaFileStoreCacheFileProvider : PhysicalFileProvider, IMed
     {
         // File store semantics may include a leading slash.
         // Trailing slash would create an empty directory instead of a file.
-        var cachePath = Path.Combine(Root, fileStoreEntry.Path.Trim('/'));
-        var directory = Path.GetDirectoryName(cachePath);
-
-        if (!Directory.Exists(directory))
-        {
-            Directory.CreateDirectory(directory);
-        }
+        // Characters that are invalid on the local file system are escaped, so remote paths
+        // that NTFS rejects (e.g. 'test:asdf') can still be cached.
+        var cachePath = Path.Combine(Root, MediaCachePathEscaper.Escape(fileStoreEntry.Path.Trim('/')));
 
         // A file download may fail, so a partially downloaded file should be deleted so the next request can reprocess.
         // All exceptions here are recaught by the MediaFileStoreResolverMiddleware.
         try
         {
+            var directory = Path.GetDirectoryName(cachePath);
+
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
             if (File.Exists(cachePath))
             {
                 File.Delete(cachePath);
@@ -164,10 +189,45 @@ public class DefaultMediaFileStoreCacheFileProvider : PhysicalFileProvider, IMed
                 _logger.LogError(ex, "Error deleting cache file {Path}", fileInfo.PhysicalPath);
                 return Task.FromResult(false);
             }
+
         }
         else
         {
             return Task.FromResult(false);
         }
+    }
+
+    private sealed class UnescapedDirectoryContents : IDirectoryContents
+    {
+        private readonly IDirectoryContents _contents;
+
+        public UnescapedDirectoryContents(IDirectoryContents contents) => _contents = contents;
+
+        public bool Exists => _contents.Exists;
+
+        public IEnumerator<IFileInfo> GetEnumerator()
+        {
+            foreach (var fileInfo in _contents)
+            {
+                yield return new UnescapedFileInfo(fileInfo);
+            }
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
+    private sealed class UnescapedFileInfo : IFileInfo
+    {
+        private readonly IFileInfo _fileInfo;
+
+        public UnescapedFileInfo(IFileInfo fileInfo) => _fileInfo = fileInfo;
+
+        public bool Exists => _fileInfo.Exists;
+        public bool IsDirectory => _fileInfo.IsDirectory;
+        public DateTimeOffset LastModified => _fileInfo.LastModified;
+        public long Length => _fileInfo.Length;
+        public string Name => MediaCachePathEscaper.Unescape(_fileInfo.Name);
+        public string PhysicalPath => _fileInfo.PhysicalPath;
+        public Stream CreateReadStream() => _fileInfo.CreateReadStream();
     }
 }

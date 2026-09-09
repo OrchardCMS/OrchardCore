@@ -98,7 +98,7 @@ public sealed class AdminController : Controller
             policies = policies.Where(x => SearchMatches(x, searchText));
         }
 
-        var pager = new Pager(pagerParameters, pagerOptions.Value.GetPageSize());
+        var pager = new Pager(pagerParameters, pagerOptions.Value);
         var orderedPolicies = policies
             .OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
             .ToArray();

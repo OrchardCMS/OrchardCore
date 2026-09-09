@@ -55,7 +55,7 @@ public sealed class RemoteInstanceController : Controller
             return Forbid();
         }
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
 
         var remoteInstances = (await _service.GetRemoteInstanceListAsync()).RemoteInstances;
 
