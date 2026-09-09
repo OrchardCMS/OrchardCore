@@ -80,7 +80,9 @@ $oc-admin-list-stack-width: 48rem;
     gap: 0.25rem;
     white-space: nowrap;
 
-    // Some modules render their menu items as <li> (Users), others as bare <a> (Contents): both live in a <div class="dropdown-menu">.
+    // Menu items are bare <a> or <button> elements carrying .dropdown-item, never wrapped in <li>: the
+    // AdminListActions shape renders them in a <div class="dropdown-menu">, and an <li> inside a <div> does
+    // not stop the HTML parser closing the row's own <li>, which hoists the items out of the list entirely.
     .dropdown-menu > li {
         list-style: none;
     }

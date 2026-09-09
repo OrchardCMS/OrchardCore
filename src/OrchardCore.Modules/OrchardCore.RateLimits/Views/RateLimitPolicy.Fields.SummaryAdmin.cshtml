@@ -1,0 +1,30 @@
+@using System.Globalization
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.RateLimits.Models
+
+@model ShapeViewModel<RateLimitPolicy>
+
+@{
+    var policy = Model.Value;
+
+    var target = policy.Scope switch
+    {
+        RateLimitPolicyScope.Global => T["Applies to every tenant request."].Value,
+        RateLimitPolicyScope.Endpoint => string.Format(CultureInfo.CurrentCulture, T["Matches requests starting with '{0}'."].Value, policy.Path),
+        RateLimitPolicyScope.Group => string.Format(CultureInfo.CurrentCulture, T["Matches endpoints in the '{0}' group."].Value, policy.GroupName),
+        _ => string.Empty,
+    };
+}
+
+@* Plain link, like the title of a content item in the Manage Content list. *@
+<a asp-action="Edit" asp-controller="Admin" asp-route-policyId="@policy.PolicyId">@policy.Name</a>
+
+@if (!string.IsNullOrWhiteSpace(target))
+{
+    <div class="metadata text-muted">@target</div>
+}
+
+@if (!string.IsNullOrWhiteSpace(policy.Description))
+{
+    <div class="metadata text-muted">@policy.Description</div>
+}
