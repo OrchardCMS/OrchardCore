@@ -75,7 +75,11 @@ public sealed class FeatureProfilesController : Controller
 
         if (!string.IsNullOrWhiteSpace(options.Search))
         {
-            featureProfiles = featureProfiles.Where(x => x.Key.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
+            // The row shows Name when it is set, so the search has to match it as well as the key.
+            featureProfiles = featureProfiles
+                .Where(x => x.Key.Contains(options.Search, StringComparison.OrdinalIgnoreCase)
+                    || (x.Value.Name != null && x.Value.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase)))
+                .ToList();
         }
 
         var count = featureProfiles.Count;
