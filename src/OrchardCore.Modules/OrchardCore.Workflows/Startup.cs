@@ -7,6 +7,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
+using OrchardCore.Workflows.ViewModels;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
@@ -58,6 +59,9 @@ public sealed class Startup : StartupBase
         services.AddScoped<IActivityDisplayManager, ActivityDisplayManager>();
         services.AddDataMigration<Migrations>();
         services.AddNavigationProvider<AdminMenu>();
+        
+        // Builds the rows of the workflow types admin list.
+        services.AddDisplayDriver<WorkflowTypeEntry, WorkflowTypeEntryDisplayDriver>();
         services.AddPermissionProvider<Permissions>();
         services.AddDisplayDriver<IActivity, MissingActivityDisplayDriver>();
         services.AddIndexProvider<WorkflowTypeIndexProvider>();
