@@ -310,7 +310,7 @@ public sealed class CultureColumnProvider : IAdminListColumnProvider
 ```
 
 ```csharp
-services.AddScoped<IAdminListColumnProvider, CultureColumnProvider>();
+services.AddAdminListColumnProvider<CultureColumnProvider>();
 ```
 
 ## Admin Routes

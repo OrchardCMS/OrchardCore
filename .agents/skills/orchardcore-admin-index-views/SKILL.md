@@ -260,7 +260,7 @@ public sealed class CultureColumnProvider : IAdminListColumnProvider
 ```
 
 ```csharp
-services.AddScoped<IAdminListColumnProvider, CultureColumnProvider>();
+services.AddAdminListColumnProvider<CultureColumnProvider>();
 ```
 
 `context.Find(name)` and `context.Remove(name)` alter existing columns. Never rely on the position of a column in the collection; use `Position`.
