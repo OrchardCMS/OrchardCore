@@ -178,7 +178,7 @@ the layout setting applies; the toolbar can omit bulk actions.
 | 3.3 | Content Parts | `ContentTypes/ListParts` | `OrchardCore.ContentTypes/Views/Admin/ListParts.cshtml` | Same as 3.2 |
 | 3.4 | Recipes | `Recipes` | `OrchardCore.Recipes/Views/Admin/Index.cshtml` | Hard-coded, rows grouped by feature |
 | 3.5 | Sitemap Cache | `SitemapsCache/List` | `OrchardCore.Sitemaps/Views/SitemapCache/List.cshtml` | Very small list |
-| 3.6 | Media Cache | `MediaCache` | `OrchardCore.Media/Views/MediaCache/Index.cshtml` | No action bar at all today |
+| 3.6 | ~~Media Cache~~ | | | **Moved to B.10** — it is a single Purge All action, not a list of records |
 | 3.7 | Workflow Instances | `Workflows/Types/{id}/Instances` | `OrchardCore.Workflows/Views/Workflow/Index.cshtml` | Has a pager and bulk actions but no search bar today — add one |
 | 3.8 | List Part contents | inside a List content item | `OrchardCore.Lists/Views/ListPartDetailAdmin.cshtml` | Rows are already `Content SummaryAdmin` shapes, so reuse the `ContentsAdminList` columns. Drag-ordering is optional here (`EnableOrdering`) — when it is on, force the `List` layout. See decision 3 |
 
@@ -210,6 +210,7 @@ new decision recorded here first.
 | B.7 | CORS Policies | `Cors` | `OrchardCore.Cors/Views/Admin/Index.cshtml` | A Vue master/detail SPA: the list (`v-for="policy in policies"`) is client-rendered from a JSON model and swapped for a `<policy-details>` editor component in place. There is no server-side row to drive | Normalise the search input to `input-group has-search` + Go |
 | B.8 | GraphQL | `GraphQL` | `OrchardCore.Apis.GraphQL/Views/Admin/Index.cshtml` | Hosts the GraphiQL explorer. No records | None |
 | B.9 | Dashboard | `dashboard/manage` | `OrchardCore.AdminDashboard/Views/Dashboard/Index.cshtml` | A resizable widget canvas | None |
+| B.10 | Media Cache | `MediaCache` | `OrchardCore.Media/Views/MediaCache/Index.cshtml` | Not a list: it renders one "Purge All" action inside a list-group. There are no records, so there is nothing for a row to be | None |
 
 > If a screen in Part A proves to belong here during implementation, move its row into this table with
 > a written reason and update the tracker in section 6. Do not silently skip it.
@@ -307,14 +308,13 @@ Legend: ☐ not started · ◐ in progress · ☑ converted, validated and pushe
 | 2.11 Remote Clients | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | 2.12 Sitemaps | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | 2.13 Sitemap Indexes | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 2.14 Workflow Types | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| 2.14 Workflow Types | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | 2.15 Tenants | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 | 3.1 Roles | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 3.2 Content Types | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
-| 3.3 Content Parts | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
-| 3.4 Recipes | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
+| 3.2 Content Types | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 3.3 Content Parts | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 3.4 Recipes | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 | 3.5 Sitemap Cache | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 3.6 Media Cache | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 | 3.7 Workflow Instances | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 | 3.8 List Part contents | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
 | 4.1 Themes | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ |
