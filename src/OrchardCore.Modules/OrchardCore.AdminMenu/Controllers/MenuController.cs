@@ -10,6 +10,8 @@ using OrchardCore.Admin;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.AdminMenu.ViewModels;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
@@ -51,7 +53,12 @@ public sealed class MenuController : Controller
         _logger = logger;
     }
 
-    public async Task<IActionResult> List(ContentOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> List(
+        ContentOptions options,
+        PagerParameters pagerParameters,
+        [FromServices] IDisplayManager<AdminMenuEntry> displayManager,
+        [FromServices] IUpdateModelAccessor updateModelAccessor,
+        [FromServices] IAdminListService adminListService)
     {
         if (!await _authorizationService.AuthorizeAsync(User, AdminMenuPermissions.ManageAdminMenu))
         {
@@ -107,6 +114,35 @@ public sealed class MenuController : Controller
         [
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
+
+        var rows = new List<object>(model.AdminMenu.Count);
+
+        foreach (var entry in model.AdminMenu)
+        {
+            rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
+        }
+
+        var toolbar = await _shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
+        {
+            ItemsCount = model.AdminMenu.Count,
+            TotalItemCount = adminMenuList.Count,
+            StartIndex = model.AdminMenu.Count > 0 ? pager.GetStartIndex() + 1 : 0,
+            EndIndex = pager.GetStartIndex() + model.AdminMenu.Count,
+            BulkActions = model.Options.ContentsBulkAction,
+        }));
+
+        // The AdminList shape renders the menus with the configured layout (List, Table, ...).
+        model.List = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        {
+            Name = AdminMenusAdminList.Name,
+            Layout = await adminListService.GetLayoutAsync(AdminMenusAdminList.Name, cancellationToken: HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(AdminMenusAdminList.Name, AdminMenusAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Rows = rows,
+            Toolbar = toolbar,
+            Pager = model.Pager,
+            ItemCssClass = "list-group-item",
+            EmptyMessage = H["<strong>Nothing here!</strong> There are no admin menus for the moment."],
+        }));
 
         return View(model);
     }
