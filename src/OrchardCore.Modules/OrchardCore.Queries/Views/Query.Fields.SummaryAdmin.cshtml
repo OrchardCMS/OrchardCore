@@ -1,3 +1,4 @@
 @model dynamic
 
-<h5>@Model.Name</h5>
+@* Plain link, like the title of a content item in the Manage Content list: the badges carry the emphasis. *@
+<a asp-action="Edit" asp-controller="Admin" asp-route-id="@Model.Name">@Model.Name</a>
