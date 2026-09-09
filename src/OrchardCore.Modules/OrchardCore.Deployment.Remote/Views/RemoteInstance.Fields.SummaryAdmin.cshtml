@@ -1,0 +1,7 @@
+@using OrchardCore.Deployment.Remote.Models
+@using OrchardCore.DisplayManagement.Views
+
+@model ShapeViewModel<RemoteInstance>
+
+@* Plain link, like the title of a content item in the Manage Content list. *@
+<a asp-action="Edit" asp-controller="RemoteInstance" asp-route-id="@Model.Value.Id">@Model.Value.Name</a>
