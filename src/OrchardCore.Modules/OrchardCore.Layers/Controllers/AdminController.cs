@@ -136,7 +136,7 @@ public sealed class AdminController : Controller
         {
             Name = LayersAdminList.Name,
             Layout = await adminListService.GetLayoutAsync(LayersAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(LayersAdminList.Name, LayersAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(LayersAdminList.Name, LayersAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             ItemCssClass = "list-group-item",
         }));

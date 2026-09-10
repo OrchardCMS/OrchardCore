@@ -135,7 +135,7 @@ public sealed class AdminController : Controller
         {
             Name = SitemapsAdminList.Name,
             Layout = await adminListService.GetLayoutAsync(SitemapsAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(SitemapsAdminList.Name, SitemapsAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(SitemapsAdminList.Name, SitemapsAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             Pager = model.Pager,

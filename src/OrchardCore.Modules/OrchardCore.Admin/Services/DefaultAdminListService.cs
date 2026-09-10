@@ -55,7 +55,7 @@ public sealed class DefaultAdminListService : IAdminListService
             : requestedLayout.Trim());
     }
 
-    public async Task<IList<AdminListColumn>> GetColumnsAsync(string listName, IEnumerable<AdminListColumn> defaultColumns, CancellationToken cancellationToken = default)
+    public async Task<IList<AdminListColumn>> GetColumnsAsync(string listName, IEnumerable<AdminListColumn> defaultColumns, IReadOnlyDictionary<string, object> data = null, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrEmpty(listName);
 
@@ -71,7 +71,7 @@ public sealed class DefaultAdminListService : IAdminListService
             }
         }
 
-        var context = new AdminListColumnsContext(listName, columns);
+        var context = new AdminListColumnsContext(listName, columns, data);
 
         await _columnProviders.InvokeAsync(
             static (provider, context, cancellationToken) => provider.BuildAsync(context, cancellationToken),

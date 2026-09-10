@@ -265,10 +265,32 @@ services.AddAdminListColumnProvider<CultureColumnProvider>();
 
 `context.Find(name)` and `context.Remove(name)` alter existing columns. Never rely on the position of a column in the collection; use `Position`.
 
+A provider often needs to know more than the name of the list: the content items list is the same list whether it shows every item or only the blog posts. The page passes what it knows as the `data` argument of `GetColumnsAsync`, and the provider reads it back from the context:
+
+```csharp
+var data = new Dictionary<string, object>
+{
+    [ContentsAdminList.ContentTypesKey] = new[] { "BlogPost" },
+};
+
+var columns = await adminListService.GetColumnsAsync(ContentsAdminList.Name, ContentsAdminList.GetDefaultColumns(S), data, HttpContext.RequestAborted);
+```
+
+```csharp
+if (context.ListName == ContentsAdminList.Name &&
+    context.TryGetData<string[]>(ContentsAdminList.ContentTypesKey, out var contentTypes) &&
+    contentTypes.Contains("BlogPost"))
+{
+    context.Columns.Add(new AdminListColumn { Name = "Category", Position = "25", Title = S["Category"], Zones = ["Category"] });
+}
+```
+
+`context.Data` is never null, and `TryGetData<T>` / `GetData<T>` fall back instead of throwing on a missing key or another type. A list documents the keys it fills: the content items list fills `ContentsAdminList.ContentTypesKey` and `ContentsAdminList.StereotypesKey` from its route, and leaves them out when the listing is not filtered.
+
 ## Gotchas
 
 1. **Do not name the rows property `Items`.** `Shape` already exposes `Items` (its child shapes), so `Model.Items` in the template silently resolves to an empty collection and the list renders no rows. The property is `Rows`.
-2. **Both interface methods take a `CancellationToken` last, defaulted.** `IAdminListService` and `IAdminListColumnProvider` end every method with `CancellationToken cancellationToken = default`. Pass `HttpContext.RequestAborted` from controllers.
+2. **Both interface methods take a `CancellationToken` last, defaulted.** `IAdminListService` and `IAdminListColumnProvider` end every method with `CancellationToken cancellationToken = default`. Pass `HttpContext.RequestAborted` from controllers. `GetColumnsAsync` takes the optional `data` bag before it, so name the argument (`cancellationToken: HttpContext.RequestAborted`) when the page passes no data.
 3. **Keep the hidden `submit.Filter` button first in the form.** It is what Enter in the search box triggers. A visible Go button reuses the same name.
 4. **Client-side search needs per-row attributes.** Set them on the row shape, not in the layout: `rowShape.Classes.Add("item")` and `rowShape.Attributes["data-filter-value"] = ...`. Both column layouts render a row shape's `Classes` and `Attributes` on its `<tr>` or row element.
 5. **Bulk actions rely on names, not markup.** Keep `#select-all` and inputs named `itemIds`, and the `list-management` script keeps working in any layout.

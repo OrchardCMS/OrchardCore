@@ -120,7 +120,7 @@ public sealed class AdminController : Controller
         {
             Name = QueriesAdminList.Name,
             Layout = await adminListService.GetLayoutAsync(QueriesAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(QueriesAdminList.Name, QueriesAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(QueriesAdminList.Name, QueriesAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = model.Queries.Select(entry => entry.Shape).ToList(),
             Toolbar = toolbar,
             Pager = model.Pager,

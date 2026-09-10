@@ -313,6 +313,36 @@ public sealed class CultureColumnProvider : IAdminListColumnProvider
 services.AddAdminListColumnProvider<CultureColumnProvider>();
 ```
 
+#### What the page knows
+
+A provider often needs more than the name of the list to decide on a column: the content items list, for instance, is the same list whether it shows every item or only the blog posts. The page passes what it knows as the `data` argument of `GetColumnsAsync`, and it reaches the provider as `context.Data`:
+
+```csharp
+var data = new Dictionary<string, object>
+{
+    [ContentsAdminList.ContentTypesKey] = new[] { "BlogPost" },
+};
+
+var columns = await adminListService.GetColumnsAsync(ContentsAdminList.Name, ContentsAdminList.GetDefaultColumns(S), data, HttpContext.RequestAborted);
+```
+
+```csharp
+public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancellationToken = default)
+{
+    // Only add the column while the list is filtered by a type that has the field this column renders.
+    if (context.ListName == ContentsAdminList.Name &&
+        context.TryGetData<string[]>(ContentsAdminList.ContentTypesKey, out var contentTypes) &&
+        contentTypes.Contains("BlogPost"))
+    {
+        context.Columns.Add(new AdminListColumn { Name = "Category", Position = "25", Title = S["Category"], Zones = ["Category"] });
+    }
+
+    return Task.CompletedTask;
+}
+```
+
+`context.Data` is never null, and `TryGetData<T>` / `GetData<T>` fall back instead of throwing when a key is missing or holds another type, so a provider written for one list stays safe on every other one. The keys are up to the list: the content items list fills `ContentsAdminList.ContentTypesKey` and `ContentsAdminList.StereotypesKey` with the types and stereotypes from its route, and leaves them out when the listing is not filtered.
+
 ### The lists to target
 
 A list is named by the constant its module publishes next to its default columns, e.g. `QueriesAdminList.Name`. The same name selects the columns a provider configures, the `AdminList__{Name}` alternate and the `AdminListCell__{Name}__{Column}` alternates. The pages that render one list per group, e.g. the features by category and the recipes by feature, give every group the same name.

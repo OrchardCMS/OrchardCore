@@ -15,6 +15,18 @@ public static class ContentsAdminList
     public const string Name = "Contents";
 
     /// <summary>
+    /// The key under which the list passes the content types its items are filtered by, as a <c>string[]</c>,
+    /// to the column providers. Empty when the items of every type are listed.
+    /// </summary>
+    public const string ContentTypesKey = "ContentTypes";
+
+    /// <summary>
+    /// The key under which the list passes the stereotypes its items are filtered by, as a <c>string[]</c>,
+    /// to the column providers. Empty when the items of every stereotype are listed.
+    /// </summary>
+    public const string StereotypesKey = "Stereotypes";
+
+    /// <summary>
     /// The default columns used by layouts with columns, e.g. <c>Table</c>. Each column renders one or more
     /// zones of the <c>Content_SummaryAdmin</c> shape.
     /// </summary>

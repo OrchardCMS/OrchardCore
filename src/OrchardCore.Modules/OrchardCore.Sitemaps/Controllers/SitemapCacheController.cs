@@ -75,7 +75,7 @@ public sealed class SitemapCacheController : Controller
         {
             Name = SitemapCacheAdminList.Name,
             Layout = await adminListService.GetLayoutAsync(SitemapCacheAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(SitemapCacheAdminList.Name, SitemapCacheAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(SitemapCacheAdminList.Name, SitemapCacheAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no sitemaps cached for the moment."],

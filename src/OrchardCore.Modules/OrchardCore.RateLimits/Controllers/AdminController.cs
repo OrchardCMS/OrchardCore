@@ -150,7 +150,7 @@ public sealed class AdminController : Controller
         {
             Name = RateLimitsAdminList.Name,
             Layout = await adminListService.GetLayoutAsync(RateLimitsAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(RateLimitsAdminList.Name, RateLimitsAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(RateLimitsAdminList.Name, RateLimitsAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = model.Policies.Select(entry => entry.Shape).ToList(),
             Toolbar = toolbar,
             Pager = model.Pager,

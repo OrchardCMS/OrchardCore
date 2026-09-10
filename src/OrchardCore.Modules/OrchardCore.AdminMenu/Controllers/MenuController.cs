@@ -136,7 +136,7 @@ public sealed class MenuController : Controller
         {
             Name = AdminMenusAdminList.Name,
             Layout = await adminListService.GetLayoutAsync(AdminMenusAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(AdminMenusAdminList.Name, AdminMenusAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(AdminMenusAdminList.Name, AdminMenusAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             Pager = model.Pager,

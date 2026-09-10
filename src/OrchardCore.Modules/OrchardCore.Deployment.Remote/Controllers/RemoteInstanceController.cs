@@ -118,7 +118,7 @@ public sealed class RemoteInstanceController : Controller
         {
             Name = RemoteInstancesAdminList.Name,
             Layout = await adminListService.GetLayoutAsync(RemoteInstancesAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(RemoteInstancesAdminList.Name, RemoteInstancesAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(RemoteInstancesAdminList.Name, RemoteInstancesAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             Pager = model.Pager,

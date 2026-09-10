@@ -195,7 +195,7 @@ public sealed class AdminController : Controller
         {
             Name = UsersAdminList.Name,
             Layout = await adminListService.GetLayoutAsync(UsersAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(UsersAdminList.Name, UsersAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(UsersAdminList.Name, UsersAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = userEntries.Select(entry => (object)entry.Shape).ToList(),
             Header = header,
             Pager = pagerShape,

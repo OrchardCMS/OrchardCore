@@ -134,7 +134,7 @@ public sealed class AdminController : Controller
         {
             Name = ShortcodesAdminList.Name,
             Layout = await adminListService.GetLayoutAsync(ShortcodesAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(ShortcodesAdminList.Name, ShortcodesAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(ShortcodesAdminList.Name, ShortcodesAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             Pager = model.Pager,

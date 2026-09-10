@@ -105,7 +105,7 @@ public class DefaultAdminListServiceTests
         var service = CreateService();
         var defaults = new[] { new AdminListColumn { Name = "Title" }, new AdminListColumn { Name = "Actions" } };
 
-        var columns = await service.GetColumnsAsync("Contents", defaults, TestContext.Current.CancellationToken);
+        var columns = await service.GetColumnsAsync("Contents", defaults, cancellationToken: TestContext.Current.CancellationToken);
 
         Assert.Equal(["Title", "Actions"], columns.Select(c => c.Name));
         Assert.NotSame(defaults, columns);
@@ -117,8 +117,8 @@ public class DefaultAdminListServiceTests
         var service = CreateService(new CultureColumnProvider());
         var defaults = new[] { new AdminListColumn { Name = "Title" }, new AdminListColumn { Name = "Actions" } };
 
-        var contents = await service.GetColumnsAsync("Contents", defaults, TestContext.Current.CancellationToken);
-        var users = await service.GetColumnsAsync("Users", defaults, TestContext.Current.CancellationToken);
+        var contents = await service.GetColumnsAsync("Contents", defaults, cancellationToken: TestContext.Current.CancellationToken);
+        var users = await service.GetColumnsAsync("Users", defaults, cancellationToken: TestContext.Current.CancellationToken);
 
         Assert.Equal(["Title", "Culture", "Actions"], contents.Select(c => c.Name));
         Assert.Equal(["Title", "Actions"], users.Select(c => c.Name));
@@ -131,10 +131,10 @@ public class DefaultAdminListServiceTests
         var defaults = new[] { new AdminListColumn { Name = "Select" }, new AdminListColumn { Name = "Title" }, new AdminListColumn { Name = "Actions", Position = "end" } };
 
         var forward = await CreateService(new PositionedColumnProvider("Owner", "15"), new PositionedColumnProvider("Culture", "25"), new PositionedColumnProvider("Unpositioned", null))
-            .GetColumnsAsync("Contents", defaults, TestContext.Current.CancellationToken);
+            .GetColumnsAsync("Contents", defaults, cancellationToken: TestContext.Current.CancellationToken);
 
         var backward = await CreateService(new PositionedColumnProvider("Unpositioned", null), new PositionedColumnProvider("Culture", "25"), new PositionedColumnProvider("Owner", "15"))
-            .GetColumnsAsync("Contents", defaults.Select(c => new AdminListColumn { Name = c.Name, Position = c.Position }), TestContext.Current.CancellationToken);
+            .GetColumnsAsync("Contents", defaults.Select(c => new AdminListColumn { Name = c.Name, Position = c.Position }), cancellationToken: TestContext.Current.CancellationToken);
 
         Assert.Equal(["Select", "Owner", "Title", "Culture", "Unpositioned", "Actions"], forward.Select(c => c.Name));
         Assert.Equal(forward.Select(c => c.Name), backward.Select(c => c.Name));
@@ -147,9 +147,72 @@ public class DefaultAdminListServiceTests
         var service = CreateService(new RemovingColumnProvider("Title"));
         var defaults = new[] { new AdminListColumn { Name = "Select" }, new AdminListColumn { Name = "Title" }, new AdminListColumn { Name = "Actions" } };
 
-        var columns = await service.GetColumnsAsync("Contents", defaults, TestContext.Current.CancellationToken);
+        var columns = await service.GetColumnsAsync("Contents", defaults, cancellationToken: TestContext.Current.CancellationToken);
 
         Assert.Equal(["Select", "Actions"], columns.Select(c => c.Name));
+    }
+
+    [Fact]
+    public async Task GetColumnsAsync_PassesTheDataOfThePageToTheProviders()
+    {
+        var provider = new DataColumnProvider();
+        var service = CreateService(provider);
+        var data = new Dictionary<string, object>
+        {
+            ["ContentTypes"] = new[] { "BlogPost" },
+            ["Count"] = 3,
+        };
+
+        var columns = await service.GetColumnsAsync("Contents", [new AdminListColumn { Name = "Title" }], data, TestContext.Current.CancellationToken);
+
+        // The provider added a column for the content type the page is filtered by.
+        Assert.Equal(["Title", "BlogPost"], columns.Select(column => column.Name));
+
+        // A key that is not there, or that holds another type, falls back instead of throwing.
+        Assert.Equal(3, provider.Count);
+        Assert.Null(provider.MissingKey);
+        Assert.Null(provider.WrongType);
+    }
+
+    [Fact]
+    public async Task GetColumnsAsync_GivesProvidersEmptyData_WhenThePagePassesNone()
+    {
+        var provider = new DataColumnProvider();
+        var service = CreateService(provider);
+
+        var columns = await service.GetColumnsAsync("Contents", [new AdminListColumn { Name = "Title" }], cancellationToken: TestContext.Current.CancellationToken);
+
+        Assert.Equal(["Title"], columns.Select(column => column.Name));
+        Assert.Empty(provider.Data);
+    }
+
+    private sealed class DataColumnProvider : IAdminListColumnProvider
+    {
+        public IReadOnlyDictionary<string, object> Data { get; private set; }
+
+        public int Count { get; private set; }
+
+        public string MissingKey { get; private set; }
+
+        public string WrongType { get; private set; }
+
+        public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancellationToken = default)
+        {
+            Data = context.Data;
+            Count = context.GetData<int>("Count");
+            MissingKey = context.GetData<string>("NotThere");
+            WrongType = context.GetData<string>("Count");
+
+            if (context.TryGetData<string[]>("ContentTypes", out var contentTypes))
+            {
+                foreach (var contentType in contentTypes)
+                {
+                    context.Columns.Add(new AdminListColumn { Name = contentType, Zones = [contentType] });
+                }
+            }
+
+            return Task.CompletedTask;
+        }
     }
 
     private sealed class PositionedColumnProvider(string name, string position) : IAdminListColumnProvider

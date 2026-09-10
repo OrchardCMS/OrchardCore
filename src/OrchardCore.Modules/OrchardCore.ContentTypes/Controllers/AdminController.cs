@@ -119,7 +119,7 @@ public sealed class AdminController : Controller
         {
             Name = ContentTypesAdminList.Name,
             Layout = await adminListService.GetLayoutAsync(ContentTypesAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(ContentTypesAdminList.Name, ContentTypesAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(ContentTypesAdminList.Name, ContentTypesAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no content types for the moment."],
@@ -578,7 +578,7 @@ public sealed class AdminController : Controller
         {
             Name = ContentPartsAdminList.Name,
             Layout = await adminListService.GetLayoutAsync(ContentPartsAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(ContentPartsAdminList.Name, ContentPartsAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(ContentPartsAdminList.Name, ContentPartsAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no content parts for the moment."],

@@ -138,7 +138,7 @@ public sealed class DeploymentPlanController : Controller
         {
             Name = DeploymentPlansAdminList.Name,
             Layout = await adminListService.GetLayoutAsync(DeploymentPlansAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(DeploymentPlansAdminList.Name, DeploymentPlansAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(DeploymentPlansAdminList.Name, DeploymentPlansAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             Pager = model.Pager,

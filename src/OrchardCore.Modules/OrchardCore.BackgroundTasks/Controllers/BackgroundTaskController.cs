@@ -172,7 +172,7 @@ public sealed class BackgroundTaskController : Controller
         {
             Name = BackgroundTasksAdminList.Name,
             Layout = await adminListService.GetLayoutAsync(BackgroundTasksAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(BackgroundTasksAdminList.Name, BackgroundTasksAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(BackgroundTasksAdminList.Name, BackgroundTasksAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             Pager = model.Pager,

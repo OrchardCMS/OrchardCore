@@ -120,8 +120,8 @@ public class AdminControllerTests
             .Setup(x => x.GetLayoutAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(AdminListConstants.List);
         adminListService
-            .Setup(x => x.GetColumnsAsync(It.IsAny<string>(), It.IsAny<IEnumerable<AdminListColumn>>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((string _, IEnumerable<AdminListColumn> columns, CancellationToken _) => columns.ToList());
+            .Setup(x => x.GetColumnsAsync(It.IsAny<string>(), It.IsAny<IEnumerable<AdminListColumn>>(), It.IsAny<IReadOnlyDictionary<string, object>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((string _, IEnumerable<AdminListColumn> columns, IReadOnlyDictionary<string, object> _, CancellationToken _) => columns.ToList());
 
         return adminListService.Object;
     }

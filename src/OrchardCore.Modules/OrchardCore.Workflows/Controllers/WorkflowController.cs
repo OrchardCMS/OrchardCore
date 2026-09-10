@@ -188,7 +188,7 @@ public sealed class WorkflowController : Controller
         {
             Name = WorkflowInstancesAdminList.Name,
             Layout = await adminListService.GetLayoutAsync(WorkflowInstancesAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(WorkflowInstancesAdminList.Name, WorkflowInstancesAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(WorkflowInstancesAdminList.Name, WorkflowInstancesAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             Pager = viewModel.Pager,

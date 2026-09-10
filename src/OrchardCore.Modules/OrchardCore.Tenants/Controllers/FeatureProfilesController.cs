@@ -136,7 +136,7 @@ public sealed class FeatureProfilesController : Controller
         {
             Name = FeatureProfilesAdminList.Name,
             Layout = await adminListService.GetLayoutAsync(FeatureProfilesAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(FeatureProfilesAdminList.Name, FeatureProfilesAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(FeatureProfilesAdminList.Name, FeatureProfilesAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             Pager = model.Pager,

@@ -123,7 +123,7 @@ public sealed class AdminController : Controller
         {
             Name = UrlRewritingAdminList.Name,
             Layout = layout,
-            Columns = await adminListService.GetColumnsAsync(UrlRewritingAdminList.Name, UrlRewritingAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(UrlRewritingAdminList.Name, UrlRewritingAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = model.Rules.Select(entry => entry.Shape).ToList(),
             // The rules are evaluated in order, so the element holding the rows is the one the sortable script reorders.
             RowsAttributes = new Dictionary<string, string> { ["id"] = UrlRewritingAdminList.SortableContainerId },

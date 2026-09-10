@@ -112,7 +112,7 @@ public sealed class AdminController : Controller
         {
             Name = AuditTrailAdminList.Name,
             Layout = await adminListService.GetLayoutAsync(AuditTrailAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(AuditTrailAdminList.Name, AuditTrailAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(AuditTrailAdminList.Name, AuditTrailAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = items,
             Header = header,
             Pager = pagerShape,

@@ -252,7 +252,7 @@ public sealed class AdminController : Controller
         {
             Name = TenantsAdminList.Name,
             Layout = await adminListService.GetLayoutAsync(TenantsAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(TenantsAdminList.Name, TenantsAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(TenantsAdminList.Name, TenantsAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             Pager = model.Pager,

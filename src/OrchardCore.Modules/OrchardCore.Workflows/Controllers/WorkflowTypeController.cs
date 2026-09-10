@@ -190,7 +190,7 @@ public sealed class WorkflowTypeController : Controller
         {
             Name = WorkflowTypesAdminList.Name,
             Layout = await adminListService.GetLayoutAsync(WorkflowTypesAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(WorkflowTypesAdminList.Name, WorkflowTypesAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(WorkflowTypesAdminList.Name, WorkflowTypesAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             Pager = model.Pager,

@@ -145,7 +145,7 @@ public sealed class TemplateController : Controller
         {
             Name = TemplatesAdminList.Name,
             Layout = await adminListService.GetLayoutAsync(TemplatesAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(TemplatesAdminList.Name, TemplatesAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(TemplatesAdminList.Name, TemplatesAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             Pager = model.Pager,

@@ -86,7 +86,7 @@ public sealed class AdminController : Controller
             Description = recipe.Description,
         }).ToArray();
 
-        var columns = await adminListService.GetColumnsAsync(RecipesAdminList.Name, RecipesAdminList.GetDefaultColumns(S), HttpContext.RequestAborted);
+        var columns = await adminListService.GetColumnsAsync(RecipesAdminList.Name, RecipesAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted);
         var layout = await adminListService.GetLayoutAsync(RecipesAdminList.Name, cancellationToken: HttpContext.RequestAborted);
 
         var model = new RecipesIndexViewModel();

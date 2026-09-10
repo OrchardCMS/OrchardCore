@@ -131,7 +131,7 @@ public sealed class SitemapIndexController : Controller
         {
             Name = SitemapIndexesAdminList.Name,
             Layout = await adminListService.GetLayoutAsync(SitemapIndexesAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(SitemapIndexesAdminList.Name, SitemapIndexesAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(SitemapIndexesAdminList.Name, SitemapIndexesAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             Pager = model.Pager,

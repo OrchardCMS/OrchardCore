@@ -128,7 +128,7 @@ public sealed class MediaProfilesController : Controller
         {
             Name = MediaProfilesAdminList.Name,
             Layout = await adminListService.GetLayoutAsync(MediaProfilesAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(MediaProfilesAdminList.Name, MediaProfilesAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(MediaProfilesAdminList.Name, MediaProfilesAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             Pager = model.Pager,

@@ -134,7 +134,7 @@ public sealed class AdminController : Controller
         {
             Name = PlacementsAdminList.Name,
             Layout = await adminListService.GetLayoutAsync(PlacementsAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(PlacementsAdminList.Name, PlacementsAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(PlacementsAdminList.Name, PlacementsAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             Pager = model.Pager,

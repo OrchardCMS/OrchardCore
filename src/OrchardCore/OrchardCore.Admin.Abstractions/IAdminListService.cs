@@ -31,6 +31,10 @@ public interface IAdminListService
     /// </summary>
     /// <param name="listName">The name of the list, e.g. <c>Contents</c>.</param>
     /// <param name="defaultColumns">The columns defined by the owner of the list.</param>
+    /// <param name="data">
+    /// What the page knows about this rendering and a provider may need to decide on a column, e.g. the content
+    /// types the items are filtered by. It reaches the providers as <see cref="AdminListColumnsContext.Data"/>.
+    /// </param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to observe.</param>
-    Task<IList<AdminListColumn>> GetColumnsAsync(string listName, IEnumerable<AdminListColumn> defaultColumns, CancellationToken cancellationToken = default);
+    Task<IList<AdminListColumn>> GetColumnsAsync(string listName, IEnumerable<AdminListColumn> defaultColumns, IReadOnlyDictionary<string, object> data = null, CancellationToken cancellationToken = default);
 }

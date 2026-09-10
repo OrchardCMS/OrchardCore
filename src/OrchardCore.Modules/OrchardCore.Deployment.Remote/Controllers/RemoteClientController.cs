@@ -125,7 +125,7 @@ public sealed class RemoteClientController : Controller
         {
             Name = RemoteClientsAdminList.Name,
             Layout = await adminListService.GetLayoutAsync(RemoteClientsAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(RemoteClientsAdminList.Name, RemoteClientsAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(RemoteClientsAdminList.Name, RemoteClientsAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             Pager = model.Pager,

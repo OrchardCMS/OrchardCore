@@ -129,7 +129,7 @@ public sealed class ApplicationController : Controller
         {
             Name = OpenIdApplicationsAdminList.Name,
             Layout = await adminListService.GetLayoutAsync(OpenIdApplicationsAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(OpenIdApplicationsAdminList.Name, OpenIdApplicationsAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(OpenIdApplicationsAdminList.Name, OpenIdApplicationsAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Pager = model.Pager,
             ItemCssClass = "list-group-item",

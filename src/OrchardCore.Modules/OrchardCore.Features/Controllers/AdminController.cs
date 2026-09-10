@@ -84,7 +84,7 @@ public sealed class AdminController : Controller
             viewModel.Features = await featureService.GetModuleFeaturesAsync();
         });
 
-        var columns = await adminListService.GetColumnsAsync(FeaturesAdminList.Name, FeaturesAdminList.GetDefaultColumns(S), HttpContext.RequestAborted);
+        var columns = await adminListService.GetColumnsAsync(FeaturesAdminList.Name, FeaturesAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted);
         var layout = await adminListService.GetLayoutAsync(FeaturesAdminList.Name, cancellationToken: HttpContext.RequestAborted);
 
         // The page keeps one list per category, and every list follows the configured layout.

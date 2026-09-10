@@ -146,7 +146,7 @@ public sealed class AdminController : Controller, IUpdateModel
         {
             Name = NotificationsAdminList.Name,
             Layout = await adminListService.GetLayoutAsync(NotificationsAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(NotificationsAdminList.Name, NotificationsAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(NotificationsAdminList.Name, NotificationsAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = notificationShapes,
             Header = header,
             Pager = pagerShape,

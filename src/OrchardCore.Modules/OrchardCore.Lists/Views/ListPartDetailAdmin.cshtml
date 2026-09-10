@@ -56,7 +56,7 @@ else
         {
             Name = ListPartContentsAdminList.Name,
             Layout = layout,
-            Columns = await AdminListService.GetColumnsAsync(ListPartContentsAdminList.Name, ListPartContentsAdminList.GetDefaultColumns(S), Context.RequestAborted),
+            Columns = await AdminListService.GetColumnsAsync(ListPartContentsAdminList.Name, ListPartContentsAdminList.GetDefaultColumns(S), cancellationToken: Context.RequestAborted),
             Rows = rows,
             Pager = Model.Pager,
             ItemCssClass = "list-group-item list-group-item-action",
