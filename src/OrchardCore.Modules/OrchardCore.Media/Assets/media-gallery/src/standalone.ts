@@ -48,7 +48,7 @@ async function loadTranslations(apiBaseUrl: string): Promise<string> {
     // Default fetch caching: the endpoint serves Cache-Control/ETag, so repeat loads hit the
     // browser cache or revalidate to a 304 instead of re-downloading the label set every boot.
     const base = apiBaseUrl.endsWith("/") ? apiBaseUrl : `${apiBaseUrl}/`;
-    const response = await fetch(`${base}api/media/localizations`);
+    const response = await fetch(`${base}api/localization/js/media-gallery`);
     if (response.ok) {
       return JSON.stringify(await response.json());
     }

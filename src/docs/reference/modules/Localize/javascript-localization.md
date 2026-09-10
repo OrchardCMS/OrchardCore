@@ -236,6 +236,22 @@ services.AddScoped<IJSLocalizer, ModuleBJSLocalizer>();
 var localizations = Orchard.GetJSLocalizations("module-a", "module-b");
 ```
 
+## Anonymous API endpoint
+
+For a standalone SPA that needs its UI labels before the user authenticates (no Razor render to call `Orchard.GetJSLocalizations` from), the **JavaScript Localization API** feature (`OrchardCore.Localization.Js`, part of the `OrchardCore.Localization` module) provides an anonymous HTTP endpoint that does the same aggregation over HTTP:
+
+```
+GET api/localization/js/{group}
+```
+
+- `{group}` accepts a comma-separated list of group identifiers, merged in one call exactly like `Orchard.GetJSLocalizations("group-a", "group-b")` — later registrations win on key conflicts.
+- Anonymous by design (`AllowAnonymous`) — `IJSLocalizer` implementations only ever expose non-sensitive UI display strings, so the response is safe to serve pre-login.
+- Response: `200 OK` with a JSON object mapping keys to translated strings (`Dictionary<string, string>`), resolved for the request's culture (`CultureInfo.CurrentUICulture`, driven by `Accept-Language`).
+- Cached per group-set and culture with an `ETag`, `Cache-Control: public, max-age=300`, and `Vary: Accept-Language`; a matching `If-None-Match` gets `304 Not Modified` instead of the body.
+- If no registered `IJSLocalizer` owns a requested group (for example, because the module that provides it isn't enabled), that group simply contributes no keys — the caller's own base-language defaults apply, with no error.
+
+This is a separate, independently toggleable feature — it is **not** enabled automatically just because some other module registers an `IJSLocalizer`. A module whose SPA needs this endpoint should enable `OrchardCore.Localization.Js` itself, typically from its own setup recipe (see the Media Gallery's standalone recipes for an example) rather than declaring a hard feature dependency on it.
+
 ## Extracting strings with PoExtractor
 
 The string keys inside `GetLocalizations` are plain `IStringLocalizer` calls, which means they are detected automatically by [PoExtractor](https://github.com/OrchardCoreContrib/OrchardCoreContrib.PoExtractor):
