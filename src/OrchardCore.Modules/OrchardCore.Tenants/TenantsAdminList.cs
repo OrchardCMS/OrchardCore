@@ -30,11 +30,52 @@ public static class TenantsAdminList
         },
         new()
         {
-            // The name, its state badges and the url take the space left by the actions.
+            // The name and the url take the space left by the other columns.
             Name = "Name",
             Position = "20",
             Title = S["Name"],
             Zones = ["Content", "Description"],
+        },
+        new()
+        {
+            Name = "Category",
+            Position = "30",
+            Title = S["Category"],
+            Zones = ["Category"],
+            Width = AdminListColumn.AutoWidth,
+        },
+        new()
+        {
+            Name = "Database",
+            Position = "40",
+            Title = S["Database"],
+            Zones = ["Database"],
+            Width = AdminListColumn.AutoWidth,
+        },
+        new()
+        {
+            Name = "Recipe",
+            Position = "50",
+            Title = S["Recipe"],
+            Zones = ["Recipe"],
+            Width = AdminListColumn.AutoWidth,
+        },
+        new()
+        {
+            // What other features add to the row, e.g. the feature profiles of the tenant.
+            Name = "Tags",
+            Position = "60",
+            Title = S["Tags"],
+            Zones = ["Tags"],
+            Width = AdminListColumn.AutoWidth,
+        },
+        new()
+        {
+            Name = "State",
+            Position = "70",
+            Title = S["State"],
+            Zones = ["State"],
+            Width = AdminListColumn.AutoWidth,
         },
         new()
         {

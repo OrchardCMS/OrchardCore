@@ -1,22 +1,10 @@
+@using OrchardCore.DisplayManagement.Views
 @using OrchardCore.Environment.Shell.Models
-@using Microsoft.AspNetCore.Http
-@using OrchardCore.Environment.Shell
+@using OrchardCore.Tenants.ViewModels
 
 @model ShapeViewModel<ShellSettingsEntry>
 
-<a class="text-break" href="@ViewContext.HttpContext.GetEncodedUrl(Model.Value)">@Model.Value.Name</a>
-@if (!string.IsNullOrEmpty(Model.Value.Category))
-{
-    <span class="badge ta-badge fw-normal"><i class="fa-solid fa-tag text-info" aria-hidden="true"></i> @Model.Value.Category</span>
-}
-@if (!string.IsNullOrEmpty(Model.Value.ShellSettings["DatabaseProvider"]))
-{
-    <span class="badge ta-badge fw-normal"><i class="fa-solid fa-database text-info" aria-hidden="true"></i> @Model.Value.ShellSettings["DatabaseProvider"]</span>
-}
-@if (!string.IsNullOrEmpty(Model.Value.ShellSettings["RecipeName"]))
-{
-    <span class="badge ta-badge fw-normal"><i class="fa-solid fa-image text-info" aria-hidden="true"></i> @Model.Value.ShellSettings["RecipeName"]</span>
-}
+@* The badge links to the list filtered by that state, the way the content type badge of a content item does. *@
 <a asp-controller="Admin" asp-action="Index" asp-route-Options.Status="@Model.Value.ShellSettings.State">
     @switch (Model.Value.ShellSettings.State)
     {

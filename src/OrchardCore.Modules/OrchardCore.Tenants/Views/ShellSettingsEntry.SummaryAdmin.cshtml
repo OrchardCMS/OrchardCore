@@ -1,4 +1,4 @@
-﻿@* The actions sit beside the whole row, centred on it, and everything else is stacked in the column
+@* The actions sit beside the whole row, centred on it, and everything else is stacked in the column
    left of them, so the description stops where the actions begin instead of running under them. *@
 <div class="row g-0 align-items-center">
     <div class="col">
@@ -17,10 +17,36 @@
                     }
                 </div>
 
+                @* Each fact of a tenant has a column of its own in the layouts with columns, so the List
+                   layout renders them one after the other to keep the same row. *@
+                @if (Model.Category != null)
+                {
+                    <div class="tags me-1">
+                        @await DisplayAsync(Model.Category)
+                    </div>
+                }
+                @if (Model.Database != null)
+                {
+                    <div class="tags me-1">
+                        @await DisplayAsync(Model.Database)
+                    </div>
+                }
+                @if (Model.Recipe != null)
+                {
+                    <div class="tags me-1">
+                        @await DisplayAsync(Model.Recipe)
+                    </div>
+                }
                 @if (Model.Tags != null)
                 {
                     <div class="tags me-1">
                         @await DisplayAsync(Model.Tags)
+                    </div>
+                }
+                @if (Model.State != null)
+                {
+                    <div class="tags me-1">
+                        @await DisplayAsync(Model.State)
                     </div>
                 }
                 @if (Model.Meta != null)
