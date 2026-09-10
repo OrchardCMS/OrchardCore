@@ -15,6 +15,7 @@
         "OrchardCore.Contents",
         "OrchardCore.Media",
         "OrchardCore.Media.Tus",
+        "OrchardCore.Localization.Js",
         "OrchardCore.Queries",
         "OrchardCore.Tenants",
         "OrchardCore.Search.Lucene",

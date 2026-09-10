@@ -1,7 +1,7 @@
 {
   "name": "MediaApiStandalone",
   "displayName": "Media API — Standalone external app",
-  "description": "Layers the cross-origin configuration needed to run the Media gallery SPA as a standalone external app (hosted on its own origin) on top of the MediaApiPkce recipe. Apply MediaApiPkce FIRST (it enables the OpenID Server/Validation/Management and bearer Media API); then this recipe (1) enables the OrchardCore.Cors module and configures a default CORS policy allowing the app origin for the Media API, /connect/token and /hubs/media (bearer-only, so AllowCredentials is false), and (2) re-declares the 'media_gallery' public client with the app-origin callback + silent-renew redirect URIs added. IMPORTANT: replace https://media.example.com with the standalone app's real origin (scheme+host+port, no trailing slash for CORS origins), and https://localhost:5001 with the Orchard tenant origin. The redirect URIs must exactly match the pages the app serves (callback.html / silent-callback.html at the app origin+base). CORS origins are ORIGINS ONLY — no path, no trailing slash.",
+  "description": "Layers the cross-origin configuration needed to run the Media gallery SPA as a standalone external app (hosted on its own origin) on top of the MediaApiPkce recipe. Apply MediaApiPkce FIRST (it enables the OpenID Server/Validation/Management and bearer Media API); then this recipe (1) enables the OrchardCore.Cors module and configures a default CORS policy allowing the app origin for the Media API, /connect/token and /hubs/media (bearer-only, so AllowCredentials is false), (2) enables OrchardCore.Localization.Js so the standalone app can fetch its UI labels anonymously from api/localization/js before authenticating, and (3) re-declares the 'media_gallery' public client with the app-origin callback + silent-renew redirect URIs added. IMPORTANT: replace https://media.example.com with the standalone app's real origin (scheme+host+port, no trailing slash for CORS origins), and https://localhost:5001 with the Orchard tenant origin. The redirect URIs must exactly match the pages the app serves (callback.html / silent-callback.html at the app origin+base). CORS origins are ORIGINS ONLY — no path, no trailing slash.",
   "author": "The Orchard Core Team",
   "website": "https://orchardcore.net",
   "version": "1.0.0",
@@ -12,7 +12,8 @@
     {
       "name": "feature",
       "enable": [
-        "OrchardCore.Cors"
+        "OrchardCore.Cors",
+        "OrchardCore.Localization.Js"
       ]
     },
     {

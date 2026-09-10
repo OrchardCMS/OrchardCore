@@ -1,7 +1,7 @@
 {
   "name": "MediaApiStandaloneLocalhost",
   "displayName": "Media API — Standalone external app (localhost dev)",
-  "description": "Dev convenience: the MediaApiStandalone configuration with localhost origins baked in (app at http://localhost:5173 — the pinned Vite dev port — against an Orchard tenant at https://localhost:5001). Apply MediaApiPkce FIRST, then run this. It enables OrchardCore.Cors with a default policy allowing http://localhost:5173 (bearer, so AllowCredentials=false), registers the app-origin callback URIs on the 'media_gallery' client, and reloads the tenant so the CORS policy takes effect immediately. Do not use in production — apply MediaApiStandalone (with your real origins) instead.",
+  "description": "Dev convenience: the MediaApiStandalone configuration with localhost origins baked in (app at http://localhost:5173 — the pinned Vite dev port — against an Orchard tenant at https://localhost:5001). Apply MediaApiPkce FIRST, then run this. It enables OrchardCore.Cors with a default policy allowing http://localhost:5173 (bearer, so AllowCredentials=false) and OrchardCore.Localization.Js (so the standalone app can fetch its UI labels anonymously from api/localization/js before authenticating), registers the app-origin callback URIs on the 'media_gallery' client, and reloads the tenant so the CORS policy takes effect immediately. Do not use in production — apply MediaApiStandalone (with your real origins) instead.",
   "author": "The Orchard Core Team",
   "website": "https://orchardcore.net",
   "version": "1.0.0",
@@ -12,7 +12,8 @@
     {
       "name": "feature",
       "enable": [
-        "OrchardCore.Cors"
+        "OrchardCore.Cors",
+        "OrchardCore.Localization.Js"
       ]
     },
     {

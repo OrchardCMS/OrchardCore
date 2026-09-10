@@ -233,8 +233,7 @@ public sealed class Startup : StartupBase
         IServiceProvider serviceProvider
     )
     {
-        routes.AddGetLocalizationsEndpoint()
-            .AddGetPermittedStorageEndpoint()
+        routes.AddGetPermittedStorageEndpoint()
             .AddGetDirectoryTreeEndpoint()
             .AddGetFoldersEndpoint()
             .AddGetMediaItemsEndpoint()

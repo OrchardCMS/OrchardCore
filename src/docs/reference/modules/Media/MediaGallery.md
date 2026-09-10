@@ -27,14 +27,7 @@ The gallery SPA can also run on its own origin, outside the Orchard admin. Since
 
 ### UI Localizations Endpoint
 
-The standalone app fetches its UI labels before any authentication flow completes, since there is no ambient Orchard session on first load. `GET api/media/localizations` returns the same `media-gallery` JS localizations the embedded admin gallery renders, resolved for the request's culture (`CultureInfo.CurrentUICulture`, driven by `Accept-Language`).
-
-- **Route**: `GET api/media/localizations`.
-- **Authentication**: anonymous (`AllowAnonymous`) — the response contains only non-sensitive UI display strings, so it is reachable before login.
-- **Response**: `200 OK` with a JSON object mapping label keys to translated strings (`Dictionary<string, string>`), for example `{ "DropHere": "Drop your file here", ... }`.
-- **Caching**: results are memoized per culture and served with `ETag`, `Cache-Control: public, max-age=300`, and `Vary: Accept-Language` headers. A request whose `If-None-Match` matches the current entry receives `304 Not Modified` instead of the body.
-
-The embedded admin gallery renders its localizations server-side and does not call this endpoint — it exists solely for the standalone build.
+The standalone app fetches its UI labels before any authentication flow completes, since there is no ambient Orchard session on first load. It calls the shared `GET api/localization/js/{group}` endpoint (see [JavaScript Localization](../Localize/javascript-localization.md#anonymous-api-endpoint)) with the `media-gallery` group, requiring the **JavaScript Localization API** feature (`OrchardCore.Localization.Js`). Both standalone recipes above enable it automatically; it isn't needed for the embedded admin gallery, which renders its localizations server-side via `Orchard.GetJSLocalizations("media-gallery")` instead.
 
 ## File Operations
 
