@@ -62,27 +62,10 @@ public sealed class ElasticsearchQueryDisplayDriver : DisplayDriver<Query>
 
         return Initialize<ElasticQueryViewModel>("ElasticQuery_Edit", async model =>
         {
-<<<<<<< HEAD:src/OrchardCore.Modules/OrchardCore.Elasticsearch/Drivers/ElasticsearchQueryDisplayDriver.cs
             model.Query = viewModel.Query;
             model.Index = viewModel.Index;
             model.Indexes = (await _store.GetByProviderAsync(ElasticsearchConstants.ProviderName)).Select(x => new SelectListItem(x.Name, x.Name)).ToArray();
             model.ReturnContentItems = query.ReturnContentItems;
-=======
-            if (query.TryGet<ElasticsearchQueryMetadata>(out var metadata))
-            {
-                model.Query = metadata.Template;
-                model.Index = metadata.Index;
-            }
-
-            model.ReturnContentItems = query.ReturnContentItems;
-            model.Indexes = (await _store.GetByProviderAsync(ElasticsearchConstants.ProviderName)).Select(x => new SelectListItem(x.Name, x.Name)).ToArray();
-
-            // Extract query from the query string if we come from the main query editor.
-            if (string.IsNullOrEmpty(model.Query))
-            {
-                await context.Updater.TryUpdateModelAsync(model, string.Empty, m => m.Query);
-            }
->>>>>>> 21e864e1b1 (Reduce Allocation by using `.TryGet<>` method over `.As<>`  (#19072)):src/OrchardCore.Modules/OrchardCore.Search.Elasticsearch/Drivers/ElasticsearchQueryDisplayDriver.cs
         }).Location("Content:5");
     }
 

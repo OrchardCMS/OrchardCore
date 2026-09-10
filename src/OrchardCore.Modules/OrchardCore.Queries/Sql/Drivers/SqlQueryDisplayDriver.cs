@@ -71,27 +71,8 @@ public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
         return Initialize<SqlQueryViewModel>("SqlQuery_Edit", model =>
         {
             model.ReturnDocuments = query.ReturnContentItems;
-<<<<<<< HEAD
             model.Query = template;
             model.HasLiquidOutputExpressions = _outputExpressionDetector.ContainsOutputStatement(model.Query);
-=======
-            var template = string.Empty;
-
-            if (query.TryGet<SqlQueryMetadata>(out var metadata))
-            {
-                template = metadata.Template;
-            }
-
-            model.Query = template;
-            model.HasLiquidOutputExpressions = _outputExpressionDetector.ContainsOutputStatement(model.Query);
-
-            // Extract query from the query string if we come from the main query editor.
-            if (string.IsNullOrEmpty(template))
-            {
-                await context.Updater.TryUpdateModelAsync(model, string.Empty, m => m.Query);
-                model.HasLiquidOutputExpressions = _outputExpressionDetector.ContainsOutputStatement(model.Query);
-            }
->>>>>>> 21e864e1b1 (Reduce Allocation by using `.TryGet<>` method over `.As<>`  (#19072))
         }).Location("Content:5");
     }
 
