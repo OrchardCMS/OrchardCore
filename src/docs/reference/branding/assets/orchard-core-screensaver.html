@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Orchard Core Screensaver with Countdown</title>
+        <style>
+            html, body {
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                background: #c6c6c6;
+            }
+            #logo {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 15vw;
+                max-width: 20vw;
+                z-index: 0;
+                will-change: transform;
+                user-select: none;
+                pointer-events: none;
+            }
+            #countdown {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                z-index: 1;
+                display: none;
+                color: #404041;
+                font: 700 clamp(5rem, 20vw, 20rem) / 1 system-ui, sans-serif;
+                pointer-events: none;
+                transform: translate(-50%, -50%);
+                user-select: none;
+            }
+            #countdown.blinking {
+                animation: blink 1s step-end infinite;
+            }
+            #timerDialog {
+                color: #404041;
+                border: 0;
+                border-radius: 0.75rem;
+                padding: 1.5rem;
+                font: 1rem system-ui, sans-serif;
+            }
+            #timerDialog::backdrop {
+                background: rgb(0 0 0 / 25%);
+            }
+            .timer-form {
+                display: grid;
+                gap: 1rem;
+                min-width: 16rem;
+            }
+            .timer-actions {
+                display: flex;
+                gap: 0.5rem;
+                justify-content: flex-end;
+            }
+            @keyframes blink {
+                50% {
+                    opacity: 0;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <img id="logo" src="data:image/png;base64,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" alt="Orchard Core Logo">
+
+        <div id="countdown" aria-live="polite"></div>
+
+        <dialog id="timerDialog">
+            <form class="timer-form" method="dialog">
+                <label for="timerInput">Countdown target time</label>
+                <input id="timerInput" type="time" required>
+                <div class="timer-actions">
+                    <button id="clearTimer" type="button">Clear</button>
+                    <button id="cancelTimer" type="button">Cancel</button>
+                    <button id="saveTimer" type="submit" value="save">Save</button>
+                </div>
+            </form>
+        </dialog>
+
+        <script>
+            const logo = document.getElementById('logo');
+            const countdown = document.getElementById('countdown');
+            const timerDialog = document.getElementById('timerDialog');
+            const timerForm = timerDialog.querySelector('form');
+            const timerInput = document.getElementById('timerInput');
+            const clearTimer = document.getElementById('clearTimer');
+            const cancelTimer = document.getElementById('cancelTimer');
+
+            let x = 0, y = 0;
+            let vx = 2, vy = 2;
+            const speed = 2;
+            let countdownTarget = null;
+            let countdownInterval = null;
+
+            function getLogoSize() {
+                const rect = logo.getBoundingClientRect();
+                return { w: rect.width, h: rect.height };
+            }
+
+            function clampPosition() {
+                const { w, h } = getLogoSize();
+                const maxX = window.innerWidth - w;
+                const maxY = window.innerHeight - h;
+                if (x > maxX) x = maxX;
+                if (y > maxY) y = maxY;
+                if (x < 0) x = 0;
+                if (y < 0) y = 0;
+            }
+
+            // Initialize position roughly centered
+            function init() {
+                const { w, h } = getLogoSize();
+                x = (window.innerWidth - w) / 2;
+                y = (window.innerHeight - h) / 2;
+                vx = speed;
+                vy = speed;
+                logo.style.transform = `translate(${x}px, ${y}px)`;
+            }
+
+            function tick() {
+                const { w, h } = getLogoSize();
+                const maxX = window.innerWidth - w;
+                const maxY = window.innerHeight - h;
+
+                x += vx;
+                y += vy;
+
+                if (x <= 0) {
+                    x = 0;
+                    vx = Math.abs(vx);
+                } else if (x >= maxX) {
+                    x = maxX;
+                    vx = -Math.abs(vx);
+                }
+
+                if (y <= 0) {
+                    y = 0;
+                    vy = Math.abs(vy);
+                } else if (y >= maxY) {
+                    y = maxY;
+                    vy = -Math.abs(vy);
+                }
+
+                logo.style.transform = `translate(${x}px, ${y}px)`;
+                requestAnimationFrame(tick);
+            }
+
+            window.addEventListener('resize', clampPosition);
+
+            function formatDuration(totalSeconds) {
+                const hours = Math.floor(totalSeconds / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
+                const seconds = totalSeconds % 60;
+                const twoDigits = value => String(value).padStart(2, '0');
+
+                if (hours > 0) {
+                    return `${twoDigits(hours)}:${twoDigits(minutes)}:${twoDigits(seconds)}`;
+                }
+
+                return `${twoDigits(minutes)}:${twoDigits(seconds)}`;
+            }
+
+            function getTargetTime(timeValue) {
+                const [hours, minutes] = timeValue.split(':').map(Number);
+                const target = new Date();
+                target.setHours(hours, minutes, 0, 0);
+                return target;
+            }
+
+            function updateCountdown() {
+                const remainingSeconds = Math.max(
+                    0,
+                    Math.ceil((countdownTarget.getTime() - Date.now()) / 1000)
+                );
+
+                countdown.textContent = remainingSeconds === 0
+                    ? '00:00'
+                    : formatDuration(remainingSeconds);
+
+                countdown.classList.toggle('blinking', remainingSeconds === 0);
+            }
+
+            function startCountdown(timeValue) {
+                countdownTarget = getTargetTime(timeValue);
+                countdown.style.display = 'block';
+                clearInterval(countdownInterval);
+                updateCountdown();
+                countdownInterval = setInterval(updateCountdown, 1000);
+            }
+
+            function clearCountdown() {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+                countdownTarget = null;
+                countdown.textContent = '';
+                countdown.style.display = 'none';
+                countdown.classList.remove('blinking');
+                timerDialog.close();
+            }
+
+            function openTimerDialog() {
+                timerInput.value = countdownTarget
+                    ? `${String(countdownTarget.getHours()).padStart(2, '0')}:${String(countdownTarget.getMinutes()).padStart(2, '0')}`
+                    : '';
+                timerDialog.showModal();
+                timerInput.focus();
+            }
+
+            document.body.addEventListener('dblclick', event => {
+                if (!timerDialog.open && event.target !== timerDialog) {
+                    openTimerDialog();
+                }
+            });
+
+            timerForm.addEventListener('submit', event => {
+                event.preventDefault();
+
+                if (!timerInput.reportValidity()) {
+                    return;
+                }
+
+                startCountdown(timerInput.value);
+                timerDialog.close();
+            });
+
+            clearTimer.addEventListener('click', clearCountdown);
+            cancelTimer.addEventListener('click', () => timerDialog.close());
+
+            let started = false;
+            function start() {
+                if (started) return;
+                started = true;
+                init();
+                requestAnimationFrame(tick);
+            }
+
+            logo.addEventListener('load', start);
+
+            // Fallback in case the image is already loaded (e.g. embedded data URI)
+            if (logo.complete) {
+                start();
+            }
+        </script>
+    </body>
+</html>
