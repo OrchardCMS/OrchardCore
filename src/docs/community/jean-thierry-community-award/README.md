@@ -22,6 +22,8 @@ If your company works with Orchard Core and would like to incentivize community 
 
 - 2025: [Mike Alhayek](https://github.com/MikeAlhayek)
 
+- 2026: [Georg von Kries](https://github.com/gvkries)
+
 ## Organizing the Jean-Thierry Kéchichian Community Award
 
 This is how we organize the Jean-Thierry Kéchichian Community Award:
