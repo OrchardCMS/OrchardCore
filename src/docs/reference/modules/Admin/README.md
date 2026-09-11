@@ -193,9 +193,15 @@ The `AdminList` shape is created by the owner of the list with these properties:
 | `Rows`         | The row shapes. (`Items` cannot be used: it is the shape's own child collection.) The `Classes` and `Attributes` of a row shape are rendered on its `<li>` or `<tr>`, e.g. `data-filter-value` for the client-side search of the `list-management` script. |
 | `Header`       | The options editor shape whose `Summary` and `Actions` zones are rendered above the items.     |
 | `Toolbar`      | Alternative to `Header` for lists without an options editor: a shape rendered as is above the items. The `AdminListToolbar` shape renders the item count, the select-all checkbox and a bulk actions dropdown from its `ItemsCount`, `TotalItemCount`, `StartIndex`, `EndIndex` and `BulkActions` properties. |
+| `Search`       | Optional. The search bar of the list. The `AdminListSearch` shape renders the standard one from its `Name`, `Value`, `Placeholder`, `Id`, `SubmitName` and `Autofocus` properties, and renders its `Filters` zone before the input, e.g. a filter dropdown. |
+| `Actions`      | Optional. The buttons of the page, e.g. "Add", rendered beside the search.                     |
 | `Pager`        | The pager shape.                                                                               |
+| `PageSize`     | Optional. The page size selector, so the layout places it instead of the pager. Build it with `PageSizeSelector.BuildOptions()` and set `ShowPageSizeSelector = false` on the pager so it is not rendered twice. |
+| `RowsAttributes` | Optional. Attributes rendered on the element wrapping the rows, whichever layout renders it, e.g. the id a sortable script needs. |
 | `ItemCssClass` | Optional. The CSS classes of each item in the `List` layout.                                   |
 | `EmptyMessage` | Optional. The message displayed when there are no items.                                       |
+
+Everything a listing is made of belongs to the shape, so a layout decides where each part goes: a layout can put the search bar beside the pager, drop the page size selector, or move the actions of the page under the rows. A list that passes none of the optional properties simply renders without them.
 
 ```csharp
 var listShape = await shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
@@ -205,6 +211,11 @@ var listShape = await shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arg
     Columns = await adminListService.GetColumnsAsync("Contents", defaultColumns, HttpContext.RequestAborted),
     Rows = contentItemSummaries,
     Header = header,
+    Search = await shapeFactory.CreateAsync("AdminListSearch", Arguments.From(new
+    {
+        Name = "Options.Search",
+        Value = options.Search,
+    })),
     Pager = pagerShape,
 }));
 ```

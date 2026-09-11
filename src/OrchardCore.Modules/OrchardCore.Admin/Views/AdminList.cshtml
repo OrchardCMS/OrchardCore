@@ -10,6 +10,9 @@
         Header        The options editor shape whose Summary and Actions zones are rendered above the items.
         Toolbar       Alternative to Header: a shape rendered as is above the items, e.g. AdminListToolbar.
         Pager         The pager shape.
+        PageSize      Optional page size selector, so a layout can place it apart from the pager.
+        Search        Optional search bar of the list, e.g. the AdminListSearch shape. Rendered in the action bar above the list.
+        Actions       Optional buttons of the page, e.g. "Add", rendered beside the search in the action bar.
         ItemCssClass  Optional CSS classes of each item, defaults to "list-group-item list-group-item-action".
         EmptyMessage  Optional message displayed when there are no items.
 *@
@@ -25,6 +28,29 @@
     var header = Model.Header;
     var toolbar = Model.Toolbar;
     string itemCssClass = Model.ItemCssClass ?? "list-group-item list-group-item-action";
+}
+
+@if (Model.Search != null || Model.Actions != null)
+{
+    @* The search bar and the buttons of the page. A layout is free to put them anywhere, or to leave them out. *@
+    <div class="card text-bg-theme mb-3 position-sticky action-bar">
+        <div class="card-body">
+            <div class="row gx-2">
+                @if (Model.Search != null)
+                {
+                    <div class="col">
+                        @await DisplayAsync(Model.Search)
+                    </div>
+                }
+                @if (Model.Actions != null)
+                {
+                    <div class="col-auto">
+                        @await DisplayAsync(Model.Actions)
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
 }
 
 <ul class="list-group with-checkbox admin-list admin-list-list" @rowsAttributesHtml>
@@ -79,7 +105,20 @@
     }
 </ul>
 
-@if (Model.Pager != null)
+@if (Model.Pager != null || Model.PageSize != null)
 {
-    @await DisplayAsync(Model.Pager)
+    <div class="admin-list-footer d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <div class="admin-list-footer-pager">
+            @if (Model.Pager != null)
+            {
+                @await DisplayAsync(Model.Pager)
+            }
+        </div>
+        @if (Model.PageSize != null)
+        {
+            <div class="admin-list-footer-page-size">
+                @await DisplayAsync(Model.PageSize)
+            </div>
+        }
+    </div>
 }

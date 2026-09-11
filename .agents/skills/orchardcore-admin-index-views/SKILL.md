@@ -192,6 +192,9 @@ var toolbar = await shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(
 | `Rows` | The row shapes. **Never call this `Items`** — see Gotchas. |
 | `Header` | Options editor shape (`Summary` + `Actions` zones). |
 | `Toolbar` | Alternative to `Header`; a shape rendered as is. |
+| `Search` | Optional. The search bar, usually the `AdminListSearch` shape (`Name`, `Value`, `Placeholder`, `Id`, `SubmitName`, `Autofocus`, and a `Filters` zone before the input). |
+| `Actions` | Optional. The buttons of the page, e.g. "Add", rendered beside the search. |
+| `PageSize` | Optional. The page size selector, built with `PageSizeSelector.BuildOptions()`. Set `ShowPageSizeSelector = false` on the pager when you pass it. |
 | `Pager` | The pager shape. It already contains the page size selector. |
 | `ItemCssClass` | Per-item classes in the `List` layout. |
 | `EmptyMessage` | Message when there are no rows. |

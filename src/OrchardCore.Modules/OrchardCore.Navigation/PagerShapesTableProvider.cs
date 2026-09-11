@@ -1,4 +1,4 @@
-#pragma warning disable CA1707 // Remove the underscores from member name
+﻿#pragma warning disable CA1707 // Remove the underscores from member name
 
 using System.Globalization;
 using Microsoft.AspNetCore.Html;
@@ -182,7 +182,7 @@ public class PagerShapes : IShapeAttributeProvider
             var singlePageContent = await displayContext.DisplayHelper.ShapeExecuteAsync(shape);
 
             // Still offer the page size selector so the user can change how many items are displayed.
-            var singlePageSelector = await RenderPageSizeSelectorAsync(displayContext, shapeFactory, pageSize);
+            var singlePageSelector = await RenderPageSizeSelectorAsync(shape, displayContext, shapeFactory, pageSize);
 
             return WrapWithPageSizeSelector(singlePageContent, singlePageSelector);
         }
@@ -360,7 +360,7 @@ public class PagerShapes : IShapeAttributeProvider
         await shape.AddAsync(pagerLastItem);
 
         var pagerContent = await displayContext.DisplayHelper.ShapeExecuteAsync(shape);
-        var pageSizeSelector = await RenderPageSizeSelectorAsync(displayContext, shapeFactory, pageSize);
+        var pageSizeSelector = await RenderPageSizeSelectorAsync(shape, displayContext, shapeFactory, pageSize);
 
         return WrapWithPageSizeSelector(pagerContent, pageSizeSelector);
     }
@@ -454,7 +454,7 @@ public class PagerShapes : IShapeAttributeProvider
         var pagerContent = await displayContext.DisplayHelper.ShapeExecuteAsync(shape);
 
         var currentPageSize = shape.TryGetProperty("PageSize", out int pageSize) ? pageSize : 0;
-        var pageSizeSelector = await RenderPageSizeSelectorAsync(displayContext, shapeFactory, currentPageSize);
+        var pageSizeSelector = await RenderPageSizeSelectorAsync(shape, displayContext, shapeFactory, currentPageSize);
 
         return WrapWithPageSizeSelector(pagerContent, pageSizeSelector);
     }
@@ -576,9 +576,16 @@ public class PagerShapes : IShapeAttributeProvider
 
     // Renders the customizable "Pager_PageSizeSelector" shape so themes can override its markup,
     // just like the other pager sub-shapes (Pager_Links, Pager_Next, ...).
-    private static async Task<IHtmlContent> RenderPageSizeSelectorAsync(DisplayContext displayContext, IShapeFactory shapeFactory, int currentPageSize)
+    private static async Task<IHtmlContent> RenderPageSizeSelectorAsync(Shape shape, DisplayContext displayContext, IShapeFactory shapeFactory, int currentPageSize)
     {
-        var items = BuildPageSizeOptions(displayContext, currentPageSize);
+        // A page that renders the selector itself, e.g. an admin list placing it through its layout, turns
+        // the one built into the pager off.
+        if (shape.TryGetProperty("ShowPageSizeSelector", out bool show) && !show)
+        {
+            return null;
+        }
+
+        var items = PageSizeSelector.BuildOptions(displayContext.ServiceProvider, currentPageSize);
 
         if (items is null)
         {
@@ -594,65 +601,6 @@ public class PagerShapes : IShapeAttributeProvider
         }));
 
         return await displayContext.DisplayHelper.ShapeExecuteAsync(selectorShape);
-    }
-
-    private static List<SelectListItem> BuildPageSizeOptions(DisplayContext displayContext, int currentPageSize)
-    {
-        var serviceProvider = displayContext.ServiceProvider;
-        var pagerOptions = serviceProvider.GetService<IOptions<PagerOptions>>()?.Value;
-
-        if (pagerOptions is null || !pagerOptions.AllowPageSizeSelection || pagerOptions.PageSizeOptions is not { Length: > 0 })
-        {
-            return null;
-        }
-
-        var httpContext = serviceProvider.GetService<IHttpContextAccessor>()?.HttpContext;
-
-        if (httpContext is null)
-        {
-            return null;
-        }
-
-        var request = httpContext.Request;
-        var basePath = (request.PathBase + request.Path).Value;
-
-        // Preserve the current query string, but reset the page number and cursor and override the page size.
-        var preserved = new List<KeyValuePair<string, string>>();
-
-        foreach (var pair in QueryHelpers.ParseQuery(request.QueryString.Value))
-        {
-            if (string.Equals(pair.Key, "pagenum", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(pair.Key, "pageSize", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(pair.Key, "before", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(pair.Key, "after", StringComparison.OrdinalIgnoreCase))
-            {
-                continue;
-            }
-
-            foreach (var value in pair.Value)
-            {
-                preserved.Add(new KeyValuePair<string, string>(pair.Key, value));
-            }
-        }
-
-        var items = new List<SelectListItem>(pagerOptions.PageSizeOptions.Length);
-
-        foreach (var size in pagerOptions.PageSizeOptions)
-        {
-            var optionParams = new List<KeyValuePair<string, string>>(preserved)
-            {
-                new("pageSize", size.ToString(CultureInfo.InvariantCulture)),
-            };
-
-            items.Add(new SelectListItem
-            {
-                Text = size.ToString(CultureInfo.InvariantCulture),
-                Value = QueryHelpers.AddQueryString(basePath, optionParams),
-                Selected = size == currentPageSize,
-            });
-        }
-
-        return items;
     }
 
     private static IHtmlContent CoerceHtmlString(object value)

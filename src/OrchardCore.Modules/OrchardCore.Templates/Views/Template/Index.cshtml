@@ -13,24 +13,8 @@
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
 
-    <div class="card text-bg-theme mb-3 position-sticky action-bar">
-        <div class="card-body">
-            <div class="row gx-2">
-                <div class="col">
-                    <div class="input-group has-search">
-                        <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
-                        <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus autocomplete="off" />
-                        <button type="submit" name="submit.Filter" class="btn btn-outline-secondary" title="@T["Search"]">@T["Go"]</button>
-                    </div>
-                </div>
-                <div class="col-auto">
-                    <a asp-action="Create" asp-route-admintemplates="@Model.Options.AdminTemplates" asp-route-returnUrl="@FullRequestPath" class="btn btn-secondary create" role="button">@T["Add Template"]</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    @* The templates, the toolbar and the pager are rendered by the AdminList shape using the configured layout (List, Table, ...). *@
+    @* The search bar, the button, the templates, the toolbar, the pager and the page size selector are all
+       rendered by the AdminList shape using the configured layout (List, Table, ...). *@
     @await DisplayAsync(Model.List)
 </form>
 

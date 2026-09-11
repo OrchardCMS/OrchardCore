@@ -140,6 +140,31 @@ public sealed class TemplateController : Controller
             BulkActions = model.Options.ContentsBulkAction,
         }));
 
+        var search = await _shapeFactory.CreateAsync("AdminListSearch", Arguments.From(new
+        {
+            Name = "Options.Search",
+            Value = options.Search,
+        }));
+
+        var actions = await _shapeFactory.CreateAsync("TemplateCreateButton", Arguments.From(new
+        {
+            options.AdminTemplates,
+        }));
+
+        // The page renders the selector through the layout, so the pager leaves its own out.
+        pagerShape.Properties["ShowPageSizeSelector"] = false;
+
+        var pageSizes = PageSizeSelector.BuildOptions(HttpContext.RequestServices, pager.PageSize);
+
+        var pageSize = pageSizes == null
+            ? null
+            : await _shapeFactory.CreateAsync("Pager_PageSizeSelector", Arguments.From(new
+            {
+                // Not "Items": a shape already exposes that name for its child shapes.
+                PageSizes = pageSizes,
+                CurrentPageSize = pager.PageSize,
+            }));
+
         // The AdminList shape renders the templates with the configured layout (List, Table, ...).
         model.List = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
         {
@@ -148,7 +173,10 @@ public sealed class TemplateController : Controller
             Columns = await adminListService.GetColumnsAsync(TemplatesAdminList.Name, TemplatesAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
+            Search = search,
+            Actions = actions,
             Pager = model.Pager,
+            PageSize = pageSize,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no templates for the moment. <a class=\"seedoc\" href=\"{0}reference/modules/Templates\" target=\"_blank\">See documentation</a>", OrchardCore.Admin.Constants.DocsUrl],
         }));
