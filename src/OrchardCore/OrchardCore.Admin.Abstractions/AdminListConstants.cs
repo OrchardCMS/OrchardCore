@@ -1,4 +1,4 @@
-namespace OrchardCore.Admin;
+﻿namespace OrchardCore.Admin;
 
 /// <summary>
 /// Well-known admin list layouts and shape names, and the naming conventions used to discover them.
@@ -56,6 +56,12 @@ public static class AdminListConstants
     /// The name of the property every part of a list carries, so a template can be overridden for one list.
     /// </summary>
     public const string ListNameProperty = "ListName";
+
+    /// <summary>
+    /// The name of the property every part of a list carries with the layout rendering it, so a template can
+    /// be overridden for one layout, e.g. a toolbar that only applies to <see cref="Grid"/>.
+    /// </summary>
+    public const string ListLayoutProperty = "ListLayout";
 
     /// <summary>
     /// The prefix of the shapes that declare an available layout, e.g. <c>AdminListLayout_Option__Table</c>.

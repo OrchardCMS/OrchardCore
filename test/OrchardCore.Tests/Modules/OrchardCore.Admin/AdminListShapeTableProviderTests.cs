@@ -75,6 +75,7 @@ public class AdminListShapeTableProviderTests
         var shape = new Shape();
         shape.Metadata.Type = AdminListConstants.ShapeType;
         shape.Properties["Name"] = "Contents";
+        shape.Properties["Layout"] = AdminListConstants.Table;
         shape.Properties["Toolbar"] = toolbar;
         shape.Properties["Search"] = search;
         shape.Properties["Pager"] = pager;
@@ -87,28 +88,51 @@ public class AdminListShapeTableProviderTests
         Assert.Equal("Contents", pager.Properties["ListName"]);
         Assert.Equal("Contents", row.Properties["ListName"]);
 
+        // The layout rendering the list is stamped as well, so a part can be overridden for one layout.
+        Assert.Equal(AdminListConstants.Table, toolbar.Properties["ListLayout"]);
+        Assert.Equal(AdminListConstants.Table, search.Properties["ListLayout"]);
+        Assert.Equal(AdminListConstants.Table, row.Properties["ListLayout"]);
+
         // A part that already names a list keeps it, e.g. a list rendered inside another one.
         Assert.Equal("SomethingElse", namedRow.Properties["ListName"]);
     }
 
     [Fact]
-    public async Task AdminListToolbarAndSearch_AddTheListAlternate()
+    public async Task AdminListToolbarAndSearch_AddTheLayoutAndListAlternates()
     {
         var toolbar = new Shape();
         toolbar.Metadata.Type = AdminListConstants.ToolbarShapeType;
         toolbar.Properties["ListName"] = "Contents";
+        toolbar.Properties["ListLayout"] = AdminListConstants.Grid;
 
         await DisplayAsync(AdminListConstants.ToolbarShapeType, toolbar);
 
-        Assert.Equal(["AdminListToolbar__Contents"], toolbar.Metadata.Alternates.ToArray());
+        Assert.Equal(
+            ["AdminListToolbar__Grid", "AdminListToolbar__Contents", "AdminListToolbar__Contents__Grid"],
+            toolbar.Metadata.Alternates.ToArray());
 
         var search = new Shape();
         search.Metadata.Type = AdminListConstants.SearchShapeType;
         search.Properties["ListName"] = "Contents";
+        search.Properties["ListLayout"] = AdminListConstants.Table;
 
         await DisplayAsync(AdminListConstants.SearchShapeType, search);
 
-        Assert.Equal(["AdminListSearch__Contents"], search.Metadata.Alternates.ToArray());
+        Assert.Equal(
+            ["AdminListSearch__Table", "AdminListSearch__Contents", "AdminListSearch__Contents__Table"],
+            search.Metadata.Alternates.ToArray());
+    }
+
+    [Fact]
+    public async Task AdminListToolbar_AddsTheLayoutAlternate_WithoutAList()
+    {
+        var toolbar = new Shape();
+        toolbar.Metadata.Type = AdminListConstants.ToolbarShapeType;
+        toolbar.Properties["ListLayout"] = AdminListConstants.List;
+
+        await DisplayAsync(AdminListConstants.ToolbarShapeType, toolbar);
+
+        Assert.Equal(["AdminListToolbar__List"], toolbar.Metadata.Alternates.ToArray());
     }
 
     [Fact]

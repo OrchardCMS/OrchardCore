@@ -16,7 +16,7 @@ namespace OrchardCore.Admin;
 /// <item><c>AdminList__{Layout}</c>, <c>AdminList__{Name}</c>, <c>AdminList__{Name}__{Layout}</c></item>
 /// <item><c>AdminListCell__{Column}</c>, <c>AdminListCell__{Name}__{Column}</c></item>
 /// <item><c>AdminListActions__{Layout}</c>, <c>AdminListActions__{Name}</c>, <c>AdminListActions__{Name}__{Layout}</c></item>
-/// <item><c>AdminListToolbar__{Name}</c> and <c>AdminListSearch__{Name}</c></item>
+/// <item><c>AdminListToolbar__{Layout}</c>, <c>AdminListToolbar__{Name}</c>, <c>AdminListToolbar__{Name}__{Layout}</c>, and the same for <c>AdminListSearch</c></item>
 /// </list>
 /// Every part of a list is stamped with the name of the list it belongs to, so each of them can be overridden
 /// for one list alone: the rows carry it for the actions they render, and so do the toolbar, the search bar
@@ -48,10 +48,11 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
                     alternates.Add($"{AdminListConstants.ShapeType}__{n}");
                     alternates.Add($"{AdminListConstants.ShapeType}__{n}__{layout}");
 
-                    // Hand the name down to everything the layout renders, so a template can be overridden for
-                    // this list alone without every page passing the name to every shape it builds.
-                    StampListName(shape, name);
                 }
+
+                // Hand the name and the layout down to everything the layout renders, so a template can be
+                // overridden for this list, or for this layout, without a page passing them to every shape.
+                StampList(shape, name, layout);
             });
 
         builder.Describe(AdminListActionsLayouts.ShapeType)
@@ -99,9 +100,9 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
                 }
             });
 
-        // The other parts of a list only need the name of the list they belong to.
-        builder.Describe(AdminListConstants.ToolbarShapeType).OnDisplaying(AddListNameAlternate);
-        builder.Describe(AdminListConstants.SearchShapeType).OnDisplaying(AddListNameAlternate);
+        // The other parts of a list, which are overridden for a layout, for a list, or for a list in a layout.
+        builder.Describe(AdminListConstants.ToolbarShapeType).OnDisplaying(AddListAlternates);
+        builder.Describe(AdminListConstants.SearchShapeType).OnDisplaying(AddListAlternates);
 
         builder.Describe(AdminListConstants.CellShapeType)
             .OnDisplaying(context =>
@@ -137,45 +138,69 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
         "PageSize",
     ];
 
-    // Adds the {ShapeType}__{ListName} alternate to a part of a list, e.g. AdminListSearch__Contents.
-    private static void AddListNameAlternate(ShapeDisplayContext context)
+    // Adds the alternates of a part of a list, from the least to the most specific:
+    // {ShapeType}__{Layout}, {ShapeType}__{ListName}, {ShapeType}__{ListName}__{Layout},
+    // e.g. AdminListSearch__Grid, AdminListSearch__Contents and AdminListSearch__Contents__Grid.
+    private static void AddListAlternates(ShapeDisplayContext context)
     {
         var shape = context.Shape;
+        var alternates = shape.Metadata.Alternates;
+        var type = shape.Metadata.Type;
 
-        if (shape.TryGetProperty<string>(AdminListConstants.ListNameProperty, out var listName) && !string.IsNullOrEmpty(listName))
+        shape.TryGetProperty<string>(AdminListConstants.ListNameProperty, out var listName);
+        shape.TryGetProperty<string>(AdminListConstants.ListLayoutProperty, out var layout);
+
+        var hasName = !string.IsNullOrEmpty(listName);
+        var hasLayout = !string.IsNullOrEmpty(layout);
+
+        if (hasLayout)
         {
-            shape.Metadata.Alternates.Add($"{shape.Metadata.Type}__{listName.ToSafeName()}");
+            alternates.Add($"{type}__{layout.ToSafeName()}");
+        }
+
+        if (hasName)
+        {
+            var n = listName.ToSafeName();
+
+            alternates.Add($"{type}__{n}");
+
+            if (hasLayout)
+            {
+                alternates.Add($"{type}__{n}__{layout.ToSafeName()}");
+            }
         }
     }
 
-    // Stamps the name of the list on every part of it, unless that part already carries a name of its own.
-    private static void StampListName(IShape shape, string name)
+    // Stamps the name and the layout of the list on every part of it, unless that part carries its own.
+    private static void StampList(IShape shape, string name, string layout)
     {
         foreach (var region in _regions)
         {
             if (shape.TryGetProperty<IShape>(region, out var regionShape))
             {
-                SetListName(regionShape, name);
+                SetProperty(regionShape, AdminListConstants.ListNameProperty, name);
+                SetProperty(regionShape, AdminListConstants.ListLayoutProperty, layout);
             }
         }
 
         if (shape.TryGetProperty<IEnumerable<object>>("Rows", out var rows) && rows != null)
         {
-            // A row carries it for the shapes it renders itself, e.g. the actions of the row.
+            // A row carries them for the shapes it renders itself, e.g. the actions of the row.
             foreach (var row in rows)
             {
-                SetListName(row as IShape, name);
+                SetProperty(row as IShape, AdminListConstants.ListNameProperty, name);
+                SetProperty(row as IShape, AdminListConstants.ListLayoutProperty, layout);
             }
         }
     }
 
-    private static void SetListName(IShape shape, string name)
+    private static void SetProperty(IShape shape, string name, string value)
     {
-        if (shape == null || shape.Properties.ContainsKey(AdminListConstants.ListNameProperty))
+        if (shape == null || string.IsNullOrEmpty(value) || shape.Properties.ContainsKey(name))
         {
             return;
         }
 
-        shape.Properties[AdminListConstants.ListNameProperty] = name;
+        shape.Properties[name] = value;
     }
 }

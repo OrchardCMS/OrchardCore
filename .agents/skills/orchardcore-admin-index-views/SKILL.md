@@ -268,10 +268,12 @@ services.AddAdminListColumnProvider<CultureColumnProvider>();
 
 Every part of a list carries the name of the list, so each part can be overridden for one list alone:
 `AdminList-{List}.cshtml`, `AdminList-{List}-{Layout}.cshtml`, `AdminListCell-{List}-{Column}.cshtml`,
-`AdminListActions-{List}.cshtml`, `AdminListActions-{List}-{Layout}.cshtml`, `AdminListToolbar-{List}.cshtml`
-and `AdminListSearch-{List}.cshtml`. The `AdminList` shape stamps its name on the toolbar, the search bar,
-the pager, the page size selector and every row, so a row template renders `AdminListActions` without
-passing a list name and still gets those alternates.
+`AdminListActions-{List}.cshtml`, `AdminListActions-{List}-{ActionsLayout}.cshtml`,
+`AdminListToolbar-{List}.cshtml`, `AdminListToolbar-{List}-{Layout}.cshtml`, `AdminListSearch-{List}.cshtml`
+and `AdminListSearch-{List}-{Layout}.cshtml`. The `AdminList` shape stamps its name and its layout on the
+toolbar, the search bar, the pager, the page size selector and every row, so a row template renders
+`AdminListActions` without passing a list name and still gets those alternates. `{Layout}` is the layout of
+the list, except on `AdminListActions`, where it is `Buttons` or `Menu`.
 
 `context.Find(name)` and `context.Remove(name)` alter existing columns. Never rely on the position of a column in the collection; use `Position`.
 
