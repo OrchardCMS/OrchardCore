@@ -266,6 +266,13 @@ public sealed class CultureColumnProvider : IAdminListColumnProvider
 services.AddAdminListColumnProvider<CultureColumnProvider>();
 ```
 
+Every part of a list carries the name of the list, so each part can be overridden for one list alone:
+`AdminList-{List}.cshtml`, `AdminList-{List}-{Layout}.cshtml`, `AdminListCell-{List}-{Column}.cshtml`,
+`AdminListActions-{List}.cshtml`, `AdminListActions-{List}-{Layout}.cshtml`, `AdminListToolbar-{List}.cshtml`
+and `AdminListSearch-{List}.cshtml`. The `AdminList` shape stamps its name on the toolbar, the search bar,
+the pager, the page size selector and every row, so a row template renders `AdminListActions` without
+passing a list name and still gets those alternates.
+
 `context.Find(name)` and `context.Remove(name)` alter existing columns. Never rely on the position of a column in the collection; use `Position`.
 
 A provider often needs to know more than the name of the list: the content items list is the same list whether it shows every item or only the blog posts. The page passes what it knows as the `data` argument of `GetColumnsAsync`, and the provider reads it back from the context:

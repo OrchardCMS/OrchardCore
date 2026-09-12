@@ -224,10 +224,17 @@ var listShape = await shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arg
 
 The following alternates are available, from the least to the most specific:
 
-| Shape           | Alternates                                                                     | Template examples                                                        |
-| --------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
-| `AdminList`     | `AdminList__{Layout}`, `AdminList__{Name}`, `AdminList__{Name}__{Layout}`      | `AdminList-Table.cshtml`, `AdminList-Contents.cshtml`, `AdminList-Contents-Table.cshtml` |
-| `AdminListCell` | `AdminListCell__{Column}`, `AdminListCell__{Name}__{Column}`                   | `AdminListCell-Actions.cshtml`, `AdminListCell-Contents-Title.cshtml`    |
+| Shape              | Alternates                                                                           | Template examples                                                        |
+| ------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| `AdminList`        | `AdminList__{Layout}`, `AdminList__{Name}`, `AdminList__{Name}__{Layout}`            | `AdminList-Table.cshtml`, `AdminList-Contents.cshtml`, `AdminList-Contents-Table.cshtml` |
+| `AdminListCell`    | `AdminListCell__{Column}`, `AdminListCell__{Name}__{Column}`                         | `AdminListCell-Actions.cshtml`, `AdminListCell-Contents-Title.cshtml`    |
+| `AdminListActions` | `AdminListActions__{Layout}`, `AdminListActions__{Name}`, `AdminListActions__{Name}__{Layout}` | `AdminListActions-Menu.cshtml`, `AdminListActions-Contents.cshtml`, `AdminListActions-Contents-Menu.cshtml` |
+| `AdminListToolbar` | `AdminListToolbar__{Name}`                                                           | `AdminListToolbar-Contents.cshtml`                                       |
+| `AdminListSearch`  | `AdminListSearch__{Name}`                                                            | `AdminListSearch-Contents.cshtml`                                        |
+
+`{Name}` is the name of the list, e.g. `Contents`, which each module publishes as a constant next to its default columns (`ContentsAdminList.Name`). The names are unique, so every alternate above targets a single list: a theme can restyle the search bar of the content items without touching any other list.
+
+The name reaches these shapes on its own. The `AdminList` shape stamps it on everything it renders — the toolbar, the search bar, the pager, the page size selector and each row — so a row template that renders `AdminListActions` without naming a list still gets the alternates of the list it belongs to. A part that already names a list keeps its own, which is what a list rendered inside another one needs.
 
 ### Column properties
 

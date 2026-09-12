@@ -43,6 +43,21 @@ public static class AdminListConstants
     public const string CellShapeType = "AdminListCell";
 
     /// <summary>
+    /// The shape type rendering the toolbar of an admin list, above its rows.
+    /// </summary>
+    public const string ToolbarShapeType = "AdminListToolbar";
+
+    /// <summary>
+    /// The shape type rendering the search bar of an admin list.
+    /// </summary>
+    public const string SearchShapeType = "AdminListSearch";
+
+    /// <summary>
+    /// The name of the property every part of a list carries, so a template can be overridden for one list.
+    /// </summary>
+    public const string ListNameProperty = "ListName";
+
+    /// <summary>
     /// The prefix of the shapes that declare an available layout, e.g. <c>AdminListLayout_Option__Table</c>.
     /// </summary>
     public const string OptionShapePrefix = "AdminListLayout_Option__";

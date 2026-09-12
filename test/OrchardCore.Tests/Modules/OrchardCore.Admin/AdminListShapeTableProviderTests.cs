@@ -63,6 +63,74 @@ public class AdminListShapeTableProviderTests
     }
 
     [Fact]
+    public async Task AdminList_StampsItsNameOnEveryPartOfTheList()
+    {
+        var toolbar = new Shape();
+        var search = new Shape();
+        var pager = new Shape();
+        var row = new Shape();
+        var namedRow = new Shape();
+        namedRow.Properties["ListName"] = "SomethingElse";
+
+        var shape = new Shape();
+        shape.Metadata.Type = AdminListConstants.ShapeType;
+        shape.Properties["Name"] = "Contents";
+        shape.Properties["Toolbar"] = toolbar;
+        shape.Properties["Search"] = search;
+        shape.Properties["Pager"] = pager;
+        shape.Properties["Rows"] = new List<object> { row, namedRow, "not a shape" };
+
+        await DisplayAsync(AdminListConstants.ShapeType, shape);
+
+        Assert.Equal("Contents", toolbar.Properties["ListName"]);
+        Assert.Equal("Contents", search.Properties["ListName"]);
+        Assert.Equal("Contents", pager.Properties["ListName"]);
+        Assert.Equal("Contents", row.Properties["ListName"]);
+
+        // A part that already names a list keeps it, e.g. a list rendered inside another one.
+        Assert.Equal("SomethingElse", namedRow.Properties["ListName"]);
+    }
+
+    [Fact]
+    public async Task AdminListToolbarAndSearch_AddTheListAlternate()
+    {
+        var toolbar = new Shape();
+        toolbar.Metadata.Type = AdminListConstants.ToolbarShapeType;
+        toolbar.Properties["ListName"] = "Contents";
+
+        await DisplayAsync(AdminListConstants.ToolbarShapeType, toolbar);
+
+        Assert.Equal(["AdminListToolbar__Contents"], toolbar.Metadata.Alternates.ToArray());
+
+        var search = new Shape();
+        search.Metadata.Type = AdminListConstants.SearchShapeType;
+        search.Properties["ListName"] = "Contents";
+
+        await DisplayAsync(AdminListConstants.SearchShapeType, search);
+
+        Assert.Equal(["AdminListSearch__Contents"], search.Metadata.Alternates.ToArray());
+    }
+
+    [Fact]
+    public async Task AdminListActions_TakesTheListNameFromItsRow()
+    {
+        // A row template renders the actions without naming the list, which the row carries.
+        var row = new Shape();
+        row.Properties["ListName"] = "Contents";
+
+        var shape = new Shape();
+        shape.Metadata.Type = AdminListActionsLayouts.ShapeType;
+        shape.Properties["Row"] = row;
+        shape.Properties["Layout"] = AdminListActionsLayouts.Menu;
+
+        await DisplayAsync(AdminListActionsLayouts.ShapeType, shape);
+
+        Assert.Equal(
+            ["AdminListActions__Menu", "AdminListActions__Contents", "AdminListActions__Contents__Menu"],
+            shape.Metadata.Alternates.ToArray());
+    }
+
+    [Fact]
     public async Task AdminListCell_AddsColumnAndListAlternates()
     {
         var shape = new Shape();
