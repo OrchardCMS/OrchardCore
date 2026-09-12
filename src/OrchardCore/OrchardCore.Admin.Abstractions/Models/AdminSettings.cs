@@ -24,4 +24,11 @@ public class AdminSettings
     /// When empty, <see cref="AdminListOptions.DefaultActionsLayout"/> is used.
     /// </summary>
     public string ListActionsLayout { get; set; }
+
+    /// <summary>
+    /// Whether a list shows a selector letting the user render it with another layout. The choice is kept in a
+    /// cookie, per list, and only applies to that user. When this is off, every list uses
+    /// <see cref="ListLayout"/>.
+    /// </summary>
+    public bool AllowUserListLayoutSelection { get; set; }
 }

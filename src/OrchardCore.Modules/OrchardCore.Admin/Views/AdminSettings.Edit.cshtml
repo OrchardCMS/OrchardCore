@@ -85,3 +85,13 @@
     </select>
     <span class="hint">@T["How the actions of each row are displayed: as buttons, or in a single compact menu. When left unchanged, the value configured for this site in appsettings.json under {0} is used.", "OrchardCore:AdminList:DefaultActionsLayout"]</span>
 </div>
+
+<div class="ocat-wrapper" asp-validation-class-for="AllowUserListLayoutSelection">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input asp-for="AllowUserListLayoutSelection" class="form-check-input" type="checkbox" />
+            <label asp-for="AllowUserListLayoutSelection" class="form-check-label">@T["Let users choose the layout of a list"]</label>
+        </div>
+        <span class="hint">@T["Whether each list shows a selector with the available layouts. A user's choice is kept in a cookie, per list, and applies to that user only. The layout above stays the one every list starts from."]</span>
+    </div>
+</div>

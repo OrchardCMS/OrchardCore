@@ -174,6 +174,23 @@ The layout is selected in **Configuration → Settings → Admin** under **List 
 
 `AdminListOptions` is the single place the shipped defaults are decided, so changing them for a site never means editing a template or a driver. The values are `List`, `Table` and `Grid` for `DefaultLayout`, and `Buttons` or `Menu` for `DefaultActionsLayout`. A blank or missing value falls back to `List` and `Buttons`.
 
+### Letting a user choose
+
+**Let users choose the layout of a list** (`AdminSettings.AllowUserListLayoutSelection`, or `AllowUserSelection` in the configuration) adds a selector to every list, one button per available layout, beside the item count:
+
+Clicking one reloads the page with `?layout=Grid`, and the choice is kept in a cookie **per list**, so a user can read the content items as a table and the users as a grid while everyone else sees the site default. The layout resolves from the most specific source to the least:
+
+| Source | Wins when |
+| --- | --- |
+| The layout the page passed to `GetLayoutAsync` | always: the page is rendering itself |
+| `?layout=` in the query string | the site lets a user choose |
+| The cookie, for this list | the site lets a user choose and no layout was asked for |
+| The site setting, then `AdminListOptions.DefaultLayout` | otherwise |
+
+A layout the site cannot render is ignored, so a stale cookie or a hand-written query string cannot reach for a template that is not there. Turning the setting off makes every list use the site default again, cookies and query strings included.
+
+The pager and the page size selector keep the query string of the page they are on, so paging or changing the page size holds on to the layout. A custom layout joins the selector by declaring itself (`AdminListLayout-Cards.Option.cshtml`) and can ship the button offering it, `AdminListLayoutSelectorItem-Cards.cshtml`, which is how the built-in layouts carry their icon.
+
 The options follow Orchard Core's signal-backed options pattern. `AdminListOptionsConfiguration` layers the site settings on top of the configuration section, the module registers `AddSignalOptionsChangeTokenSource<AdminListOptions>()`, and the settings driver calls `IOptionsUpdateNotifier.RequestUpdate<AdminListOptions>()` when the choice changes. Consumers inject `IOptionsMonitor<AdminListOptions>` and read `CurrentValue`, so saving the settings takes effect without releasing the shell.
 
 ### How it works

@@ -1,5 +1,10 @@
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin.Services;
+using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Theming;
+using OrchardCore.Environment.Extensions;
 using OrchardCore.Admin;
 using OrchardCore.Admin.Configuration;
 using OrchardCore.Admin.Models;
@@ -215,6 +220,87 @@ public class DefaultAdminListServiceTests
         }
     }
 
+    [Fact]
+    public async Task GetLayoutAsync_IgnoresTheQueryString_WhenTheSiteKeepsTheChoice()
+    {
+        var httpContext = new DefaultHttpContext();
+        httpContext.Request.QueryString = new QueryString("?layout=Grid");
+
+        var service = CreateService(new AdminListOptions { DefaultLayout = AdminListConstants.Table }, httpContext, [], AdminListConstants.List, AdminListConstants.Table, AdminListConstants.Grid);
+
+        Assert.Equal(AdminListConstants.Table, await service.GetLayoutAsync("Contents", cancellationToken: TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task GetLayoutAsync_TakesTheLayoutFromTheQueryString_AndRemembersIt()
+    {
+        var httpContext = new DefaultHttpContext();
+        httpContext.Request.QueryString = new QueryString("?layout=Grid");
+
+        var options = new AdminListOptions { DefaultLayout = AdminListConstants.Table, AllowUserSelection = true };
+        var service = CreateService(options, httpContext, [], AdminListConstants.List, AdminListConstants.Table, AdminListConstants.Grid);
+
+        Assert.Equal(AdminListConstants.Grid, await service.GetLayoutAsync("Contents", cancellationToken: TestContext.Current.CancellationToken));
+
+        // The choice went to the cookie, so the next request opens the list the same way.
+        var cookie = httpContext.Response.Headers.SetCookie.ToString();
+
+        Assert.Contains(AdminListLayoutPreference.CookieName, cookie);
+
+        // The value is url encoded on the way out, so the separator reads as %3A here.
+        Assert.Contains("Contents%3AGrid", cookie);
+    }
+
+    [Fact]
+    public async Task GetLayoutAsync_TakesTheLayoutTheUserPickedBefore()
+    {
+        var httpContext = new DefaultHttpContext();
+        httpContext.Request.Headers.Cookie = $"{AdminListLayoutPreference.CookieName}=Contents:Grid|Users:Table";
+
+        var options = new AdminListOptions { DefaultLayout = AdminListConstants.List, AllowUserSelection = true };
+        var service = CreateService(options, httpContext, [], AdminListConstants.List, AdminListConstants.Table, AdminListConstants.Grid);
+
+        Assert.Equal(AdminListConstants.Grid, await service.GetLayoutAsync("Contents", cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Equal(AdminListConstants.Table, await service.GetLayoutAsync("Users", cancellationToken: TestContext.Current.CancellationToken));
+
+        // A list the user never chose for keeps the default of the site.
+        Assert.Equal(AdminListConstants.List, await service.GetLayoutAsync("Queries", cancellationToken: TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task GetLayoutAsync_IgnoresALayoutThisSiteCannotRender()
+    {
+        var httpContext = new DefaultHttpContext();
+        httpContext.Request.QueryString = new QueryString("?layout=Cards");
+        httpContext.Request.Headers.Cookie = $"{AdminListLayoutPreference.CookieName}=Users:Cards";
+
+        var options = new AdminListOptions { DefaultLayout = AdminListConstants.List, AllowUserSelection = true };
+        var service = CreateService(options, httpContext, [], AdminListConstants.List, AdminListConstants.Table, AdminListConstants.Grid);
+
+        Assert.Equal(AdminListConstants.List, await service.GetLayoutAsync("Contents", cancellationToken: TestContext.Current.CancellationToken));
+        Assert.Equal(AdminListConstants.List, await service.GetLayoutAsync("Users", cancellationToken: TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task GetLayoutAsync_TheLayoutOfThePageWinsOverTheChoiceOfTheUser()
+    {
+        var httpContext = new DefaultHttpContext();
+        httpContext.Request.Headers.Cookie = $"{AdminListLayoutPreference.CookieName}=Contents:Grid";
+
+        var options = new AdminListOptions { DefaultLayout = AdminListConstants.List, AllowUserSelection = true };
+        var service = CreateService(options, httpContext, [], AdminListConstants.List, AdminListConstants.Table, AdminListConstants.Grid);
+
+        Assert.Equal(AdminListConstants.Table, await service.GetLayoutAsync("Contents", AdminListConstants.Table, TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task GetAvailableLayoutsAsync_ReturnsTheLayoutsOfTheShapeTable()
+    {
+        var service = CreateService(new AdminListOptions(), new DefaultHttpContext(), [], AdminListConstants.Table, AdminListConstants.List);
+
+        Assert.Equal([AdminListConstants.List, AdminListConstants.Table], await service.GetAvailableLayoutsAsync(TestContext.Current.CancellationToken));
+    }
+
     private sealed class PositionedColumnProvider(string name, string position) : IAdminListColumnProvider
     {
         public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancellationToken = default)
@@ -241,7 +327,42 @@ public class DefaultAdminListServiceTests
         => CreateService(new AdminListOptions(), providers);
 
     private static DefaultAdminListService CreateService(AdminListOptions options, params IAdminListColumnProvider[] providers)
-        => new(providers, Mock.Of<IOptionsMonitor<AdminListOptions>>(m => m.CurrentValue == options), NullLogger<DefaultAdminListService>.Instance);
+        => CreateService(options, new DefaultHttpContext(), providers);
+
+    // The layouts a site can render come from its shape table, so a test says which ones exist.
+    private static DefaultAdminListService CreateService(
+        AdminListOptions options,
+        HttpContext httpContext,
+        IAdminListColumnProvider[] providers,
+        params string[] availableLayouts)
+    {
+        var httpContextAccessor = new HttpContextAccessor { HttpContext = httpContext };
+
+        var theme = new Mock<IExtensionInfo>();
+        theme.Setup(t => t.Id).Returns("TheAdmin");
+
+        var themeManager = new Mock<IThemeManager>();
+        themeManager.Setup(t => t.GetThemeAsync()).ReturnsAsync(theme.Object);
+
+        var shapeTable = new ShapeTable(
+            new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
+            availableLayouts.ToDictionary(
+                layout => AdminListConstants.OptionShapePrefix + layout,
+                layout => new ShapeBinding { BindingName = AdminListConstants.OptionShapePrefix + layout },
+                StringComparer.OrdinalIgnoreCase));
+
+        var shapeTableManager = new Mock<IShapeTableManager>();
+        shapeTableManager.Setup(s => s.GetShapeTableAsync(It.IsAny<string>())).ReturnsAsync(shapeTable);
+
+        return new DefaultAdminListService(
+            providers,
+            Mock.Of<IOptionsMonitor<AdminListOptions>>(m => m.CurrentValue == options),
+            NullLogger<DefaultAdminListService>.Instance,
+            httpContextAccessor,
+            new AdminListLayoutPreference(httpContextAccessor),
+            themeManager.Object,
+            shapeTableManager.Object);
+    }
 
     // The effective defaults are produced by AdminListOptionsConfiguration, which layers the site settings on
     // top of the values bound from appsettings.json.

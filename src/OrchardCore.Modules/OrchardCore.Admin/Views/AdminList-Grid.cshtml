@@ -17,6 +17,7 @@
         PageSize      Optional page size selector, so a layout can place it apart from the pager.
         Search        Optional search bar of the list, e.g. the AdminListSearch shape. Rendered in the action bar above the list.
         Actions       Optional buttons of the page, e.g. "Add", rendered beside the search in the action bar.
+        LayoutSelector Optional selector offering the other layouts of the list, built for the list when the site lets a user choose.
         EmptyMessage  Optional message displayed when there are no items.
 *@
 @using Microsoft.AspNetCore.Mvc.Rendering
@@ -72,7 +73,14 @@
             : string.IsNullOrEmpty(column.Width) ? "minmax(0, 1fr)" : column.Width));
 }
 
-@if (Model.Search != null || Model.Actions != null)
+@{
+    // The selector belongs with the chrome of the list, so it rides on the toolbar strip. A list with neither a
+    // toolbar nor an options editor has no strip, and it goes to the action bar instead.
+    var layoutSelector = Model.LayoutSelector;
+    var selectorInActionBar = layoutSelector != null && toolbar == null && header == null;
+}
+
+@if (Model.Search != null || Model.Actions != null || selectorInActionBar)
 {
     @* The search bar and the buttons of the page. A layout is free to put them anywhere, or to leave them out. *@
     <div class="card text-bg-theme mb-3 position-sticky action-bar">
@@ -82,6 +90,12 @@
                 {
                     <div class="col">
                         @await DisplayAsync(Model.Search)
+                    </div>
+                }
+                @if (selectorInActionBar)
+                {
+                    <div class="col-auto ms-auto d-flex align-items-center">
+                        @await DisplayAsync(layoutSelector)
                     </div>
                 }
                 @if (Model.Actions != null)
@@ -99,7 +113,15 @@
     @if (toolbar != null)
     {
         <div class="admin-list-toolbar text-bg-theme">
-            @await DisplayAsync(toolbar)
+            <div class="d-flex align-items-center gap-2">
+                <div class="admin-list-toolbar-content">
+                    @await DisplayAsync(toolbar)
+                </div>
+                @if (layoutSelector != null)
+                {
+                    @await DisplayAsync(layoutSelector)
+                }
+            </div>
         </div>
     }
     else if (header != null)
@@ -109,8 +131,12 @@
                 <div class="col">
                     @await DisplayAsync(header.Summary)
                 </div>
-                <div class="col col-md-auto text-end">
+                <div class="col col-md-auto text-end d-flex align-items-center justify-content-end gap-2">
                     @await DisplayAsync(header.Actions)
+                    @if (layoutSelector != null)
+                    {
+                        @await DisplayAsync(layoutSelector)
+                    }
                 </div>
             </div>
         </div>

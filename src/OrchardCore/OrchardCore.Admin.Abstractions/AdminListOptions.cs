@@ -10,7 +10,8 @@ namespace OrchardCore.Admin;
 ///   "OrchardCore": {
 ///     "AdminList": {
 ///       "DefaultLayout": "Table",
-///       "DefaultActionsLayout": "Menu"
+///       "DefaultActionsLayout": "Menu",
+///       "AllowUserSelection": true
 ///     }
 ///   }
 /// }
@@ -31,4 +32,10 @@ public class AdminListOptions
     /// or <see cref="AdminListActionsLayouts.Menu"/>.
     /// </summary>
     public string DefaultActionsLayout { get; set; } = AdminListActionsLayouts.Buttons;
+
+    /// <summary>
+    /// Whether a list shows a selector letting the user render it with another layout. The choice is kept in a
+    /// cookie, per list, and only applies to that user.
+    /// </summary>
+    public bool AllowUserSelection { get; set; }
 }

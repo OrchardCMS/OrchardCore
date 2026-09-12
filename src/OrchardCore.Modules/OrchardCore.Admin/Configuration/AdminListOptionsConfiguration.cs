@@ -41,5 +41,7 @@ public sealed class AdminListOptionsConfiguration : IConfigureOptions<AdminListO
         {
             options.DefaultActionsLayout = settings.ListActionsLayout.Trim();
         }
+
+        options.AllowUserSelection = settings.AllowUserListLayoutSelection;
     }
 }

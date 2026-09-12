@@ -1,5 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.Admin.Models;
+using OrchardCore.Admin.Services;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
@@ -27,7 +31,7 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
     public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
     {
         builder.Describe(AdminListConstants.ShapeType)
-            .OnDisplaying(context =>
+            .OnDisplaying(async context =>
             {
                 var shape = context.Shape;
                 var alternates = shape.Metadata.Alternates;
@@ -53,6 +57,8 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
                 // Hand the name and the layout down to everything the layout renders, so a template can be
                 // overridden for this list, or for this layout, without a page passing them to every shape.
                 StampList(shape, name, layout);
+
+                await AddLayoutSelectorAsync(context, shape, name, layout);
             });
 
         builder.Describe(AdminListActionsLayouts.ShapeType)
@@ -127,6 +133,78 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
         return ValueTask.CompletedTask;
     }
 
+    // Builds the selector offering the other layouts of this list, unless the site keeps the choice to itself
+    // or the page built one of its own.
+    private static async Task AddLayoutSelectorAsync(ShapeDisplayContext context, IShape shape, string name, string layout)
+    {
+        var services = context.ServiceProvider;
+
+        if (services is null ||
+            string.IsNullOrEmpty(name) ||
+            shape.Properties.ContainsKey("LayoutSelector") ||
+            services.GetService<IOptionsMonitor<AdminListOptions>>()?.CurrentValue.AllowUserSelection != true)
+        {
+            return;
+        }
+
+        var adminListService = services.GetService<IAdminListService>();
+        var httpContext = services.GetService<IHttpContextAccessor>()?.HttpContext;
+
+        if (adminListService is null || httpContext is null)
+        {
+            return;
+        }
+
+        var layouts = await adminListService.GetAvailableLayoutsAsync(httpContext.RequestAborted);
+
+        // Nothing to offer when the site renders lists one way.
+        if (layouts.Count < 2)
+        {
+            return;
+        }
+
+        var shapeFactory = services.GetService<IShapeFactory>();
+
+        if (shapeFactory is null)
+        {
+            return;
+        }
+
+        shape.Properties["LayoutSelector"] = await shapeFactory.CreateAsync(AdminListConstants.LayoutSelectorShapeType, Arguments.From(new
+        {
+            ListName = name,
+            Current = layout,
+            // Not "Items": a shape already exposes that name for its child shapes.
+            Layouts = layouts
+                .Select(l => new AdminListLayoutOption { Name = l, Url = BuildLayoutUrl(httpContext.Request, l) })
+                .ToList(),
+        }));
+    }
+
+    // The same page, rendered with another layout. The rest of the query string is kept, so switching layout
+    // holds on to the search, the filters and the page the user is on.
+    private static string BuildLayoutUrl(HttpRequest request, string layout)
+    {
+        var parameters = new List<KeyValuePair<string, string>>();
+
+        foreach (var pair in QueryHelpers.ParseQuery(request.QueryString.Value))
+        {
+            if (string.Equals(pair.Key, AdminListLayoutPreference.QueryKey, StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            foreach (var value in pair.Value)
+            {
+                parameters.Add(new KeyValuePair<string, string>(pair.Key, value));
+            }
+        }
+
+        parameters.Add(new KeyValuePair<string, string>(AdminListLayoutPreference.QueryKey, layout));
+
+        return QueryHelpers.AddQueryString((request.PathBase + request.Path).Value, parameters);
+    }
+
     // The parts of a list the layout renders beside its rows.
     private static readonly string[] _regions =
     [
@@ -134,6 +212,7 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
         "Header",
         "Search",
         "Actions",
+        "LayoutSelector",
         "Pager",
         "PageSize",
     ];

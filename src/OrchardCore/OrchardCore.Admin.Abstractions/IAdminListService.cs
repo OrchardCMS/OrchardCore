@@ -8,13 +8,24 @@ namespace OrchardCore.Admin;
 public interface IAdminListService
 {
     /// <summary>
-    /// Gets the layout to use for the given list.
+    /// Gets the layout to use for the given list, from the most specific source to the least: the layout asked
+    /// for here, the one asked for in the query string, the one this user picked for this list before, and the
+    /// default of the site. The last two only count when the site lets a user choose, see
+    /// <see cref="AdminListOptions.AllowUserSelection"/>.
     /// </summary>
     /// <param name="listName">The name of the list, e.g. <c>Contents</c>.</param>
-    /// <param name="requestedLayout">An explicit layout requested for this rendering, e.g. from the query string. When not empty it takes precedence over the configured default.</param>
+    /// <param name="requestedLayout">An explicit layout requested for this rendering. When not empty it takes precedence over everything else.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to observe.</param>
     /// <returns>The layout name, never empty. Defaults to <see cref="AdminListConstants.DefaultLayout"/>.</returns>
     Task<string> GetLayoutAsync(string listName, string requestedLayout = null, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets the layouts this site can render, discovered from the shape table: a layout is available when a
+    /// shape named <c>AdminListLayout_Option__{Layout}</c> exists, e.g. <c>AdminListLayout-Table.Option.cshtml</c>.
+    /// </summary>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to observe.</param>
+    /// <returns>The layout names, in alphabetical order.</returns>
+    Task<IList<string>> GetAvailableLayoutsAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets the layout of the row actions to use for the given list.

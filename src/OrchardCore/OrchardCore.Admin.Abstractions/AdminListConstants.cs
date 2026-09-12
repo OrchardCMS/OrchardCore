@@ -53,6 +53,11 @@ public static class AdminListConstants
     public const string SearchShapeType = "AdminListSearch";
 
     /// <summary>
+    /// The shape type rendering the layouts a user can switch a list to.
+    /// </summary>
+    public const string LayoutSelectorShapeType = "AdminListLayoutSelector";
+
+    /// <summary>
     /// The name of the property every part of a list carries, so a template can be overridden for one list.
     /// </summary>
     public const string ListNameProperty = "ListName";

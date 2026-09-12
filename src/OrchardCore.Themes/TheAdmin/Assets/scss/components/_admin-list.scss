@@ -84,6 +84,18 @@ $oc-admin-list-stack-width: 48rem;
     color: var(--bs-secondary-color);
 }
 
+/* The toolbar strip carries the layout selector beside the count, so the count takes the space left. */
+.admin-list-toolbar-content,
+.admin-list .admin-list-toolbar-content {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+/* The layouts a user can switch a list to. */
+.admin-list-layout-selector {
+    flex: 0 0 auto;
+}
+
 /* Row actions (AdminListActions shape), used by every layout. */
 .admin-list-actions {
     display: inline-flex;

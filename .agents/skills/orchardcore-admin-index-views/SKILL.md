@@ -198,6 +198,7 @@ var toolbar = await shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(
 | `Search` | Optional. The search bar, usually the `AdminListSearch` shape (`Name`, `Value`, `Placeholder`, `Id`, `SubmitName`, `Autofocus`, and a `Filters` zone before the input). |
 | `Actions` | Optional. The buttons of the page, e.g. "Add", rendered beside the search. |
 | `PageSize` | Optional. The page size selector, built with `PageSizeSelector.BuildOptions()`. Set `ShowPageSizeSelector = false` on the pager when you pass it. |
+| `LayoutSelector` | Built for the list when the site lets a user choose their layout, so a page never passes it. Pass one to render your own instead. |
 | `Pager` | The pager shape. It renders the page size selector itself unless `ShowPageSizeSelector` is false. |
 | `RowsAttributes` | Optional. `IDictionary<string, string>` rendered on the element wrapping the rows in every layout, e.g. the id a sortable script needs. |
 | `ItemCssClass` | Per-item classes in the `List` layout. |
@@ -228,9 +229,19 @@ var toolbar = await shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(
 
 An alternate that names a list but no layout wins over the layout alternate, so `AdminList-Users.cshtml` renders the users list in **every** layout. Name the layout, `AdminList-Users-Grid.cshtml`, to change one mode only.
 
+### Letting a user choose a layout
+
+With **Let users choose the layout of a list** on, `AdminList` builds a `LayoutSelector` of its own and the
+layouts render it beside the item count. A click reloads with `?layout=Grid`, which
+`IAdminListService.GetLayoutAsync` honours and remembers in a cookie, per list. `GetAvailableLayoutsAsync()`
+returns what the site can render, and a layout the site does not have is ignored wherever it comes from.
+Nothing is needed from a page: the pager and the page size selector already keep the query string.
+
 ### Adding a layout — two files, no C#
 
-`AdminList-Cards.cshtml` renders the list, and `AdminListLayout-Cards.Option.cshtml` makes it selectable:
+`AdminList-Cards.cshtml` renders the list, and `AdminListLayout-Cards.Option.cshtml` makes it selectable
+(and puts it in the user's selector; ship `AdminListLayoutSelectorItem-Cards.cshtml` to give its button an
+icon):
 
 ```html
 @{

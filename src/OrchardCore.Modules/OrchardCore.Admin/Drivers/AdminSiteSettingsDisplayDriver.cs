@@ -58,6 +58,7 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
             model.ListActionsLayout = string.IsNullOrWhiteSpace(settings.ListActionsLayout)
                 ? adminListOptions.DefaultActionsLayout
                 : settings.ListActionsLayout;
+            model.AllowUserListLayoutSelection = settings.AllowUserListLayoutSelection;
         }, settings, adminListOptions).Location("Content:3")
         .OnGroup(SettingsGroupId);
     }
@@ -82,7 +83,9 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
         var listLayout = string.IsNullOrWhiteSpace(model.ListLayout) ? null : model.ListLayout.Trim();
         var listActionsLayout = string.IsNullOrWhiteSpace(model.ListActionsLayout) ? null : model.ListActionsLayout.Trim();
 
-        if (settings.ListLayout != listLayout || settings.ListActionsLayout != listActionsLayout)
+        if (settings.ListLayout != listLayout ||
+            settings.ListActionsLayout != listActionsLayout ||
+            settings.AllowUserListLayoutSelection != model.AllowUserListLayoutSelection)
         {
             // Refreshes IOptionsMonitor<AdminListOptions> once this shell scope commits.
             _optionsUpdateNotifier.RequestUpdate<AdminListOptions>();
@@ -90,6 +93,7 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
 
         settings.ListLayout = listLayout;
         settings.ListActionsLayout = listActionsLayout;
+        settings.AllowUserListLayoutSelection = model.AllowUserListLayoutSelection;
 
         return await EditAsync(site, settings, context);
     }

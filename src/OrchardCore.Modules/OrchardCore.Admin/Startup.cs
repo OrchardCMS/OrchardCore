@@ -1,4 +1,4 @@
-using Fluid;
+﻿using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
@@ -64,6 +64,7 @@ public sealed class Startup : StartupBase
         services.AddShapeTableProvider<AdminDashboardShapeTableProvider>();
         services.AddShapeTableProvider<AdminListShapeTableProvider>();
         services.AddScoped<IAdminListService, DefaultAdminListService>();
+        services.AddScoped<AdminListLayoutPreference>();
 
         services.Configure<AdminOptions>(_configuration.GetSection("OrchardCore_Admin"));
 
