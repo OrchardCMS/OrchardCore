@@ -121,12 +121,13 @@ describe("fileMenu", () => {
     expect(items.length).toBe(1);
 
     const menuItems = items[0].items;
-    expect(menuItems.length).toBe(5);
+    expect(menuItems.length).toBe(6);
     expect(menuItems[0].label).toBe("Rename");
     expect(menuItems[1].label).toBe("Move");
     expect(menuItems[2].label).toBe("Copy");
-    expect(menuItems[3].label).toBe("Download");
-    expect(menuItems[4].label).toBe("Delete");
+    expect(menuItems[3].label).toBe("View");
+    expect(menuItems[4].label).toBe("Download");
+    expect(menuItems[5].label).toBe("Delete");
   });
 
   it("rename command uses FileAction.Rename", () => {
@@ -160,10 +161,20 @@ describe("fileMenu", () => {
     expect(() => copyItem.command()).not.toThrow();
   });
 
+  it("view command calls view", () => {
+    const w = mountMenu();
+    const setupState = (w.vm.$ as any).setupState; // eslint-disable-line @typescript-eslint/no-explicit-any
+    const viewItem = setupState.items[0].items[3];
+
+    expect(viewItem.label).toBe("View");
+    expect(viewItem.icon).toBe("fa-solid fa-eye");
+    expect(() => viewItem.command()).not.toThrow();
+  });
+
   it("download command calls downloadFile", () => {
     const w = mountMenu();
     const setupState = (w.vm.$ as any).setupState; // eslint-disable-line @typescript-eslint/no-explicit-any
-    const downloadItem = setupState.items[0].items[3];
+    const downloadItem = setupState.items[0].items[4];
 
     expect(downloadItem.label).toBe("Download");
     expect(downloadItem.icon).toBe("fa-solid fa-download");
@@ -173,7 +184,7 @@ describe("fileMenu", () => {
   it("delete command uses FileAction.Delete", () => {
     const w = mountMenu();
     const setupState = (w.vm.$ as any).setupState; // eslint-disable-line @typescript-eslint/no-explicit-any
-    const deleteItem = setupState.items[0].items[4];
+    const deleteItem = setupState.items[0].items[5];
 
     expect(deleteItem.label).toBe("Delete");
     expect(deleteItem.icon).toBe("fa-solid fa-trash");
