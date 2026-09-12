@@ -163,6 +163,15 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
             return;
         }
 
+        // A page can render the same list several times, e.g. the features and the recipes, which render one
+        // list per group. They share a layout, so the first of them carries the selector for all of them.
+        var key = $"{AdminListConstants.LayoutSelectorShapeType}:{name}";
+
+        if (!httpContext.Items.TryAdd(key, true))
+        {
+            return;
+        }
+
         var shapeFactory = services.GetService<IShapeFactory>();
 
         if (shapeFactory is null)
