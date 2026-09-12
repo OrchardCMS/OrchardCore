@@ -150,17 +150,34 @@ var toolbar = await shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(
     BulkActions = viewModel.Options.BulkActions,
 }));
 
+var search = await shapeFactory.CreateAsync("AdminListSearch", Arguments.From(new
+{
+    Name = "Options.Search",
+    Value = options.Search,
+}));
+
 viewModel.List = await shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
 {
     Name = IndexingAdminList.Name,
     Layout = await adminListService.GetLayoutAsync(IndexingAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-    Columns = await adminListService.GetColumnsAsync(IndexingAdminList.Name, IndexingAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+    Columns = await adminListService.GetColumnsAsync(IndexingAdminList.Name, IndexingAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
     Rows = rows,
     Toolbar = toolbar,
+    Search = search,
+    Actions = await shapeFactory.CreateAsync("IndexProfileCreateButton"),
     Pager = viewModel.Pager,
     ItemCssClass = "list-group-item",
     EmptyMessage = H["<strong>Nothing here!</strong> There are no indexes at the moment."],
 }));
+```
+
+`Search` and `Actions` are the search bar and the button of the page. They belong to the shape so the layout
+places them; the button is its own template, which keeps the route values and the localization out of the
+controller:
+
+```html
+@* Views/IndexProfileCreateButton.cshtml *@
+<button type="button" class="btn btn-secondary create" data-bs-toggle="modal" data-bs-target="#modalAddIndex">@T["Add index"]</button>
 ```
 
 The action signature injects the service and keeps the existing parameters:
@@ -183,7 +200,8 @@ public dynamic List { get; set; }
 
 ## 4. The view
 
-`Views/Admin/Index.cshtml` keeps the form, the hidden submit buttons and the action bar, and replaces the whole list block with one call.
+`Views/Admin/Index.cshtml` keeps the form and the hidden submit buttons, and replaces everything else with one
+call: the search bar, the button, the toolbar, the rows and the pager all come from the shape.
 
 ```html
 <form asp-action="Index" method="post" class="no-multisubmit" data-list-management data-client-side-search="true" data-selected-label="@T["selected"]">
@@ -191,24 +209,7 @@ public dynamic List { get; set; }
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
 
-    <div class="card text-bg-theme mb-3 position-sticky action-bar">
-        <div class="card-body">
-            <div class="row gx-2">
-                <div class="col">
-                    <div class="input-group has-search">
-                        <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
-                        <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus autocomplete="off" />
-                        <button type="submit" name="submit.Filter" class="btn btn-outline-secondary" title="@T["Search"]">@T["Go"]</button>
-                    </div>
-                </div>
-                <div class="col-auto">
-                    <button type="button" class="btn btn-secondary create" data-bs-toggle="modal" data-bs-target="#modalAddIndex">@T["Add index"]</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    @* The index profiles, the toolbar and the pager are rendered by the AdminList shape. *@
+    @* Search bar, buttons, toolbar, rows, pager and page size, in the configured layout. *@
     @await DisplayAsync(Model.List)
 
     <div id="list-alert" class="alert alert-info my-3 d-none text-center" role="alert">
@@ -222,5 +223,6 @@ public dynamic List { get; set; }
 - The `<ul class="list-group with-checkbox">` block, the item count and select-all markup, and the bulk actions dropdown, all now in `AdminListToolbar`.
 - The per-row `<li>` with its inline checkbox and `data-filter-value`, now the row shape plus its `Classes` and `Attributes`.
 - The empty-state `<li>`, now the `EmptyMessage` property.
+- The action bar card with the search box and the create button, now the `Search` and `Actions` properties, so a layout decides where they go.
 
 The pager was previously built but never rendered; `AdminList` renders it, so the page gained working paging and the page size selector for free.

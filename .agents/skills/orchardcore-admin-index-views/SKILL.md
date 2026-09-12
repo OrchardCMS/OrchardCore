@@ -1,6 +1,6 @@
 ---
 name: orchardcore-admin-index-views
-description: Builds OrchardCore admin index (list) pages with the AdminList shape — switchable List/Table/Grid layouts, columns mapped to row zones, IAdminListService, IAdminListColumnProvider, toolbars, row actions, and client-side search. Use when creating or converting an admin listing page (Index.cshtml, *AdminList.cshtml), adding or reordering its columns, or changing how its rows and actions render.
+description: Builds OrchardCore admin index (list) pages with the AdminList shape — switchable List/Table/Grid layouts, columns mapped to row zones, the search bar, toolbar, pager and page size selector as parts of the shape, IAdminListService, IAdminListColumnProvider, row actions, per-list template alternates, and client-side search. Use when creating or converting an admin listing page (Index.cshtml, *AdminList.cshtml), adding or reordering its columns, overriding the template of one list, or changing how its rows and actions render.
 ---
 
 # OrchardCore Admin Index Views
@@ -13,8 +13,8 @@ An admin index page has three layers. Only the first is written per page.
 
 | Layer | Owner | What it does |
 |-------|-------|--------------|
-| Action bar | The page's own view | The sticky card above the list: search box and the create button. |
-| `AdminList` shape | `OrchardCore.Admin` | Renders the toolbar, the rows and the pager in the configured **layout**. |
+| The page's view | The module | A `<form>` with the antiforgery token and the hidden filter and bulk-action inputs, then the list. |
+| `AdminList` shape | `OrchardCore.Admin` | Renders the whole listing in the configured **layout**: search bar, page buttons, toolbar, rows, pager and page size selector. |
 | Row shapes | Display drivers | One `SummaryAdmin` shape per item, its zones filled by drivers and `placement.json`. |
 
 The layout only decides **how** the already-built rows are presented:
@@ -125,9 +125,15 @@ public async Task<IActionResult> Index(
     {
         Name = IndexingAdminList.Name,
         Layout = await adminListService.GetLayoutAsync(IndexingAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-        Columns = await adminListService.GetColumnsAsync(IndexingAdminList.Name, IndexingAdminList.GetDefaultColumns(S), HttpContext.RequestAborted),
+        Columns = await adminListService.GetColumnsAsync(IndexingAdminList.Name, IndexingAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
         Rows = rows,
         Toolbar = toolbar,
+        Search = await shapeFactory.CreateAsync("AdminListSearch", Arguments.From(new
+        {
+            Name = "Options.Search",
+            Value = options.Search,
+        })),
+        Actions = await shapeFactory.CreateAsync("IndexProfileCreateButton"),
         Pager = viewModel.Pager,
         EmptyMessage = H["There are no indexes at the moment."],
     }));
@@ -138,29 +144,26 @@ public async Task<IActionResult> Index(
 
 ### Step 4: Render it
 
-The page keeps its own action bar and delegates the rest:
+The view is the form and the list. The search bar, the buttons of the page, the toolbar, the rows, the pager and the page size selector all come from the shape, so a layout can place them:
 
 ```html
-<div class="card text-bg-theme mb-3 position-sticky action-bar">
-    <div class="card-body">
-        <div class="row gx-2">
-            <div class="col">
-                <div class="input-group has-search">
-                    <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
-                    <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autocomplete="off" />
-                    <button type="submit" name="submit.Filter" class="btn btn-outline-secondary" title="@T["Search"]">@T["Go"]</button>
-                </div>
-            </div>
-            <div class="col-auto">
-                @* create button *@
-            </div>
-        </div>
-    </div>
-</div>
+<form asp-action="Index" method="post" class="no-multisubmit" data-list-management data-selected-label="@T["selected"]">
+    <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
+    <input asp-for="Options.BulkAction" type="hidden" />
+    <input type="submit" name="submit.BulkAction" class="visually-hidden" />
 
-@* Rows, toolbar and pager, in the configured layout. *@
-@await DisplayAsync(Model.List)
+    @await DisplayAsync(Model.List)
+</form>
 ```
+
+The hidden `submit.Filter` button stays first: it is what Enter in the search box triggers. The buttons of the page are a shape of their own (`Actions`), which keeps the route values and the localization in a template rather than in the controller:
+
+```html
+@* IndexProfileCreateButton.cshtml *@
+<a asp-action="Create" class="btn btn-secondary create" role="button">@T["Add index"]</a>
+```
+
+A page with a filter dropdown before the search box adds it to the `Filters` zone of the `AdminListSearch` shape, which renders it inside the input group.
 
 ### Step 5: Wire the toolbar
 
@@ -195,7 +198,8 @@ var toolbar = await shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(
 | `Search` | Optional. The search bar, usually the `AdminListSearch` shape (`Name`, `Value`, `Placeholder`, `Id`, `SubmitName`, `Autofocus`, and a `Filters` zone before the input). |
 | `Actions` | Optional. The buttons of the page, e.g. "Add", rendered beside the search. |
 | `PageSize` | Optional. The page size selector, built with `PageSizeSelector.BuildOptions()`. Set `ShowPageSizeSelector = false` on the pager when you pass it. |
-| `Pager` | The pager shape. It already contains the page size selector. |
+| `Pager` | The pager shape. It renders the page size selector itself unless `ShowPageSizeSelector` is false. |
+| `RowsAttributes` | Optional. `IDictionary<string, string>` rendered on the element wrapping the rows in every layout, e.g. the id a sortable script needs. |
 | `ItemCssClass` | Per-item classes in the `List` layout. |
 | `EmptyMessage` | Message when there are no rows. |
 
@@ -217,8 +221,12 @@ var toolbar = await shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(
 | Shape | Alternates (least to most specific) |
 |-------|--------------------------------------|
 | `AdminList` | `AdminList__{Layout}`, `AdminList__{Name}`, `AdminList__{Name}__{Layout}` |
-| `AdminListCell` | `AdminListCell__{Column}`, `AdminListCell__{ListName}__{Column}` |
-| `AdminListActions` | `AdminListActions__{Layout}`, `AdminListActions__{ListName}`, `AdminListActions__{ListName}__{Layout}` |
+| `AdminListCell` | `AdminListCell__{Column}`, `AdminListCell__{ListName}__{Column}` — no layout variant, cells only exist in the layouts with columns |
+| `AdminListActions` | `AdminListActions__{Layout}`, `AdminListActions__{ListName}`, `AdminListActions__{ListName}__{Layout}` — here `{Layout}` is `Buttons` or `Menu` |
+| `AdminListToolbar` | `AdminListToolbar__{Layout}`, `AdminListToolbar__{ListName}`, `AdminListToolbar__{ListName}__{Layout}` |
+| `AdminListSearch` | `AdminListSearch__{Layout}`, `AdminListSearch__{ListName}`, `AdminListSearch__{ListName}__{Layout}` |
+
+An alternate that names a list but no layout wins over the layout alternate, so `AdminList-Users.cshtml` renders the users list in **every** layout. Name the layout, `AdminList-Users-Grid.cshtml`, to change one mode only.
 
 ### Adding a layout — two files, no C#
 
@@ -299,6 +307,37 @@ if (context.ListName == ContentsAdminList.Name &&
 
 `context.Data` is never null, and `TryGetData<T>` / `GetData<T>` fall back instead of throwing on a missing key or another type. A list documents the keys it fills: the content items list fills `ContentsAdminList.ContentTypesKey` and `ContentsAdminList.StereotypesKey` from its route, and leaves them out when the listing is not filtered.
 
+### The shape of a row
+
+Every shipped row follows the same structure, so the lists look alike. Copy it when converting a list:
+
+```html
+<div class="row g-0 align-items-center">
+    <div class="col">
+        <div class="title d-flex align-items-center">
+            @* Handle, Checkbox, then <div class="summary d-flex flex-column flex-md-row list-item-search-text"> with Content, Tags, Meta *@
+        </div>
+
+        @if (Model.Description != null)
+        {
+            @await DisplayAsync(Model.Description)
+        }
+    </div>
+    <div class="col-auto d-flex justify-content-end ps-2">
+        @await DisplayAsync(await New.AdminListActions(Row: Model))
+    </div>
+</div>
+```
+
+The actions sit beside the whole row, centred on it, and the description is inside the left column so it stops where the actions begin. The column holding the actions is `col-auto` at every width, so a narrow screen keeps them beside the row instead of dropping them onto a line of their own.
+
+| Zone | Renders as | Never |
+|------|-----------|-------|
+| `Content` | The title, a plain link to the edit page | A heading (`<h5>`), which makes the row shout next to the other lists |
+| `Tags`, `Meta` | `<span class="badge ta-badge fw-normal">` per fact, leading icon, `title` tooltip | Plain text or a `<span class="hint">` |
+| `Description` | `<div class="admin-list-secondary">`, its own line under the title | A second full-width row, which runs under the actions |
+| `Actions`, `ActionsMenu` | Through `AdminListActions` | A hand-written button group |
+
 ## Gotchas
 
 1. **Do not name the rows property `Items`.** `Shape` already exposes `Items` (its child shapes), so `Model.Items` in the template silently resolves to an empty collection and the list renders no rows. The property is `Rows`.
@@ -309,6 +348,10 @@ if (context.ListName == ContentsAdminList.Name &&
 6. **Render row actions through `AdminListActions`.** In a row template use `@await DisplayAsync(await New.AdminListActions(Row: Model))` rather than hand-writing the button group, so the configured actions layout (Buttons or Menu) applies everywhere.
 7. **Responsive behaviour is CSS, not Razor.** The stacking below 48rem is a container query on the list in `_admin-list.scss`. Do not add viewport-based Bootstrap classes such as `d-md-none` to the layouts; the sidebar makes the viewport a poor proxy for the list width.
 8. **Per-type row templates do not apply in column layouts.** `Content-BlogPost.SummaryAdmin.cshtml` is only used by the `List` layout. Customize a column with `AdminListCell-{ListName}-{Column}.cshtml` instead.
+9. **Never wrap `ActionsMenu` items in `<li>`.** The dropdown sits inside the `<li>` of the row in the `List` layout, and the parser hoists a nested `<li>` out of it, taking the rest of the row with it: the menu renders empty and stray links appear under the list.
+10. **Register the row driver in the feature that owns the list.** A driver registered in a neighbouring feature leaves every row empty on a site where that feature is off — the rows render, with no name, no badges and no buttons.
+11. **A sortable list cannot use the `Grid` layout.** Its rows are `display: contents`, so they have no box to drag. Fall back to `Table`, or force `List` when ordering is on. Mark the rows container with `RowsAttributes` and send SortableJS `oldDraggableIndex`/`newDraggableIndex`, which count only the rows.
+12. **A shape type is `typeof(TModel).Name`.** `DisplayManager<TModel>` uses it verbatim, so register the driver against a domain model named exactly what the shape should be called, never a `*ViewModel`.
 
 ## References
 
@@ -316,3 +359,5 @@ if (context.ListName == ContentsAdminList.Name &&
 - `src/docs/reference/modules/Admin/README.md` — user-facing documentation of the layouts and settings.
 - `src/OrchardCore.Modules/OrchardCore.Admin/Views/AdminList*.cshtml` — the layout, cell, actions and toolbar templates.
 - `src/OrchardCore.Themes/TheAdmin/Assets/scss/components/_admin-list.scss` — layout CSS and the container queries.
+- `src/OrchardCore/OrchardCore.Navigation.Core/PageSizeSelector.cs` — builds the options of a page size selector a list places itself.
+- `test/OrchardCore.Tests/Modules/OrchardCore.Admin/AdminListDefinitionsTests.cs` — finds every list by reflection and checks the names and the columns, so a new list is covered without touching the test.

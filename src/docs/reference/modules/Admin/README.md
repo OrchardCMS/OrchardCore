@@ -159,7 +159,7 @@ Admin lists such as the content items list are rendered by the `AdminList` shape
 | `Table` | The items are rendered in a table, one column per `AdminListColumn`.                               |
 | `Grid`  | The same columns as `Table`, rendered with a CSS grid instead of a `<table>`. The header, the body and the rows are `display: contents`, so every cell shares the tracks computed from the column widths and the header always lines up with the data. |
 
-Both column layouts use a CSS container query on the list itself: when the list is narrower than 48rem (whatever the viewport, the admin sidebar takes part of it), the headers disappear and each row becomes a compact wrapped line, checkbox and title first, badges after, actions at the end, so the page never scrolls horizontally. The cells keep a `data-title` attribute with the column title for themes that want to show it.
+Both column layouts use a CSS container query on the list itself: when the list is narrower than 48rem (whatever the viewport, the admin sidebar takes part of it), the headers disappear and a row takes the shape of a `List` row — the selection and the title share the first line with the actions at its end, and every other cell takes a line under them — so the page never scrolls horizontally. The cells keep a `data-title` attribute with the column title for themes that want to show it.
 
 The layout is selected in **Configuration → Settings → Admin** under **List layout**, and stored in `AdminSettings.ListLayout`. When that setting is empty the value comes from `AdminListOptions.DefaultLayout`, which a site can set per tenant in `appsettings.json`:
 
@@ -181,7 +181,9 @@ The options follow Orchard Core's signal-backed options pattern. `AdminListOptio
 The rows of a list are shapes built with the `SummaryAdmin` display type, e.g. `Content_SummaryAdmin`. Display drivers and `placement.json` place shapes in the zones of these rows (`Checkbox`, `Title`, `Type`, `Header`, `Tags`, `Meta`, `Actions`, `ActionsMenu`, `Content`, ...). The layout only decides how a row is presented:
 
 - In the `List` layout the row shape is rendered as a whole, so its template (e.g. `Content.SummaryAdmin.cshtml` or `Content-BlogPost.SummaryAdmin.cshtml`) decides the look.
-- In the `Table` layout each column renders one or more zones of the row in an `AdminListCell` shape. The row template is not used.
+- In the `Table` and `Grid` layouts each column renders one or more zones of the row in an `AdminListCell` shape. The row template is not used.
+
+A layout renders the whole listing, not only the rows. The shipped ones render, in order: the action bar holding `Search` and `Actions`, then `Toolbar` or `Header`, then the rows (or the empty message), then a footer holding `Pager` and `PageSize`. A custom layout is free to order them differently, to leave one out, or to put the search bar beside the pager.
 
 The `AdminList` shape is created by the owner of the list with these properties:
 
@@ -220,6 +222,48 @@ var listShape = await shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arg
 }));
 ```
 
+### Row templates
+
+In the `List` layout the row shape renders as a whole. The shipped rows all follow the same shape, so the lists look alike:
+
+```html
+<div class="row g-0 align-items-center">
+    <div class="col">
+        <div class="title d-flex align-items-center">
+            @* Handle, Checkbox, then the summary: Content (the title), Tags, Meta *@
+        </div>
+        @* Description *@
+    </div>
+    <div class="col-auto d-flex justify-content-end ps-2">
+        @await DisplayAsync(await New.AdminListActions(Row: Model))
+    </div>
+</div>
+```
+
+The actions sit beside the whole row, centred on it, and everything else is stacked in the column left of them, so a description stops where the actions begin instead of running under them. The conventions inside a row:
+
+| Zone | Renders as |
+| ---- | ---------- |
+| `Content` | The title, as a plain link to the edit page. Not a heading: a row should not shout next to the other lists. |
+| `Tags`, `Meta` | One `<span class="badge ta-badge fw-normal">` per fact, with a leading icon and a `title` tooltip naming the fact. |
+| `Description` | A `<div class="admin-list-secondary">`, which takes its own line under the title. |
+| `Actions`, `ActionsMenu` | Through `AdminListActions`, never a hand-written button group. |
+
+Items of the `ActionsMenu` zone are **bare** `<a>` or `<button>` elements with `.dropdown-item`. Wrapping them in `<li>` breaks the row: the dropdown lives inside the `<li>` of the row in the `List` layout, and the HTML parser hoists a nested `<li>` out of it, taking the rest of the row with it.
+
+### Sortable lists
+
+A list whose order is data, e.g. the URL rewriting rules, marks the element wrapping its rows with `RowsAttributes` so its script can find it, whichever layout renders it:
+
+```csharp
+RowsAttributes = new Dictionary<string, string> { ["id"] = "rewrite-rules-sortable-list" },
+```
+
+Two things a sortable list has to know:
+
+- The `Grid` layout cannot be dragged: its rows are `display: contents`, so they have no box for a drag script to pick up. Fall back to `Table` when `Grid` is configured, or force `List` the way the ordering of a list part does.
+- SortableJS `oldIndex` and `newIndex` count **every** sibling of the dragged element, including a toolbar rendered among the rows. Use `oldDraggableIndex` and `newDraggableIndex`, which count only the rows, so the indexes are the same in every layout.
+
 ### Overriding templates
 
 The following alternates are available, from the least to the most specific:
@@ -237,6 +281,10 @@ The following alternates are available, from the least to the most specific:
 `{Layout}` is the layout rendering the list (`List`, `Table`, `Grid`, or a custom one), except for `AdminListActions`, where it is the layout of the row actions (`Buttons` or `Menu`) since that is what the shape renders.
 
 The name and the layout reach these shapes on their own. The `AdminList` shape stamps them on everything it renders — the toolbar, the search bar, the pager, the page size selector and each row — so a row template that renders `AdminListActions` without naming a list still gets the alternates of the list it belongs to. A part that already names a list keeps its own, which is what a list rendered inside another one needs.
+
+An alternate that names a list but no layout applies to **every** layout of that list, because it is more specific than the layout alternate: `AdminList-Users.cshtml` renders the users in `List`, `Table` and `Grid` alike, which effectively opts that list out of the layout setting. To change one mode only, name it: `AdminList-Users-Grid.cshtml`. The shape still carries the resolved layout, so a single template can also branch on `@Model.Layout`.
+
+`AdminListCell` has no layout variant: cells only exist in the layouts with columns, and a column renders the same zones in both.
 
 ### Column properties
 
