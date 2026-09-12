@@ -15,18 +15,7 @@
     var returnUrl = Context.Request.Query["returnUrl"];
 }
 
-@if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
-{
-    <zone name="Breadcrumbs">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="@returnUrl">@T["Back"]</a></li>
-                <li class="breadcrumb-item active" aria-current="page">@RenderTitleSegments(T["Edit {0}", localizedTypeDisplayName])</li>
-            </ol>
-        </nav>
-    </zone>
-}
-else if (contentTypeDefinition != null && contentTypeDefinition.GetSettings<ContentTypeSettings>().Listable)
+@if (contentTypeDefinition != null && contentTypeDefinition.GetSettings<ContentTypeSettings>().Listable)
 {
     <zone name="Breadcrumbs">
         <nav aria-label="breadcrumb">
