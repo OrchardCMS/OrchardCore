@@ -12,11 +12,25 @@
     var contentTypeDefinition = await ContentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
     var typeDisplayName = contentTypeDefinition?.DisplayName ?? contentItem.ContentType.CamelFriendly();
     string localizedTypeDisplayName = D[typeDisplayName, DataLocalizationContext.ContentType];
+    var returnUrl = Context.Request.Query["ReturnUrl"];
+}
+
+@if (contentTypeDefinition != null && contentTypeDefinition.GetSettings<ContentTypeSettings>().Listable)
+{
+    <zone name="Breadcrumbs">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-action="List" asp-controller="Admin">@T["Content Items"]</a></li>
+                <li class="breadcrumb-item"><a asp-action="List" asp-controller="Admin" asp-route-contentTypeId="@contentItem.ContentType">@localizedTypeDisplayName</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@RenderTitleSegments(T["New {0}", localizedTypeDisplayName])</li>
+            </ol>
+        </nav>
+    </zone>
 }
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["New {0}", localizedTypeDisplayName])</h1></zone>
 
-<form asp-action="Create" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data" class="no-multisubmit">
+<form asp-action="Create" asp-route-returnUrl="@returnUrl" method="post" enctype="multipart/form-data" class="no-multisubmit">
     @if (!ViewContext.ModelState.IsValid)
     {
         @Html.ValidationSummary()
