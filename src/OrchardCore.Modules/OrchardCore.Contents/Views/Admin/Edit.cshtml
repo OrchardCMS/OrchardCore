@@ -20,7 +20,8 @@
     <zone name="Breadcrumbs">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a asp-action="List" asp-controller="Admin" asp-route-contentTypeId="@contentItem.ContentType">@T["Content Items"]</a></li>
+                <li class="breadcrumb-item"><a asp-action="List" asp-controller="Admin">@T["Content Items"]</a></li>
+                <li class="breadcrumb-item"><a asp-action="List" asp-controller="Admin" asp-route-contentTypeId="@contentItem.ContentType">@localizedTypeDisplayName</a></li>
                 <li class="breadcrumb-item active" aria-current="page">@RenderTitleSegments(T["Edit {0}", localizedTypeDisplayName])</li>
             </ol>
         </nav>
