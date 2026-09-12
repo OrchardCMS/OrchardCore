@@ -12,11 +12,35 @@
     var contentTypeDefinition = await ContentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
     var typeDisplayName = contentTypeDefinition?.DisplayName ?? contentItem.ContentType.CamelFriendly();
     string localizedTypeDisplayName = D[typeDisplayName, DataLocalizationContext.ContentType];
+    var returnUrl = Context.Request.Query["returnUrl"];
+}
+
+@if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+{
+    <zone name="Breadcrumbs">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@returnUrl">@T["Back"]</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@RenderTitleSegments(T["Edit {0}", localizedTypeDisplayName])</li>
+            </ol>
+        </nav>
+    </zone>
+}
+else if (contentTypeDefinition != null && contentTypeDefinition.GetSettings<ContentTypeSettings>().Listable)
+{
+    <zone name="Breadcrumbs">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-action="List" asp-controller="Admin" asp-route-contentTypeId="@contentItem.ContentType">@T["Content Items"]</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@RenderTitleSegments(T["Edit {0}", localizedTypeDisplayName])</li>
+            </ol>
+        </nav>
+    </zone>
 }
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit {0}", localizedTypeDisplayName])</h1></zone>
 
-<form asp-action="Edit" asp-route-contentitemid="@contentItem.ContentItemId" asp-route-returnUrl="@Context.Request.Query["returnUrl"]" method="post" enctype="multipart/form-data" class="no-multisubmit">
+<form asp-action="Edit" asp-route-contentitemid="@contentItem.ContentItemId" asp-route-returnUrl="@returnUrl" method="post" enctype="multipart/form-data" class="no-multisubmit">
     @if (!ViewContext.ModelState.IsValid)
     {
         @Html.ValidationSummary()
