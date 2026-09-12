@@ -18,6 +18,9 @@ jobs:
     steps:
     # We don't use the actions/first-interaction action because it can't reference the author, nor can it comment after
     # PR merge.
+    # STAR_MESSAGE isn't set: it makes the action call the now-restricted stargazers listing endpoint, causing
+    # "Resource not accessible by integration" (see
+    # https://github.blog/changelog/2026-06-30-upcoming-access-restrictions-to-public-api-endpoints-and-ui-views/).
     - uses: wow-actions/welcome@68019c2c271561f63162fea75bb7707ef8a02c85 #v1.3.1
       with:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -34,6 +37,3 @@ jobs:
         FIRST_PR_MERGED_COMMENT: >
           Congratulations on your first PR merge! 🎉 Thank you for your contribution! We're looking forward to welcoming
           other contributions of yours in the future. @all-contributors please add @{{ author }} for code.
-        STAR_MESSAGE: > 
-          If you like Orchard Core, please star our repo and join our
-          [community channels](https://github.com/OrchardCMS/OrchardCore/?tab=readme-ov-file#get-in-touch).
