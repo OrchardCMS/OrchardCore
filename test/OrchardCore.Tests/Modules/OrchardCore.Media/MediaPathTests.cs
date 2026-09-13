@@ -2,6 +2,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Media;
 using OrchardCore.Media.Services;
+using OrchardCore.Settings;
 using MediaStartup = OrchardCore.Media.Startup;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media;
@@ -106,7 +107,11 @@ public class MediaPathTests
         shellConfiguration.Setup(c => c.GetSection("OrchardCore_Media"))
             .Returns(configuration.GetSection("OrchardCore_Media"));
 
+        var siteService = new Mock<ISiteService>();
+        siteService.Setup(service => service.GetSiteSettingsAsync()).ReturnsAsync(new SiteSettings());
+
         var services = new ServiceCollection();
+        services.AddSingleton(siteService.Object);
         services.AddSingleton(shellConfiguration.Object);
         using var settings = new ShellSettings { Name = "Tenant" };
         services.AddSingleton(settings);
