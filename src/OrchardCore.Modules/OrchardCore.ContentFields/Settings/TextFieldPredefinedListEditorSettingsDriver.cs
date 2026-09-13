@@ -47,6 +47,11 @@ public sealed class TextFieldPredefinedListEditorSettingsDriver : ContentPartFie
                     ? []
                     : JConvert.DeserializeObject<ListValueOption[]>(model.Options);
 
+                if (settings.Options.DistinctBy(o => $"{o.Name},{o.Value}").Count() != settings.Options.Length)
+                {
+                    context.Updater.ModelState.AddModelError(Prefix, S["The options can't contain more than one element with the same label and value."]);
+                }
+
                 context.Builder.WithSettings(settings);
             }
             catch
