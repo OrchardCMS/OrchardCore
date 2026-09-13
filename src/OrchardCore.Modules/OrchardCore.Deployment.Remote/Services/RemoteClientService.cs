@@ -74,6 +74,27 @@ public class RemoteClientService
         return remoteClient;
     }
 
+    /// <summary>Compares a supplied key without exposing the stored credential.</summary>
+    public bool MatchesApiKey(RemoteClient client, string apiKey)
+    {
+        try
+        {
+            var stored = _dataProtector.Unprotect(client.ProtectedApiKey);
+            return System.Security.Cryptography.CryptographicOperations.FixedTimeEquals(stored, Encoding.UTF8.GetBytes(apiKey));
+        }
+        catch (System.Security.Cryptography.CryptographicException)
+        {
+            return false;
+        }
+    }
+
+    /// <summary>Renames a client while preserving its protected credential.</summary>
+    public async Task RenameAsync(RemoteClient client, string clientName)
+    {
+        client.ClientName = clientName;
+        await _session.SaveAsync(await GetRemoteClientListAsync());
+    }
+
     public async Task<bool> TryUpdateRemoteClient(string id, string clientName, string apiKey)
     {
         var remoteClient = await GetRemoteClientAsync(id);
