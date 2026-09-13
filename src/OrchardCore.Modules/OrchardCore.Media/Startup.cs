@@ -272,18 +272,25 @@ public sealed class Startup : StartupBase
 
     }
 
-    private static string GetMediaPath(
+    internal static string GetMediaPath(
         ShellOptions shellOptions,
         ShellSettings shellSettings,
         string assetsPath
     )
     {
-        return PathExtensions.Combine(
+        assetsPath = assetsPath?.TrimEnd(PathExtensions.PathSeparators);
+
+        if (!MediaFileStorePathHelper.IsValidRelativePath(assetsPath))
+        {
+            throw new ArgumentException("The media assets path must be a relative subdirectory of the tenant's data directory.", nameof(assetsPath));
+        }
+
+        return Path.GetFullPath(Path.Combine(
             shellOptions.ShellsApplicationDataPath,
             shellOptions.ShellsContainerName,
             shellSettings.Name,
-            assetsPath
-        );
+            assetsPath.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar)
+        ));
     }
 }
 
