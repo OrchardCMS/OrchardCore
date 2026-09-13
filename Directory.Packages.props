@@ -77,6 +77,7 @@
     <PackageVersion Include="Swashbuckle.AspNetCore.ReDoc" Version="10.2.3" />
     <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.2.3" />
     <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.2.3" />
+    <PackageVersion Include="SSH.NET" Version="2026.0.0" />
     <PackageVersion Include="Testcontainers" Version="4.13.0" />
     <PackageVersion Include="Testcontainers.Azurite" Version="4.13.0" />
     <PackageVersion Include="Testcontainers.LocalStack" Version="4.13.0" />
