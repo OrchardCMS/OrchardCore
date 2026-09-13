@@ -110,6 +110,7 @@ public sealed class DeploymentStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDeployment<AllRolesDeploymentSource, AllRolesDeploymentStep, AllRolesDeploymentStepDriver>();
+        services.AddSingleton<IDeploymentStepDefinition>(new EmptyDeploymentStepDefinition<AllRolesDeploymentStep>(nameof(AllRolesDeploymentStep)));
     }
 }
 

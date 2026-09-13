@@ -8,6 +8,7 @@ import zipfile
 import os
 from pathlib import Path
 import secrets
+import ssl
 import subprocess
 import sys
 import tempfile
@@ -103,6 +104,8 @@ def select(path):
     base = state['url']
     assert urllib.parse.urlparse(base).hostname in ('127.0.0.1', 'localhost', '::1')
     tokens = {}
+    context = ssl.create_default_context(cafile=state.get("certificatePath"))
+    urllib.request.install_opener(urllib.request.build_opener(urllib.request.HTTPSHandler(context=context)))
 
 
 def completed(operation):

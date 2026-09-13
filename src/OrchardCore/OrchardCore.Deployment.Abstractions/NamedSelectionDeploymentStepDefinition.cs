@@ -7,13 +7,14 @@ namespace OrchardCore.Deployment;
 public sealed class NamedSelectionDeploymentStepDefinition<TStep> : IDeploymentStepDefinition where TStep : DeploymentStep
 {
     private readonly string _property;
+    private readonly bool _requireSelection;
     private readonly Func<Task<IEnumerable<string>>> _availableNames;
     private readonly Func<TStep, (bool IncludeAll, string[] Names)> _read;
     private readonly Action<TStep, bool, string[]> _write;
 
     /// <summary>Creates a contract with explicit property access and the owning service's available names.</summary>
     public NamedSelectionDeploymentStepDefinition(string type, string property, Func<Task<IEnumerable<string>>> availableNames,
-        Func<TStep, (bool IncludeAll, string[] Names)> read, Action<TStep, bool, string[]> write)
+        Func<TStep, (bool IncludeAll, string[] Names)> read, Action<TStep, bool, string[]> write, bool requireSelection = false)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(type);
         ArgumentException.ThrowIfNullOrWhiteSpace(property);
@@ -21,6 +22,7 @@ public sealed class NamedSelectionDeploymentStepDefinition<TStep> : IDeploymentS
         ArgumentNullException.ThrowIfNull(read);
         ArgumentNullException.ThrowIfNull(write);
         Type = type;
+        _requireSelection = requireSelection;
         _property = property;
         _availableNames = availableNames;
         _read = read;
@@ -95,6 +97,10 @@ public sealed class NamedSelectionDeploymentStepDefinition<TStep> : IDeploymentS
         }
 
         names = DeploymentSelection.Normalize(includeAll, names);
+        if (!DeploymentSelection.IsValid(includeAll, names, _requireSelection))
+        {
+            errors[_property] = ["Select at least one existing name or include all."];
+        }
         if (!includeAll)
         {
             var available = new HashSet<string>(await _availableNames(), StringComparer.Ordinal);

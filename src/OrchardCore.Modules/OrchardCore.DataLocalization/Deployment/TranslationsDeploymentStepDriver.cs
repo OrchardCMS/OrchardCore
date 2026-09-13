@@ -10,14 +10,14 @@ namespace OrchardCore.DataLocalization.Deployment;
 public sealed class TranslationsDeploymentStepDriver : DisplayDriver<DeploymentStep, TranslationsDeploymentStep>
 {
     private readonly ILocalizationService _localizationService;
-    private readonly IEnumerable<ILocalizationDataProvider> _localizationDataProviders;
+    private readonly TranslationsDeploymentSelection _selection;
 
     public TranslationsDeploymentStepDriver(
         ILocalizationService localizationService,
         IEnumerable<ILocalizationDataProvider> localizationDataProviders)
     {
         _localizationService = localizationService;
-        _localizationDataProviders = localizationDataProviders;
+        _selection = new TranslationsDeploymentSelection(localizationService, localizationDataProviders);
     }
 
     public override Task<IDisplayResult> DisplayAsync(TranslationsDeploymentStep step, BuildDisplayContext context)
@@ -31,7 +31,7 @@ public sealed class TranslationsDeploymentStepDriver : DisplayDriver<DeploymentS
     public override async Task<IDisplayResult> EditAsync(TranslationsDeploymentStep step, BuildEditorContext context)
     {
         var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
-        var categories = await GetCategoriesAsync();
+        var categories = await _selection.GetCategoriesAsync();
 
         return Initialize<TranslationsDeploymentStepViewModel>("TranslationsDeploymentStep_Fields_Edit", model =>
         {
@@ -49,23 +49,9 @@ public sealed class TranslationsDeploymentStepDriver : DisplayDriver<DeploymentS
         step.Categories = [];
 
         await context.Updater.TryUpdateModelAsync(step, Prefix, x => x.IncludeAll, x => x.Cultures, x => x.Categories);
+        TranslationsDeploymentSelection.Apply(step, step.IncludeAll, step.Cultures, step.Categories);
 
         return await EditAsync(step, context);
     }
 
-    private async Task<string[]> GetCategoriesAsync()
-    {
-        var categories = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-        foreach (var provider in _localizationDataProviders)
-        {
-            var descriptors = await provider.GetDescriptorsAsync();
-            foreach (var descriptor in descriptors)
-            {
-                categories.Add(descriptor.Context);
-            }
-        }
-
-        return [.. categories.OrderBy(c => c)];
-    }
 }

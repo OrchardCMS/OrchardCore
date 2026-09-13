@@ -60,7 +60,7 @@ internal sealed class IndexProfileDeploymentStepDisplayDriver : DisplayDriver<De
         {
             var selectedIndexNames = model.Indexes?.Where(x => x.Selected).Select(x => x.Value).ToArray() ?? [];
 
-            if (selectedIndexNames.Length == 0)
+            if (!DeploymentSelection.IsValid(false, selectedIndexNames))
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.Indexes), S["At least one index profile is required."]);
             }

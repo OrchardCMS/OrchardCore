@@ -339,6 +339,7 @@ public sealed class DeploymentStartup : StartupBase
             AllMediaProfilesDeploymentStep,
             AllMediaProfilesDeploymentStepDriver
         >();
+        services.AddSingleton<IDeploymentStepDefinition>(new EmptyDeploymentStepDefinition<AllMediaProfilesDeploymentStep>(nameof(AllMediaProfilesDeploymentStep)));
     }
 }
 

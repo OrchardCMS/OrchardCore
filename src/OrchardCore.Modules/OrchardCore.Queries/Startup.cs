@@ -48,6 +48,7 @@ public sealed class CoreStartup : StartupBase
     {
         services.AddRecipeExecutionStep<QueryStep>();
         services.AddDeployment<AllQueriesDeploymentSource, AllQueriesDeploymentStep, AllQueriesDeploymentStepDriver>();
+        services.AddSingleton<IDeploymentStepDefinition>(new EmptyDeploymentStepDefinition<AllQueriesDeploymentStep>(nameof(AllQueriesDeploymentStep)));
         services.AddSingleton<IGlobalMethodProvider, QueryGlobalMethodProvider>();
 
         services.Configure<TemplateOptions>(o =>

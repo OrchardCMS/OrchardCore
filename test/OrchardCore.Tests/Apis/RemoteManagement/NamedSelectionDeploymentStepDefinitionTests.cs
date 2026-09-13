@@ -88,6 +88,26 @@ public class NamedSelectionDeploymentStepDefinitionTests
         Assert.Empty(definition.Describe(step)["settingsTypeNames"].AsArray());
     }
 
+    [Fact]
+    public async Task Update_RequiredSelectionRejectsEmpty_PreservesPreviousSelection()
+    {
+        var step = new CustomSettingsDeploymentStep { IncludeAll = false, SettingsTypeNames = ["Selected"] };
+        var definition = new NamedSelectionDeploymentStepDefinition<CustomSettingsDeploymentStep>(
+            nameof(CustomSettingsDeploymentStep), "settingsTypeNames", () => Task.FromResult<IEnumerable<string>>(["Selected"]),
+            value => (value.IncludeAll, value.SettingsTypeNames), (value, all, names) =>
+            {
+                value.IncludeAll = all;
+                value.SettingsTypeNames = names;
+            }, requireSelection: true);
+
+        Assert.NotEmpty(await definition.UpdateAsync(step, new JsonObject { ["settingsTypeNames"] = new JsonArray() }));
+        Assert.Equal(["Selected"], step.SettingsTypeNames);
+        Assert.False(step.IncludeAll);
+        Assert.Empty(await definition.UpdateAsync(step, new JsonObject { ["includeAll"] = true }));
+        Assert.True(step.IncludeAll);
+        Assert.Empty(step.SettingsTypeNames);
+    }
+
     private static (IDeploymentStepDefinition Definition, DeploymentStep Step) Create(bool userSettings)
     {
         var definitions = new Mock<IContentDefinitionManager>();

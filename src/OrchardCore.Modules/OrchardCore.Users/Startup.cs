@@ -695,5 +695,7 @@ public sealed class UserDeploymentStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDeployment<AllUsersDeploymentSource, AllUsersDeploymentStep, AllUsersDeploymentStepDriver>();
+        services.AddSingleton<IDeploymentStepDefinition>(new EmptyDeploymentStepDefinition<AllUsersDeploymentStep>(nameof(AllUsersDeploymentStep),
+            "Exports user records including password hashes and security tokens. Requires ManageUsers; keep artifacts private."));
     }
 }

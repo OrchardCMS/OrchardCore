@@ -59,6 +59,7 @@ public sealed class Startup : StartupBase
 
         services.AddScoped<ITimeZoneSelector, DefaultTimeZoneSelector>();
 
+        services.AddSingleton<IDeploymentStepDefinition, SiteSettingsDeploymentStepDefinition>();
         services.AddDeployment<SiteSettingsDeploymentSource, SiteSettingsDeploymentStep, SiteSettingsDeploymentStepDriver>();
 
         services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentSiteNameProvider>();

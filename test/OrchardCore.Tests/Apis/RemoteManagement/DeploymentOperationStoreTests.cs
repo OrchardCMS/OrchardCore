@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using OrchardCore.Security.Permissions;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging.Abstractions;
 using OrchardCore.Deployment.Operations;
@@ -8,6 +10,36 @@ namespace OrchardCore.Tests.Apis.RemoteManagement;
 
 public class DeploymentOperationStoreTests
 {
+    [Fact]
+    public async Task Acceptance_RetainsFirstAuthorizationSnapshotAndOmitsTokenMaterial()
+    {
+        var root = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("n"));
+        try
+        {
+            var principal = new ClaimsPrincipal(new ClaimsIdentity(
+            [
+                new Claim("sub", "client"), new Claim("oc:entyp", "application"),
+                new Claim(Permission.ClaimType, "Export"), new Claim("access_token", "must-not-persist"),
+                new Claim("role", "Administrator"),
+            ], "Bearer", "name", "role"));
+            var identity = DeploymentExecutionIdentity.Capture(principal);
+            Assert.DoesNotContain(identity.Claims, claim => claim.Type == "access_token");
+            var token = TestContext.Current.CancellationToken;
+            var store = Store(root, "one");
+            var operation = await store.CreateAsync("owner", "snapshot", DeploymentOperationKind.Export, "plan", token, identity);
+            var retryIdentity = DeploymentExecutionIdentity.Capture(new ClaimsPrincipal(new ClaimsIdentity(
+                [new Claim(Permission.ClaimType, "ManageUsers")], "Bearer")));
+            var retry = await Store(root, "one").CreateAsync("owner", "snapshot", DeploymentOperationKind.Export, "plan", token, retryIdentity);
+            Assert.Contains(retry.Identity.Claims, claim => claim.Value == "Export");
+            Assert.DoesNotContain(retry.Identity.Claims, claim => claim.Value == "ManageUsers");
+            Assert.True(retry.Identity.Restore().Identity.IsAuthenticated);
+            Assert.True(retry.Identity.Restore().IsInRole("Administrator"));
+            Assert.DoesNotContain("must-not-persist", string.Join("", Directory.GetFiles(root, "operation.json", SearchOption.AllDirectories).Select(File.ReadAllText)));
+            Assert.Equal(operation.Id, retry.Id);
+        }
+        finally { Directory.Delete(root, true); }
+    }
+
     [Fact]
     public async Task Acceptance_DeduplicatesExactRequestAndRejectsChangedPayload()
     {

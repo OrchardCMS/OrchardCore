@@ -1,9 +1,6 @@
 @model SiteSettingsDeploymentStepViewModel
-@using System.Text.Json.Serialization
-@using System.Reflection
 @{
     var settings = Model.Settings;
-    var ignoredProperties = new HashSet<string> { "Identifier", "Properties" };
 }
 <div class="ocat-wrapper">
     <div class="ocat-end-offset">
@@ -15,19 +12,8 @@
 <div class="ocat-wrapper">
     <div class="ocat-end-offset">
         <ul class="list-group">
-            @foreach (var setting in typeof(SiteSettings).GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            @foreach (var name in OrchardCore.Settings.Deployment.SiteSettingsDeploymentSelection.Names)
             {
-                if (setting.GetCustomAttributes(false).OfType<JsonIgnoreAttribute>().Any())
-                {
-                    continue;
-                }
-
-                if (ignoredProperties.Contains(setting.Name))
-                {
-                    continue;
-                }
-
-                var name = setting.Name;
                 var isChecked = settings?.Contains(name);
 
                 <li class="list-group-item">

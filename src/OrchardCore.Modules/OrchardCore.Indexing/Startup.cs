@@ -92,8 +92,29 @@ public sealed class DeploymentsStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDeployment<IndexProfileDeploymentSource, IndexProfileDeploymentStep, IndexProfileDeploymentStepDisplayDriver>();
+        services.AddScoped<IDeploymentStepDefinition>(provider => new NamedSelectionDeploymentStepDefinition<IndexProfileDeploymentStep>(
+            nameof(IndexProfileDeploymentStep), "indexNames", async () => (await provider.GetRequiredService<IIndexProfileStore>().GetAllAsync()).Select(index => index.Name),
+            step => (step.IncludeAll, step.IndexNames), (step, includeAll, names) =>
+            {
+                step.IncludeAll = includeAll;
+                step.IndexNames = names;
+            }, requireSelection: true));
         services.AddDeployment<RebuildIndexDeploymentSource, RebuildIndexDeploymentStep, RebuildIndexDeploymentStepDriver>();
+        services.AddScoped<IDeploymentStepDefinition>(provider => new NamedSelectionDeploymentStepDefinition<RebuildIndexDeploymentStep>(
+            nameof(RebuildIndexDeploymentStep), "indexNames", async () => (await provider.GetRequiredService<IIndexProfileStore>().GetAllAsync()).Select(index => index.Name),
+            step => (step.IncludeAll, step.IndexNames), (step, includeAll, names) =>
+            {
+                step.IncludeAll = includeAll;
+                step.IndexNames = names;
+            }, requireSelection: true));
         services.AddDeployment<ResetIndexDeploymentSource, ResetIndexDeploymentStep, ResetIndexDeploymentStepDriver>();
+        services.AddScoped<IDeploymentStepDefinition>(provider => new NamedSelectionDeploymentStepDefinition<ResetIndexDeploymentStep>(
+            nameof(ResetIndexDeploymentStep), "indexNames", async () => (await provider.GetRequiredService<IIndexProfileStore>().GetAllAsync()).Select(index => index.Name),
+            step => (step.IncludeAll, step.IndexNames), (step, includeAll, names) =>
+            {
+                step.IncludeAll = includeAll;
+                step.IndexNames = names;
+            }, requireSelection: true));
     }
 }
 
