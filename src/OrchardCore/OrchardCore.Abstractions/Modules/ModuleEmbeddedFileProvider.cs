@@ -87,6 +87,14 @@ public class ModuleEmbeddedFileProvider : IFileProvider
                 // Skip the module id to resolve the subpath.
                 var fileSubPath = path[(index + 1)..];
 
+                // Prevent escaping the application root folder through '..' segments that
+                // encoded separators (e.g. '%5c') may have smuggled past the server request
+                // path normalization.
+                if (ModuleStaticFiles.NavigatesAboveRoot(fileSubPath))
+                {
+                    return new NotFoundFileInfo(subpath);
+                }
+
                 // If it is the app's module.
                 if (module == Application.Name)
                 {

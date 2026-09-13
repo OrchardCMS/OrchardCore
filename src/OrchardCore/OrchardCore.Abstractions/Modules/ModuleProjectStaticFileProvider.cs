@@ -79,11 +79,20 @@ public class ModuleProjectStaticFileProvider : IModuleStaticFileProvider
             // Resolve the module id.
             var module = path[..index];
 
+            // The subpath relative to the module 'wwwroot' folder.
+            var moduleSubPath = path[(module.Length + 1)..];
+
+            // Prevent escaping the module 'wwwroot' folder through '..' segments.
+            if (ModuleStaticFiles.NavigatesAboveRoot(moduleSubPath))
+            {
+                return new NotFoundFileInfo(subpath);
+            }
+
             // Get the module project "wwwroot" folder.
             if (s_roots.TryGetValue(module, out var root))
             {
                 // Resolve "{ModuleProjectDirectory}wwwroot/**/*.*"
-                var filePath = root + path[(module.Length + 1)..];
+                var filePath = root + moduleSubPath;
 
                 if (File.Exists(filePath))
                 {
@@ -112,11 +121,20 @@ public class ModuleProjectStaticFileProvider : IModuleStaticFileProvider
             // Resolve the module id.
             var module = path[..index];
 
+            // The subpath relative to the module 'wwwroot' folder.
+            var moduleSubPath = path[(module.Length + 1)..];
+
+            // Prevent escaping the module 'wwwroot' folder through '..' segments.
+            if (ModuleStaticFiles.NavigatesAboveRoot(moduleSubPath))
+            {
+                return NullChangeToken.Singleton;
+            }
+
             // Get the module project "wwwroot" folder.
             if (s_roots.TryGetValue(module, out var root))
             {
                 // Resolve "{ModuleProjectDirectory}wwwroot/**/*.*"
-                var filePath = root + path[(module.Length + 1)..];
+                var filePath = root + moduleSubPath;
 
                 if (File.Exists(filePath))
                 {

@@ -41,8 +41,20 @@ public class ModuleEmbeddedStaticFileProvider : IModuleStaticFileProvider
             // Check if it is an existing module.
             if (application.Modules.Any(m => m.Name == module))
             {
+                // The subpath relative to the module 'wwwroot' folder.
+                var moduleSubPath = path[(index + 1)..];
+
+                // Prevent escaping the module 'wwwroot' folder through '..' segments that
+                // encoded separators (e.g. '%5c') may have smuggled past the server request
+                // path normalization, which would otherwise expose arbitrary files (e.g. the
+                // tenant Data Protection keys) served through the application module.
+                if (ModuleStaticFiles.NavigatesAboveRoot(moduleSubPath))
+                {
+                    return new NotFoundFileInfo(subpath);
+                }
+
                 // Resolve the embedded file subpath: "wwwroot/**/*.*"
-                var fileSubPath = Module.WebRoot + path[(index + 1)..];
+                var fileSubPath = Module.WebRoot + moduleSubPath;
 
                 if (module != application.Name)
                 {
