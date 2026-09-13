@@ -664,6 +664,11 @@ public sealed class CustomUserSettingsStartup : StartupBase
         services.AddDisplayDriver<User, CustomUserSettingsDisplayDriver>();
         services.AddPermissionProvider<CustomUserSettingsPermissions>();
         services.AddDeployment<CustomUserSettingsDeploymentSource, CustomUserSettingsDeploymentStep, CustomUserSettingsDeploymentStepDriver>();
+        services.AddScoped<IDeploymentStepDefinition>(provider => new NamedSelectionDeploymentStepDefinition<CustomUserSettingsDeploymentStep>(
+            nameof(CustomUserSettingsDeploymentStep), "settingsTypeNames",
+            () => provider.GetRequiredService<CustomUserSettingsService>().GetAllSettingsTypeNamesAsync(),
+            step => (step.IncludeAll, step.SettingsTypeNames),
+            (step, includeAll, names) => { step.IncludeAll = includeAll; step.SettingsTypeNames = names; }));
         services.AddScoped<IStereotypesProvider, CustomUserSettingsStereotypesProvider>();
 
         services.Configure<ContentTypeDefinitionOptions>(options =>
