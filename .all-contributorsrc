@@ -3637,6 +3637,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "JesseRigon",
+      "name": "Jesse",
+      "avatar_url": "https://avatars.githubusercontent.com/u/9398976?v=4",
+      "profile": "https://github.com/JesseRigon",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
