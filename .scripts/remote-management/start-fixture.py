@@ -58,6 +58,7 @@ for suffix, permissions in [
     ("indexes", ["ManageIndexes"]),
     ("shortcodes", ["ManageShortcodeTemplates"]),
     ("https", ["ManageHttps"]),
+    ("email", ["ManageEmailSettings"]),
     ("url-rewriting", ["ManageUrlRewritingRules"]),
     ("cors", ["ManageCorsSettings"]),
     ("sitemaps", ["ManageSitemaps"]),

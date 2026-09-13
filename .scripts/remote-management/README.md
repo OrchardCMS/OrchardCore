@@ -541,3 +541,10 @@ against the isolated loopback fixture. This checks generated Pomi plan/step
 commands, explicit schemas, retries, invalid patch preservation, HTTP permissions,
 MCP creation/ordering and cleanup. It enables Deployment and MCP in the fixture
 and removes its temporary plan on completion.
+
+### SMTP administration
+
+Run `smtp-smoke.py <fixture.json>` against a fixture started with
+`OC_FIXTURE_HTTPS=1`. It validates typed settings, secret redaction and retries,
+permission gates, MCP readback, and real tenant-local pickup messages in two
+tenants. It never sends external mail. Child tenants are stopped after checks.

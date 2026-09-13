@@ -9,6 +9,7 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Email.Services;
 using OrchardCore.Email.ViewModels;
 using OrchardCore.Environment.Options;
+using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Drivers;
@@ -71,11 +72,14 @@ public sealed class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        if (settings.DefaultProviderName != model.DefaultProvider)
+        var editor = new EmailSettingsEditor(_emailProviders, _optionsUpdateNotifier);
+        if (!editor.IsAvailable(model.DefaultProvider))
         {
-            settings.DefaultProviderName = model.DefaultProvider;
-
-            _optionsUpdateNotifier.RequestUpdate<EmailOptions>();
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.DefaultProvider), S["Select an enabled email provider."]);
+        }
+        if (context.Updater.ModelState.IsValid)
+        {
+            editor.Apply(settings, model.DefaultProvider);
         }
 
         return await EditAsync(site, settings, context);

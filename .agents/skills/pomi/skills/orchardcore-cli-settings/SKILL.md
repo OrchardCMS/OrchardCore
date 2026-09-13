@@ -14,6 +14,29 @@ Settings are named content-type-backed sections embedded in that document.
 Typed module sections have explicit providers and their own permissions; they are
 not arbitrary site properties or Custom Settings content types.
 
+## Email and SMTP
+
+Enable `OrchardCore.Email.Smtp`, refresh discovery, and use an application with
+`AccessRemoteManagement` and `ManageEmailSettings`. Read `settings sections schema smtp`
+and configure the tenant provider with `settings sections update smtp --body-file smtp.json`
+over HTTPS. Include `isEnabled: true` when configuring a disabled provider. The
+`email` section lists enabled provider names and selects `defaultProvider`; null
+restores runtime fallback. The host-owned Default SMTP provider is separate.
+
+SMTP password input is write-only. Omit it to retain the stored credential; use
+`clearPassword: true` to remove it. Never combine clearing and setting. Keep the
+input file private and do not place credentials in command arguments. Readback
+contains `hasPassword`, not the secret or encrypted value. Invalid patches preserve
+settings, and equivalent updates do not refresh options.
+
+Use `pomi email test --body-file email-test.json` with `to`, `subject`, `body`, and
+optionally `provider`. This sends one plain-text message through the existing email
+service. Obtain authorization for external delivery; prefer tenant-local pickup
+for automated validation. HTTP 204 means provider acceptance, not inbox delivery.
+Do not automatically retry uncertain test requests: each attempt can send mail.
+No `pomi login` is needed when the creation workflow already returned an
+application-credentials context.
+
 ## Rate limits
 
 Enable `OrchardCore.RateLimits`, refresh discovery, and use an application with
