@@ -16,7 +16,17 @@
             <input asp-for="DisplayMenuFilter" class="form-check-input" type="checkbox" />
             <label asp-for="DisplayMenuFilter" class="form-check-label">@T["Enable Admin Menu filter"]</label>
         </div>
-        <span class="hint">@T["Whether a quick search to filter the admin menu is displayed."]</span>
+        <span class="hint">@T["Whether a filter input is displayed above the admin menu."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="DisplayQuickSearch">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input asp-for="DisplayQuickSearch" class="form-check-input" type="checkbox" />
+            <label asp-for="DisplayQuickSearch" class="form-check-label">@T["Enable quick search"]</label>
+        </div>
+        <span class="hint">@T["Whether the quick search command palette (Ctrl+K / Cmd+K) is displayed in the admin navbar."]</span>
     </div>
 </div>
 

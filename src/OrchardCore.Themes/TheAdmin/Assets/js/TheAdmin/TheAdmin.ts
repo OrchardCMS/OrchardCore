@@ -1,8 +1,10 @@
 import { initializeMenu } from "./menu";
+import { initializeQuickSearch } from "./quickSearch";
 import "./resizeDetector";
 ///<reference path="@types/bootstrap/index.d.ts" />
 
 initializeMenu();
+initializeQuickSearch();
 
 function confirmDialog({ callback, ...options }: { callback: (response: boolean) => void; [key: string]: any }) {
     const defaultOptions = $("#confirmRemoveModalMetadata").data();
