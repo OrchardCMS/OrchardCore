@@ -18,7 +18,7 @@ Local validation before integration onto the newest merged base:
   updates and denied access checks.
 - Strict full solution build: zero warnings/errors.
 - Server suite: 3,681 passed, one skipped. CLI: 298 passed. MCP: 78 passed.
-- Cross-tenant queued settings/content/media export/import verification is in progress.
+- Cross-tenant queued settings/content/media export/import passes, including request retries and exact media bytes.
 
 Intentional boundaries: credential-bearing external identity provider exporters and
 legacy cloud-index aliases still require explicit contracts. Modern index-profile
