@@ -900,7 +900,7 @@ ol.file-items-grid li .ma-card-footer .action-button {
   padding: 4px 0 !important;
 }
 
-ol.file-items-grid li.selected {
+ol.file-items-grid li.selected, ol.file-items-grid li.selected:hover { box-shadow: 0 0 0 3px var(--media-primary);
   border-color: var(--media-primary);
 }
 
