@@ -28,36 +28,8 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-
-        if (NavigationHelper.UseLegacyFormat())
-        {
-            builder
-                .Add(S["Configuration"], NavigationConstants.AdminMenuConfigurationPosition, configuration => configuration
-                    .AddClass("menu-configuration")
-                    .Id("configuration")
-                    .Add(S["Settings"], "1", settings => settings
-                        .Add(S["General"], "1", entry => entry
-                            .AddClass("general")
-                            .Id("general")
-                            .Action("Index", "Admin", s_generalRouteValues)
-                            .Permission(SettingsPermissions.ManageGeneralSettings)
-                            .LocalNav()
-                        )
-                        .Add(S["Debugging"], "2", entry => entry
-                            .AddClass("debugging")
-                            .Id("debugging")
-                            .Action("Index", "Admin", s_debuggingRouteValues)
-                            .Permission(SettingsPermissions.ManageDebuggingSettings)
-                            .LocalNav()
-                        ),
-                    priority: 1)
-                );
-
-            return ValueTask.CompletedTask;
-        }
-
         builder
-            .Add(S["Tools"], "end.50", tools => tools
+            .Add(S["Tools"], S["Tools"].PrefixPosition(), tools => tools
                 .Id("tools")
                 .AddClass("tools")
             , priority: 1)

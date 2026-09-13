@@ -15,7 +15,7 @@ public sealed class AdminMenu : AdminNavigationProvider
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Design"], NavigationConstants.AdminMenuDesignPosition, design => design
+            .Add(S["Design"], S["Design"].PrefixPosition(), design => design
                 .AddClass("design")
                 .Id("design")
                 .Add(S["Themes"], S["Themes"].PrefixPosition(), themes => themes

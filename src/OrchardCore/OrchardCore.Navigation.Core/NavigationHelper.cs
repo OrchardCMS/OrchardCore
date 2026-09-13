@@ -9,12 +9,6 @@ namespace OrchardCore.Navigation;
 
 public static class NavigationHelper
 {
-
-    public static bool UseLegacyFormat()
-    {
-        return AppContext.TryGetSwitch(NavigationConstants.LegacyAdminMenuNavigationSwitchKey, out var enable) && enable;
-    }
-
     /// <summary>
     /// Populates the menu shapes.
     /// </summary>
@@ -345,7 +339,7 @@ public static class NavigationHelper
     {
         if (string.IsNullOrEmpty(parentHash))
         {
-            return XxHash32.HashToUInt32(MemoryMarshal.AsBytes(value.AsSpan())).ToString(CultureInfo.InvariantCulture); 
+            return XxHash32.HashToUInt32(MemoryMarshal.AsBytes(value.AsSpan())).ToString(CultureInfo.InvariantCulture);
         }
 
         var hash = new XxHash32();
