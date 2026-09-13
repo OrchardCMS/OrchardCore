@@ -120,6 +120,14 @@ using OrchardCore.Users;
 )]
 
 [assembly: Feature(
+    Id = UserConstants.Features.Phone,
+    Name = "Users Phone Number",
+    Description = "Allows users to store and manage a phone number on their profile.",
+    Dependencies = [UserConstants.Features.Users],
+    Category = "Security"
+)]
+
+[assembly: Feature(
     Id = UserConstants.Features.TwoFactorAuthentication,
     Name = "Two-Factor Authentication Services",
     Description = "Provides Two-factor core services.",
@@ -162,6 +170,7 @@ using OrchardCore.Users;
     [
         UserConstants.Features.Users,
         UserConstants.Features.TwoFactorAuthentication,
+        UserConstants.Features.Phone,
         "OrchardCore.Liquid",
         "OrchardCore.Sms",
     ],
