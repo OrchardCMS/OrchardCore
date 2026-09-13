@@ -6,6 +6,8 @@ The Antivirus module provides features that inspect uploaded files before Orchar
 
 The ClamAV feature scans files with a `clamd` service before Orchard Core stores or imports them.
 
+For local development from the Orchard Core source repository, the `OrchardCore.AspireHost` project can start both Orchard Core and a configured ClamAV container. See [Run Orchard Core with the Aspire host](../../../getting-started/aspire-host.md) for prerequisites and usage.
+
 When the feature is enabled, uploads fail:
 
 - Malware detections are rejected before storage.
