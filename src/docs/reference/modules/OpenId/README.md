@@ -604,3 +604,42 @@ descriptor updates with their admin editors and recipe steps. See the [OpenID ma
 for paging, permissions and response fields. Confidential application secrets can be
 rotated or revoked through `pomi openid applications credentials`. Rotation requires
 a new private `--secret-output-file` and immediately replaces the previous secret.
+
+## Remote configuration
+
+The owning OpenID features contribute three typed settings sections to remote
+management. Use `pomi settings sections schema <section>` to inspect the complete
+update contract, `show <section>` to read it, and `update <section> --stdin` to
+apply a JSON patch. The same operations are available through HTTP and MCP.
+
+| Section | Feature | Required permission | Managed tenant settings |
+| --- | --- | --- | --- |
+| `openid-server` | `OrchardCore.OpenId.Server` | `ManageServerSettings` | Endpoint paths, supported grant flows, access-token format/encryption, PKCE/PAR requirements, refresh-token behavior, and certificate-store selections |
+| `openid-client` | `OrchardCore.OpenId.Client` | `ManageClientSettings` | Authority, client ID/secret, callback paths, response type/mode, scopes, external-token storage, and extra authentication parameters |
+| `openid-validation` | `OrchardCore.OpenId.Validation` | `ManageValidationSettings` | Local server tenant or remote authority/audience/metadata address, and token-type validation |
+
+All sections also require remote-management access. Writes require HTTPS. They
+use the same validation and persistence services as the existing OpenID admin
+configuration and request a tenant reload only when values change. Omitted
+properties are preserved and supplied arrays replace previous arrays. Unknown
+properties and values outside the section schema are rejected before persistence.
+Existing flow/endpoint and tenant/authority constraints still apply.
+
+The client secret is encrypted with the existing OpenID client data-protection
+purpose. It and extra authentication parameters are omitted from readback;
+`hasClientSecret` and `hasParameters` report presence. Omitting either property
+retains it; explicitly setting it to null clears it. Sending the same secret again
+does not re-encrypt it or trigger a reload. Send secrets through private JSON
+input, not shell arguments. Parameters follow existing client storage behavior;
+redaction does not encrypt their values.
+
+These sections manage the tenant's saved configuration. They do not modify host
+configuration, custom application option overrides, certificate files/private
+keys, provider-specific external login settings, application registrations, or
+user MFA enrollment. Certificate settings select existing certificates or preserve
+the module's managed-certificate fallback. Applications and scopes retain their
+separate management commands.
+
+Changing token endpoints, enabled flows or validation authority can invalidate the
+context used to make the change. Keep a working administrative recovery path and
+refresh Pomi's API/context configuration after such changes.

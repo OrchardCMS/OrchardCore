@@ -561,3 +561,8 @@ Verify custom user settings on an HTTPS fixture with
 `python3 .scripts/remote-management/custom-user-settings-smoke.py <fixture.json>`.
 This exercises HTTP/Pomi/MCP discovery and updates, permissions, safe content
 schemas, equivalent retries, invalid updates, and child-tenant isolation.
+
+Verify OpenID settings on an HTTPS fixture with
+`python3 .scripts/remote-management/openid-settings-smoke.py <fixture.json>`.
+The test exercises HTTP/Pomi/MCP, actual discovery changes after reload, existing
+validation, secret redaction and retries, and feature/tenant isolation.

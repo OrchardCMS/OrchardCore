@@ -447,3 +447,15 @@ from site-level custom settings. Use the existing user ID; creating a standalone
 content item does not configure a user's settings. Updates require HTTPS, the
 settings-type permission, and permission to edit that user. Passwords, roles,
 and MFA enrollment data are outside this content envelope.
+
+### OpenID tenant configuration
+
+Use `settings sections schema/show/update openid-server`, `openid-client`, or
+`openid-validation` for the feature-owned configuration. Existing OpenID services
+validate updates; HTTPS and the corresponding ManageServerSettings,
+ManageClientSettings, or ManageValidationSettings permission are required.
+Changed settings reload the tenant. Preserve working token endpoints and flows
+when automating through the current context. Client secrets and extra parameters
+are write-only; use private JSON input, omit to retain, and send null to clear.
+Read presence flags and verify readback/discovery after the reload. This does not
+replace application/scopes commands or modify host-owned certificate material.
