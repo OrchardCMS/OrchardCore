@@ -63,7 +63,7 @@
                         @T["Showing {0} of {1} features", totalFeatures, totalFeatures]
                     </span>
                 </div>
-                <div class="col col-md-auto text-end">
+                <div class="col col-md-auto text-end d-flex align-items-center justify-content-end gap-2">
                     <div class="btn-group filter">
                         <select id="visibility-filter" class="selectpicker show-tick nosubmit me-2" multiple data-list-filter data-header="@T["Filter by visibility"]" data-selected-text-format="static" data-width="fit" title="@T["Visibility"]" data-style="btn-sm">
                             <option value="true" data-list-filter-attribute="data-is-on-demand" data-list-filter-mode="exclude" selected>@T["Hide on demand"]</option>
@@ -75,6 +75,10 @@
                             <option value="false">@T["Disabled only"]</option>
                         </select>
                     </div>
+                    @if (Model.LayoutSelector != null)
+                    {
+                        @await DisplayAsync(Model.LayoutSelector)
+                    }
                 </div>
             </div>
         </div>

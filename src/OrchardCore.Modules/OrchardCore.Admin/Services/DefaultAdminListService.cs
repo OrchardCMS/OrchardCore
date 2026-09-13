@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin.Models;
@@ -115,6 +116,66 @@ public sealed class DefaultAdminListService : IAdminListService
             .ToList();
 
         return _availableLayouts;
+    }
+
+    public async Task<IList<AdminListLayoutOption>> GetLayoutOptionsAsync(string listName, CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(listName);
+
+        var httpContext = _httpContextAccessor.HttpContext;
+
+        if (httpContext is null || !_options.CurrentValue.AllowUserSelection)
+        {
+            return [];
+        }
+
+        var layouts = await GetAvailableLayoutsAsync(cancellationToken);
+
+        // Nothing to offer when the site renders its lists one way.
+        if (layouts.Count < 2)
+        {
+            return [];
+        }
+
+        // A page can render the same list several times, e.g. the features and the recipes, which render one
+        // list per group, and a page can place the selector itself instead of leaving it to its lists. They
+        // all share one layout, so the first caller of the request is the one offering it.
+        if (!httpContext.Items.TryAdd($"{AdminListConstants.LayoutSelectorShapeType}:{listName}", true))
+        {
+            return [];
+        }
+
+        return layouts
+            .Select(layout => new AdminListLayoutOption
+            {
+                Name = layout,
+                Url = BuildLayoutUrl(httpContext.Request, layout),
+            })
+            .ToList();
+    }
+
+    // The same page, rendered with another layout. The rest of the query string is kept, so switching layout
+    // holds on to the search, the filters and the page the user is on.
+    private static string BuildLayoutUrl(HttpRequest request, string layout)
+    {
+        var parameters = new List<KeyValuePair<string, string>>();
+
+        foreach (var pair in QueryHelpers.ParseQuery(request.QueryString.Value))
+        {
+            if (string.Equals(pair.Key, AdminListLayoutPreference.QueryKey, StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            foreach (var value in pair.Value)
+            {
+                parameters.Add(new KeyValuePair<string, string>(pair.Key, value));
+            }
+        }
+
+        parameters.Add(new KeyValuePair<string, string>(AdminListLayoutPreference.QueryKey, layout));
+
+        return QueryHelpers.AddQueryString((request.PathBase + request.Path).Value, parameters);
     }
 
     private async Task<bool> IsAvailableAsync(string layout, CancellationToken cancellationToken)

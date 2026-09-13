@@ -1,15 +1,14 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using OrchardCore.Admin.Services;
-using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.DisplayManagement.Theming;
-using OrchardCore.Environment.Extensions;
 using OrchardCore.Admin;
 using OrchardCore.Admin.Configuration;
 using OrchardCore.Admin.Models;
 using OrchardCore.Admin.Services;
+using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Entities;
+using OrchardCore.Environment.Extensions;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Admin;
@@ -299,6 +298,63 @@ public class DefaultAdminListServiceTests
         var service = CreateService(new AdminListOptions(), new DefaultHttpContext(), [], AdminListConstants.Table, AdminListConstants.List);
 
         Assert.Equal([AdminListConstants.List, AdminListConstants.Table], await service.GetAvailableLayoutsAsync(TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task GetLayoutOptionsAsync_OffersEveryLayout_KeepingTheRestOfTheQueryString()
+    {
+        var httpContext = new DefaultHttpContext();
+        httpContext.Request.Path = "/Admin/Contents/ContentItems";
+        httpContext.Request.QueryString = new QueryString("?q=post&layout=Table");
+
+        var options = new AdminListOptions { AllowUserSelection = true };
+        var service = CreateService(options, httpContext, [], AdminListConstants.List, AdminListConstants.Table);
+
+        var layouts = await service.GetLayoutOptionsAsync("Contents", TestContext.Current.CancellationToken);
+
+        Assert.Collection(layouts,
+            layout =>
+            {
+                Assert.Equal(AdminListConstants.List, layout.Name);
+                Assert.Equal("/Admin/Contents/ContentItems?q=post&layout=List", layout.Url);
+            },
+            layout =>
+            {
+                Assert.Equal(AdminListConstants.Table, layout.Name);
+                Assert.Equal("/Admin/Contents/ContentItems?q=post&layout=Table", layout.Url);
+            });
+    }
+
+    [Fact]
+    public async Task GetLayoutOptionsAsync_OffersALayoutOnce_SoAPageShowsOneSelector()
+    {
+        var options = new AdminListOptions { AllowUserSelection = true };
+        var service = CreateService(options, new DefaultHttpContext(), [], AdminListConstants.List, AdminListConstants.Table);
+
+        Assert.NotEmpty(await service.GetLayoutOptionsAsync("Features", TestContext.Current.CancellationToken));
+
+        // The features render one list per category, and they share the layout the first of them offered.
+        Assert.Empty(await service.GetLayoutOptionsAsync("Features", TestContext.Current.CancellationToken));
+
+        // Another list of the same page has an offer of its own.
+        Assert.NotEmpty(await service.GetLayoutOptionsAsync("Recipes", TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task GetLayoutOptionsAsync_OffersNothing_WhenTheSiteKeepsTheChoice()
+    {
+        var service = CreateService(new AdminListOptions(), new DefaultHttpContext(), [], AdminListConstants.List, AdminListConstants.Table);
+
+        Assert.Empty(await service.GetLayoutOptionsAsync("Contents", TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task GetLayoutOptionsAsync_OffersNothing_WhenTheSiteRendersListsOneWay()
+    {
+        var options = new AdminListOptions { AllowUserSelection = true };
+        var service = CreateService(options, new DefaultHttpContext(), [], AdminListConstants.List);
+
+        Assert.Empty(await service.GetLayoutOptionsAsync("Contents", TestContext.Current.CancellationToken));
     }
 
     private sealed class PositionedColumnProvider(string name, string position) : IAdminListColumnProvider

@@ -13,6 +13,12 @@
                         <button type="submit" name="submit.Filter" class="btn btn-outline-secondary" title="@T["Search"]">@T["Go"]</button>
                     </div>
                 </div>
+                @if (Model.LayoutSelector != null)
+                {
+                    <div class="col-auto d-flex align-items-center">
+                        @await DisplayAsync(Model.LayoutSelector)
+                    </div>
+                }
             </div>
         </div>
     </div>

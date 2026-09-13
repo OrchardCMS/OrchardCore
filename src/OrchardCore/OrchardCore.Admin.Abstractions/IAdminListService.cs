@@ -28,6 +28,19 @@ public interface IAdminListService
     Task<IList<string>> GetAvailableLayoutsAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Gets the layouts to offer a user for the given list, each with the address rendering the page with it,
+    /// or nothing when the site keeps the choice to itself or can render a single layout.
+    /// </summary>
+    /// <remarks>
+    /// The first caller of a request takes the offer: a page rendering the same list several times, e.g. one
+    /// list per group, shows a single selector, and a page building its own gets it instead of its lists.
+    /// </remarks>
+    /// <param name="listName">The name of the list, e.g. <c>Contents</c>.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to observe.</param>
+    /// <returns>The layouts, in alphabetical order, or an empty list.</returns>
+    Task<IList<AdminListLayoutOption>> GetLayoutOptionsAsync(string listName, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Gets the layout of the row actions to use for the given list.
     /// </summary>
     /// <param name="listName">The name of the list, e.g. <c>Contents</c>, or <see langword="null"/> when the row is rendered outside a named list.</param>

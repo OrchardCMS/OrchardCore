@@ -91,6 +91,21 @@ public sealed class AdminController : Controller
 
         var model = new RecipesIndexViewModel();
 
+        // The features share one layout, so the page offers it once, beside its search bar, instead of letting
+        // each of its lists carry a selector of its own. Taking the offer here is what stops them.
+        var layoutOptions = await adminListService.GetLayoutOptionsAsync(RecipesAdminList.Name, HttpContext.RequestAborted);
+
+        if (layoutOptions.Count > 0)
+        {
+            model.LayoutSelector = await shapeFactory.CreateAsync(AdminListConstants.LayoutSelectorShapeType, Arguments.From(new
+            {
+                ListName = RecipesAdminList.Name,
+                Current = layout,
+                // Not "Items": a shape already exposes that name for its child shapes.
+                Layouts = layoutOptions,
+            }));
+        }
+
         // The page keeps one list per feature, and every list follows the configured layout.
         foreach (var group in entries.GroupBy(entry => entry.Feature).OrderBy(group => group.Key))
         {

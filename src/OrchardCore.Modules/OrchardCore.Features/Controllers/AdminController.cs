@@ -87,6 +87,21 @@ public sealed class AdminController : Controller
         var columns = await adminListService.GetColumnsAsync(FeaturesAdminList.Name, FeaturesAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted);
         var layout = await adminListService.GetLayoutAsync(FeaturesAdminList.Name, cancellationToken: HttpContext.RequestAborted);
 
+        // The categories share one layout, so the page offers it once, beside its filters, instead of letting
+        // each of its lists carry a selector of its own. Taking the offer here is what stops them.
+        var layoutOptions = await adminListService.GetLayoutOptionsAsync(FeaturesAdminList.Name, HttpContext.RequestAborted);
+
+        if (layoutOptions.Count > 0)
+        {
+            viewModel.LayoutSelector = await shapeFactory.CreateAsync(AdminListConstants.LayoutSelectorShapeType, Arguments.From(new
+            {
+                ListName = FeaturesAdminList.Name,
+                Current = layout,
+                // Not "Items": a shape already exposes that name for its child shapes.
+                Layouts = layoutOptions,
+            }));
+        }
+
         // The page keeps one list per category, and every list follows the configured layout.
         foreach (var group in viewModel.Features.GroupBy(feature => feature.Descriptor.Category).OrderBy(group => group.Key))
         {

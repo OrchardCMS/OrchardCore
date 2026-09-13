@@ -1,3 +1,5 @@
+using OrchardCore.DisplayManagement;
+
 namespace OrchardCore.Recipes.ViewModels;
 
 public class RecipeViewModel
@@ -20,6 +22,13 @@ public class RecipeViewModel
 public class RecipesIndexViewModel
 {
     public IList<RecipeGroupViewModel> Groups { get; set; } = [];
+
+    /// <summary>
+    /// The layouts a user can switch the list to, or <see langword="null"/> when the site keeps the choice to
+    /// itself. The page carries it beside its search bar: its features share one layout, so a selector on each
+    /// of them would offer the same thing over and over.
+    /// </summary>
+    public IShape LayoutSelector { get; set; }
 }
 
 public class RecipeGroupViewModel

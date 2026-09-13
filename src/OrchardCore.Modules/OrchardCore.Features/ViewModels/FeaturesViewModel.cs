@@ -18,6 +18,13 @@ public class FeaturesViewModel
     /// The features grouped by category, one <c>AdminList</c> shape per category.
     /// </summary>
     public IList<FeatureGroupViewModel> Groups { get; set; } = [];
+
+    /// <summary>
+    /// The layouts a user can switch the list to, or <see langword="null"/> when the site keeps the choice to
+    /// itself. The page carries it in the bar holding its filters: its categories share one layout, so a
+    /// selector on each of them would offer the same thing twenty times over.
+    /// </summary>
+    public IShape LayoutSelector { get; set; }
 }
 
 public class FeatureGroupViewModel
