@@ -23,7 +23,7 @@
         <textarea asp-for="Markdown" rows="5" class="form-control content-preview-text"></textarea>
         @if (!string.IsNullOrEmpty(settings.Hint))
         {
-            <span class="hint">@settings.Hint</span>
+            @await DisplayAsync(await New.Hint_Admin(Hint: settings.Hint))
         }
     </div>
 </div>
