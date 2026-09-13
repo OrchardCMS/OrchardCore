@@ -58,6 +58,7 @@ for suffix, permissions in [
     ("remote-instances", ["ManageRemoteInstances"]),
     ("remote-export", ["ExportRemoteInstances", "Export"]),
     ("remote-export-no-data", ["ExportRemoteInstances"]),
+    ("content-export-no-edit", ["Export"]),
     ("widgets", ["ManageLayers", "EditContent", "PublishContent", "ViewContent", "PreviewContent"]),
     ("widgets-editor", ["ManageLayers", "EditContent", "ViewContent", "PreviewContent"]),
     ("indexes", ["ManageIndexes"]),

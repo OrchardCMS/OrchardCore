@@ -679,3 +679,55 @@ Deletions are flushed in batches to keep the unit of work bounded, and a failure
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/j6xuupq9FYY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/wbTEUl_N0Lk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+## Remote content export
+
+Enable `OrchardCore.Contents.Deployment.Download` to expose the admin download's
+JSON format through OAuth, Pomi and MCP:
+
+```sh
+pomi content export <content-item-id>
+pomi content export <content-item-id> --latest true
+```
+
+The HTTP endpoint is `GET api/content/{contentItemId}/export`, with an optional
+`latest=true` query parameter. The default exports the published version. `latest` includes the current draft when
+one exists. The operation requires `AccessRemoteManagement`, `Export`, and the same
+per-item `EditContent` check as the admin download. Missing versions return 404;
+denied content returns 403. Admin display/download and this endpoint use the same
+lookup, authorization and serialization service. Save exported JSON in a private
+file when it contains private content. Download JSON retains its existing local
+metadata; recipe export removes the database document ID.
+
+For portable packages, enable
+`OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget`, create a deployment
+plan, and add its explicit selector:
+
+```json
+{
+  "id": "selected-content",
+  "type": "ExportContentToDeploymentTargetDeploymentStep",
+  "values": {
+    "contentItemIds": ["existing-content-id"],
+    "latest": true
+  }
+}
+```
+
+Use `pomi deployment plans steps add <plan-id> --body-file selection.json`, then
+`pomi deployment operations export --plan-id <plan-id> --request-id <request-id>`
+for an owned downloadable artifact. Alternatively, configure a remote destination
+and use `pomi deployment targets send <target-id> --plan-id <plan-id> --force`.
+These paths use the same deployment source and selected content versions. The
+receiving tenant must already have the needed content type definitions, or the plan
+must also export those definitions.
+
+The selector accepts 1–200 existing tenant content IDs and an optional `latest`
+Boolean. Duplicates are removed in order. Invalid patches preserve the stored
+selection. Queued exports use the initiating principal and fail if an item is denied
+or the selected version is no longer available. They do not read an ambient admin
+form. Existing admin plans with no explicit `contentItemIds` retain their form-based
+single/bulk selection; running those plans without a selection fails instead of
+silently exporting nothing. Per-item export permission checks also apply to this
+existing admin path.
