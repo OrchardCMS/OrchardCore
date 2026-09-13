@@ -142,4 +142,15 @@ with tempfile.TemporaryDirectory(prefix='content-export-cli-', dir=state_path.pa
     exported = next(step for step in recipe['steps'] if step['name'] == 'Content')['data']
     assert len(exported) == 1 and exported[0]['ContentItemId'] == item_id
     assert exported[0]['TitlePart']['Title'] == 'Latest probe' and 'Id' not in exported[0]
+    if len(sys.argv) > 2:
+        state_path = Path(sys.argv[2])
+        state = json.loads(state_path.read_text())
+        base = state['url']
+        assert urllib.parse.urlparse(base).hostname in ('localhost', '127.0.0.1', '::1')
+        tokens = {}
+        context = ssl.create_default_context(cafile=state.get('certificatePath'))
+        urllib.request.install_opener(urllib.request.build_opener(urllib.request.HTTPSHandler(context=context)))
+        request('api/features/OrchardCore.Contents.Deployment.Download:enable?force=true', 'POST')
+        request('api/content/' + item_id + '/export?latest=true', status=404)
+        request('api/deployment/artifacts/' + result['artifactId'], status=404)
     print('PASS: published/latest JSON export through HTTP/Pomi/MCP, shared permissions, explicit selection and queued latest-version archive', flush=True)

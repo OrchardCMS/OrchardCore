@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Linq.Expressions;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -57,6 +58,32 @@ public class ContentExportTests
         var result = new DeploymentPlanResult(Mock.Of<IFileBuilder>(), new RecipeDescriptor()) { User = user };
         await Assert.ThrowsAsync<UnauthorizedAccessException>(() => source.ProcessDeploymentStepAsync(new ExportContentToDeploymentTargetDeploymentStep { ContentItemIds = ["denied"] }, result));
         Assert.Empty(result.Steps);
+    }
+
+    [Fact]
+    public async Task AdminFormSelection_UsesSharedExportAndLatestVersion()
+    {
+        var user = new ClaimsPrincipal(new ClaimsIdentity("admin"));
+        var item = new ContentItem { ContentItemId = "selected" };
+        var content = new Mock<IContentManager>();
+        content.Setup(value => value.GetAsync("selected", VersionOptions.Latest)).ReturnsAsync(item);
+        var authorization = new Mock<IAuthorizationService>();
+        authorization.Setup(value => value.AuthorizeAsync(user, It.IsAny<object>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>())).ReturnsAsync(AuthorizationResult.Success());
+        var updater = new Mock<IUpdateModel>();
+        updater.Setup(value => value.TryUpdateModelAsync(It.IsAny<ExportContentToDeploymentTargetDeploymentSource.ExportContentToDeploymentTargetModel>(),
+            "ExportContentToDeploymentTarget", It.IsAny<Expression<Func<ExportContentToDeploymentTargetDeploymentSource.ExportContentToDeploymentTargetModel, object>>[]>()))
+            .Callback((ExportContentToDeploymentTargetDeploymentSource.ExportContentToDeploymentTargetModel model, string _, Expression<Func<ExportContentToDeploymentTargetDeploymentSource.ExportContentToDeploymentTargetModel, object>>[] _) =>
+            {
+                model.ContentItemId = "selected";
+                model.Latest = true;
+            }).ReturnsAsync(true);
+        var accessor = new Mock<IUpdateModelAccessor>();
+        accessor.SetupGet(value => value.ModelUpdater).Returns(updater.Object);
+        var source = new ExportContentToDeploymentTargetDeploymentSource(Mock.Of<YesSql.ISession>(), accessor.Object,
+            new ContentExportService(content.Object, authorization.Object), new HttpContextAccessor { HttpContext = new DefaultHttpContext { User = user } });
+        var result = new DeploymentPlanResult(Mock.Of<IFileBuilder>(), new RecipeDescriptor());
+        await source.ProcessDeploymentStepAsync(new ExportContentToDeploymentTargetDeploymentStep(), result);
+        Assert.Equal("selected", Assert.Single(result.Steps)["data"][0]["ContentItemId"].GetValue<string>());
     }
 
     [Fact]

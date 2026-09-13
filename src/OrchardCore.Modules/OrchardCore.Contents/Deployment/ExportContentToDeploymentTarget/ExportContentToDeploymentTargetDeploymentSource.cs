@@ -7,6 +7,7 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.ModelBinding;
 using YesSql;
 using YesSql.Services;
+using ISession = YesSql.ISession;
 
 namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget;
 
