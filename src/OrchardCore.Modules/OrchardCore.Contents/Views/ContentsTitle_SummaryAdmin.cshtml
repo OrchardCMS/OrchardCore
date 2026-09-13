@@ -1,0 +1,15 @@
+@using OrchardCore.Contents
+@using OrchardCore.ContentManagement
+@inject IAuthorizationService AuthorizationService
+@{
+    ContentItem contentItem = Model.ContentItem;
+}
+
+@if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
+{
+    <a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath" />
+}
+else
+{
+    @contentItem
+}

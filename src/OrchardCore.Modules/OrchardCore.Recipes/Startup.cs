@@ -1,6 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Deployment;
 using OrchardCore.Modules;
+using OrchardCore.Recipes.Models;
+using OrchardCore.Recipes.Drivers;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes.RecipeSteps;
 using OrchardCore.Recipes.Services;
@@ -17,6 +20,9 @@ public sealed class Startup : StartupBase
     {
         services.AddNavigationProvider<AdminMenu>();
         services.AddPermissionProvider<RecipesPermissionProvider>();
+
+        // Builds the rows of the recipes admin list.
+        services.AddDisplayDriver<RecipeEntry, RecipeEntryDisplayDriver>();
         services.AddRecipeExecutionStep<CommandStep>();
         services.AddRecipeExecutionStep<RecipesStep>();
         services.AddRecipeExecutionStep<ReloadTenantStep>();

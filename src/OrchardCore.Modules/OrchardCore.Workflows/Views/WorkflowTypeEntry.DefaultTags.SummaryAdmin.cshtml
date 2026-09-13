@@ -1,0 +1,18 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Workflows.ViewModels
+
+@model ShapeViewModel<WorkflowTypeEntry>
+
+@if (!Model.Value.WorkflowType.IsEnabled)
+{
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Status"]">
+        <i class="fa-solid fa-power-off text-danger" aria-hidden="true"></i> @T["Disabled"]
+    </span>
+}
+
+@if (Model.Value.HasInstances)
+{
+    <a asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@Model.Value.WorkflowType.Id" class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Instances"]">
+        <i class="fa-solid fa-list-ol text-secondary" aria-hidden="true"></i> @T["Instances"]
+    </a>
+}

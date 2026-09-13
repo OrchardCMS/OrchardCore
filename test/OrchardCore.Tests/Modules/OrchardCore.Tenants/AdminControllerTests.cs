@@ -1,6 +1,10 @@
+using OrchardCore.Admin;
+using OrchardCore.Admin.Models;
 using OrchardCore.Data;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Removing;
@@ -38,7 +42,10 @@ public class AdminControllerTests
             {
                 Page = 2,
                 PageSize = 2,
-            });
+            },
+            CreateDisplayManager(),
+            Mock.Of<IUpdateModelAccessor>(),
+            CreateAdminListService());
 
         var viewResult = Assert.IsType<ViewResult>(result);
         var model = Assert.IsType<AdminIndexViewModel>(viewResult.Model);
@@ -94,6 +101,29 @@ public class AdminControllerTests
                 HttpContext = new DefaultHttpContext(),
             },
         };
+    }
+
+    private static IDisplayManager<ShellSettingsEntry> CreateDisplayManager()
+    {
+        var displayManager = new Mock<IDisplayManager<ShellSettingsEntry>>();
+        displayManager
+            .Setup(x => x.BuildDisplayAsync(It.IsAny<ShellSettingsEntry>(), It.IsAny<IUpdateModel>(), It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync(() => new Shape());
+
+        return displayManager.Object;
+    }
+
+    private static IAdminListService CreateAdminListService()
+    {
+        var adminListService = new Mock<IAdminListService>();
+        adminListService
+            .Setup(x => x.GetLayoutAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(AdminListConstants.List);
+        adminListService
+            .Setup(x => x.GetColumnsAsync(It.IsAny<string>(), It.IsAny<IEnumerable<AdminListColumn>>(), It.IsAny<IReadOnlyDictionary<string, object>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((string _, IEnumerable<AdminListColumn> columns, IReadOnlyDictionary<string, object> _, CancellationToken _) => columns.ToList());
+
+        return adminListService.Object;
     }
 
     private static Mock<IAuthorizationService> CreateAuthorizationService()

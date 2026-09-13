@@ -112,3 +112,20 @@ input[type="password"]::-ms-clear {
 .has-filter .btn:not(.show) {
     border-color: var(--bs-border-color) !important;
 }
+
+// The magnifier is positioned over the input, so the input is never the input group's first child and
+// Bootstrap squares its leading corners, leaving a square edge facing the rounded Go button. Round them
+// again, unless a button really does come first, as it does when the group opens with a filter dropdown.
+// Logical properties keep this correct in RTL, and !important is needed because the Bootstrap rule is a
+// chain of :not() selectors that outweighs anything reasonable here.
+.input-group.has-search > .form-control:first-of-type,
+.input-group.has-filter > .form-control:first-of-type {
+    border-start-start-radius: var(--bs-border-radius) !important;
+    border-end-start-radius: var(--bs-border-radius) !important;
+}
+
+.input-group.has-search > .btn ~ .form-control:first-of-type,
+.input-group.has-filter > .btn ~ .form-control:first-of-type {
+    border-start-start-radius: 0 !important;
+    border-end-start-radius: 0 !important;
+}

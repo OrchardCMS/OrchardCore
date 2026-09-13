@@ -1,0 +1,15 @@
+@*
+    The category, state and sort filters of the tenants admin list, passed to the AdminListToolbar as its
+    'Actions' so they render at the end of the toolbar next to the bulk actions.
+*@
+@using OrchardCore.Tenants.ViewModels
+
+@{
+    var options = (TenantIndexOptions)Model.Options;
+}
+
+<div class="btn-group filter">
+    <select asp-for="@options.Category" name="Options.Category" asp-items="@options.TenantsCategories" class="selectpicker show-tick me-2" data-header="@T["Filter by category"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Category"]" data-style="btn-sm"></select>
+    <select asp-for="@options.Status" name="Options.Status" asp-items="@options.TenantsStates" class="selectpicker show-tick me-2" data-header="@T["Filter by state"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["State"]" data-style="btn-sm"></select>
+    <select asp-for="@options.OrderBy" name="Options.OrderBy" asp-items="@options.TenantsSorts" class="selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Sort"]" data-style="btn-sm"></select>
+</div>

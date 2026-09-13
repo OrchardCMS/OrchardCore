@@ -8,6 +8,11 @@ public class AdminMenuListViewModel
     public IList<AdminMenuEntry> AdminMenu { get; set; }
     public ContentOptions Options { get; set; } = new ContentOptions();
     public dynamic Pager { get; set; }
+
+    /// <summary>
+    /// The <c>AdminList</c> shape rendering the menus, the toolbar and the pager in the configured layout.
+    /// </summary>
+    public dynamic List { get; set; }
 }
 
 public class AdminMenuEntry

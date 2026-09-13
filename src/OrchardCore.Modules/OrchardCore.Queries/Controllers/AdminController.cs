@@ -10,6 +10,7 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Navigation;
 using OrchardCore.Queries.ViewModels;
 using OrchardCore.Routing;
@@ -58,7 +59,10 @@ public sealed class AdminController : Controller
         H = htmlLocalizer;
     }
 
-    public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(
+        ContentOptions options,
+        PagerParameters pagerParameters,
+        [FromServices] IAdminListService adminListService)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
         {
@@ -101,6 +105,28 @@ public sealed class AdminController : Controller
         [
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
+
+        var toolbar = await _shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
+        {
+            ItemsCount = model.Queries.Count,
+            TotalItemCount = result.Count,
+            StartIndex = model.Queries.Count > 0 ? pager.GetStartIndex() + 1 : 0,
+            EndIndex = pager.GetStartIndex() + model.Queries.Count,
+            BulkActions = model.Options.ContentsBulkAction,
+        }));
+
+        // The AdminList shape renders the queries with the configured layout (List, Table, ...).
+        model.List = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        {
+            Name = QueriesAdminList.Name,
+            Layout = await adminListService.GetLayoutAsync(QueriesAdminList.Name, cancellationToken: HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(QueriesAdminList.Name, QueriesAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
+            Rows = model.Queries.Select(entry => entry.Shape).ToList(),
+            Toolbar = toolbar,
+            Pager = model.Pager,
+            ItemCssClass = "list-group-item",
+            EmptyMessage = H["<strong>Nothing here!</strong> There are no queries for the moment."],
+        }));
 
         return View(model);
     }

@@ -16,6 +16,7 @@ using OrchardCore.Deployment;
 using OrchardCore.Deployment.Core.Services;
 using OrchardCore.FileStorage;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Json;
@@ -90,7 +91,12 @@ public sealed class WorkflowTypeController : Controller
     }
 
     [Admin("Workflows/Types", "WorkflowTypes")]
-    public async Task<IActionResult> Index(WorkflowTypeIndexOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(
+        WorkflowTypeIndexOptions options,
+        PagerParameters pagerParameters,
+        [FromServices] IDisplayManager<WorkflowTypeEntry> displayManager,
+        [FromServices] IUpdateModelAccessor updateModelAccessor,
+        [FromServices] IAdminListService adminListService)
     {
         if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows))
         {
@@ -162,6 +168,35 @@ public sealed class WorkflowTypeController : Controller
         [
             new SelectListItem(S["Delete"], nameof(WorkflowTypeBulkAction.Delete)),
         ];
+
+        var rows = new List<object>(model.WorkflowTypes.Count);
+
+        foreach (var entry in model.WorkflowTypes)
+        {
+            rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
+        }
+
+        var toolbar = await _shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
+        {
+            ItemsCount = model.WorkflowTypes.Count,
+            TotalItemCount = count,
+            StartIndex = model.WorkflowTypes.Count > 0 ? pager.GetStartIndex() + 1 : 0,
+            EndIndex = pager.GetStartIndex() + model.WorkflowTypes.Count,
+            BulkActions = model.Options.WorkflowTypesBulkAction,
+        }));
+
+        // The AdminList shape renders the types with the configured layout (List, Table, ...).
+        model.List = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        {
+            Name = WorkflowTypesAdminList.Name,
+            Layout = await adminListService.GetLayoutAsync(WorkflowTypesAdminList.Name, cancellationToken: HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(WorkflowTypesAdminList.Name, WorkflowTypesAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
+            Rows = rows,
+            Toolbar = toolbar,
+            Pager = model.Pager,
+            ItemCssClass = "list-group-item",
+            EmptyMessage = H["<strong>Nothing here!</strong> There are no workflow types for the moment."],
+        }));
 
         return View(model);
     }

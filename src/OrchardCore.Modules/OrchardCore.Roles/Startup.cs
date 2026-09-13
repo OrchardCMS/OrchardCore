@@ -15,6 +15,9 @@ using OrchardCore.Roles.Deployment;
 using OrchardCore.Roles.Migrations;
 using OrchardCore.Roles.Recipes;
 using OrchardCore.Roles.Services;
+using OrchardCore.Roles.ViewModels;
+using OrchardCore.Roles.Drivers;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Security.Services;
@@ -78,6 +81,9 @@ public sealed class RoleUpdaterStartup : StartupBase
         services.AddRolesCoreServices();
         services.AddScoped<RoleManager<IRole>>();
         services.AddScoped<IRoleService, RoleService>();
+
+        // Builds the rows of the roles admin list.
+        services.AddDisplayDriver<RoleEntry, RoleEntryDisplayDriver>();
         services.AddScoped<RoleUpdater>();
         services.AddScoped<IFeatureEventHandler>(sp => sp.GetRequiredService<RoleUpdater>());
         services.AddScoped<IRoleCreatedEventHandler>(sp => sp.GetRequiredService<RoleUpdater>());

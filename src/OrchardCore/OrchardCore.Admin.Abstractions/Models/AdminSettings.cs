@@ -12,4 +12,23 @@ public class AdminSettings
     public bool DisplayNewMenu { get; set; }
 
     public bool DisplayTitlesInTopbar { get; set; }
+
+    /// <summary>
+    /// The layout used to render admin lists, e.g. <see cref="AdminListConstants.List"/> or <see cref="AdminListConstants.Table"/>.
+    /// When empty, <see cref="AdminListOptions.DefaultLayout"/> is used.
+    /// </summary>
+    public string ListLayout { get; set; }
+
+    /// <summary>
+    /// The layout of the row actions of admin lists, e.g. <see cref="AdminListActionsLayouts.Buttons"/> or <see cref="AdminListActionsLayouts.Menu"/>.
+    /// When empty, <see cref="AdminListOptions.DefaultActionsLayout"/> is used.
+    /// </summary>
+    public string ListActionsLayout { get; set; }
+
+    /// <summary>
+    /// Whether a list shows a selector letting the user render it with another layout. The choice is kept in a
+    /// cookie, per list, and only applies to that user. When this is off, every list uses
+    /// <see cref="ListLayout"/>.
+    /// </summary>
+    public bool AllowUserListLayoutSelection { get; set; }
 }

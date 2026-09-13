@@ -1,4 +1,24 @@
 @model OrchardCore.Admin.ViewModels.AdminSettingsViewModel
+@using OrchardCore.DisplayManagement
+@using OrchardCore.DisplayManagement.Descriptors
+@using OrchardCore.DisplayManagement.Theming
+
+@inject IThemeManager ThemeManager
+@inject IShapeTableManager ShapeTableManager
+
+@{
+    // Layouts are discovered from the shape table, like content field editors: a layout is available
+    // when a shape named AdminListLayout_Option__{Layout} exists, e.g. AdminListLayout-Table.Option.cshtml.
+    var shapeTable = await ThemeManager.GetShapeTableAsync(ShapeTableManager);
+    var layoutOptionShapes = shapeTable.Bindings.Keys
+        .Where(x => x.StartsWith(AdminListConstants.OptionShapePrefix, StringComparison.OrdinalIgnoreCase))
+        .OrderBy(x => x, StringComparer.OrdinalIgnoreCase);
+
+    // Same convention for the layouts of the row actions: AdminListActions_Option__{Layout}.
+    var actionsLayoutOptionShapes = shapeTable.Bindings.Keys
+        .Where(x => x.StartsWith(AdminListActionsLayouts.OptionShapePrefix, StringComparison.OrdinalIgnoreCase))
+        .OrderBy(x => x, StringComparer.OrdinalIgnoreCase);
+}
 
 <div class="ocat-wrapper" asp-validation-class-for="DisplayThemeToggler">
     <div class="ocat-end-offset">
@@ -37,5 +57,41 @@
             <label asp-for="DisplayTitlesInTopbar" class="form-check-label">@T["Display titles in top bar"]</label>
         </div>
         <span class="hint">@T["Whether the titles are displayed in the top bar."]</span>
+    </div>
+</div>
+
+<div class="mb-3" asp-validation-class-for="ListLayout">
+    <label asp-for="ListLayout" class="form-label">@T["List layout"]</label>
+    <select asp-for="ListLayout" class="form-select">
+        @foreach (var shapeType in layoutOptionShapes)
+        {
+            var optionShape = await Factory.CreateAsync(shapeType);
+            optionShape.Properties["ListLayout"] = Model.ListLayout;
+            @await DisplayAsync(optionShape)
+        }
+    </select>
+    <span class="hint">@T["How the admin lists are rendered, e.g. the content items list. When left unchanged, the value configured for this site in appsettings.json under {0} is used.", "OrchardCore:AdminList:DefaultLayout"]</span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="ListActionsLayout">
+    <label asp-for="ListActionsLayout" class="form-label">@T["List actions layout"]</label>
+    <select asp-for="ListActionsLayout" class="form-select">
+        @foreach (var shapeType in actionsLayoutOptionShapes)
+        {
+            var optionShape = await Factory.CreateAsync(shapeType);
+            optionShape.Properties["ListActionsLayout"] = Model.ListActionsLayout;
+            @await DisplayAsync(optionShape)
+        }
+    </select>
+    <span class="hint">@T["How the actions of each row are displayed: as buttons, or in a single compact menu. When left unchanged, the value configured for this site in appsettings.json under {0} is used.", "OrchardCore:AdminList:DefaultActionsLayout"]</span>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="AllowUserListLayoutSelection">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input asp-for="AllowUserListLayoutSelection" class="form-check-input" type="checkbox" />
+            <label asp-for="AllowUserListLayoutSelection" class="form-check-label">@T["Let users choose the layout of a list"]</label>
+        </div>
+        <span class="hint">@T["Whether each list shows a selector with the available layouts. A user's choice is kept in a cookie, per list, and applies to that user only. The layout above stays the one every list starts from."]</span>
     </div>
 </div>

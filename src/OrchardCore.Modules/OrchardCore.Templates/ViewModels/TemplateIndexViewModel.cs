@@ -8,6 +8,11 @@ public class TemplateIndexViewModel
 {
     public IList<TemplateEntry> Templates { get; set; }
     public dynamic Pager { get; set; }
+
+    /// <summary>
+    /// The <c>AdminList</c> shape rendering the templates, the toolbar and the pager in the configured layout.
+    /// </summary>
+    public dynamic List { get; set; }
     public ContentOptions Options { get; set; } = new ContentOptions();
 }
 
@@ -15,6 +20,11 @@ public class TemplateEntry
 {
     public string Name { get; set; }
     public Template Template { get; set; }
+
+    /// <summary>
+    /// Whether the entry belongs to the admin templates, which the row links carry in their route.
+    /// </summary>
+    public bool AdminTemplates { get; set; }
 }
 
 public class ContentOptions

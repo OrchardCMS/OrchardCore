@@ -10,6 +10,8 @@ using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks.Services;
 using OrchardCore.BackgroundTasks.ViewModels;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
@@ -53,7 +55,12 @@ public sealed class BackgroundTaskController : Controller
     }
 
     [Admin("BackgroundTasks", "BackgroundTasks")]
-    public async Task<IActionResult> Index(AdminIndexOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(
+        AdminIndexOptions options,
+        PagerParameters pagerParameters,
+        [FromServices] IDisplayManager<BackgroundTaskEntry> displayManager,
+        [FromServices] IUpdateModelAccessor updateModelAccessor,
+        [FromServices] IAdminListService adminListService)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
         {
@@ -136,6 +143,42 @@ public sealed class BackgroundTaskController : Controller
             Pager = pagerShape,
             Options = options,
         };
+
+        var rows = new List<object>(model.Tasks.Count);
+
+        foreach (var entry in model.Tasks)
+        {
+            rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
+        }
+
+        // The status filter renders at the end of the toolbar, next to the bulk actions.
+        var filters = await _shapeFactory.CreateAsync("BackgroundTasksFilters", Arguments.From(new
+        {
+            Options = options,
+        }));
+
+        var toolbar = await _shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
+        {
+            ItemsCount = model.Tasks.Count,
+            TotalItemCount = taskItems.Count,
+            StartIndex = model.Tasks.Count > 0 ? pager.GetStartIndex() + 1 : 0,
+            EndIndex = pager.GetStartIndex() + model.Tasks.Count,
+            BulkActions = options.BulkActions,
+            Actions = filters,
+        }));
+
+        // The AdminList shape renders the tasks with the configured layout (List, Table, ...).
+        model.List = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        {
+            Name = BackgroundTasksAdminList.Name,
+            Layout = await adminListService.GetLayoutAsync(BackgroundTasksAdminList.Name, cancellationToken: HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(BackgroundTasksAdminList.Name, BackgroundTasksAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
+            Rows = rows,
+            Toolbar = toolbar,
+            Pager = model.Pager,
+            ItemCssClass = "list-group-item",
+            EmptyMessage = H["<strong>Nothing here!</strong> There are no background tasks for the moment."],
+        }));
 
         return View(model);
     }

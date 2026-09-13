@@ -1,0 +1,7 @@
+@model AuditTrailEventViewModel
+
+<span class="badge ta-badge fw-normal">
+    <i class="fa-solid fa-history text-secondary" aria-hidden="true"></i>
+    <a href="?q=category:@Model.Descriptor.Category" data-bs-toggle="tooltip"
+       title="@T["Category"]">@Model.Descriptor.LocalizedCategory(Context.RequestServices)</a>
+</span>

@@ -1,0 +1,39 @@
+﻿@* The actions sit beside the whole row, centred on it, and everything else is stacked in the column
+   left of them, so the description stops where the actions begin instead of running under them. *@
+<div class="row g-0 align-items-center">
+    <div class="col">
+        <div class="title d-flex align-items-center">
+            <div class="summary d-flex flex-column flex-md-row list-item-search-text">
+                <div class="me-2">
+                    @if (Model.Content != null)
+                    {
+                        @await DisplayAsync(Model.Content)
+                    }
+                </div>
+
+                @if (Model.Tags != null)
+                {
+                    <div class="tags me-1">
+                        @await DisplayAsync(Model.Tags)
+                    </div>
+                }
+                @if (Model.Meta != null)
+                {
+                    <div class="metadata me-1">
+                        @await DisplayAsync(Model.Meta)
+                    </div>
+                }
+            </div>
+        </div>
+
+        @if (Model.Description != null)
+        {
+            @* Its own line under the title, so the badges beside the title keep the same offset on every row. *@
+            @await DisplayAsync(Model.Description)
+        }
+    </div>
+    <div class="col-auto d-flex justify-content-end ps-2">
+        @* The Actions and ActionsMenu zones are rendered in the layout configured in the admin settings (Buttons, Menu, ...). *@
+        @await DisplayAsync(await New.AdminListActions(Row: Model))
+    </div>
+</div>

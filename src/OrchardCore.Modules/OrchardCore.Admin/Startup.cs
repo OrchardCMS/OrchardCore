@@ -1,4 +1,4 @@
-using Fluid;
+﻿using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin.Configuration;
 using OrchardCore.Admin.Controllers;
 using OrchardCore.Admin.Drivers;
 using OrchardCore.Admin.Models;
+using OrchardCore.Admin.Services;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -60,8 +62,17 @@ public sealed class Startup : StartupBase
         services.AddSingleton<IPageRouteModelProvider, AdminPageRouteModelProvider>();
         services.AddDisplayDriver<Navbar, VisitSiteNavbarDisplayDriver>();
         services.AddShapeTableProvider<AdminDashboardShapeTableProvider>();
+        services.AddShapeTableProvider<AdminListShapeTableProvider>();
+        services.AddScoped<IAdminListService, DefaultAdminListService>();
+        services.AddScoped<AdminListLayoutPreference>();
 
         services.Configure<AdminOptions>(_configuration.GetSection("OrchardCore_Admin"));
+
+        // The tenant configuration is bound first, then the site settings override it, so the monitor exposes
+        // the effective defaults. The signal-backed change token refreshes it when the settings are saved.
+        services.Configure<AdminListOptions>(_configuration.GetSection("AdminList"))
+            .AddTransient<IConfigureOptions<AdminListOptions>, AdminListOptionsConfiguration>()
+            .AddSignalOptionsChangeTokenSource<AdminListOptions>();
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

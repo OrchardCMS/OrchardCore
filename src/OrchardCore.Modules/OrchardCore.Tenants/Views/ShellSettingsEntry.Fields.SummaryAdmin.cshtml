@@ -1,0 +1,9 @@
+@using Microsoft.AspNetCore.Http
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Environment.Shell
+@using OrchardCore.Tenants.ViewModels
+
+@model ShapeViewModel<ShellSettingsEntry>
+
+@* Plain link, like the title of a content item in the Manage Content list. It opens the tenant itself. *@
+<a class="text-break" href="@ViewContext.HttpContext.GetEncodedUrl(Model.Value)">@Model.Value.Name</a>

@@ -9,6 +9,7 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Modules;
@@ -74,7 +75,8 @@ public sealed class AdminController : Controller, IUpdateModel
     public async Task<IActionResult> List(
         [ModelBinder(BinderType = typeof(NotificationFilterEngineModelBinder), Name = "q")] QueryFilterResult<Notification> queryFilterResult,
         PagerParameters pagerParameters,
-        ListNotificationOptions options)
+        ListNotificationOptions options,
+        [FromServices] IAdminListService adminListService)
     {
         if (!await _authorizationService.AuthorizeAsync(HttpContext.User, NotificationPermissions.ManageNotifications))
         {
@@ -120,6 +122,14 @@ public sealed class AdminController : Controller, IUpdateModel
             var shape = await _notificationDisplayManager.BuildDisplayAsync(notification, this, OrchardCoreConstants.DisplayType.SummaryAdmin);
             shape.Properties[nameof(Notification)] = notification;
 
+            // The read state is a class on the row itself, so every layout renders it on its own row element.
+            if (shape is Shape rowShape)
+            {
+                rowShape.Classes.Add(notification.GetOrCreate<NotificationReadInfo>().IsRead
+                    ? NotificationsAdminList.ReadCssClass
+                    : NotificationsAdminList.UnreadCssClass);
+            }
+
             notificationShapes.Add(shape);
         }
 
@@ -131,12 +141,26 @@ public sealed class AdminController : Controller, IUpdateModel
 
         var header = await _notificationOptionsDisplayManager.BuildEditorAsync(options, this, false, string.Empty, string.Empty);
 
+        // The AdminList shape renders the notifications with the configured layout (List, Table, ...).
+        var list = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        {
+            Name = NotificationsAdminList.Name,
+            Layout = await adminListService.GetLayoutAsync(NotificationsAdminList.Name, cancellationToken: HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(NotificationsAdminList.Name, NotificationsAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
+            Rows = notificationShapes,
+            Header = header,
+            Pager = pagerShape,
+            ItemCssClass = "list-group-item notification-container-item",
+            EmptyMessage = H["No notifications found."],
+        }));
+
         var shapeViewModel = await _shapeFactory.CreateAsync<ListNotificationsViewModel>("NotificationsAdminList", viewModel =>
         {
             viewModel.Options = options;
             viewModel.Header = header;
             viewModel.Notifications = notificationShapes;
             viewModel.Pager = pagerShape;
+            viewModel.List = list;
         });
 
         return View(shapeViewModel);

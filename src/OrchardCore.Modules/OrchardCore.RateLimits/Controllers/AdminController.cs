@@ -84,7 +84,8 @@ public sealed class AdminController : Controller
         string searchText = null,
         PagerParameters pagerParameters = null,
         [FromServices] IOptions<PagerOptions> pagerOptions = null,
-        [FromServices] IShapeFactory shapeFactory = null)
+        [FromServices] IShapeFactory shapeFactory = null,
+        [FromServices] IAdminListService adminListService = null)
     {
         if (!await _authorizationService.AuthorizeAsync(User, RateLimitsPermissions.ManageRateLimits))
         {
@@ -135,6 +136,29 @@ public sealed class AdminController : Controller
                 ? await shapeFactory.PagerAsync(pager, totalCount, routeData)
                 : null,
         };
+
+        // Each bulk action carries its own warning about the website restarting, so the list uses the
+        // module's own toolbar rather than the generic AdminListToolbar.
+        var toolbar = await shapeFactory.CreateAsync("RateLimitsToolbar", Arguments.From(new
+        {
+            ItemsCount = model.Policies.Count,
+            BulkActions = model.BulkActions,
+        }));
+
+        // The AdminList shape renders the policies with the configured layout (List, Table, ...).
+        model.List = await shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        {
+            Name = RateLimitsAdminList.Name,
+            Layout = await adminListService.GetLayoutAsync(RateLimitsAdminList.Name, cancellationToken: HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(RateLimitsAdminList.Name, RateLimitsAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
+            Rows = model.Policies.Select(entry => entry.Shape).ToList(),
+            Toolbar = toolbar,
+            Pager = model.Pager,
+            ItemCssClass = "list-group-item",
+            EmptyMessage = string.IsNullOrWhiteSpace(searchText)
+                ? H["<strong>Nothing here!</strong> There are no rate limit policies yet."]
+                : H["<strong>Nothing here!</strong> No policies match the current search."],
+        }));
 
         return View(model);
     }
@@ -430,10 +454,10 @@ public sealed class AdminController : Controller
         {
             PolicyId = policy.PolicyId,
             ActionsMenu = shape.ActionsMenu,
+            Shape = shape,
             Policy = policy,
             Name = policy.Name,
             Description = policy.Description,
-            TargetDescription = DescribeTarget(policy),
             Status = policy.Status,
             EnabledUtc = policy.EnabledUtc,
             IsEnabled = policy.IsEnabled,
@@ -809,17 +833,6 @@ public sealed class AdminController : Controller
         }
 
         return $"{trimmedName} (1)";
-    }
-
-    private string DescribeTarget(RateLimitPolicy policy)
-    {
-        return policy?.Scope switch
-        {
-            RateLimitPolicyScope.Global => S["Applies to every tenant request."],
-            RateLimitPolicyScope.Endpoint => string.Format(CultureInfo.CurrentCulture, S["Matches requests starting with '{0}'."], policy.Path),
-            RateLimitPolicyScope.Group => string.Format(CultureInfo.CurrentCulture, S["Matches endpoints in the '{0}' group."], policy.GroupName),
-            _ => string.Empty,
-        };
     }
 
     private static IEnumerable<string> GetRateLimitGroups(Endpoint endpoint)

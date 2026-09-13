@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using OrchardCore.Admin.Models;
 using OrchardCore.Admin.ViewModels;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Environment.Options;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Admin.Drivers;
@@ -15,13 +17,19 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
 
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
+    private readonly IOptionsMonitor<AdminListOptions> _adminListOptions;
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
 
     public AdminSiteSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService)
+        IAuthorizationService authorizationService,
+        IOptionsMonitor<AdminListOptions> adminListOptions,
+        IOptionsUpdateNotifier optionsUpdateNotifier)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
+        _adminListOptions = adminListOptions;
+        _optionsUpdateNotifier = optionsUpdateNotifier;
     }
 
     protected override string SettingsGroupId
@@ -36,13 +44,22 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
             return null;
         }
 
-        return Initialize<AdminSettingsViewModel, AdminSettings>("AdminSettings_Edit", static (model, settings) =>
+        var adminListOptions = _adminListOptions.CurrentValue;
+
+        return Initialize<AdminSettingsViewModel, AdminSettings, AdminListOptions>("AdminSettings_Edit", static (model, settings, adminListOptions) =>
         {
             model.DisplayThemeToggler = settings.DisplayThemeToggler;
             model.DisplayMenuFilter = settings.DisplayMenuFilter;
             model.DisplayNewMenu = settings.DisplayNewMenu;
             model.DisplayTitlesInTopbar = settings.DisplayTitlesInTopbar;
-        }, settings).Location("Content:3")
+            model.ListLayout = string.IsNullOrWhiteSpace(settings.ListLayout)
+                ? adminListOptions.DefaultLayout
+                : settings.ListLayout;
+            model.ListActionsLayout = string.IsNullOrWhiteSpace(settings.ListActionsLayout)
+                ? adminListOptions.DefaultActionsLayout
+                : settings.ListActionsLayout;
+            model.AllowUserListLayoutSelection = settings.AllowUserListLayoutSelection;
+        }, settings, adminListOptions).Location("Content:3")
         .OnGroup(SettingsGroupId);
     }
 
@@ -63,6 +80,20 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
         settings.DisplayMenuFilter = model.DisplayMenuFilter;
         settings.DisplayNewMenu = model.DisplayNewMenu;
         settings.DisplayTitlesInTopbar = model.DisplayTitlesInTopbar;
+        var listLayout = string.IsNullOrWhiteSpace(model.ListLayout) ? null : model.ListLayout.Trim();
+        var listActionsLayout = string.IsNullOrWhiteSpace(model.ListActionsLayout) ? null : model.ListActionsLayout.Trim();
+
+        if (settings.ListLayout != listLayout ||
+            settings.ListActionsLayout != listActionsLayout ||
+            settings.AllowUserListLayoutSelection != model.AllowUserListLayoutSelection)
+        {
+            // Refreshes IOptionsMonitor<AdminListOptions> once this shell scope commits.
+            _optionsUpdateNotifier.RequestUpdate<AdminListOptions>();
+        }
+
+        settings.ListLayout = listLayout;
+        settings.ListActionsLayout = listActionsLayout;
+        settings.AllowUserListLayoutSelection = model.AllowUserListLayoutSelection;
 
         return await EditAsync(site, settings, context);
     }

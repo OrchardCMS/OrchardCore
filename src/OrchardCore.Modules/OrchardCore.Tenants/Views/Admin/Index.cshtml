@@ -1,14 +1,5 @@
 @model AdminIndexViewModel
 
-@using Microsoft.Extensions.Options
-
-@inject IOptions<TenantsOptions> TenantsOptions
-
-@{
-    int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
-    int endIndex = startIndex + Model.ShellSettingsEntries.Count - 1;
-}
-
 <style asp-name="bootstrap-select" at="Head"></style>
 <script asp-name="bootstrap-select" at="Foot"></script>
 
@@ -21,11 +12,12 @@
 
     <div class="card text-bg-theme mb-3 position-sticky action-bar">
         <div class="card-body">
-            <div class="row gx-3">
+            <div class="row gx-2">
                 <div class="col">
-                    <div class="has-search">
+                    <div class="input-group has-search">
                         <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
-                        <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+                        <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus autocomplete="off" />
+                        <button type="submit" name="submit.Filter" class="btn btn-outline-secondary" title="@T["Search"]">@T["Go"]</button>
                     </div>
                 </div>
                 <div class="col-auto">
@@ -34,90 +26,9 @@
             </div>
         </div>
     </div>
-    <ul class="list-group with-checkbox">
-        <li class="list-group-item text-bg-theme">
-            <div class="row gx-3">
-                <div class="col text-nowrap">
-                    <div class="form-check my-1">
-                        <input type="checkbox" class="form-check-input" id="select-all">
-                        <label class="form-check-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
-                        <label id="items" for="select-all">@T.Plural(Model.ShellSettingsEntries.Count, "{0} item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
-                        <label id="selected-items" class="text-muted" for="select-all"></label>
-                    </div>
-                </div>
-                <div class="col-auto">
-                    <div class="dropdown d-none" id="actions">
-                        <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            @T["Actions"]
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            @foreach (var item in Model.Options.TenantsBulkAction)
-                            {
-                                @if (item.Value == nameof(TenantsBulkAction.Remove) && !TenantsOptions.Value.TenantRemovalAllowed)
-                                {
-                                    continue;
-                                }
 
-                                <li><a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a></li>
-                            }
-                        </ul>
-                    </div>
-
-                    <div class="btn-group filter">
-                        <select asp-for="Options.Category" asp-items="@Model.Options.TenantsCategories" class="selectpicker show-tick me-2" data-header="@T["Filter by category"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Category"]" data-style="btn-sm"></select>
-                        <select asp-for="Options.Status" asp-items="@Model.Options.TenantsStates" class="selectpicker show-tick me-2" data-header="@T["Filter by state"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["State"]" data-style="btn-sm"></select>
-                        <select asp-for="Options.OrderBy" asp-items="@Model.Options.TenantsSorts" class="selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Sort"]" data-style="btn-sm"></select>
-                    </div>
-                </div>
-            </div>
-        </li>
-        @if (Model.ShellSettingsEntries.Count > 0)
-        {
-            @foreach (var entry in Model.ShellSettingsEntries)
-            {
-                <li class="list-group-item">
-                    <div class="row">
-                        <div class="col-lg-6 col-sm-12 title d-flex">
-                            <div class="form-check float-start flex-shrink-0">
-                                <input type="checkbox" class="form-check-input" value="@entry.Name" name="tenantNames" id="tenantNames-@entry.Name">
-                                <label class="form-check-label" for="tenantNames-@entry.Name"></label>
-                            </div>
-                            <div class="d-inline">
-                                @await DisplayAsync(await New.TenantActionTags(ShellSettingsEntry: entry))
-                            </div>
-                        </div>
-                        <div class="col-lg-6 col-sm-12 float-end">
-                            <div class="float-end">
-                                @await DisplayAsync(await New.TenantActionButtons(ShellSettingsEntry: entry))
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            @if (!string.IsNullOrEmpty(entry.Description))
-                            {
-                                <p class="mb-0"><small class="text-muted">@entry.Description</small></p>
-                            }
-                            @if (!string.IsNullOrEmpty(entry.ShellSettings.RequestUrlHost))
-                            {
-                                <p class="mb-0"><code class="text-break" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@T["Url host"]">@entry.ShellSettings.RequestUrlHost</code></p>
-                            }
-                        </div>
-                    </div>
-                </li>
-            }
-        }
-        else
-        {
-            <li class="list-group-item">
-                <div class="alert alert-info mb-0">
-                    @T["<strong>Nothing here!</strong> Your search returned no results."]
-                </div>
-            </li>
-        }
-    </ul>
+    @* The tenants, the toolbar and the pager are rendered by the AdminList shape using the configured layout (List, Table, ...). *@
+    @await DisplayAsync(Model.List)
 </form>
-
-@await DisplayAsync(Model.Pager)
 
 <script asp-name="list-management" at="Foot"></script>

@@ -19,4 +19,10 @@ public class RateLimitsIndexViewModel
 
     [BindNever]
     public dynamic Pager { get; set; }
+
+    /// <summary>
+    /// The <c>AdminList</c> shape rendering the policies, the toolbar and the pager in the configured layout.
+    /// </summary>
+    [BindNever]
+    public dynamic List { get; set; }
 }

@@ -1,6 +1,5 @@
 @using Microsoft.AspNetCore.Authorization
 @using OrchardCore.Roles
-@using System.Linq
 
 @model OrchardCore.Roles.ViewModels.RolesViewModel
 
@@ -13,91 +12,36 @@
 <zone Name="Title"><h1>@RenderTitleSegments(T["Roles"])</h1></zone>
 
 <div data-list-management data-client-side-search="true">
-<div class="card mb-3 text-bg-theme position-sticky action-bar">
-    <div class="card-body">
-        <div class="row gx-3">
-            <div class="col">
-                <div class="has-search">
-                    <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
-                    <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+    <div class="card mb-3 text-bg-theme position-sticky action-bar">
+        <div class="card-body">
+            <div class="row gx-2">
+                <div class="col">
+                    <div class="input-group has-search">
+                        <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
+                        <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus autocomplete="off" />
+                        <button type="submit" name="submit.Filter" class="btn btn-outline-secondary" title="@T["Search"]">@T["Go"]</button>
+                    </div>
                 </div>
+                @if (hasManagePermission)
+                {
+                    <div class="col-auto">
+                        <a asp-route-action="Create" class="btn btn-secondary create" role="button">@T["Add Role"]</a>
+                    </div>
+                }
             </div>
-            @if (hasManagePermission)
-            {
-                <div class="col-auto">
-                    <a asp-route-action="Create" class="btn btn-secondary create" role="button">@T["Add Role"]</a>
-                </div>
-            }
         </div>
     </div>
-</div>
 
-<form asp-action="Index" class="roles">
-    @{
-        var message = T["Are you sure you want to delete this role?"];
-    }
-    <ul class="list-group">
-        @for (var i = 0; i < Model.RoleEntries.Count; i++)
-        {
-            var entry = Model.RoleEntries[i];
+    <form asp-action="Index" class="roles">
+        <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
 
-            <li class="list-group-item" data-filter-value="@entry.Name">
-                <div class="d-flex justify-content-between">
-                    <div class="list-item-search-text">
-                        <span>@entry.Name</span>
+        @* The roles are rendered by the AdminList shape using the configured layout (List, Table, ...). *@
+        @await DisplayAsync(Model.List)
+    </form>
 
-                        @if (entry.IsSystemRole)
-                        {
-                            <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["The '{0}' role cannot be deleted.", entry.Name]">
-                                <i class="fa-solid fa-shield text-secondary me-1" aria-hidden="true"></i>@T["System"]
-                            </span>
-                        }
-                    </div>
-
-                    <div>
-                        @if (hasManagePermission)
-                        {
-                            <a class="edit btn btn-primary btn-sm list-item-action" role="button" asp-action="Edit" asp-route-id="@entry.Name">@T["Edit"]</a>
-                            <a class="btn btn-success btn-sm" role="button" asp-action="Display" asp-route-id="@entry.Name">@T["View"]</a>
-                        }
-                        else
-                        {
-                            <a class="btn btn-success btn-sm list-item-action" role="button" asp-action="Display" asp-route-id="@entry.Name">@T["View"]</a>
-                        }
-
-                        @if (hasManagePermission && !(entry.IsAdminRole && entry.IsSystemRole))
-                        {
-                            <div class="btn-group" title="@T["Actions"]">
-                                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    @T["Actions"]
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    @if (!entry.IsAdminRole)
-                                    {
-                                        <a class="dropdown-item" asp-action="Clone" asp-route-id="@entry.Name">@T["Clone"]</a>
-                                    }
-
-                                    @if (!entry.IsSystemRole)
-                                    {
-                                        <a class="dropdown-item text-danger" asp-route-id="@entry.Name" role="button" asp-action="Delete" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Delete Role"]" data-message="@message">@T["Delete"]</a>
-                                    }
-                                </ul>
-                            </div>
-                        }
-                    </div>
-                </div>
-                @if (!string.IsNullOrWhiteSpace(entry.Description))
-                {
-                    <p class="text-muted mb-0 list-item-search-text">@entry.Description</p>
-                }
-            </li>
-        }
-    </ul>
-    <div id="list-alert" class="alert alert-info d-none" role="alert">
-        @T["<strong>Nothing here!</strong> Your search returned no results."]
+    <div id="list-alert" class="alert alert-info my-3 d-none text-center" role="alert">
+        @T["Your search returned no results."]
     </div>
-</form>
-
 </div>
 
 <script asp-name="list-management" at="Foot"></script>

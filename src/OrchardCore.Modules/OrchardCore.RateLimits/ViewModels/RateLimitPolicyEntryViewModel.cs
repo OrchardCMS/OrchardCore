@@ -8,13 +8,16 @@ public class RateLimitPolicyEntryViewModel
 
     public dynamic ActionsMenu { get; set; }
 
+    /// <summary>
+    /// The full <c>SummaryAdmin</c> row shape rendered by the <c>AdminList</c> shape.
+    /// </summary>
+    public dynamic Shape { get; set; }
+
     public RateLimitPolicy Policy { get; set; }
 
     public string Name { get; set; }
 
     public string Description { get; set; }
-
-    public string TargetDescription { get; set; }
 
     public RateLimitPolicyStatus Status { get; set; }
 

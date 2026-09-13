@@ -1,8 +1,4 @@
 @model ListSitemapIndexViewModel
-@{
-    int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
-    int endIndex = startIndex + Model.SitemapIndexes.Count - 1;
-}
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Sitemap Indexes"])</h1></zone>
 
@@ -11,7 +7,7 @@
     <p class="alert alert-warning">@T["The site settings 'Base url' property is empty, but is required to generate sitemaps."]</p>
 }
 
-@* the form is necessary to generate the antiforgery token*@
+@* the form is necessary to generate the antiforgery token *@
 <form asp-action="List" method="post" class="no-multisubmit" data-list-management data-selected-label="@T["selected"]">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
@@ -19,11 +15,12 @@
 
     <div class="card text-bg-theme mb-3 position-sticky action-bar">
         <div class="card-body">
-            <div class="row gx-3">
+            <div class="row gx-2">
                 <div class="col">
-                    <div class="has-search">
+                    <div class="input-group has-search">
                         <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
-                        <input asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+                        <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus autocomplete="off" />
+                        <button type="submit" name="submit.Filter" class="btn btn-outline-secondary" title="@T["Search"]">@T["Go"]</button>
                     </div>
                 </div>
                 <div class="col-auto">
@@ -32,80 +29,9 @@
             </div>
         </div>
     </div>
-    <ul class="list-group with-checkbox">
-        @if (Model.SitemapIndexes.Any())
-        {
-            <li class="list-group-item text-bg-theme">
-                <div class="row gx-3">
-                    <div class="col">
-                        <div class="form-check my-1">
-                            <input type="checkbox" class="form-check-input" id="select-all">
-                            <label class="form-check-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
-                            <label id="items" for="select-all">@T.Plural(Model.SitemapIndexes.Count, "{0} item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
-                            <label id="selected-items" class="text-muted" for="select-all"></label>
-                        </div>
-                    </div>
-                    <div class="col-auto">
-                        <div class="dropdown d-none" id="actions">
-                            <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                @T["Actions"]
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                @foreach (var item in Model.Options.ContentsBulkAction)
-                                {
-                                    <li><a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a></li>
-                                }
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </li>
-            @foreach (var entry in Model.SitemapIndexes)
-            {
-                <li class="list-group-item">
-                    <div class="form-check float-start">
-                        <input type="checkbox" class="form-check-input" value="@entry.SitemapId" name="itemIds" id="itemIds-@entry.SitemapId">
-                        <label class="form-check-label" for="itemIds-@entry.SitemapId">&nbsp;</label>
-                    </div>
-                    <div class="w-100">
-                        <div class="float-end">
-                            @if (entry.Enabled)
-                            {
-                                <a asp-action="Index" asp-controller="Sitemap" asp-area="OrchardCore.Sitemaps" asp-route-sitemapId="@entry.SitemapId" target="_blank" class="btn btn-success btn-sm">@T["View"]</a>
-                            }
-                            <a asp-action="Edit" asp-route-sitemapId="@entry.SitemapId" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                            <div class="btn-group btn-group-sm">
-                                <a asp-action="Delete"
-                           asp-route-sitemapId="@entry.SitemapId"
-                           class="btn btn-danger" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
-                                <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <span class="visually-hidden">@T["Toggle Dropdown"]</span>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <li>
-                                        <a asp-action="Toggle"
-                                   asp-route-sitemapId="@entry.SitemapId"
-                                   class="dropdown-item btn-sm" data-url-af="UnsafeUrl">@(entry.Enabled ? T["Disable"] : T["Enable"])</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <a class="@(entry.Enabled ? "" : "text-muted")" asp-action="Edit" asp-route-sitemapId="@entry.SitemapId">@entry.Name</a>
-                    </div>
-                </li>
-            }
-        }
-        else
-        {
-            <li class="list-group-item">
-                <div class="alert alert-info mb-0" role="alert">
-                    @T["<strong>Nothing here!</strong> There are no sitemaps indexes for the moment."]
-                </div>
-            </li>
-        }
-    </ul>
-</form>
 
-@await DisplayAsync(Model.Pager)
+    @* The rows, the toolbar and the pager are rendered by the AdminList shape using the configured layout (List, Table, ...). *@
+    @await DisplayAsync(Model.List)
+</form>
 
 <script asp-name="list-management" at="Foot"></script>

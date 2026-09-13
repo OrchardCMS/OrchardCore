@@ -1,0 +1,18 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Recipes.Models
+
+@model ShapeViewModel<RecipeEntry>
+
+<a id="btn-run-@Html.GenerateIdFromName(Model.Value.Name)"
+   asp-action="Execute"
+   asp-controller="Admin"
+   asp-route-basePath="@Model.Value.BasePath"
+   asp-route-fileName="@Model.Value.FileName"
+   role="button"
+   class="btn btn-primary btn-sm"
+   data-title="@T["Recipes"]"
+   data-message="@T["Are you sure you want to run the recipe?"]"
+   data-ok-text="@T["Yes"]"
+   data-cancel-text="@T["No"]"
+   data-ok-class="btn-primary"
+   data-url-af="RemoveUrl UnsafeUrl">@T["Run"]</a>

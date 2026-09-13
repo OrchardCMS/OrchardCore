@@ -1,0 +1,63 @@
+@*
+    The toolbar of the rate limit policies admin list. It is passed to the AdminList shape as its 'Toolbar',
+    rather than the generic AdminListToolbar, because each bulk action needs its own confirmation warning:
+    enabling, disabling or deleting an enabled policy restarts the website.
+
+    Properties:
+        ItemsCount   The number of policies displayed.
+        BulkActions  The SelectListItem collection of bulk actions.
+*@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using OrchardCore.RateLimits.ViewModels
+@{
+    int itemsCount = Model.ItemsCount ?? 0;
+    var bulkActions = ((IEnumerable<SelectListItem>)Model.BulkActions ?? []).ToList();
+
+    LocalizedHtmlString TitleFor(string value) => value switch
+    {
+        nameof(RateLimitPolicyBulkAction.Enable) => T["Enable Policies"],
+        nameof(RateLimitPolicyBulkAction.Disable) => T["Disable Policies"],
+        _ => T["Delete Policies"],
+    };
+
+    LocalizedHtmlString MessageFor(string value) => value switch
+    {
+        nameof(RateLimitPolicyBulkAction.Enable) => T["Are you sure you want to enable the selected policies? This website will restart after the policy status changes."],
+        nameof(RateLimitPolicyBulkAction.Disable) => T["Are you sure you want to disable the selected policies? This website will restart after the policy status changes."],
+        _ => T["Are you sure you want to delete the selected policies? If any selected policy is enabled, this website will restart after deletion."],
+    };
+}
+
+<div class="row gx-2">
+    <div class="col">
+        <div class="form-check my-1">
+            <input type="checkbox" class="form-check-input" id="select-all">
+            <label class="form-check-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
+            <label id="items" for="select-all">@T.Plural(itemsCount, "{0} policy", "{0} policies")</label>
+            <label id="selected-items" class="text-muted d-none" for="select-all"></label>
+        </div>
+    </div>
+    @if (bulkActions.Count > 0)
+    {
+        <div class="col-auto">
+            <div class="dropdown d-none" id="actions">
+                <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    @T["Actions"]
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    @foreach (var item in bulkActions)
+                    {
+                        <li>
+                            <a class="dropdown-item"
+                               href="javascript:void(0)"
+                               data-action="@item.Value"
+                               data-title="@TitleFor(item.Value)"
+                               data-message="@MessageFor(item.Value)">@item.Text</a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
+</div>

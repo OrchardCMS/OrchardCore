@@ -1,0 +1,45 @@
+@*
+    The 'Menu' layout of the row actions of an admin list: a single dropdown, opened by an ellipsis button, holding the
+    shapes of the 'Actions' zone (restyled as menu items by _admin-list.scss) followed by the shapes of the 'ActionsMenu' zone.
+
+    Properties:
+        Row       The row shape (a SummaryAdmin shape with 'Actions' and 'ActionsMenu' zones).
+        Layout    The layout name, "Menu" here.
+        ListName  Optional name of the list, used for the AdminListActions__{ListName}__{Layout} alternates.
+*@
+@using OrchardCore.DisplayManagement.Shapes
+@using OrchardCore.DisplayManagement.Zones
+@{
+    var row = Model.Row as IZoneHolding;
+}
+@if (row != null)
+{
+    var hasActions = row.Zones.IsNotEmpty("Actions");
+    var menu = row.Zones.IsNotEmpty("ActionsMenu") ? row.Zones["ActionsMenu"] as Shape : null;
+    var hasMenu = menu is { HasItems: true };
+
+    if (hasActions || hasMenu)
+    {
+        <div class="actions admin-list-actions admin-list-actions-menu btn-group" title="@T["Actions"]">
+            <button type="button" class="btn btn-sm btn-light actions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="@T["Actions"]">
+                <i class="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i>
+            </button>
+            <div class="actions-menu dropdown-menu dropdown-menu-end">
+                @if (hasActions)
+                {
+                    <div class="admin-list-actions-primary">
+                        @await DisplayAsync(row.Zones["Actions"])
+                    </div>
+                }
+                @if (hasActions && hasMenu)
+                {
+                    <div class="dropdown-divider"></div>
+                }
+                @if (hasMenu)
+                {
+                    @await DisplayAsync(menu)
+                }
+            </div>
+        </div>
+    }
+}

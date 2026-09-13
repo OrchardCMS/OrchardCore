@@ -8,6 +8,8 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
@@ -61,7 +63,12 @@ public sealed class AdminController : Controller
     }
 
     [Admin("Shortcodes", "Shortcodes.Index")]
-    public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(
+        ContentOptions options,
+        PagerParameters pagerParameters,
+        [FromServices] IDisplayManager<ShortcodeTemplateEntry> displayManager,
+        [FromServices] IUpdateModelAccessor updateModelAccessor,
+        [FromServices] IAdminListService adminListService)
     {
         if (!await _authorizationService.AuthorizeAsync(User, ShortcodesPermissions.ManageShortcodeTemplates))
         {
@@ -105,6 +112,35 @@ public sealed class AdminController : Controller
         [
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
+
+        var rows = new List<object>(model.ShortcodeTemplates.Count);
+
+        foreach (var entry in model.ShortcodeTemplates)
+        {
+            rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
+        }
+
+        var toolbar = await _shapeFactory.CreateAsync("AdminListToolbar", OrchardCore.DisplayManagement.Arguments.From(new
+        {
+            ItemsCount = model.ShortcodeTemplates.Count,
+            TotalItemCount = count,
+            StartIndex = model.ShortcodeTemplates.Count > 0 ? pager.GetStartIndex() + 1 : 0,
+            EndIndex = pager.GetStartIndex() + model.ShortcodeTemplates.Count,
+            BulkActions = model.Options.ContentsBulkAction,
+        }));
+
+        // The AdminList shape renders the templates with the configured layout (List, Table, ...).
+        model.List = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, OrchardCore.DisplayManagement.Arguments.From(new
+        {
+            Name = ShortcodesAdminList.Name,
+            Layout = await adminListService.GetLayoutAsync(ShortcodesAdminList.Name, cancellationToken: HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(ShortcodesAdminList.Name, ShortcodesAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
+            Rows = rows,
+            Toolbar = toolbar,
+            Pager = model.Pager,
+            ItemCssClass = "list-group-item",
+            EmptyMessage = H["<strong>Nothing here!</strong> There are no shortcode templates for the moment."],
+        }));
 
         return View(model);
     }
