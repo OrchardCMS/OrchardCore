@@ -19,6 +19,8 @@ public class AliasPartHandler : ContentPartHandler<AliasPart>
     private readonly ITagCache _tagCache;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly ISession _session;
+    private readonly IContentHandleManager _contentHandleManager;
+    private readonly IContentManager _contentManager;
 
     protected readonly IStringLocalizer S;
 
@@ -27,12 +29,16 @@ public class AliasPartHandler : ContentPartHandler<AliasPart>
         ITagCache tagCache,
         ILiquidTemplateManager liquidTemplateManager,
         ISession session,
+        IContentHandleManager contentHandleManager,
+        IContentManager contentManager,
         IStringLocalizer<AliasPartHandler> stringLocalizer)
     {
         _contentDefinitionManager = contentDefinitionManager;
         _tagCache = tagCache;
         _liquidTemplateManager = liquidTemplateManager;
         _session = session;
+        _contentHandleManager = contentHandleManager;
+        _contentManager = contentManager;
         S = stringLocalizer;
     }
 
@@ -44,9 +50,24 @@ public class AliasPartHandler : ContentPartHandler<AliasPart>
             return;
         }
 
-        await foreach (var item in part.ValidateAsync(S, _session))
+        if (part.Alias.Length > AliasPart.MaxAliasLength)
         {
-            context.Fail(item);
+            context.Fail(S["Your alias is too long. The alias can only be up to {0} characters. \"{1}\"", AliasPart.MaxAliasLength, part.Alias], nameof(part.Alias));
+        }
+
+        var conflictId = await _contentHandleManager.GetContentItemIdAsync(AliasConstants.AliasPrefix + part.Alias);
+        
+        if (!string.IsNullOrEmpty(conflictId) && !string.Equals(conflictId, part.ContentItem.ContentItemId, StringComparison.Ordinal))
+        {
+            var targetItem = await _contentManager.GetAsync(conflictId, VersionOptions.Latest);
+            context.Fail(
+                S["Alias conflict: '{0}' is already used by ContentItemId '{1}' (DisplayText: '{2}'). Source ContentItemId '{3}' (DisplayText: '{4}').",
+                    part.Alias,
+                    conflictId,
+                    targetItem?.DisplayText ?? string.Empty,
+                    part.ContentItem.ContentItemId,
+                    part.ContentItem.DisplayText ?? string.Empty],
+                nameof(part.Alias));
         }
     }
 
