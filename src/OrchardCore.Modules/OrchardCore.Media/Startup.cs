@@ -87,6 +87,7 @@ public sealed class Startup : StartupBase
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
 
         services.AddTransient<IConfigureOptions<MediaOptions>, MediaOptionsConfiguration>();
+        services.AddSingleton<IValidateOptions<MediaOptions>, MediaOptionsValidator>();
 
         services.AddSingleton<IMediaFileProvider>(serviceProvider =>
         {
@@ -226,9 +227,21 @@ public sealed class Startup : StartupBase
         app.UseStaticFiles(mediaOptions.StaticFileOptions);
     }
 
-    private static string GetMediaPath(ShellOptions shellOptions, ShellSettings shellSettings, string assetsPath)
+    internal static string GetMediaPath(ShellOptions shellOptions, ShellSettings shellSettings, string assetsPath)
     {
-        return PathExtensions.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, assetsPath);
+        assetsPath = assetsPath?.TrimEnd(PathExtensions.PathSeparators);
+
+        if (!MediaFileStorePathHelper.IsValidRelativePath(assetsPath))
+        {
+            throw new ArgumentException("The media assets path must be a relative subdirectory of the tenant's data directory.", nameof(assetsPath));
+        }
+
+        return Path.GetFullPath(Path.Combine(
+            shellOptions.ShellsApplicationDataPath,
+            shellOptions.ShellsContainerName,
+            shellSettings.Name,
+            assetsPath.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar)
+        ));
     }
 }
 
