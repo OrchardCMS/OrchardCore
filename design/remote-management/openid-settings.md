@@ -19,5 +19,6 @@ certificate material is imported/exported.
 Focused tests cover secret protection/readback/clear/retries, invalid field and
 shared-service validation, state preservation and reload behavior. Live HTTPS tests pass through HTTP/Pomi/MCP, including discovery changes after
 reload, real service validation failures, secret redaction, retries, clearing,
-and independent child-tenant configuration. Full regression/build, documentation
-packaging and CI are required before merge.
+and independent child-tenant configuration. After integration with merged user policies and custom user settings, the strict
+full solution build and all 3,670 server tests passed (one skipped). Documentation
+packaging and final CI remain required before merge.
