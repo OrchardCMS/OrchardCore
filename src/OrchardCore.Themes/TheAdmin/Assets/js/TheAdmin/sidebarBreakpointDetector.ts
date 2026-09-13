@@ -1,5 +1,5 @@
-import { setCompactStatus, unSetCompactStatus } from './menu';
-import { isCompactExplicit } from '../constants';
+import { setCompactStatus, unSetCompactStatus } from './sidebar';
+import { isCompactExplicit } from '../adminPreferences';
 
 // System to detect when the window's size reaches a given breakpoint
 // Right now it is only used to compact the lefbar when resizing under 768px

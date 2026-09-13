@@ -1,6 +1,5 @@
-import { isCompactExplicit, setCompactExplicit } from '../constants';
+import { isCompactExplicit, setCompactExplicit, persistAdminPreferences } from '../adminPreferences';
 import { getTenantName, getAdminPrefix } from '@orchardcore/bloom/helpers/globals';
-import { persistAdminPreferences } from './userPreferencesPersistor';
 
 let leftNav: HTMLElement | null = null;
 let menuInitialized = false;

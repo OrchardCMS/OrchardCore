@@ -6,3 +6,104 @@
 .second-action-bar {
     z-index: var(--oc-second-action-bar-zindex);
 }
+
+.action-bar-bottom {
+    position: fixed !important;
+    bottom: 0;
+    left: var(--oc-start-navigation-width);
+    transition: left 0.2s ease-in-out;
+    right: 0;
+    z-index: var(--oc-action-bar-bottom-zindex);
+    // Same as the card spacers for consistent padding with the rest of the UI.
+    padding: 1rem;
+}
+
+@include media-breakpoint-down(md) {
+    .action-bar-bottom {
+        .btn,
+        .form-control {
+            font-size: $input-btn-font-size-sm;
+            padding: $input-btn-padding-y-sm $input-btn-padding-x-sm;
+        }
+        // Mobile collapsible actions toggle button
+        .action-bar-toggle {
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            min-width: 2rem;
+            height: 2rem;
+            padding: 0 !important;
+            border: 0 !important;
+            border-radius: 0;
+            background-color: transparent !important;
+            box-shadow: none !important;
+            color: var(--oc-admin-menu-font-color) !important;
+            cursor: pointer;
+            font-size: 1rem;
+            line-height: 1;
+            transition: color 0.2s ease-in-out;
+
+            &:focus,
+            &:focus-visible,
+            &:active {
+                outline: none;
+                border: 0;
+                background-color: transparent;
+                box-shadow: none;
+            }
+
+            &:hover {
+                color: rgba(0, 120, 212, 1);
+                color: rgba(0, 120, 212, 1);
+                text-shadow: 0 0 4px rgba(0, 120, 212, 0.5);
+            }
+
+            &::before {
+                content: "\27EA";
+                display: inline-block;
+                transform: scale(1, 2) rotate(90deg);
+            }
+
+            &[aria-expanded="true"]::before {
+                transform: scale(1, -2) rotate(90deg);
+            }
+        }
+        // Hide collapsible actions when the toggle is in its collapsed state.
+        // Scoped to .action-bar so desktop (non-sticky) rendering is unaffected.
+        &:has(.action-bar-toggle[aria-expanded="false"]) .action-bar-collapsible {
+            display: none;
+        }
+        // Auto-hide the toggle when no collapsible actions are present.
+        &:not(:has(.action-bar-collapsible)) .action-bar-toggle {
+            display: none;
+        }
+        // Suppress Bootstrap's collapse height animation on individual action elements
+        // so that the :has()-driven instant show/hide is not interrupted by a transition.
+        .action-bar-collapsible.collapsing {
+            height: auto !important;
+            transition: none !important;
+            overflow: visible !important;
+        }
+    }
+}
+
+@include media-breakpoint-down(sm) {
+    .action-bar-bottom {
+        left: var(--oc-start-navigation-width-when-compact, 48);
+        transition: left 0.5s ease-in-out;
+    }
+}
+
+.left-sidebar-compact {
+    .action-bar-bottom {
+        left: var(--oc-start-navigation-width-when-compact, 48);
+    }
+}
+
+// Add bottom padding to the ta-content to prevent content from being obscured
+// by the fixed action bar(s).
+.ta-content:has(.action-bar-bottom) {
+    padding-bottom: var(--oc-action-bar-bottom-height);
+}
