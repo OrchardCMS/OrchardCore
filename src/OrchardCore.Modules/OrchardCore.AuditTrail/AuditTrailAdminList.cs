@@ -24,19 +24,30 @@ public static class AuditTrailAdminList
     /// </remarks>
     public static List<AdminListColumn> GetDefaultColumns(IStringLocalizer S) =>
     [
+        // What happened and the category it happened in take a quarter of the row each, so no column of badges
+        // crowds into a corner of a wide screen.
         new()
         {
             Name = "Event",
             Position = "10",
             Title = S["Event"],
-            Zones = ["EventTags"],
-            Width = AdminListColumn.AutoWidth,
+            Zones = ["EventName"],
+            Width = "25%",
         },
         new()
         {
-            // The details take the space left by the other columns.
-            Name = "Details",
+            Name = "Category",
             Position = "20",
+            Title = S["Category"],
+            Zones = ["EventCategory"],
+            Width = "25%",
+        },
+        new()
+        {
+            // The rest of it takes the space the others leave, and stands in for the title of a row when the
+            // list is too narrow for columns and stacks them.
+            Name = "Details",
+            Position = "30",
             Title = S["Details"],
             Zones = ["EventMeta", "EventData"],
         },

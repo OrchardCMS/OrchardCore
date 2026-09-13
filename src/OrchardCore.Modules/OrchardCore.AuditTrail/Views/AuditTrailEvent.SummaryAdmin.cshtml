@@ -1,12 +1,18 @@
 <div class="row">
     <div class="col-lg col-12 title d-flex">
         <div class="summary d-flex flex-column flex-md-row">
-            @if (Model.EventTags != null)
+            @if (Model.EventName != null)
             {
-                <div class="eventtags me-1">
-                    @await DisplayAsync(Model.EventTags)
+                <div class="eventname me-1">
+                    @await DisplayAsync(Model.EventName)
                 </div>
-            }            
+            }
+            @if (Model.EventCategory != null)
+            {
+                <div class="eventcategory me-1">
+                    @await DisplayAsync(Model.EventCategory)
+                </div>
+            }
             @if (Model.EventMeta != null)
             {
                 <div class="eventmeta me-1">
