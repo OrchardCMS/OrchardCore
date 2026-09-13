@@ -89,10 +89,10 @@ jobs:
         dotnet nuget push './src/**/*.nupkg' -t 600 --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}" -s https://api.nuget.org/v3/index.json --skip-duplicate
     - name: Set up Docker Buildx
       if: matrix.os == 'ubuntu-24.04'
-      uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
+      uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
     - name: Login to DockerHub
       if: matrix.os == 'ubuntu-24.04'
-      uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
+      uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
