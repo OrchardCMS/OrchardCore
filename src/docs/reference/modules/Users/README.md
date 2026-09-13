@@ -419,3 +419,35 @@ These are site policies. They do not perform password recovery, send verificatio
 codes, enroll a user in MFA, or configure third-party authentication credentials.
 Password complexity, lockout, and host cookie configuration continue to use their
 existing configuration ownership.
+
+### Managing custom user settings remotely
+
+Enable `OrchardCore.Users.CustomUserSettings` to expose the settings content types
+with the `CustomUserSettings` stereotype. The feature adds these Pomi commands,
+HTTP endpoints, and corresponding MCP tools:
+
+| Command | Endpoint |
+| --- | --- |
+| `pomi users settings types` | `GET /api/users/settings/types` |
+| `pomi users settings schema <name>` | `GET /api/users/settings/types/{name}/schema` |
+| `pomi users settings show <userId> <name>` | `GET /api/users/{userId}/settings/{name}` |
+| `pomi users settings update <userId> <name> --stdin` | `PUT /api/users/{userId}/settings/{name}` |
+
+Remote-management access and the existing permission for the settings type are
+required. Reading or updating a user's values additionally requires the existing
+resource-based `ViewUsers` or `EditUsers` permission for that user. Unauthorized
+types are omitted from discovery and return 404. Updates require HTTPS.
+
+Use `schema` before composing a JSON update. The payload accepts `ContentType`
+(which must match the selected type), `DisplayText`, and declared content parts.
+It excludes content identities, ownership, publication state, and all account
+fields such as passwords, roles, and authenticator data. Omitted values are
+preserved, arrays are replaced, and explicit null field values are merged. Parts
+and field containers must be objects. Content handlers validate changed values
+before the identity manager persists the owning user. No standalone content item
+is created, and equivalent retries skip persistence. Other settings on the user
+are preserved.
+
+The admin editor and remote API use `CustomUserSettingsService` to construct and
+attach the embedded content item. Site and user settings share the same safe
+content-envelope validation and schema builder.

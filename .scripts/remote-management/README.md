@@ -556,3 +556,8 @@ eleven typed policy sections, Pomi/MCP, permission gates, invalid-update
 preservation, independent child-tenant policy values and actual ForgotPassword
 route availability. External authentication and MFA core are activated through
 provider/method dependencies. No verification messages or external logins occur.
+
+Verify custom user settings on an HTTPS fixture with
+`python3 .scripts/remote-management/custom-user-settings-smoke.py <fixture.json>`.
+This exercises HTTP/Pomi/MCP discovery and updates, permissions, safe content
+schemas, equivalent retries, invalid updates, and child-tenant isolation.

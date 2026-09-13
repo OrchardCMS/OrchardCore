@@ -660,6 +660,7 @@ public sealed class CustomUserSettingsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddScoped<CustomUserSettingsManagementService>();
         services.AddDisplayDriver<User, CustomUserSettingsDisplayDriver>();
         services.AddPermissionProvider<CustomUserSettingsPermissions>();
         services.AddDeployment<CustomUserSettingsDeploymentSource, CustomUserSettingsDeploymentStep, CustomUserSettingsDeploymentStepDriver>();
@@ -676,6 +677,11 @@ public sealed class CustomUserSettingsStartup : StartupBase
             });
         });
     }
+    /// <summary>
+    /// Maps feature-owned custom user settings management endpoints.
+    /// </summary>
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        => routes.AddCustomUserSettingsManagementEndpoints();
 }
 
 [RequireFeatures("OrchardCore.Deployment")]

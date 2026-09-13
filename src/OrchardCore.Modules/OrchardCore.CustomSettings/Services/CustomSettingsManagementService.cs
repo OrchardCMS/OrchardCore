@@ -19,20 +19,6 @@ namespace OrchardCore.CustomSettings.Services;
 
 internal sealed class CustomSettingsManagementService
 {
-    private static readonly HashSet<string> s_forbiddenProperties = new(StringComparer.Ordinal)
-    {
-        nameof(ContentItem.ContentItemId),
-        nameof(ContentItem.ContentItemVersionId),
-        nameof(ContentItem.Id),
-        nameof(ContentItem.Latest),
-        nameof(ContentItem.Published),
-        nameof(ContentItem.ModifiedUtc),
-        nameof(ContentItem.PublishedUtc),
-        nameof(ContentItem.CreatedUtc),
-        nameof(ContentItem.Owner),
-        nameof(ContentItem.Author),
-    };
-
     private static readonly JsonMergeSettings s_mergeSettings = new()
     {
         MergeArrayHandling = MergeArrayHandling.Replace,
@@ -144,7 +130,7 @@ internal sealed class CustomSettingsManagementService
 
         var definition = definitionResult.Value;
         var canonicalName = definition.Name;
-        var errors = ValidateInput(canonicalName, definition, input);
+        var errors = EmbeddedContentItemApi.ValidateInput(canonicalName, definition, input);
         if (errors.Count > 0)
         {
             return CustomSettingsManagementResult<JsonObject>.ValidationFailure(errors);
@@ -156,7 +142,7 @@ internal sealed class CustomSettingsManagementService
         contentItem.ContentType = canonicalName;
 
         var envelope = CreateSafeEnvelope(contentItem, definition);
-        errors = ValidateEnvelope(definition, envelope);
+        errors = EmbeddedContentItemApi.ValidateEnvelope(definition, envelope);
         if (errors.Count > 0)
         {
             return CustomSettingsManagementResult<JsonObject>.ValidationFailure(errors);
@@ -182,7 +168,7 @@ internal sealed class CustomSettingsManagementService
         {
             await _session.CancelAsync();
             return CustomSettingsManagementResult<JsonObject>.ValidationFailure(
-                CreateValidationErrors(validationResult));
+                EmbeddedContentItemApi.CreateValidationErrors(validationResult));
         }
 
         envelope = CreateSafeEnvelope(contentItem, definition);
@@ -235,45 +221,7 @@ internal sealed class CustomSettingsManagementService
     }
 
     private JsonObject BuildSchema(ContentTypeDefinition definition)
-    {
-        var schema = ContentItemSchemaBuilder.BuildSchema(definition, _contentOptions, _serializerOptions);
-        var properties = schema["properties"]?.AsObject() ?? [];
-
-        foreach (var propertyName in s_forbiddenProperties)
-        {
-            properties.Remove(propertyName);
-        }
-
-        var allowed = GetAllowedProperties(definition);
-        foreach (var propertyName in properties.Select(property => property.Key).ToArray())
-        {
-            if (!allowed.Contains(propertyName))
-            {
-                properties.Remove(propertyName);
-            }
-        }
-
-        if (properties[nameof(ContentItem.ContentType)] is JsonObject contentTypeSchema)
-        {
-            contentTypeSchema["const"] = definition.Name;
-        }
-
-        schema["title"] = definition.DisplayName;
-        var description = definition.GetSettings<ContentTypeSettings>().Description;
-        if (!string.IsNullOrWhiteSpace(description))
-        {
-            schema["description"] = description;
-        }
-        else
-        {
-            schema.Remove("description");
-        }
-
-        schema["required"] = new JsonArray();
-        schema["additionalProperties"] = false;
-
-        return schema;
-    }
+        => EmbeddedContentItemApi.BuildSchema(definition, _contentOptions, _serializerOptions);
 
     private async Task<CustomSettingsManagementResult<ContentTypeDefinition>> GetAuthorizedDefinitionAsync(
         ClaimsPrincipal user,
@@ -312,143 +260,7 @@ internal sealed class CustomSettingsManagementService
     }
 
     private JsonObject CreateSafeEnvelope(ContentItem contentItem, ContentTypeDefinition definition)
-    {
-        var serialized = JsonSerializer.SerializeToNode(contentItem, _serializerOptions)?.AsObject() ?? [];
-        var allowed = GetAllowedProperties(definition);
-
-        foreach (var propertyName in serialized.Select(property => property.Key).ToArray())
-        {
-            if (!allowed.Contains(propertyName))
-            {
-                serialized.Remove(propertyName);
-            }
-        }
-
-        serialized[nameof(ContentItem.ContentType)] = definition.Name;
-
-        return serialized;
-    }
-
-    private static Dictionary<string, string[]> ValidateInput(
-        string name,
-        ContentTypeDefinition definition,
-        JsonObject input)
-    {
-        var errors = new Dictionary<string, string[]>(StringComparer.Ordinal);
-        if (input is null)
-        {
-            errors[string.Empty] = ["A JSON object payload is required."];
-            return errors;
-        }
-
-        if (input.TryGetPropertyValue(nameof(ContentItem.ContentType), out var contentTypeNode))
-        {
-            string contentType;
-            try
-            {
-                contentType = contentTypeNode?.GetValue<string>();
-            }
-            catch (InvalidOperationException)
-            {
-                contentType = null;
-            }
-
-            if (!string.Equals(contentType, name, StringComparison.Ordinal))
-            {
-                errors[nameof(ContentItem.ContentType)] =
-                    [$"ContentType must exactly match the route name '{name}'."];
-            }
-        }
-
-        var allowed = GetAllowedProperties(definition);
-        foreach (var property in input)
-        {
-            if (s_forbiddenProperties.Contains(property.Key))
-            {
-                errors[property.Key] = [$"The '{property.Key}' property cannot be updated."];
-            }
-            else if (!allowed.Contains(property.Key))
-            {
-                errors[property.Key] =
-                    [$"The '{property.Key}' property is not declared by custom settings type '{name}'."];
-            }
-        }
-
-        foreach (var error in ValidateEnvelope(definition, input))
-        {
-            errors.TryAdd(error.Key, error.Value);
-        }
-
-        return errors;
-    }
-
-    private static Dictionary<string, string[]> CreateValidationErrors(ContentValidateResult result)
-    {
-        var errors = new Dictionary<string, List<string>>(StringComparer.Ordinal);
-
-        foreach (var error in result.Errors)
-        {
-            var memberNames = error.MemberNames?.Any() == true
-                ? error.MemberNames
-                : [string.Empty];
-
-            foreach (var memberName in memberNames)
-            {
-                if (!errors.TryGetValue(memberName, out var messages))
-                {
-                    messages = [];
-                    errors[memberName] = messages;
-                }
-
-                messages.Add(error.ErrorMessage);
-            }
-        }
-
-        return errors.ToDictionary(
-            error => error.Key,
-            error => error.Value.ToArray(),
-            StringComparer.Ordinal);
-    }
-
-    private static Dictionary<string, string[]> ValidateEnvelope(
-        ContentTypeDefinition definition,
-        JsonObject envelope)
-    {
-        var errors = new Dictionary<string, string[]>(StringComparer.Ordinal);
-
-        foreach (var part in definition.Parts)
-        {
-            if (!envelope.TryGetPropertyValue(part.Name, out var partNode))
-            {
-                continue;
-            }
-
-            if (partNode is not JsonObject partObject)
-            {
-                errors[part.Name] = [$"The '{part.Name}' property must be a JSON object."];
-                continue;
-            }
-
-            foreach (var field in part.PartDefinition.Fields)
-            {
-                if (partObject.TryGetPropertyValue(field.Name, out var fieldNode) &&
-                    fieldNode is not JsonObject)
-                {
-                    errors[$"{part.Name}.{field.Name}"] =
-                        [$"The '{part.Name}.{field.Name}' property must be a JSON object."];
-                }
-            }
-        }
-
-        return errors;
-    }
-
-    private static HashSet<string> GetAllowedProperties(ContentTypeDefinition definition)
-        => new(
-            definition.Parts.Select(part => part.Name)
-                .Append(nameof(ContentItem.ContentType))
-                .Append(nameof(ContentItem.DisplayText)),
-            StringComparer.Ordinal);
+        => EmbeddedContentItemApi.CreateSafeEnvelope(contentItem, definition, _serializerOptions);
 
     private static bool IsCustomSettings(ContentTypeDefinition definition)
         => definition?.StereotypeEquals(CustomSettingsConstants.Stereotype) == true;

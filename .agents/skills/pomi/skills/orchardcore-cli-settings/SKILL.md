@@ -436,3 +436,14 @@ Updates/status changes and absent deletes can be retried without unnecessary
 writes. Verify public XML, including indexes after changing child paths/status.
 All sitemap operations require `ManageSitemaps` and remote access. Follow the
 existing mutation confirmation policy; deletion commands require `--force`.
+
+### Custom settings on a user
+
+Enable `OrchardCore.Users.CustomUserSettings`, refresh the API, and run
+`pomi users settings types`. Inspect `pomi users settings schema <name>` before
+sending JSON to `pomi users settings update <userId> <name> --stdin`, then read
+back with `pomi users settings show <userId> <name>`. Keep these values separate
+from site-level custom settings. Use the existing user ID; creating a standalone
+content item does not configure a user's settings. Updates require HTTPS, the
+settings-type permission, and permission to edit that user. Passwords, roles,
+and MFA enrollment data are outside this content envelope.
