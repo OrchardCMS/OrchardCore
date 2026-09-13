@@ -59,6 +59,15 @@
     </div>
 </div>
 
+<div class="ocat-limited-wrapper" asp-validation-class-for="ShowContentTypesGrouping">
+    <label asp-for="ShowContentTypesGrouping" class="ocat-label">@T["Show Content Types Grouping"]</label>
+    <div class="ocat-limited">
+        <input asp-for="ShowContentTypesGrouping" type="checkbox" class="form-check-input" />
+        <span asp-validation-for="ShowContentTypesGrouping"></span>
+        <span class="hint">@T["Determines whether to show content types grouping."]</span>
+    </div>
+</div>
+
 <div class="ocat-wrapper" asp-validation-class-for="AllowPageSizeSelection">
     <label class="ocat-label">@T["Page size selection"]</label>
     <div class="ocat-end">
