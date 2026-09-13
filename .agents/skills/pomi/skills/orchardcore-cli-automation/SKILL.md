@@ -460,3 +460,17 @@ can change the target immediately and is not idempotent. On timeout/error, inspe
 the target before any retry. Use HTTPS destinations, and preserve private credential
 handoff files when provisioning a persistent site. Existing setup contexts need no
 interactive `pomi login`.
+### Explicit content exports
+
+`content export <id>` (Download feature) returns the published version in the admin
+JSON format; `--latest true` selects the current draft/latest version. It requires
+Export and per-item EditContent permissions. Keep private content exports in private
+files.
+
+For packages, enable `OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget`
+and add `ExportContentToDeploymentTargetDeploymentStep` with `contentItemIds` (1–200)
+and `latest` to a plan. Then queue `deployment operations export` or send the plan to
+a configured remote target. Include content definitions in the plan when the target
+needs them. Do not automate a legacy form-based selector without explicit IDs.
+Queued exports fail on denied or missing selected content; inspect failures before
+retrying. Existing setup contexts already support client credentials without login.
