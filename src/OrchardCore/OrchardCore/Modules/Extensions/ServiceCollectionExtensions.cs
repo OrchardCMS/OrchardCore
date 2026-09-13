@@ -234,26 +234,32 @@ public static class ServiceCollectionExtensions
     {
         builder.ConfigureServices(services =>
         {
+            // Serves the application's physical web-root files through the application module prefix.
+            services.AddSingleton<ApplicationStaticFileProvider>();
+
+            // Serves static files embedded in module assemblies under their module prefixes.
+            services.AddSingleton<ModuleEmbeddedStaticFileProvider>();
+
+            // Serves physical module project files during development so asset changes are available without repackaging.
+            services.AddSingleton<ModuleProjectStaticFileProvider>();
+
             services.AddSingleton<IModuleStaticFileProvider>(serviceProvider =>
             {
                 var env = serviceProvider.GetRequiredService<IHostEnvironment>();
-                var appContext = serviceProvider.GetRequiredService<IApplicationContext>();
+                var fileProviders = new List<IStaticFileProvider>();
 
-                IModuleStaticFileProvider fileProvider;
                 if (env.IsDevelopment())
                 {
-                    var fileProviders = new List<IStaticFileProvider>
-                    {
-                        new ModuleProjectStaticFileProvider(appContext),
-                        new ModuleEmbeddedStaticFileProvider(appContext),
-                    };
-                    fileProvider = new ModuleCompositeStaticFileProvider(fileProviders);
+                    // Prefer project files while developing, then fall back to packaged embedded assets.
+                    fileProviders.Add(serviceProvider.GetRequiredService<ModuleProjectStaticFileProvider>());
                 }
-                else
-                {
-                    fileProvider = new ModuleEmbeddedStaticFileProvider(appContext);
-                }
-                return fileProvider;
+
+                fileProviders.Add(serviceProvider.GetRequiredService<ModuleEmbeddedStaticFileProvider>());
+
+                // Application files are physical rather than embedded, so resolve them last through the configured web root.
+                fileProviders.Add(serviceProvider.GetRequiredService<ApplicationStaticFileProvider>());
+
+                return new ModuleCompositeStaticFileProvider(fileProviders);
             });
 
             services.AddSingleton<IStaticFileProvider>(serviceProvider =>
