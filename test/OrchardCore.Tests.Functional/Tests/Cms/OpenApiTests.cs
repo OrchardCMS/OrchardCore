@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 using Microsoft.Playwright;
 using OrchardCore.Tests.Functional.Helpers;
@@ -405,16 +406,44 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await EnableOpenApiAsync(page);
         await FeatureHelper.EnableFeatureAsync(page, $"/{Tenant.Prefix}", "OrchardCore.OpenApi.ScalarUI");
 
-        var response = await page.RunAndWaitForResponseAsync(
-            async () =>
+        var pageErrors = new ConcurrentQueue<string>();
+        var consoleErrors = new ConcurrentQueue<string>();
+        page.PageError += (_, error) => pageErrors.Enqueue(error);
+        page.Console += (_, message) =>
+        {
+            if (message.Type == "error")
             {
-                await page.GotoAsync($"/{Tenant.Prefix}/scalar/v1");
-                await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-            },
+                consoleErrors.Enqueue(message.Text);
+            }
+        };
+
+        var response = await page.RunAndWaitForResponseAsync(
+            async () => await page.GotoAsync($"/{Tenant.Prefix}/scalar/v1"),
             r => r.Url.Contains("/swagger/v1/swagger.json"));
 
         Assert.Equal(200, response.Status);
-        await Assertions.Expect(page.Locator(".sidebar").First).ToContainTextAsync("GetEndpoint");
+        Assert.Equal($"/{Tenant.Prefix}/swagger/v1/swagger.json", new Uri(response.Url).AbsolutePath);
+
+        // Exercise the full Blog reference with Scalar's default configuration. Vue's
+        // deferred Teleport regression could unmount the sidebar after the schema loaded.
+        var sidebar = page.GetByRole(AriaRole.Navigation, new() { Name = "Sidebar for OpenApi V1", Exact = true });
+        var getEndpoint = sidebar.GetByRole(AriaRole.Button, new() { Name = "Open Group GetEndpoint", Exact = true });
+        await Assertions.Expect(getEndpoint).ToBeVisibleAsync();
+        await getEndpoint.ClickAsync();
+
+        var operation = page.GetByRole(AriaRole.Region, new() { Name = "GetEndpoint", Exact = true })
+            .GetByRole(AriaRole.Region, new() { Name = "/api/content/{contentItemId}", Exact = true });
+        await Assertions.Expect(operation).ToBeVisibleAsync();
+        await operation.GetByRole(AriaRole.Button, new() { Name = "Test Request (get /api/content/{contentItemId})", Exact = true }).ClickAsync();
+        var apiClient = page.GetByRole(AriaRole.Dialog, new() { Name = "API Client", Exact = true });
+        await Assertions.Expect(apiClient.GetByRole(AriaRole.Button, new() { Name = "Send Request" })).ToBeVisibleAsync();
+        await page.Keyboard.PressAsync("Escape");
+        await Assertions.Expect(apiClient).Not.ToBeVisibleAsync();
+        await Assertions.Expect(sidebar).ToBeVisibleAsync();
+        await Assertions.Expect(sidebar.GetByRole(AriaRole.Button, new() { Name = "Close Group GetEndpoint", Exact = true })).ToBeVisibleAsync();
+
+        Assert.Empty(pageErrors);
+        Assert.DoesNotContain(consoleErrors, error => error.Contains("TypeError", StringComparison.Ordinal));
 
         await page.CloseAsync();
     }
@@ -482,12 +511,15 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         // the protected "Api"-scheme endpoint to prove the token is attached: an unauthenticated
         // request to it returns 401. The unfilled {contentItemId} placeholder is sent as a
         // literal segment, which still matches the route and exercises authentication.
-        await page.Locator(".sidebar a", new() { HasText = "GetEndpoint" }).First.ClickAsync();
-        var operation = page.Locator("[id='tag/getendpoint/GET/api/content/{contentItemId}']");
-        await operation.Locator("button.show-api-client-button").ClickAsync();
+        var sidebar = page.GetByRole(AriaRole.Navigation, new() { Name = "Sidebar for OpenApi V1", Exact = true });
+        await sidebar.GetByRole(AriaRole.Button, new() { Name = "Open Group GetEndpoint", Exact = true }).ClickAsync();
+        var operation = page.GetByRole(AriaRole.Region, new() { Name = "GetEndpoint", Exact = true })
+            .GetByRole(AriaRole.Region, new() { Name = "/api/content/{contentItemId}", Exact = true });
+        await operation.GetByRole(AriaRole.Button, new() { Name = "Test Request (get /api/content/{contentItemId})", Exact = true }).ClickAsync();
 
+        var apiClient = page.GetByRole(AriaRole.Dialog, new() { Name = "API Client", Exact = true });
         var response = await page.RunAndWaitForResponseAsync(
-            async () => await page.GetByRole(AriaRole.Button, new() { Name = "Send Request", Exact = true }).ClickAsync(),
+            async () => await apiClient.GetByRole(AriaRole.Button, new() { Name = "Send Request" }).ClickAsync(),
             r => r.Url.Contains("/api/content/"));
 
         Assert.NotEqual(401, response.Status);
