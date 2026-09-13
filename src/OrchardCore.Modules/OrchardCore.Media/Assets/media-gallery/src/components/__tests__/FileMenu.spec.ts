@@ -31,6 +31,7 @@ vi.mock("@bloom/media/api/file-data-service", () => ({
 vi.mock("../../services/Utils", () => ({
   downloadFile: vi.fn(),
   getFileExtension: vi.fn(),
+  resolveMediaUrl: vi.fn(),
 }));
 
 vi.mock("@bloom/services/notifications/notifier", () => ({
@@ -48,6 +49,7 @@ setTranslations({
   Rename: "Rename",
   Delete: "Delete",
   Move: "Move",
+  View: "View",
   Download: "Download",
   RenameSingleFileTitle: "Rename file",
   MoveSingleFileTitle: "Move file",
