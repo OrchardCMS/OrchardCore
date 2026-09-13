@@ -3,16 +3,21 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
 using OrchardCore.Markdown.Fields;
 using OrchardCore.Markdown.Settings;
+using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Markdown;
 
 public sealed class Migrations : DataMigration
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
+    private readonly ILogger _logger;
 
-    public Migrations(IContentDefinitionManager contentDefinitionManager)
+    public Migrations(
+        IContentDefinitionManager contentDefinitionManager,
+        ILogger<Migrations> logger)
     {
         _contentDefinitionManager = contentDefinitionManager;
+        _logger = logger;
     }
 
     public async Task<int> CreateAsync()
@@ -22,7 +27,7 @@ public sealed class Migrations : DataMigration
             .WithDescription("Provides a Markdown formatted body for your content item."));
 
         // Shortcut other migration steps on new content definition schemas.
-        return 5;
+        return 6;
     }
 
     // Migrate FieldSettings. This only needs to run on old content definition schemas.
@@ -34,43 +39,49 @@ public sealed class Migrations : DataMigration
         return 4; // Returning 4 instead of 2 to skip the next 2 migration steps, see below why.
     }
 
-    // Previously, Liquid rendering was enabled by not having Html sanitization enabled and UpdateFrom2Async and
-    // UpdateFrom3Async disabled sanitization to ensure that MarkdownBodyParts and MarkdownFields kept Liquid rendering
-    // enabled. Since Liquid rendering is now controlled by a separate setting, disabling sanitization is no longer
-    // necessary.
-
     public async Task<int> UpdateFrom4Async()
     {
-        // To keep the same behavior as before, RenderLiquid is initialized to the opposite of SanitizeHtml.
+        await WarnAboutLiquidTemplatesAsync();
+
+        return 6;
+    }
+
+    public async Task<int> UpdateFrom5Async()
+    {
+        await WarnAboutLiquidTemplatesAsync();
+
+        return 6;
+    }
+
+    private async Task WarnAboutLiquidTemplatesAsync()
+    {
         foreach (var contentType in await _contentDefinitionManager.LoadTypeDefinitionsAsync())
         {
-            if (contentType.Parts.Any(x => x.PartDefinition.Name == "MarkdownBodyPart"))
+            foreach (var typePart in contentType.Parts)
             {
-                await _contentDefinitionManager.AlterTypeDefinitionAsync(contentType.Name, x => x.WithPart("MarkdownBodyPart", part =>
+                if (string.Equals(typePart.PartDefinition.Name, "MarkdownBodyPart", StringComparison.Ordinal) &&
+                    typePart.Settings[nameof(MarkdownBodyPartSettings)]?["RenderLiquid"]?.GetValue<bool>() is true)
                 {
-                    part.MergeSettings<MarkdownBodyPartSettings>(s => s.RenderLiquid = !s.SanitizeHtml);
-                }));
-            }
-        }
+                    _logger.LogWarning(
+                        "Content type '{ContentType}' part '{Part}' has RenderLiquid enabled. Liquid syntax remains stored but is no longer executed by MarkdownBodyPart. Migrate the authored source manually to LiquidPart.",
+                        contentType.Name,
+                        typePart.Name);
+                }
 
-        var partDefinitions = await _contentDefinitionManager.LoadPartDefinitionsAsync();
-        foreach (var partDefinition in partDefinitions)
-        {
-            if (partDefinition.Fields.Any(x => x.FieldDefinition.Name == "MarkdownField"))
-            {
-                await _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, partBuilder =>
+                foreach (var field in typePart.PartDefinition.Fields.Where(
+                    field => string.Equals(field.FieldDefinition.Name, nameof(MarkdownField), StringComparison.Ordinal)))
                 {
-                    foreach (var fieldDefinition in partDefinition.Fields.Where(x => x.FieldDefinition.Name == "MarkdownField"))
+                    if (field.Settings[nameof(MarkdownFieldSettings)]?["RenderLiquid"]?.GetValue<bool>() is true)
                     {
-                        partBuilder.WithField(fieldDefinition.Name, fieldBuilder =>
-                        {
-                            fieldBuilder.MergeSettings<MarkdownFieldSettings>(s => s.RenderLiquid = !s.SanitizeHtml);
-                        });
+                        _logger.LogWarning(
+                            "Content type '{ContentType}' part '{Part}' field '{Field}' has RenderLiquid enabled. Liquid syntax remains stored but is no longer executed by MarkdownField. Migrate the authored source manually to LiquidField.",
+                            contentType.Name,
+                            typePart.Name,
+                            field.Name);
                     }
-                });
+                }
             }
         }
-
-        return 5;
     }
+
 }

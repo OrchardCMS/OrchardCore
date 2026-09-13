@@ -72,7 +72,7 @@
         }
     }
 }";
-<text>editor.setValue(`@Html.Raw(fullOptions)`);
+<text>editor.setValue(@Json.Serialize(fullOptions));
         </text>
     }
 }

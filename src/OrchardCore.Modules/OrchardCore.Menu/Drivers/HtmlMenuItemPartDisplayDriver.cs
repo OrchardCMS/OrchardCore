@@ -1,4 +1,3 @@
-using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Localization;
@@ -8,7 +7,6 @@ using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Menu.Models;
-using OrchardCore.Menu.Settings;
 using OrchardCore.Menu.ViewModels;
 
 namespace OrchardCore.Menu.Drivers;
@@ -18,7 +16,6 @@ public sealed class HtmlMenuItemPartDisplayDriver : ContentPartDisplayDriver<Htm
     private readonly IUrlHelperFactory _urlHelperFactory;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IHtmlSanitizerService _htmlSanitizerService;
-    private readonly HtmlEncoder _htmlencoder;
 
     internal readonly IStringLocalizer S;
 
@@ -26,26 +23,16 @@ public sealed class HtmlMenuItemPartDisplayDriver : ContentPartDisplayDriver<Htm
         IUrlHelperFactory urlHelperFactory,
         IHttpContextAccessor httpContextAccessor,
         IStringLocalizer<HtmlMenuItemPartDisplayDriver> localizer,
-        IHtmlSanitizerService htmlSanitizerService,
-        HtmlEncoder htmlencoder
-        )
+        IHtmlSanitizerService htmlSanitizerService)
     {
         _urlHelperFactory = urlHelperFactory;
         _httpContextAccessor = httpContextAccessor;
         _htmlSanitizerService = htmlSanitizerService;
-        _htmlencoder = htmlencoder;
         S = localizer;
     }
 
     public override IDisplayResult Display(HtmlMenuItemPart part, BuildPartDisplayContext context)
     {
-        var settings = context.TypePartDefinition.GetSettings<HtmlMenuItemPartSettings>();
-
-        if (settings.SanitizeHtml)
-        {
-            part.Html = _htmlSanitizerService.Sanitize(part.Html);
-        }
-
         return Combine(
             Dynamic("HtmlMenuItemPart_Admin", static (shape, part) =>
             {
@@ -74,12 +61,11 @@ public sealed class HtmlMenuItemPartDisplayDriver : ContentPartDisplayDriver<Htm
 
     public override async Task<IDisplayResult> UpdateAsync(HtmlMenuItemPart part, UpdatePartEditorContext context)
     {
-        var settings = context.TypePartDefinition.GetSettings<HtmlMenuItemPartSettings>();
         var model = new HtmlMenuItemPartEditViewModel();
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
         part.ContentItem.DisplayText = model.Name;
-        part.Html = settings.SanitizeHtml ? _htmlSanitizerService.Sanitize(model.Html) : model.Html;
+        part.Html = model.Html;
         part.Url = model.Url;
         part.Target = model.Target;
 
@@ -98,20 +84,9 @@ public sealed class HtmlMenuItemPartDisplayDriver : ContentPartDisplayDriver<Htm
                 urlToValidate = urlHelper.Content(urlToValidate);
             }
 
-            urlToValidate = urlToValidate.ToUriComponents();
-
-            if (!Uri.IsWellFormedUriString(urlToValidate, UriKind.RelativeOrAbsolute))
+            if (!MenuShapes.IsSafeUrl(urlToValidate, _htmlSanitizerService))
             {
                 context.Updater.ModelState.AddModelError(nameof(part.Url), S["{0} is an invalid url.", part.Url]);
-            }
-            else
-            {
-                var link = $"<a href=\"{_htmlencoder.Encode(urlToValidate)}\"></a>";
-
-                if (!string.Equals(link, _htmlSanitizerService.Sanitize(link), StringComparison.OrdinalIgnoreCase))
-                {
-                    context.Updater.ModelState.AddModelError(nameof(part.Url), S["{0} is an invalid url.", part.Url]);
-                }
             }
         }
 

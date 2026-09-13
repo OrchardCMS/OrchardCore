@@ -24,7 +24,7 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddHtmlServices();
-        
+
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
 
         services.Configure<TemplateOptions>(o =>

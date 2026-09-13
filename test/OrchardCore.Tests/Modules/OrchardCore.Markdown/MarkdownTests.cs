@@ -51,10 +51,11 @@ public class MarkdownTests
         services.AddScoped<IOrchardHelper>(provider => new MockOrchardHelper(provider));
         services.AddScoped<IShortcodeService, ShortcodeService>();
         services.AddScoped<IHtmlSanitizerService, HtmlSanitizerService>();
-        
+        services.AddScoped<IMarkdownDisplayService, MarkdownDisplayService>();
+
         // Act
         var orchard = services.BuildServiceProvider().GetService<IOrchardHelper>();
-        
+
         await using var stringWriter = new StringWriter();
         (await orchard.MarkdownToHtmlAsync("This _is_ a ==test== markdown.")).WriteTo(stringWriter, HtmlEncoder.Default);
         var html = stringWriter.ToString();
@@ -62,6 +63,40 @@ public class MarkdownTests
         // Assert
         html = html.ReplaceLineEndings(string.Empty);
         Assert.Equal("<p>This <em>is</em> a <mark>test</mark> markdown.</p>", html);
+    }
+
+    [Theory]
+    [InlineData(true, "<p><strong>Safe</strong> </p>\n")]
+    [InlineData(false, "<p><strong>Safe</strong> <script>alert('xss')</script></p>\n")]
+    public async Task MarkdownDisplayService_SanitizesAfterConversionAndShortcodes(
+        bool sanitizeHtml,
+        string expected)
+    {
+        var services = CreateServiceCollection();
+        services.AddSingleton<IShortcodeService>(new UnsafeShortcodeService());
+        services.AddScoped<IHtmlSanitizerService, HtmlSanitizerService>();
+        services.AddScoped<IMarkdownDisplayService, MarkdownDisplayService>();
+        services.AddOptions<HtmlSanitizerOptions>();
+        var service = services.BuildServiceProvider().GetRequiredService<IMarkdownDisplayService>();
+
+        var html = await service.ToHtmlAsync("**Safe** [unsafe]", sanitizeHtml: sanitizeHtml);
+
+        Assert.Equal(expected, html);
+    }
+
+    [Fact]
+    public async Task MarkdownDisplayService_LiquidSyntax_IsNotExecuted()
+    {
+        var services = CreateServiceCollection();
+        services.AddSingleton<IShortcodeService>(new PassthroughShortcodeService());
+        services.AddScoped<IHtmlSanitizerService, HtmlSanitizerService>();
+        services.AddScoped<IMarkdownDisplayService, MarkdownDisplayService>();
+        services.AddOptions<HtmlSanitizerOptions>();
+        var service = services.BuildServiceProvider().GetRequiredService<IMarkdownDisplayService>();
+
+        var html = await service.ToHtmlAsync("{{ ContentItem.DisplayText }}", sanitizeHtml: false);
+
+        Assert.Equal("<p>{{ ContentItem.DisplayText }}</p>\n", html);
     }
 
     private static ServiceCollection CreateServiceCollection()
@@ -74,7 +109,7 @@ public class MarkdownTests
 
         return services;
     }
-    
+
     private sealed class MockOrchardHelper : IOrchardHelper
     {
         public HttpContext HttpContext { get; }
@@ -84,6 +119,19 @@ public class MarkdownTests
             HttpContext = new DefaultHttpContext();
             HttpContext.RequestServices = provider;
         }
+
+    }
+
+    private sealed class UnsafeShortcodeService : IShortcodeService
+    {
+        public ValueTask<string> ProcessAsync(string input, Context context = null)
+            => ValueTask.FromResult(input.Replace("[unsafe]", "<script>alert('xss')</script>"));
+    }
+
+    private sealed class PassthroughShortcodeService : IShortcodeService
+    {
+        public ValueTask<string> ProcessAsync(string input, Context context = null)
+            => ValueTask.FromResult(input);
     }
 
     [Theory]

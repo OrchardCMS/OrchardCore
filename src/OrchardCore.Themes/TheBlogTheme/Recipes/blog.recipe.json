@@ -94,7 +94,7 @@
         },
         {
           "Name": "Editor",
-          "Description": "Grants users the ability to edit existing content.",
+          "Description": "Grants users the ability to edit content and Liquid templates.",
           "Permissions": []
         },
         {

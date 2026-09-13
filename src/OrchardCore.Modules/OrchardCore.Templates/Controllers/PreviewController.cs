@@ -47,7 +47,8 @@ public sealed class PreviewController : Controller
     [HttpPost]
     public async Task<IActionResult> Render()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates) ||
+            !await _authorizationService.AuthorizeAsync(User, OrchardCore.Liquid.Permissions.ManageLiquidTemplates))
         {
             return this.ChallengeOrForbid();
         }

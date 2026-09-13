@@ -16,7 +16,6 @@ public sealed class MarkdownBodyPartSettingsDisplayDriver : ContentTypePartDefin
             var settings = contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
 
             model.SanitizeHtml = settings.SanitizeHtml;
-            model.RenderLiquid = settings.RenderLiquid;
         }).Location("Content:20");
     }
 
@@ -28,7 +27,6 @@ public sealed class MarkdownBodyPartSettingsDisplayDriver : ContentTypePartDefin
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
         settings.SanitizeHtml = model.SanitizeHtml;
-        settings.RenderLiquid = model.RenderLiquid;
 
         context.Builder.WithSettings(settings);
 

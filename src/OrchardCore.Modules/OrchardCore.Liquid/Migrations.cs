@@ -19,6 +19,11 @@ public sealed class Migrations : DataMigration
             .Attachable()
             .WithDescription("Provides a Liquid formatted body for your content item."));
 
-        return 1;
+        return 2;
+    }
+
+    public static int UpdateFrom1()
+    {
+        return 2;
     }
 }
