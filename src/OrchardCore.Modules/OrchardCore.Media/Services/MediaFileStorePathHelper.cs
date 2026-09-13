@@ -4,6 +4,23 @@ namespace OrchardCore.Media.Services;
 
 internal static class MediaFileStorePathHelper
 {
+    public static bool IsValidRelativePath(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path) ||
+            path[0] is '/' or '\\' ||
+            path.Contains(':') ||
+            path.Contains('\0'))
+        {
+            return false;
+        }
+
+        // Apply the same rules on every platform, including Windows path aliases.
+        return path.Split(PathExtensions.PathSeparators).All(segment =>
+            !string.IsNullOrWhiteSpace(segment) &&
+            !segment.EndsWith('.') &&
+            !segment.EndsWith(' '));
+    }
+
     /// <summary>
     /// Resolves and sanitizes a media path, collapsing any path-traversal segments (e.g. <c>..</c>)
     /// against the actual file store so that the returned path can be safely used in authorization checks.
