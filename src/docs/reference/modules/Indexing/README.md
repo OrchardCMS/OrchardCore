@@ -66,7 +66,15 @@ If you need UI integration, you can:
 
 ### Create Index Profile step
 
-Index profile can be created during recipe execution using the `IndexProfile` step.
+Index profiles can be created or updated during recipe execution using the
+`CreateOrUpdateIndexProfile` step.
+
+For an existing profile, incoming content settings (`IndexLatest`, `Culture`, and
+`IndexedContentTypes`) and Lucene settings (`AnalyzerName` and `StoreSourceData`)
+use the same handlers as creation. Omitted values preserve the existing settings.
+An empty content-type list fails shared validation and leaves the stored profile
+unchanged. Updating a definition does not imply that existing documents have been
+reindexed; run the appropriate indexing operation when changing indexed data.
 
 Here is a sample step:
 
@@ -165,3 +173,165 @@ To reset all indices:
   ]
 }
 ```
+
+## Remote index discovery
+
+With `OrchardCore.Indexing` enabled, the tenant exposes the `indexes` remote-management
+capability. Discovery requires API bearer authentication, `AccessRemoteManagement`
+and `ManageIndexes`. The same permission checks apply to in-process MCP invocation.
+
+```bash
+pomi indexes providers list
+pomi indexes list --page 1 --page-size 50
+pomi indexes list --search Articles --page 1 --page-size 20
+pomi indexes show <id>
+```
+
+`GET api/indexes` uses the existing index store's one-based paging contract. `page`
+defaults to 1 and `pageSize` defaults to 50, with a maximum of 200. Negative/zero
+values and offsets beyond a 32-bit integer are rejected. `search` filters profile
+names using the configured store's comparison rules. Responses contain `page`,
+`pageSize`, `totalCount` and `items`; names determine ordering.
+
+`GET api/indexes/by-id?id=...` retrieves an index by its stable administrative ID,
+returning `404` when it is absent. Each index response contains `id`, `name`,
+`indexName`, `providerName`, `type` and `createdUtc`. It omits the properties bag,
+physical backend name, author and owner fields. The profile name, logical backend
+index name and administrative ID are distinct identifiers.
+
+`GET api/indexes/providers` describes registered providers and their source types.
+It returns provider names/display names and source types/display names/descriptions.
+Registration does not promise that every provider supports the same remote mutation
+or execution operations; inspect the live command catalog before invoking them.
+
+With tenant MCP enabled, these operations are available as `indexes_list`,
+`indexes_show` and `indexes_providers_list`. Reads use the existing profile manager
+and registered indexing options; they do not serialize backend configuration objects.
+
+## Coordinating profiles and provider resources
+
+`IIndexProfileManagementService` coordinates creation and deletion for the admin UI
+and recipe creation. Extensions that need both a local profile and a provider index
+can use this service instead of repeating the coordination around `IIndexProfileManager`.
+
+Creation validates the profile, saves it locally so creation handlers can populate
+metadata, then asks the keyed `IIndexManager` to create the provider index. A rejected
+provider creation removes the local profile. If that compensation fails, the result
+is `LocalDeleteFailed`. Provider exceptions propagate and retain the local profile
+because the provider outcome may be uncertain. Synchronization is scheduled only
+after successful creation; it is not a completion signal for indexing.
+
+Deletion checks whether the provider index exists, removes it if necessary, and then
+removes the local profile. Provider rejection preserves the local profile. The admin's
+force-delete option permits local removal when the provider is missing or rejects
+deletion, but provider exceptions still propagate. Results distinguish success,
+unavailable providers, provider rejection and failure to remove the local profile.
+
+The default profile manager propagates failures from initialization, mutation and
+validation handlers. It does not save after a creating/updating/validation handler
+fails. Failed updates restore the tracked values from before the updating handlers,
+including nested extension properties. A handler failure after persistence also
+propagates, but does not undo stored data or provider operations; inspect the result
+before retrying an uncertain operation. This behavior applies to admin, recipe and
+remote-management callers using the default manager.
+
+`IndexProfileIdentityValidator` supplies the required-name, length and uniqueness
+checks shared by the index editor and default profile handler. The editor maps these
+errors to its field prefixes; recipe and API callers receive the same domain checks.
+Provider index-name uniqueness is enforced for all registered providers, not only Lucene.
+
+### Indexing batch failures
+
+The shared background indexer reads provider state and its cursor under the per-index
+lock, and keeps an index's cursor before a failed batch. A
+failed document handler, provider rejection, or cursor update stops that index for
+the current run; other indexes may continue. A subsequent run retries from its last
+saved cursor, so provider mutations in an incomplete batch may be repeated. A batch
+read/preparation failure stops the run rather than skipping ahead.
+
+Records successfully excluded by an index's selection still advance its cursor.
+They do not require a provider write. These progress rules do not make a scheduled
+synchronization request proof that indexing has completed.
+
+### Coordinating lifecycle execution
+
+`IIndexLifecycleService.ExecuteAsync` executes synchronization, reset or rebuild
+through the registered indexing source. The worker acquires one per-index lock for
+preparation and processing, subject to its 15-minute lease. Reset replays tasks without recreating the provider
+index; rebuild recreates it before resetting and replaying. A provider rejection or
+required reset-handler failure prevents subsequent processing.
+
+This service executes work directly and returns an `IndexProcessingResult`. Callers
+that need asynchronous HTTP operation tracking must schedule and track that work
+separately. A completed result describes the queue observed during that run; later
+content changes still require indexing.
+
+After successful processing, the coordinator invokes the registered
+`IIndexProfileHandler.SynchronizedAsync` callbacks with
+`IndexProfileSynchronizedContext.IsIndexingCompleted` set to `true`. Extension
+handlers still perform their synchronization work. The built-in content handler
+uses this flag to avoid indexing the same queue again. Legacy synchronization
+contexts default to `false` and retain the built-in processing behavior. Callback
+exceptions prevent the tracked operation from being recorded as completed.
+
+Custom sources without a keyed `NamedIndexingService` retain their legacy
+synchronization-handler path for admin and recipe operations. Reset/rebuild prepare
+the profile through the same coordinator, then release its preparation lock before
+invoking handlers, which may manage their own locks or schedule further work.
+These callbacks receive `IsIndexingCompleted = false`. Since legacy handlers return
+no processing outcome, the coordinator returns `Unverified` and the operation is
+recorded as `Uncertain`, never as completed. Register a keyed processor for the
+source type to provide directly observed processing outcomes. This compatibility
+path does not enable an unverified source/provider for remote lifecycle requests.
+
+The lock API does not renew leases. The worker measures elapsed time with a
+monotonic clock, checks the lease before starting further work or writes, and
+reports `LockExpired` if the lease elapsed. The operation becomes `Uncertain`.
+A provider call already in flight cannot be cancelled by this check and may have
+changed the index; the server does not claim continued exclusive ownership or
+successful completion. Inspect the provider before requesting new work. The last
+reported cursor is the value confirmed before expiry, which may differ from a
+provider write that finished after expiry.
+
+### Persisting lifecycle state
+
+`IndexOperationStore` stores lifecycle records in the tenant database with opaque
+operation identifiers. Status writes use independent transactions so they can be
+retained separately from indexing work. Expected-state transitions prevent a
+terminal record from being restarted, and a completed state requires a completed
+processing result for the same index. Records contain timestamps and confirmed
+progress rather than provider exception details.
+
+`IndexOperationRunner` records requests before scheduling post-request work. It
+claims each pending operation once and records completion after the execution scope
+returns. Exceptions are logged on the server and produce failed operation status.
+
+After 30 minutes without a state transition, observed pending/running work becomes
+`Uncertain`. This does not cancel work or prove it stopped. The original execution
+can still record its eventual result, but uncertain operations are not automatically
+restarted. Inspect the index before requesting new work after an uncertain outcome.
+
+### Remote lifecycle requests
+
+Remote lifecycle commands require API authentication, `AccessRemoteManagement` and
+`ManageIndexes`. Discover the `lifecycleActions` on each source from
+`pomi indexes providers list`. Lucene content indexes enable the current contract;
+unverified provider/source pairs return HTTP 501.
+
+```bash
+pomi indexes synchronize INDEX_ID
+pomi indexes reset INDEX_ID --force
+pomi indexes rebuild INDEX_ID --force
+pomi indexes operations show OPERATION_ID
+```
+
+Requests use `POST api/indexes/by-id:synchronize`, `:reset` or `:rebuild`, with the
+index identifier in the `id` query parameter. HTTP 202 returns the operation record
+and a Location header for `GET api/indexes/operations/by-id?id=OPERATION_ID`.
+Acceptance is not completion. Observe `state` until `Completed`, `Failed` or
+`Uncertain`, and inspect `outcome` for details such as provider contention. State and
+action values are serialized enum names. Reset/rebuild confirmation is local to
+Pomi and does not override server failures.
+
+Existing admin single/bulk actions and reset/rebuild recipes queue the same
+persisted operations. Their acknowledgement means work was queued, not completed.

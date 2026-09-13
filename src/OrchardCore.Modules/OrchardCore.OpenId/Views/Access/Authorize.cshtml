@@ -6,20 +6,25 @@
     ViewLayout = "Layout__Login";
 }
 
-<div class="jumbotron">
-    <h1>@T["Authorization"]</h1>
+<div class="row">
+    <section class="col-md-8 offset-md-2 py-4" aria-labelledby="authorization-title">
+        <h1 id="authorization-title" class="h3 mb-3">@T["Authorize {0}", Model.ApplicationName]</h1>
+        <p class="text-body-secondary mb-4">@T["Review the requested access. Only continue if you started this sign-in request."]</p>
 
-    <p class="lead text-start">@T["Do you want to grant <strong>{0}</strong> access to your data? (scopes requested: {1})", Model.ApplicationName, Model.Scope]</p>
+        @await DisplayAsync(await New.OpenIdConsentScopes(Scope: Model.Scope))
 
-    <form asp-controller="Access" asp-action="Authorize" method="post" class="no-multisubmit">
-        @* Flow the request parameters so they can be received by the Accept/Reject actions: *@
-        @foreach (var parameter in Context.Request.HasFormContentType ?
-          (IEnumerable<KeyValuePair<string, StringValues>>) Context.Request.Form : Context.Request.Query)
-        {
-            <input type="hidden" name="@parameter.Key" value="@parameter.Value" />
-        }
+        <form asp-controller="Access" asp-action="Authorize" method="post" class="no-multisubmit">
+            @* Preserve the validated protocol request for the Accept/Reject actions. *@
+            @foreach (var parameter in Context.Request.HasFormContentType ?
+              (IEnumerable<KeyValuePair<string, StringValues>>) Context.Request.Form : Context.Request.Query)
+            {
+                <input type="hidden" name="@parameter.Key" value="@parameter.Value" />
+            }
 
-        <input class="btn btn-lg btn-success" name="submit.Accept" type="submit" value="Yes" />
-        <input class="btn btn-lg btn-danger" name="submit.Deny" type="submit" value="No" />
-    </form>
+            <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-primary" name="submit.Accept" value="yes" type="submit">@T["Allow access"]</button>
+                <button class="btn btn-secondary" name="submit.Deny" value="no" type="submit">@T["Cancel"]</button>
+            </div>
+        </form>
+    </section>
 </div>

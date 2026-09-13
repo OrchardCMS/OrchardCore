@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>@RenderTitleSegments(Site.SiteName, "before")</title>
+    <link type="image/x-icon" rel="shortcut icon" href="~/TheTheme/images/favicon.ico" />
+    @if (Orchard.IsRightToLeft())
+    {
+        <style asp-name="bootstrap-rtl" version="5" at="Head"></style>
+        <style asp-name="TheSaaSTheme" depends-on="bootstrap-rtl" asp-src="~/TheSaaSTheme/styles/theme.min.css" debug-src="~/TheSaaSTheme/styles/theme.css" at="Head"></style>
+    }
+    else
+    {
+        <style asp-name="bootstrap" version="5" at="Head"></style>
+        <style asp-name="TheSaaSTheme" depends-on="bootstrap" asp-src="~/TheSaaSTheme/styles/theme.min.css" debug-src="~/TheSaaSTheme/styles/theme.css" at="Head"></style>
+    }
+    <resources type="Header" />
+    @await RenderSectionAsync("HeadMeta", required: false)
+</head>
+<body class="saas-auth-page">
+    <shape type="SaaSBackground" />
+    <a class="saas-skip-link" href="#main-content">@T["Skip to main content"]</a>
+    <header class="saas-auth-header">
+        <div class="saas-container">
+            <a class="saas-brand" href="@Url.Content("~/")">
+                <span class="saas-brand__mark" aria-hidden="true">
+                    <span></span><span></span><span></span>
+                </span>
+                <span>@Site.SiteName</span>
+            </a>
+        </div>
+    </header>
+    <main id="main-content" class="saas-auth-main">
+        <div class="saas-auth-main__inner">
+            <a class="saas-auth-home" href="@Url.Content("~/")">&larr; @T["Back to site"]</a>
+            @await RenderSectionAsync("Header", required: false)
+            @await RenderSectionAsync("Messages", required: false)
+            <div class="saas-auth-card">
+                @await RenderBodyAsync()
+            </div>
+        </div>
+    </main>
+    @await RenderSectionAsync("Footer", required: false)
+    <resources type="FootScript" />
+</body>
+</html>

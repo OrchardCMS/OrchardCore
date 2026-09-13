@@ -4,6 +4,7 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Layers.Models;
+using OrchardCore.Layers.Services;
 using OrchardCore.Layers.ViewModels;
 using OrchardCore.Settings;
 
@@ -12,8 +13,6 @@ namespace OrchardCore.Layers.Drivers;
 public sealed class LayerSiteSettingsDisplayDriver : SiteDisplayDriver<LayerSettings>
 {
     public const string GroupId = "zones";
-
-    private static readonly char[] s_separator = [' ', ','];
 
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
@@ -58,7 +57,7 @@ public sealed class LayerSiteSettingsDisplayDriver : SiteDisplayDriver<LayerSett
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        settings.Zones = (model.Zones ?? string.Empty).Split(s_separator, StringSplitOptions.RemoveEmptyEntries);
+        LayerSettingsEditor.Apply(settings, [model.Zones]);
 
         return await EditAsync(site, settings, context);
     }

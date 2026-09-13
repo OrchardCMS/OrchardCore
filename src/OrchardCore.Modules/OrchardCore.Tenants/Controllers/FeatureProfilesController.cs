@@ -170,8 +170,6 @@ public sealed class FeatureProfilesController : Controller
     {
         return await ProcessSaveAsync(model, submit, false, async (profile) =>
         {
-            await _featureProfilesManager.RemoveFeatureProfileAsync(profile.Id);
-
             await _featureProfilesManager.UpdateFeatureProfileAsync(profile.Id, profile);
         });
     }
@@ -245,11 +243,13 @@ public sealed class FeatureProfilesController : Controller
                 profile.Name = model.Name;
                 profile.FeatureRules = JConvert.DeserializeObject<List<FeatureRule>>(model.FeatureRules);
 
-                var featureProfilesDocument = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();
-
-                if (FeatureExists(profile, featureProfilesDocument, isNew))
+                var errors = await _featureProfilesManager.ValidateFeatureProfileAsync(model.Id, profile, isNew);
+                foreach (var (key, messages) in errors)
                 {
-                    ModelState.AddModelError(nameof(FeatureProfileViewModel.Name), S["A feature profile with the same name already exists."]);
+                    foreach (var message in messages)
+                    {
+                        ModelState.AddModelError(key, message);
+                    }
                 }
             }
             catch (Exception)
@@ -273,11 +273,4 @@ public sealed class FeatureProfilesController : Controller
         return View(model);
     }
 
-    private static bool FeatureExists(FeatureProfile model, FeatureProfilesDocument featureProfilesDocument, bool isNew)
-    {
-        // For backward compatibility, we use the key value as the name when the new name property is not set.
-        var profiles = featureProfilesDocument.FeatureProfiles.Where(x => (x.Value.Name ?? x.Key) == model.Name);
-
-        return profiles.Any(x => isNew || x.Key != model.Id);
-    }
 }

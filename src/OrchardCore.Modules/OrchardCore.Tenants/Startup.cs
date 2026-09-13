@@ -13,11 +13,13 @@ using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
+using OrchardCore.RemoteManagement;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Setup;
 using OrchardCore.Tenants.Deployment;
 using OrchardCore.Tenants.Recipes;
 using OrchardCore.Tenants.Services;
+using OrchardCore.Tenants.Endpoints.Management;
 
 namespace OrchardCore.Tenants;
 
@@ -38,8 +40,14 @@ public sealed class Startup : StartupBase
         services.AddScoped<ITenantValidator, TenantValidator>();
         services.AddShapeTableProvider<TenantShapeTableProvider>();
         services.AddSetup();
+        services.AddSingleton<IRemoteManagementCapabilityProvider, TenantRemoteManagementCapabilityProvider>();
 
         services.Configure<TenantsOptions>(_shellConfiguration.GetSection("OrchardCore_Tenants"));
+    }
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        routes.AddTenantManagementEndpoints();
     }
 }
 
@@ -110,13 +118,18 @@ public sealed class FeatureProfilesStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddNavigationProvider<FeatureProfilesAdminMenu>();
+        services.AddPermissionProvider<Permissions>();
         services.AddScoped<FeatureProfilesManager>();
+        services.AddSingleton<IRemoteManagementCapabilityProvider, FeatureProfilesRemoteManagementCapabilityProvider>();
         services.AddScoped<IFeatureProfilesService, FeatureProfilesService>();
         services.AddScoped<IFeatureProfilesSchemaService, FeatureProfilesSchemaService>();
         services.AddShapeTableProvider<TenantFeatureProfileShapeTableProvider>();
 
         services.AddRecipeExecutionStep<FeatureProfilesStep>();
     }
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        => routes.AddFeatureProfileManagementEndpoints();
 }
 
 [RequireFeatures("OrchardCore.Deployment", "OrchardCore.Tenants.FeatureProfiles")]
@@ -125,6 +138,7 @@ public sealed class FeatureProfilesDeploymentStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDeployment<AllFeatureProfilesDeploymentSource, AllFeatureProfilesDeploymentStep, AllFeatureProfilesDeploymentStepDriver>();
+        services.AddSingleton<IDeploymentStepDefinition>(new EmptyDeploymentStepDefinition<AllFeatureProfilesDeploymentStep>(nameof(AllFeatureProfilesDeploymentStep)));
     }
 }
 

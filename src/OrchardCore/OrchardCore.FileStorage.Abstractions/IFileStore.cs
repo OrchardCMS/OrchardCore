@@ -112,12 +112,50 @@ public interface IFileStore
     Task MoveFileAsync(string oldPath, string newPath);
 
     /// <summary>
+    /// Renames or moves a file only when the destination does not already exist.
+    /// </summary>
+    /// <param name="oldPath">The path of the file to be renamed or moved.</param>
+    /// <param name="newPath">The destination path.</param>
+    /// <returns><c>true</c> when the file was moved; <c>false</c> when the destination already exists.</returns>
+    async Task<bool> TryMoveFileAsync(string oldPath, string newPath)
+    {
+        try
+        {
+            await MoveFileAsync(oldPath, newPath);
+            return true;
+        }
+        catch (ExistsFileStoreException)
+        {
+            return false;
+        }
+    }
+
+    /// <summary>
     /// Creates a copy of a file in the file store.
     /// </summary>
     /// <param name="srcPath">The path of the source file to be copied.</param>
     /// <param name="dstPath">The path of the destination file to be created.</param>
     /// <exception cref="FileStoreException">Thrown if the specified file does not exist or if the <paramref name="dstPath"/> path already exists.</exception>
     Task CopyFileAsync(string srcPath, string dstPath);
+
+    /// <summary>
+    /// Copies a file only when the destination does not already exist.
+    /// </summary>
+    /// <param name="srcPath">The source file path.</param>
+    /// <param name="dstPath">The destination path.</param>
+    /// <returns><c>true</c> when the file was copied; <c>false</c> when the destination already exists.</returns>
+    async Task<bool> TryCopyFileAsync(string srcPath, string dstPath)
+    {
+        try
+        {
+            await CopyFileAsync(srcPath, dstPath);
+            return true;
+        }
+        catch (ExistsFileStoreException)
+        {
+            return false;
+        }
+    }
 
     /// <summary>
     /// Creates a stream to read the contents of a file in the file store.

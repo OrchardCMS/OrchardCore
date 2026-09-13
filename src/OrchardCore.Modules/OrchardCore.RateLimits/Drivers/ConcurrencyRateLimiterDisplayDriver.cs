@@ -57,17 +57,19 @@ public sealed class ConcurrencyRateLimiterDisplayDriver : DisplayDriver<RateLimi
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        if (model.PermitLimit < 1)
-        {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.PermitLimit), S["Permit limit must be greater than zero."]);
-        }
-
-        limiter.Put(new ConcurrencyRateLimiterData
+        var data = new ConcurrencyRateLimiterData
         {
             PermitLimit = model.PermitLimit,
             QueueLimit = model.QueueLimit,
             QueueProcessingOrder = model.QueueProcessingOrder,
-        });
+        };
+
+        foreach (var error in RateLimitLimiterValidation.Validate(data, S))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, error.Key, error.Value);
+        }
+
+        limiter.Put(data);
 
         return Edit(limiter, context);
     }

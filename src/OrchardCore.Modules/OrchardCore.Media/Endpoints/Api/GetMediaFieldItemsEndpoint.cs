@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
 using OrchardCore.Media.ViewModels;
+using OrchardCore.RemoteManagement;
 
 namespace OrchardCore.Media.Endpoints.Api;
 
@@ -17,10 +18,17 @@ public static class GetMediaFieldItemsEndpoint
 {
     public static IEndpointRouteBuilder AddGetMediaFieldItemsEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapGet("api/media/GetMediaFieldItems", HandleAsync)
+        builder.MapLegacyGet("api/media/GetMediaFieldItems", HandleAsync);
+
+        builder.MapManagementGet("api/media/files/metadata", HandleAsync)
             .WithName("ApiGetMediaFieldItems")
-            .WithTags("MediaApi")
-            .DisableAntiforgery()
+            .WithSummary("Shows metadata for multiple media files.")
+            .WithDescription("Returns the metadata for the requested media file paths and omits any paths that no longer resolve to a file.")
+            .WithCliCommand(new CliOperationMetadata(["media", "metadata"], "show")
+            {
+                Capability = MediaApiEndpointConventions.CapabilityName,
+                InputMode = CliInputMode.Options,
+            })
             .Produces<IEnumerable<FileStoreEntryDto>>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
@@ -28,15 +36,16 @@ public static class GetMediaFieldItemsEndpoint
         return builder;
     }
 
-    [Authorize(Policy = MediaApiConstants.AuthorizationPolicyName)]
     private static async Task<IResult> HandleAsync(
         HttpContext httpContext,
-        IAuthorizationService authorizationService,
-        IMediaFileStore mediaFileStore,
-        IContentTypeProvider contentTypeProvider,
-        IFileVersionProvider fileVersionProvider,
-        [FromQuery] string[] paths)
+        [FromServices] IAuthorizationService authorizationService,
+        [FromServices] IMediaFileStore mediaFileStore,
+        [FromServices] IContentTypeProvider contentTypeProvider,
+        [FromServices] IFileVersionProvider fileVersionProvider,
+        [AsParameters] GetMediaFieldItemsRequest request)
     {
+        var paths = request.Paths;
+
         if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMedia))
         {
             return httpContext.ApiForbidProblem();

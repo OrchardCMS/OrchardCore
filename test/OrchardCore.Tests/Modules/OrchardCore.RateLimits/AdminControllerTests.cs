@@ -1,3 +1,7 @@
+using System.Text.Json.Nodes;
+using OrchardCore.Localization;
+using OrchardCore.RateLimits.Recipes;
+using OrchardCore.Recipes.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.DisplayManagement;
@@ -187,6 +191,66 @@ public class AdminControllerTests
         shellReleaseManager.Verify(x => x.RequestRelease(), Times.Never);
     }
 
+    [Theory]
+    [InlineData(RateLimitPolicyScope.Global, null, null, true)]
+    [InlineData(RateLimitPolicyScope.Endpoint, "/limited", null, true)]
+    [InlineData(RateLimitPolicyScope.Group, null, "group", true)]
+    [InlineData((RateLimitPolicyScope)999, null, null, false)]
+    [InlineData(RateLimitPolicyScope.Endpoint, null, null, false)]
+    [InlineData(RateLimitPolicyScope.Endpoint, "relative", null, false)]
+    [InlineData(RateLimitPolicyScope.Group, null, null, false)]
+    public async Task AdminAndRecipe_ShareTargetValidation(RateLimitPolicyScope scope, string path, string group, bool valid)
+    {
+        var store = new Mock<IRateLimitPolicyStore>();
+        store.Setup(value => value.GetAllAsync(PolicyVersion.Current))
+            .Returns(() => ValueTask.FromResult<IReadOnlyCollection<RateLimitPolicy>>([]));
+        var controller = CreateController(store.Object, Mock.Of<IShellReleaseManager>());
+        await controller.CreatePost(new RateLimitPolicyEditViewModel
+        {
+            Name = "policy", Scope = scope, Path = path, GroupName = group,
+        });
+        Assert.Equal(valid, controller.ModelState.IsValid);
+        var context = new RecipeExecutionContext
+        {
+            Name = CreateOrUpdateRateLimitPoliciesStep.StepKey,
+            Step = new JsonObject
+            {
+                ["policies"] = new JsonArray(new JsonObject
+                {
+                    ["PolicyId"] = "recipe-policy", ["Name"] = "recipe", ["Scope"] = (int)scope,
+                    ["Path"] = path, ["GroupName"] = group,
+                }),
+            },
+        };
+        await new CreateOrUpdateRateLimitPoliciesStep(store.Object,
+            new StringLocalizer<CreateOrUpdateRateLimitPoliciesStep>(new NullStringLocalizerFactory())).ExecuteAsync(context);
+        Assert.Equal(valid, context.Errors.Count == 0);
+        store.Verify(value => value.CreateAsync(It.IsAny<RateLimitPolicy>()), valid ? Times.Exactly(2) : Times.Never());
+    }
+
+    [Fact]
+    public async Task BulkEnable_ChangesOnlyDisabledPoliciesAndReleasesShellOnce()
+    {
+        var policies = new[]
+        {
+            new RateLimitPolicy { PolicyId = "one" },
+            new RateLimitPolicy { PolicyId = "two" },
+            new RateLimitPolicy { PolicyId = "already", IsEnabled = true },
+        };
+        var store = new Mock<IRateLimitPolicyStore>();
+        store.Setup(value => value.GetAllAsync(PolicyVersion.Current))
+            .Returns(() => ValueTask.FromResult<IReadOnlyCollection<RateLimitPolicy>>(policies));
+        store.Setup(value => value.SetStatusAsync(It.IsAny<string>(), true)).Returns(() => ValueTask.FromResult(true));
+        var release = new Mock<IShellReleaseManager>();
+        var controller = CreateController(store.Object, release.Object);
+        await controller.IndexPost(new RateLimitsIndexViewModel { BulkAction = RateLimitPolicyBulkAction.Enable },
+            policies.Select(policy => policy.PolicyId));
+        store.Verify(value => value.SetStatusAsync("one", true), Times.Once);
+        store.Verify(value => value.SetStatusAsync("two", true), Times.Once);
+        store.Verify(value => value.SetStatusAsync("already", true), Times.Never);
+        release.Verify(value => value.RequestRelease(), Times.Once);
+    }
+
     private static AdminController CreateController(
         IRateLimitPolicyStore policyStore,
         IShellReleaseManager shellReleaseManager)
@@ -201,7 +265,7 @@ public class AdminControllerTests
             new EmptyEndpointDataSource(),
             Options.Create(new RateLimitsOptions()),
             Mock.Of<IDisplayManager<RateLimitPolicy>>(),
-            Mock.Of<IStringLocalizer<AdminController>>(),
+            new StringLocalizer<AdminController>(new NullStringLocalizerFactory()),
             Mock.Of<IHtmlLocalizer<AdminController>>())
         {
             ControllerContext = new ControllerContext

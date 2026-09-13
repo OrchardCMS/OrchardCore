@@ -8,15 +8,13 @@ using OrchardCore.Cors.Settings;
 using OrchardCore.Cors.ViewModels;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
-using CorsConstants = Microsoft.AspNetCore.Cors.Infrastructure.CorsConstants;
 
 namespace OrchardCore.Cors.Controllers;
 
 [Admin]
 public sealed class AdminController : Controller
 {
-    private readonly IShellHost _shellHost;
-    private readonly ShellSettings _shellSettings;
+    private readonly IShellReleaseManager _releaseManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly CorsService _corsService;
     private readonly INotifier _notifier;
@@ -24,16 +22,14 @@ public sealed class AdminController : Controller
     internal readonly IHtmlLocalizer H;
 
     public AdminController(
-        IShellHost shellHost,
-        ShellSettings shellSettings,
+        IShellReleaseManager releaseManager,
         IAuthorizationService authorizationService,
         CorsService corsService,
         INotifier notifier,
         IHtmlLocalizer<AdminController> htmlLocalizer
         )
     {
-        _shellHost = shellHost;
-        _shellSettings = shellSettings;
+        _releaseManager = releaseManager;
         _authorizationService = authorizationService;
         _corsService = corsService;
         _notifier = notifier;
@@ -93,43 +89,39 @@ public sealed class AdminController : Controller
         }
 
         var model = new CorsSettingsViewModel();
-        var configJson = Request.Form["CorsSettings"].First();
-        model.Policies = JConvert.DeserializeObject<CorsPolicyViewModel[]>(configJson);
+        var configJson = Request.Form["CorsSettings"].FirstOrDefault();
+        try
+        {
+            model.Policies = string.IsNullOrWhiteSpace(configJson) ? null : JConvert.DeserializeObject<CorsPolicyViewModel[]>(configJson);
+        }
+        catch (JsonException)
+        {
+            ModelState.AddModelError(string.Empty, H["Provide a valid CORS policies array."].Value);
+        }
+        if (model.Policies is null || !ModelState.IsValid)
+        {
+            ModelState.AddModelError(string.Empty, H["Provide a CORS policies array; use an empty array to remove policies."].Value);
+            model.Policies ??= [];
+            return View(model);
+        }
 
         var corsPolicies = new List<CorsPolicySetting>();
 
-        // If "allow origin" and "allow credentials" are both true, issue a warning about CORS functionality. Inform the user.
-        var policyWarnings = new List<string>();
-
-        foreach (var settingViewModel in model.Policies)
+        foreach (var settingViewModel in model.Policies ?? [])
         {
-            if (IsAnyOriginAllowed(settingViewModel) && settingViewModel.AllowCredentials)
+            corsPolicies.Add(settingViewModel is null ? null : new CorsPolicySetting
             {
-                policyWarnings.Add(settingViewModel.Name);
-            }
-            else
-            {
-                corsPolicies.Add(new CorsPolicySetting
-                {
-                    Name = settingViewModel.Name,
-                    AllowAnyHeader = settingViewModel.AllowAnyHeader,
-                    AllowAnyMethod = settingViewModel.AllowAnyMethod,
-                    AllowAnyOrigin = settingViewModel.AllowAnyOrigin,
-                    AllowCredentials = settingViewModel.AllowCredentials,
-                    AllowedHeaders = settingViewModel.AllowedHeaders,
-                    AllowedMethods = settingViewModel.AllowedMethods,
-                    AllowedOrigins = settingViewModel.AllowedOrigins,
-                    IsDefaultPolicy = settingViewModel.IsDefaultPolicy,
-                    ExposedHeaders = settingViewModel.ExposedHeaders,
-                });
-            }
-        }
-
-        if (policyWarnings.Count > 0)
-        {
-            await _notifier.WarningAsync(H["Specifying AllowAnyOrigin and AllowCredentials is an insecure configuration and can result in cross-site request forgery. The CORS service returns an invalid CORS response when an app is configured with both methods.<br /><strong>Affected policies: {0} </strong><br />Refer to docs: <a href='https://learn.microsoft.com/en-us/aspnet/core/security/cors' target='_blank'>https://learn.microsoft.com/en-us/aspnet/core/security/cors</a>.", string.Join(", ", policyWarnings)]);
-
-            return View(model);
+                Name = settingViewModel.Name,
+                AllowAnyHeader = settingViewModel.AllowAnyHeader,
+                AllowAnyMethod = settingViewModel.AllowAnyMethod,
+                AllowAnyOrigin = settingViewModel.AllowAnyOrigin,
+                AllowCredentials = settingViewModel.AllowCredentials,
+                AllowedHeaders = settingViewModel.AllowedHeaders,
+                AllowedMethods = settingViewModel.AllowedMethods,
+                AllowedOrigins = settingViewModel.AllowedOrigins,
+                IsDefaultPolicy = settingViewModel.IsDefaultPolicy,
+                ExposedHeaders = settingViewModel.ExposedHeaders,
+            });
         }
 
         var corsSettings = new CorsSettings()
@@ -137,15 +129,23 @@ public sealed class AdminController : Controller
             Policies = corsPolicies,
         };
 
-        await _corsService.UpdateSettingsAsync(corsSettings);
-
-        await _shellHost.ReleaseShellContextAsync(_shellSettings);
+        var result = await _corsService.UpdateSettingsAsync(corsSettings);
+        if (result.Errors.Count > 0)
+        {
+            foreach (var error in result.Errors.Values.SelectMany(messages => messages))
+            {
+                ModelState.AddModelError(string.Empty, error);
+            }
+            return View(model);
+        }
+        if (result.Changed)
+        {
+            _releaseManager.RequestRelease();
+        }
 
         await _notifier.SuccessAsync(H["The CORS settings have updated successfully."]);
 
         return View(model);
     }
 
-    private static bool IsAnyOriginAllowed(CorsPolicyViewModel corsPolicyViewModel)
-        => corsPolicyViewModel.AllowAnyOrigin || corsPolicyViewModel.AllowedOrigins.Any(origin => origin == CorsConstants.AnyOrigin);
 }

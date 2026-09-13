@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>@RenderTitleSegments(Site.SiteName, "before")</title>
+    <link type="image/x-icon" rel="shortcut icon" href="~/TheTheme/images/favicon.ico" />
+    @if (Orchard.IsRightToLeft())
+    {
+        <style asp-name="bootstrap-rtl" version="5" at="Head"></style>
+        <style asp-name="TheSaaSTheme" depends-on="bootstrap-rtl" asp-src="~/TheSaaSTheme/styles/theme.min.css" debug-src="~/TheSaaSTheme/styles/theme.css" at="Head"></style>
+    }
+    else
+    {
+        <style asp-name="bootstrap" version="5" at="Head"></style>
+        <style asp-name="TheSaaSTheme" depends-on="bootstrap" asp-src="~/TheSaaSTheme/styles/theme.min.css" debug-src="~/TheSaaSTheme/styles/theme.css" at="Head"></style>
+    }
+    <resources type="Header" />
+    @await RenderSectionAsync("HeadMeta", required: false)
+</head>
+<body class="saas-page">
+    <shape type="SaaSBackground" />
+    <a class="saas-skip-link" href="#main-content">@T["Skip to main content"]</a>
+    <header class="saas-header">
+        <div class="saas-container saas-header__inner">
+            <a class="saas-brand" href="@Url.Content("~/")" aria-label="@T["{0} home", Site.SiteName]">
+                <span class="saas-brand__mark" aria-hidden="true">
+                    <span></span><span></span><span></span>
+                </span>
+                <span>@Site.SiteName</span>
+            </a>
+            <a class="saas-header__action" href="@Url.Content("~/Admin")">@T["Open administration"]</a>
+        </div>
+    </header>
+
+    @await RenderSectionAsync("Header", required: false)
+
+    <main id="main-content" class="saas-main">
+        <div class="saas-container">
+            @await RenderSectionAsync("Messages", required: false)
+            @await RenderBodyAsync()
+        </div>
+    </main>
+
+    <resources type="FootScript" />
+</body>
+</html>

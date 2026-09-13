@@ -5,6 +5,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Mvc.ModelBinding;
+using OrchardCore.Settings.Services;
 using OrchardCore.Settings.ViewModels;
 
 namespace OrchardCore.Settings.Drivers;
@@ -91,14 +92,14 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
         site.AppendVersion = model.AppendVersion;
         site.CacheMode = model.CacheMode;
 
-        if (model.PageSize.Value < 1)
+        if (SiteSettingsValidator.ValidatePageSize(S, model.PageSize.Value, site.MaxPageSize) is { } pageSizeError)
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), S["The page size must be greater than zero."]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), pageSizeError);
         }
 
-        if (site.MaxPageSize > 0 && model.PageSize.Value > site.MaxPageSize)
+        if (SiteSettingsValidator.ValidateBaseUrl(S, site.BaseUrl) is { } baseUrlError)
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), S["The page size must be less than or equal to {0}.", site.MaxPageSize]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.BaseUrl), baseUrlError);
         }
 
         if (TryParsePageSizeOptions(model.PageSizeOptions, out var pageSizeOptions))
@@ -118,11 +119,6 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
         else
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSizeOptions), S["The page size options must be a comma-separated list of positive numbers."]);
-        }
-
-        if (!string.IsNullOrEmpty(site.BaseUrl) && !Uri.TryCreate(site.BaseUrl, UriKind.Absolute, out _))
-        {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.BaseUrl), S["The Base url must be a fully qualified URL."]);
         }
 
         _shellReleaseManager.RequestRelease();

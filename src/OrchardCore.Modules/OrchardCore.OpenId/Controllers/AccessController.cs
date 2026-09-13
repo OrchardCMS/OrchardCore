@@ -299,6 +299,171 @@ public sealed class AccessController : Controller
         return Forbid(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
     }
 
+    [AllowAnonymous, DisableCors, HttpGet, IgnoreAntiforgeryToken]
+    public async Task<IActionResult> Verify()
+    {
+        var response = HttpContext.GetOpenIddictServerResponse();
+        if (response is not null)
+        {
+            return View("Error", new ErrorViewModel
+            {
+                Error = response.Error,
+                ErrorDescription = response.ErrorDescription,
+            });
+        }
+
+        var request = HttpContext.GetOpenIddictServerRequest();
+        if (request == null)
+        {
+            return NotFound();
+        }
+
+        var result = await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        var userCode = GetPresentedUserCode(result?.Properties);
+
+        if (result is { Succeeded: true, Principal: not null } &&
+            !string.IsNullOrEmpty(result.Principal.GetClaim(Claims.ClientId)))
+        {
+            var authentication = await HttpContext.AuthenticateAsync();
+            if (authentication is not { Succeeded: true, Principal: not null })
+            {
+                return Challenge(new AuthenticationProperties
+                {
+                    RedirectUri = Request.PathBase + Request.Path + QueryString.Create(
+                        Request.HasFormContentType ? Request.Form : Request.Query),
+                });
+            }
+
+            var application = await _applicationManager.FindByClientIdAsync(result.Principal.GetClaim(Claims.ClientId)) ??
+                throw new InvalidOperationException("The application details cannot be found.");
+
+            var authorizations = await _authorizationManager.FindAsync(
+                subject: authentication.Principal.GetUserIdentifier(),
+                client: await _applicationManager.GetIdAsync(application),
+                status: Statuses.Valid,
+                type: AuthorizationTypes.Permanent,
+                scopes: result.Principal.GetScopes()).ToListAsync();
+
+            if (await _applicationManager.GetConsentTypeAsync(application) == ConsentTypes.External &&
+                authorizations.Count == 0)
+            {
+                return Forbid(new AuthenticationProperties(new Dictionary<string, string>
+                {
+                    [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.ConsentRequired,
+                    [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
+                        "The logged in user is not allowed to access this client application.",
+                }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+            }
+
+            return View(new VerifyViewModel
+            {
+                ApplicationName = await _applicationManager.GetLocalizedDisplayNameAsync(application),
+                Scope = string.Join(' ', result.Principal.GetScopes()),
+                UserCode = userCode,
+            });
+        }
+
+        if (!string.IsNullOrEmpty(userCode))
+        {
+            return View(new VerifyViewModel
+            {
+                Error = Errors.InvalidToken,
+                ErrorDescription = "The specified user code is not valid. Please make sure you typed it correctly.",
+                UserCode = userCode,
+            });
+        }
+
+        return View(new VerifyViewModel());
+    }
+
+    [ActionName(nameof(Verify)), DisableCors]
+    [FormValueRequired("submit.Accept"), HttpPost]
+    public async Task<IActionResult> VerifyAccept()
+    {
+        // Warning: unlike the main Verify method, this method MUST NOT be decorated with
+        // [IgnoreAntiforgeryToken] as we must be able to reject end-user verification requests
+        // sent by a malicious client that could abuse this interactive endpoint to silently
+        // approve a device authorization request without the user explicitly approving it.
+
+        var response = HttpContext.GetOpenIddictServerResponse();
+        if (response is not null)
+        {
+            return View("Error", new ErrorViewModel
+            {
+                Error = response.Error,
+                ErrorDescription = response.ErrorDescription,
+            });
+        }
+
+        var request = HttpContext.GetOpenIddictServerRequest();
+        if (request == null)
+        {
+            return NotFound();
+        }
+
+        var result = await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        if (result is not { Succeeded: true, Principal: not null } ||
+            string.IsNullOrEmpty(result.Principal.GetClaim(Claims.ClientId)))
+        {
+            return View(new VerifyViewModel
+            {
+                Error = Errors.InvalidToken,
+                ErrorDescription = "The specified user code is not valid. Please make sure you typed it correctly.",
+                UserCode = GetPresentedUserCode(result?.Properties),
+            });
+        }
+
+        var application = await _applicationManager.FindByClientIdAsync(result.Principal.GetClaim(Claims.ClientId)) ??
+            throw new InvalidOperationException("The application details cannot be found.");
+
+        var authorizations = await _authorizationManager.FindAsync(
+            subject: User.GetUserIdentifier(),
+            client: await _applicationManager.GetIdAsync(application),
+            status: Statuses.Valid,
+            type: AuthorizationTypes.Permanent,
+            scopes: result.Principal.GetScopes()).ToListAsync();
+
+        switch (await _applicationManager.GetConsentTypeAsync(application))
+        {
+            case ConsentTypes.External when authorizations.Count == 0:
+                return Forbid(new AuthenticationProperties(new Dictionary<string, string>
+                {
+                    [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.ConsentRequired,
+                    [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
+                        "The logged in user is not allowed to access this client application.",
+                }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+
+            default:
+                return await CompleteEndUserVerificationAsync(User, result.Principal, application, authorizations.LastOrDefault());
+        }
+    }
+
+    [ActionName(nameof(Verify)), DisableCors]
+    [FormValueRequired("submit.Deny"), HttpPost]
+    public IActionResult VerifyDeny()
+    {
+        var response = HttpContext.GetOpenIddictServerResponse();
+        if (response is not null)
+        {
+            return View("Error", new ErrorViewModel
+            {
+                Error = response.Error,
+                ErrorDescription = response.ErrorDescription,
+            });
+        }
+
+        var request = HttpContext.GetOpenIddictServerRequest();
+        if (request == null)
+        {
+            return NotFound();
+        }
+
+        return Forbid(new AuthenticationProperties
+        {
+            RedirectUri = "/",
+        }, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+    }
+
     [AllowAnonymous]
     [DisableCors]
     [HttpGet]
@@ -451,7 +616,7 @@ public sealed class AccessController : Controller
             return ExchangeClientCredentialsGrantType(request);
         }
 
-        if (request.IsAuthorizationCodeGrantType() || request.IsRefreshTokenGrantType())
+        if (request.IsAuthorizationCodeGrantType() || request.IsDeviceCodeGrantType() || request.IsRefreshTokenGrantType())
         {
             return ExchangeAuthorizationCodeOrRefreshTokenGrantType(request);
         }
@@ -636,6 +801,51 @@ public sealed class AccessController : Controller
         identity.SetDestinations(GetDestinations);
 
         return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+    }
+
+    private async Task<IActionResult> CompleteEndUserVerificationAsync(
+        ClaimsPrincipal principal,
+        ClaimsPrincipal requestPrincipal,
+        object application,
+        object authorization = null)
+    {
+        var identity = new ClaimsIdentity(principal.Claims, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        identity.AddClaim(new Claim(OpenIdConstants.Claims.EntityType, OpenIdConstants.EntityTypes.User));
+
+        PopulateIdentityClaims(principal, identity);
+
+        var scopes = requestPrincipal.GetScopes();
+        identity.SetScopes(scopes);
+        identity.SetResources(await GetResourcesAsync(scopes));
+
+        authorization ??= await _authorizationManager.CreateAsync(
+            identity: identity,
+            subject: identity.GetUserIdentifier(),
+            client: await _applicationManager.GetIdAsync(application),
+            type: AuthorizationTypes.Permanent,
+            scopes: identity.GetScopes());
+
+        identity.SetAuthorizationId(await _authorizationManager.GetIdAsync(authorization));
+        identity.SetDestinations(GetDestinations);
+
+        return SignIn(
+            new ClaimsPrincipal(identity),
+            new AuthenticationProperties { RedirectUri = "/" },
+            OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+    }
+
+    private string GetPresentedUserCode(AuthenticationProperties properties = null)
+    {
+        var userCode = properties?.GetTokenValue(OpenIddictServerAspNetCoreConstants.Tokens.UserCode);
+
+        if (!string.IsNullOrEmpty(userCode))
+        {
+            return userCode;
+        }
+
+        return Request.HasFormContentType ?
+            Request.Form[Parameters.UserCode].ToString() :
+            Request.Query[Parameters.UserCode].ToString();
     }
 
     private static IEnumerable<string> GetDestinations(Claim claim)

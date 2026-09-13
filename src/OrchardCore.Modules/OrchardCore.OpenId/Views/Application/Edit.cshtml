@@ -20,8 +20,19 @@
         </div>
     </div>
 
+    <div class="ocat-wrapper" asp-validation-class-for="ApplicationType">
+        <label asp-for="ApplicationType" class="ocat-label">@T["Application type"]</label>
+        <div class="ocat-end">
+            <select asp-for="ApplicationType" class="form-select">
+                <option value="@OpenIddictConstants.ApplicationTypes.Web">@T["Web application"]</option>
+                <option value="@OpenIddictConstants.ApplicationTypes.Native">@T["Native application"]</option>
+            </select>
+            <div class="hint">@T["Native applications can use loopback redirect URIs with an ephemeral port."]</div>
+        </div>
+    </div>
+
     <div class="ocat-wrapper" asp-validation-class-for="Type">
-        <label asp-for="Type" class="ocat-label">@T["Type"]</label>
+        <label asp-for="Type" class="ocat-label">@T["Client type"]</label>
         <div class="ocat-end">
             <select asp-for="Type" class="form-select">
                 <option value="@OpenIddictConstants.ClientTypes.Confidential">@T["Confidential client"]</option>
@@ -91,6 +102,17 @@
         </div>
     </div>
 
+    <div id="AllowDeviceAuthorizationFlowFieldSet" class='ocat-wrapper collapse' asp-validation-class-for="AllowDeviceAuthorizationFlow">
+        <div class="ocat-end-offset">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" asp-for="AllowDeviceAuthorizationFlow" data-bs-toggle="collapse" data-bs-target="#AllowDeviceAuthorizationFlowRecommendedHint" checked="@Model.AllowDeviceAuthorizationFlow">
+                <label class="form-check-label" asp-for="AllowDeviceAuthorizationFlow">@T["Allow Device Authorization Flow"]</label>
+                <span class="hint dashed">@T["Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Device Authorization Grant.", "https://datatracker.ietf.org/doc/html/rfc8628"]</span>
+            </div>
+            <div id="AllowDeviceAuthorizationFlowRecommendedHint" class="hint collapse">@T["Recommended Parameters:"] <code>client_id, scope ('openid, profile, roles)')</code></div>
+        </div>
+    </div>
+
     <div id="AllowImplicitFlowFieldSet" class='ocat-wrapper collapse' asp-validation-class-for="AllowImplicitFlow">
         <div class="ocat-end-offset">
             <div class="form-check">
@@ -138,7 +160,7 @@
     <div id="AllowRefreshTokenFlowFieldSet" class='ocat-wrapper collapse' asp-validation-class-for="AllowRefreshTokenFlow">
         <div class="ocat-end-offset">
             <div class="form-check">
-                <input type="checkbox" class="form-check-input" asp-for="AllowRefreshTokenFlow" data-bs-toggle="collapse" data-bs-target="#AllowRefreshTokenFlowRecommendedHint" checked="@Model.AllowRefreshTokenFlow" disabled=@((Model.AllowPasswordFlow || Model.AllowAuthorizationCodeFlow) ? null : "")>
+                <input type="checkbox" class="form-check-input" asp-for="AllowRefreshTokenFlow" data-bs-toggle="collapse" data-bs-target="#AllowRefreshTokenFlowRecommendedHint" checked="@Model.AllowRefreshTokenFlow" disabled=@((Model.AllowPasswordFlow || Model.AllowAuthorizationCodeFlow || Model.AllowDeviceAuthorizationFlow || Model.AllowHybridFlow) ? null : "")>
                 <label class="form-check-label" asp-for="AllowRefreshTokenFlow">@T["Allow Refresh Token Flow"]</label>
                 <span class="hint dashed">@T["Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Refresh Token Flow.", "http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens"]</span>
             </div>
@@ -330,6 +352,7 @@
         <text>
             setCollapse(getElement("AllowAuthorizationCodeFlowFieldSet"), "show");
             setCollapse(getElement("AllowClientCredentialsFlowFieldSet"), "show");
+            setCollapse(getElement("AllowDeviceAuthorizationFlowFieldSet"), "show");
             setCollapse(getElement("AllowImplicitFlowFieldSet"), "show");
             setCollapse(getElement("AllowPasswordFlowFieldSet"), "show");
             setCollapse(getElement("AllowRefreshTokenFlowFieldSet"), "show");
@@ -359,6 +382,18 @@
             <text>
                 setCollapse(getElement("AllowClientCredentialsFlowFieldSet"), "hide");
                 getElement("AllowClientCredentialsFlow").checked = false;
+            </text>
+        }
+
+        if (settings.AllowDeviceAuthorizationFlow)
+        {
+            <text>setCollapse(getElement("AllowDeviceAuthorizationFlowFieldSet"), "show"); </text>
+        }
+        else
+        {
+            <text>
+                setCollapse(getElement("AllowDeviceAuthorizationFlowFieldSet"), "hide");
+                getElement("AllowDeviceAuthorizationFlow").checked = false;
             </text>
         }
 
@@ -444,7 +479,7 @@
                 allowClientCredentialsFlow.checked = false;
             }
 
-            var clientSecretHints = document.querySelectorAll("#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint, #AllowImplicitFlowRecommendedHint, #AllowRefreshTokenFlowRecommendedHint");
+            var clientSecretHints = document.querySelectorAll("#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint, #AllowDeviceAuthorizationFlowRecommendedHint, #AllowImplicitFlowRecommendedHint, #AllowRefreshTokenFlowRecommendedHint");
 
             if (defaultType === getElement("Type").value)
                 return;
@@ -462,7 +497,7 @@
         });
 
         function refreshOfflineAccessTip(defaultValue) {
-            var offlineAccessHints = document.querySelectorAll("#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint");
+            var offlineAccessHints = document.querySelectorAll("#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint, #AllowDeviceAuthorizationFlowRecommendedHint");
             var allowRefreshTokenFlow = getElement("AllowRefreshTokenFlow");
             if (defaultValue === allowRefreshTokenFlow.checked)
                 return;
@@ -475,7 +510,7 @@
             }
         }
 
-        document.querySelectorAll("#AllowClientCredentialsFlow, #AllowPasswordFlow, #AllowAuthorizationCodeFlow, #AllowImplicitFlow, #AllowHybridFlow, #AllowRefreshTokenFlow").forEach(function (element) {
+        document.querySelectorAll("#AllowClientCredentialsFlow, #AllowPasswordFlow, #AllowAuthorizationCodeFlow, #AllowDeviceAuthorizationFlow, #AllowImplicitFlow, #AllowHybridFlow, #AllowRefreshTokenFlow").forEach(function (element) {
             element.addEventListener('change', function () {
                 refreshFlows();
             });
@@ -494,6 +529,7 @@
 
             if (getElement("AllowPasswordFlow").checked ||
                 getElement("AllowAuthorizationCodeFlow").checked ||
+                getElement("AllowDeviceAuthorizationFlow").checked ||
                 getElement("AllowHybridFlow").checked) {
                 allowRefreshTokenFlow.disabled = false;
             }

@@ -2,6 +2,10 @@
 
 The `OrchardCore.Features` module lets the administrator of a site manage the installed modules and enable or disable the features they provide.
 
+## API reference
+
+See the [Feature management API](../../api/features/README.md) for OpenAPI operations that list, enable, and disable features.
+
 ## Managing features
 
 Go to **Configuration** > **Features** in the admin (requires the `Manage features` permission). From there you can:
@@ -42,3 +46,14 @@ Features can be enabled or disabled from a recipe using the `Feature` step. List
 ```
 
 This is the recommended way to compose a site's enabled feature set as part of a setup or deployment recipe.
+
+## Deployment step configuration through Pomi
+
+The `AllFeaturesDeploymentStep` factory exposes the Boolean `ignoreDisabledFeatures`
+option through the live deployment step schema.
+Use `pomi deployment step-types schema <factory>` to inspect the contract and
+`pomi deployment plans steps add <planId> --body-file step.json` to add a step with
+`id`, `type` and `values`. Updates contain only `values`; omitted options retain
+their existing setting. Unknown properties, nulls and non-Boolean values are
+rejected before the persisted step changes. This requires the Deployment feature
+and its plan-management permission.

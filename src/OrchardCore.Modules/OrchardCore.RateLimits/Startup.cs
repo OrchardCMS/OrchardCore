@@ -11,6 +11,8 @@ using OrchardCore.Navigation;
 using OrchardCore.RateLimits.Core;
 using OrchardCore.RateLimits.Deployment;
 using OrchardCore.RateLimits.Drivers;
+using OrchardCore.RateLimits.Endpoints;
+using OrchardCore.RemoteManagement;
 using OrchardCore.RateLimits.Migrations;
 using OrchardCore.RateLimits.Models;
 using OrchardCore.RateLimits.Recipes;
@@ -28,6 +30,9 @@ public sealed class Startup : StartupBase
         services.AddDataMigration<GlobalRateLimitsMigrations>();
         services.AddTransient<IConfigureOptions<RateLimiterOptions>, RateLimiterOptionsConfigurations>();
         services.AddSingleton<IRateLimitPolicyStore, RateLimitPolicyStore>();
+        services.AddScoped<RateLimitPolicyMutations>();
+        services.AddScoped<RateLimitLimiterMutations>();
+        services.AddSingleton<IRemoteManagementCapabilityProvider, RateLimitsCapabilityProvider>();
         services.AddDisplayDriver<RateLimitLimiter, RateLimitLimiterDisplayDriver>();
         services.AddDisplayDriver<RateLimitPolicy, RateLimitPolicyDisplayDriver>();
 
@@ -50,6 +55,7 @@ public sealed class Startup : StartupBase
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
         app.UseRateLimiter();
+        routes.AddRateLimitEndpoints();
     }
 }
 

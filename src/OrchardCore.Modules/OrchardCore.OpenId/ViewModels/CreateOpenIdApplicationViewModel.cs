@@ -16,6 +16,8 @@ public class CreateOpenIdApplicationViewModel
     [Url(ErrorMessage = "{0} is not well-formed")]
     public string PostLogoutRedirectUris { get; set; }
 
+    public string ApplicationType { get; set; } = OpenIddict.Abstractions.OpenIddictConstants.ApplicationTypes.Web;
+
     public string Type { get; set; }
 
     public string ConsentType { get; set; }
@@ -31,6 +33,8 @@ public class CreateOpenIdApplicationViewModel
     public bool AllowClientCredentialsFlow { get; set; }
 
     public bool AllowAuthorizationCodeFlow { get; set; }
+
+    public bool AllowDeviceAuthorizationFlow { get; set; }
 
     public bool AllowRefreshTokenFlow { get; set; }
 

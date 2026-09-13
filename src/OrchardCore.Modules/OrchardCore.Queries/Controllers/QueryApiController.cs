@@ -9,6 +9,7 @@ namespace OrchardCore.Queries.Controllers;
 
 [Route("api/queries")]
 [ApiController]
+[ApiExplorerSettings(IgnoreApi = true)]
 [Authorize(AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api)]
 [IgnoreAntiforgeryToken]
 [AllowAnonymous]

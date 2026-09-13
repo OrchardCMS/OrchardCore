@@ -244,3 +244,33 @@ The string keys inside `GetLocalizations` are plain `IStringLocalizer` calls, wh
 dotnet tool install --global OrchardCoreContrib.PoExtractor
 extractpo src/MyModule output/Localization -l C#
 ```
+
+## Advertise groups for HTTP discovery
+
+An `IJSLocalizer` provider can advertise the exact group names it accepts:
+
+```csharp
+public IEnumerable<string> GetLocalizationGroups() => ["my-module", "shared-ui"];
+```
+
+Implement this alongside `GetLocalizations(string group)` on the same registered
+provider. The default interface implementation returns an empty list, keeping
+existing providers compatible. Their strings remain accessible by a known name,
+but discovery cannot infer group names from `GetLocalizations`.
+
+With Localization and Remote Management enabled, administrators can discover
+and inspect groups supplied by enabled modules:
+
+```http
+GET /api/localization/strings
+GET /api/localization/strings/my-module?culture=fr
+```
+
+Use nonblank names of at most 200 characters. Discovery merges exact duplicates
+and preserves case; advertise the spelling callers should use. A group's names
+should not depend on the current culture. These HTTP operations are described
+in the tenant's OpenAPI document, including providers from third-party modules.
+They are not projected into CLI commands; `pomi media localizations show` remains
+available for the Media gallery's own UI labels.
+See the [Localization API](../../api/localization/README.md#list-ui-string-groups)
+for permissions, paging, and supported-culture requirements.

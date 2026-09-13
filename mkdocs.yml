@@ -62,6 +62,9 @@ not_in_nav: |
   releases/4.0.0.md
   llms.txt
 
+hooks:
+  - .scripts/remote-management/docs-hook.py
+
 # Extensions
 markdown_extensions:
   - markdown.extensions.admonition
@@ -91,8 +94,14 @@ markdown_extensions:
 
 plugins:
   - search
-  - git-authors
-  - git-revision-date-localized
+  - git-authors:
+      exclude:
+        - agents/skills/*
+        - agents/agents/*
+  - git-revision-date-localized:
+      exclude:
+        - agents/skills/*
+        - agents/agents/*
   - exclude:
       glob:
         # Excluding the large node folder with all its MD files. We can't exclude everything apart from docs because there are links to e.g. C# files too.
@@ -140,6 +149,8 @@ nav:
       - External Resources: getting-started/external-resources.md
   - Guides:
       - Follow the Guides: guides/README.md
+      - Manage a tenant with the CLI: guides/remote-management/README.md
+      - Use Pomi with an agent: agents/index.md
       - Create a modular application: guides/create-modular-application-mvc/README.md
       - Create a website: guides/create-cms-application/README.md
       - Leverage CSPROJ meta information: guides/leverage-csproj-meta-info/README.md
@@ -197,6 +208,35 @@ nav:
       - Managing the Orchard Core Red Hat Ecosystem Catalog certification: topics/red-hat-ecosystem-catalog-certification/README.md
       - Source Generators: topics/source-generators/README.md
   - Reference:
+      - API Reference:
+          - Overview: reference/api/README.md
+          - Protocol:
+              - Discovery and manifest: reference/api/discovery/README.md
+              - Authentication: reference/api/authentication/README.md
+          - Content:
+              - Content definitions: reference/api/content-definitions/README.md
+              - Content items: reference/api/content-items/README.md
+              - Content localizations: reference/api/content-localizations/README.md
+              - Media: reference/api/media/README.md
+              - Placements: reference/api/placements/README.md
+              - Queries: reference/api/queries/README.md
+              - Shortcode templates: reference/api/shortcode-templates/README.md
+              - Templates: reference/api/templates/README.md
+              - Layers: reference/api/layers/README.md
+              - Themes: reference/api/themes/README.md
+              - Workflows: reference/api/workflows/README.md
+          - Administration:
+              - Custom settings: reference/api/custom-settings/README.md
+              - Features: reference/api/features/README.md
+              - Home Route: reference/api/home-route/README.md
+              - OpenID management: reference/api/openid/README.md
+              - Localization: reference/api/localization/README.md
+              - Recipes: reference/api/recipes/README.md
+              - Roles: reference/api/roles/README.md
+              - Site settings: reference/api/settings/README.md
+              - Users: reference/api/users/README.md
+          - Hosting:
+              - Tenants: reference/api/tenants/README.md
       - Modules:
           - Overview: reference/README.md
           - CMS Modules:
@@ -309,6 +349,7 @@ nav:
               - Recipes: reference/modules/Recipes/README.md
               - Redis: reference/modules/Redis/README.md
               - Remote Deployment: reference/modules/Deployment.Remote/README.md
+              - Remote Management: reference/modules/RemoteManagement/README.md
               - Response Compression: reference/modules/ResponseCompression/README.md
               - Roles: reference/modules/Roles/README.md
               - Sanitizer: reference/modules/Sanitizer/README.md
@@ -371,6 +412,7 @@ nav:
       - Opening and managing issues: contributing/managing-issues.md
       - Contributing code: contributing/contributing-code.md
       - Contributing documentation: contributing/contributing-documentation.md
+      - Documenting management APIs: contributing/documenting-management-apis.md
       - Reviewing pull requests: contributing/reviewing-pull-requests.md
       - Using agent skills: contributing/using-skills.md
       - Benchmarking: contributing/benchmarking.md

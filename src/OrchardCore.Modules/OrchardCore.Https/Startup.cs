@@ -13,6 +13,7 @@ using OrchardCore.Https.Settings;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 
 namespace OrchardCore.Https;
@@ -39,8 +40,10 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddSiteDisplayDriver<HttpsSettingsDisplayDriver>();
+        services.AddSiteSettingsPermission(HttpsSettingsDisplayDriver.GroupId, Permissions.ManageHttps);
         services.AddNavigationProvider<AdminMenu>();
         services.AddSingleton<IHttpsService, HttpsService>();
+        services.AddScoped<ISiteSettingsSectionProvider, HttpsSettingsSectionProvider>();
         services.AddDataMigration<HttpsSettingsMigrations>();
 
         services.AddPermissionProvider<Permissions>();

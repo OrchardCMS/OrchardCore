@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Media.Services;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Media.ViewModels;
@@ -14,7 +14,7 @@ namespace OrchardCore.Media.Controllers;
 public sealed class MediaCacheController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
-    private readonly IMediaFileStoreCache _mediaFileStoreCache;
+    private readonly MediaCacheManagementService _cache;
     private readonly INotifier _notifier;
 
     internal readonly IHtmlLocalizer H;
@@ -28,7 +28,7 @@ public sealed class MediaCacheController : Controller
     {
         _authorizationService = authorizationService;
         // Resolve from service provider as the service will not be registered if configuration is invalid.
-        _mediaFileStoreCache = serviceProvider.GetService<IMediaFileStoreCache>();
+        _cache = new MediaCacheManagementService(serviceProvider);
         _notifier = notifier;
         H = htmlLocalizer;
     }
@@ -42,7 +42,7 @@ public sealed class MediaCacheController : Controller
         }
         var model = new MediaCacheViewModel
         {
-            IsConfigured = _mediaFileStoreCache != null,
+            IsConfigured = _cache.RemoteConfigured,
         };
 
         return View(model);
@@ -56,14 +56,14 @@ public sealed class MediaCacheController : Controller
             return Forbid();
         }
 
-        if (_mediaFileStoreCache == null)
+        if (!_cache.RemoteConfigured)
         {
             await _notifier.ErrorAsync(H["The asset cache feature is enabled, but a remote media store feature is not enabled, or not configured with appsettings.json."]);
-            RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index));
         }
 
-        var hasErrors = await _mediaFileStoreCache.PurgeAsync();
-        if (hasErrors)
+        var result = await _cache.PurgeAsync("remote", HttpContext.RequestAborted);
+        if (result != MediaCachePurgeStatus.Purged)
         {
             await _notifier.ErrorAsync(H["Asset cache purged, with errors."]);
         }

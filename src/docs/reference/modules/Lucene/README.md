@@ -15,7 +15,7 @@ Here is a sample step:
       "Indices": [
         {
           "Search": {
-            "AnalyzerName": "standard",
+            "AnalyzerName": "standardanalyzer",
             "IndexLatest": false,
             "IndexedContentTypes": [
               "Article",
@@ -156,7 +156,7 @@ Here is an example of how to create `Lucene` index profile using the `IndexProfi
 				    "Culture": "any"
 			    },
                 "LuceneIndexMetadata": {
-                    "AnalyzerName": "standard",
+                    "AnalyzerName": "standardanalyzer",
                     "StoreSourceData": true,
                 }
 		    }
@@ -365,3 +365,96 @@ Starting from OC version 1.5 the Lucene module will automatically map text field
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/9EgZ_J1npw4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/6jJH9ntqi_A" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+## Remote content index definitions
+
+With `OrchardCore.Lucene` and content support enabled, the `indexes-lucene`
+management capability exposes typed Lucene content index definitions. Requests need
+the API authentication scheme, `AccessRemoteManagement`, and `ManageIndexes`.
+Pomi and tenant MCP use the same endpoints and permissions. Enable remote management
+separately; enabling Lucene alone does not provision OAuth credentials.
+
+```shell
+pomi indexes providers list
+pomi indexes list --page 1 --page-size 50
+pomi indexes lucene analyzers
+pomi indexes lucene create --body-file articles-index.json
+pomi indexes lucene show INDEX_ID
+pomi indexes lucene update INDEX_ID --body-file articles-index.json
+pomi indexes lucene delete INDEX_ID --force
+```
+
+Example `articles-index.json` (the `Article` content type must already exist):
+
+```json
+{
+  "name": "Articles",
+  "indexName": "articles",
+  "indexedContentTypes": ["Article"],
+  "indexLatest": false,
+  "culture": "any",
+  "analyzerName": "standardanalyzer",
+  "storeSourceData": false,
+  "queryAnalyzerName": "standardanalyzer",
+  "allowLuceneQueries": false,
+  "defaultVersion": "LUCENE_48",
+  "defaultSearchFields": ["Content.ContentItem.FullText"]
+}
+```
+
+Create and update accept a complete definition. Omitted optional fields use the
+shown defaults; update replaces those editable values while preserving unknown
+extension metadata. Responses contain `id` and `definition`, without arbitrary
+profile properties, owner information, or physical provider paths. The index ID is
+the administrative identifier used in show/update/delete; `indexName` is the
+provider resource name and cannot change on update. Named queries and default search
+settings also reference the administrative `name`; renaming it does not rewrite those
+references. Retain that name or update dependent definitions when renaming.
+The default Lucene compatibility version
+is `LUCENE_48`; existing named compatibility versions, including `LUCENE_30`, remain
+accepted. Analyzer names must be registered, content types must be nonempty and unique,
+and index names must be single filenames without path separators or reserved characters.
+The same filename rule protects direct Lucene filesystem access for existing profiles.
+
+| HTTP operation | Behavior |
+| --- | --- |
+| `GET api/indexes/lucene/analyzers` | List registered analyzer names. |
+| `GET api/indexes/lucene/by-id?id=...` | Show a Lucene content definition; other provider/source profiles return 404. |
+| `POST api/indexes/lucene` | Create with 201; an equivalent retry returns 200; a conflicting display/provider name returns 409. |
+| `PUT api/indexes/lucene/by-id?id=...` | Replace editable values; an equivalent retry does not write or schedule work. |
+| `DELETE api/indexes/lucene/by-id?id=...` | Delete provider resource and profile; an already missing profile returns 204. |
+
+Creation uses the shared profile/provider coordinator and schedules synchronization.
+It does not wait for documents to be indexed. Updating a definition does not rebuild
+or synchronize existing documents; apply the appropriate indexing operation after
+changing settings that affect indexed data. Provider rejection returns 503; inspect
+uncertain outcomes before retrying. Pomi's `--force` above confirms the destructive
+command locally; it does not request server-side force deletion.
+
+MCP exposes `indexes_lucene_show`, `indexes_lucene_create`, `indexes_lucene_update`,
+`indexes_lucene_delete`, and `indexes_lucene_analyzers`. They remain available when
+the MCP feature is enabled and the CLI feature is disabled.
+
+Enable `OrchardCore.Indexing.Worker` for ongoing scheduled content-index updates.
+Creation's scheduled synchronization and the worker use the normal indexing pipeline;
+existing named Lucene queries can read the resulting index. Changing and publishing a
+content item updates its indexed terms on a subsequent worker run, without updating
+the index definition or recreating the named query.
+
+The legacy `lucene-index` recipe creates new profiles through the same coordinator
+as the admin and typed API, including compensation when provider creation is rejected.
+For an existing profile it preserves the legacy behavior: keep its definition, ensure
+its provider index exists, then schedule synchronization. That repair path does not
+replace the stored definition with the recipe's incoming settings.
+
+### Tracked lifecycle operations
+
+Lucene content indexes support the common `pomi indexes synchronize`, `reset`, and
+`rebuild` commands. Each returns an operation ID; poll `pomi indexes operations
+show OPERATION_ID` to observe its outcome. Use rebuild after changing the selected
+content types when previously indexed documents must be removed. Reset reprocesses
+content without recreating the provider index.
+
+See [tracked index lifecycle operations](../Indexing/README.md#remote-lifecycle-requests)
+for permissions, HTTP routes and completion semantics. Ongoing scheduled updates
+still require `OrchardCore.Indexing.Worker`.

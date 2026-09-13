@@ -20,7 +20,12 @@
         "OrchardCore.Localization",
         "OrchardCore.Features",
         "OrchardCore.Navigation",
+        "OrchardCore.OpenApi",
+        "OrchardCore.OpenId.Management",
+        "OrchardCore.OpenId.Server",
+        "OrchardCore.OpenId.Validation",
         "OrchardCore.Recipes",
+        "OrchardCore.RemoteManagement.Cli",
         "OrchardCore.Resources",
         "OrchardCore.Roles",
         "OrchardCore.Security",
@@ -30,6 +35,7 @@
         "OrchardCore.Users",
 
         // Themes
+        "TheSaaSTheme",
         "TheTheme",
         "TheAdmin",
         "SafeMode"
@@ -38,7 +44,10 @@
     {
       "name": "themes",
       "admin": "TheAdmin",
-      "site": "TheTheme"
+      "site": "TheSaaSTheme"
+    },
+    {
+      "name": "RemoteManagementCliConfiguration"
     },
     {
       "name": "settings",
@@ -46,7 +55,22 @@
         "Action": "Index",
         "Controller": "Home",
         "Area": "TheTheme"
+      },
+      "LoginSettings": {
+        "UseSiteTheme": true
+      },
+      "RegistrationSettings": {
+        "UseSiteTheme": true
+      },
+      "ResetPasswordSettings": {
+        "UseSiteTheme": true
+      },
+      "TwoFactorLoginSettings": {
+        "UseSiteTheme": true
       }
+    },
+    {
+      "name": "ReloadTenant"
     }
   ]
 }

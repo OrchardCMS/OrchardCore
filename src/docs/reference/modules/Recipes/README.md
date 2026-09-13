@@ -4,6 +4,10 @@
 
 The `OrchardCore.Recipes` module allows you to automate Orchard Core tenant setup and configuration using JSON-based recipe files. Recipes can install features, set themes, create content types, provision content, and much more.
 
+## API reference
+
+See the [Recipe management API](../../api/recipes/README.md) for OpenAPI operations that list and execute available recipes.
+
 ---
 
 ## What is a Recipe?

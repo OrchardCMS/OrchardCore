@@ -26,6 +26,10 @@ public class OpenIdServerSettings
 
     public PathString IntrospectionEndpointPath { get; set; }
 
+    public PathString DeviceAuthorizationEndpointPath { get; set; }
+
+    public PathString EndUserVerificationEndpointPath { get; set; }
+
     public PathString PushedAuthorizationEndpointPath { get; set; }
 
     public PathString RevocationEndpointPath { get; set; }
@@ -33,6 +37,7 @@ public class OpenIdServerSettings
     public bool AllowPasswordFlow { get; set; }
     public bool AllowClientCredentialsFlow { get; set; }
     public bool AllowAuthorizationCodeFlow { get; set; }
+    public bool AllowDeviceAuthorizationFlow { get; set; }
     public bool AllowRefreshTokenFlow { get; set; }
     public bool AllowHybridFlow { get; set; }
     public bool AllowImplicitFlow { get; set; }

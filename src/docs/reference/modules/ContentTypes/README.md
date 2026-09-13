@@ -1,5 +1,9 @@
 # Content Types (`OrchardCore.ContentTypes`)
 
+## API reference
+
+See the [Content definitions management API](../../api/content-definitions/README.md) for OpenAPI operations that manage content types, content parts, and content fields.
+
 ## View Components
 
 ### `SelectContentTypes`
@@ -431,3 +435,18 @@ These defaults are applied to content types that do not have an explicit categor
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/NDUjn5_KdEM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/bayT58i7DVY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+## Deployment step configuration
+
+When deployment is enabled, the content-definition export, replacement and deletion
+steps expose explicit configuration through the deployment plan API, Pomi and MCP.
+Use the deployment step schema to discover the available properties.
+
+Export and replacement accept `includeAll`, `contentTypes` and `contentParts`.
+Selected names must exist on the source tenant. Enabling `includeAll` clears the
+individual selections, using the same normalization as the administration editor.
+Deletion accepts `contentTypes` and `contentParts`; these names may exist only on
+the destination tenant. Deletion does not support `includeAll`.
+
+Names are arrays of non-empty strings. Omitted properties retain their current
+values, empty arrays clear selections, and invalid patches leave the step unchanged.

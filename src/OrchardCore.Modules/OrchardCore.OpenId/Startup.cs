@@ -18,12 +18,15 @@ using OrchardCore.BackgroundTasks;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Theming;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.OpenId.Configuration;
 using OrchardCore.OpenId.Deployment;
 using OrchardCore.OpenId.Drivers;
+using OrchardCore.OpenId.Endpoints.Management;
 using OrchardCore.OpenId.Handlers;
 using OrchardCore.OpenId.Migrations;
 using OrchardCore.OpenId.Recipes;
@@ -32,6 +35,7 @@ using OrchardCore.OpenId.Services.Handlers;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.Tasks;
 using OrchardCore.Recipes;
+using OrchardCore.RemoteManagement;
 using OrchardCore.RateLimits;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
@@ -90,6 +94,7 @@ public sealed class ServerStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddNavigationProvider<ServerAdminMenu>();
+        services.AddScoped<IThemeSelector, OpenIdThemeSelector>();
 
         services.AddOpenIddict()
             .AddServer(options =>
@@ -171,6 +176,16 @@ public sealed class ServerStartup : StartupBase
             );
         }
 
+        if (settings.EndUserVerificationEndpointPath.HasValue)
+        {
+            routes.MapAreaControllerRoute(
+                name: "Access.Verify",
+                areaName: typeof(Startup).Namespace,
+                pattern: settings.EndUserVerificationEndpointPath.Value,
+                defaults: new { controller = "Access", action = "Verify" }
+            );
+        }
+
         if (settings.UserinfoEndpointPath.HasValue)
         {
             routes.MapAreaControllerRoute(
@@ -215,6 +230,7 @@ public sealed class ServerDeploymentStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDeployment<OpenIdServerDeploymentSource, OpenIdServerDeploymentStep, OpenIdServerDeploymentStepDriver>();
+        services.AddSingleton<IDeploymentStepDefinition>(new EmptyDeploymentStepDefinition<OpenIdServerDeploymentStep>(nameof(OpenIdServerDeploymentStep)));
     }
 }
 
@@ -267,6 +283,7 @@ public sealed class ValidationDeploymentStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDeployment<OpenIdValidationDeploymentSource, OpenIdValidationDeploymentStep, OpenIdValidationDeploymentStepDriver>();
+        services.AddSingleton<IDeploymentStepDefinition>(new EmptyDeploymentStepDefinition<OpenIdValidationDeploymentStep>(nameof(OpenIdValidationDeploymentStep)));
     }
 }
 
@@ -276,6 +293,36 @@ public sealed class ManagementStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddNavigationProvider<ManagementAdminMenu>();
+        services.AddSingleton<IRemoteManagementCapabilityProvider, OpenIdManagementCapabilityProvider>();
+    }
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        routes.AddOpenIdDiscoveryEndpoints();
+        routes.AddOpenIdApplicationManagementEndpoints();
+        routes.AddOpenIdApplicationCredentialEndpoints();
+        routes.AddOpenIdScopeManagementEndpoints();
+    }
+}
+
+[Feature("OrchardCore.OpenId.RemoteManagement")]
+public sealed class RemoteManagementStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddNavigationProvider<RemoteManagementAdminMenu>();
+        services.AddScoped<RemoteManagementConfigurationService>();
+        services.AddScoped<IRemoteManagementTenantConfigurationService, TenantRemoteManagementConfigurationService>();
+        services.AddRecipeExecutionStep<RemoteManagementConfigurationStep>();
+    }
+}
+
+[RequiredStartup]
+public sealed class RemoteManagementFeatureEventHandlerStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IFeatureEventHandler, RemoteManagementFeatureEventHandler>();
     }
 }
 
@@ -302,4 +349,39 @@ internal static class OpenIdServiceCollectionExtensions
     public static IServiceCollection RemoveAll<TService, TImplementation>(this IServiceCollection services)
         where TImplementation : TService
         => services.RemoveAll(typeof(TService), typeof(TImplementation));
+}
+
+[Feature("OrchardCore.OpenId.RemoteManagement.Cli")]
+public sealed class RemoteManagementCliStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IRemoteManagementCliConfigurationService, RemoteManagementCliConfigurationService>();
+        services.AddScoped<IRemoteManagementClientProvisioningService, RemoteManagementClientProvisioningService>();
+        services.AddRecipeExecutionStep<RemoteManagementCliConfigurationStep>();
+    }
+}
+
+[Feature("OrchardCore.OpenId.RemoteManagement.Mcp")]
+public sealed class RemoteManagementMcpStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<RemoteManagementMcpConfigurationService>();
+        services.AddScoped<McpClientRegistrationService>();
+        services.AddSingleton<McpClientRegistrationLimiter>();
+        services.AddOptions<RemoteManagementMcpOptions>().BindConfiguration("OrchardCore_OpenId:Mcp");
+        services.AddOpenIddict().AddServer(options =>
+        {
+            options.AddEventHandler<OpenIddictServerEvents.HandleConfigurationRequestContext>(builder =>
+                builder.UseScopedHandler<McpRegistrationMetadataHandler>().SetOrder(int.MaxValue - 100_000));
+            options.AddEventHandler<OpenIddictServerEvents.ValidateAuthorizationRequestContext>(builder =>
+                builder.UseScopedHandler<McpAuthorizationRequestHandler>().SetOrder(OpenIddictServerHandlers.Authentication.ValidateResources.Descriptor.Order - 1_000));
+            options.AddEventHandler<OpenIddictServerEvents.ValidateTokenRequestContext>(builder =>
+                builder.UseScopedHandler<McpTokenRequestHandler>().SetOrder(OpenIddictServerHandlers.Exchange.ValidateResources.Descriptor.Order - 1_000));
+            options.AddEventHandler<OpenIddictServerEvents.ProcessSignInContext>(builder =>
+                builder.UseScopedHandler<McpTokenResourceHandler>().SetOrder(OpenIddictServerHandlers.PrepareAccessTokenPrincipal.Descriptor.Order - 1_000));
+        });
+        services.AddRecipeExecutionStep<RemoteManagementMcpConfigurationStep>();
+    }
 }

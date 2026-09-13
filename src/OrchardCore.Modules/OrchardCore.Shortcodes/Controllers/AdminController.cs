@@ -9,15 +9,12 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Infrastructure.Html;
-using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Shortcodes.Models;
 using OrchardCore.Shortcodes.Services;
 using OrchardCore.Shortcodes.ViewModels;
-using Shortcodes;
 
 namespace OrchardCore.Shortcodes.Controllers;
 
@@ -28,11 +25,9 @@ public sealed class AdminController : Controller
 
     private readonly IAuthorizationService _authorizationService;
     private readonly ShortcodeTemplatesManager _shortcodeTemplatesManager;
-    private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly PagerOptions _pagerOptions;
     private readonly INotifier _notifier;
     private readonly IShapeFactory _shapeFactory;
-    private readonly IHtmlSanitizerService _htmlSanitizerService;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -40,24 +35,20 @@ public sealed class AdminController : Controller
     public AdminController(
         IAuthorizationService authorizationService,
         ShortcodeTemplatesManager shortcodeTemplatesManager,
-        ILiquidTemplateManager liquidTemplateManager,
         IOptions<PagerOptions> pagerOptions,
         INotifier notifier,
         IShapeFactory shapeFactory,
         IStringLocalizer<AdminController> stringLocalizer,
-        IHtmlLocalizer<AdminController> htmlLocalizer,
-        IHtmlSanitizerService htmlSanitizerService
+        IHtmlLocalizer<AdminController> htmlLocalizer
         )
     {
         _authorizationService = authorizationService;
         _shortcodeTemplatesManager = shortcodeTemplatesManager;
-        _liquidTemplateManager = liquidTemplateManager;
         _pagerOptions = pagerOptions.Value;
         _notifier = notifier;
         _shapeFactory = shapeFactory;
         S = stringLocalizer;
         H = htmlLocalizer;
-        _htmlSanitizerService = htmlSanitizerService;
     }
 
     [Admin("Shortcodes", "Shortcodes.Index")]
@@ -138,53 +129,14 @@ public sealed class AdminController : Controller
 
         if (ModelState.IsValid)
         {
-            if (string.IsNullOrWhiteSpace(model.Name))
+            var result = await _shortcodeTemplatesManager.SaveAsync(model.Name, ToTemplate(model));
+            if (result.Status == ShortcodeTemplateMutationStatus.Saved)
             {
-                ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name is mandatory."]);
+                return submit == "SaveAndContinue"
+                    ? RedirectToAction(nameof(Edit), new { name = result.Name })
+                    : RedirectToAction(nameof(Index));
             }
-            else if (!IsValidShortcodeName(model.Name))
-            {
-                ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name contains invalid characters."]);
-            }
-            else
-            {
-                var shortcodeTemplatesDocument = await _shortcodeTemplatesManager.GetShortcodeTemplatesDocumentAsync();
-
-                if (shortcodeTemplatesDocument.ShortcodeTemplates.ContainsKey(model.Name))
-                {
-                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["A template with the same name already exists."]);
-                }
-            }
-
-            if (string.IsNullOrEmpty(model.Content))
-            {
-                ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template content is mandatory."]);
-            }
-            else if (!_liquidTemplateManager.Validate(model.Content, out var errors))
-            {
-                ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
-            }
-        }
-
-        if (ModelState.IsValid)
-        {
-            var template = new ShortcodeTemplate
-            {
-                Content = model.Content,
-                Hint = model.Hint,
-                Usage = _htmlSanitizerService.Sanitize(model.Usage),
-                DefaultValue = model.DefaultValue,
-                Categories = JConvert.DeserializeObject<string[]>(model.SelectedCategories),
-            };
-
-            await _shortcodeTemplatesManager.UpdateShortcodeTemplateAsync(model.Name, template);
-
-            if (submit == "SaveAndContinue")
-            {
-                return RedirectToAction(nameof(Edit), new { name = model.Name });
-            }
-
-            return RedirectToAction(nameof(Index));
+            AddErrors(result);
         }
 
         // If we got this far, something failed, redisplay form
@@ -227,60 +179,25 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var shortcodeTemplatesDocument = await _shortcodeTemplatesManager.LoadShortcodeTemplatesDocumentAsync();
-
-        if (!shortcodeTemplatesDocument.ShortcodeTemplates.ContainsKey(sourceName))
+        if (string.IsNullOrEmpty(sourceName))
         {
             return NotFound();
         }
 
         if (ModelState.IsValid)
         {
-            if (string.IsNullOrWhiteSpace(model.Name))
+            var result = await _shortcodeTemplatesManager.SaveAsync(model.Name, ToTemplate(model), sourceName);
+            if (result.Status == ShortcodeTemplateMutationStatus.NotFound)
             {
-                ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name is mandatory."]);
+                return NotFound();
             }
-            else if (!IsValidShortcodeName(model.Name))
+            if (result.Status is ShortcodeTemplateMutationStatus.Saved or ShortcodeTemplateMutationStatus.Existing)
             {
-                ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name contains invalid characters."]);
+                return submit == "SaveAndContinue"
+                    ? RedirectToAction(nameof(Edit), new { name = result.Name })
+                    : RedirectToAction(nameof(Index));
             }
-            else if (!string.Equals(model.Name, sourceName, StringComparison.OrdinalIgnoreCase)
-                && shortcodeTemplatesDocument.ShortcodeTemplates.ContainsKey(model.Name))
-            {
-                ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["A template with the same name already exists."]);
-            }
-
-            if (string.IsNullOrEmpty(model.Content))
-            {
-                ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template content is mandatory."]);
-            }
-            else if (!_liquidTemplateManager.Validate(model.Content, out var errors))
-            {
-                ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
-            }
-        }
-
-        if (ModelState.IsValid)
-        {
-            var template = new ShortcodeTemplate
-            {
-                Content = model.Content,
-                Hint = model.Hint,
-                Usage = _htmlSanitizerService.Sanitize(model.Usage),
-                DefaultValue = model.DefaultValue,
-                Categories = JConvert.DeserializeObject<string[]>(model.SelectedCategories),
-            };
-
-            await _shortcodeTemplatesManager.RemoveShortcodeTemplateAsync(sourceName);
-
-            await _shortcodeTemplatesManager.UpdateShortcodeTemplateAsync(model.Name, template);
-
-            if (submit == "SaveAndContinue")
-            {
-                return RedirectToAction(nameof(Edit), new { name = model.Name });
-            }
-
-            return RedirectToAction(nameof(Index));
+            AddErrors(result);
         }
 
         // If we got this far, something failed, redisplay form
@@ -299,14 +216,10 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var shortcodeTemplatesDocument = await _shortcodeTemplatesManager.LoadShortcodeTemplatesDocumentAsync();
-
-        if (!shortcodeTemplatesDocument.ShortcodeTemplates.ContainsKey(name))
+        if (!await _shortcodeTemplatesManager.RemoveIfExistsAsync(name))
         {
             return NotFound();
         }
-
-        await _shortcodeTemplatesManager.RemoveShortcodeTemplateAsync(name);
 
         await _notifier.SuccessAsync(H["Shortcode template deleted successfully."]);
 
@@ -345,19 +258,28 @@ public sealed class AdminController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    private static bool IsValidShortcodeName(string name)
+    private static ShortcodeTemplate ToTemplate(ShortcodeTemplateViewModel model) => new()
     {
-        try
-        {
-            var nodes = new ShortcodesParser().Parse($"[{name}]");
+        Content = model.Content,
+        Hint = model.Hint,
+        Usage = model.Usage,
+        DefaultValue = model.DefaultValue,
+        Categories = JConvert.DeserializeObject<string[]>(model.SelectedCategories),
+    };
 
-            return nodes.Count == 1 &&
-                nodes[0] is Shortcode shortcodeNode &&
-                shortcodeNode.Identifier.Equals(name, StringComparison.OrdinalIgnoreCase);
-        }
-        catch (Exception)
+    private void AddErrors(ShortcodeTemplateMutationResult result)
+    {
+        if (result.Status is ShortcodeTemplateMutationStatus.Conflict or ShortcodeTemplateMutationStatus.Existing)
         {
-            return false;
+            ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["A template with the same name already exists."]);
+        }
+        foreach (var error in result.Errors)
+        {
+            var property = error.Key == "name" ? nameof(ShortcodeTemplateViewModel.Name) : nameof(ShortcodeTemplateViewModel.Content);
+            foreach (var message in error.Value)
+            {
+                ModelState.AddModelError(property, message);
+            }
         }
     }
 }

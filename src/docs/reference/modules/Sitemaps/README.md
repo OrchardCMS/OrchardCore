@@ -158,3 +158,55 @@ Sitemaps robots settings can be configured using the `Settings` recipe step:
 Copyright (c) IDeliverable, Ltd.
 
 BSD-3
+
+## Remote administration
+
+With Remote Management enabled, sitemap administration is available through
+OpenAPI, Pomi and MCP. Operations require API bearer authentication,
+`AccessRemoteManagement`, and `ManageSitemaps`.
+
+```sh
+pomi sitemaps list
+pomi sitemaps show <id>
+pomi sitemaps create --stdin < sitemap.json
+pomi sitemaps update <id> --stdin < sitemap.json
+pomi sitemaps disable <id>
+pomi sitemaps enable <id>
+pomi sitemaps delete <id> --force
+pomi sitemaps sources types
+pomi sitemaps sources schema CustomPathSitemapSource
+pomi sitemaps sources list <id>
+pomi sitemaps sources create <id> --stdin < source.json
+pomi sitemaps sources update <id> <sourceId> --stdin < source.json
+pomi sitemaps sources delete <id> <sourceId> --force
+```
+
+A sitemap definition contains `name`, `path`, `kind` (`Sitemap` or `SitemapIndex`),
+`enabled`, and `containedSitemapIds`. An omitted/empty path derives a slug ending
+in `.xml`. Updates replace metadata and retain sources. Indexes accept distinct
+existing regular sitemap IDs and cannot contain other indexes. Existing admin
+path validation and the sitemap manager are shared with the API. Child changes
+and deletion also invalidate referencing index caches.
+
+A source write contains `type` and a complete `configuration` object. Registered
+`CustomPathSitemapSource` and `ContentTypesSitemapSource` contracts are supported.
+Use `sources schema` for their fields; change frequencies use enum names and
+priorities range from zero to ten. IDs and update timestamps are server-owned.
+Unknown source extensions expose identity only. Invalid writes preserve existing
+sources. Source updates regenerate the sitemap cache identifier.
+
+```json
+{
+  "type": "CustomPathSitemapSource",
+  "configuration": { "path": "/contact", "priority": 5, "changeFrequency": "Monthly" }
+}
+```
+
+Create operations generate IDs. After an uncertain create response, list/read back
+before retrying to avoid duplicate sources. Identical updates and status changes
+avoid unnecessary writes; deleting an already absent source is unchanged.
+
+When SEO is also enabled, `settings sections show/schema/update sitemaps-robots`
+exposes `includeSitemaps` using `ManageSeoSettings`. The existing robots provider
+requires a site `baseUrl`. A physical `robots.txt` still overrides generated output.
+Verify the public `.xml` and `robots.txt` responses after configuration changes.

@@ -1,4 +1,5 @@
 using System.Text;
+using System.Security.Claims;
 using System.Text.Json.Nodes;
 using OrchardCore.Recipes.Models;
 
@@ -26,6 +27,9 @@ public class DeploymentPlanResult
             ["tags"] = JArray.FromObject(recipeDescriptor.Tags ?? []),
         };
     }
+
+    /// <summary>Gets or sets the initiating principal used to authorize exported resources.</summary>
+    public ClaimsPrincipal User { get; set; }
 
     public JsonObject Recipe { get; }
     public IList<JsonObject> Steps { get; init; } = [];

@@ -9,6 +9,7 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings.Deployment;
+using OrchardCore.Settings;
 using CorsService = OrchardCore.Cors.Services.CorsService;
 
 namespace OrchardCore.Cors;
@@ -28,6 +29,7 @@ public sealed class Startup : StartupBase
         services.AddNavigationProvider<AdminMenu>();
         services.AddPermissionProvider<Permissions>();
         services.AddSingleton<CorsService>();
+        services.AddScoped<ISiteSettingsSectionProvider, CorsSettingsSectionProvider>();
 
         services.AddTransient<IConfigureOptions<CorsOptions>, CorsOptionsConfiguration>();
     }

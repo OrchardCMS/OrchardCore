@@ -131,6 +131,88 @@ or, to display the UTC value before it is converted:
 | `Hint`                   | The hint text to display below the field on the editor.                                                                                        |
 | `TitlePattern`           | A Liquid pattern used to render the title of each item in the picker. Defaults to `{{ Model.ContentItem \| display_text }}`.                   |
 
+#### Multi-select content picker
+
+A `ContentPickerField` accepts at most one ID by default, even though its value
+is a `ContentItemIds` array. Set `Multiple` to `true` on the **field definition**
+before assigning a roster, calendar, or other collection of related items.
+Set `DisplayedContentTypes` to the technical type names editors should be able
+to select. This filters editor choices; it is not a server-side type validation
+or authorization rule. Alternatively, use `DisplayAllContentTypes: true` to
+show all types without a stereotype. Nonempty `DisplayedStereotypes` takes
+precedence over `DisplayedContentTypes`.
+
+Assume a `Team` content type has a `Team` part and `Person` is an existing
+content type. Save this as `roster-field.json`:
+
+```json
+{
+  "name": "Roster",
+  "fieldName": "ContentPickerField",
+  "settings": {
+    "ContentPartFieldSettings": {
+      "displayName": "Team roster"
+    },
+    "ContentPickerFieldSettings": {
+      "Multiple": true,
+      "Required": false,
+      "DisplayAllContentTypes": false,
+      "DisplayedContentTypes": ["Person"]
+    }
+  }
+}
+```
+
+`name` identifies this field; `fieldName` identifies its registered field type.
+Keep the contributed settings container and its members Pascal-cased as shown.
+These JSON properties are not generated CLI options such as `--multiple`.
+
+```bash
+pomi content settings show ContentPickerFieldSettings
+pomi content fields create Team --body-file roster-field.json
+pomi content fields show Team Roster --output json
+pomi content items schema Team
+```
+
+For an existing field, read its definition first, preserve its other settings,
+merge the picker settings above, and save the complete definition to the file.
+Use `pomi content fields update Team Roster --body-file roster-field.json`
+instead of `create`. Definition updates replace the supplied definition; do
+not overwrite an existing field with an incomplete example.
+
+Save a content payload as `team.json`, replacing the example IDs with actual
+`Person` content item IDs (not version IDs):
+
+```json
+{
+  "ContentType": "Team",
+  "Team": {
+    "Roster": {
+      "ContentItemIds": ["PERSON_ITEM_ID_1", "PERSON_ITEM_ID_2"]
+    }
+  }
+}
+```
+
+Include any other fields required by your `Team` definition, then validate
+before creating content:
+
+```bash
+pomi content items validate --body-file team.json
+```
+
+For a calendar field, use a different field name such as `Calendar` and
+`DisplayedContentTypes: ["Event"]`, with IDs of existing `Event` items. Each
+picker field needs its own `Multiple: true` setting. `Required: true` additionally
+requires at least one ID; otherwise an empty array is allowed.
+
+`content settings list` lists contracts registered by enabled modules, not every
+setting the server accepts. Content Fields contributes `ContentPickerFieldSettings`;
+older servers or other fields may have no registered contract. If it is missing,
+check `pomi content field-types list --take 200` and the field's module documentation,
+then read the stored definition and validate a representative multi-item payload.
+Do not conclude that an absent contract means its settings are unsupported.
+
 #### Displaying Localized Content Items
 
 When the content type uses `LocalizationPart`, you can display the culture code alongside the display text in the picker by setting the `TitlePattern` to:

@@ -48,6 +48,26 @@ internal sealed class OpenIdApplicationStepTestsData
                 OpenIddictConstants.Permissions.Endpoints.Token,
                 $"{OpenIddictConstants.Permissions.Prefixes.Scope}scope1",
             });
+
+        AddWithHashsets(
+            "app-recipe4",
+            new OpenIdApplicationDescriptor
+            {
+                ApplicationType = OpenIddictConstants.ApplicationTypes.Native,
+                ClientId = "a4",
+                ClientType = "public",
+                ConsentType = "explicit",
+                DisplayName = "Device Application",
+            },
+            null,
+            null,
+            null,
+            new[] {
+                OpenIddictConstants.Permissions.GrantTypes.DeviceCode,
+                OpenIddictConstants.Permissions.GrantTypes.RefreshToken,
+                OpenIddictConstants.Permissions.Endpoints.DeviceAuthorization,
+                OpenIddictConstants.Permissions.Endpoints.Token,
+            });
     }
 
     private static void UnionIfNotNull<TItem>(ISet<TItem> itemSet, IEnumerable<TItem> items)

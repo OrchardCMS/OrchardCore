@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.FileStorage;
 using OrchardCore.Media.ViewModels;
+using OrchardCore.RemoteManagement;
 
 namespace OrchardCore.Media.Endpoints.Api;
 
@@ -22,32 +23,53 @@ public static class UploadMediaEndpoint
 {
     public static IEndpointRouteBuilder AddUploadMediaEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapPost("api/media/Upload", HandleAsync)
+        builder.MapLegacyPost("api/media/Upload", HandleLegacyAsync)
+            .AddEndpointFilter<MediaApiAntiforgeryEndpointFilter>();
+
+        builder.MapManagementPut("api/media/files/content", HandleStreamAsync)
             .WithName("ApiUploadMedia")
-            .WithTags("MediaApi")
-            .DisableAntiforgery()
-            .AddEndpointFilter<MediaApiAntiforgeryEndpointFilter>()
-            .Produces<UploadFilesResultDto>(StatusCodes.Status200OK)
+            .WithSummary("Uploads a media file from a binary stream.")
+            .WithDescription("Creates a media file from the request body stream. The legacy multipart upload endpoint remains available for the admin UI but is hidden from API discovery.")
+            .WithCliCommand(new CliOperationMetadata(["media", "files"], "upload")
+            {
+                Capability = MediaApiEndpointConventions.CapabilityName,
+                InputMode = CliInputMode.Stream,
+                Arguments =
+                {
+                    new CliArgumentMetadata("fileName", 0),
+                },
+                TableColumns =
+                {
+                    new CliTableColumnMetadata("name", "Name"),
+                    new CliTableColumnMetadata("filePath", "Path"),
+                    new CliTableColumnMetadata("url", "URL"),
+                    new CliTableColumnMetadata("size", "Size"),
+                },
+            })
+            .Accepts<Stream>("application/octet-stream")
+            .Produces<FileStoreEntryDto>(StatusCodes.Status200OK)
+            .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
-            .ProducesProblem(StatusCodes.Status403Forbidden);
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status413PayloadTooLarge);
 
         return builder;
     }
 
-    [Authorize(Policy = MediaApiConstants.AuthorizationPolicyName)]
-    private static async Task<IResult> HandleAsync(
+    private static async Task<IResult> HandleLegacyAsync(
         HttpContext httpContext,
-        IAuthorizationService authorizationService,
-        IMediaFileStore mediaFileStore,
-        IMediaNameNormalizerService mediaNameNormalizerService,
-        IContentTypeProvider contentTypeProvider,
-        IFileVersionProvider fileVersionProvider,
-        IChunkFileUploadService chunkFileUploadService,
-        FileCreationService fileCreationService,
-        IServiceProvider serviceProvider,
-        IOptions<MediaOptions> options,
-        ILogger<MediaApiEndpoints> logger,
-        IStringLocalizer<MediaApiEndpoints> localizer,
+        [FromServices] IAuthorizationService authorizationService,
+        [FromServices] IMediaFileStore mediaFileStore,
+        [FromServices] IMediaNameNormalizerService mediaNameNormalizerService,
+        [FromServices] IContentTypeProvider contentTypeProvider,
+        [FromServices] IFileVersionProvider fileVersionProvider,
+        [FromServices] IChunkFileUploadService chunkFileUploadService,
+        [FromServices] FileCreationService fileCreationService,
+        [FromServices] IServiceProvider serviceProvider,
+        [FromServices] IOptions<MediaOptions> options,
+        [FromServices] ILogger<MediaApiEndpoints> logger,
+        [FromServices] IStringLocalizer<MediaApiEndpoints> localizer,
         string path,
         string extensions)
     {
@@ -85,9 +107,32 @@ public static class UploadMediaEndpoint
                 // Loop through each file in the request.
                 foreach (var file in files)
                 {
-                    var fileName = MediaEndpointHelpers.GetFileName(
-                        mediaFileStore,
-                        mediaNameNormalizerService.NormalizeFileName(file.FileName));
+                    if (!MediaEndpointHelpers.IsBaseName(file.FileName))
+                    {
+                        result.Add(new UploadFileResultDto
+                        {
+                            Name = file.FileName,
+                            Size = file.Length,
+                            Folder = path,
+                            Error = localizer["The file name must not contain a directory path."].ToString(),
+                        });
+                        continue;
+                    }
+
+                    var normalizedFileName = mediaNameNormalizerService.NormalizeFileName(file.FileName);
+                    if (!MediaEndpointHelpers.IsBaseName(normalizedFileName))
+                    {
+                        result.Add(new UploadFileResultDto
+                        {
+                            Name = normalizedFileName,
+                            Size = file.Length,
+                            Folder = path,
+                            Error = localizer["The normalized file name must not contain a directory path."].ToString(),
+                        });
+                        continue;
+                    }
+
+                    var fileName = MediaEndpointHelpers.GetFileName(mediaFileStore, normalizedFileName);
                     var extension = Path.GetExtension(fileName);
 
                     if (!mediaOptions.IsFileExtensionAllowed(extension, canUploadRestrictedMedia)
@@ -113,6 +158,17 @@ public static class UploadMediaEndpoint
                     try
                     {
                         var mediaFilePath = mediaFileStore.Combine(path, fileName);
+                        if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMediaFolder, (object)mediaFilePath))
+                        {
+                            result.Add(new UploadFileResultDto
+                            {
+                                Name = fileName,
+                                Size = file.Length,
+                                Folder = path,
+                                Error = localizer["You do not have permission to manage this media path."].ToString(),
+                            });
+                            continue;
+                        }
 
                         if (await mediaFileStore.GetFileInfoAsync(mediaFilePath) != null)
                         {
@@ -185,6 +241,140 @@ public static class UploadMediaEndpoint
         return new ActionResultResult(actionResult);
     }
 
+    private static async Task<IResult> HandleStreamAsync(
+        HttpContext httpContext,
+        [FromServices] IAuthorizationService authorizationService,
+        [FromServices] IMediaFileStore mediaFileStore,
+        [FromServices] IMediaNameNormalizerService mediaNameNormalizerService,
+        [FromServices] IContentTypeProvider contentTypeProvider,
+        [FromServices] IFileVersionProvider fileVersionProvider,
+        [FromServices] FileCreationService fileCreationService,
+        [FromServices] IServiceProvider serviceProvider,
+        [FromServices] IOptions<MediaOptions> options,
+        [FromServices] ILogger<MediaApiEndpoints> logger,
+        [FromServices] IStringLocalizer<MediaApiEndpoints> localizer,
+        [AsParameters] UploadMediaStreamRequest request)
+    {
+        var path = string.IsNullOrEmpty(request.Path) ? string.Empty : request.Path;
+
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMedia)
+            || !await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMediaFolder, (object)path))
+        {
+            return httpContext.ApiForbidProblem();
+        }
+
+        if (string.IsNullOrWhiteSpace(request.FileName))
+        {
+            return httpContext.ApiValidationProblem(detail: localizer["A file name is required."]);
+        }
+
+        if (!MediaEndpointHelpers.IsBaseName(request.FileName))
+        {
+            return httpContext.ApiValidationProblem(detail: localizer["The file name must not contain a directory path."]);
+        }
+
+        var mediaOptions = options.Value;
+        ApplyRequestSizeLimit(httpContext, mediaOptions.MaxFileSize);
+        if (httpContext.Request.ContentLength > mediaOptions.MaxFileSize)
+        {
+            return TypedResults.Problem(
+                detail: localizer["The file exceeds the maximum allowed size of {0} bytes.", mediaOptions.MaxFileSize],
+                statusCode: StatusCodes.Status413PayloadTooLarge);
+        }
+
+        var canUploadRestrictedMedia = await authorizationService.AuthorizeAsync(
+            httpContext.User,
+            MediaPermissions.UploadRestrictedMedia);
+        var extension = Path.GetExtension(request.FileName);
+
+        if (!mediaOptions.IsFileExtensionAllowed(extension, canUploadRestrictedMedia))
+        {
+            return httpContext.ApiValidationProblem(detail: localizer["This file extension is not allowed: {0}", extension]);
+        }
+
+        var normalizedFileName = mediaNameNormalizerService.NormalizeFileName(request.FileName);
+        if (!MediaEndpointHelpers.IsBaseName(normalizedFileName))
+        {
+            return httpContext.ApiValidationProblem(detail: localizer["The normalized file name must not contain a directory path."]);
+        }
+
+        var fileName = MediaEndpointHelpers.GetFileName(mediaFileStore, normalizedFileName);
+        var mediaFilePath = mediaFileStore.Combine(path, fileName);
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMediaFolder, (object)mediaFilePath))
+        {
+            return httpContext.ApiForbidProblem();
+        }
+
+        if (await mediaFileStore.GetFileInfoAsync(mediaFilePath) != null)
+        {
+            return httpContext.ApiValidationProblem(detail: localizer["A file with this name already exists in the current folder."]);
+        }
+
+        try
+        {
+            using var limitedBody = new SizeLimitedReadStream(
+                httpContext.Request.Body,
+                mediaOptions.MaxFileSize,
+                httpContext.Request.ContentLength);
+            Stream uploadStream = limitedBody;
+            MemoryStream bufferedBody = null;
+            if (!httpContext.Request.ContentLength.HasValue)
+            {
+                bufferedBody = new MemoryStream();
+                await limitedBody.CopyToAsync(bufferedBody, httpContext.RequestAborted);
+                bufferedBody.Position = 0;
+                uploadStream = bufferedBody;
+            }
+
+            using (bufferedBody)
+            {
+                var createdPath = await mediaFileStore.CreateFileFromStreamAsync(
+                    fileCreationService,
+                    mediaFilePath,
+                    uploadStream,
+                    length: uploadStream.Length,
+                    contentType: httpContext.Request.ContentType,
+                    cancellationToken: httpContext.RequestAborted);
+
+                var mediaFile = await mediaFileStore.GetFileInfoAsync(createdPath);
+
+                await MediaEndpointHelpers.PreCacheRemoteMediaAsync(
+                    mediaFile,
+                    mediaFileStore,
+                    serviceProvider.GetService(typeof(IMediaFileStoreCache)) as IMediaFileStoreCache,
+                    httpContext,
+                    logger);
+
+                return TypedResults.Ok(MediaEndpointHelpers.CreateFileResult(mediaFile, httpContext, contentTypeProvider, fileVersionProvider, mediaFileStore));
+            }
+        }
+        catch (PayloadTooLargeException)
+        {
+            await mediaFileStore.TryDeleteFileAsync(mediaFilePath);
+            return TypedResults.Problem(
+                detail: localizer["The file exceeds the maximum allowed size of {0} bytes.", mediaOptions.MaxFileSize],
+                statusCode: StatusCodes.Status413PayloadTooLarge);
+        }
+        catch (ExistsFileStoreException ex)
+        {
+            logger.LogWarning(ex, "An error occurred while streaming a media upload");
+
+            return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status400BadRequest);
+        }
+        catch (FileStoreException ex)
+        {
+            logger.LogWarning(ex, "An error occurred while streaming a media upload");
+
+            return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status400BadRequest);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred while streaming a media upload");
+
+            return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+        }
+    }
+
     // Mirrors OrchardCore.Media.Services.MediaSizeLimitAttribute's InternalMediaSizeFilter, applied
     // inline because minimal-API endpoints do not run MVC authorization filters.
     private static void ApplyMediaSizeLimit(HttpContext httpContext, long maxFileSize)
@@ -206,6 +396,89 @@ public static class UploadMediaEndpoint
         if (maxRequestBodySizeFeature != null && !maxRequestBodySizeFeature.IsReadOnly)
         {
             maxRequestBodySizeFeature.MaxRequestBodySize = maxFileSize;
+        }
+    }
+
+    private static void ApplyRequestSizeLimit(HttpContext httpContext, long maxFileSize)
+    {
+        var maxRequestBodySizeFeature = httpContext.Features.Get<IHttpMaxRequestBodySizeFeature>();
+        if (maxRequestBodySizeFeature != null && !maxRequestBodySizeFeature.IsReadOnly)
+        {
+            maxRequestBodySizeFeature.MaxRequestBodySize = maxFileSize;
+        }
+    }
+
+    private sealed class PayloadTooLargeException : IOException;
+
+    private sealed class SizeLimitedReadStream : Stream
+    {
+        private readonly Stream _inner;
+        private readonly long _maximumLength;
+        private readonly long? _length;
+        private long _totalRead;
+
+        public SizeLimitedReadStream(Stream inner, long maximumLength, long? length)
+        {
+            _inner = inner;
+            _maximumLength = maximumLength;
+            _length = length;
+        }
+
+        public override bool CanRead => _inner.CanRead;
+        public override bool CanSeek => false;
+        public override bool CanWrite => false;
+        public override long Length => _length ?? throw new NotSupportedException();
+        public override long Position
+        {
+            get => _totalRead;
+            set => throw new NotSupportedException();
+        }
+
+        public override void Flush() => throw new NotSupportedException();
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            var read = _inner.Read(buffer, offset, GetReadCount(count));
+            AddRead(read);
+            return read;
+        }
+
+        public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+        {
+            var read = await _inner.ReadAsync(buffer[..GetReadCount(buffer.Length)], cancellationToken);
+            AddRead(read);
+            return read;
+        }
+
+        public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            var read = await _inner.ReadAsync(buffer.AsMemory(offset, GetReadCount(count)), cancellationToken);
+            AddRead(read);
+            return read;
+        }
+
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+        public override void SetLength(long value) => throw new NotSupportedException();
+        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+
+        protected override void Dispose(bool disposing)
+        {
+            // The request owns the underlying body stream.
+            base.Dispose(disposing);
+        }
+
+        private int GetReadCount(int requestedCount)
+        {
+            var remaining = _maximumLength - _totalRead;
+            return checked((int)Math.Min(requestedCount, Math.Max(0, remaining) + 1));
+        }
+
+        private void AddRead(int read)
+        {
+            _totalRead += read;
+            if (_totalRead > _maximumLength)
+            {
+                throw new PayloadTooLargeException();
+            }
         }
     }
 

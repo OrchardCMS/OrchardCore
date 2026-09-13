@@ -1,3 +1,4 @@
+using OrchardCore.Users.Services.Management;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -66,27 +67,19 @@ public sealed class RoleLoginSettingsDisplayDriver : SiteDisplayDriver<RoleLogin
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
+        var proposed = UserPolicySettingsEditor.Clone(settings);
+        proposed.RequireTwoFactorAuthenticationForSpecificRoles = model.RequireTwoFactorAuthenticationForSpecificRoles;
         if (model.RequireTwoFactorAuthenticationForSpecificRoles)
         {
-            var roles = await _roleService.GetAssignableRolesAsync();
-
-            var selectedRoles = model.Roles.Where(x => x.IsSelected)
-                .Join(roles, e => e.Role, r => r.RoleName, (e, r) => r.RoleName)
-                .ToArray();
-
-            if (selectedRoles.Length == 0)
-            {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Roles), S["Select at least one role."]);
-            }
-            else
-            {
-                settings.RequireTwoFactorAuthenticationForSpecificRoles = true;
-                settings.Roles = selectedRoles;
-            }
+            proposed.Roles = model.Roles?.Where(role => role.IsSelected).Select(role => role.Role).ToArray() ?? [];
         }
-        else
+        foreach (var error in await UserPolicySettingsEditor.ValidateAsync(proposed, _roleService, S))
         {
-            settings.RequireTwoFactorAuthenticationForSpecificRoles = false;
+            context.Updater.ModelState.AddModelError(Prefix, error.Key, string.Join(' ', error.Value));
+        }
+        if (context.Updater.ModelState.IsValid)
+        {
+            UserPolicySettingsEditor.Apply(settings, proposed);
         }
 
         return Edit(site, settings, context);

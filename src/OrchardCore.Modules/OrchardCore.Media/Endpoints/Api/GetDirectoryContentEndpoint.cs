@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Options;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
+using OrchardCore.RemoteManagement;
 
 namespace OrchardCore.Media.Endpoints.Api;
 
@@ -16,10 +17,16 @@ public static class GetDirectoryContentEndpoint
 {
     public static IEndpointRouteBuilder AddGetDirectoryContentEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapGet("api/media/GetDirectoryContent", HandleAsync)
+        builder.MapLegacyGet("api/media/GetDirectoryContent", HandleAsync);
+
+        builder.MapManagementGet("api/media/directories/content", HandleAsync)
             .WithName("ApiGetDirectoryContent")
-            .WithTags("MediaApi")
-            .DisableAntiforgery()
+            .WithSummary("Lists the folders and files in a folder.")
+            .WithDescription("Returns both child folders and files for a media folder in a single response, filtered to the entries the caller can access.")
+            .WithCliCommand(new CliOperationMetadata(["media", "directories"], "show")
+            {
+                Capability = MediaApiEndpointConventions.CapabilityName,
+            })
             .Produces<DirectoryContentDto>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)
@@ -28,17 +35,18 @@ public static class GetDirectoryContentEndpoint
         return builder;
     }
 
-    [Authorize(Policy = MediaApiConstants.AuthorizationPolicyName)]
     private static async Task<IResult> HandleAsync(
         HttpContext httpContext,
-        IAuthorizationService authorizationService,
-        IMediaFileStore mediaFileStore,
-        IContentTypeProvider contentTypeProvider,
-        IFileVersionProvider fileVersionProvider,
-        IOptions<MediaOptions> options,
-        string path,
-        string extensions)
+        [FromServices] IAuthorizationService authorizationService,
+        [FromServices] IMediaFileStore mediaFileStore,
+        [FromServices] IContentTypeProvider contentTypeProvider,
+        [FromServices] IFileVersionProvider fileVersionProvider,
+        [FromServices] IOptions<MediaOptions> options,
+        [AsParameters] BrowseDirectoryContentRequest request)
     {
+        var path = request.Path;
+        var extensions = request.Extensions;
+
         if (string.IsNullOrEmpty(path))
         {
             path = string.Empty;

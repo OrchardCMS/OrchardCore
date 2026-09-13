@@ -414,7 +414,9 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
             r => r.Url.Contains("/swagger/v1/swagger.json"));
 
         Assert.Equal(200, response.Status);
-        await Assertions.Expect(page.Locator(".sidebar").First).ToContainTextAsync("GetEndpoint");
+        await page.GetByRole(AriaRole.Button, new() { Name = "Expand Content Items", Exact = true }).ClickAsync();
+        await Assertions.Expect(page.Locator(".sidebar a[href$='/GET/api/content/{contentItemId}']"))
+            .ToContainTextAsync("Gets a content item.");
 
         await page.CloseAsync();
     }
@@ -442,17 +444,19 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         // Use the Contents module's GET content-item endpoint (enabled by the Blog recipe) as
         // the protected "Api"-scheme endpoint to prove the token is attached: an unauthenticated
         // request to it returns 401, an authenticated one 404 for an unknown id.
-        var operation = page.Locator("#operations-GetEndpoint-ApiGetContentItem");
+        var operation = page.Locator(".opblock-get").Filter(new()
+        {
+            Has = page.Locator(".opblock-summary-path[data-path='/api/content/{contentItemId}']"),
+        });
         await operation.Locator(".opblock-summary").ClickAsync();
         await operation.Locator("button.try-out__btn").ClickAsync();
         await operation.Locator("tr[data-param-name='contentItemId'] input").FillAsync("does-not-exist");
 
         var response = await page.RunAndWaitForResponseAsync(
             async () => await operation.Locator("button.execute").ClickAsync(),
-            r => r.Url.Contains("/api/content/"));
+            r => new Uri(r.Url).AbsolutePath == $"/{Tenant.Prefix}/api/content/does-not-exist");
 
-        Assert.NotEqual(401, response.Status);
-        Assert.NotEqual(403, response.Status);
+        Assert.Equal(404, response.Status);
 
         await page.CloseAsync();
     }
@@ -480,18 +484,20 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
 
         // Use the Contents module's GET content-item endpoint (enabled by the Blog recipe) as
         // the protected "Api"-scheme endpoint to prove the token is attached: an unauthenticated
-        // request to it returns 401. The unfilled {contentItemId} placeholder is sent as a
-        // literal segment, which still matches the route and exercises authentication.
-        await page.Locator(".sidebar a", new() { HasText = "GetEndpoint" }).First.ClickAsync();
-        var operation = page.Locator("[id='tag/getendpoint/GET/api/content/{contentItemId}']");
+        // request to it returns 401, an authenticated one 404 for an unknown id.
+        await page.GetByRole(AriaRole.Button, new() { Name = "Expand Content Items", Exact = true }).ClickAsync();
+        await page.Locator(".sidebar a[href$='/GET/api/content/{contentItemId}']").ClickAsync();
+        var operation = page.Locator("[id$='/GET/api/content/{contentItemId}']");
         await operation.Locator("button.show-api-client-button").ClickAsync();
+
+        await page.GetByRole(AriaRole.Row).Filter(new() { HasText = "contentItemId" })
+            .GetByRole(AriaRole.Textbox).Nth(1).FillAsync("does-not-exist");
 
         var response = await page.RunAndWaitForResponseAsync(
             async () => await page.GetByRole(AriaRole.Button, new() { Name = "Send Request", Exact = true }).ClickAsync(),
-            r => r.Url.Contains("/api/content/"));
+            r => new Uri(r.Url).AbsolutePath == $"/{Tenant.Prefix}/api/content/does-not-exist");
 
-        Assert.NotEqual(401, response.Status);
-        Assert.NotEqual(403, response.Status);
+        Assert.Equal(404, response.Status);
 
         await page.CloseAsync();
     }

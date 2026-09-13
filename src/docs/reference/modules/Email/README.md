@@ -129,3 +129,40 @@ Email settings can be configured using the `Settings` recipe step:
 | Property              | Type   | Description                             |
 |-----------------------|--------|-----------------------------------------|
 | `DefaultProviderName` | String | The name of the default email provider. |
+
+## Remote email administration
+
+Remote Management exposes the typed `email` settings section and `email test`
+when the Email feature is enabled. Both require `AccessRemoteManagement` and
+`ManageEmailSettings`; existing admin pages use the same provider selection and
+email delivery services.
+
+```sh
+pomi settings sections show email
+pomi settings sections update email --body '{"defaultProvider":"SMTP"}'
+pomi email test --body-file email-test.json
+```
+
+Read `availableProviders` to discover enabled provider names. `defaultProvider`
+is the stored selection: omission retains it and null restores runtime fallback.
+Provider credentials are configured through the owning provider, such as the
+[`smtp` section](../Email.Smtp/README.md#remote-smtp-administration).
+
+Example `email-test.json`:
+
+```json
+{
+  "provider": "SMTP",
+  "to": "recipient@example.com",
+  "subject": "Delivery test",
+  "body": "Test message from Orchard Core."
+}
+```
+
+Omit `provider` to use the runtime default. Tests accept a single recipient, a
+subject up to 256 characters and a plain-text body up to 16384 characters. A
+successful request returns HTTP 204, meaning the provider accepted the message;
+it does not prove arrival in the recipient's inbox. Invalid input returns 400; an unavailable provider or delivery failure returns 502
+without connection details or secrets.
+Sending is not idempotent: retrying may send another message. Local pickup delivery
+can verify message generation without external mail delivery.

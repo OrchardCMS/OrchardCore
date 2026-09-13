@@ -6,7 +6,6 @@ using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using YesSql;
 
 namespace OrchardCore.Deployment.Controllers;
 
@@ -16,17 +15,18 @@ public sealed class StepController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly IDisplayManager<DeploymentStep> _displayManager;
     private readonly IEnumerable<IDeploymentStepFactory> _factories;
-    private readonly ISession _session;
+    private readonly IDeploymentPlanService _plans;
     private readonly INotifier _notifier;
     private readonly IUpdateModelAccessor _updateModelAccessor;
 
     internal readonly IHtmlLocalizer H;
 
+    /// <summary>Creates the admin step editor using shared tenant plan mutations.</summary>
     public StepController(
         IAuthorizationService authorizationService,
         IDisplayManager<DeploymentStep> displayManager,
         IEnumerable<IDeploymentStepFactory> factories,
-        ISession session,
+        IDeploymentPlanService plans,
         IHtmlLocalizer<StepController> htmlLocalizer,
         INotifier notifier,
         IUpdateModelAccessor updateModelAccessor)
@@ -34,7 +34,7 @@ public sealed class StepController : Controller
         _displayManager = displayManager;
         _factories = factories;
         _authorizationService = authorizationService;
-        _session = session;
+        _plans = plans;
         _notifier = notifier;
         _updateModelAccessor = updateModelAccessor;
         H = htmlLocalizer;
@@ -48,7 +48,7 @@ public sealed class StepController : Controller
             return Forbid();
         }
 
-        var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
+        var deploymentPlan = await _plans.GetAsync(id);
 
         if (deploymentPlan == null)
         {
@@ -86,7 +86,7 @@ public sealed class StepController : Controller
             return Forbid();
         }
 
-        var deploymentPlan = await _session.GetAsync<DeploymentPlan>(model.DeploymentPlanId);
+        var deploymentPlan = await _plans.GetAsync(model.DeploymentPlanId);
 
         if (deploymentPlan == null)
         {
@@ -106,11 +106,14 @@ public sealed class StepController : Controller
         if (ModelState.IsValid)
         {
             step.Id = model.DeploymentStepId;
-            deploymentPlan.DeploymentSteps.Add(step);
-            await _session.SaveAsync(deploymentPlan);
-
-            await _notifier.SuccessAsync(H["Deployment plan step added successfully."]);
-            return RedirectToAction("Display", "DeploymentPlan", new { id = model.DeploymentPlanId });
+            var result = await _plans.AddStepsAsync(model.DeploymentPlanId, [step]);
+            if (result.Error == DeploymentStepManagementError.NotFound) { return NotFound(); }
+            if (result.Error == DeploymentStepManagementError.None)
+            {
+                await _notifier.SuccessAsync(H["Deployment plan step added successfully."]);
+                return RedirectToAction("Display", "DeploymentPlan", new { id = model.DeploymentPlanId });
+            }
+            ModelState.AddModelError(nameof(model.DeploymentStepId), H["The deployment step identifier is already in use."].Value);
         }
 
         model.Editor = editor;
@@ -127,7 +130,7 @@ public sealed class StepController : Controller
             return Forbid();
         }
 
-        var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
+        var deploymentPlan = await _plans.GetAsync(id);
 
         if (deploymentPlan == null)
         {
@@ -163,7 +166,7 @@ public sealed class StepController : Controller
             return Forbid();
         }
 
-        var deploymentPlan = await _session.GetAsync<DeploymentPlan>(model.DeploymentPlanId);
+        var deploymentPlan = await _plans.GetAsync(model.DeploymentPlanId);
 
         if (deploymentPlan == null)
         {
@@ -177,14 +180,20 @@ public sealed class StepController : Controller
             return NotFound();
         }
 
+        step = _plans.CloneStep(step);
+
         var editor = await _displayManager.UpdateEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "");
 
         if (ModelState.IsValid)
         {
-            await _session.SaveAsync(deploymentPlan);
-
-            await _notifier.SuccessAsync(H["Deployment plan step updated successfully."]);
-            return RedirectToAction("Display", "DeploymentPlan", new { id = model.DeploymentPlanId });
+            var result = await _plans.UpdateStepAsync(model.DeploymentPlanId, step);
+            if (result.Error == DeploymentStepManagementError.NotFound) { return NotFound(); }
+            if (result.Error == DeploymentStepManagementError.None)
+            {
+                await _notifier.SuccessAsync(H["Deployment plan step updated successfully."]);
+                return RedirectToAction("Display", "DeploymentPlan", new { id = model.DeploymentPlanId });
+            }
+            ModelState.AddModelError(nameof(model.DeploymentStepId), H["The deployment step identity or type is invalid."].Value);
         }
 
         await _notifier.ErrorAsync(H["The deployment plan step has validation errors."]);
@@ -205,22 +214,11 @@ public sealed class StepController : Controller
             return Forbid();
         }
 
-        var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
-
-        if (deploymentPlan == null)
+        var result = await _plans.DeleteStepAsync(id, stepId);
+        if (result.Error != DeploymentStepManagementError.None)
         {
             return NotFound();
         }
-
-        var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => string.Equals(x.Id, stepId, StringComparison.OrdinalIgnoreCase));
-
-        if (step == null)
-        {
-            return NotFound();
-        }
-
-        deploymentPlan.DeploymentSteps.Remove(step);
-        await _session.SaveAsync(deploymentPlan);
 
         await _notifier.SuccessAsync(H["Deployment step deleted successfully."]);
 
@@ -235,26 +233,12 @@ public sealed class StepController : Controller
             return Forbid();
         }
 
-        var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
-
-        if (deploymentPlan == null)
+        var result = await _plans.MoveStepAsync(id, oldIndex, newIndex);
+        return result.Error switch
         {
-            return NotFound();
-        }
-
-        var step = deploymentPlan.DeploymentSteps.ElementAtOrDefault(oldIndex);
-
-        if (step == null)
-        {
-            return NotFound();
-        }
-
-        deploymentPlan.DeploymentSteps.RemoveAt(oldIndex);
-
-        deploymentPlan.DeploymentSteps.Insert(newIndex, step);
-
-        await _session.SaveAsync(deploymentPlan);
-
-        return Ok();
+            DeploymentStepManagementError.None => Ok(),
+            DeploymentStepManagementError.NotFound => NotFound(),
+            _ => BadRequest(),
+        };
     }
 }

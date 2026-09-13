@@ -42,7 +42,7 @@ public sealed class DeploymentPlanDeploymentSource
                          Steps = (from step in plan.DeploymentSteps
                                   select new
                                   {
-                                      Type = GetStepType(deploymentStepFactories, step),
+                                      Type = DeploymentStepTypeResolver.Resolve(step, deploymentStepFactories),
                                       Step = step,
                                   }).ToArray(),
                      }).ToArray();
@@ -55,17 +55,4 @@ public sealed class DeploymentPlanDeploymentSource
         });
     }
 
-    /// <summary>
-    /// A Site Settings Step is generic and the name is mapped to the <see cref="IDeploymentStepFactory.Name"/> so its 'Type' should be determined though a lookup.
-    /// A normal steps name is not mapped to the <see cref="IDeploymentStepFactory.Name"/> and should use its type.
-    /// </summary>
-    private static string GetStepType(Dictionary<string, IDeploymentStepFactory> deploymentStepFactories, DeploymentStep step)
-    {
-        if (deploymentStepFactories.TryGetValue(step.Name, out var deploymentStepFactory))
-        {
-            return deploymentStepFactory.Name;
-        }
-
-        return step.GetType().Name;
-    }
 }

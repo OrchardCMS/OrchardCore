@@ -1,17 +1,19 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin.Models;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Liquid;
 using OrchardCore.Localization.Drivers;
+using OrchardCore.Localization.Endpoints;
 using OrchardCore.Localization.Liquid.Filters;
 using OrchardCore.Localization.Models;
 using OrchardCore.Localization.Services;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using OrchardCore.RemoteManagement;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings.Deployment;
 
@@ -27,6 +29,7 @@ public sealed class Startup : StartupBase
     /// <inheritdocs />
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddSingleton<IRemoteManagementCapabilityProvider, LocalizationRemoteManagementCapabilityProvider>();
         services.AddSiteDisplayDriver<LocalizationSettingsDisplayDriver>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddPermissionProvider<Permissions>();
@@ -59,6 +62,7 @@ public sealed class Startup : StartupBase
             .AddSupportedUICultures(supportedCultures);
 
         app.UseRequestLocalization(localizationOptions);
+        routes.AddLocalizationManagementEndpoints();
     }
 }
 

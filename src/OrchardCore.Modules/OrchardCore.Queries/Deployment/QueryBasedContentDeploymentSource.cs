@@ -1,4 +1,3 @@
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using OrchardCore.ContentManagement;
 using OrchardCore.Deployment;
@@ -31,12 +30,12 @@ public sealed class QueryBasedContentDeploymentSource
             return;
         }
 
-        if (!TryDeserializeParameters(step.QueryParameters ?? "{ }", out var parameters))
+        if (!QueryDeploymentConfiguration.TryDeserializeParameters(step.QueryParameters ?? "{ }", out var parameters))
         {
             return;
         }
 
-        var results = await _queryManager.ExecuteQueryAsync(query, parameters);
+        var results = await _queryManager.ExecuteQueryAsync(query, parameters ?? []);
 
         foreach (var contentItem in results.Items)
         {
@@ -70,19 +69,4 @@ public sealed class QueryBasedContentDeploymentSource
         }
     }
 
-    private static bool TryDeserializeParameters(string parameters, out Dictionary<string, object> queryParameters)
-    {
-        try
-        {
-            queryParameters = JConvert.DeserializeObject<Dictionary<string, object>>(parameters) ?? [];
-
-            return true;
-        }
-        catch (JsonException)
-        {
-            queryParameters = [];
-
-            return false;
-        }
-    }
 }

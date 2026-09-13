@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Menu.Models;
@@ -6,5 +7,6 @@ namespace OrchardCore.Menu.Models;
 // This part is automatically added to all menus.
 public class MenuItemsListPart : ContentPart
 {
+    [Description("The ordered menu item content items contained by this menu.")]
     public List<ContentItem> MenuItems { get; set; } = [];
 }

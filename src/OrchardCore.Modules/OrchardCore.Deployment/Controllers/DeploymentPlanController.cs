@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
-using OrchardCore.Deployment.Indexes;
 using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -14,8 +13,6 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
-using YesSql;
-using YesSql.Services;
 
 namespace OrchardCore.Deployment.Controllers;
 
@@ -27,7 +24,7 @@ public sealed class DeploymentPlanController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly IDisplayManager<DeploymentStep> _displayManager;
     private readonly IEnumerable<IDeploymentStepFactory> _factories;
-    private readonly ISession _session;
+    private readonly IDeploymentPlanService _plans;
     private readonly PagerOptions _pagerOptions;
     private readonly INotifier _notifier;
     private readonly IUpdateModelAccessor _updateModelAccessor;
@@ -36,11 +33,12 @@ public sealed class DeploymentPlanController : Controller
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
 
+    /// <summary>Creates the admin editor using the shared tenant plan service.</summary>
     public DeploymentPlanController(
         IAuthorizationService authorizationService,
         IDisplayManager<DeploymentStep> displayManager,
         IEnumerable<IDeploymentStepFactory> factories,
-        ISession session,
+        IDeploymentPlanService plans,
         IOptions<PagerOptions> pagerOptions,
         IShapeFactory shapeFactory,
         IStringLocalizer<DeploymentPlanController> stringLocalizer,
@@ -51,7 +49,7 @@ public sealed class DeploymentPlanController : Controller
         _displayManager = displayManager;
         _factories = factories;
         _authorizationService = authorizationService;
-        _session = session;
+        _plans = plans;
         _pagerOptions = pagerOptions.Value;
         _notifier = notifier;
         _updateModelAccessor = updateModelAccessor;
@@ -74,20 +72,9 @@ public sealed class DeploymentPlanController : Controller
 
         var pager = new Pager(pagerParameters, _pagerOptions);
 
-        var deploymentPlans = _session.Query<DeploymentPlan, DeploymentPlanIndex>();
-
-        if (!string.IsNullOrWhiteSpace(options.Search))
-        {
-            deploymentPlans = deploymentPlans.Where(x => x.Name.Contains(options.Search));
-        }
-
-        var count = await deploymentPlans.CountAsync();
-
-        var results = await deploymentPlans
-            .OrderBy(p => p.Name)
-            .Skip(pager.GetStartIndex())
-            .Take(pager.PageSize)
-            .ListAsync();
+        var page = await _plans.ListAsync(options.Search, pager.GetStartIndex(), pager.PageSize);
+        var count = page.TotalCount;
+        var results = page.Items;
 
         // Maintain previous route data when generating page links.
         var routeData = new RouteData();
@@ -133,15 +120,14 @@ public sealed class DeploymentPlanController : Controller
 
         if (itemIds?.Any() == true)
         {
-            var checkedItems = await _session.Query<DeploymentPlan, DeploymentPlanIndex>().Where(x => x.DocumentId.IsIn(itemIds)).ListAsync();
             switch (options.BulkAction)
             {
                 case ContentsBulkAction.None:
                     break;
                 case ContentsBulkAction.Delete:
-                    foreach (var item in checkedItems)
+                    foreach (var id in itemIds.Distinct())
                     {
-                        _session.Delete(item);
+                        await _plans.DeleteAsync(id);
                     }
                     await _notifier.SuccessAsync(H["Deployment plans successfully deleted."]);
                     break;
@@ -160,7 +146,7 @@ public sealed class DeploymentPlanController : Controller
             return Forbid();
         }
 
-        var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
+        var deploymentPlan = await _plans.GetAsync(id);
 
         if (deploymentPlan == null)
         {
@@ -234,25 +220,12 @@ public sealed class DeploymentPlanController : Controller
 
         if (ModelState.IsValid)
         {
-            if (string.IsNullOrWhiteSpace(model.Name))
+            var result = await _plans.CreateAsync(model.Name);
+            if (result.Error == DeploymentPlanManagementError.None)
             {
-                ModelState.AddModelError(nameof(CreateDeploymentPlanViewModel.Name), S["The name is mandatory."]);
+                return RedirectToAction(nameof(Display), new { id = result.Plan.Id });
             }
-
-            var count = await _session.QueryIndex<DeploymentPlanIndex>(x => x.Name == model.Name).CountAsync();
-            if (count > 0)
-            {
-                ModelState.AddModelError(nameof(CreateDeploymentPlanViewModel.Name), S["A deployment plan with the same name already exists."]);
-            }
-        }
-
-        if (ModelState.IsValid)
-        {
-            var deploymentPlan = new DeploymentPlan { Name = model.Name };
-
-            await _session.SaveAsync(deploymentPlan);
-
-            return RedirectToAction(nameof(Display), new { id = deploymentPlan.Id });
+            AddNameError(result.Error);
         }
 
         // If we got this far, something failed, redisplay form
@@ -266,7 +239,7 @@ public sealed class DeploymentPlanController : Controller
             return Forbid();
         }
 
-        var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
+        var deploymentPlan = await _plans.GetAsync(id);
 
         if (deploymentPlan == null)
         {
@@ -290,7 +263,7 @@ public sealed class DeploymentPlanController : Controller
             return Forbid();
         }
 
-        var deploymentPlan = await _session.GetAsync<DeploymentPlan>(model.Id);
+        var deploymentPlan = await _plans.GetAsync(model.Id);
 
         if (deploymentPlan == null)
         {
@@ -299,29 +272,17 @@ public sealed class DeploymentPlanController : Controller
 
         if (ModelState.IsValid)
         {
-            if (string.IsNullOrWhiteSpace(model.Name))
+            var result = await _plans.RenameAsync(model.Id, model.Name);
+            if (result.Error == DeploymentPlanManagementError.NotFound)
             {
-                ModelState.AddModelError(nameof(EditDeploymentPlanViewModel.Name), S["The name is mandatory."]);
+                return NotFound();
             }
-            if (!string.Equals(model.Name, deploymentPlan.Name, StringComparison.OrdinalIgnoreCase))
+            if (result.Error == DeploymentPlanManagementError.None)
             {
-                var count = await _session.QueryIndex<DeploymentPlanIndex>(x => x.Name == model.Name && x.DocumentId != model.Id).CountAsync();
-                if (count > 0)
-                {
-                    ModelState.AddModelError(nameof(CreateDeploymentPlanViewModel.Name), S["A deployment plan with the same name already exists."]);
-                }
+                await _notifier.SuccessAsync(H["Deployment plan updated successfully."]);
+                return RedirectToAction(nameof(Index));
             }
-        }
-
-        if (ModelState.IsValid)
-        {
-            deploymentPlan.Name = model.Name;
-
-            await _session.SaveAsync(deploymentPlan);
-
-            await _notifier.SuccessAsync(H["Deployment plan updated successfully."]);
-
-            return RedirectToAction(nameof(Index));
+            AddNameError(result.Error);
         }
 
         // If we got this far, something failed, redisplay form
@@ -336,17 +297,24 @@ public sealed class DeploymentPlanController : Controller
             return Forbid();
         }
 
-        var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
+        var deploymentPlan = await _plans.GetAsync(id);
 
         if (deploymentPlan == null)
         {
             return NotFound();
         }
 
-        _session.Delete(deploymentPlan);
+        await _plans.DeleteAsync(id);
 
         await _notifier.SuccessAsync(H["Deployment plan deleted successfully."]);
 
         return RedirectToAction(nameof(Index));
+    }
+
+    private void AddNameError(DeploymentPlanManagementError error)
+    {
+        ModelState.AddModelError(nameof(CreateDeploymentPlanViewModel.Name), error == DeploymentPlanManagementError.MissingName
+            ? S["The name is mandatory."]
+            : S["A deployment plan with the same name already exists."]);
     }
 }

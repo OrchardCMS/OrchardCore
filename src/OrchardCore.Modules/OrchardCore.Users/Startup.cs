@@ -27,6 +27,7 @@ using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
+using OrchardCore.RemoteManagement;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.RateLimits;
@@ -38,6 +39,7 @@ using OrchardCore.Settings.Deployment;
 using OrchardCore.Setup.Events;
 using OrchardCore.Users.Commands;
 using OrchardCore.Users.Controllers;
+using OrchardCore.Users.Endpoints.Management;
 using OrchardCore.Users.Core.Services;
 using OrchardCore.Users.DataMigrations;
 using OrchardCore.Users.Deployment;
@@ -69,6 +71,7 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddSingleton<IRemoteManagementCapabilityProvider, UserRemoteManagementCapabilityProvider>();
         services.AddShapeTableProvider<UserDisplayNameShapeTableProvider>();
 
         services.AddDataMigration<ExternalAuthenticationMigrations>();
@@ -238,6 +241,7 @@ public sealed class Startup : StartupBase
             }
         );
 
+        routes.AddUserManagementEndpoints();
         builder.UseAuthorization();
     }
 
@@ -656,9 +660,15 @@ public sealed class CustomUserSettingsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddScoped<CustomUserSettingsManagementService>();
         services.AddDisplayDriver<User, CustomUserSettingsDisplayDriver>();
         services.AddPermissionProvider<CustomUserSettingsPermissions>();
         services.AddDeployment<CustomUserSettingsDeploymentSource, CustomUserSettingsDeploymentStep, CustomUserSettingsDeploymentStepDriver>();
+        services.AddScoped<IDeploymentStepDefinition>(provider => new NamedSelectionDeploymentStepDefinition<CustomUserSettingsDeploymentStep>(
+            nameof(CustomUserSettingsDeploymentStep), "settingsTypeNames",
+            () => provider.GetRequiredService<CustomUserSettingsService>().GetAllSettingsTypeNamesAsync(),
+            step => (step.IncludeAll, step.SettingsTypeNames),
+            (step, includeAll, names) => { step.IncludeAll = includeAll; step.SettingsTypeNames = names; }));
         services.AddScoped<IStereotypesProvider, CustomUserSettingsStereotypesProvider>();
 
         services.Configure<ContentTypeDefinitionOptions>(options =>
@@ -672,6 +682,11 @@ public sealed class CustomUserSettingsStartup : StartupBase
             });
         });
     }
+    /// <summary>
+    /// Maps feature-owned custom user settings management endpoints.
+    /// </summary>
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        => routes.AddCustomUserSettingsManagementEndpoints();
 }
 
 [RequireFeatures("OrchardCore.Deployment")]
@@ -680,5 +695,7 @@ public sealed class UserDeploymentStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDeployment<AllUsersDeploymentSource, AllUsersDeploymentStep, AllUsersDeploymentStepDriver>();
+        services.AddSingleton<IDeploymentStepDefinition>(new EmptyDeploymentStepDefinition<AllUsersDeploymentStep>(nameof(AllUsersDeploymentStep),
+            "Exports user records including password hashes and security tokens. Requires ManageUsers; keep artifacts private."));
     }
 }

@@ -61,3 +61,35 @@ using OrchardCore.OpenId;
         OpenIdConstants.Features.Core,
     ]
 )]
+
+[assembly: Feature(
+    Id = "OrchardCore.OpenId.RemoteManagement",
+    Name = "OpenID Connect Remote Management Configuration",
+    Description = "Configures the OpenID Connect services required for remote management.",
+    Category = "OpenID Connect",
+    EnabledByDependencyOnly = true,
+    Dependencies =
+    [
+        OpenIdConstants.Features.Management,
+        OpenIdConstants.Features.Server,
+        OpenIdConstants.Features.Validation,
+    ]
+)]
+
+[assembly: Feature(
+    Id = "OrchardCore.OpenId.RemoteManagement.Cli",
+    Name = "OpenID Connect Remote Management CLI Configuration",
+    Description = "Configures the Pomi native application and device authorization flow.",
+    Category = "OpenID Connect",
+    EnabledByDependencyOnly = true,
+    Dependencies = ["OrchardCore.OpenId.RemoteManagement"]
+)]
+
+[assembly: Feature(
+    Id = "OrchardCore.OpenId.RemoteManagement.Mcp",
+    Name = "OpenID Connect Remote Management MCP Configuration",
+    Description = "Configures OAuth applications for tenant MCP clients.",
+    Category = "OpenID Connect",
+    EnabledByDependencyOnly = true,
+    Dependencies = ["OrchardCore.OpenId.RemoteManagement"]
+)]

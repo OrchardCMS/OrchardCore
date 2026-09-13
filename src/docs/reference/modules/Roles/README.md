@@ -2,6 +2,10 @@
 
 Enabling the `OrchardCore.Roles` module will allow you to manage the user roles.
 
+## API reference
+
+See the [Role management API](../../api/roles/README.md) for OpenAPI operations that list permissions and manage roles.
+
 ## Predefined Roles
 
 Orchard Core defines the following predefined permission stereotypes:

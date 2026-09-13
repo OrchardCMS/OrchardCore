@@ -19,15 +19,18 @@ public sealed class AddToDeploymentPlanController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly IContentManager _contentManager;
     private readonly ISession _session;
+    private readonly IDeploymentPlanService _plans;
     private readonly IEnumerable<IDeploymentStepFactory> _factories;
     private readonly INotifier _notifier;
 
     internal readonly IHtmlLocalizer H;
 
+    /// <summary>Creates content-to-plan actions with shared step persistence and content authorization.</summary>
     public AddToDeploymentPlanController(
         IAuthorizationService authorizationService,
         IContentManager contentManager,
         ISession session,
+        IDeploymentPlanService plans,
         IEnumerable<IDeploymentStepFactory> factories,
         INotifier notifier,
         IHtmlLocalizer<AddToDeploymentPlanController> htmlLocalizer
@@ -36,6 +39,7 @@ public sealed class AddToDeploymentPlanController : Controller
         _authorizationService = authorizationService;
         _contentManager = contentManager;
         _session = session;
+        _plans = plans;
         _factories = factories;
         _notifier = notifier;
         H = htmlLocalizer;
@@ -51,7 +55,7 @@ public sealed class AddToDeploymentPlanController : Controller
             return Forbid();
         }
 
-        var deploymentPlan = await _session.GetAsync<DeploymentPlan>(deploymentPlanId);
+        var deploymentPlan = await _plans.GetAsync(deploymentPlanId);
 
         if (deploymentPlan == null)
         {
@@ -83,11 +87,11 @@ public sealed class AddToDeploymentPlanController : Controller
 
         step.ContentItemId = contentItem.ContentItemId;
 
-        deploymentPlan.DeploymentSteps.Add(step);
+        var result = await _plans.AddStepsAsync(deploymentPlanId, [step]);
+        if (result.Error == DeploymentStepManagementError.NotFound) { return NotFound(); }
+        if (result.Error != DeploymentStepManagementError.None) { return BadRequest(); }
 
         await _notifier.SuccessAsync(H["Content added successfully to the deployment plan."]);
-
-        await _session.SaveAsync(deploymentPlan);
 
         return this.LocalRedirect(returnUrl, true);
     }
@@ -107,7 +111,7 @@ public sealed class AddToDeploymentPlanController : Controller
             return Forbid();
         }
 
-        var deploymentPlan = await _session.GetAsync<DeploymentPlan>(deploymentPlanId);
+        var deploymentPlan = await _plans.GetAsync(deploymentPlanId);
 
         if (deploymentPlan == null)
         {
@@ -116,6 +120,7 @@ public sealed class AddToDeploymentPlanController : Controller
 
         var contentItems = await _session.Query<ContentItem, ContentItemIndex>().Where(x => x.DocumentId.IsIn(itemIds) && x.Published).ListAsync();
 
+        var steps = new List<DeploymentStep>();
         foreach (var item in contentItems)
         {
             // Export permission is required as the overriding permission.
@@ -138,12 +143,14 @@ public sealed class AddToDeploymentPlanController : Controller
 
             step.ContentItemId = item.ContentItemId;
 
-            deploymentPlan.DeploymentSteps.Add(step);
+            steps.Add(step);
         }
 
-        await _notifier.SuccessAsync(H["Content added successfully to the deployment plan."]);
+        var result = await _plans.AddStepsAsync(deploymentPlanId, steps);
+        if (result.Error == DeploymentStepManagementError.NotFound) { return NotFound(); }
+        if (result.Error != DeploymentStepManagementError.None) { return BadRequest(); }
 
-        await _session.SaveAsync(deploymentPlan);
+        await _notifier.SuccessAsync(H["Content added successfully to the deployment plan."]);
 
         return this.LocalRedirect(returnUrl, true);
     }

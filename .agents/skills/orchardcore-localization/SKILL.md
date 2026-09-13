@@ -126,6 +126,20 @@ Recipe `settings` step:
 
 The Localization module reads these at startup and calls `app.UseRequestLocalization(...)` with the configured default + supported cultures.
 
+## Remote management
+
+Use `pomi localization` when managing an existing tenant through Remote Management.
+Read live help and schemas first. Prefer `cultures add fr` or
+`cultures remove fr --force` for a single culture change: they preserve the
+other cultures, default and fallback setting. Removing the default is rejected;
+change it through `settings update` first. `cultures available`
+discovers valid names. `settings show/update` reads/replaces the whole configuration.
+The CLI does not expose general string inspection, PO catalogs, or database
+translation editing. `pomi media localizations show` remains available for
+Media gallery labels. Use the Data Localization admin UI or the existing
+HTTP APIs for database translations. See
+`src/docs/reference/api/localization/README.md` for commands and permissions.
+
 ## Quick Reference
 
 ### Localizers

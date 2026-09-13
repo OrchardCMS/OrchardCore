@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Options;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
+using OrchardCore.RemoteManagement;
 
 namespace OrchardCore.Media.Endpoints.Api;
 
@@ -18,11 +20,26 @@ public static class GetMediaItemsEndpoint
 {
     public static IEndpointRouteBuilder AddGetMediaItemsEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapGet("api/media/GetMediaItems", HandleAsync)
+        builder.MapLegacyGet("api/media/GetMediaItems", HandleAsync);
+
+        builder.MapManagementGet("api/media/files", HandleAsync)
             .WithName("ApiGetMediaItems")
-            .WithTags("MediaApi")
-            .DisableAntiforgery()
-            .Produces<IEnumerable<FileStoreEntryDto>>(StatusCodes.Status200OK)
+            .WithSummary("Lists media files in a folder.")
+            .WithDescription("Returns the files that are directly contained in the specified folder, optionally filtered by file extension.")
+            .WithCliCommand(new CliOperationMetadata(["media", "files"], "list")
+            {
+                Capability = MediaApiEndpointConventions.CapabilityName,
+                TableColumns =
+                {
+                    new CliTableColumnMetadata("items[].name", "Name"),
+                    new CliTableColumnMetadata("items[].filePath", "Path"),
+                    new CliTableColumnMetadata("items[].url", "URL"),
+                    new CliTableColumnMetadata("items[].size", "Size"),
+                    new CliTableColumnMetadata("items[].mime", "Content type"),
+                },
+            })
+            .Produces<MediaListResponse>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
@@ -30,17 +47,26 @@ public static class GetMediaItemsEndpoint
         return builder;
     }
 
-    [Authorize(Policy = MediaApiConstants.AuthorizationPolicyName)]
     private static async Task<IResult> HandleAsync(
         HttpContext httpContext,
-        IAuthorizationService authorizationService,
-        IMediaFileStore mediaFileStore,
-        IContentTypeProvider contentTypeProvider,
-        IFileVersionProvider fileVersionProvider,
-        IOptions<MediaOptions> options,
-        string path,
-        string extensions)
+        [FromServices] IAuthorizationService authorizationService,
+        [FromServices] IMediaFileStore mediaFileStore,
+        [FromServices] IContentTypeProvider contentTypeProvider,
+        [FromServices] IFileVersionProvider fileVersionProvider,
+        [FromServices] IOptions<MediaOptions> options,
+        [AsParameters] BrowseFilesRequest request)
     {
+        var path = request.Path;
+        var extensions = request.Extensions;
+        var isManagementEndpoint = httpContext.GetEndpoint()?.Metadata.GetMetadata<EndpointNameMetadata>()?.EndpointName == "ApiGetMediaItems";
+        var skip = request.Skip ?? 0;
+        var take = request.Take ?? MediaEndpointHelpers.DefaultTake;
+
+        if (isManagementEndpoint && MediaEndpointHelpers.ValidatePaging(skip, take) is { } pagingError)
+        {
+            return pagingError;
+        }
+
         if (string.IsNullOrEmpty(path))
         {
             path = string.Empty;
@@ -77,6 +103,16 @@ public static class GetMediaItemsEndpoint
             }
         }
 
-        return TypedResults.Ok(allowed);
+        allowed.Sort((left, right) => StringComparer.OrdinalIgnoreCase.Compare(left.FilePath, right.FilePath));
+
+        return isManagementEndpoint
+            ? TypedResults.Ok(new MediaListResponse
+            {
+                Skip = skip,
+                Take = take,
+                TotalCount = allowed.Count,
+                Items = allowed.Skip(skip).Take(take).ToArray(),
+            })
+            : TypedResults.Ok(allowed);
     }
 }

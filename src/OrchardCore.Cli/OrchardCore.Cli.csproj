@@ -1,0 +1,64 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>pomi</AssemblyName>
+    <RootNamespace>OrchardCore.Cli</RootNamespace>
+    <TargetFramework>$(DefaultTargetFramework)</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <!-- Tool packages are built per platform by the reusable native workflow. Keep ordinary
+         solution packing from publishing an incomplete pointer package. -->
+    <IsPackable Condition="'$(PackAsTool)' != 'true'">false</IsPackable>
+    <IsPackable Condition="'$(PackAsTool)' == 'true'">true</IsPackable>
+    <PackageId>OrchardCore.Cli</PackageId>
+    <Authors>Orchard Core Community and Contributors</Authors>
+    <ToolCommandName>pomi</ToolCommandName>
+    <ToolPackageRuntimeIdentifiers>linux-x64;linux-arm64;win-x64;win-arm64;osx-arm64;osx-x64</ToolPackageRuntimeIdentifiers>
+    <Description>Native Orchard Core command-line tool for local CMS installation and remote tenant management.</Description>
+    <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PublishAot>true</PublishAot>
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>full</TrimMode>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+    <EnableAotAnalyzer>true</EnableAotAnalyzer>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="QRCoder" GeneratePathProperty="true" />
+    <PackageReference Include="System.CommandLine" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="README.md" Pack="true" PackagePath="/" />
+    <None Include="..\..\LICENSE" Link="LICENSE.txt" Pack="true" PackagePath="/" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="$(PkgQRCoder)/LICENSE.txt" Link="QRCoder.LICENSE.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore\OrchardCore.RemoteManagement.Abstractions\OrchardCore.RemoteManagement.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="OrchardCore.Cli.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\design\artifacts\logos\pomi\png\pomi-terminal-icon-light-32.png"
+                      LogicalName="PomiFavicon" />
+    <!-- Embed the source template, independently of ProjectTemplates' generated
+         configuration files. Stamp it with this CLI's version when extracted. -->
+    <EmbeddedResource Include="..\Templates\OrchardCore.ProjectTemplates\content\OrchardCore.Templates.Cms.Web\**\*"
+                      Exclude="..\Templates\OrchardCore.ProjectTemplates\content\OrchardCore.Templates.Cms.Web\.template.config\**;..\Templates\OrchardCore.ProjectTemplates\content\OrchardCore.Templates.Cms.Web\bin\**;..\Templates\OrchardCore.ProjectTemplates\content\OrchardCore.Templates.Cms.Web\obj\**"
+                      LogicalName="OccmsTemplate/%(RecursiveDir)%(Filename)%(Extension)"
+                      WithCulture="false" />
+  </ItemGroup>
+
+  <Import Project="..\OrchardCore.Build\OrchardCore.Commons.targets" />
+
+</Project>

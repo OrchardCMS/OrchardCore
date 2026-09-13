@@ -1,5 +1,4 @@
 using System.Text.Json.Nodes;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Indexing.Models;
@@ -13,7 +12,7 @@ public sealed class CreateOrUpdateIndexProfileStep : NamedRecipeStepHandler
     public const string StepKey = "CreateOrUpdateIndexProfile";
 
     private readonly IIndexProfileManager _indexProfileManager;
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IIndexProfileManagementService _management;
     private readonly IndexingOptions _indexingOptions;
 
     internal readonly IStringLocalizer S;
@@ -21,12 +20,12 @@ public sealed class CreateOrUpdateIndexProfileStep : NamedRecipeStepHandler
     public CreateOrUpdateIndexProfileStep(
         IIndexProfileManager indexProfileManager,
         IOptions<IndexingOptions> indexingOptions,
-        IServiceProvider serviceProvider,
+        IIndexProfileManagementService management,
         IStringLocalizer<CreateOrUpdateIndexProfileStep> stringLocalizer)
         : base(StepKey)
     {
         _indexProfileManager = indexProfileManager;
-        _serviceProvider = serviceProvider;
+        _management = management;
         _indexingOptions = indexingOptions.Value;
         S = stringLocalizer;
     }
@@ -59,19 +58,18 @@ public sealed class CreateOrUpdateIndexProfileStep : NamedRecipeStepHandler
 
             if (indexProfile is not null)
             {
-                var validationResult = await _indexProfileManager.ValidateAsync(indexProfile);
-
-                if (!validationResult.Succeeded)
+                try
                 {
-                    foreach (var error in validationResult.Errors)
+                    // The manager validates after applying the incoming values.
+                    await _indexProfileManager.UpdateAsync(indexProfile, token);
+                }
+                catch (IndexProfileValidationException exception)
+                {
+                    foreach (var error in exception.Errors)
                     {
                         context.Errors.Add(error.ErrorMessage);
                     }
-
-                    continue;
                 }
-
-                await _indexProfileManager.UpdateAsync(indexProfile, token);
             }
             else
             {
@@ -114,20 +112,13 @@ public sealed class CreateOrUpdateIndexProfileStep : NamedRecipeStepHandler
                     continue;
                 }
 
-                var indexManager = _serviceProvider.GetRequiredKeyedService<IIndexManager>(providerName);
-
-                await _indexProfileManager.CreateAsync(indexProfile);
-
-                if (!await indexManager.CreateAsync(indexProfile))
+                var result = await _management.CreateAsync(indexProfile);
+                if (result != IndexProfileManagementResult.Success)
                 {
-                    await _indexProfileManager.DeleteAsync(indexProfile);
-
                     context.Errors.Add(S["Unable to create the index '{0}' for the provider '{1}'.", indexProfile.IndexName, providerName]);
 
                     return;
                 }
-
-                await _indexProfileManager.SynchronizeAsync(indexProfile);
             }
         }
     }

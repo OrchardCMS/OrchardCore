@@ -13,6 +13,7 @@ public sealed class AddToDeploymentPlanStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDeployment<ContentItemDeploymentSource, ContentItemDeploymentStep, ContentItemDeploymentStepDriver>();
+        services.AddScoped<IDeploymentStepDefinition, ContentItemDeploymentStepDefinition>();
         services.AddScoped<IContentDisplayDriver, AddToDeploymentPlanContentDriver>();
         services.AddDisplayDriver<ContentOptionsViewModel, AddToDeploymentPlanContentsAdminListDisplayDriver>();
     }

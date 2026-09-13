@@ -1,0 +1,29 @@
+@{
+    string scopeList = Model.Scope;
+}
+
+@if (!string.IsNullOrWhiteSpace(scopeList))
+{
+    <h2 class="h6 mb-3">@T["Requested access"]</h2>
+    <ul class="list-group mb-4">
+        @foreach (var scope in scopeList.Split(' ', StringSplitOptions.RemoveEmptyEntries).Distinct())
+        {
+            var label = scope switch
+            {
+                "openid" => T["Your identity"],
+                "profile" => T["Profile information"],
+                "email" => T["Email address"],
+                "phone" => T["Phone number"],
+                "address" => T["Postal address"],
+                "roles" => T["Role membership"],
+                "offline_access" => T["Stay signed in"],
+                "orchardcore.management" => T["Manage this Orchard Core tenant"],
+                _ => T["Additional access"],
+            };
+            <li class="list-group-item py-2">
+                <span class="d-block">@label</span>
+                <code class="small text-body-secondary text-break">@scope</code>
+            </li>
+        }
+    </ul>
+}

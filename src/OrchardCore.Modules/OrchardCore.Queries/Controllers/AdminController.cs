@@ -13,7 +13,6 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Queries.ViewModels;
 using OrchardCore.Routing;
-using YesSql.Services;
 
 namespace OrchardCore.Queries.Controllers;
 

@@ -1,0 +1,16 @@
+@model bool
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Pomi CLI authentication"])</h1></zone>
+
+<form asp-action="Configure" method="post" class="no-multisubmit">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <div class="alert @(Model ? "alert-success" : "alert-warning")" role="status">
+                @(Model ? T["The Pomi client and device authorization flow are configured."] : T["The Pomi client or device authorization flow needs configuration."])
+            </div>
+            <p>@T["Configures shared Remote Management authentication, the orchardcore-cli public native application, its loopback callback, and the device authorization flow. Existing unrelated settings are preserved."]</p>
+            <button class="btn btn-primary" type="submit">@(Model ? T["Repair CLI configuration"] : T["Configure CLI authentication"])</button>
+            <a class="btn btn-secondary" asp-controller="RemoteManagement" asp-action="Index">@T["Shared authentication"]</a>
+        </div>
+    </div>
+</form>

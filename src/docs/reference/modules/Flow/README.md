@@ -4,6 +4,12 @@ The Flows module provides methods to display content items directly within anoth
 
 A good example of this would be a page with an FAQ section in it. A FAQ content type might have a question and an answer field, and the content editor can add new FAQs directly when editing the page.
 
+## Widget widths in the editor
+
+The Standard and Blocks Flow editors display widgets without `FlowMetadata` at full width, including widgets authored through an API or imported from a recipe. To specify a width, add `FlowMetadata` to the embedded widget alongside its content parts, for example `"FlowMetadata": { "Size": 50, "Alignment": "Right" }`. `Size` is a percentage of the row. Existing explicit widths are preserved when editing or publishing the containing content item.
+
+Bag editors display their items at full width and do not require `FlowMetadata`. A Flow nested inside a Bag uses the same Flow width rules as a top-level Flow.
+
 ## Empty Flows and Bags
 
 Flows and Bags that do not contain any content items will be displayed with a different shape name. For empty Flows, the shape name is `FlowPart_Empty`; for empty Bags, it's `BagPart_Empty`.

@@ -1,6 +1,8 @@
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -16,8 +18,10 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Recipes.Services;
 using OrchardCore.ResourceManagement;
+using OrchardCore.RemoteManagement;
 using OrchardCore.Roles;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Settings.Endpoints.Api;
 using OrchardCore.Settings.Deployment;
 using OrchardCore.Settings.Drivers;
 using OrchardCore.Settings.Recipes;
@@ -42,6 +46,8 @@ public sealed class Startup : StartupBase
 
         services.AddRecipeExecutionStep<SettingsStep>();
         services.AddSingleton<ISiteService, SiteService>();
+        services.AddScoped<SiteSettingsManagementService>();
+        services.AddSingleton<IRemoteManagementCapabilityProvider, SiteSettingsRemoteManagementCapabilityProvider>();
 
         // Site Settings editor
         services.AddSiteDisplayDriver<DefaultSiteSettingsDisplayDriver>();
@@ -53,6 +59,7 @@ public sealed class Startup : StartupBase
 
         services.AddScoped<ITimeZoneSelector, DefaultTimeZoneSelector>();
 
+        services.AddSingleton<IDeploymentStepDefinition, SiteSettingsDeploymentStepDefinition>();
         services.AddDeployment<SiteSettingsDeploymentSource, SiteSettingsDeploymentStep, SiteSettingsDeploymentStepDriver>();
 
         services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentSiteNameProvider>();
@@ -63,6 +70,12 @@ public sealed class Startup : StartupBase
         services.AddTransient<IConfigureOptions<ShapeRenderingOptions>, ShapeRenderingOptionsConfiguration>();
 
         services.AddScoped<IModularTenantEvents, PreloadSiteSettingsTenantEventHandler>();
+    }
+
+    public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        routes.AddSiteSettingsManagementEndpoints();
+        routes.AddSiteSettingsSectionEndpoints();
     }
 }
 
@@ -77,7 +90,7 @@ public sealed class LiquidStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.Configure<SettingsLiquidOptions>(_configuration.GetSection("OrchardCore_Settings_Liquid"));
-        
+
         services.AddSingleton<ISitePropertiesLiquidMapper, SitePropertiesLiquidMapper>();
         services.Configure<TemplateOptions>(o =>
         {

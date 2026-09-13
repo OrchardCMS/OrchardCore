@@ -2,6 +2,10 @@
 
 The Users module enables authentication UI and user management.
 
+## API reference
+
+See the [User management API](../../api/users/README.md) for OpenAPI operations that list and manage users.
+
 ## Features
 
 The module contains the following features apart from the base feature:
@@ -191,7 +195,7 @@ User module settings can be configured using the `Settings` recipe step:
 
 | Property                   | Type    | Description                                                           |
 |----------------------------|---------|-----------------------------------------------------------------------|
-| `UseSiteTheme`             | Boolean | Whether to use the site theme for the login page.                     |
+| `UseSiteTheme`             | Boolean | Whether to use the site theme for login and OpenID authorization, device verification, sign-out, and error pages. |
 | `DisableLocalLogin`        | Boolean | Whether to disable local username/password login.                     |
 | `AllowRememberMe`          | Boolean | Whether to show the **Remember me** option on the login form. Default: `true`. When disabled, the `UsePersistentAuthenticationCookie` setting controls all local and external sign-ins. |
 | `UsePersistentAuthenticationCookie` | Boolean | Whether authentication cookies persist across browser sessions. When `AllowRememberMe` is enabled, this is the default value of the **Remember me** option. Default: `false`. |
@@ -362,3 +366,88 @@ For example, to create an administrator during setup from a recipe:
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/FmgZHpFHCcg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/b-lHY0NxZNI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+## Remote user policy administration
+
+With Remote Management enabled, user features contribute typed settings sections
+for their tenant-wide policies. The caller requires `AccessRemoteManagement` and
+`ManageUsers`; updates require HTTPS. These policies do not expose passwords,
+authenticator keys, recovery codes, or user-specific MFA enrollment.
+
+| Section | Owning feature | Managed policy |
+| --- | --- | --- |
+| `user-login` | Users | Local login, editable profile fields, remember-me/cookie and theme choices |
+| `user-registration` | Users.Registration | Email verification, moderation, theme |
+| `user-password-reset` | Users.ResetPassword | Password-reset availability and theme |
+| `user-change-email` | Users.ChangeEmail | Email-change availability |
+| `user-external-login` | Users.ExternalAuthentication | Single-provider selection and property-sync script settings |
+| `user-external-registration` | Users.ExternalAuthentication | New external registrations, identity-field collection and username script settings |
+| `user-two-factor` | Users.2FA | MFA requirement, remembered clients, recovery-code count and theme |
+| `user-role-two-factor` | Users.2FA and Roles | MFA requirement for selected assignable roles |
+| `user-authenticator-app` | Users.2FA.AuthenticatorApp and Users.2FA | Authenticator display name and supported six-digit code length |
+| `user-email-authenticator` | Users.2FA.Email | Verification email subject/body Liquid templates |
+| `user-sms-authenticator` | Users.2FA.Sms | Verification SMS Liquid template |
+
+Feature names in this table have the `OrchardCore.` prefix. ExternalAuthentication
+is enabled by an authentication-provider feature, rather than directly. Similarly,
+the MFA services feature is enabled by an MFA method feature. Disabling an owning
+feature removes its section from discovery. Use the schema for the precise fields:
+
+```sh
+pomi settings sections schema user-registration
+pomi settings sections update user-registration --body '{"usersMustValidateEmail":true,"usersAreModerated":true}'
+pomi settings sections show user-registration
+pomi settings sections update user-password-reset --body '{"allowResetPassword":true}'
+pomi settings sections update user-two-factor --body '{"numberOfRecoveryCodesToGenerate":7}'
+```
+
+Updates preserve omitted fields, reject unknown fields and invalid types, and skip
+unchanged writes. Booleans and integers cannot be reset with null. Nullable text
+can be cleared with null; existing runtime defaults apply to empty MFA templates.
+Liquid templates use the same validation as the admin editor. External-login
+scripts retain the existing script semantics and are not executed by a settings
+update. Policy updates share admin mutation logic; registration and external-login
+options are invalidated after the settings commit.
+
+Recovery-code counts must be positive. Authenticator-app codes are limited to the
+six-digit length supported by the existing Identity implementation. Role-specific
+MFA requires at least one existing assignable role when enabled. Disabling it
+retains inactive role selections, including deleted roles, so stale selections
+cannot prevent disabling the policy.
+
+These are site policies. They do not perform password recovery, send verification
+codes, enroll a user in MFA, or configure third-party authentication credentials.
+Password complexity, lockout, and host cookie configuration continue to use their
+existing configuration ownership.
+
+### Managing custom user settings remotely
+
+Enable `OrchardCore.Users.CustomUserSettings` to expose the settings content types
+with the `CustomUserSettings` stereotype. The feature adds these Pomi commands,
+HTTP endpoints, and corresponding MCP tools:
+
+| Command | Endpoint |
+| --- | --- |
+| `pomi users settings types` | `GET /api/users/settings/types` |
+| `pomi users settings schema <name>` | `GET /api/users/settings/types/{name}/schema` |
+| `pomi users settings show <userId> <name>` | `GET /api/users/{userId}/settings/{name}` |
+| `pomi users settings update <userId> <name> --stdin` | `PUT /api/users/{userId}/settings/{name}` |
+
+Remote-management access and the existing permission for the settings type are
+required. Reading or updating a user's values additionally requires the existing
+resource-based `ViewUsers` or `EditUsers` permission for that user. Unauthorized
+types are omitted from discovery and return 404. Updates require HTTPS.
+
+Use `schema` before composing a JSON update. The payload accepts `ContentType`
+(which must match the selected type), `DisplayText`, and declared content parts.
+It excludes content identities, ownership, publication state, and all account
+fields such as passwords, roles, and authenticator data. Omitted values are
+preserved, arrays are replaced, and explicit null field values are merged. Parts
+and field containers must be objects. Content handlers validate changed values
+before the identity manager persists the owning user. No standalone content item
+is created, and equivalent retries skip persistence. Other settings on the user
+are preserved.
+
+The admin editor and remote API use `CustomUserSettingsService` to construct and
+attach the embedded content item. Site and user settings share the same safe
+content-envelope validation and schema builder.

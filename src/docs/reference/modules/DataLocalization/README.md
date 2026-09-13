@@ -309,3 +309,13 @@ To display translated dynamic strings in Razor views, inject `IDataLocalizer`:
 ## Liquid filters
 
 For more information on using data locaization filters in Liquid templates, see the [Liquid Localization filters documentation](../Liquid/README.md#localization-filters).
+
+## Remote management API
+
+The [Localization API](../../api/localization/README.md) exposes culture settings,
+registered JavaScript UI strings, and database-backed dynamic translations through
+OpenAPI. The `pomi localization` command group exposes culture and settings
+management only; UI strings and dynamic translations remain HTTP API operations.
+These operations use the existing culture and translation permissions. See the API page for a CLI walkthrough, feature
+requirements, culture selection, and the distinction between PO catalogs and
+dynamic translations.

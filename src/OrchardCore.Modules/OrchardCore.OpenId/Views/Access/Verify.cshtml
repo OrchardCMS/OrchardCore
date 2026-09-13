@@ -1,0 +1,56 @@
+@using Microsoft.Extensions.Primitives
+@using OrchardCore.OpenId.ViewModels
+@model VerifyViewModel
+
+@{
+    ViewLayout = "Layout__Login";
+}
+
+<div class="row">
+    <section class="col-md-8 offset-md-2 py-4" aria-labelledby="device-authorization-title">
+        <h1 id="device-authorization-title" class="h3 mb-3">@T["Device authorization"]</h1>
+
+        @if (string.IsNullOrEmpty(Model.UserCode) || !string.IsNullOrEmpty(Model.Error))
+        {
+            @if (!string.IsNullOrEmpty(Model.Error) && !string.IsNullOrEmpty(Model.ErrorDescription))
+            {
+                <div class="alert alert-warning" role="alert">@Model.ErrorDescription (@Model.Error)</div>
+            }
+
+            <p class="text-body-secondary">@T["Enter the user code shown by the client application."]</p>
+
+            <form asp-controller="Access" asp-action="Verify" method="get" class="no-multisubmit">
+                <div class="mb-3">
+                    <label for="user-code" class="form-label">@T["User code"]</label>
+                    <input id="user-code" class="form-control" name="user_code" type="text" value="@Model.UserCode" autocomplete="one-time-code" required />
+                </div>
+                <button class="btn btn-primary" type="submit">@T["Continue"]</button>
+            </form>
+        }
+        else
+        {
+            <p>@T["{0} is requesting access to your account.", Model.ApplicationName]</p>
+            <div class="alert alert-info">
+                <p class="mb-2">@T["Check that this code matches the one in your application:"]</p>
+                <p class="h4 font-monospace text-break mb-2">@Model.UserCode</p>
+                <p class="mb-0">@T["If the codes do not match or you did not start this request, select Cancel."]</p>
+            </div>
+
+            @await DisplayAsync(await New.OpenIdConsentScopes(Scope: Model.Scope))
+
+            <form asp-controller="Access" asp-action="Verify" method="post" class="no-multisubmit">
+                @* Preserve the validated protocol request for the Accept/Reject actions. *@
+                @foreach (var parameter in Context.Request.HasFormContentType ?
+                  (IEnumerable<KeyValuePair<string, StringValues>>)Context.Request.Form : Context.Request.Query)
+                {
+                    <input type="hidden" name="@parameter.Key" value="@parameter.Value" />
+                }
+
+                <div class="d-flex flex-wrap gap-2">
+                    <button class="btn btn-primary" name="submit.Accept" value="yes" type="submit">@T["Allow access"]</button>
+                    <button class="btn btn-secondary" name="submit.Deny" value="no" type="submit">@T["Cancel"]</button>
+                </div>
+            </form>
+        }
+    </section>
+</div>

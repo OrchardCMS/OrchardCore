@@ -1,0 +1,30 @@
+{
+  "name": "pomi",
+  "version": "0.10.42",
+  "description": "Design and build editor-friendly Orchard Core websites and SaaS tenants with Pomi.",
+  "author": {
+    "name": "Orchard Core contributors"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Pomi CLI",
+    "shortDescription": "Discover, model, and manage Orchard Core tenants.",
+    "longDescription": "Skills for local CMS installation, authentication, content, media, templates, themes, settings, menus, GraphQL, and administration. Requires pomi; local installation needs the matching .NET SDK, while remote operations need an authorized tenant context.",
+    "developerName": "Orchard Core contributors",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Inspect the capabilities of my Orchard Core tenant.",
+      "Create and validate an unpublished article draft.",
+      "Help me diagnose a denied management command."
+    ],
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/logo.png",
+    "logoDark": "./assets/logo-dark.png"
+  },
+  "repository": "https://github.com/OrchardCMS/OrchardCore",
+  "license": "BSD-3-Clause"
+}

@@ -1,0 +1,540 @@
+// Orchard green and cream palette, shared visually with the self-contained CLI callback.
+:root {
+    color-scheme: light;
+    --saas-ink: #0f1a14;
+    --saas-muted: #566058;
+    --saas-primary: #15803d;
+    --saas-primary-dark: #11672f;
+    --saas-on-primary: #fff;
+    --saas-surface: #fff;
+    --saas-surface-soft: #f5f8f6;
+    --saas-tint: #edf2ee;
+    --saas-border: #e2e8e3;
+    --saas-focus-rgb: 21, 128, 61;
+    --saas-background-opacity: .05;
+    --saas-shadow: 0 12px 40px #0f1a140a;
+    --saas-heading-font: Georgia, "Times New Roman", serif;
+    --bs-body-color: var(--saas-ink);
+    --bs-body-bg: var(--saas-surface);
+    --bs-secondary-color: var(--saas-muted);
+    --bs-border-color: var(--saas-border);
+    --bs-link-color: var(--saas-primary-dark);
+    --bs-link-hover-color: var(--saas-primary);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        color-scheme: dark;
+        --saas-ink: #e4efe8;
+        --saas-muted: #9db2a4;
+        --saas-primary: #86cda0;
+        --saas-primary-dark: #afdcbd;
+        --saas-on-primary: #07150d;
+        --saas-surface: #12291b;
+        --saas-surface-soft: #07150d;
+        --saas-tint: #16331f;
+        --saas-border: #21402e;
+        --saas-focus-rgb: 134, 205, 160;
+        --saas-background-opacity: .07;
+        --saas-shadow: 0 12px 40px #0003;
+        --bs-danger-rgb: 255, 180, 171;
+        --bs-danger-text-emphasis: #ffb4ab;
+        --bs-danger-bg-subtle: #392023;
+        --bs-danger-border-subtle: #734149;
+        --bs-warning-text-emphasis: #eed09d;
+        --bs-warning-bg-subtle: #322b1c;
+        --bs-warning-border-subtle: #5c4d30;
+        --bs-success-text-emphasis: #afdcbd;
+        --bs-success-bg-subtle: #16331f;
+        --bs-success-border-subtle: #315840;
+        --bs-info-text-emphasis: #a9d5e3;
+        --bs-info-bg-subtle: #142c34;
+        --bs-info-border-subtle: #315562;
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    min-height: 100%;
+}
+
+body {
+    isolation: isolate;
+    min-height: 100vh;
+    min-height: 100svh;
+    margin: 0;
+    color: var(--saas-ink);
+    background: var(--saas-surface-soft);
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+// Decorative inline SVG stays behind the page and never intercepts input.
+.saas-background {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    user-select: none;
+    color: var(--saas-primary);
+    opacity: var(--saas-background-opacity);
+
+    svg {
+        position: absolute;
+        right: -100px;
+        bottom: -100px;
+        width: clamp(360px, 65vw, 680px);
+        height: auto;
+    }
+}
+
+a {
+    color: var(--saas-primary-dark);
+}
+
+a:hover {
+    color: var(--saas-primary);
+}
+
+:focus-visible {
+    outline: 3px solid var(--saas-primary);
+    outline-offset: 3px;
+}
+
+.saas-skip-link {
+    position: fixed;
+    z-index: 1000;
+    inset-block-start: 1rem;
+    inset-inline-start: 1rem;
+    padding: .65rem 1rem;
+    color: var(--saas-surface);
+    background: var(--saas-ink);
+    border-radius: .65rem;
+    transform: translateY(-180%);
+    transition: transform .2s ease;
+}
+
+.saas-skip-link:focus {
+    color: var(--saas-surface);
+    transform: translateY(0);
+}
+
+.saas-container {
+    width: min(100% - 2rem, 1080px);
+    margin-inline: auto;
+}
+
+.saas-header,
+.saas-auth-header {
+    color: var(--saas-ink);
+    background: var(--saas-surface);
+    border-bottom: 1px solid var(--saas-border);
+}
+
+.saas-header__inner {
+    display: flex;
+    min-height: 72px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.saas-auth-header {
+    padding-block: 1.25rem;
+}
+
+.saas-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: .7rem;
+    color: var(--saas-ink);
+    font-size: 1rem;
+    font-weight: 650;
+    letter-spacing: -.02em;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    text-decoration: none;
+}
+
+.saas-brand:hover {
+    color: var(--saas-ink);
+}
+
+.saas-brand__mark,
+.saas-welcome__mark {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: .18rem;
+}
+
+.saas-brand__mark {
+    width: 2rem;
+    height: 2rem;
+    padding: .4rem;
+    border-radius: .65rem;
+    color: var(--saas-on-primary);
+    background: var(--saas-primary);
+    flex-shrink: 0;
+}
+
+.saas-brand__mark span,
+.saas-welcome__mark span {
+    display: block;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.saas-brand__mark span:first-child,
+.saas-welcome__mark span:first-child {
+    grid-row: span 2;
+    border-radius: 1rem;
+}
+
+.saas-header__action {
+    padding: .55rem .9rem;
+    color: var(--saas-primary-dark);
+    border: 1px solid var(--saas-border);
+    border-radius: .7rem;
+    font-size: .88rem;
+    font-weight: 650;
+    text-decoration: none;
+}
+
+.saas-header__action:hover {
+    color: var(--saas-primary-dark);
+    border-color: var(--saas-primary);
+    background: var(--saas-tint);
+}
+
+.saas-main {
+    display: grid;
+    min-height: calc(100vh - 72px);
+    padding-block: clamp(3rem, 10vw, 7rem);
+}
+
+.saas-welcome {
+    width: min(100%, 660px);
+    margin-inline: auto;
+    padding: clamp(2rem, 6vw, 4rem);
+    text-align: center;
+    border: 1px solid var(--saas-border);
+    border-radius: 1.25rem;
+    background: var(--saas-surface);
+    box-shadow: var(--saas-shadow);
+}
+
+.saas-welcome__mark {
+    width: 3rem;
+    height: 3rem;
+    margin: 0 auto 1.75rem;
+    padding: .6rem;
+    color: var(--saas-on-primary);
+    border-radius: .9rem;
+    background: var(--saas-primary);
+}
+
+.saas-eyebrow {
+    display: inline-block;
+    margin-bottom: .75rem;
+    color: var(--saas-primary-dark);
+    font-size: .75rem;
+    font-weight: 800;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+}
+
+.saas-welcome h1 {
+    margin: 0;
+    font-size: clamp(2.25rem, 6vw, 3.75rem);
+    font-family: var(--saas-heading-font);
+    font-weight: 600;
+    overflow-wrap: anywhere;
+    letter-spacing: -.035em;
+    line-height: 1.12;
+}
+
+.saas-welcome p {
+    max-width: 500px;
+    margin: 1.25rem auto 1.75rem;
+    color: var(--saas-muted);
+    font-size: 1.08rem;
+}
+
+.btn-primary {
+    --bs-btn-color: var(--saas-on-primary);
+    --bs-btn-hover-color: var(--saas-on-primary);
+    --bs-btn-active-color: var(--saas-on-primary);
+    --bs-btn-disabled-color: var(--saas-on-primary);
+    --bs-btn-disabled-bg: var(--saas-primary);
+    --bs-btn-disabled-border-color: var(--saas-primary);
+    --bs-btn-bg: var(--saas-primary);
+    --bs-btn-border-color: var(--saas-primary);
+    --bs-btn-hover-bg: var(--saas-primary-dark);
+    --bs-btn-hover-border-color: var(--saas-primary-dark);
+    --bs-btn-active-bg: var(--saas-primary-dark);
+    --bs-btn-active-border-color: var(--saas-primary-dark);
+    --bs-btn-focus-shadow-rgb: var(--saas-focus-rgb);
+}
+
+.btn-link {
+    --bs-btn-color: var(--saas-primary-dark);
+    --bs-btn-hover-color: var(--saas-primary);
+    --bs-btn-active-color: var(--saas-primary);
+}
+
+.btn {
+    border-radius: .75rem;
+    font-weight: 700;
+}
+
+.saas-auth-page {
+    background: var(--saas-surface-soft);
+}
+
+.saas-auth-main {
+    display: grid;
+    min-height: calc(100vh - 72px);
+    padding: clamp(2rem, 7vw, 5rem) 1rem;
+    place-items: start center;
+}
+
+.saas-auth-main__inner {
+    width: min(100%, 570px);
+}
+
+.saas-auth-home {
+    display: inline-block;
+    margin-bottom: 1.25rem;
+    color: var(--saas-muted);
+    font-size: .9rem;
+    font-weight: 650;
+    text-decoration: none;
+}
+
+.saas-auth-card {
+    padding: clamp(1.5rem, 5vw, 3.25rem);
+    border: 1px solid var(--saas-border);
+    border-radius: 1.25rem;
+    background: var(--saas-surface);
+    box-shadow: var(--saas-shadow);
+}
+
+.saas-auth-card > .row {
+    margin: 0;
+}
+
+.saas-auth-card > .row > [class*="col-"] {
+    width: 100%;
+    margin-inline-start: 0;
+    padding: 0;
+}
+
+.saas-auth-card h1 {
+    margin: 0 0 .75rem;
+    font-size: clamp(1.8rem, 4vw, 2.45rem) !important;
+    font-family: var(--saas-heading-font);
+    font-weight: 600;
+    overflow-wrap: anywhere;
+    letter-spacing: -.04em;
+}
+
+.saas-auth-card hr {
+    display: none;
+}
+
+.saas-auth-card p {
+    color: var(--saas-muted);
+}
+
+.saas-auth-card .form-label,
+.saas-auth-card label {
+    color: var(--saas-ink);
+    font-size: .9rem;
+    font-weight: 700;
+}
+
+.saas-auth-card .form-control {
+    min-height: 3rem;
+    border-color: var(--saas-border);
+    border-radius: .7rem;
+    background: var(--saas-surface);
+}
+
+.saas-auth-card .form-control::placeholder {
+    color: var(--saas-muted);
+    opacity: 1;
+}
+
+.saas-auth-card .form-check-input {
+    border-color: var(--saas-muted);
+    background-color: var(--saas-surface);
+}
+
+.saas-auth-card .form-check-input:checked {
+    border-color: #15803d;
+    background-color: #15803d;
+}
+
+.saas-auth-card .form-check-input:focus,
+.saas-auth-card .form-control:focus {
+    border-color: var(--saas-primary);
+    box-shadow: 0 0 0 .25rem rgba(var(--saas-focus-rgb), .2);
+}
+
+.saas-auth-card .auth-form .btn-primary {
+    width: 100%;
+    min-height: 3rem;
+}
+
+.saas-auth-content > p {
+    margin-bottom: 1.5rem;
+    font-size: 1.04rem;
+}
+
+.saas-permission {
+    display: flex;
+    gap: .9rem;
+    margin-block: 1.5rem 2rem;
+    padding: 1rem;
+    border: 1px solid var(--saas-border);
+    border-radius: .85rem;
+    background: var(--saas-tint);
+}
+
+.saas-permission__icon {
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    color: var(--saas-on-primary);
+    border-radius: 50%;
+    background: var(--saas-primary);
+    flex: 0 0 auto;
+    place-items: center;
+}
+
+.saas-permission > div {
+    min-width: 0;
+}
+
+.saas-permission strong,
+.saas-permission code {
+    display: block;
+}
+
+.saas-permission code {
+    margin-top: .25rem;
+    color: var(--saas-muted);
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.saas-auth-actions {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+}
+
+.saas-auth-actions .btn-primary {
+    min-width: 10rem;
+}
+
+.saas-device-code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 1.35rem;
+    font-weight: 750;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+.saas-device-confirmation {
+    margin-block: 1.5rem .75rem;
+    padding: 1.25rem;
+    text-align: center;
+    border: 1px solid var(--saas-border);
+    border-radius: 1rem;
+    background: var(--saas-tint);
+}
+
+.saas-device-confirmation span,
+.saas-device-confirmation strong {
+    display: block;
+}
+
+.saas-device-confirmation span {
+    color: var(--saas-muted);
+    font-size: .82rem;
+    font-weight: 700;
+}
+
+.saas-device-confirmation strong {
+    margin-top: .35rem;
+    color: var(--saas-ink);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 2rem;
+    letter-spacing: .16em;
+}
+
+.saas-auth-muted {
+    font-size: .9rem !important;
+}
+
+.alert {
+    border-radius: .8rem;
+}
+
+.alert > span {
+    display: block;
+}
+
+@media (max-width: 576px) {
+    .saas-header__inner {
+        min-height: 64px;
+    }
+
+    .saas-header__action {
+        padding: .5rem .7rem;
+        font-size: .8rem;
+    }
+
+    .saas-main {
+        min-height: calc(100vh - 64px);
+        padding-block: 2rem;
+    }
+
+    .saas-welcome {
+        padding: 2.25rem 1.5rem;
+        border-radius: 1rem;
+    }
+
+    .saas-auth-main {
+        padding: 2rem 1rem;
+    }
+
+    .saas-auth-card {
+        padding: 1.5rem;
+        border-radius: 1rem;
+    }
+
+    .saas-auth-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .saas-auth-actions .btn {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+    }
+}

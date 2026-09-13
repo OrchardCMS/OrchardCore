@@ -1,0 +1,34 @@
+@using Microsoft.Extensions.Primitives
+@using OrchardCore.OpenId.ViewModels
+@model AuthorizeViewModel
+
+@{
+    ViewLayout = "Layout__Login";
+}
+
+<div class="saas-auth-content">
+    <span class="saas-eyebrow">@T["Authorization request"]</span>
+    <h1>@T["Allow access to your tenant?"]</h1>
+    <p>@T["<strong>{0}</strong> is requesting permission to manage this Orchard Core tenant.", Model.ApplicationName]</p>
+
+    <div class="saas-permission" role="note">
+        <span class="saas-permission__icon" aria-hidden="true">&#10003;</span>
+        <div>
+            <strong>@T["Requested access"]</strong>
+            <code>@Model.Scope</code>
+        </div>
+    </div>
+
+    <form asp-controller="Access" asp-action="Authorize" method="post" class="no-multisubmit">
+        @foreach (var parameter in Context.Request.HasFormContentType ?
+          (IEnumerable<KeyValuePair<string, StringValues>>)Context.Request.Form : Context.Request.Query)
+        {
+            <input type="hidden" name="@parameter.Key" value="@parameter.Value" />
+        }
+
+        <div class="saas-auth-actions">
+            <button class="btn btn-primary btn-lg" name="submit.Accept" type="submit" value="yes" autofocus>@T["Allow access"]</button>
+            <button class="btn btn-link" name="submit.Deny" type="submit" value="no">@T["Deny"]</button>
+        </div>
+    </form>
+</div>

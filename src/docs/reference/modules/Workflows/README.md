@@ -2,6 +2,10 @@
 
 The Workflows module provides a way for users to visually implement business rules using flowchart diagrams.
 
+## API reference
+
+See the [Workflow management API](../../api/workflows/README.md) for OpenAPI operations that manage definitions, inspect activity types, execute workflows, and manage instances.
+
 ## General Concepts
 
 A workflow is a collection of **activities** that are connected to each other. These connections are called **transitions**.  

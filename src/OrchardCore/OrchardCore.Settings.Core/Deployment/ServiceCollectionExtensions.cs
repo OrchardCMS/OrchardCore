@@ -22,6 +22,7 @@ public static class ServiceCollectionExtensions
         });
 
         services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<TModel>());
+        services.AddSingleton<IDeploymentStepDefinition>(new SiteSettingsPropertyDeploymentStepDefinition<TModel>());
         services.AddJsonDerivedTypeInfo<SiteSettingsPropertyDeploymentStep<TModel>, DeploymentStep>();
     }
 }

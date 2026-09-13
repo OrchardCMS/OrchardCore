@@ -24,6 +24,7 @@ public sealed class MediaProfilesController : Controller
 
     private readonly IAuthorizationService _authorizationService;
     private readonly MediaProfilesManager _mediaProfilesManager;
+    private readonly MediaProfileManagementService _management;
     private readonly MediaOptions _mediaOptions;
     private readonly PagerOptions _pagerOptions;
     private readonly INotifier _notifier;
@@ -45,6 +46,7 @@ public sealed class MediaProfilesController : Controller
     {
         _authorizationService = authorizationService;
         _mediaProfilesManager = mediaProfilesManager;
+        _management = new MediaProfileManagementService(mediaProfilesManager, mediaOptions);
         _mediaOptions = mediaOptions.Value;
         _pagerOptions = pagerOptions.Value;
         _notifier = notifier;
@@ -134,47 +136,13 @@ public sealed class MediaProfilesController : Controller
 
         if (ModelState.IsValid)
         {
-            if (string.IsNullOrWhiteSpace(model.Name))
+            var result = await _management.SaveAsync(model.Name, MediaProfileManagementService.FromEditor(model, _mediaOptions));
+            AddErrors(result);
+            if (ModelState.IsValid)
             {
-                ModelState.AddModelError(nameof(MediaProfileViewModel.Name), S["The name is mandatory."]);
-            }
-            else
-            {
-                var mediaProfilesDocument = await _mediaProfilesManager.GetMediaProfilesDocumentAsync();
-
-                if (mediaProfilesDocument.MediaProfiles.ContainsKey(model.Name))
-                {
-                    ModelState.AddModelError(nameof(MediaProfileViewModel.Name), S["A profile with the same name already exists."]);
-                }
-            }
-        }
-
-        if (ModelState.IsValid)
-        {
-            var isCustomWidth = model.SelectedWidth != 0 && Array.BinarySearch(_mediaOptions.SupportedSizes, model.SelectedWidth) < 0;
-            var isCustomHeight = model.SelectedHeight != 0 && Array.BinarySearch(_mediaOptions.SupportedSizes, model.SelectedHeight) < 0;
-
-            var mediaProfile = new MediaProfile
-            {
-                Hint = model.Hint,
-                Width = isCustomWidth ? model.CustomWidth : model.SelectedWidth,
-                Height = isCustomHeight ? model.CustomHeight : model.SelectedHeight,
-                Mode = model.SelectedMode,
-                Format = model.SelectedFormat,
-                Quality = model.Quality,
-                BackgroundColor = model.BackgroundColor,
-                AutoOrient = model.AutoOrient,
-            };
-
-            await _mediaProfilesManager.UpdateMediaProfileAsync(model.Name, mediaProfile);
-
-            if (submit == "SaveAndContinue")
-            {
-                return RedirectToAction(nameof(Edit), new { name = model.Name });
-            }
-            else
-            {
-                return RedirectToAction(nameof(Index));
+                return submit == "SaveAndContinue"
+                    ? RedirectToAction(nameof(Edit), new { name = result.Name })
+                    : RedirectToAction(nameof(Index));
             }
         }
 
@@ -230,45 +198,16 @@ public sealed class MediaProfilesController : Controller
             return Forbid();
         }
 
-        var mediaProfilesDocument = await _mediaProfilesManager.LoadMediaProfilesDocumentAsync();
-
-        if (!mediaProfilesDocument.MediaProfiles.ContainsKey(sourceName))
-        {
-            return NotFound();
-        }
-
         if (ModelState.IsValid)
         {
-            if (string.IsNullOrWhiteSpace(model.Name))
+            var result = await _management.SaveAsync(model.Name, MediaProfileManagementService.FromEditor(model, _mediaOptions), sourceName);
+            if (result.NotFound) { return NotFound(); }
+            AddErrors(result);
+            if (ModelState.IsValid)
             {
-                ModelState.AddModelError(nameof(MediaProfileViewModel.Name), S["The name is mandatory."]);
-            }
-        }
-
-        if (ModelState.IsValid)
-        {
-            var isCustomWidth = Array.BinarySearch(_mediaOptions.SupportedSizes, model.SelectedWidth) < 0;
-            var isCustomHeight = Array.BinarySearch(_mediaOptions.SupportedSizes, model.SelectedHeight) < 0;
-
-            var mediaProfile = new MediaProfile
-            {
-                Hint = model.Hint,
-                Width = isCustomWidth ? model.CustomWidth : model.SelectedWidth,
-                Height = isCustomHeight ? model.CustomHeight : model.SelectedHeight,
-                Mode = model.SelectedMode,
-                Format = model.SelectedFormat,
-                Quality = model.Quality,
-                BackgroundColor = model.BackgroundColor,
-                AutoOrient = model.AutoOrient,
-            };
-
-            await _mediaProfilesManager.RemoveMediaProfileAsync(sourceName);
-
-            await _mediaProfilesManager.UpdateMediaProfileAsync(model.Name, mediaProfile);
-
-            if (submit != "SaveAndContinue")
-            {
-                return RedirectToAction(nameof(Index));
+                return submit == "SaveAndContinue"
+                    ? RedirectToAction(nameof(Edit), new { name = result.Name })
+                    : RedirectToAction(nameof(Index));
             }
         }
 
@@ -315,7 +254,7 @@ public sealed class MediaProfilesController : Controller
         if (itemIds?.Any() == true)
         {
             var mediaProfilesDocument = await _mediaProfilesManager.LoadMediaProfilesDocumentAsync();
-            var checkedContentItems = mediaProfilesDocument.MediaProfiles.Where(x => itemIds.Contains(x.Key));
+            var checkedContentItems = mediaProfilesDocument.MediaProfiles.Where(x => itemIds.Contains(x.Key)).ToArray();
             switch (options.BulkAction)
             {
                 case ContentsBulkAction.None:
@@ -333,6 +272,26 @@ public sealed class MediaProfilesController : Controller
         }
 
         return RedirectToAction(nameof(Index));
+    }
+
+    private void AddErrors(MediaProfileMutationResult result)
+    {
+        if (result.Conflict)
+        {
+            ModelState.AddModelError(nameof(MediaProfileViewModel.Name), S["A profile with the same name already exists."]);
+        }
+        foreach (var error in result.Errors)
+        {
+            var field = error.Key switch
+            {
+                "width" => nameof(MediaProfileViewModel.SelectedWidth),
+                "height" => nameof(MediaProfileViewModel.SelectedHeight),
+                "mode" => nameof(MediaProfileViewModel.SelectedMode),
+                "format" => nameof(MediaProfileViewModel.SelectedFormat),
+                _ => error.Key,
+            };
+            ModelState.AddModelError(field, S["The media profile setting is invalid."]);
+        }
     }
 
     private void BuildViewModel(MediaProfileViewModel model)

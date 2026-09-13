@@ -9,7 +9,6 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
-using OrchardCore.OpenId.Configuration;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.ViewModels;
@@ -177,8 +176,7 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
 
         if (!string.IsNullOrEmpty(model.ClientSecret))
         {
-            var protector = _dataProtectionProvider.CreateProtector(nameof(OpenIdClientConfiguration));
-            settings.ClientSecret = protector.Protect(model.ClientSecret);
+            settings.ClientSecret = OpenIdClientSecretEditor.Protect(_dataProtectionProvider, previousClientSecret, model.ClientSecret);
         }
 
         foreach (var result in await _clientService.ValidateSettingsAsync(settings))

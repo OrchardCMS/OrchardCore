@@ -130,3 +130,19 @@ The following configuration is used by default and can be customized:
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/cwKa1OA48-4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+## Remote content localization
+
+The [content localizations API](../../api/content-localizations/README.md) lists authorized
+variants and creates or reuses a localized draft through Pomi and MCP. It uses the existing
+localization manager and handlers; the admin localization action shares the service's
+permission checks, configured culture validation and retry behavior. Creating a localization
+does not publish it. Existing target variants must be editable before they can be reused.
+
+## Remote picker settings
+
+The [content culture picker settings section](../../api/settings/README.md#content-culture-picker-section)
+manages cookie-writing and homepage-fallback behavior through OpenAPI, Pomi and MCP.
+It requires the picker feature and `ManageContentCulturePicker`, and shares mutation
+logic with both existing admin settings editors. Changes take effect without reloading
+the tenant. Disabling cookie writing does not remove existing visitor cookies.

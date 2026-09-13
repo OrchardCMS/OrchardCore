@@ -27,6 +27,7 @@ public sealed class OpenIdApplicationStep : NamedRecipeStepHandler
         {
             AllowAuthorizationCodeFlow = model.AllowAuthorizationCodeFlow,
             AllowClientCredentialsFlow = model.AllowClientCredentialsFlow,
+            AllowDeviceAuthorizationFlow = model.AllowDeviceAuthorizationFlow,
             AllowHybridFlow = model.AllowHybridFlow,
             AllowImplicitFlow = model.AllowImplicitFlow,
             AllowIntrospectionEndpoint = model.AllowIntrospectionEndpoint,
@@ -38,6 +39,7 @@ public sealed class OpenIdApplicationStep : NamedRecipeStepHandler
             ClientSecret = model.ClientSecret,
             ConsentType = model.ConsentType,
             DisplayName = model.DisplayName,
+            ApplicationType = model.ApplicationType,
             PostLogoutRedirectUris = model.PostLogoutRedirectUris,
             RedirectUris = model.RedirectUris,
             Roles = model.RoleEntries.Select(x => x.Name).ToArray(),
