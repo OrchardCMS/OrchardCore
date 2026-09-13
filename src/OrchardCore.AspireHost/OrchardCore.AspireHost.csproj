@@ -6,6 +6,8 @@
     <IsAspireHost>true</IsAspireHost>
     <IsPackable>false</IsPackable>
     <UserSecretsId>53f65258-c4bc-45d0-ab79-c8309ff77904</UserSecretsId>
+    <!-- CI doesn't have the Aspire CLI bundle installed, so suppress the diagnostic instead of requiring it. -->
+    <NoWarn>$(NoWarn);ASPIRE010</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
