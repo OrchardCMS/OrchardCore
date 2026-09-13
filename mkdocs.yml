@@ -5,6 +5,7 @@ theme:
   logo: assets/images/orchard-logo.png
   favicon: assets/images/favicon.png
   features:
+    - content.code.copy
     - content.tabs.link
     - header.autohide
     - navigation.footer
