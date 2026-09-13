@@ -114,6 +114,12 @@ public sealed class AdminController : Controller
             rows.Add(shape);
         }
 
+        var toolbar = await shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
+        {
+            ItemsCount = rows.Count,
+            ShowSelectAll = false,
+        }));
+
         // The AdminList shape renders the types with the configured layout (List, Table, ...).
         model.List = await shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
         {
@@ -121,6 +127,7 @@ public sealed class AdminController : Controller
             Layout = await adminListService.GetLayoutAsync(ContentTypesAdminList.Name, cancellationToken: HttpContext.RequestAborted),
             Columns = await adminListService.GetColumnsAsync(ContentTypesAdminList.Name, ContentTypesAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
+            Toolbar = toolbar,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no content types for the moment."],
         }));
@@ -573,6 +580,12 @@ public sealed class AdminController : Controller
             rows.Add(shape);
         }
 
+        var toolbar = await shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
+        {
+            ItemsCount = rows.Count,
+            ShowSelectAll = false,
+        }));
+
         // The AdminList shape renders the parts with the configured layout (List, Table, ...).
         model.List = await shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
         {
@@ -580,6 +593,7 @@ public sealed class AdminController : Controller
             Layout = await adminListService.GetLayoutAsync(ContentPartsAdminList.Name, cancellationToken: HttpContext.RequestAborted),
             Columns = await adminListService.GetColumnsAsync(ContentPartsAdminList.Name, ContentPartsAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
+            Toolbar = toolbar,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no content parts for the moment."],
         }));

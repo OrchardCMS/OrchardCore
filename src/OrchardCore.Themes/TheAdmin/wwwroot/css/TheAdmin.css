@@ -309,9 +309,39 @@ a:hover {
   min-width: 0;
 }
 
-/* The layouts a user can switch a list to. */
+/* The layouts a user can switch a list to. It ends the toolbar strip, on its own line when the strip wraps. */
 .admin-list-layout-selector {
   flex: 0 0 auto;
+  margin-inline-start: auto;
+}
+
+/*
+ The row under the list. The pager takes the space left by the page size selector, and centres itself in it,
+ whether it renders the selector itself (.pager-wrapper) or the layout places it apart.
+*/
+.admin-list-footer {
+  margin-top: 1rem;
+}
+
+.admin-list-footer .admin-list-footer-pager {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.admin-list-footer .admin-list-footer-page-size {
+  flex: 0 0 auto;
+}
+
+[dir="ltr"] .admin-list-footer .admin-list-footer-page-size {
+  margin-left: auto;
+}
+
+[dir="rtl"] .admin-list-footer .admin-list-footer-page-size {
+  margin-right: auto;
+}
+
+.admin-list-footer ul.pager {
+  margin: 0;
 }
 
 /* Row actions (AdminListActions shape), used by every layout. */

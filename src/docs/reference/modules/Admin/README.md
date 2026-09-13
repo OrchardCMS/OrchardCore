@@ -191,6 +191,22 @@ A layout the site cannot render is ignored, so a stale cookie or a hand-written 
 
 The pager and the page size selector keep the query string of the page they are on, so paging or changing the page size holds on to the layout. A custom layout joins the selector by declaring itself (`AdminListLayout-Cards.Option.cshtml`) and can ship the button offering it, `AdminListLayoutSelectorItem-Cards.cshtml`, which is how the built-in layouts carry their icon.
 
+A page shows one selector, however many lists it renders: `IAdminListService.GetLayoutOptionsAsync()` hands the offer to the first caller of the request, which is what stops the features, whose twenty six categories are twenty six lists, from offering the same choice on each of them. A page that would rather place the selector in a header of its own asks for the options before rendering its lists, and builds the shape with them:
+
+```csharp
+var layoutOptions = await adminListService.GetLayoutOptionsAsync("Features", HttpContext.RequestAborted);
+
+if (layoutOptions.Count > 0)
+{
+    model.LayoutSelector = await shapeFactory.CreateAsync(AdminListConstants.LayoutSelectorShapeType, Arguments.From(new
+    {
+        ListName = "Features",
+        Current = layout,
+        Layouts = layoutOptions,
+    }));
+}
+```
+
 The options follow Orchard Core's signal-backed options pattern. `AdminListOptionsConfiguration` layers the site settings on top of the configuration section, the module registers `AddSignalOptionsChangeTokenSource<AdminListOptions>()`, and the settings driver calls `IOptionsUpdateNotifier.RequestUpdate<AdminListOptions>()` when the choice changes. Consumers inject `IOptionsMonitor<AdminListOptions>` and read `CurrentValue`, so saving the settings takes effect without releasing the shell.
 
 ### How it works
@@ -200,7 +216,12 @@ The rows of a list are shapes built with the `SummaryAdmin` display type, e.g. `
 - In the `List` layout the row shape is rendered as a whole, so its template (e.g. `Content.SummaryAdmin.cshtml` or `Content-BlogPost.SummaryAdmin.cshtml`) decides the look.
 - In the `Table` and `Grid` layouts each column renders one or more zones of the row in an `AdminListCell` shape. The row template is not used.
 
-A layout renders the whole listing, not only the rows. The shipped ones render, in order: the action bar holding `Search` and `Actions`, then `Toolbar` or `Header`, then the rows (or the empty message), then a footer holding `Pager` and `PageSize`. A custom layout is free to order them differently, to leave one out, or to put the search bar beside the pager.
+A layout renders the whole listing, not only the rows. The shipped ones render, in order: the action bar holding `Search` and `Actions`, then the toolbar strip holding `Toolbar` or `Header` and the layout selector, then the rows (or the empty message), then a footer holding `Pager` and `PageSize`. A custom layout is free to order them differently, to leave one out, or to put the search bar beside the pager.
+
+Two rules keep the shipped layouts looking the same from one page to the next:
+
+- Only the bar carrying the search follows the page as it scrolls (`position-sticky`). A page that renders its own search bar already has one, and a second sticky bar would cover it.
+- The pager is centred on the footer row and the page size selector sits at its end, whether the pager renders the selector itself or the layout places it apart.
 
 The `AdminList` shape is created by the owner of the list with these properties:
 
@@ -211,9 +232,10 @@ The `AdminList` shape is created by the owner of the list with these properties:
 | `Columns`      | The `AdminListColumn` collection, usually built with `IAdminListService.GetColumnsAsync()`.   |
 | `Rows`         | The row shapes. (`Items` cannot be used: it is the shape's own child collection.) The `Classes` and `Attributes` of a row shape are rendered on its `<li>` or `<tr>`, e.g. `data-filter-value` for the client-side search of the `list-management` script. |
 | `Header`       | The options editor shape whose `Summary` and `Actions` zones are rendered above the items.     |
-| `Toolbar`      | Alternative to `Header` for lists without an options editor: a shape rendered as is above the items. The `AdminListToolbar` shape renders the item count, the select-all checkbox and a bulk actions dropdown from its `ItemsCount`, `TotalItemCount`, `StartIndex`, `EndIndex` and `BulkActions` properties. |
+| `Toolbar`      | Alternative to `Header` for lists without an options editor: a shape rendered as is above the items. The `AdminListToolbar` shape renders the item count, the select-all checkbox and a bulk actions dropdown from its `ItemsCount`, `TotalItemCount`, `StartIndex`, `EndIndex` and `BulkActions` properties; a list whose rows cannot be selected passes `ShowSelectAll = false` and keeps the count alone. |
 | `Search`       | Optional. The search bar of the list. The `AdminListSearch` shape renders the standard one from its `Name`, `Value`, `Placeholder`, `Id`, `SubmitName` and `Autofocus` properties, and renders its `Filters` zone before the input, e.g. a filter dropdown. |
 | `Actions`      | Optional. The buttons of the page, e.g. "Add", rendered beside the search.                     |
+| `LayoutSelector` | Optional. The selector offering the other layouts of the list, built for the list when the site lets a user choose, so a page passes one only to place it itself. |
 | `Pager`        | The pager shape.                                                                               |
 | `PageSize`     | Optional. The page size selector, so the layout places it instead of the pager. Build it with `PageSizeSelector.BuildOptions()` and set `ShowPageSizeSelector = false` on the pager so it is not rendered twice. |
 | `RowsAttributes` | Optional. Attributes rendered on the element wrapping the rows, whichever layout renders it, e.g. the id a sortable script needs. |

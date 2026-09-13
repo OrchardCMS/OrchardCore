@@ -199,6 +199,7 @@ var toolbar = await shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(
 | `Actions` | Optional. The buttons of the page, e.g. "Add", rendered beside the search. |
 | `PageSize` | Optional. The page size selector, built with `PageSizeSelector.BuildOptions()`. Set `ShowPageSizeSelector = false` on the pager when you pass it. |
 | `LayoutSelector` | Built for the list when the site lets a user choose their layout, so a page never passes it. Pass one to render your own instead. |
+| `ShowSelectAll` | On `AdminListToolbar`, not on the list: pass `false` when the rows cannot be selected, so the count is rendered without a select-all checkbox. |
 | `Pager` | The pager shape. It renders the page size selector itself unless `ShowPageSizeSelector` is false. |
 | `RowsAttributes` | Optional. `IDictionary<string, string>` rendered on the element wrapping the rows in every layout, e.g. the id a sortable script needs. |
 | `ItemCssClass` | Per-item classes in the `List` layout. |
@@ -229,6 +230,14 @@ var toolbar = await shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(
 
 An alternate that names a list but no layout wins over the layout alternate, so `AdminList-Users.cshtml` renders the users list in **every** layout. Name the layout, `AdminList-Users-Grid.cshtml`, to change one mode only.
 
+### One sticky bar, one footer
+
+The action bar of a layout sticks to the top of the page only when it carries the `Search`, so a page that
+renders its own search bar never ends up with two bars covering each other. Everything else above the rows
+belongs on the toolbar strip: pass a `Toolbar` (or a `Header`) rather than a second card of your own, and give
+a list with nothing else to say the item count, which is what every other list shows there. The footer centres
+the pager and puts the page size selector at its end.
+
 ### Letting a user choose a layout
 
 With **Let users choose the layout of a list** on, `AdminList` builds a `LayoutSelector` of its own and the
@@ -236,6 +245,11 @@ layouts render it beside the item count. A click reloads with `?layout=Grid`, wh
 `IAdminListService.GetLayoutAsync` honours and remembers in a cookie, per list. `GetAvailableLayoutsAsync()`
 returns what the site can render, and a layout the site does not have is ignored wherever it comes from.
 Nothing is needed from a page: the pager and the page size selector already keep the query string.
+
+A page shows one selector however many lists it renders, because `GetLayoutOptionsAsync` hands the offer to the
+first caller of the request. A page rendering one list per group, e.g. the features or the recipes, asks for
+the options itself before building its lists and places the selector in its own header: taking the offer there
+is what keeps its lists from carrying one each.
 
 ### Adding a layout — two files, no C#
 

@@ -124,6 +124,14 @@ public sealed class ApplicationController : Controller
             rows.Add(await displayManager.BuildDisplayAsync(application, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
         }
 
+        var toolbar = await _shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
+        {
+            ItemsCount = rows.Count,
+            TotalItemCount = count,
+            StartIndex = rows.Count > 0 ? pager.GetStartIndex() + 1 : 0,
+            ShowSelectAll = false,
+        }));
+
         // The AdminList shape renders the applications with the configured layout (List, Table, ...).
         model.List = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
         {
@@ -131,6 +139,7 @@ public sealed class ApplicationController : Controller
             Layout = await adminListService.GetLayoutAsync(OpenIdApplicationsAdminList.Name, cancellationToken: HttpContext.RequestAborted),
             Columns = await adminListService.GetColumnsAsync(OpenIdApplicationsAdminList.Name, OpenIdApplicationsAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
+            Toolbar = toolbar,
             Pager = model.Pager,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no applications at the moment."],

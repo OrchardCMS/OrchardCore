@@ -115,6 +115,14 @@ public sealed class ScopeController : Controller
             rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
         }
 
+        var toolbar = await _shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
+        {
+            ItemsCount = rows.Count,
+            TotalItemCount = count,
+            StartIndex = rows.Count > 0 ? pager.GetStartIndex() + 1 : 0,
+            ShowSelectAll = false,
+        }));
+
         // The AdminList shape renders the scopes with the configured layout (List, Table, ...).
         model.List = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
         {
@@ -122,6 +130,7 @@ public sealed class ScopeController : Controller
             Layout = await adminListService.GetLayoutAsync(OpenIdScopesAdminList.Name, cancellationToken: HttpContext.RequestAborted),
             Columns = await adminListService.GetColumnsAsync(OpenIdScopesAdminList.Name, OpenIdScopesAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
+            Toolbar = toolbar,
             Pager = model.Pager,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no scopes at the moment."],

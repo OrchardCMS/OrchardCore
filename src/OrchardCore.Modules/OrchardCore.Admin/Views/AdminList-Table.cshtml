@@ -75,34 +75,29 @@
 }
 
 @{
-    // The selector belongs with the chrome of the list, so it rides on the toolbar strip. A list with neither a
-    // toolbar nor an options editor has no strip, and it goes to the action bar instead.
+    // Everything the layout renders above the rows, so it can leave any of it out.
     var layoutSelector = Model.LayoutSelector;
-    var selectorInActionBar = layoutSelector != null && toolbar == null && header == null;
+    var search = Model.Search;
+    var actions = Model.Actions;
 }
 
-@if (Model.Search != null || Model.Actions != null || selectorInActionBar)
+@if (search != null || actions != null)
 {
-    @* The search bar and the buttons of the page. A layout is free to put them anywhere, or to leave them out. *@
-    <div class="card text-bg-theme mb-3 position-sticky action-bar">
+    @* The search bar and the buttons of the page. Only a bar carrying the search follows the page as it
+       scrolls, so two of them never cover each other. *@
+    <div class="card text-bg-theme mb-3 @(search != null ? "position-sticky action-bar" : null)">
         <div class="card-body">
             <div class="row gx-2">
-                @if (Model.Search != null)
+                @if (search != null)
                 {
                     <div class="col">
-                        @await DisplayAsync(Model.Search)
+                        @await DisplayAsync(search)
                     </div>
                 }
-                @if (selectorInActionBar)
+                @if (actions != null)
                 {
-                    <div class="col-auto ms-auto d-flex align-items-center">
-                        @await DisplayAsync(layoutSelector)
-                    </div>
-                }
-                @if (Model.Actions != null)
-                {
-                    <div class="col-auto">
-                        @await DisplayAsync(Model.Actions)
+                    <div class="col-auto ms-auto">
+                        @await DisplayAsync(actions)
                     </div>
                 }
             </div>
@@ -111,34 +106,32 @@
 }
 
 <div class="admin-list admin-list-table">
-    @if (toolbar != null)
+    @if (toolbar != null || header != null || layoutSelector != null)
     {
         <div class="admin-list-toolbar text-bg-theme">
-            <div class="d-flex align-items-center gap-2">
+            @* Wrapping: a narrow list sends the selector to a line of its own instead of over the filters. *@
+            <div class="d-flex flex-wrap align-items-center gap-2">
                 <div class="admin-list-toolbar-content">
-                    @await DisplayAsync(toolbar)
+                    @if (toolbar != null)
+                    {
+                        @await DisplayAsync(toolbar)
+                    }
+                    else if (header != null)
+                    {
+                        <div class="row gx-2 align-items-center">
+                            <div class="col">
+                                @await DisplayAsync(header.Summary)
+                            </div>
+                            <div class="col col-md-auto text-end">
+                                @await DisplayAsync(header.Actions)
+                            </div>
+                        </div>
+                    }
                 </div>
                 @if (layoutSelector != null)
                 {
                     @await DisplayAsync(layoutSelector)
                 }
-            </div>
-        </div>
-    }
-    else if (header != null)
-    {
-        <div class="admin-list-toolbar text-bg-theme">
-            <div class="row gx-2">
-                <div class="col">
-                    @await DisplayAsync(header.Summary)
-                </div>
-                <div class="col col-md-auto text-end d-flex align-items-center justify-content-end gap-2">
-                    @await DisplayAsync(header.Actions)
-                    @if (layoutSelector != null)
-                    {
-                        @await DisplayAsync(layoutSelector)
-                    }
-                </div>
             </div>
         </div>
     }
@@ -204,7 +197,8 @@
 
 @if (Model.Pager != null || Model.PageSize != null)
 {
-    <div class="admin-list-footer d-flex flex-wrap align-items-center justify-content-between gap-2">
+    @* The pager is centred on the row and the page size selector sits at its end, see _admin-list.scss. *@
+    <div class="admin-list-footer d-flex flex-wrap align-items-center gap-2">
         <div class="admin-list-footer-pager">
             @if (Model.Pager != null)
             {
