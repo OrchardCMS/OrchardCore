@@ -69,6 +69,11 @@ public static class GetMediaItemsEndpoint
 
         var allowed = new List<FileStoreEntryDto>();
 
+        if (path.Length == 0 && !await MediaEndpointHelpers.CanListRootFilesAsync(authorizationService, httpContext))
+        {
+            return TypedResults.Ok(allowed);
+        }
+
         await foreach (var entry in mediaFileStore.GetFilesAsync(path))
         {
             if (!filterByExtensions || allowedExtensions.Contains(Path.GetExtension(entry.Path)))

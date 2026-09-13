@@ -52,7 +52,9 @@ public sealed class ManageMediaFolderAuthorizationHandler : AuthorizationHandler
             return;
         }
 
-        var path = await _fileStore.ResolveAuthorizedPathAsync(resourcePath);
+        var path = await _fileStore.ResolveAuthorizedPathAsync(
+            resourcePath,
+            _serviceProvider.GetService<MediaPathResolutionCache>());
 
         var userOwnFolder = EnsureTrailingSlash(
             _fileStore.Combine(_usersFolder, _userAssetFolderNameProvider.GetUserAssetFolderName(context.User)));
