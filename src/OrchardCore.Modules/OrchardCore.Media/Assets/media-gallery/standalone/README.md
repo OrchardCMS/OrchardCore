@@ -55,7 +55,7 @@ Place a `config.json` next to `index.html` (copy `config.example.json`):
 | `oidcScope` | no | Defaults to `openid email profile roles` (the `roles` scope is required — Media permission checks read it). |
 | `signalrEnabled` | no | Real-time updates. Requires SignalR CORS on the Orchard origin. Defaults to false. |
 
-UI labels are fetched from the remote tenant at startup (the anonymous `api/media/localizations`
+UI labels are fetched from the remote tenant at startup (the anonymous `api/localization/js/media-gallery`
 endpoint returns the same `media-gallery` JS localizations the embedded admin renders, for the
 server's culture) — no local translations file needed.
 

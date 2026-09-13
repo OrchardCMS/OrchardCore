@@ -30,3 +30,10 @@ using OrchardCore.Modules.Manifest;
     Dependencies = ["OrchardCore.Localization"],
     Category = "Internationalization"
 )]
+
+[assembly: Feature(
+    Id = "OrchardCore.Localization.Js",
+    Name = "JavaScript Localization API",
+    Description = "Provides the anonymous api/localization/js endpoint that serves merged JavaScript/UI localizations for any registered IJSLocalizer group.",
+    Category = "Internationalization"
+)]
