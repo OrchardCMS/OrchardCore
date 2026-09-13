@@ -902,6 +902,7 @@ ol.file-items-grid li .ma-card-footer .action-button {
 
 ol.file-items-grid li.selected {
   border-color: var(--media-primary);
+  border-width: 3px;
 }
 
 ol.file-items-grid li:hover {
