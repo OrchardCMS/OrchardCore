@@ -12,4 +12,4 @@ imports and sends are not automatically retried.
 Initial local evidence: 16 transport/admin archive tests passed; receiver exception
 regression passes and verifies staging cleanup. Live HTTP/Pomi/MCP client/instance
 CRUD, key preservation/redaction, tenant isolation and actual recipe delivery pass.
-Final integrated checks and role-specific send permission checks remain pending.
+Final integrated full solution build has zero warnings/errors; full server suite has 3,681 passed and one skipped. CLI 298 and MCP 78 pass. Fresh HTTPS source/target probes verify separate management/export permissions and successful recipe delivery.
