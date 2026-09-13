@@ -80,3 +80,59 @@ Use separate role assignments when operators should be allowed to deploy but sho
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/2c5pbXuJJb0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+## OAuth, Pomi and MCP management
+
+Enable Remote Deployment and remote management in the selected tenant, then refresh
+Pomi discovery. Setup with `--enable-remote-management` already provides a client
+credentials context; automation does not need an interactive login.
+
+```sh
+pomi deployment remote-clients list
+pomi deployment remote-clients create --body-file private-client.json
+pomi deployment remote-clients show <id>
+pomi deployment remote-clients update <id> --body-file private-client.json
+pomi deployment remote-clients delete <id> --force
+pomi deployment remote-instances list
+pomi deployment remote-instances create --body-file private-destination.json
+pomi deployment remote-instances show <id>
+pomi deployment remote-instances update <id> --body-file private-destination.json
+pomi deployment remote-instances delete <id> --force
+pomi deployment targets list
+pomi deployment targets send <id> --plan-id <plan-id> --force
+```
+
+Client bodies contain `clientName` and `apiKey`. Destination bodies contain `name`,
+`url`, `clientName` and `apiKey`. All non-key fields are required on update; an
+omitted or null key preserves its stored value. Empty keys are rejected; delete the
+client to revoke it. Creation retries with identical names and configuration return
+`changed: false`; conflicting configuration returns 409. Equivalent updates and
+repeated deletes are unchanged. IDs belong to the selected tenant.
+
+Keys are write-only through these APIs. Readback returns `hasApiKey` and never
+returns plaintext or protected keys. Supply keys using stdin or private body files,
+not command arguments. Store the same strong generated key in the destination's
+client and source's instance. The destination protects its client key; the source
+retains its existing database storage semantics described above. These credentials
+secure the existing import protocol; OAuth secures configuration and send commands.
+
+All operations require `AccessRemoteManagement`. Client and instance administration
+also require `ManageRemoteClients` or `ManageRemoteInstances`, respectively. Target
+listing requires `ExportRemoteInstances`; sending additionally requires `Export`
+and the permissions enforced by the selected export sources. Target listing reveals
+only the destination identity and display name. All management mutations require
+HTTPS. Destination URLs must use HTTPS without user information or fragments; HTTP
+is accepted only for loopback development. Admin and API validation share these rules.
+
+A send builds the existing plan archive and submits it once through the same sender
+as the admin action. Redirects are disabled, so deployment credentials cannot follow
+a redirect to another location. The HTTP request has a two-minute timeout. A remote
+error, timeout or disconnected request can occur after import has started: inspect
+the destination before sending again. Sending is not idempotent and has no automatic
+retry. The existing receiver now stages uploads through the shared bounded package
+validator and returns an error status when recipe execution fails, instead of reporting
+HTTP 200. Imports can partially commit before failure.
+
+The JSON management operations are also available through the tenant MCP catalog.
+The binary package continues to travel directly from the source site to the configured
+destination; it is not embedded into tool results.

@@ -46,7 +46,8 @@ public sealed class ExportRemoteInstanceController : Controller
     [HttpPost]
     public async Task<IActionResult> Execute(long id, string remoteInstanceId, string returnUrl)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.Export))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.Export)
+            || !await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ExportRemoteInstances))
         {
             return Forbid();
         }
@@ -68,26 +69,15 @@ public sealed class ExportRemoteInstanceController : Controller
         var filename = deploymentPlan.Name.ToSafeName() + ".zip";
         await using var archive = await _archives.CreateAsync(deploymentPlan, new RecipeDescriptor());
 
-        HttpResponseMessage response;
+        var status = await new RemoteDeploymentSender(_httpClientFactory).SendAsync(remoteInstance, archive, filename, HttpContext.RequestAborted);
 
-        using (var requestContent = new MultipartFormDataContent())
-        {
-            requestContent.Add(new StreamContent(archive), nameof(ImportViewModel.Content), filename);
-            requestContent.Add(new StringContent(remoteInstance.ClientName), nameof(ImportViewModel.ClientName));
-            requestContent.Add(new StringContent(remoteInstance.ApiKey), nameof(ImportViewModel.ApiKey));
-
-            var httpClient = _httpClientFactory.CreateClient();
-
-            response = await httpClient.PostAsync(remoteInstance.Url, requestContent);
-        }
-
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        if (status == System.Net.HttpStatusCode.OK)
         {
             await _notifier.SuccessAsync(H["Deployment executed successfully."]);
         }
         else
         {
-            await _notifier.ErrorAsync(H["An error occurred while sending the deployment to the remote instance: \"{0} ({1})\"", response.ReasonPhrase, (int)response.StatusCode]);
+            await _notifier.ErrorAsync(H["An error occurred while sending the deployment to the remote instance: \"{0} ({1})\"", status.ToString(), (int)status]);
         }
 
         if (!string.IsNullOrEmpty(returnUrl))

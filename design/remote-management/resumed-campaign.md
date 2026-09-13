@@ -9,7 +9,7 @@ local verification and CI succeed; refresh the base before the next PR.
 | --- | --- | --- |
 | SMTP | Typed tenant SMTP and default email-provider settings, redacted secrets, delivery testing, shared admin validation and mutations | Merged PR #38 (`b7be36756`); all CI green |
 | User/security settings | Existing registration, password-reset, email-change and MFA policy settings; custom user settings; supported tenant OpenID server/client/validation settings with explicit ownership | Policies merged PR #39; custom user settings merged PR #40; OpenID merged PR #41 (`c5b7b0582`); all CI green |
-| Deployment completion | Remaining explicit step adapters, initiating-user authorization in background exports, remote clients/instances/targets, content export entry-point parity | Selector and execution-principal slice locally verified; remote destinations in progress; content export parity pending |
+| Deployment completion | Remaining explicit step adapters, initiating-user authorization in background exports, remote clients/instances/targets, content export entry-point parity | Selectors and execution-principal merged PR #42 (`8d0ef4359`); remote destinations locally verified on merged base; content export parity in final verification |
 
 Count progress against this scope, not the completed earlier campaign. Split each
 area into reviewable independent PRs where needed. Every slice includes canonical
