@@ -366,3 +366,56 @@ For example, to create an administrator during setup from a recipe:
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/FmgZHpFHCcg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/b-lHY0NxZNI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+## Remote user policy administration
+
+With Remote Management enabled, user features contribute typed settings sections
+for their tenant-wide policies. The caller requires `AccessRemoteManagement` and
+`ManageUsers`; updates require HTTPS. These policies do not expose passwords,
+authenticator keys, recovery codes, or user-specific MFA enrollment.
+
+| Section | Owning feature | Managed policy |
+| --- | --- | --- |
+| `user-login` | Users | Local login, editable profile fields, remember-me/cookie and theme choices |
+| `user-registration` | Users.Registration | Email verification, moderation, theme |
+| `user-password-reset` | Users.ResetPassword | Password-reset availability and theme |
+| `user-change-email` | Users.ChangeEmail | Email-change availability |
+| `user-external-login` | Users.ExternalAuthentication | Single-provider selection and property-sync script settings |
+| `user-external-registration` | Users.ExternalAuthentication | New external registrations, identity-field collection and username script settings |
+| `user-two-factor` | Users.2FA | MFA requirement, remembered clients, recovery-code count and theme |
+| `user-role-two-factor` | Users.2FA and Roles | MFA requirement for selected assignable roles |
+| `user-authenticator-app` | Users.2FA.AuthenticatorApp and Users.2FA | Authenticator display name and supported six-digit code length |
+| `user-email-authenticator` | Users.2FA.Email | Verification email subject/body Liquid templates |
+| `user-sms-authenticator` | Users.2FA.Sms | Verification SMS Liquid template |
+
+Feature names in this table have the `OrchardCore.` prefix. ExternalAuthentication
+is enabled by an authentication-provider feature, rather than directly. Similarly,
+the MFA services feature is enabled by an MFA method feature. Disabling an owning
+feature removes its section from discovery. Use the schema for the precise fields:
+
+```sh
+pomi settings sections schema user-registration
+pomi settings sections update user-registration --body '{"usersMustValidateEmail":true,"usersAreModerated":true}'
+pomi settings sections show user-registration
+pomi settings sections update user-password-reset --body '{"allowResetPassword":true}'
+pomi settings sections update user-two-factor --body '{"numberOfRecoveryCodesToGenerate":7}'
+```
+
+Updates preserve omitted fields, reject unknown fields and invalid types, and skip
+unchanged writes. Booleans and integers cannot be reset with null. Nullable text
+can be cleared with null; existing runtime defaults apply to empty MFA templates.
+Liquid templates use the same validation as the admin editor. External-login
+scripts retain the existing script semantics and are not executed by a settings
+update. Policy updates share admin mutation logic; registration and external-login
+options are invalidated after the settings commit.
+
+Recovery-code counts must be positive. Authenticator-app codes are limited to the
+six-digit length supported by the existing Identity implementation. Role-specific
+MFA requires at least one existing assignable role when enabled. Disabling it
+retains inactive role selections, including deleted roles, so stale selections
+cannot prevent disabling the policy.
+
+These are site policies. They do not perform password recovery, send verification
+codes, enroll a user in MFA, or configure third-party authentication credentials.
+Password complexity, lockout, and host cookie configuration continue to use their
+existing configuration ownership.

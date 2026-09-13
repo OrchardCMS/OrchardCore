@@ -53,6 +53,7 @@ for suffix, permissions in [
     ("content-localizer", ["LocalizeContent", "EditContent", "ViewContent", "PreviewContent"]),
     ("content-localizer-no-edit", ["LocalizeContent", "ViewContent", "PreviewContent"]),
     ("content-reader", ["ViewContent"]),
+    ("user-policy", ["ManageUsers"]),
     ("widgets", ["ManageLayers", "EditContent", "PublishContent", "ViewContent", "PreviewContent"]),
     ("widgets-editor", ["ManageLayers", "EditContent", "ViewContent", "PreviewContent"]),
     ("indexes", ["ManageIndexes"]),

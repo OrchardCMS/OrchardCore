@@ -7,8 +7,8 @@ local verification and CI succeed; refresh the base before the next PR.
 
 | Area | Scope | State |
 | --- | --- | --- |
-| SMTP | Typed tenant SMTP and default email-provider settings, redacted secrets, delivery testing, shared admin validation and mutations | Locally verified on merged CI prerequisite #37; ready for feature PR |
-| User/security settings | Existing registration, password-reset, email-change and MFA policy settings; custom user settings; supported tenant OpenID server/client/validation settings with explicit ownership | Pending source audit |
+| SMTP | Typed tenant SMTP and default email-provider settings, redacted secrets, delivery testing, shared admin validation and mutations | Merged PR #38 (`b7be36756`); all CI green |
+| User/security settings | Existing registration, password-reset, email-change and MFA policy settings; custom user settings; supported tenant OpenID server/client/validation settings with explicit ownership | Policies locally verified; custom user settings and OpenID configuration pending |
 | Deployment completion | Remaining explicit step adapters, initiating-user authorization in background exports, remote clients/instances/targets, content export entry-point parity | Pending source audit |
 
 Count progress against this scope, not the completed earlier campaign. Split each

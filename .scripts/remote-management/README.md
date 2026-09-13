@@ -548,3 +548,11 @@ Run `smtp-smoke.py <fixture.json>` against a fixture started with
 `OC_FIXTURE_HTTPS=1`. It validates typed settings, secret redaction and retries,
 permission gates, MCP readback, and real tenant-local pickup messages in two
 tenants. It never sends external mail. Child tenants are stopped after checks.
+
+### User policy administration
+
+Run `user-policy-smoke.py <fixture.json>` against an HTTPS fixture to verify all
+eleven typed policy sections, Pomi/MCP, permission gates, invalid-update
+preservation, independent child-tenant policy values and actual ForgotPassword
+route availability. External authentication and MFA core are activated through
+provider/method dependencies. No verification messages or external logins occur.

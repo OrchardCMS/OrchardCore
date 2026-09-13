@@ -37,6 +37,37 @@ Do not automatically retry uncertain test requests: each attempt can send mail.
 No `pomi login` is needed when the creation workflow already returned an
 application-credentials context.
 
+## User and authentication policies
+
+Use typed `user-*` sections for tenant policies, with `AccessRemoteManagement`,
+`ManageUsers`, and HTTPS. Discover the schema before changing values:
+
+```sh
+pomi settings sections schema user-registration
+pomi settings sections update user-registration --body '{"usersMustValidateEmail":true,"usersAreModerated":true}'
+pomi settings sections show user-registration
+```
+
+Sections cover login, registration, password reset, email changes, external login
+and registration, MFA requirements, role-specific MFA, authenticator-app options,
+and email/SMS verification templates. External authentication is enabled through
+a provider feature; MFA services are enabled through an MFA method feature.
+These dependency-only features cannot be enabled directly.
+
+Omitted fields are preserved. Nullable strings can be cleared with null; Boolean
+and integer fields cannot. Invalid patches preserve the old values. MFA recovery
+counts must be positive and authenticator-app code length must be six. Enabled
+role-specific MFA requires existing assignable roles. Liquid templates use the
+existing editor validation. Scripts use the existing external-authentication
+semantics and are not executed by the update request.
+
+Read back and verify the affected workflow. For example, disabling password reset
+makes the public ForgotPassword route unavailable. These commands configure
+policies; they do not enroll users, disclose MFA keys/recovery codes, or perform
+password recovery. Keep the application context returned by automated setup;
+no interactive `pomi login` is needed. User-specific custom settings and provider
+credentials are separate administration workflows.
+
 ## Rate limits
 
 Enable `OrchardCore.RateLimits`, refresh discovery, and use an application with

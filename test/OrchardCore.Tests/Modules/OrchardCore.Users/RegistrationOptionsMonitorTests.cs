@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Entities;
@@ -12,8 +13,10 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Users;
 
 public class RegistrationOptionsMonitorTests
 {
-    [Fact]
-    public async Task RequestUpdate_ShouldRefreshRegistrationOptionsWithoutReleasingTenant()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task RequestUpdate_ShouldRefreshRegistrationOptionsWithoutReleasingTenant(bool useManagement)
     {
         using var context = new SiteContext()
             .WithRecipe("SaaS");
@@ -49,20 +52,34 @@ public class RegistrationOptionsMonitorTests
 
         await context.UsingTenantScopeAsync(async scope =>
         {
-            var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
-            var notifier = scope.ServiceProvider.GetRequiredService<IOptionsUpdateNotifier>();
-
-            var site = await siteService.LoadSiteSettingsAsync();
-            site.Put(new RegistrationSettings
+            if (useManagement)
             {
-                UsersMustValidateEmail = true,
-                UsersAreModerated = true,
-                UseSiteTheme = false,
-            });
+                var section = scope.ServiceProvider.GetServices<ISiteSettingsSectionProvider>()
+                    .Single(provider => provider.Descriptor.Name == "user-registration");
+                var result = await section.UpdateAsync(new JsonObject
+                {
+                    ["usersMustValidateEmail"] = true, ["usersAreModerated"] = true, ["useSiteTheme"] = false,
+                });
+                Assert.Empty(result.Errors);
+                Assert.True(result.Changed);
+            }
+            else
+            {
+                var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
+                var notifier = scope.ServiceProvider.GetRequiredService<IOptionsUpdateNotifier>();
 
-            notifier.RequestUpdate<RegistrationOptions>();
+                var site = await siteService.LoadSiteSettingsAsync();
+                site.Put(new RegistrationSettings
+                {
+                    UsersMustValidateEmail = true,
+                    UsersAreModerated = true,
+                    UseSiteTheme = false,
+                });
 
-            await siteService.UpdateSiteSettingsAsync(site);
+                notifier.RequestUpdate<RegistrationOptions>();
+
+                await siteService.UpdateSiteSettingsAsync(site);
+            }
         });
 
         await context.WaitForDeferredTasksAsync(CancellationToken.None);
