@@ -1,0 +1,12 @@
+[
+  {
+    "action": "parcel",
+    "name": "autoroute-editors",
+    "source": [
+      "Assets/ts/autoroute-part-settings.ts",
+      "Assets/ts/autoroute-part.ts"
+    ],
+    "dest": "wwwroot/Scripts/autoroute-editors/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

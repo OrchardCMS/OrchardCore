@@ -1,5 +1,5 @@
 /** Content Type Check All **/
-document.addEventListener('DOMContentLoaded', function (event) {
+document.addEventListener('DOMContentLoaded', function () {
     let checkAllContainer = document.querySelectorAll('.check-all.content-types');
 
     checkAllContainer.forEach((container) => {

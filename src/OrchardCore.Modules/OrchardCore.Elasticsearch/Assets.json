@@ -1,0 +1,30 @@
+[
+  {
+    "action": "parcel",
+    "name": "elastic-query-editor",
+    "source": "Assets/ts/elastic-query.ts",
+    "dest": "wwwroot/Scripts/elastic-query/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "elasticsearch-admin-query",
+    "source": "Assets/ts/elasticsearch-admin-query.ts",
+    "dest": "wwwroot/Scripts/elasticsearch-admin-query/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "index-info",
+    "source": "Assets/ts/index-info.ts",
+    "dest": "wwwroot/Scripts/index-info/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "elasticsearch-query-settings",
+    "source": "Assets/ts/elasticsearch-query-settings.ts",
+    "dest": "wwwroot/Scripts/elasticsearch-query-settings/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

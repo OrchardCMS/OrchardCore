@@ -36,7 +36,7 @@ else
             </div>
         </div>
     </div>
-    <ul class="list-group with-checkbox">
+    <ul class="list-group with-checkbox bulk-select-list" data-checkbox-name="itemIds" data-bulk-action-name="Options.BulkAction" data-selected-text="@T["selected"]">
         @if (Model.Templates.Count > 0)
         {
             <li class="list-group-item text-bg-theme">
@@ -99,4 +99,4 @@ else
 
 @await DisplayAsync(Model.Pager)
 
-<script asp-name="list-management" at="Foot"></script>
+<script asp-src="~/OrchardCore.Templates/Scripts/template-editors/template-index.min.js" debug-src="~/OrchardCore.Templates/Scripts/template-editors/template-index.js" at="Foot" type="module"></script>

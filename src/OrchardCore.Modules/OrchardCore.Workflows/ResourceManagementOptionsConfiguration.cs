@@ -14,7 +14,6 @@ public sealed class ResourceManagementOptionsConfiguration
 
         s_manifest
             .DefineScript("jsplumb")
-            .SetDependencies("jQuery")
             .SetUrl(
                 "~/OrchardCore.Workflows/Scripts/jsplumb.min.js",
                 "~/OrchardCore.Workflows/Scripts/jsplumb.js"
@@ -65,10 +64,26 @@ public sealed class ResourceManagementOptionsConfiguration
 
         s_manifest
             .DefineScript("workflow-url-generator")
-            .SetDependencies("jQuery")
             .SetUrl(
                 "~/OrchardCore.Workflows/Scripts/Workflows/url-generator/workflow-url-generator.min.js",
                 "~/OrchardCore.Workflows/Scripts/Workflows/url-generator/workflow-url-generator.js"
+            )
+            .SetVersion("1.0.0");
+
+        s_manifest
+            .DefineScript("workflow-syntax-toggle")
+            .SetUrl(
+                "~/OrchardCore.Workflows/Scripts/Workflows/syntax-toggle/workflow-syntax-toggle.min.js",
+                "~/OrchardCore.Workflows/Scripts/Workflows/syntax-toggle/workflow-syntax-toggle.js"
+            )
+            .SetVersion("1.0.0");
+
+        s_manifest
+            .DefineScript("workflow-monaco-text-editor")
+            .SetDependencies("monaco")
+            .SetUrl(
+                "~/OrchardCore.Workflows/Scripts/Workflows/monaco-text-editor/workflow-monaco-text-editor.min.js",
+                "~/OrchardCore.Workflows/Scripts/Workflows/monaco-text-editor/workflow-monaco-text-editor.js"
             )
             .SetVersion("1.0.0");
     }

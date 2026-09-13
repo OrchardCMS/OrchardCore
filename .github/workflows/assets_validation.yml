@@ -27,12 +27,18 @@ jobs:
     - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
       with:
         node-version-file: '.node-version'
-    - name: Rebuild packages
+    - name: Install packages
       run: |
         npm install -g corepack
         corepack enable
         yarn --no-check-resolutions
-        yarn build
+    - name: Lint assets
+      run: yarn lint
+    - name: Type-check assets
+      timeout-minutes: 10
+      run: yarn check
+    - name: Rebuild packages
+      run: yarn build
     - name: Check if git has changes
       shell: pwsh
       run: |

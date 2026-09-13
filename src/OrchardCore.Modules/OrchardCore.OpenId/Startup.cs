@@ -19,6 +19,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell.Builders;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.OpenId.Configuration;
@@ -64,6 +65,7 @@ public sealed class ClientStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddNavigationProvider<ClientAdminMenu>();
+        services.AddScoped<IJSLocalizer, OpenIdJSLocalizer>();
 
         services.TryAddSingleton<IOpenIdClientService, OpenIdClientService>();
 

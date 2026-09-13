@@ -5,7 +5,7 @@ import { isCompactExplicit, setAdminPreferences } from '../constants';
 // restore the sidebar to the previous state.
 export const persistAdminPreferences = () => {
     setTimeout(function () {
-        var adminPreferences = {} as AdminPreferences;
+        const adminPreferences = {} as AdminPreferences;
         adminPreferences.leftSidebarCompact = document.body.classList.contains('left-sidebar-compact') ? true : false;
         adminPreferences.isCompactExplicit = isCompactExplicit;
         setAdminPreferences(adminPreferences);

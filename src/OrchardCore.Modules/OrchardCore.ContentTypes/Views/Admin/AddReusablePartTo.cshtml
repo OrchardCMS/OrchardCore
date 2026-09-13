@@ -6,7 +6,7 @@
     string localizedTypeName = D[Model.Type.DisplayName, "Content Types"];
 }
 
-<script asp-src="~/OrchardCore.ContentTypes/Scripts/autocomplete/autocomplete.js" at="Foot" depends-on="jQuery"></script>
+<script asp-src="~/OrchardCore.ContentTypes/Scripts/autocomplete/autocomplete.js" at="Foot"></script>
 <zone Name="Title"><h1>@T["Add Named Part To \"{0}\"", localizedTypeName]</h1></zone>
 
 <form asp-action="AddReusablePartTo">
