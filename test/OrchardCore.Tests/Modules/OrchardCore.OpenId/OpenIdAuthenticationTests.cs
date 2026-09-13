@@ -114,7 +114,7 @@ public class OpenIdAuthenticationTests
 
             var cookies = CookiesHelper.ExtractCookies(loginPostResponse);
 
-            Assert.Contains("orchauth_" + shellSettings.Name, cookies.Keys);
+            Assert.Contains($"{OrchardCoreConstants.Cookies.Authentication}.{shellSettings.Name}", cookies.Keys);
 
             var codeVerifier = GenerateCodeVerifier();
             var codeChallenge = GenerateCodeChallenge(codeVerifier);
@@ -274,7 +274,7 @@ public class OpenIdAuthenticationTests
 
             var cookies = CookiesHelper.ExtractCookies(loginPostResponse);
 
-            Assert.Contains("orchauth_" + shellSettings.Name, cookies.Keys);
+            Assert.Contains($"{OrchardCoreConstants.Cookies.Authentication}.{shellSettings.Name}", cookies.Keys);
 
             var codeVerifier = GenerateCodeVerifier();
             var codeChallenge = GenerateCodeChallenge(codeVerifier);
