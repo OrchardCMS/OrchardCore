@@ -65,7 +65,7 @@ def on_page_markdown(markdown, page, config, files):
     artifacts = '\n'.join(f'- [{info["file"]}](../downloads/{info["file"]}) — SHA-256 `{info["sha256"]}`'
                           for info in metadata['artifacts'].values())
     version = f'''Package **{metadata['packageVersion']}**, generated from commit
-[`{metadata['sourceCommit'][:12]}`](https://github.com/sebastienros/OrchardCore/commit/{metadata['sourceCommit']}).
+[`{metadata['sourceCommit'][:12]}`](https://github.com/OrchardCMS/OrchardCore/commit/{metadata['sourceCommit']}).
 {'**Local working-tree build: inputs include uncommitted changes.**' if metadata['sourceDirty'] else 'Built from committed package inputs.'}
 
 - Pomi: {metadata['compatibility']['pomi']}.
@@ -77,7 +77,7 @@ def on_page_markdown(markdown, page, config, files):
 Install the same Git revision in Codex:
 
 ```bash
-codex plugin marketplace add sebastienros/OrchardCore --ref {metadata['sourceCommit']}
+codex plugin marketplace add OrchardCMS/OrchardCore --ref {metadata['sourceCommit']}
 codex plugin add pomi@orchardcore
 ```
 

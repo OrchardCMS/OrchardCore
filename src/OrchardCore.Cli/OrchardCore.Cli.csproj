@@ -9,7 +9,7 @@
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
-    <!-- Tool packages are built per platform by remote_cli.yml. Keep ordinary
+    <!-- Tool packages are built per platform by the reusable native workflow. Keep ordinary
          solution packing from publishing an incomplete pointer package. -->
     <IsPackable Condition="'$(PackAsTool)' != 'true'">false</IsPackable>
     <IsPackable Condition="'$(PackAsTool)' == 'true'">true</IsPackable>

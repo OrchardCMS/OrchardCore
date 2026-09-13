@@ -141,7 +141,7 @@ For cache freshness and offline help, see [shared discovery rules](shared-rules.
 
 The environment-variable example above assumes a confidential application is
 already configured in this tenant. For its roles, scopes, grants, and secret
-setup, read the versioned [authentication API reference](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/api/authentication/README.md)
-and [Remote Management reference](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/modules/RemoteManagement/README.md).
+setup, read the official [authentication API reference](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/api/authentication/README.md)
+and [Remote Management reference](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/modules/RemoteManagement/README.md).
 Do not create applications or grant additional permissions unless the requested
 automation requires and authorizes that configuration.

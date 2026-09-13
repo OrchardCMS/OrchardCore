@@ -4,33 +4,28 @@ Pomi (`pomi`) creates local Orchard Core sites and manages tenants through their
 commands, authenticate interactively, and manage content, media, themes,
 templates, and tenant settings from your terminal.
 
-## Install a development build
+## Install
 
-Each successful push build in the fork publishes to
-[the Orchard Core Feedz feed](https://f.feedz.io/sebastienros/orchardcore/nuget/index.json).
-Use the exact version from the workflow's **Published to Feedz** summary:
+Official releases publish `OrchardCore.Cli` and its six native implementations
+through the Orchard Core release workflow to NuGet.org:
 
 ```sh
-dotnet tool install --global OrchardCore.Cli --add-source https://f.feedz.io/sebastienros/orchardcore/nuget/index.json --version <version>
+dotnet tool install --global OrchardCore.Cli --version <release-version>
 pomi --version
 pomi
 ```
 
-The [workflow](https://github.com/sebastienros/OrchardCore/actions/workflows/remote_cli.yml)
-also provides `pomi-tool-<rid>` artifacts. To install a downloaded artifact, keep
-both `.nupkg` files together and replace the source above with `./pomi-packages`.
+Installation requires the .NET 10 SDK or later. Running the installed native
+executable needs no separate .NET runtime. Linux, Windows, and macOS are
+supported on x64 and Arm64. Use `dotnet tool update` to upgrade.
 
-Installation requires the .NET 10 SDK or later. The installer selects the
-native executable for your platform. Running that executable does not require
-a separately installed .NET runtime. Native packages are provided for Linux,
-Windows, and macOS on x64 and Arm64.
-
-Use `dotnet tool update` with the same package, source, and a newer version to
-upgrade, or `dotnet tool uninstall --global OrchardCore.Cli` to remove it.
-
-Standalone downloads are also available for computers without the SDK.
-These development packages are available on Feedz and as workflow artifacts;
-they are not published to NuGet.org.
+Standalone archives and SHA-256 checksums are attached to
+[official releases](https://github.com/OrchardCMS/OrchardCore/releases).
+Main CI also builds and verifies all six platforms and retains `pomi-<rid>`
+and `pomi-tool-<rid>` artifacts for 30 days. Those artifacts validate development
+changes; native tools are published to the package registry only for releases.
+For a downloaded tool artifact, keep both `.nupkg` files together and install
+with `--add-source ./pomi-packages --version <artifact-version>`.
 
 ## Get started
 
@@ -49,16 +44,16 @@ Omit `--run` to stop after setup. Local installation requires the matching
 .NET SDK (currently .NET 10); `pomi doctor` reports whether it is available.
 The template is embedded; restoring the site's dependencies still requires
 NuGet access or a populated package cache. Nuget.org is added by default, and
-parent/user NuGet sources remain available. For this fork's temporary previews,
-configure Feedz in an inherited NuGet configuration or add
-`--source https://f.feedz.io/sebastienros/orchardcore/nuget/index.json`.
+parent/user NuGet sources remain available. For official preview dependencies,
+configure Cloudsmith in an inherited NuGet configuration or add
+`--source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json`.
 Use `--clear-sources` to ignore inherited package sources and retain only
 nuget.org plus any explicit `--source`.
 `--site-time-zone` takes an IANA/TZDB ID such as `Europe/Paris` or
 `America/Los_Angeles` (default `UTC`). Run `pomi install --help` for database,
 recipe, URL, and secret-input options.
 
-Follow the [remote management guide](https://github.com/sebastienros/OrchardCore/blob/sebros/remote-tenant-cli-plan/src/docs/guides/remote-management/README.md)
+Follow the [remote management guide](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/guides/remote-management/README.md)
 to prepare a tenant and authenticate. Run `pomi --help` to discover commands
 available in the local cache, or `pomi doctor` to inspect local configuration.
 
@@ -72,7 +67,7 @@ For device authorization across separate processes, use `pomi login device start
 `pomi login device show <session-id>`, and `pomi login device wait <session-id>`.
 Each returns one JSON result with `--output json`; `start` and `show` support
 opt-in `--qr always` PNG output. See the
-[device login guide](https://github.com/sebastienros/OrchardCore/blob/sebros/remote-tenant-cli-plan/src/docs/guides/remote-management/README.md#start-and-complete-device-login-separately).
+[device login guide](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/guides/remote-management/README.md#start-and-complete-device-login-separately).
 
 ## GraphQL
 
@@ -88,7 +83,7 @@ These built-in GraphQL commands call GraphQL directly, reuse the current context
 and need no OpenAPI refresh. GraphQL errors return exit code 4 while preserving
 partial data and errors in the JSON response. Human output shows readable errors
 on stderr and any partial data on stdout. See the
-[GraphQL CLI reference](https://github.com/sebastienros/OrchardCore/blob/sebros/remote-tenant-cli-plan/src/docs/reference/modules/Apis.GraphQL/README.md#use-graphql-from-the-cli)
+[GraphQL CLI reference](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/modules/Apis.GraphQL/README.md#use-graphql-from-the-cli)
 for permissions, stdin, operation names, custom endpoint paths, and mutations.
 
 ## Existing installations

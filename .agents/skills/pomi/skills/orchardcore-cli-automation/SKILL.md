@@ -63,7 +63,7 @@ A missing assigned profile removes its restriction on future feature selection;
 deleting a profile is not tenant shutdown. Read back both the host definition and
 the child's feature eligibility after a policy change.
 
-See the [profile API contract](https://github.com/sebastienros/OrchardCore/blob/d36ce61633a7ed819773f07744b9314066bb599f/src/docs/reference/api/tenants/README.md#feature-profile-definitions).
+See the [profile API contract](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/api/tenants/README.md#feature-profile-definitions).
 
 ## Recipes
 
@@ -172,9 +172,9 @@ These operations use the same coordinator as admin and recipe actions. Ongoing
 scheduled updates still require the worker feature. Other providers' typed
 definitions and lifecycle adapters are not covered by the Lucene contract.
 
-See the [Lucene definition contract](https://github.com/sebastienros/OrchardCore/blob/738a7c14b4e1ac8a0418fc11967c681b6ac444cd/src/docs/reference/modules/Lucene/README.md#remote-content-index-definitions)
-and [shared index coordination](https://github.com/sebastienros/OrchardCore/blob/738a7c14b4e1ac8a0418fc11967c681b6ac444cd/src/docs/reference/modules/Indexing/README.md#coordinating-profiles-and-provider-resources).
-See also the [operation status contract](https://github.com/sebastienros/OrchardCore/blob/738a7c14b4e1ac8a0418fc11967c681b6ac444cd/src/docs/reference/modules/Indexing/README.md#remote-lifecycle-requests).
+See the [Lucene definition contract](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/modules/Lucene/README.md#remote-content-index-definitions)
+and [shared index coordination](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/modules/Indexing/README.md#coordinating-profiles-and-provider-resources).
+See also the [operation status contract](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/modules/Indexing/README.md#remote-lifecycle-requests).
 
 ## Workflows
 
@@ -306,14 +306,14 @@ revoke existing tokens or remove application permission strings.
 
 Versioned API references (live tenant schemas take precedence):
 
-- [Features](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/api/features/README.md)
-- [Recipes](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/api/recipes/README.md)
-- [Queries](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/api/queries/README.md)
-- [Workflows](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/api/workflows/README.md)
-- [Users](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/api/users/README.md)
-- [Roles](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/api/roles/README.md)
+- [Features](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/api/features/README.md)
+- [Recipes](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/api/recipes/README.md)
+- [Queries](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/api/queries/README.md)
+- [Workflows](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/api/workflows/README.md)
+- [Users](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/api/users/README.md)
+- [Roles](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/api/roles/README.md)
 
-- [OpenID management](https://github.com/sebastienros/OrchardCore/blob/80579b862fb369b8366fe220ab2b6f4df80300fa/src/docs/reference/api/openid/README.md)
+- [OpenID management](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/api/openid/README.md)
 
 ## Deployment plans and steps
 

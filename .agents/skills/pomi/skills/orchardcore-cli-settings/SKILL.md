@@ -333,7 +333,7 @@ a successful settings update alone does not prove that public search is availabl
 For imports, generic Settings recipes retain their ordering behavior so an index
 can be defined later in the recipe.
 
-See the [frontend search contract](https://github.com/sebastienros/OrchardCore/blob/f70b3ed3c911750484f3d011990ab73b9ee0f52a/src/docs/reference/modules/Search/README.md#remote-frontend-search-settings).
+See the [frontend search contract](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/modules/Search/README.md#remote-frontend-search-settings).
 
 ## Custom Settings
 
@@ -402,17 +402,17 @@ does not add translation commands to Pomi.
 - Treat nested JSON type failures as validation errors; correct the exact path.
 - Read back after updates and verify user-facing behavior separately.
 
-Versioned references (live tenant schemas take precedence):
-[Content culture picker settings](https://github.com/sebastienros/OrchardCore/blob/3ab81c560b073f2c5d51d14af5c7b66bca01a1d1/src/docs/reference/api/settings/README.md#content-culture-picker-section),
-[Layer zone settings](https://github.com/sebastienros/OrchardCore/blob/6b6a83808e1eb19800c99734869cd8474d0d695b/src/docs/reference/api/settings/README.md#layer-zones-section),
-[localization API](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/api/localization/README.md),
-[settings API](https://github.com/sebastienros/OrchardCore/blob/5bb6c301c6fa9b795717d6a7906d7cb8626fe33c/src/docs/reference/api/settings/README.md),
-[custom-settings API](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/api/custom-settings/README.md),
-[CORS module](https://github.com/sebastienros/OrchardCore/blob/4020c67d5b920d7a26ca175420683793b033fb08/src/docs/reference/modules/Cors/README.md),
-[URL Rewriting module](https://github.com/sebastienros/OrchardCore/blob/92ac82a188ce0525e2b9072543451757d39f3032/src/docs/reference/modules/UrlRewriting/README.md),
-[Security module](https://github.com/sebastienros/OrchardCore/blob/5bb6c301c6fa9b795717d6a7906d7cb8626fe33c/src/docs/reference/modules/Security/README.md),
-[Settings module](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/modules/Settings/README.md), and
-[CustomSettings module](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/modules/CustomSettings/README.md).
+Official references (live tenant schemas take precedence):
+[Content culture picker settings](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/api/settings/README.md#content-culture-picker-section),
+[Layer zone settings](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/api/settings/README.md#layer-zones-section),
+[localization API](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/api/localization/README.md),
+[settings API](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/api/settings/README.md),
+[custom-settings API](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/api/custom-settings/README.md),
+[CORS module](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/modules/Cors/README.md),
+[URL Rewriting module](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/modules/UrlRewriting/README.md),
+[Security module](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/modules/Security/README.md),
+[Settings module](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/modules/Settings/README.md), and
+[CustomSettings module](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/modules/CustomSettings/README.md).
 
 ## Robots and sitemaps
 

@@ -10,143 +10,62 @@ validates an unpublished article.
 
 ## 1. Download or build the CLI
 
-The fork's [Remote management CI and optional packages workflow](https://github.com/sebastienros/OrchardCore/actions/workflows/remote_cli.yml)
-runs checks on ordinary pushes and PRs without producing native binaries or
-NuGet packages. Downloadable builds require a manual workflow run with
-`publish_packages` enabled. This option also publishes the package set to Feedz.
-
-1. Open a completed manual packaging run for the commit you want to try. A
-   maintainer can start one with **Run workflow**, select the desired branch,
-   and enable **Build native binaries and publish the complete package set to Feedz**.
-2. Once the platform job succeeds, use its summary's **Download** link or
-   select an artifact in the run's **Artifacts** section:
-
-   | Your computer | Artifact |
-   | --- | --- |
-   | macOS, Apple Silicon | `pomi-osx-arm64` |
-   | macOS, Intel | `pomi-osx-x64` |
-   | Windows, x64 | `pomi-win-x64` |
-   | Windows, Arm64 | `pomi-win-arm64` |
-   | Linux, x64 | `pomi-linux-x64` |
-   | Linux, Arm64 | `pomi-linux-arm64` |
-
-3. Extract the downloaded artifact, then extract the `.tar.gz` or `.zip`
-   native archive inside it. The artifact also includes its SHA-256 checksum
-   and a verification record; the job summary identifies the built commit.
-4. Put the extracted directory on your `PATH` and run `pomi --version`.
-
-You must be signed into GitHub to download workflow artifacts. These builds
-are retained for 30 days and are unsigned development artifacts. The run summary
-identifies the selected commit. Superseded ordinary checks can be cancelled;
-explicitly requested publication runs continue to completion.
-
 ### Install as a .NET tool
 
-If you have the .NET 10 SDK or later, you can install and update `pomi` through
-`dotnet tool`. It installs a native executable for your platform; running
-`pomi` does not require a separately installed .NET runtime.
-
-To discover the latest published preview using your registered NuGet sources:
+Install an [official release](https://github.com/OrchardCMS/OrchardCore/releases)
+as a .NET tool, or download its standalone native archive and checksum:
 
 ```bash
-dotnet package search OrchardCore.Cli --prerelease --format json
-```
-
-Read `latestVersion` from the intended feed's result with the exact package ID
-`OrchardCore.Cli`. The platform-specific packages are selected automatically
-during installation. If the temporary Feedz source is not registered, append
-`--source https://f.feedz.io/sebastienros/orchardcore/nuget/index.json` to the
-query. `dotnet tool search` searches only NuGet.org, even when other feeds are
-registered; `dotnet package search` uses your configured feeds.
-
-To install the latest available version, including previews:
-
-```bash
-dotnet tool install --global OrchardCore.Cli --prerelease
+dotnet tool install --global OrchardCore.Cli --version <release-version>
 pomi --version
 ```
 
-If Feedz is not registered, add
-`--add-source https://f.feedz.io/sebastienros/orchardcore/nuget/index.json` to
-that install command. A registered feed needs no extra argument. Use
-`dotnet tool update --global OrchardCore.Cli --prerelease` to update an existing
-installation, with the same optional `--add-source`. Without
-`--prerelease`, an unpinned install selects a stable version. For a reproducible
-installation, use the exact discovered version, or copy the version of a
-specific manual packaging run from its **Published to Feedz** workflow summary:
+The tool installer requires the .NET 10 SDK or later. Running the native binary
+needs no separate .NET runtime. Linux, Windows, and macOS each support x64 and
+Arm64. Use `dotnet tool update --global OrchardCore.Cli --version <release-version>`
+to upgrade, or `dotnet tool uninstall --global OrchardCore.Cli` to remove it.
 
+### Development artifacts
+
+[Main CI](https://github.com/OrchardCMS/OrchardCore/actions/workflows/main_ci.yml)
+builds and validates native artifacts for all six platforms on main and release
+branch code changes. These builds do not publish native packages to a registry.
+Download `pomi-<rid>` for a standalone archive or `pomi-tool-<rid>` for a tool
+installer and native implementation, using one of these runtime identifiers:
+`linux-x64`, `linux-arm64`, `win-x64`, `win-arm64`, `osx-x64`, `osx-arm64`.
+GitHub sign-in is required for workflow downloads, which are retained for 30 days.
+
+Extract the standalone archive and put its directory on `PATH`. For a tool
+artifact, extract both `.nupkg` files together and use the version in `INSTALL.md`:
 
 ```bash
-dotnet tool install --global OrchardCore.Cli --add-source https://f.feedz.io/sebastienros/orchardcore/nuget/index.json --version <version>
-pomi --version
+dotnet tool install --global OrchardCore.Cli --add-source ./pomi-packages --version <artifact-version>
 ```
 
-Use `dotnet tool update --global` with the same package/source and a newer exact
-version to upgrade. All packages from a build share a version such as
-`4.0.0-cli.25`: Orchard's version prefix and the workflow run number.
-The native implementation is selected automatically for your computer.
+Development artifacts use a validation-only version. Their embedded site template
+references that same version, so `pomi install` needs matching locally built server
+packages; the native CI version is not a Cloudsmith preview version. Use an official
+release for a published, consistently versioned CLI and server package set.
 
-To use a downloadable artifact from a manual packaging run instead:
+### Project templates and libraries
 
-1. From the same workflow run, download `pomi-tool-<rid>` for your computer,
-   such as **pomi-tool-osx-arm64** for an Apple Silicon Mac.
-2. Extract the artifact into a directory such as `pomi-packages`. Keep the two
-   `.nupkg` files together: the installer package and your platform's native
-   implementation. Open `INSTALL.md` for a command with the exact build version.
-3. Install from that directory, replacing `<version>` with the version in
-   `INSTALL.md` or the job summary:
-
-   ```bash
-   dotnet tool install --global OrchardCore.Cli --add-source ./pomi-packages --version <version>
-   pomi --version
-   pomi
-   ```
-
-   If `pomi` is not found, add the tool directory printed by the installer to
-   your `PATH` and open a new terminal.
-
-To update, download the newer artifact and run:
+Released templates and libraries are available on NuGet.org. Main's libraries,
+modules, themes, and templates follow the existing Preview CI publication schedule
+to [Cloudsmith](https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json).
+Native Pomi tools are published only by Release CI.
 
 ```bash
-dotnet tool update --global OrchardCore.Cli --add-source ./pomi-packages --version <new-version>
-```
-
-For a project-local installation, run `dotnet new tool-manifest` if the project
-does not already have a tool manifest, then use `--local` instead of `--global`.
-Run it with `dotnet tool run pomi -- <arguments>`. You can remove a global
-installation with `dotnet tool uninstall --global OrchardCore.Cli`.
-
-The development packages are available on Feedz and as workflow artifacts,
-not on NuGet.org. `--add-source` adds your extracted packages to the configured
-NuGet sources. Installation may also download an SDK launcher from NuGet.org.
-The SDK selects the matching native package automatically. Both packages must
-come from the same build. Each CI run has a distinct prerelease version so
-an update selects the new executable.
-
-### Test matching project templates and libraries
-
-Install templates from the same successful manual packaging run:
-
-```bash
-dotnet new install OrchardCore.ProjectTemplates@<version> --add-source https://f.feedz.io/sebastienros/orchardcore/nuget/index.json
+dotnet new install OrchardCore.ProjectTemplates@<preview-version> --add-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json
 dotnet new occms -o MyOrchardSite
 cd MyOrchardSite
 dotnet new nugetconfig
-dotnet nuget add source https://f.feedz.io/sebastienros/orchardcore/nuget/index.json --name OrchardCoreFeedz
+dotnet nuget add source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --name OrchardCorePreview
 dotnet restore
 dotnet run
 ```
 
-The template defaults to the matching Orchard package version. The local
-`NuGet.Config` keeps the feed configuration with the generated project.
-All packages retain their original IDs, including built-in themes such as
-`TheAdmin` and `TheBlogTheme`; only their versions change for this feed.
-Translation packs remain separate dependencies at the version pinned
-by the repository.
-
-The template pack also includes MVC websites, CMS/MVC modules, and themes. Add
-`OrchardCore.RemoteManagement` and configure the tenant as described below when
-testing CLI management against a generated site.
+The template defaults to its matching Orchard package version. Use a release
+version and omit the extra source when installing released templates.
 
 ### Build from source
 
@@ -325,13 +244,12 @@ or the site's packages. `--source` adds an explicit Orchard dependency feed
 alongside nuget.org, using an HTTPS NuGet URL or local package directory. It
 does not replace the embedded template or change the Orchard version.
 
-For this fork's temporary CLI previews, whose matching packages are published
-on Feedz, configure the feed in a parent/user NuGet configuration or pass it
-explicitly:
+When restoring a build that references official preview packages, configure
+Cloudsmith in a parent/user NuGet configuration or pass it explicitly:
 
 ```bash
 pomi install ./MyPreviewSite --site-name "My Preview Site" --email admin@example.com \
-  --source https://f.feedz.io/sebastienros/orchardcore/nuget/index.json
+  --source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json
 ```
 
 For an isolated source list, add `--clear-sources` to that command. This clears
@@ -963,10 +881,10 @@ closing a shell does not log you out.
 
 Continue with the [complete management API reference](../../reference/api/README.md),
 [CLI reference](../../reference/modules/RemoteManagement/README.md), and
-[verification record](../../reference/modules/RemoteManagement/review.md).
+[verification scripts](https://github.com/OrchardCMS/OrchardCore/tree/main/.scripts/remote-management).
 The agent plugin includes a workflow router, independently usable specialists,
 and shared authentication, context, and output guidance. Essential references
-are bundled; longer manuals use commit-pinned links that require network access.
+are bundled; longer manuals use official Orchard Core links that require network access.
 
 Download the plugin or skills-only package and follow the installation steps
 in [Use Pomi with an agent](../../agents/index.md).

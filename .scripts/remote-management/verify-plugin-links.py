@@ -2,7 +2,7 @@
 """Verify Markdown file links and heading anchors in an extracted CLI plugin.
 
 Runs without the repository or network. Relative links must stay inside the
-plugin and resolve to packaged files. External manuals must use a commit-pinned
+plugin and resolve to packaged files. External manuals must use an official
 GitHub URL. This checks their URL shape, not remote HTTP availability.
 """
 import argparse
@@ -43,8 +43,8 @@ def verify(root):
             if url.scheme or url.netloc:
                 if 'src/docs/' in url.path:
                     if (url.scheme != 'https' or url.netloc != 'github.com'
-                            or not re.fullmatch(r'/sebastienros/OrchardCore/blob/[0-9a-f]{40}/src/docs/.+', url.path)):
-                        failures.append(f'{file.relative_to(root)}: manual is not commit-pinned: {link}')
+                            or not re.fullmatch(r'/OrchardCMS/OrchardCore/blob/(?:main|v[^/]+|[0-9a-f]{40})/src/docs/.+', url.path)):
+                        failures.append(f'{file.relative_to(root)}: manual is not official: {link}')
                     manual_count += 1
                 continue
             target = (file.parent / urllib.parse.unquote(url.path)).resolve() if url.path else file

@@ -66,5 +66,5 @@ origin or tenant.
   Use GraphiQL for interactive query authoring. If a custom mutation changes
   management commands, explicitly refresh their metadata with `pomi api refresh`.
 
-Versioned reference (live tenant schemas take precedence): [Apis.GraphQL module](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/modules/Apis.GraphQL/README.md),
+Official reference (live tenant schemas take precedence): [Apis.GraphQL module](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/modules/Apis.GraphQL/README.md),
 section **Use GraphQL from the CLI**.

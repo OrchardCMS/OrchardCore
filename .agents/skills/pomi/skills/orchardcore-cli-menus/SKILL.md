@@ -233,5 +233,5 @@ Verify the root and representative content routes, nested keyboard navigation,
 anchor targets, role-varying visibility, mobile/desktop layouts, script/CSS
 requests, and browser console.
 
-Versioned reference (live tenant schemas take precedence):
-[Menu module](https://github.com/sebastienros/OrchardCore/blob/907ffbbb9ad29b950316e4971caecf532ffbb80a/src/docs/reference/modules/Menu/README.md).
+Official reference (live tenant schemas take precedence):
+[Menu module](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/modules/Menu/README.md).

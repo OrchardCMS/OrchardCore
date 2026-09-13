@@ -334,10 +334,10 @@ URLs, missing shapes, stylesheet requests, and responsive behavior. Require:
 - browser console has no errors;
 - layout works at approximately 375px, 768px, and 1440px viewport widths.
 
-Versioned references (live tenant schemas take precedence):
-[Placements API](https://github.com/sebastienros/OrchardCore/blob/48e9565ed0507eca9891c249fe6bdbd95ecb9c3a/src/docs/reference/api/placements/README.md),
-[Shortcode templates API](https://github.com/sebastienros/OrchardCore/blob/b52b013b456dac853ff9a41f3fa23e2036a39c30/src/docs/reference/api/shortcode-templates/README.md),
-[Layers API](https://github.com/sebastienros/OrchardCore/blob/9ac4196b9c911244e346d6447eae10ff8c74b535/src/docs/reference/api/layers/README.md),
-[templates API](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/api/templates/README.md),
-[Templates module](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/modules/Templates/README.md), and
-[Liquid module](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/modules/Liquid/README.md).
+Official references (live tenant schemas take precedence):
+[Placements API](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/api/placements/README.md),
+[Shortcode templates API](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/api/shortcode-templates/README.md),
+[Layers API](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/api/layers/README.md),
+[templates API](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/api/templates/README.md),
+[Templates module](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/modules/Templates/README.md), and
+[Liquid module](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/modules/Liquid/README.md).

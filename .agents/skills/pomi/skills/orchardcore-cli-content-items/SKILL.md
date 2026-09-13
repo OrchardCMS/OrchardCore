@@ -121,7 +121,7 @@ with changed culture/set membership; inspect and resolve that draft. Coordinate
 concurrent requests for the same set/culture because sequential retry behavior
 does not provide a distributed lock.
 
-[Content localizations API](https://github.com/sebastienros/OrchardCore/blob/67e9556d06ea2edc3d9fd434d88e3ff456068564/src/docs/reference/api/content-localizations/README.md)
+[Content localizations API](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/api/content-localizations/README.md)
 is a versioned reference; the live tenant contract takes precedence. UI-string
 translations and culture-picker settings are separate workflows.
 
@@ -222,4 +222,4 @@ pomi content items list --content-type Article --status published
 Inspect public URLs separately; a successful API save does not prove template,
 media, navigation, or CSS correctness.
 
-Versioned reference (live tenant schemas take precedence): [content-items API](https://github.com/sebastienros/OrchardCore/blob/907ffbbb9ad29b950316e4971caecf532ffbb80a/src/docs/reference/api/content-items/README.md).
+Official reference (live tenant schemas take precedence): [content-items API](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/api/content-items/README.md).

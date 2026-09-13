@@ -1,103 +1,48 @@
-name: Remote management CI and optional packages
+name: Native CLI artifacts
 on:
-  workflow_dispatch:
-    inputs:
-      publish_packages:
-        description: Build native binaries and publish the complete package set to Feedz
-        type: boolean
-        default: false
-  push:
-    branches: ['**']
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - '.github/workflows/remote_cli.yml'
+      - '.github/workflows/release_ci.yml'
+      - '.scripts/remote-management/*smoke.py'
+      - '.scripts/remote-management/*prepare-packages.py'
+      - 'src/OrchardCore.Cli/**'
+  workflow_call:
+    inputs:
+      version:
+        description: Release version; empty for main validation artifacts
+        type: string
+        default: ''
 permissions:
   contents: read
-env:
-  FEEDZ_SOURCE: https://f.feedz.io/sebastienros/orchardcore/nuget/index.json
-concurrency:
-  # Superseded checks can stop; an explicitly requested publication runs to completion.
-  group: remote-cli-${{ github.event_name }}-${{ inputs.publish_packages && github.run_id || github.event.pull_request.number || github.ref }}
-  cancel-in-progress: ${{ !inputs.publish_packages }}
 jobs:
-  checks:
-    # PR - CI builds the solution and runs these suites on Linux and Windows for PRs.
-    if: github.repository == 'sebastienros/OrchardCore' && github.event_name != 'pull_request'
-    runs-on: ubuntu-24.04
-    timeout-minutes: 45
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: ./.github/actions/setup-dotnet
-      - name: Build with analyzers
-        run: dotnet build OrchardCore.slnx -c Release -p:TreatWarningsAsErrors=true --warnaserror -p:RunAnalyzers=true -p:NuGetAudit=false
-      - name: Server tests
-        run: dotnet test --project test/OrchardCore.Tests -c Release --no-build
-      - name: CLI tests
-        run: dotnet test --project test/OrchardCore.Cli.Tests -c Release --no-build
-      - name: Remote management authentication and MCP tests
-        run: dotnet test --project test/OrchardCore.RemoteManagement.Tests -c Release --no-build
-
   version:
-    if: github.repository == 'sebastienros/OrchardCore' && github.event_name == 'workflow_dispatch' && inputs.publish_packages
     runs-on: ubuntu-24.04
     outputs:
       package_version: ${{ steps.version.outputs.package_version }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Select a common incremental package version
+      - name: Validate package staging
+        run: python3 .scripts/remote-management/test-prepare-packages.py
+      - name: Select a common package version
         id: version
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
         run: |
           python3 - <<'PYTHON'
           import os
           import xml.etree.ElementTree as ET
           prefix = ET.parse('src/OrchardCore.Build/OrchardCore.Commons.props').find('.//{*}VersionPrefix').text
-          version = f"{prefix}-cli.{os.environ['GITHUB_RUN_NUMBER']}"
+          version = os.environ["RELEASE_VERSION"] or f"{prefix}-preview-native.{os.environ['GITHUB_RUN_NUMBER']}"
           with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
               output.write(f"package_version={version}\n")
           print(f"Package version: {version}")
           PYTHON
 
-  packages:
-    needs: version
-    if: github.repository == 'sebastienros/OrchardCore' && github.event_name == 'workflow_dispatch' && inputs.publish_packages
-    runs-on: ubuntu-24.04
-    timeout-minutes: 45
-    env:
-      PACKAGE_VERSION: ${{ needs.version.outputs.package_version }}
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: ./.github/actions/setup-dotnet
-      - name: Build libraries, modules, themes, and project templates
-        run: >-
-          dotnet build OrchardCore.slnx -c Release -p:NuGetAudit=false
-          -p:Version="$PACKAGE_VERSION" -p:RepositoryUrl=https://github.com/sebastienros/OrchardCore
-          -p:RepositoryCommit="$GITHUB_SHA"
-      - name: Server tests
-        run: dotnet test --project test/OrchardCore.Tests -c Release --no-build
-      - name: Remote management authentication and MCP tests
-        run: dotnet test --project test/OrchardCore.RemoteManagement.Tests -c Release --no-build
-      - name: Pack the solution, including project templates
-        run: >-
-          dotnet pack OrchardCore.slnx -c Release --no-build
-          -p:Version="$PACKAGE_VERSION" -p:RepositoryUrl=https://github.com/sebastienros/OrchardCore
-          -p:RepositoryCommit="$GITHUB_SHA"
-      - name: Upload library and template packages
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: orchardcore-packages
-          # Match release_ci.yml: test/sample projects outside src are not products.
-          path: |
-            src/**/*.nupkg
-            src/**/*.snupkg
-          if-no-files-found: error
-          retention-days: 30
-          compression-level: 0
-
   native:
     needs: version
     env:
       CLI_PACKAGE_VERSION: ${{ needs.version.outputs.package_version }}
-    # Native builds and downloadable artifacts are manual opt-in only.
-    if: github.repository == 'sebastienros/OrchardCore' && github.event_name == 'workflow_dispatch' && inputs.publish_packages
     strategy:
       fail-fast: false
       matrix:
@@ -116,7 +61,7 @@ jobs:
       - name: CLI tests
         run: dotnet test --project test/OrchardCore.Cli.Tests
       - name: Publish NativeAOT
-        run: dotnet publish src/OrchardCore.Cli -c Release -r ${{ matrix.rid }} -o artifacts/native -p:TreatWarningsAsErrors=true -p:Version=${{ env.CLI_PACKAGE_VERSION }} -p:RepositoryUrl=https://github.com/sebastienros/OrchardCore -p:RepositoryCommit=${{ github.sha }}
+        run: dotnet publish src/OrchardCore.Cli -c Release -r ${{ matrix.rid }} -o artifacts/native -p:TreatWarningsAsErrors=true -p:Version=${{ env.CLI_PACKAGE_VERSION }} -p:RepositoryUrl=https://github.com/OrchardCMS/OrchardCore -p:RepositoryCommit=${{ github.sha }}
       - name: Verify native binary and package
         shell: pwsh
         run: |
@@ -144,9 +89,9 @@ jobs:
           & $python .scripts/remote-management/device-qr-native-smoke.py (Join-Path artifacts/native $(if ($IsWindows) { 'pomi.exe' } else { 'pomi' }))
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Pack tool installer
-        run: dotnet pack src/OrchardCore.Cli -c Release -p:PackAsTool=true -p:Version=${{ env.CLI_PACKAGE_VERSION }} -p:RepositoryUrl=https://github.com/sebastienros/OrchardCore -p:RepositoryCommit=${{ github.sha }} -p:TreatWarningsAsErrors=true -o artifacts/tool
+        run: dotnet pack src/OrchardCore.Cli -c Release -p:PackAsTool=true -p:Version=${{ env.CLI_PACKAGE_VERSION }} -p:RepositoryUrl=https://github.com/OrchardCMS/OrchardCore -p:RepositoryCommit=${{ github.sha }} -p:TreatWarningsAsErrors=true -o artifacts/tool
       - name: Pack NativeAOT tool implementation
-        run: dotnet pack src/OrchardCore.Cli -c Release -r ${{ matrix.rid }} -p:PackAsTool=true -p:Version=${{ env.CLI_PACKAGE_VERSION }} -p:RepositoryUrl=https://github.com/sebastienros/OrchardCore -p:RepositoryCommit=${{ github.sha }} -p:TreatWarningsAsErrors=true -o artifacts/tool
+        run: dotnet pack src/OrchardCore.Cli -c Release -r ${{ matrix.rid }} -p:PackAsTool=true -p:Version=${{ env.CLI_PACKAGE_VERSION }} -p:RepositoryUrl=https://github.com/OrchardCMS/OrchardCore -p:RepositoryCommit=${{ github.sha }} -p:TreatWarningsAsErrors=true -o artifacts/tool
       - name: Verify tool installation and native execution
         shell: pwsh
         run: |
@@ -200,71 +145,3 @@ jobs:
 
           GitHub sign-in is required. Artifacts are retained for 30 days.
           "@ | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
-
-  publish:
-    needs: [checks, version, packages, native]
-    # Never expose the publishing secret to PR runs or publish from upstream.
-    if: github.repository == 'sebastienros/OrchardCore' && github.event_name == 'workflow_dispatch' && inputs.publish_packages
-    runs-on: ubuntu-24.04
-    timeout-minutes: 30
-    env:
-      PACKAGE_VERSION: ${{ needs.version.outputs.package_version }}
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: ./.github/actions/setup-dotnet
-      - name: Download libraries and templates
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: orchardcore-packages
-          path: artifacts/downloads/packages
-      - name: Download all native tool implementations
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          pattern: pomi-tool-*
-          path: artifacts/downloads
-      - name: Package publication regression tests
-        run: python3 .scripts/remote-management/test-prepare-feedz.py
-      - name: Validate a complete, consistently versioned package set
-        run: python3 .scripts/remote-management/prepare-feedz.py artifacts/downloads artifacts/feedz "$PACKAGE_VERSION"
-      - name: Publish packages and symbols to Feedz
-        env:
-          FEEDZ_IO_API_KEY: ${{ secrets.FEEDZ_IO_API_KEY }}
-        run: |
-          test -n "$FEEDZ_IO_API_KEY" || { echo 'FEEDZ_IO_API_KEY is not configured.' >&2; exit 1; }
-          # The list puts the installer last, after every native implementation.
-          while IFS= read -r package; do
-            dotnet nuget push "$package" --source "$FEEDZ_SOURCE" \
-              --api-key "$FEEDZ_IO_API_KEY" --symbol-api-key "$FEEDZ_IO_API_KEY" \
-              --skip-duplicate --timeout 600
-          done < artifacts/feedz/publish-order.txt
-      - name: Install the published tool and templates, then restore a generated CMS
-        env:
-          NUGET_PACKAGES: ${{ runner.temp }}/feedz-verification/packages
-        run: |
-          dotnet tool install OrchardCore.Cli --tool-path "$RUNNER_TEMP/feedz-tool" \
-            --add-source "$FEEDZ_SOURCE" --version "$PACKAGE_VERSION"
-          test "$("$RUNNER_TEMP/feedz-tool/pomi" --version)" = "$PACKAGE_VERSION"
-          dotnet new install "OrchardCore.ProjectTemplates@$PACKAGE_VERSION" --add-source "$FEEDZ_SOURCE"
-          dotnet new occms -o "$RUNNER_TEMP/feedz-cms"
-          dotnet restore "$RUNNER_TEMP/feedz-cms" --source "$FEEDZ_SOURCE" --source https://api.nuget.org/v3/index.json
-          dotnet build "$RUNNER_TEMP/feedz-cms" --no-restore
-      - name: Verify embedded CMS installation and Auto Setup
-        run: python3 .scripts/remote-management/install-smoke.py "$RUNNER_TEMP/feedz-tool/pomi" --source "$FEEDZ_SOURCE"
-      - name: Add Feedz installation commands to the summary
-        run: |
-          cat >> "$GITHUB_STEP_SUMMARY" <<EOF
-          ## Published to Feedz
-
-          Commit: $GITHUB_SHA
-
-          Package version: **$PACKAGE_VERSION**
-
-          Libraries, modules, themes, project templates, and NativeAOT CLI tools
-          for all six platforms use this version. The published Linux tool and
-          templates were installed, and a generated CMS restored from the feed.
-
-          \`\`\`sh
-          dotnet tool install --global OrchardCore.Cli --add-source $FEEDZ_SOURCE --version $PACKAGE_VERSION
-          dotnet new install OrchardCore.ProjectTemplates@$PACKAGE_VERSION --add-source $FEEDZ_SOURCE
-          \`\`\`
-          EOF

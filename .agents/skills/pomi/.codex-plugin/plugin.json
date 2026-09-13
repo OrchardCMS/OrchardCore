@@ -1,6 +1,6 @@
 {
   "name": "pomi",
-  "version": "0.10.41",
+  "version": "0.10.42",
   "description": "Design and build editor-friendly Orchard Core websites and SaaS tenants with Pomi.",
   "author": {
     "name": "Orchard Core contributors"
@@ -25,6 +25,6 @@
     "logo": "./assets/logo.png",
     "logoDark": "./assets/logo-dark.png"
   },
-  "repository": "https://github.com/sebastienros/OrchardCore",
+  "repository": "https://github.com/OrchardCMS/OrchardCore",
   "license": "BSD-3-Clause"
 }

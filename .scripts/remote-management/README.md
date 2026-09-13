@@ -1,8 +1,5 @@
 # Remote management verification toolkit
 
-See the [module/feature coverage inventory](../../design/remote-management/coverage-inventory.md)
-and [prioritized delivery plan](../../design/remote-management/coverage-plan.md) for API and command gaps.
-
 Run these scripts from a checkout of the feature branch. Python 3 and the
 repository's .NET SDK are required. These tools create disposable loopback
 tenants with synthetic credentials; do not point them at real tenant data.
@@ -163,19 +160,11 @@ binaries with completions, a verification record, and SHA-256 checksums.
 Budgets are 30 MiB for the executable and 2 seconds median process startup;
 the latter is a regression guard, not a cold-machine performance guarantee.
 
-The `Remote management CI and optional packages` workflow runs server and CLI
-checks on pushes. PRs run the strict solution build, server, CLI, authentication,
-MCP and functional tests through `PR - CI`. Regular pushes and PR updates do not
-build, pack, upload or publish native binaries or NuGet packages.
-
-To produce packages, manually dispatch `remote_cli.yml` on the desired branch
-with `publish_packages` enabled. This opt-in runs the six-platform NativeAOT
-builds and native smoke/install checks, creates downloadable artifacts retained
-for 30 days, and publishes the complete package set to Feedz after checks pass.
-Each platform summary links to its native archive and `pomi-tool-<rid>` packages,
-with the built commit and common `4.0.0-cli.<run>` version (using the current
-repository version prefix). Native-specific smoke checks run only in this
-opt-in path; managed CLI tests continue to run in ordinary CI.
+PR CI runs strict solution builds, server, CLI, authentication, MCP, and functional
+tests. Main CI additionally calls the reusable native workflow for all six
+platforms, retaining verified archives and tool packages for 30 days without
+publishing them. Release CI builds the tag version and publishes only after
+native and server checks pass. See [Official publishing](#official-publishing).
 
 Download instructions and platform names are in the
 [getting-started guide](../../src/docs/guides/remote-management/README.md#1-download-or-build-the-cli).
@@ -276,9 +265,9 @@ and tenant setup live in its `references/` directory. Every specialist links
 directly to shared context/authentication/output rules, so selecting a specialist
 does not require loading the router first. Sibling skills and essential
 references use relative Markdown links that work in both the repository and ZIP.
-Longer manuals use commit-pinned GitHub links rather than unpackaged `src/docs`
+Longer manuals use official Orchard Core GitHub links rather than unpackaged `src/docs`
 paths; live tenant schemas remain authoritative. When revising an instruction
-alongside an API change, update its manual link to a published commit containing
+alongside an API change, keep its manual link on the official main branch or an official tag containing
 that documentation.
 
 The builder checks local links and heading anchors before creating the ZIP.
@@ -316,10 +305,6 @@ skill descriptions and body text when adding/removing capabilities; bump the
 plugin version and rebuild the archive. Recheck blind evaluations when a
 workflow changes materially; syntax checks do not measure agent efficiency.
 
-See [evaluations.md](evaluations.md) for the reproducible blind-evaluation
-protocol and observed results. Test evidence and limitations are also recorded
-in `src/docs/reference/modules/RemoteManagement/review.md`.
-
 ## Custom asset policy regression checks
 
 With the disposable fixture running, verify the Media upload policy:
@@ -336,56 +321,20 @@ static-file management routes return 404 while tenant static serving is enabled.
 The smoke fixture exercises the custom asset lifecycle through `pomi` itself.
 This is a local-store check; it does not claim Azure/S3 or multi-node coverage.
 
-## Feedz publishing
+## Official publishing
 
-The fork's `remote_cli.yml` publishes only when manually dispatched with
-`publish_packages` enabled (default: disabled). Branch pushes, PR updates and
-manual runs without that option run checks without package or native-binary
-publication. Superseded regular checks are cancelled; explicitly requested
-publication runs are allowed to finish. Publishing runs only in
-`sebastienros/OrchardCore`, after the checks and all six native builds/tests/install
-checks pass. A manual packaging run also publishes to Feedz; it is not an
-artifact-only mode.
+`remote_cli.yml` is a reusable six-platform native build and verification workflow.
+Main CI calls it to generate validation artifacts without registry publication.
+Release CI calls it with the tag version and waits for all native checks before
+publishing. `prepare-packages.py` validates the complete release package set,
+including templates and all native implementations, and stages the installer last.
+Run `python3 .scripts/remote-management/test-prepare-packages.py` to test that boundary.
 
-Only outputs under `src` are collected, excluding test/sample packages.
-The solution pack includes libraries, modules, themes, targets, and
-`OrchardCore.ProjectTemplates`. The CLI adds `OrchardCore.Cli` and six
-`OrchardCore.Cli.<rid>` NativeAOT implementation packages. All packages retain
-their original IDs, including bundled themes such as `TheAdmin` and
-`TheBlogTheme`. Only the package version changes for this feed.
-`prepare-feedz.py` accepts the OrchardCore packages and existing bundled theme
-IDs, and rejects unexpected IDs, missing implementations,
-inconsistent dependencies, or templates stamped with a different version.
-Separately published translation packs retain the version pinned in
-`Directory.Packages.props`; they are restored, not republished.
-
-After publishing, `install-smoke.py <native-pomi>` tests the embedded CMS template
-against the matching published packages: Auto Setup, a directory with spaces,
-environment/stdin password input, missing SDK diagnostics, overwrite refusal,
-failed setup, and foreground `--run` cancellation. It uses disposable local
-sites and generated test credentials. Run it only with a CLI build whose
-matching Orchard dependencies are already available. Pass its preview feed with
-`--source` when needed.
-
-The installer smoke also places its preview feed in a parent `NuGet.Config`,
-installs without `--source`, and verifies both installation and a subsequent
-ordinary restore inherit that feed. Its explicit `--clear-sources` case checks
-that an inherited-only source is excluded while nuget.org and `--source` remain.
-
-Versions use the repository's `VersionPrefix` plus
-`-cli.<workflow-run-number>` (for example `4.0.0-cli.25`). Each explicitly requested publication uses its workflow run number. Rerunning the same workflow run keeps its version;
-`--skip-duplicate` allows a partial publication to resume without replacing
-immutable packages.
-
-The publishing step alone receives `FEEDZ_IO_API_KEY` from GitHub secrets. Its
-only destination is `https://f.feedz.io/sebastienros/orchardcore/nuget/index.json`;
-the feed's service index also advertises its symbol endpoint. Symbol packages
-are staged beside their main packages for NuGet's symbol publication. The
-installer is published after all native implementations. The final verification
-installs the Linux tool and project templates from Feedz and restores a generated
-CMS project with an isolated package cache, then builds it. Use the **Published to Feedz** job
-summary for the exact version and install commands.
-
+Server libraries, modules, themes, and templates follow the existing Preview CI
+Cloudsmith publication workflow. Release packages, including the native .NET tool,
+follow the existing NuGet.org release workflow. Standalone native archives and
+checksums are attached to the official GitHub release after package publication.
+Main validation artifacts are not published to either registry.
 
 ## Confirmation flags
 
@@ -425,7 +374,7 @@ The smoke suite verifies partial updates and null reset, no-op retries, module p
 refusal over HTTP, real 307/308 redirects and HSTS headers, feature removal/restoration
 and MCP behavior with the CLI feature disabled. HTTPS certificate verification stays enabled.
 
-## Website composition milestone
+## Website composition checks
 
 ```bash
 python3 .scripts/remote-management/website-composition-smoke.py <fixture.json>

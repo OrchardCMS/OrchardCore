@@ -225,7 +225,7 @@ child; use its own returned context for content and design work. The administrat
 user remains available for human sign-in with the password in the handoff file.
 
 For host presets, validation, permissions, and complete DTOs, read the versioned
-[tenant API reference](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/api/tenants/README.md).
+[tenant API reference](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/api/tenants/README.md).
 
 ## Feature-profile definitions and assignment
 

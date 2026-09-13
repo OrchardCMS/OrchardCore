@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate and stage one complete Orchard Core build before publishing to Feedz."""
+"""Validate and stage one complete Orchard Core build before package publication."""
 import argparse
 import json
 from pathlib import Path

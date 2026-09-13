@@ -163,6 +163,6 @@ routes, capability, CLI commands and MCP tools.
 
 ## Sources
 
-- [Endpoint mappings and handlers](https://github.com/sebastienros/OrchardCore/blob/sebros/remote-tenant-cli-plan/src/OrchardCore.Modules/OrchardCore.Placements/Endpoints/Management/PlacementManagementEndpoints.cs)
-- [Shared manager](https://github.com/sebastienros/OrchardCore/blob/sebros/remote-tenant-cli-plan/src/OrchardCore.Modules/OrchardCore.Placements/Services/PlacementsManager.cs)
+- [Endpoint mappings and handlers](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore.Modules/OrchardCore.Placements/Endpoints/Management/PlacementManagementEndpoints.cs)
+- [Shared manager](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore.Modules/OrchardCore.Placements/Services/PlacementsManager.cs)
 - [Placements module](../../modules/Placements/README.md)

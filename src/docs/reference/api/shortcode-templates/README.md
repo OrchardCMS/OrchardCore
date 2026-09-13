@@ -146,6 +146,6 @@ A disabled feature removes its routes, capability, CLI commands and MCP tools.
 
 ## Sources
 
-- [Endpoint mappings and handlers](https://github.com/sebastienros/OrchardCore/blob/sebros/remote-tenant-cli-plan/src/OrchardCore.Modules/OrchardCore.Shortcodes/Endpoints/Management/ShortcodeTemplateManagementEndpoints.cs)
-- [Shared manager](https://github.com/sebastienros/OrchardCore/blob/sebros/remote-tenant-cli-plan/src/OrchardCore.Modules/OrchardCore.Shortcodes/Services/ShortcodeTemplatesManager.cs)
+- [Endpoint mappings and handlers](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore.Modules/OrchardCore.Shortcodes/Endpoints/Management/ShortcodeTemplateManagementEndpoints.cs)
+- [Shared manager](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore.Modules/OrchardCore.Shortcodes/Services/ShortcodeTemplatesManager.cs)
 - [Shortcodes module](../../modules/Shortcodes/README.md)

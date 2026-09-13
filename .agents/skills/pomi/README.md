@@ -2,7 +2,7 @@
 
 Start with the [workflow router](skills/orchardcore-cli/SKILL.md), or select a
 specialist directly. Each links to bundled context, authentication, and output
-rules. Longer manuals use commit-pinned links and require network access.
+rules. Longer manuals use official links and require network access.
 Live tenant schemas take precedence. Install Pomi separately; this package
 contains instructions and branding, not a CLI executable or credentials.
 
@@ -17,7 +17,7 @@ content editable through Orchard rather than embedding whole pages in HTML.
 In Copilot CLI, install the plugin and open the agent selector:
 
 ```bash
-copilot plugin marketplace add sebastienros/OrchardCore#sebros/remote-tenant-cli-plan
+copilot plugin marketplace add OrchardCMS/OrchardCore#main
 copilot plugin install pomi@orchardcore
 copilot
 ```
@@ -36,7 +36,7 @@ the skills-only ZIP includes only the skills and their references.
 ## Install from the Orchard Core marketplace
 
 ```bash
-codex plugin marketplace add sebastienros/OrchardCore --ref sebros/remote-tenant-cli-plan
+codex plugin marketplace add OrchardCMS/OrchardCore --ref main
 codex plugin add pomi@orchardcore
 ```
 
@@ -44,7 +44,7 @@ Start a new task and ask for the `orchardcore-cli` skill. Claude Code uses the
 same skill files; run these commands inside Claude Code:
 
 ```text
-/plugin marketplace add sebastienros/OrchardCore@sebros/remote-tenant-cli-plan
+/plugin marketplace add OrchardCMS/OrchardCore@main
 /plugin install pomi@orchardcore
 ```
 

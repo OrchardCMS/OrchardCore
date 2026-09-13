@@ -15,7 +15,7 @@ on:
       - '.readthedocs.yml'
       - '.gitattributes'
       - '.github/workflows/docs_validation.yml'
-    branches: [ main, release/**, sebros/remote-tenant-cli-plan ]
+    branches: [ main, release/** ]
   pull_request:
     paths:
       - 'mkdocs.yml'

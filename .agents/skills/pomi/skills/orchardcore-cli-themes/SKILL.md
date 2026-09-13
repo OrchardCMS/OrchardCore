@@ -53,6 +53,6 @@ and [orchardcore-cli-templates](../orchardcore-cli-templates/SKILL.md) for custo
 public route because selecting a theme does not prove its resources or content
 templates render correctly.
 
-Versioned references (live tenant schemas take precedence):
-[themes API](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/api/themes/README.md) and
-[Themes module](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/modules/Themes/README.md).
+Official references (live tenant schemas take precedence):
+[themes API](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/api/themes/README.md) and
+[Themes module](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/modules/Themes/README.md).

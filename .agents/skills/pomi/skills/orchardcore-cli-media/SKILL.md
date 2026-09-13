@@ -142,9 +142,9 @@ Also verify the response content type. When a template references the asset,
 verify the rendered page and computed styles. Use returned `filePath` values for
 media fields, not public URLs.
 
-Versioned references (live tenant schemas take precedence):
-[media API](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/api/media/README.md) and
-[Media module](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/modules/Media/README.md).
+Official references (live tenant schemas take precedence):
+[media API](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/api/media/README.md) and
+[Media module](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/modules/Media/README.md).
 
 ## Profiles, caches and tenant restrictions
 

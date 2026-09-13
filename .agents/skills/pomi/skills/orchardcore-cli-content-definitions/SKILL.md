@@ -298,13 +298,13 @@ Remote management currently has no dedicated sitemap document/source API.
 its content-type source requires a recipe, deployment plan, admin UI, or a
 future sitemap management API.
 
-Versioned references (live tenant schemas take precedence):
-[content-definitions API](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/api/content-definitions/README.md) and the module references below:
+Official references (live tenant schemas take precedence):
+[content-definitions API](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/api/content-definitions/README.md) and the module references below:
 
-- [ContentTypes](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/modules/ContentTypes/README.md)
-- [Flow](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/modules/Flow/README.md)
-- [Lists](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/modules/Lists/README.md)
-- [Taxonomies](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/modules/Taxonomies/README.md)
-- [Menu](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/modules/Menu/README.md)
-- [Alias](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/modules/Alias/README.md)
-- [Sitemaps](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/modules/Sitemaps/README.md)
+- [ContentTypes](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/modules/ContentTypes/README.md)
+- [Flow](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/modules/Flow/README.md)
+- [Lists](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/modules/Lists/README.md)
+- [Taxonomies](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/modules/Taxonomies/README.md)
+- [Menu](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/modules/Menu/README.md)
+- [Alias](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/modules/Alias/README.md)
+- [Sitemaps](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/modules/Sitemaps/README.md)

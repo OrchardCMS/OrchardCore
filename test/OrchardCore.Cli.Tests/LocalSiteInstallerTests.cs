@@ -129,7 +129,7 @@ public class LocalSiteInstallerTests
 
     [Theory]
     [InlineData("https://packages.example/v3/index.json")]
-    [InlineData("https://f.feedz.io/sebastienros/orchardcore/nuget/index.json")]
+    [InlineData("https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json")]
     public void Source_UsesExplicitFeed(string source)
     {
         Assert.Equal(source, LocalSiteInstaller.ResolveSource(new LocalSiteInstallOptions

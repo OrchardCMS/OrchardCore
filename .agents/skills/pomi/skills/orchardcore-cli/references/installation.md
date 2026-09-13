@@ -11,8 +11,8 @@ dependency versions; no template download or version selection is needed.
 Run `pomi doctor` to check for the required stable .NET SDK (currently .NET 10).
 Dependencies still need a NuGet feed or populated package cache. Nuget.org is
 added by default; parent and user-level NuGet sources remain available. For
-this fork's temporary CLI previews, use an inherited Feedz configuration or
-pass `--source https://f.feedz.io/sebastienros/orchardcore/nuget/index.json`.
+official preview dependencies, use an inherited Cloudsmith configuration or
+pass `--source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json`.
 Use `--clear-sources` only when the user wants to exclude inherited package
 sources; it leaves nuget.org and an explicit `--source`.
 
@@ -136,4 +136,17 @@ tenants; do not recreate or reset the installed site. Without the flag, recipe
 behavior is unchanged and no automatic context is created.
 
 After installation, see [tenant management and Remote Management setup](tenants.md)
-and the versioned [Remote Management reference](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/modules/RemoteManagement/README.md).
+and the official [Remote Management reference](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/modules/RemoteManagement/README.md).
+
+## Official distribution
+
+Install released Pomi tools from NuGet.org with `dotnet tool install --global
+OrchardCore.Cli --version <release-version>` (as one command), or use the standalone
+archive from the official Orchard Core release. Main CI's six-platform artifacts
+are validation builds, not published preview tools. Their embedded template needs
+server packages with the same artifact version. Do not assume a native validation
+artifact can restore its dependencies from Cloudsmith.
+
+Libraries, modules, themes, and project templates from main use Orchard Core's
+existing Cloudsmith preview publication workflow. Tagged releases publish the
+complete versioned package set, including native tools, to NuGet.org.

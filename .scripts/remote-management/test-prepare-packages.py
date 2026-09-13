@@ -7,13 +7,13 @@ import tempfile
 import unittest
 import zipfile
 
-spec = importlib.util.spec_from_file_location('prepare_feedz', Path(__file__).with_name('prepare-feedz.py'))
-feedz = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(feedz)
-VERSION = '4.0.0-cli.123'
+spec = importlib.util.spec_from_file_location('prepare_packages', Path(__file__).with_name('prepare-packages.py'))
+publisher = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(publisher)
+VERSION = '4.0.0'
 
 
-class PrepareFeedzTests(unittest.TestCase):
+class PreparePackagesTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
@@ -21,8 +21,8 @@ class PrepareFeedzTests(unittest.TestCase):
         self.source = self.root / 'input'
         self.source.mkdir()
         self.output = self.root / 'output'
-        for key in feedz.REQUIRED:
-            self.package(feedz.THEMES.get(key, 'OrchardCore.' + key.removeprefix('orchardcore.')))
+        for key in publisher.REQUIRED:
+            self.package(publisher.THEMES.get(key, 'OrchardCore.' + key.removeprefix('orchardcore.')))
 
     def package(self, package_id, version=VERSION, template_version=VERSION, dependency=None, folder='', dependency_version='0.0.1'):
         path = self.source / folder / f'{package_id}.{version}.nupkg'
@@ -39,26 +39,26 @@ class PrepareFeedzTests(unittest.TestCase):
 
     def test_complete_set_deduplicates_pointer_and_publishes_it_last(self):
         self.package('OrchardCore.cli', folder='another-native-runner')
-        feedz.prepare(self.source, self.output, VERSION)
+        publisher.prepare(self.source, self.output, VERSION)
         ordered = (self.output / 'publish-order.txt').read_text().splitlines()
-        self.assertEqual(len(feedz.REQUIRED), len(ordered))
+        self.assertEqual(len(publisher.REQUIRED), len(ordered))
         self.assertEqual('OrchardCore.cli.' + VERSION + '.nupkg', Path(ordered[-1]).name)
 
     def test_missing_platform_stops_before_staging(self):
         next(self.source.glob('*cli.win-arm64.*')).unlink()
         with self.assertRaisesRegex(ValueError, 'Missing required packages'):
-            feedz.prepare(self.source, self.output, VERSION)
+            publisher.prepare(self.source, self.output, VERSION)
         self.assertFalse(self.output.exists())
 
     def test_foreign_package_stops_before_staging(self):
         self.package('Unexpected.Package')
         with self.assertRaisesRegex(ValueError, 'Unexpected package ID'):
-            feedz.prepare(self.source, self.output, VERSION)
+            publisher.prepare(self.source, self.output, VERSION)
         self.assertFalse(self.output.exists())
 
     def test_original_theme_ids_and_dependencies_are_preserved(self):
         self.package('OrchardCore.Extra', dependency='TheBlogTheme', dependency_version=VERSION)
-        feedz.prepare(self.source, self.output, VERSION)
+        publisher.prepare(self.source, self.output, VERSION)
         self.assertTrue((self.output / f'TheBlogTheme.{VERSION}.nupkg').exists())
         packages = json.loads((self.output / 'packages.json').read_text())['packages']
         self.assertIn('theblogtheme', packages)
@@ -68,37 +68,37 @@ class PrepareFeedzTests(unittest.TestCase):
         next(self.source.glob('TheBlogTheme.*')).unlink()
         self.package('OrchardCore.Themes.TheBlogTheme')
         with self.assertRaisesRegex(ValueError, 'Missing required packages: theblogtheme'):
-            feedz.prepare(self.source, self.output, VERSION)
+            publisher.prepare(self.source, self.output, VERSION)
         self.assertFalse(self.output.exists())
 
     def test_inconsistent_theme_dependency_is_rejected(self):
         self.package('OrchardCore.Extra', dependency='TheBlogTheme')
         with self.assertRaisesRegex(ValueError, 'inconsistent version'):
-            feedz.prepare(self.source, self.output, VERSION)
+            publisher.prepare(self.source, self.output, VERSION)
 
     def test_mixed_versions_are_rejected(self):
         self.package('OrchardCore.Extra', version='4.0.0-cli.122')
         with self.assertRaisesRegex(ValueError, 'expected version'):
-            feedz.prepare(self.source, self.output, VERSION)
+            publisher.prepare(self.source, self.output, VERSION)
 
     def test_stale_template_version_is_rejected(self):
         self.package('OrchardCore.projecttemplates', template_version='4.0.0-preview')
         with self.assertRaisesRegex(ValueError, 'template uses a different Orchard version'):
-            feedz.prepare(self.source, self.output, VERSION)
+            publisher.prepare(self.source, self.output, VERSION)
 
     def test_separately_published_translation_dependency_is_allowed_at_pinned_version(self):
         self.package('OrchardCore.Extra', dependency='OrchardCore.Translations.All', dependency_version='3.0.0')
-        feedz.prepare(self.source, self.output, VERSION)
+        publisher.prepare(self.source, self.output, VERSION)
 
     def test_unexpected_translation_version_is_rejected(self):
         self.package('OrchardCore.Extra', dependency='OrchardCore.Translations.All')
         with self.assertRaisesRegex(ValueError, 'inconsistent version'):
-            feedz.prepare(self.source, self.output, VERSION)
+            publisher.prepare(self.source, self.output, VERSION)
 
     def test_inconsistent_build_dependency_is_rejected(self):
         self.package('OrchardCore.Extra', dependency='OrchardCore.Module.Targets')
         with self.assertRaisesRegex(ValueError, 'inconsistent version'):
-            feedz.prepare(self.source, self.output, VERSION)
+            publisher.prepare(self.source, self.output, VERSION)
 
 
 if __name__ == '__main__':

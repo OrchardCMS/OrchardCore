@@ -179,5 +179,5 @@ The linked manuals are pinned to the reviewed source revision; they require
 network access. Essential operating rules are bundled here. The target tenant's
 live help and schemas remain authoritative for its enabled modules and version.
 
-- [Management discovery API](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/api/discovery/README.md)
-- [Remote Management configuration](https://github.com/sebastienros/OrchardCore/blob/4d4fc0fb66a5d789dff6d8057bbc074107918533/src/docs/reference/modules/RemoteManagement/README.md)
+- [Management discovery API](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/api/discovery/README.md)
+- [Remote Management configuration](https://github.com/OrchardCMS/OrchardCore/blob/main/src/docs/reference/modules/RemoteManagement/README.md)

@@ -49,8 +49,8 @@ on Windows, use **Extract All** and equivalent absolute folder paths.
 Register the marketplace on the Pomi development branch, then install its plugin:
 
 ```bash
-codex plugin marketplace add sebastienros/OrchardCore \
-  --ref sebros/remote-tenant-cli-plan
+codex plugin marketplace add OrchardCMS/OrchardCore \
+  --ref main
 codex plugin add pomi@orchardcore
 ```
 
@@ -88,7 +88,7 @@ the OpenAI plugin directory.
 Run these commands **inside Claude Code**:
 
 ```text
-/plugin marketplace add sebastienros/OrchardCore@sebros/remote-tenant-cli-plan
+/plugin marketplace add OrchardCMS/OrchardCore@main
 /plugin install pomi@orchardcore
 ```
 
@@ -113,7 +113,7 @@ Copilot CLI recognizes the Claude-compatible catalog and manifest in this
 repository:
 
 ```bash
-copilot plugin marketplace add sebastienros/OrchardCore#sebros/remote-tenant-cli-plan
+copilot plugin marketplace add OrchardCMS/OrchardCore#main
 copilot plugin install pomi@orchardcore
 ```
 
