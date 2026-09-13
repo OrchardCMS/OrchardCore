@@ -138,6 +138,7 @@ public sealed class FeatureProfilesDeploymentStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDeployment<AllFeatureProfilesDeploymentSource, AllFeatureProfilesDeploymentStep, AllFeatureProfilesDeploymentStepDriver>();
+        services.AddSingleton<IDeploymentStepDefinition>(new EmptyDeploymentStepDefinition<AllFeatureProfilesDeploymentStep>(nameof(AllFeatureProfilesDeploymentStep)));
     }
 }
 

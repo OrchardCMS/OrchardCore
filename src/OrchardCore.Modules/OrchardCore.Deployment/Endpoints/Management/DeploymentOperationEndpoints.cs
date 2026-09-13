@@ -97,7 +97,7 @@ internal static class DeploymentOperationEndpoints
     {
         try
         {
-            var operation = await operations.CreateAsync(owner, requestId, kind, payload, context.RequestAborted);
+            var operation = await operations.CreateAsync(owner, requestId, kind, payload, context.RequestAborted, DeploymentExecutionIdentity.Capture(context.User));
             return TypedResults.Accepted(context.Request.PathBase + "/api/deployment/operations/" + operation.Id, Describe(operation));
         }
         catch (DeploymentOperationBusyException)

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -29,6 +30,13 @@ internal sealed class DeploymentOperationExecutor : IDeploymentOperationExecutor
             var artifacts = services.GetRequiredService<DeploymentArtifactStore>();
             if (operation.Kind == DeploymentOperationKind.Export)
             {
+                var principal = operation.Identity?.Restore();
+                if (principal is null || DeploymentArtifactOwner.Get(principal) != operation.Owner
+                    || !await services.GetRequiredService<IAuthorizationService>().AuthorizeAsync(principal, DeploymentPermissions.Export))
+                {
+                    throw new UnauthorizedAccessException("The export has no authorized initiating identity.");
+                }
+                services.GetRequiredService<DeploymentExecutionContext>().User = principal;
                 var options = services.GetRequiredService<IOptions<DocumentJsonSerializerOptions>>().Value.SerializerOptions;
                 var plan = JsonSerializer.Deserialize<DeploymentPlan>(operation.Payload, options);
                 if (plan is null || plan.DeploymentSteps.Any(step => step is UnknownDeploymentStep))

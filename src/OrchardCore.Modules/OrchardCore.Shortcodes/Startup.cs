@@ -110,5 +110,6 @@ public sealed class ShortcodeTemplatesDeploymentStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDeployment<AllShortcodeTemplatesDeploymentSource, AllShortcodeTemplatesDeploymentStep, AllShortcodeTemplatesDeploymentStepDriver>();
+        services.AddSingleton<IDeploymentStepDefinition>(new EmptyDeploymentStepDefinition<AllShortcodeTemplatesDeploymentStep>(nameof(AllShortcodeTemplatesDeploymentStep)));
     }
 }

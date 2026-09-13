@@ -36,6 +36,7 @@ public sealed class Startup : StartupBase
         services.AddSingleton<IRemoteManagementCapabilityProvider, ThemesRemoteManagementCapabilityProvider>();
         services.AddScoped<ThemeTogglerService>();
         services.AddDeployment<ThemesDeploymentSource, ThemesDeploymentStep, ThemesDeploymentStepDriver>();
+        services.AddSingleton<IDeploymentStepDefinition>(new EmptyDeploymentStepDefinition<ThemesDeploymentStep>(nameof(ThemesDeploymentStep)));
         services.AddDisplayDriver<ThemeEntry, ThemeEntryDisplayDriver>();
         services.AddShapeTableProvider<AdminDashboardShapeTableProvider>();
     }

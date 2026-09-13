@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement;
@@ -66,12 +67,13 @@ public class CustomSettingsService
         return settingsType;
     }
 
+    /// <summary>Checks settings permissions for the current HTTP user.</summary>
     public Task<bool> CanUserCreateSettingsAsync(ContentTypeDefinition settingsType)
-    {
-        var user = _httpContextAccessor.HttpContext?.User;
+        => CanUserCreateSettingsAsync(settingsType, _httpContextAccessor.HttpContext?.User);
 
-        return _authorizationService.AuthorizeAsync(user, Permissions.CreatePermissionForType(settingsType));
-    }
+    /// <summary>Checks settings permissions for an explicit initiating user, including background exports.</summary>
+    public Task<bool> CanUserCreateSettingsAsync(ContentTypeDefinition settingsType, ClaimsPrincipal user)
+        => _authorizationService.AuthorizeAsync(user ?? new ClaimsPrincipal(new ClaimsIdentity()), Permissions.CreatePermissionForType(settingsType));
 
     public async Task<ContentItem> GetSettingsAsync(string settingsTypeName, Action isNew = null)
     {

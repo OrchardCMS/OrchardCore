@@ -427,3 +427,20 @@ Use separate `enable <name>` / `disable <name>` commands, then read back. These
 commands affect future scheduling; do not claim they immediately run or cancel a
 task. Existing settings signals notify the scheduler. Enabling invalid persisted
 settings is rejected; disabling remains available so they can be repaired.
+
+
+### Feature-owned deployment selectors and background permissions
+
+Discover `deployment step-types list` and the exact schema before adding steps.
+Settings selectors use `includeAll` and `settingsTypeNames`. Site settings use an
+explicit `settings` list. Core index selectors use profile names and require a
+nonempty selection unless `includeAll` is true; legacy Lucene selectors use index
+names. Configuration-free factories take `{}` and reject arbitrary model fields.
+Refresh discovery after enabling the contributing feature.
+
+Queued exports retain the first submitting identity without retaining its tokens.
+Grant the existing settings-type and user-resource permissions to that context;
+`Export` alone does not authorize private settings or credential-bearing user
+records (`ManageUsers`). Poll the operation and require `succeeded` before using
+its artifact. A denied source fails the job. Do not retry a failed job blindly or
+publish downloaded packages, which may contain site secrets or user credentials.

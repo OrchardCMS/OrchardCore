@@ -10,6 +10,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
+using OrchardCore.Indexing;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
@@ -125,8 +126,29 @@ public sealed class DeploymentStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDeployment<LuceneIndexDeploymentSource, LuceneIndexDeploymentStep, LuceneIndexDeploymentStepDriver>();
+        services.AddScoped<IDeploymentStepDefinition>(provider => new NamedSelectionDeploymentStepDefinition<LuceneIndexDeploymentStep>(
+            nameof(LuceneIndexDeploymentStep), "indexNames", async () => (await provider.GetRequiredService<IIndexProfileStore>().GetByProviderAsync(LuceneConstants.ProviderName)).Select(index => index.IndexName),
+            step => (step.IncludeAll, step.IndexNames), (step, includeAll, names) =>
+            {
+                step.IncludeAll = includeAll;
+                step.IndexNames = names;
+            }));
         services.AddDeployment<LuceneIndexRebuildDeploymentSource, LuceneIndexRebuildDeploymentStep, LuceneIndexRebuildDeploymentStepDriver>();
+        services.AddScoped<IDeploymentStepDefinition>(provider => new NamedSelectionDeploymentStepDefinition<LuceneIndexRebuildDeploymentStep>(
+            nameof(LuceneIndexRebuildDeploymentStep), "indexNames", async () => (await provider.GetRequiredService<IIndexProfileStore>().GetByProviderAsync(LuceneConstants.ProviderName)).Select(index => index.IndexName),
+            step => (step.IncludeAll, step.IndexNames), (step, includeAll, names) =>
+            {
+                step.IncludeAll = includeAll;
+                step.IndexNames = names;
+            }));
         services.AddDeployment<LuceneIndexResetDeploymentSource, LuceneIndexResetDeploymentStep, LuceneIndexResetDeploymentStepDriver>();
+        services.AddScoped<IDeploymentStepDefinition>(provider => new NamedSelectionDeploymentStepDefinition<LuceneIndexResetDeploymentStep>(
+            nameof(LuceneIndexResetDeploymentStep), "indexNames", async () => (await provider.GetRequiredService<IIndexProfileStore>().GetByProviderAsync(LuceneConstants.ProviderName)).Select(index => index.IndexName),
+            step => (step.IncludeAll, step.IndexNames), (step, includeAll, names) =>
+            {
+                step.IncludeAll = includeAll;
+                step.IndexNames = names;
+            }));
     }
 }
 

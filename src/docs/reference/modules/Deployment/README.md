@@ -294,3 +294,42 @@ States are `pending`, `running`, `succeeded`, `failed` and `uncertain`. An aband
 execution becomes uncertain and is never automatically replayed. Imports can
 partially commit before failure or interruption; review the target site before
 submitting a new request ID.
+
+### Additional feature-owned step contracts
+
+Enabled features also provide the following explicit contracts. Discover the schema
+before use; enabling Deployment alone does not enable the contributing features.
+
+| Factories | Configuration |
+| --- | --- |
+| `CustomSettingsDeploymentStep`, `CustomUserSettingsDeploymentStep` | `includeAll`, `settingsTypeNames`; names must belong to the respective settings stereotype. |
+| `TranslationsDeploymentStep` | `includeAll`, `cultures`, `categories`; uses the same culture/category validation and selection logic as the admin editor. |
+| `SiteSettingsDeploymentStep` | `settings`, an explicit list of site properties from the schema; shared with the admin selector and export source. |
+| `IndexProfileDeploymentStep`, `RebuildIndexDeploymentStep`, `ResetIndexDeploymentStep` | `includeAll`, `indexNames`; select profile **names**, matching the admin editor. An empty selection requires `includeAll: true`. |
+| `LuceneIndexDeploymentStep`, `LuceneIndexRebuildDeploymentStep`, `LuceneIndexResetDeploymentStep` | `includeAll`, `indexNames`; these legacy Lucene steps select provider index names. |
+| `AdminMenuDeploymentStep`, `AllDataTranslationsDeploymentStep`, `AllLayersDeploymentStep`, `AllMediaProfilesDeploymentStep`, `OpenIdServerDeploymentStep`, `OpenIdValidationDeploymentStep`, `PlacementsDeploymentStep`, `AllQueriesDeploymentStep`, `AllRolesDeploymentStep`, `SearchSettingsDeploymentStep`, `AllShortcodeTemplatesDeploymentStep`, `AllSitemapsDeploymentStep`, `AllFeatureProfilesDeploymentStep`, `ThemesDeploymentStep`, `AllWorkflowTypeDeploymentStep`, `AllUsersDeploymentStep` | Empty `{}` configuration; the existing export source supplies the data. |
+
+Empty contracts reject extra fields. Selection patches are validated before the
+stored step changes. Selecting all clears explicit names for named selectors.
+Provider-specific credential export steps and legacy cloud-index aliases without
+an explicit contract remain discoverable but cannot be remotely configured. Use
+the modern index-profile contracts for provider-independent selection.
+
+### Authorization during queued export
+
+A queued export stores the first accepted request's identity and authorization
+claims alongside its private operation record. It never stores bearer tokens or
+other authentication properties. Retries cannot substitute another identity.
+The worker restores this identity in the tenant scope and checks Export permission;
+custom settings also enforce their settings-type permissions, and custom user
+settings enforce type and per-user read permissions. User-record exports require
+`ManageUsers` because packages contain password hashes and security fields.
+A denied source fails the operation instead of silently producing an incomplete
+package. Existing queued exports that predate identity capture fail closed; submit
+a new request after upgrading.
+
+Export sources can use `DeploymentPlanResult.User` for the initiating principal.
+`DeploymentExecutionContext` supplies it for background execution; admin requests
+continue to use their authenticated HTTP principal. Packages retain their existing
+private, owner-scoped artifact access. Treat exported site secrets, user records,
+and user-authored workflow/query definitions as private data.

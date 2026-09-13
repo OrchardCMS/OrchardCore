@@ -61,5 +61,10 @@ public sealed class DeploymentStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDeployment<CustomSettingsDeploymentSource, CustomSettingsDeploymentStep, CustomSettingsDeploymentStepDriver>();
+        services.AddScoped<IDeploymentStepDefinition>(provider => new NamedSelectionDeploymentStepDefinition<CustomSettingsDeploymentStep>(
+            nameof(CustomSettingsDeploymentStep), "settingsTypeNames",
+            () => provider.GetRequiredService<CustomSettingsService>().GetAllSettingsTypeNamesAsync(),
+            step => (step.IncludeAll, step.SettingsTypeNames),
+            (step, includeAll, names) => { step.IncludeAll = includeAll; step.SettingsTypeNames = names; }));
     }
 }

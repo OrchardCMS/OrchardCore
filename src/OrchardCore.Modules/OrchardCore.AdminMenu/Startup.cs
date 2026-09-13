@@ -27,6 +27,7 @@ public sealed class Startup : StartupBase
         services.AddRecipeExecutionStep<AdminMenuStep>();
 
         services.AddDeployment<AdminMenuDeploymentSource, AdminMenuDeploymentStep, AdminMenuDeploymentStepDriver>();
+        services.AddSingleton<IDeploymentStepDefinition>(new EmptyDeploymentStepDefinition<AdminMenuDeploymentStep>(nameof(AdminMenuDeploymentStep)));
 
         // placeholder treeNode
         services.AddAdminNode<PlaceholderAdminNode, PlaceholderAdminNodeNavigationBuilder, PlaceholderAdminNodeDriver>();

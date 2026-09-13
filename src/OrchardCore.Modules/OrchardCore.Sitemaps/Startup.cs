@@ -129,6 +129,7 @@ public sealed class SitemapsDeploymentStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDeployment<AllSitemapsDeploymentSource, AllSitemapsDeploymentStep, AllSitemapsDeploymentStepDriver>();
+        services.AddSingleton<IDeploymentStepDefinition>(new EmptyDeploymentStepDefinition<AllSitemapsDeploymentStep>(nameof(AllSitemapsDeploymentStep)));
     }
 }
 

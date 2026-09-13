@@ -57,6 +57,7 @@ public sealed class Startup : StartupBase
         services.AddPermissionProvider<Permissions>();
         services.AddRecipeExecutionStep<LayerStep>();
         services.AddDeployment<AllLayersDeploymentSource, AllLayersDeploymentStep, AllLayersDeploymentStepDriver>();
+        services.AddSingleton<IDeploymentStepDefinition>(new EmptyDeploymentStepDefinition<AllLayersDeploymentStep>(nameof(AllLayersDeploymentStep)));
         services.AddSingleton<IGlobalMethodProvider, DefaultLayersMethodProvider>();
     }
 

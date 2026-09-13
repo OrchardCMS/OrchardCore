@@ -230,6 +230,7 @@ public sealed class ServerDeploymentStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDeployment<OpenIdServerDeploymentSource, OpenIdServerDeploymentStep, OpenIdServerDeploymentStepDriver>();
+        services.AddSingleton<IDeploymentStepDefinition>(new EmptyDeploymentStepDefinition<OpenIdServerDeploymentStep>(nameof(OpenIdServerDeploymentStep)));
     }
 }
 
@@ -282,6 +283,7 @@ public sealed class ValidationDeploymentStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDeployment<OpenIdValidationDeploymentSource, OpenIdValidationDeploymentStep, OpenIdValidationDeploymentStepDriver>();
+        services.AddSingleton<IDeploymentStepDefinition>(new EmptyDeploymentStepDefinition<OpenIdValidationDeploymentStep>(nameof(OpenIdValidationDeploymentStep)));
     }
 }
 

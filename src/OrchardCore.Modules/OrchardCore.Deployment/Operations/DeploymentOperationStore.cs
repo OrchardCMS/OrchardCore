@@ -16,6 +16,7 @@ internal sealed record DeploymentOperation
     public string Owner { get; init; }
     public DeploymentOperationKind Kind { get; init; }
     public string Payload { get; init; }
+    public DeploymentExecutionIdentity Identity { get; init; }
     public DeploymentOperationState State { get; init; }
     public string ArtifactId { get; init; }
     public string ErrorCode { get; init; }
@@ -38,7 +39,7 @@ internal sealed class DeploymentOperationStore
     }
 
     public async Task<DeploymentOperation> CreateAsync(string owner, string requestId, DeploymentOperationKind kind,
-        string payload, CancellationToken cancellationToken)
+        string payload, CancellationToken cancellationToken, DeploymentExecutionIdentity identity = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(owner);
         ArgumentException.ThrowIfNullOrWhiteSpace(requestId);
@@ -66,7 +67,7 @@ internal sealed class DeploymentOperationStore
             return Match(existing, owner, kind, payload);
         }
         var operation = new DeploymentOperation { Id = id, Owner = owner, Kind = kind, Payload = payload,
-            State = DeploymentOperationState.Pending, CreatedUtc = _clock.UtcNow, UpdatedUtc = _clock.UtcNow, };
+            Identity = identity, State = DeploymentOperationState.Pending, CreatedUtc = _clock.UtcNow, UpdatedUtc = _clock.UtcNow, };
         await WriteAsync(operation, cancellationToken);
         return operation;
     }

@@ -34,8 +34,10 @@ public class Startup : StartupBase
         services.AddScoped<ITranslationsManager>(provider => provider.GetRequiredService<TranslationsManager>());
         services.AddRecipeExecutionStep<TranslationsStep>();
 
+        services.AddScoped<IDeploymentStepDefinition, TranslationsDeploymentStepDefinition>();
         services.AddDeployment<TranslationsDeploymentSource, TranslationsDeploymentStep, TranslationsDeploymentStepDriver>();
         services.AddDeployment<AllDataTranslationsDeploymentSource, AllDataTranslationsDeploymentStep, AllDataTranslationsDeploymentStepDriver>();
+        services.AddSingleton<IDeploymentStepDefinition>(new EmptyDeploymentStepDefinition<AllDataTranslationsDeploymentStep>(nameof(AllDataTranslationsDeploymentStep)));
 
         services.AddScoped<IPermissionProvider, Permissions>();
         services.AddScoped<INavigationProvider, AdminMenu>();
