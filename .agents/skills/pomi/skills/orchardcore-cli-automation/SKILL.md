@@ -429,7 +429,8 @@ task. Existing settings signals notify the scheduler. Enabling invalid persisted
 settings is rejected; disabling remains available so they can be repaired.
 
 
-### Feature-owned deployment selectors and background permissions
+
+## Feature-owned deployment selectors and background permissions
 
 Discover `deployment step-types list` and the exact schema before adding steps.
 Settings selectors use `includeAll` and `settingsTypeNames`. Site settings use an
@@ -444,7 +445,8 @@ Grant the existing settings-type and user-resource permissions to that context;
 records (`ManageUsers`). Poll the operation and require `succeeded` before using
 its artifact. A denied source fails the job. Do not retry a failed job blindly or
 publish downloaded packages, which may contain site secrets or user credentials.
-### Remote deployment destinations
+
+## Remote deployment destinations
 
 Enable `OrchardCore.Deployment.Remote` and refresh discovery. Configure a target's
 `deployment remote-clients` with `clientName` and a strong `apiKey`, and the source's
@@ -460,7 +462,8 @@ can change the target immediately and is not idempotent. On timeout/error, inspe
 the target before any retry. Use HTTPS destinations, and preserve private credential
 handoff files when provisioning a persistent site. Existing setup contexts need no
 interactive `pomi login`.
-### Explicit content exports
+
+## Explicit content exports
 
 `content export <id>` (Download feature) returns the published version in the admin
 JSON format; `--latest true` selects the current draft/latest version. It requires

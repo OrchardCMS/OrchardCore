@@ -691,7 +691,8 @@ pomi content export <content-item-id>
 pomi content export <content-item-id> --latest true
 ```
 
-The default exports the published version. `latest` includes the current draft when
+The HTTP endpoint is `GET api/content/{contentItemId}/export`, with an optional
+`latest=true` query parameter. The default exports the published version. `latest` includes the current draft when
 one exists. The operation requires `AccessRemoteManagement`, `Export`, and the same
 per-item `EditContent` check as the admin download. Missing versions return 404;
 denied content returns 403. Admin display/download and this endpoint use the same
