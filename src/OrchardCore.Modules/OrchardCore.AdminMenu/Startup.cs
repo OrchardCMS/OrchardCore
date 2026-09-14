@@ -19,6 +19,7 @@ public sealed class Startup : StartupBase
     {
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
+        services.AddBreadcrumbProvider<AdminMenuBreadcrumbProvider>();
 
         services.AddScoped<IAdminMenuService, AdminMenuService>();
         services.AddScoped<IAdminMenuAccessor, AdminMenuAccessor>();

@@ -4,7 +4,9 @@
     var sourceId = ViewContext.HttpContext.Request.Query["id"];
 }
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Add '{0}' Limiter", Model.DisplayName])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@RateLimitsBreadcrumbs.LimiterCreate" data="@(new { Model.DisplayName })" />
+</zone>
 
 <form asp-action="Create" method="post" class="no-multisubmit">
     <input type="hidden" name="id" value="@sourceId" />

@@ -3,7 +3,9 @@
 
 @model ListRewriteRuleViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["URL Rewriting Rules"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@UrlRewritingBreadcrumbs.List" />
+</zone>
 
 @* the form is necessary to generate an antiforgery token for the delete and toggle actions *@
 <form asp-action="Index" method="post" class="no-multisubmit" data-list-management data-client-side-search="true" data-selected-label="@T["selected"]">

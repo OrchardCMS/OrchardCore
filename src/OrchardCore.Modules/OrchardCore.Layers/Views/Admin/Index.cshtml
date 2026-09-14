@@ -14,7 +14,9 @@
 
 <script asp-name="jquery-ui" at="Foot"></script>
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Widgets and Layers"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@LayersBreadcrumbs.List" />
+</zone>
 
 <form id="undo-form" asp-action="UpdatePosition" method="post" class="no-multisubmit">
     <div id="layer-undo-message" class="alert alert-success alert-dismissible show d-none" role="alert">

@@ -11,7 +11,9 @@
     var orderUrl = Url.Action("UpdateOrder", "LayerRule");
 }
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Layer - {0}", Model.Name])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@LayersBreadcrumbs.Edit" data="@(new { LayerName = Model.Name })" />
+</zone>
 
 <form asp-action="Edit" method="post" class="no-multisubmit">
     <div class="ocat-wrapper" asp-validation-class-for="Name">

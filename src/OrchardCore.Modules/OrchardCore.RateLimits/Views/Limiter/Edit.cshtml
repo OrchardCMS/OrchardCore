@@ -1,6 +1,8 @@
 @model OrchardCore.RateLimits.ViewModels.RateLimiterEditorViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit '{0}' Limiter", Model.DisplayName])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@RateLimitsBreadcrumbs.LimiterEdit" data="@(new { Model.DisplayName })" />
+</zone>
 
 <form asp-action="Edit" method="post" class="no-multisubmit">
     <div class="alert alert-info" role="alert">

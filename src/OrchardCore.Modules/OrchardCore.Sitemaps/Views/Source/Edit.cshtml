@@ -1,6 +1,8 @@
 @model EditSourceViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Sitemap Source"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@SitemapsBreadcrumbs.SourceEdit" />
+</zone>
 
 @if (string.IsNullOrEmpty(Site.BaseUrl))
 {

@@ -1,6 +1,8 @@
 @model LayerEditViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Create Layer"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@LayersBreadcrumbs.Create" />
+</zone>
 
 <form asp-action="Create" method="post" class="no-multisubmit">
     <div class="ocat-wrapper" asp-validation-class-for="Name">

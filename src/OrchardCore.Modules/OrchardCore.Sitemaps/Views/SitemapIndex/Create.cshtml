@@ -1,6 +1,8 @@
 @model CreateSitemapIndexViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Create Sitemap Index"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@SitemapsBreadcrumbs.IndexesCreate" />
+</zone>
 
 @if (string.IsNullOrEmpty(Site.BaseUrl))
 {

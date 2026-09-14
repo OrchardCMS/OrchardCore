@@ -1,6 +1,8 @@
 @model LayerRuleEditViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Rule"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@LayersBreadcrumbs.RuleEdit" />
+</zone>
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Edit" method="post" class="no-multisubmit">
