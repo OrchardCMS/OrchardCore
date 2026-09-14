@@ -6,7 +6,7 @@ namespace OrchardCore.Navigation;
 /// The shape of a single node of a breadcrumb trail.
 /// </summary>
 [GenerateShape]
-public partial class BreadcrumbItemViewModel
+public sealed partial class BreadcrumbItemViewModel
 {
     public BreadcrumbItemViewModel()
     {

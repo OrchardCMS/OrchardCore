@@ -8,7 +8,7 @@ using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.Navigation;
 
-public class BreadcrumbManager : IBreadcrumbManager
+public sealed class BreadcrumbManager : IBreadcrumbManager
 {
     private readonly IEnumerable<IBreadcrumbProvider> _breadcrumbProviders;
     private readonly IUrlHelperFactory _urlHelperFactory;

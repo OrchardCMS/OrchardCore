@@ -19,7 +19,7 @@ namespace OrchardCore.Navigation.TagHelpers;
 /// </code>
 /// </example>
 [HtmlTargetElement("breadcrumb", Attributes = NameAttribute)]
-public class BreadcrumbTagHelper : TagHelper
+public sealed class BreadcrumbTagHelper : TagHelper
 {
     private const string NameAttribute = "name";
 
@@ -55,10 +55,11 @@ public class BreadcrumbTagHelper : TagHelper
 
     /// <summary>
     /// The html tag wrapping the text of the current node, so that the breadcrumb can stand in for the title of the
-    /// page. Defaults to <c>h1</c>. Set it to an empty value to render no heading.
+    /// page. Defaults to <c>h1</c> on a request to the admin, where the trail replaces the title of the screen, and
+    /// to no heading everywhere else, where the page has a heading of its own. Set it to an empty value to render none.
     /// </summary>
     [HtmlAttributeName("heading")]
-    public string Heading { get; set; } = "h1";
+    public string Heading { get; set; }
 
     /// <summary>
     /// Whether the text of the current node is registered as a segment of the page title. Defaults to <c>true</c>.
@@ -102,26 +103,31 @@ public class BreadcrumbTagHelper : TagHelper
             }
         }
 
+        // A trail rendered on the admin and a trail rendered by a front end theme are the same shape, so they are told
+        // apart by their display type, the way the rest of the display system tells those contexts apart.
+        var isAdmin = ViewContext?.HttpContext is not null && AdminAttribute.IsApplied(ViewContext.HttpContext);
+
         var shape = await _shapeFactory.BreadcrumbAsync(
             Name,
             items,
-            string.IsNullOrWhiteSpace(Heading) ? null : Heading,
-            string.IsNullOrWhiteSpace(DisplayType) ? GetDefaultDisplayType() : DisplayType);
+            GetHeading(isAdmin),
+            string.IsNullOrWhiteSpace(DisplayType) ? (isAdmin ? "DetailAdmin" : "Detail") : DisplayType);
 
         output.TagName = null;
         output.Content.SetHtmlContent(await _displayHelper.ShapeExecuteAsync(shape));
     }
 
     /// <summary>
-    /// A trail rendered on the admin and a trail rendered by a front end theme are the same shape, so they are told
-    /// apart by their display type, the way the rest of the display system tells them apart.
+    /// On the admin the trail replaces the title of the screen, so its current node carries the heading of the page.
+    /// Everywhere else the page has a heading of its own, and a second one would be wrong.
     /// </summary>
-    private string GetDefaultDisplayType()
+    private string GetHeading(bool isAdmin)
     {
-        var httpContext = ViewContext?.HttpContext;
+        if (Heading is null)
+        {
+            return isAdmin ? "h1" : null;
+        }
 
-        return httpContext is not null && AdminAttribute.IsApplied(httpContext)
-            ? "DetailAdmin"
-            : "Detail";
+        return string.IsNullOrWhiteSpace(Heading) ? null : Heading;
     }
 }
