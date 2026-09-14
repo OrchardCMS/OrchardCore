@@ -7,7 +7,9 @@
 }
 
 <script asp-src="~/OrchardCore.ContentTypes/Scripts/autocomplete/autocomplete.js" at="Foot" depends-on="jQuery"></script>
-<zone Name="Title"><h1>@T["Add Named Part To \"{0}\"", localizedTypeName]</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@ContentTypesBreadcrumbs.TypesAddReusablePart" data="@(new { TypeName = Model.Type.Name, TypeDisplayName = localizedTypeName })" />
+</zone>
 
 <form asp-action="AddReusablePartTo">
     @Html.ValidationSummary()
