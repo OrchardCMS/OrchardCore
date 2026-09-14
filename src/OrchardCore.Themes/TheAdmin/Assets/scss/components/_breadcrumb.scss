@@ -8,6 +8,11 @@
         margin-bottom: 0;
     }
 
+    // The trail reads right to left, so the chevron points the other way.
+    [dir="rtl"] & .breadcrumb {
+        --bs-breadcrumb-divider: '\2039';
+    }
+
     .breadcrumb-item {
         display: flex;
         align-items: center;

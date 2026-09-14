@@ -253,6 +253,10 @@ a:hover {
   margin-bottom: 0;
 }
 
+[dir=rtl] .oc-breadcrumb .breadcrumb {
+  --bs-breadcrumb-divider: '\2039';
+}
+
 .oc-breadcrumb .breadcrumb-item {
   display: flex;
   align-items: center;
