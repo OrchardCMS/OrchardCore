@@ -17,7 +17,7 @@ public class SiteSettingsDeploymentStep : DeploymentStep
         : this()
     {
         Category = S["Configuration"];
-        DisplayName = S["Site Settings"];
+        Title = S["Site Settings"];
     }
 
     public string[] Settings { get; set; }

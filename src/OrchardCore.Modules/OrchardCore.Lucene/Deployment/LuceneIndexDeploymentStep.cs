@@ -17,7 +17,7 @@ public class LuceneIndexDeploymentStep : DeploymentStep
         : this()
     {
         Category = S["Search"];
-        DisplayName = S["Lucene Search Indexes"];
+        Title = S["Lucene Search Indexes"];
     }
 
     public bool IncludeAll { get; set; } = true;

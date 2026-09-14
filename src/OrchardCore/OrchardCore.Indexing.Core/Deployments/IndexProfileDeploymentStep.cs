@@ -15,7 +15,7 @@ public sealed class IndexProfileDeploymentStep : DeploymentStep
         : this()
     {
         Category = S["Indexing"];
-        DisplayName = S["Index Profiles"];
+        Title = S["Index Profiles"];
     }
 
     public bool IncludeAll { get; set; }

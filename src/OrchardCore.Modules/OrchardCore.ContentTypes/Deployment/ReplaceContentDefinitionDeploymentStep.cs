@@ -14,7 +14,7 @@ public class ReplaceContentDefinitionDeploymentStep : DeploymentStep
         : this()
     {
         Category = S["Content Management"];
-        DisplayName = S["Replace Content Definitions"];
+        Title = S["Replace Content Definitions"];
     }
 
     public bool IncludeAll { get; set; }

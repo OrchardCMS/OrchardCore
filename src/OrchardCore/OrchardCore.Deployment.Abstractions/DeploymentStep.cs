@@ -11,8 +11,8 @@ public abstract class DeploymentStep
     public LocalizedString Category { get; set; } = new(string.Empty, string.Empty);
 
     /// <summary>
-    /// The localized display name of the step, shown as the title of its screens. Set it in the step's constructor,
+    /// The localized title of the step, shown as the heading of its screens. Set it in the step's constructor,
     /// alongside <see cref="Category"/>.
     /// </summary>
-    public LocalizedString DisplayName { get; set; }
+    public LocalizedString Title { get; set; }
 }

@@ -95,7 +95,7 @@ public sealed class DeploymentBreadcrumbProvider : IBreadcrumbProvider
             return S["Step"].Value;
         }
 
-        var displayName = _stepFactories.FirstOrDefault(factory => factory.Name == stepType)?.Create().DisplayName;
+        var displayName = _stepFactories.FirstOrDefault(factory => factory.Name == stepType)?.Create().Title;
 
         if (!string.IsNullOrEmpty(displayName?.Value))
         {

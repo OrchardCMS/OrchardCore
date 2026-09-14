@@ -105,7 +105,7 @@ public sealed class WorkflowsBreadcrumbProvider : IBreadcrumbProvider
             .Action("Index", "WorkflowType", s_routeValues)
             .Permission(WorkflowsPermissions.ManageWorkflows));
 
-    private void AddEditType(BreadcrumbBuilder builder)
+    private static void AddEditType(BreadcrumbBuilder builder)
         => builder.Add(builder.GetData<string>(WorkflowsBreadcrumbs.TypeNameKey), item => item
             .Id("WorkflowType")
             .Action("Edit", "WorkflowType", new RouteValueDictionary(s_routeValues)

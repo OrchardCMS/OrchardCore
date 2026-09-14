@@ -16,7 +16,7 @@ public class RecipeFileDeploymentStep : DeploymentStep
         : this()
     {
         Category = S["Deployment"];
-        DisplayName = S["Recipe File"];
+        Title = S["Recipe File"];
     }
 
     public string RecipeName { get; set; }

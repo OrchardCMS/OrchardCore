@@ -17,7 +17,7 @@ public class ContentDefinitionDeploymentStep : DeploymentStep
         : this()
     {
         Category = S["Content Management"];
-        DisplayName = S["Update Content Definitions"];
+        Title = S["Update Content Definitions"];
     }
 
     public bool IncludeAll { get; set; }

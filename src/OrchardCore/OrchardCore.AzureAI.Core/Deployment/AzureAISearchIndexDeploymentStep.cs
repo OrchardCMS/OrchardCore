@@ -15,7 +15,7 @@ public class AzureAISearchIndexDeploymentStep : DeploymentStep
         : this()
     {
         Category = S["Search"];
-        DisplayName = S["Azure AI Search Indexes"];
+        Title = S["Azure AI Search Indexes"];
     }
 
     public bool IncludeAll { get; set; } = true;

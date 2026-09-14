@@ -17,6 +17,6 @@ public class AdminMenuDeploymentStep : DeploymentStep
         : this()
     {
         Category = S["Content Management"];
-        DisplayName = S["Admin Menus"];
+        Title = S["Admin Menus"];
     }
 }

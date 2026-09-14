@@ -69,11 +69,11 @@ public sealed class OpenIdBreadcrumbProvider : IBreadcrumbProvider
         => builder.Add(S["Applications"], item => item
             .Id("OpenIdApplications")
             .Action("Index", "Application", s_routeValues)
-            .Permission(Permissions.ManageApplications));
+            .Permission(OpenIdPermissions.ManageApplications));
 
     private void AddScopes(BreadcrumbBuilder builder)
         => builder.Add(S["Scopes"], item => item
             .Id("OpenIdScopes")
             .Action("Index", "Scope", s_routeValues)
-            .Permission(Permissions.ManageScopes));
+            .Permission(OpenIdPermissions.ManageScopes));
 }
