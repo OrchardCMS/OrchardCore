@@ -10,7 +10,7 @@ public interface IBreadcrumbManager
     /// <summary>
     /// Builds the ordered nodes of the breadcrumb of the given name.
     /// </summary>
-    /// <param name="name">The name of the breadcrumb. e.g., <c>Contents.Edit</c>.</param>
+    /// <param name="name">The name of the breadcrumb. e.g., <c>ContentsEdit</c>.</param>
     /// <param name="actionContext">The context of the request, used to generate the url of each node.</param>
     /// <param name="data">The optional contextual data of the page rendering the breadcrumb.</param>
     /// <returns>

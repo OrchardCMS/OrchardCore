@@ -8,27 +8,32 @@ namespace OrchardCore.Contents;
 public static class ContentsBreadcrumbs
 {
     /// <summary>
-    /// The breadcrumb of the content items list. It carries <see cref="ContentTypeData"/>.
+    /// The breadcrumb of the content items list. It carries <see cref="ContentTypeKey"/>.
+    /// <para>
+    /// It is named after the list it belongs to, so that the name of the breadcrumb of a screen and the name of the
+    /// admin list of that screen are one and the same.
+    /// </para>
     /// </summary>
-    public const string List = "Contents.List";
+    public const string List = "Contents";
 
     /// <summary>
-    /// The breadcrumb of the content item creation screen. It carries <see cref="ContentItemData"/>.
+    /// The breadcrumb of the content item creation screen. It carries <see cref="ContentItemKey"/>.
     /// </summary>
-    public const string Create = "Contents.Create";
+    public const string Create = "ContentsCreate";
 
     /// <summary>
-    /// The breadcrumb of the content item edition screen. It carries <see cref="ContentItemData"/>.
+    /// The breadcrumb of the content item edition screen. It carries <see cref="ContentItemKey"/>.
     /// </summary>
-    public const string Edit = "Contents.Edit";
+    public const string Edit = "ContentsEdit";
 
     /// <summary>
-    /// The key of the <c>ContentItem</c> the screen is about.
+    /// The key under which the screen passes the <c>ContentItem</c> it is about.
     /// </summary>
-    public const string ContentItemData = "ContentItem";
+    public const string ContentItemKey = "ContentItem";
 
     /// <summary>
-    /// The key of the name of the content type the list is filtered on, when there is one.
+    /// The key under which the list passes the name of the content type its items are filtered by. Empty when the
+    /// items of every type are listed.
     /// </summary>
-    public const string ContentTypeData = "ContentType";
+    public const string ContentTypeKey = "ContentType";
 }

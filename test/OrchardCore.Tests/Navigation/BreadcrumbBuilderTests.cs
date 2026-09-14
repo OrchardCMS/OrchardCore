@@ -7,7 +7,7 @@ public class BreadcrumbBuilderTests
     [Fact]
     public void Add_WithItemBuilder_ConfiguresTheNode()
     {
-        var builder = new BreadcrumbBuilder("Contents.Edit");
+        var builder = new BreadcrumbBuilder("ContentsEdit");
 
         builder.Add("Manage Content", item => item
             .Id("Contents")
@@ -29,7 +29,7 @@ public class BreadcrumbBuilderTests
     [Fact]
     public void Remove_WithMatchingNode_DropsItFromTheTrail()
     {
-        var builder = new BreadcrumbBuilder("Contents.Edit");
+        var builder = new BreadcrumbBuilder("ContentsEdit");
 
         builder.Add("Manage Content", item => item.Id("Contents"));
         builder.Add("Edit Site Page", item => item.Id("ContentItem"));
@@ -43,7 +43,7 @@ public class BreadcrumbBuilderTests
     public void TryGetData_WithAnotherType_ReturnsFalse()
     {
         var data = new Dictionary<string, object> { { "ContentType", "SitePage" } };
-        var builder = new BreadcrumbBuilder("Contents.List", data);
+        var builder = new BreadcrumbBuilder("Contents", data);
 
         Assert.False(builder.TryGetData<int>("ContentType", out _));
         Assert.False(builder.TryGetData<string>("Missing", out _));
@@ -54,7 +54,7 @@ public class BreadcrumbBuilderTests
     [Fact]
     public void GetData_WithoutData_ReturnsTheDefaultValue()
     {
-        var builder = new BreadcrumbBuilder("Contents.List");
+        var builder = new BreadcrumbBuilder("Contents");
 
         Assert.Null(builder.GetData<string>("ContentType"));
     }

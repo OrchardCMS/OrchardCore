@@ -62,7 +62,7 @@ public sealed class ContentsBreadcrumbProvider : IBreadcrumbProvider
     {
         await AddListAsync(builder);
 
-        var contentType = builder.GetData<string>(ContentsBreadcrumbs.ContentTypeData);
+        var contentType = builder.GetData<string>(ContentsBreadcrumbs.ContentTypeKey);
 
         if (string.IsNullOrEmpty(contentType))
         {
@@ -77,7 +77,7 @@ public sealed class ContentsBreadcrumbProvider : IBreadcrumbProvider
 
     private async ValueTask BuildEditorAsync(BreadcrumbBuilder builder, bool isNew)
     {
-        if (!builder.TryGetData<ContentItem>(ContentsBreadcrumbs.ContentItemData, out var contentItem))
+        if (!builder.TryGetData<ContentItem>(ContentsBreadcrumbs.ContentItemKey, out var contentItem))
         {
             return;
         }

@@ -19,7 +19,7 @@ public sealed class BreadcrumbBuilder
     }
 
     /// <summary>
-    /// Gets the name of the breadcrumb being built. e.g., <c>Contents.Edit</c>.
+    /// Gets the name of the breadcrumb being built. e.g., <c>ContentsEdit</c>.
     /// </summary>
     public string Name { get; }
 

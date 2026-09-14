@@ -14,7 +14,7 @@ namespace OrchardCore.Navigation.TagHelpers;
 /// </summary>
 /// <example>
 /// <code>
-/// &lt;breadcrumb name="Contents.Edit" data="@(new { ContentItem = contentItem })" /&gt;
+/// &lt;breadcrumb name="ContentsEdit" data="@(new { ContentItem = contentItem })" /&gt;
 /// </code>
 /// </example>
 [HtmlTargetElement("breadcrumb", Attributes = NameAttribute)]
@@ -40,7 +40,7 @@ public class BreadcrumbTagHelper : TagHelper
     }
 
     /// <summary>
-    /// The name of the breadcrumb to render. e.g., <c>Contents.Edit</c>.
+    /// The name of the breadcrumb to render. e.g., <c>ContentsEdit</c>.
     /// </summary>
     [HtmlAttributeName(NameAttribute)]
     public string Name { get; set; }

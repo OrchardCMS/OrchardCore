@@ -15,7 +15,7 @@ public class ContentsBreadcrumbTests
         var html = await GetAdminPageAsync(context, "Admin/Contents/ContentItems");
 
         Assert.Contains("oc-breadcrumb", html);
-        Assert.Contains("breadcrumb-contents-list", html);
+        Assert.Contains("breadcrumb-contents", html);
 
         // The list is the page itself, so its node carries the heading and is not a link.
         Assert.Contains("<h1>Manage Content</h1>", html);

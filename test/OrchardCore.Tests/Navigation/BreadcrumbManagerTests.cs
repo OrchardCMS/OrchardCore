@@ -23,7 +23,7 @@ public class BreadcrumbManagerTests
             new DelegateBreadcrumbProvider(builder => builder.Add("Last", "after")),
             new DelegateBreadcrumbProvider(builder => builder.Add("First")));
 
-        var items = await manager.BuildBreadcrumbAsync("Contents.Edit", CreateActionContext());
+        var items = await manager.BuildBreadcrumbAsync("ContentsEdit", CreateActionContext());
 
         Assert.Equal(["First", "Last"], items.Select(item => item.Text));
     }
@@ -35,7 +35,7 @@ public class BreadcrumbManagerTests
             .Add("Manage Content", item => item.Url("/Admin/Contents/ContentItems"))
             .Add("Edit Site Page", item => item.Url("/Admin/Contents/ContentItems/Edit"))));
 
-        var items = await manager.BuildBreadcrumbAsync("Contents.Edit", CreateActionContext());
+        var items = await manager.BuildBreadcrumbAsync("ContentsEdit", CreateActionContext());
 
         Assert.Collection(items,
             item =>
@@ -61,7 +61,7 @@ public class BreadcrumbManagerTests
                     .Permission(_listContent))
                 .Add("Edit Site Page")));
 
-        var items = await manager.BuildBreadcrumbAsync("Contents.Edit", CreateActionContext());
+        var items = await manager.BuildBreadcrumbAsync("ContentsEdit", CreateActionContext());
 
         Assert.Equal(2, items.Count);
         Assert.Equal("Manage Content", items[0].Text);
@@ -75,7 +75,7 @@ public class BreadcrumbManagerTests
             .Add("Manage Content", item => item.Url("~/Admin/Contents/ContentItems"))
             .Add("Edit Site Page")));
 
-        var items = await manager.BuildBreadcrumbAsync("Contents.Edit", CreateActionContext(pathBase: "/tenant"));
+        var items = await manager.BuildBreadcrumbAsync("ContentsEdit", CreateActionContext(pathBase: "/tenant"));
 
         Assert.Equal("/tenant/Admin/Contents/ContentItems", items[0].Href);
     }
@@ -87,7 +87,7 @@ public class BreadcrumbManagerTests
             .Add("Manage Content", item => item.Action("List", "Admin", new { area = "OrchardCore.Contents" }))
             .Add("Edit Site Page")));
 
-        var items = await manager.BuildBreadcrumbAsync("Contents.Edit", CreateActionContext());
+        var items = await manager.BuildBreadcrumbAsync("ContentsEdit", CreateActionContext());
 
         Assert.Equal("/OrchardCore.Contents/Admin/List", items[0].Href);
     }
@@ -99,7 +99,7 @@ public class BreadcrumbManagerTests
             new DelegateBreadcrumbProvider(_ => throw new InvalidOperationException("Boom.")),
             new DelegateBreadcrumbProvider(builder => builder.Add("Manage Content")));
 
-        var items = await manager.BuildBreadcrumbAsync("Contents.Edit", CreateActionContext());
+        var items = await manager.BuildBreadcrumbAsync("ContentsEdit", CreateActionContext());
 
         Assert.Equal("Manage Content", Assert.Single(items).Text);
     }
@@ -107,9 +107,9 @@ public class BreadcrumbManagerTests
     [Fact]
     public async Task BuildBreadcrumbAsync_WithAnotherName_SkipsTheNamedProvider()
     {
-        var manager = CreateManager(new StubNamedBreadcrumbProvider("Contents.Edit"));
+        var manager = CreateManager(new StubNamedBreadcrumbProvider("ContentsEdit"));
 
-        var items = await manager.BuildBreadcrumbAsync("Contents.List", CreateActionContext());
+        var items = await manager.BuildBreadcrumbAsync("Contents", CreateActionContext());
 
         Assert.Empty(items);
     }
@@ -126,7 +126,7 @@ public class BreadcrumbManagerTests
 
         var data = new Dictionary<string, object> { { "ContentType", "SitePage" } };
 
-        var items = await manager.BuildBreadcrumbAsync("Contents.List", CreateActionContext(), data);
+        var items = await manager.BuildBreadcrumbAsync("Contents", CreateActionContext(), data);
 
         Assert.Equal("SitePage", Assert.Single(items).Text);
     }
@@ -136,7 +136,7 @@ public class BreadcrumbManagerTests
     {
         var manager = CreateManager();
 
-        var items = await manager.BuildBreadcrumbAsync("Contents.Edit", CreateActionContext());
+        var items = await manager.BuildBreadcrumbAsync("ContentsEdit", CreateActionContext());
 
         Assert.Empty(items);
     }

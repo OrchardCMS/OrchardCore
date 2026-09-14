@@ -57,7 +57,7 @@ public static class ShapeFactoryExtensions
     /// Creates the <c>Breadcrumb</c> shape of a trail, with one <c>BreadcrumbItem</c> shape per node.
     /// </summary>
     /// <param name="shapeFactory">The shape factory.</param>
-    /// <param name="name">The name of the breadcrumb. e.g., <c>Contents.Edit</c>.</param>
+    /// <param name="name">The name of the breadcrumb. e.g., <c>ContentsEdit</c>.</param>
     /// <param name="items">The nodes of the trail, as built by the <see cref="IBreadcrumbManager"/>.</param>
     /// <param name="heading">The optional html tag wrapping the text of the current node. e.g., <c>h1</c>.</param>
     public static async ValueTask<IShape> BreadcrumbAsync(this IShapeFactory shapeFactory, string name, IEnumerable<BreadcrumbItem> items, string heading = null)

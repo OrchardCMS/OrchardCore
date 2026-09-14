@@ -174,13 +174,15 @@ namespace My.Module;
 
 public static class MyBreadcrumbs
 {
-    public const string Edit = "MyModule.Edit";
+    public const string List = "Records";
 
-    public const string RecordData = "Record";
+    public const string Edit = "RecordsEdit";
+
+    public const string RecordKey = "Record";
 }
 ```
 
-Use a name that reads as `{Area}.{Screen}`; it also becomes the shape alternate of the trail, so keep it stable.
+Name a trail after the screen that renders it, in PascalCase and without separators, because the name also becomes the shape alternate of the trail. A screen that also publishes a name for something else of its own, such as the name an admin list is known by, reuses that name for its breadcrumb, so that one screen has one name rather than two: the content items list is `Contents` for both.
 
 #### 3. Describe the trail
 
@@ -199,7 +201,7 @@ public sealed class MyBreadcrumbProvider : NamedBreadcrumbProvider
 
     protected override ValueTask BuildAsync(BreadcrumbBuilder builder)
     {
-        if (!builder.TryGetData<Record>(MyBreadcrumbs.RecordData, out var record))
+        if (!builder.TryGetData<Record>(MyBreadcrumbs.RecordKey, out var record))
         {
             return ValueTask.CompletedTask;
         }
@@ -242,7 +244,7 @@ Rendering the trail in the `Title` zone is what makes it behave like the title i
 
 | Attribute    | Type     | Description                                                                                                                                                                   |
 |--------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `name`       | `string` | Required. The name of the trail to render, e.g. `Contents.Edit`.                                                                                                              |
+| `name`       | `string` | Required. The name of the trail to render, e.g. `ContentsEdit`.                                                                                                              |
 | `data`       | `object` | The contextual data of the page. Each property becomes an entry of `BreadcrumbBuilder.Data`, which every provider of the trail can read back.                                  |
 | `heading`    | `string` | The html tag wrapping the text of the current node, so the breadcrumb can stand in for the title of the page. Defaults to `h1`. Set it to an empty value to render no heading. |
 | `page-title` | `bool`   | Whether the text of the current node is registered as a segment of the `<title>` of the page. Defaults to `true`.                                                              |
@@ -345,7 +347,7 @@ A display driver, or any other code that needs the shape rather than the tag hel
 ```csharp
 var items = await _breadcrumbManager.BuildBreadcrumbAsync(ContentsBreadcrumbs.Edit, ViewContext, new Dictionary<string, object>
 {
-    { ContentsBreadcrumbs.ContentItemData, contentItem },
+    { ContentsBreadcrumbs.ContentItemKey, contentItem },
 });
 
 var shape = await _shapeFactory.BreadcrumbAsync(ContentsBreadcrumbs.Edit, items, heading: "h1");
@@ -359,10 +361,8 @@ The trail renders as the `Breadcrumb` shape, with one `BreadcrumbItem` shape per
 
 | Shape            | Alternates (least to most specific)                                                                                                     |
 |------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| `Breadcrumb`     | `Breadcrumb__[Name]`, e.g. `Breadcrumb-Contents_Edit.cshtml`                                                                             |
-| `BreadcrumbItem` | `BreadcrumbItem__[Name]`, `BreadcrumbItem__[Id]`, `BreadcrumbItem__[Name]__[Id]`, e.g. `BreadcrumbItem-Contents_Edit-ContentItem.cshtml` |
-
-The `.` of a name is encoded as `_` in a template file name, as it is for every other alternate.
+| `Breadcrumb`     | `Breadcrumb__[Name]`, e.g. `Breadcrumb-ContentsEdit.cshtml`                                                                              |
+| `BreadcrumbItem` | `BreadcrumbItem__[Name]`, `BreadcrumbItem__[Id]`, `BreadcrumbItem__[Name]__[Id]`, e.g. `BreadcrumbItem-ContentsEdit-ContentItem.cshtml`  |
 
 The `BreadcrumbItem` shape carries the following properties:
 
@@ -384,9 +384,9 @@ The content management screens describe the following trails, whose names and da
 
 | Name              | Rendered by                    | Contextual data                                                                         |
 |-------------------|--------------------------------|-----------------------------------------------------------------------------------------|
-| `Contents.List`   | The content items list         | `ContentType`, the name of the content type the list is filtered on, when there is one. |
-| `Contents.Create` | The content item creation form | `ContentItem`, the content item being created.                                          |
-| `Contents.Edit`   | The content item edition form  | `ContentItem`, the content item being edited.                                           |
+| `Contents`        | The content items list         | `ContentType`, the name of the content type the list is filtered on, when there is one. |
+| `ContentsCreate`  | The content item creation form | `ContentItem`, the content item being created.                                          |
+| `ContentsEdit`    | The content item edition form  | `ContentItem`, the content item being edited.                                           |
 
 ## Extending Navigation
 

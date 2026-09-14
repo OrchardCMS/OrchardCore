@@ -15,7 +15,7 @@ public class DashboardBreadcrumbProviderTests
         var provider = CreateProvider("Admin", isAdminRequest: true);
 
         // The provider reacts to a trail it knows nothing about.
-        var builder = new BreadcrumbBuilder("Contents.Edit");
+        var builder = new BreadcrumbBuilder("ContentsEdit");
 
         builder.Add("Manage Content");
 
@@ -35,7 +35,7 @@ public class DashboardBreadcrumbProviderTests
     {
         var provider = CreateProvider("Backend", isAdminRequest: true);
 
-        var builder = new BreadcrumbBuilder("Contents.List");
+        var builder = new BreadcrumbBuilder("Contents");
 
         await provider.BuildBreadcrumbAsync(builder);
 
@@ -47,7 +47,7 @@ public class DashboardBreadcrumbProviderTests
     {
         var provider = CreateProvider("Admin", isAdminRequest: false);
 
-        var builder = new BreadcrumbBuilder("Contents.List");
+        var builder = new BreadcrumbBuilder("Contents");
 
         await provider.BuildBreadcrumbAsync(builder);
 
