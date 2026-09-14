@@ -1,7 +1,7 @@
 @model LayerRuleCreateViewModel
 
 <zone Name="Title">
-    <breadcrumb name="@LayersBreadcrumbs.RuleCreate" />
+    <breadcrumb name="@LayersBreadcrumbs.RuleCreate" data="@(new { LayerName = Model.Name })" />
 </zone>
 
 <div asp-validation-summary="ModelOnly"></div>

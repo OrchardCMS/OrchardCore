@@ -55,8 +55,24 @@ public sealed class ContentsBreadcrumbProvider : IBreadcrumbProvider
             ContentsBreadcrumbs.List => BuildListAsync(builder),
             ContentsBreadcrumbs.Create => BuildEditorAsync(builder, isNew: true),
             ContentsBreadcrumbs.Edit => BuildEditorAsync(builder, isNew: false),
+            ContentsBreadcrumbs.Display => BuildDisplayAsync(builder),
             _ => ValueTask.CompletedTask,
         };
+
+    private async ValueTask BuildDisplayAsync(BreadcrumbBuilder builder)
+    {
+        await AddListAsync(builder);
+
+        // A screen may give the node its own text (e.g. a version label); otherwise the item's display text is used.
+        var title = builder.GetData<string>(ContentsBreadcrumbs.TitleKey);
+
+        if (string.IsNullOrEmpty(title) && builder.TryGetData<ContentItem>(ContentsBreadcrumbs.ContentItemKey, out var contentItem))
+        {
+            title = contentItem.DisplayText;
+        }
+
+        builder.Add(title, item => item.Id("ContentItem"));
+    }
 
     private async ValueTask BuildListAsync(BreadcrumbBuilder builder)
     {

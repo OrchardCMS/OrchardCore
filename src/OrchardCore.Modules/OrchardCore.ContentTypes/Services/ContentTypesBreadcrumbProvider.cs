@@ -55,7 +55,9 @@ public sealed class ContentTypesBreadcrumbProvider : IBreadcrumbProvider
                 break;
 
             case ContentTypesBreadcrumbs.TypesAddField:
-                AddTypes(builder);
+                // A field is added to a part, and reached from that part's editor, so its trail leads back through it.
+                AddParts(builder);
+                AddEditPart(builder);
                 builder.Add(S["Add New Field To \"{0}\"", builder.GetData<string>(ContentTypesBreadcrumbs.PartDisplayNameKey)],
                     item => item.Id("AddField"));
                 break;

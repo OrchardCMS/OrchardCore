@@ -13,7 +13,9 @@
     var tag = Tag(Model, "article");
 }
 
-<zone Name="Title"><h1>@RenderTitleSegments(contentItem.DisplayText)</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@OrchardCore.Contents.ContentsBreadcrumbs.Display" data="@(new { ContentItem = contentItem })" />
+</zone>
 
 <article>
     <header>

@@ -8,7 +8,9 @@
 @model SelectThemesViewModel
 
 <style asp-src="~/OrchardCore.Themes/Styles/themes.admin.css"></style>
-<zone Name="Title"><h1>@RenderTitleSegments(T["Themes"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@ThemesBreadcrumbs.List" />
+</zone>
 
 @if (!Model.Themes.Any())
 {

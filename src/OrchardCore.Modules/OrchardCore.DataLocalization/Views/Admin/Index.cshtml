@@ -7,7 +7,7 @@
 }
 
 <zone Name="Title">
-    <h1>@RenderTitleSegments(T["Dynamic Translations"])</h1>
+    <breadcrumb name="@DataLocalizationBreadcrumbs.List" />
 </zone>
 
 @if (Model.IsReadOnly)

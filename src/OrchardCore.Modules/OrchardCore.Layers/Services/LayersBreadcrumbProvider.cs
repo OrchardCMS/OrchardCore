@@ -42,11 +42,13 @@ public sealed class LayersBreadcrumbProvider : IBreadcrumbProvider
 
             case LayersBreadcrumbs.RuleCreate:
                 AddList(builder);
+                AddEditLayer(builder);
                 builder.Add(S["Create Rule"], item => item.Id("Rule"));
                 break;
 
             case LayersBreadcrumbs.RuleEdit:
                 AddList(builder);
+                AddEditLayer(builder);
                 builder.Add(S["Edit Rule"], item => item.Id("Rule"));
                 break;
         }
@@ -59,4 +61,18 @@ public sealed class LayersBreadcrumbProvider : IBreadcrumbProvider
             .Id("Layers")
             .Action("Index", "Admin", s_routeValues)
             .Permission(Permissions.ManageLayers));
+
+    // A layer rule is only reached from its layer, so its trail leads back through the layer.
+    private void AddEditLayer(BreadcrumbBuilder builder)
+    {
+        var layerName = builder.GetData<string>(LayersBreadcrumbs.LayerNameKey);
+
+        builder.Add(S["Edit Layer - {0}", layerName], item => item
+            .Id("Layer")
+            .Action("Edit", "Admin", new RouteValueDictionary(s_routeValues)
+            {
+                { "name", layerName },
+            })
+            .Permission(Permissions.ManageLayers));
+    }
 }

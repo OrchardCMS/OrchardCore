@@ -30,4 +30,9 @@ public static class UsersBreadcrumbs
     /// The breadcrumb of the user display screen.
     /// </summary>
     public const string Display = "UsersDisplay";
+
+    /// <summary>
+    /// The breadcrumb of the user audit trail settings screen.
+    /// </summary>
+    public const string AuditTrail = "UsersAuditTrail";
 }

@@ -50,6 +50,7 @@ public sealed class Startup : StartupBase
         services.AddSiteSettingsPermission(DefaultSiteSettingsDisplayDriver.GroupId, SettingsPermissions.ManageGeneralSettings);
         services.AddSiteSettingsPermission(DebugSettingsDisplayDriver.GroupId, SettingsPermissions.ManageDebuggingSettings);
         services.AddNavigationProvider<AdminMenu>();
+        services.AddBreadcrumbProvider<SettingsBreadcrumbProvider>();
 
         services.AddScoped<ITimeZoneSelector, DefaultTimeZoneSelector>();
 

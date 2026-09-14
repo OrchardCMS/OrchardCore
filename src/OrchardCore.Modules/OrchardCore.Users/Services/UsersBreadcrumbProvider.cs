@@ -48,6 +48,10 @@ public sealed class UsersBreadcrumbProvider : IBreadcrumbProvider
                 AddList(builder);
                 builder.Add(S["View User"], item => item.Id("User"));
                 break;
+
+            case UsersBreadcrumbs.AuditTrail:
+                builder.Add(S["Audit Trail User Event Settings"], item => item.Id("AuditTrail"));
+                break;
         }
 
         return ValueTask.CompletedTask;

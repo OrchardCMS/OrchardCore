@@ -33,6 +33,7 @@ public class Startup : StartupBase
 
         services.AddScoped<IPermissionProvider, Permissions>();
         services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddBreadcrumbProvider<DataLocalizationBreadcrumbProvider>();
 
         services.AddDataLocalization();
         services.AddSingleton<IDataTranslationProvider, DataTranslationProvider>();

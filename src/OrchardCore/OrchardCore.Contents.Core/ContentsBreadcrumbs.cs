@@ -27,6 +27,13 @@ public static class ContentsBreadcrumbs
     public const string Edit = "ContentsEdit";
 
     /// <summary>
+    /// The breadcrumb of a content item display screen, such as the admin detail view, the JSON view or an audit
+    /// trail version. It carries <see cref="ContentItemKey"/>, and optionally <see cref="TitleKey"/> to give the node
+    /// its own text.
+    /// </summary>
+    public const string Display = "ContentsDisplay";
+
+    /// <summary>
     /// The key under which the screen passes the <c>ContentItem</c> it is about.
     /// </summary>
     public const string ContentItemKey = "ContentItem";
@@ -36,4 +43,10 @@ public static class ContentsBreadcrumbs
     /// items of every type are listed.
     /// </summary>
     public const string ContentTypeKey = "ContentType";
+
+    /// <summary>
+    /// The key under which a display screen passes the text of its node, when it should differ from the display text
+    /// of the content item.
+    /// </summary>
+    public const string TitleKey = "Title";
 }

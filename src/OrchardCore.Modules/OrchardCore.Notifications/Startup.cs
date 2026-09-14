@@ -1,3 +1,4 @@
+using OrchardCore.Navigation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -45,6 +46,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<INotificationEvents, CoreNotificationEventsHandler>();
 
         services.AddPermissionProvider<NotificationPermissionsProvider>();
+        services.AddBreadcrumbProvider<NotificationsBreadcrumbProvider>();
         services.AddDisplayDriver<ListNotificationOptions, ListNotificationOptionsDisplayDriver>();
         services.AddDisplayDriver<Notification, NotificationDisplayDriver>();
         services.AddTransient<INotificationAdminListFilterProvider, DefaultNotificationsAdminListFilterProvider>();

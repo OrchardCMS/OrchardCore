@@ -1,6 +1,8 @@
 @model OrchardCore.Email.ViewModels.EmailTestViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Settings"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@EmailBreadcrumbs.Settings" />
+</zone>
 
 @if (Model.Providers == null || Model.Providers.Count == 0)
 {
