@@ -27,26 +27,26 @@ public sealed class RolesBreadcrumbProvider : IBreadcrumbProvider
     {
         switch (builder.Name)
         {
-            case RolesBreadcrumbs.List:
+            case RolesConstants.List:
                 AddList(builder);
                 break;
 
-            case RolesBreadcrumbs.Create:
+            case RolesConstants.Create:
                 AddList(builder);
                 builder.Add(S["Create Role"], item => item.Id("Role"));
                 break;
 
-            case RolesBreadcrumbs.Edit:
+            case RolesConstants.Edit:
                 AddList(builder);
                 builder.Add(S["Edit '{0}' Role", GetRoleName(builder)], item => item.Id("Role"));
                 break;
 
-            case RolesBreadcrumbs.Clone:
+            case RolesConstants.Clone:
                 AddList(builder);
                 builder.Add(S["Clone '{0}' Role", GetRoleName(builder)], item => item.Id("Role"));
                 break;
 
-            case RolesBreadcrumbs.Display:
+            case RolesConstants.Display:
                 AddList(builder);
                 builder.Add(GetRoleName(builder), item => item.Id("Role"));
                 break;
@@ -62,5 +62,5 @@ public sealed class RolesBreadcrumbProvider : IBreadcrumbProvider
             .Permission(RolesPermissions.ViewRoles));
 
     private static string GetRoleName(BreadcrumbBuilder builder)
-        => builder.GetData<string>(RolesBreadcrumbs.RoleNameKey);
+        => builder.GetData<string>(RolesConstants.RoleNameKey);
 }

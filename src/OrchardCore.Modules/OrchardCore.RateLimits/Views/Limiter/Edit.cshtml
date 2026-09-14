@@ -1,7 +1,7 @@
 @model OrchardCore.RateLimits.ViewModels.RateLimiterEditorViewModel
 
 <zone Name="Title">
-    <breadcrumb name="@RateLimitsBreadcrumbs.LimiterEdit" data="@(new { Model.DisplayName, PolicyId = ViewContext.RouteData.Values["policyId"] })" />
+    <breadcrumb name="@RateLimitsConstants.LimiterEdit" data="@(new { Model.DisplayName, PolicyId = ViewContext.RouteData.Values["policyId"] })" />
 </zone>
 
 <form asp-action="Edit" method="post" class="no-multisubmit">

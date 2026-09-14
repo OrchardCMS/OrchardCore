@@ -30,49 +30,49 @@ public sealed class WorkflowsBreadcrumbProvider : IBreadcrumbProvider
     {
         switch (builder.Name)
         {
-            case WorkflowsBreadcrumbs.TypesList:
+            case WorkflowsConstants.TypesList:
                 AddWorkflows(builder);
                 break;
 
-            case WorkflowsBreadcrumbs.TypeEdit:
+            case WorkflowsConstants.TypeEdit:
                 AddWorkflows(builder);
-                builder.Add(builder.GetData<string>(WorkflowsBreadcrumbs.TypeNameKey), item => item.Id("WorkflowType"));
+                builder.Add(builder.GetData<string>(WorkflowsConstants.TypeNameKey), item => item.Id("WorkflowType"));
                 break;
 
-            case WorkflowsBreadcrumbs.TypeEditProperties:
+            case WorkflowsConstants.TypeEditProperties:
                 AddWorkflows(builder);
                 builder.Add(S["Edit Workflow"], item => item.Id("WorkflowType"));
                 break;
 
-            case WorkflowsBreadcrumbs.TypeDuplicate:
+            case WorkflowsConstants.TypeDuplicate:
                 AddWorkflows(builder);
                 builder.Add(S["Copy Workflow"], item => item.Id("WorkflowType"));
                 break;
 
-            case WorkflowsBreadcrumbs.Instances:
+            case WorkflowsConstants.Instances:
                 AddWorkflows(builder);
                 AddEditType(builder);
                 builder.Add(S["Instances"], item => item.Id("Instances"));
                 break;
 
-            case WorkflowsBreadcrumbs.InstanceDetails:
+            case WorkflowsConstants.InstanceDetails:
                 AddWorkflows(builder);
                 AddEditType(builder);
                 AddInstances(builder);
-                builder.Add(builder.GetData<string>(WorkflowsBreadcrumbs.WorkflowIdKey), item => item.Id("Instance"));
+                builder.Add(builder.GetData<string>(WorkflowsConstants.WorkflowIdKey), item => item.Id("Instance"));
                 break;
 
-            case WorkflowsBreadcrumbs.ActivityCreate:
+            case WorkflowsConstants.ActivityCreate:
                 AddWorkflows(builder);
                 await AddTypeByIdAsync(builder);
-                builder.Add(S["Add {0}", builder.GetData<string>(WorkflowsBreadcrumbs.ActivityNameKey)],
+                builder.Add(S["Add {0}", builder.GetData<string>(WorkflowsConstants.ActivityNameKey)],
                     item => item.Id("Activity"));
                 break;
 
-            case WorkflowsBreadcrumbs.ActivityEdit:
+            case WorkflowsConstants.ActivityEdit:
                 AddWorkflows(builder);
                 await AddTypeByIdAsync(builder);
-                builder.Add(S["Edit {0}", builder.GetData<string>(WorkflowsBreadcrumbs.ActivityNameKey)],
+                builder.Add(S["Edit {0}", builder.GetData<string>(WorkflowsConstants.ActivityNameKey)],
                     item => item.Id("Activity"));
                 break;
         }
@@ -81,7 +81,7 @@ public sealed class WorkflowsBreadcrumbProvider : IBreadcrumbProvider
     // An activity is only reached from the workflow designer, so its trail leads back through the workflow.
     private async ValueTask AddTypeByIdAsync(BreadcrumbBuilder builder)
     {
-        var typeId = builder.GetData<long>(WorkflowsBreadcrumbs.TypeIdKey);
+        var typeId = builder.GetData<long>(WorkflowsConstants.TypeIdKey);
 
         if (typeId == 0)
         {
@@ -106,11 +106,11 @@ public sealed class WorkflowsBreadcrumbProvider : IBreadcrumbProvider
             .Permission(WorkflowsPermissions.ManageWorkflows));
 
     private static void AddEditType(BreadcrumbBuilder builder)
-        => builder.Add(builder.GetData<string>(WorkflowsBreadcrumbs.TypeNameKey), item => item
+        => builder.Add(builder.GetData<string>(WorkflowsConstants.TypeNameKey), item => item
             .Id("WorkflowType")
             .Action("Edit", "WorkflowType", new RouteValueDictionary(s_routeValues)
             {
-                { "id", builder.GetData<string>(WorkflowsBreadcrumbs.TypeIdKey) },
+                { "id", builder.GetData<string>(WorkflowsConstants.TypeIdKey) },
             })
             .Permission(WorkflowsPermissions.ManageWorkflows));
 
@@ -119,7 +119,7 @@ public sealed class WorkflowsBreadcrumbProvider : IBreadcrumbProvider
             .Id("Instances")
             .Action("Index", "Workflow", new RouteValueDictionary(s_routeValues)
             {
-                { "workflowTypeId", builder.GetData<string>(WorkflowsBreadcrumbs.TypeIdKey) },
+                { "workflowTypeId", builder.GetData<string>(WorkflowsConstants.TypeIdKey) },
             })
             .Permission(WorkflowsPermissions.ManageWorkflows));
 }

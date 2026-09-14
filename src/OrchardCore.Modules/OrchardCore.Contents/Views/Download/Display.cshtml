@@ -17,7 +17,7 @@
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 
 <zone Name="Title">
-    <breadcrumb name="@ContentsBreadcrumbs.Display" data="@(new { ContentItem = contentItem, Title = T["View As JSON {0}", localizedTypeDisplayName].Value })" />
+    <breadcrumb name="@ContentsConstants.Display" data="@(new { ContentItem = contentItem, Title = T["View As JSON {0}", localizedTypeDisplayName].Value })" />
 </zone>
 
 <form asp-action="Download" asp-route-contentItemId="@contentItem.ContentItemId" method="post" enctype="multipart/form-data" class="no-multisubmit">

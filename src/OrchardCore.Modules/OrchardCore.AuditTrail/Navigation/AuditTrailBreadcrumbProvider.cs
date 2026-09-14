@@ -25,11 +25,11 @@ public sealed class AuditTrailBreadcrumbProvider : IBreadcrumbProvider
     {
         switch (builder.Name)
         {
-            case AuditTrailBreadcrumbs.List:
+            case AuditTrailConstants.List:
                 AddList(builder);
                 break;
 
-            case AuditTrailBreadcrumbs.Display:
+            case AuditTrailConstants.Display:
                 AddList(builder);
                 builder.Add(S["Audit Trail Event"], item => item.Id("Event"));
                 break;

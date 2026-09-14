@@ -21,65 +21,65 @@ public sealed class ContentTypesBreadcrumbProvider : IBreadcrumbProvider
     {
         switch (builder.Name)
         {
-            case ContentTypesBreadcrumbs.TypesList:
+            case ContentTypesConstants.TypesList:
                 AddTypes(builder);
                 break;
 
-            case ContentTypesBreadcrumbs.TypesCreate:
+            case ContentTypesConstants.TypesCreate:
                 AddTypes(builder);
                 builder.Add(S["New Content Type"], item => item.Id("ContentType"));
                 break;
 
-            case ContentTypesBreadcrumbs.TypesEdit:
+            case ContentTypesConstants.TypesEdit:
                 AddTypes(builder);
                 AddEditType(builder);
                 break;
 
-            case ContentTypesBreadcrumbs.TypesEditPart:
+            case ContentTypesConstants.TypesEditPart:
                 AddTypes(builder);
                 AddEditType(builder);
-                builder.Add(S["Edit Part - {0}", builder.GetData<string>(ContentTypesBreadcrumbs.PartDisplayNameKey)],
+                builder.Add(S["Edit Part - {0}", builder.GetData<string>(ContentTypesConstants.PartDisplayNameKey)],
                     item => item.Id("Part"));
                 break;
 
-            case ContentTypesBreadcrumbs.TypesAddParts:
+            case ContentTypesConstants.TypesAddParts:
                 AddTypes(builder);
                 AddEditType(builder);
                 builder.Add(S["Add Parts"], item => item.Id("AddParts"));
                 break;
 
-            case ContentTypesBreadcrumbs.TypesAddReusablePart:
+            case ContentTypesConstants.TypesAddReusablePart:
                 AddTypes(builder);
                 AddEditType(builder);
                 builder.Add(S["Add Named Part"], item => item.Id("AddParts"));
                 break;
 
-            case ContentTypesBreadcrumbs.TypesAddField:
+            case ContentTypesConstants.TypesAddField:
                 // A field is added to a part, and reached from that part's editor, so its trail leads back through it.
                 AddParts(builder);
                 AddEditPart(builder);
-                builder.Add(S["Add New Field To \"{0}\"", builder.GetData<string>(ContentTypesBreadcrumbs.PartDisplayNameKey)],
+                builder.Add(S["Add New Field To \"{0}\"", builder.GetData<string>(ContentTypesConstants.PartDisplayNameKey)],
                     item => item.Id("AddField"));
                 break;
 
-            case ContentTypesBreadcrumbs.PartsList:
+            case ContentTypesConstants.PartsList:
                 AddParts(builder);
                 break;
 
-            case ContentTypesBreadcrumbs.PartsCreate:
+            case ContentTypesConstants.PartsCreate:
                 AddParts(builder);
                 builder.Add(S["New Content Part"], item => item.Id("ContentPart"));
                 break;
 
-            case ContentTypesBreadcrumbs.PartsEdit:
+            case ContentTypesConstants.PartsEdit:
                 AddParts(builder);
                 AddEditPart(builder);
                 break;
 
-            case ContentTypesBreadcrumbs.PartsEditField:
+            case ContentTypesConstants.PartsEditField:
                 AddParts(builder);
                 AddEditPart(builder);
-                builder.Add(S["\"{0}\" settings", builder.GetData<string>(ContentTypesBreadcrumbs.FieldDisplayNameKey)],
+                builder.Add(S["\"{0}\" settings", builder.GetData<string>(ContentTypesConstants.FieldDisplayNameKey)],
                     item => item.Id("Field"));
                 break;
         }
@@ -101,8 +101,8 @@ public sealed class ContentTypesBreadcrumbProvider : IBreadcrumbProvider
 
     private void AddEditType(BreadcrumbBuilder builder)
     {
-        var typeName = builder.GetData<string>(ContentTypesBreadcrumbs.TypeNameKey);
-        var typeDisplayName = builder.GetData<string>(ContentTypesBreadcrumbs.TypeDisplayNameKey);
+        var typeName = builder.GetData<string>(ContentTypesConstants.TypeNameKey);
+        var typeDisplayName = builder.GetData<string>(ContentTypesConstants.TypeDisplayNameKey);
 
         builder.Add(S["Edit Content Type - {0}", typeDisplayName], item => item
             .Id("ContentType")
@@ -116,8 +116,8 @@ public sealed class ContentTypesBreadcrumbProvider : IBreadcrumbProvider
 
     private void AddEditPart(BreadcrumbBuilder builder)
     {
-        var partName = builder.GetData<string>(ContentTypesBreadcrumbs.PartNameKey);
-        var partDisplayName = builder.GetData<string>(ContentTypesBreadcrumbs.PartDisplayNameKey);
+        var partName = builder.GetData<string>(ContentTypesConstants.PartNameKey);
+        var partDisplayName = builder.GetData<string>(ContentTypesConstants.PartDisplayNameKey);
 
         builder.Add(S["Edit Content Part - {0}", partDisplayName], item => item
             .Id("ContentPart")

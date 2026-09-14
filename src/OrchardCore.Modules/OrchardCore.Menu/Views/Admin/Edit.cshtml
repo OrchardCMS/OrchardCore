@@ -14,7 +14,7 @@
 }
 
 <zone Name="Title">
-    <breadcrumb name="@MenuBreadcrumbs.Edit" data="@(new { ItemTypeDisplayName = localizedTypeDisplayName, MenuContentItemId = Model.MenuContentItemId })" />
+    <breadcrumb name="@MenuConstants.Edit" data="@(new { ItemTypeDisplayName = localizedTypeDisplayName, MenuContentItemId = Model.MenuContentItemId })" />
 </zone>
 
 <form asp-action="Edit" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data" class="no-multisubmit">

@@ -3,7 +3,7 @@
 @using OrchardCore.Contents.ViewModels
 
 <zone Name="Title">
-    <breadcrumb name="@ContentsBreadcrumbs.List" data="@(new { ContentType = Model.Options.SelectedContentType })" />
+    <breadcrumb name="@ContentsConstants.List" data="@(new { ContentType = Model.Options.SelectedContentType })" />
 </zone>
 
 <form asp-action="List" asp-controller="Admin" method="post" id="items-form" autocomplete="off">

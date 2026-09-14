@@ -18,7 +18,7 @@ public sealed class RecipesBreadcrumbProvider : NamedBreadcrumbProvider
     internal readonly IStringLocalizer S;
 
     public RecipesBreadcrumbProvider(IStringLocalizer<RecipesBreadcrumbProvider> stringLocalizer)
-        : base(RecipesBreadcrumbs.List)
+        : base(RecipesConstants.List)
     {
         S = stringLocalizer;
     }

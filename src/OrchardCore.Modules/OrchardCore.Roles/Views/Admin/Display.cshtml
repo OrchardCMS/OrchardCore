@@ -2,7 +2,7 @@
 @using OrchardCore.Roles.ViewModels
 
 <zone Name="Title">
-    <breadcrumb name="@RolesBreadcrumbs.Display" data="@(new { RoleName = Model.Role.RoleName })" />
+    <breadcrumb name="@RolesConstants.Display" data="@(new { RoleName = Model.Role.RoleName })" />
 </zone>
 
 <div data-list-management data-client-side-search="true" data-search-result-selector=".permissions-list > table > tbody > tr" data-search-text-attribute="data-text" data-search-group-selector=".permissions-list" data-search-group-visible-selector="table > tbody > tr">

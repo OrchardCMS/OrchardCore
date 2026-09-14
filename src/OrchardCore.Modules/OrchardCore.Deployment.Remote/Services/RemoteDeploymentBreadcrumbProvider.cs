@@ -25,25 +25,25 @@ public sealed class RemoteDeploymentBreadcrumbProvider : IBreadcrumbProvider
     {
         switch (builder.Name)
         {
-            case RemoteDeploymentBreadcrumbs.Instances:
+            case RemoteDeploymentConstants.Instances:
                 AddInstances(builder);
                 break;
 
-            case RemoteDeploymentBreadcrumbs.InstancesCreate:
+            case RemoteDeploymentConstants.InstancesCreate:
                 AddInstances(builder);
                 builder.Add(S["Create Remote Instance"], item => item.Id("RemoteInstance"));
                 break;
 
-            case RemoteDeploymentBreadcrumbs.InstancesEdit:
+            case RemoteDeploymentConstants.InstancesEdit:
                 AddInstances(builder);
                 builder.Add(S["Edit Remote Instance"], item => item.Id("RemoteInstance"));
                 break;
 
-            case RemoteDeploymentBreadcrumbs.Clients:
+            case RemoteDeploymentConstants.Clients:
                 AddClients(builder);
                 break;
 
-            case RemoteDeploymentBreadcrumbs.ClientsEdit:
+            case RemoteDeploymentConstants.ClientsEdit:
                 AddClients(builder);
                 builder.Add(S["Edit Remote Client"], item => item.Id("RemoteClient"));
                 break;

@@ -25,39 +25,39 @@ public sealed class OpenIdBreadcrumbProvider : IBreadcrumbProvider
     {
         switch (builder.Name)
         {
-            case OpenIdBreadcrumbs.ApplicationsList:
+            case OpenIdConstants.ApplicationsList:
                 AddApplications(builder);
                 break;
 
-            case OpenIdBreadcrumbs.ApplicationsCreate:
+            case OpenIdConstants.ApplicationsCreate:
                 AddApplications(builder);
                 builder.Add(S["Create a new application"], item => item.Id("Application"));
                 break;
 
-            case OpenIdBreadcrumbs.ApplicationsEdit:
+            case OpenIdConstants.ApplicationsEdit:
                 AddApplications(builder);
                 builder.Add(S["Edit an application"], item => item.Id("Application"));
                 break;
 
-            case OpenIdBreadcrumbs.ScopesList:
+            case OpenIdConstants.ScopesList:
                 AddScopes(builder);
                 break;
 
-            case OpenIdBreadcrumbs.ScopesCreate:
+            case OpenIdConstants.ScopesCreate:
                 AddScopes(builder);
                 builder.Add(S["Create a new scope"], item => item.Id("Scope"));
                 break;
 
-            case OpenIdBreadcrumbs.ScopesEdit:
+            case OpenIdConstants.ScopesEdit:
                 AddScopes(builder);
                 builder.Add(S["Edit a scope"], item => item.Id("Scope"));
                 break;
 
-            case OpenIdBreadcrumbs.ServerConfiguration:
+            case OpenIdConstants.ServerConfiguration:
                 builder.Add(S["Configure OpenID Connect server settings"], item => item.Id("ServerConfiguration"));
                 break;
 
-            case OpenIdBreadcrumbs.ValidationConfiguration:
+            case OpenIdConstants.ValidationConfiguration:
                 builder.Add(S["Configure OpenID Connect validation settings"], item => item.Id("ValidationConfiguration"));
                 break;
         }

@@ -28,34 +28,34 @@ public sealed class AdminMenuBreadcrumbProvider : IBreadcrumbProvider
     {
         switch (builder.Name)
         {
-            case AdminMenuBreadcrumbs.List:
+            case AdminMenuConstants.List:
                 AddList(builder);
                 break;
 
-            case AdminMenuBreadcrumbs.Create:
+            case AdminMenuConstants.Create:
                 AddList(builder);
                 builder.Add(S["Create Admin Menu"], item => item.Id("Menu"));
                 break;
 
-            case AdminMenuBreadcrumbs.Edit:
+            case AdminMenuConstants.Edit:
                 AddList(builder);
-                builder.Add(S["Edit Admin Menu: {0}", builder.GetData<string>(AdminMenuBreadcrumbs.MenuNameKey)],
+                builder.Add(S["Edit Admin Menu: {0}", builder.GetData<string>(AdminMenuConstants.MenuNameKey)],
                     item => item.Id("Menu"));
                 break;
 
-            case AdminMenuBreadcrumbs.Nodes:
+            case AdminMenuConstants.Nodes:
                 AddList(builder);
-                builder.Add(S["Edit Nodes for '{0}'", builder.GetData<string>(AdminMenuBreadcrumbs.MenuNameKey)],
+                builder.Add(S["Edit Nodes for '{0}'", builder.GetData<string>(AdminMenuConstants.MenuNameKey)],
                     item => item.Id("Nodes"));
                 break;
 
-            case AdminMenuBreadcrumbs.NodeCreate:
+            case AdminMenuConstants.NodeCreate:
                 AddList(builder);
                 await AddNodesAsync(builder);
                 builder.Add(S["Create Node"], item => item.Id("Node"));
                 break;
 
-            case AdminMenuBreadcrumbs.NodeEdit:
+            case AdminMenuConstants.NodeEdit:
                 AddList(builder);
                 await AddNodesAsync(builder);
                 builder.Add(S["Edit Node"], item => item.Id("Node"));
@@ -72,7 +72,7 @@ public sealed class AdminMenuBreadcrumbProvider : IBreadcrumbProvider
     // A node is only reached from its admin menu, so its trail leads back through the menu's nodes.
     private async ValueTask AddNodesAsync(BreadcrumbBuilder builder)
     {
-        var menuId = builder.GetData<string>(AdminMenuBreadcrumbs.MenuIdKey);
+        var menuId = builder.GetData<string>(AdminMenuConstants.MenuIdKey);
 
         if (string.IsNullOrEmpty(menuId))
         {

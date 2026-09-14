@@ -30,17 +30,17 @@ public sealed class MenuBreadcrumbProvider : IBreadcrumbProvider
     {
         switch (builder.Name)
         {
-            case MenuBreadcrumbs.Create:
+            case MenuConstants.Create:
                 AddManageContent(builder);
                 await AddMenuAsync(builder);
-                builder.Add(S["New {0}", builder.GetData<string>(MenuBreadcrumbs.ItemTypeDisplayNameKey)],
+                builder.Add(S["New {0}", builder.GetData<string>(MenuConstants.ItemTypeDisplayNameKey)],
                     item => item.Id("MenuItem"));
                 break;
 
-            case MenuBreadcrumbs.Edit:
+            case MenuConstants.Edit:
                 AddManageContent(builder);
                 await AddMenuAsync(builder);
-                builder.Add(S["Edit {0}", builder.GetData<string>(MenuBreadcrumbs.ItemTypeDisplayNameKey)],
+                builder.Add(S["Edit {0}", builder.GetData<string>(MenuConstants.ItemTypeDisplayNameKey)],
                     item => item.Id("MenuItem"));
                 break;
         }
@@ -56,7 +56,7 @@ public sealed class MenuBreadcrumbProvider : IBreadcrumbProvider
 
     private async ValueTask AddMenuAsync(BreadcrumbBuilder builder)
     {
-        var menuContentItemId = builder.GetData<string>(MenuBreadcrumbs.MenuContentItemIdKey);
+        var menuContentItemId = builder.GetData<string>(MenuConstants.MenuContentItemIdKey);
 
         if (string.IsNullOrEmpty(menuContentItemId))
         {

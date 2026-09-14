@@ -25,30 +25,30 @@ public sealed class TenantsBreadcrumbProvider : IBreadcrumbProvider
     {
         switch (builder.Name)
         {
-            case TenantsBreadcrumbs.List:
+            case TenantsConstants.List:
                 AddTenants(builder);
                 break;
 
-            case TenantsBreadcrumbs.Create:
+            case TenantsConstants.Create:
                 AddTenants(builder);
                 builder.Add(S["Create Tenant"], item => item.Id("Tenant"));
                 break;
 
-            case TenantsBreadcrumbs.Edit:
+            case TenantsConstants.Edit:
                 AddTenants(builder);
                 builder.Add(S["Edit Tenant"], item => item.Id("Tenant"));
                 break;
 
-            case TenantsBreadcrumbs.FeatureProfiles:
+            case TenantsConstants.FeatureProfiles:
                 AddFeatureProfiles(builder);
                 break;
 
-            case TenantsBreadcrumbs.FeatureProfilesCreate:
+            case TenantsConstants.FeatureProfilesCreate:
                 AddFeatureProfiles(builder);
                 builder.Add(S["Create Feature Profile"], item => item.Id("FeatureProfile"));
                 break;
 
-            case TenantsBreadcrumbs.FeatureProfilesEdit:
+            case TenantsConstants.FeatureProfilesEdit:
                 AddFeatureProfiles(builder);
                 builder.Add(S["Edit Feature Profile"], item => item.Id("FeatureProfile"));
                 break;

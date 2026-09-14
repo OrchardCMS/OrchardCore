@@ -22,7 +22,7 @@
 }
 
 <zone Name="Title">
-    <breadcrumb name="@ContentTypesBreadcrumbs.PartsEditField" data="@(new { PartName = Model.PartFieldDefinition.PartDefinition.Name, PartDisplayName = localizedPartName, FieldDisplayName = localizedFieldName })" />
+    <breadcrumb name="@ContentTypesConstants.PartsEditField" data="@(new { PartName = Model.PartFieldDefinition.PartDefinition.Name, PartDisplayName = localizedPartName, FieldDisplayName = localizedFieldName })" />
 </zone>
 
 <form asp-action="EditField" asp-route-returnUrl="@ViewData["returnUrl"]">

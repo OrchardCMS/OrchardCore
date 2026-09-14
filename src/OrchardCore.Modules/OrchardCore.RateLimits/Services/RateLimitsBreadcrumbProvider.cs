@@ -30,31 +30,31 @@ public sealed class RateLimitsBreadcrumbProvider : IBreadcrumbProvider
     {
         switch (builder.Name)
         {
-            case RateLimitsBreadcrumbs.List:
+            case RateLimitsConstants.List:
                 AddList(builder);
                 break;
 
-            case RateLimitsBreadcrumbs.Create:
+            case RateLimitsConstants.Create:
                 AddList(builder);
                 builder.Add(S["New Rate Limit Policy"], item => item.Id("Policy"));
                 break;
 
-            case RateLimitsBreadcrumbs.Edit:
+            case RateLimitsConstants.Edit:
                 AddList(builder);
                 builder.Add(S["Edit Rate Limit Policy"], item => item.Id("Policy"));
                 break;
 
-            case RateLimitsBreadcrumbs.LimiterCreate:
+            case RateLimitsConstants.LimiterCreate:
                 AddList(builder);
                 await AddPolicyAsync(builder);
-                builder.Add(S["Add '{0}' Limiter", builder.GetData<string>(RateLimitsBreadcrumbs.DisplayNameKey)],
+                builder.Add(S["Add '{0}' Limiter", builder.GetData<string>(RateLimitsConstants.DisplayNameKey)],
                     item => item.Id("Limiter"));
                 break;
 
-            case RateLimitsBreadcrumbs.LimiterEdit:
+            case RateLimitsConstants.LimiterEdit:
                 AddList(builder);
                 await AddPolicyAsync(builder);
-                builder.Add(S["Edit '{0}' Limiter", builder.GetData<string>(RateLimitsBreadcrumbs.DisplayNameKey)],
+                builder.Add(S["Edit '{0}' Limiter", builder.GetData<string>(RateLimitsConstants.DisplayNameKey)],
                     item => item.Id("Limiter"));
                 break;
         }
@@ -69,7 +69,7 @@ public sealed class RateLimitsBreadcrumbProvider : IBreadcrumbProvider
     // A limiter is only reached from its policy, so its trail leads back through the policy.
     private async ValueTask AddPolicyAsync(BreadcrumbBuilder builder)
     {
-        var policyId = builder.GetData<string>(RateLimitsBreadcrumbs.PolicyIdKey);
+        var policyId = builder.GetData<string>(RateLimitsConstants.PolicyIdKey);
 
         if (string.IsNullOrEmpty(policyId))
         {

@@ -26,11 +26,11 @@ public sealed class DataLocalizationBreadcrumbProvider : IBreadcrumbProvider
     {
         switch (builder.Name)
         {
-            case DataLocalizationBreadcrumbs.List:
+            case DataLocalizationConstants.List:
                 AddList(builder);
                 break;
 
-            case DataLocalizationBreadcrumbs.Statistics:
+            case DataLocalizationConstants.Statistics:
                 AddList(builder);
                 builder.Add(S["Statistics"], item => item.Id("Statistics"));
                 break;

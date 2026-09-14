@@ -4,7 +4,7 @@
 @inject OrchardCore.Modules.ILocalClock LocalClock
 
 <zone Name="Title">
-    <breadcrumb name="@WorkflowsBreadcrumbs.InstanceDetails" data="@(new { TypeName = Model.WorkflowType.Name, TypeId = Model.WorkflowType.Id.ToString(), WorkflowId = Model.Workflow.WorkflowId })" />
+    <breadcrumb name="@WorkflowsConstants.InstanceDetails" data="@(new { TypeName = Model.WorkflowType.Name, TypeId = Model.WorkflowType.Id.ToString(), WorkflowId = Model.Workflow.WorkflowId })" />
 </zone>
 
 <nav class="mb-3">

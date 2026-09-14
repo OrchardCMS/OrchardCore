@@ -14,7 +14,7 @@
 }
 
 <zone Name="Title">
-    <breadcrumb name="@TaxonomiesBreadcrumbs.Edit" data="@(new { TermTypeDisplayName = localizedTypeDisplayName, TaxonomyContentItemId = Model.TaxonomyContentItemId })" />
+    <breadcrumb name="@TaxonomiesConstants.Edit" data="@(new { TermTypeDisplayName = localizedTypeDisplayName, TaxonomyContentItemId = Model.TaxonomyContentItemId })" />
 </zone>
 
 <form asp-action="Edit" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data" class="no-multisubmit">

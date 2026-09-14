@@ -25,28 +25,28 @@ public sealed class LayersBreadcrumbProvider : IBreadcrumbProvider
     {
         switch (builder.Name)
         {
-            case LayersBreadcrumbs.List:
+            case LayersConstants.List:
                 AddList(builder);
                 break;
 
-            case LayersBreadcrumbs.Create:
+            case LayersConstants.Create:
                 AddList(builder);
                 builder.Add(S["Create Layer"], item => item.Id("Layer"));
                 break;
 
-            case LayersBreadcrumbs.Edit:
+            case LayersConstants.Edit:
                 AddList(builder);
-                builder.Add(S["Edit Layer - {0}", builder.GetData<string>(LayersBreadcrumbs.LayerNameKey)],
+                builder.Add(S["Edit Layer - {0}", builder.GetData<string>(LayersConstants.LayerNameKey)],
                     item => item.Id("Layer"));
                 break;
 
-            case LayersBreadcrumbs.RuleCreate:
+            case LayersConstants.RuleCreate:
                 AddList(builder);
                 AddEditLayer(builder);
                 builder.Add(S["Create Rule"], item => item.Id("Rule"));
                 break;
 
-            case LayersBreadcrumbs.RuleEdit:
+            case LayersConstants.RuleEdit:
                 AddList(builder);
                 AddEditLayer(builder);
                 builder.Add(S["Edit Rule"], item => item.Id("Rule"));
@@ -65,7 +65,7 @@ public sealed class LayersBreadcrumbProvider : IBreadcrumbProvider
     // A layer rule is only reached from its layer, so its trail leads back through the layer.
     private void AddEditLayer(BreadcrumbBuilder builder)
     {
-        var layerName = builder.GetData<string>(LayersBreadcrumbs.LayerNameKey);
+        var layerName = builder.GetData<string>(LayersConstants.LayerNameKey);
 
         builder.Add(S["Edit Layer - {0}", layerName], item => item
             .Id("Layer")

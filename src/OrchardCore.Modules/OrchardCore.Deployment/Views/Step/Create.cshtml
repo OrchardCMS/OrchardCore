@@ -1,7 +1,7 @@
 @model EditDeploymentPlanStepViewModel
 
 <zone Name="Title">
-    <breadcrumb name="@DeploymentBreadcrumbs.StepCreate" data="@(new { PlanId = Model.DeploymentPlanId, StepType = Model.DeploymentStepType })" />
+    <breadcrumb name="@DeploymentConstants.StepCreate" data="@(new { PlanId = Model.DeploymentPlanId, StepType = Model.DeploymentStepType })" />
 </zone>
 
 <div asp-validation-summary="ModelOnly"></div>

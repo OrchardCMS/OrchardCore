@@ -25,19 +25,19 @@ public sealed class UrlRewritingBreadcrumbProvider : IBreadcrumbProvider
     {
         switch (builder.Name)
         {
-            case UrlRewritingBreadcrumbs.List:
+            case UrlRewritingConstants.List:
                 AddList(builder);
                 break;
 
-            case UrlRewritingBreadcrumbs.Create:
+            case UrlRewritingConstants.Create:
                 AddList(builder);
-                builder.Add(S["New '{0}' rule", builder.GetData<string>(UrlRewritingBreadcrumbs.DisplayNameKey)],
+                builder.Add(S["New '{0}' rule", builder.GetData<string>(UrlRewritingConstants.DisplayNameKey)],
                     item => item.Id("Rule"));
                 break;
 
-            case UrlRewritingBreadcrumbs.Edit:
+            case UrlRewritingConstants.Edit:
                 AddList(builder);
-                builder.Add(S["Edit '{0}' rule", builder.GetData<string>(UrlRewritingBreadcrumbs.DisplayNameKey)],
+                builder.Add(S["Edit '{0}' rule", builder.GetData<string>(UrlRewritingConstants.DisplayNameKey)],
                     item => item.Id("Rule"));
                 break;
         }

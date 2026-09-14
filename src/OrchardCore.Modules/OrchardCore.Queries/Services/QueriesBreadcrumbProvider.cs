@@ -25,23 +25,23 @@ public sealed class QueriesBreadcrumbProvider : IBreadcrumbProvider
     {
         switch (builder.Name)
         {
-            case QueriesBreadcrumbs.List:
+            case QueriesConstants.List:
                 AddList(builder);
                 break;
 
-            case QueriesBreadcrumbs.Create:
+            case QueriesConstants.Create:
                 AddList(builder);
-                builder.Add(S["New {0} query", builder.GetData<string>(QueriesBreadcrumbs.SourceNameKey)],
+                builder.Add(S["New {0} query", builder.GetData<string>(QueriesConstants.SourceNameKey)],
                     item => item.Id("Query"));
                 break;
 
-            case QueriesBreadcrumbs.Edit:
+            case QueriesConstants.Edit:
                 AddList(builder);
-                builder.Add(S["Edit '{0}' query", builder.GetData<string>(QueriesBreadcrumbs.QueryNameKey)],
+                builder.Add(S["Edit '{0}' query", builder.GetData<string>(QueriesConstants.QueryNameKey)],
                     item => item.Id("Query"));
                 break;
 
-            case QueriesBreadcrumbs.Run:
+            case QueriesConstants.Run:
                 AddList(builder);
                 builder.Add(S["SQL Query"], item => item.Id("Query"));
                 break;

@@ -25,13 +25,13 @@ public sealed class PlacementsBreadcrumbProvider : IBreadcrumbProvider
     {
         switch (builder.Name)
         {
-            case PlacementsBreadcrumbs.List:
+            case PlacementsConstants.List:
                 AddList(builder);
                 break;
 
-            case PlacementsBreadcrumbs.Edit:
+            case PlacementsConstants.Edit:
                 AddList(builder);
-                builder.Add(builder.GetData<bool>(PlacementsBreadcrumbs.CreatingKey) ? S["Create Placement"] : S["Edit Placement"],
+                builder.Add(builder.GetData<bool>(PlacementsConstants.CreatingKey) ? S["Create Placement"] : S["Edit Placement"],
                     item => item.Id("Placement"));
                 break;
         }

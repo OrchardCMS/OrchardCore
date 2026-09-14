@@ -3,7 +3,7 @@
 @model ModelViewModel
 
 <zone Name="Title">
-    <breadcrumb name="@IndexingBreadcrumbs.Edit" data="@(new { Model.DisplayName })" />
+    <breadcrumb name="@IndexingConstants.Edit" data="@(new { Model.DisplayName })" />
 </zone>
 
 <form method="post" asp-route-id="@ViewContext.HttpContext.Request.RouteValues["Id"]" enctype="multipart/form-data" class="no-multisubmit">

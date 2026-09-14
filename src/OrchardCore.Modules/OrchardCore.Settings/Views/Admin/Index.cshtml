@@ -1,7 +1,7 @@
 @model AdminIndexViewModel
 
 <zone Name="Title">
-    <breadcrumb name="@SettingsBreadcrumbs.List" />
+    <breadcrumb name="@SettingsConstants.List" />
 </zone>
 
 <form asp-action="Index" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data" class="no-multisubmit">

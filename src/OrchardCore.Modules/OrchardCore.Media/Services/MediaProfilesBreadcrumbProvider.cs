@@ -25,21 +25,21 @@ public sealed class MediaProfilesBreadcrumbProvider : IBreadcrumbProvider
     {
         switch (builder.Name)
         {
-            case MediaProfilesBreadcrumbs.List:
+            case MediaProfilesConstants.List:
                 AddList(builder);
                 break;
 
-            case MediaProfilesBreadcrumbs.Create:
+            case MediaProfilesConstants.Create:
                 AddList(builder);
                 builder.Add(S["Create Media Profile"], item => item.Id("MediaProfile"));
                 break;
 
-            case MediaProfilesBreadcrumbs.Edit:
+            case MediaProfilesConstants.Edit:
                 AddList(builder);
                 builder.Add(S["Edit Media Profile"], item => item.Id("MediaProfile"));
                 break;
 
-            case MediaProfilesBreadcrumbs.Cache:
+            case MediaProfilesConstants.Cache:
                 builder.Add(S["Asset Cache"], item => item
                     .Id("MediaCache")
                     .Action("Index", "MediaCache", s_routeValues)

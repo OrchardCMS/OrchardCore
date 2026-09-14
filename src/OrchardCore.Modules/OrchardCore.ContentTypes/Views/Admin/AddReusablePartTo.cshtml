@@ -8,7 +8,7 @@
 
 <script asp-src="~/OrchardCore.ContentTypes/Scripts/autocomplete/autocomplete.js" at="Foot" depends-on="jQuery"></script>
 <zone Name="Title">
-    <breadcrumb name="@ContentTypesBreadcrumbs.TypesAddReusablePart" data="@(new { TypeName = Model.Type.Name, TypeDisplayName = localizedTypeName })" />
+    <breadcrumb name="@ContentTypesConstants.TypesAddReusablePart" data="@(new { TypeName = Model.Type.Name, TypeDisplayName = localizedTypeName })" />
 </zone>
 
 <form asp-action="AddReusablePartTo">

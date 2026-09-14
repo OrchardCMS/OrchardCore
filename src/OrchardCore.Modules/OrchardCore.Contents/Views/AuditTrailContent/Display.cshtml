@@ -10,7 +10,7 @@
 <script asp-src="~/OrchardCore.Contents/Scripts/audittrail-disabledcontent.min.js" debug-src="~/OrchardCore.Contents/Scripts/audittrail-disabledcontent.js" at="Foot" depends-on="jQuery"></script>
 
 <zone Name="Title">
-    <breadcrumb name="@ContentsBreadcrumbs.Display" data="@(new { ContentItem = contentItem, Title = T["{0} {1} - Version {2}", contentItem.ContentType, contentItem.DisplayText, versionNumber].Value })" />
+    <breadcrumb name="@ContentsConstants.Display" data="@(new { ContentItem = contentItem, Title = T["{0} {1} - Version {2}", contentItem.ContentType, contentItem.DisplayText, versionNumber].Value })" />
 </zone>
 
 <div class="disabledContent__wrapper">

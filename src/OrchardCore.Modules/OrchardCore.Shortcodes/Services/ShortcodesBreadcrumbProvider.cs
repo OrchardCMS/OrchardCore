@@ -25,16 +25,16 @@ public sealed class ShortcodesBreadcrumbProvider : IBreadcrumbProvider
     {
         switch (builder.Name)
         {
-            case ShortcodesBreadcrumbs.List:
+            case ShortcodesConstants.List:
                 AddList(builder);
                 break;
 
-            case ShortcodesBreadcrumbs.Create:
+            case ShortcodesConstants.Create:
                 AddList(builder);
                 builder.Add(S["Create Shortcode"], item => item.Id("Shortcode"));
                 break;
 
-            case ShortcodesBreadcrumbs.Edit:
+            case ShortcodesConstants.Edit:
                 AddList(builder);
                 builder.Add(S["Edit Shortcode"], item => item.Id("Shortcode"));
                 break;

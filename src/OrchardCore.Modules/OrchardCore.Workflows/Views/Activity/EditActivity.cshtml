@@ -2,7 +2,7 @@
 
 <div data-workflow-type-id="@Model.WorkflowTypeId" data-activity-id="@Model.ActivityId">
     <zone Name="Title">
-        <breadcrumb name="@WorkflowsBreadcrumbs.ActivityEdit" data="@(new { ActivityName = Model.Activity.DisplayText.Value, TypeId = Model.WorkflowTypeId })" />
+        <breadcrumb name="@WorkflowsConstants.ActivityEdit" data="@(new { ActivityName = Model.Activity.DisplayText.Value, TypeId = Model.WorkflowTypeId })" />
     </zone>
 
     <div asp-validation-summary="ModelOnly"></div>

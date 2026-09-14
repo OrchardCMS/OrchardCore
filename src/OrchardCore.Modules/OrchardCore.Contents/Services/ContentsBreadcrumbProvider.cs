@@ -52,10 +52,10 @@ public sealed class ContentsBreadcrumbProvider : IBreadcrumbProvider
     public ValueTask BuildBreadcrumbAsync(BreadcrumbBuilder builder)
         => builder.Name switch
         {
-            ContentsBreadcrumbs.List => BuildListAsync(builder),
-            ContentsBreadcrumbs.Create => BuildEditorAsync(builder, isNew: true),
-            ContentsBreadcrumbs.Edit => BuildEditorAsync(builder, isNew: false),
-            ContentsBreadcrumbs.Display => BuildDisplayAsync(builder),
+            ContentsConstants.List => BuildListAsync(builder),
+            ContentsConstants.Create => BuildEditorAsync(builder, isNew: true),
+            ContentsConstants.Edit => BuildEditorAsync(builder, isNew: false),
+            ContentsConstants.Display => BuildDisplayAsync(builder),
             _ => ValueTask.CompletedTask,
         };
 
@@ -64,9 +64,9 @@ public sealed class ContentsBreadcrumbProvider : IBreadcrumbProvider
         await AddListAsync(builder);
 
         // A screen may give the node its own text (e.g. a version label); otherwise the item's display text is used.
-        var title = builder.GetData<string>(ContentsBreadcrumbs.TitleKey);
+        var title = builder.GetData<string>(ContentsConstants.TitleKey);
 
-        if (string.IsNullOrEmpty(title) && builder.TryGetData<ContentItem>(ContentsBreadcrumbs.ContentItemKey, out var contentItem))
+        if (string.IsNullOrEmpty(title) && builder.TryGetData<ContentItem>(ContentsConstants.ContentItemKey, out var contentItem))
         {
             title = contentItem.DisplayText;
         }
@@ -78,7 +78,7 @@ public sealed class ContentsBreadcrumbProvider : IBreadcrumbProvider
     {
         await AddListAsync(builder);
 
-        var contentType = builder.GetData<string>(ContentsBreadcrumbs.ContentTypeKey);
+        var contentType = builder.GetData<string>(ContentsConstants.ContentTypeKey);
 
         if (string.IsNullOrEmpty(contentType))
         {
@@ -93,7 +93,7 @@ public sealed class ContentsBreadcrumbProvider : IBreadcrumbProvider
 
     private async ValueTask BuildEditorAsync(BreadcrumbBuilder builder, bool isNew)
     {
-        if (!builder.TryGetData<ContentItem>(ContentsBreadcrumbs.ContentItemKey, out var contentItem))
+        if (!builder.TryGetData<ContentItem>(ContentsConstants.ContentItemKey, out var contentItem))
         {
             return;
         }

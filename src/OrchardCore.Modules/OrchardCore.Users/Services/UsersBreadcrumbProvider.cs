@@ -25,31 +25,31 @@ public sealed class UsersBreadcrumbProvider : IBreadcrumbProvider
     {
         switch (builder.Name)
         {
-            case UsersBreadcrumbs.List:
+            case UsersConstants.List:
                 AddList(builder);
                 break;
 
-            case UsersBreadcrumbs.Create:
+            case UsersConstants.Create:
                 AddList(builder);
                 builder.Add(S["Create User"], item => item.Id("User"));
                 break;
 
-            case UsersBreadcrumbs.Edit:
+            case UsersConstants.Edit:
                 AddList(builder);
                 builder.Add(S["Edit User"], item => item.Id("User"));
                 break;
 
-            case UsersBreadcrumbs.EditPassword:
+            case UsersConstants.EditPassword:
                 AddList(builder);
                 builder.Add(S["Change Password"], item => item.Id("User"));
                 break;
 
-            case UsersBreadcrumbs.Display:
+            case UsersConstants.Display:
                 AddList(builder);
                 builder.Add(S["View User"], item => item.Id("User"));
                 break;
 
-            case UsersBreadcrumbs.AuditTrail:
+            case UsersConstants.AuditTrail:
                 builder.Add(S["Audit Trail User Event Settings"], item => item.Id("AuditTrail"));
                 break;
         }

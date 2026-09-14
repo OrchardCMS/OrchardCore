@@ -7,7 +7,7 @@
     string localizedTypeName = D[Model.Type.DisplayName, "Content Types"];
 }
 <zone Name="Title">
-    <breadcrumb name="@ContentTypesBreadcrumbs.TypesAddParts" data="@(new { TypeName = Model.Type.Name, TypeDisplayName = localizedTypeName })" />
+    <breadcrumb name="@ContentTypesConstants.TypesAddParts" data="@(new { TypeName = Model.Type.Name, TypeDisplayName = localizedTypeName })" />
 </zone>
 
 <div class="ocat-wrapper">

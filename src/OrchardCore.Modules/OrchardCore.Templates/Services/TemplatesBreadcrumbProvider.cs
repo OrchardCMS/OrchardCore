@@ -26,16 +26,16 @@ public sealed class TemplatesBreadcrumbProvider : IBreadcrumbProvider
     {
         switch (builder.Name)
         {
-            case TemplatesBreadcrumbs.List:
+            case TemplatesConstants.List:
                 AddList(builder);
                 break;
 
-            case TemplatesBreadcrumbs.Create:
+            case TemplatesConstants.Create:
                 AddList(builder);
                 builder.Add(S["Create Template"], item => item.Id("Template"));
                 break;
 
-            case TemplatesBreadcrumbs.Edit:
+            case TemplatesConstants.Edit:
                 AddList(builder);
                 builder.Add(IsAdminTemplates(builder) ? S["Edit Admin Template"] : S["Edit Template"],
                     item => item.Id("Template"));
@@ -56,5 +56,5 @@ public sealed class TemplatesBreadcrumbProvider : IBreadcrumbProvider
     }
 
     private static bool IsAdminTemplates(BreadcrumbBuilder builder)
-        => builder.GetData<bool>(TemplatesBreadcrumbs.AdminTemplatesKey);
+        => builder.GetData<bool>(TemplatesConstants.AdminTemplatesKey);
 }

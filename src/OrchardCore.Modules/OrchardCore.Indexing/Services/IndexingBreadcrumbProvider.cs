@@ -26,19 +26,19 @@ public sealed class IndexingBreadcrumbProvider : IBreadcrumbProvider
     {
         switch (builder.Name)
         {
-            case IndexingBreadcrumbs.List:
+            case IndexingConstants.List:
                 AddList(builder);
                 break;
 
-            case IndexingBreadcrumbs.Create:
+            case IndexingConstants.Create:
                 AddList(builder);
-                builder.Add(S["New '{0}' index", builder.GetData<string>(IndexingBreadcrumbs.DisplayNameKey)],
+                builder.Add(S["New '{0}' index", builder.GetData<string>(IndexingConstants.DisplayNameKey)],
                     item => item.Id("Index"));
                 break;
 
-            case IndexingBreadcrumbs.Edit:
+            case IndexingConstants.Edit:
                 AddList(builder);
-                builder.Add(S["Edit '{0}' index", builder.GetData<string>(IndexingBreadcrumbs.DisplayNameKey)],
+                builder.Add(S["Edit '{0}' index", builder.GetData<string>(IndexingConstants.DisplayNameKey)],
                     item => item.Id("Index"));
                 break;
         }

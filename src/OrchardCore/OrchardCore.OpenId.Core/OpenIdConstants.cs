@@ -31,4 +31,14 @@ public static class OpenIdConstants
     {
         public const string Roles = "Roles";
     }
+
+    // Breadcrumb trail names.
+    public const string ApplicationsList = "OpenIdApplications";
+    public const string ApplicationsCreate = "OpenIdApplicationsCreate";
+    public const string ApplicationsEdit = "OpenIdApplicationsEdit";
+    public const string ScopesList = "OpenIdScopes";
+    public const string ScopesCreate = "OpenIdScopesCreate";
+    public const string ScopesEdit = "OpenIdScopesEdit";
+    public const string ServerConfiguration = "OpenIdServerConfiguration";
+    public const string ValidationConfiguration = "OpenIdValidationConfiguration";
 }

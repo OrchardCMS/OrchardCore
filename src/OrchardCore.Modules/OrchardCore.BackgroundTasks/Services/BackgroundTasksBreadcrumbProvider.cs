@@ -25,11 +25,11 @@ public sealed class BackgroundTasksBreadcrumbProvider : IBreadcrumbProvider
     {
         switch (builder.Name)
         {
-            case BackgroundTasksBreadcrumbs.List:
+            case BackgroundTasksConstants.List:
                 AddList(builder);
                 break;
 
-            case BackgroundTasksBreadcrumbs.Edit:
+            case BackgroundTasksConstants.Edit:
                 AddList(builder);
                 builder.Add(S["Edit Task Settings"], item => item.Id("Task"));
                 break;

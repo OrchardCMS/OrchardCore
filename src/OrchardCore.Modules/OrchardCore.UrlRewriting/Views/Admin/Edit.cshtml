@@ -1,7 +1,7 @@
 @model RewriteRuleViewModel
 
 <zone Name="Title">
-    <breadcrumb name="@UrlRewritingBreadcrumbs.Edit" data="@(new { Model.DisplayName })" />
+    <breadcrumb name="@UrlRewritingConstants.Edit" data="@(new { Model.DisplayName })" />
 </zone>
 
 <form method="post" asp-route-id="@ViewContext.HttpContext.Request.RouteValues["id"]" enctype="multipart/form-data" class="no-multisubmit">

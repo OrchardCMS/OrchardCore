@@ -30,17 +30,17 @@ public sealed class TaxonomiesBreadcrumbProvider : IBreadcrumbProvider
     {
         switch (builder.Name)
         {
-            case TaxonomiesBreadcrumbs.Create:
+            case TaxonomiesConstants.Create:
                 AddManageContent(builder);
                 await AddTaxonomyAsync(builder);
-                builder.Add(S["New {0}", builder.GetData<string>(TaxonomiesBreadcrumbs.TermTypeDisplayNameKey)],
+                builder.Add(S["New {0}", builder.GetData<string>(TaxonomiesConstants.TermTypeDisplayNameKey)],
                     item => item.Id("Term"));
                 break;
 
-            case TaxonomiesBreadcrumbs.Edit:
+            case TaxonomiesConstants.Edit:
                 AddManageContent(builder);
                 await AddTaxonomyAsync(builder);
-                builder.Add(S["Edit {0}", builder.GetData<string>(TaxonomiesBreadcrumbs.TermTypeDisplayNameKey)],
+                builder.Add(S["Edit {0}", builder.GetData<string>(TaxonomiesConstants.TermTypeDisplayNameKey)],
                     item => item.Id("Term"));
                 break;
         }
@@ -56,7 +56,7 @@ public sealed class TaxonomiesBreadcrumbProvider : IBreadcrumbProvider
 
     private async ValueTask AddTaxonomyAsync(BreadcrumbBuilder builder)
     {
-        var taxonomyContentItemId = builder.GetData<string>(TaxonomiesBreadcrumbs.TaxonomyContentItemIdKey);
+        var taxonomyContentItemId = builder.GetData<string>(TaxonomiesConstants.TaxonomyContentItemIdKey);
 
         if (string.IsNullOrEmpty(taxonomyContentItemId))
         {

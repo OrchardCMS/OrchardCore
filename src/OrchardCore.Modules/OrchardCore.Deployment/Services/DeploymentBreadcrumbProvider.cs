@@ -35,43 +35,43 @@ public sealed class DeploymentBreadcrumbProvider : IBreadcrumbProvider
     {
         switch (builder.Name)
         {
-            case DeploymentBreadcrumbs.List:
+            case DeploymentConstants.List:
                 AddList(builder);
                 break;
 
-            case DeploymentBreadcrumbs.Create:
+            case DeploymentConstants.Create:
                 AddList(builder);
                 builder.Add(S["Create Deployment Plan"], item => item.Id("DeploymentPlan"));
                 break;
 
-            case DeploymentBreadcrumbs.Edit:
+            case DeploymentConstants.Edit:
                 AddList(builder);
                 builder.Add(S["Edit Deployment Plan"], item => item.Id("DeploymentPlan"));
                 break;
 
-            case DeploymentBreadcrumbs.Display:
+            case DeploymentConstants.Display:
                 AddList(builder);
                 builder.Add(S["Deployment Plan"], item => item.Id("DeploymentPlan"));
                 break;
 
-            case DeploymentBreadcrumbs.StepCreate:
+            case DeploymentConstants.StepCreate:
                 AddList(builder);
                 await AddPlanAsync(builder);
                 builder.Add(GetStepName(builder), item => item.Id("Step"));
                 break;
 
-            case DeploymentBreadcrumbs.StepEdit:
+            case DeploymentConstants.StepEdit:
                 AddList(builder);
                 await AddPlanAsync(builder);
                 builder.Add(GetStepName(builder), item => item.Id("Step"));
                 break;
 
             // The import screens are siblings of the plans rather than children of them.
-            case DeploymentBreadcrumbs.Import:
+            case DeploymentConstants.Import:
                 builder.Add(S["Import Deployment Package"], item => item.Id("Import"));
                 break;
 
-            case DeploymentBreadcrumbs.ImportJson:
+            case DeploymentConstants.ImportJson:
                 builder.Add(S["JSON Import"], item => item.Id("Import"));
                 break;
         }
@@ -88,7 +88,7 @@ public sealed class DeploymentBreadcrumbProvider : IBreadcrumbProvider
     // becomes 'Export Content To Deployment Target'.
     private string GetStepName(BreadcrumbBuilder builder)
     {
-        var stepType = builder.GetData<string>(DeploymentBreadcrumbs.StepTypeKey);
+        var stepType = builder.GetData<string>(DeploymentConstants.StepTypeKey);
 
         if (string.IsNullOrEmpty(stepType))
         {
@@ -119,7 +119,7 @@ public sealed class DeploymentBreadcrumbProvider : IBreadcrumbProvider
     // A step is only reached from its deployment plan, so its trail leads back through the plan.
     private async ValueTask AddPlanAsync(BreadcrumbBuilder builder)
     {
-        var planId = builder.GetData<long>(DeploymentBreadcrumbs.PlanIdKey);
+        var planId = builder.GetData<long>(DeploymentConstants.PlanIdKey);
         var plan = await _session.GetAsync<DeploymentPlan>(planId);
 
         builder.Add(plan?.Name ?? S["Deployment Plan"].Value, item => item

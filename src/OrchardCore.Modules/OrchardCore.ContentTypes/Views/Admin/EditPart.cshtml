@@ -20,7 +20,7 @@
     string localizedPartName = D[Model.DisplayName, "Content Types"];
 }
 <zone Name="Title">
-    <breadcrumb name="@ContentTypesBreadcrumbs.PartsEdit" data="@(new { PartName = Model.Name, PartDisplayName = localizedPartName })" />
+    <breadcrumb name="@ContentTypesConstants.PartsEdit" data="@(new { PartName = Model.Name, PartDisplayName = localizedPartName })" />
 </zone>
 
 <form asp-action="EditPart">

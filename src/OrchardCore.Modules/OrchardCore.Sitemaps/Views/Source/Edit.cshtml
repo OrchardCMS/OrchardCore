@@ -1,7 +1,7 @@
 @model EditSourceViewModel
 
 <zone Name="Title">
-    <breadcrumb name="@SitemapsBreadcrumbs.SourceEdit" data="@(new { SitemapId = Model.SitemapId })" />
+    <breadcrumb name="@SitemapsConstants.SourceEdit" data="@(new { SitemapId = Model.SitemapId })" />
 </zone>
 
 @if (string.IsNullOrEmpty(Site.BaseUrl))

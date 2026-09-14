@@ -1,7 +1,7 @@
 @model QueriesEditViewModel
 
 <zone Name="Title">
-    <breadcrumb name="@QueriesBreadcrumbs.Edit" data="@(new { QueryName = Model.Name })" />
+    <breadcrumb name="@QueriesConstants.Edit" data="@(new { QueryName = Model.Name })" />
 </zone>
 
 <form asp-action="Edit" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data" class="no-multisubmit">

@@ -29,52 +29,52 @@ public sealed class SitemapsBreadcrumbProvider : IBreadcrumbProvider
     {
         switch (builder.Name)
         {
-            case SitemapsBreadcrumbs.List:
+            case SitemapsConstants.List:
                 AddSitemaps(builder);
                 break;
 
-            case SitemapsBreadcrumbs.Create:
+            case SitemapsConstants.Create:
                 AddSitemaps(builder);
                 builder.Add(S["Create Sitemap"], item => item.Id("Sitemap"));
                 break;
 
-            case SitemapsBreadcrumbs.Edit:
+            case SitemapsConstants.Edit:
                 AddSitemaps(builder);
                 builder.Add(S["Edit Sitemap"], item => item.Id("Sitemap"));
                 break;
 
-            case SitemapsBreadcrumbs.Display:
+            case SitemapsConstants.Display:
                 AddSitemaps(builder);
                 builder.Add(S["Sitemap"], item => item.Id("Sitemap"));
                 break;
 
-            case SitemapsBreadcrumbs.SourceCreate:
+            case SitemapsConstants.SourceCreate:
                 AddSitemaps(builder);
                 await AddSitemapAsync(builder);
                 builder.Add(S["Create Sitemap Source"], item => item.Id("Source"));
                 break;
 
-            case SitemapsBreadcrumbs.SourceEdit:
+            case SitemapsConstants.SourceEdit:
                 AddSitemaps(builder);
                 await AddSitemapAsync(builder);
                 builder.Add(S["Edit Sitemap Source"], item => item.Id("Source"));
                 break;
 
-            case SitemapsBreadcrumbs.IndexesList:
+            case SitemapsConstants.IndexesList:
                 AddIndexes(builder);
                 break;
 
-            case SitemapsBreadcrumbs.IndexesCreate:
+            case SitemapsConstants.IndexesCreate:
                 AddIndexes(builder);
                 builder.Add(S["Create Sitemap Index"], item => item.Id("SitemapIndex"));
                 break;
 
-            case SitemapsBreadcrumbs.IndexesEdit:
+            case SitemapsConstants.IndexesEdit:
                 AddIndexes(builder);
                 builder.Add(S["Edit Sitemap Index"], item => item.Id("SitemapIndex"));
                 break;
 
-            case SitemapsBreadcrumbs.Cache:
+            case SitemapsConstants.Cache:
                 builder.Add(S["Sitemaps Cache"], item => item
                     .Id("SitemapCache")
                     .Action("List", "SitemapCache", s_routeValues)
@@ -86,7 +86,7 @@ public sealed class SitemapsBreadcrumbProvider : IBreadcrumbProvider
     // A source is only reached from its sitemap, so its trail leads back through the sitemap.
     private async ValueTask AddSitemapAsync(BreadcrumbBuilder builder)
     {
-        var sitemapId = builder.GetData<string>(SitemapsBreadcrumbs.SitemapIdKey);
+        var sitemapId = builder.GetData<string>(SitemapsConstants.SitemapIdKey);
 
         if (string.IsNullOrEmpty(sitemapId))
         {

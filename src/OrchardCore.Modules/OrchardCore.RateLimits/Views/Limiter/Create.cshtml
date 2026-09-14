@@ -5,7 +5,7 @@
 }
 
 <zone Name="Title">
-    <breadcrumb name="@RateLimitsBreadcrumbs.LimiterCreate" data="@(new { Model.DisplayName, PolicyId = ViewContext.RouteData.Values["policyId"] })" />
+    <breadcrumb name="@RateLimitsConstants.LimiterCreate" data="@(new { Model.DisplayName, PolicyId = ViewContext.RouteData.Values["policyId"] })" />
 </zone>
 
 <form asp-action="Create" method="post" class="no-multisubmit">
