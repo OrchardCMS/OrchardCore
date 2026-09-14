@@ -37,6 +37,7 @@ const mockApp = {
     onConnectSuccessCb = onSuccess;
     onConnectErrorCb = onError;
   }),
+  onDisconnect: vi.fn((onSuccess: () => void) => onSuccess()),
 };
 
 vi.mock("@bloom/services/signalr/signalr-app", () => ({
@@ -98,6 +99,23 @@ describe("SignalR", () => {
     );
     vi.doUnmock("../media-gallery-auth");
     vi.resetModules();
+  });
+
+  it("stops the connection and removes the event-bus handler when its scope is disposed", async () => {
+    // The picker mounts/unmounts the gallery per modal open; without teardown
+    // every open would leak a live hub connection and a mitt handler.
+    const { effectScope } = await import("vue");
+    const { signalRReceivedData } = await import("@bloom/services/signalr/eventbus");
+    const { useSignalR } = await import("../SignalR");
+
+    const scope = effectScope();
+    scope.run(() => useSignalR());
+    expect(mockApp.onDisconnect).not.toHaveBeenCalled();
+
+    scope.stop();
+
+    expect(mockApp.onDisconnect).toHaveBeenCalled();
+    expect(signalRReceivedData.off).toHaveBeenCalledWith(signalRReceivedDataCb);
   });
 
   it("registers MediaChanged handler on the connection", async () => {

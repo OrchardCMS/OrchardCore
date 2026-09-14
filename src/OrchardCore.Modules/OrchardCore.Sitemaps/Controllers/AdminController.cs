@@ -71,7 +71,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
 
         var sitemaps = (await _sitemapManager.GetSitemapsAsync())
             .OfType<Sitemap>();

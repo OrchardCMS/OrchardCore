@@ -509,6 +509,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
         {
             AssetsUsersFolder = UsersFolder,
             AllowedFileExtensions = [".png"],
+            RestrictedFileExtensions = [".svg"],
         });
 
         var mockUserAssetFolderNameProvider = new Mock<IUserAssetFolderNameProvider>();
@@ -580,4 +581,3 @@ public class ViewMediaFolderAuthorizationHandlerTests
         await Task.CompletedTask;
     }
 }
-

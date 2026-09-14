@@ -1,7 +1,7 @@
 import SignalRApp from "@bloom/services/signalr/signalr-app";
 import { signalRReceivedData } from "@bloom/services/signalr/eventbus";
 import { HubConnectionState } from "@microsoft/signalr";
-import { watch } from "vue";
+import { getCurrentScope, onScopeDispose, watch } from "vue";
 import { useFileLibraryManager } from "./FileLibraryManager";
 import { useGlobals } from "./Globals";
 import { getAccessToken, isAuthConfigured } from "./media-gallery-auth";
@@ -75,9 +75,24 @@ export function useSignalR() {
     });
   }
 
-  signalRReceivedData.on((data: unknown) => {
+  const onReceivedData = (data: unknown) => {
     console.debug("SignalR received data:", data);
-  });
+  };
+  signalRReceivedData.on(onReceivedData);
+
+  // The picker mounts a fresh app per modal open, so the hub connection and the
+  // module-level event-bus handler must be torn down with the component scope —
+  // otherwise every open leaks a live connection. On the admin page the app
+  // lives for the whole page, so this never fires there.
+  if (getCurrentScope()) {
+    onScopeDispose(() => {
+      signalRReceivedData.off(onReceivedData);
+      app.onDisconnect(
+        () => console.debug("SignalR disconnected from MediaHub"),
+        (err: unknown) => console.error("SignalR disconnect error:", err),
+      );
+    });
+  }
 
   // Watch the selected directory and update group subscriptions when the user navigates.
   watch(selectedDirectory, (newDir, oldDir) => {

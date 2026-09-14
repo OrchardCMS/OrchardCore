@@ -107,7 +107,7 @@ public sealed class AdminController : Controller
         var allSettings = _shellHost.GetAllSettings();
         var dataProtector = _dataProtectorProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
 
         var filteredSettings = allSettings;
 

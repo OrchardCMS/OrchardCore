@@ -1,5 +1,3 @@
-using System.Text.Encodings.Web;
-using Fluid.Values;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
@@ -8,10 +6,10 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Html.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Mvc.ModelBinding;
-using OrchardCore.Shortcodes.Services;
 using Shortcodes;
 
 namespace OrchardCore.ContentFields.Drivers;
@@ -19,23 +17,20 @@ namespace OrchardCore.ContentFields.Drivers;
 public sealed class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField>
 {
     private readonly ILiquidTemplateManager _liquidTemplateManager;
-    private readonly HtmlEncoder _htmlEncoder;
+    private readonly IHtmlDisplayService _htmlDisplayService;
     private readonly IHtmlSanitizerService _htmlSanitizerService;
-    private readonly IShortcodeService _shortcodeService;
 
     internal readonly IStringLocalizer S;
 
     public HtmlFieldDisplayDriver(
         ILiquidTemplateManager liquidTemplateManager,
-        HtmlEncoder htmlEncoder,
+        IHtmlDisplayService htmlDisplayService,
         IHtmlSanitizerService htmlSanitizerService,
-        IShortcodeService shortcodeService,
         IStringLocalizer<HtmlFieldDisplayDriver> localizer)
     {
         _liquidTemplateManager = liquidTemplateManager;
-        _htmlEncoder = htmlEncoder;
+        _htmlDisplayService = htmlDisplayService;
         _htmlSanitizerService = htmlSanitizerService;
-        _shortcodeService = shortcodeService;
         S = localizer;
     }
 
@@ -50,19 +45,11 @@ public sealed class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField
 
             var settings = context.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
 
-            if (settings.RenderLiquid)
-            {
-                model.Html = await driver._liquidTemplateManager.RenderStringAsync(field.Html, driver._htmlEncoder, model,
-                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(field.ContentItem) });
-            }
-
-            model.Html = await driver._shortcodeService.ProcessAsync(model.Html,
-                new Context
-                {
-                    ["ContentItem"] = field.ContentItem,
-                    ["PartFieldDefinition"] = context.PartFieldDefinition,
-                });
-
+            await driver._htmlDisplayService.UpdateModelHtmlAsync(
+                model,
+                settings.RenderLiquid,
+                new Context { ["PartFieldDefinition"] = context.PartFieldDefinition },
+                settings.SanitizeHtml);
         }, this, field, context)
         .Location(OrchardCoreConstants.DisplayType.Detail, "Content")
         .Location(OrchardCoreConstants.DisplayType.Summary, "Content");

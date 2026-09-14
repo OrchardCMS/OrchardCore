@@ -26,6 +26,7 @@
       :media-app-translations="config.mediaAppTranslations || ''"
       :base-path="config.basePath || ''"
       :upload-files-url="config.uploadFilesUrl || ''"
+      :signalr-enabled="config.signalrEnabled === true"
       @select="onPickerSelect"
     />
 

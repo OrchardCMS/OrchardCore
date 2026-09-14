@@ -30,7 +30,7 @@
                 </a>
               </span>
             </div>
-            <div class="tw:relative tw:px-3">
+            <div class="tw:relative tw:px-1">
               <a href="javascript:void(0)" class="storage-info-btn" :title="t.StorageInfo || 'Storage Info'"
                 @click="toggleStoragePopover">
                 <fa-icon icon="fa-solid fa-hard-drive"></fa-icon>
@@ -50,7 +50,7 @@
                 </div>
               </div>
             </div>
-            <div class="tw:relative tw:px-3">
+            <div class="tw:relative tw:px-1">
               <a href="javascript:void(0)" class="settings-btn" :title="t.Settings || 'Settings'"
                 @click="toggleSettingsPopover">
                 <fa-icon icon="fa-solid fa-gear"></fa-icon>

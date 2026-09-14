@@ -8,7 +8,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Media.Services;
 
 namespace OrchardCore.Media.Endpoints.Api;
 
@@ -37,6 +39,7 @@ public static class MoveMediaEndpoint
         IMediaFileStore mediaFileStore,
         IOptions<MediaOptions> options,
         IServiceProvider serviceProvider,
+        ILogger<MediaApiEndpoints> logger,
         IStringLocalizer<MediaApiEndpoints> localizer,
         string oldPath,
         string newPath)
@@ -59,8 +62,11 @@ public static class MoveMediaEndpoint
         }
 
         var newExtension = Path.GetExtension(newPath);
+        var canUploadRestrictedMedia = await authorizationService.AuthorizeAsync(
+            httpContext.User,
+            MediaPermissions.UploadRestrictedMedia);
 
-        if (!options.Value.AllowedFileExtensions.Contains(newExtension, StringComparer.OrdinalIgnoreCase))
+        if (!options.Value.IsFileExtensionAllowed(newExtension, canUploadRestrictedMedia))
         {
             return httpContext.ApiValidationProblem(detail: localizer["This file extension is not allowed: {0}", newExtension]);
         }
@@ -73,7 +79,12 @@ public static class MoveMediaEndpoint
         await mediaFileStore.MoveFileAsync(oldPath, newPath);
 
         var movedFile = await mediaFileStore.GetFileInfoAsync(newPath);
-        await MediaEndpointHelpers.PreCacheRemoteMediaAsync(movedFile, serviceProvider, mediaFileStore, httpContext);
+        await MediaEndpointHelpers.PreCacheRemoteMediaAsync(
+            movedFile,
+            mediaFileStore,
+            serviceProvider.GetService(typeof(IMediaFileStoreCache)) as IMediaFileStoreCache,
+            httpContext,
+            logger);
 
         return TypedResults.Ok();
     }

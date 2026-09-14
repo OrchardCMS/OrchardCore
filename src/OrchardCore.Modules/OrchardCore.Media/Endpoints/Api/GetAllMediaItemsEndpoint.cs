@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Options;
 using OrchardCore.FileStorage;
+using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
 
 namespace OrchardCore.Media.Endpoints.Api;
@@ -55,10 +56,17 @@ public static class GetAllMediaItemsEndpoint
             await mediaFileStore.TryCreateDirectoryAsync(mediaFileStore.Combine(mediaOptions.AssetsUsersFolder, userAssetFolderNameProvider.GetUserAssetFolderName(httpContext.User)));
         }
 
-        var allowedExtensions = MediaEndpointHelpers.GetRequestedExtensions(mediaOptions, extensions, false);
+        var canUploadRestrictedMedia = await authorizationService.AuthorizeAsync(
+            httpContext.User,
+            MediaPermissions.UploadRestrictedMedia);
+        var allowedExtensions = MediaEndpointHelpers.GetRequestedExtensions(
+            mediaOptions,
+            extensions,
+            canUploadRestrictedMedia);
+        var filterByExtensions = !string.IsNullOrWhiteSpace(extensions);
         var allItems = new List<FileStoreEntryDto>();
 
-        await MediaEndpointHelpers.CollectAllItemsRecursiveAsync(mediaFileStore, authorizationService, httpContext, contentTypeProvider, fileVersionProvider, string.Empty, allowedExtensions, allItems);
+        await MediaEndpointHelpers.CollectAllItemsRecursiveAsync(mediaFileStore, authorizationService, httpContext, contentTypeProvider, fileVersionProvider, string.Empty, allowedExtensions, filterByExtensions, allItems);
 
         return TypedResults.Ok(allItems);
     }

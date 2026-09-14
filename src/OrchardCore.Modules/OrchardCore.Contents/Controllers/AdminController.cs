@@ -229,7 +229,7 @@ public sealed class AdminController : Controller, IUpdateModel
         // Populate route values to maintain previous route data when generating page links.
         options.RouteValues.TryAdd("q", options.FilterResult.ToString());
 
-        var pager = new Pager(pagerParameters, pagerOptions.Value.GetPageSize());
+        var pager = new Pager(pagerParameters, pagerOptions.Value);
 
         var itemsPerPage = pagerOptions.Value.MaxPagedCount > 0
             ? pagerOptions.Value.MaxPagedCount
@@ -402,12 +402,6 @@ public sealed class AdminController : Controller, IUpdateModel
         string returnUrl)
     {
         var stayOnSamePage = submitSave == "submit.SaveAndContinue";
-
-        if (submitSave == "submit.SaveAndNew")
-        {
-            returnUrl = Url.Action(nameof(Create), new { returnUrl });
-        }
-
         return CreateInternalAsync(id, returnUrl, stayOnSamePage, async contentItem =>
         {
             await _contentManager.SaveDraftAsync(contentItem);
@@ -440,11 +434,6 @@ public sealed class AdminController : Controller, IUpdateModel
         if (!await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.PublishContent, id, CurrentUserId()))
         {
             return Forbid();
-        }
-
-        if (submitPublish == "submit.PublishAndNew")
-        {
-            returnUrl = Url.Action(nameof(Create), new { returnUrl });
         }
 
         return await CreateInternalAsync(id, returnUrl, stayOnSamePage, async contentItem =>

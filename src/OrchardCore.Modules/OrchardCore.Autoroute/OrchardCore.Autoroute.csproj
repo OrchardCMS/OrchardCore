@@ -32,4 +32,8 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Sitemaps.Abstractions\OrchardCore.Sitemaps.Abstractions.csproj" />
   </ItemGroup>
 
+  <!-- For Unit Tests-->
+  <ItemGroup>
+    <InternalsVisibleTo Include="OrchardCore.Tests" />
+  </ItemGroup>
 </Project>

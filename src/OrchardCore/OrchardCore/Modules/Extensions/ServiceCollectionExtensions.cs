@@ -27,6 +27,7 @@ using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Options;
 using OrchardCore.Extensions;
+using OrchardCore.FileStorage;
 using OrchardCore.Json;
 using OrchardCore.Localization;
 using OrchardCore.Localization.Data;
@@ -175,9 +176,14 @@ public static class ServiceCollectionExtensions
             services.AddSingleton<ILocalLock>(sp => sp.GetRequiredService<LocalLock>());
             services.AddSingleton<IDistributedLock>(sp => sp.GetRequiredService<LocalLock>());
 
+            // Registered as a tenant-level singleton (not a host singleton) because it depends on the
+            // tenant's ShellSettings, which is not resolvable from the shared application container.
+            services.TryAddSingleton<ITempDirectoryProvider, DefaultTempDirectoryProvider>();
+
             var configuration = serviceProvider.GetService<IShellConfiguration>();
 
             services.Configure<CultureOptions>(configuration.GetSection("OrchardCore_Localization_CultureOptions"));
+            services.Configure<TempDirectoryOptions>(configuration.GetSection("TempDirectory"));
         });
 
         services.AddSingleton(new FluidParser());
@@ -236,26 +242,32 @@ public static class ServiceCollectionExtensions
     {
         builder.ConfigureServices(services =>
         {
+            // Serves the application's physical web-root files through the application module prefix.
+            services.AddSingleton<ApplicationStaticFileProvider>();
+
+            // Serves static files embedded in module assemblies under their module prefixes.
+            services.AddSingleton<ModuleEmbeddedStaticFileProvider>();
+
+            // Serves physical module project files during development so asset changes are available without repackaging.
+            services.AddSingleton<ModuleProjectStaticFileProvider>();
+
             services.AddSingleton<IModuleStaticFileProvider>(serviceProvider =>
             {
                 var env = serviceProvider.GetRequiredService<IHostEnvironment>();
-                var appContext = serviceProvider.GetRequiredService<IApplicationContext>();
+                var fileProviders = new List<IStaticFileProvider>();
 
-                IModuleStaticFileProvider fileProvider;
                 if (env.IsDevelopment())
                 {
-                    var fileProviders = new List<IStaticFileProvider>
-                    {
-                        new ModuleProjectStaticFileProvider(appContext),
-                        new ModuleEmbeddedStaticFileProvider(appContext),
-                    };
-                    fileProvider = new ModuleCompositeStaticFileProvider(fileProviders);
+                    // Prefer project files while developing, then fall back to packaged embedded assets.
+                    fileProviders.Add(serviceProvider.GetRequiredService<ModuleProjectStaticFileProvider>());
                 }
-                else
-                {
-                    fileProvider = new ModuleEmbeddedStaticFileProvider(appContext);
-                }
-                return fileProvider;
+
+                fileProviders.Add(serviceProvider.GetRequiredService<ModuleEmbeddedStaticFileProvider>());
+
+                // Application files are physical rather than embedded, so resolve them last through the configured web root.
+                fileProviders.Add(serviceProvider.GetRequiredService<ApplicationStaticFileProvider>());
+
+                return new ModuleCompositeStaticFileProvider(fileProviders);
             });
 
             services.AddSingleton<IStaticFileProvider>(serviceProvider =>

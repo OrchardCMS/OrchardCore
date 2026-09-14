@@ -101,9 +101,11 @@ public sealed class AdminController : Controller
         }
         else
         {
-            foreach (var message in messages)
+            var validationMessages = SqlParser.Validate(tokenizedQuery);
+
+            foreach (var message in validationMessages.Count > 0 ? validationMessages : messages)
             {
-                ModelState.AddModelError("", message);
+                ModelState.AddModelError(nameof(model.DecodedQuery), message);
             }
         }
 
