@@ -5,7 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="AnyAscii" Version="0.3.3" />
-    <PackageVersion Include="AngleSharp" Version="1.4.0" />
+    <PackageVersion Include="AngleSharp" Version="1.8.1" />
     <PackageVersion Include="AWSSDK.S3" Version="4.0.23.5" />
     <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.4.2" />
     <PackageVersion Include="Azure.Communication.Email" Version="1.1.0" />
@@ -40,7 +40,7 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.3.0" />
     <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.14.0" />
     <PackageVersion Include="Microsoft.Identity.Web" Version="4.10.0" />
-    <PackageVersion Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.18.0" />
+    <PackageVersion Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.19.2" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.6.0" />
     <PackageVersion Include="MimeKit" Version="4.17.0" />
@@ -73,7 +73,7 @@
     <PackageVersion Include="ZString" Version="2.6.0" />
   </ItemGroup>
   <ItemGroup>
-    <GlobalPackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.300" />
+    <GlobalPackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.303" />
     <GlobalPackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeStyle" Version="5.3.0" />
   </ItemGroup>
   <!--
@@ -89,30 +89,31 @@
   <!-- There may be no TFM in an evaluation phase so we can't use a conditional 'Property' -->
   <ItemGroup>
     <PackageVersion Include="AspNet.Security.OAuth.GitHub" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="10.0.8" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="10.0.8" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="10.0.8" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="10.0.8" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.8" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Twitter" Version="10.0.8" />
-    <PackageVersion Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="10.0.8" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="10.0.8" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.8" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Twitter" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.11" />
     <PackageVersion Include="Microsoft.Playwright" Version="1.60.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="10.0.8" />
-    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="10.0.8" />
-    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.8" />
+    <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.11" />
     <!-- dotnet/extensions repository -->
     <PackageVersion Include="Microsoft.Extensions.Diagnostics.Testing" Version="10.6.0" />
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.6.0" />
     <!-- Serilog.AspNetCore -->
     <PackageVersion Include="Serilog.AspNetCore" Version="10.0.0" />
-    <PackageVersion Include="System.IO.Hashing" Version="10.0.8" />
-    <PackageVersion Include="System.Text.Json" Version="10.0.8" />
+    <PackageVersion Include="System.IO.Hashing" Version="10.0.11" />
+    <PackageVersion Include="System.Text.Json" Version="10.0.11" />
   </ItemGroup>
   <ItemGroup>
     <!-- Transitive Packages -->
-    <PackageVersion Include="Microsoft.Data.Sqlite" Version="10.0.8" />
+    <PackageVersion Include="Microsoft.Data.Sqlite" Version="10.0.11" />
     <PackageVersion Include="SQLitePCLRaw.lib.e_sqlite3" Version="3.50.3" />
+    <PackageVersion Include="System.Security.Cryptography.Xml" Version="10.0.11" />
   </ItemGroup>
 </Project>
