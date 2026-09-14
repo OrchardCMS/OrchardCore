@@ -10,7 +10,9 @@
 
 <style asp-name="codemirror"></style>
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["SQL Query"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@QueriesBreadcrumbs.Run" />
+</zone>
 
 <div asp-validation-summary="ModelOnly"></div>
 

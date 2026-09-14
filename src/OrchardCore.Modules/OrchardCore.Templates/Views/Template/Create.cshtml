@@ -4,7 +4,9 @@
     var culture = CultureInfo.CurrentUICulture;
 }
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Create Template"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@TemplatesBreadcrumbs.Create" data="@(new { AdminTemplates = Model.AdminTemplates })" />
+</zone>
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Create" asp-route-returnUrl="@ViewData["returnUrl"]" method="post" class="no-multisubmit">

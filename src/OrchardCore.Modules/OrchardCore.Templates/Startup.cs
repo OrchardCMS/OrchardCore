@@ -24,6 +24,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<TemplatesManager>();
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
+        services.AddBreadcrumbProvider<TemplatesBreadcrumbProvider>();
         services.AddRecipeExecutionStep<TemplateStep>();
 
         // Template shortcuts in settings

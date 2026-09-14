@@ -10,7 +10,9 @@
     var hasManagePermission = await AuthorizationService.AuthorizeAsync(User, RolesPermissions.ManageRoles);
 }
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Roles"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@RolesBreadcrumbs.List" />
+</zone>
 
 <div data-list-management data-client-side-search="true">
 <div class="card mb-3 text-bg-theme position-sticky action-bar">

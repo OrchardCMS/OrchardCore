@@ -9,7 +9,9 @@
 <script asp-name="codemirror-addon-selection-active-line" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 
-<zone Name="Title"><h1>@RenderTitleSegments(Model.Creating ? T["Create Placement"] : T["Edit Placement"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@PlacementsBreadcrumbs.Edit" data="@(new { Model.Creating })" />
+</zone>
 
 <form asp-action="Edit" asp-route-returnUrl="@ViewData["returnUrl"]" method="post" class="no-multisubmit">
     @Html.HiddenFor(m => m.Creating)

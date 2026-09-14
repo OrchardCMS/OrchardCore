@@ -2,7 +2,7 @@
 @using OrchardCore.Roles.ViewModels
 
 <zone Name="Title">
-    <h1>@RenderTitleSegments(T["Clone '{0}' Role", Model.Role.RoleName])</h1>
+    <breadcrumb name="@RolesBreadcrumbs.Clone" data="@(new { RoleName = Model.Role.RoleName })" />
 </zone>
 
 <div asp-validation-summary="ModelOnly"></div>

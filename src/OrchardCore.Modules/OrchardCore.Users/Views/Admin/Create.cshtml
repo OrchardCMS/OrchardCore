@@ -1,6 +1,8 @@
 @model dynamic
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Create User"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@UsersBreadcrumbs.Create" />
+</zone>
 
 <form asp-action="Create" method="post" enctype="multipart/form-data" class="no-multisubmit">
     @Html.ValidationSummary()

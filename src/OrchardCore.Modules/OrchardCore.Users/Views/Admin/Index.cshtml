@@ -1,6 +1,8 @@
 @model UsersIndexViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Users"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@UsersBreadcrumbs.List" />
+</zone>
 
 <form asp-action="Index" method="post" class="no-multisubmit">
     @await DisplayAsync(Model)
