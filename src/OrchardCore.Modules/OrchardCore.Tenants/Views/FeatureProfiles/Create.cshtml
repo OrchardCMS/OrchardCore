@@ -1,6 +1,8 @@
 @model FeatureProfileViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Create Feature Profile"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@TenantsBreadcrumbs.FeatureProfilesCreate" />
+</zone>
 
 <div asp-validation-summary="All"></div>
 

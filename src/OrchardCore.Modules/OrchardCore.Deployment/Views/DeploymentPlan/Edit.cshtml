@@ -1,6 +1,8 @@
 @model EditDeploymentPlanViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Deployment Plan"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@DeploymentBreadcrumbs.Edit" />
+</zone>
 
 <div asp-validation-summary="All"></div>
 <form asp-action="Edit" method="post" class="no-multisubmit">
