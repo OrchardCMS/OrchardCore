@@ -1,0 +1,26 @@
+.oc-breadcrumb {
+    .breadcrumb {
+        // The default Bootstrap divider is a slash, a chevron reads better at the size of a title.
+        --bs-breadcrumb-divider: '\203A';
+        align-items: center;
+        flex-wrap: wrap;
+        row-gap: 0.25rem;
+        margin-bottom: 0;
+    }
+
+    .breadcrumb-item {
+        display: flex;
+        align-items: center;
+    }
+
+    // The current node carries the heading of the page, it reads as the rest of the trail.
+    h1, h2, h3, h4, h5, h6 {
+        font: inherit;
+        letter-spacing: inherit;
+        margin-bottom: 0;
+    }
+}
+
+.ta-navbar-top .oc-breadcrumb .breadcrumb {
+    margin-top: 0;
+}

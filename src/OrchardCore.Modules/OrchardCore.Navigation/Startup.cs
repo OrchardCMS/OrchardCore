@@ -18,8 +18,10 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddNavigation();
+        services.AddBreadcrumbs();
 
         services.AddShapeTableProvider<NavigationShapes>();
+        services.AddShapeTableProvider<BreadcrumbShapes>();
         services.AddShapeTableProvider<PagerShapesTableProvider>();
         services.AddShapeAttributes<PagerShapes>();
 

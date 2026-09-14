@@ -18,7 +18,7 @@ body, html {
     padding-top: calc(var(--oc-top-nav-height, 0) + 1rem);
     transition: margin-left 0.2s ease-in-out;
 
-    h1 {
+    h1, .oc-breadcrumb .breadcrumb {
         line-height: 40px;
         font-size: 28px;
         letter-spacing: -0.04em;

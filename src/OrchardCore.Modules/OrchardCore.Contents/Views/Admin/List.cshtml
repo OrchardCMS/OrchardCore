@@ -1,17 +1,11 @@
 @model ListContentsViewModel
+@using OrchardCore.Contents
 @using OrchardCore.Contents.ViewModels
 
-@{
-    var contentTypeDisplayName = Model.Options.ContentTypeOptions.Find(x => x.Value == Model.Options.SelectedContentType && x.Value != null)?.Text;
-    var pageTitle = T["Manage Content"];
-    if (!string.IsNullOrWhiteSpace(contentTypeDisplayName))
-    {
-        pageTitle = T["Manage {0} Content", (string)contentTypeDisplayName];
-    }
-}
+<zone Name="Title">
+    <breadcrumb name="@ContentsBreadcrumbs.List" data="@(new { ContentType = Model.Options.SelectedContentType })" />
+</zone>
 
-<zone Name="Title"><h1>@RenderTitleSegments(pageTitle)</h1></zone>
-    
 <form asp-action="List" asp-controller="Admin" method="post" id="items-form" autocomplete="off">
     @Html.ValidationSummary()
     @await DisplayAsync(Model)

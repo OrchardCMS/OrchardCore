@@ -1,0 +1,16 @@
+@{
+    TagBuilder tag = Tag(Model, "nav");
+    tag.Attributes["aria-label"] = T["Breadcrumb"].Value;
+
+    var list = new TagBuilder("ol");
+    list.AddCssClass("breadcrumb");
+
+    foreach (var item in Model)
+    {
+        list.InnerHtml.AppendHtml(await DisplayAsync(item));
+    }
+
+    tag.InnerHtml.AppendHtml(list);
+}
+
+@tag
