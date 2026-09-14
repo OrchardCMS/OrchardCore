@@ -163,12 +163,12 @@ The `<breadcrumb>` tag helper lives in `OrchardCore.Navigation.Core`. Reference 
 
 #### 2. Name the trail
 
-Every screen that renders a breadcrumb publishes the name of its trail, and the keys of the contextual data the trail carries, so that another module can react to them. Put them in a class of your module's abstractions, next to your permissions:
+Every screen that renders a breadcrumb publishes the name of its trail, and the keys of the contextual data the trail carries, so that another module can react to them. Put them on a constants class of your module's abstractions, next to your permissions. The class name ends in `Constants`; reuse your module's existing `{Module}Constants` when it has one, and only add a new file when it does not:
 
 ```csharp
 namespace My.Module;
 
-public static class MyBreadcrumbs
+public static class MyConstants
 {
     public const string List = "Records";
 
@@ -177,6 +177,8 @@ public static class MyBreadcrumbs
     public const string RecordKey = "Record";
 }
 ```
+
+When a `{Module}Constants` name would collide with a framework type (for instance `Microsoft.AspNetCore.Cors.Infrastructure.CorsConstants`), name the class `{Module}BreadcrumbConstants` instead.
 
 Name a trail after the screen that renders it, in PascalCase and without separators, because the name also becomes the shape alternate of the trail. A screen that also publishes a name for something else of its own, such as the name an admin list is known by, reuses that name for its breadcrumb, so that one screen has one name rather than two: the content items list is `Contents` for both.
 
@@ -190,14 +192,14 @@ public sealed class MyBreadcrumbProvider : NamedBreadcrumbProvider
     internal readonly IStringLocalizer S;
 
     public MyBreadcrumbProvider(IStringLocalizer<MyBreadcrumbProvider> localizer)
-        : base(MyBreadcrumbs.Edit)
+        : base(MyConstants.Edit)
     {
         S = localizer;
     }
 
     protected override ValueTask BuildAsync(BreadcrumbBuilder builder)
     {
-        if (!builder.TryGetData<Record>(MyBreadcrumbs.RecordKey, out var record))
+        if (!builder.TryGetData<Record>(MyConstants.RecordKey, out var record))
         {
             return ValueTask.CompletedTask;
         }
@@ -228,7 +230,7 @@ Put the tag helper in the `Title` zone of the view, in place of the `<h1>` it re
 
 ```html
 <zone Name="Title">
-    <breadcrumb name="@MyBreadcrumbs.Edit" data="@(new { Record = record })" />
+    <breadcrumb name="@MyConstants.Edit" data="@(new { Record = record })" />
 </zone>
 ```
 
@@ -287,7 +289,7 @@ Because every provider sees every trail, a module extends a trail described by a
 public sealed class LocalizationBreadcrumbProvider : NamedBreadcrumbProvider
 {
     public LocalizationBreadcrumbProvider()
-        : base(ContentsBreadcrumbs.Edit)
+        : base(ContentsConstants.Edit)
     {
     }
 
@@ -336,12 +338,12 @@ public ValueTask BuildBreadcrumbAsync(BreadcrumbBuilder builder)
 A display driver, or any other code that needs the shape rather than the tag helper, builds it in two calls:
 
 ```csharp
-var items = await _breadcrumbManager.BuildBreadcrumbAsync(ContentsBreadcrumbs.Edit, ViewContext, new Dictionary<string, object>
+var items = await _breadcrumbManager.BuildBreadcrumbAsync(ContentsConstants.Edit, ViewContext, new Dictionary<string, object>
 {
-    { ContentsBreadcrumbs.ContentItemKey, contentItem },
+    { ContentsConstants.ContentItemKey, contentItem },
 });
 
-var shape = await _shapeFactory.BreadcrumbAsync(ContentsBreadcrumbs.Edit, items, heading: "h1");
+var shape = await _shapeFactory.BreadcrumbAsync(ContentsConstants.Edit, items, heading: "h1");
 ```
 
 `BuildBreadcrumbAsync` returns the ordered nodes, so it is also how code reads a trail without rendering it.
@@ -375,7 +377,7 @@ The `Breadcrumb` shape carries the `oc-breadcrumb` class, alongside a class buil
 
 ### Content management trails
 
-The content management screens describe the following trails, whose names and data keys are exposed by `OrchardCore.Contents.ContentsBreadcrumbs`:
+The content management screens describe the following trails, whose names and data keys are exposed by `OrchardCore.Contents.ContentsConstants`:
 
 | Name              | Rendered by                    | Contextual data                                                                         |
 |-------------------|--------------------------------|-----------------------------------------------------------------------------------------|
