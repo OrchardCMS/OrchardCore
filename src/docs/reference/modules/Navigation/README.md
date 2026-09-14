@@ -252,6 +252,30 @@ The same builder also removes a node another provider added, which is how a trai
 builder.Remove(item => item.Id == "Contents");
 ```
 
+The `OrchardCore.AdminDashboard` feature does this for real, and for every trail rather than for one of them. `DashboardBreadcrumbProvider` adds the dashboard at the `start` position, the sentinel that sorts before every other position, so the node leads the trail whatever positions its other nodes use:
+
+```csharp
+public ValueTask BuildBreadcrumbAsync(BreadcrumbBuilder builder)
+{
+    var httpContext = _httpContextAccessor.HttpContext;
+
+    // The dashboard is the root of the admin only. A trail rendered by a front end theme doesn't lead to it.
+    if (httpContext is null || !AdminAttribute.IsApplied(httpContext))
+    {
+        return ValueTask.CompletedTask;
+    }
+
+    builder.Add(S["Dashboard"], "start", item => item
+        .Id("Dashboard")
+        .Url("~/" + _adminOptions.AdminUrlPrefix)
+        .Permission(Permissions.AccessAdminDashboard));
+
+    return ValueTask.CompletedTask;
+}
+```
+
+`Manage Content › Edit Article` therefore becomes `Dashboard › Manage Content › Edit Article` when the feature is enabled, and goes back to what it was when it is disabled, without the content management screens knowing that the dashboard exists.
+
 ### Theming
 
 The trail renders as the `Breadcrumb` shape, with one `BreadcrumbItem` shape per node. Both carry alternates built from the name of the trail, so a single screen can be templated on its own:

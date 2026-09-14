@@ -1,11 +1,16 @@
 .oc-breadcrumb {
     .breadcrumb {
-        // The default Bootstrap divider is a slash, a chevron reads better at the size of a title.
+        // The default Bootstrap divider is a slash, a chevron reads better in a trail of pages.
         --bs-breadcrumb-divider: '\203A';
         align-items: center;
         flex-wrap: wrap;
         row-gap: 0.25rem;
-        margin-bottom: 0;
+
+        // The trail stands in for the title of the page, so it is heavier than the body, but it is a path
+        // rather than a heading: every node reads the same, and none of them shouts.
+        font-size: 1.25rem;
+        font-weight: 500;
+        line-height: 1.4;
     }
 
     // The trail reads right to left, so the chevron points the other way.
@@ -16,16 +21,19 @@
     .breadcrumb-item {
         display: flex;
         align-items: center;
-    }
 
-    // The current node carries the heading of the page, it reads as the rest of the trail.
-    h1, h2, h3, h4, h5, h6 {
-        font: inherit;
-        letter-spacing: inherit;
-        margin-bottom: 0;
+        // The current node carries the heading of the page, it reads as the rest of the trail. The selector
+        // is more specific than the '.ta-content h1' and '.ta-navbar-top h1' rules it has to win over.
+        h1, h2, h3, h4, h5, h6 {
+            font: inherit;
+            letter-spacing: inherit;
+            margin-bottom: 0;
+        }
     }
 }
 
+// The top bar is a fixed height row, the trail sits in it rather than above the page.
 .ta-navbar-top .oc-breadcrumb .breadcrumb {
     margin-top: 0;
+    margin-bottom: 0;
 }

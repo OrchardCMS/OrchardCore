@@ -250,7 +250,9 @@ a:hover {
   align-items: center;
   flex-wrap: wrap;
   row-gap: 0.25rem;
-  margin-bottom: 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.4;
 }
 
 [dir=rtl] .oc-breadcrumb .breadcrumb {
@@ -262,7 +264,7 @@ a:hover {
   align-items: center;
 }
 
-.oc-breadcrumb h1, .oc-breadcrumb h2, .oc-breadcrumb h3, .oc-breadcrumb h4, .oc-breadcrumb h5, .oc-breadcrumb h6 {
+.oc-breadcrumb .breadcrumb-item h1, .oc-breadcrumb .breadcrumb-item h2, .oc-breadcrumb .breadcrumb-item h3, .oc-breadcrumb .breadcrumb-item h4, .oc-breadcrumb .breadcrumb-item h5, .oc-breadcrumb .breadcrumb-item h6 {
   font: inherit;
   letter-spacing: inherit;
   margin-bottom: 0;
@@ -270,6 +272,7 @@ a:hover {
 
 .ta-navbar-top .oc-breadcrumb .breadcrumb {
   margin-top: 0;
+  margin-bottom: 0;
 }
 
 .card.collapsed .card-header {
@@ -9457,7 +9460,7 @@ div.editor-widget.find-widget .button.codicon:active {
   padding-bottom: 0;
 }
 
-.ta-navbar-top h1, .ta-navbar-top .oc-breadcrumb .breadcrumb {
+.ta-navbar-top h1 {
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 0;

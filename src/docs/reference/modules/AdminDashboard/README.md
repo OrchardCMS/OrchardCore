@@ -106,6 +106,14 @@ If you wish to modify the look of your widget, consider incorporating a template
 </div>
 ```
 
+## Breadcrumbs
+
+Enabling the feature also puts the dashboard at the beginning of every admin [breadcrumb](../Navigation/README.md#breadcrumbs) trail: `Manage Content › Edit Article` becomes `Dashboard › Manage Content › Edit Article`.
+
+`DashboardBreadcrumbProvider` is an `IBreadcrumbProvider` that reacts to every trail rather than to one of them, and adds its node at the `start` position so that it leads the trail whatever positions the other nodes use. The node links to the admin url prefix and requires the `AccessAdminDashboard` permission; a user without it sees the node as plain text rather than as a link.
+
+Disabling the feature removes the node from every trail. No other module has to know that the dashboard exists.
+
 ## Provisioning widgets with a recipe
 
 Dashboard widgets are content items, so they can be created from a recipe using the `content` step. This is handy to ship a default dashboard with your site. The following sample adds an `HtmlDashboardWidget` with a list of links, positioned first and two rows tall:

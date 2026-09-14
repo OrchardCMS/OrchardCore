@@ -14,6 +14,7 @@ using OrchardCore.ContentTypes.Events;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Security.Permissions;
 
@@ -35,6 +36,7 @@ public sealed class Startup : StartupBase
         services.AddPermissionProvider<Permissions>();
 
         services.AddScoped<IAdminDashboardService, AdminDashboardService>();
+        services.AddBreadcrumbProvider<DashboardBreadcrumbProvider>();
         services.AddIndexProvider<DashboardPartIndexProvider>();
 
         services.AddContentPart<DashboardPart>()

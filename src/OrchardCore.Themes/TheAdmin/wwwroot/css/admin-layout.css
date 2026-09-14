@@ -65,7 +65,7 @@ body, html {
   transition: margin-right 0.2s ease-in-out;
 }
 
-.ta-content h1, .ta-content .oc-breadcrumb .breadcrumb {
+.ta-content h1 {
   line-height: 40px;
   font-size: 28px;
   letter-spacing: -0.04em;
