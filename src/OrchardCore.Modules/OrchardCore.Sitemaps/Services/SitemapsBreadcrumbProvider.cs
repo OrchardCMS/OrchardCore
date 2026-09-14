@@ -15,14 +15,17 @@ public sealed class SitemapsBreadcrumbProvider : IBreadcrumbProvider
         { "area", "OrchardCore.Sitemaps" },
     };
 
+    private readonly ISitemapManager _sitemapManager;
+
     internal readonly IStringLocalizer S;
 
-    public SitemapsBreadcrumbProvider(IStringLocalizer<SitemapsBreadcrumbProvider> stringLocalizer)
+    public SitemapsBreadcrumbProvider(ISitemapManager sitemapManager, IStringLocalizer<SitemapsBreadcrumbProvider> stringLocalizer)
     {
+        _sitemapManager = sitemapManager;
         S = stringLocalizer;
     }
 
-    public ValueTask BuildBreadcrumbAsync(BreadcrumbBuilder builder)
+    public async ValueTask BuildBreadcrumbAsync(BreadcrumbBuilder builder)
     {
         switch (builder.Name)
         {
@@ -47,11 +50,13 @@ public sealed class SitemapsBreadcrumbProvider : IBreadcrumbProvider
 
             case SitemapsBreadcrumbs.SourceCreate:
                 AddSitemaps(builder);
+                await AddSitemapAsync(builder);
                 builder.Add(S["Create Sitemap Source"], item => item.Id("Source"));
                 break;
 
             case SitemapsBreadcrumbs.SourceEdit:
                 AddSitemaps(builder);
+                await AddSitemapAsync(builder);
                 builder.Add(S["Edit Sitemap Source"], item => item.Id("Source"));
                 break;
 
@@ -76,8 +81,27 @@ public sealed class SitemapsBreadcrumbProvider : IBreadcrumbProvider
                     .Permission(SitemapsPermissions.ManageSitemaps));
                 break;
         }
+    }
 
-        return ValueTask.CompletedTask;
+    // A source is only reached from its sitemap, so its trail leads back through the sitemap.
+    private async ValueTask AddSitemapAsync(BreadcrumbBuilder builder)
+    {
+        var sitemapId = builder.GetData<string>(SitemapsBreadcrumbs.SitemapIdKey);
+
+        if (string.IsNullOrEmpty(sitemapId))
+        {
+            return;
+        }
+
+        var sitemap = await _sitemapManager.GetSitemapAsync(sitemapId);
+
+        builder.Add(sitemap?.Name ?? S["Sitemap"].Value, item => item
+            .Id("Sitemap")
+            .Action("Display", "Admin", new RouteValueDictionary(s_routeValues)
+            {
+                { "sitemapId", sitemapId },
+            })
+            .Permission(SitemapsPermissions.ManageSitemaps));
     }
 
     private void AddSitemaps(BreadcrumbBuilder builder)

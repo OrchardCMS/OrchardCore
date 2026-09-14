@@ -1,7 +1,7 @@
 @model AdminNodeEditViewModel
 
 <zone Name="Title">
-    <breadcrumb name="@AdminMenuBreadcrumbs.NodeEdit" />
+    <breadcrumb name="@AdminMenuBreadcrumbs.NodeEdit" data="@(new { MenuId = Model.AdminMenuId })" />
 </zone>
 
 <div asp-validation-summary="All"></div>

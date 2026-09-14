@@ -55,4 +55,9 @@ public static class SitemapsBreadcrumbs
     /// The breadcrumb of the sitemaps cache list. It is named after the list of that screen.
     /// </summary>
     public const string Cache = "SitemapCache";
+
+    /// <summary>
+    /// The key under which a source screen passes the identifier of the sitemap it belongs to.
+    /// </summary>
+    public const string SitemapIdKey = "SitemapId";
 }

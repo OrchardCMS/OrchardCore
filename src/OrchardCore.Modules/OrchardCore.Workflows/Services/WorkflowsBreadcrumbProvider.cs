@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
+using OrchardCore.Workflows.Models;
+using YesSql;
 
 namespace OrchardCore.Workflows.Services;
 
@@ -14,14 +16,17 @@ public sealed class WorkflowsBreadcrumbProvider : IBreadcrumbProvider
         { "area", "OrchardCore.Workflows" },
     };
 
+    private readonly ISession _session;
+
     internal readonly IStringLocalizer S;
 
-    public WorkflowsBreadcrumbProvider(IStringLocalizer<WorkflowsBreadcrumbProvider> stringLocalizer)
+    public WorkflowsBreadcrumbProvider(ISession session, IStringLocalizer<WorkflowsBreadcrumbProvider> stringLocalizer)
     {
+        _session = session;
         S = stringLocalizer;
     }
 
-    public ValueTask BuildBreadcrumbAsync(BreadcrumbBuilder builder)
+    public async ValueTask BuildBreadcrumbAsync(BreadcrumbBuilder builder)
     {
         switch (builder.Name)
         {
@@ -59,18 +64,39 @@ public sealed class WorkflowsBreadcrumbProvider : IBreadcrumbProvider
 
             case WorkflowsBreadcrumbs.ActivityCreate:
                 AddWorkflows(builder);
+                await AddTypeByIdAsync(builder);
                 builder.Add(S["Add {0}", builder.GetData<string>(WorkflowsBreadcrumbs.ActivityNameKey)],
                     item => item.Id("Activity"));
                 break;
 
             case WorkflowsBreadcrumbs.ActivityEdit:
                 AddWorkflows(builder);
+                await AddTypeByIdAsync(builder);
                 builder.Add(S["Edit {0}", builder.GetData<string>(WorkflowsBreadcrumbs.ActivityNameKey)],
                     item => item.Id("Activity"));
                 break;
         }
+    }
 
-        return ValueTask.CompletedTask;
+    // An activity is only reached from the workflow designer, so its trail leads back through the workflow.
+    private async ValueTask AddTypeByIdAsync(BreadcrumbBuilder builder)
+    {
+        var typeId = builder.GetData<long>(WorkflowsBreadcrumbs.TypeIdKey);
+
+        if (typeId == 0)
+        {
+            return;
+        }
+
+        var workflowType = await _session.GetAsync<WorkflowType>(typeId);
+
+        builder.Add(workflowType?.Name, item => item
+            .Id("WorkflowType")
+            .Action("Edit", "WorkflowType", new RouteValueDictionary(s_routeValues)
+            {
+                { "id", typeId },
+            })
+            .Permission(WorkflowsPermissions.ManageWorkflows));
     }
 
     private void AddWorkflows(BreadcrumbBuilder builder)

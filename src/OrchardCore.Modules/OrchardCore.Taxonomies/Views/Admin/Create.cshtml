@@ -14,7 +14,7 @@
 }
 
 <zone Name="Title">
-    <breadcrumb name="@OrchardCore.Contents.ContentsBreadcrumbs.Create" data="@(new { ContentItem = contentItem })" />
+    <breadcrumb name="@TaxonomiesBreadcrumbs.Create" data="@(new { TermTypeDisplayName = localizedTypeDisplayName, TaxonomyContentItemId = Model.TaxonomyContentItemId })" />
 </zone>
 
 <form asp-action="Create" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data" class="no-multisubmit">

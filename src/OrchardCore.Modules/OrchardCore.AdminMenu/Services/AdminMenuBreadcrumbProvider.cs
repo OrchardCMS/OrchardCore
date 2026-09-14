@@ -14,14 +14,17 @@ public sealed class AdminMenuBreadcrumbProvider : IBreadcrumbProvider
         { "area", "OrchardCore.AdminMenu" },
     };
 
+    private readonly IAdminMenuService _adminMenuService;
+
     internal readonly IStringLocalizer S;
 
-    public AdminMenuBreadcrumbProvider(IStringLocalizer<AdminMenuBreadcrumbProvider> stringLocalizer)
+    public AdminMenuBreadcrumbProvider(IAdminMenuService adminMenuService, IStringLocalizer<AdminMenuBreadcrumbProvider> stringLocalizer)
     {
+        _adminMenuService = adminMenuService;
         S = stringLocalizer;
     }
 
-    public ValueTask BuildBreadcrumbAsync(BreadcrumbBuilder builder)
+    public async ValueTask BuildBreadcrumbAsync(BreadcrumbBuilder builder)
     {
         switch (builder.Name)
         {
@@ -48,16 +51,16 @@ public sealed class AdminMenuBreadcrumbProvider : IBreadcrumbProvider
 
             case AdminMenuBreadcrumbs.NodeCreate:
                 AddList(builder);
+                await AddNodesAsync(builder);
                 builder.Add(S["Create Node"], item => item.Id("Node"));
                 break;
 
             case AdminMenuBreadcrumbs.NodeEdit:
                 AddList(builder);
+                await AddNodesAsync(builder);
                 builder.Add(S["Edit Node"], item => item.Id("Node"));
                 break;
         }
-
-        return ValueTask.CompletedTask;
     }
 
     private void AddList(BreadcrumbBuilder builder)
@@ -65,4 +68,26 @@ public sealed class AdminMenuBreadcrumbProvider : IBreadcrumbProvider
             .Id("AdminMenus")
             .Action("List", "Menu", s_routeValues)
             .Permission(AdminMenuPermissions.ManageAdminMenu));
+
+    // A node is only reached from its admin menu, so its trail leads back through the menu's nodes.
+    private async ValueTask AddNodesAsync(BreadcrumbBuilder builder)
+    {
+        var menuId = builder.GetData<string>(AdminMenuBreadcrumbs.MenuIdKey);
+
+        if (string.IsNullOrEmpty(menuId))
+        {
+            return;
+        }
+
+        var adminMenuList = await _adminMenuService.GetAdminMenuListAsync();
+        var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, menuId);
+
+        builder.Add(S["Edit Nodes for '{0}'", adminMenu?.Name], item => item
+            .Id("Nodes")
+            .Action("List", "Node", new RouteValueDictionary(s_routeValues)
+            {
+                { "id", menuId },
+            })
+            .Permission(AdminMenuPermissions.ManageAdminMenu));
+    }
 }

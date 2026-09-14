@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
+using YesSql;
 
 namespace OrchardCore.Deployment.Services;
 
@@ -14,14 +15,17 @@ public sealed class DeploymentBreadcrumbProvider : IBreadcrumbProvider
         { "area", "OrchardCore.Deployment" },
     };
 
+    private readonly ISession _session;
+
     internal readonly IStringLocalizer S;
 
-    public DeploymentBreadcrumbProvider(IStringLocalizer<DeploymentBreadcrumbProvider> stringLocalizer)
+    public DeploymentBreadcrumbProvider(ISession session, IStringLocalizer<DeploymentBreadcrumbProvider> stringLocalizer)
     {
+        _session = session;
         S = stringLocalizer;
     }
 
-    public ValueTask BuildBreadcrumbAsync(BreadcrumbBuilder builder)
+    public async ValueTask BuildBreadcrumbAsync(BreadcrumbBuilder builder)
     {
         switch (builder.Name)
         {
@@ -46,11 +50,13 @@ public sealed class DeploymentBreadcrumbProvider : IBreadcrumbProvider
 
             case DeploymentBreadcrumbs.StepCreate:
                 AddList(builder);
+                await AddPlanAsync(builder);
                 builder.Add(S["Create Step"], item => item.Id("Step"));
                 break;
 
             case DeploymentBreadcrumbs.StepEdit:
                 AddList(builder);
+                await AddPlanAsync(builder);
                 builder.Add(S["Edit Step"], item => item.Id("Step"));
                 break;
 
@@ -63,8 +69,6 @@ public sealed class DeploymentBreadcrumbProvider : IBreadcrumbProvider
                 builder.Add(S["JSON Import"], item => item.Id("Import"));
                 break;
         }
-
-        return ValueTask.CompletedTask;
     }
 
     private void AddList(BreadcrumbBuilder builder)
@@ -72,4 +76,19 @@ public sealed class DeploymentBreadcrumbProvider : IBreadcrumbProvider
             .Id("DeploymentPlans")
             .Action("Index", "DeploymentPlan", s_routeValues)
             .Permission(DeploymentPermissions.Export));
+
+    // A step is only reached from its deployment plan, so its trail leads back through the plan.
+    private async ValueTask AddPlanAsync(BreadcrumbBuilder builder)
+    {
+        var planId = builder.GetData<long>(DeploymentBreadcrumbs.PlanIdKey);
+        var plan = await _session.GetAsync<DeploymentPlan>(planId);
+
+        builder.Add(plan?.Name ?? S["Deployment Plan"].Value, item => item
+            .Id("DeploymentPlan")
+            .Action("Display", "DeploymentPlan", new RouteValueDictionary(s_routeValues)
+            {
+                { "id", planId },
+            })
+            .Permission(DeploymentPermissions.Export));
+    }
 }

@@ -41,4 +41,9 @@ public static class AdminMenuBreadcrumbs
     /// The key under which a screen passes the name of the admin menu it is about.
     /// </summary>
     public const string MenuNameKey = "MenuName";
+
+    /// <summary>
+    /// The key under which a node screen passes the identifier of the admin menu it belongs to.
+    /// </summary>
+    public const string MenuIdKey = "MenuId";
 }

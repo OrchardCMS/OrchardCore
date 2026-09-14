@@ -45,4 +45,9 @@ public static class DeploymentBreadcrumbs
     /// The breadcrumb of the json import screen.
     /// </summary>
     public const string ImportJson = "DeploymentImportJson";
+
+    /// <summary>
+    /// The key under which a step screen passes the identifier of the deployment plan it belongs to.
+    /// </summary>
+    public const string PlanIdKey = "PlanId";
 }

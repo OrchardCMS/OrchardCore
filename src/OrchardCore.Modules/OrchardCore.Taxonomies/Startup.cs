@@ -88,6 +88,7 @@ public sealed class ContentsAdminListStartup : StartupBase
         services.AddScoped<IContentsAdminListFilter, TaxonomyContentsAdminListFilter>();
         services.AddDisplayDriver<ContentOptionsViewModel, TaxonomyContentsAdminListDisplayDriver>();
         services.AddNavigationProvider<AdminMenu>();
+        services.AddBreadcrumbProvider<TaxonomiesBreadcrumbProvider>();
         services.AddSiteDisplayDriver<TaxonomyContentsAdminListSettingsDisplayDriver>();
     }
 }

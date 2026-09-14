@@ -36,4 +36,9 @@ public static class RateLimitsBreadcrumbs
     /// The key under which a limiter screen passes the display name of the limiter it is about.
     /// </summary>
     public const string DisplayNameKey = "DisplayName";
+
+    /// <summary>
+    /// The key under which a limiter screen passes the identifier of the policy it belongs to.
+    /// </summary>
+    public const string PolicyIdKey = "PolicyId";
 }
