@@ -60,6 +60,7 @@ public class MediaOptionsExtensionsTests
 
     private static MediaOptions CreateOptions() => new()
     {
+        AssetsPath = "Media",
         AllowedFileExtensions = new(StringComparer.OrdinalIgnoreCase) { ".jpg" },
         RestrictedFileExtensions = new(StringComparer.OrdinalIgnoreCase) { ".svg" },
     };
