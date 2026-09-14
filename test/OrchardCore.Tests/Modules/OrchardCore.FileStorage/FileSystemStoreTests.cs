@@ -99,4 +99,71 @@ public class FileSystemStoreTests : IDisposable
             Assert.Contains(entries, e => e.IsDirectory && e.Name == NtfsInvalidFolder);
         }
     }
+
+    [Theory]
+    [InlineData("Media", "Media-other")]
+    [InlineData("Media/", "Media-other")]
+    [InlineData("Media", "MediaSibling")]
+    public async Task FileOperations_SiblingWithMatchingRootPrefix_RejectAccess(string storePath, string siblingPath)
+    {
+        var storeRoot = Directory.CreateDirectory(Path.Combine(_root, storePath)).FullName;
+        var siblingRoot = Directory.CreateDirectory(Path.Combine(_root, siblingPath)).FullName;
+        var assemblyPath = Path.Combine(siblingRoot, "Application.dll");
+        await File.WriteAllTextAsync(assemblyPath, "original", TestContext.Current.CancellationToken);
+        var store = new FileSystemStore(Path.Combine(_root, storePath), NullLogger<FileSystemStore>.Instance);
+        var outsidePath = $"../{siblingPath}/Application.dll";
+        using var stream = new MemoryStream("replacement"u8.ToArray());
+
+        await Assert.ThrowsAsync<FileStoreException>(() => store.CreateFileFromStreamAsync(outsidePath, stream, overwrite: true));
+        await Assert.ThrowsAsync<FileStoreException>(() => store.GetFileInfoAsync(outsidePath));
+        await Assert.ThrowsAsync<FileStoreException>(() => store.GetDirectoryInfoAsync($"../{siblingPath}"));
+        await Assert.ThrowsAsync<FileStoreException>(() => store.GetFileStreamAsync(outsidePath));
+        await Assert.ThrowsAsync<FileStoreException>(() => store.TryDeleteFileAsync(outsidePath));
+        await Assert.ThrowsAsync<FileStoreException>(() => store.TryDeleteDirectoryAsync($"../{siblingPath}"));
+        await Assert.ThrowsAsync<FileStoreException>(() => store.TryCreateDirectoryAsync($"../{siblingPath}/new"));
+
+        using var source = new MemoryStream("media"u8.ToArray());
+        await store.CreateFileFromStreamAsync("source.dll", source);
+        await Assert.ThrowsAsync<FileStoreException>(() => store.CopyFileAsync("source.dll", $"../{siblingPath}/copy.dll"));
+        await Assert.ThrowsAsync<FileStoreException>(() => store.MoveFileAsync("source.dll", $"../{siblingPath}/moved.dll"));
+
+        Assert.Equal("original", await File.ReadAllTextAsync(assemblyPath, TestContext.Current.CancellationToken));
+        Assert.Single(Directory.GetFiles(siblingRoot));
+        Assert.Empty(Directory.GetDirectories(siblingRoot));
+        Assert.True(File.Exists(Path.Combine(storeRoot, "source.dll")));
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task GetFileInfo_PathResolvingInsideRoot_ReturnsCanonicalRelativePath(bool trailingSeparator)
+    {
+        var store = new FileSystemStore(
+            trailingSeparator ? _root + Path.DirectorySeparatorChar : _root,
+            NullLogger<FileSystemStore>.Instance);
+        using var stream = new MemoryStream("media"u8.ToArray());
+        await store.CreateFileFromStreamAsync("folder/../file.txt", stream);
+
+        var info = await store.GetFileInfoAsync("folder/../file.txt");
+
+        Assert.Equal("file.txt", info.Path);
+        Assert.NotNull(await store.GetDirectoryInfoAsync(null));
+        Assert.NotNull(await store.GetDirectoryInfoAsync("."));
+        Assert.NotNull(await store.GetDirectoryInfoAsync("folder/.."));
+    }
+
+    [Fact]
+    public async Task CreateFile_CaseVariantRootEscapeOnNonWindows_RejectsWrite()
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            return;
+        }
+
+        Directory.CreateDirectory(Path.Combine(_root, "Media"));
+        var store = new FileSystemStore(Path.Combine(_root, "Media"), NullLogger<FileSystemStore>.Instance);
+        using var stream = new MemoryStream("replacement"u8.ToArray());
+
+        await Assert.ThrowsAsync<FileStoreException>(() => store.CreateFileFromStreamAsync("../media/file.txt", stream));
+    }
 }
