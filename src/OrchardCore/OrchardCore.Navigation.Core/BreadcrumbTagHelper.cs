@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.AspNetCore.Routing;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Html;
 using OrchardCore.DisplayManagement.Title;
@@ -65,6 +66,14 @@ public class BreadcrumbTagHelper : TagHelper
     [HtmlAttributeName("page-title")]
     public bool PageTitle { get; set; } = true;
 
+    /// <summary>
+    /// The display type of the trail, which becomes an alternate of every shape it renders, so that a theme can give
+    /// the admin and the front end a presentation of their own. Defaults to <c>DetailAdmin</c> on a request to the
+    /// admin, and to <c>Detail</c> everywhere else.
+    /// </summary>
+    [HtmlAttributeName("display-type")]
+    public string DisplayType { get; set; }
+
     [HtmlAttributeNotBound]
     [ViewContext]
     public ViewContext ViewContext { get; set; }
@@ -93,9 +102,26 @@ public class BreadcrumbTagHelper : TagHelper
             }
         }
 
-        var shape = await _shapeFactory.BreadcrumbAsync(Name, items, string.IsNullOrWhiteSpace(Heading) ? null : Heading);
+        var shape = await _shapeFactory.BreadcrumbAsync(
+            Name,
+            items,
+            string.IsNullOrWhiteSpace(Heading) ? null : Heading,
+            string.IsNullOrWhiteSpace(DisplayType) ? GetDefaultDisplayType() : DisplayType);
 
         output.TagName = null;
         output.Content.SetHtmlContent(await _displayHelper.ShapeExecuteAsync(shape));
+    }
+
+    /// <summary>
+    /// A trail rendered on the admin and a trail rendered by a front end theme are the same shape, so they are told
+    /// apart by their display type, the way the rest of the display system tells them apart.
+    /// </summary>
+    private string GetDefaultDisplayType()
+    {
+        var httpContext = ViewContext?.HttpContext;
+
+        return httpContext is not null && AdminAttribute.IsApplied(httpContext)
+            ? "DetailAdmin"
+            : "Detail";
     }
 }

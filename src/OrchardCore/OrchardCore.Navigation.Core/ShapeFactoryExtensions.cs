@@ -60,7 +60,8 @@ public static class ShapeFactoryExtensions
     /// <param name="name">The name of the breadcrumb. e.g., <c>ContentsEdit</c>.</param>
     /// <param name="items">The nodes of the trail, as built by the <see cref="IBreadcrumbManager"/>.</param>
     /// <param name="heading">The optional html tag wrapping the text of the current node. e.g., <c>h1</c>.</param>
-    public static async ValueTask<IShape> BreadcrumbAsync(this IShapeFactory shapeFactory, string name, IEnumerable<BreadcrumbItem> items, string heading = null)
+    /// <param name="displayType">The optional display type of the trail, which becomes an alternate of every shape it renders. e.g., <c>DetailAdmin</c>.</param>
+    public static async ValueTask<IShape> BreadcrumbAsync(this IShapeFactory shapeFactory, string name, IEnumerable<BreadcrumbItem> items, string heading = null, string displayType = null)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
         ArgumentNullException.ThrowIfNull(items);
@@ -70,6 +71,11 @@ public static class ShapeFactoryExtensions
             Name = name,
             Heading = heading,
         }));
+
+        if (!string.IsNullOrEmpty(displayType))
+        {
+            breadcrumb.Metadata.DisplayType = displayType;
+        }
 
         var level = 0;
 
@@ -86,6 +92,11 @@ public static class ShapeFactoryExtensions
                 Level = level++,
                 Heading = item.IsCurrent ? heading : null,
             };
+
+            if (!string.IsNullOrEmpty(displayType))
+            {
+                itemShape.Metadata.DisplayType = displayType;
+            }
 
             foreach (var className in item.Classes)
             {

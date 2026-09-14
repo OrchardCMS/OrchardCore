@@ -17,8 +17,11 @@ public sealed class BreadcrumbShapes : ShapeTableProvider
                 breadcrumb.Classes.Add("oc-breadcrumb");
                 breadcrumb.Classes.Add("breadcrumb-" + name.HtmlClassify());
 
-                // Breadcrumb__[Name] e.g. Breadcrumb-Contents_Edit.cshtml
-                breadcrumb.Metadata.Alternates.AddRange(BreadcrumbAlternatesFactory.GetBreadcrumbAlternates(name));
+                // Breadcrumb__[Name] e.g. Breadcrumb-ContentsEdit.cshtml
+                // Breadcrumb_[DisplayType] e.g. Breadcrumb.DetailAdmin.cshtml
+                // Breadcrumb_[DisplayType]__[Name] e.g. Breadcrumb-ContentsEdit.DetailAdmin.cshtml
+                breadcrumb.Metadata.Alternates.AddRange(
+                    BreadcrumbAlternatesFactory.GetBreadcrumbAlternates(name, breadcrumb.Metadata.DisplayType));
             });
 
         builder.Describe("BreadcrumbItem")
@@ -34,10 +37,12 @@ public sealed class BreadcrumbShapes : ShapeTableProvider
                     ? typedViewModel.Item?.Id
                     : breadcrumbItem.GetProperty<BreadcrumbItem>(nameof(BreadcrumbItemViewModel.Item))?.Id;
 
-                // BreadcrumbItem__[Name] e.g. BreadcrumbItem-Contents_Edit.cshtml
-                // BreadcrumbItem__[Id] e.g. BreadcrumbItem-ContentTypes.cshtml
-                // BreadcrumbItem__[Name]__[Id] e.g. BreadcrumbItem-Contents_Edit-ContentTypes.cshtml
-                breadcrumbItem.Metadata.Alternates.AddRange(BreadcrumbAlternatesFactory.GetBreadcrumbItemAlternates(name, id));
+                // BreadcrumbItem__[Name] e.g. BreadcrumbItem-ContentsEdit.cshtml
+                // BreadcrumbItem__[Id] e.g. BreadcrumbItem-Dashboard.cshtml
+                // BreadcrumbItem__[Name]__[Id] e.g. BreadcrumbItem-ContentsEdit-ContentItem.cshtml
+                // BreadcrumbItem_[DisplayType]__[Name]__[Id] e.g. BreadcrumbItem-ContentsEdit-ContentItem.DetailAdmin.cshtml
+                breadcrumbItem.Metadata.Alternates.AddRange(
+                    BreadcrumbAlternatesFactory.GetBreadcrumbItemAlternates(name, id, breadcrumbItem.Metadata.DisplayType));
             });
 
         return ValueTask.CompletedTask;

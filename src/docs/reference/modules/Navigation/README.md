@@ -149,10 +149,6 @@ A trail is identified by a **name**, and it is built by every `IBreadcrumbProvid
 
 The shapes and the services live in the `OrchardCore.Navigation` module, which is always enabled, so a module that renders a breadcrumb does not need to depend on a feature.
 
-![The breadcrumb of the content items list](assets/breadcrumb-list.png)
-
-![The breadcrumb of the content item edition form](assets/breadcrumb-edit.png)
-
 ### Adding a breadcrumb to your own screen
 
 Four steps, of which only the last one touches the view.
@@ -242,12 +238,13 @@ Rendering the trail in the `Title` zone is what makes it behave like the title i
 
 ### The `<breadcrumb>` tag helper
 
-| Attribute    | Type     | Description                                                                                                                                                                   |
-|--------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `name`       | `string` | Required. The name of the trail to render, e.g. `ContentsEdit`.                                                                                                              |
-| `data`       | `object` | The contextual data of the page. Each property becomes an entry of `BreadcrumbBuilder.Data`, which every provider of the trail can read back.                                  |
-| `heading`    | `string` | The html tag wrapping the text of the current node, so the breadcrumb can stand in for the title of the page. Defaults to `h1`. Set it to an empty value to render no heading. |
-| `page-title` | `bool`   | Whether the text of the current node is registered as a segment of the `<title>` of the page. Defaults to `true`.                                                              |
+| Attribute      | Type     | Description                                                                                                                                                                   |
+|----------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `name`         | `string` | Required. The name of the trail to render, e.g. `ContentsEdit`.                                                                                                                |
+| `data`         | `object` | The contextual data of the page. Each property becomes an entry of `BreadcrumbBuilder.Data`, which every provider of the trail can read back.                                   |
+| `heading`      | `string` | The html tag wrapping the text of the current node, so the breadcrumb can stand in for the title of the page. Defaults to `h1`. Set it to an empty value to render no heading.  |
+| `page-title`   | `bool`   | Whether the text of the current node is registered as a segment of the `<title>` of the page. Defaults to `true`.                                                               |
+| `display-type` | `string` | The display type of the trail, which becomes an alternate of every shape it renders. Defaults to `DetailAdmin` on a request to the admin, and to `Detail` everywhere else.      |
 
 Nothing is rendered when no provider contributes a node to the trail, so a screen keeps working when the feature owning its provider is disabled.
 
@@ -334,12 +331,6 @@ public ValueTask BuildBreadcrumbAsync(BreadcrumbBuilder builder)
 
 `Manage Content › Edit Article` therefore becomes `Dashboard › Manage Content › Edit Article` when the feature is enabled, and goes back to what it was when it is disabled, without the content management screens knowing that the dashboard exists.
 
-The same screen with the feature disabled, and with it enabled:
-
-![The content item edition form without the Admin Dashboard feature](assets/breadcrumb-edit-without-dashboard.png)
-
-![The content item edition form with the Admin Dashboard feature](assets/breadcrumb-edit.png)
-
 ### Building a trail from code
 
 A display driver, or any other code that needs the shape rather than the tag helper, builds it in two calls:
@@ -359,10 +350,10 @@ var shape = await _shapeFactory.BreadcrumbAsync(ContentsBreadcrumbs.Edit, items,
 
 The trail renders as the `Breadcrumb` shape, with one `BreadcrumbItem` shape per node. Both carry alternates built from the name of the trail, so a single screen can be templated on its own:
 
-| Shape            | Alternates (least to most specific)                                                                                                     |
-|------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| `Breadcrumb`     | `Breadcrumb__[Name]`, e.g. `Breadcrumb-ContentsEdit.cshtml`                                                                              |
-| `BreadcrumbItem` | `BreadcrumbItem__[Name]`, `BreadcrumbItem__[Id]`, `BreadcrumbItem__[Name]__[Id]`, e.g. `BreadcrumbItem-ContentsEdit-ContentItem.cshtml`  |
+| Shape            | Alternates (least to most specific)                                                                                                                                                                                                  |
+|------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Breadcrumb`     | `Breadcrumb__[Name]`, `Breadcrumb_[DisplayType]`, `Breadcrumb_[DisplayType]__[Name]`, e.g. `Breadcrumb-ContentsEdit.cshtml`, `Breadcrumb.DetailAdmin.cshtml`, `Breadcrumb-ContentsEdit.DetailAdmin.cshtml`                          |
+| `BreadcrumbItem` | `BreadcrumbItem__[Name]`, `BreadcrumbItem__[Id]`, `BreadcrumbItem__[Name]__[Id]`, then the same three prefixed with the display type, e.g. `BreadcrumbItem-ContentsEdit-ContentItem.DetailAdmin.cshtml`                             |
 
 The `BreadcrumbItem` shape carries the following properties:
 
@@ -375,6 +366,8 @@ The `BreadcrumbItem` shape carries the following properties:
 | `IsCurrent` | `bool`           | Whether the node is the page being rendered.                                                    |
 | `Level`     | `int`            | The zero based index of the node in the trail.                                                  |
 | `Heading`   | `string`         | The html tag wrapping the text of the current node, e.g. `h1`. It is `null` on the other nodes. |
+
+A trail rendered on the admin and a trail rendered by a front end theme are the same shape, so they are told apart by their **display type**, the way the rest of the display system tells them apart. The tag helper sets it to `DetailAdmin` on a request to the admin and to `Detail` everywhere else, and the `display-type` attribute overrides it. A theme that only styles one of the two therefore templates `Breadcrumb.DetailAdmin.cshtml` or `Breadcrumb.Detail.cshtml` rather than `Breadcrumb.cshtml`, and the default template of the module keeps serving the other.
 
 The `Breadcrumb` shape carries the `oc-breadcrumb` class, alongside a class built from the name of the trail, e.g. `breadcrumb-contents-edit`, which is how `TheAdmin` styles it. The markup is a plain [Bootstrap breadcrumb](https://getbootstrap.com/docs/5.3/components/breadcrumb/), so a theme restyles it with the `--bs-breadcrumb-*` custom properties.
 
