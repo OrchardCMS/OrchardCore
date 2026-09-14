@@ -114,6 +114,5 @@
     <!-- Transitive Packages -->
     <PackageVersion Include="Microsoft.Data.Sqlite" Version="10.0.11" />
     <PackageVersion Include="SQLitePCLRaw.lib.e_sqlite3" Version="3.50.3" />
-    <PackageVersion Include="System.Security.Cryptography.Xml" Version="10.0.11" />
   </ItemGroup>
 </Project>
