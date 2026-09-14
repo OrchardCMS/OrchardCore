@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Mvc.Utilities;
 using OrchardCore.Navigation;
 using YesSql;
 
@@ -51,13 +52,13 @@ public sealed class DeploymentBreadcrumbProvider : IBreadcrumbProvider
             case DeploymentBreadcrumbs.StepCreate:
                 AddList(builder);
                 await AddPlanAsync(builder);
-                builder.Add(S["Create Step"], item => item.Id("Step"));
+                builder.Add(GetStepName(builder), item => item.Id("Step"));
                 break;
 
             case DeploymentBreadcrumbs.StepEdit:
                 AddList(builder);
                 await AddPlanAsync(builder);
-                builder.Add(S["Edit Step"], item => item.Id("Step"));
+                builder.Add(GetStepName(builder), item => item.Id("Step"));
                 break;
 
             // The import screens are siblings of the plans rather than children of them.
@@ -76,6 +77,29 @@ public sealed class DeploymentBreadcrumbProvider : IBreadcrumbProvider
             .Id("DeploymentPlans")
             .Action("Index", "DeploymentPlan", s_routeValues)
             .Permission(DeploymentPermissions.Export));
+
+    // A deployment step has no display name of its own, so its friendly name is derived from its type, e.g.
+    // 'ExportContentToDeploymentTargetDeploymentStep' becomes 'Export Content To Deployment Target'.
+    private string GetStepName(BreadcrumbBuilder builder)
+    {
+        var stepType = builder.GetData<string>(DeploymentBreadcrumbs.StepTypeKey);
+
+        if (string.IsNullOrEmpty(stepType))
+        {
+            return S["Step"].Value;
+        }
+
+        if (stepType.EndsWith("DeploymentStep", StringComparison.Ordinal))
+        {
+            stepType = stepType[..^"DeploymentStep".Length];
+        }
+        else if (stepType.EndsWith("Step", StringComparison.Ordinal))
+        {
+            stepType = stepType[..^"Step".Length];
+        }
+
+        return stepType.CamelFriendly();
+    }
 
     // A step is only reached from its deployment plan, so its trail leads back through the plan.
     private async ValueTask AddPlanAsync(BreadcrumbBuilder builder)

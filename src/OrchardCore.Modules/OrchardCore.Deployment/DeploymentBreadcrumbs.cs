@@ -50,4 +50,9 @@ public static class DeploymentBreadcrumbs
     /// The key under which a step screen passes the identifier of the deployment plan it belongs to.
     /// </summary>
     public const string PlanIdKey = "PlanId";
+
+    /// <summary>
+    /// The key under which a step screen passes the technical type name of the step it is about.
+    /// </summary>
+    public const string StepTypeKey = "StepType";
 }
