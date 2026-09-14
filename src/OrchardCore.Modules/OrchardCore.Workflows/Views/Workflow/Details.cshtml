@@ -3,18 +3,10 @@
 @using OrchardCore.Workflows.ViewModels
 @inject OrchardCore.Modules.ILocalClock LocalClock
 
-<zone Name="Title"><h1>@RenderTitleSegments(Model.WorkflowType.Name)</h1></zone>
-
-<zone name="Breadcrumbs">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-action="Index" asp-controller="WorkflowType">@T["Workflows"]</a></li>
-            <li class="breadcrumb-item"><a asp-action="Edit" asp-controller="WorkflowType" asp-route-id="@Model.WorkflowType.Id">@Model.WorkflowType.Name</a></li>
-            <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@Model.WorkflowType.Id">@T["Instances"]</a></li>
-            <li class="breadcrumb-item active" aria-current="page">@Model.Workflow.WorkflowId</li>
-        </ol>
-    </nav>
+<zone Name="Title">
+    <breadcrumb name="@WorkflowsBreadcrumbs.InstanceDetails" data="@(new { TypeName = Model.WorkflowType.Name, TypeId = Model.WorkflowType.Id.ToString(), WorkflowId = Model.Workflow.WorkflowId })" />
 </zone>
+
 <nav class="mb-3">
     <ul class="nav nav-pills" role="tablist">
         <li class="nav-item">

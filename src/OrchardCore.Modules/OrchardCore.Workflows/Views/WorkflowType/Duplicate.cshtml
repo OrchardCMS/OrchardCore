@@ -1,6 +1,8 @@
 @model OrchardCore.Workflows.ViewModels.WorkflowTypePropertiesViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Copy Workflow"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@WorkflowsBreadcrumbs.TypeDuplicate" />
+</zone>
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Duplicate" method="post" class="no-multisubmit">
