@@ -17,6 +17,7 @@ public class AllTemplatesDeploymentStep : DeploymentStep
         : this()
     {
         Category = S["Development"];
+        DisplayName = S["All Templates"];
     }
     public bool ExportAsFiles { get; set; }
 }

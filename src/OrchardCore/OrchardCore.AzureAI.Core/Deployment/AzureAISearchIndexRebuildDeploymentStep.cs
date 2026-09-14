@@ -14,6 +14,7 @@ public class AzureAISearchIndexRebuildDeploymentStep : DeploymentStep
         : this()
     {
         Category = S["Search"];
+        DisplayName = S["Rebuild Azure AI Search Indices"];
     }
 
     public bool IncludeAll { get; set; }

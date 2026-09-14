@@ -17,5 +17,6 @@ public class ExportContentToDeploymentTargetDeploymentStep : DeploymentStep
         : this()
     {
         Category = S["Content Management"];
+        DisplayName = S["Export Content To Deployment Target"];
     }
 }

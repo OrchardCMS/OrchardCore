@@ -17,12 +17,17 @@ public sealed class DeploymentBreadcrumbProvider : IBreadcrumbProvider
     };
 
     private readonly ISession _session;
+    private readonly IEnumerable<IDeploymentStepFactory> _stepFactories;
 
     internal readonly IStringLocalizer S;
 
-    public DeploymentBreadcrumbProvider(ISession session, IStringLocalizer<DeploymentBreadcrumbProvider> stringLocalizer)
+    public DeploymentBreadcrumbProvider(
+        ISession session,
+        IEnumerable<IDeploymentStepFactory> stepFactories,
+        IStringLocalizer<DeploymentBreadcrumbProvider> stringLocalizer)
     {
         _session = session;
+        _stepFactories = stepFactories;
         S = stringLocalizer;
     }
 
@@ -78,8 +83,9 @@ public sealed class DeploymentBreadcrumbProvider : IBreadcrumbProvider
             .Action("Index", "DeploymentPlan", s_routeValues)
             .Permission(DeploymentPermissions.Export));
 
-    // A deployment step has no display name of its own, so its friendly name is derived from its type, e.g.
-    // 'ExportContentToDeploymentTargetDeploymentStep' becomes 'Export Content To Deployment Target'.
+    // The step's display name is authoritative, so it is read from a fresh instance of the step. A step that does not
+    // set one falls back to a name derived from its type, e.g. 'ExportContentToDeploymentTargetDeploymentStep'
+    // becomes 'Export Content To Deployment Target'.
     private string GetStepName(BreadcrumbBuilder builder)
     {
         var stepType = builder.GetData<string>(DeploymentBreadcrumbs.StepTypeKey);
@@ -89,16 +95,25 @@ public sealed class DeploymentBreadcrumbProvider : IBreadcrumbProvider
             return S["Step"].Value;
         }
 
-        if (stepType.EndsWith("DeploymentStep", StringComparison.Ordinal))
+        var displayName = _stepFactories.FirstOrDefault(factory => factory.Name == stepType)?.Create().DisplayName;
+
+        if (!string.IsNullOrEmpty(displayName?.Value))
         {
-            stepType = stepType[..^"DeploymentStep".Length];
-        }
-        else if (stepType.EndsWith("Step", StringComparison.Ordinal))
-        {
-            stepType = stepType[..^"Step".Length];
+            return displayName.Value;
         }
 
-        return stepType.CamelFriendly();
+        var derived = stepType;
+
+        if (derived.EndsWith("DeploymentStep", StringComparison.Ordinal))
+        {
+            derived = derived[..^"DeploymentStep".Length];
+        }
+        else if (derived.EndsWith("Step", StringComparison.Ordinal))
+        {
+            derived = derived[..^"Step".Length];
+        }
+
+        return derived.CamelFriendly();
     }
 
     // A step is only reached from its deployment plan, so its trail leads back through the plan.

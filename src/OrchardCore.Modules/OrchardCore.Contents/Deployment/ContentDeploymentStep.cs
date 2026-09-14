@@ -17,6 +17,7 @@ public class ContentDeploymentStep : DeploymentStep
         : this()
     {
         Category = S["Content Management"];
+        DisplayName = S["Content Types"];
     }
 
     public string[] ContentTypes { get; set; }

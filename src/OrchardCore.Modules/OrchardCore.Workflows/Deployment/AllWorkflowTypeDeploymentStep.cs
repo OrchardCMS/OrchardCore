@@ -14,5 +14,6 @@ public class AllWorkflowTypeDeploymentStep : DeploymentStep
         : this()
     {
         Category = S["Workflows"];
+        DisplayName = S["All Workflow Types"];
     }
 }

@@ -17,6 +17,7 @@ public class LuceneIndexResetDeploymentStep : DeploymentStep
         : this()
     {
         Category = S["Search"];
+        DisplayName = S["Reset Lucene Search Indices"];
     }
 
     public bool IncludeAll { get; set; } = true;

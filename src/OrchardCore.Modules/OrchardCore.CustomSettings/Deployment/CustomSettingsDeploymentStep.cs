@@ -14,6 +14,7 @@ public class CustomSettingsDeploymentStep : DeploymentStep
         : this()
     {
         Category = S["Settings"];
+        DisplayName = S["Custom Settings"];
     }
 
     public bool IncludeAll { get; set; } = true;

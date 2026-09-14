@@ -17,6 +17,7 @@ public sealed class ElasticsearchIndexDeploymentStep : DeploymentStep
         : this()
     {
         Category = S["Search"];
+        DisplayName = S["Elasticsearch Search Indexes"];
     }
 
     public bool IncludeAll { get; set; } = true;

@@ -18,6 +18,7 @@ public class QueryBasedContentDeploymentStep : DeploymentStep
         : this()
     {
         Category = S["Content Management"];
+        DisplayName = S["Queried Content Items"];
     }
 
     [Required]

@@ -17,6 +17,7 @@ public class MediaDeploymentStep : DeploymentStep
         : this()
     {
         Category = S["Content Management"];
+        DisplayName = S["Media"];
     }
 
     public bool IncludeAll { get; set; } = true;

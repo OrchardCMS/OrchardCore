@@ -16,6 +16,7 @@ public class JsonRecipeDeploymentStep : DeploymentStep
         : this()
     {
         Category = S["Deployment"];
+        DisplayName = S["JSON Recipe"];
     }
 
     public string Json { get; set; }
