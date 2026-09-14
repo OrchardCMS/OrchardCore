@@ -96,6 +96,9 @@ internal sealed class BlobOptionsConfiguration : IConfigureOptions<BlobOptions>,
         return ValidateOptionsResult.Success;
     }
 
+    public ValidateOptionsResult Validate(string? name, BlobOptions options)
+        => ValidateOptionsResult.Fail("Blob options require asynchronous startup validation.");
+
     private void ConfigureBlobName(BlobOptions options)
     {
         _logger.LogDebug("Configuring BlobOptions.BlobName in BlobOptionsSetup");

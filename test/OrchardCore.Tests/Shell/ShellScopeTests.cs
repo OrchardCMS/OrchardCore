@@ -89,7 +89,7 @@ public class ShellScopeTests
 
         Assert.True(shellContext.IsActivated);
         Assert.Equal(
-            ["Activating", "Sync validation", "Async validation", "Activated"],
+            ["Sync validation", "Async validation", "Activating", "Activated"],
             executionOrder);
     }
 
@@ -99,7 +99,9 @@ public class ShellScopeTests
         var validator = new MutableStartupValidator { ShouldFail = true };
         await using var shellContext = CreateShellContext(services =>
         {
+#pragma warning disable SYSLIB0066 // IStartupValidator is obsolete but retained for compatibility.
             services.AddSingleton<IStartupValidator>(validator);
+#pragma warning restore SYSLIB0066
         });
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => ActivateAsync(shellContext));
@@ -133,6 +135,26 @@ public class ShellScopeTests
     }
 
     [Fact]
+    public async Task ActivateShell_SyncOnlyStartupValidator_TakesPrecedenceOverAsyncValidators()
+    {
+        var syncValidator = new MutableStartupValidator();
+        var asyncValidator = new RecordingAsyncStartupValidator(_ => Task.CompletedTask);
+        await using var shellContext = CreateShellContext(services =>
+        {
+#pragma warning disable SYSLIB0066 // IStartupValidator is obsolete but retained for compatibility.
+            services.AddSingleton<IStartupValidator>(syncValidator);
+#pragma warning restore SYSLIB0066
+            services.AddSingleton<IAsyncStartupValidator>(asyncValidator);
+        });
+
+        await ActivateAsync(shellContext);
+
+        Assert.True(shellContext.IsActivated);
+        Assert.Equal(1, syncValidator.CallCount);
+        Assert.Equal(0, asyncValidator.CallCount);
+    }
+
+    [Fact]
     public async Task ActivateShell_AsyncStartupValidation_UsesApplicationStoppingToken()
     {
         using var cancellationTokenSource = new CancellationTokenSource();
@@ -158,7 +180,6 @@ public class ShellScopeTests
     [Fact]
     public async Task ActivateShell_ActivatedShell_DoesNotRunStartupValidatorsAgain()
     {
-        var syncValidator = new MutableStartupValidator();
         var validatorStarted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var completeValidator = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var asyncValidator = new RecordingAsyncStartupValidator(_ =>
@@ -168,7 +189,6 @@ public class ShellScopeTests
         });
         await using var shellContext = CreateShellContext(services =>
         {
-            services.AddSingleton<IStartupValidator>(syncValidator);
             services.AddSingleton<IAsyncStartupValidator>(asyncValidator);
         });
 
@@ -178,19 +198,16 @@ public class ShellScopeTests
         completeValidator.SetResult();
         await Task.WhenAll(firstActivation, secondActivation);
 
-        Assert.Equal(1, syncValidator.CallCount);
         Assert.Equal(1, asyncValidator.CallCount);
     }
 
     [Fact]
     public async Task ActivateShell_RebuiltShell_RunsStartupValidatorsAgain()
     {
-        var syncValidator = new MutableStartupValidator();
         var asyncValidator = new RecordingAsyncStartupValidator(_ => Task.CompletedTask);
 
         await using (var firstShellContext = CreateShellContext(services =>
         {
-            services.AddSingleton<IStartupValidator>(syncValidator);
             services.AddSingleton<IAsyncStartupValidator>(asyncValidator);
         }))
         {
@@ -199,14 +216,12 @@ public class ShellScopeTests
 
         await using (var rebuiltShellContext = CreateShellContext(services =>
         {
-            services.AddSingleton<IStartupValidator>(syncValidator);
             services.AddSingleton<IAsyncStartupValidator>(asyncValidator);
         }))
         {
             await ActivateAsync(rebuiltShellContext);
         }
 
-        Assert.Equal(2, syncValidator.CallCount);
         Assert.Equal(2, asyncValidator.CallCount);
     }
 
@@ -258,6 +273,7 @@ public class ShellScopeTests
         }
     }
 
+#pragma warning disable SYSLIB0066 // IStartupValidator is obsolete but retained for compatibility.
     private sealed class MutableStartupValidator : IStartupValidator
     {
         public bool ShouldFail { get; set; }
@@ -274,6 +290,7 @@ public class ShellScopeTests
             }
         }
     }
+#pragma warning restore SYSLIB0066
 
     private sealed class RecordingAsyncStartupValidator : IAsyncStartupValidator
     {

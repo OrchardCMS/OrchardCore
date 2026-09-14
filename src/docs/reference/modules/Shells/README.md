@@ -174,11 +174,11 @@ services.AddOptions<StorageOptions>()
     .ValidateOnStart();
 ```
 
-During activation, Orchard Core runs `IStartupValidator` after tenant
-`ActivatingAsync()` events and then runs `IAsyncStartupValidator` before
-`ActivatedAsync()` events. A validation failure prevents the tenant from becoming activated and
-is propagated to the caller. Async validation receives the host application stopping token when
-one is available.
+During activation, Orchard Core follows the .NET host startup-validation behavior before resolving
+tenant events: it runs a legacy sync-only `IStartupValidator` when one is registered; otherwise it
+runs all `IAsyncStartupValidator` instances. A validation failure prevents the tenant from becoming
+activated and is propagated to the caller. Async validation receives the host application stopping
+token when one is available.
 
 Validation runs once for each tenant shell instance. It runs again when a tenant shell is rebuilt
 or reloaded. It does not validate subsequent mutable tenant-setting saves or

@@ -1,3 +1,4 @@
+using System.Runtime.ExceptionServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -335,19 +336,12 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
         {
             await new ShellScope(ShellContext).UsingAsync(async scope =>
             {
+                await ValidateOptionsAsync(scope.ServiceProvider);
+
                 var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
                 foreach (var tenantEvent in tenantEvents)
                 {
                     await tenantEvent.ActivatingAsync();
-                }
-
-                scope.ServiceProvider.GetService<IStartupValidator>()?.Validate();
-
-                var asyncStartupValidator = scope.ServiceProvider.GetService<IAsyncStartupValidator>();
-                if (asyncStartupValidator is not null)
-                {
-                    var applicationLifetime = scope.ServiceProvider.GetService<IHostApplicationLifetime>();
-                    await asyncStartupValidator.ValidateAsync(applicationLifetime?.ApplicationStopping ?? CancellationToken.None);
                 }
 
                 foreach (var tenantEvent in tenantEvents.Reverse())
@@ -359,6 +353,72 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
             ShellContext.IsActivated = true;
         }
     }
+
+#pragma warning disable SYSLIB0066 // IStartupValidator is obsolete but retained for compatibility.
+    private static async Task ValidateOptionsAsync(IServiceProvider serviceProvider)
+    {
+        var startupValidator = serviceProvider.GetService<IStartupValidator>();
+        IAsyncStartupValidator[] asyncValidators = [];
+        bool runSyncValidator;
+
+        if (startupValidator is not null and not IAsyncStartupValidator)
+        {
+            runSyncValidator = true;
+        }
+        else
+        {
+            asyncValidators = [.. serviceProvider.GetServices<IAsyncStartupValidator>()];
+            runSyncValidator = startupValidator is not null &&
+                !asyncValidators.Any(asyncValidator => ReferenceEquals(asyncValidator, startupValidator));
+        }
+
+        if (runSyncValidator)
+        {
+            startupValidator?.Validate();
+            return;
+        }
+
+        var applicationLifetime = serviceProvider.GetService<IHostApplicationLifetime>();
+        var cancellationToken = applicationLifetime?.ApplicationStopping ?? CancellationToken.None;
+        List<Exception>? validationFailures = null;
+
+        foreach (var asyncValidator in asyncValidators)
+        {
+            try
+            {
+                await asyncValidator.ValidateAsync(cancellationToken);
+            }
+            catch (OptionsValidationException exception)
+            {
+                (validationFailures ??= []).Add(exception);
+            }
+            catch (AggregateException exception) when (exception.InnerExceptions.Count > 0 &&
+                exception.InnerExceptions.All(static exception => exception is OptionsValidationException))
+            {
+                (validationFailures ??= []).AddRange(exception.InnerExceptions);
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                throw;
+            }
+            catch (Exception exception)
+            {
+                (validationFailures ??= []).Add(exception);
+                break;
+            }
+        }
+
+        if (validationFailures is { Count: 1 })
+        {
+            ExceptionDispatchInfo.Capture(validationFailures[0]).Throw();
+        }
+
+        if (validationFailures is { Count: > 1 })
+        {
+            throw new AggregateException(validationFailures);
+        }
+    }
+#pragma warning restore SYSLIB0066
 
     /// <summary>
     /// Registers a delegate to be invoked when 'BeforeDisposeAsync()' is called on this scope.
