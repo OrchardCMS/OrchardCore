@@ -102,12 +102,25 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
 
         if (IsAuthorizedFolder("/", path))
         {
-            // A file lying in the media root is content that no folder permission covers, so it takes the
-            // root permission itself. The root container is merely the way down to the folders below it,
-            // so any folder grant is enough to look inside it.
-            await AuthorizeAsync(context, requirement, isRootFile
-                ? MediaPermissions.ViewRootMedia
-                : await GetViewRootMediaPermissionAsync());
+            if (isRootFile)
+            {
+                // A file lying in the media root is content that no folder permission covers, so it
+                // takes the root permission itself.
+                await AuthorizeAsync(context, requirement, MediaPermissions.ViewRootMedia);
+
+                return;
+            }
+
+            // The root container is merely the way down to what lies below it, so being able to view
+            // anything under the root is enough to look inside it: a first-level folder (carried by the
+            // provider's instance), or the user's own and others' media folders. The listing then shows
+            // only the folders the caller may actually see, and the root's own files are excluded above.
+            await AuthorizeAnyAsync(
+                context,
+                requirement,
+                await GetViewRootMediaPermissionAsync(),
+                MediaPermissions.ViewOwnMedia,
+                MediaPermissions.ViewOthersMedia);
 
             return;
         }
@@ -236,6 +249,30 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
         }
 
         await AuthorizeAsync(context, requirement, permission);
+    }
+
+    /// <summary>
+    /// Succeeds the requirement if any of <paramref name="permissions"/> is granted, and fails it only
+    /// once none of them is. Used where several unrelated grants each justify the same access, so that
+    /// an early miss does not fail the requirement outright.
+    /// </summary>
+    private async Task AuthorizeAnyAsync(AuthorizationHandlerContext context, PermissionRequirement requirement, params Permission[] permissions)
+    {
+        var authorizationService = _serviceProvider.GetService<IAuthorizationService>();
+
+        foreach (var permission in permissions)
+        {
+            if (await authorizationService.AuthorizeAsync(context.User, permission))
+            {
+                await AuthorizeAsync(context, requirement, permission);
+
+                return;
+            }
+        }
+
+        // None of them matched, so fail once with the primary permission, keeping the caching marker
+        // and failure reason identical to the single-permission path.
+        await AuthorizeAsync(context, requirement, permissions[0]);
     }
 
     private async Task AuthorizeAsync(AuthorizationHandlerContext context, PermissionRequirement requirement, Permission permission, object resource = null)
