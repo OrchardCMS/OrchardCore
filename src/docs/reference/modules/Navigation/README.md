@@ -141,92 +141,148 @@ In order to block search engines from crawling all your pagers links, it is poss
 
 ## Breadcrumbs
 
-The `Breadcrumb` shape renders the trail of pages leading to the page being displayed, e.g. _Manage Content › Edit Site Page_. It is meant to stand in for the title of an admin screen: the last node of the trail is the page itself, and it is rendered inside a heading tag so that it keeps the look, and the semantics, of the `<h1>` it replaces.
+The `Breadcrumb` shape renders the trail of pages leading to the page being displayed, e.g. _Dashboard › Manage Content › Edit Article_.
+
+It is meant to stand in for the title of an admin screen rather than to sit beside it: the last node of the trail is the page itself, it is rendered inside a heading tag so that it keeps the look and the semantics of the `<h1>` it replaces, and its text is registered as a segment of the `<title>` of the page. A screen that renders a breadcrumb therefore stops rendering a title of its own.
 
 A trail is identified by a **name**, and it is built by every `IBreadcrumbProvider` registered on the tenant. That is what makes it extensible: a module adds a node to, or removes a node from, a trail described by another module without either of them knowing about the other.
 
-### Rendering a breadcrumb
+The shapes and the services live in the `OrchardCore.Navigation` module, which is always enabled, so a module that renders a breadcrumb does not need to depend on a feature.
 
-Add the `<breadcrumb>` tag helper to the `Title` zone of an admin view, and give it the name of the trail:
+![The breadcrumb of the content items list](assets/breadcrumb-list.png)
+
+![The breadcrumb of the content item edition form](assets/breadcrumb-edit.png)
+
+### Adding a breadcrumb to your own screen
+
+Four steps, of which only the last one touches the view.
+
+#### 1. Reference the tag helpers
+
+The `<breadcrumb>` tag helper lives in `OrchardCore.Navigation.Core`. Reference the project (or the `OrchardCore.Navigation.Core` package) from your module, then add it to the `Views/_ViewImports.cshtml` of your module:
 
 ```html
 @addTagHelper *, OrchardCore.Navigation.Core
-
-<zone Name="Title">
-    <breadcrumb name="@ContentsBreadcrumbs.Edit" data="@(new { ContentItem = contentItem })" />
-</zone>
 ```
 
-| Attribute    | Type     | Description                                                                                                                                                                   |
-|--------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `name`       | `string` | Required. The name of the trail to render, e.g. `Contents.Edit`.                                                                                                              |
-| `data`       | `object` | The contextual data of the page. Each property becomes an entry of `BreadcrumbBuilder.Data`, which every provider of the trail can read back.                                  |
-| `heading`    | `string` | The html tag wrapping the text of the current node, so the breadcrumb can stand in for the title of the page. Defaults to `h1`. Set it to an empty value to render no heading. |
-| `page-title` | `bool`   | Whether the text of the current node is registered as a segment of the `<title>` of the page. Defaults to `true`.                                                              |
+#### 2. Name the trail
 
-The trail can also be built from code, which is what the tag helper does:
+Every screen that renders a breadcrumb publishes the name of its trail, and the keys of the contextual data the trail carries, so that another module can react to them. Put them in a class of your module's abstractions, next to your permissions:
 
 ```csharp
-var items = await _breadcrumbManager.BuildBreadcrumbAsync(ContentsBreadcrumbs.Edit, ViewContext, new Dictionary<string, object>
+namespace My.Module;
+
+public static class MyBreadcrumbs
 {
-    { ContentsBreadcrumbs.ContentItemData, contentItem },
-});
+    public const string Edit = "MyModule.Edit";
 
-var shape = await _shapeFactory.BreadcrumbAsync(ContentsBreadcrumbs.Edit, items, heading: "h1");
+    public const string RecordData = "Record";
+}
 ```
 
-### Describing a trail
+Use a name that reads as `{Area}.{Screen}`; it also becomes the shape alternate of the trail, so keep it stable.
 
-Implement `IBreadcrumbProvider`, or inherit from `NamedBreadcrumbProvider` when the provider only contributes to a single trail, and register it with `services.AddBreadcrumbProvider<T>()`:
+#### 3. Describe the trail
+
+Implement `IBreadcrumbProvider`, or inherit from `NamedBreadcrumbProvider` when the provider only contributes to a single trail:
 
 ```csharp
-public sealed class ContentsBreadcrumbProvider : NamedBreadcrumbProvider
+public sealed class MyBreadcrumbProvider : NamedBreadcrumbProvider
 {
     internal readonly IStringLocalizer S;
 
-    public ContentsBreadcrumbProvider(IStringLocalizer<ContentsBreadcrumbProvider> localizer)
-        : base(ContentsBreadcrumbs.Edit)
+    public MyBreadcrumbProvider(IStringLocalizer<MyBreadcrumbProvider> localizer)
+        : base(MyBreadcrumbs.Edit)
     {
         S = localizer;
     }
 
     protected override ValueTask BuildAsync(BreadcrumbBuilder builder)
     {
-        if (!builder.TryGetData<ContentItem>(ContentsBreadcrumbs.ContentItemData, out var contentItem))
+        if (!builder.TryGetData<Record>(MyBreadcrumbs.RecordData, out var record))
         {
             return ValueTask.CompletedTask;
         }
 
-        builder.Add(S["Manage Content"], item => item
-            .Id("Contents")
-            .Action("List", "Admin", new RouteValueDictionary { { "area", "OrchardCore.Contents" } }));
+        builder.Add(S["Records"], item => item
+            .Id("Records")
+            .Action(nameof(RecordController.Index), "Record", new { area = "My.Module" })
+            .Permission(MyPermissions.ManageRecords));
 
-        builder.Add(S["Edit {0}", contentItem.ContentType], item => item.Id("ContentItem"));
+        builder.Add(S["Edit {0}", record.Name], item => item.Id("Record"));
 
         return ValueTask.CompletedTask;
     }
 }
 ```
 
-Every provider of the tenant is called for every trail that is rendered, so a provider must check `builder.Name` before it adds anything. `NamedBreadcrumbProvider` does that for you.
+Register it in the `Startup` of your module:
+
+```csharp
+services.AddBreadcrumbProvider<MyBreadcrumbProvider>();
+```
+
+The provider is where the whole trail is decided, including the node of the page itself. Nothing about the trail lives in the view, which is what lets another module change it.
+
+#### 4. Render it in the view
+
+Put the tag helper in the `Title` zone of the view, in place of the `<h1>` it replaces, and pass the contextual data the providers read back:
+
+```html
+<zone Name="Title">
+    <breadcrumb name="@MyBreadcrumbs.Edit" data="@(new { Record = record })" />
+</zone>
+```
+
+That is the whole change to the view. There is no `@RenderTitleSegments(...)` call to keep: the tag helper registers the text of the current node as a segment of the page title on its own.
+
+Rendering the trail in the `Title` zone is what makes it behave like the title it replaces, including honouring the **Display titles in the top bar** admin setting. A trail that is meant to sit above the page rather than to replace its title goes in the `Breadcrumbs` zone instead, and is rendered with `heading=""` so that it carries no heading.
+
+### The `<breadcrumb>` tag helper
+
+| Attribute    | Type     | Description                                                                                                                                                                   |
+|--------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `name`       | `string` | Required. The name of the trail to render, e.g. `Contents.Edit`.                                                                                                              |
+| `data`       | `object` | The contextual data of the page. Each property becomes an entry of `BreadcrumbBuilder.Data`, which every provider of the trail can read back.                                  |
+| `heading`    | `string` | The html tag wrapping the text of the current node, so the breadcrumb can stand in for the title of the page. Defaults to `h1`. Set it to an empty value to render no heading. |
+| `page-title` | `bool`   | Whether the text of the current node is registered as a segment of the `<title>` of the page. Defaults to `true`.                                                              |
+
+Nothing is rendered when no provider contributes a node to the trail, so a screen keeps working when the feature owning its provider is disabled.
+
+### Describing the nodes
+
+`BreadcrumbBuilder` carries the `Name` of the trail being built, the `Data` the page provided, and the nodes added so far:
+
+| Member                       | Description                                                                                          |
+|------------------------------|--------------------------------------------------------------------------------------------------|
+| `Name`                       | The name of the trail being built. Check it before adding anything, unless you inherit from `NamedBreadcrumbProvider`. |
+| `Data`                       | The contextual data of the page, keyed by the property names of the `data` attribute.               |
+| `TryGetData<T>` / `GetData<T>` | Reads one contextual value, when it exists and is of the expected type.                           |
+| `Add(text, [position], [item => …])` | Adds a node.                                                                                |
+| `Remove(predicate)`          | Removes every node matching the predicate, whichever provider added it.                             |
+| `Items`                      | The nodes added so far. They are mutable, so a provider can also change a node instead of replacing it. |
 
 A node is configured through `BreadcrumbItemBuilder`:
 
 | Method                             | Description                                                                                                                    |
-|------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|
+|------------------------------------|------------------------------------------------------------------------------------------------------------------------------|
 | `Text(string)`                     | The text to display for the node. It is also the first argument of `BreadcrumbBuilder.Add()`.                                  |
 | `Id(string)`                       | The identifier of the node, used to build its shape alternates, and to let another provider find it.                           |
 | `Url(string)` / `Action(…)`        | What the node links to. A node with neither is rendered as plain text.                                                         |
-| `Position(string)`                 | The position of the node among the nodes of the trail, using the placement syntax, e.g. `5`, `end`.                            |
+| `Position(string)`                 | The position of the node among the nodes of the trail, using the same syntax as [placement](../Placement/README.md#position-format), e.g. `5`, `after`, `start`, `end`. It is also the second argument of `BreadcrumbBuilder.Add()`. |
 | `Permission(…)` / `Permissions(…)` | The permissions the user must all have for the node to be rendered as a link.                                                  |
 | `Resource(object)`                 | The resource the permissions of the node are evaluated against.                                                                |
 | `AddClass(string)`                 | A css class to render with the node.                                                                                           |
 
-The manager orders the nodes by their position, computes the url of each of them, and marks the last one as the current node. The current node never links to itself. A node the user is not authorized to reach is rendered as plain text rather than removed, so that the trail stays complete.
+`IBreadcrumbManager` then orders the nodes by their position, computes the url of each of them, and marks the last one as the current node:
 
-### Adding a node to an existing trail
+- The **current node never links to itself**, whatever url its provider gave it.
+- A node the user is **not authorized** to reach is rendered as plain text rather than removed, so that the trail stays complete instead of losing a step.
+- A provider that throws is **ignored**, and the nodes of the other providers are still rendered.
 
-Because every provider sees every trail, a module extends a trail it does not own by reacting to its name and positioning its node:
+### Adding a node to a trail you don't own
+
+Because every provider sees every trail, a module extends a trail described by another module by reacting to its name and positioning its node:
 
 ```csharp
 public sealed class LocalizationBreadcrumbProvider : NamedBreadcrumbProvider
@@ -276,40 +332,61 @@ public ValueTask BuildBreadcrumbAsync(BreadcrumbBuilder builder)
 
 `Manage Content › Edit Article` therefore becomes `Dashboard › Manage Content › Edit Article` when the feature is enabled, and goes back to what it was when it is disabled, without the content management screens knowing that the dashboard exists.
 
+The same screen with the feature disabled, and with it enabled:
+
+![The content item edition form without the Admin Dashboard feature](assets/breadcrumb-edit-without-dashboard.png)
+
+![The content item edition form with the Admin Dashboard feature](assets/breadcrumb-edit.png)
+
+### Building a trail from code
+
+A display driver, or any other code that needs the shape rather than the tag helper, builds it in two calls:
+
+```csharp
+var items = await _breadcrumbManager.BuildBreadcrumbAsync(ContentsBreadcrumbs.Edit, ViewContext, new Dictionary<string, object>
+{
+    { ContentsBreadcrumbs.ContentItemData, contentItem },
+});
+
+var shape = await _shapeFactory.BreadcrumbAsync(ContentsBreadcrumbs.Edit, items, heading: "h1");
+```
+
+`BuildBreadcrumbAsync` returns the ordered nodes, so it is also how code reads a trail without rendering it.
+
 ### Theming
 
 The trail renders as the `Breadcrumb` shape, with one `BreadcrumbItem` shape per node. Both carry alternates built from the name of the trail, so a single screen can be templated on its own:
 
 | Shape            | Alternates (least to most specific)                                                                                                     |
-|------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
-| `Breadcrumb`     | `Breadcrumb__[Name]`, e.g. `Breadcrumb-Contents_Edit.cshtml`                                                                               |
-| `BreadcrumbItem` | `BreadcrumbItem__[Name]`, `BreadcrumbItem__[Id]`, `BreadcrumbItem__[Name]__[Id]`, e.g. `BreadcrumbItem-Contents_Edit-ContentItem.cshtml`   |
+|------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| `Breadcrumb`     | `Breadcrumb__[Name]`, e.g. `Breadcrumb-Contents_Edit.cshtml`                                                                             |
+| `BreadcrumbItem` | `BreadcrumbItem__[Name]`, `BreadcrumbItem__[Id]`, `BreadcrumbItem__[Name]__[Id]`, e.g. `BreadcrumbItem-Contents_Edit-ContentItem.cshtml` |
 
 The `.` of a name is encoded as `_` in a template file name, as it is for every other alternate.
 
 The `BreadcrumbItem` shape carries the following properties:
 
-| Property    | Type             | Description                                                                                     |
-|-------------|------------------|---------------------------------------------------------------------------------------------------|
-| `Name`      | `string`         | The name of the trail the node belongs to.                                                       |
-| `Item`      | `BreadcrumbItem` | The node being rendered, with its classes, permissions and route values.                         |
-| `Text`      | `string`         | The text to display for the node.                                                                |
-| `Href`      | `string`         | The url the node links to, or `null` when the node is not a link.                                |
-| `IsCurrent` | `bool`           | Whether the node is the page being rendered.                                                     |
-| `Level`     | `int`            | The zero based index of the node in the trail.                                                   |
-| `Heading`   | `string`         | The html tag wrapping the text of the current node, e.g. `h1`. It is `null` on the other nodes.  |
+| Property    | Type             | Description                                                                                    |
+|-------------|------------------|------------------------------------------------------------------------------------------------|
+| `Name`      | `string`         | The name of the trail the node belongs to.                                                      |
+| `Item`      | `BreadcrumbItem` | The node being rendered, with its classes, permissions and route values.                        |
+| `Text`      | `string`         | The text to display for the node.                                                               |
+| `Href`      | `string`         | The url the node links to, or `null` when the node is not a link.                               |
+| `IsCurrent` | `bool`           | Whether the node is the page being rendered.                                                    |
+| `Level`     | `int`            | The zero based index of the node in the trail.                                                  |
+| `Heading`   | `string`         | The html tag wrapping the text of the current node, e.g. `h1`. It is `null` on the other nodes. |
 
-`TheAdmin` theme styles the trail through the `oc-breadcrumb` class the `Breadcrumb` shape carries, alongside a class built from its name, e.g. `breadcrumb-contents-edit`.
+The `Breadcrumb` shape carries the `oc-breadcrumb` class, alongside a class built from the name of the trail, e.g. `breadcrumb-contents-edit`, which is how `TheAdmin` styles it. The markup is a plain [Bootstrap breadcrumb](https://getbootstrap.com/docs/5.3/components/breadcrumb/), so a theme restyles it with the `--bs-breadcrumb-*` custom properties.
 
 ### Content management trails
 
 The content management screens describe the following trails, whose names and data keys are exposed by `OrchardCore.Contents.ContentsBreadcrumbs`:
 
 | Name              | Rendered by                    | Contextual data                                                                         |
-|-------------------|--------------------------------|-------------------------------------------------------------------------------------------|
-| `Contents.List`   | The content items list         | `ContentType`, the name of the content type the list is filtered on, when there is one.  |
-| `Contents.Create` | The content item creation form | `ContentItem`, the content item being created.                                           |
-| `Contents.Edit`   | The content item edition form  | `ContentItem`, the content item being edited.                                            |
+|-------------------|--------------------------------|-----------------------------------------------------------------------------------------|
+| `Contents.List`   | The content items list         | `ContentType`, the name of the content type the list is filtered on, when there is one. |
+| `Contents.Create` | The content item creation form | `ContentItem`, the content item being created.                                          |
+| `Contents.Edit`   | The content item edition form  | `ContentItem`, the content item being edited.                                           |
 
 ## Extending Navigation
 
