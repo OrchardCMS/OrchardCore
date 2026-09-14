@@ -1,6 +1,8 @@
 @model EditRemoteInstanceViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Remote Instance"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@RemoteDeploymentBreadcrumbs.InstancesEdit" />
+</zone>
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Edit" method="post" class="no-multisubmit">

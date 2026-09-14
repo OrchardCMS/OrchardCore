@@ -90,6 +90,7 @@ public sealed class ServerStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddNavigationProvider<ServerAdminMenu>();
+        services.AddBreadcrumbProvider<OpenIdBreadcrumbProvider>();
 
         services.AddOpenIddict()
             .AddServer(options =>
@@ -224,6 +225,7 @@ public sealed class ValidationStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddNavigationProvider<ValidationAdminMenu>();
+        services.AddBreadcrumbProvider<OpenIdBreadcrumbProvider>();
 
         // Used to attach RFC 9457 Problem Details bodies to the challenge responses produced
         // by the OpenIddict validation handler, honoring app-level ProblemDetails customizations.
@@ -276,6 +278,7 @@ public sealed class ManagementStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddNavigationProvider<ManagementAdminMenu>();
+        services.AddBreadcrumbProvider<OpenIdBreadcrumbProvider>();
     }
 }
 

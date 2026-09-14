@@ -1,7 +1,9 @@
 @model OpenIdApplicationsIndexViewModel
 @using OrchardCore.OpenId.ViewModels
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Applications"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@OpenIdBreadcrumbs.ApplicationsList" />
+</zone>
 
 <div class="card text-bg-theme mb-3">
     <div class="card-body">

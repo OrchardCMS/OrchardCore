@@ -1,5 +1,7 @@
 @model OrchardCore.Media.ViewModels.MediaCacheViewModel
-<zone Name="Title"><h1>@RenderTitleSegments(T["Asset Cache"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@MediaProfilesBreadcrumbs.Cache" />
+</zone>
 
 @if (Model.IsConfigured)
 {
