@@ -12,6 +12,8 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
 
     protected override string RecipeName => "Blog";
 
+    private Uri TenantUri(string path) => new(new Uri(Fixture.BaseUrl), $"/{Tenant.Prefix}/{path}");
+
     // The checkbox is rendered by a site-settings display driver, so its element id carries the
     // shape's model prefix. Target the accessible name instead, which is stable.
     private static ILocator AllowAnonymousSchemaAccessCheckbox(IPage page) =>
@@ -417,12 +419,12 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
             }
         };
 
+        var schemaUri = TenantUri("swagger/v1/swagger.json");
         var response = await page.RunAndWaitForResponseAsync(
-            async () => await page.GotoAsync($"/{Tenant.Prefix}/scalar/v1"),
-            r => r.Url.Contains("/swagger/v1/swagger.json"));
+            async () => await page.GotoAsync(TenantUri("scalar/v1").AbsoluteUri),
+            r => r.Request.Method == "GET" && new Uri(r.Url) == schemaUri);
 
         Assert.Equal(200, response.Status);
-        Assert.Equal($"/{Tenant.Prefix}/swagger/v1/swagger.json", new Uri(response.Url).AbsolutePath);
 
         // Exercise the full Blog reference with Scalar's default configuration. Vue's
         // deferred Teleport regression could unmount the sidebar after the schema loaded.
@@ -431,12 +433,19 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await Assertions.Expect(getEndpoint).ToBeVisibleAsync();
         await getEndpoint.ClickAsync();
 
+        // Scalar labels use schema-relative paths; verify the origin and tenant prefix on the actual request.
         var operation = page.GetByRole(AriaRole.Region, new() { Name = "GetEndpoint", Exact = true })
             .GetByRole(AriaRole.Region, new() { Name = "/api/content/{contentItemId}", Exact = true });
         await Assertions.Expect(operation).ToBeVisibleAsync();
         await operation.GetByRole(AriaRole.Button, new() { Name = "Test Request (get /api/content/{contentItemId})", Exact = true }).ClickAsync();
         var apiClient = page.GetByRole(AriaRole.Dialog, new() { Name = "API Client", Exact = true });
         await Assertions.Expect(apiClient.GetByRole(AriaRole.Button, new() { Name = "Send Request" })).ToBeVisibleAsync();
+        var contentUri = TenantUri("api/content/{contentItemId}");
+        var apiResponse = await page.RunAndWaitForResponseAsync(
+            async () => await apiClient.GetByRole(AriaRole.Button, new() { Name = "Send Request" }).ClickAsync(),
+            r => r.Request.Method == "GET" && new Uri(r.Url) == contentUri);
+        Assert.Equal(401, apiResponse.Status);
+
         await page.Keyboard.PressAsync("Escape");
         await Assertions.Expect(apiClient).Not.ToBeVisibleAsync();
         await Assertions.Expect(sidebar).ToBeVisibleAsync();
@@ -454,7 +463,7 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         var page = await Fixture.CreatePageAsync();
         await EnableOpenApiWithSwaggerUIAsync(page);
 
-        var redirectUri = $"{Fixture.BaseUrl}/{Tenant.Prefix}/OrchardCore.OpenApi/openapi-oidc-silent.html";
+        var redirectUri = TenantUri("OrchardCore.OpenApi/openapi-oidc-silent.html").AbsoluteUri;
 
         await ConfigureOpenIdServerForAuthorizationCodeAsync(page, $"/{Tenant.Prefix}");
         await RegisterOpenApiSilentClientAsync(page, $"/{Tenant.Prefix}", redirectUri);
@@ -464,7 +473,7 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         // Opening the Swagger page loads the injected openapi-ui-auth bundle, which silently
         // acquires a bearer token from the existing admin session (prompt=none). No Authorize
         // click; give the hidden-iframe handshake a moment to complete before the first call.
-        await page.GotoAsync($"/{Tenant.Prefix}/swagger");
+        await page.GotoAsync(TenantUri("swagger").AbsoluteUri);
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
         await page.WaitForTimeoutAsync(3000);
 
@@ -476,12 +485,12 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await operation.Locator("button.try-out__btn").ClickAsync();
         await operation.Locator("tr[data-param-name='contentItemId'] input").FillAsync("does-not-exist");
 
+        var contentUri = TenantUri("api/content/does-not-exist");
         var response = await page.RunAndWaitForResponseAsync(
             async () => await operation.Locator("button.execute").ClickAsync(),
-            r => r.Url.Contains("/api/content/"));
+            r => r.Request.Method == "GET" && new Uri(r.Url) == contentUri);
 
-        Assert.NotEqual(401, response.Status);
-        Assert.NotEqual(403, response.Status);
+        Assert.Equal(404, response.Status);
 
         await page.CloseAsync();
     }
@@ -493,7 +502,7 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await EnableOpenApiAsync(page);
         await FeatureHelper.EnableFeatureAsync(page, $"/{Tenant.Prefix}", "OrchardCore.OpenApi.ScalarUI");
 
-        var redirectUri = $"{Fixture.BaseUrl}/{Tenant.Prefix}/OrchardCore.OpenApi/openapi-oidc-silent.html";
+        var redirectUri = TenantUri("OrchardCore.OpenApi/openapi-oidc-silent.html").AbsoluteUri;
 
         await ConfigureOpenIdServerForAuthorizationCodeAsync(page, $"/{Tenant.Prefix}");
         await RegisterOpenApiSilentClientAsync(page, $"/{Tenant.Prefix}", redirectUri);
@@ -503,7 +512,7 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         // Opening the Scalar page loads the injected openapi-ui-auth bundle, which wraps fetch and
         // silently acquires a bearer token from the existing admin session (prompt=none). No
         // Authorize click; give the hidden-iframe handshake a moment before sending a request.
-        await page.GotoAsync($"/{Tenant.Prefix}/scalar/v1");
+        await page.GotoAsync(TenantUri("scalar/v1").AbsoluteUri);
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
         await page.WaitForTimeoutAsync(3000);
 
@@ -518,12 +527,12 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await operation.GetByRole(AriaRole.Button, new() { Name = "Test Request (get /api/content/{contentItemId})", Exact = true }).ClickAsync();
 
         var apiClient = page.GetByRole(AriaRole.Dialog, new() { Name = "API Client", Exact = true });
+        var contentUri = TenantUri("api/content/{contentItemId}");
         var response = await page.RunAndWaitForResponseAsync(
             async () => await apiClient.GetByRole(AriaRole.Button, new() { Name = "Send Request" }).ClickAsync(),
-            r => r.Url.Contains("/api/content/"));
+            r => r.Request.Method == "GET" && new Uri(r.Url) == contentUri);
 
-        Assert.NotEqual(401, response.Status);
-        Assert.NotEqual(403, response.Status);
+        Assert.Equal(404, response.Status);
 
         await page.CloseAsync();
     }
