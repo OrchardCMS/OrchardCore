@@ -172,5 +172,4 @@ Make sure you have the correct .NET SDK version installed. The `global.json` fil
 - [global.json specification](https://learn.microsoft.com/dotnet/core/tools/global-json)
 - [.NET SDK releases](https://github.com/dotnet/sdk/releases)
 - [Roslyn](https://github.com/dotnet/roslyn)
-- [Target frameworks upgrade checklist](.github/ISSUE_TEMPLATE/target_frameworks.md)
-- [CodeAnalysis package version verification script](build/verify-codeanalysis-versions.ps1)
+- [Target frameworks upgrade checklist](https://github.com/OrchardCMS/OrchardCore/blob/main/.github/ISSUE_TEMPLATE/target_frameworks.md)
