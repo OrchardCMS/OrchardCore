@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.Admin;
+using OrchardCore.Admin.Models;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Html;
 using OrchardCore.DisplayManagement.Title;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Navigation.TagHelpers;
 
@@ -27,17 +29,20 @@ public sealed class BreadcrumbTagHelper : TagHelper
     private readonly IShapeFactory _shapeFactory;
     private readonly IDisplayHelper _displayHelper;
     private readonly IPageTitleBuilder _pageTitleBuilder;
+    private readonly ISiteService _siteService;
 
     public BreadcrumbTagHelper(
         IBreadcrumbManager breadcrumbManager,
         IShapeFactory shapeFactory,
         IDisplayHelper displayHelper,
-        IPageTitleBuilder pageTitleBuilder)
+        IPageTitleBuilder pageTitleBuilder,
+        ISiteService siteService)
     {
         _breadcrumbManager = breadcrumbManager;
         _shapeFactory = shapeFactory;
         _displayHelper = displayHelper;
         _pageTitleBuilder = pageTitleBuilder;
+        _siteService = siteService;
     }
 
     /// <summary>
@@ -107,11 +112,23 @@ public sealed class BreadcrumbTagHelper : TagHelper
         // apart by their display type, the way the rest of the display system tells those contexts apart.
         var isAdmin = ViewContext?.HttpContext is not null && AdminAttribute.IsApplied(ViewContext.HttpContext);
 
+        // The trail can be turned off for the whole admin from the admin settings, in which case only the page title
+        // is rendered. The setting is about the admin, so a front end trail is never hidden by it.
+        var showTrail = true;
+
+        if (isAdmin)
+        {
+            var adminSettings = await _siteService.GetSettingsAsync<AdminSettings>();
+
+            showTrail = adminSettings.ShowBreadcrumb;
+        }
+
         var shape = await _shapeFactory.BreadcrumbAsync(
             Name,
             items,
             GetHeading(isAdmin),
-            string.IsNullOrWhiteSpace(DisplayType) ? (isAdmin ? "DetailAdmin" : "Detail") : DisplayType);
+            string.IsNullOrWhiteSpace(DisplayType) ? (isAdmin ? "DetailAdmin" : "Detail") : DisplayType,
+            showTrail);
 
         output.TagName = null;
         output.Content.SetHtmlContent(await _displayHelper.ShapeExecuteAsync(shape));

@@ -173,6 +173,8 @@ Node `Id` is **not** an HTML `id` — it only feeds alternates and lets another 
 
 `.` and `-` in a name/id are encoded (`.`→`_`, `-`→`__`) by `EncodeAlternateElement`. See `references/theming.md`.
 
+`Breadcrumb.cshtml` renders the trail **and** the page title, so it is the one template to override to rearrange them — e.g. render the title above the trail (swap the two output lines), drop the `oc-breadcrumb-title` block to let the trail be the title, or skip the `IsCurrent` node so the current page is not repeated. An administrator can also turn the trail off for the whole admin with the **Show breadcrumb** setting (`AdminSettings.ShowBreadcrumb`, default on); the tag helper passes the result to the shape as `ShowTrail`, and the template then renders the title alone.
+
 ## Gotchas
 
 - **Data key mismatch.** `data="@(new { ContentItem = x })"` must match the provider's `GetData<T>("ContentItem")`. A typo silently yields `default`, so the node's text/parent goes missing.

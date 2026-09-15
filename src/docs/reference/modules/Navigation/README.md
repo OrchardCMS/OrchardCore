@@ -368,13 +368,52 @@ The `BreadcrumbItem` shape carries the following properties:
 | `IsCurrent` | `bool`           | Whether the node is the page being rendered.                                                    |
 | `Level`     | `int`            | The zero based index of the node in the trail.                                                  |
 
-The enclosing `Breadcrumb` shape carries the trail `Name` and the `Heading` tag of the page title. `Breadcrumb.cshtml` renders the `<ol>` of nodes and then, from the current node's text, the page title in that heading tag.
+The enclosing `Breadcrumb` shape carries the trail `Name`, the `Heading` tag of the page title, and `ShowTrail`. `Breadcrumb.cshtml` renders the `<ol>` of nodes and then, from the current node's text, the page title in that heading tag. When `ShowTrail` is `false` — the administrator turned the breadcrumb off with the **Show breadcrumb** admin setting — the template renders the page title without the trail above it.
 
 A trail rendered on the admin and a trail rendered by a front end theme are the same shape, so they are told apart by their **display type**, the way the rest of the display system tells those contexts apart. The tag helper sets it to `DetailAdmin` on a request to the admin and to `Detail` everywhere else, and the `display-type` attribute overrides it.
 
 The module ships one template for both, because the markup of a trail does not differ between them: what differs is the heading, and the tag helper already decides that per context. The display type is there so that a theme can diverge without dragging the other context along: templating `Breadcrumb.DetailAdmin.cshtml` restyles the admin and leaves the front end on the default, and `Breadcrumb.Detail.cshtml` does the opposite.
 
 The `Breadcrumb` shape carries the `oc-breadcrumb` class, alongside a class built from the name of the trail, e.g. `breadcrumb-contents-edit`, which is how `TheAdmin` styles it. The markup is a plain [Bootstrap breadcrumb](https://getbootstrap.com/docs/5.3/components/breadcrumb/), so a theme restyles it with the `--bs-breadcrumb-*` custom properties.
+
+`Breadcrumb.cshtml` renders the trail and the page title together, so it is the single template a theme overrides to change how the two sit. To render the title **above** the trail, for example, override `Breadcrumb.DetailAdmin.cshtml` in the theme and swap the order of the two:
+
+```razor
+@{
+    var list = new TagBuilder("ol");
+    list.AddCssClass("breadcrumb");
+
+    string heading = Model.Heading;
+    string title = null;
+
+    foreach (var item in Model)
+    {
+        if (item.IsCurrent)
+        {
+            title = (string)item.Text;
+        }
+
+        list.InnerHtml.AppendHtml(await DisplayAsync(item));
+    }
+
+    TagBuilder nav = Tag(Model, "nav");
+    nav.Attributes["aria-label"] = T["Breadcrumb"].Value;
+    nav.InnerHtml.AppendHtml(list);
+}
+
+@* Title first, trail second — the only change from the default template is the order of these two lines. *@
+@if (!string.IsNullOrEmpty(heading) && !string.IsNullOrEmpty(title))
+{
+    TagBuilder titleTag = new(heading);
+    titleTag.AddCssClass("oc-breadcrumb-title");
+    titleTag.InnerHtml.Append(title);
+
+    @titleTag
+}
+@nav
+```
+
+The same template is where a theme drops the `oc-breadcrumb-title` block to let the trail stand in for the title, or skips the `IsCurrent` node so the current page is not repeated in the trail. To turn the trail off across the whole admin without touching a template, clear **Show breadcrumb** under *Configuration → Settings → Admin*; the page title is then rendered on its own.
 
 ### Content management trails
 

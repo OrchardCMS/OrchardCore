@@ -1,28 +1,46 @@
 @{
-    TagBuilder nav = Tag(Model, "nav");
-    nav.Attributes["aria-label"] = T["Breadcrumb"].Value;
-
-    var list = new TagBuilder("ol");
-    list.AddCssClass("breadcrumb");
-
     // The trail is a small path shown above the page title. The current (last) node also carries the title, which is
     // rendered below the trail as the heading of the page, the way it appeared before the breadcrumb was introduced.
     // This template is the single place a theme overrides to change how the trail and the title sit together, e.g. to
-    // drop the heading and let the trail stand in for the title, or to move the trail elsewhere.
+    // render the title above the trail, to drop the heading and let the trail stand in for the title, or to move the
+    // trail elsewhere.
+    // 'ShowTrail' is false when an administrator turns the breadcrumb off in the admin settings: only the title renders.
     string heading = Model.Heading;
+    bool showTrail = Model.ShowTrail;
     string title = null;
 
-    foreach (var item in Model)
+    TagBuilder nav = null;
+
+    if (showTrail)
     {
-        if (item.IsCurrent)
+        var list = new TagBuilder("ol");
+        list.AddCssClass("breadcrumb");
+
+        foreach (var item in Model)
         {
-            title = (string)item.Text;
+            if (item.IsCurrent)
+            {
+                title = (string)item.Text;
+            }
+
+            list.InnerHtml.AppendHtml(await DisplayAsync(item));
         }
 
-        list.InnerHtml.AppendHtml(await DisplayAsync(item));
+        nav = Tag(Model, "nav");
+        nav.Attributes["aria-label"] = T["Breadcrumb"].Value;
+        nav.InnerHtml.AppendHtml(list);
     }
-
-    nav.InnerHtml.AppendHtml(list);
+    else
+    {
+        // The trail is hidden, but the current node still carries the title of the page.
+        foreach (var item in Model)
+        {
+            if (item.IsCurrent)
+            {
+                title = (string)item.Text;
+            }
+        }
+    }
 }
 
 @nav
