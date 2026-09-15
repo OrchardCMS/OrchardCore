@@ -17,8 +17,8 @@ public class ContentsBreadcrumbTests
         Assert.Contains("oc-breadcrumb", html);
         Assert.Contains("breadcrumb-contents", html);
 
-        // The list is the page itself, so its node carries the heading and is not a link.
-        Assert.Contains("<h1>Manage Content</h1>", html);
+        // The list is the page itself, so the trail renders its text as the breadcrumb title heading.
+        Assert.Contains("oc-breadcrumb-title\">Manage Content</h1>", html);
     }
 
     [Fact]
@@ -37,8 +37,8 @@ public class ContentsBreadcrumbTests
         // The list is an ancestor of the page, so its node is a link.
         Assert.Contains("Manage Content</a>", html);
 
-        // The page itself carries the heading and is not a link.
-        Assert.Contains("<h1>Edit Article</h1>", html);
+        // The page itself is the current node, and the trail renders its text as the breadcrumb title heading.
+        Assert.Contains("oc-breadcrumb-title\">Edit Article</h1>", html);
     }
 
     private static async Task<string> GetAdminPageAsync(SiteContext context, string path)
