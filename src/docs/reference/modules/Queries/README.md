@@ -263,6 +263,8 @@ A SQL query is actually a Liquid template. This allows your queries to be shaped
 Do not inject user-provided values directly with Liquid output expressions (`{{ ... }}`), as this can lead to SQL injection.  
 Use SQL parameters (`@name` or `@name:default`) for all user-provided values, and only use Liquid templates to change the shape of the query.
 
+The admin editor validates SQL syntax when saving queries without Liquid syntax and displays parse errors with their line and column. Queries that contain Liquid syntax are validated after the template is rendered when they are executed.
+
 Unsafe example:
 
 ```liquid

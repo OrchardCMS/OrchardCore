@@ -65,7 +65,7 @@ public sealed class ApplicationController : Controller
             return Forbid();
         }
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
         var count = await _applicationManager.CountAsync();
 
         var applications = new List<OpenIdApplicationEntry>();

@@ -97,7 +97,7 @@ public sealed class WorkflowTypeController : Controller
             return Forbid();
         }
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
 
         options ??= new WorkflowTypeIndexOptions();
 

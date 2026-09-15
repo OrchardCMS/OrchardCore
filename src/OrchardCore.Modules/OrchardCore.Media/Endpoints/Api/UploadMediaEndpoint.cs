@@ -138,7 +138,12 @@ public static class UploadMediaEndpoint
 
                         var mediaFile = await mediaFileStore.GetFileInfoAsync(mediaFilePath);
 
-                        await MediaEndpointHelpers.PreCacheRemoteMediaAsync(mediaFile, serviceProvider, mediaFileStore, httpContext);
+                        await MediaEndpointHelpers.PreCacheRemoteMediaAsync(
+                            mediaFile,
+                            mediaFileStore,
+                            serviceProvider.GetService(typeof(IMediaFileStoreCache)) as IMediaFileStoreCache,
+                            httpContext,
+                            logger);
 
                         result.Add(new UploadFileResultDto(MediaEndpointHelpers.CreateFileResult(mediaFile, httpContext, contentTypeProvider, fileVersionProvider, mediaFileStore)));
                     }

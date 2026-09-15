@@ -27,6 +27,7 @@ using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Localization;
 using OrchardCore.Media.Core;
+using OrchardCore.Media.Core.Helpers;
 using OrchardCore.Media.Deployment;
 using OrchardCore.Media.Drivers;
 using OrchardCore.Media.Endpoints.Api;
@@ -94,6 +95,7 @@ public sealed class Startup : StartupBase
         services.AddTransient<IConfigureOptions<AuthorizationOptions>, MediaApiAuthorizationOptionsConfiguration>();
         services.AddSiteDisplayDriver<MediaApiSettingsDisplayDriver>();
         services.TryAddTransient<FileCreationService>();
+        services.AddTransient<FileSizeHelper>();
 
         services.AddSingleton<IMediaFileProvider>(serviceProvider =>
         {
@@ -121,6 +123,7 @@ public sealed class Startup : StartupBase
             var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
             var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
             var mediaEventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
+            var fileSizeHelper = serviceProvider.GetService<FileSizeHelper>();
             var mediaCreatingEventHandlers =
                 serviceProvider.GetServices<IMediaCreatingEventHandler>();
             var fileSystemStoreLogger = serviceProvider.GetRequiredService<
@@ -159,6 +162,7 @@ public sealed class Startup : StartupBase
                 mediaOptions.CdnBaseUrl,
                 mediaEventHandlers,
                 mediaCreatingEventHandlers,
+                fileSizeHelper,
                 defaultMediaFileStoreLogger
             );
         });
@@ -268,18 +272,25 @@ public sealed class Startup : StartupBase
 
     }
 
-    private static string GetMediaPath(
+    internal static string GetMediaPath(
         ShellOptions shellOptions,
         ShellSettings shellSettings,
         string assetsPath
     )
     {
-        return PathExtensions.Combine(
+        assetsPath = assetsPath?.TrimEnd(PathExtensions.PathSeparators);
+
+        if (!MediaFileStorePathHelper.IsValidRelativePath(assetsPath))
+        {
+            throw new ArgumentException("The media assets path must be a relative subdirectory of the tenant's data directory.", nameof(assetsPath));
+        }
+
+        return Path.GetFullPath(Path.Combine(
             shellOptions.ShellsApplicationDataPath,
             shellOptions.ShellsContainerName,
             shellSettings.Name,
-            assetsPath
-        );
+            assetsPath.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar)
+        ));
     }
 }
 
