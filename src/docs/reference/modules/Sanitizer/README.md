@@ -2,7 +2,7 @@
 
 An HTML Sanitizer is available as part of the Orchard Core Infrastructure.
 
-The Sanitizer cleans user input that could lead to XSS attacks.
+The Sanitizer cleans final rendered HTML that could lead to XSS attacks. Authored HTML and Markdown source is stored unchanged.
 
 It is used by default for the following parts and fields:
 
@@ -13,7 +13,7 @@ It is used by default for the following parts and fields:
 - Markdown Field
 
 !!! note
-    To disable sanitization on these fields disable the `Sanitize Html` option in the field or part settings.
+    To disable final-output sanitization for trusted content, disable the `Sanitize Html` option in the field or part settings.
 
 ## Razor Helper
 

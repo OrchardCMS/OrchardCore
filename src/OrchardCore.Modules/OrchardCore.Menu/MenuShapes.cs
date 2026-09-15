@@ -1,14 +1,18 @@
 using System.Security.Claims;
 using System.Text;
+using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Contents;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.Infrastructure.Html;
 using OrchardCore.Menu.Models;
+using OrchardCore.Menu.Settings;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Security.Permissions;
 
@@ -151,13 +155,27 @@ public class MenuShapes : ShapeTableProvider
             });
 
         builder.Describe("MenuItemLink")
-            .OnDisplaying(displaying =>
+            .OnDisplaying(async displaying =>
             {
                 var menuItem = displaying.Shape;
                 var level = menuItem.GetProperty<int>("Level");
                 var differentiator = menuItem.Metadata.Differentiator;
 
                 var menuContentItem = menuItem.GetProperty<ContentItem>("ContentItem");
+
+                if (menuContentItem.TryGet<HtmlMenuItemPart>(out var htmlMenuItemPart))
+                {
+                    var contentDefinitionManager = displaying.ServiceProvider.GetRequiredService<IContentDefinitionManager>();
+                    var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(menuContentItem.ContentType);
+                    var typePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(
+                        part => string.Equals(part.PartDefinition.Name, nameof(HtmlMenuItemPart), StringComparison.Ordinal));
+                    var settings = typePartDefinition?.GetSettings<HtmlMenuItemPartSettings>() ?? new();
+                    var sanitizer = displaying.ServiceProvider.GetRequiredService<IHtmlSanitizerService>();
+                    menuItem.Properties["ContentItem"] = CreateSafeMenuItem(
+                        menuContentItem,
+                        settings.SanitizeHtml,
+                        sanitizer);
+                }
 
                 // Get cached alternates and add them efficiently
                 var cachedAlternates = MenuItemAlternatesFactory.GetMenuItemLinkAlternates(
@@ -171,7 +189,56 @@ public class MenuShapes : ShapeTableProvider
         return ValueTask.CompletedTask;
     }
 
-    private async static Task<bool> ShouldCreateAsync(
+    internal static bool IsSafeUrl(string url, IHtmlSanitizerService sanitizer)
+    {
+        if (string.IsNullOrEmpty(url))
+        {
+            return true;
+        }
+
+        var urlToValidate = url.Split('#', 2)[0];
+        if (!Uri.TryCreate(urlToValidate, UriKind.RelativeOrAbsolute, out _))
+        {
+            return false;
+        }
+
+        try
+        {
+            urlToValidate = urlToValidate.ToUriComponents();
+        }
+        catch (UriFormatException)
+        {
+            return false;
+        }
+
+        var link = $"<a href=\"{HtmlEncoder.Default.Encode(urlToValidate)}\"></a>";
+        return string.Equals(link, sanitizer.Sanitize(link), StringComparison.OrdinalIgnoreCase);
+    }
+
+    internal static ContentItem CreateSafeMenuItem(
+        ContentItem menuContentItem,
+        bool sanitizeHtml,
+        IHtmlSanitizerService sanitizer)
+    {
+        var sanitizedContentItem = menuContentItem.Clone();
+        sanitizedContentItem.TryGet<HtmlMenuItemPart>(out var sanitizedPart);
+
+        if (sanitizeHtml)
+        {
+            sanitizedPart.Html = sanitizer.Sanitize(sanitizedPart.Html ?? string.Empty);
+        }
+
+        if (!IsSafeUrl(sanitizedPart.Url, sanitizer))
+        {
+            sanitizedPart.Url = string.Empty;
+        }
+
+        sanitizedPart.Apply();
+
+        return sanitizedContentItem;
+    }
+
+    private static async Task<bool> ShouldCreateAsync(
         ContentItem contentItem,
         IContentManager contentManager,
         IPermissionService permissionService,
