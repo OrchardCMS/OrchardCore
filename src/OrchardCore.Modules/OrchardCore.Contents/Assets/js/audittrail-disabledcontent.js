@@ -1,10 +1,10 @@
-$(function () {
-    $('.disabledContent__wrapper input').prop('disabled', true);
-    $('.disabledContent__wrapper textarea').prop('disabled', true);
-    $('.disabledContent__wrapper button').prop('disabled', true);
-    $('.disabledContent__wrapper .widget-editor .widget-editor-header .widget-editor-btn-toggle').prop('disabled', false);
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.disabledContent__wrapper input').forEach((el) => el.disabled = true);
+    document.querySelectorAll('.disabledContent__wrapper textarea').forEach((el) => el.disabled = true);
+    document.querySelectorAll('.disabledContent__wrapper button').forEach((el) => el.disabled = true);
+    document.querySelectorAll('.disabledContent__wrapper .widget-editor .widget-editor-header .widget-editor-btn-toggle').forEach((el) => el.disabled = false);
 
-    setTimeout(function () {
-        $('.disabledContent__wrapper textarea').prop('disabled', true);
+    setTimeout(() => {
+        document.querySelectorAll('.disabledContent__wrapper textarea').forEach((el) => el.disabled = true);
     });
 });
