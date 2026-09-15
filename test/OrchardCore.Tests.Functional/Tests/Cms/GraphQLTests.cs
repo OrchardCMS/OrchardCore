@@ -4,29 +4,31 @@ using OrchardCore.Tests.Functional.Helpers;
 
 namespace OrchardCore.Tests.Functional.Tests.Cms;
 
-public sealed class GraphQLTests : CmsTestBase, IClassFixture<CmsSetupFixture>
+public sealed class GraphQLTests : CmsTestBase<BlogFixture>, IClassFixture<BlogFixture>
 {
     private const string Password = "Orchard1!";
     private const string QueryName = "PermissionTestQuery";
     private const string RoleName = "GraphQLQueryRunner";
     private const string UserName = "graphql-query-runner";
 
-    public GraphQLTests(CmsSetupFixture fixture) : base(fixture) { }
-
-    protected override string RecipeName => "Blog";
+    public GraphQLTests(BlogFixture fixture) : base(fixture) { }
 
     [Fact]
     public async Task NamedQuery_RequiresQueryPermission()
     {
-        var prefix = $"/{Tenant.Prefix}";
+        const string prefix = "";
         var page = await Fixture.CreatePageAsync();
         await page.LoginAsync(prefix);
         await FeatureHelper.EnableFeatureAsync(page, prefix, "OrchardCore.Apis.GraphQL");
         await CreateQueryAsync(page, prefix);
 
         await CreateRoleWithPermissionAsync(page, prefix, RoleName, "ExecuteGraphQL");
-        await UserHelper.CreateUserAsync(page, prefix, UserName, "graphql-query-runner@test.com", Password, RoleName);
-        await UserHelper.LoginAsAsync(page, prefix, UserName, Password);
+        await CreateUserAsync(page, prefix);
+        await page.LoginAsync(prefix, new OrchardConfig
+        {
+            Username = UserName,
+            Password = Password,
+        });
 
         var response = await ExecuteQueryAsync(page, prefix);
         var content = await response.TextAsync();
@@ -42,7 +44,11 @@ public sealed class GraphQLTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await page.GotoAsync($"{prefix}/logout");
         await page.LoginAsync(prefix);
         await SetRolePermissionAsync(page, prefix, RoleName, $"ExecuteApi_{QueryName}");
-        await UserHelper.LoginAsAsync(page, prefix, UserName, Password);
+        await page.LoginAsync(prefix, new OrchardConfig
+        {
+            Username = UserName,
+            Password = Password,
+        });
 
         response = await ExecuteQueryAsync(page, prefix);
         content = await response.TextAsync();
@@ -107,6 +113,18 @@ public sealed class GraphQLTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
         await SetRolePermissionAsync(page, prefix, roleName, permissionName);
+    }
+
+    private static async Task CreateUserAsync(IPage page, string prefix)
+    {
+        await page.GotoAndAssertOkAsync($"{prefix}/Admin/Users/Create");
+        await page.GetByLabel("User name", new() { Exact = true }).FillAsync(UserName);
+        await page.GetByLabel("Email", new() { Exact = true }).FillAsync("graphql-query-runner@test.com");
+        await page.GetByLabel("Password", new() { Exact = true }).FillAsync(Password);
+        await page.GetByLabel("Password Confirmation", new() { Exact = true }).FillAsync(Password);
+        await page.GetByLabel(RoleName, new() { Exact = true }).CheckAsync();
+        await page.ClickSaveAsync();
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 
     private static async Task SetRolePermissionAsync(
