@@ -270,8 +270,9 @@ A provider is what lets **another** module extend a trail, and it is where dynam
 | `url`                       | The url the node links to. Ignored when `action` is set.                 |
 | `position`                  | The relative position of the node, e.g. `10`, `before`, `end`.           |
 | `id`                        | The identifier of the node, used to build its shape alternates.          |
+| `permission`                | The name of the permission the user must have for the node to be a link. An unknown name is ignored. |
 
-Inline nodes **seed** the trail: the providers still run over it, so a module can add to, remove from or reorder them, and the Admin Dashboard node still leads the trail. Give the `breadcrumb` a `name` so a provider can target it; a permission-gated link, a localized name loaded from a service, or a node another module inserts by position is still best expressed in a provider.
+Inline nodes **seed** the trail: the providers still run over it, so a module can add to, remove from or reorder them, and the Admin Dashboard node still leads the trail. Give the `breadcrumb` a `name` so a provider can target it; a node whose text is loaded from a service, or one another module inserts by position, is still best expressed in a provider.
 
 ### Describing the nodes
 

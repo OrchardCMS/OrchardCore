@@ -79,7 +79,7 @@ A screen whose trail is static can skip the provider (Workflow B) and declare no
 </breadcrumb>
 ```
 
-`breadcrumb-item` attributes: inner text (the node text), `action`/`controller`/`area` or `url` (the link), `position`, `id`. Inline nodes **seed** the trail — providers still run over it, so the Dashboard node and any module extension still apply. Keep the `name` so a provider can target the trail. Use a provider (not inline) for permission-gated links, node text loaded from a service, or parent resolution.
+`breadcrumb-item` attributes: inner text (the node text), `action`/`controller`/`area` or `url` (the link), `position`, `id`, `permission` (a permission *name*, resolved through `IPermissionService`). Inline nodes **seed** the trail — providers still run over it, so the Dashboard node and any module extension still apply. Keep the `name` so a provider can target the trail. Use a provider (not inline) for node text loaded from a service, or parent resolution.
 
 ## Workflow B: write a provider
 

@@ -119,7 +119,7 @@ public sealed class BreadcrumbTagHelper : TagHelper
 
         // A trail rendered on the admin and a trail rendered by a front end theme are the same shape, so they are told
         // apart by their display type, the way the rest of the display system tells those contexts apart.
-        var isAdmin = ViewContext?.HttpContext is not null && AdminAttribute.IsApplied(ViewContext.HttpContext);
+        var isAdmin = AdminAttribute.IsApplied(ViewContext.HttpContext);
 
         // The trail can be turned off for the whole admin from the admin settings, in which case only the page title
         // is rendered. The setting is about the admin, so a front end trail is never hidden by it.

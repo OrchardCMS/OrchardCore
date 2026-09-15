@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Navigation.TagHelpers;
 
@@ -18,12 +19,26 @@ namespace OrchardCore.Navigation.TagHelpers;
 [HtmlTargetElement("breadcrumb-item", ParentTag = "breadcrumb")]
 public sealed class BreadcrumbItemTagHelper : TagHelper
 {
+    private readonly IPermissionService _permissionService;
+
+    public BreadcrumbItemTagHelper(IPermissionService permissionService)
+    {
+        _permissionService = permissionService;
+    }
+
     /// <summary>
     /// The identifier of the node, used to build its shape alternates and to let a provider find it. See
     /// <see cref="BreadcrumbItem.Id"/>.
     /// </summary>
     [HtmlAttributeName("id")]
     public string Id { get; set; }
+
+    /// <summary>
+    /// The name of the permission the user must have for the node to be rendered as a link. The node is still rendered
+    /// as plain text when the user lacks it, so that the trail stays complete. An unknown name is ignored.
+    /// </summary>
+    [HtmlAttributeName("permission")]
+    public string PermissionName { get; set; }
 
     /// <summary>
     /// The relative position of the node among the other nodes of the trail. e.g., <c>10</c>, <c>before</c>, <c>end</c>.
@@ -90,6 +105,16 @@ public sealed class BreadcrumbItemTagHelper : TagHelper
         else if (!string.IsNullOrEmpty(Url))
         {
             builder.Url(Url);
+        }
+
+        if (!string.IsNullOrEmpty(PermissionName))
+        {
+            var permission = await _permissionService.FindByNameAsync(PermissionName);
+
+            if (permission is not null)
+            {
+                builder.Permission(permission);
+            }
         }
 
         items.Add(item);

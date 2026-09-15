@@ -67,11 +67,18 @@ public static class ShapeFactoryExtensions
         ArgumentException.ThrowIfNullOrEmpty(name);
         ArgumentNullException.ThrowIfNull(items);
 
+        var itemList = items as IReadOnlyList<BreadcrumbItem> ?? items.ToList();
+
+        // The current node is the last one. It carries the title of the page, which is rendered whether or not the
+        // trail is shown, so the shape carries it as well and the template has no node to look it up on.
+        var current = itemList.Count > 0 ? itemList[^1] : null;
+
         var breadcrumb = await shapeFactory.CreateAsync("Breadcrumb", Arguments.From(new
         {
             Name = name,
             Heading = heading,
             ShowTrail = showTrail,
+            Title = current?.Text,
         }));
 
         if (!string.IsNullOrEmpty(displayType))
@@ -79,9 +86,15 @@ public static class ShapeFactoryExtensions
             breadcrumb.Metadata.DisplayType = displayType;
         }
 
+        // A node only renders as part of the trail, so there is nothing to build for it when the trail is hidden.
+        if (!showTrail)
+        {
+            return breadcrumb;
+        }
+
         var level = 0;
 
-        foreach (var item in items)
+        foreach (var item in itemList)
         {
             var itemShape = new BreadcrumbItemViewModel
             {
