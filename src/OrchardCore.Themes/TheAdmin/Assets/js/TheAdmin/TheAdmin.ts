@@ -1,5 +1,7 @@
-import { initializeMenu } from "./menu";
-import "./resizeDetector";
+import { initializeMenu } from "./sidebar";
+import "./sidebarBreakpointDetector";
+import "./actionBar";
+import "./actionGroup";
 ///<reference path="@types/bootstrap/index.d.ts" />
 
 initializeMenu();
