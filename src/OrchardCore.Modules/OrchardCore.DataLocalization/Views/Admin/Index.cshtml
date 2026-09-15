@@ -337,21 +337,21 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (response.ok) {
                         this.isDirty = false;
                         // Show success toast (using Bootstrap if available)
-                        this.showNotification('@T["Translations saved successfully."]', 'success');
+                        this.showNotification("@T["Translations saved successfully."]", 'success');
                     } else {
                         const error = await response.json();
-                        this.showNotification(error.message || '@T["Failed to save translations."]', 'danger');
+                        this.showNotification(error.message || "@T["Failed to save translations."]", 'danger');
                     }
                 } catch (error) {
                     console.error('Save error:', error);
-                    this.showNotification('@T["An error occurred while saving."]', 'danger');
+                    this.showNotification("@T["An error occurred while saving."]", 'danger');
                 } finally {
                     this.isSaving = false;
                 }
             },
             async onCultureChange() {
                 if (this.isDirty) {
-                    if (!confirm('@T["You have unsaved changes. Do you want to discard them?"]')) {
+                    if (!confirm("@T["You have unsaved changes. Do you want to discard them?"]")) {
                         return;
                     }
                 }
@@ -371,7 +371,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 } catch (error) {
                     console.error('Load error:', error);
-                    this.showNotification('@T["Failed to load translations."]', 'danger');
+                    this.showNotification("@T["Failed to load translations."]", 'danger');
                 } finally {
                     this.isLoading = false;
                 }
