@@ -94,7 +94,8 @@ A sample of OpenID Connect Settings recipe step:
       "AllowRefreshTokenFlow": false,
       "AllowImplicitFlow": false,
       "RequireProofKeyForCodeExchange": false,
-      "RequirePushedAuthorizationRequests": false
+      "RequirePushedAuthorizationRequests": false,
+      "RequireEndSessionConfirmation": true
 }
 ```
 
@@ -358,6 +359,7 @@ All OpenID Connect settings can be configured using the generic `Settings` recip
         "AllowImplicitFlow": false,
         "AllowHybridFlow": false,
         "RequireProofKeyForCodeExchange": true,
+        "RequireEndSessionConfirmation": true,
         "UseRollingRefreshTokens": false,
         "UseReferenceAccessTokens": false
       }
@@ -390,6 +392,7 @@ All OpenID Connect settings can be configured using the generic `Settings` recip
 | `AllowImplicitFlow`              | Boolean | Whether the Implicit flow is allowed.                                     |
 | `AllowHybridFlow`                | Boolean | Whether the Hybrid flow is allowed.                                       |
 | `RequireProofKeyForCodeExchange` | Boolean | Whether PKCE is required for all clients.                                 |
+| `RequireEndSessionConfirmation`  | Boolean | Whether users must confirm logout, even with a valid `id_token_hint`. Defaults to `true`. |
 | `UseRollingRefreshTokens`        | Boolean | Whether to use rolling refresh tokens.                                    |
 | `UseReferenceAccessTokens`       | Boolean | Whether to use reference access tokens.                                   |
 

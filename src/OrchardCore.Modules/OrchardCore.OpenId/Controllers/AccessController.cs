@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using OpenIddict.Abstractions;
+using OpenIddict.Server;
 using OpenIddict.Server.AspNetCore;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
@@ -35,6 +36,7 @@ public sealed class AccessController : Controller
     private readonly IOpenIdAuthorizationManager _authorizationManager;
     private readonly IOpenIdScopeManager _scopeManager;
     private readonly IOpenIdServerService _serverService;
+    private readonly IOpenIddictServerDispatcher _dispatcher;
     private readonly ShellSettings _shellSettings;
 
     public AccessController(
@@ -42,12 +44,14 @@ public sealed class AccessController : Controller
         IOpenIdAuthorizationManager authorizationManager,
         IOpenIdScopeManager scopeManager,
         IOpenIdServerService serverService,
+        IOpenIddictServerDispatcher dispatcher,
         ShellSettings shellSettings)
     {
         _applicationManager = applicationManager;
         _authorizationManager = authorizationManager;
         _scopeManager = scopeManager;
         _serverService = serverService;
+        _dispatcher = dispatcher;
         _shellSettings = shellSettings;
     }
 
@@ -335,27 +339,14 @@ public sealed class AccessController : Controller
         }
 
         // If the server is configured to allow skipping the confirmation prompt and a valid
-        // id_token_hint matching the current authenticated user is supplied, sign the user out
-        // immediately. The id_token_hint validation (signature, issuer, audience, lifetime) is
-        // performed by OpenIddict before the principal is exposed via AuthenticateAsync.
+        // id_token_hint issued to the client application for the current authenticated user
+        // is supplied, sign the user out immediately without rendering a confirmation form.
         var settings = await _serverService.GetSettingsAsync();
-        if (!settings.RequireEndSessionConfirmation && !string.IsNullOrEmpty(request.IdTokenHint))
+        if (!settings.RequireEndSessionConfirmation &&
+            !string.IsNullOrEmpty(request.IdTokenHint) &&
+            await IsIdTokenHintValidForUserAsync(request, result.Principal))
         {
-            var hintResult = await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
-            if (hintResult is { Succeeded: true, Principal: not null })
-            {
-                var hintSub = hintResult.Principal.GetClaim(Claims.Subject);
-                var cookieSub = result.Principal.GetUserIdentifier();
-
-                if (hintSub != null && CryptographicOperations.FixedTimeEquals(
-                    MemoryMarshal.AsBytes<char>(hintSub.AsSpan()),
-                    MemoryMarshal.AsBytes<char>((cookieSub ?? string.Empty).AsSpan())))
-                {
-                    return SignOut(
-                        new AuthenticationProperties { RedirectUri = "/" },
-                        OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
-                }
-            }
+            return await SignOutAndRedirectAsync(request);
         }
 
         return View();
@@ -386,18 +377,7 @@ public sealed class AccessController : Controller
         // sent by a malicious client that could abuse this interactive endpoint to silently
         // log the user out without the user explicitly approving the log out operation.
 
-        await HttpContext.SignOutAsync();
-
-        // If no post_logout_redirect_uri was specified, redirect the user agent
-        // to the root page, that should correspond to the home page in most cases.
-        if (string.IsNullOrEmpty(request.PostLogoutRedirectUri))
-        {
-            return Redirect("~/");
-        }
-
-        return SignOut(
-            new AuthenticationProperties { RedirectUri = "/" },
-            OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        return await SignOutAndRedirectAsync(request);
     }
 
     [ActionName(nameof(Logout)), AllowAnonymous, DisableCors]
@@ -421,6 +401,92 @@ public sealed class AccessController : Controller
         }
 
         return Redirect("~/");
+    }
+
+    private async Task<IActionResult> SignOutAndRedirectAsync(OpenIddictRequest request)
+    {
+        await HttpContext.SignOutAsync();
+
+        // If no post_logout_redirect_uri was specified, redirect the user agent
+        // to the root page, that should correspond to the home page in most cases.
+        if (string.IsNullOrEmpty(request.PostLogoutRedirectUri))
+        {
+            return Redirect("~/");
+        }
+
+        return SignOut(
+            new AuthenticationProperties { RedirectUri = "/" },
+            OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+    }
+
+    private async Task<bool> IsIdTokenHintValidForUserAsync(OpenIddictRequest request, ClaimsPrincipal user)
+    {
+        // Note: the principal returned by AuthenticateAsync() for the OpenIddict scheme can't be used here.
+        // When end session request caching is enabled, OpenIddict validates the tokens before the cached
+        // request parameters (including the id_token_hint) are restored, so the returned principal is empty.
+        // To work around that, the id_token_hint is explicitly validated using the OpenIddict server pipeline.
+        var transaction = HttpContext.Features.Get<OpenIddictServerAspNetCoreFeature>()?.Transaction;
+        if (transaction is null)
+        {
+            return false;
+        }
+
+        // Note: like OpenIddict, the lifetime of identity tokens used as hints is deliberately not validated.
+        // The audience and presenter are validated below, based on the client application sending the request.
+        var context = new OpenIddictServerEvents.ValidateTokenContext(transaction)
+        {
+            Token = request.IdTokenHint,
+            ValidTokenTypes = { TokenTypeIdentifiers.IdentityToken },
+            DisableAudienceValidation = true,
+            DisableLifetimeValidation = true,
+            DisablePresenterValidation = true,
+        };
+
+        await _dispatcher.DispatchAsync(context);
+
+        if (context.IsRejected || context.Principal is not ClaimsPrincipal principal)
+        {
+            return false;
+        }
+
+        if (!await IsIdTokenHintIssuedToClientAsync(request, principal))
+        {
+            return false;
+        }
+
+        var hintSubject = principal.GetClaim(Claims.Subject);
+        var userIdentifier = user.FindUserIdentifier();
+
+        return hintSubject is not null && userIdentifier is not null &&
+            CryptographicOperations.FixedTimeEquals(
+                MemoryMarshal.AsBytes<char>(hintSubject.AsSpan()),
+                MemoryMarshal.AsBytes<char>(userIdentifier.AsSpan()));
+    }
+
+    private async Task<bool> IsIdTokenHintIssuedToClientAsync(OpenIddictRequest request, ClaimsPrincipal principal)
+    {
+        // Note: unlike OpenIddict, end session requests that can't be associated
+        // with a client application always require an explicit user confirmation.
+        if (!string.IsNullOrEmpty(request.ClientId))
+        {
+            return principal.HasAudience(request.ClientId) || principal.HasPresenter(request.ClientId);
+        }
+
+        if (string.IsNullOrEmpty(request.PostLogoutRedirectUri))
+        {
+            return false;
+        }
+
+        await foreach (var application in _applicationManager.FindByPostLogoutRedirectUriAsync(request.PostLogoutRedirectUri))
+        {
+            var clientId = await _applicationManager.GetClientIdAsync(application);
+            if (!string.IsNullOrEmpty(clientId) && (principal.HasAudience(clientId) || principal.HasPresenter(clientId)))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     [AllowAnonymous, HttpPost]

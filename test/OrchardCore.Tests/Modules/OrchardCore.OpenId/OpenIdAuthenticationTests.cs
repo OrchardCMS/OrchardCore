@@ -378,6 +378,308 @@ public class OpenIdAuthenticationTests
         Assert.Equal(HttpStatusCode.TooManyRequests, response.StatusCode);
     }
 
+    [Fact]
+    public async Task OpenId_Logout_WithValidIdTokenHint_SignsOutWithoutConfirmation_WhenConfirmationIsDisabled()
+    {
+        var context = await CreateLogoutSiteContextAsync(requireEndSessionConfirmation: false);
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var httpClient = context.Client;
+            var shellSettings = scope.ServiceProvider.GetRequiredService<ShellSettings>();
+            var session = await SignInAndRequestTokensAsync(httpClient, shellSettings, LogoutClientId);
+            var postLogoutRedirectUri = GetPostLogoutRedirectUri(httpClient, LogoutClientId);
+
+            var response = await SendLogoutRequestAsync(httpClient, session.Cookies, new Dictionary<string, string>
+            {
+                { OpenIddictConstants.Parameters.IdTokenHint, session.IdToken },
+                { OpenIddictConstants.Parameters.ClientId, LogoutClientId },
+                { OpenIddictConstants.Parameters.PostLogoutRedirectUri, postLogoutRedirectUri },
+            });
+
+            Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+            Assert.StartsWith(postLogoutRedirectUri, response.Headers.Location?.ToString());
+
+            // The local authentication cookie must be removed as well.
+            var cookies = CookiesHelper.ExtractCookies(response);
+            Assert.True(cookies.TryGetValue(session.AuthenticationCookieName, out var cookieValue));
+            Assert.Empty(cookieValue);
+        });
+    }
+
+    [Fact]
+    public async Task OpenId_Logout_WithValidIdTokenHint_ShowsConfirmation_WhenConfirmationIsRequiredByDefault()
+    {
+        var context = await CreateLogoutSiteContextAsync(requireEndSessionConfirmation: null);
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var httpClient = context.Client;
+            var shellSettings = scope.ServiceProvider.GetRequiredService<ShellSettings>();
+            var session = await SignInAndRequestTokensAsync(httpClient, shellSettings, LogoutClientId);
+
+            var response = await SendLogoutRequestAsync(httpClient, session.Cookies, new Dictionary<string, string>
+            {
+                { OpenIddictConstants.Parameters.IdTokenHint, session.IdToken },
+                { OpenIddictConstants.Parameters.ClientId, LogoutClientId },
+                { OpenIddictConstants.Parameters.PostLogoutRedirectUri, GetPostLogoutRedirectUri(httpClient, LogoutClientId) },
+            });
+
+            await AssertConfirmationPromptAsync(response, session.AuthenticationCookieName);
+        });
+    }
+
+    [Fact]
+    public async Task OpenId_Logout_WithIdTokenHintIssuedToAnotherClient_DoesNotSignOut()
+    {
+        var context = await CreateLogoutSiteContextAsync(requireEndSessionConfirmation: false);
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var httpClient = context.Client;
+            var shellSettings = scope.ServiceProvider.GetRequiredService<ShellSettings>();
+            var session = await SignInAndRequestTokensAsync(httpClient, shellSettings, LogoutClientId);
+            var otherPostLogoutRedirectUri = GetPostLogoutRedirectUri(httpClient, OtherLogoutClientId);
+
+            var response = await SendLogoutRequestAsync(httpClient, session.Cookies, new Dictionary<string, string>
+            {
+                { OpenIddictConstants.Parameters.IdTokenHint, session.IdToken },
+                { OpenIddictConstants.Parameters.ClientId, OtherLogoutClientId },
+                { OpenIddictConstants.Parameters.PostLogoutRedirectUri, otherPostLogoutRedirectUri },
+            });
+
+            Assert.False(response.Headers.Location?.ToString().StartsWith(otherPostLogoutRedirectUri, StringComparison.Ordinal) ?? false);
+            Assert.DoesNotContain(session.AuthenticationCookieName, CookiesHelper.ExtractCookies(response).Keys);
+        });
+    }
+
+    [Theory]
+    [InlineData("invalid-token")]
+    [InlineData("access-token")]
+    [InlineData("no-client")]
+    public async Task OpenId_Logout_WithUnverifiableIdTokenHint_ShowsConfirmation_WhenConfirmationIsDisabled(string scenario)
+    {
+        var context = await CreateLogoutSiteContextAsync(requireEndSessionConfirmation: false);
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var httpClient = context.Client;
+            var shellSettings = scope.ServiceProvider.GetRequiredService<ShellSettings>();
+            var session = await SignInAndRequestTokensAsync(httpClient, shellSettings, LogoutClientId);
+            var postLogoutRedirectUri = GetPostLogoutRedirectUri(httpClient, LogoutClientId);
+
+            var parameters = scenario switch
+            {
+                "invalid-token" => new Dictionary<string, string>
+                {
+                    { OpenIddictConstants.Parameters.IdTokenHint, "invalid-token" },
+                    { OpenIddictConstants.Parameters.ClientId, LogoutClientId },
+                    { OpenIddictConstants.Parameters.PostLogoutRedirectUri, postLogoutRedirectUri },
+                },
+                "access-token" => new Dictionary<string, string>
+                {
+                    { OpenIddictConstants.Parameters.IdTokenHint, session.AccessToken },
+                    { OpenIddictConstants.Parameters.ClientId, LogoutClientId },
+                    { OpenIddictConstants.Parameters.PostLogoutRedirectUri, postLogoutRedirectUri },
+                },
+
+                // A valid hint that can't be bound to a client application.
+                "no-client" => new Dictionary<string, string>
+                {
+                    { OpenIddictConstants.Parameters.IdTokenHint, session.IdToken },
+                },
+                _ => throw new ArgumentOutOfRangeException(nameof(scenario)),
+            };
+
+            var response = await SendLogoutRequestAsync(httpClient, session.Cookies, parameters);
+
+            await AssertConfirmationPromptAsync(response, session.AuthenticationCookieName);
+        });
+    }
+
+    private const string LogoutClientId = "logout_client";
+    private const string OtherLogoutClientId = "other_logout_client";
+
+    private sealed record LogoutTestSession(
+        IDictionary<string, string> Cookies,
+        string AuthenticationCookieName,
+        string IdToken,
+        string AccessToken);
+
+    private static async Task<SiteContext> CreateLogoutSiteContextAsync(bool? requireEndSessionConfirmation)
+    {
+        var context = new SiteContext();
+
+        await context.InitializeAsync();
+
+        var serverSettingsStep = new JsonObject
+        {
+            { "name", "OpenIdServerSettings" },
+            { "EnableAuthorizationEndpoint", true },
+            { "EnableTokenEndpoint", true },
+            { "EnableLogoutEndpoint", true },
+            { "AllowAuthorizationCodeFlow", true },
+        };
+
+        if (requireEndSessionConfirmation is not null)
+        {
+            serverSettingsStep.Add("RequireEndSessionConfirmation", requireEndSessionConfirmation.Value);
+        }
+
+        var recipe = new JsonObject
+        {
+            ["steps"] = new JsonArray
+            {
+                new JsonObject
+                {
+                    { "name", "Feature" },
+                    { "enable", new JsonArray(
+                        "OrchardCore.Users",
+                        "OrchardCore.OpenId.Server",
+                        "OrchardCore.OpenId.Validation",
+                        "OrchardCore.OpenId") },
+                },
+                serverSettingsStep,
+                CreateLogoutApplicationStep(context.Client, LogoutClientId),
+                CreateLogoutApplicationStep(context.Client, OtherLogoutClientId),
+            },
+        };
+
+        await RecipeHelpers.RunRecipeAsync(context, recipe);
+
+        return context;
+    }
+
+    private static JsonObject CreateLogoutApplicationStep(HttpClient httpClient, string clientId)
+        => new()
+        {
+            { "name", "OpenIdApplication" },
+            { "ClientId", clientId },
+            { "DisplayName", clientId },
+            { "Type", "public" },
+            { "ConsentType", "implicit" },
+            { "AllowAuthorizationCodeFlow", true },
+            { "RequireProofKeyForCodeExchange", true },
+            { "AllowLogoutEndpoint", true },
+            { "RedirectUris", GetRedirectUri(httpClient, clientId) },
+            { "PostLogoutRedirectUris", GetPostLogoutRedirectUri(httpClient, clientId) },
+        };
+
+    private static string GetRedirectUri(HttpClient httpClient, string clientId)
+        => httpClient.BaseAddress + "signin-oidc-" + clientId;
+
+    private static string GetPostLogoutRedirectUri(HttpClient httpClient, string clientId)
+        => httpClient.BaseAddress + "signout-callback-oidc-" + clientId;
+
+    private static async Task<LogoutTestSession> SignInAndRequestTokensAsync(HttpClient httpClient, ShellSettings shellSettings, string clientId)
+    {
+        // Visit the login page to get the AntiForgery token.
+        var loginGetRequest = await httpClient.GetAsync("Login", CancellationToken.None);
+
+        var loginFormData = new Dictionary<string, string>
+        {
+            {"__RequestVerificationToken", await AntiForgeryHelper.ExtractAntiForgeryToken(loginGetRequest) },
+            {$"{nameof(LoginForm)}.{nameof(LoginViewModel.UserName)}", "admin"},
+            {$"{nameof(LoginForm)}.{nameof(LoginViewModel.Password)}", "Password01_"},
+        };
+
+        var loginPostRequest = HttpRequestHelper.CreatePostMessageWithCookies($"Login?ReturnUrl=/{shellSettings.RequestUrlPrefix}", loginFormData, loginGetRequest);
+        var loginPostResponse = await httpClient.SendAsync(loginPostRequest, CancellationToken.None);
+
+        Assert.Equal(HttpStatusCode.Redirect, loginPostResponse.StatusCode);
+
+        var cookies = CookiesHelper.ExtractCookies(loginPostResponse);
+        var authenticationCookieName = "orchauth_" + shellSettings.Name;
+
+        Assert.Contains(authenticationCookieName, cookies.Keys);
+
+        var redirectUri = GetRedirectUri(httpClient, clientId);
+        var codeVerifier = GenerateCodeVerifier();
+
+        var authorizeRequest = HttpRequestHelper.CreatePostMessage("connect/authorize", new Dictionary<string, string>
+        {
+            { "client_id", clientId },
+            { "response_type", "code" },
+            { "redirect_uri", redirectUri },
+            { "scope", "openid" },
+            { "code_challenge_method", "S256" },
+            { "code_challenge", GenerateCodeChallenge(codeVerifier) },
+        });
+        CookiesHelper.AddCookiesToRequest(authorizeRequest, cookies);
+
+        var authorizeResponse = await httpClient.SendAsync(authorizeRequest, CancellationToken.None);
+
+        Assert.Equal(HttpStatusCode.Redirect, authorizeResponse.StatusCode);
+
+        // Authorization requests are cached by OpenIddict, which redirects the user agent to the same endpoint.
+        var cachedAuthorizeRequest = HttpRequestHelper.CreateGetMessage(authorizeResponse.Headers.Location?.ToString());
+        CookiesHelper.AddCookiesToRequest(cachedAuthorizeRequest, cookies);
+
+        var authorizationCodeResponse = await httpClient.SendAsync(cachedAuthorizeRequest, CancellationToken.None);
+
+        Assert.Equal(HttpStatusCode.Redirect, authorizationCodeResponse.StatusCode);
+
+        var callbackUri = authorizationCodeResponse.Headers.Location?.ToString();
+
+        Assert.StartsWith(redirectUri, callbackUri);
+
+        var authorizationCode = HttpUtility.ParseQueryString(new Uri(callbackUri).Query)["code"];
+
+        Assert.NotEmpty(authorizationCode);
+
+        var tokenRequest = HttpRequestHelper.CreatePostMessage("connect/token", new Dictionary<string, string>
+        {
+            { "client_id", clientId },
+            { "grant_type", "authorization_code" },
+            { "code", authorizationCode },
+            { "redirect_uri", redirectUri },
+            { "code_verifier", codeVerifier },
+        });
+
+        var tokenResponse = await httpClient.SendAsync(tokenRequest, CancellationToken.None);
+
+        Assert.True(tokenResponse.IsSuccessStatusCode, await tokenResponse.Content.ReadAsStringAsync());
+
+        var tokenResult = await tokenResponse.Content.ReadFromJsonAsync<JsonObject>();
+        var idToken = tokenResult[OpenIddictConstants.Parameters.IdToken]?.ToString();
+        var accessToken = tokenResult[OpenIddictConstants.Parameters.AccessToken]?.ToString();
+
+        Assert.NotEmpty(idToken);
+        Assert.NotEmpty(accessToken);
+
+        return new LogoutTestSession(cookies, authenticationCookieName, idToken, accessToken);
+    }
+
+    private static async Task<HttpResponseMessage> SendLogoutRequestAsync(HttpClient httpClient, IDictionary<string, string> cookies, Dictionary<string, string> parameters)
+    {
+        var query = string.Join('&', parameters.Select(parameter => $"{Uri.EscapeDataString(parameter.Key)}={Uri.EscapeDataString(parameter.Value)}"));
+
+        var logoutRequest = HttpRequestHelper.CreateGetMessage("connect/logout?" + query);
+        CookiesHelper.AddCookiesToRequest(logoutRequest, cookies);
+
+        var logoutResponse = await httpClient.SendAsync(logoutRequest, CancellationToken.None);
+
+        // End session requests are cached by OpenIddict, which redirects the user agent to the same endpoint
+        // with a request_uri parameter. The logout action is only invoked when that second request is processed.
+        var location = logoutResponse.Headers.Location?.ToString();
+        if (logoutResponse.StatusCode != HttpStatusCode.Redirect || location?.Contains("request_uri=", StringComparison.Ordinal) != true)
+        {
+            return logoutResponse;
+        }
+
+        var cachedLogoutRequest = HttpRequestHelper.CreateGetMessage(location);
+        CookiesHelper.AddCookiesToRequest(cachedLogoutRequest, cookies);
+
+        return await httpClient.SendAsync(cachedLogoutRequest, CancellationToken.None);
+    }
+
+    private static async Task AssertConfirmationPromptAsync(HttpResponseMessage response, string authenticationCookieName)
+    {
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains("submit.Accept", await response.Content.ReadAsStringAsync());
+        Assert.DoesNotContain(authenticationCookieName, CookiesHelper.ExtractCookies(response).Keys);
+    }
+
     private static async Task ExchangeCodeForTokenAsync(HttpClient httpClient, string authorizationCode, string clientId, string redirectUri, string codeVerifier, ConcurrentBag<string> tokens)
     {
         var data = new Dictionary<string, string>()
