@@ -9,4 +9,7 @@ public static class LuceneConstants
     public const string ProviderName = "Lucene";
 
     public static readonly LuceneVersion DefaultVersion = LuceneVersion.LUCENE_48;
+
+    // Breadcrumb trail names.
+    public const string Query = "LuceneQuery";
 }

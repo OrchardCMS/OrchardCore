@@ -17,5 +17,6 @@ public class SearchSettingsDeploymentStep : DeploymentStep
         : this()
     {
         Category = S["Search"];
+        Title = S["Search Settings"];
     }
 }

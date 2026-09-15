@@ -3,7 +3,9 @@
 @using OrchardCore.Localization.Data
 @inject IDataLocalizer D
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Content Types"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@ContentTypesConstants.TypesList" />
+</zone>
 
 <div data-list-management data-client-side-search="true" data-single-result-action-mode="first" data-search-first-element-classes="border-top rounded-top">
 <div class="card mb-3 text-bg-theme position-sticky action-bar">

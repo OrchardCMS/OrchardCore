@@ -3,7 +3,7 @@
 @model ModelViewModel
 
 <zone Name="Title">
-    <h1>@RenderTitleSegments(T["New '{0}' index", Model.DisplayName])</h1>
+    <breadcrumb name="@IndexingConstants.Create" data="@(new { Model.DisplayName })" />
 </zone>
 
 <form method="post" enctype="multipart/form-data" class="no-multisubmit">

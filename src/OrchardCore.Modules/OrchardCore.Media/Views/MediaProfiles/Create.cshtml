@@ -1,6 +1,8 @@
 @model MediaProfileViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Create Media Profile"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@MediaProfilesConstants.Create" />
+</zone>
 
 <div asp-validation-summary="All"></div>
 <form asp-action="Create" method="post" class="no-multisubmit">

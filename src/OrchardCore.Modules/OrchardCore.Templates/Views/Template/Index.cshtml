@@ -5,14 +5,9 @@
     var formAction = Model.Options.AdminTemplates ? "admin" : "index";
 }
 
-@if (Model.Options.AdminTemplates)
-{
-    <zone Name="Title"><h1>@RenderTitleSegments(T["Admin Templates"])</h1></zone>
-}
-else
-{
-    <zone Name="Title"><h1>@RenderTitleSegments(T["Templates"])</h1></zone>
-}
+<zone Name="Title">
+    <breadcrumb name="@TemplatesConstants.List" data="@(new { AdminTemplates = Model.Options.AdminTemplates })" />
+</zone>
 
 @* the form is necessary to generate and antiforgery token for the delete action *@
 <form asp-action="@formAction" data-list-management data-selected-label="@T["selected"]">

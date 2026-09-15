@@ -1,6 +1,8 @@
 @model DisplaySitemapViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Sitemap"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@SitemapsConstants.Display" />
+</zone>
 
 @if (string.IsNullOrEmpty(Site.BaseUrl))
 {

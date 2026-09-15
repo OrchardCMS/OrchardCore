@@ -17,6 +17,7 @@ public class AllAdminTemplatesDeploymentStep : DeploymentStep
         : this()
     {
         Category = S["Development"];
+        Title = S["All Admin Templates"];
     }
     public bool ExportAsFiles { get; set; }
 }

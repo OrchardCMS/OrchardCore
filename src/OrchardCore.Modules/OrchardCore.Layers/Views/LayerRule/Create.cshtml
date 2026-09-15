@@ -1,6 +1,8 @@
 @model LayerRuleCreateViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Create Rule"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@LayersConstants.RuleCreate" data="@(new { LayerName = Model.Name })" />
+</zone>
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Create" method="post" class="no-multisubmit">

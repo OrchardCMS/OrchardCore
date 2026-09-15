@@ -2,7 +2,9 @@
 
 @model EditTenantViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Create Tenant"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@TenantsConstants.Create" />
+</zone>
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Create" method="post" class="no-multisubmit">

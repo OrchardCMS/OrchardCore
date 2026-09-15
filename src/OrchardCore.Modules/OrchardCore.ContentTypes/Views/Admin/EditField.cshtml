@@ -21,7 +21,9 @@
     string localizedPartName = D[Model.PartFieldDefinition.PartDefinition.DisplayName(), "Content Types"];
 }
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["\"{0}\" settings for \"{1}\"", localizedFieldName, localizedPartName])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@ContentTypesConstants.PartsEditField" data="@(new { PartName = Model.PartFieldDefinition.PartDefinition.Name, PartDisplayName = localizedPartName, FieldDisplayName = localizedFieldName })" />
+</zone>
 
 <form asp-action="EditField" asp-route-returnUrl="@ViewData["returnUrl"]">
     @Html.ValidationSummary()

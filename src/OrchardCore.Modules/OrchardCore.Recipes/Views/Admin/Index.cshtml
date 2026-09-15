@@ -1,7 +1,9 @@
 @model RecipeViewModel[]
 @using OrchardCore.Recipes.ViewModels
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Recipes"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@RecipesConstants.List" />
+</zone>
 
 <div data-list-management
      data-client-side-search="true"

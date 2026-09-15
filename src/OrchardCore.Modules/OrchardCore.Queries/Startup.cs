@@ -6,6 +6,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using OrchardCore.Queries.Services;
 using OrchardCore.Queries.Core.Services;
 using OrchardCore.Queries.Deployment;
 using OrchardCore.Queries.Drivers;
@@ -25,6 +26,7 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddNavigationProvider<AdminMenu>();
+        services.AddBreadcrumbProvider<QueriesBreadcrumbProvider>();
         services.AddDisplayDriver<Query, QueryDisplayDriver>();
         services.AddPermissionProvider<Permissions>();
     }

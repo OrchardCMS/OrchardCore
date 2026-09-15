@@ -126,6 +126,7 @@ public sealed class Startup : StartupBase
 
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
+        services.AddBreadcrumbProvider<UsersBreadcrumbProvider>();
 
         services.AddSiteDisplayDriver<LoginSettingsDisplayDriver>();
 

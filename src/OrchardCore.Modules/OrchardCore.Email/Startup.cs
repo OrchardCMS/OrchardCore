@@ -20,7 +20,8 @@ public sealed class Startup : StartupBase
             .AddSiteDisplayDriver<EmailSettingsDisplayDriver>()
             .AddSiteSettingsPermission(EmailSettings.GroupId, EmailPermissions.ManageEmailSettings)
             .AddPermissionProvider<Permissions>()
-            .AddNavigationProvider<AdminMenu>();
+            .AddNavigationProvider<AdminMenu>()
+            .AddBreadcrumbProvider<EmailBreadcrumbProvider>();
 
         services.AddDataMigration<EmailMigrations>();
     }

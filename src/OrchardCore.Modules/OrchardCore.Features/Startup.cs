@@ -21,6 +21,7 @@ public sealed class Startup : StartupBase
         services.AddPermissionProvider<Permissions>();
         services.AddScoped<IModuleService, ModuleService>();
         services.AddNavigationProvider<AdminMenu>();
+        services.AddBreadcrumbProvider<FeaturesBreadcrumbProvider>();
 
         services.AddDeployment<AllFeaturesDeploymentSource, AllFeaturesDeploymentStep, AllFeaturesDeploymentStepDriver>();
     }

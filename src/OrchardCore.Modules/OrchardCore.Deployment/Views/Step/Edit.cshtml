@@ -1,6 +1,8 @@
 @model EditDeploymentPlanStepViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Step"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@DeploymentConstants.StepEdit" data="@(new { PlanId = Model.DeploymentPlanId, StepType = Model.DeploymentStepType })" />
+</zone>
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Edit" method="post" enctype="multipart/form-data" class="no-multisubmit">

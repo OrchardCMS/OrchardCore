@@ -28,6 +28,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IThemeSelector, SiteThemeSelector>();
         services.AddScoped<ISiteThemeService, SiteThemeService>();
         services.AddNavigationProvider<AdminMenu>();
+        services.AddBreadcrumbProvider<ThemesBreadcrumbProvider>();
         services.AddScoped<IThemeService, ThemeService>();
         services.AddScoped<ThemeTogglerService>();
         services.AddDeployment<ThemesDeploymentSource, ThemesDeploymentStep, ThemesDeploymentStepDriver>();

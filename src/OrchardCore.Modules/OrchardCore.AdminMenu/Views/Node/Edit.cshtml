@@ -1,6 +1,8 @@
 @model AdminNodeEditViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Node"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@AdminMenuConstants.NodeEdit" data="@(new { MenuId = Model.AdminMenuId })" />
+</zone>
 
 <div asp-validation-summary="All"></div>
 <form asp-action="Edit" method="post" class="no-multisubmit">

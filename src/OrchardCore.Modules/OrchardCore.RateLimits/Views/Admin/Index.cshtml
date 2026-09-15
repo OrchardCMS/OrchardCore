@@ -1,7 +1,9 @@
 @using System.Globalization
 @model OrchardCore.RateLimits.ViewModels.RateLimitsIndexViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Rate Limit Policies"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@RateLimitsConstants.List" />
+</zone>
 
 <form asp-action="Index" method="get" class="mb-3">
     <div class="card text-bg-theme position-sticky action-bar">

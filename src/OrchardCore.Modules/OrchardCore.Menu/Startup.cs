@@ -25,6 +25,7 @@ public sealed class Startup : StartupBase
         services.AddShapeTableProvider<MenuShapes>();
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
+        services.AddBreadcrumbProvider<MenuBreadcrumbProvider>();
 
         services.AddScoped<IStereotypesProvider, MenuItemStereotypesProvider>();
 

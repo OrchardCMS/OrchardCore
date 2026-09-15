@@ -1,6 +1,8 @@
 @model QueriesEditViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit '{0}' query", Model.Name])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@QueriesConstants.Edit" data="@(new { QueryName = Model.Name })" />
+</zone>
 
 <form asp-action="Edit" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data" class="no-multisubmit">
     @Html.ValidationSummary()

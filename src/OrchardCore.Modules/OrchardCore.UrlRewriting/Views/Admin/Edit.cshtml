@@ -1,6 +1,8 @@
 @model RewriteRuleViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit '{0}' rule", Model.DisplayName])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@UrlRewritingConstants.Edit" data="@(new { Model.DisplayName })" />
+</zone>
 
 <form method="post" asp-route-id="@ViewContext.HttpContext.Request.RouteValues["id"]" enctype="multipart/form-data" class="no-multisubmit">
     @Html.ValidationSummary()

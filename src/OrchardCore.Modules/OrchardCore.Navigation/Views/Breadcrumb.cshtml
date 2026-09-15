@@ -1,0 +1,38 @@
+@{
+    // The trail is a small path shown above the page title, and the title itself is rendered below it from the text of
+    // the current node, the way it appeared before the breadcrumb was introduced. This template is the single place a
+    // theme overrides to change how the trail and the title sit together, e.g. to render the title above the trail, to
+    // drop the heading and let the trail stand in for the title, or to move the trail elsewhere.
+    // 'ShowTrail' is false when an administrator turns the breadcrumb off in the admin settings: the shape then carries
+    // no node, and only the title renders.
+    string heading = Model.Heading;
+    string title = Model.Title;
+    bool showTrail = Model.ShowTrail;
+
+    TagBuilder nav = null;
+
+    if (showTrail)
+    {
+        var list = new TagBuilder("ol");
+        list.AddCssClass("breadcrumb");
+
+        foreach (var item in Model)
+        {
+            list.InnerHtml.AppendHtml(await DisplayAsync(item));
+        }
+
+        nav = Tag(Model, "nav");
+        nav.Attributes["aria-label"] = T["Breadcrumb"].Value;
+        nav.InnerHtml.AppendHtml(list);
+    }
+}
+
+@nav
+@if (!string.IsNullOrEmpty(heading) && !string.IsNullOrEmpty(title))
+{
+    TagBuilder titleTag = new(heading);
+    titleTag.AddCssClass("oc-breadcrumb-title");
+    titleTag.InnerHtml.Append(title);
+
+    @titleTag
+}

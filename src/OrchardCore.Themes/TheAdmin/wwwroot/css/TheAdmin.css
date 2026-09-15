@@ -245,6 +245,32 @@ a:hover {
   --bs-btn-padding-x: 0.25rem;
 }
 
+.oc-breadcrumb .breadcrumb {
+  --bs-breadcrumb-divider: '\203A';
+  align-items: center;
+  flex-wrap: wrap;
+  row-gap: 0.25rem;
+  font-size: 0.8125rem;
+  margin-bottom: 0.25rem;
+}
+
+[dir=rtl] .oc-breadcrumb .breadcrumb {
+  --bs-breadcrumb-divider: '\2039';
+}
+
+.oc-breadcrumb .breadcrumb-item {
+  display: flex;
+  align-items: center;
+}
+
+.oc-breadcrumb-title {
+  margin-top: 0;
+}
+
+.ta-navbar-top .oc-breadcrumb .breadcrumb {
+  display: none;
+}
+
 .card.collapsed .card-header {
   border-bottom: 0;
 }

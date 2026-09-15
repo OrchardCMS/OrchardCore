@@ -6,7 +6,9 @@
 @{
     var settings = ViewData[nameof(OpenIdServerSettings)] as OpenIdServerSettings;
 }
-<zone Name="Title"><h1>@RenderTitleSegments(T["Create a new application"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@OpenIdConstants.ApplicationsCreate" />
+</zone>
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Create" method="post" class="no-multisubmit">

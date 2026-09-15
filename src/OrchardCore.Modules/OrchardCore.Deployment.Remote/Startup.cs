@@ -17,6 +17,7 @@ public sealed class Startup : StartupBase
         services.TryAddTransient<FileCreationService>();
 
         services.AddNavigationProvider<AdminMenu>();
+        services.AddBreadcrumbProvider<RemoteDeploymentBreadcrumbProvider>();
         services.AddScoped<RemoteInstanceService>();
         services.AddScoped<RemoteClientService>();
         services.AddScoped<IDeploymentTargetProvider, RemoteInstanceDeploymentTargetProvider>();

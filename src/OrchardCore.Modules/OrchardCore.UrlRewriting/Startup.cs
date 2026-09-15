@@ -25,6 +25,7 @@ public sealed class Startup : StartupBase
     {
         services.AddUrlRewritingServices()
             .AddNavigationProvider<AdminMenu>()
+            .AddBreadcrumbProvider<UrlRewritingBreadcrumbProvider>()
             .AddPermissionProvider<UrlRewritingPermissionProvider>()
             .AddResourceConfiguration<ResourceManagementOptionsConfiguration>()
             .AddDisplayDriver<RewriteRule, RewriteRulesDisplayDriver>();

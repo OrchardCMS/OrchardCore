@@ -1,6 +1,8 @@
 @model AdminNodeEditViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Create Node"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="@AdminMenuConstants.NodeCreate" data="@(new { MenuId = Model.AdminMenuId })" />
+</zone>
 
 <div asp-validation-summary="All"></div>
 <form asp-action="Create" method="post" class="no-multisubmit">
