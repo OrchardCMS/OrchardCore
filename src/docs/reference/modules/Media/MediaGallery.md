@@ -25,6 +25,10 @@ The gallery SPA can also run on its own origin, outside the Orchard admin. Since
 - **Media API — Standalone external app** — layers the cross-origin (CORS) configuration and the standalone redirect URIs on top of the Bearer/PKCE recipe. Apply **Media API — Bearer/PKCE** first.
 - **Media API — Standalone external app (localhost dev)** — the same configuration with localhost origins baked in (app at `http://localhost:5173`, the pinned Vite dev port, against a tenant at `https://localhost:5001`), for local development.
 
+### UI Localizations Endpoint
+
+The standalone app fetches its UI labels before any authentication flow completes, since there is no ambient Orchard session on first load. It calls the shared `GET api/localization/js/{group}` endpoint (see [JavaScript Localization](../Localize/javascript-localization.md#anonymous-api-endpoint)) with the `media-gallery` group, requiring the **JavaScript Localization API** feature (`OrchardCore.Localization.Js`). Both standalone recipes above enable it automatically; it isn't needed for the embedded admin gallery, which renders its localizations server-side via `Orchard.GetJSLocalizations("media-gallery")` instead.
+
 ## File Operations
 
 The gallery supports the following operations on files:

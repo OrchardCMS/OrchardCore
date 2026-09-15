@@ -501,6 +501,94 @@ export class ElasticsearchApiClient implements IElasticsearchApiClient {
     }
 }
 
+export interface ILocalizationApiClient {
+    /**
+     * @return OK
+     */
+    apiGetJavaScriptLocalizations(group: string,  cancelToken?: CancelToken): Promise<{ [key: string]: string; }>;
+}
+
+export class LocalizationApiClient implements ILocalizationApiClient {
+    protected instance: AxiosInstance;
+    protected baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, instance?: AxiosInstance) {
+
+        this.instance = instance || axios.create();
+
+        this.baseUrl = baseUrl ?? "/";
+
+    }
+
+    /**
+     * @return OK
+     */
+    apiGetJavaScriptLocalizations(group: string, cancelToken?: CancelToken): Promise<{ [key: string]: string; }> {
+        let url_ = this.baseUrl + "/api/localization/js/{group}";
+        if (group === undefined || group === null)
+            throw new globalThis.Error("The parameter 'group' must be defined.");
+        url_ = url_.replace("{group}", encodeURIComponent("" + group));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processApiGetJavaScriptLocalizations(_response);
+        });
+    }
+
+    protected processApiGetJavaScriptLocalizations(response: AxiosResponse): Promise<{ [key: string]: string; }> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            if (resultData200) {
+                result200 = {} as any;
+                for (let key in resultData200) {
+                    if (resultData200.hasOwnProperty(key))
+                        (result200 as any)![key] = resultData200[key] !== undefined ? resultData200[key] : null as any;
+                }
+            }
+            else {
+                result200 = null as any;
+            }
+            return Promise.resolve<{ [key: string]: string; }>(result200);
+
+        } else if (status === 304) {
+            const _responseText = response.data;
+            return throwException("Not Modified", status, _responseText, _headers);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<{ [key: string]: string; }>(null as any);
+    }
+}
+
 export interface ILuceneApiClient {
     /**
      * @param indexName (optional) 
@@ -840,10 +928,6 @@ export interface IMediaApiClient {
      * @return OK
      */
     apiGetPermittedStorage( cancelToken?: CancelToken): Promise<PermittedStorageDto>;
-    /**
-     * @return OK
-     */
-    apiGetMediaLocalizations( cancelToken?: CancelToken): Promise<{ [key: string]: string; }>;
     /**
      * @param oldPath (optional) 
      * @param newPath (optional) 
@@ -1887,70 +1971,6 @@ export class MediaApiClient implements IMediaApiClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
         return Promise.resolve<PermittedStorageDto>(null as any);
-    }
-
-    /**
-     * @return OK
-     */
-    apiGetMediaLocalizations( cancelToken?: CancelToken): Promise<{ [key: string]: string; }> {
-        let url_ = this.baseUrl + "/api/media/localizations";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: AxiosRequestConfig = {
-            method: "GET",
-            url: url_,
-            headers: {
-                "Accept": "application/json"
-            },
-            cancelToken
-        };
-
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processApiGetMediaLocalizations(_response);
-        });
-    }
-
-    protected processApiGetMediaLocalizations(response: AxiosResponse): Promise<{ [key: string]: string; }> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 200) {
-            const _responseText = response.data;
-            let result200: any = null;
-            let resultData200  = _responseText;
-            if (resultData200) {
-                result200 = {} as any;
-                for (let key in resultData200) {
-                    if (resultData200.hasOwnProperty(key))
-                        (result200 as any)![key] = resultData200[key] !== undefined ? resultData200[key] : null as any;
-                }
-            }
-            else {
-                result200 = null as any;
-            }
-            return Promise.resolve<{ [key: string]: string; }>(result200);
-
-        } else if (status === 304) {
-            const _responseText = response.data;
-            return throwException("Not Modified", status, _responseText, _headers);
-
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<{ [key: string]: string; }>(null as any);
     }
 
     /**

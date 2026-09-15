@@ -7,6 +7,7 @@ using OrchardCore.Admin.Models;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Liquid;
 using OrchardCore.Localization.Drivers;
+using OrchardCore.Localization.Endpoints.Api;
 using OrchardCore.Localization.Liquid.Filters;
 using OrchardCore.Localization.Models;
 using OrchardCore.Localization.Services;
@@ -89,4 +90,11 @@ public sealed class CulturePickerStartup : StartupBase
 
         services.AddTransient<IConfigureOptions<RequestLocalizationOptions>, RequestLocalizationOptionsConfigurations>();
     }
+}
+
+[Feature("OrchardCore.Localization.Js")]
+public sealed class JavaScriptLocalizationStartup : StartupBase
+{
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        => routes.AddGetJavaScriptLocalizationsEndpoint();
 }
