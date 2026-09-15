@@ -143,7 +143,7 @@ In order to block search engines from crawling all your pagers links, it is poss
 
 The `Breadcrumb` shape renders the trail of pages leading to the page being displayed, e.g. _Dashboard › Manage Content › Edit Article_.
 
-It is meant to stand in for the title of an admin screen rather than to sit beside it: the last node of the trail is the page itself, it is rendered inside a heading tag so that it keeps the look and the semantics of the `<h1>` it replaces, and its text is registered as a segment of the `<title>` of the page. A screen that renders a breadcrumb therefore stops rendering a title of its own.
+On an admin screen the trail is rendered as a small path above the page title: the last node of the trail is the page itself, and its text is also rendered below the trail inside a heading tag (`<h1>` by default), so the screen keeps the title it had before the trail was introduced. The current node's text is registered as a segment of the `<title>` of the page. A screen that renders a breadcrumb therefore stops rendering a title of its own, because the trail renders it. How the trail and the title sit together is decided by a single template, `Breadcrumb.cshtml`, so a theme overrides that one file to change the arrangement — for example to drop the heading and let the trail stand in for the title.
 
 A trail is identified by a **name**, and it is built by every `IBreadcrumbProvider` registered on the tenant. That is what makes it extensible: a module adds a node to, or removes a node from, a trail described by another module without either of them knowing about the other.
 
@@ -236,7 +236,7 @@ Put the tag helper in the `Title` zone of the view, in place of the `<h1>` it re
 
 That is the whole change to the view. There is no `@RenderTitleSegments(...)` call to keep: the tag helper registers the text of the current node as a segment of the page title on its own.
 
-Rendering the trail in the `Title` zone is what makes it behave like the title it replaces, including honouring the **Display titles in the top bar** admin setting. A trail that is meant to sit above the page rather than to replace its title goes in the `Breadcrumbs` zone instead, and is rendered with `heading=""` so that it carries no heading. Outside the admin that is already the default, because a front end page has a heading of its own and a second one would be wrong.
+Rendering the trail in the `Title` zone is what makes it behave like the title it replaces, including honouring the **Display titles in the top bar** admin setting: when titles are shown in the top bar, the theme keeps the page title there and leaves the trail to the content area. A trail that is meant to sit above the page without carrying its title goes in the `Breadcrumbs` zone instead, and is rendered with `heading=""` so that it renders no title of its own. Outside the admin that is already the default, because a front end page has a heading of its own and a second one would be wrong.
 
 ### The `<breadcrumb>` tag helper
 
@@ -244,7 +244,7 @@ Rendering the trail in the `Title` zone is what makes it behave like the title i
 |----------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `name`         | `string` | Required. The name of the trail to render, e.g. `ContentsEdit`.                                                                                                                |
 | `data`         | `object` | The contextual data of the page. Each property becomes an entry of `BreadcrumbBuilder.Data`, which every provider of the trail can read back.                                   |
-| `heading`      | `string` | The html tag wrapping the text of the current node, so the breadcrumb can stand in for the title of the page. Defaults to `h1` on the admin and to no heading elsewhere. Set it to an empty value to render none. |
+| `heading`      | `string` | The html tag of the page title, rendered below the trail from the current node's text, so the breadcrumb carries the title of the page. Defaults to `h1` on the admin and to no title elsewhere. Set it to an empty value to render none. |
 | `page-title`   | `bool`   | Whether the text of the current node is registered as a segment of the `<title>` of the page. Defaults to `true`.                                                               |
 | `display-type` | `string` | The display type of the trail, which becomes an alternate of every shape it renders. Defaults to `DetailAdmin` on a request to the admin, and to `Detail` everywhere else.      |
 
@@ -367,7 +367,8 @@ The `BreadcrumbItem` shape carries the following properties:
 | `Href`      | `string`         | The url the node links to, or `null` when the node is not a link.                               |
 | `IsCurrent` | `bool`           | Whether the node is the page being rendered.                                                    |
 | `Level`     | `int`            | The zero based index of the node in the trail.                                                  |
-| `Heading`   | `string`         | The html tag wrapping the text of the current node, e.g. `h1`. It is `null` on the other nodes. |
+
+The enclosing `Breadcrumb` shape carries the trail `Name` and the `Heading` tag of the page title. `Breadcrumb.cshtml` renders the `<ol>` of nodes and then, from the current node's text, the page title in that heading tag.
 
 A trail rendered on the admin and a trail rendered by a front end theme are the same shape, so they are told apart by their **display type**, the way the rest of the display system tells those contexts apart. The tag helper sets it to `DetailAdmin` on a request to the admin and to `Detail` everywhere else, and the `display-type` attribute overrides it.
 

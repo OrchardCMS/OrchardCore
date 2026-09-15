@@ -90,7 +90,6 @@ public static class ShapeFactoryExtensions
                 Href = item.Href,
                 IsCurrent = item.IsCurrent,
                 Level = level++,
-                Heading = item.IsCurrent ? heading : null,
             };
 
             if (!string.IsNullOrEmpty(displayType))

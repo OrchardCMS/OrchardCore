@@ -1,13 +1,13 @@
 ---
 name: orchardcore-breadcrumbs
-description: Renders and extends the breadcrumb trail that replaces the title on OrchardCore admin screens (and optionally on the front end). Use when the user needs to add a breadcrumb to a view, write or change an IBreadcrumbProvider, add a node to a trail owned by another module, resolve a parent entity for a nested editor, or theme a breadcrumb through shape alternates.
+description: Renders and extends the breadcrumb trail shown above the title on OrchardCore admin screens (and optionally on the front end). Use when the user needs to add a breadcrumb to a view, write or change an IBreadcrumbProvider, add a node to a trail owned by another module, resolve a parent entity for a nested editor, or theme a breadcrumb through shape alternates.
 ---
 
 # OrchardCore Breadcrumbs
 
 This skill guides you through OrchardCore's breadcrumb system following project conventions.
 
-A breadcrumb is a **named trail** rendered by the `<breadcrumb>` tag helper in a view. Every `IBreadcrumbProvider` registered on the tenant is called for *every* trail; a provider decides which trail it contributes to by its name, and appends nodes to the shared builder. This is how one module adds a node to a trail owned by another module (e.g. `OrchardCore.AdminDashboard` prepends a "Dashboard" node to every admin trail). On the admin the trail **replaces the page `<h1>`** and feeds the page title; on the front end it renders without a heading.
+A breadcrumb is a **named trail** rendered by the `<breadcrumb>` tag helper in a view. Every `IBreadcrumbProvider` registered on the tenant is called for *every* trail; a provider decides which trail it contributes to by its name, and appends nodes to the shared builder. This is how one module adds a node to a trail owned by another module (e.g. `OrchardCore.AdminDashboard` prepends a "Dashboard" node to every admin trail). On the admin the trail renders as a **small path above the page title**, and the current node's text is also rendered below it as the `<h1>` and feeds the page title; on the front end it renders without a title. How the trail and the title sit together is decided by one template, `Breadcrumb.cshtml`, which a theme overrides to rearrange them.
 
 ## Mental model
 
@@ -56,13 +56,13 @@ Replace the `<h1>`/title with the tag helper, inside the `Title` zone. Pass the 
 ```
 
 - Each property of `data` becomes a `builder.Data` entry keyed by the property name — match the provider's `*Key` consts exactly.
-- `heading` — override the wrapping tag of the current node. Defaults to `h1` on admin, none on the front end. `heading=""` renders no heading.
+- `heading` — the tag of the page title rendered below the trail (from the current node's text). Defaults to `h1` on admin, none on the front end. `heading=""` renders no title.
 - `page-title` — defaults `true`; the current node's text is added as a page-title segment.
 - `display-type` — defaults `DetailAdmin` on admin, `Detail` elsewhere. Rarely set by hand.
 
 ### Step 2: Do NOT leave a second heading
 
-Because the current node becomes the `<h1>` on admin, remove any old `<h1>`/`<h5>` title the view rendered, or the title shows twice.
+The trail renders the page title (from the current node) as the `<h1>` on admin, so remove any old `<h1>`/`<h5>` title the view rendered, or the title shows twice.
 
 ### Step 3: `@using` the constants
 
@@ -176,7 +176,7 @@ Node `Id` is **not** an HTML `id` — it only feeds alternates and lets another 
 ## Gotchas
 
 - **Data key mismatch.** `data="@(new { ContentItem = x })"` must match the provider's `GetData<T>("ContentItem")`. A typo silently yields `default`, so the node's text/parent goes missing.
-- **Second heading.** Remove the view's old `<h1>`/`<h5>`; the current node already renders the heading on admin.
+- **Second heading.** Remove the view's old `<h1>`/`<h5>`; the trail already renders the page title (from the current node) on admin.
 - **Trail name ≠ admin list name.** Diverging names is the bug this convention exists to prevent — reuse the list `Name`.
 - **Don't link the last node.** The manager clears the current node's href; you can still add an `.Action(...)`, it's just ignored for the current node.
 - **Provider must be registered** with `AddBreadcrumbProvider<T>()` or the trail renders nothing (the tag helper suppresses output for an empty trail — a common "why is it blank" cause).

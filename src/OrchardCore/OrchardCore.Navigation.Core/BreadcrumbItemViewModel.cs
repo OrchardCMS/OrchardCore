@@ -47,10 +47,4 @@ public sealed partial class BreadcrumbItemViewModel
     /// Gets or sets the zero based index of the node in the trail.
     /// </summary>
     public int Level { get; set; }
-
-    /// <summary>
-    /// Gets or sets the html tag wrapping the text of the current node, e.g. <c>h1</c>. It is <c>null</c> when the
-    /// node is not the current one, or when the breadcrumb renders no heading.
-    /// </summary>
-    public string Heading { get; set; }
 }

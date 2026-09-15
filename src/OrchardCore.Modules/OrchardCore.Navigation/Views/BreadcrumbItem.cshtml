@@ -4,7 +4,6 @@
 
     string text = Model.Text;
     string href = Model.Href;
-    string heading = Model.Heading;
 
     if (Model.IsCurrent)
     {
@@ -19,13 +18,6 @@
         link.InnerHtml.Append(text);
 
         tag.InnerHtml.AppendHtml(link);
-    }
-    else if (!string.IsNullOrEmpty(heading))
-    {
-        var title = new TagBuilder(heading);
-        title.InnerHtml.Append(text);
-
-        tag.InnerHtml.AppendHtml(title);
     }
     else
     {

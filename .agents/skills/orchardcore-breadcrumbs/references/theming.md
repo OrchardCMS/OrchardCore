@@ -55,7 +55,7 @@ So a trail named `My.Trail` contributes `Breadcrumb__My_Trail`. Keep trail names
 
 ## The default templates
 
-`Breadcrumb.cshtml` emits a Bootstrap 5 breadcrumb: `<nav aria-label>` → `<ol class="breadcrumb">` → one `<li class="breadcrumb-item">` per node (`BreadcrumbItem.cshtml`). The current node gets `active` + `aria-current="page"` and, on admin, wraps its text in the `heading` tag (`h1` by default). A node with an href renders an `<a>`; otherwise plain text. Bootstrap's breadcrumb variables control the `›` separator and link color — override them in theme CSS rather than the template when only styling changes.
+`Breadcrumb.cshtml` emits a Bootstrap 5 breadcrumb — `<nav aria-label>` → `<ol class="breadcrumb">` → one `<li class="breadcrumb-item">` per node (`BreadcrumbItem.cshtml`) — and then, on admin, the page title below it: a heading tag (`h1` by default, from the shape's `Heading`) holding the current node's text, with class `oc-breadcrumb-title`. The current node's `<li>` gets `active` + `aria-current="page"`; a node with an href renders an `<a>`, otherwise plain text. Because the trail and the title are produced together here, `Breadcrumb.cshtml` (or its `__[Name]` / `_[DisplayType]` alternates) is the single override point for their arrangement — e.g. drop the `oc-breadcrumb-title` block to let the trail stand in for the title, or wrap the current node inline instead. Bootstrap's breadcrumb variables control the `›` separator and link color — override them in theme CSS rather than the template when only styling changes.
 
 ## Front end usage
 

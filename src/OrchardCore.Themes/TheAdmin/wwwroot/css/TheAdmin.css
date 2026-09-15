@@ -250,9 +250,8 @@ a:hover {
   align-items: center;
   flex-wrap: wrap;
   row-gap: 0.25rem;
-  font-size: 1.25rem;
-  font-weight: 500;
-  line-height: 1.4;
+  font-size: 0.8125rem;
+  margin-bottom: 0.25rem;
 }
 
 [dir=rtl] .oc-breadcrumb .breadcrumb {
@@ -264,15 +263,12 @@ a:hover {
   align-items: center;
 }
 
-.oc-breadcrumb .breadcrumb-item h1, .oc-breadcrumb .breadcrumb-item h2, .oc-breadcrumb .breadcrumb-item h3, .oc-breadcrumb .breadcrumb-item h4, .oc-breadcrumb .breadcrumb-item h5, .oc-breadcrumb .breadcrumb-item h6 {
-  font: inherit;
-  letter-spacing: inherit;
-  margin-bottom: 0;
+.oc-breadcrumb-title {
+  margin-top: 0;
 }
 
 .ta-navbar-top .oc-breadcrumb .breadcrumb {
-  margin-top: 0;
-  margin-bottom: 0;
+  display: none;
 }
 
 .card.collapsed .card-header {

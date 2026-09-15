@@ -6,11 +6,10 @@
         flex-wrap: wrap;
         row-gap: 0.25rem;
 
-        // The trail stands in for the title of the page, so it is heavier than the body, but it is a path
-        // rather than a heading: every node reads the same, and none of them shouts.
-        font-size: 1.25rem;
-        font-weight: 500;
-        line-height: 1.4;
+        // The trail is a small path above the title, not a heading: it stays quiet and lets the page title
+        // rendered below it lead.
+        font-size: 0.8125rem;
+        margin-bottom: 0.25rem;
     }
 
     // The trail reads right to left, so the chevron points the other way.
@@ -21,19 +20,17 @@
     .breadcrumb-item {
         display: flex;
         align-items: center;
-
-        // The current node carries the heading of the page, it reads as the rest of the trail. The selector
-        // is more specific than the '.ta-content h1' and '.ta-navbar-top h1' rules it has to win over.
-        h1, h2, h3, h4, h5, h6 {
-            font: inherit;
-            letter-spacing: inherit;
-            margin-bottom: 0;
-        }
     }
 }
 
-// The top bar is a fixed height row, the trail sits in it rather than above the page.
-.ta-navbar-top .oc-breadcrumb .breadcrumb {
+// The page title rendered below the trail. It inherits the theme's '.ta-content h1' size, so it reads as the title
+// did before the trail was introduced; only the space between it and the trail above is set here.
+.oc-breadcrumb-title {
     margin-top: 0;
-    margin-bottom: 0;
+}
+
+// The top bar is a fixed height row: the title sits in it as before, and the trail is left to the content area rather
+// than crowding the bar.
+.ta-navbar-top .oc-breadcrumb .breadcrumb {
+    display: none;
 }
