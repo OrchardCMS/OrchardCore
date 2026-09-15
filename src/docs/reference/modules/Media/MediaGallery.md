@@ -14,6 +14,8 @@ The gallery works out of the box: requests use the ambient same-origin admin coo
 
 The API accepts only Bearer tokens via the `"Api"` scheme, and the gallery acquires one **silently**: an OAuth2 authorization-code + PKCE flow runs in a hidden iframe (`prompt=none`) against the tenant's OpenID Connect server, using the existing admin cookie session — no interactive login. The token auto-renews and is attached to every API call, Uppy/TUS upload request, and the SignalR connection. A request rejected with `401` is retried once after a silent renewal.
 
+If you use this mode, you **must** enable the **OpenID Token Validation** feature (`OrchardCore.OpenId.Validation`) so Orchard Core can validate the `access_token` sent by the SPA and the SignalR client.
+
 To provision this mode, run the **Media API — Bearer/PKCE** recipe (Configuration → Recipes). It switches the authentication scheme to `Bearer`, enables the OpenID Server, Token Validation, and Management features, turns on the authorization-code flow with PKCE required, and registers a public (secret-less) `media_gallery` OpenID application whose redirect URI points at the gallery's silent-renew page. Adjust the recipe's `https://localhost:5001` origins to your tenant's real origin before running it, and make sure gallery users have roles granting the media permissions — the `roles` scope carries them into the token.
 
 ### Standalone external app
@@ -71,7 +73,9 @@ The `MaxFileSize` setting is enforced at multiple layers:
 
 ### File Extension Validation
 
-The `AllowedFileExtensions` setting is enforced both client-side and server-side. Files with disallowed extensions are rejected before upload begins in the Media Gallery. The server also validates extensions on all upload endpoints.
+The `AllowedFileExtensions` setting is enforced both client-side and server-side. Extensions configured in `RestrictedFileExtensions` additionally require the `UploadRestrictedMedia` permission. The Media Gallery receives the effective list for the current user, while the server remains authoritative for regular, API, and TUS uploads.
+
+Field-level extension settings intersect with the effective global list and can only further restrict uploads. They cannot make a globally disallowed or permission-gated extension uploadable.
 
 ### Concurrent Uploads
 
@@ -93,24 +97,28 @@ When TUS is enabled:
 The TUS endpoint is available at `/api/media/tus`.
 
 !!! warning
-    TUS stores partial upload data on local disk by default. In multi-instance deployments, you must ensure that all upload chunks for a given file reach the same server instance. This can be achieved by configuring `TusTempPath` to a **shared filesystem** path accessible from all instances, or by enabling **sticky sessions** (session affinity) on your load balancer. Without this, a chunked upload that spans multiple instances will fail because the second instance cannot find the partial file created by the first.
+    TUS stores partial upload data on local disk by default. In multi-instance deployments, you must ensure that all upload chunks for a given file reach the same server instance. This can be achieved by configuring the temporary file location (`OrchardCore:TempDirectory:Path`) to a **shared filesystem** path accessible from all instances, or by enabling **sticky sessions** (session affinity) on your load balancer. Without this, a chunked upload that spans multiple instances will fail because the second instance cannot find the partial file created by the first.
 
-To configure a shared path for TUS uploads:
+To configure a shared temporary file location (used by TUS and all other temporary files):
 
 ```json
 {
-  "OrchardCore_Media": {
-    "TusTempPath": "/mnt/shared/TusUploads"
+  "OrchardCore": {
+    "TempDirectory": {
+      "Path": "/mnt/shared/temp"
+    }
   }
 }
 ```
 
-For Docker deployments, set `TusTempPath` to a path inside a shared volume:
+For Docker deployments, set `Path` to a path inside a shared volume:
 
 ```json
 {
-  "OrchardCore_Media": {
-    "TusTempPath": "/app/data/TusUploads"
+  "OrchardCore": {
+    "TempDirectory": {
+      "Path": "/app/data/temp"
+    }
   }
 }
 ```
@@ -141,7 +149,7 @@ Alternatively, configure sticky sessions on your load balancer instead of a shar
 
 The SignalR feature enables real-time media updates. When enabled, changes to media files and folders (uploads, renames, moves, deletes) are broadcast to all connected clients. This keeps the Media Gallery in sync across multiple browser tabs and users.
 
-To enable, activate the **Media SignalR** feature in the admin panel. This feature depends on the reusable **`OrchardCore.SignalR`** feature, which provides the SignalR services, client resources, and hub authentication shared by any module that hosts a hub. The media hub accepts both the standard application cookie used by signed-in site users and API access tokens used by headless clients. API token validation requires the **OpenID Token Validation** feature (`OrchardCore.OpenId.Validation`).
+To enable, activate the **Media SignalR** feature in the admin panel. This feature depends on the reusable **`OrchardCore.SignalR`** feature, which provides the SignalR services, client resources, and the `SignalR` authorization policy shared by any module that hosts a hub. The media hub accepts both the standard application cookie used by signed-in site users and API access tokens used by headless clients. If headless clients connect with `access_token`, you **must** enable the **OpenID Token Validation** feature (`OrchardCore.OpenId.Validation`).
 
 For multi-instance deployments, a backplane is required. The backplane is provided by the reusable SignalR module and applies to every hub in the tenant, so the same two features cover the Media Gallery and any other SignalR-based feature:
 
@@ -184,7 +192,7 @@ To fully scale the Media Library across multiple application instances, the foll
 | Component | Purpose | Configuration |
 |---|---|---|
 | **SignalR backplane** | Broadcast real-time updates across instances | Enable `OrchardCore.SignalR.Azure` or `OrchardCore.SignalR.Redis` |
-| **Sticky sessions** or **shared TUS path** | Ensure TUS upload chunks are accessible across instances | Configure session affinity on your load balancer, or set `TusTempPath` to a shared filesystem |
+| **Sticky sessions** or **shared TUS path** | Ensure TUS upload chunks are accessible across instances | Configure session affinity on your load balancer, or set `OrchardCore:TempDirectory:Path` to a shared filesystem |
 | **Shared media storage** | Store media files accessible from all instances | Configure Azure Blob Storage, Amazon S3, or a shared filesystem |
 | **Shared Data Protection keys** | Let cookies, antiforgery tokens, and bearer tokens issued by one instance be validated by another | Enable `OrchardCore.Redis.DataProtection`, or configure Azure Blob key storage via `OrchardCore.DataProtection.Azure` |
 
@@ -203,8 +211,8 @@ A single Redis instance can carry the whole cross-instance coordination load. En
   "OrchardCore_Redis": {
     "Configuration": "your-redis-host:6379,password=...,ssl=true"
   },
-  "OrchardCore_Media": {
-    "TusTempPath": "/mnt/shared/TusUploads"
+  "TempDirectory": {
+    "Path": "/mnt/shared/temp"
   }
 }
 ```

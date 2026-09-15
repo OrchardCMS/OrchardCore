@@ -72,7 +72,7 @@ public abstract class NotifyUserTaskActivity : TaskActivity
     /// <param name="activityContext">The activity context.</param>
     /// <returns>The possible workflow outcomes.</returns>
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        => Outcomes(S["Done"], S["Failed"], S["Failed: no user found"]);
+        => Outcome(S["Done"], S["Failed"], S["Failed: no user found"]);
 
     /// <summary>
     /// Sends the configured notification message to each resolved user.
@@ -86,7 +86,7 @@ public abstract class NotifyUserTaskActivity : TaskActivity
 
         if (users == null || !users.Any())
         {
-            return Outcomes("Failed: no user found");
+            return Outcome("Failed: no user found");
         }
 
         var message = await GetMessageAsync(workflowContext);
@@ -101,12 +101,9 @@ public abstract class NotifyUserTaskActivity : TaskActivity
 
         workflowContext.LastResult = totalSent;
 
-        if (totalSent == 0)
-        {
-            return Outcomes("Failed");
-        }
-
-        return Outcomes("Done");
+        return totalSent == 0
+            ? Outcome("Failed")
+            : Outcome("Done");
     }
 
     /// <summary>

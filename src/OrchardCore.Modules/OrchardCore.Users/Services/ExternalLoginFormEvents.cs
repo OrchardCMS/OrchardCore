@@ -13,20 +13,20 @@ namespace OrchardCore.Users.Services;
 
 public sealed class ExternalLoginFormEvents : LoginFormEventBase
 {
-    private readonly ExternalLoginOptions _externalLoginOptions;
+    private readonly IOptionsMonitor<ExternalLoginOptions> _externalLoginOptions;
     private readonly SignInManager<IUser> _signInManager;
     private readonly LinkGenerator _linkGenerator;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ISiteService _siteService;
 
     public ExternalLoginFormEvents(
-        IOptions<ExternalLoginOptions> externalLoginOptions,
+        IOptionsMonitor<ExternalLoginOptions> externalLoginOptions,
         SignInManager<IUser> signInManager,
         LinkGenerator linkGenerator,
         IHttpContextAccessor httpContextAccessor,
         ISiteService siteService)
     {
-        _externalLoginOptions = externalLoginOptions.Value;
+        _externalLoginOptions = externalLoginOptions;
         _signInManager = signInManager;
         _linkGenerator = linkGenerator;
         _httpContextAccessor = httpContextAccessor;
@@ -35,7 +35,7 @@ public sealed class ExternalLoginFormEvents : LoginFormEventBase
 
     public override async Task<IActionResult> LoggingInAsync()
     {
-        if (!_externalLoginOptions.UseExternalProviderIfOnlyOneDefined)
+        if (!_externalLoginOptions.CurrentValue.UseExternalProviderIfOnlyOneDefined)
         {
             return null;
         }

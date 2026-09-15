@@ -29,6 +29,16 @@ public interface ISite : IEntity
 
     int MaxPagedCount { get; set; }
 
+    /// <summary>
+    /// Gets or sets whether users can change the number of items displayed per page on listing pages.
+    /// </summary>
+    bool AllowPageSizeSelection { get; set; }
+
+    /// <summary>
+    /// Gets or sets the page size values a user can select from when <see cref="AllowPageSizeSelection"/> is enabled.
+    /// </summary>
+    int[] PageSizeOptions { get; set; }
+
     string BaseUrl { get; set; }
 
     RouteValueDictionary HomeRoute { get; set; }

@@ -3,15 +3,11 @@
     var term = Model.Value.FilterResult.FirstOrDefault(x => x.TermName == "stereotype");
 }
 
-<div class="ocat-wrapper">
-    <h4 class="card-title ocat-label">@T["Content Type Stereotype"]</h4>
-    <div class="ocat-end">
-        <pre>@(term?.ToString() ?? "stereotype:...")</pre>
-    </div>
-</div>
-<p>@T["Filters on a specified content type stereotype."]</p>
-<div class="d-block text-end">
-    <span>
-        <i class="fa-solid fa-sm fa-minus text-primary" aria-hidden="true"></i>
+<div class="d-flex justify-content-between align-items-center gap-2">
+    <h6 class="card-title fw-semibold mb-0">@T["Content Type Stereotype"]</h6>
+    <span class="text-primary text-nowrap">
+        <i class="fa-solid fa-sm fa-minus" title="@T["Accepts a single value"]" aria-hidden="true"></i>
     </span>
 </div>
+<div class="mt-1"><code class="small text-nowrap">@(term?.ToString() ?? "stereotype:...")</code></div>
+<p class="card-text small text-body-secondary mt-1 mb-0">@T["Filters on a specified content type stereotype."]</p>

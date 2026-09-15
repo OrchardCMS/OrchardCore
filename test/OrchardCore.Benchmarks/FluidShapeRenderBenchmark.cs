@@ -7,6 +7,7 @@ using Fluid.Values;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Moq;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Liquid;
@@ -25,7 +26,15 @@ public class FluidShapeRenderBenchmark
 
     static FluidShapeRenderBenchmark()
     {
-        var htmlDisplay = new DefaultHtmlDisplay(null, null, null, null, null, Options.Create(new ShapeRenderingOptions()), null);
+        var shapeRenderingOptions = new ShapeRenderingOptions();
+        var htmlDisplay = new DefaultHtmlDisplay(
+            null,
+            null,
+            null,
+            null,
+            null,
+            Mock.Of<IOptionsMonitor<ShapeRenderingOptions>>(x => x.CurrentValue == shapeRenderingOptions),
+            null);
 
         s_serviceProvider = new ServiceCollection()
             .AddScoped<IDisplayHelper>(sp => new DisplayHelper(htmlDisplay, null, null))

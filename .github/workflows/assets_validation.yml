@@ -10,7 +10,6 @@ on:
       - 'src/docs/**/*'
     branches: [ main, release/** ]
   pull_request:
-    branches: [ main, release/** ]
 
 concurrency:
   group: ${{ github.head_ref || github.run_id }}-assets_validation

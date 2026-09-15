@@ -406,6 +406,14 @@ Reports `OCSG001` when a sealed non-`IShape` model is passed to OrchardCore APIs
 
 **Purpose:** Catch runtime Castle DynamicProxy failures at build time
 
+### FeatureAttributeTargetAnalyzer
+
+Reports `OCSG002` when `OrchardCore.Modules.FeatureAttribute` targets a feature ID that is not declared by the current module assembly.
+
+**Status:** ✅ Stable
+
+**Purpose:** Catch silently ignored cross-module feature targets at build time
+
 ## Advanced Usage
 
 ### Nested Types

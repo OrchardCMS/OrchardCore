@@ -13,6 +13,7 @@ using OrchardCore.Abstractions.Setup;
 using OrchardCore.Data;
 using OrchardCore.Email;
 using OrchardCore.Environment.Shell;
+using OrchardCore.FileStorage;
 using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
@@ -27,7 +28,7 @@ namespace OrchardCore.Tenants.Controllers;
 
 [Route("api/tenants")]
 [ApiController]
-[Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
+[Authorize(AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api), IgnoreAntiforgeryToken, AllowAnonymous]
 public sealed class TenantApiController : ControllerBase
 {
     private readonly IShellHost _shellHost;
@@ -44,6 +45,7 @@ public sealed class TenantApiController : ControllerBase
     private readonly Dictionary<string, DatabaseProvider> _databaseProviderLookup;
     private readonly ITenantValidator _tenantValidator;
     private readonly TenantDatabasePatternResolver _tenantDatabasePatternResolver;
+    private readonly ITempDirectoryProvider _tempDirectoryProvider;
     private readonly ILogger _logger;
 
     internal readonly IStringLocalizer S;
@@ -63,6 +65,7 @@ public sealed class TenantApiController : ControllerBase
         IEnumerable<DatabaseProvider> databaseProviders,
         ITenantValidator tenantValidator,
         TenantDatabasePatternResolver tenantDatabasePatternResolver,
+        ITempDirectoryProvider tempDirectoryProvider,
         IStringLocalizer<TenantApiController> stringLocalizer,
         ILogger<TenantApiController> logger)
     {
@@ -80,6 +83,7 @@ public sealed class TenantApiController : ControllerBase
         _databaseProviderLookup = databaseProviders.ToDictionary(provider => provider.Value, StringComparer.OrdinalIgnoreCase);
         _tenantValidator = tenantValidator;
         _tenantDatabasePatternResolver = tenantDatabasePatternResolver;
+        _tempDirectoryProvider = tempDirectoryProvider;
         S = stringLocalizer;
         _logger = logger;
     }
@@ -96,7 +100,7 @@ public sealed class TenantApiController : ControllerBase
 
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
         {
-            return this.ChallengeOrForbid("Api");
+            return this.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
 
         _ = _shellHost.TryGetSettings(model.Name, out var settings);
@@ -174,7 +178,7 @@ public sealed class TenantApiController : ControllerBase
 
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
         {
-            return this.ChallengeOrForbid("Api");
+            return this.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
 
         ApplyPresetDatabaseConfiguration(model);
@@ -243,7 +247,7 @@ public sealed class TenantApiController : ControllerBase
 
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
         {
-            return this.ChallengeOrForbid("Api");
+            return this.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
 
         if (!_shellHost.TryGetSettings(tenantName, out var shellSettings))
@@ -273,7 +277,7 @@ public sealed class TenantApiController : ControllerBase
 
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
         {
-            return this.ChallengeOrForbid("Api");
+            return this.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
 
         if (!_shellHost.TryGetSettings(tenantName, out var shellSettings))
@@ -303,7 +307,7 @@ public sealed class TenantApiController : ControllerBase
 
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
         {
-            return this.ChallengeOrForbid("Api");
+            return this.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
 
         if (!_shellHost.TryGetSettings(tenantName, out var shellSettings))
@@ -340,12 +344,12 @@ public sealed class TenantApiController : ControllerBase
     {
         if (!_currentShellSettings.IsDefaultShell())
         {
-            return this.ChallengeOrForbid("Api");
+            return this.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
 
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
         {
-            return this.ChallengeOrForbid("Api");
+            return this.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
 
         if (!string.IsNullOrEmpty(model.UserName) && model.UserName.Any(c => !_identityOptions.User.AllowedUserNameCharacters.Contains(c)))
@@ -478,7 +482,7 @@ public sealed class TenantApiController : ControllerBase
                 return BadRequest(S["Either a 'recipe' file or 'RecipeName' is required."]);
             }
 
-            var tempFilename = PathExtensions.GetTempFileName();
+            var tempFilename = _tempDirectoryProvider.GetTempFileName();
 
             await System.IO.File.WriteAllTextAsync(tempFilename, model.Recipe);
 

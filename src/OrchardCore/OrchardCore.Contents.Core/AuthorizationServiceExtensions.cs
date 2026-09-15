@@ -18,11 +18,14 @@ public static class AuthorizationServiceExtensions
 
     public static Task<bool> AuthorizeContentTypeAsync(this IAuthorizationService service, ClaimsPrincipal user, Permission requiredPermission, string contentType, string owner = null)
     {
-        ArgumentNullException.ThrowIfNull(user);
-
         ArgumentNullException.ThrowIfNull(requiredPermission);
 
         ArgumentException.ThrowIfNullOrEmpty(contentType);
+        
+        if (user == null)
+        {
+            return Task.FromResult(false);
+        }
 
         var item = new ContentItem()
         {

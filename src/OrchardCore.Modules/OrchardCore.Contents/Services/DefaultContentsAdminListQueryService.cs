@@ -88,7 +88,9 @@ public sealed class DefaultContentsAdminListQueryService : IContentsAdminListQue
         await _contentsAdminListFilters
             .InvokeAsync((filter, model, query, updater) => filter.FilterAsync(model, query, updater), model, query, updater, _logger);
 
-        if (hasFilterResult && defaultOperator != defaultTermNode?.Operation)
+        if (hasFilterResult &&
+            defaultTermNode is not null &&
+            (defaultTermName != defaultTermNode?.TermName || defaultOperator != defaultTermNode?.Operation))
         {
             // Restore the original 'defaultTermNode'.
             model.FilterResult.TryRemove(defaultTermName);

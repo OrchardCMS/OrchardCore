@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Identity;
-
 namespace OrchardCore.Media;
 
 /// <summary>
@@ -21,7 +19,7 @@ public class MediaApiSettings
 {
     public const string GroupId = "mediaApi";
 
-    public MediaApiAuthenticationScheme AuthenticationScheme { get; set; } = MediaApiAuthenticationScheme.Cookie;
+    public MediaApiAuthenticationScheme AuthenticationScheme { get; set; }
 }
 
 public static class MediaApiConstants
@@ -29,12 +27,5 @@ public static class MediaApiConstants
     /// <summary>The authorization policy the Media API and TUS endpoints require.</summary>
     public const string AuthorizationPolicyName = "MediaApi";
 
-    /// <summary>The authorization policy that allows the media hub to use either API or cookie authentication.</summary>
     public const string HubAuthorizationPolicyName = "MediaHub";
-
-    /// <summary>The bearer forwarding scheme (resolves to OpenIddict validation when enabled).</summary>
-    public const string ApiScheme = "Api";
-
-    /// <summary>The same-origin admin cookie scheme.</summary>
-    public static readonly string CookieScheme = IdentityConstants.ApplicationScheme;
 }

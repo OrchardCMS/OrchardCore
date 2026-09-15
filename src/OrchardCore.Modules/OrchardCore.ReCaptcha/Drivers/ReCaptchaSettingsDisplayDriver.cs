@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Options;
 using OrchardCore.ReCaptcha.Configuration;
 using OrchardCore.ReCaptcha.ViewModels;
 using OrchardCore.Settings;
@@ -14,16 +14,16 @@ public sealed class ReCaptchaSettingsDisplayDriver : SiteDisplayDriver<ReCaptcha
 {
     public const string GroupId = "recaptcha";
 
-    private readonly IShellReleaseManager _shellReleaseManager;
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
     public ReCaptchaSettingsDisplayDriver(
-        IShellReleaseManager shellReleaseManager,
+        IOptionsUpdateNotifier optionsUpdateNotifier,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService)
     {
-        _shellReleaseManager = shellReleaseManager;
+        _optionsUpdateNotifier = optionsUpdateNotifier;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
     }
@@ -39,8 +39,6 @@ public sealed class ReCaptchaSettingsDisplayDriver : SiteDisplayDriver<ReCaptcha
         {
             return null;
         }
-
-        context.AddTenantReloadWarningWrapper();
 
         return Initialize<ReCaptchaSettingsViewModel>("ReCaptchaSettings_Edit", model =>
         {
@@ -63,10 +61,16 @@ public sealed class ReCaptchaSettingsDisplayDriver : SiteDisplayDriver<ReCaptcha
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        settings.SiteKey = model.SiteKey?.Trim();
-        settings.SecretKey = model.SecretKey?.Trim();
+        var siteKey = model.SiteKey?.Trim();
+        var secretKey = model.SecretKey?.Trim();
 
-        _shellReleaseManager.RequestRelease();
+        if (settings.SiteKey != siteKey || settings.SecretKey != secretKey)
+        {
+            _optionsUpdateNotifier.RequestUpdate<ReCaptchaSettings>();
+        }
+
+        settings.SiteKey = siteKey;
+        settings.SecretKey = secretKey;
 
         return await EditAsync(site, settings, context);
     }

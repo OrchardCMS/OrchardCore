@@ -468,14 +468,14 @@ public sealed class ResourceManagementOptionsConfiguration
                 "~/OrchardCore.Resources/Vendor/CrestApps/bootstrap-select/bootstrap-select.css"
             )
             .SetCdn(
-                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.2.3/dist/css/bootstrap-select.min.css",
-                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.2.3/dist/css/bootstrap-select.css"
+                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.2.4/dist/css/bootstrap-select.min.css",
+                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.2.4/dist/css/bootstrap-select.css"
             )
             .SetCdnIntegrity(
-                "sha384-uTVFGhmafhxI1V+GiAORrz631AShzJdjwa3ZCWMWPFv0eMslvIb0p79RumYGHQNV",
-                "sha384-xMF7Xm9pp70bLape4wK/fnANIfW2NDLRRgJVBIfq6jy9612QXFEE5L32reYK+EXP"
+                "sha384-sQr5Em/mpvLjnu2huY8PDGrpItq+8qR2NHsVB4Kq4Zqb+LrBExUL7pid7pCJf10K",
+                "sha384-mG0OUnrbVYDYdq8PTDcpU2GSTM4bxIPJrOke74gIoPsH3T9qfC+rZe5DzkIuaMQc"
             )
-            .SetVersion("1.2.2");
+            .SetVersion("1.2.4");
 
         manifest
             .DefineScript("bootstrap-select")
@@ -485,14 +485,14 @@ public sealed class ResourceManagementOptionsConfiguration
                 "~/OrchardCore.Resources/Vendor/CrestApps/bootstrap-select/bootstrap-select.js"
             )
             .SetCdn(
-                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.2.3/dist/js/bootstrap-select.min.js",
-                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.2.3/dist/js/bootstrap-select.js"
+                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.2.4/dist/js/bootstrap-select.min.js",
+                "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.2.4/dist/js/bootstrap-select.js"
             )
             .SetCdnIntegrity(
-                "sha384-eq1pm4DXYrzqtpBP1TfHtIfZplAjd17FnFqwYtpgBsFXYLPFFmFvCGutuApzS32+",
-                "sha384-Y/7D7SLRuuUFv3KidcFXc9hTFrsZ20ZuqU1JL2bIByQFLqEIqN7mQtNul2UXXlle"
+                "sha384-Bw1T257yCrZ7XkIute3Z7uYC0tE5602dCse3aVwTmy0Pnl7wRPorXO+dHH2m8n3p",
+                "sha384-uxbBuZEWDbdH0t6Lxy2N98Ix+6IzIp0lorXXkc1J4mjbINsZ0ALaNAMiaj+wojmJ"
             )
-            .SetVersion("1.2.2");
+            .SetVersion("1.2.4");
 
         manifest
             .DefineStyle("nouislider")

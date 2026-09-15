@@ -7,6 +7,7 @@ using OrchardCore.Menu.Settings;
 
 namespace OrchardCore.Menu.Handlers;
 
+[Obsolete("This handler is no longer used.")]
 public class HtmlMenuItemPartHandler : ContentPartHandler<HtmlMenuItemPart>
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;

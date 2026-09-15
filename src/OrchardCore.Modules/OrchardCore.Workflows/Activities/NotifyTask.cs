@@ -44,9 +44,7 @@ public class NotifyTask : TaskActivity<NotifyTask>
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"]);
-    }
+        => Outcome(S["Done"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -55,6 +53,6 @@ public class NotifyTask : TaskActivity<NotifyTask>
         // The notification message can contain HTML by design
         await _notifier.AddAsync(NotificationType, new LocalizedHtmlString(nameof(NotifyTask), message));
 
-        return Outcomes("Done");
+        return Outcome("Done");
     }
 }

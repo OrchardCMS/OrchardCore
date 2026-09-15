@@ -31,7 +31,7 @@ public static class CreateEndpoint
         return builder;
     }
 
-    [Authorize(AuthenticationSchemes = "Api")]
+    [Authorize(AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api)]
     private static async Task<IResult> HandleAsync(
         ContentItem model,
         IContentManager contentManager,
@@ -45,7 +45,7 @@ public static class CreateEndpoint
     {
         if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.AccessContentApi))
         {
-            return httpContext.ChallengeOrForbid("Api");
+            return httpContext.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
 
         if (model is null)
@@ -67,7 +67,7 @@ public static class CreateEndpoint
 
             if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.PublishContent, contentItem))
             {
-                return httpContext.ChallengeOrForbid("Api");
+                return httpContext.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
             }
             contentItem.Merge(model);
 
@@ -97,7 +97,7 @@ public static class CreateEndpoint
         {
             if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.EditContent, contentItem))
             {
-                return httpContext.ChallengeOrForbid("Api");
+                return httpContext.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
             }
 
             contentItem.Merge(model, s_updateJsonMergeSettings);

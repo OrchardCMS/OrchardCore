@@ -12,17 +12,17 @@ namespace OrchardCore.Users.Handlers;
 
 internal sealed class EmailConfirmationLoginFormEvent : LoginFormEventBase
 {
-    private readonly RegistrationOptions _registrationOptions;
+    private readonly IOptionsMonitor<RegistrationOptions> _registrationOptions;
     private readonly UserManager<IUser> _userManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     public EmailConfirmationLoginFormEvent(
-        IOptions<RegistrationOptions> registrationOptions,
+        IOptionsMonitor<RegistrationOptions> registrationOptions,
         UserManager<IUser> userManager,
         IHttpContextAccessor httpContextAccessor
         )
     {
-        _registrationOptions = registrationOptions.Value;
+        _registrationOptions = registrationOptions;
         _userManager = userManager;
         _httpContextAccessor = httpContextAccessor;
     }
@@ -30,7 +30,7 @@ internal sealed class EmailConfirmationLoginFormEvent : LoginFormEventBase
     public override async Task<IActionResult> ValidatingLoginAsync(IUser user)
     {
         // Require that the users have a confirmed email before they can log on.
-        if (!_registrationOptions.UsersMustValidateEmail || await _userManager.IsEmailConfirmedAsync(user))
+        if (!_registrationOptions.CurrentValue.UsersMustValidateEmail || await _userManager.IsEmailConfirmedAsync(user))
         {
             return null;
         }

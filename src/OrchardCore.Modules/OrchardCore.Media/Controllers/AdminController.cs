@@ -22,6 +22,7 @@ public sealed class AdminController : Controller
     private readonly IMediaFileStore _mediaFileStore;
     private readonly IAuthorizationService _authorizationService;
     private readonly MediaOptions _mediaOptions;
+    private readonly FileSizeHelper _fileSizeHelper;
 
     internal readonly IStringLocalizer S;
 
@@ -29,11 +30,13 @@ public sealed class AdminController : Controller
         IMediaFileStore mediaFileStore,
         IAuthorizationService authorizationService,
         IOptions<MediaOptions> options,
+        FileSizeHelper fileSizeHelper,
         IStringLocalizer<AdminController> stringLocalizer)
     {
         _mediaFileStore = mediaFileStore;
         _authorizationService = authorizationService;
         _mediaOptions = options.Value;
+        _fileSizeHelper = fileSizeHelper;
         S = stringLocalizer;
     }
 
@@ -46,16 +49,28 @@ public sealed class AdminController : Controller
         }
 
         var tusEnabled = HttpContext.RequestServices.IsMediaTusEnabled();
-        var signalrEnabled = HttpContext.RequestServices.GetService<IHubContext<MediaHub>>() is not null;
+        var signalrEnabled = HttpContext.RequestServices.IsMediaSignalREnabled();
         var shellSettings = HttpContext.RequestServices.GetRequiredService<ShellSettings>();
         var hostEnvironment = HttpContext.RequestServices.GetRequiredService<IHostEnvironment>();
         var mediaApiSettings = HttpContext.RequestServices.GetRequiredService<ISiteService>().GetSettings<MediaApiSettings>();
+
+        var canUploadRestrictedMedia = await _authorizationService.AuthorizeAsync(
+            User,
+            MediaPermissions.UploadRestrictedMedia);
+        var allowedExtensions = string.Join(',', _mediaOptions.AllowedFileExtensions);
+        if (canUploadRestrictedMedia && _mediaOptions.RestrictedFileExtensions.Count > 0)
+        {
+            allowedExtensions += (allowedExtensions.Length > 0 ? "," : string.Empty)
+                + string.Join(',', _mediaOptions.RestrictedFileExtensions);
+        }
 
         var model = new MediaIndexViewModel
         {
             SiteId = shellSettings.TenantId,
             MaxFileSize = _mediaOptions.MaxFileSize,
-            AllowedExtensions = string.Join(',', _mediaOptions.AllowedFileExtensions),
+            AllowedExtensions = allowedExtensions.Length == 0
+                ? ".__none__"
+                : allowedExtensions,
             TusEnabled = tusEnabled,
             SignalrEnabled = signalrEnabled,
             DebugEnabled = hostEnvironment.IsDevelopment(),
@@ -84,7 +99,9 @@ public sealed class AdminController : Controller
         }
 
         var bytes = await _mediaFileStore.GetPermittedStorageAsync();
-        var text = bytes == null ? S["Unspecified"] : FileSizeHelpers.FormatAsBytes(bytes.Value);
+        var text = bytes == null
+            ? S["Unspecified"]
+            : _fileSizeHelper.FormatSize(bytes.Value);
 
         return Ok(new { bytes, text });
     }

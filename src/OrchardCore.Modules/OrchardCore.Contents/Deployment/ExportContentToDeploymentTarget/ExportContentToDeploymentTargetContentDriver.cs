@@ -26,11 +26,11 @@ public sealed class ExportContentToDeploymentTargetContentDriver : ContentDispla
         return CombineAsync(
             Dynamic("ExportContentToDeploymentTarget_Modal__ActionDeploymentTarget")
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:30")
-                .RenderWhen(async () =>
+                .RenderWhen(static async (driver) =>
                 {
-                    if (await _deploymentPlanService.DoesUserHaveExportPermissionAsync())
+                    if (await driver._deploymentPlanService.DoesUserHaveExportPermissionAsync())
                     {
-                        var exportContentToDeploymentTargetSettings = await _siteService.GetSettingsAsync<ExportContentToDeploymentTargetSettings>();
+                        var exportContentToDeploymentTargetSettings = await driver._siteService.GetSettingsAsync<ExportContentToDeploymentTargetSettings>();
 
                         if (exportContentToDeploymentTargetSettings.ExportContentToDeploymentTargetPlanId != 0)
                         {
@@ -39,14 +39,14 @@ public sealed class ExportContentToDeploymentTargetContentDriver : ContentDispla
                     }
 
                     return false;
-                }),
-            Shape("ExportContentToDeploymentTarget_SummaryAdmin__Button__Actions", new ContentItemViewModel(model))
+                }, this),
+            Factory("ExportContentToDeploymentTarget_SummaryAdmin__Button__Actions", static (ContentItem m) => new ContentItemViewModel(m), model)
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:40")
-                .RenderWhen(async () =>
+                .RenderWhen(static async (driver) =>
                 {
-                    if (await _deploymentPlanService.DoesUserHaveExportPermissionAsync())
+                    if (await driver._deploymentPlanService.DoesUserHaveExportPermissionAsync())
                     {
-                        var exportContentToDeploymentTargetSettings = await _siteService.GetSettingsAsync<ExportContentToDeploymentTargetSettings>();
+                        var exportContentToDeploymentTargetSettings = await driver._siteService.GetSettingsAsync<ExportContentToDeploymentTargetSettings>();
 
                         if (exportContentToDeploymentTargetSettings.ExportContentToDeploymentTargetPlanId != 0)
                         {
@@ -55,7 +55,7 @@ public sealed class ExportContentToDeploymentTargetContentDriver : ContentDispla
                     }
 
                     return false;
-                })
+                }, this)
             );
     }
 }

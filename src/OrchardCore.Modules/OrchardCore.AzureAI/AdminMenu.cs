@@ -16,21 +16,21 @@ public sealed class AdminMenu : AdminNavigationProvider
         { "groupId", AzureAISearchDefaultSettingsDisplayDriver.GroupId},
     };
 
-    private readonly AzureAISearchDefaultOptions _azureAISearchSettings;
+    private readonly IOptionsMonitor<AzureAISearchDefaultOptions> _azureAISearchSettings;
 
     internal readonly IStringLocalizer S;
 
     public AdminMenu(
-        IOptions<AzureAISearchDefaultOptions> azureAISearchSettings,
+        IOptionsMonitor<AzureAISearchDefaultOptions> azureAISearchSettings,
         IStringLocalizer<AdminMenu> stringLocalizer)
     {
-        _azureAISearchSettings = azureAISearchSettings.Value;
+        _azureAISearchSettings = azureAISearchSettings;
         S = stringLocalizer;
     }
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (_azureAISearchSettings.DisableUIConfiguration)
+        if (_azureAISearchSettings.CurrentValue.DisableUIConfiguration)
         {
             return ValueTask.CompletedTask;
         }

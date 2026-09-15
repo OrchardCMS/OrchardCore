@@ -1,8 +1,8 @@
 <template>
   <div>
     <!-- Empty state -->
-    <div v-if="visibleItems.length === 0" class="mf-empty-card tw:border tw:border-dashed tw:border-[var(--bs-border-color,#dee2e6)] tw:rounded tw:p-8 tw:text-center tw:bg-[var(--bs-tertiary-bg,#f8f9fa)] dark:tw:bg-[#2b3035] dark:tw:border-[#495057]">
-      <span class="tw:text-[#6c757d] tw:text-sm">{{ t.noImages }}</span>
+    <div v-if="visibleItems.length === 0" class="mf-empty-card tw:p-8 tw:text-center">
+      <span class="tw:text-sm">{{ t.noImages }}</span>
     </div>
 
     <!-- Thumbnail grid -->
@@ -12,10 +12,10 @@
         :key="media.vuekey"
         :class="[
           'mf-thumb-item',
-          'tw:border tw:border-[var(--bs-border-color)] tw:rounded tw:overflow-hidden tw:transition-all tw:bg-[var(--bs-body-bg)] hover:tw:border-[#adb5bd] dark:tw:bg-[#212529] dark:tw:border-[#495057]',
+          'tw:border tw:border-[var(--oc-media-border-color)] tw:rounded tw:overflow-hidden tw:transition-all tw:bg-[var(--oc-media-body-bg)] hover:tw:border-[var(--oc-media-primary)]',
           allowMultiple ? 'tw:cursor-grab active:tw:cursor-grabbing' : 'tw:cursor-pointer',
           selectedMedia === media
-            ? 'mf-thumb-item-active tw:border-[#7bc143]! tw:shadow-[0_0_0_2px_rgba(123,193,67,0.25)]'
+            ? 'mf-thumb-item-active tw:border-[var(--oc-media-primary)]! tw:shadow-[0_0_0_0.2rem_rgba(var(--oc-media-primary-rgb),0.15)]'
             : '',
         ]"
         :style="{ width: thumbSize + 2 + 'px' }"
@@ -28,14 +28,14 @@
       >
         <!-- Transient error -->
         <div v-if="media.errorType === 'transient'">
-          <div class="tw:flex tw:flex-col tw:items-center tw:justify-center tw:bg-[#f8f9fa] dark:tw:bg-[#2b3035]" :style="{ height: thumbSize + 'px' }">
+          <div class="tw:flex tw:flex-col tw:items-center tw:justify-center tw:bg-[var(--oc-media-tertiary-bg)]" :style="{ height: thumbSize + 'px' }">
             <i class="fa-solid fa-triangle-exclamation tw:text-yellow-500 tw:text-2xl tw:block" aria-hidden="true"></i>
             <span class="tw:text-yellow-500 tw:text-xs tw:block tw:mt-1">{{ t.mediaTemporarilyUnavailable }}</span>
           </div>
-          <div class="tw:px-2 tw:py-1 tw:border-t tw:border-[var(--bs-border-color)] tw:flex tw:items-center tw:gap-1 tw:min-h-8 dark:tw:border-[#495057]">
+          <div class="tw:px-2 tw:py-1 tw:border-t tw:border-[var(--oc-media-border-color)] tw:flex tw:items-center tw:gap-1 tw:min-h-8">
             <button
               type="button"
-              class="mf-btn-delete tw:order-2 tw:px-1 tw:py-0.5 tw:text-xs tw:border-none tw:bg-transparent tw:cursor-pointer tw:text-[var(--bs-body-color)] hover:tw:text-[#7bc143] dark:tw:text-[#dee2e6] tw:flex-shrink-0"
+              class="mf-btn-delete tw:order-2 tw:px-1 tw:py-0.5 tw:text-xs tw:border-none tw:bg-transparent tw:cursor-pointer tw:text-[var(--oc-media-body-color)] tw:flex-shrink-0"
               @click.stop="emit('deleteMedia', media)"
             >
               <i class="fa-solid fa-trash" aria-hidden="true"></i>
@@ -46,7 +46,7 @@
 
         <!-- Normal item -->
         <div v-else-if="!media.errorType">
-          <div class="mf-thumb-preview tw:flex tw:items-center tw:justify-center tw:bg-[#f8f9fa] dark:tw:bg-[#2b3035]" :style="{ height: thumbSize + 'px' }">
+          <div class="mf-thumb-preview tw:flex tw:items-center tw:justify-center tw:bg-[var(--oc-media-tertiary-bg)]" :style="{ height: thumbSize + 'px' }">
             <img
               v-if="media.mime && media.mime.startsWith('image')"
               :src="buildMediaUrl(media.url!, thumbSize)"
@@ -60,10 +60,10 @@
               :data-mime="media.mime"
             ></i>
           </div>
-          <div class="tw:px-2 tw:py-1 tw:border-t tw:border-[var(--bs-border-color)] tw:flex tw:items-center tw:gap-1 tw:min-h-8 dark:tw:border-[#495057]">
+          <div class="tw:px-2 tw:py-1 tw:border-t tw:border-[var(--oc-media-border-color)] tw:flex tw:items-center tw:gap-1 tw:min-h-8">
             <button
               type="button"
-              class="mf-btn-delete tw:order-2 tw:px-1 tw:py-0.5 tw:text-xs tw:border-none tw:bg-transparent tw:cursor-pointer tw:text-[var(--bs-body-color)] hover:tw:text-[#7bc143] dark:tw:text-[#dee2e6] tw:flex-shrink-0"
+              class="mf-btn-delete tw:order-2 tw:px-1 tw:py-0.5 tw:text-xs tw:border-none tw:bg-transparent tw:cursor-pointer tw:text-[var(--oc-media-body-color)] tw:flex-shrink-0"
               @click.stop="emit('deleteMedia', media)"
             >
               <i class="fa-solid fa-trash" aria-hidden="true"></i>
@@ -71,7 +71,7 @@
             <a
               :href="media.url"
               target="_blank"
-              class="tw:order-1 tw:ml-auto tw:px-1 tw:py-0.5 tw:text-xs tw:border-none tw:bg-transparent tw:cursor-pointer tw:text-[var(--bs-body-color)] hover:tw:text-[#7bc143] dark:tw:text-[#dee2e6] tw:flex-shrink-0"
+              class="mf-btn-delete tw:order-1 tw:ml-auto tw:px-1 tw:py-0.5 tw:text-xs tw:border-none tw:bg-transparent tw:cursor-pointer tw:text-[var(--oc-media-body-color)] tw:flex-shrink-0"
               @click.stop
             >
               <i class="fa-solid fa-download" aria-hidden="true"></i>
@@ -84,14 +84,14 @@
 
         <!-- Not found error -->
         <div v-else>
-          <div class="tw:flex tw:flex-col tw:items-center tw:justify-center tw:bg-[#f8f9fa] dark:tw:bg-[#2b3035]" :style="{ height: thumbSize + 'px' }">
+          <div class="tw:flex tw:flex-col tw:items-center tw:justify-center tw:bg-[var(--oc-media-tertiary-bg)]" :style="{ height: thumbSize + 'px' }">
             <i class="fa-solid fa-ban tw:text-red-500 tw:text-2xl tw:block" aria-hidden="true"></i>
             <span class="tw:text-red-500 tw:text-xs tw:block tw:mt-1">{{ t.mediaNotFound }}</span>
           </div>
-          <div class="tw:px-2 tw:py-1 tw:border-t tw:border-[var(--bs-border-color)] tw:flex tw:items-center tw:gap-1 tw:min-h-8 dark:tw:border-[#495057]">
+          <div class="tw:px-2 tw:py-1 tw:border-t tw:border-[var(--oc-media-border-color)] tw:flex tw:items-center tw:gap-1 tw:min-h-8">
             <button
               type="button"
-              class="mf-btn-delete tw:order-2 tw:px-1 tw:py-0.5 tw:text-xs tw:border-none tw:bg-transparent tw:cursor-pointer tw:text-[var(--bs-body-color)] hover:tw:text-[#7bc143] dark:tw:text-[#dee2e6] tw:flex-shrink-0"
+              class="mf-btn-delete tw:order-2 tw:px-1 tw:py-0.5 tw:text-xs tw:border-none tw:bg-transparent tw:cursor-pointer tw:text-[var(--oc-media-body-color)] tw:flex-shrink-0"
               @click.stop="emit('deleteMedia', media)"
             >
               <i class="fa-solid fa-trash" aria-hidden="true"></i>

@@ -14,16 +14,16 @@ public sealed class AzureAISearchService : ISearchService
 {
     private readonly AzureAISearchDocumentIndexManager _indexDocumentManager;
     private readonly ILogger<AzureAISearchService> _logger;
-    private readonly AzureAISearchDefaultOptions _azureAIOptions;
+    private readonly IOptionsMonitor<AzureAISearchDefaultOptions> _azureAIOptions;
 
     public AzureAISearchService(
         AzureAISearchDocumentIndexManager documentManager,
         ILogger<AzureAISearchService> logger,
-        IOptions<AzureAISearchDefaultOptions> azureAIOptions)
+        IOptionsMonitor<AzureAISearchDefaultOptions> azureAIOptions)
     {
         _indexDocumentManager = documentManager;
         _logger = logger;
-        _azureAIOptions = azureAIOptions.Value;
+        _azureAIOptions = azureAIOptions;
     }
 
     public string Name
@@ -34,8 +34,9 @@ public sealed class AzureAISearchService : ISearchService
         ArgumentNullException.ThrowIfNull(index);
 
         var result = new SearchResult();
+        var azureAIOptions = _azureAIOptions.CurrentValue;
 
-        if (!_azureAIOptions.ConfigurationExists())
+        if (!azureAIOptions.ConfigurationExists())
         {
             _logger.LogWarning("Azure AI Search: Couldn't execute search. Azure AI Search has not been configured yet.");
 

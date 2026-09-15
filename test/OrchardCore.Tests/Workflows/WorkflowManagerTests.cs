@@ -597,15 +597,13 @@ public class WorkflowManagerTests
         public override LocalizedString Category => new("Test", "Test");
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        {
-            return Outcomes(new LocalizedString("Done", "Done"));
-        }
+            => Outcome(new LocalizedString("Done", "Done"));
 
         public override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             _onExecute();
 
-            return Task.FromResult(Outcomes("Done"));
+            return Task.FromResult(Outcome("Done"));
         }
     }
 

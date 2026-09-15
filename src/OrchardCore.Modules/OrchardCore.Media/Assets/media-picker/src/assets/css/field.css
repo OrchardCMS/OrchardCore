@@ -5,18 +5,280 @@
    be expressed as inline utilities.
    ============================================================ */
 
-/* Tailwind v4 — with preflight, tw: prefix, BS dark mode selector */
-@import "tailwindcss" prefix(tw);
+@import "../../../../shared/media-admin.css";
+
+/* Tailwind v4 utilities without preflight, so host element styles remain untouched. */
+@import "tailwindcss/theme" prefix(tw);
+@import "tailwindcss/utilities" prefix(tw);
 @custom-variant dark (&:where([data-bs-theme="dark"], [data-bs-theme="dark"] *));
 
-/* ============================================================
-   CSS Custom Properties (Bootstrap compat tokens)
-   ============================================================ */
-:root {
-  --bs-body-bg: #fff;
-  --bs-body-color: #212529;
-  --bs-border-color: #dee2e6;
+/* Picker-owned tokens fall back to Bootstrap-compatible defaults without redefining host tokens. */
+.media-field-app,
+.mf-modal,
+.mf-picker-shell,
+.mf-upload-toast {
+  --mf-body-bg: var(--bs-body-bg, #fff);
+  --mf-body-color: var(--bs-body-color, #212529);
+  --mf-border-color: var(--bs-border-color, #dee2e6);
   --mf-accent: #7bc143;
+}
+
+.mf-vfm {
+  --mf-overlay-z-index: 2200;
+}
+
+.media-field,
+.media-field-app {
+  color: var(--oc-media-body-color);
+}
+
+.mf-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.mf-toolbar-spacer {
+  margin-left: auto;
+}
+
+.mf-btn-primary,
+.mf-btn-danger,
+.mf-btn-secondary,
+.mf-btn-icon,
+.mf-btn-delete,
+.mf-upload-toast button {
+  font: inherit;
+}
+
+.mf-btn-primary,
+.mf-btn-danger,
+.mf-btn-secondary,
+.mf-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  text-decoration: none;
+}
+
+.mf-btn-primary {
+  padding: 0.375rem 0.75rem;
+  min-height: calc(1.5em + 0.75rem + 2px);
+  border: 1px solid var(--oc-media-primary);
+  border-radius: var(--oc-media-border-radius);
+  background-color: var(--oc-media-primary);
+  color: #fff;
+  cursor: pointer;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.mf-btn-danger {
+  padding: 0.375rem 0.75rem;
+  min-height: calc(1.5em + 0.75rem + 2px);
+  border: 1px solid var(--oc-media-danger);
+  border-radius: var(--oc-media-border-radius);
+  background-color: var(--oc-media-danger);
+  color: #fff;
+  cursor: pointer;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.mf-btn-secondary {
+  padding: 0.375rem 0.75rem;
+  min-height: calc(1.5em + 0.75rem + 2px);
+  border: 1px solid var(--oc-media-border-color);
+  border-radius: var(--oc-media-border-radius);
+  background-color: var(--oc-media-secondary-bg);
+  color: var(--oc-media-body-color);
+  cursor: pointer;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.mf-btn-icon {
+  padding: 0.375rem 0.5rem;
+  min-width: 2.25rem;
+  border: 1px solid transparent;
+  border-radius: var(--oc-media-border-radius);
+  background: transparent;
+  color: var(--oc-media-body-color);
+  cursor: pointer;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.mf-form-control,
+.mf-form-textarea {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--oc-media-border-color);
+  border-radius: var(--oc-media-border-radius);
+  background-color: var(--oc-media-body-bg);
+  color: var(--oc-media-body-color);
+  font: inherit;
+  line-height: 1.5;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.mf-modal {
+  background-color: var(--oc-media-body-bg);
+  color: var(--oc-media-body-color);
+  border: 1px solid var(--oc-media-border-color-subtle);
+  border-radius: var(--oc-media-border-radius-lg);
+  box-shadow: var(--oc-media-box-shadow);
+}
+
+.mf-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-bottom: 1px solid var(--oc-media-border-color);
+}
+
+.mf-modal-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+.mf-modal-body {
+  padding: 1rem;
+}
+
+.mf-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-top: 1px solid var(--oc-media-border-color);
+  justify-content: flex-end;
+}
+
+.mf-empty-card {
+  border: 1px dashed var(--oc-media-border-color);
+  border-radius: var(--oc-media-border-radius);
+  background-color: var(--oc-media-tertiary-bg);
+  color: var(--oc-media-secondary-color);
+}
+
+.mf-picker-shell {
+  background-color: var(--oc-media-body-bg);
+  color: var(--oc-media-body-color);
+  border: 1px solid var(--oc-media-border-color-subtle);
+  border-radius: var(--oc-media-border-radius-lg);
+  box-shadow: var(--oc-media-box-shadow);
+  display: flex;
+  flex-direction: column;
+}
+
+.mf-picker-shell-lg {
+  width: min(1000px, 90vw);
+  min-width: 300px;
+  height: min(85vh, 85vh);
+  max-height: 85vh;
+}
+
+.mf-upload-toast {
+  background-color: var(--oc-media-body-bg);
+  border: 1px solid var(--oc-media-border-color);
+  border-radius: var(--oc-media-border-radius);
+  box-shadow: var(--oc-media-box-shadow-sm);
+}
+
+.mf-upload-toast-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background-color: var(--oc-media-tertiary-bg);
+  border-bottom: 1px solid var(--oc-media-border-color);
+}
+
+.mf-upload-toast-actions {
+  display: flex;
+  align-items: center;
+}
+
+.mf-upload-toast-progress-track {
+  height: 3px;
+  border-radius: 999px;
+  overflow: hidden;
+  background-color: var(--oc-media-secondary-bg);
+}
+
+.mf-upload-toast-progress-bar {
+  height: 100%;
+  border-radius: inherit;
+  background-color: var(--oc-media-success);
+  transition: width 0.15s ease-in-out;
+}
+
+.mf-upload-toast-error {
+  color: var(--oc-media-danger);
+}
+
+.mf-gallery-card,
+.mf-gallery-add-card {
+  background-color: var(--oc-media-body-bg);
+  border: 1px solid var(--oc-media-border-color);
+  border-radius: var(--oc-media-border-radius);
+  box-shadow: var(--oc-media-box-shadow-sm);
+}
+
+.mf-gallery-card-icon,
+.mf-gallery-add-card {
+  color: var(--oc-media-secondary-color);
+}
+
+.mf-gallery-add-card:hover,
+.mf-gallery-card-item.is-selected .mf-gallery-card {
+  border-color: var(--oc-media-primary);
+  box-shadow: 0 0 0 0.2rem rgba(var(--oc-media-primary-rgb), 0.15);
+}
+
+.mf-btn-primary:hover {
+  background-color: color-mix(in srgb, var(--oc-media-primary) 90%, #000);
+  border-color: color-mix(in srgb, var(--oc-media-primary) 84%, #000);
+}
+
+.mf-btn-danger:hover {
+  background-color: color-mix(in srgb, var(--oc-media-danger) 88%, #000);
+  border-color: color-mix(in srgb, var(--oc-media-danger) 82%, #000);
+}
+
+.mf-btn-secondary:hover {
+  background-color: var(--oc-media-tertiary-bg);
+}
+
+.mf-btn-icon:hover,
+.mf-btn-delete:hover,
+.mf-upload-toast button:hover {
+  color: var(--oc-media-primary);
+}
+
+.mf-btn-primary:focus-visible,
+.mf-btn-danger:focus-visible,
+.mf-btn-secondary:focus-visible,
+.mf-btn-icon:focus-visible,
+.mf-form-control:focus,
+.mf-form-textarea:focus {
+  outline: 0;
+  box-shadow: var(--oc-media-focus-ring);
+}
+
+.mf-btn-primary:disabled,
+.mf-btn-primary.is-disabled,
+.mf-btn-danger:disabled,
+.mf-btn-secondary:disabled,
+.mf-btn-icon:disabled {
+  opacity: 0.65;
+  pointer-events: none;
 }
 
 /* ============================================================
@@ -44,8 +306,8 @@
    VFM z-index override
    Must sit above Bootstrap sidebar (z-index: 1030)
    ============================================================ */
-.vfm {
-  z-index: 2000 !important;
+.mf-vfm {
+  z-index: var(--mf-overlay-z-index) !important;
 }
 
 
@@ -59,6 +321,12 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
+}
+
+/* The picker shell already draws the modal frame; the gallery's own outer
+   border would double it. Internal separators (tree/footer) are kept. */
+.mf-picker-media-gallery .fileApp #fileContainer {
+  border: none;
 }
 
 /* ============================================================

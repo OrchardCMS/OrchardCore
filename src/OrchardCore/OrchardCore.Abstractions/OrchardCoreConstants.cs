@@ -9,6 +9,16 @@ public static class OrchardCoreConstants
         public const string TenantsFileName = "tenants.json";
     }
 
+    public static class AuthenticationSchemes
+    {
+        public const string Api = "Api";
+    }
+
+    public static class TokenNames
+    {
+        public const string AccessToken = "access_token";
+    }
+
     public static class Configuration
     {
         public const string ApplicationSettingsFileName = "appsettings.json";

@@ -37,7 +37,6 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
     private readonly IUserService _userService;
     private readonly INotifier _notifier;
     private readonly IEnumerable<IExternalLoginEventHandler> _externalLoginEventHandlers;
-    private readonly ExternalLoginOptions _externalLoginOption;
     private readonly IdentityOptions _identityOptions;
 
     internal readonly IHtmlLocalizer H;
@@ -57,7 +56,6 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         IUserService userService,
         INotifier notifier,
         IEnumerable<IExternalLoginEventHandler> externalLoginEventHandlers,
-        IOptions<ExternalLoginOptions> externalLoginOption,
         IOptions<IdentityOptions> identityOptions)
     {
         _signInManager = signInManager;
@@ -71,7 +69,6 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         _userService = userService;
         _notifier = notifier;
         _externalLoginEventHandlers = externalLoginEventHandlers;
-        _externalLoginOption = externalLoginOption.Value;
         _identityOptions = identityOptions.Value;
 
         H = htmlLocalizer;

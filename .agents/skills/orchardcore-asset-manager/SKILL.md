@@ -158,6 +158,8 @@ echo "1" | yarn dry-run -n media-app   # scoped to one asset
 | `Cannot find package '@tailwindcss/vite'` | Run `fnm exec --using 24.14.1 -- corepack yarn install` |
 | Parcel cache stale after deleting output | Run `echo "1" \| yarn clean` then rebuild |
 | Changes not reflected | Confirm the built `wwwroot/` files changed; rebuild if not |
+| Ran a full-repo build by accident (wrong `-n` value, e.g. package.json name instead of `Assets.json` "name") | `git status --short` immediately; `git checkout --` every changed path outside your target module/theme before committing |
+| Edited source but bug still repros in the running app | You forgot to rebuild. `stat -c '%y' <source>.ts` vs `stat -c '%y' wwwroot/Scripts/<bundle>.js` — if the bundle is older, run `yarn build -n <asset-name>` |
 
 ## References
 

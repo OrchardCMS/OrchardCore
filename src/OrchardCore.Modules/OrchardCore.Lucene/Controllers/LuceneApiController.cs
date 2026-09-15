@@ -3,14 +3,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.Entities;
-using OrchardCore.Queries;
 using OrchardCore.Lucene.Models;
+using OrchardCore.Queries;
 
 namespace OrchardCore.Lucene.Controllers;
 
 [Route("api/lucene")]
 [ApiController]
-[Authorize(AuthenticationSchemes = "Api")]
+[Authorize(AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api)]
 [IgnoreAntiforgeryToken]
 [AllowAnonymous]
 public sealed class LuceneApiController : ControllerBase
@@ -33,7 +33,7 @@ public sealed class LuceneApiController : ControllerBase
     {
         if (!await _authorizationService.AuthorizeAsync(User, LuceneSearchPermissions.QueryLuceneApi))
         {
-            return this.ChallengeOrForbid("Api");
+            return this.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
 
         var result = await LuceneQueryApiAsync(queryModel, returnContentItems: true);
@@ -78,7 +78,7 @@ public sealed class LuceneApiController : ControllerBase
     {
         if (!await _authorizationService.AuthorizeAsync(User, LuceneSearchPermissions.QueryLuceneApi))
         {
-            return this.ChallengeOrForbid("Api");
+            return this.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
 
         var result = await LuceneQueryApiAsync(queryModel);

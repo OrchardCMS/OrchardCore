@@ -9,7 +9,7 @@ namespace OrchardCore.Queries.Controllers;
 
 [Route("api/queries")]
 [ApiController]
-[Authorize(AuthenticationSchemes = "Api")]
+[Authorize(AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api)]
 [IgnoreAntiforgeryToken]
 [AllowAnonymous]
 public sealed class QueryApiController : ControllerBase

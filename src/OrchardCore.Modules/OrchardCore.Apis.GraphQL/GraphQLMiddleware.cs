@@ -62,7 +62,7 @@ public sealed class GraphQLMiddleware
     private async Task ProcessGraphQLRequestAsync(HttpContext context)
     {
         var authenticationService = context.RequestServices.GetService<IAuthenticationService>();
-        var authenticateResult = await authenticationService.AuthenticateAsync(context, "Api");
+        var authenticateResult = await authenticationService.AuthenticateAsync(context, OrchardCoreConstants.AuthenticationSchemes.Api);
         if (authenticateResult.Succeeded)
         {
             context.User = authenticateResult.Principal;
@@ -76,7 +76,7 @@ public sealed class GraphQLMiddleware
         }
         else
         {
-            await context.ChallengeAsync("Api");
+            await context.ChallengeAsync(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
     }
 

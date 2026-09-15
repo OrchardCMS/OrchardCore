@@ -1,6 +1,6 @@
 @charset "UTF-8";
 /*!
- * Bootstrap-select v1.2.3 (https://github.com/CrestApps/bootstrap-select)
+ * Bootstrap-select v1.2.4 (https://github.com/CrestApps/bootstrap-select)
  *
  * CrestApps fork (vanilla JavaScript, Bootstrap 5+) of snapappointments/bootstrap-select
  * Copyright 2012-2018 SnapAppointments, LLC (original work)
@@ -524,7 +524,7 @@ select.selectpicker {
   border-bottom: 1px solid var(--bs-border-color-translucent, rgba(0, 0, 0, 0.1));
 }
 .bs-searchbox + .bs-actionsbox {
-  padding: 0 8px 4px;
+  padding: 0.5rem 0.75rem 0.25rem;
 }
 .bs-searchbox .form-control {
   margin-bottom: 0;

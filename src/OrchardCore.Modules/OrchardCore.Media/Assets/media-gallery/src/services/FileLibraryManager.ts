@@ -45,6 +45,15 @@ function isBeingDeleted(path: string): boolean {
   return false;
 }
 
+/**
+ * Invalidates the file cache for a specific directory. Exported at module scope so
+ * other services (e.g. UppyFileUpload) can invalidate a folder's cache without going
+ * through useFileLibraryManager().
+ */
+export const invalidateFileCache = (directoryPath: string) => {
+  fileCache.delete(directoryPath);
+};
+
 export function useFileLibraryManager() {
   const fileDataService: IFileDataService = new FileDataService(basePath.value, getSharedAxios());
 

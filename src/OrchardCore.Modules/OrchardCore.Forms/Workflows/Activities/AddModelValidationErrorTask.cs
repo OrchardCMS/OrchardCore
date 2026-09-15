@@ -37,9 +37,7 @@ public class AddModelValidationErrorTask : TaskActivity<AddModelValidationErrorT
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"]);
-    }
+        => Outcome(S["Done"]);
 
     public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -47,6 +45,7 @@ public class AddModelValidationErrorTask : TaskActivity<AddModelValidationErrorT
             ?? throw new InvalidOperationException("Cannot add model validation errors when there's no Updater present.");
 
         updater.ModelState.AddModelError(Key, ErrorMessage);
-        return Outcomes("Done");
+
+        return Outcome("Done");
     }
 }

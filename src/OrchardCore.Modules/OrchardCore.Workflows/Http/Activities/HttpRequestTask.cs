@@ -197,7 +197,7 @@ public class HttpRequestTask : TaskActivity<HttpRequestTask>
             response.IsSuccessStatusCode,
         };
 
-        return Outcomes(outcome != 0 ? outcome.ToString() : "UnhandledHttpStatus");
+        return Outcome(outcome != 0 ? outcome.ToString() : "UnhandledHttpStatus");
     }
 
     private static IEnumerable<KeyValuePair<string, string>> ParseHeaders(string text)

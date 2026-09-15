@@ -86,14 +86,6 @@ public sealed class SecureMediaPermissions : IPermissionProvider
                     MediaPermissions.ViewOwnMedia,
                 },
             },
-            new PermissionStereotype
-            {
-                Name = OrchardCoreConstants.Roles.Anonymous,
-                Permissions = new[]
-                {
-                    MediaPermissions.ViewMedia,
-                },
-            },
         };
     }
 

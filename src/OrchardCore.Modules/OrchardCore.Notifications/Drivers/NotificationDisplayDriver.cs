@@ -9,11 +9,11 @@ public sealed class NotificationDisplayDriver : DisplayDriver<Notification>
     public override Task<IDisplayResult> DisplayAsync(Notification notification, BuildDisplayContext context)
     {
         return CombineAsync(
-            Shape("NotificationsMeta_SummaryAdmin", new NotificationViewModel(notification))
+            Factory("NotificationsMeta_SummaryAdmin", static (Notification n) => new NotificationViewModel(n), notification)
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Meta:20"),
-            Shape("NotificationsActions_SummaryAdmin", new NotificationViewModel(notification))
+            Factory("NotificationsActions_SummaryAdmin", static (Notification n) => new NotificationViewModel(n), notification)
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:5"),
-            Shape("NotificationsButtonActions_SummaryAdmin", new NotificationViewModel(notification))
+            Factory("NotificationsButtonActions_SummaryAdmin", static (Notification n) => new NotificationViewModel(n), notification)
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:10")
         );
     }

@@ -50,7 +50,7 @@ public class EmailTaskTests
 
     private static DefaultEmailService CreateSmtpService(SmtpOptions smtpOptions)
     {
-        var options = new Mock<IOptions<SmtpOptions>>();
+        var options = new Mock<IOptionsMonitor<SmtpOptions>>();
         var logger = new Mock<ILogger<SmtpEmailProvider>>();
         var logger2 = new Mock<ILogger<DefaultEmailService>>();
 
@@ -61,7 +61,7 @@ public class EmailTaskTests
         emailValidator.Setup(x => x.Validate(It.IsAny<string>()))
             .Returns(true);
 
-        options.Setup(o => o.Value)
+        options.Setup(o => o.CurrentValue)
             .Returns(smtpOptions);
 
         var smtp = new SmtpEmailProvider(options.Object, emailValidator.Object, logger.Object, localizer.Object);

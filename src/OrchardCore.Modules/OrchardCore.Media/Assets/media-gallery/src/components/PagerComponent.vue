@@ -4,32 +4,32 @@
       :data-computed-trigger="itemsInCurrentPage?.length">
       <ul class="ma-pagination">
         <li class="ma-page-item file-first-button" :class="{ 'is-disabled': !canDoFirst }">
-          <a class="ma-page-link first" href="#" :tabindex="canDoFirst ? 0 : -1" v-on:click="goFirst">
+          <button type="button" class="ma-page-link first" :tabindex="canDoFirst ? 0 : -1" :disabled="!canDoFirst" v-on:click="goFirst">
             {{ t.PagerFirstButton }}
-          </a>
+          </button>
         </li>
         <li class="ma-page-item" :class="{ 'is-disabled': !canDoPrev }">
-          <a class="ma-page-link previous" href="#" :tabindex="canDoPrev ? 0 : -1" v-on:click="previous">
+          <button type="button" class="ma-page-link previous" :tabindex="canDoPrev ? 0 : -1" :disabled="!canDoPrev" v-on:click="previous">
             {{ t.PagerPreviousButton }}
-          </a>
+          </button>
         </li>
         <template v-for="(link, index) in pageLinks" v-bind:key="index">
           <li v-if="link != -1" class="ma-page-item ma-page-number" :class="{ active: current == link - 1 }">
-            <a class="ma-page-link" href="#" v-on:click="goTo(link - 1)" :aria-label="'Goto Page ' + link">
+            <button type="button" class="ma-page-link" v-on:click="goTo(link - 1)" :aria-label="'Goto Page ' + link" :aria-current="current == link - 1 ? 'page' : undefined">
               {{ link }}
               <span v-if="current == link - 1" style="display:none">(current)</span>
-            </a>
+            </button>
           </li>
         </template>
         <li class="ma-page-item" :class="{ 'is-disabled': !canDoNext }">
-          <a class="ma-page-link next" href="#" :tabindex="canDoNext ? 0 : -1" v-on:click="next">
+          <button type="button" class="ma-page-link next" :tabindex="canDoNext ? 0 : -1" :disabled="!canDoNext" v-on:click="next">
             {{ t.PagerNextButton }}
-          </a>
+          </button>
         </li>
         <li class="ma-page-item file-last-button" :class="{ 'is-disabled': !canDoLast }">
-          <a class="ma-page-link last" href="#" :tabindex="canDoLast ? 0 : -1" v-on:click="goLast">
+          <button type="button" class="ma-page-link last" :tabindex="canDoLast ? 0 : -1" :disabled="!canDoLast" v-on:click="goLast">
             {{ t.PagerLastButton }}
-          </a>
+          </button>
         </li>
       </ul>
     </nav>

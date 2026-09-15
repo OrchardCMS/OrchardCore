@@ -76,6 +76,26 @@ In Liquid, the current site settings are available through the `Site` accessor:
 {{ Site.PageSize }}
 ```
 
+This accessor has all properties of `ISite`, with two security limitations:
+
+1. `ISite.SiteSalt` may not be accessed. If you try to use `{{ Site.SiteSalt }}` in Liquid, you will get `[REDACTED]` instead of the actual value.
+2. `ISite.Properties` is filtered. By default, this object appears empty in Liquid. You can configure the `OrchardCore.Settings.SettingsLiquidOptions` object to specify which properties should be exposed through Liquid. For example using _appsettings.json_:
+   ```json
+   {
+     "OrchardCore": {
+       "OrchardCore_Settings_Liquid": {
+         "PermittedSiteProperties": [
+           "ExternalRegistrationSettings",
+           "ExternalLoginSettings",
+           "CurrentThemeName",
+           "CurrentAdminThemeName",
+           "LayerSettings"
+         ]
+       }
+     }
+   }
+   ```
+
 ## Recipes
 
 Site settings can be set from a recipe using the `settings` step. Recognized keys map to the built-in properties; any other key is stored in the site settings `Properties` bag, which lets modules import their own settings.

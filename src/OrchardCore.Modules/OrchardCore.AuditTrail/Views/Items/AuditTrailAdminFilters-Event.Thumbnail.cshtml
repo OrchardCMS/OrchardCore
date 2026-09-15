@@ -3,11 +3,11 @@
     var term = Model.Value.FilterResult.FirstOrDefault(x => x.TermName == "event");
 }
 
-<h4 class="card-title">@T["Event"]</h4>
-<pre class="mb-3">@(term?.ToString() ?? "event:...")</pre>
-<p>@T["Filters on the audit trail event, when a Correlation Id is used."]</p>
-<div class="d-block text-end">
-    <span>
-        <i class="fa-solid fa-sm fa-bars text-primary" aria-hidden="true"></i>
+<div class="d-flex justify-content-between align-items-center gap-2">
+    <h6 class="card-title fw-semibold mb-0">@T["Event"]</h6>
+    <span class="text-primary text-nowrap">
+        <i class="fa-solid fa-sm fa-bars" title="@T["Supports logical operators and groups"]" aria-hidden="true"></i>
     </span>
 </div>
+<div class="mt-1"><code class="small text-nowrap">@(term?.ToString() ?? "event:...")</code></div>
+<p class="card-text small text-body-secondary mt-1 mb-0">@T["Filters on the audit trail event, when a Correlation Id is used."]</p>

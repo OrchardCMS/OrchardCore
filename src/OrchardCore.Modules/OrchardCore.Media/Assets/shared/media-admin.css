@@ -1,0 +1,306 @@
+/* Shared Bootstrap-aligned primitives for OrchardCore media Vue apps.
+   These classes are intentionally host-friendly: when embedded in the admin
+   they inherit the active Bootstrap 5 theme via CSS variables; when used
+   standalone they fall back to sensible defaults. */
+
+:root {
+  --oc-media-body-bg: var(--bs-body-bg, #fff);
+  --oc-media-body-color: var(--bs-body-color, #212529);
+  --oc-media-secondary-bg: var(--bs-secondary-bg, #e9ecef);
+  --oc-media-tertiary-bg: var(--bs-tertiary-bg, #f8f9fa);
+  --oc-media-border-color: var(--bs-border-color, #dee2e6);
+  --oc-media-border-color-subtle: var(--bs-border-color-translucent, rgba(0, 0, 0, 0.175));
+  --oc-media-secondary-color: var(--bs-secondary-color, #6c757d);
+  --oc-media-primary: var(--bs-primary, #0d6efd);
+  --oc-media-primary-rgb: var(--bs-primary-rgb, 13, 110, 253);
+  --oc-media-danger: var(--bs-danger, #dc3545);
+  --oc-media-danger-rgb: var(--bs-danger-rgb, 220, 53, 69);
+  --oc-media-success: var(--bs-success, #198754);
+  --oc-media-success-rgb: var(--bs-success-rgb, 25, 135, 84);
+  --oc-media-warning: var(--bs-warning, #ffc107);
+  --oc-media-box-shadow: var(--bs-box-shadow, 0 0.5rem 1rem rgba(0, 0, 0, 0.15));
+  --oc-media-box-shadow-sm: var(--bs-box-shadow-sm, 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075));
+  --oc-media-border-radius: var(--bs-border-radius, 0.375rem);
+  --oc-media-border-radius-lg: var(--bs-border-radius-lg, 0.5rem);
+  --oc-media-focus-ring: 0 0 0 0.25rem rgba(var(--oc-media-primary-rgb), 0.25);
+}
+
+.oc-media-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  min-height: calc(1.5em + 0.75rem + 2px);
+  border: 1px solid transparent;
+  border-radius: var(--oc-media-border-radius);
+  background: var(--oc-media-body-bg);
+  color: var(--oc-media-body-color);
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: center;
+  text-decoration: none;
+  vertical-align: middle;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.oc-media-btn:hover {
+  text-decoration: none;
+}
+
+.oc-media-btn:focus-visible {
+  outline: 0;
+  box-shadow: var(--oc-media-focus-ring);
+}
+
+.oc-media-btn:disabled,
+.oc-media-btn.is-disabled,
+.oc-media-btn[aria-disabled="true"] {
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+.oc-media-btn-primary {
+  background-color: var(--oc-media-primary);
+  border-color: var(--oc-media-primary);
+  color: #fff;
+}
+
+.oc-media-btn-primary:hover {
+  background-color: color-mix(in srgb, var(--oc-media-primary) 90%, #000);
+  border-color: color-mix(in srgb, var(--oc-media-primary) 84%, #000);
+  color: #fff;
+}
+
+.oc-media-btn-secondary {
+  background-color: var(--oc-media-secondary-bg);
+  border-color: var(--oc-media-border-color);
+  color: var(--oc-media-body-color);
+}
+
+.oc-media-btn-secondary:hover {
+  background-color: var(--oc-media-tertiary-bg);
+  border-color: var(--oc-media-border-color);
+  color: var(--oc-media-body-color);
+}
+
+.oc-media-btn-danger {
+  background-color: var(--oc-media-danger);
+  border-color: var(--oc-media-danger);
+  color: #fff;
+}
+
+.oc-media-btn-danger:hover {
+  background-color: color-mix(in srgb, var(--oc-media-danger) 88%, #000);
+  border-color: color-mix(in srgb, var(--oc-media-danger) 82%, #000);
+  color: #fff;
+}
+
+.oc-media-btn-link {
+  background: transparent;
+  border-color: transparent;
+  color: var(--oc-media-body-color);
+}
+
+.oc-media-btn-link:hover {
+  color: var(--oc-media-primary);
+}
+
+.oc-media-btn-icon {
+  padding-inline: 0.5rem;
+  min-width: 2.25rem;
+}
+
+.oc-media-btn-group {
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.oc-media-btn-group > .oc-media-btn:not(:first-child) {
+  margin-left: -1px;
+}
+
+.oc-media-btn-group > .oc-media-btn:first-child {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.oc-media-btn-group > .oc-media-btn:last-child {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.oc-media-btn-group > .oc-media-btn:not(:first-child):not(:last-child) {
+  border-radius: 0;
+}
+
+.oc-media-form-control,
+.oc-media-form-select,
+.oc-media-form-textarea {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--oc-media-border-color);
+  border-radius: var(--oc-media-border-radius);
+  background-color: var(--oc-media-body-bg);
+  color: var(--oc-media-body-color);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.oc-media-form-control:focus,
+.oc-media-form-select:focus,
+.oc-media-form-textarea:focus {
+  outline: 0;
+  border-color: color-mix(in srgb, var(--oc-media-primary) 65%, white);
+  box-shadow: var(--oc-media-focus-ring);
+}
+
+.oc-media-input-group {
+  display: flex;
+  width: 100%;
+  align-items: stretch;
+}
+
+.oc-media-input-group-text {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--oc-media-border-color);
+  background-color: var(--oc-media-tertiary-bg);
+  color: var(--oc-media-secondary-color);
+}
+
+.oc-media-input-group > .oc-media-input-group-text:first-child {
+    border-top-left-radius: var(--oc-media-border-radius);
+    border-bottom-left-radius: var(--oc-media-border-radius);
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-right: 0;
+}
+
+.oc-media-input-group > .oc-media-form-control {
+  border-radius: 0;
+  flex: 1 1 auto;
+}
+
+.oc-media-input-group > .oc-media-btn:last-child,
+.oc-media-input-group > .oc-media-input-group-text:last-child,
+.oc-media-input-group > .ma-btn:last-child {
+  border-top-right-radius: var(--oc-media-border-radius);
+  border-bottom-right-radius: var(--oc-media-border-radius);
+}
+
+.oc-media-input-group > .oc-media-btn:last-child,
+.oc-media-input-group > .ma-btn:last-child {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-left: 0;
+}
+
+.oc-media-modal {
+  background-color: var(--oc-media-body-bg);
+  color: var(--oc-media-body-color);
+  border: 1px solid var(--oc-media-border-color-subtle);
+  border-radius: var(--oc-media-border-radius-lg);
+  box-shadow: var(--oc-media-box-shadow);
+}
+
+.oc-media-modal-header,
+.oc-media-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 1rem;
+}
+
+.oc-media-modal-header {
+  border-bottom: 1px solid var(--oc-media-border-color);
+}
+
+.oc-media-modal-footer {
+  border-top: 1px solid var(--oc-media-border-color);
+}
+
+.oc-media-modal-body {
+  padding: 1rem;
+}
+
+.oc-media-modal-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+.oc-media-surface {
+  background-color: var(--oc-media-body-bg);
+  border: 1px solid var(--oc-media-border-color);
+  border-radius: var(--oc-media-border-radius);
+  box-shadow: var(--oc-media-box-shadow-sm);
+}
+
+.oc-media-surface-muted {
+  background-color: var(--oc-media-tertiary-bg);
+}
+
+.oc-media-empty-state {
+  border: 1px dashed var(--oc-media-border-color);
+  border-radius: var(--oc-media-border-radius);
+  background-color: var(--oc-media-tertiary-bg);
+  color: var(--oc-media-secondary-color);
+}
+
+.oc-media-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.oc-media-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  padding: 0.25em 0.5em;
+  border-radius: 999px;
+  background-color: var(--oc-media-tertiary-bg);
+  color: var(--oc-media-body-color);
+  font-size: 0.75em;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.oc-media-popover {
+  position: absolute;
+  inset-inline-end: 0;
+  z-index: 1045;
+  min-width: 16rem;
+  margin-top: 0.5rem;
+  background: var(--oc-media-body-bg);
+  border: 1px solid var(--oc-media-border-color);
+  border-radius: var(--oc-media-border-radius);
+  box-shadow: var(--oc-media-box-shadow);
+}
+
+.oc-media-popover-content {
+  padding: 0.75rem 1rem;
+}
+
+.oc-media-popover-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.oc-media-popover-label {
+  font-size: 0.875rem;
+  color: var(--oc-media-secondary-color);
+}
