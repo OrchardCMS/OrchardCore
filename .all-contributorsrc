@@ -3655,6 +3655,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "antonfirsov",
+      "name": "Anton Firszov",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6835152?v=4",
+      "profile": "https://github.com/antonfirsov",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
