@@ -44,6 +44,7 @@ public class MediaJSLocalizer(IStringLocalizer<MediaJSLocalizer> S) : IJSLocaliz
                 { "MoveSingleFileTitle", S["Move file"].Value },
                 { "Copy", S["Copy"].Value },
                 { "CopySingleFileTitle", S["Copy file"].Value },
+                { "View", S["View"].Value },
                 { "Download", S["Download"].Value },
                 { "Delete", S["Delete"].Value },
                 { "DeleteFileTitle", S["Delete file"].Value },
