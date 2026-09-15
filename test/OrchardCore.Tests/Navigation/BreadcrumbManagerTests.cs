@@ -141,6 +141,24 @@ public class BreadcrumbManagerTests
         Assert.Empty(items);
     }
 
+    [Fact]
+    public async Task BuildBreadcrumbAsync_WithInlineItems_SeedsThemBeforeTheProvidersRun()
+    {
+        // A provider still runs over an inline trail, so a module can extend it. Here it prepends a node the way the
+        // Admin Dashboard feature does.
+        var manager = CreateManager(new DelegateBreadcrumbProvider(builder => builder.Add("Dashboard", "start")));
+
+        var inlineItems = new List<BreadcrumbItem>
+        {
+            new() { Text = "Manage Content" },
+            new() { Text = "Edit Article" },
+        };
+
+        var items = await manager.BuildBreadcrumbAsync("ContentsEdit", CreateActionContext(), data: null, items: inlineItems);
+
+        Assert.Equal(["Dashboard", "Manage Content", "Edit Article"], items.Select(item => item.Text));
+    }
+
     private static BreadcrumbManager CreateManager(params IBreadcrumbProvider[] providers)
         => CreateManager(isAuthorized: true, providers);
 

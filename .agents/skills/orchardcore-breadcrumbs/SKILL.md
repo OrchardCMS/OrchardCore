@@ -68,6 +68,19 @@ The trail renders the page title (from the current node) as the `<h1>` on admin,
 
 Add the module namespace to the view's `_ViewImports.cshtml` (or the view) so `@SomeConstants.Edit` resolves — the Razor SDK type-checks these at build time.
 
+### Inline alternative (static trails)
+
+A screen whose trail is static can skip the provider (Workflow B) and declare nodes inline as `breadcrumb-item` children — no class, no `switch`:
+
+```razor
+<breadcrumb name="MyRecordsEdit">
+    <breadcrumb-item action="Index" controller="Record" area="My.Module">@T["Records"]</breadcrumb-item>
+    <breadcrumb-item>@T["Edit {0}", record.Name]</breadcrumb-item>
+</breadcrumb>
+```
+
+`breadcrumb-item` attributes: inner text (the node text), `action`/`controller`/`area` or `url` (the link), `position`, `id`. Inline nodes **seed** the trail — providers still run over it, so the Dashboard node and any module extension still apply. Keep the `name` so a provider can target the trail. Use a provider (not inline) for permission-gated links, node text loaded from a service, or parent resolution.
+
 ## Workflow B: write a provider
 
 ### Step 1: Inherit the right base

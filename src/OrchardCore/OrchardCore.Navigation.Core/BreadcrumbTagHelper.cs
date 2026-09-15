@@ -13,7 +13,8 @@ namespace OrchardCore.Navigation.TagHelpers;
 
 /// <summary>
 /// Renders the breadcrumb trail of the given name, and registers the text of its current node as a segment of the
-/// page title.
+/// page title. The nodes come from the <see cref="IBreadcrumbProvider"/> implementations of the trail, from the
+/// <c>breadcrumb-item</c> children declared inline in the view, or from both.
 /// </summary>
 /// <example>
 /// <code>
@@ -59,9 +60,9 @@ public sealed class BreadcrumbTagHelper : TagHelper
     public object Data { get; set; }
 
     /// <summary>
-    /// The html tag wrapping the text of the current node, so that the breadcrumb can stand in for the title of the
-    /// page. Defaults to <c>h1</c> on a request to the admin, where the trail replaces the title of the screen, and
-    /// to no heading everywhere else, where the page has a heading of its own. Set it to an empty value to render none.
+    /// The html tag of the page title, rendered below the trail from the text of the current node, so that the
+    /// breadcrumb carries the title of the page. Defaults to <c>h1</c> on a request to the admin, and to no title
+    /// everywhere else, where the page has a heading of its own. Set it to an empty value to render none.
     /// </summary>
     [HtmlAttributeName("heading")]
     public string Heading { get; set; }
@@ -86,10 +87,18 @@ public sealed class BreadcrumbTagHelper : TagHelper
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
+        // Let any 'breadcrumb-item' children declared in the view seed the trail. They add themselves to this list
+        // while the child content renders.
+        var inlineItems = new List<BreadcrumbItem>();
+        context.Items[typeof(BreadcrumbItemTagHelper)] = inlineItems;
+
+        await output.GetChildContentAsync();
+
         var items = await _breadcrumbManager.BuildBreadcrumbAsync(
             Name,
             ViewContext,
-            Data is null ? null : new RouteValueDictionary(Data));
+            Data is null ? null : new RouteValueDictionary(Data),
+            inlineItems.Count > 0 ? inlineItems : null);
 
         if (items.Count == 0)
         {
@@ -135,8 +144,8 @@ public sealed class BreadcrumbTagHelper : TagHelper
     }
 
     /// <summary>
-    /// On the admin the trail replaces the title of the screen, so its current node carries the heading of the page.
-    /// Everywhere else the page has a heading of its own, and a second one would be wrong.
+    /// On the admin the trail carries the title of the screen, rendered below it from the current node, so it defaults
+    /// to an <c>h1</c>. Everywhere else the page has a heading of its own, and a second one would be wrong.
     /// </summary>
     private string GetHeading(bool isAdmin)
     {

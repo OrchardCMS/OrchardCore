@@ -13,8 +13,12 @@ public interface IBreadcrumbManager
     /// <param name="name">The name of the breadcrumb. e.g., <c>ContentsEdit</c>.</param>
     /// <param name="actionContext">The context of the request, used to generate the url of each node.</param>
     /// <param name="data">The optional contextual data of the page rendering the breadcrumb.</param>
+    /// <param name="items">
+    /// The optional nodes declared inline by the page. They seed the trail before the providers run, so the providers
+    /// can still add to, remove from or reorder them.
+    /// </param>
     /// <returns>
     /// The nodes of the trail, ordered by their position. The last node is the current one: it is never a link.
     /// </returns>
-    Task<IList<BreadcrumbItem>> BuildBreadcrumbAsync(string name, ActionContext actionContext, IReadOnlyDictionary<string, object> data = null);
+    Task<IList<BreadcrumbItem>> BuildBreadcrumbAsync(string name, ActionContext actionContext, IReadOnlyDictionary<string, object> data = null, IEnumerable<BreadcrumbItem> items = null);
 }

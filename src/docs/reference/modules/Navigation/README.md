@@ -250,6 +250,29 @@ Rendering the trail in the `Title` zone is what makes it behave like the title i
 
 Nothing is rendered when no provider contributes a node to the trail, so a screen keeps working when the feature owning its provider is disabled.
 
+### Declaring a trail inline
+
+A provider is what lets **another** module extend a trail, and it is where dynamic text, permission-gated links and parent lookups belong. A screen whose trail is static, though, can skip the provider and the `switch` and declare its nodes in the view as `breadcrumb-item` children:
+
+```html
+<zone Name="Title">
+    <breadcrumb name="MyRecordsEdit">
+        <breadcrumb-item action="Index" controller="Record" area="My.Module">@T["Records"]</breadcrumb-item>
+        <breadcrumb-item>@T["Edit {0}", record.Name]</breadcrumb-item>
+    </breadcrumb>
+</zone>
+```
+
+| `breadcrumb-item` attribute | Description                                                              |
+|-----------------------------|--------------------------------------------------------------------------|
+| _(inner text)_              | The text of the node.                                                    |
+| `action`, `controller`, `area` | The route the node links to.                                          |
+| `url`                       | The url the node links to. Ignored when `action` is set.                 |
+| `position`                  | The relative position of the node, e.g. `10`, `before`, `end`.           |
+| `id`                        | The identifier of the node, used to build its shape alternates.          |
+
+Inline nodes **seed** the trail: the providers still run over it, so a module can add to, remove from or reorder them, and the Admin Dashboard node still leads the trail. Give the `breadcrumb` a `name` so a provider can target it; a permission-gated link, a localized name loaded from a service, or a node another module inserts by position is still best expressed in a provider.
+
 ### Describing the nodes
 
 `BreadcrumbBuilder` carries the `Name` of the trail being built, the `Data` the page provided, and the nodes added so far:

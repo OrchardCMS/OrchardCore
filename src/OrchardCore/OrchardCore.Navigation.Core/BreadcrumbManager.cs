@@ -29,12 +29,22 @@ public sealed class BreadcrumbManager : IBreadcrumbManager
         _logger = logger;
     }
 
-    public async Task<IList<BreadcrumbItem>> BuildBreadcrumbAsync(string name, ActionContext actionContext, IReadOnlyDictionary<string, object> data = null)
+    public async Task<IList<BreadcrumbItem>> BuildBreadcrumbAsync(string name, ActionContext actionContext, IReadOnlyDictionary<string, object> data = null, IEnumerable<BreadcrumbItem> items = null)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
         ArgumentNullException.ThrowIfNull(actionContext);
 
         var builder = new BreadcrumbBuilder(name, data);
+
+        // Nodes declared inline by the page seed the trail, so a screen static enough not to need a provider can
+        // describe its trail in the view. The providers still run over them, so a module can extend the trail.
+        if (items is not null)
+        {
+            foreach (var item in items)
+            {
+                builder.Add(item);
+            }
+        }
 
         // Process all breadcrumb providers to create a flat list of nodes.
         // If a breadcrumb provider fails, it is ignored.
@@ -51,13 +61,13 @@ public sealed class BreadcrumbManager : IBreadcrumbManager
         }
 
         // Order the nodes by their position, keeping the order they were added in for equal positions.
-        var items = builder.Build()
+        var orderedItems = builder.Build()
             .OrderBy(item => item, FlatPositionComparer.Instance)
             .ToList();
 
         var user = actionContext.HttpContext?.User;
 
-        foreach (var item in items)
+        foreach (var item in orderedItems)
         {
             // A node the user is not authorized to reach is still rendered, but not as a link, so that the trail
             // stays complete.
@@ -66,16 +76,16 @@ public sealed class BreadcrumbManager : IBreadcrumbManager
                 : null;
         }
 
-        if (items.Count > 0)
+        if (orderedItems.Count > 0)
         {
             // The last node is the page being rendered, it never links to itself.
-            var current = items[^1];
+            var current = orderedItems[^1];
 
             current.IsCurrent = true;
             current.Href = null;
         }
 
-        return items;
+        return orderedItems;
     }
 
     /// <summary>
