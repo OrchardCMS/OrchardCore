@@ -12,7 +12,7 @@
 
 <div class="card text-bg-theme mb-3 position-sticky action-bar">
     <div class="card-body">
-        <div class="row gx-3">
+        <div class="row gx-2">
             <div class="col">
                 @await DisplayAsync(Model.Header.Search)
             </div>
@@ -23,41 +23,8 @@
     </div>
 </div>
 
-<ul class="list-group with-checkbox">
-    <li class="list-group-item text-bg-theme">
-        <div class="row gx-3">
-            <div class="col">
-                @await DisplayAsync(Model.Header.Summary)
-            </div>
-            <div class="col col-md-auto text-end">
-                @await DisplayAsync(Model.Header.Actions)
-            </div>
-        </div>
-    </li>
-    @if (Model.Users.Count > 0)
-    {
-        @foreach (var entry in Model.Users)
-        {
-            <li class="list-group-item">
-                <div class="form-check float-start">
-                    <input type="checkbox" class="form-check-input" value="@entry.UserId" name="itemIds" id="itemIds-@entry.UserId">
-                    <label class="form-check-label" for="itemIds-@entry.UserId"></label>
-                </div>
-                @await DisplayAsync(entry.Shape)
-            </li>
-        }
-    }
-    else
-    {
-        <li class="list-group-item">
-            <div class="alert alert-info mb-0">
-                @T["No results found."]
-            </div>
-        </li>
-    }
-</ul>
-
-@await DisplayAsync(Model.Pager)
+@* The users, the summary/actions bar and the pager are rendered by the AdminList shape using the configured layout (List, Table, ...). *@
+@await DisplayAsync(Model.List)
 
 </div>
 

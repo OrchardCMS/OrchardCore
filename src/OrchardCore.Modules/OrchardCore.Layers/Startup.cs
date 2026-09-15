@@ -41,6 +41,9 @@ public sealed class Startup : StartupBase
         services.AddSiteDisplayDriver<LayerSiteSettingsDisplayDriver>();
         services.AddContentPart<LayerMetadata>();
         services.AddScoped<IContentDisplayDriver, LayerMetadataWelder>();
+
+        // Builds the rows of the layers admin list.
+        services.AddDisplayDriver<Layer, LayerDisplayDriver>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<ILayerService, LayerService>();
         services.AddScoped<IContentHandler, LayerMetadataHandler>();

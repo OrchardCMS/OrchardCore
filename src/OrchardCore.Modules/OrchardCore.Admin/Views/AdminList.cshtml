@@ -1,0 +1,144 @@
+﻿@*
+    The default 'List' layout of an admin list.
+
+    Properties:
+        Name          The name of the list, e.g. "Contents". Used for the AdminList__{Name} alternates.
+        Layout        The layout name, "List" here.
+        Rows          The row shapes, usually built with the "SummaryAdmin" display type. (Not "Items": that name is the shape's own child collection.)
+                      The Classes and Attributes of a row shape (e.g. data-filter-value for client-side search) are rendered on its list item.
+        RowsAttributes Optional attributes rendered on the element wrapping the rows, e.g. the id a sortable list needs.
+        Header        The options editor shape whose Summary and Actions zones are rendered above the items.
+        Toolbar       Alternative to Header: a shape rendered as is above the items, e.g. AdminListToolbar.
+        Pager         The pager shape.
+        PageSize      Optional page size selector, so a layout can place it apart from the pager.
+        Search        Optional search bar of the list, e.g. the AdminListSearch shape. Rendered in the action bar above the list.
+        Actions       Optional buttons of the page, e.g. "Add", rendered beside the search in the action bar.
+        LayoutSelector Optional selector offering the other layouts of the list, built for the list when the site lets a user choose.
+        ItemCssClass  Optional CSS classes of each item, defaults to "list-group-item list-group-item-action".
+        EmptyMessage  Optional message displayed when there are no items.
+*@
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using System.Text.Encodings.Web
+@using Microsoft.AspNetCore.Html
+@using OrchardCore.DisplayManagement.Shapes
+@{
+    var rows = ((IEnumerable<object>)Model.Rows ?? []).ToList();
+    // Optional attributes for the element wrapping the rows, e.g. the id a sortable list needs.
+    var rowsAttributes = (IDictionary<string, string>)Model.RowsAttributes ?? new Dictionary<string, string>();
+    var rowsAttributesHtml = new HtmlString(string.Join(' ', rowsAttributes.Select(attribute => $"{attribute.Key}=\"{HtmlEncoder.Default.Encode(attribute.Value)}\"")));
+    var header = Model.Header;
+    var toolbar = Model.Toolbar;
+    string itemCssClass = Model.ItemCssClass ?? "list-group-item list-group-item-action";
+}
+
+@{
+    // Everything the layout renders above the rows, so it can leave any of it out.
+    var layoutSelector = Model.LayoutSelector;
+    var search = Model.Search;
+    var actions = Model.Actions;
+}
+
+@if (search != null || actions != null)
+{
+    @* The search bar and the buttons of the page. Only a bar carrying the search follows the page as it
+       scrolls, so two of them never cover each other. *@
+    <div class="card text-bg-theme mb-3 @(search != null ? "position-sticky action-bar" : null)">
+        <div class="card-body">
+            <div class="row gx-2">
+                @if (search != null)
+                {
+                    <div class="col">
+                        @await DisplayAsync(search)
+                    </div>
+                }
+                @if (actions != null)
+                {
+                    <div class="col-auto ms-auto">
+                        @await DisplayAsync(actions)
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+<ul class="list-group with-checkbox admin-list admin-list-list" @rowsAttributesHtml>
+    @if (toolbar != null || header != null || layoutSelector != null)
+    {
+        <li class="list-group-item text-bg-theme">
+            @* Wrapping: a narrow list sends the selector to a line of its own instead of over the filters. *@
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <div class="admin-list-toolbar-content">
+                    @if (toolbar != null)
+                    {
+                        @await DisplayAsync(toolbar)
+                    }
+                    else if (header != null)
+                    {
+                        <div class="row gx-2 align-items-center">
+                            <div class="col">
+                                @await DisplayAsync(header.Summary)
+                            </div>
+                            <div class="col col-md-auto text-end">
+                                @await DisplayAsync(header.Actions)
+                            </div>
+                        </div>
+                    }
+                </div>
+                @if (layoutSelector != null)
+                {
+                    @await DisplayAsync(layoutSelector)
+                }
+            </div>
+        </li>
+    }
+    @if (rows.Count > 0)
+    {
+        foreach (var row in rows)
+        {
+            var item = new TagBuilder("li");
+            item.AddCssClass(itemCssClass);
+
+            if (row is Shape rowShape)
+            {
+                foreach (var cssClass in rowShape.Classes)
+                {
+                    item.AddCssClass(cssClass);
+                }
+
+                item.MergeAttributes(rowShape.Attributes);
+            }
+
+            item.InnerHtml.AppendHtml(await DisplayAsync(row));
+
+            @item
+        }
+    }
+    else
+    {
+        <li class="list-group-item">
+            <div class="alert alert-info mb-0">
+                @(Model.EmptyMessage ?? T["No results found."])
+            </div>
+        </li>
+    }
+</ul>
+
+@if (Model.Pager != null || Model.PageSize != null)
+{
+    @* The pager is centred on the row and the page size selector sits at its end, see _admin-list.scss. *@
+    <div class="admin-list-footer d-flex flex-wrap align-items-center gap-2">
+        <div class="admin-list-footer-pager">
+            @if (Model.Pager != null)
+            {
+                @await DisplayAsync(Model.Pager)
+            }
+        </div>
+        @if (Model.PageSize != null)
+        {
+            <div class="admin-list-footer-page-size">
+                @await DisplayAsync(Model.PageSize)
+            </div>
+        }
+    </div>
+}

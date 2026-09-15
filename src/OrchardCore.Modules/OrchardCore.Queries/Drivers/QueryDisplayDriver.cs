@@ -24,6 +24,13 @@ public sealed class QueryDisplayDriver : DisplayDriver<Query>
     public override Task<IDisplayResult> DisplayAsync(Query query, BuildDisplayContext context)
     {
         return CombineAsync(
+            Dynamic("Query_Checkbox_SummaryAdmin", static (model, query) =>
+            {
+                model.Name = query.Name;
+                model.Source = query.Source;
+                model.Schema = query.Schema;
+                model.Query = query;
+            }, query).Location("Checkbox:1"),
             Dynamic("Query_Fields_SummaryAdmin", static (model, query) =>
             {
                 model.Name = query.Name;

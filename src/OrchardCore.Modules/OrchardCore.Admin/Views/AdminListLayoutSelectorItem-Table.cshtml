@@ -1,0 +1,7 @@
+@{
+    var isCurrent = Model.IsCurrent != null && (bool)Model.IsCurrent;
+}
+
+<a href="@Model.Url" class="btn btn-sm @(isCurrent ? "btn-primary active" : "btn-outline-secondary")" title="@T["Table"]" aria-label="@T["Table"]" aria-pressed="@isCurrent">
+    <i class="fa-solid fa-table-list" aria-hidden="true"></i>
+</a>

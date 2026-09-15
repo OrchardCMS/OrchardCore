@@ -1,0 +1,7 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Recipes.Models
+
+@model ShapeViewModel<RecipeEntry>
+
+@* Plain text, like the title of a content item in the Manage Content list: a recipe has no edit screen. *@
+<span class="list-item-search-text">@Model.Value.DisplayName</span>

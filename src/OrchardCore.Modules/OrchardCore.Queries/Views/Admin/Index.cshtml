@@ -1,8 +1,4 @@
 @model QueriesIndexViewModel
-@{
-    int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
-    int endIndex = startIndex + Model.Queries.Count - 1;
-}
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Queries"])</h1></zone>
 
@@ -14,11 +10,12 @@
 
     <div class="card text-bg-theme mb-3 position-sticky action-bar">
         <div class="card-body">
-            <div class="row gx-3">
+            <div class="row gx-2">
                 <div class="col">
-                    <div class="has-search">
+                    <div class="input-group has-search">
                         <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
-                        <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+                        <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus autocomplete="off" />
+                        <button type="submit" name="submit.Filter" class="btn btn-outline-secondary" title="@T["Search"]">@T["Go"]</button>
                     </div>
                 </div>
                 <div class="col-auto">
@@ -27,57 +24,10 @@
             </div>
         </div>
     </div>
-    <ul class="list-group with-checkbox">
-        @if (Model.Queries.Any())
-        {
-            <li class="list-group-item text-bg-theme">
-                <div class="row gx-3">
-                    <div class="col">
-                        <div class="form-check my-1">
-                            <input type="checkbox" class="form-check-input" id="select-all">
-                            <label class="form-check-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
-                            <label id="items" for="select-all">@T.Plural(Model.Queries.Count, "{0} item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
-                            <label id="selected-items" class="text-muted" for="select-all"></label>
-                        </div>
-                    </div>
-                    <div class="col-auto">
-                        <div class="dropdown d-none" id="actions">
-                            <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                @T["Actions"]
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                @foreach (var item in Model.Options.ContentsBulkAction)
-                                {
-                                    <li><a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a></li>
-                                }
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </li>
-            @foreach (var entry in Model.Queries)
-            {
-                <li class="list-group-item">
-                    <div class="form-check float-start">
-                        <input type="checkbox" class="form-check-input" value="@entry.Query.Name" name="itemIds" id="itemIds-@entry.Query.Name">
-                        <label class="form-check-label" for="itemIds-@entry.Query.Name">&nbsp;</label>
-                    </div>
-                    @await DisplayAsync(entry.Shape)
-                </li>
-            }
-        }
-        else
-        {
-            <li class="list-group-item">
-                <div class="alert alert-info mb-0" role="alert">
-                    @T["<strong>Nothing here!</strong> There are no queries for the moment."]
-                </div>
-            </li>
-        }
-    </ul>
-</form>
 
-@await DisplayAsync(Model.Pager)
+    @* The queries, the toolbar and the pager are rendered by the AdminList shape using the configured layout (List, Table, ...). *@
+    @await DisplayAsync(Model.List)
+</form>
 
 <!-- Modal -->
 <div class="modal fade" id="modalAddQuery" tabindex="-1" role="dialog" aria-labelledby="available-query-types-title" aria-hidden="true">

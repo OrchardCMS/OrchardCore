@@ -5,6 +5,9 @@ using OrchardCore.ContentTypes.Deployment;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.ContentTypes.RecipeSteps;
 using OrchardCore.ContentTypes.Services;
+using OrchardCore.ContentTypes.Models;
+using OrchardCore.ContentTypes.Drivers;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Deployment;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
@@ -46,6 +49,10 @@ public sealed class Startup : StartupBase
         services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IContentDefinitionService, ContentDefinitionService>();
         services.AddScoped<IStereotypeService, StereotypeService>();
+
+        // Build the rows of the content types and content parts admin lists.
+        services.AddDisplayDriver<ContentTypeEntry, ContentTypeEntryDisplayDriver>();
+        services.AddDisplayDriver<ContentPartEntry, ContentPartEntryDisplayDriver>();
         services.AddScoped<IContentDefinitionDisplayHandler, ContentDefinitionDisplayCoordinator>();
         services.AddScoped<IContentDefinitionDisplayManager, DefaultContentDefinitionDisplayManager>();
         services.AddScoped<IContentPartDefinitionDisplayDriver, ContentPartSettingsDisplayDriver>();

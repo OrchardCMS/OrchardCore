@@ -15,4 +15,10 @@ public class ListNotificationsViewModel
 
     [BindNever]
     public dynamic Pager { get; set; }
+
+    /// <summary>
+    /// The <c>AdminList</c> shape rendering the notifications, the header and the pager in the configured layout.
+    /// </summary>
+    [BindNever]
+    public dynamic List { get; set; }
 }

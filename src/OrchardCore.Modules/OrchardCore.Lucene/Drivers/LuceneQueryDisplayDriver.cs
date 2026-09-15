@@ -33,8 +33,9 @@ public sealed class LuceneQueryDisplayDriver : DisplayDriver<Query>
         }
 
         return Combine(
+            // The source is a badge in the Tags zone, which the 'Source' column of the admin list renders.
             Dynamic("LuceneQuery_SummaryAdmin", static (model, query) => { model.Query = query; }, query)
-                .Location("Content:5"),
+                .Location("Tags:5"),
             Dynamic("LuceneQuery_Buttons_SummaryAdmin", static (model, query) => { model.Query = query; }, query)
                 .Location("Actions:2")
         );

@@ -3,6 +3,9 @@ using OrchardCore.AdminMenu.AdminNodes;
 using OrchardCore.AdminMenu.Deployment;
 using OrchardCore.AdminMenu.Recipes;
 using OrchardCore.AdminMenu.Services;
+using OrchardCore.AdminMenu.ViewModels;
+using OrchardCore.AdminMenu.Drivers;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.Localization.Data;
@@ -21,6 +24,9 @@ public sealed class Startup : StartupBase
         services.AddNavigationProvider<AdminMenu>();
 
         services.AddScoped<IAdminMenuService, AdminMenuService>();
+
+        // Builds the rows of the admin menus list.
+        services.AddDisplayDriver<AdminMenuEntry, AdminMenuEntryDisplayDriver>();
         services.AddScoped<IAdminMenuAccessor, AdminMenuAccessor>();
         services.AddScoped<AdminMenuNavigationProvidersCoordinator>();
 

@@ -23,6 +23,7 @@ using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Recipes;
 using OrchardCore.Sitemaps.Routing;
 using OrchardCore.Sitemaps.Services;
+using OrchardCore.Sitemaps.ViewModels;
 
 namespace OrchardCore.Sitemaps;
 
@@ -33,6 +34,11 @@ public sealed class Startup : StartupBase
         services.AddDataMigration<Migrations>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddPermissionProvider<Permissions>();
+
+        // Build the rows of the sitemaps, sitemap indexes and sitemap cache admin lists.
+        services.AddDisplayDriver<SitemapListEntry, SitemapListEntryDisplayDriver>();
+        services.AddDisplayDriver<SitemapIndexListEntry, SitemapIndexListEntryDisplayDriver>();
+        services.AddDisplayDriver<SitemapCacheEntry, SitemapCacheEntryDisplayDriver>();
 
         services.Configure<SitemapsOptions>(options =>
         {

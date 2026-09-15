@@ -24,6 +24,7 @@ using OrchardCore.Navigation;
 using OrchardCore.OpenId.Configuration;
 using OrchardCore.OpenId.Deployment;
 using OrchardCore.OpenId.Drivers;
+using OrchardCore.OpenId.ViewModels;
 using OrchardCore.OpenId.Handlers;
 using OrchardCore.OpenId.Migrations;
 using OrchardCore.OpenId.Recipes;
@@ -276,6 +277,10 @@ public sealed class ManagementStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddNavigationProvider<ManagementAdminMenu>();
+
+        // Build the rows of the applications and scopes admin lists.
+        services.AddDisplayDriver<OpenIdApplicationEntry, OpenIdApplicationDisplayDriver>();
+        services.AddDisplayDriver<OpenIdScopeEntry, OpenIdScopeDisplayDriver>();
     }
 }
 

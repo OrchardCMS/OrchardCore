@@ -1,0 +1,34 @@
+﻿@*
+    The layouts a user can switch this list to, one button each. Rendered only when the site allows a user to
+    choose, see the "Let users choose the layout of a list" admin setting.
+
+    Properties:
+        ListName  The name of the list, e.g. "Contents".
+        Current   The layout the list is rendered with.
+        Layouts   The available layouts, each with a Name and the Url switching to it.
+*@
+@using OrchardCore.Admin.Models
+@{
+    string current = Model.Current;
+    var layouts = (IEnumerable<AdminListLayoutOption>)Model.Layouts ?? [];
+}
+
+@if (layouts.Any())
+{
+    <div class="btn-group admin-list-layout-selector" role="group" aria-label="@T["Layout"]">
+        @foreach (var layout in layouts)
+        {
+            var name = layout.Name;
+
+            var item = await New.AdminListLayoutSelectorItem(
+                Layout: name,
+                Url: layout.Url,
+                IsCurrent: string.Equals(name, current, StringComparison.OrdinalIgnoreCase));
+
+            // Each layout can ship the button that offers it, e.g. AdminListLayoutSelectorItem-Grid.cshtml.
+            item.Metadata.Alternates.Add($"AdminListLayoutSelectorItem__{name}");
+
+            @await DisplayAsync(item)
+        }
+    </div>
+}

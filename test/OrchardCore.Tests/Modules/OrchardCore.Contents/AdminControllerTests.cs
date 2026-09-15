@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Moq;
+using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
@@ -37,6 +38,7 @@ public class AdminControllerTests
             Options.Create(new PagerOptions()),
             Mock.Of<IShapeFactory>(),
             queryService.Object,
+            Mock.Of<IAdminListService>(),
             filterResult,
             options,
             new PagerParameters(),
@@ -62,6 +64,7 @@ public class AdminControllerTests
             Options.Create(new PagerOptions()),
             Mock.Of<IShapeFactory>(),
             queryService.Object,
+            Mock.Of<IAdminListService>(),
             filterResult,
             options,
             new PagerParameters(),
@@ -87,6 +90,7 @@ public class AdminControllerTests
             Options.Create(new PagerOptions()),
             Mock.Of<IShapeFactory>(),
             queryService.Object,
+            Mock.Of<IAdminListService>(),
             filterResult,
             options,
             new PagerParameters(),

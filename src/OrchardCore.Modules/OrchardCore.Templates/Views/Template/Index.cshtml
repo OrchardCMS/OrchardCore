@@ -1,102 +1,21 @@
 @model TemplateIndexViewModel
+
 @{
-    int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
-    int endIndex = startIndex + Model.Templates.Count - 1;
-    var formAction = Model.Options.AdminTemplates ? "admin" : "index";
+    var pageTitle = Model.Options.AdminTemplates ? T["Admin Templates"] : T["Templates"];
 }
 
-@if (Model.Options.AdminTemplates)
-{
-    <zone Name="Title"><h1>@RenderTitleSegments(T["Admin Templates"])</h1></zone>
-}
-else
-{
-    <zone Name="Title"><h1>@RenderTitleSegments(T["Templates"])</h1></zone>
-}
+<zone Name="Title"><h1>@RenderTitleSegments(pageTitle)</h1></zone>
 
-@* the form is necessary to generate and antiforgery token for the delete action *@
-<form asp-action="@formAction" data-list-management data-selected-label="@T["selected"]">
+@* the form is necessary to generate an antiforgery token for the delete action *@
+<form asp-action="Index" method="post" class="no-multisubmit" data-list-management data-selected-label="@T["selected"]">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input asp-for="Options.AdminTemplates" type="hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
 
-    <div class="card text-bg-theme mb-3 position-sticky action-bar" style="position: relative; top: 0;">
-        <div class="card-body">
-            <div class="row gx-3">
-                <div class="col">
-                    <div class="has-search">
-                        <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
-                        <input asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
-                    </div>
-                </div>
-                <div class="col-auto">
-                    <a asp-route-action="Create" asp-route-admintemplates="@Model.Options.AdminTemplates" asp-route-returnUrl="@FullRequestPath" class="btn btn-secondary create" role="button">@T["Add Template"]</a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <ul class="list-group with-checkbox">
-        @if (Model.Templates.Count > 0)
-        {
-            <li class="list-group-item text-bg-theme">
-                <div class="row gx-3">
-                    <div class="col">
-                        <div class="form-check my-1">
-                            <input type="checkbox" class="form-check-input" id="select-all">
-                            <label class="form-check-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
-                            <label id="items" for="select-all">@T.Plural(Model.Templates.Count, "{0} item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
-                            <label id="selected-items" class="text-muted" for="select-all"></label>
-                        </div>
-                    </div>
-                    <div class="col-auto">
-                        <div class="dropdown d-none" id="actions">
-                            <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                @T["Actions"]
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                @foreach (var item in Model.Options.ContentsBulkAction)
-                                {
-                                    <li><a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a></li>
-                                }
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </li>
-            @foreach (var entry in Model.Templates)
-            {
-                <li class="list-group-item">
-                    <div class="form-check float-start">
-                        <input type="checkbox" class="form-check-input" value="@entry.Name" name="itemIds" id="itemIds-@entry.Name">
-                        <label class="form-check-label" for="itemIds-@entry.Name">&nbsp;</label>
-                    </div>
-                    <div class="w-100">
-                        <div class="float-end">
-                            <a asp-action="Edit" asp-route-name="@entry.Name" asp-route-admintemplates="@Model.Options.AdminTemplates" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                            <a asp-action="Delete" asp-route-name="@entry.Name" asp-route-admintemplates="@Model.Options.AdminTemplates" asp-route-returnUrl="@FullRequestPath" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
-                        </div>
-                        <a asp-action="Edit" asp-route-name="@entry.Name" asp-route-admintemplates="@Model.Options.AdminTemplates" asp-route-returnUrl="@FullRequestPath">@entry.Name</a>
-                        @if (!string.IsNullOrWhiteSpace(entry.Template.Description))
-                        {
-                            <span class="hint dashed">@entry.Template.Description</span>
-                        }
-                    </div>
-                </li>
-            }
-        }
-        else
-        {
-            <li class="list-group-item">
-                <div class="alert alert-info mb-0" role="alert">
-                    @T["<strong>Nothing here!</strong> There are no templates for the moment."]
-                    <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Templates" target="_blank">@T["See documentation"]</a>
-                </div>
-            </li>
-        }
-    </ul>
+    @* The search bar, the button, the templates, the toolbar, the pager and the page size selector are all
+       rendered by the AdminList shape using the configured layout (List, Table, ...). *@
+    @await DisplayAsync(Model.List)
 </form>
-
-@await DisplayAsync(Model.Pager)
 
 <script asp-name="list-management" at="Foot"></script>

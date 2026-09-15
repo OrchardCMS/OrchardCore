@@ -1,0 +1,9 @@
+@using OrchardCore.Deployment.ViewModels
+@using OrchardCore.DisplayManagement.Views
+
+@model ShapeViewModel<DeploymentPlanEntry>
+
+<div class="form-check">
+    <input type="checkbox" class="form-check-input" value="@Model.Value.DeploymentPlan.Id" name="itemIds" id="itemIds-@Model.Value.DeploymentPlan.Id">
+    <label class="form-check-label" for="itemIds-@Model.Value.DeploymentPlan.Id"></label>
+</div>

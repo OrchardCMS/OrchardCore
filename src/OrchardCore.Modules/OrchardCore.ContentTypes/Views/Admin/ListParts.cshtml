@@ -1,37 +1,31 @@
 @model ListContentPartsViewModel
-@using OrchardCore.Localization.Data
-@inject IDataLocalizer D
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Content Parts"])</h1></zone>
 
 <div data-list-management data-client-side-search="true" data-single-result-action-mode="first" data-search-first-element-classes="border-top rounded-top">
-<div class="card mb-3 text-bg-theme position-sticky action-bar">
-    <div class="card-body">
-        <div class="row gx-3">
-            <div class="col">
-                <div class="has-search">
-                    <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
-                    <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+    <div class="card mb-3 text-bg-theme position-sticky action-bar">
+        <div class="card-body">
+            <div class="row gx-2">
+                <div class="col">
+                    <div class="input-group has-search">
+                        <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
+                        <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus autocomplete="off" />
+                        <button type="submit" name="submit.Filter" class="btn btn-outline-secondary" title="@T["Search"]">@T["Go"]</button>
+                    </div>
                 </div>
-            </div>
-            <div class="col-auto">
-                <a asp-route-action="CreatePart" id="btnCreate" class="btn btn-secondary create" role="button">@T["Create new part"]</a>
+                <div class="col-auto">
+                    <a asp-route-action="CreatePart" id="btnCreate" class="btn btn-secondary create" role="button">@T["Create new part"]</a>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<ul id="list-items" class="list-group">
-    @foreach (var type in Model.Parts)
-    {
-        <li class="list-group-item" data-filter-value="@D[type.DisplayName, "Content Types"]" data-type-name="@type.Name">
-            @Html.DisplayFor(m => type)
-        </li>
-    }
-</ul>
-<div id="list-alert" class="alert alert-info d-none" role="alert">
-    @T["<strong>Nothing here!</strong> Your search returned no results."]
-</div>
+    @* The rows are rendered by the AdminList shape using the configured layout (List, Table, ...). *@
+    @await DisplayAsync(Model.List)
+
+    <div id="list-alert" class="alert alert-info my-3 d-none text-center" role="alert">
+        @T["Your search returned no results."]
+    </div>
 </div>
 
 <script asp-name="list-management" at="Foot"></script>
