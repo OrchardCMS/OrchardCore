@@ -95,7 +95,7 @@ When upgrading to a new SDK major version, you may need to update other packages
 - Update `src/OrchardCore.Build/TargetFrameworks.props` if adding new target frameworks
 - Add new `AspNetCorePackagesVersion` entries in `Directory.Packages.props` if dual-targeting
 - Update package versions that have SDK-specific dependencies
-- See [target frameworks checklist](.github/ISSUE_TEMPLATE/target_frameworks.md) for full details
+- See [target frameworks checklist](https://github.com/OrchardCMS/OrchardCore/blob/main/.github/ISSUE_TEMPLATE/target_frameworks.md) for full details
 
 ### Step 6: Update CI/CD and Documentation
 
