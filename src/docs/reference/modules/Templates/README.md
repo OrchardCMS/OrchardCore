@@ -2,6 +2,8 @@
 
 The templates module allows editors to create custom Liquid templates.
 
+Editing templates and using template preview requires both `ManageTemplates` and the security-critical `ManageLiquidTemplates` permission. Admin templates require both `ManageAdminTemplates` and `ManageLiquidTemplates`.
+
 ## Available templates
 
 Templates can be defined using the web editor, or in a theme. Templates are distinguished by their name.  

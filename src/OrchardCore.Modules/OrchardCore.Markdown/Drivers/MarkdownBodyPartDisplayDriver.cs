@@ -1,5 +1,7 @@
 using System.Text.Encodings.Web;
 using Fluid.Values;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -24,6 +26,8 @@ public sealed class MarkdownBodyPartDisplayDriver : ContentPartDisplayDriver<Mar
     private readonly IHtmlSanitizerService _htmlSanitizerService;
     private readonly IShortcodeService _shortcodeService;
     private readonly IMarkdownService _markdownService;
+    private readonly IAuthorizationService _authorizationService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     internal readonly IStringLocalizer S;
 
@@ -32,6 +36,8 @@ public sealed class MarkdownBodyPartDisplayDriver : ContentPartDisplayDriver<Mar
         IHtmlSanitizerService htmlSanitizerService,
         IShortcodeService shortcodeService,
         IMarkdownService markdownService,
+        IAuthorizationService authorizationService,
+        IHttpContextAccessor httpContextAccessor,
         IStringLocalizer<MarkdownBodyPartDisplayDriver> localizer)
     {
         _liquidTemplateManager = liquidTemplateManager;
@@ -39,6 +45,8 @@ public sealed class MarkdownBodyPartDisplayDriver : ContentPartDisplayDriver<Mar
         _htmlSanitizerService = htmlSanitizerService;
         _shortcodeService = shortcodeService;
         _markdownService = markdownService;
+        _authorizationService = authorizationService;
+        _httpContextAccessor = httpContextAccessor;
         S = localizer;
     }
 
@@ -49,8 +57,15 @@ public sealed class MarkdownBodyPartDisplayDriver : ContentPartDisplayDriver<Mar
             .Location(OrchardCoreConstants.DisplayType.Summary, "Content");
     }
 
-    public override IDisplayResult Edit(MarkdownBodyPart markdownBodyPart, BuildPartEditorContext context)
+    public override async Task<IDisplayResult> EditAsync(MarkdownBodyPart markdownBodyPart, BuildPartEditorContext context)
     {
+        var settings = context.TypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
+
+        if (settings.RenderLiquid && !await CanManageLiquidTemplatesAsync())
+        {
+            return null;
+        }
+
         return Initialize<MarkdownBodyPartViewModel>(GetEditorShapeType(context), model =>
         {
             model.Markdown = markdownBodyPart.Markdown;
@@ -64,6 +79,15 @@ public sealed class MarkdownBodyPartDisplayDriver : ContentPartDisplayDriver<Mar
     {
         var viewModel = new MarkdownBodyPartViewModel();
         var settings = context.TypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
+
+        if (settings.RenderLiquid && !await CanManageLiquidTemplatesAsync())
+        {
+            context.Updater.ModelState.AddModelError(
+                Prefix,
+                S["You do not have permission to edit Liquid templates."]);
+
+            return null;
+        }
 
         await context.Updater.TryUpdateModelAsync(viewModel, Prefix, vm => vm.Markdown);
 
@@ -81,7 +105,7 @@ public sealed class MarkdownBodyPartDisplayDriver : ContentPartDisplayDriver<Mar
             model.Markdown = viewModel.Markdown;
         }
 
-        return Edit(model, context);
+        return await EditAsync(model, context);
     }
 
     private async ValueTask BuildViewModel(MarkdownBodyPartViewModel model, MarkdownBodyPart markdownBodyPart, BuildPartDisplayContext context)
@@ -114,4 +138,9 @@ public sealed class MarkdownBodyPartDisplayDriver : ContentPartDisplayDriver<Mar
             model.Html = _htmlSanitizerService.Sanitize(model.Html ?? "");
         }
     }
+
+    private Task<bool> CanManageLiquidTemplatesAsync() =>
+        _authorizationService.AuthorizeAsync(
+            _httpContextAccessor.HttpContext?.User,
+            Permissions.ManageLiquidTemplates);
 }

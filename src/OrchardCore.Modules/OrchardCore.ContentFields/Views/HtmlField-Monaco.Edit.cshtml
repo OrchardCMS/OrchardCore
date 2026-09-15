@@ -1,4 +1,5 @@
 @model OrchardCore.ContentFields.ViewModels.EditHtmlFieldViewModel
+@using System.Text.Json
 @using OrchardCore.ContentFields
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore.Localization.Data
@@ -15,7 +16,7 @@
     <div class="ocat-end">
         @await DisplayAsync(await New.ShortcodeModal())
         <div id="@Html.IdFor(x => x.Html)_editor" asp-for="Text" style="min-height: 400px;" class="form-control" dir="@culture.GetLanguageDirection()"></div>
-        <textarea asp-for="Html" hidden>@Html.Raw(Model.Html)</textarea>
+        <textarea asp-for="Html" hidden></textarea>
         @if (!string.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>
@@ -39,7 +40,7 @@
             return;
         }
         require(['vs/editor/editor.main'], function () {
-            var settings = @Html.Raw(string.IsNullOrWhiteSpace(monacoSettings.Options) ? "{}" : monacoSettings.Options);
+            var settings = JSON.parse(@Html.Raw(JsonSerializer.Serialize(string.IsNullOrWhiteSpace(monacoSettings.Options) ? "{}" : monacoSettings.Options)));
             if (settings.automaticLayout == undefined) {
                 settings.automaticLayout = true;
             }

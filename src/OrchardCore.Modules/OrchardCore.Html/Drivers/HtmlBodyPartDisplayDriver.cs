@@ -1,5 +1,7 @@
 using System.Text.Encodings.Web;
 using Fluid.Values;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -22,6 +24,8 @@ public sealed class HtmlBodyPartDisplayDriver : ContentPartDisplayDriver<HtmlBod
     private readonly IHtmlSanitizerService _htmlSanitizerService;
     private readonly HtmlEncoder _htmlEncoder;
     private readonly IShortcodeService _shortcodeService;
+    private readonly IAuthorizationService _authorizationService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     internal readonly IStringLocalizer S;
 
@@ -29,12 +33,16 @@ public sealed class HtmlBodyPartDisplayDriver : ContentPartDisplayDriver<HtmlBod
         IHtmlSanitizerService htmlSanitizerService,
         HtmlEncoder htmlEncoder,
         IShortcodeService shortcodeService,
+        IAuthorizationService authorizationService,
+        IHttpContextAccessor httpContextAccessor,
         IStringLocalizer<HtmlBodyPartDisplayDriver> localizer)
     {
         _liquidTemplateManager = liquidTemplateManager;
         _htmlSanitizerService = htmlSanitizerService;
         _htmlEncoder = htmlEncoder;
         _shortcodeService = shortcodeService;
+        _authorizationService = authorizationService;
+        _httpContextAccessor = httpContextAccessor;
         S = localizer;
     }
 
@@ -45,8 +53,15 @@ public sealed class HtmlBodyPartDisplayDriver : ContentPartDisplayDriver<HtmlBod
             .Location(OrchardCoreConstants.DisplayType.Summary, "Content");
     }
 
-    public override IDisplayResult Edit(HtmlBodyPart HtmlBodyPart, BuildPartEditorContext context)
+    public override async Task<IDisplayResult> EditAsync(HtmlBodyPart HtmlBodyPart, BuildPartEditorContext context)
     {
+        var settings = context.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
+
+        if (settings.RenderLiquid && !await CanManageLiquidTemplatesAsync())
+        {
+            return null;
+        }
+
         return Initialize<HtmlBodyPartViewModel>(GetEditorShapeType(context), model =>
         {
             model.Html = HtmlBodyPart.Html;
@@ -61,25 +76,30 @@ public sealed class HtmlBodyPartDisplayDriver : ContentPartDisplayDriver<HtmlBod
         var viewModel = new HtmlBodyPartViewModel();
         var settings = context.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
 
+        if (settings.RenderLiquid && !await CanManageLiquidTemplatesAsync())
+        {
+            context.Updater.ModelState.AddModelError(
+                Prefix,
+                S["You do not have permission to edit Liquid templates."]);
+
+            return null;
+        }
+
         await context.Updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Html);
 
-        model.Html = settings.SanitizeHtml
-            ? _htmlSanitizerService.Sanitize(viewModel.Html)
-            : viewModel.Html;
+        model.Html = viewModel.Html;
 
         if (settings.RenderLiquid
             && !string.IsNullOrEmpty(model.Html)
             && !_liquidTemplateManager.Validate(model.Html, out var errors))
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.Html),
-                S[settings.SanitizeHtml
-                    ? "{0} contains invalid Liquid expression. Note that HTML sanitization affects the value being saved and thus can break Liquid code: {1}"
-                    : "{0} contains invalid Liquid expression: {1}",
+                S["{0} contains invalid Liquid expression: {1}",
                     context.TypePartDefinition.DisplayName(),
                     string.Join(" ", errors)]);
         }
 
-        return Edit(model, context);
+        return await EditAsync(model, context);
     }
 
     private async ValueTask BuildViewModelAsync(HtmlBodyPartViewModel model, HtmlBodyPart htmlBodyPart, BuildPartDisplayContext context)
@@ -102,5 +122,15 @@ public sealed class HtmlBodyPartDisplayDriver : ContentPartDisplayDriver<HtmlBod
                 ["ContentItem"] = htmlBodyPart.ContentItem,
                 ["TypePartDefinition"] = context.TypePartDefinition,
             });
+
+        if (settings.SanitizeHtml)
+        {
+            model.Html = _htmlSanitizerService.Sanitize(model.Html);
+        }
     }
+
+    private Task<bool> CanManageLiquidTemplatesAsync() =>
+        _authorizationService.AuthorizeAsync(
+            _httpContextAccessor.HttpContext?.User,
+            Permissions.ManageLiquidTemplates);
 }
