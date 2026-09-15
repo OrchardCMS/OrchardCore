@@ -56,6 +56,7 @@ function readConfig(el: HTMLElement): IMediaFieldConfig {
     tusEndpointUrl: dataset.tusEndpointUrl || "",
     tusFileInfoUrl: dataset.tusFileInfoUrl || "",
     signalrEnabled: dataset.signalrEnabled === "true",
+    disableThumbnails: dataset.disableThumbnails === "true",
   };
 }
 
@@ -213,12 +214,18 @@ export function openMediaPicker(
 
     let settled = false;
 
+    // The editor plugins pass no display options; the site-wide DisableThumbnails option is
+    // read from the picker config element the host page renders.
+    const pickerConfigEl = document.querySelector<HTMLElement>("[data-media-picker-config]");
+    const disableThumbnails = pickerConfigEl?.dataset.disableThumbnails === "true";
+
     const app = createFieldApp(MediaPickerModal, {
       mediaAppTranslations,
       basePath,
       uploadFilesUrl,
       allowedExtensions,
       allowMultiple,
+      disableThumbnails,
       autoOpen: true,
       onResolve: (items: IMediaFieldItem[]) => {
         if (settled) return;

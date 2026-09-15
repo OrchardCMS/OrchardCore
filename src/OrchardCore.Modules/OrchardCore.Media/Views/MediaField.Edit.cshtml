@@ -1,6 +1,6 @@
 @model OrchardCore.Media.ViewModels.EditMediaFieldViewModel
-@inject IDataLocalizer D
 @inject IOptions<MediaOptions> MediaOptions
+@inject IDataLocalizer D
 @inject Microsoft.AspNetCore.Authorization.IAuthorizationService AuthorizationService
 @{
     var tusEnabled = Context.RequestServices.IsMediaTusEnabled();
@@ -58,6 +58,7 @@
              data-tus-endpoint-url="@Url.Content("~/api/media/tus")"
              data-tus-file-info-url="@Url.Content("~/api/media/TusFileInfo")"
              data-signalr-enabled="@(signalrEnabled ? "true" : "false")"
+             data-disable-thumbnails="@(MediaOptions.Value.DisableThumbnails ? "true" : "false")"
              data-translations="@translationsJson">
         </div>
 
