@@ -18,6 +18,21 @@ public class Pager
     }
 
     /// <summary>
+    /// Constructs a new pager, resolving the page size from the request against the configured
+    /// <see cref="PagerOptions"/>. The requested page size is honored only when page size selection
+    /// is enabled and the value is allowed; otherwise the configured default is used.
+    /// </summary>
+    /// <param name="pagerParameters">The pager parameters.</param>
+    /// <param name="pagerOptions">The site pager options.</param>
+    public Pager(PagerParameters pagerParameters, PagerOptions pagerOptions)
+    {
+        ArgumentNullException.ThrowIfNull(pagerOptions);
+
+        Page = (int)(pagerParameters.Page != null ? (pagerParameters.Page > 0 ? pagerParameters.Page : PageDefault) : PageDefault);
+        PageSize = pagerOptions.GetPageSize(pagerParameters.PageSize);
+    }
+
+    /// <summary>
     /// Constructs a new pager.
     /// </summary>
     /// <param name="page">The page parameter.</param>

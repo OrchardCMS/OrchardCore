@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -30,7 +29,8 @@ public static class GetPermittedStorageEndpoint
         HttpContext httpContext,
         IAuthorizationService authorizationService,
         IMediaFileStore mediaFileStore,
-        IStringLocalizer<MediaApiEndpoints> localizer)
+        IStringLocalizer<MediaApiEndpoints> localizer,
+        FileSizeHelper fileSizeHelper)
     {
         if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMedia)
             || !await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMediaFolder, (object)string.Empty))
@@ -39,7 +39,7 @@ public static class GetPermittedStorageEndpoint
         }
 
         var bytes = await mediaFileStore.GetPermittedStorageAsync();
-        var text = bytes == null ? localizer["Unspecified"] : FileSizeHelpers.FormatAsBytes(bytes.Value);
+        var text = bytes == null ? localizer["Unspecified"] : fileSizeHelper.FormatSize(bytes.Value);
 
         return TypedResults.Ok(new PermittedStorageDto { Bytes = bytes, Text = text });
     }

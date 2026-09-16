@@ -77,7 +77,18 @@ Three things are worth knowing about how that instance is used:
 - **Do not register an `IObjectConverter` that handles `Delegate`.** Global methods are `Delegate` values, and converters are consulted before Jint's own delegate wrapping, so such a converter would change the shape of the globals that are created on demand while leaving the eagerly created ones alone.
 - **Do not use `Engine.Advanced.HostDefined` on an engine the scripting engine created.** A global that is created on demand is built long after its engine was, so the services it belongs to have to travel with the engine, and that slot is where they travel. It is reachable, because `JavaScriptScope.Engine` is public. Writing to it replaces the services and the next global to be created is built from whatever was put there instead. A scope built around an engine of your own is the exception: it claims the slot only if nothing else has, so an engine you are already using it on keeps what you put there, and the registered globals on that engine fail with a message saying so rather than silently taking your value.
 
-No execution constraints are configured by default, so a script such as `while (true) {}` runs until the process is recycled. Sites that let non-administrators author scripts should set at least one.
+No execution *budget* is configured by default, so a script such as `while (true) {}` runs until the process is recycled. Sites that let non-administrators author scripts should set at least one of the limits above.
+
+One protection is on by default, because no budget substitutes for it: `Constraints.StackOverflowGuard`. An unbounded recursion — `function f() { return 1 + f(); }`, but equally a getter, a constructor or a `valueOf` that re-enters itself — overflows the native stack, and a native stack overflow is not an exception. It cannot be caught, it is not logged, and the whole process is killed rather than the one request. A budget does not help, because a budget is only reached by a script that survives long enough to spend it, and the overflow arrives in milliseconds: with `MaxStatements(10_000)` and `TimeoutInterval(TimeSpan.FromSeconds(5))` both set, that script still ends the process. With the guard on, it raises an ordinary `RangeError` that the script itself can catch, only the request that ran it fails, and the engine is still usable.
+
+The guard measures the remaining stack at every entry into a script function, which Jint's own benchmarks put at 1.7–2.3% on deeply recursive code and unmeasurable on ordinary calls. An application that has weighed that against its own scripts can turn it off:
+
+```csharp
+services.Configure<Jint.Options>(options =>
+{
+    options.Constraints.StackOverflowGuard = false;
+});
+```
 
 One constraint *is* registered, and it bounds nothing until asked to. `IScriptingManager.EvaluateAsync()` and `IScriptingEngine.EvaluateAsync()` take a `CancellationToken`, and Jint's own `EvaluateAsync` observes a token only while awaiting promise settlement — the script is interpreted to completion first. Forwarding the token there therefore bounded an evaluation that awaits something and nothing at all for one that does not, which is the case that matters. `AddJavaScriptEngine()` registers a `Jint.Constraints.OperationDeadlineConstraint` factory, and `JavaScriptEngine.EvaluateAsync()` arms that engine's instance with the token for the duration of the call. Three things follow:
 

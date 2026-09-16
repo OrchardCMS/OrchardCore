@@ -1,5 +1,19 @@
 namespace OrchardCore.DisplayManagement.Zones;
 
+/// <summary>
+/// Compares dot/colon separated position strings.
+/// <para>
+/// The total order, from first to last, is:
+/// <c>start</c> &lt; <c>before</c> &lt; numbers &lt; <c>after</c> &lt; free-text &lt; <c>end</c>.
+/// </para>
+/// <para>
+/// <c>before</c> and <c>after</c> are anchors within the numeric range (they normalize to very low
+/// and very high numbers), so a free-text position such as one produced by <c>PrefixPosition()</c>
+/// still sorts after <c>after</c>. Use the terminal sentinels <c>start</c> and <c>end</c> when an
+/// item must sort truly first or truly last regardless of any other position, including free text.
+/// Both sentinels support sub-ordering, e.g. <c>end.50</c> sorts before <c>end.100</c>.
+/// </para>
+/// </summary>
 public sealed class FlatPositionComparer : IComparer<IPositioned>, IComparer<string>
 {
     private static readonly char[] s_splitChars = ['.', ':'];
@@ -74,6 +88,24 @@ public sealed class FlatPositionComparer : IComparer<IPositioned>, IComparer<str
             var yPart = yParts.Current;
 #endif
 
+            // Terminal sentinels: `start` always sorts before everything else and `end` always
+            // sorts after everything else, regardless of numbers, `before`/`after`, or free text.
+            var xTier = GetSentinelTier(xPart);
+            var yTier = GetSentinelTier(yPart);
+
+            if (xTier != yTier)
+            {
+                return xTier < yTier ? -1 : 1;
+            }
+
+            if (xTier != 0)
+            {
+                // Both partitions are the same terminal sentinel (e.g. `end` vs `end.100`); the
+                // ordering is decided by the remaining partitions.
+                partIndex++;
+                continue;
+            }
+
             // Normalize known partitions
             var xIsInt = TryNormalizeKnownPartitions(xPart, out var xPos);
             var yIsInt = TryNormalizeKnownPartitions(yPart, out var yPos);
@@ -135,6 +167,23 @@ public sealed class FlatPositionComparer : IComparer<IPositioned>, IComparer<str
         span = span.TrimEnd('.');
 
         return span;
+    }
+
+    private static int GetSentinelTier(ReadOnlySpan<char> partition)
+    {
+        // `start` sorts before every non-sentinel position, `end` sorts after every non-sentinel
+        // position (including free text). Everything else lives in the middle tier.
+        if (partition.Equals("start", StringComparison.OrdinalIgnoreCase))
+        {
+            return -1;
+        }
+
+        if (partition.Equals("end", StringComparison.OrdinalIgnoreCase))
+        {
+            return 1;
+        }
+
+        return 0;
     }
 
     private static bool TryNormalizeKnownPartitions(ReadOnlySpan<char> partition, out int position)

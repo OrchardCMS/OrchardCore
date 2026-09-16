@@ -92,6 +92,13 @@ public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Query), S["The query field is required"]);
         }
+        else if (!ContainsLiquidSyntax(viewModel.Query))
+        {
+            foreach (var message in SqlParser.Validate(viewModel.Query))
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Query), message);
+            }
+        }
 
         viewModel.HasLiquidOutputExpressions = _outputExpressionDetector.ContainsOutputStatement(viewModel.Query);
 
@@ -112,4 +119,8 @@ public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
 
         return await EditAsync(query, context);
     }
+
+    private static bool ContainsLiquidSyntax(string query) =>
+        query.Contains("{{", StringComparison.Ordinal) ||
+        query.Contains("{%", StringComparison.Ordinal);
 }

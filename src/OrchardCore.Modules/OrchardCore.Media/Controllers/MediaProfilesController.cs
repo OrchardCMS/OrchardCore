@@ -61,7 +61,7 @@ public sealed class MediaProfilesController : Controller
             return Forbid();
         }
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
 
         var mediaProfilesDocument = await _mediaProfilesManager.GetMediaProfilesDocumentAsync();
         var mediaProfiles = mediaProfilesDocument.MediaProfiles.ToList();

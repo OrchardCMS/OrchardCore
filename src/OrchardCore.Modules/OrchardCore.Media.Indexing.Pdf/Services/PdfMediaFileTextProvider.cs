@@ -1,10 +1,18 @@
 using Cysharp.Text;
+using OrchardCore.FileStorage;
 using UglyToad.PdfPig;
 
 namespace OrchardCore.Media.Indexing;
 
 public class PdfMediaFileTextProvider : IMediaFileTextProvider
 {
+    private readonly ITempDirectoryProvider _tempDirectoryProvider;
+
+    public PdfMediaFileTextProvider(ITempDirectoryProvider tempDirectoryProvider)
+    {
+        _tempDirectoryProvider = tempDirectoryProvider;
+    }
+
     public async Task<string> GetTextAsync(string path, Stream fileStream)
     {
         // PdfPig requires the stream to be seekable, see:
@@ -16,7 +24,7 @@ public class PdfMediaFileTextProvider : IMediaFileTextProvider
         {
             if (!fileStream.CanSeek)
             {
-                seekableStream = new FileStream(Path.GetTempFileName(), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.DeleteOnClose);
+                seekableStream = new FileStream(_tempDirectoryProvider.GetTempFileName(), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
                 await fileStream.CopyToAsync(seekableStream);
 

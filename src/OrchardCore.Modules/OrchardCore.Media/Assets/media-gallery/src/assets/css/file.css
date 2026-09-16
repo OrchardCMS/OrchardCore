@@ -163,6 +163,28 @@
   background-color: var(--oc-media-tertiary-bg);
 }
 
+/* Kebab (⋮) menu triggers: fa-ellipsis-v is only a few pixels wide, and the padding
+   the buttons declare via tw: utilities loses to the unlayered per-context rules
+   below (folder tree, grid footer, list rows). A minimum hit target keeps them
+   clickable everywhere without disturbing those layouts. */
+.fileApp .action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.25rem;
+  min-height: 2.25rem;
+  /* The minimum width centers the icon ~10px further from the container's right
+     edge than the old icon-hugging buttons; pull it back so the dots keep their
+     flush-right position while the hit target stays wide. */
+  margin-inline-end: -0.625rem;
+}
+
+/* On the icon-sized buttons the .ma-btn-link hover fill was an invisible sliver;
+   at the widened hit target it becomes a loud box. Keep only the color change. */
+.fileApp .action-button:hover {
+  background-color: transparent;
+}
+
 .ma-badge {
   display: inline-flex;
   align-items: center;

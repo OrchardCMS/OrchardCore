@@ -104,7 +104,7 @@ public sealed class WorkflowController : Controller
             _ => query.OrderByDescending(x => x.CreatedUtc),
         };
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
 
         var routeData = new RouteData();
         routeData.Values.Add("Filter", model.Options.Filter);
