@@ -78,7 +78,7 @@
                         {
                             <span class="badge text-danger"><i class="fa-solid fa-power-off" aria-hidden="true"></i> @T["Disabled"]</span>
                         }
-                        @if (entry.WorkflowType.Activities.Count > 0 && !entry.WorkflowType.Activities.Any(x => x.IsStart))
+                        @if (entry.WorkflowType.IsMissingStartActivity())
                         {
                             <span class="badge text-warning"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> @T["No startup task"]</span>
                         }

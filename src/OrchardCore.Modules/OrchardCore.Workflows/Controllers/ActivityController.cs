@@ -108,7 +108,7 @@ public sealed class ActivityController : Controller
             Properties = activity.Properties,
 
             // A workflow can't run without a startup task, so make the first event the startup task.
-            IsStart = activity.IsEvent() && !workflowType.Activities.Any(x => _activityLibrary.GetActivityByName(x.Name)?.IsEvent() == true),
+            IsStart = activity.IsEvent() && !HasEventActivity(workflowType),
         };
         workflowType.Activities.Add(activityRecord);
 
@@ -176,4 +176,7 @@ public sealed class ActivityController : Controller
             ? (IActionResult)this.Redirect(model.ReturnUrl, true)
             : RedirectToAction(nameof(Edit), "WorkflowType", new { id = model.WorkflowTypeId });
     }
+
+    private bool HasEventActivity(WorkflowType workflowType)
+        => workflowType.Activities.Any(activityRecord => _activityLibrary.GetActivityByName(activityRecord.Name)?.IsEvent() == true);
 }
