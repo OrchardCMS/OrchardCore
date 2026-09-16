@@ -374,13 +374,13 @@ document.addEventListener('DOMContentLoaded', function () {
                         const culture = this.cultures.find(c => c.name === this.currentCulture);
                         this.isReadOnly = !culture || !culture.canEdit;
                     }
-                        } catch (error) {
-                        console.error('Load error:', error);
-                        this.showNotification(@Html.Raw(failedToLoadTranslations), 'danger');
-                    } finally {
-                        this.isLoading = false;
-                    }
-                },
+                } catch (error) {
+                    console.error('Load error:', error);
+                    this.showNotification(@Html.Raw(failedToLoadTranslations), 'danger');
+                } finally {
+                    this.isLoading = false;
+                }
+            },
             showNotification(message, type) {
                 // Create a simple toast notification
                 const toastContainer = document.querySelector('.toast-container') || this.createToastContainer();
