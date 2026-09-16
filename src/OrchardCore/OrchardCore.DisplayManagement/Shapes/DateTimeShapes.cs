@@ -11,6 +11,11 @@ namespace OrchardCore.DisplayManagement.Shapes;
 [Feature(Application.DefaultFeatureId)]
 public class DateTimeShapes : IShapeAttributeProvider
 {
+    private const string TimeTagName = "time";
+    private const string DateTimeAttributeName = "datetime";
+    private const string UtcDateTimeAttributeFormat = "yyyy-MM-ddTHH:mm:ssZ";
+    private const string LocalDateTimeAttributeFormat = "yyyy-MM-ddTHH:mm:sszzz";
+
     private readonly IClock _clock;
     private readonly ILocalClock _localClock;
     protected readonly IStringLocalizer S;
@@ -30,13 +35,25 @@ public class DateTimeShapes : IShapeAttributeProvider
     }
 
     [Shape]
-    public IHtmlContent TimeSpan(DateTime? Utc, DateTime? Origin)
+    public IHtmlContent TimeSpan(DateTime? Utc, DateTime? Origin, bool TimeTag)
     {
         Utc ??= _clock.UtcNow;
         Origin ??= _clock.UtcNow;
 
-        var time = Origin.Value - Utc.Value;
+        var text = GetRelativeTime(Origin.Value - Utc.Value);
 
+        if (!TimeTag)
+        {
+            return text;
+        }
+
+        var utc = System.DateTime.SpecifyKind(Utc.Value, DateTimeKind.Utc);
+
+        return CreateTimeTag(utc.ToString(UtcDateTimeAttributeFormat, CultureInfo.InvariantCulture), text);
+    }
+
+    private LocalizedHtmlString GetRelativeTime(TimeSpan time)
+    {
         if (time.TotalYears() > 1)
         {
             return H.Plural(time.TotalYears(), "1 year ago", "{0} years ago");
@@ -113,13 +130,29 @@ public class DateTimeShapes : IShapeAttributeProvider
     }
 
     [Shape]
-    public async Task<IHtmlContent> DateTime(IHtmlHelper Html, DateTime? Utc, string Format)
+    public async Task<IHtmlContent> DateTime(IHtmlHelper Html, DateTime? Utc, string Format, bool TimeTag)
     {
         Utc ??= _clock.UtcNow;
         var zonedTime = await _localClock.ConvertToLocalAsync(Utc.Value);
         Format ??= S["dddd, MMMM d, yyyy h:mm:ss tt"].Value;
 
-        return Html.Raw(Html.Encode(zonedTime.ToString(Format, CultureInfo.CurrentUICulture)));
+        var text = zonedTime.ToString(Format, CultureInfo.CurrentUICulture);
+
+        if (!TimeTag)
+        {
+            return Html.Raw(Html.Encode(text));
+        }
+
+        return CreateTimeTag(zonedTime.ToString(LocalDateTimeAttributeFormat, CultureInfo.InvariantCulture), new HtmlContentBuilder().Append(text));
+    }
+
+    private static TagBuilder CreateTimeTag(string dateTime, IHtmlContent content)
+    {
+        var tag = new TagBuilder(TimeTagName);
+        tag.Attributes[DateTimeAttributeName] = dateTime;
+        tag.InnerHtml.AppendHtml(content);
+
+        return tag;
     }
 
     [Shape]
