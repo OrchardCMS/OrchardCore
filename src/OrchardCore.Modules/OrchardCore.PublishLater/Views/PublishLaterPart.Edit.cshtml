@@ -6,7 +6,7 @@
 
 @if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, Model.ContentItem))
 {
-    <div class="btn-group mb-1">
+    <div class="btn-group action-bar-collapsible d-md-inline-block">
         <div class="input-group">
             <input asp-for="ScheduledPublishLocalDateTime" type="datetime-local" class="form-control content-preview-select" />
             <button class="btn btn-outline-success text-nowrap btn-publish-later" type="submit" name="submit.Save" value="submit.PublishLater">@T["Publish Later"]</button>
@@ -15,7 +15,7 @@
 
     @if (Model.ScheduledPublishUtc.HasValue)
     {
-        <div class="btn-group mb-1">
+        <div class="btn-group action-bar-collapsible d-md-inline-block">
             <button class="btn btn-warning text-nowrap btn-publish-later" type="submit" name="submit.Save" value="submit.CancelPublishLater">@T["Cancel Publish Later"]</button>
         </div>
     }

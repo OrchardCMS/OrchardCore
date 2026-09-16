@@ -38,6 +38,8 @@ $dropdown-max-height: 250px !default;
     /* Action bar should always be less than dropdown menu */
     --oc-action-bar-zindex: #{$zindex-dropdown - 20};
     --oc-second-action-bar-zindex: #{$zindex-dropdown - 17};
+    --oc-action-bar-bottom-zindex: #{$zindex-dropdown - 20};
+    --oc-action-bar-bottom-height: 0px;
     /* Undefined Bootstrap variables */
     --bs-dropdown-zindex: #{$zindex-dropdown};
     --bs-zindex-fixed: #{$zindex-fixed};
