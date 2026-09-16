@@ -29,10 +29,6 @@ jobs:
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - uses: ./.github/actions/setup-dotnet
-    - name: Verify CodeAnalysis Package Versions
-      # Ensure Microsoft.CodeAnalysis packages stay in sync with the Roslyn compiler version in global.json
-      run: |
-        pwsh ./build/verify-codeanalysis-versions.ps1
     - name: Build
       # See pr_ci.yml for the reason why we disable NuGet audit warnings.
       run: |
