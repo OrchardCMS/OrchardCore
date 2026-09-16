@@ -1,4 +1,5 @@
 @using Microsoft.AspNetCore.Mvc.Localization
+@using System.Text.Json
 @using OrchardCore.UrlRewriting.Endpoints.Rules
 
 @model ListRewriteRuleViewModel
@@ -131,6 +132,6 @@
 
 <script at="Foot" depends-on="sortable-rules">
     document.addEventListener('DOMContentLoaded', () => {
-        sortingListManager.create('#rewrite-rules-sortable-list', '@Url.RouteUrl(SortRulesEndpoint.RouteName, new { area = "OrchardCore.UrlRewriting" })', '@T["Unable to sort the list. Try refreshing your page and try again."]');
+        sortingListManager.create('#rewrite-rules-sortable-list', '@Url.RouteUrl(SortRulesEndpoint.RouteName, new { area = "OrchardCore.UrlRewriting" })', @Html.Raw(JConvert.SerializeObject(T["Unable to sort the list. Try refreshing your page and try again."].Value)));  
     });
 </script>
