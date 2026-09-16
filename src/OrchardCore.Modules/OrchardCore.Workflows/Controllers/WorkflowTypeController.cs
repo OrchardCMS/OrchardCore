@@ -513,6 +513,11 @@ public sealed class WorkflowTypeController : Controller
         await _workflowTypeStore.SaveAsync(workflowType);
         await _notifier.SuccessAsync(H["Workflow has been saved."]);
 
+        if (workflowType.Activities.Count > 0 && !workflowType.Activities.Any(x => x.IsStart))
+        {
+            await _notifier.WarningAsync(H["This workflow has no startup task, so it will never run. Select an event and mark it as the startup task."]);
+        }
+
         return RedirectToAction(nameof(Edit), new
         {
             id = model.Id,
