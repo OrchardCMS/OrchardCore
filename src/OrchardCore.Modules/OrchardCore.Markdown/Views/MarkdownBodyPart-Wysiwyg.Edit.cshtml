@@ -42,7 +42,7 @@
 @if (!string.IsNullOrWhiteSpace(wysiwygSettings.Options))
 {
     <text>
-            var customOptions = @Html.Raw(wysiwygSettings.Options);
+            var customOptions = JSON.parse(@Json.Serialize(string.IsNullOrWhiteSpace(wysiwygSettings.Options) ? "{}" : wysiwygSettings.Options));
             if (customOptions.toolbar) {
                 // Map custom button names to their full definitions from mdeToolbar.
                 var mdeToolbarMap = {};

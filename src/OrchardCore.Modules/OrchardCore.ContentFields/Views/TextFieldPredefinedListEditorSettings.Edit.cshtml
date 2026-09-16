@@ -5,7 +5,7 @@
 <style asp-src="~/OrchardCore.ContentFields/Styles/optionsEditor.min.css" debug-src="~/OrchardCore.ContentFields/Styles/optionsEditor.css"></style>
 
 <script at="Foot">
-    initializeOptionsEditor(document.getElementById('@Html.IdFor(m => m)'), @Html.Raw(Model.Options), '@Model.DefaultValue', document.getElementsByClassName('@Html.IdFor(m => m)-ModalBody'));
+    initializeOptionsEditor(document.getElementById('@Html.IdFor(m => m)'), JSON.parse(@Json.Serialize(string.IsNullOrWhiteSpace(Model.Options) ? "{}" : Model.Options)), @Json.Serialize(Model.DefaultValue), document.getElementsByClassName('@Html.IdFor(m => m)-ModalBody'));
 </script>
 
 <script type="text/x-template" id="options-table">
