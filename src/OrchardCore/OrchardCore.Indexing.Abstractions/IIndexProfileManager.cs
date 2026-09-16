@@ -5,6 +5,11 @@ using OrchardCore.Infrastructure.Entities;
 
 namespace OrchardCore.Indexing;
 
+/// <summary>Manages index profile definitions and their lifecycle handlers.</summary>
+/// <remarks>
+/// The default manager propagates mutation and validation handler failures.
+/// Failures after persistence do not imply that stored or provider state was rolled back.
+/// </remarks>
 public interface IIndexProfileManager
 {
     /// <summary>
@@ -83,7 +88,10 @@ public interface IIndexProfileManager
     ValueTask CreateAsync(IndexProfile indexProfile);
 
     /// <summary>
-    /// Asynchronously updates the specified model with optional additional data.
+    /// Applies optional additional data, validates the resulting model, and persists valid values.
+    /// Values applied by updating handlers are restored if updating or validation fails
+    /// before persistence. Validation errors throw an <see cref="IndexProfileValidationException"/>;
+    /// handler exceptions propagate. Post-persistence failures do not restore stored values.
     /// </summary>
     /// <param name="indexProfile">The model to be updated.</param>
     /// <param name="data">Optional additional data to update the model with. Defaults to <c>null</c>.</param>
@@ -133,7 +141,7 @@ public interface IIndexProfileManager
     ValueTask SynchronizeAsync(IndexProfile indexProfile);
 
     /// <summary>
-    /// Asynchronously resets the specified index entity.
+    /// Asynchronously resets the specified index entity. Required handler failures propagate to the caller.
     /// </summary>
     /// <param name="indexProfile">The index entity to reset.</param>
     /// <returns>

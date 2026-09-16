@@ -1,3 +1,7 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
+using OrchardCore.Indexing.Endpoints.Management;
+using OrchardCore.RemoteManagement;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.BackgroundTasks;
@@ -28,6 +32,7 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddIndexingCore();
+        services.AddSingleton<IRemoteManagementCapabilityProvider, IndexRemoteManagementCapabilityProvider>();
         services.AddDataMigration<RecordIndexingTaskMigrations>();
 
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -40,8 +45,16 @@ public sealed class Startup : StartupBase
         services.AddDataMigration<PreviewIndexingMigrations>();
 
         services
+            .AddIndexProvider<IndexOperationIndexProvider>()
+            .AddDataMigration<IndexOperationMigrations>()
             .AddIndexProvider<IndexProfileIndexProvider>()
             .AddDataMigration<IndexingMigrations>();
+    }
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        routes.AddIndexDiscoveryEndpoints();
+        routes.AddIndexLifecycleEndpoints();
     }
 }
 
@@ -53,6 +66,8 @@ public sealed class ContentStartup : StartupBase
         services.TryAddEnumerable(ServiceDescriptor.Scoped<IContentHandler, IndexingContentHandler>());
         services.AddScoped<IContentHandler, CreateIndexingTaskContentHandler>();
         services.TryAddScoped<ContentIndexingService>();
+        services.AddKeyedScoped<NamedIndexingService>(IndexingConstants.ContentsIndexSource,
+            (provider, _) => provider.GetRequiredService<ContentIndexingService>());
         services.AddIndexProfileHandler<ContentIndexProfileHandler>();
         services.AddDisplayDriver<IndexProfile, ContentIndexProfileDisplayDriver>();
         services.TryAddEnumerable(ServiceDescriptor.Scoped<IModularTenantEvents, ContentIndexInitializerService>());
@@ -77,8 +92,29 @@ public sealed class DeploymentsStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDeployment<IndexProfileDeploymentSource, IndexProfileDeploymentStep, IndexProfileDeploymentStepDisplayDriver>();
+        services.AddScoped<IDeploymentStepDefinition>(provider => new NamedSelectionDeploymentStepDefinition<IndexProfileDeploymentStep>(
+            nameof(IndexProfileDeploymentStep), "indexNames", async () => (await provider.GetRequiredService<IIndexProfileStore>().GetAllAsync()).Select(index => index.Name),
+            step => (step.IncludeAll, step.IndexNames), (step, includeAll, names) =>
+            {
+                step.IncludeAll = includeAll;
+                step.IndexNames = names;
+            }, requireSelection: true));
         services.AddDeployment<RebuildIndexDeploymentSource, RebuildIndexDeploymentStep, RebuildIndexDeploymentStepDriver>();
+        services.AddScoped<IDeploymentStepDefinition>(provider => new NamedSelectionDeploymentStepDefinition<RebuildIndexDeploymentStep>(
+            nameof(RebuildIndexDeploymentStep), "indexNames", async () => (await provider.GetRequiredService<IIndexProfileStore>().GetAllAsync()).Select(index => index.Name),
+            step => (step.IncludeAll, step.IndexNames), (step, includeAll, names) =>
+            {
+                step.IncludeAll = includeAll;
+                step.IndexNames = names;
+            }, requireSelection: true));
         services.AddDeployment<ResetIndexDeploymentSource, ResetIndexDeploymentStep, ResetIndexDeploymentStepDriver>();
+        services.AddScoped<IDeploymentStepDefinition>(provider => new NamedSelectionDeploymentStepDefinition<ResetIndexDeploymentStep>(
+            nameof(ResetIndexDeploymentStep), "indexNames", async () => (await provider.GetRequiredService<IIndexProfileStore>().GetAllAsync()).Select(index => index.Name),
+            step => (step.IncludeAll, step.IndexNames), (step, includeAll, names) =>
+            {
+                step.IncludeAll = includeAll;
+                step.IndexNames = names;
+            }, requireSelection: true));
     }
 }
 

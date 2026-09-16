@@ -1,12 +1,15 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Https.Settings;
+using OrchardCore.Https.Services;
+using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Https.ViewModels;
 using OrchardCore.Settings;
 
@@ -22,12 +25,14 @@ public sealed class HttpsSettingsDisplayDriver : SiteDisplayDriver<HttpsSettings
     private readonly INotifier _notifier;
 
     internal readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
 
     public HttpsSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         INotifier notifier,
+        IStringLocalizer<HttpsSettingsDisplayDriver> localizer,
         IHtmlLocalizer<HttpsSettingsDisplayDriver> htmlLocalizer)
     {
         _shellReleaseManager = shellReleaseManager;
@@ -35,6 +40,7 @@ public sealed class HttpsSettingsDisplayDriver : SiteDisplayDriver<HttpsSettings
         _authorizationService = authorizationService;
         _notifier = notifier;
         H = htmlLocalizer;
+        S = localizer;
     }
     protected override string SettingsGroupId
         => GroupId;
@@ -87,12 +93,24 @@ public sealed class HttpsSettingsDisplayDriver : SiteDisplayDriver<HttpsSettings
             return await EditAsync(site, settings, context);
         }
 
-        settings.StrictTransportSecurityMode = model.StrictTransportSecurityMode;
-        settings.RequireHttps = model.RequireHttps;
-        settings.RequireHttpsPermanent = model.RequireHttpsPermanent;
-        settings.SslPort = model.SslPort;
-
-        _shellReleaseManager.RequestRelease();
+        var proposed = new HttpsSettings
+        {
+            StrictTransportSecurityMode = model.StrictTransportSecurityMode,
+            RequireHttps = model.RequireHttps,
+            RequireHttpsPermanent = model.RequireHttpsPermanent,
+            SslPort = model.SslPort,
+        };
+        foreach (var error in HttpsSettingsEditor.Validate(proposed, S))
+        {
+            foreach (var message in error.Value)
+            {
+                context.Updater.ModelState.AddModelError(Prefix, error.Key, message);
+            }
+        }
+        if (context.Updater.ModelState.IsValid && HttpsSettingsEditor.Apply(settings, proposed))
+        {
+            _shellReleaseManager.RequestRelease();
+        }
 
         return await EditAsync(site, settings, context);
     }

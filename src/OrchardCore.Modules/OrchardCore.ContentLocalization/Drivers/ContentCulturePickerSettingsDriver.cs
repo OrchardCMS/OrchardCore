@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentLocalization.Models;
+using OrchardCore.ContentLocalization.Services;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -52,7 +53,9 @@ public sealed class ContentCulturePickerSettingsDriver : SiteDisplayDriver<Conte
             return null;
         }
 
-        await context.Updater.TryUpdateModelAsync(section, Prefix);
+        var proposed = new ContentCulturePickerSettings { SetCookie = section.SetCookie, RedirectToHomepage = section.RedirectToHomepage };
+        await context.Updater.TryUpdateModelAsync(proposed, Prefix);
+        ContentCultureSettingsEditor.Apply(section, proposed);
 
         return await EditAsync(site, section, context);
     }

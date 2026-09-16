@@ -1,4 +1,5 @@
 using OrchardCore.Deployment.ViewModels;
+using OrchardCore.Deployment.Services;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
@@ -42,10 +43,7 @@ public sealed class DeploymentPlanDeploymentStepDriver : DisplayDriver<Deploymen
                                           x => x.IncludeAll);
 
         // Don't have the selected option if include all.
-        if (step.IncludeAll)
-        {
-            step.DeploymentPlanNames = [];
-        }
+        DeploymentStepValidation.Normalize(step);
 
         return Edit(step, context);
     }

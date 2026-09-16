@@ -1,3 +1,7 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
+using OrchardCore.RemoteManagement;
+using OrchardCore.AuditTrail.Endpoints;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,8 +28,14 @@ namespace OrchardCore.AuditTrail;
 
 public sealed class Startup : StartupBase
 {
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        routes.AddAuditTrailEndpoints();
+    }
+
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddSingleton<IRemoteManagementCapabilityProvider, AuditTrailCapabilityProvider>();
         // Add ILookupNormalizer as Singleton because it is needed by Users
         services.TryAddSingleton<ILookupNormalizer, UpperInvariantLookupNormalizer>();
 

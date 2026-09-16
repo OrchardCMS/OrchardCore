@@ -1,14 +1,14 @@
-using System.IO.Compression;
+using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
 using OrchardCore.Deployment.Services;
+using OrchardCore.Deployment.Core.Services;
 using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.FileStorage;
@@ -25,16 +25,17 @@ public sealed class ImportController : Controller
     private readonly INotifier _notifier;
     private readonly ILogger _logger;
     private readonly FileCreationService _fileCreationService;
-    private readonly ITempDirectoryProvider _tempDirectoryProvider;
+    private readonly DeploymentPackageService _packages;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
 
+    /// <summary>Creates admin import actions with shared package validation and staging.</summary>
     public ImportController(
         IDeploymentManager deploymentManager,
         IAuthorizationService authorizationService,
         FileCreationService fileCreationService,
-        ITempDirectoryProvider tempDirectoryProvider,
+        DeploymentPackageService packages,
         INotifier notifier,
         ILogger<ImportController> logger,
         IHtmlLocalizer<ImportController> htmlLocalizer,
@@ -44,7 +45,7 @@ public sealed class ImportController : Controller
         _deploymentManager = deploymentManager;
         _authorizationService = authorizationService;
         _fileCreationService = fileCreationService;
-        _tempDirectoryProvider = tempDirectoryProvider;
+        _packages = packages;
         _notifier = notifier;
         _logger = logger;
         H = htmlLocalizer;
@@ -71,9 +72,6 @@ public sealed class ImportController : Controller
 
         if (importedPackage != null)
         {
-            var tempArchiveName = _tempDirectoryProvider.GetTempFileName(Path.GetExtension(importedPackage.FileName));
-            var tempArchiveFolder = _tempDirectoryProvider.GetTempFileName();
-
             try
             {
                 await using var uploadedStream = importedPackage.OpenReadStream();
@@ -89,28 +87,8 @@ public sealed class ImportController : Controller
                     return RedirectToAction(nameof(Index));
                 }
 
-                await using (var stream = new FileStream(tempArchiveName, FileMode.Create))
-                {
-                    await fileCreatingResult.Stream.CopyToAsync(stream, HttpContext.RequestAborted);
-                }
-
-                if (importedPackage.FileName.EndsWith(".zip"))
-                {
-                    ZipFile.ExtractToDirectory(tempArchiveName, tempArchiveFolder);
-                }
-                else if (importedPackage.FileName.EndsWith(".json"))
-                {
-                    Directory.CreateDirectory(tempArchiveFolder);
-                    System.IO.File.Move(tempArchiveName, Path.Combine(tempArchiveFolder, "Recipe.json"));
-                }
-                else
-                {
-                    await _notifier.ErrorAsync(H["Only zip or json files are supported."]);
-
-                    return RedirectToAction(nameof(Index));
-                }
-
-                await _deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
+                using var package = await _packages.StageAsync(fileCreatingResult.Stream, importedPackage.FileName, HttpContext.RequestAborted);
+                await _deploymentManager.ImportDeploymentPackageAsync(package.FileProvider);
 
                 await _notifier.SuccessAsync(H["Deployment package imported."]);
             }
@@ -126,18 +104,7 @@ public sealed class ImportController : Controller
 
                 await _notifier.ErrorAsync(H["Unexpected error occurred while importing the deployment package."]);
             }
-            finally
-            {
-                if (System.IO.File.Exists(tempArchiveName))
-                {
-                    System.IO.File.Delete(tempArchiveName);
-                }
 
-                if (Directory.Exists(tempArchiveFolder))
-                {
-                    Directory.Delete(tempArchiveFolder, true);
-                }
-            }
         }
         else
         {
@@ -172,13 +139,11 @@ public sealed class ImportController : Controller
 
         if (ModelState.IsValid)
         {
-            var tempArchiveFolder = _tempDirectoryProvider.CreateTempSubdirectory();
-
             try
             {
-                System.IO.File.WriteAllText(Path.Combine(tempArchiveFolder, "Recipe.json"), model.Json);
-
-                await _deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
+                using var input = new MemoryStream(Encoding.UTF8.GetBytes(model.Json));
+                using var package = await _packages.StageAsync(input, "Recipe.json", HttpContext.RequestAborted);
+                await _deploymentManager.ImportDeploymentPackageAsync(package.FileProvider);
 
                 await _notifier.SuccessAsync(H["Recipe imported successfully!"]);
             }
@@ -194,13 +159,7 @@ public sealed class ImportController : Controller
 
                 ModelState.AddModelError(string.Empty, S["Unexpected error occurred while importing the recipe."]);
             }
-            finally
-            {
-                if (Directory.Exists(tempArchiveFolder))
-                {
-                    Directory.Delete(tempArchiveFolder, true);
-                }
-            }
+
         }
 
         return RedirectToAction(nameof(Json));

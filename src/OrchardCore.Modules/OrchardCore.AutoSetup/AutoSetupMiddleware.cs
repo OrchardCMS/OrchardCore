@@ -142,6 +142,11 @@ public class AutoSetupMiddleware
                         }
                     }
 
+                    if (!string.IsNullOrWhiteSpace(_setupOptions.RemoteManagementClientId))
+                    {
+                        httpContext.Response.Headers["X-OrchardCore-Provisioned-Client"] = _setupOptions.RemoteManagementClientId;
+                    }
+
                     httpContext.Response.Redirect(pathBase);
                     return;
                 }

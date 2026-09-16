@@ -1,0 +1,58 @@
+@using Microsoft.Extensions.Primitives
+@using OrchardCore.OpenId.ViewModels
+@model VerifyViewModel
+
+@{
+    ViewLayout = "Layout__Login";
+}
+
+<div class="saas-auth-content">
+    <span class="saas-eyebrow">@T["Device verification"]</span>
+    <h1>@T["Connect a trusted device"]</h1>
+
+    @if (string.IsNullOrEmpty(Model.UserCode) || !string.IsNullOrEmpty(Model.Error))
+    {
+        @if (!string.IsNullOrEmpty(Model.Error) && !string.IsNullOrEmpty(Model.ErrorDescription))
+        {
+            <div class="alert alert-warning" role="alert">
+                <strong>@T["We could not verify that code."]</strong>
+                <span>@Model.ErrorDescription (@Model.Error)</span>
+            </div>
+        }
+
+        <p>@T["Enter the code displayed by the Pomi CLI to continue securely."]</p>
+
+        <form asp-controller="Access" asp-action="Verify" method="get" class="no-multisubmit">
+            <div class="mb-4">
+                <label class="form-label" for="user_code">@T["Device code"]</label>
+                <input class="form-control form-control-lg saas-device-code" id="user_code" name="user_code" type="text" value="@Model.UserCode" autocomplete="one-time-code" inputmode="text" />
+                <div class="form-text">@T["The code is not case-sensitive."]</div>
+            </div>
+
+            <button class="btn btn-primary btn-lg w-100" type="submit">@T["Continue"]</button>
+        </form>
+    }
+    else
+    {
+        <p>@T["Confirm that <strong>{0}</strong> may access this tenant.", Model.ApplicationName]</p>
+
+        <div class="saas-device-confirmation" role="note">
+            <span>@T["Confirm this code"]</span>
+            <strong>@Model.UserCode</strong>
+        </div>
+        <p class="saas-auth-muted">@T["Only continue when this code matches the one shown on your device."]</p>
+
+        <form asp-controller="Access" asp-action="Verify" method="post" class="no-multisubmit">
+            @foreach (var parameter in Context.Request.HasFormContentType ?
+              (IEnumerable<KeyValuePair<string, StringValues>>)Context.Request.Form : Context.Request.Query)
+            {
+                <input type="hidden" name="@parameter.Key" value="@parameter.Value" />
+            }
+
+            <div class="saas-auth-actions">
+                <button class="btn btn-primary btn-lg" name="submit.Accept" type="submit" value="yes">@T["Confirm device"]</button>
+                <button class="btn btn-link" name="submit.Deny" type="submit" value="no">@T["Deny"]</button>
+            </div>
+        </form>
+    }
+</div>

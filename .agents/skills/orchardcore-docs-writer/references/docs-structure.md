@@ -36,6 +36,7 @@ python -m mkdocs build   # static output
 | `getting-started/` | install, CMS setup, theme, dev tools |
 | `guides/` | 20+ tutorials, each `guides/<name>/README.md` |
 | `reference/` | API + module reference |
+| `reference/api/<resource>/README.md` | OpenAPI management endpoint reference |
 | `reference/modules/<Name>/README.md` | one folder per module (~100), no `OrchardCore.` prefix |
 | `reference/glossary/`, `branding/`, `libraries/` | supporting reference |
 | `releases/` | per-version release notes |
@@ -57,6 +58,10 @@ nav:
   - Key Topics:
       - Manage your Content: topics/content-management/README.md
   - Reference:
+      - API Reference:
+          - Overview: reference/api/README.md
+          - Content:
+              - Content items: reference/api/content-items/README.md
       - Modules:
           - Overview: reference/README.md
           - CMS Modules:

@@ -88,6 +88,26 @@
         </div>
     </div>
 
+    <div class="ocat-wrapper" asp-validation-class-for="EnableDeviceAuthorizationEndpoint">
+        <div class="ocat-end-offset">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" asp-for="EnableDeviceAuthorizationEndpoint">
+                <label class="form-check-label" asp-for="EnableDeviceAuthorizationEndpoint">@T["Enable Device Authorization Endpoint"]</label>
+                <span class="hint dashed">@T["Enables the endpoint:"]</span> <code>/connect/device</code>
+            </div>
+        </div>
+    </div>
+
+    <div class="ocat-wrapper" asp-validation-class-for="EnableEndUserVerificationEndpoint">
+        <div class="ocat-end-offset">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" asp-for="EnableEndUserVerificationEndpoint">
+                <label class="form-check-label" asp-for="EnableEndUserVerificationEndpoint">@T["Enable End-User Verification Endpoint"]</label>
+                <span class="hint dashed">@T["Enables the endpoint:"]</span> <code>/connect/verify</code>
+            </div>
+        </div>
+    </div>
+
     <div class="ocat-wrapper" asp-validation-class-for="EnableRevocationEndpoint">
         <div class="ocat-end-offset">
             <div class="form-check">
@@ -112,6 +132,16 @@
                 <input type="checkbox" class="form-check-input" asp-for="AllowAuthorizationCodeFlow">
                 <label class="form-check-label" asp-for="AllowAuthorizationCodeFlow">@T["Allow Authorization Code Flow"]</label>
                 <span class="hint dashed">@T["Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Authorization Code Flow.", "http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth"]</span>
+            </div>
+        </div>
+    </div>
+
+    <div class='ocat-wrapper collapse' asp-validation-class-for="AllowDeviceAuthorizationFlow">
+        <div class="ocat-end-offset">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" asp-for="AllowDeviceAuthorizationFlow">
+                <label class="form-check-label" asp-for="AllowDeviceAuthorizationFlow">@T["Allow Device Authorization Flow"]</label>
+                <span class="hint dashed">@T["Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Device Authorization Grant.", "https://datatracker.ietf.org/doc/html/rfc8628"]</span>
             </div>
         </div>
     </div>
@@ -459,7 +489,7 @@
         getElement("@Html.IdFor(m => m.SigningCertificateStoreName)").addEventListener('change', function () {
             refreshSigningCertificates();
         });
-        document.querySelectorAll("#@Html.IdFor(m => m.EnableTokenEndpoint), #@Html.IdFor(m => m.EnableAuthorizationEndpoint), #@Html.IdFor(m => m.AllowPasswordFlow), #@Html.IdFor(m => m.AllowAuthorizationCodeFlow), #@Html.IdFor(m => m.AllowAuthorizationCodeFlow), #@Html.IdFor(m => m.AllowHybridFlow)").forEach(function (element) {
+        document.querySelectorAll("#@Html.IdFor(m => m.EnableTokenEndpoint), #@Html.IdFor(m => m.EnableAuthorizationEndpoint), #@Html.IdFor(m => m.EnableDeviceAuthorizationEndpoint), #@Html.IdFor(m => m.EnableEndUserVerificationEndpoint), #@Html.IdFor(m => m.AllowPasswordFlow), #@Html.IdFor(m => m.AllowAuthorizationCodeFlow), #@Html.IdFor(m => m.AllowDeviceAuthorizationFlow), #@Html.IdFor(m => m.AllowHybridFlow)").forEach(function (element) {
             element.addEventListener('change', function () {
             refreshEndpoints();
             });
@@ -531,6 +561,7 @@
         function refreshEndpoints() {
             refreshEnableTokenEndpoint();
             refreshAllowAuthorizationCodeFlowVisibility();
+            refreshAllowDeviceAuthorizationFlowVisibility();
             refreshEnableAuthorizationEndpoint();
             refreshAllowHybridFlowVisibility();
             refreshAllowRefreshTokenFlowVisibility();
@@ -577,6 +608,18 @@
                 setCollapse(allowAuthorizationCodeFlow.closest('.collapse'), "hide");
             }
         }
+        function refreshAllowDeviceAuthorizationFlowVisibility() {
+            var allowDeviceAuthorizationFlow = getElement("@Html.IdFor(m => m.AllowDeviceAuthorizationFlow)");
+            if (getElement("@Html.IdFor(m => m.EnableTokenEndpoint)").checked
+                && getElement("@Html.IdFor(m => m.EnableDeviceAuthorizationEndpoint)").checked
+                && getElement("@Html.IdFor(m => m.EnableEndUserVerificationEndpoint)").checked) {
+                setCollapse(allowDeviceAuthorizationFlow.closest('.collapse'), "show");
+            }
+            else {
+                allowDeviceAuthorizationFlow.checked = false;
+                setCollapse(allowDeviceAuthorizationFlow.closest('.collapse'), "hide");
+            }
+        }
         function refreshAllowHybridFlowVisibility() {
             var allowHybridFlow = getElement("@Html.IdFor(m => m.AllowHybridFlow)");
             if (getElement("@Html.IdFor(m => m.EnableTokenEndpoint)").checked && getElement("@Html.IdFor(m => m.EnableAuthorizationEndpoint)").checked) {
@@ -592,6 +635,7 @@
             if (getElement("@Html.IdFor(m => m.EnableTokenEndpoint)").checked
                 && (getElement("@Html.IdFor(m => m.AllowPasswordFlow)").checked ||
                     getElement("@Html.IdFor(m => m.AllowAuthorizationCodeFlow)").checked ||
+                    getElement("@Html.IdFor(m => m.AllowDeviceAuthorizationFlow)").checked ||
                     getElement("@Html.IdFor(m => m.AllowHybridFlow)").checked)) {
                 setCollapse(allowRefreshTokenFlow.closest('.collapse'), "show");
             }

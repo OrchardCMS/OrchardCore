@@ -13,7 +13,7 @@ namespace OrchardCore.Indexing.Core.Handlers;
 
 internal sealed class DefaultIndexProfileHandler : IndexProfileHandlerBase
 {
-    private readonly IIndexProfileStore _store;
+    private readonly IndexProfileIdentityValidator _identities;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IServiceProvider _serviceProvider;
     private readonly IndexingOptions _indexingOptions;
@@ -22,14 +22,14 @@ internal sealed class DefaultIndexProfileHandler : IndexProfileHandlerBase
     internal readonly IStringLocalizer S;
 
     public DefaultIndexProfileHandler(
-        IIndexProfileStore store,
+        IndexProfileIdentityValidator identities,
         IHttpContextAccessor httpContextAccessor,
         IServiceProvider serviceProvider,
         IOptions<IndexingOptions> indexingOptions,
         IClock clock,
         IStringLocalizer<DefaultIndexProfileHandler> stringLocalizer)
     {
-        _store = store;
+        _identities = identities;
         _httpContextAccessor = httpContextAccessor;
         _serviceProvider = serviceProvider;
         _indexingOptions = indexingOptions.Value;
@@ -45,37 +45,12 @@ internal sealed class DefaultIndexProfileHandler : IndexProfileHandlerBase
 
     public override async Task ValidatingAsync(ValidatingContext<IndexProfile> context)
     {
-        if (string.IsNullOrWhiteSpace(context.Model.Name))
+        foreach (var error in await _identities.ValidateAsync(context.Model))
         {
-            context.Result.Fail(new ValidationResult(S["Index name is required."], [nameof(IndexProfile.Name)]));
-        }
-        else
-        {
-            if (context.Model.Name.Length > 255)
-            {
-                context.Result.Fail(new ValidationResult(S["The index name cannot be longer than 255 characters."], [nameof(IndexProfile.Name)]));
-            }
-            else
-            {
-                var existing = await _store.FindByNameAsync(context.Model.Name);
-
-                if (existing is not null && existing.Id != context.Model.Id)
-                {
-                    context.Result.Fail(new ValidationResult(S["There is already another index with the same name."], [nameof(IndexProfile.Name)]));
-                }
-            }
+            context.Result.Fail(error);
         }
 
         var hasIndexName = !string.IsNullOrWhiteSpace(context.Model.IndexName);
-
-        if (!hasIndexName)
-        {
-            context.Result.Fail(new ValidationResult(S["The index name is required."], [nameof(IndexProfile.IndexName)]));
-        }
-        else if (context.Model.IndexName.Length > 255)
-        {
-            context.Result.Fail(new ValidationResult(S["The index name cannot be longer than 255 characters."], [nameof(IndexProfile.IndexName)]));
-        }
 
         if (string.IsNullOrWhiteSpace(context.Model.IndexFullName))
         {

@@ -1,3 +1,4 @@
+using OrchardCore.Users.Services.Management;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
@@ -54,7 +55,12 @@ public sealed class ExternalRegistrationSettingsDisplayDriver : SiteDisplayDrive
             return null;
         }
 
-        await context.Updater.TryUpdateModelAsync(settings, Prefix);
+        var model = UserPolicySettingsEditor.Clone(settings);
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        if (context.Updater.ModelState.IsValid)
+        {
+            UserPolicySettingsEditor.Apply(settings, model);
+        }
 
         return await EditAsync(site, settings, context);
     }

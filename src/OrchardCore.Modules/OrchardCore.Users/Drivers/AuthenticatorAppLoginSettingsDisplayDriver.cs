@@ -1,3 +1,4 @@
+using OrchardCore.Users.Services.Management;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
@@ -42,17 +43,13 @@ public sealed class AuthenticatorAppLoginSettingsDisplayDriver : SiteDisplayDriv
             return null;
         }
 
-        await context.Updater.TryUpdateModelAsync(section, Prefix);
-
-        // A possible issue in Identity prevents from validation token that are not 6 in length.
-        // If this limitation is lifted, the following block can be uncommented.
-        // For more info read https://github.com/dotnet/aspnetcore/issues/48317
-        /*
-        if (section.TokenLength != 6 && section.TokenLength != 8)
+        var model = UserPolicySettingsEditor.Clone(section);
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        model.TokenLength = 6;
+        if (context.Updater.ModelState.IsValid)
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(section.TokenLength), S["The token length should be either 6 or 8."]);
+            UserPolicySettingsEditor.Apply(section, model);
         }
-        */
 
         return Edit(site, section, context);
     }

@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Admin.Models;
 using OrchardCore.ContentLocalization.Drivers;
+using OrchardCore.ContentLocalization.Endpoints;
+using OrchardCore.RemoteManagement;
 using OrchardCore.ContentLocalization.Indexing;
 using OrchardCore.ContentLocalization.Liquid;
 using OrchardCore.ContentLocalization.Security;
@@ -21,6 +23,7 @@ using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Settings;
 using OrchardCore.Sitemaps.Builders;
 
 namespace OrchardCore.ContentLocalization;
@@ -38,6 +41,8 @@ public sealed class Startup : StartupBase
         services.AddScoped<IContentPartIndexHandler, LocalizationPartIndexHandler>();
         services.AddSingleton<ILocalizationEntries, LocalizationEntries>();
         services.AddContentLocalization();
+        services.AddScoped<IContentLocalizationService, ContentLocalizationService>();
+        services.AddSingleton<IRemoteManagementCapabilityProvider, ContentLocalizationRemoteManagementCapabilityProvider>();
 
         services.AddPermissionProvider<Permissions>();
         services.AddScoped<IAuthorizationHandler, LocalizeContentAuthorizationHandler>();
@@ -45,6 +50,10 @@ public sealed class Startup : StartupBase
         services.AddScoped<IContentsAdminListFilter, LocalizationPartContentsAdminListFilter>();
         services.AddTransient<IContentsAdminListFilterProvider, LocalizationPartContentsAdminListFilterProvider>();
         services.AddDisplayDriver<ContentOptionsViewModel, LocalizationContentsAdminListDisplayDriver>();
+    }
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        routes.AddContentLocalizationEndpoints();
     }
 }
 
@@ -66,6 +75,7 @@ public sealed class ContentPickerStartup : StartupBase
         services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IContentCulturePickerService, ContentCulturePickerService>();
         services.AddSiteDisplayDriver<ContentCulturePickerSettingsDriver>();
+        services.AddScoped<ISiteSettingsSectionProvider, ContentCultureSettingsSectionProvider>();
         services.AddSiteDisplayDriver<ContentRequestCultureProviderSettingsDriver>();
 
         services.Configure<RequestLocalizationOptions>(options => options.AddInitialRequestCultureProvider(new ContentRequestCultureProvider()));

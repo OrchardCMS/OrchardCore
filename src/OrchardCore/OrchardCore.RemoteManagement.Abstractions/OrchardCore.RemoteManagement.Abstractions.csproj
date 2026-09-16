@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>OrchardCore.RemoteManagement</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Remote Management Abstractions</Title>
+    <Description>$(OCCMSDescription)
+
+    Abstractions for Orchard Core remote management capabilities.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Abstractions RemoteManagement</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -137,15 +137,9 @@ public sealed class ApplicationController : Controller
             return Forbid();
         }
 
-        if (!string.IsNullOrEmpty(model.ClientSecret) &&
-             string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
+        foreach (var error in OpenIdApplicationExtensions.ValidateClientSettings(model.Type, model.ApplicationType, model.ClientSecret, S, isNew: true))
         {
-            ModelState.AddModelError(nameof(model.ClientSecret), S["No client secret can be set for public applications."]);
-        }
-        else if (string.IsNullOrEmpty(model.ClientSecret) &&
-                 string.Equals(model.Type, OpenIddictConstants.ClientTypes.Confidential, StringComparison.OrdinalIgnoreCase))
-        {
-            ModelState.AddModelError(nameof(model.ClientSecret), S["The client secret is required for confidential applications."]);
+            ModelState.AddModelError(error.MemberNames.Single(), error.ErrorMessage);
         }
 
         if (!string.IsNullOrEmpty(model.ClientId) && await _applicationManager.FindByClientIdAsync(model.ClientId) != null)
@@ -164,6 +158,7 @@ public sealed class ApplicationController : Controller
         {
             AllowAuthorizationCodeFlow = model.AllowAuthorizationCodeFlow,
             AllowClientCredentialsFlow = model.AllowClientCredentialsFlow,
+            AllowDeviceAuthorizationFlow = model.AllowDeviceAuthorizationFlow,
             AllowHybridFlow = model.AllowHybridFlow,
             AllowImplicitFlow = model.AllowImplicitFlow,
             AllowIntrospectionEndpoint = model.AllowIntrospectionEndpoint,
@@ -175,6 +170,7 @@ public sealed class ApplicationController : Controller
             ClientSecret = model.ClientSecret,
             ConsentType = model.ConsentType,
             DisplayName = model.DisplayName,
+            ApplicationType = model.ApplicationType,
             PostLogoutRedirectUris = model.PostLogoutRedirectUris,
             RedirectUris = model.RedirectUris,
             Roles = model.RoleEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
@@ -212,10 +208,14 @@ public sealed class ApplicationController : Controller
 
         var model = new EditOpenIdApplicationViewModel
         {
+            ApplicationType = await _applicationManager.GetApplicationTypeAsync(application) ?? OpenIddictConstants.ApplicationTypes.Web,
             AllowAuthorizationCodeFlow = await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode) &&
                                          await HasPermissionAsync(OpenIddictConstants.Permissions.ResponseTypes.Code),
 
             AllowClientCredentialsFlow = await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.ClientCredentials),
+
+            AllowDeviceAuthorizationFlow = await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.DeviceCode) &&
+                                           await HasPermissionAsync(OpenIddictConstants.Permissions.Endpoints.DeviceAuthorization),
 
             // Note: the hybrid flow doesn't have a dedicated grant_type but is treated as a combination
             // of both the authorization code and implicit grants. As such, to determine whether the hybrid
@@ -297,18 +297,10 @@ public sealed class ApplicationController : Controller
             return NotFound();
         }
 
-        // If the application was a public client and is now a confidential client, ensure a client secret was provided.
-        if (string.IsNullOrEmpty(model.ClientSecret) &&
-           !string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase) &&
-            await _applicationManager.HasClientTypeAsync(application, OpenIddictConstants.ClientTypes.Public))
+        foreach (var error in OpenIdApplicationExtensions.ValidateClientSettings(model.Type, model.ApplicationType, model.ClientSecret, S,
+            isNew: false, wasPublic: await _applicationManager.HasClientTypeAsync(application, OpenIddictConstants.ClientTypes.Public)))
         {
-            ModelState.AddModelError(nameof(model.ClientSecret), S["Setting a new client secret is required."]);
-        }
-
-        if (!string.IsNullOrEmpty(model.ClientSecret) &&
-             string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
-        {
-            ModelState.AddModelError(nameof(model.ClientSecret), S["No client secret can be set for public applications."]);
+            ModelState.AddModelError(error.MemberNames.Single(), error.ErrorMessage);
         }
 
         if (ModelState.IsValid)
@@ -333,6 +325,7 @@ public sealed class ApplicationController : Controller
         {
             AllowAuthorizationCodeFlow = model.AllowAuthorizationCodeFlow,
             AllowClientCredentialsFlow = model.AllowClientCredentialsFlow,
+            AllowDeviceAuthorizationFlow = model.AllowDeviceAuthorizationFlow,
             AllowHybridFlow = model.AllowHybridFlow,
             AllowImplicitFlow = model.AllowImplicitFlow,
             AllowIntrospectionEndpoint = model.AllowIntrospectionEndpoint,
@@ -344,6 +337,7 @@ public sealed class ApplicationController : Controller
             ClientSecret = model.ClientSecret,
             ConsentType = model.ConsentType,
             DisplayName = model.DisplayName,
+            ApplicationType = model.ApplicationType,
             PostLogoutRedirectUris = model.PostLogoutRedirectUris,
             RedirectUris = model.RedirectUris,
             Roles = model.RoleEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),

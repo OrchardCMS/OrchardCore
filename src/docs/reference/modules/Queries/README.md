@@ -2,6 +2,10 @@
 
 The queries module provides a management UI and APIs for querying data.
 
+## Management API reference
+
+See the [Query management API](../../api/queries/README.md) for OpenAPI operations that manage saved queries, inspect query-source schemas, and execute queries.
+
 ## Creating custom query sources
 
 ### Query
@@ -355,3 +359,17 @@ To :
   count:1231
 }
 ```
+
+## Query-based content deployment
+
+With Deployment enabled, `QueryBasedContentDeploymentStep` exposes an explicit
+configuration schema through deployment plan management, Pomi and MCP. Set
+`queryName` to an existing query that returns content items. `queryParameters` is
+a string containing a JSON object; use JSON null to clear this optional string.
+The string `"null"` is rejected by the configuration editor. `exportAsSetupRecipe`
+controls the existing source's setup-recipe identity rewriting.
+
+Updates retain omitted properties and reject invalid changes before mutating the
+stored step. The administration editor and remote adapter share query and parameter
+validation; the deployment source uses the same parser. Existing stored steps with
+the parameter string `"null"` continue exporting with empty parameters.

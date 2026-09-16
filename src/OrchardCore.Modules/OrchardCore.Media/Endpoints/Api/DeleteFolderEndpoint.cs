@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Media.Services;
+using OrchardCore.Media.ViewModels;
+using OrchardCore.RemoteManagement;
 
 namespace OrchardCore.Media.Endpoints.Api;
 
@@ -14,12 +16,24 @@ public static class DeleteFolderEndpoint
 {
     public static IEndpointRouteBuilder AddDeleteFolderEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapPost("api/media/DeleteFolder", HandleAsync)
+        builder.MapLegacyPost("api/media/DeleteFolder", HandleLegacyAsync)
+            .AddEndpointFilter<MediaApiAntiforgeryEndpointFilter>();
+
+        builder.MapManagementDelete("api/media/folder", HandleAsync)
             .WithName("ApiDeleteFolder")
-            .WithTags("MediaApi")
-            .DisableAntiforgery()
-            .AddEndpointFilter<MediaApiAntiforgeryEndpointFilter>()
-            .Produces(StatusCodes.Status200OK)
+            .WithSummary("Deletes a media folder.")
+            .WithDescription("Deletes a media folder when it is not the root or a protected system folder and the caller is allowed to manage it.")
+            .WithCliCommand(new CliOperationMetadata(["media", "folders"], "delete")
+            {
+                Capability = MediaApiEndpointConventions.CapabilityName,
+                RequiresConfirmation = true,
+                Arguments =
+                {
+                    new CliArgumentMetadata("path", 0),
+                },
+            })
+            .Produces<DeleteFolderResultDto>(StatusCodes.Status200OK)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
@@ -27,8 +41,59 @@ public static class DeleteFolderEndpoint
         return builder;
     }
 
-    [Authorize(Policy = MediaApiConstants.AuthorizationPolicyName)]
-    private static async Task<IResult> HandleAsync(
+    private static Task<IResult> HandleLegacyAsync(
+        HttpContext httpContext,
+        [FromServices] IAuthorizationService authorizationService,
+        [FromServices] IMediaFileStore mediaFileStore,
+        [FromServices] IOptions<MediaOptions> options,
+        [FromServices] AttachedMediaFieldFileService attachedMediaFieldFileService,
+        [FromServices] MediaDirectoryTreeCache directoryTreeCache,
+        [FromServices] IStringLocalizer<MediaApiEndpoints> localizer,
+        string path)
+        => HandleLegacyResultAsync(httpContext, authorizationService, mediaFileStore, options, attachedMediaFieldFileService, directoryTreeCache, localizer, path);
+
+    private static Task<IResult> HandleAsync(
+        HttpContext httpContext,
+        [FromServices] IAuthorizationService authorizationService,
+        [FromServices] IMediaFileStore mediaFileStore,
+        [FromServices] IOptions<MediaOptions> options,
+        [FromServices] AttachedMediaFieldFileService attachedMediaFieldFileService,
+        [FromServices] MediaDirectoryTreeCache directoryTreeCache,
+        [FromServices] IStringLocalizer<MediaApiEndpoints> localizer,
+        [AsParameters] DeleteFolderRequest request)
+        => HandleManagementAsync(httpContext, authorizationService, mediaFileStore, options, attachedMediaFieldFileService, directoryTreeCache, localizer, request.Path);
+
+    private static async Task<IResult> HandleLegacyResultAsync(
+        HttpContext httpContext,
+        IAuthorizationService authorizationService,
+        IMediaFileStore mediaFileStore,
+        IOptions<MediaOptions> options,
+        AttachedMediaFieldFileService attachedMediaFieldFileService,
+        MediaDirectoryTreeCache directoryTreeCache,
+        IStringLocalizer<MediaApiEndpoints> localizer,
+        string path)
+    {
+        var result = await DeleteAsync(httpContext, authorizationService, mediaFileStore, options, attachedMediaFieldFileService, directoryTreeCache, localizer, path);
+
+        return result ?? TypedResults.Ok();
+    }
+
+    private static async Task<IResult> HandleManagementAsync(
+        HttpContext httpContext,
+        IAuthorizationService authorizationService,
+        IMediaFileStore mediaFileStore,
+        IOptions<MediaOptions> options,
+        AttachedMediaFieldFileService attachedMediaFieldFileService,
+        MediaDirectoryTreeCache directoryTreeCache,
+        IStringLocalizer<MediaApiEndpoints> localizer,
+        string path)
+    {
+        var result = await DeleteAsync(httpContext, authorizationService, mediaFileStore, options, attachedMediaFieldFileService, directoryTreeCache, localizer, path);
+
+        return result ?? TypedResults.Ok(new DeleteFolderResultDto { Path = path });
+    }
+
+    private static async Task<IResult> DeleteAsync(
         HttpContext httpContext,
         IAuthorizationService authorizationService,
         IMediaFileStore mediaFileStore,
@@ -67,6 +132,6 @@ public static class DeleteFolderEndpoint
 
         directoryTreeCache.Invalidate();
 
-        return TypedResults.Ok();
+        return null;
     }
 }

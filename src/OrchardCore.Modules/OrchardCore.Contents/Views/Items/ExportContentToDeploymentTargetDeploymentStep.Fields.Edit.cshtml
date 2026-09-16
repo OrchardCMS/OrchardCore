@@ -5,3 +5,8 @@
         <h5>@T["Export Content To Deployment Target"]</h5>
     </div>
 </div>
+
+@if (Model.Value.ContentItemIds is not null)
+{
+    <p class="hint">@T["This step exports {0} explicitly selected content items. Latest versions: {1}.", Model.Value.ContentItemIds.Length, Model.Value.Latest]</p>
+}

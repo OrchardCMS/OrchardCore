@@ -59,29 +59,21 @@ public sealed class TokenBucketRateLimiterDisplayDriver : DisplayDriver<RateLimi
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        if (model.TokenLimit < 1)
-        {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.TokenLimit), S["Token limit must be greater than zero."]);
-        }
-
-        if (model.TokensPerPeriod < 1)
-        {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.TokensPerPeriod), S["Tokens per period must be greater than zero."]);
-        }
-
-        if (model.ReplenishmentPeriodSeconds < 1)
-        {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.ReplenishmentPeriodSeconds), S["Replenishment period must be greater than zero."]);
-        }
-
-        limiter.Put(new TokenBucketRateLimiterData
+        var data = new TokenBucketRateLimiterData
         {
             TokenLimit = model.TokenLimit,
             QueueLimit = model.QueueLimit,
             TokensPerPeriod = model.TokensPerPeriod,
             ReplenishmentPeriodSeconds = model.ReplenishmentPeriodSeconds,
             QueueProcessingOrder = model.QueueProcessingOrder,
-        });
+        };
+
+        foreach (var error in RateLimitLimiterValidation.Validate(data, S))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, error.Key, error.Value);
+        }
+
+        limiter.Put(data);
 
         return Edit(limiter, context);
     }

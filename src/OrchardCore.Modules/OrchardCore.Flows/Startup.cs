@@ -3,12 +3,14 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.ContentTypes.Management;
 using OrchardCore.Data.Migration;
 using OrchardCore.Flows.Drivers;
 using OrchardCore.Flows.Handlers;
 using OrchardCore.Flows.Indexing;
 using OrchardCore.Flows.Models;
 using OrchardCore.Flows.Settings;
+using OrchardCore.Flows.Services;
 using OrchardCore.Flows.ViewModels;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
@@ -33,6 +35,7 @@ public sealed class Startup : StartupBase
         services.AddContentPart<FlowPart>()
             .UseDisplayDriver<FlowPartDisplayDriver>();
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, FlowPartSettingsDisplayDriver>();
+        services.AddSingleton<IContentDefinitionManagementSchemaProvider, FlowsContentDefinitionManagementSchemaProvider>();
         services.AddScoped<IContentPartIndexHandler, FlowPartIndexHandler>();
 
         services.AddScoped<IContentDisplayDriver, FlowMetadataDisplayDriver>();

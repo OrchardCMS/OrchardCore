@@ -557,6 +557,7 @@ public class BlobFileStore : IFileStore
                 var fileClient = _dataLakeFileSystemClient.GetFileClient(oldFullPath);
                 await fileClient.RenameAsync(newFullPath);
             }
+
             catch (Exception ex)
             {
                 throw new FileStoreException($"Cannot move file '{oldPath}' to '{newPath}'.", ex);
@@ -574,6 +575,42 @@ public class BlobFileStore : IFileStore
         {
             throw new FileStoreException($"Cannot move file '{oldPath}' to '{newPath}'.", ex);
         }
+    }
+
+    public async Task<bool> TryMoveFileAsync(string oldPath, string newPath)
+    {
+        await EnsureCapabilitiesAsync();
+
+        if (_capabilities?.SupportsAtomicMove == true)
+        {
+            try
+            {
+                var oldFullPath = this.Combine(_basePrefix, oldPath);
+                var newFullPath = this.Combine(_basePrefix, newPath);
+                await _dataLakeFileSystemClient.GetFileClient(oldFullPath).RenameAsync(newFullPath);
+                return true;
+            }
+            catch (RequestFailedException ex) when (ex.Status is 409 or 412)
+            {
+                return false;
+            }
+            catch (Exception ex)
+            {
+                throw new FileStoreException($"Cannot move file '{oldPath}' to '{newPath}'.", ex);
+            }
+        }
+
+        if (!await TryCopyFileAsync(oldPath, newPath))
+        {
+            return false;
+        }
+
+        if (!await TryDeleteFileAsync(oldPath))
+        {
+            throw new FileStoreException($"File '{oldPath}' was copied to '{newPath}' but the source could not be deleted.");
+        }
+
+        return true;
     }
 
     public async Task CopyFileAsync(string srcPath, string dstPath)
@@ -615,6 +652,45 @@ public class BlobFileStore : IFileStore
             {
                 throw new FileStoreException($"Error while copying file '{srcPath}'; copy operation failed with status {properties.Value.CopyStatus} and description {properties.Value.CopyStatusDescription}.");
             }
+        }
+        catch (FileStoreException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new FileStoreException($"Cannot copy file '{srcPath}' to '{dstPath}'.", ex);
+        }
+    }
+
+    public async Task<bool> TryCopyFileAsync(string srcPath, string dstPath)
+    {
+        try
+        {
+            if (srcPath == dstPath)
+            {
+                throw new ArgumentException($"The values for {nameof(srcPath)} and {nameof(dstPath)} must not be the same.");
+            }
+
+            var oldBlob = GetBlobReference(srcPath);
+            if (!await oldBlob.ExistsAsync())
+            {
+                throw new FileStoreException($"Cannot copy file '{srcPath}' because it does not exist.");
+            }
+
+            var operation = await GetBlobReference(dstPath).StartCopyFromUriAsync(
+                oldBlob.Uri,
+                new BlobCopyFromUriOptions
+                {
+                    DestinationConditions = new BlobRequestConditions { IfNoneMatch = ETag.All },
+                });
+
+            _ = await operation.WaitForCompletionAsync();
+            return true;
+        }
+        catch (RequestFailedException ex) when (ex.Status is 409 or 412)
+        {
+            return false;
         }
         catch (FileStoreException)
         {

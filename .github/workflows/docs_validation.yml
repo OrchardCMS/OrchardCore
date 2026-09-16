@@ -7,11 +7,27 @@ on:
     paths:
       - 'mkdocs.yml'
       - 'src/docs/**'
+      - '.agents/skills/**'
+      - '.agents/plugins/**'
+      - '.claude-plugin/**'
+      - '.scripts/remote-management/**'
+      - 'design/artifacts/logos/pomi/**'
+      - '.readthedocs.yml'
+      - '.gitattributes'
+      - '.github/workflows/docs_validation.yml'
     branches: [ main, release/** ]
   pull_request:
     paths:
       - 'mkdocs.yml'
       - 'src/docs/**'
+      - '.agents/skills/**'
+      - '.agents/plugins/**'
+      - '.claude-plugin/**'
+      - '.scripts/remote-management/**'
+      - 'design/artifacts/logos/pomi/**'
+      - '.readthedocs.yml'
+      - '.gitattributes'
+      - '.github/workflows/docs_validation.yml'
 
 concurrency:
   group: ${{ github.head_ref || github.run_id }}-docs_validation
@@ -34,5 +50,18 @@ jobs:
       run: |
         pip install -r src/docs/requirements.txt -v
 
+    - name: Validate directly installable Pomi marketplace
+      run: python .scripts/remote-management/test-marketplace.py
+
     - name: Build Documentation
       run: python -m mkdocs build --strict
+
+    - name: Validate published Pomi packages and raw skills
+      run: python .scripts/remote-management/test-skill-distribution.py site
+
+    - name: Upload Pomi downloads for this commit
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+      with:
+        name: pomi-skills-${{ github.sha }}
+        path: site/downloads/
+        if-no-files-found: error

@@ -43,11 +43,7 @@ public sealed class CustomSettingsDeploymentStepDriver : DisplayDriver<Deploymen
                                           x => x.SettingsTypeNames,
                                           x => x.IncludeAll);
 
-        // Don't have the selected option if include all.
-        if (step.IncludeAll)
-        {
-            step.SettingsTypeNames = [];
-        }
+        step.SettingsTypeNames = DeploymentSelection.Normalize(step.IncludeAll, step.SettingsTypeNames);
 
         return Edit(step, context);
     }

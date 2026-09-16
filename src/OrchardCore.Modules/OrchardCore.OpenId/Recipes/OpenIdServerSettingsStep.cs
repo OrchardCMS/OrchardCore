@@ -46,6 +46,10 @@ public sealed class OpenIdServerSettingsStep : NamedRecipeStepHandler
             new PathString("/connect/userinfo") : PathString.Empty;
         settings.IntrospectionEndpointPath = model.EnableIntrospectionEndpoint ?
             new PathString("/connect/introspect") : PathString.Empty;
+        settings.DeviceAuthorizationEndpointPath = model.EnableDeviceAuthorizationEndpoint ?
+            new PathString("/connect/device") : PathString.Empty;
+        settings.EndUserVerificationEndpointPath = model.EnableEndUserVerificationEndpoint ?
+            new PathString("/connect/verify") : PathString.Empty;
         settings.PushedAuthorizationEndpointPath = model.EnablePushedAuthorizationEndpoint ?
             new PathString("/connect/par") : PathString.Empty;
         settings.RevocationEndpointPath = model.EnableRevocationEndpoint ?
@@ -53,6 +57,7 @@ public sealed class OpenIdServerSettingsStep : NamedRecipeStepHandler
 
         settings.AllowAuthorizationCodeFlow = model.AllowAuthorizationCodeFlow;
         settings.AllowClientCredentialsFlow = model.AllowClientCredentialsFlow;
+        settings.AllowDeviceAuthorizationFlow = model.AllowDeviceAuthorizationFlow;
         settings.AllowHybridFlow = model.AllowHybridFlow;
         settings.AllowImplicitFlow = model.AllowImplicitFlow;
         settings.AllowPasswordFlow = model.AllowPasswordFlow;

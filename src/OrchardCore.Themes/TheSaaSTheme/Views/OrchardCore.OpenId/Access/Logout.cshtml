@@ -1,0 +1,24 @@
+@using Microsoft.Extensions.Primitives
+
+@{
+    ViewLayout = "Layout__Login";
+}
+
+<div class="saas-auth-content">
+    <span class="saas-eyebrow">@T["Session security"]</span>
+    <h1>@T["Sign out of this tenant?"]</h1>
+    <p>@T["You will need to sign in again before approving new remote management requests."]</p>
+
+    <form asp-controller="Access" asp-action="Logout" method="post" class="no-multisubmit">
+        @foreach (var parameter in Context.Request.HasFormContentType ?
+          (IEnumerable<KeyValuePair<string, StringValues>>)Context.Request.Form : Context.Request.Query)
+        {
+            <input type="hidden" name="@parameter.Key" value="@parameter.Value" />
+        }
+
+        <div class="saas-auth-actions">
+            <button class="btn btn-primary btn-lg" name="submit.Accept" type="submit" value="yes">@T["Sign out"]</button>
+            <button class="btn btn-link" name="submit.Deny" type="submit" value="no">@T["Stay signed in"]</button>
+        </div>
+    </form>
+</div>

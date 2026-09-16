@@ -143,3 +143,47 @@ SMTP email settings can be configured using the `Settings` recipe step:
 
 Copyright 2013-2019 Xamarin Inc
 Licensed under the MIT License
+
+## Remote SMTP administration
+
+With Remote Management enabled, `settings sections` exposes the `smtp` section
+when `OrchardCore.Email.Smtp` is enabled. The caller needs `AccessRemoteManagement`
+and `ManageEmailSettings`. SMTP updates require HTTPS.
+
+```sh
+pomi settings sections schema smtp
+pomi settings sections show smtp
+pomi settings sections update smtp --body-file smtp.json
+```
+
+Example `smtp.json` for a tenant-local pickup directory:
+
+```json
+{
+  "isEnabled": true,
+  "defaultSender": "admin@example.com",
+  "deliveryMethod": "SpecifiedPickupDirectory",
+  "pickupDirectoryLocation": "/"
+}
+```
+
+For network delivery use `deliveryMethod: "Network"`, `host`, `port`, and the
+schema's encryption and authentication fields. These are tenant settings; the
+host-configured Default SMTP provider and pickup base directory remain separate.
+Pickup paths stay within that tenant's configured base directory.
+
+Omitted properties retain their values. Enable the provider in the same update
+when configuring a disabled provider. Disabling retains its configuration and
+clears its default-provider selection. Enabling selects SMTP automatically only
+when no default provider is selected. Use the `email` section to select among
+available providers explicitly.
+
+`password` is write-only: neither plaintext nor protected ciphertext is returned.
+Readback supplies `hasPassword`. Omit the password to retain it, provide a nonempty
+value to replace it, or use `clearPassword: true` to remove it. Do not set and clear
+it together. Invalid updates preserve the stored configuration. Unchanged updates,
+including the same password, do not request an options refresh. Keep credential
+files private and avoid placing secrets in command arguments or shell history.
+
+Use [`pomi email test`](../Email/README.md#remote-email-administration) to verify
+delivery after the settings update completes.

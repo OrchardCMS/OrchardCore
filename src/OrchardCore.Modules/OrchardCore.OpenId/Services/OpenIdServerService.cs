@@ -99,7 +99,7 @@ public class OpenIdServerService : IOpenIdServerService
         var results = ImmutableArray.CreateBuilder<ValidationResult>();
 
         if (!settings.AllowAuthorizationCodeFlow && !settings.AllowClientCredentialsFlow &&
-            !settings.AllowHybridFlow && !settings.AllowImplicitFlow &&
+            !settings.AllowDeviceAuthorizationFlow && !settings.AllowHybridFlow && !settings.AllowImplicitFlow &&
             !settings.AllowPasswordFlow && !settings.AllowRefreshTokenFlow)
         {
             results.Add(new ValidationResult(S["At least one OpenID Connect flow must be enabled."]));
@@ -186,6 +186,15 @@ public class OpenIdServerService : IOpenIdServerService
             }));
         }
 
+        if (settings.AllowDeviceAuthorizationFlow &&
+            (!settings.DeviceAuthorizationEndpointPath.HasValue || !settings.EndUserVerificationEndpointPath.HasValue || !settings.TokenEndpointPath.HasValue))
+        {
+            results.Add(new ValidationResult(S["The device authorization flow cannot be enabled when the device authorization, end-user verification and token endpoints are disabled."], new[]
+            {
+                nameof(settings.AllowDeviceAuthorizationFlow),
+            }));
+        }
+
         if (settings.AllowRefreshTokenFlow)
         {
             if (!settings.TokenEndpointPath.HasValue)
@@ -196,9 +205,10 @@ public class OpenIdServerService : IOpenIdServerService
                 }));
             }
 
-            if (!settings.AllowPasswordFlow && !settings.AllowAuthorizationCodeFlow && !settings.AllowHybridFlow)
+            if (!settings.AllowPasswordFlow && !settings.AllowAuthorizationCodeFlow &&
+                !settings.AllowDeviceAuthorizationFlow && !settings.AllowHybridFlow)
             {
-                results.Add(new ValidationResult(S["The refresh token flow can only be enabled if the password, authorization code or hybrid flows are enabled."], new[]
+                results.Add(new ValidationResult(S["The refresh token flow can only be enabled if the password, authorization code, device authorization or hybrid flows are enabled."], new[]
                 {
                     nameof(settings.AllowRefreshTokenFlow),
                 }));
@@ -234,6 +244,14 @@ public class OpenIdServerService : IOpenIdServerService
             results.Add(new ValidationResult(S["The pushed authorization endpoint can only be enabled when the authorization endpoint is enabled."], new[]
             {
                 nameof(settings.PushedAuthorizationEndpointPath),
+            }));
+        }
+
+        if (settings.EndUserVerificationEndpointPath.HasValue && !settings.DeviceAuthorizationEndpointPath.HasValue)
+        {
+            results.Add(new ValidationResult(S["The end-user verification endpoint can only be enabled when the device authorization endpoint is enabled."], new[]
+            {
+                nameof(settings.EndUserVerificationEndpointPath),
             }));
         }
 

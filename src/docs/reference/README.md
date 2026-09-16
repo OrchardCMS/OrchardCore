@@ -2,6 +2,8 @@
 
 This is a comprehensive reference for the modules and their features available in Orchard Core. Under each of these pages, you'll find an overview of the given module with documentation on how to use and extend it.
 
+For tenant administration over HTTP, see the [Management API reference](api/README.md).
+
 Check out the reference pages for each module under the following categories in the menu:
 
 - CMS Modules: Modules that contain content management features that all interact with content items in some way. E.g. the base content management module, the media management module, or modules related to search and indexing are here.

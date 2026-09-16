@@ -2,7 +2,6 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.UrlRewriting.Models;
 using OrchardCore.UrlRewriting.ViewModels;
 
@@ -10,15 +9,12 @@ namespace OrchardCore.UrlRewriting.Drivers;
 
 public sealed class RewriteRulesDisplayDriver : DisplayDriver<RewriteRule>
 {
-    private readonly IShellReleaseManager _shellReleaseManager;
-
     internal readonly IStringLocalizer S;
 
+    /// <summary>Creates the rule identity editor; the manager owns validation and reloads.</summary>
     public RewriteRulesDisplayDriver(
-        IShellReleaseManager shellReleaseManager,
         IStringLocalizer<RewriteRulesDisplayDriver> stringLocalizer)
     {
-        _shellReleaseManager = shellReleaseManager;
         S = stringLocalizer;
     }
 
@@ -49,14 +45,7 @@ public sealed class RewriteRulesDisplayDriver : DisplayDriver<RewriteRule>
         await context.Updater.TryUpdateModelAsync(model, Prefix,
             m => m.Name);
 
-        if (string.IsNullOrEmpty(model.Name))
-        {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Name), S["Name is required"]);
-        }
-
         rule.Name = model.Name;
-
-        _shellReleaseManager.RequestRelease();
 
         return Edit(rule, context);
     }

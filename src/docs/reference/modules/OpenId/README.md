@@ -10,6 +10,10 @@
 - **OpenID Connect Authorization Server**
 - **OpenID Connect Client Integration**
 
+## Remote management authentication reference
+
+See [Management API authentication](../../api/authentication/README.md) for the OpenID Connect endpoints, grants, scopes, and request formats used by remote management clients.
+
 ## Core OpenID Connect Services
 
 This feature provides the essential services that underpin all other OpenID Connect features within Orchard Core. It includes fundamental components needed for secure communication, token handling, and user authentication.
@@ -30,10 +34,120 @@ Key points:
 
 Supported flows include:
 - [Authorization Code Flow](http://openid.net/specs/openid-connect-core-1_0.html)
+- [Device Authorization Grant](https://datatracker.ietf.org/doc/html/rfc8628)
 - [Implicit Flow](http://openid.net/specs/openid-connect-core-1_0.html)
 - [Hybrid Flow](http://openid.net/specs/openid-connect-core-1_0.html)
 - [Client Credentials Grant](https://tools.ietf.org/html/rfc6749)
 - [Resource Owner Password Grant](https://tools.ietf.org/html/rfc6749)
+
+### Customizing authorization pages
+
+The authorization server's consent, device verification, sign-out, and error
+pages use the same theme selection as the login page. By default, they use the
+tenant's admin theme and its `Layout__Login` layout. The default consent view
+shows readable permission labels alongside the exact scope identifiers, with
+localized **Allow access** and **Cancel** actions.
+
+To use your site's branding, activate a site theme and enable **Use site theme
+for login page** in the user login settings. This sets
+`LoginSettings.UseSiteTheme` to `true`. The admin theme remains the fallback
+when no site theme is selected.
+
+The SaaS theme focuses **Allow access** when the browser consent page opens,
+so pressing Enter approves the request. Tab moves focus to **Deny**.
+
+Its green accents, cream background, and serif headings take inspiration from
+[orchardcore.net](https://orchardcore.net/). It follows the browser's light or
+dark color preference and uses locally available fonts. To adjust this palette
+in a derived theme, override the `--saas-*` CSS custom properties, including
+`--saas-primary`, `--saas-surface`, `--saas-ink`, and `--saas-heading-font`,
+after the theme stylesheet. Provide corresponding dark-mode overrides as needed.
+The decorative leaf background is the `SaaSBackground` shape. Override
+`Views/SaaSBackground.cshtml` in a derived theme to replace it, or set
+`--saas-background-opacity: 0` to hide it. The leaf is inline SVG and requires
+no image download.
+See the [SaaS consent example](../../../guides/remote-management/README.md#4-sign-in-once).
+
+You can also select an installed site theme through the
+[theme management CLI/API](../../api/themes/README.md#set-the-current-theme):
+
+```bash
+pomi themes list --admin false
+pomi themes set-current TheAgencyTheme
+```
+
+Replace `TheAgencyTheme` with the theme ID returned by the list command. The
+selection operation also enables the theme and its base themes.
+
+The login-theme flag itself is not exposed by `pomi settings update` or
+`PUT /api/settings`, which only accept
+[safe core site settings](../../api/settings/README.md#site-settings-representation).
+For automation, include the
+[login settings recipe configuration](../Users/README.md#login-settings)
+in an installed non-setup recipe, then run it through the
+[recipe management API](../../api/recipes/README.md#execute-a-recipe)
+or its `pomi recipes execute <recipeId> --json '{}' --force` CLI command, using an ID
+returned by `pomi recipes list`.
+That API executes installed recipes; it does not accept a new recipe body.
+The `Settings` recipe step replaces the supplied `LoginSettings` section, so
+include the other login settings you intend to retain.
+
+A theme can provide `Views/Layout-Login.cshtml` to customize the surrounding
+layout. To replace individual MVC views, add the corresponding file to the
+active theme:
+
+| Theme file | Purpose |
+| --- | --- |
+| `Views/OrchardCore.OpenId/Access/Authorize.cshtml` | Browser consent |
+| `Views/OrchardCore.OpenId/Access/Verify.cshtml` | Device code entry and consent |
+| `Views/OrchardCore.OpenId/Access/Logout.cshtml` | Sign-out confirmation |
+| `Views/OrchardCore.OpenId/Access/Error.cshtml` | Authorization error |
+
+#### Consent scope shape
+
+Both consent views render the `OpenIdConsentScopes` shape through Orchard's
+display pipeline. Its `Model.Scope` property contains the space-separated
+requested scope identifiers. The default binding is
+`Views/OpenIdConsentScopes.cshtml` in the OpenID module.
+
+A theme can override this binding with `Views/OpenIdConsentScopes.cshtml` or
+`Views/OpenIdConsentScopes.liquid`. Other modules can customize it using an
+`IShapeTableProvider` that describes `OpenIdConsentScopes`, or supply a shape
+template through the usual feature dependency and binding precedence rules.
+
+With the [Templates module](../Templates/README.md) enabled, create a dynamic
+Liquid template named `OpenIdConsentScopes`. For example:
+
+```liquid
+{% assign scopes = Model.Scope | split: ' ' | uniq %}
+{% if scopes.size > 0 %}
+  <h2>{{ 'Requested access' | t }}</h2>
+  <ul>
+    {% for scope in scopes %}
+      <li><code>{{ scope | escape }}</code></li>
+    {% endfor %}
+  </ul>
+{% endif %}
+```
+
+The [Templates management CLI/API](../../api/templates/README.md#create-a-template)
+can also create or update that dynamic template. This scope-list shape works
+on the consent pages even when they use the admin theme: selecting that theme
+does not make these pages admin routes. The surrounding forms continue to
+handle protocol parameters and the approval/cancellation actions.
+
+#### Custom form views
+
+Start from the module's view when overriding a form. Preserve its model,
+protocol parameters, form action and method, antiforgery token, and submit
+button names (`submit.Accept` and `submit.Deny`) with nonempty values. Keep
+the application name, requested permissions, and device-code comparison
+visible so users can make an informed choice. Continue using Razor's encoded
+output for application names, scope identifiers, and protocol values.
+
+The default views use Bootstrap 5 classes. Themes using another CSS framework
+can replace the views as well as the layout. No OAuth endpoint or CLI change
+is needed to customize their appearance.
 
 ## OpenID Connect Token Validation
 
@@ -60,11 +174,14 @@ to allow third-party resource servers to use the JWT tokens produced by the Orch
 - Enable Authorization Endpoint.
 - Enable Logout Endpoint.
 - Enable User Info Endpoint.
+- Enable Device Authorization Endpoint.
+- Enable End-User Verification Endpoint.
 - Allow Password Flow: It requires that the Token Endpoint is enabled. More info at <https://tools.ietf.org/html/rfc6749#section-1.3.3>
 - Allow Client Credentials Flow: It requires that the Token Endpoint is enabled. More info at <https://tools.ietf.org/html/rfc6749#section-1.3.4>
 - Allow Authorization Code Flow: It requires that the Authorization and Token Endpoints are enabled. More info at <http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth>
+- Allow Device Authorization Flow: It requires that the Device Authorization, End-User Verification, and Token Endpoints are enabled. More info at <https://datatracker.ietf.org/doc/html/rfc8628>
 - Allow Implicit Flow: It requires that the Authorization Endpoint is enabled. More info at <http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth>
-- Allow Refresh Token Flow: It allows refreshing the access token using a refresh token. It can be used in combination with Password Flow, Authorization Code Flow, and Hybrid Flow. More info at <http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens>
+- Allow Refresh Token Flow: It allows refreshing the access token using a refresh token. It can be used in combination with Password Flow, Authorization Code Flow, Device Authorization Flow, and Hybrid Flow. More info at <http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens>
 - Require Proof Key for Code Exchange: Global setting that applies PKCE to all registered clients whether or not the 'Require PKCE' flag was set in the Application settings page.
 
 A sample of OpenID Connect Settings recipe step:
@@ -83,6 +200,8 @@ A sample of OpenID Connect Settings recipe step:
       "EncryptionCertificateThumbprint": "BC34460ABEA2D576EA68E8FFCFEEB3F45C94FB0F",
       "EnableTokenEndpoint": true,
       "EnableAuthorizationEndpoint": false,
+      "EnableDeviceAuthorizationEndpoint": true,
+      "EnableEndUserVerificationEndpoint": true,
       "EnableIntrospectionEndpoint": false,
       "EnableLogoutEndpoint": true,
       "EnablePushedAuthorizationEndpoint": false,
@@ -91,6 +210,7 @@ A sample of OpenID Connect Settings recipe step:
       "AllowPasswordFlow": true,
       "AllowClientCredentialsFlow": false,
       "AllowAuthorizationCodeFlow": false,
+      "AllowDeviceAuthorizationFlow": false,
       "AllowRefreshTokenFlow": false,
       "AllowImplicitFlow": false,
       "RequireProofKeyForCodeExchange": false,
@@ -108,6 +228,9 @@ OpenID Connect apps require the following configuration.
 - Id: Unique identifier.
 - Client Id: Client identifier of the application. It has to be provided by a client when requesting a valid token.
 - Display Name: Display name associated with the current application.
+- Application Type:
+  - Web application: Uses fixed redirect URIs.
+  - Native application: Represents an installed application and permits loopback redirect URIs with an ephemeral port. Native applications must use the Public client type.
 - Type: There are two options:
   - Confidential: Confidential applications MUST send their client secret when communicating with the token and revocation endpoints. This guarantees that only the legit client can exchange an authorization code or get a refresh token.
   - Public: Public applications don't use client secret on their communications.
@@ -116,8 +239,9 @@ OpenID Connect apps require the following configuration.
   - Allow Password Flow: It requires that the Token Endpoint is enabled. More info at <https://tools.ietf.org/html/rfc6749#section-1.3.3>
   - Allow Client Credentials Flow: It requires that the Token Endpoint is enabled. More info at <https://tools.ietf.org/html/rfc6749#section-1.3.4>
   - Allow Authorization Code Flow: It requires that the Authorization and Token Endpoints are enabled. More info at <http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth>
+- Allow Device Authorization Flow: It requires that the Device Authorization endpoint is enabled. More info at <https://datatracker.ietf.org/doc/html/rfc8628>
   - Allow Implicit Flow: It requires that the Authorization Endpoint is enabled. More info at <http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth>
-  - Allow Refresh Token Flow: It allows refreshing the access token using a refresh token. It can be used in combination with Password Flow, Authorization Code Flow, and Hybrid Flow. More info at <http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens>
+  - Allow Refresh Token Flow: It allows refreshing the access token using a refresh token. It can be used in combination with Password Flow, Authorization Code Flow, Device Authorization Flow, and Hybrid Flow. More info at <http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens>
 - Normalized RoleNames: This configuration is only required if Client Credentials Flow is enabled. It determines the roles assigned to the app when it is authenticated using that flow.
 - Redirect Options: Those options are only required when Implicit Flow, Authorization Code Flow or Allow Hybrid Flow is required.
 - Logout Redirect Uri: logout callback URL.
@@ -126,6 +250,12 @@ OpenID Connect apps require the following configuration.
 - Advanced Parameters: Allows setting additional parameters that can be sent with the authorize request. Note: The default parameters are set from the options above.
 - Require PKCE: Applies PKCE for the registered application. Ensure that the client library being used supports PKCE.
 
+The application editor and recipe step share the same settings update logic. Updating a
+confidential application without a new client secret preserves its existing credential.
+Switching to a public application removes the secret. Roles, scopes and redirect URIs
+replace their existing collections, while custom descriptor properties are preserved.
+If OpenID validation rejects an update, the previous application values remain available.
+
 A sample of OpenID Connect App recipe step:
 
 ```json
@@ -133,6 +263,7 @@ A sample of OpenID Connect App recipe step:
       "name": "openidapplication",
       "ClientId": "openidtest",
       "DisplayName": "Open Id Test",
+      "ApplicationType": "web",
       "Type": "Confidential",
       "ClientSecret": "MyPassword",
       "EnableTokenEndpoint": true,
@@ -142,6 +273,7 @@ A sample of OpenID Connect App recipe step:
       "AllowPasswordFlow": true,
       "AllowClientCredentialsFlow": false,
       "AllowAuthorizationCodeFlow": false,
+      "AllowDeviceAuthorizationFlow": false,
       "AllowRefreshTokenFlow": false,
       "AllowImplicitFlow": false,
       "RequireProofKeyForCodeExchange": false,
@@ -162,6 +294,12 @@ OpenID Connect Scopes require the following configuration.
 | Description          | Describe how this scope is used in the system.                    |
 | Tenants              | Build the audience based on tenants names.                        |
 | Additional resources | Build the audience based on the space separated strings provided. |
+
+Admin scope edits replace the resources list, so an empty field clears it. A scope
+recipe update that omits `Resources` or supplies an empty string preserves the
+existing resources; a nonempty value replaces them. Both paths preserve custom
+properties they do not edit and skip saving when their editable values already
+match. The recipe step uses the same descriptor update as the admin editor.
 
 A sample of OpenID Connect Scope recipe step:
 
@@ -455,3 +593,53 @@ All OpenID Connect settings can be configured using the generic `Settings` recip
 | `DisableTokenTypeValidation` | Boolean | Whether to disable access token type validation.                      |
 | `Tenant`                     | String  | The Orchard tenant for local server validation.                       |
 | `MetadataAddress`            | String  | Override the metadata discovery address (for non-standard providers). |
+
+## Remote application and scope administration
+
+With `OrchardCore.OpenId.Management` enabled, authorized clients can manage
+applications through `pomi openid applications` and manage scope definitions through
+`pomi openid scopes`. Reads use the same managers as the admin UI and omit
+credentials, keys and private properties. Application and scope mutations share
+descriptor updates with their admin editors and recipe steps. See the [OpenID management API](../../api/openid/README.md)
+for paging, permissions and response fields. Confidential application secrets can be
+rotated or revoked through `pomi openid applications credentials`. Rotation requires
+a new private `--secret-output-file` and immediately replaces the previous secret.
+
+## Remote configuration
+
+The owning OpenID features contribute three typed settings sections to remote
+management. Use `pomi settings sections schema <section>` to inspect the complete
+update contract, `show <section>` to read it, and `update <section> --stdin` to
+apply a JSON patch. The same operations are available through HTTP and MCP.
+
+| Section | Feature | Required permission | Managed tenant settings |
+| --- | --- | --- | --- |
+| `openid-server` | `OrchardCore.OpenId.Server` | `ManageServerSettings` | Endpoint paths, supported grant flows, access-token format/encryption, PKCE/PAR requirements, refresh-token behavior, and certificate-store selections |
+| `openid-client` | `OrchardCore.OpenId.Client` | `ManageClientSettings` | Authority, client ID/secret, callback paths, response type/mode, scopes, external-token storage, and extra authentication parameters |
+| `openid-validation` | `OrchardCore.OpenId.Validation` | `ManageValidationSettings` | Local server tenant or remote authority/audience/metadata address, and token-type validation |
+
+All sections also require remote-management access. Writes require HTTPS. They
+use the same validation and persistence services as the existing OpenID admin
+configuration and request a tenant reload only when values change. Omitted
+properties are preserved and supplied arrays replace previous arrays. Unknown
+properties and values outside the section schema are rejected before persistence.
+Existing flow/endpoint and tenant/authority constraints still apply.
+
+The client secret is encrypted with the existing OpenID client data-protection
+purpose. It and extra authentication parameters are omitted from readback;
+`hasClientSecret` and `hasParameters` report presence. Omitting either property
+retains it; explicitly setting it to null clears it. Sending the same secret again
+does not re-encrypt it or trigger a reload. Send secrets through private JSON
+input, not shell arguments. Parameters follow existing client storage behavior;
+redaction does not encrypt their values.
+
+These sections manage the tenant's saved configuration. They do not modify host
+configuration, custom application option overrides, certificate files/private
+keys, provider-specific external login settings, application registrations, or
+user MFA enrollment. Certificate settings select existing certificates or preserve
+the module's managed-certificate fallback. Applications and scopes retain their
+separate management commands.
+
+Changing token endpoints, enabled flows or validation authority can invalidate the
+context used to make the change. Keep a working administrative recovery path and
+refresh Pomi's API/context configuration after such changes.

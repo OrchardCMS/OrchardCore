@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -76,6 +77,7 @@ public class MetaEntry
         return this;
     }
 
+    [Description("The value of the HTML meta element's name attribute.")]
     public string Name
     {
         get
@@ -86,6 +88,7 @@ public class MetaEntry
         set { SetAttribute("name", value); }
     }
 
+    [Description("The value of the HTML meta element's property attribute.")]
     public string Property
     {
         get
@@ -96,6 +99,7 @@ public class MetaEntry
         set { SetAttribute("property", value); }
     }
 
+    [Description("The value of the HTML meta element's content attribute.")]
     public string Content
     {
         get
@@ -107,6 +111,7 @@ public class MetaEntry
         set { SetAttribute("content", value); }
     }
 
+    [Description("The value of the HTML meta element's http-equiv attribute.")]
     public string HttpEquiv
     {
         get
@@ -117,6 +122,7 @@ public class MetaEntry
         set { SetAttribute("http-equiv", value); }
     }
 
+    [Description("The character encoding declared by the HTML meta element.")]
     public string Charset
     {
         get

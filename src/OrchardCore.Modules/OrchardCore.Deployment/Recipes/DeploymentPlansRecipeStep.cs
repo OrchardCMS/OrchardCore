@@ -33,49 +33,65 @@ public sealed class DeploymentPlansRecipeStep : NamedRecipeStepHandler
         S = stringLocalizer;
     }
 
-    protected override Task HandleAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        var deploymentStepFactories = _serviceProvider.GetServices<IDeploymentStepFactory>().ToDictionary(f => f.Name);
-
-        var model = context.Step.ToObject<DeploymentPlansModel>();
-
-        var unknownTypes = new List<string>();
-        var deploymentPlans = new List<DeploymentPlan>();
-
+        var factories = _serviceProvider.GetServices<IDeploymentStepFactory>().ToDictionary(factory => factory.Name);
+        DeploymentPlansModel model;
+        try
+        {
+            model = context.Step.ToObject<DeploymentPlansModel>();
+        }
+        catch (JsonException)
+        {
+            context.Errors.Add(S["Invalid deployment plan recipe structure. No changes have been made."]);
+            return;
+        }
+        if (model?.Plans is null)
+        {
+            context.Errors.Add(S["A deployment plan array is required. No changes have been made."]);
+            return;
+        }
+        var plans = new List<DeploymentPlan>();
         foreach (var plan in model.Plans)
         {
-            var deploymentPlan = new DeploymentPlan
+            if (plan is null)
             {
-                Name = plan.Name,
-            };
-
-            foreach (var step in plan.Steps)
+                context.Errors.Add(S["Every deployment plan must be an object."]);
+                continue;
+            }
+            var candidate = new DeploymentPlan { Name = plan.Name };
+            foreach (var step in plan.Steps ?? [])
             {
-                if (deploymentStepFactories.TryGetValue(step.Type, out var deploymentStepFactory))
+                if (step?.Step is null || string.IsNullOrWhiteSpace(step.Type) || !factories.TryGetValue(step.Type, out var factory))
                 {
-                    var deploymentStep = (DeploymentStep)step.Step.ToObject(deploymentStepFactory.Create().GetType(), _jsonSerializerOptions);
-
-                    deploymentPlan.DeploymentSteps.Add(deploymentStep);
+                    context.Errors.Add(S["Every deployment step requires an enabled factory type and a configuration object."]);
+                    continue;
                 }
-                else
+                try
                 {
-                    unknownTypes.Add(step.Type);
+                    var template = factory.Create();
+                    var value = (DeploymentStep)step.Step.ToObject(template.GetType(), _jsonSerializerOptions);
+                    value.Name = template.Name;
+                    candidate.DeploymentSteps.Add(value);
+                }
+                catch (JsonException)
+                {
+                    context.Errors.Add(S["Invalid deployment step configuration. No changes have been made."]);
                 }
             }
-
-            deploymentPlans.Add(deploymentPlan);
+            plans.Add(candidate);
         }
-
-        if (unknownTypes.Count != 0)
+        foreach (var messages in _deploymentPlanService.ValidateReplacement(plans).Values)
         {
-            context.Errors.Add(
-                S["No changes have been made. The following types of deployment plans cannot be added: {0}. Please ensure that the related features are enabled to add these types of deployment plans.",
-                string.Join(", ", unknownTypes)]);
-
-            return Task.CompletedTask;
+            foreach (var message in messages)
+            {
+                context.Errors.Add(S[message]);
+            }
         }
-
-        return _deploymentPlanService.CreateOrUpdateDeploymentPlansAsync(deploymentPlans);
+        if (context.Errors.Count == 0)
+        {
+            await _deploymentPlanService.CreateOrUpdateDeploymentPlansAsync(plans);
+        }
     }
 
     private sealed class DeploymentPlansModel

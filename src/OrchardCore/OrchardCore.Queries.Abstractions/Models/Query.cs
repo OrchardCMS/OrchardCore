@@ -23,5 +23,10 @@ public class Query : Entity
     /// </summary>
     public string Schema { get; set; }
 
+    /// <summary>
+    /// Gets or sets the optional JSON schema that describes the query execution parameters.
+    /// </summary>
+    public string ParameterSchema { get; set; }
+
     public bool ReturnContentItems { get; set; }
 }

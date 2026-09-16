@@ -44,7 +44,7 @@ public sealed class AdminController : Controller
     private readonly IServiceProvider _serviceProvider;
     private readonly INotifier _notifier;
     private readonly IRateLimitPolicyStore _policyStore;
-    private readonly IShellReleaseManager _shellReleaseManager;
+    private readonly RateLimitPolicyMutations _mutations;
     private readonly RateLimitsOptions _rateLimitsOptions;
     private readonly EndpointDataSource _endpointDataSource;
     private readonly IDisplayManager<RateLimitLimiter> _displayManager;
@@ -71,7 +71,7 @@ public sealed class AdminController : Controller
         _notifier = notifier;
         _policyStore = policyStore;
         _serviceProvider = serviceProvider;
-        _shellReleaseManager = shellReleaseManager;
+        _mutations = new RateLimitPolicyMutations(policyStore, shellReleaseManager);
         _endpointDataSource = endpointDataSource;
         _rateLimitsOptions = rateLimitsOptions.Value;
         _policyDisplayManager = policyDisplayManager;
@@ -176,12 +176,7 @@ public sealed class AdminController : Controller
         policy.PolicyId = IdGenerator.GenerateId();
         policy.EnabledUtc = model.IsEnabled ? DateTime.UtcNow : null;
 
-        await _policyStore.CreateAsync(policy);
-
-        if (ShouldReloadPolicy(wasEnabled: false, isEnabled: policy.IsEnabled))
-        {
-            _shellReleaseManager.RequestRelease();
-        }
+        await _mutations.CreateAsync(policy);
 
         await _notifier.SuccessAsync(H["Policy created successfully."]);
 
@@ -223,14 +218,9 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        if (!policy.IsEnabled && !await _policyStore.SetStatusAsync(policyId, true))
+        if (!policy.IsEnabled && await _mutations.SetStatusAsync([policy], true) == 0)
         {
             return NotFound();
-        }
-
-        if (!policy.IsEnabled)
-        {
-            _shellReleaseManager.RequestRelease();
         }
 
         await _notifier.SuccessAsync(H["Policy enabled successfully."]);
@@ -252,14 +242,9 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        if (policy.IsEnabled && !await _policyStore.SetStatusAsync(policyId, false))
+        if (policy.IsEnabled && await _mutations.SetStatusAsync([policy], false) == 0)
         {
             return NotFound();
-        }
-
-        if (policy.IsEnabled)
-        {
-            _shellReleaseManager.RequestRelease();
         }
 
         await _notifier.SuccessAsync(H["Policy disabled successfully."]);
@@ -281,12 +266,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        await _policyStore.DeleteAsync(policy);
-
-        if (policy.IsEnabled)
-        {
-            _shellReleaseManager.RequestRelease();
-        }
+        await _mutations.DeleteAsync([policy]);
 
         await _notifier.SuccessAsync(H["Policy deleted successfully."]);
 
@@ -308,7 +288,7 @@ public sealed class AdminController : Controller
         }
 
         var clonedPolicy = CreateClonedPolicy(policy, await GetCurrentPoliciesAsync());
-        await _policyStore.CreateAsync(clonedPolicy);
+        await _mutations.CreateAsync(clonedPolicy);
         await _notifier.SuccessAsync(H["Policy cloned successfully."]);
 
         return RedirectToAction(nameof(Edit), new { policyId = clonedPolicy.PolicyId });
@@ -339,15 +319,7 @@ public sealed class AdminController : Controller
         {
             case RateLimitPolicyBulkAction.Enable:
                 {
-                    var totalChanged = 0;
-
-                    foreach (var policy in policies.Where(x => !x.IsEnabled))
-                    {
-                        if (await _policyStore.SetStatusAsync(policy.PolicyId, true))
-                        {
-                            totalChanged++;
-                        }
-                    }
+                    var totalChanged = await _mutations.SetStatusAsync(policies, true);
 
                     if (totalChanged == 0)
                     {
@@ -355,7 +327,6 @@ public sealed class AdminController : Controller
                         break;
                     }
 
-                    _shellReleaseManager.RequestRelease();
                     await _notifier.SuccessAsync(H.Plural(totalChanged, "{1} policy was enabled successfully.", "{1} policies were enabled successfully.", totalChanged));
 
                     break;
@@ -363,15 +334,7 @@ public sealed class AdminController : Controller
 
             case RateLimitPolicyBulkAction.Disable:
                 {
-                    var totalChanged = 0;
-
-                    foreach (var policy in policies.Where(x => x.IsEnabled))
-                    {
-                        if (await _policyStore.SetStatusAsync(policy.PolicyId, false))
-                        {
-                            totalChanged++;
-                        }
-                    }
+                    var totalChanged = await _mutations.SetStatusAsync(policies, false);
 
                     if (totalChanged == 0)
                     {
@@ -379,7 +342,6 @@ public sealed class AdminController : Controller
                         break;
                     }
 
-                    _shellReleaseManager.RequestRelease();
                     await _notifier.SuccessAsync(H.Plural(totalChanged, "{1} policy was disabled successfully.", "{1} policies were disabled successfully.", totalChanged));
 
                     break;
@@ -387,27 +349,12 @@ public sealed class AdminController : Controller
 
             case RateLimitPolicyBulkAction.Remove:
                 {
-                    var totalDeleted = 0;
-                    var shouldReload = false;
-
-                    foreach (var policy in policies)
-                    {
-                        if (await _policyStore.DeleteAsync(policy))
-                        {
-                            totalDeleted++;
-                            shouldReload |= policy.IsEnabled;
-                        }
-                    }
+                    var totalDeleted = await _mutations.DeleteAsync(policies);
 
                     if (totalDeleted == 0)
                     {
                         await _notifier.WarningAsync(H["No policies were deleted."]);
                         break;
-                    }
-
-                    if (shouldReload)
-                    {
-                        _shellReleaseManager.RequestRelease();
                     }
 
                     await _notifier.SuccessAsync(H.Plural(totalDeleted, "{1} policy was deleted successfully.", "{1} policies were deleted successfully.", totalDeleted));
@@ -507,12 +454,7 @@ public sealed class AdminController : Controller
             : null;
         updated.Limiters.AddRange(existingPolicy.Limiters);
 
-        await _policyStore.UpdateAsync(updated);
-
-        if (ShouldReloadPolicy(existingPolicy.IsEnabled, updated.IsEnabled))
-        {
-            _shellReleaseManager.RequestRelease();
-        }
+        await _mutations.UpdateAsync(updated, existingPolicy.IsEnabled);
 
         await _notifier.SuccessAsync(H["Policy saved successfully."]);
 
@@ -562,28 +504,20 @@ public sealed class AdminController : Controller
             ModelState.AddModelError(nameof(model.Name), S["A policy with the same name already exists."]);
         }
 
-        if (effectiveScope != RateLimitPolicyScope.Global &&
-            effectiveScope != RateLimitPolicyScope.Endpoint &&
-            effectiveScope != RateLimitPolicyScope.Group)
+        switch (RateLimitPolicyValidation.ValidateTarget(effectiveScope, effectivePath, effectiveGroupName))
         {
-            ModelState.AddModelError(nameof(model.Scope), S["The selected policy type is invalid."]);
-        }
-
-        if (effectiveScope == RateLimitPolicyScope.Endpoint)
-        {
-            if (string.IsNullOrWhiteSpace(effectivePath))
-            {
+            case RateLimitPolicyTargetError.InvalidScope:
+                ModelState.AddModelError(nameof(model.Scope), S["The selected policy type is invalid."]);
+                break;
+            case RateLimitPolicyTargetError.MissingPath:
                 ModelState.AddModelError(nameof(model.Path), S["A request path is required for endpoint policies."]);
-            }
-            else if (!effectivePath.StartsWith('/'))
-            {
+                break;
+            case RateLimitPolicyTargetError.RelativePath:
                 ModelState.AddModelError(nameof(model.Path), S["The request path must start with '/'."]);
-            }
-        }
-
-        if (effectiveScope == RateLimitPolicyScope.Group && string.IsNullOrWhiteSpace(effectiveGroupName))
-        {
-            ModelState.AddModelError(nameof(model.GroupName), S["A rate-limit group is required for group policies."]);
+                break;
+            case RateLimitPolicyTargetError.MissingGroup:
+                ModelState.AddModelError(nameof(model.GroupName), S["A rate-limit group is required for group policies."]);
+                break;
         }
     }
 
@@ -774,9 +708,6 @@ public sealed class AdminController : Controller
         return !string.IsNullOrWhiteSpace(value) &&
             value.Contains(searchText, StringComparison.OrdinalIgnoreCase);
     }
-
-    private static bool ShouldReloadPolicy(bool wasEnabled, bool isEnabled)
-        => wasEnabled != isEnabled;
 
     private static string GenerateUniqueCloneName(string sourceName, IReadOnlyCollection<RateLimitPolicy> policies)
     {

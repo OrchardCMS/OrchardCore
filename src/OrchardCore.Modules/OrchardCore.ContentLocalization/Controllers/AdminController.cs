@@ -1,35 +1,25 @@
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Admin;
-using OrchardCore.ContentLocalization.Models;
-using OrchardCore.ContentManagement;
-using OrchardCore.Contents;
+using OrchardCore.ContentLocalization.Services;
 using OrchardCore.DisplayManagement.Notify;
 
 namespace OrchardCore.ContentLocalization.Controllers;
 
 public sealed class AdminController : Controller
 {
-    private readonly IContentManager _contentManager;
-    private readonly IContentLocalizationManager _contentLocalizationManager;
+    private readonly IContentLocalizationService _contentLocalizationService;
     private readonly INotifier _notifier;
-    private readonly IAuthorizationService _authorizationService;
 
     internal readonly IHtmlLocalizer H;
 
     public AdminController(
-        IContentManager contentManager,
         INotifier notifier,
-        IContentLocalizationManager localizationManager,
-        IHtmlLocalizer<AdminController> localizer,
-        IAuthorizationService authorizationService)
+        IContentLocalizationService localizationService,
+        IHtmlLocalizer<AdminController> localizer)
     {
-        _contentManager = contentManager;
         _notifier = notifier;
-        _authorizationService = authorizationService;
-        _contentLocalizationManager = localizationManager;
+        _contentLocalizationService = localizationService;
         H = localizer;
     }
 
@@ -40,46 +30,35 @@ public sealed class AdminController : Controller
         // Invariant culture name is empty so a null value is bound.
         targetCulture ??= string.Empty;
 
-        var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
-
-        if (contentItem == null)
-        {
-            return NotFound();
-        }
-
-        if (!await _authorizationService.AuthorizeAsync(User, ContentLocalizationPermissions.LocalizeContent, contentItem))
-        {
-            return Forbid();
-        }
-
-        if (!await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, contentItem.ContentType, User.FindFirstValue(ClaimTypes.NameIdentifier)))
-        {
-            return Forbid();
-        }
-
-        if (!contentItem.TryGet<LocalizationPart>(out var part))
-        {
-            return NotFound();
-        }
-
-        var alreadyLocalizedContent = await _contentLocalizationManager.GetContentItemAsync(part.LocalizationSet, targetCulture);
-
-        if (alreadyLocalizedContent != null)
-        {
-            await _notifier.WarningAsync(H["A localization already exists for '{0}'.", targetCulture]);
-            return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId, returnUrl });
-        }
-
         try
         {
-            var newContent = await _contentLocalizationManager.LocalizeAsync(contentItem, targetCulture);
-            await _notifier.InformationAsync(H["Localized version of the content created successfully."]);
-            return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = newContent.ContentItemId, returnUrl });
+            var result = await _contentLocalizationService.LocalizeAsync(User, contentItemId, targetCulture);
+            if (result.Status == ContentLocalizationStatus.NotFound)
+            {
+                return NotFound();
+            }
+            if (result.Status == ContentLocalizationStatus.Forbidden)
+            {
+                return Forbid();
+            }
+            if (result.Status is ContentLocalizationStatus.Invalid or ContentLocalizationStatus.Conflict)
+            {
+                await _notifier.WarningAsync(H["Could not create localized version of the content item."]);
+            }
+            else if (!result.Created)
+            {
+                await _notifier.WarningAsync(H["A localization already exists for '{0}'.", targetCulture]);
+            }
+            else
+            {
+                await _notifier.InformationAsync(H["Localized version of the content created successfully."]);
+                contentItemId = result.ContentItem.ContentItemId;
+            }
         }
         catch (InvalidOperationException)
         {
             await _notifier.WarningAsync(H["Could not create localized version of the content item."]);
-            return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = contentItem.ContentItemId, returnUrl });
         }
+        return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId, returnUrl });
     }
 }

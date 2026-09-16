@@ -4,6 +4,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Rules.Drivers;
+using OrchardCore.Rules;
 using OrchardCore.Rules.Models;
 using OrchardCore.Rules.Services;
 using OrchardCore.Rules.ViewModels;
@@ -98,6 +99,7 @@ public class JavascriptConditionDisplayDriverTests
             new StubHtmlLocalizer<JavascriptConditionDisplayDriver>(),
             new StubStringLocalizer<JavascriptConditionDisplayDriver>(),
             evaluator,
+            new RuleManagementService([], global::Microsoft.Extensions.Options.Options.Create(new ConditionOperatorOptions()), Mock.Of<IConditionIdGenerator>(), new StubStringLocalizer<RuleManagementService>()),
             notifier.Object);
 
         return (driver, notifier);

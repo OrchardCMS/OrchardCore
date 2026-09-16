@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <InterceptorsNamespaces>$(InterceptorsNamespaces);Microsoft.AspNetCore.OpenApi.Generated</InterceptorsNamespaces>
+    <NoWarn>$(NoWarn);CA1707;EnableGenerateDocumentationFile</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <PackageReference Include="Moq" />
+    <PackageReference Include="xunit.v3.mtp-v2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.RemoteManagement\OrchardCore.RemoteManagement.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.OpenId\OrchardCore.OpenId.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="Moq" />
+    <Using Include="Xunit" />
+    <Compile Include="..\OrchardCore.Tests\Modules\OrchardCore.OpenId\RemoteManagementConfigurationServiceTests.cs" Link="RemoteManagementConfigurationServiceTests.cs" />
+    <Compile Include="..\OrchardCore.Tests\Modules\OrchardCore.RemoteManagement\RemoteManagementManifestServiceTests.cs" Link="RemoteManagementManifestServiceTests.cs" />
+  </ItemGroup>
+</Project>

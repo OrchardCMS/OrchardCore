@@ -7,3 +7,13 @@
 **/wwwroot/**/*.json text eol=lf
 **/wwwroot/**/*.ts text eol=lf
 **/wwwroot/**/*.svg text eol=lf
+
+# Keep canonical skill and packaging inputs identical across checkout platforms.
+.agents/skills/**/*.md text eol=lf
+.scripts/remote-management/*.py text eol=lf
+
+# The directly installable plugin must match generated downloads on every OS.
+.agents/skills/pomi/** text eol=lf
+.agents/skills/pomi/assets/*.png binary
+.agents/plugins/*.json text eol=lf
+.claude-plugin/*.json text eol=lf

@@ -56,6 +56,7 @@ public class OpenIdApplicationStepTests
                 It.IsAny<CancellationToken>()));
 
         Assert.Equal(expected.ClientId, actual.ClientId);
+        Assert.Equal(expected.ApplicationType, actual.ApplicationType);
         Assert.Equal(expected.ClientSecret, actual.ClientSecret);
         Assert.Equal(expected.ClientType, actual.ClientType);
         Assert.Equal(expected.ConsentType, actual.ConsentType);

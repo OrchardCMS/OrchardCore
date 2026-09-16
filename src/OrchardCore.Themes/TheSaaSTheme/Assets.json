@@ -1,0 +1,9 @@
+[
+  {
+    "action": "sass",
+    "name": "theme-thesaas",
+    "source": "Assets/scss/theme.scss",
+    "dest": "wwwroot/styles/",
+    "tags": ["theme", "css"]
+  }
+]

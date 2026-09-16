@@ -1,4 +1,3 @@
-using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement;
@@ -10,14 +9,14 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.ViewModels;
+using OrchardCore.Users.Services;
 
 namespace OrchardCore.Users.Drivers;
 
 public sealed class CustomUserSettingsDisplayDriver : DisplayDriver<User>
 {
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
-    private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly IContentManager _contentManager;
+    private readonly CustomUserSettingsService _settingsService;
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -29,8 +28,7 @@ public sealed class CustomUserSettingsDisplayDriver : DisplayDriver<User>
         IHttpContextAccessor httpContextAccessor)
     {
         _contentItemDisplayManager = contentItemDisplayManager;
-        _contentDefinitionManager = contentDefinitionManager;
-        _contentManager = contentManager;
+        _settingsService = new CustomUserSettingsService(contentManager, contentDefinitionManager, session: null);
         _authorizationService = authorizationService;
         _httpContextAccessor = httpContextAccessor;
     }
@@ -108,35 +106,19 @@ public sealed class CustomUserSettingsDisplayDriver : DisplayDriver<User>
             var isNew = false;
             var contentItem = await GetUserSettingsAsync(user, contentTypeDefinition, () => isNew = true);
             await _contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, isNew, context.GroupId, Prefix);
-            user.Properties[contentTypeDefinition.Name] = JObject.FromObject(contentItem);
+            CustomUserSettingsService.SetSettings(user, contentTypeDefinition, contentItem);
         }
 
         return await EditAsync(user, context);
     }
 
-    private async Task<IEnumerable<ContentTypeDefinition>> GetContentTypeDefinitionsAsync()
-        => (await _contentDefinitionManager.ListTypeDefinitionsAsync())
-            .Where(x => x.GetStereotype() == "CustomUserSettings");
+    private Task<IEnumerable<ContentTypeDefinition>> GetContentTypeDefinitionsAsync()
+        => _settingsService.GetAllSettingsTypesAsync();
 
-    private async Task<ContentItem> GetUserSettingsAsync(User user, ContentTypeDefinition settingsType, Action isNew = null)
-    {
-        JsonNode property;
-        ContentItem contentItem;
-
-        if (user.Properties.TryGetPropertyValue(settingsType.Name, out property))
+    private Task<ContentItem> GetUserSettingsAsync(User user, ContentTypeDefinition settingsType, Action isNew = null)
+        => _settingsService.GetSettingsAsync(user, settingsType, () =>
         {
-            var existing = property.ToObject<ContentItem>();
-
-            // Create a new item to take into account the current type definition.
-            contentItem = await _contentManager.NewAsync(existing.ContentType);
-            contentItem.Merge(existing);
-        }
-        else
-        {
-            contentItem = await _contentManager.NewAsync(settingsType.Name);
             isNew?.Invoke();
-        }
-
-        return contentItem;
-    }
+            return Task.CompletedTask;
+        });
 }

@@ -54,8 +54,15 @@ public sealed class ManageMediaFolderAuthorizationHandler : AuthorizationHandler
 
         var path = await _fileStore.ResolveAuthorizedPathAsync(resourcePath);
 
-        var userOwnFolder = EnsureTrailingSlash(
-            _fileStore.Combine(_usersFolder, _userAssetFolderNameProvider.GetUserAssetFolderName(context.User)));
+        // Application tokens may have no user folder. An absent name must not
+        // turn the entire users directory into the caller's own folder.
+        var userFolderName = _userAssetFolderNameProvider.GetUserAssetFolderName(context.User);
+        var isOwnFolder = false;
+        if (!string.IsNullOrEmpty(userFolderName))
+        {
+            var userOwnFolder = EnsureTrailingSlash(_fileStore.Combine(_usersFolder, userFolderName));
+            isOwnFolder = IsAuthorizedFolder(userOwnFolder, path) || IsDescendantOfAuthorizedFolder(userOwnFolder, path);
+        }
 
         var permission = MediaPermissions.ManageMedia;
 
@@ -65,12 +72,12 @@ public sealed class ManageMediaFolderAuthorizationHandler : AuthorizationHandler
             permission = MediaPermissions.ManageAttachedMediaFieldsFolder;
         }
 
-        if (IsAuthorizedFolder(_usersFolder, path) || IsAuthorizedFolder(userOwnFolder, path) || IsDescendantOfAuthorizedFolder(userOwnFolder, path))
+        if (IsAuthorizedFolder(_usersFolder, path) || isOwnFolder)
         {
             permission = MediaPermissions.ManageOwnMedia;
         }
 
-        if (IsDescendantOfAuthorizedFolder(_usersFolder, path) && !IsAuthorizedFolder(userOwnFolder, path) && !IsDescendantOfAuthorizedFolder(userOwnFolder, path))
+        if (IsDescendantOfAuthorizedFolder(_usersFolder, path) && !isOwnFolder)
         {
             permission = MediaPermissions.ManageOthersMedia;
         }

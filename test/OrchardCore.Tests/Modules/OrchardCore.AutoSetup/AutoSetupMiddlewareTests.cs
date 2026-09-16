@@ -83,9 +83,13 @@ public class AutoSetupMiddlewareTests : IDisposable
         Assert.Equal(StatusCodes.Status503ServiceUnavailable, httpContext.Response.StatusCode);
     }
 
-    [Fact]
-    public async Task InvokeAsync_UnInitializedShell_PerformsSetup()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task InvokeAsync_UnInitializedShell_PerformsSetup(bool provision)
     {
+        _mockOptions.Object.Value.Tenants[0].RemoteManagementClientId = provision ? "pomi-test" : null;
+        _mockOptions.Object.Value.Tenants[0].RemoteManagementClientSecret = provision ? "test-secret" : null;
         // Arrange
         _shellSettings.State = TenantState.Uninitialized;
 
@@ -106,6 +110,7 @@ public class AutoSetupMiddlewareTests : IDisposable
 
         // Assert
         Assert.Equal(StatusCodes.Status302Found, httpContext.Response.StatusCode); // Redirect
+        Assert.Equal(provision ? "pomi-test" : string.Empty, httpContext.Response.Headers["X-OrchardCore-Provisioned-Client"].ToString());
         _mockAutoSetupService.Verify(s => s.SetupTenantAsync(It.IsAny<TenantSetupOptions>(), It.IsAny<ShellSettings>()), Times.Once);
     }
 

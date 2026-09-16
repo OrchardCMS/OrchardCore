@@ -28,9 +28,9 @@ public sealed class ContentDeploymentStepDriver : DisplayDriver<DeploymentStep, 
     public override async Task<IDisplayResult> UpdateAsync(ContentDeploymentStep step, UpdateEditorContext context)
     {
         // Initializes the value to empty otherwise the model is not updated if no type is selected.
-        step.ContentTypes = [];
-
-        await context.Updater.TryUpdateModelAsync(step, Prefix, x => x.ContentTypes, x => x.ExportAsSetupRecipe);
+        var model = new ContentDeploymentStepViewModel { ContentTypes = [], ExportAsSetupRecipe = step.ExportAsSetupRecipe };
+        await context.Updater.TryUpdateModelAsync(model, Prefix, x => x.ContentTypes, x => x.ExportAsSetupRecipe);
+        ContentDeploymentStepEditor.Apply(step, model.ContentTypes, model.ExportAsSetupRecipe);
 
         return Edit(step, context);
     }

@@ -172,6 +172,19 @@ The following skills are available in `.agents/skills/` for guided workflows:
 | `orchardcore-tester` | Browser-based testing | Testing features via Playwright automation |
 | `orchardcore-nswag-regenerate` | Regenerate NSwag API clients | Updating `Services/OpenApiClient.cs`/`OpenApiClient.ts`, noisy NSwag regeneration diffs |
 
+The ten Pomi remote management skills are bundled in
+[the Pomi plugin](.agents/skills/pomi/README.md). Start with its
+[workflow router](.agents/skills/pomi/skills/orchardcore-cli/SKILL.md), which links
+to each specialist and shared references. This nested layout keeps the package
+directly installable; agents that only discover immediate child skill folders
+should follow these links or install `pomi@orchardcore`.
+
+For automated website or tenant creation followed by Pomi management, use
+`--enable-remote-management` on the install command and select its returned
+context; it needs no `pomi login`. Preserve setup-only requests without the flag.
+Always hand over the administrator credentials in a private file according to
+the [credential handoff procedure](.agents/skills/pomi/skills/orchardcore-cli/references/setup-password.md#credential-handoff).
+
 These skills provide step-by-step guidance, code templates, and references for common tasks.
 
 ## Frontend Assets

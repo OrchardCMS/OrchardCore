@@ -1,6 +1,6 @@
-using System.Text.Json.Nodes;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment.ViewModels;
+using OrchardCore.Deployment.Services;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
@@ -59,23 +59,19 @@ public sealed class JsonRecipeDeploymentStepDriver : DisplayDriver<DeploymentSte
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        try
+        var candidate = new JsonRecipeDeploymentStep { Json = model.Json };
+        var errors = DeploymentStepValidation.Validate(candidate);
+        foreach (var messages in errors.Values)
         {
-            var jObject = JObject.Parse(model.Json);
-            if (!jObject.ContainsKey("name"))
+            foreach (var message in messages)
             {
-
-                context.Updater.ModelState.AddModelError(Prefix, nameof(JsonRecipeDeploymentStepViewModel.Json), S["The recipe must have a name property"]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(JsonRecipeDeploymentStepViewModel.Json), S[message]);
             }
-
         }
-        catch (Exception)
+        if (errors.Count == 0)
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(JsonRecipeDeploymentStepViewModel.Json), S["Invalid JSON supplied"]);
-
+            step.Json = candidate.Json;
         }
-
-        step.Json = model.Json;
 
         return Edit(step, context);
     }

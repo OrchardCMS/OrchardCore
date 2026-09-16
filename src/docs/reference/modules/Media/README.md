@@ -4,6 +4,10 @@ The Media module provides a UI to upload and organize binary files that can be u
 
 The media-processing liquid filters can also create custom sized images.
 
+## API reference
+
+See the [Media management API](../../api/media/README.md) for OpenAPI operations that browse and manage media files and folders.
+
 ## HTML filters
 
 The following filters allow for media manipulation:
@@ -818,3 +822,60 @@ The base `Media Indexing` feature indexes media text stored by media fields. Add
 
 To index PDF files the [PdfPig library](https://github.com/UglyToad/PdfPig/) is used.
 To index Microsoft Office files (i.e., .docx, .ppts) the [Open-XML-SDK](https://github.com/dotnet/Open-XML-SDK) is used.
+
+## Deployment step configuration
+
+The media deployment step exposes `includeAll`, `filePaths` and `directoryPaths`
+through the deployment plan API, Pomi and MCP. Paths are arrays of existing,
+relative media-store paths, using `/` separators without traversal segments.
+Enabling `includeAll` clears explicit selections through the same normalization
+used by the administration editor. Omitted properties preserve current values;
+empty arrays clear selections. Invalid patches leave the step unchanged.
+
+## Remote administration
+
+With Remote Management enabled, `pomi media profiles list/show/create/update/delete`
+manage named image profiles. Create and update accept JSON with `name`, `hint`,
+`width`, `height`, `mode`, `format`, `quality`, `backgroundColor`, and `autoOrient`.
+Names are case-insensitive and stored in invariant lowercase. Update replaces the
+complete definition and can rename it; a conflicting destination returns 409.
+An identical create retry succeeds without writing again. Dimensions must be
+nonnegative; without tokenized URLs they must be configured supported sizes.
+The existing profile administration UI uses the same conversion and validation.
+Liquid, Razor and tag helper image URLs consume the saved profiles as before.
+
+```sh
+pomi media profiles create --stdin < profile.json
+pomi media profiles show thumbnail
+pomi media profiles update thumbnail --stdin < profile.json
+pomi media profiles delete thumbnail --force
+pomi media cache show
+pomi media cache purge resized --force
+```
+
+Cache commands require `OrchardCore.Media.Cache`. `resized` purges the tenant's
+resized image cache; `remote` purges the configured remote asset cache. An absent
+provider returns 503, and a provider failure is reported instead of successful
+purging. Profile commands require `ManageMediaProfiles`, cache commands require
+`ManageAssetCache`; both also require `AccessRemoteManagement` and API bearer
+authentication. These commands are available through MCP using the same policies.
+
+Two typed settings sections require `ManageMediaApiSettings`:
+
+- `media-api` exposes `authenticationScheme` (`Cookie` or `Bearer`) for the existing
+  gallery/file API. It does not provision OpenID. Management endpoints keep their
+  API bearer policy independently of this setting.
+- `media-upload-policy` adds optional tenant restrictions: `maxFileSize` in bytes
+  and `allowedFileExtensions`. Omitted properties preserve overrides, `null`
+  inherits host configuration, and an empty extension array permits no uploads.
+  Restrictions cannot exceed host limits. Restricted extensions retain their
+  existing `UploadRestrictedMedia` permission requirement. Responses include
+  read-only host and effective values. Existing upload and gallery paths consume
+  the resulting media options; a change requests a tenant reload.
+
+```sh
+pomi settings sections show media-upload-policy
+pomi settings sections schema media-upload-policy
+printf '%s' '{"maxFileSize":1000000,"allowedFileExtensions":[".png",".jpg"]}' |
+  pomi settings sections update media-upload-policy --stdin
+```

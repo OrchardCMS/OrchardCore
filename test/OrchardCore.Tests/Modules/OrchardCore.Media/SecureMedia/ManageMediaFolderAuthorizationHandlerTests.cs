@@ -94,7 +94,45 @@ public class ManageMediaFolderAuthorizationHandlerTests
         Assert.True(context.HasSucceeded);
     }
 
-    private static ManageMediaFolderAuthorizationHandler CreateHandler()
+    [Theory]
+    [InlineData(null, "_users/other-user-folder")]
+    [InlineData("", "_users/other-user-folder")]
+    [InlineData(null, "_users/other-user-folder/victim-private.svg")]
+    [InlineData("", "_users/other-user-folder/victim-private.svg")]
+    [InlineData(null, "_users/other-user-folder/new-file.svg")]
+    [InlineData("", "_users/other-user-folder/new-file.svg")]
+    public async Task OwnMediaPermissionWithoutUserFolderDoesNotGrantOtherUsersMedia(string userFolderName, string resource)
+    {
+        var handler = CreateHandler(userFolderName);
+        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(
+            MediaPermissions.ManageMediaFolder,
+            [MediaPermissions.ManageOwnMedia.Name],
+            authenticated: true,
+            resource);
+
+        await handler.HandleAsync(context);
+
+        Assert.False(context.HasSucceeded);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public async Task OthersMediaPermissionWithoutUserFolderStillAllowsOtherUsersMedia(string userFolderName)
+    {
+        var handler = CreateHandler(userFolderName);
+        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(
+            MediaPermissions.ManageMediaFolder,
+            [MediaPermissions.ManageOthersMedia.Name],
+            authenticated: true,
+            "_users/other-user-folder/victim-private.svg");
+
+        await handler.HandleAsync(context);
+
+        Assert.True(context.HasSucceeded);
+    }
+
+    private static ManageMediaFolderAuthorizationHandler CreateHandler(string userFolderName = "user-folder")
     {
         var defaultHttpContext = new DefaultHttpContext();
         var httpContextAccessor = Mock.Of<IHttpContextAccessor>(hca => hca.HttpContext == defaultHttpContext);
@@ -152,7 +190,7 @@ public class ManageMediaFolderAuthorizationHandlerTests
         var mockUserAssetFolderNameProvider = new Mock<IUserAssetFolderNameProvider>();
         mockUserAssetFolderNameProvider
             .Setup(afp => afp.GetUserAssetFolderName(It.Is<ClaimsPrincipal>(cp => cp.Identity.AuthenticationType == "Test")))
-            .Returns("user-folder");
+            .Returns(userFolderName);
 
         var attachedMediaFieldFileService = new AttachedMediaFieldFileService(
             mockMediaFileStore.Object,

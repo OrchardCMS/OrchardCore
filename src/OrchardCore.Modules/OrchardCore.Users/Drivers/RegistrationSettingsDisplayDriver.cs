@@ -1,3 +1,4 @@
+using OrchardCore.Users.Services.Management;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
@@ -61,16 +62,7 @@ public sealed class RegistrationSettingsDisplayDriver : SiteDisplayDriver<Regist
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        var hasChange =
-            model.UsersMustValidateEmail != settings.UsersMustValidateEmail ||
-            model.UsersAreModerated != settings.UsersAreModerated ||
-            model.UseSiteTheme != settings.UseSiteTheme;
-
-        settings.UsersMustValidateEmail = model.UsersMustValidateEmail;
-        settings.UsersAreModerated = model.UsersAreModerated;
-        settings.UseSiteTheme = model.UseSiteTheme;
-
-        if (hasChange)
+        if (context.Updater.ModelState.IsValid && UserPolicySettingsEditor.Apply(settings, model))
         {
             _optionsUpdateNotifier.RequestUpdate<RegistrationOptions>();
         }

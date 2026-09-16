@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
-using OrchardCore.Modules;
 
 namespace OrchardCore.Indexing.Core;
 
@@ -61,13 +60,37 @@ public abstract class NamedIndexingService
         await ProcessRecordsAsync(indexProfiles.Where(x => indexIds.Contains(x.Id)));
     }
 
-    private async Task ProcessRecordsAsync(IEnumerable<IndexProfile> indexProfiles)
+    /// <summary>
+    /// Processes the selected indexes and reports progress, unavailable providers, contention and failures.
+    /// Completion means no further tasks were observed at the final queue read, not that future content changes are indexed.
+    /// </summary>
+    public async Task<IReadOnlyList<IndexProcessingResult>> ProcessRecordsWithResultsAsync(IEnumerable<string> indexIds)
+    {
+        ArgumentNullException.ThrowIfNull(indexIds);
+        var ids = indexIds.Distinct(StringComparer.Ordinal).ToArray();
+        var profiles = (await _indexProfileStore.GetByTypeAsync(Name)).Where(profile => ids.Contains(profile.Id)).ToArray();
+        var results = (await ProcessRecordsAsync(profiles)).ToList();
+        foreach (var id in ids.Except(profiles.Select(profile => profile.Id), StringComparer.Ordinal))
+        {
+            results.Add(new IndexProcessingResult { IndexId = id, Status = IndexProcessingStatus.NotFound });
+        }
+        return results;
+    }
+
+    internal async Task<IndexProcessingResult> ProcessIndexWithPreparationAsync(IndexProfile profile,
+        Func<IndexProfile, IIndexManager, Action, Task<bool>> prepare)
+        => (await ProcessRecordsAsync([profile], prepare)).Single();
+
+    private async Task<IReadOnlyList<IndexProcessingResult>> ProcessRecordsAsync(IEnumerable<IndexProfile> indexProfiles,
+        Func<IndexProfile, IIndexManager, Action, Task<bool>> prepare = null)
     {
         if (!indexProfiles.Any())
         {
-            return;
+            return [];
         }
 
+        var results = indexProfiles.ToDictionary(profile => profile.Id,
+            profile => new IndexProcessingResult { IndexId = profile.Id, Status = IndexProcessingStatus.Failed });
         var tracker = new Dictionary<string, IndexProfileEntryContext>();
 
         var documentIndexManagers = new Dictionary<string, IDocumentIndexManager>();
@@ -77,6 +100,7 @@ public abstract class NamedIndexingService
 
         var distributedLock = _serviceProvider.GetRequiredService<IDistributedLock>();
         var lockers = new List<ILocker>();
+        var leases = new Dictionary<string, IndexingLease>();
 
         try
         {
@@ -85,7 +109,7 @@ public abstract class NamedIndexingService
             {
                 if (indexProfile.Type != Name)
                 {
-                    // Skip indexes that are not content indexes.
+                    results[indexProfile.Id].Status = IndexProcessingStatus.Unsupported;
                     continue;
                 }
 
@@ -95,6 +119,7 @@ public abstract class NamedIndexingService
 
                     if (documentIndexManager is null)
                     {
+                        results[indexProfile.Id].Status = IndexProcessingStatus.ProviderUnavailable;
                         Logger.LogWarning("Unable to find an implementation of {Implementation} for the provider '{ProviderName}'", nameof(IDocumentIndexManager), indexProfile.ProviderName);
 
                         continue;
@@ -109,6 +134,7 @@ public abstract class NamedIndexingService
 
                     if (indexManager is null)
                     {
+                        results[indexProfile.Id].Status = IndexProcessingStatus.ProviderUnavailable;
                         Logger.LogWarning("Unable to find an implementation of {Implementation} for the provider '{ProviderName}'", nameof(IIndexManager), indexProfile.ProviderName);
 
                         continue;
@@ -117,42 +143,59 @@ public abstract class NamedIndexingService
                     indexManagers.Add(indexProfile.ProviderName, indexManager);
                 }
 
-                if (!await indexManager.ExistsAsync(indexProfile.IndexFullName))
-                {
-                    Logger.LogWarning("The index '{IndexName}' does not exist for the provider '{ProviderName}'.", indexProfile.IndexName, indexProfile.ProviderName);
-
-                    continue;
-                }
-
-                var taskId = await documentIndexManager.GetLastTaskIdAsync(indexProfile);
-                lastTaskId = Math.Min(lastTaskId, taskId);
-                tracker.Add(indexProfile.Id, new IndexProfileEntryContext(indexProfile, documentIndexManager, taskId));
-
-                (var locker, var isLocked) = await distributedLock.TryAcquireLockAsync($"IndexingService-{indexProfile.Id}", TimeSpan.FromSeconds(3), TimeSpan.FromMinutes(15));
+                var lease = new IndexingLease(_serviceProvider);
+                (var locker, var isLocked) = await distributedLock.TryAcquireLockAsync($"IndexingService-{indexProfile.Id}", TimeSpan.FromSeconds(3), IndexingLease.Duration);
 
                 if (!isLocked)
                 {
-                    documentIndexManagers.Remove(indexProfile.ProviderName);
-                    indexManagers.Remove(indexProfile.ProviderName);
-                    tracker.Remove(indexProfile.Id);
-
+                    results[indexProfile.Id].Status = IndexProcessingStatus.Busy;
                     Logger.LogWarning("The index {Name} is already being indexed. Skipping", indexProfile.Name);
 
                     continue;
                 }
 
                 lockers.Add(locker);
+                leases.Add(indexProfile.Id, lease);
+                try
+                {
+                    lease.EnsureActive();
+
+                    if (prepare is not null && !await prepare(indexProfile, indexManager, lease.EnsureActive))
+                    {
+                        results[indexProfile.Id].Status = IndexProcessingStatus.ProviderRejected;
+                        continue;
+                    }
+
+                    lease.EnsureActive();
+                    if (!await indexManager.ExistsAsync(indexProfile.IndexFullName))
+                    {
+                        results[indexProfile.Id].Status = IndexProcessingStatus.ProviderMissing;
+                        Logger.LogWarning("The index '{IndexName}' does not exist for the provider '{ProviderName}'.", indexProfile.IndexName, indexProfile.ProviderName);
+
+                        continue;
+                    }
+
+                    lease.EnsureActive();
+                    var taskId = await documentIndexManager.GetLastTaskIdAsync(indexProfile);
+                    lease.EnsureActive();
+                    results[indexProfile.Id].LastTaskId = taskId;
+                    lastTaskId = Math.Min(lastTaskId, taskId);
+                    tracker.Add(indexProfile.Id, new IndexProfileEntryContext(indexProfile, documentIndexManager, taskId));
+                }
+                catch (Exception) when (lease.Expired)
+                {
+                    results[indexProfile.Id].Status = IndexProcessingStatus.LockExpired;
+                }
             }
 
             if (tracker.Count == 0)
             {
-                return;
+                return results.Values.ToArray();
             }
 
-            while (true)
+            while (tracker.Count > 0)
             {
                 List<RecordIndexingTask> currentBatch = null;
-                var batchProcessedSuccessfully = false;
 
                 try
                 {
@@ -167,19 +210,21 @@ public abstract class NamedIndexingService
                     // Group all DocumentIndex by index to batch update them.
                     var updatedDocumentsByIndex = tracker.Values.ToDictionary(x => x.IndexProfile.Id, b => new List<DocumentIndex>());
 
+                    var failedIndexes = new HashSet<string>();
                     await BeforeProcessingTasksAsync(currentBatch, tracker.Values);
 
                     foreach (var entry in tracker.Values)
                     {
                         foreach (var task in currentBatch)
                         {
-                            if (task.Id < entry.LastTaskId)
+                            if (task.Id <= entry.LastTaskId)
                             {
                                 continue;
                             }
 
                             try
                             {
+                                leases[entry.IndexProfile.Id].EnsureActive();
                                 var buildIndexContext = await GetBuildDocumentIndexAsync(entry, task);
 
                                 if (buildIndexContext is null)
@@ -187,7 +232,11 @@ public abstract class NamedIndexingService
                                     continue;
                                 }
 
-                                await _documentIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), Logger);
+                                foreach (var handler in _documentIndexHandlers)
+                                {
+                                    leases[entry.IndexProfile.Id].EnsureActive();
+                                    await handler.BuildIndexAsync(buildIndexContext);
+                                }
 
                                 if (await ShouldTrackDocumentAsync(buildIndexContext, entry, task))
                                 {
@@ -196,18 +245,19 @@ public abstract class NamedIndexingService
                             }
                             catch (Exception ex)
                             {
-                                // Log the error but continue processing remaining tasks
-                                Logger.LogError(ex, "Error processing indexing task {TaskId} for index {IndexName}. Continuing with remaining tasks.", task.Id, entry.IndexProfile.Name);
+                                // Keep this index at its previous cursor so the failed batch can be retried.
+                                Logger.LogError(ex, "Error processing indexing task {TaskId} for index {IndexName}. Stopping this index until the next run.", task.Id, entry.IndexProfile.Name);
+                                failedIndexes.Add(entry.IndexProfile.Id);
+                                break;
                             }
                         }
                     }
 
                     lastTaskId = currentBatch.Last().Id;
-                    batchProcessedSuccessfully = true;
 
                     foreach (var indexEntry in updatedDocumentsByIndex)
                     {
-                        if (indexEntry.Value.Count == 0)
+                        if (failedIndexes.Contains(indexEntry.Key))
                         {
                             continue;
                         }
@@ -216,44 +266,61 @@ public abstract class NamedIndexingService
 
                         try
                         {
+                            leases[indexEntry.Key].EnsureActive();
                             // AddOrUpdateDocumentsAsync is an upsert operation that handles both adding new documents
                             // and updating existing ones. Implementations should handle any necessary deletions internally.
-                            if (await trackerEntry.DocumentIndexManager.AddOrUpdateDocumentsAsync(trackerEntry.IndexProfile, indexEntry.Value))
+                            if (indexEntry.Value.Count == 0 || await trackerEntry.DocumentIndexManager.AddOrUpdateDocumentsAsync(trackerEntry.IndexProfile, indexEntry.Value))
                             {
-                                // We know none of the previous batches failed to update this index.
-                                await trackerEntry.DocumentIndexManager.SetLastTaskIdAsync(trackerEntry.IndexProfile, lastTaskId);
+                                leases[indexEntry.Key].EnsureActive();
+                                // Successfully filtered records also count as processed, without regressing ahead indexes.
+                                if (lastTaskId > trackerEntry.LastTaskId)
+                                {
+                                    await trackerEntry.DocumentIndexManager.SetLastTaskIdAsync(trackerEntry.IndexProfile, lastTaskId);
+                                    leases[indexEntry.Key].EnsureActive();
+                                    results[trackerEntry.IndexProfile.Id].LastTaskId = lastTaskId;
+                                }
+                            }
+                            else
+                            {
+                                failedIndexes.Add(indexEntry.Key);
+                                Logger.LogWarning("The provider rejected documents for index {IndexName}. Stopping this index until the next run.", trackerEntry.IndexProfile.Name);
                             }
                         }
                         catch (Exception ex)
                         {
-                            // Log the error but continue processing remaining indexes
-                            Logger.LogError(ex, "Error updating documents for index {IndexName}. Continuing with remaining indexes.", trackerEntry.IndexProfile.Name);
+                            failedIndexes.Add(indexEntry.Key);
+                            Logger.LogError(ex, "Error updating documents for index {IndexName}. Stopping this index until the next run.", trackerEntry.IndexProfile.Name);
                         }
+                    }
+
+                    foreach (var id in failedIndexes)
+                    {
+                        tracker.Remove(id);
                     }
                 }
                 catch (Exception ex)
                 {
-                    // Log batch processing error and continue with next batch if possible
-                    Logger.LogError(ex, "Error processing batch of indexing tasks. Attempting to continue with next batch.");
-
-                    // Move to next batch only if we haven't already updated lastTaskId and we successfully loaded tasks
-                    if (!batchProcessedSuccessfully && currentBatch != null && currentBatch.Count > 0)
-                    {
-                        lastTaskId = currentBatch.Last().Id;
-                    }
-                    else if (currentBatch == null || currentBatch.Count == 0)
-                    {
-                        // If we couldn't load tasks, break the loop to avoid infinite retry
-                        break;
-                    }
+                    // Do not skip a failed batch and later advance a cursor past it.
+                    Logger.LogError(ex, "Error processing a batch of indexing tasks. Stopping until the next run.");
+                    tracker.Clear();
+                    break;
                 }
             }
+            foreach (var id in tracker.Keys)
+            {
+                results[id].Status = IndexProcessingStatus.Completed;
+            }
+            return results.Values.ToArray();
         }
         finally
         {
             foreach (var locker in lockers)
             {
                 await locker.DisposeAsync();
+            }
+            foreach (var (id, lease) in leases)
+            {
+                if (lease.Expired) { results[id].Status = IndexProcessingStatus.LockExpired; }
             }
         }
     }

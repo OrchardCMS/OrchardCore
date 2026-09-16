@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Remote Management</Title>
+    <Description>$(OCCMSDescription)
+
+    Provides remote management discovery, CLI metadata, and MCP tools for Orchard Core tenants.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Api RemoteManagement</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Microsoft.OpenApi" />
+    <PackageReference Include="ModelContextProtocol.AspNetCore" />
+    <PackageReference Include="OpenIddict.Server.AspNetCore" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.OpenApi.Core\OrchardCore.OpenApi.Core.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.RemoteManagement.Abstractions\OrchardCore.RemoteManagement.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore\OrchardCore.csproj" />
+  </ItemGroup>
+
+</Project>

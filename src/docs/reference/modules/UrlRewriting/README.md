@@ -97,3 +97,79 @@ The `UrlRewriting` step allows you to create or update URL rewrite rules easily.
   - **Append**: Appends the original query string to the new URL.
   - **Drop**: Ignores the query string during the rewrite.
 - **SkipFurtherRules**: When set to `true`, any subsequent rules will not be processed if this rule matches.
+
+## Validation and updates
+
+The admin editor and recipe importer use the rewrite manager's validation handlers.
+Validation checks required names, match patterns, query policies and redirect statuses,
+then asks the registered source to construct its runtime rule before saving. Rewrite
+and redirect arguments cannot contain literal whitespace or control characters because
+they are emitted as individual Apache rewrite arguments. Escape match characters or
+URL-encode substitution characters as appropriate. A substitution is a replacement
+expression, not a regular expression.
+
+Edits use independent metadata copies so invalid changes do not mutate stored rules.
+Saving an unchanged rule or deleting a missing rule does not reload the tenant.
+Changed saves, deletes and ordering changes request a reload. The manager uses one-based ordering positions, matching the admin sortable list
+which includes a header row. Stored rule order values are zero-based.
+
+## Remote management
+
+When this feature is enabled, its management endpoints require both
+`AccessRemoteManagement` and `ManageUrlRewritingRules` through the API authentication
+scheme. Pomi and MCP reuse these endpoints and the existing rewrite manager.
+The module advertises the `url-rewriting` capability.
+
+| Method and route | Pomi command | Behavior |
+| --- | --- | --- |
+| `GET /api/url-rewriting/rules` | `url-rewriting rules list` | Runtime-ordered page; `skip`, `take` (1–200) and optional name `search`. |
+| `GET /api/url-rewriting/rules/{id}` | `url-rewriting rules show <id>` | Stored identity, order and allowlisted definition. |
+| `GET /api/url-rewriting/sources` | `url-rewriting rules sources` | Registered sources and editing support. |
+| `POST /api/url-rewriting/rules/validate` | `url-rewriting rules validate` | Validation and source parsing without saving or matching a request. |
+| `POST /api/url-rewriting/rules` | `url-rewriting rules create` | Create a complete definition. |
+| `PUT /api/url-rewriting/rules/{id}` | `url-rewriting rules update <id>` | Replace a complete definition, preserving source, identity and order. |
+| `DELETE /api/url-rewriting/rules/{id}` | `url-rewriting rules delete <id> --force` | Delete; a missing rule succeeds without mutation. |
+| `PUT /api/url-rewriting/rules/{id}/position` | `url-rewriting rules move <id>` | Move using `{"position": 0}` for the first rule. |
+
+```bash
+pomi url-rewriting rules create --stdin <<'JSON'
+{
+  "id": "redirect-about",
+  "name": "Redirect old about URL",
+  "source": "Redirect",
+  "pattern": "^/about-us$",
+  "substitutionPattern": "/about",
+  "redirectType": "MovedPermanently",
+  "queryStringPolicy": "Append"
+}
+JSON
+pomi url-rewriting rules show redirect-about
+```
+
+The optional `id` accepts 1–128 ASCII letters, digits, underscores or hyphens.
+Without it, creation generates a new identifier each time. Supplying the same ID
+and normalized definition again returns the stored rule (HTTP 200); a different
+definition with that ID returns HTTP 409. Names are display labels and need not be
+unique. A newly created rule returns HTTP 201 with its location.
+
+Updates require the complete definition. Omitted options reset to their defaults:
+case-sensitive matching, `Append`, `Found` for redirects and `skipFurtherRules: false`
+for rewrites. `redirectType` is only valid for `Redirect`; `skipFurtherRules` is only
+valid for `Rewrite`. Enum values use names, not numbers. Unknown properties are
+rejected. A supplied body ID must match the route ID. Rule source changes are not
+supported; create another rule when changing source.
+
+Readback includes a `definition` object suitable for a subsequent update. The API
+supports the built-in `Rewrite` and `Redirect` definitions. Custom sources appear
+in discovery and stored-rule listings with `isWritable: false` and an opaque/null
+definition. Their arbitrary metadata is not exposed or edited; authorized callers
+can still reorder or delete these stored rules.
+
+This module uses its source's regex and rewrite options; it does not store common
+Rules-module condition trees. Validation constructs the registered runtime rule
+but does not evaluate it against a request. Test the resulting URL, status code,
+query policy and ordering after applying a change. Matching excludes the configured
+admin URL prefix; management API URLs otherwise participate in normal rewriting.
+Changed paths are rerouted through the tenant endpoints before the remaining middleware,
+so the target endpoint's authorization still applies. Disabling the feature removes its
+management operations and runtime rewriting.

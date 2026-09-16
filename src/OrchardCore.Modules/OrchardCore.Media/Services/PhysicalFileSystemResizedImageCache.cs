@@ -90,6 +90,7 @@ internal sealed class PhysicalFileSystemResizedImageCache : IResizedImageCache
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
             _logger.LogWarning(ex, "Could not fully clear resized image cache at '{Root}'.", _cacheRoot);
+            throw;
         }
 
         return Task.CompletedTask;

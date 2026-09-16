@@ -1,3 +1,7 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
+using OrchardCore.Lucene.Endpoints.Management;
+using OrchardCore.RemoteManagement;
 using Lucene.Net.Analysis.Standard;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -6,6 +10,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
+using OrchardCore.Indexing;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
@@ -59,6 +64,7 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<IndexProfile, LuceneIndexProfileDisplayDriver>();
 
         services.AddIndexProfileHandler<LuceneIndexProfileHandler>();
+        services.AddIndexProfileHandler<LuceneIndexValidationHandler>();
     }
 }
 
@@ -85,6 +91,8 @@ public sealed class ContentsStartup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddSingleton<IRemoteManagementCapabilityProvider, LuceneIndexCapabilityProvider>();
+        services.Configure<IndexLifecycleOptions>(options => options.RemoteProviders.Add(LuceneConstants.ProviderName));
         services.AddDataMigration<IndexingMigrations>();
 
         // Register after IndexingMigrations so its deferred task, which rewrites obsolete per-index role
@@ -99,6 +107,8 @@ public sealed class ContentsStartup : StartupBase
                 o.Description = S["Create an Lucene index based on site contents."];
             });
     }
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        => routes.AddLuceneIndexDefinitionEndpoints();
 }
 
 [RequireFeatures("OrchardCore.Search")]
@@ -116,8 +126,29 @@ public sealed class DeploymentStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDeployment<LuceneIndexDeploymentSource, LuceneIndexDeploymentStep, LuceneIndexDeploymentStepDriver>();
+        services.AddScoped<IDeploymentStepDefinition>(provider => new NamedSelectionDeploymentStepDefinition<LuceneIndexDeploymentStep>(
+            nameof(LuceneIndexDeploymentStep), "indexNames", async () => (await provider.GetRequiredService<IIndexProfileStore>().GetByProviderAsync(LuceneConstants.ProviderName)).Select(index => index.IndexName),
+            step => (step.IncludeAll, step.IndexNames), (step, includeAll, names) =>
+            {
+                step.IncludeAll = includeAll;
+                step.IndexNames = names;
+            }));
         services.AddDeployment<LuceneIndexRebuildDeploymentSource, LuceneIndexRebuildDeploymentStep, LuceneIndexRebuildDeploymentStepDriver>();
+        services.AddScoped<IDeploymentStepDefinition>(provider => new NamedSelectionDeploymentStepDefinition<LuceneIndexRebuildDeploymentStep>(
+            nameof(LuceneIndexRebuildDeploymentStep), "indexNames", async () => (await provider.GetRequiredService<IIndexProfileStore>().GetByProviderAsync(LuceneConstants.ProviderName)).Select(index => index.IndexName),
+            step => (step.IncludeAll, step.IndexNames), (step, includeAll, names) =>
+            {
+                step.IncludeAll = includeAll;
+                step.IndexNames = names;
+            }));
         services.AddDeployment<LuceneIndexResetDeploymentSource, LuceneIndexResetDeploymentStep, LuceneIndexResetDeploymentStepDriver>();
+        services.AddScoped<IDeploymentStepDefinition>(provider => new NamedSelectionDeploymentStepDefinition<LuceneIndexResetDeploymentStep>(
+            nameof(LuceneIndexResetDeploymentStep), "indexNames", async () => (await provider.GetRequiredService<IIndexProfileStore>().GetByProviderAsync(LuceneConstants.ProviderName)).Select(index => index.IndexName),
+            step => (step.IncludeAll, step.IndexNames), (step, includeAll, names) =>
+            {
+                step.IncludeAll = includeAll;
+                step.IndexNames = names;
+            }));
     }
 }
 

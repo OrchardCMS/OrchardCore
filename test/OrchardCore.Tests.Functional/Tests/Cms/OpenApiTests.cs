@@ -414,7 +414,8 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
             r => r.Url.Contains("/swagger/v1/swagger.json"));
 
         Assert.Equal(200, response.Status);
-        await Assertions.Expect(page.GetByRole(AriaRole.Complementary).First).ToContainTextAsync("GetEndpoint", new() { Timeout = 30_000 });
+        await page.GetByRole(AriaRole.Button, new() { Name = "Open Group - Content Items", Exact = true }).ClickAsync();
+        await Assertions.Expect(page.GetByRole(AriaRole.Complementary).First).ToContainTextAsync("Gets a content item.", new() { Timeout = 30_000 });
 
         await page.CloseAsync();
     }
@@ -442,17 +443,19 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         // Use the Contents module's GET content-item endpoint (enabled by the Blog recipe) as
         // the protected "Api"-scheme endpoint to prove the token is attached: an unauthenticated
         // request to it returns 401, an authenticated one 404 for an unknown id.
-        var operation = page.Locator("#operations-GetEndpoint-ApiGetContentItem");
+        var operation = page.Locator(".opblock-get").Filter(new()
+        {
+            Has = page.Locator(".opblock-summary-path[data-path='/api/content/{contentItemId}']"),
+        });
         await operation.Locator(".opblock-summary").ClickAsync();
         await operation.Locator("button.try-out__btn").ClickAsync();
         await operation.Locator("tr[data-param-name='contentItemId'] input").FillAsync("does-not-exist");
 
         var response = await page.RunAndWaitForResponseAsync(
             async () => await operation.Locator("button.execute").ClickAsync(),
-            r => r.Url.Contains("/api/content/"));
+            r => new Uri(r.Url).AbsolutePath == $"/{Tenant.Prefix}/api/content/does-not-exist");
 
-        Assert.NotEqual(401, response.Status);
-        Assert.NotEqual(403, response.Status);
+        Assert.Equal(404, response.Status);
 
         await page.CloseAsync();
     }
@@ -488,8 +491,7 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         var status = await page.EvaluateAsync<int>(
             $"async () => (await fetch('/{Tenant.Prefix}/api/content/does-not-exist')).status");
 
-        Assert.NotEqual(401, status);
-        Assert.NotEqual(403, status);
+        Assert.Equal(404, status);
 
         await page.CloseAsync();
     }

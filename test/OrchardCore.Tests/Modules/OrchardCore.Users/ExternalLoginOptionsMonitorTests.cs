@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Entities;
@@ -11,8 +12,10 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Users;
 
 public class ExternalLoginOptionsMonitorTests
 {
-    [Fact]
-    public async Task RequestUpdate_ShouldRefreshExternalLoginOptionsWithoutReleasingTenant()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task RequestUpdate_ShouldRefreshExternalLoginOptionsWithoutReleasingTenant(bool useManagement)
     {
         using var context = new SiteContext()
             .WithRecipe("SaaS");
@@ -43,17 +46,28 @@ public class ExternalLoginOptionsMonitorTests
 
         await context.UsingTenantScopeAsync(async scope =>
         {
-            var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
-            var notifier = scope.ServiceProvider.GetRequiredService<IOptionsUpdateNotifier>();
+            if (useManagement)
+            {
+                var section = scope.ServiceProvider.GetServices<ISiteSettingsSectionProvider>()
+                    .Single(provider => provider.Descriptor.Name == "user-external-login");
+                var result = await section.UpdateAsync(new JsonObject { ["useExternalProviderIfOnlyOneDefined"] = true });
+                Assert.Empty(result.Errors);
+                Assert.True(result.Changed);
+            }
+            else
+            {
+                var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
+                var notifier = scope.ServiceProvider.GetRequiredService<IOptionsUpdateNotifier>();
 
-            var site = await siteService.LoadSiteSettingsAsync();
-            var settings = site.GetOrCreate<ExternalLoginSettings>();
-            settings.UseExternalProviderIfOnlyOneDefined = true;
-            site.Put(settings);
+                var site = await siteService.LoadSiteSettingsAsync();
+                var settings = site.GetOrCreate<ExternalLoginSettings>();
+                settings.UseExternalProviderIfOnlyOneDefined = true;
+                site.Put(settings);
 
-            notifier.RequestUpdate<ExternalLoginOptions>();
+                notifier.RequestUpdate<ExternalLoginOptions>();
 
-            await siteService.UpdateSiteSettingsAsync(site);
+                await siteService.UpdateSiteSettingsAsync(site);
+            }
         });
 
         await context.WaitForDeferredTasksAsync(CancellationToken.None);

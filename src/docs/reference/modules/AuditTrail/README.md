@@ -105,3 +105,31 @@ Audit trail settings can be configured using the `Settings` recipe step:
 <https://github.com/kpdecker/jsdiff>  
 Copyright (c) 2009-2015, Kevin Decker, <kpdecker@gmail.com>  
 License: Software License Agreement (BSD License)
+
+## Remote event search
+
+When Audit Trail is enabled, `api/audit-trail/events` provides a bounded metadata
+search using the same filter parser and query service as the administration UI.
+Operations require API bearer authentication, `AccessRemoteManagement`, and
+`ViewAuditTrail`. Use the tenant's existing remote-management authentication; this
+feature does not configure OpenID itself.
+
+```bash
+pomi audit-trail events list --q 'category:User event:Created' --page 1 --page-size 50
+pomi audit-trail events list --q 'id:correlation-id'
+pomi audit-trail events show <event-id>
+```
+
+The default page is 1 with 50 events. `pageSize` accepts 1–200 and `page` accepts
+1–1,000,000; `q` is limited to 4096 characters. Responses include `page`, `pageSize`,
+`totalCount`, and `items`. Use the existing admin filter syntax, including `id`
+(correlation ID), `category`, `event`, `date`, `username`, `userid`, and `sort`.
+Enabled modules can contribute additional filters. Filtering and ordering have the
+same behavior as the UI, including its time-zone handling for date expressions.
+
+List and show return event identity, category, name, correlation ID, recorded actor
+identity/name, and UTC event time. Stored event properties, snapshots, and client
+IP addresses are excluded. The endpoints do not create, alter, trim, or delete
+audit events. Recording still depends on enabled event-contributing features and
+Audit Trail settings. The same read operations are available through MCP when the
+tenant MCP feature is enabled.

@@ -7,8 +7,8 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
-using OrchardCore.OpenId.Abstractions.Descriptors;
 using OrchardCore.OpenId.Abstractions.Managers;
+using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.ViewModels;
 
 namespace OrchardCore.OpenId.Controllers;
@@ -106,28 +106,15 @@ public sealed class ScopeController : Controller
             return View(model);
         }
 
-        var descriptor = new OpenIdScopeDescriptor
+        if (OpenIdScopeEditor.ContainsCurrentTenantResource(model.Resources, _shellSettings.Name))
         {
-            Description = model.Description,
-            DisplayName = model.DisplayName,
-            Name = model.Name,
-        };
-
-        if (!string.IsNullOrEmpty(model.Resources))
-        {
-            if (model.Resources.Contains(OpenIdConstants.Prefixes.Tenant + _shellSettings.Name, StringComparison.OrdinalIgnoreCase))
-            {
-                ModelState.AddModelError(nameof(model.Resources), S["The resources field cannot contain the value: {0}.", OpenIdConstants.Prefixes.Tenant + _shellSettings.Name]);
-
-                ViewData["ReturnUrl"] = returnUrl;
-
-                return View(model);
-            }
-
-            descriptor.Resources.UnionWith(model.Resources.Split(' ', StringSplitOptions.RemoveEmptyEntries));
+            ModelState.AddModelError(nameof(model.Resources), S["The resources field cannot contain the value: {0}.", OpenIdConstants.Prefixes.Tenant + _shellSettings.Name]);
+            ViewData["ReturnUrl"] = returnUrl;
+            return View(model);
         }
 
-        await _scopeManager.CreateAsync(descriptor);
+        await OpenIdScopeEditor.SaveAsync(_scopeManager, null, model.Name, model.DisplayName, model.Description,
+            model.Resources?.Split(' ', StringSplitOptions.RemoveEmptyEntries) ?? []);
 
         if (string.IsNullOrEmpty(returnUrl))
         {
@@ -201,30 +188,15 @@ public sealed class ScopeController : Controller
             return View(model);
         }
 
-        var descriptor = new OpenIdScopeDescriptor();
-        await _scopeManager.PopulateAsync(descriptor, scope);
-
-        descriptor.Description = model.Description;
-        descriptor.DisplayName = model.DisplayName;
-        descriptor.Name = model.Name;
-
-        descriptor.Resources.Clear();
-
-        if (!string.IsNullOrEmpty(model.Resources))
+        if (OpenIdScopeEditor.ContainsCurrentTenantResource(model.Resources, _shellSettings.Name))
         {
-            if (model.Resources.Contains(OpenIdConstants.Prefixes.Tenant + _shellSettings.Name, StringComparison.OrdinalIgnoreCase))
-            {
-                ModelState.AddModelError(nameof(model.Resources), S["The resources field cannot contain the value: {0}.", OpenIdConstants.Prefixes.Tenant + _shellSettings.Name]);
-
-                ViewData["ReturnUrl"] = returnUrl;
-
-                return View(model);
-            }
-
-            descriptor.Resources.UnionWith(model.Resources.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+            ModelState.AddModelError(nameof(model.Resources), S["The resources field cannot contain the value: {0}.", OpenIdConstants.Prefixes.Tenant + _shellSettings.Name]);
+            ViewData["ReturnUrl"] = returnUrl;
+            return View(model);
         }
 
-        await _scopeManager.UpdateAsync(scope, descriptor);
+        await OpenIdScopeEditor.SaveAsync(_scopeManager, scope, model.Name, model.DisplayName, model.Description,
+            model.Resources?.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? []);
 
         if (string.IsNullOrEmpty(returnUrl))
         {

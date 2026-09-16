@@ -318,3 +318,86 @@ Rate limiting is a defensive control that helps reduce abuse on high-risk endpoi
 This makes automated credential stuffing, brute-force attempts, and repetitive token or code requests more expensive for an attacker.
 
 Rate limiting is not a replacement for authentication, authorization, captcha, lockout, or monitoring. Use it together with the other security features that Orchard Core and ASP.NET Core provide.
+
+## Remote administration
+
+When `OrchardCore.RateLimits` is enabled, tenant management exposes policies at
+`api/rate-limits/policies` and built-in limiter schemas at
+`api/rate-limits/limiter-types`. Every operation requires API bearer authentication,
+`AccessRemoteManagement`, and `ManageRateLimits`. Enabling Rate Limits does not
+configure OpenID or enable remote-management discovery. Use the existing remote
+management setup and application credentials for Pomi or MCP access. The seeded
+Default Global Policy also limits discovery, management, and token requests; budget
+automation traffic accordingly or configure the policy for the intended workload.
+
+```bash
+pomi rate-limits limiter-types list
+pomi rate-limits policies list --take 200
+pomi rate-limits policies create --body-file policy.json
+pomi rate-limits policies show <policy-id>
+pomi rate-limits policies limiters add <policy-id> --body-file limiter.json
+pomi rate-limits policies enable <policy-id>
+```
+
+A policy is created disabled. `policy.json` contains its complete metadata and target:
+
+```json
+{
+  "name": "Public search",
+  "description": "Limit requests to the public search path",
+  "scope": "Endpoint",
+  "path": "/search"
+}
+```
+
+`scope` is `Global`, `Endpoint`, or `Group`. Endpoint policies require an absolute
+path prefix; group policies require `groupName`. The name is unique within the
+tenant. Retrying creation with the same name and definition returns the existing
+policy. A different definition using that name returns HTTP 409.
+
+For a fixed-window limiter, `limiter.json` is:
+
+```json
+{
+  "id": "search-window",
+  "source": "FixedWindow",
+  "values": {
+    "permitLimit": 60,
+    "windowSeconds": 60,
+    "queueLimit": 0
+  }
+}
+```
+
+Use a stable limiter `id` for retries. The four supported sources are `FixedWindow`,
+`SlidingWindow`, `Concurrency`, and `TokenBucket`; discover their settings schemas
+before writing. Numeric limits and periods must be positive, while `queueLimit`
+must be nonnegative. Queue order is `OldestFirst` or `NewestFirst`; omitted queue
+settings default to no queue and oldest-first processing. Unknown properties and
+invalid types are rejected before persistence. Other registered limiter sources
+remain visible with `canConfigure: false` and no arbitrary property projection.
+
+```bash
+pomi rate-limits policies disable <policy-id>
+pomi rate-limits policies update <policy-id> --body-file policy.json
+pomi rate-limits policies limiters list <policy-id>
+pomi rate-limits policies limiters show <policy-id> search-window
+pomi rate-limits policies limiters update <policy-id> search-window --body-file limiter.json
+pomi rate-limits policies enable <policy-id>
+```
+
+Policy updates replace the complete metadata and target; read `definition` from
+`show` before editing. Limiter updates replace the source's complete settings while
+preserving its identity, source, position, and unrelated extension data. Disable a
+policy before changing its target or limiters. Name and description edits remain
+available while enabled, matching the administration UI. Enabling, disabling, or
+deleting an active policy reloads the tenant pipeline; identical status retries
+are unchanged. Verify actual request behavior after activation, including HTTP 429
+and recovery after disabling. Select a narrow test path that does not include the
+management or token endpoints.
+
+Delete a limiter with `policies limiters delete <policy-id> <limiter-id> --force`;
+delete a policy with `policies delete <policy-id> --force`. Repeating a successful
+delete is harmless. Host-contributed route/group limits configured in code remain
+outside these tenant-policy mutations. The same JSON operations are available as
+MCP tools when the tenant MCP feature is enabled; binary transfer is unnecessary.

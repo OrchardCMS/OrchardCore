@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Indexing.Models;
+using OrchardCore.Indexing.Core;
 using OrchardCore.Indexing.ViewModels;
 using OrchardCore.Mvc.ModelBinding;
 
@@ -11,19 +11,15 @@ namespace OrchardCore.Indexing.Drivers;
 
 internal sealed class IndexProfileDisplayDriver : DisplayDriver<IndexProfile>
 {
-    private readonly IIndexProfileStore _indexProfileStore;
+    private readonly IndexProfileIdentityValidator _identities;
     private readonly IServiceProvider _serviceProvider;
 
-    internal readonly IStringLocalizer S;
-
     public IndexProfileDisplayDriver(
-        IIndexProfileStore indexProfileStore,
-        IServiceProvider serviceProvider,
-        IStringLocalizer<IndexProfileDisplayDriver> stringLocalizer)
+        IndexProfileIdentityValidator identities,
+        IServiceProvider serviceProvider)
     {
-        _indexProfileStore = indexProfileStore;
+        _identities = identities;
         _serviceProvider = serviceProvider;
-        S = stringLocalizer;
     }
 
     public override Task<IDisplayResult> DisplayAsync(IndexProfile indexProfile, BuildDisplayContext context)
@@ -62,20 +58,6 @@ internal sealed class IndexProfileDisplayDriver : DisplayDriver<IndexProfile>
         {
             var hasIndexName = !string.IsNullOrEmpty(model.IndexName);
 
-            if (!hasIndexName)
-            {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.IndexName), S["The index name is a required field."]);
-            }
-            else if (await _indexProfileStore.FindByIndexNameAndProviderAsync(model.IndexName, indexProfile.ProviderName) is not null)
-            {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.IndexName), S["There is already another index with the same name."]);
-            }
-
-            if (hasIndexName && model.IndexName.Length > 255)
-            {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.IndexName), S["The index name must be less than 255 characters."]);
-            }
-
             if (hasIndexName && !string.IsNullOrEmpty(indexProfile.ProviderName))
             {
                 var nameProvider = _serviceProvider.GetKeyedService<IIndexNameProvider>(indexProfile.ProviderName);
@@ -89,28 +71,14 @@ internal sealed class IndexProfileDisplayDriver : DisplayDriver<IndexProfile>
             indexProfile.IndexName = model.IndexName;
         }
 
-        if (string.IsNullOrEmpty(model.Name))
-        {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Name), S["The name is required field."]);
-        }
-        else
-        {
-            if (model.Name.Length > 255)
-            {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Name), S["The name must be less than 255 characters."]);
-            }
-            else
-            {
-                var existing = await _indexProfileStore.FindByNameAsync(model.Name);
-
-                if (existing is not null && existing.Id != indexProfile.Id)
-                {
-                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.Name), S["There is already another index with the same name."]);
-                }
-            }
-        }
-
         indexProfile.Name = model.Name;
+        foreach (var error in await _identities.ValidateAsync(indexProfile))
+        {
+            foreach (var member in error.MemberNames)
+            {
+                context.Updater.ModelState.AddModelError(Prefix, member, error.ErrorMessage);
+            }
+        }
 
         return Edit(indexProfile, context);
     }

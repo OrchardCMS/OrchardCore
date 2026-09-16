@@ -97,36 +97,23 @@ public sealed class CreateOrUpdateRateLimitPoliciesStep : NamedRecipeStepHandler
 
     private bool ValidatePolicy(RateLimitPolicy policy, RecipeExecutionContext context)
     {
-        if (policy.Scope != RateLimitPolicyScope.Global &&
-            policy.Scope != RateLimitPolicyScope.Endpoint &&
-            policy.Scope != RateLimitPolicyScope.Group)
+        switch (RateLimitPolicyValidation.ValidateTarget(policy.Scope, policy.Path, policy.GroupName))
         {
-            context.Errors.Add(S["The policy '{0}' has an unsupported scope.", policy.Name ?? policy.PolicyId ?? string.Empty]);
-            return false;
-        }
-
-        if (policy.Scope == RateLimitPolicyScope.Endpoint)
-        {
-            if (string.IsNullOrWhiteSpace(policy.Path))
-            {
+            case RateLimitPolicyTargetError.InvalidScope:
+                context.Errors.Add(S["The policy '{0}' has an unsupported scope.", policy.Name ?? policy.PolicyId ?? string.Empty]);
+                return false;
+            case RateLimitPolicyTargetError.MissingPath:
                 context.Errors.Add(S["The endpoint policy '{0}' must define a request path.", policy.Name ?? policy.PolicyId ?? string.Empty]);
                 return false;
-            }
-
-            if (!policy.Path.StartsWith('/'))
-            {
+            case RateLimitPolicyTargetError.RelativePath:
                 context.Errors.Add(S["The endpoint policy '{0}' must use a request path that starts with '/'.", policy.Name ?? policy.PolicyId ?? string.Empty]);
                 return false;
-            }
+            case RateLimitPolicyTargetError.MissingGroup:
+                context.Errors.Add(S["The group policy '{0}' must define a rate-limit group.", policy.Name ?? policy.PolicyId ?? string.Empty]);
+                return false;
+            default:
+                return true;
         }
-
-        if (policy.Scope == RateLimitPolicyScope.Group && string.IsNullOrWhiteSpace(policy.GroupName))
-        {
-            context.Errors.Add(S["The group policy '{0}' must define a rate-limit group.", policy.Name ?? policy.PolicyId ?? string.Empty]);
-            return false;
-        }
-
-        return true;
     }
 
     private async Task<List<RateLimitPolicy>> GetCurrentPoliciesAsync()

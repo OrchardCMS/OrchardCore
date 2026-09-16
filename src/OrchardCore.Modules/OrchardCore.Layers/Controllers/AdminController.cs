@@ -10,16 +10,12 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Documents;
 using OrchardCore.Entities;
-using OrchardCore.Layers.Handlers;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Services;
 using OrchardCore.Layers.ViewModels;
 using OrchardCore.Rules;
-using OrchardCore.Rules.Services;
 using OrchardCore.Settings;
-using YesSql;
 
 namespace OrchardCore.Layers.Controllers;
 
@@ -27,17 +23,14 @@ namespace OrchardCore.Layers.Controllers;
 public sealed class AdminController : Controller
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly IContentManager _contentManager;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
     private readonly ISiteService _siteService;
     private readonly ILayerService _layerService;
     private readonly IAuthorizationService _authorizationService;
-    private readonly ISession _session;
     private readonly IUpdateModelAccessor _updateModelAccessor;
-    private readonly IVolatileDocumentManager<LayerState> _layerStateManager;
+    private readonly ILayerWidgetService _widgets;
     private readonly IDisplayManager<Condition> _conditionDisplayManager;
     private readonly IDisplayManager<Rule> _ruleDisplayManager;
-    private readonly IConditionIdGenerator _conditionIdGenerator;
     private readonly IEnumerable<IConditionFactory> _conditionFactories;
     private readonly INotifier _notifier;
     private readonly ILogger _logger;
@@ -47,17 +40,14 @@ public sealed class AdminController : Controller
 
     public AdminController(
         IContentDefinitionManager contentDefinitionManager,
-        IContentManager contentManager,
         IContentItemDisplayManager contentItemDisplayManager,
         ISiteService siteService,
         ILayerService layerService,
         IAuthorizationService authorizationService,
-        ISession session,
         IUpdateModelAccessor updateModelAccessor,
-        IVolatileDocumentManager<LayerState> layerStateManager,
+        ILayerWidgetService widgets,
         IDisplayManager<Condition> conditionDisplayManager,
         IDisplayManager<Rule> ruleDisplayManager,
-        IConditionIdGenerator conditionIdGenerator,
         IEnumerable<IConditionFactory> conditionFactories,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer,
@@ -65,17 +55,14 @@ public sealed class AdminController : Controller
         ILogger<AdminController> logger)
     {
         _contentDefinitionManager = contentDefinitionManager;
-        _contentManager = contentManager;
         _contentItemDisplayManager = contentItemDisplayManager;
         _siteService = siteService;
         _layerService = layerService;
         _authorizationService = authorizationService;
-        _session = session;
         _updateModelAccessor = updateModelAccessor;
-        _layerStateManager = layerStateManager;
+        _widgets = widgets;
         _conditionDisplayManager = conditionDisplayManager;
         _ruleDisplayManager = ruleDisplayManager;
-        _conditionIdGenerator = conditionIdGenerator;
         _conditionFactories = conditionFactories;
         _notifier = notifier;
         S = stringLocalizer;
@@ -142,26 +129,14 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var layers = await _layerService.LoadLayersAsync();
-
-        ValidateViewModel(model, layers, isNew: true);
-
         if (ModelState.IsValid)
         {
-            var layer = new Layer
+            var result = await _layerService.CreateAsync(model.Name, model.Description);
+            if (result.Status == LayerMutationStatus.Success)
             {
-                Name = model.Name,
-                Description = model.Description,
-                LayerRule = new Rule(),
-            };
-
-            _conditionIdGenerator.GenerateUniqueId(layer.LayerRule);
-
-            layers.Layers.Add(layer);
-
-            await _layerService.UpdateAsync(layers);
-
-            return RedirectToAction(nameof(Edit), new { name = layer.Name, });
+                return RedirectToAction(nameof(Edit), new { name = result.Layer.Name });
+            }
+            ModelState.AddModelError(nameof(LayerEditViewModel.Name), result.Error);
         }
 
         return View(model);
@@ -174,9 +149,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var layers = await _layerService.GetLayersAsync();
-
-        var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.Ordinal));
+        var layer = await _layerService.GetLayerAsync(name);
 
         if (layer == null)
         {
@@ -215,25 +188,19 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var layers = await _layerService.LoadLayersAsync();
-
-        ValidateViewModel(model, layers, isNew: false);
-
         if (ModelState.IsValid)
         {
-            var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, model.Name, StringComparison.Ordinal));
-
-            if (layer == null)
+            // Editing the layer's metadata leaves its rule and condition identities intact.
+            var result = await _layerService.UpdateAsync(model.Name, model.Description);
+            if (result.Status == LayerMutationStatus.NotFound)
             {
                 return NotFound();
             }
-
-            layer.Name = model.Name;
-            layer.Description = model.Description;
-
-            await _layerService.UpdateAsync(layers);
-
-            return RedirectToAction(nameof(Index));
+            if (result.Status == LayerMutationStatus.Success)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            ModelState.AddModelError(nameof(LayerEditViewModel.Name), result.Error);
         }
 
         return View(model);
@@ -247,21 +214,13 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var layers = await _layerService.LoadLayersAsync();
-
-        var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.Ordinal));
-
-        if (layer == null)
+        var result = await _layerService.DeleteAsync(name);
+        if (result.Status == LayerMutationStatus.NotFound)
         {
             return NotFound();
         }
-
-        var widgets = await _layerService.GetLayerWidgetsMetadataAsync(c => c.Latest == true);
-
-        if (!widgets.Any(x => string.Equals(x.Layer, name, StringComparison.OrdinalIgnoreCase)))
+        if (result.Status == LayerMutationStatus.Success)
         {
-            layers.Layers.Remove(layer);
-            await _layerService.UpdateAsync(layers);
             await _notifier.SuccessAsync(H["Layer deleted successfully."]);
         }
         else
@@ -280,49 +239,20 @@ public sealed class AdminController : Controller
             return Unauthorized();
         }
 
-        // Load the latest version first if any
-        var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
-
-        if (contentItem == null)
+        var result = await _widgets.UpdateAsync(User, contentItemId,
+            new LayerMetadata { Position = position, Zone = zone }, positionOnly: true);
+        if (result.Status == LayerWidgetMutationStatus.NotFound)
         {
             return NotFound();
         }
-
-        if (!contentItem.TryGet<LayerMetadata>(out var layerMetadata))
+        if (result.Status == LayerWidgetMutationStatus.Forbidden)
         {
             return Forbid();
         }
-
-        layerMetadata.Position = position;
-        layerMetadata.Zone = zone;
-
-        contentItem.Apply(layerMetadata);
-
-        await _session.SaveAsync(contentItem);
-
-        // In case the moved contentItem is the draft for a published contentItem we update it's position too.
-        // We do that because we want the position of published and draft version to be the same.
-        if (contentItem.IsPublished() == false)
+        if (result.Status == LayerWidgetMutationStatus.Invalid)
         {
-            var publishedContentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Published);
-            if (publishedContentItem != null)
-            {
-                if (!publishedContentItem.TryGet(out layerMetadata))
-                {
-                    return Forbid();
-                }
-
-                layerMetadata.Position = position;
-                layerMetadata.Zone = zone;
-
-                publishedContentItem.Apply(layerMetadata);
-
-                await _session.SaveAsync(publishedContentItem);
-            }
+            return BadRequest(result.Errors);
         }
-
-        // The state will be updated once the ambient session is committed.
-        await _layerStateManager.UpdateAsync(new LayerState());
 
         if (Request.Headers != null && Request.Headers.XRequestedWith == "XMLHttpRequest")
         {
@@ -331,18 +261,6 @@ public sealed class AdminController : Controller
         else
         {
             return RedirectToAction(nameof(Index));
-        }
-    }
-
-    private void ValidateViewModel(LayerEditViewModel model, LayersDocument layers, bool isNew)
-    {
-        if (string.IsNullOrWhiteSpace(model.Name))
-        {
-            ModelState.AddModelError(nameof(LayerEditViewModel.Name), S["The layer name is required."]);
-        }
-        else if (isNew && layers.Layers.Any(x => string.Equals(x.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
-        {
-            ModelState.AddModelError(nameof(LayerEditViewModel.Name), S["The layer name already exists."]);
         }
     }
 }

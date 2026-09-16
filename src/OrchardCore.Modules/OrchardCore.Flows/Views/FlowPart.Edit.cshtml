@@ -27,7 +27,8 @@
             foreach (var widget in Model.FlowPart.Widgets)
             {
                 var widgetContentItem = (ContentItem)widget;
-                var colSize = 1;
+                // API-created and imported widgets may not have FlowMetadata yet.
+                var colSize = 12;
 
                 if (widgetContentItem.TryGet<FlowMetadata>(out var metadata))
                 {

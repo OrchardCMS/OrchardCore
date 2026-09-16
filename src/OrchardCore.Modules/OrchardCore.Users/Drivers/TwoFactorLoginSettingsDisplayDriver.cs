@@ -1,3 +1,4 @@
+using OrchardCore.Users.Services.Management;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
@@ -50,11 +51,15 @@ public sealed class TwoFactorLoginSettingsDisplayDriver : SiteDisplayDriver<TwoF
             return null;
         }
 
-        await context.Updater.TryUpdateModelAsync(settings, Prefix);
-
-        if (settings.NumberOfRecoveryCodesToGenerate < 1)
+        var model = UserPolicySettingsEditor.Clone(settings);
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        if (model.NumberOfRecoveryCodesToGenerate < 1)
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(settings.NumberOfRecoveryCodesToGenerate), S["Number of Recovery Codes to Generate should be grater than 0."]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.NumberOfRecoveryCodesToGenerate), S["Number of Recovery Codes to Generate should be greater than 0."]);
+        }
+        if (context.Updater.ModelState.IsValid)
+        {
+            UserPolicySettingsEditor.Apply(settings, model);
         }
 
         return Edit(site, settings, context);

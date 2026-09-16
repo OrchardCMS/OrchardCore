@@ -5,10 +5,12 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Net.Http.Headers;
 using OrchardCore.Localization;
+using OrchardCore.RemoteManagement;
 
 namespace OrchardCore.Media.Endpoints.Api;
 
@@ -18,9 +20,15 @@ public static class GetLocalizationsEndpoint
     {
         builder.MapGet("api/media/localizations", HandleAsync)
             .WithName("ApiGetMediaLocalizations")
-            .WithTags("MediaApi")
+            .WithTags(MediaApiEndpointConventions.TagName)
             .AllowAnonymous()
             .DisableAntiforgery()
+            .WithSummary("Shows the media UI localizations.")
+            .WithDescription("Returns the localized display strings used by the media management clients. The response is culture-aware and supports conditional requests via ETags.")
+            .WithCliCommand(new CliOperationMetadata(["media", "localizations"], "show")
+            {
+                Capability = MediaApiEndpointConventions.CapabilityName,
+            })
             .Produces<Dictionary<string, string>>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status304NotModified);
 
@@ -34,7 +42,7 @@ public static class GetLocalizationsEndpoint
     // per culture in the tenant-scoped IMemoryCache — a shell reload replaces the container and the
     // cache with it — and served with an ETag so repeat loads revalidate to 304 instead of paying
     // the localizer lookups and serialization again.
-    private static IResult HandleAsync(HttpContext httpContext, IEnumerable<IJSLocalizer> jsLocalizers, IMemoryCache cache)
+    private static IResult HandleAsync(HttpContext httpContext, [FromServices] IEnumerable<IJSLocalizer> jsLocalizers, [FromServices] IMemoryCache cache)
     {
         var culture = CultureInfo.CurrentUICulture.Name;
         var (payload, etag) = cache.GetOrCreate($"MediaGalleryLocalizations_{culture}", _ =>

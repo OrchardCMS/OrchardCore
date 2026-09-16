@@ -188,20 +188,8 @@ public sealed class AdminController : Controller
 
         viewModel.ShapeType = viewModel.ShapeType?.Trim();
 
-        if (string.IsNullOrWhiteSpace(viewModel.ShapeType))
-        {
-            ModelState.AddModelError(nameof(viewModel.ShapeType), S["The Shape type can't be empty."]);
-        }
-
         if (!ModelState.IsValid)
         {
-            return View(viewModel);
-        }
-
-        if (viewModel.Creating && await _placementsManager.GetShapePlacementsAsync(viewModel.ShapeType) != null)
-        {
-            // Prevent overriding existing rules on creation.
-            await _notifier.WarningAsync(H["Placement rules for \"{0}\" already exists. Please edit existing rule.", viewModel.ShapeType]);
             return View(viewModel);
         }
 
@@ -210,28 +198,32 @@ public sealed class AdminController : Controller
             var placementNodes = JConvert.DeserializeObject<PlacementNode[]>(viewModel.Nodes)
                 ?? Array.Empty<PlacementNode>();
 
-            var emptyNodesIndexes = Array.FindAll(placementNodes, IsEmpty)
-                .Select(node => Array.IndexOf(placementNodes, node) + 1);
-
-            if (emptyNodesIndexes.Any())
+            var result = await _placementsManager.SaveAsync(viewModel.ShapeType, placementNodes, creating: viewModel.Creating);
+            if (viewModel.Creating && result.Status is PlacementMutationStatus.Existing or PlacementMutationStatus.Conflict)
             {
-                await _notifier.ErrorAsync(H["A valid placement must contain either <b>place</b>, <b>shape</b>, <b>wrappers</b> or <b>alternates</b>. Please correct the placements at positions: {0}.", string.Join(", ", emptyNodesIndexes)]);
+                await _notifier.WarningAsync(H["Placement rules for \"{0}\" already exists. Please edit existing rule.", viewModel.ShapeType]);
                 return View(viewModel);
             }
-
-            if (placementNodes.Length > 0)
+            if (result.Status == PlacementMutationStatus.Invalid)
             {
-                // Save.
-                await _placementsManager.UpdateShapePlacementsAsync(viewModel.ShapeType, placementNodes);
-                viewModel.Creating = false;
-
-                await _notifier.SuccessAsync(H["The \"{0}\" placement have been saved.", viewModel.ShapeType]);
+                foreach (var error in result.Errors)
+                {
+                    foreach (var message in error.Value)
+                    {
+                        ModelState.AddModelError(error.Key == "shapeType" ? nameof(viewModel.ShapeType) : nameof(viewModel.Nodes), message);
+                        await _notifier.ErrorAsync(H["Placement error at {0}: {1}", error.Key, message]);
+                    }
+                }
+                return View(viewModel);
+            }
+            if (result.Status == PlacementMutationStatus.Deleted)
+            {
+                await _notifier.SuccessAsync(H["The \"{0}\" placement has been deleted.", viewModel.ShapeType]);
             }
             else
             {
-                // Remove if empty.
-                await _placementsManager.RemoveShapePlacementsAsync(viewModel.ShapeType);
-                await _notifier.SuccessAsync(H["The \"{0}\" placement has been deleted.", viewModel.ShapeType]);
+                viewModel.Creating = false;
+                await _notifier.SuccessAsync(H["The \"{0}\" placement have been saved.", viewModel.ShapeType]);
             }
         }
         catch (JsonException jsonException)
@@ -324,14 +316,6 @@ public sealed class AdminController : Controller
                 (string.IsNullOrEmpty(contentPart) || (node.Filters.ContainsKey("contentPart") && FilterEquals(node.Filters["contentPart"], contentPart))) &&
                 (string.IsNullOrEmpty(differentiator) || node.Differentiator == differentiator));
         }
-    }
-
-    private static bool IsEmpty(PlacementNode node)
-    {
-        return string.IsNullOrEmpty(node.Location)
-            && string.IsNullOrEmpty(node.ShapeType)
-            && (node.Alternates == null || node.Alternates.Length == 0)
-            && (node.Wrappers == null || node.Wrappers.Length == 0);
     }
 
     private static bool FilterEquals(object node, string value)

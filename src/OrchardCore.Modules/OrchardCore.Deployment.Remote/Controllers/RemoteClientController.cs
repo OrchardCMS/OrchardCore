@@ -258,14 +258,12 @@ public sealed class RemoteClientController : Controller
 
     private void ValidateViewModel(EditRemoteClientViewModel model)
     {
-        if (string.IsNullOrWhiteSpace(model.ClientName))
+        foreach (var (field, errors) in RemoteDeploymentValidation.Client(model.ClientName, model.ApiKey))
         {
-            ModelState.AddModelError(nameof(EditRemoteClientViewModel.ClientName), S["The client name is mandatory."]);
-        }
-
-        if (string.IsNullOrWhiteSpace(model.ApiKey))
-        {
-            ModelState.AddModelError(nameof(EditRemoteClientViewModel.ApiKey), S["The api key is mandatory."]);
+            foreach (var error in errors)
+            {
+                ModelState.AddModelError(field, S[error]);
+            }
         }
     }
 }

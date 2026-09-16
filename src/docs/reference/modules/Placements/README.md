@@ -2,6 +2,12 @@
 
 The placements module allows editors to add custom placement logic.
 
+## Management API
+
+The [Placements API](../../api/placements/README.md) exposes stored shape rules, validation and
+filter discovery with generated `pomi placements` commands and MCP tools. It shares the admin
+editor's manager and selected storage provider.
+
 ## General concepts
 
 Custom placements can be provided by themes and modules using a `placement.json` file.

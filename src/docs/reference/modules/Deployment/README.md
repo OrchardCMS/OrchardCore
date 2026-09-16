@@ -35,6 +35,20 @@ In the admin, go to **Tools** > **Deployments** and use one of these options:
 - **Package Import** accepts a `.zip` deployment package or a `.json` recipe file.
 - **JSON Import** accepts recipe JSON entered directly in the editor.
 
+Local package uploads and JSON imports use `DeploymentPackageService` to stage and
+validate input before executing it. ZIP uploads require a root `Recipe.json` with
+an array of named recipe steps. Absolute/traversal paths, symlinks and duplicate
+normalized archive paths are rejected. Staged files are removed when import ends.
+The upload action continues to run the file-creation event pipeline before staging.
+`StagedDeploymentPackage.OpenRead()` opens the validated original ZIP or JSON bytes
+for persistence or transfer without repacking. Dispose that stream before disposing
+the staged package; disposing the package removes both the original and extracted files.
+
+Hosts can configure `DeploymentPackageOptions` through the options system. Defaults
+are 100 MiB input, 500 MiB expanded data, and 10,000 archive entries; all limits must
+be positive. Byte limits are enforced while copying streams. These checks do not
+make recipe execution transactional or guarantee that each recipe step succeeds.
+
 Importing a package executes its recipe immediately. The steps run in the order in which they appear in `Recipe.json`.
 
 !!! warning
@@ -70,6 +84,10 @@ The `deployment` recipe step creates or updates deployment plans. Each entry req
 }
 ```
 
+Deployment steps have stable IDs. When upgrading an existing tenant, a migration assigns IDs to steps that lack them and replaces later duplicate IDs while preserving the first occurrence. Configuration from disabled features is preserved, including its original type information. Recipes can omit step IDs; replay retains an existing ID when the step at the same position has the same type and name. Supply explicit IDs when identities must survive changes to ordering.
+
+The complete replacement batch is validated before any plan is changed. Plan names must be nonempty and unique within the batch. Supplied step IDs must be unique within each plan. Invalid JSON recipe configuration, unsafe custom-file paths, and malformed or unavailable step types are reported as recipe errors. The recipe handler and direct replacement callers use `IDeploymentPlanService.ValidateReplacement`; JSON and file-path validation is also shared with the admin editors and remote configuration contracts.
+
 `Type` is the registered deployment step type. The properties under `Step` are specific to that type. All features that provide the referenced step types must be enabled when the recipe runs; otherwise, no plans from that recipe step are changed.
 
 ## Permissions
@@ -84,6 +102,96 @@ The module defines the following permissions:
 
 Administrators receive these permissions by default.
 
+## Remote plan management
+
+With Deployment and remote management enabled, an application context with
+`AccessRemoteManagement` and `ManageDeploymentPlan` can manage plan metadata:
+
+```sh
+pomi deployment step-types list
+pomi deployment step-types schema CustomFileDeploymentStep
+pomi deployment plans list --take 50
+pomi deployment plans show 123
+pomi deployment plans create --body-file plan.json
+pomi deployment plans update 123 --body-file renamed-plan.json
+pomi deployment plans delete 123 --force
+```
+
+Step-type discovery lists enabled factories and whether each has an explicit
+configuration contract. Schema requests return 501 for a registered factory without
+a contract and 404 for an unavailable factory. Discovery does not create steps or inspect embedded step data.
+
+Both create and update accept a JSON object with a required `name` string:
+
+```json
+{ "name": "Website export" }
+```
+
+Creation makes an empty plan. Retrying an existing name returns its plan without
+changing its steps. Update renames the identified plan and preserves step order,
+identifiers and configuration. Duplicate rename targets are rejected. Equivalent
+updates and repeated deletes report `changed: false`. Plan identifiers are local
+to a tenant; use discovery in the target tenant instead of copying identifiers
+between sites.
+
+List accepts `search`, `skip` and `take` (1–200, default 50), with stable name and
+identifier ordering. List and show return only the plan identifier, name and step
+count; embedded recipe JSON and custom-file contents are not returned. The same
+operations are exposed through the tenant MCP catalog.
+
+The admin controller uses the same plan validation, query and mutation service.
+Admin presentation and its existing permissions remain in the controller. Step
+editors apply validated detached copies, and reorder requests validate both positions
+before changing the plan. Content-to-plan actions share the same batch append
+operation; new steps receive identifiers and bulk content permissions are checked
+before the plan is changed. These
+operations do not execute plans or grant Export/Import permissions. Recipe-based
+plan replacement keeps its existing semantics of replacing the complete step list.
+
+## Remote step management
+
+Use factory discovery and its schema before adding or updating a step:
+
+```sh
+pomi deployment plans steps list 123
+pomi deployment plans steps show 123 site-css
+pomi deployment plans steps add 123 --body-file step.json
+pomi deployment plans steps update 123 site-css --body-file step-update.json
+pomi deployment plans steps order 123 --body-file step-order.json
+pomi deployment plans steps delete 123 site-css --force
+```
+
+An add request supplies a caller-selected identity, a factory type and typed values:
+
+```json
+{
+  "id": "site-css",
+  "type": "CustomFileDeploymentStep",
+  "values": {
+    "fileName": "assets/site.css",
+    "fileContent": "body { color: #222; }"
+  }
+}
+```
+
+Use a nonempty identity of at most 128 characters. Retrying the same identity with
+matching requested configuration reports unchanged; a different type or conflicting
+configuration returns 409. Update uses `{ "values": { "fileName": "assets/new.css" } }`
+and preserves omitted configuration, including write-only fields. Invalid patches
+are rejected before replacing the persisted step. Identity and type cannot be changed
+by a configuration patch.
+
+An order request contains `stepIds`, listing every current step identity exactly
+once. Invalid or incomplete orders leave the plan unchanged. List/show include
+position, factory type, explicit configuration support and allowlisted readable
+values. Unsupported step types retain their stored configuration and can be listed,
+ordered or deleted, but configuration changes require an enabled explicit contract.
+Deleting an already absent step is unchanged; an absent plan returns 404.
+
+These operations require the same management permissions as plan metadata and do
+not execute an export. Write-only custom-file contents and embedded recipe JSON
+are never included in step readback.
+
 ## Extending deployment
 
 A module can provide a custom deployment step by implementing an `IDeploymentSource`, deriving its step model from `DeploymentStep`, and optionally adding a display driver for its editor. Register the components together:
@@ -94,10 +202,134 @@ services.AddDeployment<MyDeploymentSource, MyDeploymentStep, MyDeploymentStepDis
 
 The source processes the configured step and adds recipe steps or files to the `DeploymentPlanResult`. Register a custom execution destination by implementing `IDeploymentTargetProvider`.
 
+`IDeploymentArchiveService.CreateAsync(plan, recipeDescriptor)` runs the registered
+sources through `IDeploymentManager` and returns a readable ZIP stream. The caller
+owns that stream and must dispose it; disposal removes the temporary archive.
+Staged source files are removed before the stream is returned, and failed archive
+creation removes its temporary files. Each export has a separate temporary path,
+including simultaneous exports of plans with the same name. Authorize the caller
+before invoking the service; it does not grant export permission itself.
+
+The local download and remote multipart export actions use this shared service.
+Each action supplies its existing recipe metadata and owns the returned stream
+through response or request disposal.
+
+Explicit configuration contracts implement `IDeploymentStepDefinition`. Each contract
+identifies one registered factory, supplies a patch schema, describes allowlisted
+configuration and updates a detached step candidate. Omitted properties preserve
+stored values; extensions must declare their supported fields instead of exposing
+arbitrary serialized CLR objects.
+
+The built-in contracts cover recipe metadata, custom files, JSON recipe steps,
+selected deployment plans, all published content, selected content types and a single
+content item. Content type selection uses `contentTypes` and `exportAsSetupRecipe`;
+all-content selection exposes only `exportAsSetupRecipe`. A single-item selector
+requires an existing tenant `contentItemId`, using the same lookup as its admin editor.
+
+Generic site-settings export factories register an empty configuration contract
+alongside their existing factory. Use their discovered factory name and `{}` values;
+this selects a settings section for export without reading or changing its values.
+Configuration contracts support asynchronous validation through `UpdateAsync`.
+ Custom-file content and embedded recipe JSON are
+write-only in contract readback. File paths must be relative package paths without
+traversal; `Recipe.json` is reserved for the generated recipe. A JSON recipe step
+must contain an object with a nonempty string `name`. The existing admin editors
+use the same validation, and selecting all deployment plans clears explicit names.
+
 To send packages directly to another Orchard Core site, see [Remote Deployment](../Deployment.Remote/README.md).
+
+## Private artifact storage
+
+`DeploymentArtifactOptions` provides host-owned limits for deployment artifact
+storage: `MaxBytes` defaults to 500 MiB and `Lifetime` to 24 hours. Storage uses a
+private `DeploymentArtifacts` directory under the tenant's App_Data folder. These
+options are separate from package extraction limits in `DeploymentPackageOptions`.
+A tenant background task runs every 15 minutes and removes up to 100 expired
+artifacts or abandoned uploads per run. Active read/write leases prevent removal;
+cleanup retries them on a later run. The Background Tasks administration feature
+can manage the task schedule.
+Artifact metadata is available from `GET api/deployment/artifacts/{id}` and deletion
+from `DELETE api/deployment/artifacts/{id}`, projected as `pomi deployment artifacts
+show` and `delete`. Authenticated bytes are served by
+`GET api/deployment/artifacts/{id}/content`, projected as
+`pomi deployment artifacts download <id> --output-file ./package.zip`. The output
+file must not already exist. Download streams the original bytes to a private file
+and removes an incomplete download on failure. It is not exposed as an MCP tool.
+
+Artifact access requires `AccessRemoteManagement`, the artifact's Export or Import
+permission, and the same tenant, issuer, entity kind and subject that created it.
+Metadata omits the owner identity and server paths. An active read prevents deletion
+with a conflict response; repeated deletion of an absent artifact is unchanged.
+Upload a ZIP or JSON package with `POST api/deployment/artifacts?fileName=package.zip`
+and an `application/octet-stream` request body, or use
+`pomi deployment artifacts upload package.zip --file ./package.zip`. Upload requires
+Import permission, runs the file-creation pipeline and the same bounded package
+validator as admin imports, and returns private artifact metadata without executing
+the recipe. Rejected packages are not persisted. Stream uploads are not exposed as
+MCP tools. Export creation and import execution workflows are implemented separately.
 
 ## Videos
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/wBWa28iHWHI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/2c5pbXuJJb0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+## Queued deployment operations
+
+`POST api/deployment/operations/export` accepts `requestId` and `planId`;
+`POST api/deployment/operations/import` accepts `requestId` and `artifactId`.
+Both return HTTP 202 with an operation ID and status location. Use
+`pomi deployment operations export --request-id <id> --plan-id <plan>` or
+`pomi deployment operations import --request-id <id> --artifact-id <artifact> --force`.
+Use `pomi deployment operations show <id>` to observe progress. These JSON
+operations are also available through MCP.
+
+The worker polls every minute. Exports capture the plan configuration at submission;
+imports use an owned, validated upload. Reusing a request ID for identical kind and
+payload returns the existing operation; a different payload conflicts. A successful
+export reports its artifact ID for download. Status requires the same owner and
+current Export or Import permission. It does not reveal the captured configuration.
+
+States are `pending`, `running`, `succeeded`, `failed` and `uncertain`. An abandoned
+execution becomes uncertain and is never automatically replayed. Imports can
+partially commit before failure or interruption; review the target site before
+submitting a new request ID.
+
+### Additional feature-owned step contracts
+
+Enabled features also provide the following explicit contracts. Discover the schema
+before use; enabling Deployment alone does not enable the contributing features.
+
+| Factories | Configuration |
+| --- | --- |
+| `CustomSettingsDeploymentStep`, `CustomUserSettingsDeploymentStep` | `includeAll`, `settingsTypeNames`; names must belong to the respective settings stereotype. |
+| `TranslationsDeploymentStep` | `includeAll`, `cultures`, `categories`; uses the same culture/category validation and selection logic as the admin editor. |
+| `SiteSettingsDeploymentStep` | `settings`, an explicit list of site properties from the schema; shared with the admin selector and export source. |
+| `IndexProfileDeploymentStep`, `RebuildIndexDeploymentStep`, `ResetIndexDeploymentStep` | `includeAll`, `indexNames`; select profile **names**, matching the admin editor. An empty selection requires `includeAll: true`. |
+| `LuceneIndexDeploymentStep`, `LuceneIndexRebuildDeploymentStep`, `LuceneIndexResetDeploymentStep` | `includeAll`, `indexNames`; these legacy Lucene steps select provider index names. |
+| `AdminMenuDeploymentStep`, `AllDataTranslationsDeploymentStep`, `AllLayersDeploymentStep`, `AllMediaProfilesDeploymentStep`, `OpenIdServerDeploymentStep`, `OpenIdValidationDeploymentStep`, `PlacementsDeploymentStep`, `AllQueriesDeploymentStep`, `AllRolesDeploymentStep`, `SearchSettingsDeploymentStep`, `AllShortcodeTemplatesDeploymentStep`, `AllSitemapsDeploymentStep`, `AllFeatureProfilesDeploymentStep`, `ThemesDeploymentStep`, `AllWorkflowTypeDeploymentStep`, `AllUsersDeploymentStep` | Empty `{}` configuration; the existing export source supplies the data. |
+
+Empty contracts reject extra fields. Selection patches are validated before the
+stored step changes. Selecting all clears explicit names for named selectors.
+Provider-specific credential export steps and legacy cloud-index aliases without
+an explicit contract remain discoverable but cannot be remotely configured. Use
+the modern index-profile contracts for provider-independent selection.
+
+### Authorization during queued export
+
+A queued export stores the first accepted request's identity and authorization
+claims alongside its private operation record. It never stores bearer tokens or
+other authentication properties. Retries cannot substitute another identity.
+The worker restores this identity in the tenant scope and checks Export permission;
+custom settings also enforce their settings-type permissions, and custom user
+settings enforce type and per-user read permissions. User-record exports require
+`ManageUsers` because packages contain password hashes and security fields.
+A denied source fails the operation instead of silently producing an incomplete
+package. Existing queued exports that predate identity capture fail closed; submit
+a new request after upgrading.
+
+Export sources can use `DeploymentPlanResult.User` for the initiating principal.
+`DeploymentExecutionContext` supplies it for background execution; admin requests
+continue to use their authenticated HTTP principal. Packages retain their existing
+private, owner-scoped artifact access. Treat exported site secrets, user records,
+and user-authored workflow/query definitions as private data.

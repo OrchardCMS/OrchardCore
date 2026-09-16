@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.ContentTypes.Editors;
@@ -6,6 +8,8 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Placements.Deployment;
+using OrchardCore.Placements.Endpoints.Management;
+using OrchardCore.RemoteManagement;
 using OrchardCore.Placements.Recipes;
 using OrchardCore.Placements.Services;
 using OrchardCore.Placements.Settings;
@@ -23,6 +27,7 @@ public sealed class Startup : StartupBase
 
         services.TryAddScoped<IPlacementStore, DatabasePlacementsStore>();
         services.AddScoped<PlacementsManager>();
+        services.AddSingleton<IRemoteManagementCapabilityProvider, PlacementsRemoteManagementCapabilityProvider>();
         services.AddScoped<IShapePlacementProvider, PlacementProvider>();
 
         // Shortcuts in settings
@@ -32,6 +37,11 @@ public sealed class Startup : StartupBase
 
         // Recipes
         services.AddRecipeExecutionStep<PlacementStep>();
+    }
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        routes.AddPlacementManagementEndpoints();
     }
 }
 
@@ -51,5 +61,6 @@ public class DeploymentStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDeployment<PlacementsDeploymentSource, PlacementsDeploymentStep, PlacementsDeploymentStepDriver>();
+        services.AddSingleton<IDeploymentStepDefinition>(new EmptyDeploymentStepDefinition<PlacementsDeploymentStep>(nameof(PlacementsDeploymentStep)));
     }
 }

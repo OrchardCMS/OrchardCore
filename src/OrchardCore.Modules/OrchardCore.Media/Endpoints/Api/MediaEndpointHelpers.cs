@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.FileStorage;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
+using OrchardCore.RemoteManagement;
 
 namespace OrchardCore.Media.Endpoints.Api;
 
@@ -21,11 +23,36 @@ namespace OrchardCore.Media.Endpoints.Api;
 /// </summary>
 internal static class MediaEndpointHelpers
 {
+    public const int DefaultTake = 50;
+    public const int MaximumTake = 200;
+
     public static readonly char[] InvalidFolderNameCharacters = ['\\', '/'];
 
     private static readonly char[] s_extensionSeparator = [' ', ','];
 
     private static readonly HashSet<string> s_emptySet = [];
+
+    public static bool IsBaseName(string name)
+        => !string.IsNullOrWhiteSpace(name)
+            && name is not "." and not ".."
+            && !name.Contains('/')
+            && !name.Contains('\\');
+
+    public static Microsoft.AspNetCore.Http.HttpResults.ProblemHttpResult ValidatePaging(int skip, int take)
+    {
+        if (skip < 0 || take < 1)
+        {
+            return TypedResults.Problem(
+                detail: "Skip must be zero or greater and take must be greater than zero.",
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        return take > MaximumTake
+            ? TypedResults.Problem(
+                detail: $"Take cannot exceed {MaximumTake}.",
+                statusCode: StatusCodes.Status400BadRequest)
+            : null;
+    }
 
     public static string GetFileName(IMediaFileStore mediaFileStore, string path)
         => Path.GetFileName(mediaFileStore.NormalizePath(path));
@@ -47,9 +74,25 @@ internal static class MediaEndpointHelpers
             FilePath = mediaFile.Path,
             LastModifiedUtc = mediaFile.LastModifiedUtc,
             IsDirectory = false,
-            Url = fileVersionProvider.AddFileVersionToPath(httpContext.Request.PathBase, mediaFileStore.MapPathToPublicUrl(mediaFile.Path)),
+            Url = GetFileUrl(mediaFile.Path, httpContext, fileVersionProvider, mediaFileStore),
             Mime = contentType ?? "application/octet-stream",
         };
+    }
+
+    public static string GetFileUrl(string path, HttpContext httpContext, IFileVersionProvider fileVersionProvider, IMediaFileStore mediaFileStore)
+    {
+        var url = fileVersionProvider.AddFileVersionToPath(httpContext.Request.PathBase, mediaFileStore.MapPathToPublicUrl(path));
+        if (httpContext.GetEndpoint()?.Metadata.GetMetadata<CliOperationMetadata>() is null
+            || Uri.TryCreate(url, UriKind.Absolute, out var absoluteUrl) && absoluteUrl.Scheme is "http" or "https")
+        {
+            return url;
+        }
+
+        // The media store already supplies the tenant/media prefix and escapes file names.
+        // Resolve relative mappings without replacing a configured CDN origin or version query.
+        var request = httpContext.Request;
+        var tenantUrl = UriHelper.BuildAbsolute(request.Scheme, request.Host, request.PathBase.Add("/"));
+        return new Uri(new Uri(tenantUrl), url).AbsoluteUri;
     }
 
     public static FileStoreEntryDto CreateFolderResult(IFileStoreEntry folder)

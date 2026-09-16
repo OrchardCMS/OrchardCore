@@ -13,14 +13,17 @@ namespace OrchardCore.Layers.Drivers;
 public sealed class LayerMetadataWelder : ContentDisplayDriver
 {
     private readonly ILayerService _layerService;
+    private readonly ILayerWidgetService _widgets;
 
     internal readonly IStringLocalizer S;
 
     public LayerMetadataWelder(
         ILayerService layerService,
+        ILayerWidgetService widgets,
         IStringLocalizer<LayerMetadataWelder> stringLocalizer)
     {
         _layerService = layerService;
+        _widgets = widgets;
         S = stringLocalizer;
     }
 
@@ -75,14 +78,18 @@ public sealed class LayerMetadataWelder : ContentDisplayDriver
             context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Title), S["Title is required field."]);
         }
 
-        if (string.IsNullOrEmpty(viewModel.LayerMetadata.Zone))
+        foreach (var error in await _widgets.ValidateAsync(viewModel.LayerMetadata))
         {
-            context.Updater.ModelState.AddModelError(Prefix, "LayerMetadata.Zone", S["Zone is missing"]);
+            foreach (var message in error.Value)
+            {
+                var field = char.ToUpperInvariant(error.Key[0]) + error.Key[1..];
+                context.Updater.ModelState.AddModelError(Prefix, "LayerMetadata." + field, message);
+            }
         }
-
-        if (string.IsNullOrEmpty(viewModel.LayerMetadata.Layer))
+        if (!string.IsNullOrEmpty(viewModel.LayerMetadata.Layer)
+            && await _layerService.GetLayerAsync(viewModel.LayerMetadata.Layer) is { } layer)
         {
-            context.Updater.ModelState.AddModelError(Prefix, "LayerMetadata.Layer", S["Layer is missing field."]);
+            viewModel.LayerMetadata.Layer = layer.Name;
         }
 
         model.Apply(viewModel.LayerMetadata);

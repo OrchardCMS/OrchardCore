@@ -108,8 +108,8 @@ public class OpenIdScopeStepTests
 
         scopeManagerMock.Setup(m =>
             m.PopulateAsync(
-                It.IsAny<object>(),
                 It.IsAny<OpenIdScopeDescriptor>(),
+                It.IsAny<object>(),
                 It.IsAny<CancellationToken>()))
             .Returns(
                 ValueTask.CompletedTask);
@@ -143,8 +143,8 @@ public class OpenIdScopeStepTests
 
         scopeManagerMock.Verify(m =>
             m.PopulateAsync(
-                It.IsAny<object>(),
                 It.IsAny<OpenIdScopeDescriptor>(),
+                It.IsAny<object>(),
                 It.IsAny<CancellationToken>()));
 
         scopeManagerMock.Verify(m =>

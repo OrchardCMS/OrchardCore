@@ -378,6 +378,160 @@ public class OpenIdAuthenticationTests
         Assert.Equal(HttpStatusCode.TooManyRequests, response.StatusCode);
     }
 
+    [Fact]
+    public async Task OpenId_DeviceFlow_CanExchangeDeviceCodeAndRefreshToken()
+    {
+        var context = new SiteContext();
+
+        await context.InitializeAsync();
+
+        const string clientId = "device-flow-client";
+
+        var recipe = new JsonObject
+        {
+            ["steps"] = new JsonArray
+            {
+                new JsonObject
+                {
+                    { "name", "Feature" },
+                    { "enable", new JsonArray(
+                        "OrchardCore.Users",
+                        "OrchardCore.OpenId.Server",
+                        "OrchardCore.OpenId.Validation",
+                        "OrchardCore.OpenId") },
+                },
+                new JsonObject
+                {
+                    { "name", "OpenIdServerSettings" },
+                    { "EnableTokenEndpoint", true },
+                    { "EnableDeviceAuthorizationEndpoint", true },
+                    { "EnableEndUserVerificationEndpoint", true },
+                    { "AllowDeviceAuthorizationFlow", true },
+                    { "AllowRefreshTokenFlow", true },
+                },
+                new JsonObject
+                {
+                    { "name", "OpenIdApplication" },
+                    { "ClientId", clientId },
+                    { "DisplayName", "Device Flow Test Application" },
+                    { "Type", "public" },
+                    { "ConsentType", "explicit" },
+                    { "AllowDeviceAuthorizationFlow", true },
+                    { "AllowRefreshTokenFlow", true },
+                },
+            },
+        };
+
+        await RecipeHelpers.RunRecipeAsync(context, recipe);
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var featureManager = scope.ServiceProvider.GetService<IShellFeaturesManager>();
+
+            Assert.True(await featureManager.IsFeatureEnabledAsync("OrchardCore.Users"));
+            Assert.True(await featureManager.IsFeatureEnabledAsync("OrchardCore.OpenId.Server"));
+            Assert.True(await featureManager.IsFeatureEnabledAsync("OrchardCore.OpenId.Validation"));
+            Assert.True(await featureManager.IsFeatureEnabledAsync("OrchardCore.OpenId"));
+
+            var httpClient = context.Client;
+            var session = scope.ServiceProvider.GetRequiredService<YesSql.ISession>();
+
+            var applications = await session.Query<OpenIdApplication, OpenIdApplicationIndex>(OpenIdApplication.OpenIdCollection).ListAsync();
+
+            Assert.Single(applications);
+
+            var application = applications[0];
+            Assert.True(application.ClientId == clientId);
+            Assert.Equal("explicit", application.ConsentType);
+            Assert.Contains(OpenIddictConstants.Permissions.GrantTypes.DeviceCode, application.Permissions);
+            Assert.Contains(OpenIddictConstants.Permissions.GrantTypes.RefreshToken, application.Permissions);
+            Assert.Contains(OpenIddictConstants.Permissions.Endpoints.DeviceAuthorization, application.Permissions);
+            Assert.Contains(OpenIddictConstants.Permissions.Endpoints.Token, application.Permissions);
+
+            var deviceAuthorization = await RequestDeviceAuthorizationAsync(httpClient, clientId);
+
+            var deviceCode = deviceAuthorization["device_code"]?.ToString();
+            var userCode = deviceAuthorization["user_code"]?.ToString();
+            var verificationUri = deviceAuthorization["verification_uri"]?.ToString();
+            var verificationUriComplete = deviceAuthorization["verification_uri_complete"]?.ToString();
+
+            Assert.NotEmpty(deviceCode);
+            Assert.NotEmpty(userCode);
+            Assert.NotEmpty(verificationUri);
+
+            // Visit the login page to get the AntiForgery token.
+            var loginGetRequest = await httpClient.GetAsync("Login", CancellationToken.None);
+
+            var loginFormData = new Dictionary<string, string>
+            {
+                { "__RequestVerificationToken", await AntiForgeryHelper.ExtractAntiForgeryToken(loginGetRequest) },
+                { $"{nameof(LoginForm)}.{nameof(LoginViewModel.UserName)}", "admin" },
+                { $"{nameof(LoginForm)}.{nameof(LoginViewModel.Password)}", "Password01_" },
+            };
+
+            var shellSettings = scope.ServiceProvider.GetService<ShellSettings>();
+
+            var loginPostRequest = HttpRequestHelper.CreatePostMessageWithCookies($"Login?ReturnUrl=/{shellSettings.RequestUrlPrefix}?loggedIn=true", loginFormData, loginGetRequest);
+
+            // Login
+            var loginPostResponse = await httpClient.SendAsync(loginPostRequest, CancellationToken.None);
+
+            Assert.Equal(HttpStatusCode.Redirect, loginPostResponse.StatusCode);
+
+            var cookies = CookiesHelper.ExtractCookies(loginPostResponse);
+
+            Assert.Contains("orchauth_" + shellSettings.Name, cookies.Keys);
+
+            var verificationRequestUri = verificationUriComplete;
+            if (string.IsNullOrEmpty(verificationRequestUri))
+            {
+                verificationRequestUri = $"{verificationUri}?user_code={HttpUtility.UrlEncode(userCode)}";
+            }
+
+            var verifyGetRequest = HttpRequestHelper.CreateGetMessage(verificationRequestUri);
+            CookiesHelper.AddCookiesToRequest(verifyGetRequest, cookies);
+
+            var verifyGetResponse = await httpClient.SendAsync(verifyGetRequest, CancellationToken.None);
+
+            Assert.Equal(HttpStatusCode.OK, verifyGetResponse.StatusCode);
+
+            var verifyFormData = new Dictionary<string, string>
+            {
+                { "__RequestVerificationToken", await AntiForgeryHelper.ExtractAntiForgeryToken(verifyGetResponse) },
+                { "user_code", userCode },
+                { "submit.Accept", "Yes" },
+            };
+
+            var verifyPostRequest = HttpRequestHelper.CreatePostMessage(verificationUri, verifyFormData);
+            var verificationCookies = CookiesHelper.ExtractCookies(verifyGetResponse);
+            CookiesHelper.AddCookiesToRequest(verifyPostRequest, cookies);
+            CookiesHelper.AddCookiesToRequest(verifyPostRequest, verificationCookies);
+
+            var verifyPostResponse = await httpClient.SendAsync(verifyPostRequest, CancellationToken.None);
+
+            Assert.Equal(HttpStatusCode.Redirect, verifyPostResponse.StatusCode);
+
+            var tokenResponse = await ExchangeDeviceCodeForTokenAsync(httpClient, deviceCode, clientId);
+
+            Assert.True(tokenResponse.IsSuccessStatusCode);
+
+            var tokenResult = await tokenResponse.Content.ReadFromJsonAsync<JsonObject>();
+            var accessToken = tokenResult[OrchardCoreConstants.TokenNames.AccessToken]?.ToString();
+            var refreshToken = tokenResult["refresh_token"]?.ToString();
+
+            Assert.NotEmpty(accessToken);
+            Assert.NotEmpty(refreshToken);
+
+            var refreshResponse = await ExchangeRefreshTokenAsync(httpClient, refreshToken, clientId);
+
+            Assert.True(refreshResponse.IsSuccessStatusCode);
+
+            var refreshResult = await refreshResponse.Content.ReadFromJsonAsync<JsonObject>();
+
+            Assert.NotEmpty(refreshResult[OrchardCoreConstants.TokenNames.AccessToken]?.ToString());
+        });
+    }
+
     private static async Task ExchangeCodeForTokenAsync(HttpClient httpClient, string authorizationCode, string clientId, string redirectUri, string codeVerifier, ConcurrentBag<string> tokens)
     {
         var data = new Dictionary<string, string>()
@@ -458,5 +612,44 @@ public class OpenIdAuthenticationTests
             .TrimEnd('=')
             .Replace('+', '-')
             .Replace('/', '_');
+    }
+
+    private static async Task<JsonObject> RequestDeviceAuthorizationAsync(HttpClient httpClient, string clientId)
+    {
+        var request = HttpRequestHelper.CreatePostMessage("connect/device", new Dictionary<string, string>
+        {
+            { "client_id", clientId },
+            { "scope", "openid offline_access" },
+        });
+
+        var response = await httpClient.SendAsync(request, CancellationToken.None);
+
+        Assert.True(response.IsSuccessStatusCode);
+
+        return await response.Content.ReadFromJsonAsync<JsonObject>();
+    }
+
+    private static Task<HttpResponseMessage> ExchangeDeviceCodeForTokenAsync(HttpClient httpClient, string deviceCode, string clientId)
+    {
+        var request = HttpRequestHelper.CreatePostMessage("connect/token", new Dictionary<string, string>
+        {
+            { "client_id", clientId },
+            { "device_code", deviceCode },
+            { "grant_type", OpenIddictConstants.GrantTypes.DeviceCode },
+        });
+
+        return httpClient.SendAsync(request, CancellationToken.None);
+    }
+
+    private static Task<HttpResponseMessage> ExchangeRefreshTokenAsync(HttpClient httpClient, string refreshToken, string clientId)
+    {
+        var request = HttpRequestHelper.CreatePostMessage("connect/token", new Dictionary<string, string>
+        {
+            { "client_id", clientId },
+            { "grant_type", OpenIddictConstants.GrantTypes.RefreshToken },
+            { "refresh_token", refreshToken },
+        });
+
+        return httpClient.SendAsync(request, CancellationToken.None);
     }
 }

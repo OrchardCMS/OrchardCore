@@ -18,6 +18,7 @@ public sealed class Startup : StartupBase
         // Rule services.
         services
             .AddRules()
+            .AddScoped<IRuleManagementService, RuleManagementService>()
             .AddDisplayDriver<Rule, RuleDisplayDriver>()
             .AddSingleton<IConditionIdGenerator, ConditionIdGenerator>()
             .AddTransient<IConfigureOptions<ConditionOperatorOptions>, ConditionOperatorConfigureOptions>()

@@ -24,7 +24,7 @@ public sealed class BackgroundTaskController : Controller
 
     private readonly IAuthorizationService _authorizationService;
     private readonly IEnumerable<IBackgroundTask> _backgroundTasks;
-    private readonly BackgroundTaskManager _backgroundTaskManager;
+    private readonly BackgroundTaskManagementService _management;
     private readonly PagerOptions _pagerOptions;
     private readonly INotifier _notifier;
     private readonly IShapeFactory _shapeFactory;
@@ -44,7 +44,7 @@ public sealed class BackgroundTaskController : Controller
     {
         _authorizationService = authorizationService;
         _backgroundTasks = backgroundTasks;
-        _backgroundTaskManager = backgroundTaskManager;
+        _management = new BackgroundTaskManagementService(backgroundTasks, backgroundTaskManager);
         _pagerOptions = pagerOptions.Value;
         _notifier = notifier;
         _shapeFactory = shapeFactory;
@@ -60,30 +60,10 @@ public sealed class BackgroundTaskController : Controller
             return Forbid();
         }
 
-        var document = await _backgroundTaskManager.GetDocumentAsync();
-
-        var items = _backgroundTasks.Select(task =>
+        var settings = await _management.ListAsync();
+        IEnumerable<BackgroundTaskEntry> items = settings.Select(task => new BackgroundTaskEntry
         {
-            var defaultSettings = task.GetDefaultSettings();
-
-            if (document.Settings.TryGetValue(task.GetTaskName(), out var settings))
-            {
-                return new BackgroundTaskEntry()
-                {
-                    Name = defaultSettings.Name,
-                    Title = defaultSettings.Title,
-                    Description = settings.Description,
-                    Enable = settings.Enable,
-                };
-            }
-
-            return new BackgroundTaskEntry()
-            {
-                Name = defaultSettings.Name,
-                Title = defaultSettings.Title,
-                Description = defaultSettings.Description,
-                Enable = defaultSettings.Enable,
-            };
+            Name = task.Name, Title = task.Title, Description = task.Description, Enable = task.Enable,
         });
 
         if (!string.IsNullOrWhiteSpace(options.Search))
@@ -165,29 +145,23 @@ public sealed class BackgroundTaskController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        var document = await _backgroundTaskManager.LoadDocumentAsync();
-
-        foreach (var name in taskNames)
+        var invalidSettings = false;
+        if (options.BulkAction is BackgroundTaskBulkAction.Enable or BackgroundTaskBulkAction.Disable)
         {
-            var task = _backgroundTasks.GetTaskByName(name);
-            if (task == null)
+            foreach (var name in taskNames.Distinct(StringComparer.Ordinal))
             {
-                continue;
+                var result = await _management.SetStatusAsync(name, options.BulkAction == BackgroundTaskBulkAction.Enable);
+                if (result.Errors.Count > 0)
+                {
+                    invalidSettings = true;
+                }
             }
+        }
 
-            if (!document.Settings.TryGetValue(name, out var settings))
-            {
-                settings = task.GetDefaultSettings();
-            }
-
-            settings.Enable = options.BulkAction switch
-            {
-                BackgroundTaskBulkAction.Enable => true,
-                BackgroundTaskBulkAction.Disable => false,
-                _ => settings.Enable,
-            };
-
-            await _backgroundTaskManager.UpdateAsync(name, settings);
+        if (invalidSettings)
+        {
+            await _notifier.WarningAsync(H["Some tasks have invalid settings and could not be enabled."]);
+            return RedirectToAction(nameof(Index));
         }
 
         switch (options.BulkAction)
@@ -216,13 +190,8 @@ public sealed class BackgroundTaskController : Controller
             return NotFound();
         }
 
-        var document = await _backgroundTaskManager.GetDocumentAsync();
-
         var defaultSettings = task.GetDefaultSettings();
-        if (!document.Settings.TryGetValue(name, out var settings))
-        {
-            settings = defaultSettings;
-        }
+        var settings = await _management.GetAsync(name);
 
         var model = new BackgroundTaskViewModel
         {
@@ -255,25 +224,25 @@ public sealed class BackgroundTaskController : Controller
 
         var defaultSettings = task.GetDefaultSettings();
 
+        var input = new BackgroundTaskConfiguration
+        {
+            Schedule = model.Schedule, Description = model.Description, LockTimeout = model.LockTimeout,
+            LockExpiration = model.LockExpiration, UsePipeline = model.UsePipeline,
+        };
+        foreach (var error in BackgroundTaskManagementService.Validate(input))
+        {
+            ModelState.AddModelError(error.Key, error.Key switch
+            {
+                "schedule" => S["Provide a valid five-field cron expression."],
+                "lockTimeout" => S["Lock timeout must be nonnegative."],
+                "lockExpiration" => S["Lock expiration must be nonnegative."],
+                _ => S["The task setting is invalid."],
+            });
+        }
         if (ModelState.IsValid)
         {
-            var document = await _backgroundTaskManager.LoadDocumentAsync();
-            if (!document.Settings.TryGetValue(model.Name, out var settings))
-            {
-                settings = defaultSettings;
-            }
-
-            settings.Title = defaultSettings.Title;
-            settings.Schedule = model.Schedule?.Trim();
-            settings.Description = model.Description;
-            settings.LockTimeout = model.LockTimeout;
-            settings.LockExpiration = model.LockExpiration;
-            settings.UsePipeline = model.UsePipeline;
-
-            await _backgroundTaskManager.UpdateAsync(model.Name, settings);
-
+            await _management.UpdateAsync(model.Name, input);
             await _notifier.SuccessAsync(H["The task has been updated."]);
-
             return RedirectToAction(nameof(Index));
         }
 
@@ -297,15 +266,12 @@ public sealed class BackgroundTaskController : Controller
             return NotFound();
         }
 
-        var document = await _backgroundTaskManager.LoadDocumentAsync();
-        if (!document.Settings.TryGetValue(name, out var settings))
+        var result = await _management.SetStatusAsync(name, true);
+        if (result.Errors.Count > 0)
         {
-            settings = task.GetDefaultSettings();
+            await _notifier.WarningAsync(H["The task has invalid settings and could not be enabled."]);
+            return RedirectToAction(nameof(Edit), new { name });
         }
-
-        settings.Enable = true;
-
-        await _backgroundTaskManager.UpdateAsync(name, settings);
 
         await _notifier.SuccessAsync(H["The task has been enabled."]);
 
@@ -326,15 +292,12 @@ public sealed class BackgroundTaskController : Controller
             return NotFound();
         }
 
-        var document = await _backgroundTaskManager.LoadDocumentAsync();
-        if (!document.Settings.TryGetValue(name, out var settings))
+        var result = await _management.SetStatusAsync(name, false);
+        if (result.Errors.Count > 0)
         {
-            settings = task.GetDefaultSettings();
+            await _notifier.WarningAsync(H["The task has invalid settings and could not be enabled."]);
+            return RedirectToAction(nameof(Edit), new { name });
         }
-
-        settings.Enable = false;
-
-        await _backgroundTaskManager.UpdateAsync(name, settings);
 
         await _notifier.SuccessAsync(H["The task has been disabled."]);
 

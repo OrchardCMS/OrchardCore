@@ -1,0 +1,65 @@
+@using OrchardCore.Environment.Shell
+@inject IShellFeaturesManager ShellFeaturesManager
+@model OrchardCore.OpenId.RemoteManagementConfigurationStatus
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Remote Management"])</h1></zone>
+
+@if (Model.IsReady)
+{
+    <div class="alert alert-success" role="status">
+        @T["This tenant is ready to accept authenticated remote management connections."]
+    </div>
+}
+else
+{
+    <div class="alert alert-warning" role="alert">
+        @T["Authentication is not fully configured. Review the checks below, then configure or repair the required settings."]
+    </div>
+}
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">@T["Requirement"]</th>
+                    <th scope="col">@T["Status"]</th>
+                </tr>
+            </thead>
+            <tbody>
+                <partial name="_RemoteManagementCheck" model='(T["Server endpoints"], Model.ServerEndpointsConfigured)' />
+                <partial name="_RemoteManagementCheck" model='(T["Authorization code flow"], Model.AuthorizationCodeFlowConfigured)' />
+                <partial name="_RemoteManagementCheck" model='(T["Client credentials flow"], Model.ClientCredentialsFlowConfigured)' />
+                <partial name="_RemoteManagementCheck" model='(T["Refresh token flow"], Model.RefreshFlowConfigured)' />
+                <partial name="_RemoteManagementCheck" model='(T["Proof Key for Code Exchange (PKCE)"], Model.ProofKeyForCodeExchangeRequired)' />
+                <partial name="_RemoteManagementCheck" model='(T["Token validation for this tenant"], Model.ValidationConfigured)' />
+                <partial name="_RemoteManagementCheck" model='(T["Remote management scope"], Model.ManagementScopeConfigured)' />
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<form asp-action="Configure" method="post" class="no-multisubmit">
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <button class="btn btn-primary" type="submit">
+                @(Model.IsReady ? T["Repair configuration"] : T["Configure Remote Management"])
+            </button>
+            <span class="hint">@T["Only settings required by Remote Management are added or repaired. Other OpenID Connect settings are preserved."]</span>
+        </div>
+    </div>
+</form>
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        @if (await ShellFeaturesManager.IsFeatureEnabledAsync("OrchardCore.RemoteManagement.Cli"))
+        {
+            <a class="btn btn-secondary" asp-controller="RemoteManagementCli" asp-action="Index">@T["Configure Pomi CLI"]</a>
+        }
+        @if (await ShellFeaturesManager.IsFeatureEnabledAsync("OrchardCore.RemoteManagement.Mcp"))
+        {
+            <a class="btn btn-secondary" asp-controller="RemoteManagementMcp" asp-action="Index">@T["Configure MCP authentication"]</a>
+        }
+        <span class="hint">@T["Client applications are configured separately by the CLI and MCP features."]</span>
+    </div>
+</div>

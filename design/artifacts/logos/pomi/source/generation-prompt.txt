@@ -1,0 +1,6 @@
+Mode: built-in image_gen image editing; no fallback CLI used.
+Input: ../pomi-terminal-logo.png (approved terminal design).
+
+Use case: background-extraction. Edit this approved Pomi terminal logo. Remove the white background, including all white negative spaces in leaf and lettering, to TRUE TRANSPARENCY with an alpha channel. Keep exact geometry, position, proportions, leaf, terminal >_ mark and lowercase pomi letterforms unchanged. Preserve flat solid forest green emblem and near-black wordmark. Remove paper texture and make both colors completely flat. No changes to composition, no redesign, no glow, no shadows, no checkerboard baked into the pixels. Deliver a clean transparent PNG for a professional logo asset.
+
+The generated transparent master is included in this folder. Subsequent SVG tracing and PNG exports are reproducible through ../export-vectors.cjs.

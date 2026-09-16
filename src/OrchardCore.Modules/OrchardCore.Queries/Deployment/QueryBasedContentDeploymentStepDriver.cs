@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
@@ -50,26 +49,13 @@ public sealed class QueryBasedContentDeploymentStepDriver : DisplayDriver<Deploy
             viewModel => viewModel.QueryParameters,
             viewModel => viewModel.ExportAsSetupRecipe);
 
-        var query = await _queryManager.GetQueryAsync(queryBasedContentViewModel.QueryName);
-
-        if (!query.ReturnContentItems)
+        var errors = await QueryDeploymentConfiguration.ValidateAsync(_queryManager,
+            queryBasedContentViewModel.QueryName, queryBasedContentViewModel.QueryParameters);
+        foreach (var (property, messages) in errors)
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(step.QueryName), S["Your Query is not returning content items."]);
-        }
-
-        if (queryBasedContentViewModel.QueryParameters != null)
-        {
-            try
+            foreach (var message in messages)
             {
-                var parameters = JConvert.DeserializeObject<Dictionary<string, object>>(queryBasedContentViewModel.QueryParameters);
-                if (parameters == null)
-                {
-                    context.Updater.ModelState.AddModelError(Prefix, nameof(step.QueryParameters), S["Make sure it is a valid JSON object. Example: { key : 'value' }"]);
-                }
-            }
-            catch (JsonException)
-            {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(step.QueryParameters), S["Something is wrong with your JSON."]);
+                context.Updater.ModelState.AddModelError(Prefix, property, S[message]);
             }
         }
 
