@@ -250,7 +250,7 @@ public sealed class Startup : StartupBase
             pattern: "ResendEmailConfirmation",
             defaults: new
             {
-                controller = _emailConfirmationControllerName,
+                controller = s_emailConfirmationControllerName,
                 action = nameof(EmailConfirmationController.ResendEmailConfirmation),
             }
         );
