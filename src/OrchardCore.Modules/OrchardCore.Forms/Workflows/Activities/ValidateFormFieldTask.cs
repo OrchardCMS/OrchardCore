@@ -42,9 +42,7 @@ public class ValidateFormFieldTask : TaskActivity<ValidateFormFieldTask>
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"], S["Valid"], S["Invalid"]);
-    }
+        => Outcome(S["Done"], S["Valid"], S["Invalid"]);
 
     public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -60,6 +58,6 @@ public class ValidateFormFieldTask : TaskActivity<ValidateFormFieldTask>
             updater?.ModelState.TryAddModelError(FieldName, ErrorMessage);
         }
 
-        return Outcomes("Done", outcome);
+        return Outcome("Done", outcome);
     }
 }

@@ -30,15 +30,13 @@
     "tags": [ "admin", "dashboard", "js" ]
   },
   {
-    "action": "min",
+    "action": "parcel",
     "name": "contentfields",
-    "source": "Assets/js/trumbowyg.media.tag.js",
-    "tags": [ "admin", "dashboard", "js" ]
-  },
-  {
-    "action": "min",
-    "name": "contentfields",
-    "source": "Assets/js/trumbowyg.media.url.js",
+    "source": [
+      "Assets/js/trumbowyg.media.tag.ts",
+      "Assets/js/trumbowyg.media.url.ts"
+    ],
+    "dest": "wwwroot/Scripts/trumbowyg",
     "tags": [ "admin", "dashboard", "js" ]
   },
   {

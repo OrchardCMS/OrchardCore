@@ -9,18 +9,18 @@ namespace OrchardCore.ReCaptcha.Forms;
 
 public sealed class ReCaptchaPartDisplayDriver : ContentPartDisplayDriver<ReCaptchaPart>
 {
-    private readonly ReCaptchaSettings _settings;
+    private readonly IOptionsMonitor<ReCaptchaSettings> _settings;
 
-    public ReCaptchaPartDisplayDriver(IOptions<ReCaptchaSettings> options)
+    public ReCaptchaPartDisplayDriver(IOptionsMonitor<ReCaptchaSettings> options)
     {
-        _settings = options.Value;
+        _settings = options;
     }
 
     public override IDisplayResult Display(ReCaptchaPart part, BuildPartDisplayContext context)
     {
         return Initialize<ReCaptchaPartViewModel>("ReCaptchaPart", async model =>
         {
-            model.SettingsAreConfigured = _settings.ConfigurationExists();
+            model.SettingsAreConfigured = _settings.CurrentValue.ConfigurationExists();
         }).Location(OrchardCoreConstants.DisplayType.Detail, "Content");
     }
 
@@ -28,7 +28,7 @@ public sealed class ReCaptchaPartDisplayDriver : ContentPartDisplayDriver<ReCapt
     {
         return Initialize<ReCaptchaPartViewModel>("ReCaptchaPart_Fields_Edit", async model =>
         {
-            model.SettingsAreConfigured = _settings.ConfigurationExists();
+            model.SettingsAreConfigured = _settings.CurrentValue.ConfigurationExists();
         });
     }
 }

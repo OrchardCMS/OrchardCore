@@ -10,16 +10,16 @@ namespace OrchardCore.ReCaptcha.Drivers;
 
 public sealed class ReCaptchaLoginFormDisplayDriver : DisplayDriver<LoginForm>
 {
-    private readonly ReCaptchaSettings _settings;
+    private readonly IOptionsMonitor<ReCaptchaSettings> _settings;
 
-    public ReCaptchaLoginFormDisplayDriver(IOptions<ReCaptchaSettings> options)
+    public ReCaptchaLoginFormDisplayDriver(IOptionsMonitor<ReCaptchaSettings> options)
     {
-        _settings = options.Value;
+        _settings = options;
     }
 
     public override async Task<IDisplayResult> EditAsync(LoginForm model, BuildEditorContext context)
     {
-        if (!_settings.ConfigurationExists())
+        if (!_settings.CurrentValue.ConfigurationExists())
         {
             return null;
         }

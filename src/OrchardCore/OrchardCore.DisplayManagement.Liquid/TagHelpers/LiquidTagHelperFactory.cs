@@ -15,8 +15,8 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers;
 /// </summary>
 public class LiquidTagHelperFactory
 {
-    private static readonly ConcurrentDictionary<Type, LiquidTagHelperMatching> _allMatchings = new();
-    private static readonly ConcurrentDictionary<Type, LiquidTagHelperActivator> _allActivators = new();
+    private static readonly ConcurrentDictionary<Type, LiquidTagHelperMatching> s_allMatchings = new();
+    private static readonly ConcurrentDictionary<Type, LiquidTagHelperActivator> s_allActivators = new();
 
     private List<LiquidTagHelperMatching> _matchings;
     private readonly ApplicationPartManager _partManager;
@@ -46,7 +46,7 @@ public class LiquidTagHelperFactory
 
                 foreach (var tagHelper in feature.TagHelpers)
                 {
-                    var matching = _allMatchings.GetOrAdd(tagHelper.AsType(), type =>
+                    var matching = s_allMatchings.GetOrAdd(tagHelper.AsType(), type =>
                     {
                         var descriptorBuilder = TagHelperDescriptorBuilder.Create(
                             type.FullName, type.Assembly.GetName().Name);
@@ -78,7 +78,7 @@ public class LiquidTagHelperFactory
         if (matching != LiquidTagHelperMatching.None)
         {
             var tagHelperType = Type.GetType(matching.Name + ", " + matching.AssemblyName);
-            return _allActivators.GetOrAdd(tagHelperType, type => new LiquidTagHelperActivator(type));
+            return s_allActivators.GetOrAdd(tagHelperType, type => new LiquidTagHelperActivator(type));
         }
 
         return LiquidTagHelperActivator.None;

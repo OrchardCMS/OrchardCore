@@ -10,13 +10,13 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
 {
     private readonly LiquidViewParser _liquidViewParser;
     private readonly IOptions<TemplateOptions> _templateOptions;
-    private static readonly ResourceManifest _manifest;
+    private static readonly ResourceManifest s_manifest;
 
     static ResourceManagementOptionsConfiguration()
     {
-        _manifest = new ResourceManifest();
+        s_manifest = new ResourceManifest();
 
-        _manifest
+        s_manifest
             .DefineScript("monaco-liquid-intellisense")
             .SetUrl(
                 "~/OrchardCore.Liquid/monaco/liquid-intellisense.min.js",
@@ -44,7 +44,7 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
             .SetDependencies("monaco-liquid-intellisense")
             .SetUrl($"~/OrchardCore.Liquid/Scripts/liquid-intellisense.js?v={hash}");
 
-        options.ResourceManifests.Add(_manifest);
+        options.ResourceManifests.Add(s_manifest);
         options.ResourceManifests.Add(manifest);
     }
 }

@@ -17,6 +17,7 @@ public class DefaultMediaFileStore : IMediaFileStore
     private readonly string _cdnBaseUrl;
     private readonly IEnumerable<IMediaEventHandler> _mediaEventHandlers;
     private readonly IEnumerable<IMediaCreatingEventHandler> _mediaCreatingEventHandlers;
+    private readonly FileSizeHelper _fileSizeHelper;
     private readonly ILogger _logger;
 
     private bool _requestBasePathValidated;
@@ -27,6 +28,7 @@ public class DefaultMediaFileStore : IMediaFileStore
         string cdnBaseUrl,
         IEnumerable<IMediaEventHandler> mediaEventHandlers,
         IEnumerable<IMediaCreatingEventHandler> mediaCreatingEventHandlers,
+        FileSizeHelper fileSizeHelper,
         ILogger<DefaultMediaFileStore> logger)
     {
         _fileStore = fileStore;
@@ -38,6 +40,7 @@ public class DefaultMediaFileStore : IMediaFileStore
         _cdnBaseUrl = cdnBaseUrl;
         _mediaEventHandlers = mediaEventHandlers;
         _mediaCreatingEventHandlers = mediaCreatingEventHandlers;
+        _fileSizeHelper = fileSizeHelper;
         _logger = logger;
     }
 
@@ -54,6 +57,16 @@ public class DefaultMediaFileStore : IMediaFileStore
     public virtual IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentAsync(string path = null, bool includeSubDirectories = false)
     {
         return _fileStore.GetDirectoryContentAsync(path, includeSubDirectories);
+    }
+
+    public virtual IAsyncEnumerable<IFileStoreEntry> GetFilesAsync(string path = null)
+    {
+        return _fileStore.GetFilesAsync(path);
+    }
+
+    public virtual IAsyncEnumerable<IFileStoreEntry> GetDirectoriesAsync(string path = null)
+    {
+        return _fileStore.GetDirectoriesAsync(path);
     }
 
     public virtual async Task<bool> TryCreateDirectoryAsync(string path)
@@ -145,6 +158,8 @@ public class DefaultMediaFileStore : IMediaFileStore
         }
 
         await _fileStore.CopyFileAsync(srcPath, dstPath);
+
+        await _mediaEventHandlers.InvokeAsync((handler, ctx) => handler.MediaCopiedFileAsync(ctx), new MediaMoveContext { OldPath = srcPath, NewPath = dstPath }, _logger);
     }
 
     public virtual Task<Stream> GetFileStreamAsync(string path)
@@ -234,6 +249,10 @@ public class DefaultMediaFileStore : IMediaFileStore
         return context.PermittedStorage;
     }
 
+    public IFileStoreCapabilities Capabilities => _fileStore.Capabilities;
+
+    public string StorageName => _fileStore.StorageName;
+
     private void ValidateRequestBasePath(HttpContext httpContext)
     {
         var originalPathBase = httpContext.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? PathString.Empty;
@@ -253,8 +272,8 @@ public class DefaultMediaFileStore : IMediaFileStore
             requiredStorageSpace > storageLimit)
         {
             throw new FileStoreException(
-                $"You tried to upload a file that requires {FileSizeHelpers.FormatAsBytes(requiredStorageSpace)} of " +
-                $"storage space, but only {FileSizeHelpers.FormatAsBytes(storageLimit)} is available. Try uploading " +
+                $"You tried to upload a file that requires {_fileSizeHelper.FormatSize(requiredStorageSpace)} of " +
+                $"storage space, but only {_fileSizeHelper.FormatSize(storageLimit)} is available. Try uploading " +
                 $"a file that fits the available space, or delete some unnecessary files.");
         }
     }
@@ -263,6 +282,10 @@ public class DefaultMediaFileStore : IMediaFileStore
     {
         await ValidateAvailableStorageAsync(stream.Length);
 
-        return await _fileStore.CreateFileFromStreamAsync(path, stream, overwrite);
+        var result = await _fileStore.CreateFileFromStreamAsync(path, stream, overwrite);
+
+        await _mediaEventHandlers.InvokeAsync((handler, ctx) => handler.MediaCreatedFileAsync(ctx), new MediaCreatedContext { Path = result }, _logger);
+
+        return result;
     }
 }

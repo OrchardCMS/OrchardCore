@@ -10,7 +10,7 @@ namespace OrchardCore.Users.AuditTrail;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", LoginSettingsDisplayDriver.GroupId },

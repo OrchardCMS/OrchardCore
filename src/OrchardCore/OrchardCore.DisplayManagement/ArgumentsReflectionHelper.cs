@@ -9,7 +9,7 @@ namespace OrchardCore.DisplayManagement;
 /// </summary>
 internal static class ArgumentsReflectionHelper
 {
-    private static readonly ConcurrentDictionary<Type, Func<object, INamedEnumerable<object>>> _propertiesAccessors = new();
+    private static readonly ConcurrentDictionary<Type, Func<object, INamedEnumerable<object>>> s_propertiesAccessors = new();
 
     /// <summary>
     /// Creates an <see cref="INamedEnumerable{T}"/> from an object's properties using cached reflection.
@@ -20,7 +20,7 @@ internal static class ArgumentsReflectionHelper
     /// </remarks>
     public static INamedEnumerable<object> FromReflection(object propertyObject)
     {
-        var propertiesAccessor = _propertiesAccessors.GetOrAdd(propertyObject.GetType(), type =>
+        var propertiesAccessor = s_propertiesAccessors.GetOrAdd(propertyObject.GetType(), type =>
         {
             var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
             var names = new string[properties.Length];

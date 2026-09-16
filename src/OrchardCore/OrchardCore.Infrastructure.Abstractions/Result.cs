@@ -7,9 +7,9 @@ namespace OrchardCore.Infrastructure;
 /// </summary>
 public class Result
 {
-    private static readonly ResultError[] _emptyErrors = [];
-    private static readonly Result _success = new Result { Succeeded = true };
-    private IEnumerable<ResultError> _errors = _emptyErrors;
+    private static readonly ResultError[] s_emptyErrors = [];
+    private static readonly Result s_success = new Result { Succeeded = true };
+    private IEnumerable<ResultError> _errors = s_emptyErrors;
 
     protected Result()
     {
@@ -26,7 +26,7 @@ public class Result
     /// <param name="errors">The errors that occurred during the operation.</param>
     protected Result(IEnumerable<ResultError> errors)
     {
-        _errors = errors ?? _emptyErrors;
+        _errors = errors ?? s_emptyErrors;
     }
 
     /// <summary>
@@ -43,7 +43,7 @@ public class Result
     /// Returns a successful result instance.
     /// </summary>
     /// <returns>A successful result instance.</returns>
-    public static Result Success() => _success;
+    public static Result Success() => s_success;
 
     /// <summary>
     /// Returns a successful result instance with the specified value.

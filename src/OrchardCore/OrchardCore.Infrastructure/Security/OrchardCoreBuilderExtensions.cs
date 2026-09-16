@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
+using OrchardCore;
 using OrchardCore.Security;
 using OrchardCore.Security.AuthorizationHandlers;
 using OrchardCore.Security.Permissions;
@@ -22,9 +23,9 @@ public static partial class OrchardCoreBuilderExtensions
 
             services.Configure<AuthenticationOptions>((options) =>
             {
-                if (!options.Schemes.Any(x => x.Name == "Api"))
+                if (!options.Schemes.Any(x => x.Name == OrchardCoreConstants.AuthenticationSchemes.Api))
                 {
-                    options.AddScheme<ApiAuthenticationHandler>("Api", null);
+                    options.AddScheme<ApiAuthenticationHandler>(OrchardCoreConstants.AuthenticationSchemes.Api, null);
                 }
             });
 

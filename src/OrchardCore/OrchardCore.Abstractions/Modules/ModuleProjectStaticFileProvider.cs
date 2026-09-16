@@ -10,19 +10,19 @@ namespace OrchardCore.Modules;
 /// </summary>
 public class ModuleProjectStaticFileProvider : IModuleStaticFileProvider
 {
-    private static Dictionary<string, string> _roots;
-    private static readonly object _synLock = new();
+    private static Dictionary<string, string> s_roots;
+    private static readonly object s_synLock = new();
 
     public ModuleProjectStaticFileProvider(IApplicationContext applicationContext)
     {
-        if (_roots != null)
+        if (s_roots != null)
         {
             return;
         }
 
-        lock (_synLock)
+        lock (s_synLock)
         {
-            if (_roots == null)
+            if (s_roots == null)
             {
                 var application = applicationContext.Application;
 
@@ -53,7 +53,7 @@ public class ModuleProjectStaticFileProvider : IModuleStaticFileProvider
                     }
                 }
 
-                _roots = roots;
+                s_roots = roots;
             }
         }
     }
@@ -80,7 +80,7 @@ public class ModuleProjectStaticFileProvider : IModuleStaticFileProvider
             var module = path[..index];
 
             // Get the module project "wwwroot" folder.
-            if (_roots.TryGetValue(module, out var root))
+            if (s_roots.TryGetValue(module, out var root))
             {
                 // Resolve "{ModuleProjectDirectory}wwwroot/**/*.*"
                 var filePath = root + path[(module.Length + 1)..];
@@ -113,7 +113,7 @@ public class ModuleProjectStaticFileProvider : IModuleStaticFileProvider
             var module = path[..index];
 
             // Get the module project "wwwroot" folder.
-            if (_roots.TryGetValue(module, out var root))
+            if (s_roots.TryGetValue(module, out var root))
             {
                 // Resolve "{ModuleProjectDirectory}wwwroot/**/*.*"
                 var filePath = root + path[(module.Length + 1)..];

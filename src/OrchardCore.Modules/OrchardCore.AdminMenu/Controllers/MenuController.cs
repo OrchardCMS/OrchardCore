@@ -58,7 +58,7 @@ public sealed class MenuController : Controller
             return Forbid();
         }
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
 
         var adminMenuList = (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu;
 

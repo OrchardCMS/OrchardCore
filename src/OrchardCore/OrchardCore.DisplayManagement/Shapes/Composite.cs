@@ -152,8 +152,8 @@ public class Composite : DynamicObject
 
 public class Nil : DynamicObject
 {
-    private static readonly Nil _singleton = new();
-    public static Nil Instance { get { return _singleton; } }
+    private static readonly Nil s_singleton = new();
+    public static Nil Instance { get { return s_singleton; } }
 
     private Nil()
     {

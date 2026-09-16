@@ -146,6 +146,7 @@ public sealed class Startup : StartupBase
         services.AddPermissionProvider<ContentTypePermissions>();
         services.AddScoped<IAuthorizationHandler, ContentTypeAuthorizationHandler>();
         services.AddShapeTableProvider<Shapes>();
+        services.AddShapeTableProvider<AdminDashboardShapeTableProvider>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IContentDisplayDriver, ContentsDriver>();
         services.AddScoped<IContentHandler, ContentsHandler>();
@@ -304,6 +305,17 @@ public sealed class DataLocalizationStartup : StartupBase
     {
         services.AddScoped<ILocalizationDataProvider, ContentTypeDataLocalizationProvider>();
         services.AddScoped<ILocalizationDataProvider, ContentFieldDataLocalizationProvider>();
+    }
+}
+
+/// <summary>
+/// Registers content-type admin menu localization when both supporting features are enabled.
+/// </summary>
+[RequireFeatures("OrchardCore.DataLocalization", "OrchardCore.AdminMenu")]
+public sealed class AdminMenuDataLocalizationStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
         services.AddScoped<ILocalizationDataProvider, ContentTypesAdminNodeDataLocalizationProvider>();
     }
 }

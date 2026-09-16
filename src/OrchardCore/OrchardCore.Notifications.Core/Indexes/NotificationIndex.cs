@@ -71,11 +71,11 @@ public partial class NotificationIndexProvider : IndexProvider<Notification>
             });
     }
 
-    private static readonly Regex _htmlRegex = GetHtmlBlockRegex();
+    private static readonly Regex s_htmlRegex = GetHtmlBlockRegex();
 
     public static string StripHTML(string html)
     {
-        return _htmlRegex.Replace(html, string.Empty);
+        return s_htmlRegex.Replace(html, string.Empty);
     }
 
     [GeneratedRegex("<.*?>", RegexOptions.Compiled)]

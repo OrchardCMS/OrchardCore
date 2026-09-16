@@ -8,13 +8,13 @@ namespace OrchardCore.DisplayManagement.Zones;
 /// </summary>
 internal static class ZoneAlternatesFactory
 {
-    private static readonly ConcurrentDictionary<string, string[]> _cache = new(StringComparer.Ordinal);
+    private static readonly ConcurrentDictionary<string, string[]> s_cache = new(StringComparer.Ordinal);
 
     /// <summary>
     /// Gets or creates cached alternate for a Zone shape configuration.
     /// </summary>
     public static string[] GetAlternates(string zoneName)
     {
-        return _cache.GetOrAdd(zoneName, static z => [$"Zone__{z}"]);
+        return s_cache.GetOrAdd(zoneName, static z => [$"Zone__{z}"]);
     }
 }

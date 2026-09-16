@@ -10,29 +10,27 @@ namespace OrchardCore.ReCaptcha.Services;
 
 public sealed class ReCaptchaService
 {
-    private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
+    private static readonly JsonSerializerOptions s_jsonSerializerOptions = new()
     {
         PropertyNamingPolicy = SnakeCaseNamingPolicy.Instance,
     };
 
-    private readonly ReCaptchaSettings _reCaptchaSettings;
+    private readonly IOptionsMonitor<ReCaptchaSettings> _reCaptchaSettings;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger _logger;
-    private readonly string _verifyHost;
 
     internal readonly IStringLocalizer S;
 
     public ReCaptchaService(
         IHttpClientFactory httpClientFactory,
-        IOptions<ReCaptchaSettings> optionsAccessor,
+        IOptionsMonitor<ReCaptchaSettings> optionsAccessor,
         IHttpContextAccessor httpContextAccessor,
         ILogger<ReCaptchaService> logger,
         IStringLocalizer<ReCaptchaService> stringLocalizer)
     {
         _httpClientFactory = httpClientFactory;
-        _reCaptchaSettings = optionsAccessor.Value;
-        _verifyHost = $"{optionsAccessor.Value.ReCaptchaApiUri?.TrimEnd('/')}/siteverify";
+        _reCaptchaSettings = optionsAccessor;
         _httpContextAccessor = httpContextAccessor;
         _logger = logger;
         S = stringLocalizer;
@@ -44,9 +42,13 @@ public sealed class ReCaptchaService
     /// <param name="reCaptchaResponse"></param>
     /// <returns></returns>
     public async Task<bool> VerifyCaptchaResponseAsync(string reCaptchaResponse)
-        => !string.IsNullOrWhiteSpace(reCaptchaResponse)
-            && _reCaptchaSettings.ConfigurationExists()
-            && await VerifyAsync(reCaptchaResponse);
+    {
+        var settings = _reCaptchaSettings.CurrentValue;
+
+        return !string.IsNullOrWhiteSpace(reCaptchaResponse)
+            && settings.ConfigurationExists()
+            && await VerifyAsync(reCaptchaResponse, settings);
+    }
 
     /// <summary>
     /// Validates the captcha that is in the Form of the current request.
@@ -54,7 +56,9 @@ public sealed class ReCaptchaService
     /// <param name="reportError">Lambda for reporting errors.</param>
     public async Task<bool> ValidateCaptchaAsync(Action<string, string> reportError)
     {
-        if (!_reCaptchaSettings.ConfigurationExists())
+        var settings = _reCaptchaSettings.CurrentValue;
+
+        if (!settings.ConfigurationExists())
         {
             _logger.LogWarning("The ReCaptcha settings are invalid");
 
@@ -85,20 +89,20 @@ public sealed class ReCaptchaService
     /// </summary>
     /// <param name="responseToken">Token received from the ReCaptcha UI.</param>
     /// <returns>A boolean indicating if the token is valid.</returns>
-    private async Task<bool> VerifyAsync(string responseToken)
+    private async Task<bool> VerifyAsync(string responseToken, ReCaptchaSettings settings)
     {
         try
         {
             var content = new FormUrlEncodedContent(new Dictionary<string, string>
             {
-                { "secret", _reCaptchaSettings.SecretKey },
+                { "secret", settings.SecretKey },
                 { "response", responseToken },
             });
 
             var httpClient = _httpClientFactory.CreateClient(nameof(ReCaptchaService));
-            var response = await httpClient.PostAsync(_verifyHost, content);
+            var response = await httpClient.PostAsync(GetVerifyHost(settings), content);
             response.EnsureSuccessStatusCode();
-            var result = await response.Content.ReadFromJsonAsync<ReCaptchaResponse>(_jsonSerializerOptions);
+            var result = await response.Content.ReadFromJsonAsync<ReCaptchaResponse>(s_jsonSerializerOptions);
 
             return result.Success;
         }
@@ -109,4 +113,7 @@ public sealed class ReCaptchaService
 
         return false;
     }
+
+    private static string GetVerifyHost(ReCaptchaSettings settings)
+        => $"{settings.ReCaptchaApiUri?.TrimEnd('/')}/siteverify";
 }

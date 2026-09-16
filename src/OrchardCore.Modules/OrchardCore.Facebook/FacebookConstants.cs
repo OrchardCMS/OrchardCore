@@ -9,6 +9,8 @@ public static class FacebookConstants
 
     public const string PixelSettingsGroupId = "facebook-pixel";
 
+    public const string ConversionsApiProtectorName = "OrchardCore.Facebook.ConversionsApi";
+
     public static class Features
     {
         public const string Widgets = "OrchardCore.Facebook.Widgets";

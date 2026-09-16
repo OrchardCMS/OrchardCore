@@ -1,14 +1,16 @@
 using Azure.Communication.Sms;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.Infrastructure;
 using OrchardCore.Sms.Azure.Models;
 
 namespace OrchardCore.Sms.Azure.Services;
 
-public abstract class AzureSmsProviderBase : ISmsProvider
+public abstract class AzureSmsProviderBase<TOptions> : ISmsProvider
+    where TOptions : AzureSmsOptions
 {
-    private readonly AzureSmsOptions _providerOptions;
+    private readonly IOptionsMonitor<TOptions> _optionsMonitor;
     private readonly IPhoneFormatValidator _phoneFormatValidator;
     private readonly ILogger _logger;
 
@@ -17,12 +19,12 @@ public abstract class AzureSmsProviderBase : ISmsProvider
     protected readonly IStringLocalizer S;
 
     public AzureSmsProviderBase(
-        AzureSmsOptions options,
+        IOptionsMonitor<TOptions> optionsMonitor,
         IPhoneFormatValidator phoneFormatValidator,
         ILogger logger,
         IStringLocalizer stringLocalizer)
     {
-        _providerOptions = options;
+        _optionsMonitor = optionsMonitor;
         _phoneFormatValidator = phoneFormatValidator;
         _logger = logger;
         S = stringLocalizer;
@@ -40,7 +42,9 @@ public abstract class AzureSmsProviderBase : ISmsProvider
     {
         ArgumentNullException.ThrowIfNull(message);
 
-        if (!_providerOptions.IsEnabled)
+        var providerOptions = _optionsMonitor.CurrentValue;
+
+        if (!providerOptions.IsEnabled)
         {
             return Result.Failed(S["The Azure Communication Provider is disabled."]);
         }
@@ -79,9 +83,9 @@ public abstract class AzureSmsProviderBase : ISmsProvider
 
         try
         {
-            _smsClient ??= new SmsClient(_providerOptions.ConnectionString);
+            _smsClient ??= new SmsClient(providerOptions.ConnectionString);
 
-            var senderNumber = _providerOptions.PhoneNumber;
+            var senderNumber = providerOptions.PhoneNumber;
 
             if (!string.IsNullOrEmpty(message.From))
             {

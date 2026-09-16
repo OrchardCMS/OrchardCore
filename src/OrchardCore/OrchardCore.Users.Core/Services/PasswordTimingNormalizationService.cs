@@ -14,7 +14,7 @@ public sealed class PasswordTimingNormalizationService
     // A pre-computed bcrypt hash of an arbitrary string.
     // The actual password doesn't matter — the goal is to spend the same
     // CPU time as a real VerifyHashedPassword call.
-    private static readonly string _dummyHash =
+    private static readonly string s_dummyHash =
         new PasswordHasher<object>().HashPassword(null, "OrchardCore-DummyPassword-TimingNormalization");
 
     private readonly PasswordHasher<object> _hasher = new();
@@ -28,6 +28,6 @@ public sealed class PasswordTimingNormalizationService
     {
         // The result is intentionally discarded — we only care about
         // consuming the same CPU time as a real bcrypt verification.
-        _hasher.VerifyHashedPassword(null, _dummyHash, "wrong-password");
+        _hasher.VerifyHashedPassword(null, s_dummyHash, "wrong-password");
     }
 }

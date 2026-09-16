@@ -17,7 +17,9 @@ using OrchardCore.Media.Azure.Filters;
 using OrchardCore.Media.Azure.Services;
 using OrchardCore.Media.Core;
 using OrchardCore.Media.Core.Events;
+using OrchardCore.Media.Core.Helpers;
 using OrchardCore.Media.Events;
+using OrchardCore.Media.Services;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
@@ -35,9 +37,6 @@ public sealed class Startup : Modules.StartupBase
         _logger = logger;
         _configuration = configuration;
     }
-
-    public override int Order
-        => OrchardCoreConstants.ConfigureOrder.AzureMediaStorage;
 
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -104,6 +103,7 @@ public sealed class Startup : Modules.StartupBase
                 var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
                 var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
                 var mediaEventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
+                var fileSizeHelper = serviceProvider.GetService<FileSizeHelper>();
                 var mediaCreatingEventHandlers = serviceProvider.GetServices<IMediaCreatingEventHandler>();
                 var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStore>>();
 
@@ -118,7 +118,14 @@ public sealed class Startup : Modules.StartupBase
                     mediaUrlBase = fileStore.Combine(originalPathBase.Value, mediaUrlBase);
                 }
 
-                return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl, mediaEventHandlers, mediaCreatingEventHandlers, logger);
+                return new DefaultMediaFileStore(
+                    fileStore,
+                    mediaUrlBase,
+                    mediaOptions.CdnBaseUrl,
+                    mediaEventHandlers,
+                    mediaCreatingEventHandlers,
+                    fileSizeHelper,
+                    logger);
             }));
 
             services.AddSingleton<IMediaEventHandler, DefaultMediaFileStoreCacheEventHandler>();
@@ -166,9 +173,6 @@ public sealed class MediaAzureImageCacheStartup : Modules.StartupBase
         _logger = logger;
     }
 
-    public override int Order
-        => OrchardCoreConstants.ConfigureOrder.AzureResizedImageCache;
-
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddTransient<IConfigureOptions<MediaBlobImageCacheOptions>, MediaBlobImageCacheOptionsConfiguration>();
@@ -207,6 +211,16 @@ public sealed class MediaAzureImageCacheStartup : Modules.StartupBase
         }
 
         return optionsAreValid;
+    }
+}
+
+[Feature("OrchardCore.Media.Azure.Storage")]
+[RequireFeatures("OrchardCore.Media.Tus")]
+public sealed class MediaAzureTusStartup : Modules.StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.Replace(ServiceDescriptor.Singleton<ITusTempStore, AzureBlobTusTempStore>());
     }
 }
 

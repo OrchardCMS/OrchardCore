@@ -26,12 +26,12 @@ public sealed class TitlePartDisplayDriver : ContentPartDisplayDriver<TitlePart>
             return null;
         }
 
-        return Initialize<TitlePartViewModel>(GetDisplayShapeType(context), model =>
+        return Initialize<TitlePartViewModel, TitlePart>(GetDisplayShapeType(context), static (model, titlePart) =>
         {
             model.Title = titlePart.ContentItem.DisplayText;
             model.TitlePart = titlePart;
             model.ContentItem = titlePart.ContentItem;
-        }).Location(OrchardCoreConstants.DisplayType.Detail, "Header")
+        }, titlePart).Location(OrchardCoreConstants.DisplayType.Detail, "Header")
         .Location(OrchardCoreConstants.DisplayType.Summary, "Header");
     }
 

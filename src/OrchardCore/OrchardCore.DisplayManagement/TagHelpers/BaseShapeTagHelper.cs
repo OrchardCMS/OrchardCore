@@ -8,7 +8,7 @@ public abstract class BaseShapeTagHelper : TagHelper
     protected const string PropertyDictionaryName = "prop-all";
     protected const string PropertyPrefix = "prop-";
 
-    private static readonly HashSet<string> _internalProperties =
+    private static readonly HashSet<string> s_internalProperties =
     [
         "id",
         "alternate",
@@ -20,7 +20,7 @@ public abstract class BaseShapeTagHelper : TagHelper
         "cache-sliding-duration"
     ];
 
-    private static readonly char[] _separators = [',', ' '];
+    private static readonly char[] s_separators = [',', ' '];
 
     protected IShapeFactory _shapeFactory;
     protected IDisplayHelper _displayHelper;
@@ -68,7 +68,7 @@ public abstract class BaseShapeTagHelper : TagHelper
         foreach (var pair in output.Attributes)
         {
             // Check it's not a reserved property name
-            if (!_internalProperties.Contains(pair.Name))
+            if (!s_internalProperties.Contains(pair.Name))
             {
                 var normalizedName = pair.Name.ToPascalCaseDash();
 
@@ -159,13 +159,13 @@ public abstract class BaseShapeTagHelper : TagHelper
 
             if (!string.IsNullOrWhiteSpace(Context))
             {
-                var contexts = Context.Split(_separators, StringSplitOptions.RemoveEmptyEntries);
+                var contexts = Context.Split(s_separators, StringSplitOptions.RemoveEmptyEntries);
                 metadata.Cache().AddContext(contexts);
             }
 
             if (!string.IsNullOrWhiteSpace(Tag))
             {
-                var tags = Tag.Split(_separators, StringSplitOptions.RemoveEmptyEntries);
+                var tags = Tag.Split(s_separators, StringSplitOptions.RemoveEmptyEntries);
                 metadata.Cache().AddTag(tags);
             }
         }

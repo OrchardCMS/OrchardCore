@@ -3,36 +3,50 @@
 // We need to apply the classes BEFORE the page is rendered.
 // That is why we use a MutationObserver instead of document.Ready().
 import { getAdminPreferences, setCompactExplicit } from '../constants';
+import { applySelectedNavFromSessionStorage } from '../TheAdmin/menu';
 
 const userPreferencesLoader = () => {
-    const observer = new MutationObserver(function (mutations) {
-        for (const mutation of mutations) {
-            for (const node of mutation.addedNodes) {
-                if (node instanceof HTMLElement && node.tagName === 'BODY') {
-                    const body = node;
-                    const adminPreferences = getAdminPreferences();
+    let bodyInitialized = false;
+    let selectedNavApplied = false;
 
-                    if (adminPreferences) {
-                        try {
-                            setCompactExplicit(adminPreferences.isCompactExplicit);
-                            if (adminPreferences.leftSidebarCompact) {
-                                body.classList.add('left-sidebar-compact');
-                            }
-                        } catch (error) {
-                            console.error('Error while loading user preferences:', error);
-                        }
+    const applyState = () => {
+        if (!bodyInitialized && document.body) {
+            const adminPreferences = getAdminPreferences();
+
+            if (adminPreferences) {
+                try {
+                    setCompactExplicit(adminPreferences.isCompactExplicit);
+                    if (adminPreferences.leftSidebarCompact) {
+                        document.body.classList.add('left-sidebar-compact');
                     }
-
-                    observer.disconnect();
-                    break;
+                } catch (error) {
+                    console.error('Error while loading user preferences:', error);
                 }
             }
+
+            bodyInitialized = true;
+        }
+
+        if (!selectedNavApplied) {
+            selectedNavApplied = applySelectedNavFromSessionStorage();
+        }
+
+        return bodyInitialized && selectedNavApplied;
+    };
+
+    if (applyState()) {
+        return;
+    }
+
+    const observer = new MutationObserver(() => {
+        if (applyState()) {
+            observer.disconnect();
         }
     });
 
     observer.observe(document.documentElement, {
         childList: true,
-        subtree: true
+        subtree: true,
     });
 }
 

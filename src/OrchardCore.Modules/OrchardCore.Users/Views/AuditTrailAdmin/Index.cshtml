@@ -1,8 +1,8 @@
 @using Microsoft.Extensions.Compliance.Redaction
-@using OrchardCore
 @using OrchardCore.Users.AuditTrail.Services
 @model OrchardCore.Users.AuditTrail.ViewModels.AuditTrailUserEventSettingsViewModel
 
+<style asp-name="bootstrap-select" at="Head"></style>
 <script asp-name="bootstrap-select" at="Foot"></script>
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Audit Trail User Event Settings"])</h1></zone>

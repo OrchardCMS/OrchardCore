@@ -18,7 +18,7 @@ public class ScriptExternalLoginEventHandler : IExternalLoginEventHandler
     private readonly ILogger _logger;
     private readonly IScriptingManager _scriptingManager;
     private readonly ISiteService _siteService;
-    private static readonly JsonMergeSettings _jsonMergeSettings = new JsonMergeSettings
+    private static readonly JsonMergeSettings s_jsonMergeSettings = new JsonMergeSettings
     {
         MergeArrayHandling = MergeArrayHandling.Union,
         MergeNullValueHandling = MergeNullValueHandling.Merge,
@@ -100,7 +100,7 @@ public class ScriptExternalLoginEventHandler : IExternalLoginEventHandler
                 if (context.PropertiesToUpdate is not null)
                 {
                     // Perhaps other provider will fill some values. we should keep exists value.
-                    context.PropertiesToUpdate.Merge(result, _jsonMergeSettings);
+                    context.PropertiesToUpdate.Merge(result, s_jsonMergeSettings);
                 }
                 else
                 {

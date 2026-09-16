@@ -7,7 +7,7 @@ namespace OrchardCore.ReCaptcha;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", ReCaptchaSettingsDisplayDriver.GroupId },
@@ -29,7 +29,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                     .Add(S["Settings"], S["Settings"].PrefixPosition(), settings => settings
                         .Add(S["reCaptcha"], S["reCaptcha"].PrefixPosition(), reCaptcha => reCaptcha
                             .Permission(ReCaptchaPermissions.ManageReCaptchaSettings)
-                            .Action("Index", "Admin", _routeValues)
+                            .Action("Index", "Admin", s_routeValues)
                             .LocalNav()
                         )
                     )
@@ -43,7 +43,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                 .Add(S["Security"], S["Security"].PrefixPosition(), security => security
                     .Add(S["reCaptcha"], S["reCaptcha"].PrefixPosition(), reCaptcha => reCaptcha
                         .Permission(ReCaptchaPermissions.ManageReCaptchaSettings)
-                        .Action("Index", "Admin", _routeValues)
+                        .Action("Index", "Admin", s_routeValues)
                         .LocalNav()
                     )
                 )

@@ -11,7 +11,7 @@ public static class ContentPartAlternatesFactory
 {
     private const string DisplayToken = "_Display";
 
-    private static readonly ConcurrentDictionary<PartAlternatesCacheKey, string[]> _cache = new();
+    private static readonly ConcurrentDictionary<PartAlternatesCacheKey, string[]> s_cache = new();
 
     /// <summary>
     /// Gets or creates cached alternates for a content part configuration.
@@ -31,7 +31,7 @@ public static class ContentPartAlternatesFactory
             shapeType,
             displayType ?? string.Empty);
 
-        return _cache.GetOrAdd(key, BuildAlternates);
+        return s_cache.GetOrAdd(key, BuildAlternates);
     }
 
     /// <summary>

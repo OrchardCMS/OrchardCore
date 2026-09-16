@@ -20,8 +20,8 @@ namespace OrchardCore.Data;
 
 public class DbConnectionValidator : IDbConnectionValidator
 {
-    private static readonly string[] _requiredDocumentTableColumns = ["Id", "Type", "Content", "Version"];
-    private static readonly string _shellDescriptorTypeColumnValue = new TypeService()[typeof(ShellDescriptor)];
+    private static readonly string[] s_requiredDocumentTableColumns = ["Id", "Type", "Content", "Version"];
+    private static readonly string s_shellDescriptorTypeColumnValue = new TypeService()[typeof(ShellDescriptor)];
 
     private readonly IEnumerable<DatabaseProvider> _databaseProviders;
     private readonly ITableNameConventionFactory _tableNameConventionFactory;
@@ -129,10 +129,10 @@ public class DbConnectionValidator : IDbConnectionValidator
 
                 var requiredColumnsCount = Enumerable.Range(0, result.FieldCount)
                     .Select(result.GetName)
-                    .Where(c => _requiredDocumentTableColumns.Contains(c, StringComparer.OrdinalIgnoreCase))
+                    .Where(c => s_requiredDocumentTableColumns.Contains(c, StringComparer.OrdinalIgnoreCase))
                     .Count();
 
-                if (requiredColumnsCount != _requiredDocumentTableColumns.Length)
+                if (requiredColumnsCount != s_requiredDocumentTableColumns.Length)
                 {
                     // The 'Document' table exists with another schema.
                     return DbConnectionValidatorResult.DocumentTableFound;
@@ -185,7 +185,7 @@ public class DbConnectionValidator : IDbConnectionValidator
 
         if (isShellDescriptorDocument)
         {
-            sqlBuilder.WhereAnd($"Type = '{_shellDescriptorTypeColumnValue}'");
+            sqlBuilder.WhereAnd($"Type = '{s_shellDescriptorTypeColumnValue}'");
         }
 
         return sqlBuilder.ToSqlString();

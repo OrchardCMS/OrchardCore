@@ -21,6 +21,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Commands;
+using OrchardCore.Environment.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Scope;
@@ -55,8 +56,8 @@ namespace OrchardCore.Users;
 
 public sealed class Startup : StartupBase
 {
-    private static readonly string _accountControllerName = typeof(AccountController).ControllerName();
-    private static readonly string _emailConfirmationControllerName = typeof(EmailConfirmationController).ControllerName();
+    private static readonly string s_accountControllerName = typeof(AccountController).ControllerName();
+    private static readonly string s_emailConfirmationControllerName = typeof(EmailConfirmationController).ControllerName();
     private readonly string _tenantName;
 
     private UserOptions _userOptions;
@@ -162,6 +163,7 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<Navbar, UserMenuNavbarDisplayDriver>();
         services.AddDisplayDriver<UserMenu, UserMenuDisplayDriver>();
         services.AddShapeTableProvider<UserMenuShapeTableProvider>();
+        services.AddShapeTableProvider<AdminDashboardShapeTableProvider>();
 
         services.AddRecipeExecutionStep<UsersStep>();
 
@@ -182,7 +184,7 @@ public sealed class Startup : StartupBase
             pattern: _userOptions.LoginPath,
             defaults: new
             {
-                controller = _accountControllerName,
+                controller = s_accountControllerName,
                 action = nameof(AccountController.Login),
             }
         );
@@ -193,7 +195,7 @@ public sealed class Startup : StartupBase
             pattern: _userOptions.ChangePasswordUrl,
             defaults: new
             {
-                controller = _accountControllerName,
+                controller = s_accountControllerName,
                 action = nameof(AccountController.ChangePassword),
             }
         );
@@ -204,7 +206,7 @@ public sealed class Startup : StartupBase
             pattern: _userOptions.ChangePasswordConfirmationUrl,
             defaults: new
             {
-                controller = _accountControllerName,
+                controller = s_accountControllerName,
                 action = nameof(AccountController.ChangePasswordConfirmation),
             }
         );
@@ -215,7 +217,7 @@ public sealed class Startup : StartupBase
             pattern: _userOptions.LogoffPath,
             defaults: new
             {
-                controller = _accountControllerName,
+                controller = s_accountControllerName,
                 action = nameof(AccountController.LogOff),
             }
         );
@@ -226,7 +228,7 @@ public sealed class Startup : StartupBase
             pattern: "ConfirmEmail",
             defaults: new
             {
-                controller = _emailConfirmationControllerName,
+                controller = s_emailConfirmationControllerName,
                 action = nameof(EmailConfirmationController.ConfirmEmail),
             }
         );
@@ -237,7 +239,7 @@ public sealed class Startup : StartupBase
             pattern: "ConfirmEmailSent",
             defaults: new
             {
-                controller = _emailConfirmationControllerName,
+                controller = s_emailConfirmationControllerName,
                 action = nameof(EmailConfirmationController.ConfirmEmailSent),
             }
         );
@@ -282,6 +284,7 @@ public sealed class ExternalAuthenticationStartup : StartupBase
         services.AddDisplayDriver<UserMenu, ExternalAuthenticationUserMenuDisplayDriver>();
         services.AddSiteDisplayDriver<ExternalRegistrationSettingsDisplayDriver>();
         services.AddSiteDisplayDriver<ExternalLoginSettingsDisplayDriver>();
+        services.AddSignalOptionsChangeTokenSource<ExternalLoginOptions>();
         services.AddTransient<IConfigureOptions<ExternalLoginOptions>, ExternalLoginOptionsConfigurations>();
     }
 
@@ -299,6 +302,17 @@ public sealed class ExternalAuthenticationStartup : StartupBase
                 action = nameof(ExternalAuthenticationsController.ExternalLogins),
             }
         );
+    }
+}
+
+[Feature(UserConstants.Features.ExternalAuthentication)]
+[RequireFeatures("OrchardCore.Deployment")]
+public sealed class ExternalAuthenticationDeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddSiteSettingsPropertyDeploymentStep<ExternalRegistrationSettings, ExternalAuthenticationDeploymentStartup>(S => S["External registration settings"], S => S["Exports the external registration settings."]);
+        services.AddSiteSettingsPropertyDeploymentStep<ExternalLoginSettings, ExternalAuthenticationDeploymentStartup>(S => S["External login settings"], S => S["Exports the external login settings."]);
     }
 }
 
@@ -490,6 +504,7 @@ public sealed class RegistrationStartup : StartupBase
         services.AddDisplayDriver<User, UserRegistrationAdminDisplayDriver>();
         services.AddSiteDisplayDriver<RegistrationSettingsDisplayDriver>();
         services.AddNavigationProvider<RegistrationAdminMenu>();
+        services.AddSignalOptionsChangeTokenSource<RegistrationOptions>();
 
         services.AddDisplayDriver<LoginForm, RegisterUserLoginFormDisplayDriver>();
         services.AddDisplayDriver<RegisterUserForm, RegisterUserFormDisplayDriver>();

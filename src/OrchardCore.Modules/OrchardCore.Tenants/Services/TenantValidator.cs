@@ -50,6 +50,8 @@ public partial class TenantValidator : ITenantValidator
             errors.Add(new ModelError(nameof(model.Name), S["The tenant name is mandatory."]));
         }
 
+        var isTenantNameValid = !string.IsNullOrWhiteSpace(model.Name) && TenantNameRuleRegex().IsMatch(model.Name);
+
         if (model.FeatureProfiles is not null && model.FeatureProfiles.Length > 0)
         {
             var featureProfiles = await _featureProfilesService.GetFeatureProfilesAsync();
@@ -63,12 +65,16 @@ public partial class TenantValidator : ITenantValidator
             }
         }
 
-        if (!string.IsNullOrEmpty(model.Name) && !TenantNameRuleRegex().IsMatch(model.Name))
+        if (!string.IsNullOrEmpty(model.Name) && !isTenantNameValid)
         {
             errors.Add(new ModelError(nameof(model.Name), S["Invalid tenant name. Must contain characters only and no spaces."]));
         }
 
-        _ = _shellHost.TryGetSettings(model.Name, out var existingShellSettings);
+        ShellSettings existingShellSettings = null;
+        if (isTenantNameValid)
+        {
+            _ = _shellHost.TryGetSettings(model.Name, out existingShellSettings);
+        }
 
         if (!string.IsNullOrWhiteSpace(model.RequestUrlPrefix) && model.RequestUrlPrefix.Contains('/'))
         {
@@ -84,7 +90,7 @@ public partial class TenantValidator : ITenantValidator
         }
 
         ShellSettings shellSettings = null;
-        if (model.IsNewTenant)
+        if (isTenantNameValid && model.IsNewTenant)
         {
             if (existingShellSettings is null)
             {
@@ -105,7 +111,7 @@ public partial class TenantValidator : ITenantValidator
                 errors.Add(new ModelError(nameof(model.Name), S["A tenant with the same name already exists."]));
             }
         }
-        else if (existingShellSettings is null)
+        else if (isTenantNameValid && existingShellSettings is null)
         {
             errors.Add(new ModelError(nameof(model.Name), S["The existing tenant to be validated was not found."]));
         }

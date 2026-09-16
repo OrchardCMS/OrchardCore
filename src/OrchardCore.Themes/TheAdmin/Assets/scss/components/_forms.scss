@@ -48,7 +48,7 @@ label.input-required:after {
 }
 
 .button {
-    @extend .btn, .btn-primary;
+    @extend .btn, .btn-primary !optional;
 }
 
 input[type="password"]::-ms-reveal,

@@ -1,11 +1,15 @@
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Options;
+using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -29,21 +33,70 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddScoped<ISetupEventHandler, SetupEventHandler>();
+        services.AddPermissionProvider<Permissions>();
+
+        services.AddRolesCoreServices()
+            .AddScoped<IAuthorizationHandler, SuperUserHandler>()
+            .AddScoped<IAuthorizationHandler, SiteSettingsAuthorizationHandler>();
+
+        services.AddRecipeExecutionStep<SettingsStep>();
+        services.AddSingleton<ISiteService, SiteService>();
+
+        // Site Settings editor
+        services.AddSiteDisplayDriver<DefaultSiteSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<DebugSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<ButtonsSettingsDisplayDriver>();
+        services.AddSiteSettingsPermission(DefaultSiteSettingsDisplayDriver.GroupId, SettingsPermissions.ManageGeneralSettings);
+        services.AddSiteSettingsPermission(DebugSettingsDisplayDriver.GroupId, SettingsPermissions.ManageDebuggingSettings);
+        services.AddNavigationProvider<AdminMenu>();
+
+        services.AddScoped<ITimeZoneSelector, DefaultTimeZoneSelector>();
+
+        services.AddDeployment<SiteSettingsDeploymentSource, SiteSettingsDeploymentStep, SiteSettingsDeploymentStepDriver>();
+
+        services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentSiteNameProvider>();
+        services.AddSignalOptionsChangeTokenSource<ShapeRenderingOptions>();
+
+        services.AddTransient<IPostConfigureOptions<ResourceOptions>, ResourceOptionsConfiguration>();
+        services.AddTransient<IPostConfigureOptions<PagerOptions>, PagerOptionsConfiguration>();
+        services.AddTransient<IConfigureOptions<ShapeRenderingOptions>, ShapeRenderingOptionsConfiguration>();
+
+        services.AddScoped<IModularTenantEvents, PreloadSiteSettingsTenantEventHandler>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Liquid.Core")]
+public sealed class LiquidStartup : StartupBase
+{
+    private readonly IShellConfiguration _configuration;
+
+    public LiquidStartup(IShellConfiguration configuration) =>
+        _configuration = configuration;
+
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.Configure<SettingsLiquidOptions>(_configuration.GetSection("OrchardCore_Settings_Liquid"));
+        
+        services.AddSingleton<ISitePropertiesLiquidMapper, SitePropertiesLiquidMapper>();
         services.Configure<TemplateOptions>(o =>
         {
             o.Scope.SetValue("Site", new ObjectValue(new LiquidSiteSettingsAccessor()));
             o.MemberAccessStrategy.Register<LiquidSiteSettingsAccessor, FluidValue>(async (obj, name, context) =>
             {
                 var liquidTemplateContext = (LiquidTemplateContext)context;
+                var services = liquidTemplateContext.Services;
 
-                var siteService = liquidTemplateContext.Services.GetRequiredService<ISiteService>();
+                var siteService = services.GetRequiredService<ISiteService>();
                 var site = await siteService.GetSiteSettingsAsync();
 
                 FluidValue result = name switch
                 {
                     nameof(ISite.SiteName) => new StringValue(site.SiteName),
                     nameof(ISite.PageTitleFormat) => new StringValue(site.PageTitleFormat),
-                    nameof(ISite.SiteSalt) => new StringValue(site.SiteSalt),
+                    // The site salt should never be accessible to Liquid and exposing it is a major security risk. This
+                    // comment and the dummy value below should be kept, to record that it's intentional.
+                    nameof(ISite.SiteSalt) => new StringValue("[REDACTED]"),
                     nameof(ISite.SuperUser) => new StringValue(site.SuperUser),
                     nameof(ISite.Calendar) => new StringValue(site.Calendar),
                     nameof(ISite.TimeZoneId) => new StringValue(site.TimeZoneId),
@@ -57,40 +110,13 @@ public sealed class Startup : StartupBase
                     nameof(ISite.HomeRoute) => new ObjectValue(site.HomeRoute),
                     nameof(ISite.AppendVersion) => BooleanValue.Create(site.AppendVersion),
                     nameof(ISite.CacheMode) => new StringValue(site.CacheMode.ToString()),
-                    nameof(ISite.Properties) => new ObjectValue(site.Properties),
+                    nameof(ISite.Properties) => await services.GetRequiredService<ISitePropertiesLiquidMapper>().MapAsync(site),
                     _ => NilValue.Instance
                 };
 
                 return result;
             });
         });
-
-        services.AddScoped<ISetupEventHandler, SetupEventHandler>();
-        services.AddPermissionProvider<Permissions>();
-
-        services.AddRolesCoreServices()
-            .AddScoped<IAuthorizationHandler, SuperUserHandler>();
-
-        services.AddRecipeExecutionStep<SettingsStep>();
-        services.AddSingleton<ISiteService, SiteService>();
-
-        // Site Settings editor
-        services.AddSiteDisplayDriver<DefaultSiteSettingsDisplayDriver>();
-        services.AddSiteDisplayDriver<DebugSettingsDisplayDriver>();
-        services.AddSiteDisplayDriver<ButtonsSettingsDisplayDriver>();
-        services.AddNavigationProvider<AdminMenu>();
-
-        services.AddScoped<ITimeZoneSelector, DefaultTimeZoneSelector>();
-
-        services.AddDeployment<SiteSettingsDeploymentSource, SiteSettingsDeploymentStep, SiteSettingsDeploymentStepDriver>();
-
-        services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentSiteNameProvider>();
-
-        services.AddTransient<IPostConfigureOptions<ResourceOptions>, ResourceOptionsConfiguration>();
-        services.AddTransient<IPostConfigureOptions<PagerOptions>, PagerOptionsConfiguration>();
-        services.AddTransient<IConfigureOptions<ShapeRenderingOptions>, ShapeRenderingOptionsConfiguration>();
-
-        services.AddScoped<IModularTenantEvents, PreloadSiteSettingsTenantEventHandler>();
     }
 }
 

@@ -161,6 +161,64 @@ services
 !!! note
     On the admin there will be no indication that this override happened, and the value displayed there will still be the one configured in site settings, so if you choose to do this you'll need to let your users know.
 
+#### Live tenant options with `IOptionsMonitor`
+
+Orchard Core keeps the standard `IOptionsMonitor<TOptions>` implementation. To make a specific options type refresh after tenant data changes, opt it in by registering Orchard Core's signal-backed `IOptionsChangeTokenSource<TOptions>`.
+
+Use `IOptionsMonitor<TOptions>` when an options type is built from mutable tenant state such as site settings, documents, or other values that can change from the admin UI without restarting the application. Continue to use `IOptions<TOptions>` for values that are effectively immutable for the lifetime of the tenant shell, such as options coming only from startup code or static configuration.
+
+When a settings editor updates data that feeds an options type, request an invalidation through `IOptionsUpdateNotifier`. Orchard Core defers the notification until the current document session commits successfully, so failed or rolled-back updates do not refresh the options cache.
+
+```csharp
+public sealed class Startup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddSignalOptionsChangeTokenSource<MyOptions>();
+    }
+}
+
+public sealed class MySettingsDisplayDriver : SiteDisplayDriver<MySettings>
+{
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
+
+    public MySettingsDisplayDriver(IOptionsUpdateNotifier optionsUpdateNotifier)
+    {
+        _optionsUpdateNotifier = optionsUpdateNotifier;
+    }
+
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, MySettings settings, UpdateEditorContext context)
+    {
+        await context.Updater.TryUpdateModelAsync(settings, Prefix);
+
+        if (context.Updater.ModelState.IsValid)
+        {
+            _optionsUpdateNotifier.RequestUpdate<MyOptions>();
+        }
+
+        return await EditAsync(site, settings, context);
+    }
+}
+
+public sealed class MyService
+{
+    private readonly IOptionsMonitor<MyOptions> _options;
+
+    public MyService(IOptionsMonitor<MyOptions> options)
+    {
+        _options = options;
+    }
+
+    public string GetValue() => _options.CurrentValue.SomeSetting;
+}
+```
+
+Queue update requests only after validation succeeds and only for the options types affected by the change. The notifier is intentionally one-way: Orchard Core coalesces requests per shell scope and dispatches them after commit, so there is no `RemoveUpdateRequest()` API to cancel earlier requests.
+
+For named options, register `IOptionsChangeTokenSource<TOptions>` manually with `SignalOptionsChangeTokenSource<TOptions>` for the matching name and call `RequestUpdate<TOptions>(name)` with the same value.
+
+In multi-node environments, use a distributed `ISignal` implementation such as the Redis Bus feature from [`OrchardCore.Redis`](../Redis/README.md). This ensures every node invalidates its local `IOptionsMonitor<TOptions>` cache and rebuilds the updated options from the committed tenant state.
+
 ### `ORCHARD_APP_DATA` Environment Variable
 
 The location of the `App_Data` folder can be configured by setting the `ORCHARD_APP_DATA` environment variable.

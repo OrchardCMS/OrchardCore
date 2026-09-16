@@ -10,22 +10,24 @@ public class DefaultSmsProviderResolver : ISmsProviderResolver
     private readonly ISiteService _siteService;
     private readonly ILogger _logger;
     private readonly IServiceProvider _serviceProvider;
-    private readonly SmsProviderOptions _smsProviderOptions;
+    private readonly IOptionsMonitor<SmsProviderOptions> _smsProviderOptions;
 
     public DefaultSmsProviderResolver(
         ISiteService siteService,
         ILogger<DefaultSmsProviderResolver> logger,
-        IOptions<SmsProviderOptions> smsProviderOptions,
+        IOptionsMonitor<SmsProviderOptions> smsProviderOptions,
         IServiceProvider serviceProvider)
     {
         _siteService = siteService;
         _logger = logger;
         _serviceProvider = serviceProvider;
-        _smsProviderOptions = smsProviderOptions.Value;
+        _smsProviderOptions = smsProviderOptions;
     }
 
     public async Task<ISmsProvider> GetAsync(string name = null)
     {
+        var smsProviderOptions = _smsProviderOptions.CurrentValue;
+
         if (string.IsNullOrEmpty(name))
         {
             var settings = await _siteService.GetSettingsAsync<SmsSettings>();
@@ -33,14 +35,14 @@ public class DefaultSmsProviderResolver : ISmsProviderResolver
             name = settings.DefaultProviderName;
         }
 
-        if (name != null && _smsProviderOptions.Providers.TryGetValue(name, out var providerType))
+        if (name != null && smsProviderOptions.Providers.TryGetValue(name, out var providerType))
         {
             return _serviceProvider.CreateInstance<ISmsProvider>(providerType.Type);
         }
 
-        if (string.IsNullOrEmpty(name) && _smsProviderOptions.Providers.Count > 0)
+        if (string.IsNullOrEmpty(name) && smsProviderOptions.Providers.Count > 0)
         {
-            return _serviceProvider.CreateInstance<ISmsProvider>(_smsProviderOptions.Providers.Values.Last().Type);
+            return _serviceProvider.CreateInstance<ISmsProvider>(smsProviderOptions.Providers.Values.Last().Type);
         }
 
         if (_logger.IsEnabled(LogLevel.Error))

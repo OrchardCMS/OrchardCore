@@ -29,6 +29,9 @@ app.publish/
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
 
+# Vitest JUnit test reports
+**/testing/vitest-results.xml
+
 *_i.c
 *_p.c
 *.ilk
@@ -225,3 +228,4 @@ BenchmarkDotNet.Artifacts
 
 .playwright-cli
 .claude/*
+

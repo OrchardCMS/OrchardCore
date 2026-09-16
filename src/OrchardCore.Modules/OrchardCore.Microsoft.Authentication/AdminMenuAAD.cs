@@ -6,7 +6,7 @@ namespace OrchardCore.Microsoft.Authentication;
 
 public sealed class AdminMenuAAD : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", MicrosoftAuthenticationConstants.Features.AAD },
@@ -29,7 +29,7 @@ public sealed class AdminMenuAAD : AdminNavigationProvider
                         .Add(S["Microsoft Entra ID"], S["Microsoft Entra ID"].PrefixPosition(), entraId => entraId
                             .AddClass("microsoft-entra-id")
                             .Id("microsoftentraid")
-                            .Action("Index", "Admin", _routeValues)
+                            .Action("Index", "Admin", s_routeValues)
                             .Permission(Permissions.ManageMicrosoftAuthentication)
                             .LocalNav()
                         )
@@ -46,7 +46,7 @@ public sealed class AdminMenuAAD : AdminNavigationProvider
                         .Add(S["Microsoft Entra ID"], S["Microsoft Entra ID"].PrefixPosition(), entraId => entraId
                             .AddClass("microsoft-entra-id")
                             .Id("microsoftentraid")
-                            .Action("Index", "Admin", _routeValues)
+                            .Action("Index", "Admin", s_routeValues)
                             .Permission(Permissions.ManageMicrosoftAuthentication)
                             .LocalNav()
                         )

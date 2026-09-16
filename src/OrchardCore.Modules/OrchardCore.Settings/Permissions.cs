@@ -7,6 +7,8 @@ public sealed class Permissions : IPermissionProvider
     private readonly IEnumerable<Permission> _allPermissions =
     [
         SettingsPermissions.ManageSettings,
+        SettingsPermissions.ManageGeneralSettings,
+        SettingsPermissions.ManageDebuggingSettings,
     ];
 
     [Obsolete("This will be removed in a future release. Instead use 'SettingsPermissions.ManageSettings'.")]

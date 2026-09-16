@@ -1,0 +1,12 @@
+[
+  {
+    "action": "copy",
+    "name": "signalr",
+    "source": [
+      "../../../node_modules/@microsoft/signalr/dist/browser/*.js",
+      "../../../node_modules/@microsoft/signalr/dist/browser/*.map"
+    ],
+    "dest": "wwwroot/Scripts/",
+    "tags": [ "js" ]
+  }
+]

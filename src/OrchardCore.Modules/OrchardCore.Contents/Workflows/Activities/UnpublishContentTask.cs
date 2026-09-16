@@ -24,9 +24,7 @@ public class UnpublishContentTask : ContentTask
     public override LocalizedString Category => S["Content"];
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Unpublished"], S["Noop"]);
-    }
+        => Outcome(S["Unpublished"], S["Noop"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -35,7 +33,7 @@ public class UnpublishContentTask : ContentTask
 
         if (string.Equals(InlineEvent.ContentItemId, content.ContentItem.ContentItemId, StringComparison.OrdinalIgnoreCase))
         {
-            return Outcomes("Noop");
+            return Outcome("Noop");
         }
 
         var contentItem = await ContentManager.GetAsync(content.ContentItem.ContentItemId, VersionOptions.Latest);
@@ -57,6 +55,6 @@ public class UnpublishContentTask : ContentTask
 
         await ContentManager.UnpublishAsync(contentItem);
 
-        return Outcomes("Unpublished");
+        return Outcome("Unpublished");
     }
 }

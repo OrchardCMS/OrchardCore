@@ -10,19 +10,19 @@ namespace OrchardCore.Redis.Services;
 /// </summary>
 public sealed class RedisDatabaseFactory : IRedisDatabaseFactory, IDisposable
 {
-    private static readonly ConcurrentDictionary<string, Lazy<Task<IDatabase>>> _factories = new();
-    private static volatile int _registered;
-    private static volatile int _refCount;
+    private static readonly ConcurrentDictionary<string, Lazy<Task<IDatabase>>> s_factories = new();
+    private static volatile int s_registered;
+    private static volatile int s_refCount;
 
     private readonly IHostApplicationLifetime _lifetime;
     private readonly ILogger _logger;
 
     public RedisDatabaseFactory(IHostApplicationLifetime lifetime, ILogger<RedisDatabaseFactory> logger)
     {
-        Interlocked.Increment(ref _refCount);
+        Interlocked.Increment(ref s_refCount);
 
         _lifetime = lifetime;
-        if (Interlocked.CompareExchange(ref _registered, 1, 0) == 0)
+        if (Interlocked.CompareExchange(ref s_registered, 1, 0) == 0)
         {
             _lifetime.ApplicationStopped.Register(Release);
         }
@@ -31,13 +31,13 @@ public sealed class RedisDatabaseFactory : IRedisDatabaseFactory, IDisposable
     }
 
     public Task<IDatabase> CreateAsync(RedisOptions options) =>
-        _factories.GetOrAdd(options.Configuration, new Lazy<Task<IDatabase>>(async () =>
+        s_factories.GetOrAdd(options.Configuration, new Lazy<Task<IDatabase>>(async () =>
         {
             try
             {
                 if (_logger.IsEnabled(LogLevel.Debug))
                 {
-                    _logger.LogDebug("Creating a new instance of '{Name}'. A single instance per configuration should be created across tenants. Total instances prior creating is '{Count}'.", nameof(ConnectionMultiplexer), _factories.Count);
+                    _logger.LogDebug("Creating a new instance of '{Name}'. A single instance per configuration should be created across tenants. Total instances prior creating is '{Count}'.", nameof(ConnectionMultiplexer), s_factories.Count);
                 }
 
                 return (await ConnectionMultiplexer.ConnectAsync(options.ConfigurationOptions)).GetDatabase();
@@ -52,7 +52,7 @@ public sealed class RedisDatabaseFactory : IRedisDatabaseFactory, IDisposable
 
     public void Dispose()
     {
-        if (Interlocked.Decrement(ref _refCount) == 0 && _lifetime.ApplicationStopped.IsCancellationRequested)
+        if (Interlocked.Decrement(ref s_refCount) == 0 && _lifetime.ApplicationStopped.IsCancellationRequested)
         {
             Release();
         }
@@ -60,11 +60,11 @@ public sealed class RedisDatabaseFactory : IRedisDatabaseFactory, IDisposable
 
     internal static void Release()
     {
-        if (Interlocked.CompareExchange(ref _refCount, 0, 0) == 0)
+        if (Interlocked.CompareExchange(ref s_refCount, 0, 0) == 0)
         {
-            var factories = _factories.Values.ToArray();
+            var factories = s_factories.Values.ToArray();
 
-            _factories.Clear();
+            s_factories.Clear();
 
             foreach (var factory in factories)
             {

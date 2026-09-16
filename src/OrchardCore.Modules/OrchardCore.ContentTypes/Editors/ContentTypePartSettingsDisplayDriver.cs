@@ -8,6 +8,6 @@ public sealed class ContentTypePartSettingsDisplayDriver : ContentTypePartDefini
 {
     public override IDisplayResult Edit(ContentTypePartDefinition model, BuildEditorContext context)
     {
-        return Shape("ContentTypePartSettings_Edit", new ShapeViewModel<ContentTypePartDefinition>(model)).Location("Content");
+        return Factory("ContentTypePartSettings_Edit", static (ContentTypePartDefinition m) => new ShapeViewModel<ContentTypePartDefinition>(m), model).Location("Content");
     }
 }

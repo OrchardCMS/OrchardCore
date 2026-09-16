@@ -11,8 +11,8 @@ public class UserConfirmedEventDisplayDriver : ActivityDisplayDriver<UserConfirm
     public override Task<IDisplayResult> DisplayAsync(UserConfirmedEvent activity, BuildDisplayContext context)
     {
         return CombineAsync(
-            Shape("UserConfirmedEvent_Fields_Thumbnail", new UserConfirmedEventViewModel(activity)).Location("Thumbnail", "Content"),
-            Factory("UserConfirmedEvent_Fields_Design", ctx =>
+            Factory("UserConfirmedEvent_Fields_Thumbnail", static (UserConfirmedEvent a) => new UserConfirmedEventViewModel(a), activity).Location("Thumbnail", "Content"),
+            Factory("UserConfirmedEvent_Fields_Design", static (ctx, activity) =>
             {
                 var shape = new UserConfirmedEventViewModel
                 {
@@ -20,7 +20,7 @@ public class UserConfirmedEventDisplayDriver : ActivityDisplayDriver<UserConfirm
                 };
 
                 return shape;
-            }).Location("Design", "Content")
+            }, activity).Location("Design", "Content")
         );
     }
 }

@@ -39,7 +39,7 @@ public class SecureMediaMiddleware
             if (!(context.User.Identity?.IsAuthenticated ?? false))
             {
                 // Allow bearer (API) authentication too.
-                var authenticateResult = await authenticationService.AuthenticateAsync(context, "Api");
+                var authenticateResult = await authenticationService.AuthenticateAsync(context, OrchardCoreConstants.AuthenticationSchemes.Api);
 
                 if (authenticateResult.Succeeded)
                 {

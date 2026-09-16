@@ -16,8 +16,8 @@ namespace OrchardCore.Mvc;
 public class ShellFileVersionProvider : IFileVersionProvider
 {
     private const string VersionKey = "v";
-    private static readonly char[] _queryStringAndFragmentTokens = ['?', '#'];
-    private static readonly MemoryCache _sharedCache = new(new MemoryCacheOptions());
+    private static readonly char[] s_queryStringAndFragmentTokens = ['?', '#'];
+    private static readonly MemoryCache s_sharedCache = new(new MemoryCacheOptions());
 
     private readonly IFileProvider[] _fileProviders;
     private readonly IMemoryCache _cache;
@@ -40,7 +40,7 @@ public class ShellFileVersionProvider : IFileVersionProvider
 
         var resolvedPath = path;
 
-        var queryStringOrFragmentStartIndex = path.IndexOfAny(_queryStringAndFragmentTokens);
+        var queryStringOrFragmentStartIndex = path.IndexOfAny(s_queryStringAndFragmentTokens);
         if (queryStringOrFragmentStartIndex != -1)
         {
             resolvedPath = path[..queryStringOrFragmentStartIndex];
@@ -67,7 +67,7 @@ public class ShellFileVersionProvider : IFileVersionProvider
         if (resolvedPath.StartsWith(requestPathBase.Value, StringComparison.OrdinalIgnoreCase))
         {
 #pragma warning disable CA1831 // Use AsSpan instead of Range-based indexers for string
-            if (_sharedCache.TryGetValue(resolvedPath[requestPathBase.Value.Length..], out value))
+            if (s_sharedCache.TryGetValue(resolvedPath[requestPathBase.Value.Length..], out value))
             {
                 return QueryHelpers.AddQueryString(path, VersionKey, value);
             }
@@ -111,7 +111,7 @@ public class ShellFileVersionProvider : IFileVersionProvider
                 // Cache module static files to the shared cache.
                 if (fileProvider is IModuleStaticFileProvider)
                 {
-                    _sharedCache.Set(resolvedPath, value, cacheEntryOptions);
+                    s_sharedCache.Set(resolvedPath, value, cacheEntryOptions);
                 }
                 else
                 {

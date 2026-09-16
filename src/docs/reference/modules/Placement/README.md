@@ -178,8 +178,10 @@ Examples:
 | `Content`        | Content | *(empty, treated as 0)* | Places in Content zone at default position               |
 | `Content:5`      | Content | 5                       | Places in Content zone at position 5                     |
 | `Content:5.1`    | Content | 5.1                     | Places in Content zone at position 5.1 (between 5 and 6) |
-| `Content:before` | Content | before                  | Places at the very beginning of the zone                 |
-| `Content:after`  | Content | after                   | Places at the very end of the zone                       |
+| `Content:before` | Content | before                  | Places before all numbered positions                     |
+| `Content:after`  | Content | after                   | Places after all numbered positions                      |
+| `Content:start`  | Content | start                   | Places truly first, before everything (including `before`) |
+| `Content:end`    | Content | end                     | Places truly last, after everything (including free text) |
 
 ##### Position ordering rules
 
@@ -189,10 +191,27 @@ Shapes within a zone are sorted by their position using these rules:
 - **Dot notation** is supported for sub-positioning: `1.1` comes after `1` but before `2`. Positions like `1.5` can be used to insert shapes between `1` and `2`.
 - The special keyword **`before`** places a shape before all numbered positions (internally mapped to `-9999`).
 - The special keyword **`after`** places a shape after all numbered positions (internally mapped to `9999`).
+- The special keyword **`start`** places a shape truly first — before *every* other position, including `before`.
+- The special keyword **`end`** places a shape truly last — after *every* other position, including non-numeric (free-text) positions.
 - A shape with **no position** (empty string) is treated as position `0`.
 - When multiple shapes share the **same position**, they maintain their registration order (stable sort).
 
-The full ordering is: `before`, `0` (empty), `1`, `1.1`, `1.2`, `2`, `10`, then `after`.
+The full ordering is:
+
+```
+start  <  before  <  0 (empty)  <  1  <  1.1  <  2  <  10  <  after  <  free-text  <  end
+```
+
+###### `after` vs `end`, and `before` vs `start`
+
+`before` and `after` are anchors **within the numeric range** — they behave like a very small and a very large number. Any **non-numeric** position (for example a value produced by the admin-menu `PrefixPosition()` helper, which alphabetizes sibling items) is *not* a number, so it sorts **after `after`**. Likewise, nothing sorts before `before` in the numeric range, but `before` is still just the low end of that range.
+
+Use the **terminal sentinels** when an item must sort truly first or truly last regardless of *any* other position, including free text:
+
+- **`end`** always sorts after everything, including free-text positions — use it when `after` is "not last enough."
+- **`start`** always sorts before everything, including `before` — use it when `before` is "not first enough."
+
+Like `before`/`after`, the sentinels support sub-ordering: `end.50` sorts before `end.100`, and a bare `end` sorts before both (the same way bare `after` sorts before `after.50`).
 
 !!! note
     Position ordering within a zone is determined solely by the position value. The module or project name does not affect the order of shapes within a zone.

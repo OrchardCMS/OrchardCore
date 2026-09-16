@@ -9,7 +9,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags;
 
 public class ShapeTag
 {
-    private static readonly char[] _separators = [',', ' '];
+    private static readonly char[] s_separators = [',', ' '];
 
     public static async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, TextWriter writer, TextEncoder encoder, TemplateContext context)
     {
@@ -93,13 +93,13 @@ public class ShapeTag
 
             if (!string.IsNullOrWhiteSpace(cacheContext))
             {
-                var contexts = cacheContext.Split(_separators, StringSplitOptions.RemoveEmptyEntries);
+                var contexts = cacheContext.Split(s_separators, StringSplitOptions.RemoveEmptyEntries);
                 metadata.Cache().AddContext(contexts);
             }
 
             if (!string.IsNullOrWhiteSpace(cacheTag))
             {
-                var tags = cacheTag.Split(_separators, StringSplitOptions.RemoveEmptyEntries);
+                var tags = cacheTag.Split(s_separators, StringSplitOptions.RemoveEmptyEntries);
                 metadata.Cache().AddTag(tags);
             }
         }

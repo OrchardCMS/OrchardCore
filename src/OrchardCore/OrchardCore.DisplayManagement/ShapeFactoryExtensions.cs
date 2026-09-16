@@ -7,8 +7,8 @@ namespace OrchardCore.DisplayManagement;
 
 public static class ShapeFactoryExtensions
 {
-    private static readonly ConcurrentDictionary<Type, Type> _proxyTypeCache = [];
-    private static readonly ProxyGenerator _proxyGenerator = new();
+    private static readonly ConcurrentDictionary<Type, Type> s_proxyTypeCache = [];
+    private static readonly ProxyGenerator s_proxyGenerator = new();
 
     /// <summary>
     /// Creates a new generic shape by copying the properties of an object.
@@ -192,7 +192,7 @@ public static class ShapeFactoryExtensions
             return (IShape)Activator.CreateInstance(baseType);
         }
 
-        if (_proxyTypeCache.TryGetValue(baseType, out var proxyType))
+        if (s_proxyTypeCache.TryGetValue(baseType, out var proxyType))
         {
             var model = new ShapeViewModel();
 
@@ -201,9 +201,9 @@ public static class ShapeFactoryExtensions
 
         var options = new ProxyGenerationOptions();
         options.AddMixinInstance(new ShapeViewModel());
-        var shape = (IShape)_proxyGenerator.CreateClassProxy(baseType, options);
+        var shape = (IShape)s_proxyGenerator.CreateClassProxy(baseType, options);
 
-        _proxyTypeCache.TryAdd(baseType, shape.GetType());
+        s_proxyTypeCache.TryAdd(baseType, shape.GetType());
 
         return shape;
     }

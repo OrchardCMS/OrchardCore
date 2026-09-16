@@ -6,19 +6,19 @@ namespace OrchardCore.Themes.TheAdmin;
 public sealed class ResourceManagementOptionsConfiguration
     : IConfigureOptions<ResourceManagementOptions>
 {
-    private static readonly ResourceManifest _manifest;
+    private static readonly ResourceManifest s_manifest;
 
     static ResourceManagementOptionsConfiguration()
     {
-        _manifest = new ResourceManifest();
+        s_manifest = new ResourceManifest();
 
-        _manifest
+        s_manifest
             .DefineScript("the-admin")
             .SetDependencies("bootstrap", "admin-main", "theme-manager", "jQuery", "Sortable")
             .SetUrl("~/TheAdmin/js/theadmin/TheAdmin.min.js", "~/TheAdmin/js/theadmin/TheAdmin.js")
             .SetVersion("1.0.0");
 
-        _manifest
+        s_manifest
             .DefineScript("admin-main")
             .SetUrl(
                 "~/TheAdmin/js/theadmin-main/TheAdmin-main.min.js",
@@ -27,7 +27,7 @@ public sealed class ResourceManagementOptionsConfiguration
             .SetDependencies("bootstrap", "theme-head", "js-cookie")
             .SetVersion("1.0.0");
 
-        _manifest
+        s_manifest
             .DefineStyle("the-admin")
             .SetUrl("~/TheAdmin/css/TheAdmin.min.css", "~/TheAdmin/css/TheAdmin.css")
             .SetVersion("1.0.0");
@@ -35,6 +35,6 @@ public sealed class ResourceManagementOptionsConfiguration
 
     public void Configure(ResourceManagementOptions options)
     {
-        options.ResourceManifests.Add(_manifest);
+        options.ResourceManifests.Add(s_manifest);
     }
 }

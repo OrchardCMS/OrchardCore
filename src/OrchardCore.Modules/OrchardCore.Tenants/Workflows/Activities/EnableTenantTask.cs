@@ -23,40 +23,40 @@ public class EnableTenantTask : TenantTask
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        return Outcomes(S["Enabled"], S["Failed"]);
+        return Outcome(S["Enabled"], S["Failed"]);
     }
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         if (!ShellScope.Context.Settings.IsDefaultShell())
         {
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
 
         var tenantName = (await ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext, null))?.Trim();
 
         if (string.IsNullOrEmpty(tenantName))
         {
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
 
         if (!ShellHost.TryGetSettings(tenantName, out var shellSettings))
         {
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
 
         if (shellSettings.IsDefaultShell())
         {
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
 
         if (!shellSettings.IsDisabled())
         {
-            return Outcomes("Failed");
+            return Outcome("Failed");
         }
 
         await ShellHost.UpdateShellSettingsAsync(shellSettings.AsRunning());
 
-        return Outcomes("Enabled");
+        return Outcome("Enabled");
     }
 }

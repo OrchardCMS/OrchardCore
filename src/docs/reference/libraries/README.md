@@ -51,7 +51,7 @@ The table below lists the different libraries used as resources:
 | Library | Usage | License |
 |--- | --- | --- |
 | [Bootstrap](https://github.com/twbs/bootstrap) | HTML, CSS, and JavaScript framework for developing responsive, mobile first projects on the web. | [MIT](https://github.com/twbs/bootstrap/blob/main/LICENSE) |
-| [bootstrap-select](https://github.com/snapappointments/bootstrap-select) | jQuery plugin for select elements. | [MIT](https://github.com/snapappointments/bootstrap-select/blob/v1.14-dev/LICENSE) |
+| [bootstrap-select](https://github.com/CrestApps/bootstrap-select) | A Bootstrap-powered library that brings select elements into the 21st century with intuitive multi-selection, search, and more. | [MIT](https://github.com/CrestApps/bootstrap-select/blob/main/LICENSE) |
 | [Code Mirror](https://github.com/codemirror/CodeMirror) | In-browser code editor. | [MIT](https://github.com/codemirror/CodeMirror/blob/master/LICENSE) |
 | [Font Awesome](https://github.com/FortAwesome/Font-Awesome) | The iconic SVG, font, and CSS toolkit. | [Font Awesome Free License](https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt) |
 | [jQuery](https://github.com/jquery/jquery) | jQuery JavaScript Library. | [MIT](https://github.com/jquery/jquery/blob/master/LICENSE.txt) |

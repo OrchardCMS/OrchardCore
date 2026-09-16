@@ -289,14 +289,14 @@ public class DefaultShapeTableManagerTests : IDisposable
 
     public class TestShapeProvider : IShapeTableProvider
     {
-        private static IDictionary<IFeatureInfo, IEnumerable<string>> _featureShapes;
+        private static IDictionary<IFeatureInfo, IEnumerable<string>> s_featureShapes;
 
-        public static IDictionary<IFeatureInfo, IEnumerable<string>> FeatureShapes => _featureShapes;
+        public static IDictionary<IFeatureInfo, IEnumerable<string>> FeatureShapes => s_featureShapes;
 
         public Action<ShapeTableBuilder> Discover = x => { };
 
         public static void InitFeatureShapes(IDictionary<IFeatureInfo, IEnumerable<string>> featureShapes)
-            => _featureShapes = featureShapes;
+            => s_featureShapes = featureShapes;
 
         ValueTask IShapeTableProvider.DiscoverAsync(ShapeTableBuilder builder)
         {

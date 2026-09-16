@@ -9,10 +9,10 @@ namespace OrchardCore.BackgroundJobs;
 
 public static class HttpBackgroundJob
 {
-    private static volatile int _activeJobsCount;
+    private static volatile int s_activeJobsCount;
 
     // Gets the number of active background jobs that are currently running. 
-    internal static int ActiveJobsCount => _activeJobsCount;
+    internal static int ActiveJobsCount => s_activeJobsCount;
 
     /// <summary>
     /// Executes a background job in an isolated <see cref="ShellScope"/> after the current HTTP request is completed.
@@ -52,7 +52,7 @@ public static class HttpBackgroundJob
         var userPrincipal = httpContextAccessor.HttpContext.User.Clone();
 
         // Increment the active jobs count to track the number of background jobs running.
-        Interlocked.Increment(ref _activeJobsCount);
+        Interlocked.Increment(ref s_activeJobsCount);
 
         // Fire and forget in an isolated child scope.
         _ = ShellScope.UsingChildScopeAsync(async scope =>
@@ -60,7 +60,7 @@ public static class HttpBackgroundJob
             scope.RegisterBeforeDispose(scope =>
             {
                 // Decrement the active jobs count when the job is disposed.
-                Interlocked.Decrement(ref _activeJobsCount);
+                Interlocked.Decrement(ref s_activeJobsCount);
             }, true);
 
             var timeoutTask = Task.Delay(60_000);

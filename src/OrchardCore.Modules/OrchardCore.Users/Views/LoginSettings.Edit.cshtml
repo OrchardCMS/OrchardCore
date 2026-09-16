@@ -17,6 +17,16 @@
     </div>
 </div>
 
+<div class="ocat-wrapper" asp-validation-class-for="UsePersistentAuthenticationCookie">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input asp-for="UsePersistentAuthenticationCookie" type="checkbox" class="form-check-input" />
+            <label class="form-check-label" asp-for="UsePersistentAuthenticationCookie">@T["Use persistent authentication cookies by default"]</label>
+            <span class="hint dashed">@T["When Remember me is allowed, this is the default checkbox value. When Remember me is disabled, this controls whether login cookies are persistent."]</span>
+        </div>
+    </div>
+</div>
+
 <div class="ocat-wrapper">
     <div class="ocat-end-offset">
         <div class="form-check">

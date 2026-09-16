@@ -14,7 +14,7 @@ public class SiteContext : IDisposable
     private const int HttpBackgroundJobsTimeoutSeconds = 90;
     private const int WaitDelayMilliseconds = 10;
 
-    private static readonly TablePrefixGenerator _tablePrefixGenerator = new();
+    private static readonly TablePrefixGenerator s_tablePrefixGenerator = new();
     public static OrchardTestFixture<SiteStartup> Site { get; }
     public static IShellHost ShellHost { get; private set; }
     public static IShellSettingsManager ShellSettingsManager { get; private set; }
@@ -42,7 +42,7 @@ public class SiteContext : IDisposable
     public virtual async Task InitializeAsync()
     {
         var tenantName = Guid.NewGuid().ToString("n");
-        var tablePrefix = await _tablePrefixGenerator.GeneratePrefixAsync();
+        var tablePrefix = await s_tablePrefixGenerator.GeneratePrefixAsync();
 
         var createModel = new Tenants.Models.TenantApiModel
         {

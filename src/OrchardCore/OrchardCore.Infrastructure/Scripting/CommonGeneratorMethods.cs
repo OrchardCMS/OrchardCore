@@ -5,13 +5,13 @@ namespace OrchardCore.Scripting;
 
 public class CommonGeneratorMethods : IGlobalMethodProvider
 {
-    private static readonly GlobalMethod[] _allMethods;
+    private static readonly GlobalMethod[] s_allMethods;
 
-    public IEnumerable<GlobalMethod> GetMethods() => _allMethods;
+    public IEnumerable<GlobalMethod> GetMethods() => s_allMethods;
 
     static CommonGeneratorMethods()
     {
-        _allMethods = [_base64, _html, _gZip];
+        s_allMethods = [_base64, _html, _gZip];
     }
 
     internal static readonly GlobalMethod _base64 = new()

@@ -1,15 +1,14 @@
-using System.Text.Json.Nodes;
+using System.Globalization;
+using System.IO.Hashing;
+using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.DisplayManagement;
-using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Navigation;
 
 public static class NavigationHelper
 {
-    private const string SelectedNavHashCacheKey = "OrchardCore.Navigation.SelectedNavHash";
-    private static readonly object SelectedNavHashMissing = new();
 
     public static bool UseLegacyFormat()
     {
@@ -27,7 +26,7 @@ public static class NavigationHelper
     public static async Task PopulateMenuAsync(IShapeFactory shapeFactory, IShape parentShape, IShape menu, IEnumerable<MenuItem> menuItems, ViewContext viewContext)
     {
         await PopulateMenuLevelAsync(shapeFactory, parentShape, menu, menuItems, viewContext);
-        ApplySelection(parentShape, viewContext);
+        ApplySelection(parentShape);
     }
 
     /// <summary>
@@ -76,16 +75,16 @@ public static class NavigationHelper
             shape.Item = menuItem;
             shape.Menu = menu;
             shape.Parent = parentShape;
-            shape.Level = GetLevel(parentShape) + 1;   
+            shape.Level = GetLevel(parentShape) + 1;
             shape.Priority = menuItem.Priority;
             shape.Local = menuItem.LocalNav;
-            shape.Hash = (GetHash(parentShape) + menuItem.Text.Value).GetHashCode().ToString();
+            shape.Hash = ComputeStableHash(GetHash(parentShape), menuItem.Text.Value);
             shape.Score = 0;
         }, (menuItem, parentShape, menu));
 
         menuItemShape.Id = menuItem.Id;
 
-        MarkAsSelectedIfMatchesPathOrPreferences(menuItem, menuItemShape, viewContext);
+        MarkAsSelectedIfMatchesPath(menuItem, menuItemShape, viewContext);
 
         foreach (var className in menuItem.Classes)
         {
@@ -95,60 +94,65 @@ public static class NavigationHelper
         return menuItemShape;
     }
 
-    private static void MarkAsSelectedIfMatchesPathOrPreferences(MenuItem menuItem, NavigationItemViewModel menuItemShape, ViewContext viewContext)
+    internal static void MarkAsSelectedIfMatchesPath(MenuItem menuItem, NavigationItemViewModel menuItemShape, ViewContext viewContext)
     {
         if (string.IsNullOrEmpty(menuItem.Href) || menuItem.Href[0] != '/')
         {
-            menuItemShape.Selected = menuItemShape.Score > 0;
+            menuItemShape.Selected = false;
             return;
         }
 
-        // Strip query string from the menu item href to get a pure path for comparison.
+        // Strip query string and fragment from the menu item href to get a pure path for comparison.
         var hrefSpan = menuItem.Href.AsSpan();
         var queryIndex = hrefSpan.IndexOf('?');
+        var fragmentIndex = hrefSpan.IndexOf('#');
+
+        // Use the earliest terminator (query string or fragment) to isolate the path.
+        var pathEndIndex = queryIndex >= 0 && fragmentIndex >= 0
+            ? Math.Min(queryIndex, fragmentIndex)
+            : queryIndex >= 0 ? queryIndex
+            : fragmentIndex >= 0 ? fragmentIndex
+            : -1;
+
         var hrefPath = RemovePathBase(
-            (queryIndex >= 0 ? hrefSpan[..queryIndex] : hrefSpan).ToString(),
+            (pathEndIndex >= 0 ? hrefSpan[..pathEndIndex] : hrefSpan).ToString(),
             viewContext.HttpContext.Request.PathBase);
 
         var requestPath = RemovePathBase(
             viewContext.HttpContext.Request.Path.Value ?? "/",
             viewContext.HttpContext.Request.PathBase);
-        var segmentCount = hrefPath.Split('/', StringSplitOptions.RemoveEmptyEntries).Length;
 
+        var hrefSegmentCount = CountPathSegments(hrefPath);
+        var requestSegmentCount = CountPathSegments(requestPath);
+        var matchingSegmentCount = CountLeadingMatchingPathSegments(requestPath, hrefPath);
 
-        // Ancestor paths (e.g. "/Admin" while evaluating "/Admin/Features") are not
-        // within the menu item branch and should not reuse a stale clicked hash.
-        if (!IsAncestorPath(requestPath, hrefPath))
+        // Must match at least more than one leading segment to be considered a match, so that
+        // the root menu item ("/admin") does not always match.
+        if (matchingSegmentCount > 1)
         {
-            // Use the selectedNavHash stored in the admin preferences cookie, which JS writes proactively when
-            // the user clicks a nav link. Give it a high score to ensure it wins over any URL-matched items.
-            var selectedNavHash = GetSelectedNavHashFromPrefs(viewContext);
+            // Score by matching leading segments so routes with more shared context
+            // (like a specific content item id) outrank broader ancestors.
+            menuItemShape.Score += matchingSegmentCount * 2;
 
-            if (selectedNavHash == menuItemShape.Hash)
+            // Slightly favor complete href prefix matches over partial overlap.
+            if (matchingSegmentCount == hrefSegmentCount)
             {
-                menuItemShape.Score += 100;
-            }
-        }
+                menuItemShape.Score += 1;
 
-        if (requestPath.Equals(hrefPath, StringComparison.OrdinalIgnoreCase))
-        {
-            // Exact URL match — score by path depth so deeper (more specific) links beat
-            // shallower ones that share the same prefix.
-            menuItemShape.Score += segmentCount + 2;
-        }
-        else if (segmentCount > 0 && requestPath.StartsWith(hrefPath.TrimEnd('/') + "/", StringComparison.OrdinalIgnoreCase))
-        {
-            // Prefix match (e.g. "/Admin/ContentTypes" matches "/Admin/ContentTypes/Edit/Blog").
-            // Deeper prefix = higher score, ensuring the most specific ancestor wins.
-            menuItemShape.Score += segmentCount;
+                // Exact path match gets a small additional boost.
+                if (hrefSegmentCount == requestSegmentCount)
+                {
+                    menuItemShape.Score += 1;
+                }
+            }
         }
 
         menuItemShape.Selected = menuItemShape.Score > 0;
     }
 
-    private static string RemovePathBase(string path, PathString pathBase)
+    internal static string RemovePathBase(string path, PathString pathBase)
     {
-        if (!pathBase.HasValue || pathBase == PathString.Empty)
+        if (!pathBase.HasValue)
         {
             return path;
         }
@@ -168,41 +172,109 @@ public static class NavigationHelper
         return path;
     }
 
-    private static bool IsAncestorPath(string requestPath, string hrefPath)
+    internal static int CountPathSegments(string path)
     {
-        var normalizedRequestPath = requestPath.AsSpan().TrimEnd('/');
-        var normalizedHrefPath = hrefPath.AsSpan().TrimEnd('/');
-
-        if (normalizedRequestPath.IsEmpty)
+        if (string.IsNullOrEmpty(path))
         {
-            normalizedRequestPath = "/";
+            return 0;
         }
 
-        if (normalizedHrefPath.IsEmpty || normalizedRequestPath.Length >= normalizedHrefPath.Length)
+        var span = path.AsSpan();
+        var count = 0;
+        var inSegment = false;
+
+        for (int i = 0; i < span.Length; i++)
         {
-            return false;
+            if (span[i] == '/')
+            {
+                if (inSegment)
+                {
+                    count++;
+                    inSegment = false;
+                }
+            }
+            else
+            {
+                inSegment = true;
+            }
         }
 
-        return normalizedHrefPath[normalizedRequestPath.Length] == '/'
-            && normalizedHrefPath.StartsWith(normalizedRequestPath, StringComparison.OrdinalIgnoreCase);
+        if (inSegment)
+        {
+            count++;
+        }
+
+        return count;
+    }
+
+    internal static int CountLeadingMatchingPathSegments(string requestPath, string hrefPath)
+    {
+        if (string.IsNullOrEmpty(requestPath) || string.IsNullOrEmpty(hrefPath))
+        {
+            return 0;
+        }
+
+        var requestSpan = requestPath.AsSpan().Trim('/');
+        var hrefSpan = hrefPath.AsSpan().Trim('/');
+
+        var matchingSegments = 0;
+        var requestPos = 0;
+        var hrefPos = 0;
+
+        while (true)
+        {
+            SkipSlashes(requestSpan, ref requestPos);
+            SkipSlashes(hrefSpan, ref hrefPos);
+
+            if (requestPos >= requestSpan.Length || hrefPos >= hrefSpan.Length)
+            {
+                break;
+            }
+
+            var requestStart = requestPos;
+            while (requestPos < requestSpan.Length && requestSpan[requestPos] != '/')
+            {
+                requestPos++;
+            }
+
+            var hrefStart = hrefPos;
+            while (hrefPos < hrefSpan.Length && hrefSpan[hrefPos] != '/')
+            {
+                hrefPos++;
+            }
+
+            var requestSegment = requestSpan[requestStart..requestPos];
+            var hrefSegment = hrefSpan[hrefStart..hrefPos];
+
+            if (!requestSegment.Equals(hrefSegment, StringComparison.OrdinalIgnoreCase))
+            {
+                break;
+            }
+
+            matchingSegments++;
+        }
+
+        return matchingSegments;
+    }
+
+    private static void SkipSlashes(ReadOnlySpan<char> path, ref int pos)
+    {
+        while (pos < path.Length && path[pos] == '/')
+        {
+            pos++;
+        }
     }
 
     /// <summary>
     /// Ensures only one menuitem (and its ancestors) are marked as selected for the menu.
     /// </summary>
     /// <param name="parentShape">The menu shape.</param>
-    /// <param name="viewContext">The current <see cref="ViewContext"/>.</param>
-    private static void ApplySelection(IShape parentShape, ViewContext viewContext)
+    internal static void ApplySelection(IShape parentShape)
     {
         var selectedItem = GetHighestPrioritySelectedMenuItem(parentShape);
 
-        // Persist the selected item hash inside the existing admin preferences cookie so
-        // that direct URL navigations (not triggered by a nav click) also update the stored
-        // selection, keeping the fallback in sync with URL-path-matched selections.
         if (selectedItem != null)
         {
-            UpdateSelectedNavHashInPrefs(viewContext, selectedItem.Hash);
-
             var ancestor = selectedItem.Parent;
 
             while (ancestor is NavigationItemViewModel ancestorItem)
@@ -211,77 +283,6 @@ public static class NavigationHelper
                 ancestor = ancestorItem.Parent;
             }
         }
-    }
-
-    /// <summary>
-    /// Reads the <c>selectedNavHash</c> field from the admin preferences cookie.
-    /// The cookie is written by JS (js-cookie) using <c>encodeURIComponent</c>, so the
-    /// raw value must be URL-decoded before JSON parsing.
-    /// </summary>
-    private static string GetSelectedNavHashFromPrefs(ViewContext viewContext)
-    {
-        if (viewContext.HttpContext.Items.TryGetValue(SelectedNavHashCacheKey, out var cached))
-        {
-            return ReferenceEquals(cached, SelectedNavHashMissing) ? null : cached as string;
-        }
-
-        var key = $"{ShellScope.Context.Settings.Name}-adminPreferences";
-        var raw = viewContext.HttpContext.Request.Cookies[key];
-
-        if (string.IsNullOrEmpty(raw))
-        {
-            viewContext.HttpContext.Items[SelectedNavHashCacheKey] = SelectedNavHashMissing;
-            return null;
-        }
-
-        try
-        {
-            var json = Uri.UnescapeDataString(raw);
-            var node = JsonNode.Parse(json);
-            var selectedNavHash = node?["selectedNavHash"]?.GetValue<string>();
-            viewContext.HttpContext.Items[SelectedNavHashCacheKey] = selectedNavHash ?? SelectedNavHashMissing;
-            return selectedNavHash;
-        }
-        catch
-        {
-            viewContext.HttpContext.Items[SelectedNavHashCacheKey] = SelectedNavHashMissing;
-            return null;
-        }
-    }
-
-    /// <summary>
-    /// Merges the <c>selectedNavHash</c> field into the existing admin preferences cookie,
-    /// preserving all other fields (e.g. <c>leftSidebarCompact</c>).
-    /// The value is URL-encoded to match the encoding js-cookie uses when reading.
-    /// </summary>
-    private static void UpdateSelectedNavHashInPrefs(ViewContext viewContext, string hash)
-    {
-        var key = $"{ShellScope.Context.Settings.Name}-adminPreferences";
-        var raw = viewContext.HttpContext.Request.Cookies[key];
-
-        JsonObject prefs;
-
-        try
-        {
-            var json = string.IsNullOrEmpty(raw) ? "{}" : Uri.UnescapeDataString(raw);
-            prefs = JsonNode.Parse(json)?.AsObject() ?? new JsonObject();
-        }
-        catch
-        {
-            prefs = new JsonObject();
-        }
-
-        prefs["selectedNavHash"] = hash;
-
-        var options = new CookieOptions
-        {
-            Path = "/",
-            Expires = DateTimeOffset.UtcNow.AddDays(360),
-            MaxAge = TimeSpan.FromDays(360),
-        };
-
-        viewContext.HttpContext.Response.Cookies.Append(key, Uri.EscapeDataString(prefs.ToJsonString()), options);
-        viewContext.HttpContext.Items[SelectedNavHashCacheKey] = hash ?? SelectedNavHashMissing;
     }
 
     /// <summary>
@@ -333,6 +334,27 @@ public static class NavigationHelper
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// Computes a deterministic hash identifying a menu item across requests. Unlike
+    /// <see cref="string.GetHashCode()"/>, which is randomized per process, the result is stable
+    /// across restarts and load-balanced instances.
+    /// </summary>
+    internal static string ComputeStableHash(string parentHash, string value)
+    {
+        if (string.IsNullOrEmpty(parentHash))
+        {
+            return XxHash32.HashToUInt32(MemoryMarshal.AsBytes(value.AsSpan())).ToString(CultureInfo.InvariantCulture); 
+        }
+
+        var hash = new XxHash32();
+
+        hash.Append(MemoryMarshal.AsBytes(parentHash.AsSpan()));
+        hash.Append(stackalloc byte[] { 0 }); // separator
+        hash.Append(MemoryMarshal.AsBytes(value.AsSpan()));
+
+        return hash.GetCurrentHashAsUInt32().ToString(CultureInfo.InvariantCulture);
     }
 
     private static int GetLevel(IShape shape)

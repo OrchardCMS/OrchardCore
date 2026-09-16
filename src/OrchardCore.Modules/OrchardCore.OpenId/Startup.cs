@@ -225,6 +225,10 @@ public sealed class ValidationStartup : StartupBase
     {
         services.AddNavigationProvider<ValidationAdminMenu>();
 
+        // Used to attach RFC 9457 Problem Details bodies to the challenge responses produced
+        // by the OpenIddict validation handler, honoring app-level ProblemDetails customizations.
+        services.AddProblemDetails();
+
         services.AddOpenIddict()
             .AddValidation(options =>
             {

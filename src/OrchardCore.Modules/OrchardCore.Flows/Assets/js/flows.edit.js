@@ -107,10 +107,12 @@ $(function () {
             var dropdown = $(this).closest('.dropdown-menu');
             dropdown.prev('button').text($radioSize + '%');
         } else if ($radio[0].id !== 'undefined' && $radio[0].id.indexOf('Alignment') > 0) {
-            var svg = $(this).find('svg')[0].outerHTML;
+            var icon = $(this).find('i')[0].outerHTML;
             var alignDropdown = $(this).closest('.dropdown-menu');
             var $btn = alignDropdown.prev('button');
-            $btn.html(svg);
+            if (icon) {
+                $btn.html(icon);
+            }
         }
 
         $(this).parent().find('.dropdown-item').removeClass('active');

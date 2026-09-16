@@ -7,12 +7,12 @@ namespace OrchardCore.Localization;
 /// </summary>
 public class DefaultCalendarSelector : ICalendarSelector
 {
-    private static readonly Task<CalendarSelectorResult> _calendarResult = Task.FromResult(new CalendarSelectorResult
+    private static readonly Task<CalendarSelectorResult> s_calendarResult = Task.FromResult(new CalendarSelectorResult
     {
         Priority = 0,
         CalendarName = () => Task.FromResult(BclCalendars.GetCalendarName(CultureInfo.CurrentUICulture.Calendar)),
     });
 
     /// <inheritdocs />
-    public Task<CalendarSelectorResult> GetCalendarAsync() => _calendarResult;
+    public Task<CalendarSelectorResult> GetCalendarAsync() => s_calendarResult;
 }
