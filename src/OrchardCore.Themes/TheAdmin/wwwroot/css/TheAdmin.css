@@ -10008,6 +10008,86 @@ ul.pager {
   justify-content: center;
 }
 
+.admin-quick-search .admin-quick-search-input {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+.admin-quick-search .admin-quick-search-input > i {
+  color: var(--bs-secondary-color);
+}
+
+.admin-quick-search .admin-quick-search-input > .form-control {
+  background-color: transparent;
+  color: var(--bs-body-color);
+}
+
+.admin-quick-search .admin-quick-search-results {
+  max-height: 60vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--oc-scrollbar-color) var(--bs-modal-bg);
+}
+
+.admin-quick-search .admin-quick-search-results [role=option] > .admin-quick-search-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding: 0.5rem 1rem;
+  color: var(--bs-body-color);
+  text-decoration: none;
+  border-inline-start: 3px solid transparent;
+}
+
+.admin-quick-search .admin-quick-search-results [role=option].active > .admin-quick-search-item,
+.admin-quick-search .admin-quick-search-results [role=option] > .admin-quick-search-item:hover {
+  background-color: var(--bs-tertiary-bg);
+  border-inline-start-color: var(--bs-primary);
+}
+
+.admin-quick-search .admin-quick-search-results .admin-quick-search-title {
+  font-weight: 600;
+}
+
+.admin-quick-search .admin-quick-search-results .admin-quick-search-path {
+  font-size: 0.8125rem;
+  color: var(--bs-secondary-color);
+}
+
+.admin-quick-search .admin-quick-search-results mark {
+  padding: 0;
+  background-color: transparent;
+  color: var(--bs-primary);
+  font-weight: 700;
+}
+
+.admin-quick-search .admin-quick-search-results .admin-quick-search-empty {
+  padding: 1rem;
+  text-align: center;
+  color: var(--bs-secondary-color);
+}
+
+.admin-quick-search .admin-quick-search-footer {
+  gap: 1rem;
+  padding: 0.375rem 1rem;
+  border-top: 1px solid var(--bs-border-color);
+  font-size: 0.75rem;
+  color: var(--bs-secondary-color);
+}
+
+.admin-quick-search kbd {
+  font-size: 0.7rem;
+  padding: 0.1rem 0.35rem;
+  margin-inline-end: 0.15rem;
+  color: var(--bs-body-color);
+  background-color: var(--bs-tertiary-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.25rem;
+}
+
 .g-recaptcha {
   margin-bottom: 1rem;
 }
