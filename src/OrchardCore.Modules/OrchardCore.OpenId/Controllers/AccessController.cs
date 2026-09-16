@@ -339,8 +339,8 @@ public sealed class AccessController : Controller
         }
 
         // If the server is configured to allow skipping the confirmation prompt and a valid
-        // id_token_hint issued to the client application for the current authenticated user
-        // is supplied, sign the user out immediately without rendering a confirmation form.
+        // id_token_hint matching the current authenticated user is supplied, sign the user
+        // out immediately without rendering a confirmation form.
         var settings = await _serverService.GetSettingsAsync();
         if (!settings.RequireEndSessionConfirmation &&
             !string.IsNullOrEmpty(request.IdTokenHint) &&
@@ -431,8 +431,8 @@ public sealed class AccessController : Controller
             return false;
         }
 
-        // Note: like OpenIddict, the lifetime of identity tokens used as hints is deliberately not validated.
-        // The audience and presenter are validated below, based on the client application sending the request.
+        // Note: like OpenIddict, the audience, presenter and lifetime of identity
+        // tokens used as hints are deliberately not validated.
         var context = new OpenIddictServerEvents.ValidateTokenContext(transaction)
         {
             Token = request.IdTokenHint,
@@ -449,11 +449,6 @@ public sealed class AccessController : Controller
             return false;
         }
 
-        if (!await IsIdTokenHintIssuedToClientAsync(request, principal))
-        {
-            return false;
-        }
-
         var hintSubject = principal.GetClaim(Claims.Subject);
         var userIdentifier = user.FindUserIdentifier();
 
@@ -461,32 +456,6 @@ public sealed class AccessController : Controller
             CryptographicOperations.FixedTimeEquals(
                 MemoryMarshal.AsBytes<char>(hintSubject.AsSpan()),
                 MemoryMarshal.AsBytes<char>(userIdentifier.AsSpan()));
-    }
-
-    private async Task<bool> IsIdTokenHintIssuedToClientAsync(OpenIddictRequest request, ClaimsPrincipal principal)
-    {
-        // Note: unlike OpenIddict, end session requests that can't be associated
-        // with a client application always require an explicit user confirmation.
-        if (!string.IsNullOrEmpty(request.ClientId))
-        {
-            return principal.HasAudience(request.ClientId) || principal.HasPresenter(request.ClientId);
-        }
-
-        if (string.IsNullOrEmpty(request.PostLogoutRedirectUri))
-        {
-            return false;
-        }
-
-        await foreach (var application in _applicationManager.FindByPostLogoutRedirectUriAsync(request.PostLogoutRedirectUri))
-        {
-            var clientId = await _applicationManager.GetClientIdAsync(application);
-            if (!string.IsNullOrEmpty(clientId) && (principal.HasAudience(clientId) || principal.HasPresenter(clientId)))
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     [AllowAnonymous, HttpPost]

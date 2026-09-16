@@ -453,10 +453,34 @@ public class OpenIdAuthenticationTests
         });
     }
 
+    [Fact]
+    public async Task OpenId_Logout_WithValidIdTokenHintAndNoClientParameters_SignsOutWithoutConfirmation_WhenConfirmationIsDisabled()
+    {
+        var context = await CreateLogoutSiteContextAsync(requireEndSessionConfirmation: false);
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var httpClient = context.Client;
+            var shellSettings = scope.ServiceProvider.GetRequiredService<ShellSettings>();
+            var session = await SignInAndRequestTokensAsync(httpClient, shellSettings, LogoutClientId);
+
+            var response = await SendLogoutRequestAsync(httpClient, session.Cookies, new Dictionary<string, string>
+            {
+                { OpenIddictConstants.Parameters.IdTokenHint, session.IdToken },
+            });
+
+            // Without a post_logout_redirect_uri, the user agent is redirected to the root page.
+            Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+
+            var cookies = CookiesHelper.ExtractCookies(response);
+            Assert.True(cookies.TryGetValue(session.AuthenticationCookieName, out var cookieValue));
+            Assert.Empty(cookieValue);
+        });
+    }
+
     [Theory]
     [InlineData("invalid-token")]
     [InlineData("access-token")]
-    [InlineData("no-client")]
     public async Task OpenId_Logout_WithUnverifiableIdTokenHint_ShowsConfirmation_WhenConfirmationIsDisabled(string scenario)
     {
         var context = await CreateLogoutSiteContextAsync(requireEndSessionConfirmation: false);
@@ -481,12 +505,6 @@ public class OpenIdAuthenticationTests
                     { OpenIddictConstants.Parameters.IdTokenHint, session.AccessToken },
                     { OpenIddictConstants.Parameters.ClientId, LogoutClientId },
                     { OpenIddictConstants.Parameters.PostLogoutRedirectUri, postLogoutRedirectUri },
-                },
-
-                // A valid hint that can't be bound to a client application.
-                "no-client" => new Dictionary<string, string>
-                {
-                    { OpenIddictConstants.Parameters.IdTokenHint, session.IdToken },
                 },
                 _ => throw new ArgumentOutOfRangeException(nameof(scenario)),
             };
