@@ -7,7 +7,6 @@ concurrency:
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
-  DOTNET_MULTILEVEL_LOOKUP: 0
   PLAYWRIGHT_TRACING: true
 permissions:
   contents: read
@@ -21,6 +20,14 @@ jobs:
     name: Build & Test
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+    - name: Pin global.json SDK in CI
+      shell: pwsh
+      run: |
+        $globalJson = Get-Content global.json -Raw | ConvertFrom-Json
+        $version = $globalJson.sdk.version
+        $globalJson.sdk.PSObject.Properties.Remove('rollForward')
+        $globalJson | ConvertTo-Json -Depth 10 | Set-Content global.json
+        Write-Host "Pinned global.json SDK for CI: $version"
     - uses: ./.github/actions/setup-dotnet
     - name: Verify exact .NET SDK from global.json
       shell: pwsh
