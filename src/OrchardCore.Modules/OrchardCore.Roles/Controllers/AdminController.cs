@@ -106,7 +106,7 @@ public sealed class AdminController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateRoleViewModel model)
+    public async Task<IActionResult> Create(CreateRoleViewModel model, string submit)
     {
         if (!await _authorizationService.AuthorizeAsync(User, RolesPermissions.ManageRoles))
         {
@@ -126,6 +126,11 @@ public sealed class AdminController : Controller
             if (result.Succeeded)
             {
                 await _notifier.SuccessAsync(H["Role created successfully."]);
+
+                if (submit == "SaveAndContinue")
+                {
+                    return RedirectToAction(nameof(Edit), new { id = role.RoleName });
+                }
 
                 return RedirectToAction(nameof(Index));
             }
@@ -165,7 +170,7 @@ public sealed class AdminController : Controller
     }
 
     [HttpPost, ActionName(nameof(Edit))]
-    public async Task<IActionResult> EditPost(string id, string roleDescription)
+    public async Task<IActionResult> EditPost(string id, string roleDescription, string submit)
     {
         if (!await _authorizationService.AuthorizeAsync(User, RolesPermissions.ManageRoles))
         {
@@ -188,6 +193,11 @@ public sealed class AdminController : Controller
         await _roleManager.UpdateAsync(role);
 
         await _notifier.SuccessAsync(H["Role updated successfully."]);
+
+        if (submit == "SaveAndContinue")
+        {
+            return RedirectToAction(nameof(Edit), new { id = role.RoleName });
+        }
 
         return RedirectToAction(nameof(Index));
     }
