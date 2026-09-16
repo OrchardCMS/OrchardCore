@@ -7,6 +7,7 @@ concurrency:
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_ROLL_FORWARD: Disable
   PLAYWRIGHT_TRACING: true
 permissions:
   contents: read
@@ -27,6 +28,7 @@ jobs:
       # treat warnings as errors could break anytime, without us changing the code. This prevents that. Treating them as
       # warnings and other better approaches don't work, see https://github.com/OrchardCMS/OrchardCore/pull/16317.
       run: |
+        dotnet --version
         dotnet build -c Release -p:TreatWarningsAsErrors=true --warnaserror -p:RunAnalyzers=true -p:NuGetAudit=false
     - name: Unit Tests
       run: |
