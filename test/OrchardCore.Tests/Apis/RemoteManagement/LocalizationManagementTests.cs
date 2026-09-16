@@ -261,17 +261,17 @@ public class LocalizationManagementTests
     }
 
     [Fact]
-    public async Task Routes_AllEleven_RequireAuthorizationButOnlyCultureSettingsExposeCliMetadata()
+    public async Task Routes_RequireAuthorizationAndExposeExpectedCliMetadata()
     {
         var builder = WebApplication.CreateBuilder();
         await using var app = builder.Build();
         app.AddLocalizationManagementEndpoints();
         app.AddTranslationManagementEndpoints();
         var endpoints = ((IEndpointRouteBuilder)app).DataSources.SelectMany(source => source.Endpoints).ToArray();
-        Assert.Equal(11, endpoints.Length);
+        Assert.Equal(13, endpoints.Length);
         var commands = endpoints.Select(endpoint => endpoint.Metadata.GetMetadata<CliOperationMetadata>()).OfType<CliOperationMetadata>().ToArray();
-        Assert.Equal(6, commands.Length);
-        Assert.All(commands, command => Assert.Contains(command.CommandGroup[^1], new[] { "cultures", "settings" }));
+        Assert.Equal(8, commands.Length);
+        Assert.All(commands, command => Assert.Contains(command.CommandGroup[^1], new[] { "cultures", "settings", "messages" }));
         Assert.True(Assert.Single(commands, command => command.Verb == "remove").RequiresConfirmation);
         Assert.False(Assert.Single(commands, command => command.Verb == "add").RequiresConfirmation);
         Assert.All(endpoints, endpoint =>

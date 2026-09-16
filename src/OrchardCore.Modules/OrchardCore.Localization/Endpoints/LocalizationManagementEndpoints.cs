@@ -15,7 +15,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Localization.Endpoints;
 
-internal static class LocalizationManagementEndpoints
+internal static partial class LocalizationManagementEndpoints
 {
     internal const string Capability = "localization";
 
@@ -25,6 +25,8 @@ internal static class LocalizationManagementEndpoints
             .RequireAuthorization(new AuthorizeAttribute { AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api })
             .RequireAuthorization(policy => policy.AddRequirements(new OrchardCore.Security.PermissionRequirement(RemoteManagementPermissions.AccessRemoteManagement)))
             .DisableAntiforgery();
+
+        AddMessageEndpoints(group);
 
         group.MapGet("/cultures", ListAsync)
             .WithName("ApiListLocalizationCultures")

@@ -365,7 +365,7 @@ content. Do not use them for collections of independently managed content.
 ## Localization
 
 Discover `pomi localization --help` after enabling `OrchardCore.Localization`
-and refreshing metadata. It exposes culture and settings management only.
+and refreshing metadata. It exposes culture/settings management and standard PO message lookup.
 
 ```bash
 pomi localization cultures list
@@ -388,6 +388,24 @@ Use names returned by culture discovery, not time zone identifiers. These
 operations require `ManageCultures` and remote-management access.
 
 There are no generic string, PO catalog, or database translation commands.
+Use `pomi localization messages list --culture fr --context Shop --prefix Cart.`
+to inspect standard PO entries, or `--key "Delete"` for an exact key. Context/key/
+prefix matching is case-sensitive; paginate with `--skip`/`--take`. This lists the
+selected culture's catalog without parent fallback or scanning untranslated source.
+
+Use `pomi localization messages resolve --body-file message.json` for a resolved
+message. JSON includes `key`, optional `culture`/`context`, and optional paired
+`count`/`plural` with an `arguments` array of scalar values. Count occupies `{0}`;
+additional plural arguments start at `{1}`. Without count, arguments start at `{0}`.
+The server applies Orchard plural/fallback rules and culture formatting. Use the
+returned `value` for display; `template` is the unformatted selected message. Do not
+apply JavaScript plural rules to PO catalog arrays or render responses as raw HTML.
+Omit culture to use Orchard's resolved request culture (including configured
+header/user/cookie providers), or pass an explicit culture. Unsupported child
+cultures select a supported parent only when tenant fallback is enabled. Responses
+identify the selected culture; resolution also returns `formattingCulture`.
+These commands require `ManageCultures`. They do not edit translations.
+
 For Media UI labels, use `pomi media localizations show`. This reads the
 server-resolved labels, not PO catalog entries. For translation editing, use
 the Data Localization admin UI or its documented HTTP API; enabling that feature

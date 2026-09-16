@@ -34,7 +34,7 @@ def pomi(*args, body=None, client=None, status=None):
 tokens = {}
 
 
-def api(method, route, body=None, query=None, client='cli-fixture', status=200):
+def api(method, route, body=None, query=None, client='cli-fixture', status=200, headers=None):
     if client not in tokens:
         credentials = urllib.parse.urlencode({'grant_type': 'client_credentials', 'client_id': client,
                                              'client_secret': state['OC_CLIENT_SECRET'], 'scope': 'orchardcore.management'}).encode()
@@ -44,7 +44,7 @@ def api(method, route, body=None, query=None, client='cli-fixture', status=200):
     if query:
         url += '?' + urllib.parse.urlencode(query)
     request = urllib.request.Request(url, method=method, data=json.dumps(body).encode() if body is not None else None,
-                                     headers={'Authorization': 'Bearer ' + tokens[client], 'Content-Type': 'application/json'})
+                                     headers={'Authorization': 'Bearer ' + tokens[client], 'Content-Type': 'application/json', **(headers or {})})
     try:
         with urllib.request.urlopen(request, timeout=30) as response:
             assert response.status == status, (route, response.status, status)
@@ -99,6 +99,33 @@ api('GET', 'api/localization/strings/missing-group', status=404)
 api('GET', 'api/localization/strings/media-gallery', query={'culture': 'de'}, status=400)
 pomi('localization', 'settings', 'update', '--stdin', body={**updated, 'defaultCulture': 'de'}, status=400)
 
+# Standard catalogs use their own discovery/commands, not dynamic translation providers.
+assert schema['paths']['/api/localization/messages']['get']['x-oc-cli']['commandGroup'] == ['localization', 'messages']
+assert schema['paths']['/api/localization/messages/resolve']['post']['x-oc-cli']['verb'] == 'resolve'
+assert 'key' in pomi('localization', 'messages', 'schema', '--operation', 'resolve')['properties']
+catalog = pomi('localization', 'messages', 'list', '--culture', 'fr', '--take', '1')
+assert catalog['culture'] == 'fr' and len(catalog['items']) <= 1
+if catalog['items']:
+    entry = catalog['items'][0]
+    exact = pomi('localization', 'messages', 'list', '--culture', 'fr', '--key', entry['key'])
+    assert all(item['key'] == entry['key'] for item in exact['items'])
+    prefixed = pomi('localization', 'messages', 'list', '--culture', 'fr', '--prefix', entry['key'][:3])
+    assert all(item['key'].startswith(entry['key'][:3]) for item in prefixed['items'])
+message = {'culture': 'fr', 'context': 'PomiLocalizationSmoke', 'key': '{0} book for {1}',
+           'plural': '{0} books for {1}', 'count': 2, 'arguments': ['Alice']}
+resolved = pomi('localization', 'messages', 'resolve', '--stdin', body=message)
+assert resolved['value'] == '2 books for Alice' and resolved['template'] == message['plural']
+assert api('POST', 'api/localization/messages/resolve', body=message) == resolved
+assert api('GET', 'api/localization/messages', headers={'Accept-Language': 'fr-FR'})['culture'] == 'fr'
+automatic = {key: value for key, value in message.items() if key != 'culture'}
+assert api('POST', 'api/localization/messages/resolve', body=automatic, headers={'Accept-Language': 'fr-FR'})['culture'] == 'fr'
+assert api('POST', 'api/localization/messages/resolve', body={**message, 'culture': 'en'}, headers={'Accept-Language': 'fr'})['culture'] == 'en'
+assert pomi('localization', 'messages', 'resolve', '--stdin', body={**message, 'culture': 'fr-FR'})['culture'] == 'fr'
+api('GET', 'api/localization/messages', client='cli-discovery', status=403)
+api('POST', 'api/localization/messages/resolve', body=message, client='cli-discovery', status=403)
+pomi('localization', 'messages', 'resolve', '--stdin', body={**message, 'arguments': [{}]}, status=400)
+api('GET', 'api/localization/messages', query={'take': 201}, status=400)
+
 items = api('GET', 'api/localization/translations', query={'culture': 'fr'})['items']
 assert items, 'Fixture must register at least one dynamic translation descriptor.'
 key = items[0]
@@ -118,7 +145,7 @@ query = {'context': key['context'], 'key': key['key'], 'culture': 'fr'}
 assert api('DELETE', 'api/localization/translations', query=query)['changed']
 assert not api('DELETE', 'api/localization/translations', query=query)['changed']
 # Anonymous callers cannot reach any of the new read APIs.
-for route in ('api/localization/cultures', 'api/localization/cultures/available', 'api/localization/settings', 'api/localization/strings', 'api/localization/strings/media-gallery', 'api/localization/translations?culture=fr'):
+for route in ('api/localization/messages', 'api/localization/cultures', 'api/localization/cultures/available', 'api/localization/settings', 'api/localization/strings', 'api/localization/strings/media-gallery', 'api/localization/translations?culture=fr'):
     try:
         urllib.request.urlopen(state['url'] + route, timeout=15)
         raise AssertionError('Anonymous access unexpectedly succeeded: ' + route)
@@ -132,4 +159,4 @@ for method in ('PUT', 'DELETE'):
     except urllib.error.HTTPError as error:
         assert error.code == 401, (method, error.code)
 assert pomi('localization', 'settings', 'show') == updated
-print('Localization smoke passed: six culture/settings CLI operations, Media UI labels, five HTTP-only string operations, paging, retries, and authorization.')
+print('Localization smoke passed: culture/settings CLI operations, PO message listing/resolution, request and explicit cultures with parent fallback, Media UI labels, HTTP-only string operations, paging, retries, and authorization.')
