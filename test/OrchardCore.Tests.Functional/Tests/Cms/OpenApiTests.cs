@@ -414,9 +414,8 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
             r => r.Url.Contains("/swagger/v1/swagger.json"));
 
         Assert.Equal(200, response.Status);
-        await page.GetByRole(AriaRole.Button, new() { Name = "Expand Content Items", Exact = true }).ClickAsync();
-        await Assertions.Expect(page.Locator(".sidebar a[href$='/GET/api/content/{contentItemId}']"))
-            .ToContainTextAsync("Gets a content item.");
+        await page.GetByRole(AriaRole.Button, new() { Name = "Open Group - Content Items", Exact = true }).ClickAsync();
+        await Assertions.Expect(page.GetByRole(AriaRole.Complementary).First).ToContainTextAsync("Gets a content item.", new() { Timeout = 30_000 });
 
         await page.CloseAsync();
     }
@@ -482,22 +481,17 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
         await page.WaitForTimeoutAsync(3000);
 
-        // Use the Contents module's GET content-item endpoint (enabled by the Blog recipe) as
-        // the protected "Api"-scheme endpoint to prove the token is attached: an unauthenticated
-        // request to it returns 401, an authenticated one 404 for an unknown id.
-        await page.GetByRole(AriaRole.Button, new() { Name = "Expand Content Items", Exact = true }).ClickAsync();
-        await page.Locator(".sidebar a[href$='/GET/api/content/{contentItemId}']").ClickAsync();
-        var operation = page.Locator("[id$='/GET/api/content/{contentItemId}']");
-        await operation.Locator("button.show-api-client-button").ClickAsync();
+        // Prove the token is attached by calling the Contents module's GET content-item endpoint
+        // (enabled by the Blog recipe) directly through the page's wrapped fetch — the same fetch
+        // Scalar's own "test request" UI would use. Driving that UI instead (opening an operation,
+        // filling its path parameter, clicking send) exercises Scalar's own internal client dialog
+        // rather than this module's auth bundle, and is what made this test flaky across Scalar UI
+        // versions. An unauthenticated call to this endpoint returns 401; a silently-authenticated
+        // one does not, even for a nonexistent content item id.
+        var status = await page.EvaluateAsync<int>(
+            $"async () => (await fetch('/{Tenant.Prefix}/api/content/does-not-exist')).status");
 
-        await page.GetByRole(AriaRole.Row).Filter(new() { HasText = "contentItemId" })
-            .GetByRole(AriaRole.Textbox).Nth(1).FillAsync("does-not-exist");
-
-        var response = await page.RunAndWaitForResponseAsync(
-            async () => await page.GetByRole(AriaRole.Button, new() { Name = "Send Request", Exact = true }).ClickAsync(),
-            r => new Uri(r.Url).AbsolutePath == $"/{Tenant.Prefix}/api/content/does-not-exist");
-
-        Assert.Equal(404, response.Status);
+        Assert.Equal(404, status);
 
         await page.CloseAsync();
     }

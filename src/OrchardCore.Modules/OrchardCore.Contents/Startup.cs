@@ -311,6 +311,9 @@ public sealed class DataLocalizationStartup : StartupBase
     }
 }
 
+/// <summary>
+/// Registers content-type admin menu localization when both supporting features are enabled.
+/// </summary>
 [RequireFeatures("OrchardCore.DataLocalization", "OrchardCore.AdminMenu")]
 public sealed class AdminMenuDataLocalizationStartup : StartupBase
 {

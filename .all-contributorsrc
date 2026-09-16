@@ -3639,10 +3639,37 @@
       ]
     },
     {
+      "login": "Klabos",
+      "name": "Kryštof Klaban",
+      "avatar_url": "https://avatars.githubusercontent.com/u/38937135?v=4",
+      "profile": "https://github.com/Klabos",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
       "login": "blueheron786",
       "name": "blueheron786",
       "avatar_url": "https://avatars.githubusercontent.com/u/113736807?v=4",
       "profile": "https://github.com/blueheron786",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "AniketDeshmane",
+      "name": "AniketDeshmane",
+      "avatar_url": "https://avatars.githubusercontent.com/u/48859031?v=4",
+      "profile": "https://github.com/AniketDeshmane",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "antonfirsov",
+      "name": "Anton Firszov",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6835152?v=4",
+      "profile": "https://github.com/antonfirsov",
       "contributions": [
         "code"
       ]
