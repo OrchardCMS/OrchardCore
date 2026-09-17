@@ -4,11 +4,6 @@
 @{
     var culturesJson = JConvert.SerializeObject(Model.AllowedCultures, JOptions.CamelCase);
     var providersJson = JConvert.SerializeObject(Model.Providers, JOptions.CamelCase);
-    var translationsSavedSuccessfully = JConvert.SerializeObject(T["Translations saved successfully."].Value);
-    var failedToSaveTranslations = JConvert.SerializeObject(T["Failed to save translations."].Value);
-    var errorSavingTranslations = JConvert.SerializeObject(T["An error occurred while saving."].Value);
-    var discardUnsavedChanges = JConvert.SerializeObject(T["You have unsaved changes. Do you want to discard them?"].Value);
-    var failedToLoadTranslations = JConvert.SerializeObject(T["Failed to load translations."].Value);
 }
 
 <zone Name="Title">
@@ -29,6 +24,12 @@
      data-get-strings-url="@Url.Action("GetStrings", "Admin", new { area = "OrchardCore.DataLocalization" })">
 
     @Html.AntiForgeryToken()
+
+    <span id="translations-saved-successfully" hidden>@T["Translations saved successfully."]</span>
+    <span id="failed-to-save-translations" hidden>@T["Failed to save translations."]</span>
+    <span id="error-saving-translations" hidden>@T["An error occurred while saving."]</span>
+    <span id="discard-unsaved-changes" hidden>@T["You have unsaved changes. Do you want to discard them?"]</span>
+    <span id="failed-to-load-translations" hidden>@T["Failed to load translations."]</span>
 
     <!-- Filters -->
     <div class="row g-3">
@@ -181,6 +182,14 @@ document.addEventListener('DOMContentLoaded', function () {
         cultures: @Html.Raw(culturesJson),
         providers: @Html.Raw(providersJson)
     };
+
+    const getHiddenHtml = (id) => document.getElementById(id)?.innerHTML?.trim() || '';
+    const getHiddenText = (id) => document.getElementById(id)?.textContent?.trim() || '';
+    const translationsSavedSuccessfully = getHiddenHtml('translations-saved-successfully');
+    const failedToSaveTranslations = getHiddenHtml('failed-to-save-translations');
+    const errorSavingTranslations = getHiddenHtml('error-saving-translations');
+    const discardUnsavedChanges = getHiddenText('discard-unsaved-changes');
+    const failedToLoadTranslations = getHiddenHtml('failed-to-load-translations');
 
     // Get antiforgery token from hidden input
     const getAntiForgeryToken = () => {
@@ -342,21 +351,21 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (response.ok) {
                         this.isDirty = false;
                         // Show success toast (using Bootstrap if available)
-                        this.showNotification(@Html.Raw(translationsSavedSuccessfully), 'success');
+                        this.showNotification(translationsSavedSuccessfully, 'success');
                     } else {
                         const error = await response.json();
-                        this.showNotification(error.message || @Html.Raw(failedToSaveTranslations), 'danger');
+                        this.showNotification(error.message || failedToSaveTranslations, 'danger');
                     }
                 } catch (error) {
                     console.error('Save error:', error);
-                    this.showNotification(@Html.Raw(errorSavingTranslations), 'danger');
+                    this.showNotification(errorSavingTranslations, 'danger');
                 } finally {
                     this.isSaving = false;
                 }
             },
             async onCultureChange() {
                 if (this.isDirty) {
-                    if (!confirm(@Html.Raw(discardUnsavedChanges))) {
+                    if (!confirm(discardUnsavedChanges)) {
                         return;
                     }
                 }
@@ -376,7 +385,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 } catch (error) {
                     console.error('Load error:', error);
-                    this.showNotification(@Html.Raw(failedToLoadTranslations), 'danger');
+                    this.showNotification(failedToLoadTranslations, 'danger');
                 } finally {
                     this.isLoading = false;
                 }
