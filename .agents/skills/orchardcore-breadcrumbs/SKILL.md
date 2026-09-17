@@ -164,9 +164,14 @@ Inherit from `AdminBreadcrumbProvider` when the gate is "the admin only", rather
 // The dashboard is the admin root only, so BuildAsync never runs on a front end trail.
 public sealed class DashboardBreadcrumbProvider : AdminBreadcrumbProvider
 {
-    public DashboardBreadcrumbProvider(IHttpContextAccessor httpContextAccessor, /* ... */)
+    public DashboardBreadcrumbProvider(
+        IOptions<AdminOptions> adminOptions,
+        IHttpContextAccessor httpContextAccessor,
+        IStringLocalizer<DashboardBreadcrumbProvider> stringLocalizer)
         : base(httpContextAccessor)
     {
+        _adminOptions = adminOptions.Value;
+        S = stringLocalizer;
     }
 
     protected override ValueTask BuildAsync(BreadcrumbBuilder builder)
