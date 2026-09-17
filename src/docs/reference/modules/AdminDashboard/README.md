@@ -110,7 +110,7 @@ If you wish to modify the look of your widget, consider incorporating a template
 
 Enabling the feature also puts the dashboard at the beginning of every admin [breadcrumb](../Navigation/README.md#breadcrumbs) trail: `Manage Content › Edit Article` becomes `Dashboard › Manage Content › Edit Article`.
 
-`DashboardBreadcrumbProvider` is an `IBreadcrumbProvider` that reacts to every trail rather than to one of them, and adds its node at the `start` position so that it leads the trail whatever positions the other nodes use. The node links to the admin url prefix and requires the `AccessAdminDashboard` permission; a user without it sees the node as plain text rather than as a link.
+`DashboardBreadcrumbProvider` is an `AdminBreadcrumbProvider` that reacts to every admin trail rather than to one of them, and adds its node at the `start` position so that it leads the trail whatever positions the other nodes use. The node links to the admin url prefix and requires the `AccessAdminDashboard` permission; a user without it sees the node as plain text rather than as a link.
 
 Disabling the feature removes the node from every trail. No other module has to know that the dashboard exists.
 

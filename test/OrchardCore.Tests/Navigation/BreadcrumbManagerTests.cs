@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using OrchardCore.Admin;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 
@@ -108,6 +109,26 @@ public class BreadcrumbManagerTests
     public async Task BuildBreadcrumbAsync_WithAnotherName_SkipsTheNamedProvider()
     {
         var manager = CreateManager(new StubNamedBreadcrumbProvider("ContentsEdit"));
+
+        var items = await manager.BuildBreadcrumbAsync("Contents", CreateActionContext());
+
+        Assert.Empty(items);
+    }
+
+    [Fact]
+    public async Task BuildBreadcrumbAsync_OnAnAdminRequest_RunsTheAdminProvider()
+    {
+        var manager = CreateManager(new StubAdminBreadcrumbProvider(isAdminRequest: true));
+
+        var items = await manager.BuildBreadcrumbAsync("Contents", CreateActionContext());
+
+        Assert.Equal("Manage Content", Assert.Single(items).Text);
+    }
+
+    [Fact]
+    public async Task BuildBreadcrumbAsync_OutsideOfTheAdmin_SkipsTheAdminProvider()
+    {
+        var manager = CreateManager(new StubAdminBreadcrumbProvider(isAdminRequest: false));
 
         var items = await manager.BuildBreadcrumbAsync("Contents", CreateActionContext());
 
@@ -217,6 +238,36 @@ public class BreadcrumbManagerTests
             _build(builder);
 
             return ValueTask.CompletedTask;
+        }
+    }
+
+    private sealed class StubAdminBreadcrumbProvider : AdminBreadcrumbProvider
+    {
+        public StubAdminBreadcrumbProvider(bool isAdminRequest)
+            : base(CreateAccessor(isAdminRequest))
+        {
+        }
+
+        protected override ValueTask BuildAsync(BreadcrumbBuilder builder)
+        {
+            builder.Add("Manage Content");
+
+            return ValueTask.CompletedTask;
+        }
+
+        private static HttpContextAccessor CreateAccessor(bool isAdminRequest)
+        {
+            var httpContext = new DefaultHttpContext();
+
+            if (isAdminRequest)
+            {
+                AdminAttribute.Apply(httpContext);
+            }
+
+            return new HttpContextAccessor
+            {
+                HttpContext = httpContext,
+            };
         }
     }
 

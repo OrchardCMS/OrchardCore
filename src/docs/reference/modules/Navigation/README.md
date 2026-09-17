@@ -184,7 +184,15 @@ Name a trail after the screen that renders it, in PascalCase and without separat
 
 #### 3. Describe the trail
 
-Implement `IBreadcrumbProvider`, or inherit from `NamedBreadcrumbProvider` when the provider only contributes to a single trail:
+Implement `IBreadcrumbProvider`, or inherit from one of the base providers when it fits:
+
+| Base                        | Use it when                                                                                                   |
+|-----------------------------|---------------------------------------------------------------------------------------------------------------|
+| `IBreadcrumbProvider`       | The provider owns several trails and switches on `builder.Name`.                                               |
+| `NamedBreadcrumbProvider`   | The provider only contributes to a single trail. Pass its name to `base(...)`.                                  |
+| `AdminBreadcrumbProvider`   | The provider only contributes to the trails rendered on the admin, whatever their name. Pass the `IHttpContextAccessor` to `base(...)`. |
+
+All three are described through a single `BuildAsync` (or `BuildBreadcrumbAsync`) method:
 
 ```csharp
 public sealed class MyBreadcrumbProvider : NamedBreadcrumbProvider
@@ -333,25 +341,30 @@ The same builder also removes a node another provider added, which is how a trai
 builder.Remove(item => item.Id == "Contents");
 ```
 
-The `OrchardCore.AdminDashboard` feature does this for real, and for every trail rather than for one of them. `DashboardBreadcrumbProvider` adds the dashboard at the `start` position, the sentinel that sorts before every other position, so the node leads the trail whatever positions its other nodes use:
+The `OrchardCore.AdminDashboard` feature does this for real, and for every trail rather than for one of them. `DashboardBreadcrumbProvider` adds the dashboard at the `start` position, the sentinel that sorts before every other position, so the node leads the trail whatever positions its other nodes use. It inherits from `AdminBreadcrumbProvider`, which only calls `BuildAsync` while an admin request is being handled, because the dashboard is the root of the admin only and a trail rendered by a front end theme doesn't lead to it:
 
 ```csharp
-public ValueTask BuildBreadcrumbAsync(BreadcrumbBuilder builder)
+public sealed class DashboardBreadcrumbProvider : AdminBreadcrumbProvider
 {
-    var httpContext = _httpContextAccessor.HttpContext;
-
-    // The dashboard is the root of the admin only. A trail rendered by a front end theme doesn't lead to it.
-    if (httpContext is null || !AdminAttribute.IsApplied(httpContext))
+    public DashboardBreadcrumbProvider(
+        IOptions<AdminOptions> adminOptions,
+        IHttpContextAccessor httpContextAccessor,
+        IStringLocalizer<DashboardBreadcrumbProvider> stringLocalizer)
+        : base(httpContextAccessor)
     {
-        return ValueTask.CompletedTask;
+        _adminOptions = adminOptions.Value;
+        S = stringLocalizer;
     }
 
-    builder.Add(S["Dashboard"], "start", item => item
-        .Id("Dashboard")
-        .Url("~/" + _adminOptions.AdminUrlPrefix)
-        .Permission(Permissions.AccessAdminDashboard));
+    protected override ValueTask BuildAsync(BreadcrumbBuilder builder)
+    {
+        builder.Add(S["Dashboard"], "start", item => item
+            .Id("Dashboard")
+            .Url("~/" + _adminOptions.AdminUrlPrefix)
+            .Permission(Permissions.AccessAdminDashboard));
 
-    return ValueTask.CompletedTask;
+        return ValueTask.CompletedTask;
+    }
 }
 ```
 
