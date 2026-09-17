@@ -147,14 +147,24 @@ public async Task<IActionResult> Index(
 The view is the form and the list. The search bar, the buttons of the page, the toolbar, the rows, the pager and the page size selector all come from the shape, so a layout can place them:
 
 ```html
-<form asp-action="Index" method="post" class="no-multisubmit" data-list-management data-selected-label="@T["selected"]">
+<form asp-action="Index" method="post" class="no-multisubmit bulk-select-list"
+      data-checkbox-name="itemIds" data-bulk-action-name="Options.BulkAction" data-selected-text="@T["selected"]">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
 
     @await DisplayAsync(Model.List)
 </form>
+
+<script asp-src="~/OrchardCore.Indexing/Scripts/indexing-admin-index/indexing-admin-index.min.js"
+        debug-src="~/OrchardCore.Indexing/Scripts/indexing-admin-index/indexing-admin-index.js" at="Foot" type="module"></script>
 ```
+
+The selection and the client-side search are the shared components of `.scripts/bloom/components`
+(`bulk-select-list`, `list-search-filter`), wired by one small module per page (`Assets/ts/*.ts`, built by
+`yarn build --name <entry>`). The component reads the name of the row checkboxes from the root it is given, so
+a list only has to keep the well-known ids `#select-all`, `#items`, `#selected-items` and `#actions`, which
+`AdminListToolbar` renders.
 
 The hidden `submit.Filter` button stays first: it is what Enter in the search box triggers. The buttons of the page are a shape of their own (`Actions`), which keeps the route values and the localization in a template rather than in the controller:
 
@@ -369,7 +379,7 @@ The actions sit beside the whole row, centred on it, and the description is insi
 2. **Both interface methods take a `CancellationToken` last, defaulted.** `IAdminListService` and `IAdminListColumnProvider` end every method with `CancellationToken cancellationToken = default`. Pass `HttpContext.RequestAborted` from controllers. `GetColumnsAsync` takes the optional `data` bag before it, so name the argument (`cancellationToken: HttpContext.RequestAborted`) when the page passes no data.
 3. **Keep the hidden `submit.Filter` button first in the form.** It is what Enter in the search box triggers. A visible Go button reuses the same name.
 4. **Client-side search needs per-row attributes.** Set them on the row shape, not in the layout: `rowShape.Classes.Add("item")` and `rowShape.Attributes["data-filter-value"] = ...`. Both column layouts render a row shape's `Classes` and `Attributes` on its `<tr>` or row element.
-5. **Bulk actions rely on names, not markup.** Keep `#select-all` and inputs named `itemIds`, and the `list-management` script keeps working in any layout.
+5. **Bulk actions rely on names, not markup.** Keep `#select-all` and row checkboxes named consistently, and tell the `bulk-select-list` component the name with `data-checkbox-name`; it then works in any layout. A page that sorts its rows puts that class, and its `data-sort-url`, on the rows container through `RowsAttributes` (a `class` there joins the classes of the element), because the script sorts the element it is given.
 6. **Render row actions through `AdminListActions`.** In a row template use `@await DisplayAsync(await New.AdminListActions(Row: Model))` rather than hand-writing the button group, so the configured actions layout (Buttons or Menu) applies everywhere.
 7. **Responsive behaviour is CSS, not Razor.** The stacking below 48rem is a container query on the list in `_admin-list.scss`. Do not add viewport-based Bootstrap classes such as `d-md-none` to the layouts; the sidebar makes the viewport a poor proxy for the list width.
 8. **Per-type row templates do not apply in column layouts.** `Content-BlogPost.SummaryAdmin.cshtml` is only used by the `List` layout. Customize a column with `AdminListCell-{ListName}-{Column}.cshtml` instead.

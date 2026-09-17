@@ -2,7 +2,7 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Recipes"])</h1></zone>
 
-<div data-list-management data-client-side-search="true">
+<div>
     <div class="card text-bg-theme mb-3 position-sticky action-bar">
         <div class="card-body">
             <div class="row gx-2">
@@ -41,4 +41,4 @@
     </div>
 </div>
 
-<script asp-name="list-management" at="Foot"></script>
+<script asp-src="~/OrchardCore.Recipes/Scripts/recipes-index/recipes-index.min.js" debug-src="~/OrchardCore.Recipes/Scripts/recipes-index/recipes-index.js" at="Foot" type="module"></script>

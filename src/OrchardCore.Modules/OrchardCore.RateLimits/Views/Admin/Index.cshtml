@@ -1,4 +1,4 @@
-@using System.Globalization
+﻿@using System.Globalization
 @model OrchardCore.RateLimits.ViewModels.RateLimitsIndexViewModel
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Rate Limit Policies"])</h1></zone>
@@ -27,7 +27,7 @@
     </div>
 </form>
 
-<form asp-action="Index" method="post" class="no-multisubmit" data-list-management data-selected-label="@T["selected"]" data-min-selected-items="1">
+<form asp-action="Index" method="post" class="no-multisubmit rate-limits-index" data-selected-text="@T["selected"]">
     <input asp-for="BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
 
@@ -112,72 +112,4 @@
     </div>
 </div>
 
-<script asp-name="list-management" at="Foot"></script>
-
-<script at="Foot">
-    document.addEventListener('DOMContentLoaded', () => {
-        const deletePolicyForm = document.getElementById('delete-policy-form');
-        const deletePolicyId = document.getElementById('delete-policy-id');
-        const enablePolicyForm = document.getElementById('enable-policy-form');
-        const enablePolicyId = document.getElementById('enable-policy-id');
-        const disablePolicyForm = document.getElementById('disable-policy-form');
-        const disablePolicyId = document.getElementById('disable-policy-id');
-        const clonePolicyForm = document.getElementById('clone-policy-form');
-        const clonePolicyId = document.getElementById('clone-policy-id');
-
-        for (const button of document.querySelectorAll('[data-delete-policy-id]')) {
-            button.addEventListener('click', () => {
-                confirmDialog({
-                    ...button.dataset,
-                    callback: (confirmed) => {
-                        if (!confirmed) {
-                            return;
-                        }
-
-                        deletePolicyId.value = button.dataset.deletePolicyId;
-                        deletePolicyForm.submit();
-                    }
-                });
-            });
-        }
-
-        for (const button of document.querySelectorAll('[data-enable-policy-id]')) {
-            button.addEventListener('click', () => {
-                confirmDialog({
-                    ...button.dataset,
-                    callback: (confirmed) => {
-                        if (!confirmed) {
-                            return;
-                        }
-
-                        enablePolicyId.value = button.dataset.enablePolicyId;
-                        enablePolicyForm.submit();
-                    }
-                });
-            });
-        }
-
-        for (const button of document.querySelectorAll('[data-disable-policy-id]')) {
-            button.addEventListener('click', () => {
-                confirmDialog({
-                    ...button.dataset,
-                    callback: (confirmed) => {
-                        if (!confirmed) {
-                            return;
-                        }
-
-                        disablePolicyId.value = button.dataset.disablePolicyId;
-                        disablePolicyForm.submit();
-                    }
-                });
-            });
-        }
-
-        for (const button of document.querySelectorAll('[data-clone-policy-id]')) {
-            button.addEventListener('click', () => {
-                clonePolicyId.value = button.dataset.clonePolicyId;
-                clonePolicyForm.submit();
-            });
-        }
-    });
-</script>
+<script asp-src="~/OrchardCore.RateLimits/Scripts/rate-limits-index/rate-limits-index.min.js" debug-src="~/OrchardCore.RateLimits/Scripts/rate-limits-index/rate-limits-index.js" at="Foot" type="module"></script>

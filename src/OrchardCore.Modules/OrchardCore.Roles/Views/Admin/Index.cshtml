@@ -11,7 +11,7 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Roles"])</h1></zone>
 
-<div data-list-management data-client-side-search="true">
+<div>
     <div class="card mb-3 text-bg-theme position-sticky action-bar">
         <div class="card-body">
             <div class="row gx-2">
@@ -44,4 +44,4 @@
     </div>
 </div>
 
-<script asp-name="list-management" at="Foot"></script>
+<script asp-src="~/OrchardCore.Roles/Scripts/roles-editors/roles-index.min.js" debug-src="~/OrchardCore.Roles/Scripts/roles-editors/roles-index.js" at="Foot" type="module"></script>

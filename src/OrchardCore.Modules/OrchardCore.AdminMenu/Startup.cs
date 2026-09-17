@@ -8,6 +8,7 @@ using OrchardCore.AdminMenu.Drivers;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 using OrchardCore.Localization.Data;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -22,6 +23,7 @@ public sealed class Startup : StartupBase
     {
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
+        services.AddScoped<IJSLocalizer, AdminMenuJSLocalizer>();
 
         services.AddScoped<IAdminMenuService, AdminMenuService>();
 

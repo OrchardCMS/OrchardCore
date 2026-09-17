@@ -127,7 +127,7 @@ The page has no options editor shape, so it builds the generic `AdminListToolbar
 `Controllers/AdminController.cs` (excerpt, after the view model is populated)
 
 ```csharp
-// The rows carry the attributes used by the client-side search of the list-management script.
+// The rows carry the attributes used by the client-side search of the page's script.
 var rows = new List<object>(viewModel.Models.Count);
 
 foreach (var entry in viewModel.Models)
@@ -204,7 +204,7 @@ public dynamic List { get; set; }
 call: the search bar, the button, the toolbar, the rows and the pager all come from the shape.
 
 ```html
-<form asp-action="Index" method="post" class="no-multisubmit" data-list-management data-client-side-search="true" data-selected-label="@T["selected"]">
+<form asp-action="Index" method="post" class="no-multisubmit bulk-select-list" data-selected-text="@T["selected"]">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />

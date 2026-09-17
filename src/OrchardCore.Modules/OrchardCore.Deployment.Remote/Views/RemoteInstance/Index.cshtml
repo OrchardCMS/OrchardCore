@@ -3,7 +3,7 @@
 <zone Name="Title"><h1>@RenderTitleSegments(T["Remote Instances"])</h1></zone>
 
 @* the form is necessary to generate an antiforgery token for the delete action *@
-<form asp-action="Index" method="post" class="no-multisubmit" data-list-management data-selected-label="@T["selected"]">
+<form asp-action="Index" method="post" class="no-multisubmit bulk-select-list" data-selected-text="@T["selected"]">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
@@ -29,4 +29,4 @@
     @await DisplayAsync(Model.List)
 </form>
 
-<script asp-name="list-management" at="Foot"></script>
+<script asp-src="~/OrchardCore.Deployment.Remote/Scripts/deployment-remote-admin-lists/remote-instance-index.min.js" debug-src="~/OrchardCore.Deployment.Remote/Scripts/deployment-remote-admin-lists/remote-instance-index.js" at="Foot" type="module"></script>

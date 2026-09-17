@@ -36,7 +36,7 @@
     <div class="ocat-end" id="@fieldId" data-for="@Html.IdFor(m => m.Paths)">
         @if (!string.IsNullOrWhiteSpace(settings.Hint))
         {
-            <div class="hint mt-lg-2">@settings.Hint</div>
+            @await DisplayAsync(await New.Hint_Admin(Hint: settings.Hint))
         }
 
         <div id="@fieldId"

@@ -3,7 +3,7 @@
 <zone Name="Title"><h1>@RenderTitleSegments(T["Admin Menus"])</h1></zone>
 
 @* the form is necessary to generate an antiforgery token for the delete and toggle actions *@
-<form asp-action="List" method="post" class="no-multisubmit" data-list-management data-selected-label="@T["selected"]">
+<form asp-action="List" method="post" class="no-multisubmit bulk-select-list" data-selected-text="@T["selected"]">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
@@ -29,4 +29,4 @@
     @await DisplayAsync(Model.List)
 </form>
 
-<script asp-name="list-management" at="Foot"></script>
+<script asp-src="~/OrchardCore.AdminMenu/Scripts/menu-list/menu-list.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/menu-list/menu-list.js" at="Foot" type="module"></script>

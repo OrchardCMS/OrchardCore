@@ -1,0 +1,12 @@
+[
+  {
+    "action": "parcel",
+    "name": "deployment-remote-admin-lists",
+    "source": [
+      "Assets/ts/remote-client-index.ts",
+      "Assets/ts/remote-instance-index.ts"
+    ],
+    "dest": "wwwroot/Scripts/deployment-remote-admin-lists/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

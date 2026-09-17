@@ -1,4 +1,4 @@
-sortingListManager = function () {
+window.sortingListManager = function () {
 
     const saveOrders = (evt, url, errorMessage) => {
 
@@ -30,6 +30,7 @@ sortingListManager = function () {
             return;
         }
 
+        var orderUrl;
         if (sortUrl) {
             orderUrl = sortUrl;
         } else {
@@ -42,7 +43,7 @@ sortingListManager = function () {
             return;
         }
 
-        var sortable = Sortable.create(sortable, {
+        Sortable.create(sortable, {
             handle: ".ui-sortable-handle",
             animation: 150,
             filter: ".ignore-elements",

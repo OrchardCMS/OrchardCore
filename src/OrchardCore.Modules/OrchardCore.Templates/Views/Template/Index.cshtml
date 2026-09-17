@@ -7,7 +7,7 @@
 <zone Name="Title"><h1>@RenderTitleSegments(pageTitle)</h1></zone>
 
 @* the form is necessary to generate an antiforgery token for the delete action *@
-<form asp-action="Index" method="post" class="no-multisubmit" data-list-management data-selected-label="@T["selected"]">
+<form asp-action="Index" method="post" class="no-multisubmit bulk-select-list" data-checkbox-name="itemIds" data-bulk-action-name="Options.BulkAction" data-selected-text="@T["selected"]">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input asp-for="Options.AdminTemplates" type="hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
@@ -18,4 +18,4 @@
     @await DisplayAsync(Model.List)
 </form>
 
-<script asp-name="list-management" at="Foot"></script>
+<script asp-src="~/OrchardCore.Templates/Scripts/template-editors/template-index.min.js" debug-src="~/OrchardCore.Templates/Scripts/template-editors/template-index.js" at="Foot" type="module"></script>

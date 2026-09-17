@@ -11,6 +11,7 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Routing;
+using OrchardCore.UrlRewriting.Endpoints.Rules;
 using OrchardCore.UrlRewriting.Models;
 using OrchardCore.UrlRewriting.ViewModels;
 
@@ -125,8 +126,17 @@ public sealed class AdminController : Controller
             Layout = layout,
             Columns = await adminListService.GetColumnsAsync(UrlRewritingAdminList.Name, UrlRewritingAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = model.Rules.Select(entry => entry.Shape).ToList(),
-            // The rules are evaluated in order, so the element holding the rows is the one the sortable script reorders.
-            RowsAttributes = new Dictionary<string, string> { ["id"] = UrlRewritingAdminList.SortableContainerId },
+            // The rules are evaluated in order, so the element holding the rows is the one the script of the page
+            // selects, reorders and saves, whichever layout renders it. See url-rewriting-admin-index.ts.
+            RowsAttributes = new Dictionary<string, string>
+            {
+                ["id"] = UrlRewritingAdminList.SortableContainerId,
+                ["class"] = "bulk-select-list",
+                ["data-checkbox-name"] = "ruleIds",
+                ["data-selected-text"] = S["selected"],
+                ["data-sort-url"] = Url.RouteUrl(SortRulesEndpoint.RouteName, new { area = "OrchardCore.UrlRewriting" }),
+                ["data-sort-error-message"] = S["Unable to sort the list. Try refreshing your page and try again."],
+            },
             Toolbar = toolbar,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no rewrite rules at the moment."],

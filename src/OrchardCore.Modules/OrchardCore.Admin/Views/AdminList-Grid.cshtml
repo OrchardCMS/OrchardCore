@@ -10,7 +10,8 @@
         Columns       The AdminListColumn collection, usually built by IAdminListService.GetColumnsAsync().
         Rows          The row shapes, usually built with the "SummaryAdmin" display type. (Not "Items": that name is the shape's own child collection.)
                       The Classes and Attributes of a row shape (e.g. data-filter-value for client-side search) are rendered on its row element.
-        RowsAttributes Optional attributes rendered on the rows container, e.g. the id a sortable list needs.
+        RowsAttributes Optional attributes rendered on the rows container, e.g. the id a sortable list needs. A class joins the ones the layout gives it,
+                       e.g. a hook a script of the page selects the list by.
         Header        The options editor shape whose Summary and Actions zones are rendered above the rows.
         Toolbar       Alternative to Header: a shape rendered as is above the rows, e.g. AdminListToolbar.
         Pager         The pager shape.
@@ -29,7 +30,10 @@
 @{
     var rows = ((IEnumerable<object>)Model.Rows ?? []).ToList();
     // Optional attributes for the element wrapping the rows, e.g. the id a sortable list needs.
-    var rowsAttributes = (IDictionary<string, string>)Model.RowsAttributes ?? new Dictionary<string, string>();
+    var rowsAttributes = new Dictionary<string, string>((IDictionary<string, string>)Model.RowsAttributes ?? new Dictionary<string, string>(), StringComparer.OrdinalIgnoreCase);
+    // A class is merged with the ones the layout gives the element: rendering it as an attribute of its own
+    // would leave the element with two class attributes, and the browser keeps the first.
+    rowsAttributes.Remove("class", out var rowsCssClass);
     var rowsAttributesHtml = new HtmlString(string.Join(' ', rowsAttributes.Select(attribute => $"{attribute.Key}=\"{HtmlEncoder.Default.Encode(attribute.Value)}\"")));
     var columns = ((IEnumerable<AdminListColumn>)Model.Columns ?? []).ToList();
     var header = Model.Header;
@@ -141,7 +145,7 @@
                 <div class="@ColumnCssClass(column)" role="columnheader">@column.Title</div>
             }
         </div>
-        <div class="admin-list-grid-body" role="rowgroup" @rowsAttributesHtml>
+        <div class="admin-list-grid-body @rowsCssClass" role="rowgroup" @rowsAttributesHtml>
             @if (rows.Count > 0)
             {
                 foreach (var row in rows)

@@ -230,7 +230,7 @@ The `AdminList` shape is created by the owner of the list with these properties:
 | `Name`         | The name of the list, e.g. `Contents`.                                                         |
 | `Layout`       | The layout name, usually resolved with `IAdminListService.GetLayoutAsync()`.                  |
 | `Columns`      | The `AdminListColumn` collection, usually built with `IAdminListService.GetColumnsAsync()`.   |
-| `Rows`         | The row shapes. (`Items` cannot be used: it is the shape's own child collection.) The `Classes` and `Attributes` of a row shape are rendered on its `<li>` or `<tr>`, e.g. `data-filter-value` for the client-side search of the `list-management` script. |
+| `Rows`         | The row shapes. (`Items` cannot be used: it is the shape's own child collection.) The `Classes` and `Attributes` of a row shape are rendered on its `<li>` or `<tr>`, e.g. `data-filter-value` for the client-side search of the page's script. |
 | `Header`       | The options editor shape whose `Summary` and `Actions` zones are rendered above the items.     |
 | `Toolbar`      | Alternative to `Header` for lists without an options editor: a shape rendered as is above the items. The `AdminListToolbar` shape renders the item count, the select-all checkbox and a bulk actions dropdown from its `ItemsCount`, `TotalItemCount`, `StartIndex`, `EndIndex` and `BulkActions` properties; a list whose rows cannot be selected passes `ShowSelectAll = false` and keeps the count alone. |
 | `Search`       | Optional. The search bar of the list. The `AdminListSearch` shape renders the standard one from its `Name`, `Value`, `Placeholder`, `Id`, `SubmitName` and `Autofocus` properties, and renders its `Filters` zone before the input, e.g. a filter dropdown. |
