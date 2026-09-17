@@ -9,6 +9,11 @@
   "categories": [ "tests" ],
   "tags": [ "tests" ],
 
+  "variables": {
+    "bulkSelectTestPageOneId": "[js:uuid()]",
+    "bulkSelectTestPageTwoId": "[js:uuid()]"
+  },
+
   "steps": [
     {
       "name": "feature",
@@ -82,7 +87,7 @@
       "Data": [
         {
           "ContentType": "BulkSelectTestPage",
-          "ContentItemId": "bulkselecttestpageone000000000001",
+          "ContentItemId": "[js: variables('bulkSelectTestPageOneId')]",
           "DisplayText": "Bulk Select Test Page One",
           "Latest": true,
           "Published": true,
@@ -92,7 +97,7 @@
         },
         {
           "ContentType": "BulkSelectTestPage",
-          "ContentItemId": "bulkselecttestpagetwo000000000002",
+          "ContentItemId": "[js: variables('bulkSelectTestPageTwoId')]",
           "DisplayText": "Bulk Select Test Page Two",
           "Latest": true,
           "Published": true,
