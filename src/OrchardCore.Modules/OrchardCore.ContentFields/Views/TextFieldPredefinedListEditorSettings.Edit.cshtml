@@ -1,11 +1,16 @@
 @using OrchardCore.ContentFields.Settings
+@using System.Text.Json
 @model OrchardCore.ContentFields.ViewModels.PredefinedListSettingsViewModel
 
 <script asp-src="~/OrchardCore.ContentFields/Scripts/optionsEditor.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/optionsEditor.js" asp-name="optionsEditor" at="Foot" depends-on="vuejs:2, vue-draggable:2"></script>
 <style asp-src="~/OrchardCore.ContentFields/Styles/optionsEditor.min.css" debug-src="~/OrchardCore.ContentFields/Styles/optionsEditor.css"></style>
 
 <script at="Foot">
-    initializeOptionsEditor(document.getElementById('@Html.IdFor(m => m)'), @Html.Raw(Model.Options), '@Model.DefaultValue', document.getElementsByClassName('@Html.IdFor(m => m)-ModalBody'));
+    initializeOptionsEditor(
+        document.getElementById('@Html.IdFor(m => m)'),
+        JSON.parse(@Html.Raw(JsonSerializer.Serialize(Model.Options ?? "[]"))),
+        @Html.Raw(JsonSerializer.Serialize(Model.DefaultValue)),
+        document.getElementsByClassName('@Html.IdFor(m => m)-ModalBody'));
 </script>
 
 <script type="text/x-template" id="options-table">

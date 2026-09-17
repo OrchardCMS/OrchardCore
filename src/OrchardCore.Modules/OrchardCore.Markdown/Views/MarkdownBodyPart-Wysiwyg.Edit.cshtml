@@ -1,4 +1,5 @@
 @model MarkdownBodyPartViewModel
+@using System.Text.Json
 @using OrchardCore.ContentLocalization
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.Localization
@@ -34,7 +35,7 @@
 @if (!string.IsNullOrWhiteSpace(wysiwygSettings.Options))
 {
     <text>
-            var customOptions = @Html.Raw(wysiwygSettings.Options);
+            var customOptions = Function('"use strict"; return (' + @Html.Raw(JsonSerializer.Serialize(wysiwygSettings.Options)) + ')')();
             if (customOptions.toolbar) {
                 // Map custom button names to their full definitions from mdeToolbar.
                 var mdeToolbarMap = {};

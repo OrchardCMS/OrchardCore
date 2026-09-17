@@ -11,6 +11,7 @@ using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Shortcodes.Services;
 using Shortcodes;
@@ -64,11 +65,19 @@ public class HtmlFieldQueryObjectType : ObjectGraphType<HtmlField>
                 new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(ctx.Source.ContentItem) });
         }
 
-        return await shortcodeService.ProcessAsync(html,
+        html = await shortcodeService.ProcessAsync(html,
             new Context
             {
                 ["ContentItem"] = ctx.Source.ContentItem,
                 ["PartFieldDefinition"] = contentPartFieldDefinition,
             });
+
+        if (settings.SanitizeHtml)
+        {
+            var htmlSanitizerService = serviceProvider.GetRequiredService<IHtmlSanitizerService>();
+            html = htmlSanitizerService.Sanitize(html);
+        }
+
+        return html;
     }
 }
