@@ -1,5 +1,5 @@
 ///<reference path="../../../../../../node_modules/@types/jquery/index.d.ts" />
-declare var jsPlumb: jsPlumbInstance;
+declare let jsPlumb: jsPlumbInstance;
 
 interface jsPlumbInstance {
     setRenderMode(renderMode: string): string;
@@ -76,6 +76,8 @@ interface PaintStyle {
 
 interface Overlay {
     setLabel(label: string): void;
+    getElement?(): HTMLElement;
+    canvas?: HTMLElement;
 }
 
 interface ArrowOverlay extends Overlay {
@@ -177,4 +179,10 @@ interface Connection {
 
 interface Endpoint {
     getParameters(): any;
+    getOverlay(name: string): Overlay;
+    hideOverlay(name: string): void;
+    showOverlay(name: string): void;
+    setAnchor(anchor: string): void;
+    canvas: HTMLElement;
+    connections: Connection[];
 }
