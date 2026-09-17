@@ -28,6 +28,6 @@
             <textarea asp-for="Text" class="form-control content-preview-text" placeholder="@settings.Placeholder" dir="@culture.GetLanguageDirection()" maxlength="@settings.MaxLength" minlength="@settings.MinLength"></textarea>
         }
         <span asp-validation-for="Text"></span>
-        <span class="hint">@settings.Hint</span>
+        @await DisplayAsync(await New.Hint_Admin(Hint: settings.Hint))
     </div>
 </div>

@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-396-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-399-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key))!
@@ -544,8 +544,13 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="16.66%"><a href="https://soumilm.vercel.app/"><img src="https://avatars.githubusercontent.com/u/120581772?v=4?s=100" width="100px;" alt="Soumil Mukhopadhyay"/><br /><sub><b>Soumil Mukhopadhyay</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=Soumilgit" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/kizaski"><img src="https://avatars.githubusercontent.com/u/81563289?v=4?s=100" width="100px;" alt="Kiril Z"/><br /><sub><b>Kiril Z</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=kizaski" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="http://lazerg.uz"><img src="https://avatars.githubusercontent.com/u/20501725?v=4?s=100" width="100px;" alt="Lazizbek Ergashev"/><br /><sub><b>Lazizbek Ergashev</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=lazerg" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/Klabos"><img src="https://avatars.githubusercontent.com/u/38937135?v=4?s=100" width="100px;" alt="Kryštof Klaban"/><br /><sub><b>Kryštof Klaban</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=Klabos" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/blueheron786"><img src="https://avatars.githubusercontent.com/u/113736807?v=4?s=100" width="100px;" alt="blueheron786"/><br /><sub><b>blueheron786</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=blueheron786" title="Code">💻</a></td>
+    </tr>
+    <tr>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/AniketDeshmane"><img src="https://avatars.githubusercontent.com/u/48859031?v=4?s=100" width="100px;" alt="AniketDeshmane"/><br /><sub><b>AniketDeshmane</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=AniketDeshmane" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/antonfirsov"><img src="https://avatars.githubusercontent.com/u/6835152?v=4?s=100" width="100px;" alt="Anton Firszov"/><br /><sub><b>Anton Firszov</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=antonfirsov" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="http://techiu.epizy.com/"><img src="https://avatars.githubusercontent.com/u/49456702?v=4?s=100" width="100px;" alt="Rajeev Kumar"/><br /><sub><b>Rajeev Kumar</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=RAJEEV2510" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

@@ -3,6 +3,7 @@ using Fluid.Values;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
@@ -65,6 +66,7 @@ public sealed class ShortcodeTemplatesStartup : StartupBase
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddBreadcrumbProvider<ShortcodesBreadcrumbProvider>();
+        services.AddScoped<IJSLocalizer, ShortcodesJSLocalizer>();
 
         services.AddRecipeExecutionStep<ShortcodeTemplateStep>();
 

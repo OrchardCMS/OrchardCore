@@ -11,7 +11,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-var defaultDiacriticsRemovalMap = [
+const defaultDiacriticsRemovalMap = [
   {
     base: "A",
     letters:
@@ -133,14 +133,15 @@ var defaultDiacriticsRemovalMap = [
 ];
 
 const diacriticsMap: Record<string, string> = {};
-for (var i = 0; i < defaultDiacriticsRemovalMap.length; i++) {
-  var letters = defaultDiacriticsRemovalMap[i].letters;
-  for (var j = 0; j < letters.length; j++) {
+for (let i = 0; i < defaultDiacriticsRemovalMap.length; i++) {
+  const letters = defaultDiacriticsRemovalMap[i].letters;
+  for (let j = 0; j < letters.length; j++) {
     diacriticsMap[letters[j]] = defaultDiacriticsRemovalMap[i].base;
   }
 }
 
 const removeDiacritics = (str: string) => {
+  // eslint-disable-next-line no-control-regex -- \u0000 intentionally anchors the full ASCII range.
   return str.replace(/[^\u0000-\u007E]/g, function (a) {
     return diacriticsMap[a] || a;
   });

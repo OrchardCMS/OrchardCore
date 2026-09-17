@@ -1159,6 +1159,7 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
   text-decoration: none;
   margin: 0;
   list-style: none;
+  cursor: pointer;
 }
 
 .file-app .p-menu-item-link .p-menu-item-icon,

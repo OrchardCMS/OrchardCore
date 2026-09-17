@@ -118,7 +118,7 @@ const init = () => {
 
     // Refresh the recipe description
     document.querySelectorAll("#recipes div a").forEach(function (element) {
-        element.addEventListener("click", function () {
+        element.addEventListener("click", function (this: Element) {
             refreshDescription(this);
         });
     });

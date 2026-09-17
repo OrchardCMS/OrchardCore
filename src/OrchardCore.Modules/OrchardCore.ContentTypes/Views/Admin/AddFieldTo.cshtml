@@ -10,7 +10,7 @@
     string localizedPartName = D[Model.Part.DisplayName(), "Content Types"];
 }
 
-<script asp-src="~/OrchardCore.ContentTypes/Scripts/autocomplete/autocomplete.js" at="Foot" depends-on="jQuery"></script>
+<script asp-src="~/OrchardCore.ContentTypes/Scripts/autocomplete/autocomplete.js" at="Foot"></script>
 <zone Name="Title">
     <breadcrumb name="@ContentTypesConstants.TypesAddField" data="@(new { PartName = Model.Part.Name, PartDisplayName = localizedPartName })" />
 </zone>
