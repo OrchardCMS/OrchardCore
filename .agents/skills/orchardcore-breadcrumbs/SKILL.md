@@ -22,7 +22,7 @@ order by position → resolve urls → auth → mark last node current      Brea
 ```
 
 - **Trail name** — a stable string (e.g. `ContentsEdit`). Declared as a `const` and passed to `<breadcrumb name="…">`. Providers match on it.
-- **Provider** — `IBreadcrumbProvider` / `NamedBreadcrumbProvider` / `AdminBreadcrumbProvider`. Adds `BreadcrumbItem` nodes to the builder for the trail(s) it recognizes.
+- **Provider** — `IBreadcrumbProvider` / `NamedBreadcrumbProvider`. Adds `BreadcrumbItem` nodes to the builder for the trail(s) it recognizes.
 - **Node** (`BreadcrumbItem`) — text + optional link (`Url`/`Action`) + `Position` + `Id` + `Permission`s. The manager never links the *current* (last) node, and renders a node the user can't reach as plain text so the trail stays complete.
 - **Data** — the contextual object the view passes (`data="@(new { ContentItem = item })"`). Providers read it via `builder.GetData<T>(key)` / `TryGetData`.
 - **Shapes** — the trail renders as a `Breadcrumb` shape containing one `BreadcrumbItem` shape per node, so a theme can override presentation via alternates.
@@ -86,7 +86,6 @@ A screen whose trail is static can skip the provider (Workflow B) and declare no
 ### Step 1: Inherit the right base
 
 - **`NamedBreadcrumbProvider`** — contributes to a *single* trail. Pass the name to `base(...)`; implement `BuildAsync`. Best for a one-screen trail.
-- **`AdminBreadcrumbProvider`** — contributes only to the trails rendered on the admin. Pass the `IHttpContextAccessor` to `base(...)`; implement `BuildAsync`, which only runs when `AdminAttribute` is applied to the request. Best for a node that reacts to *every* trail, where the admin check would otherwise be repeated.
 - **`IBreadcrumbProvider`** — implement directly and `switch (builder.Name)` when one module owns several related trails (list/create/edit/display).
 
 ### Step 2: Add nodes
@@ -158,31 +157,19 @@ Inject whatever loads the parent by id: `IContentManager`, `ISession`/YesSql, `I
 
 A provider that reacts to *every* trail can prepend/append a global node. Use position `start` (sorts before all) or `end`. Gate on context so it only appears where it should. This is the mechanism behind the extensibility guarantee — other modules gain the node when the feature is enabled and lose it when disabled, knowing nothing about it.
 
-Inherit from `AdminBreadcrumbProvider` when the gate is "the admin only", rather than repeating the `AdminAttribute` check:
-
 ```csharp
-// The dashboard is the admin root only, so BuildAsync never runs on a front end trail.
-public sealed class DashboardBreadcrumbProvider : AdminBreadcrumbProvider
+public ValueTask BuildBreadcrumbAsync(BreadcrumbBuilder builder)
 {
-    public DashboardBreadcrumbProvider(
-        IOptions<AdminOptions> adminOptions,
-        IHttpContextAccessor httpContextAccessor,
-        IStringLocalizer<DashboardBreadcrumbProvider> stringLocalizer)
-        : base(httpContextAccessor)
-    {
-        _adminOptions = adminOptions.Value;
-        S = stringLocalizer;
-    }
+    var httpContext = _httpContextAccessor.HttpContext;
+    if (httpContext is null || !AdminAttribute.IsApplied(httpContext))
+        return ValueTask.CompletedTask;   // dashboard is the admin root only
 
-    protected override ValueTask BuildAsync(BreadcrumbBuilder builder)
-    {
-        builder.Add(S["Dashboard"], "start", item => item
-            .Id("Dashboard")
-            .Url("~/" + _adminOptions.AdminUrlPrefix)
-            .Permission(Permissions.AccessAdminDashboard));
+    builder.Add(S["Dashboard"], "start", item => item
+        .Id("Dashboard")
+        .Url("~/" + _adminOptions.AdminUrlPrefix)
+        .Permission(Permissions.AccessAdminDashboard));
 
-        return ValueTask.CompletedTask;
-    }
+    return ValueTask.CompletedTask;
 }
 ```
 
@@ -214,7 +201,7 @@ Node `Id` is **not** an HTML `id` — it only feeds alternates and lets another 
 ## References
 
 - `references/theming.md` — full alternate tables, display types, front-end vs admin, overriding a node template
-- `src/OrchardCore/OrchardCore.Navigation.Core/` (repo) — `BreadcrumbBuilder`, `BreadcrumbItem(Builder)`, `IBreadcrumbProvider`, `NamedBreadcrumbProvider`, `AdminBreadcrumbProvider`, `IBreadcrumbManager`, `BreadcrumbManager`
+- `src/OrchardCore/OrchardCore.Navigation.Core/` (repo) — `BreadcrumbBuilder`, `BreadcrumbItem(Builder)`, `IBreadcrumbProvider`, `NamedBreadcrumbProvider`, `IBreadcrumbManager`, `BreadcrumbManager`
 - `src/OrchardCore.Modules/OrchardCore.Navigation/` (repo) — `BreadcrumbShapes`, `BreadcrumbAlternatesFactory`, `Views/Breadcrumb.cshtml`, `Views/BreadcrumbItem.cshtml`
 - `src/docs/reference/modules/Navigation/README.md` (repo) — official breadcrumb reference
 - `AGENTS.md` (repo root) — build commands
