@@ -368,33 +368,33 @@ All OpenID Connect settings can be configured using the generic `Settings` recip
 }
 ```
 
-| Property                         | Type    | Description                                                               |
-|----------------------------------|---------|---------------------------------------------------------------------------|
-| `TestingModeEnabled`             | Boolean | Whether testing mode is enabled (uses ephemeral signing/encryption keys). |
-| `TokenFormat`                    | String  | The access token format. Values: `DataProtection`, `JsonWebToken`.        |
-| `Authority`                      | String  | The authority URL used by Orchard to act as an identity server.           |
-| `AuthorizationEndpointPath`      | String  | Path for the authorization endpoint.                                      |
-| `LogoutEndpointPath`             | String  | Path for the logout endpoint.                                             |
-| `TokenEndpointPath`              | String  | Path for the token endpoint.                                              |
-| `UserinfoEndpointPath`           | String  | Path for the userinfo endpoint.                                           |
-| `IntrospectionEndpointPath`      | String  | Path for the introspection endpoint.                                      |
-| `RevocationEndpointPath`         | String  | Path for the revocation endpoint.                                         |
-| `EnableTokenEndpoint`            | Boolean | Whether the token endpoint is enabled.                                    |
-| `EnableAuthorizationEndpoint`    | Boolean | Whether the authorization endpoint is enabled.                            |
-| `EnableLogoutEndpoint`           | Boolean | Whether the logout endpoint is enabled.                                   |
-| `EnableUserInfoEndpoint`         | Boolean | Whether the userinfo endpoint is enabled.                                 |
-| `EnableIntrospectionEndpoint`    | Boolean | Whether the introspection endpoint is enabled.                            |
-| `EnableRevocationEndpoint`       | Boolean | Whether the revocation endpoint is enabled.                               |
-| `AllowPasswordFlow`              | Boolean | Whether the Resource Owner Password flow is allowed.                      |
-| `AllowClientCredentialsFlow`     | Boolean | Whether the Client Credentials flow is allowed.                           |
-| `AllowAuthorizationCodeFlow`     | Boolean | Whether the Authorization Code flow is allowed.                           |
-| `AllowRefreshTokenFlow`          | Boolean | Whether the Refresh Token flow is allowed.                                |
-| `AllowImplicitFlow`              | Boolean | Whether the Implicit flow is allowed.                                     |
-| `AllowHybridFlow`                | Boolean | Whether the Hybrid flow is allowed.                                       |
-| `RequireProofKeyForCodeExchange` | Boolean | Whether PKCE is required for all clients.                                 |
+| Property                         | Type    | Description                                                                               |
+|----------------------------------|---------|-------------------------------------------------------------------------------------------|
+| `TestingModeEnabled`             | Boolean | Whether testing mode is enabled (uses ephemeral signing/encryption keys).                 |
+| `TokenFormat`                    | String  | The access token format. Values: `DataProtection`, `JsonWebToken`.                        |
+| `Authority`                      | String  | The authority URL used by Orchard to act as an identity server.                           |
+| `AuthorizationEndpointPath`      | String  | Path for the authorization endpoint.                                                      |
+| `LogoutEndpointPath`             | String  | Path for the logout endpoint.                                                             |
+| `TokenEndpointPath`              | String  | Path for the token endpoint.                                                              |
+| `UserinfoEndpointPath`           | String  | Path for the userinfo endpoint.                                                           |
+| `IntrospectionEndpointPath`      | String  | Path for the introspection endpoint.                                                      |
+| `RevocationEndpointPath`         | String  | Path for the revocation endpoint.                                                         |
+| `EnableTokenEndpoint`            | Boolean | Whether the token endpoint is enabled.                                                    |
+| `EnableAuthorizationEndpoint`    | Boolean | Whether the authorization endpoint is enabled.                                            |
+| `EnableLogoutEndpoint`           | Boolean | Whether the logout endpoint is enabled.                                                   |
+| `EnableUserInfoEndpoint`         | Boolean | Whether the userinfo endpoint is enabled.                                                 |
+| `EnableIntrospectionEndpoint`    | Boolean | Whether the introspection endpoint is enabled.                                            |
+| `EnableRevocationEndpoint`       | Boolean | Whether the revocation endpoint is enabled.                                               |
+| `AllowPasswordFlow`              | Boolean | Whether the Resource Owner Password flow is allowed.                                      |
+| `AllowClientCredentialsFlow`     | Boolean | Whether the Client Credentials flow is allowed.                                           |
+| `AllowAuthorizationCodeFlow`     | Boolean | Whether the Authorization Code flow is allowed.                                           |
+| `AllowRefreshTokenFlow`          | Boolean | Whether the Refresh Token flow is allowed.                                                |
+| `AllowImplicitFlow`              | Boolean | Whether the Implicit flow is allowed.                                                     |
+| `AllowHybridFlow`                | Boolean | Whether the Hybrid flow is allowed.                                                       |
+| `RequireProofKeyForCodeExchange` | Boolean | Whether PKCE is required for all clients.                                                 |
 | `RequireEndSessionConfirmation`  | Boolean | Whether users must confirm logout, even with a valid `id_token_hint`. Defaults to `true`. |
-| `UseRollingRefreshTokens`        | Boolean | Whether to use rolling refresh tokens.                                    |
-| `UseReferenceAccessTokens`       | Boolean | Whether to use reference access tokens.                                   |
+| `UseRollingRefreshTokens`        | Boolean | Whether to use rolling refresh tokens.                                                    |
+| `UseReferenceAccessTokens`       | Boolean | Whether to use reference access tokens.                                                   |
 
 ### Client Settings
 

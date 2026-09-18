@@ -347,7 +347,7 @@ public sealed class AccessController : Controller
             var hintSubject = hintResult is { Succeeded: true } ? hintResult.Principal?.GetClaim(Claims.Subject) : null;
             var userIdentifier = result.Principal.FindUserIdentifier();
 
-            if (hintSubject is not null && userIdentifier is not null &&
+            if (!string.IsNullOrEmpty(hintSubject) && !string.IsNullOrEmpty(userIdentifier) &&
                 CryptographicOperations.FixedTimeEquals(
                     MemoryMarshal.AsBytes<char>(hintSubject.AsSpan()),
                     MemoryMarshal.AsBytes<char>(userIdentifier.AsSpan())))
