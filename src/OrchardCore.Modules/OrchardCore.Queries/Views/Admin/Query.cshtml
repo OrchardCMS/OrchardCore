@@ -30,7 +30,9 @@
 <style asp-name="codemirror"></style>
 
 <zone Name="Title">
-    <breadcrumb name="@QueriesConstants.Run" />
+    <breadcrumb name="QueriesRun" title="@T["SQL Query"]">
+        <breadcrumb-item id="Queries" action="Index" controller="Admin" area="OrchardCore.Queries" permission="@QueryPermissions.ManageQueries.Name">@T["Queries"]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <div asp-validation-summary="ModelOnly"></div>

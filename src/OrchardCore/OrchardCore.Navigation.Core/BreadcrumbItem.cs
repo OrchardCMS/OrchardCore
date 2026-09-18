@@ -5,7 +5,7 @@ using OrchardCore.Security.Permissions;
 namespace OrchardCore.Navigation;
 
 /// <summary>
-/// Represents a single node of a breadcrumb trail described by an <see cref="IBreadcrumbProvider"/> implementation.
+/// Represents an ancestor declared inline or updated by a provider, or the current page's explicit title node.
 /// </summary>
 public class BreadcrumbItem : IPositioned
 {
@@ -16,7 +16,7 @@ public class BreadcrumbItem : IPositioned
 
     /// <summary>
     /// Gets or sets the optional identifier of the node. It is used to build the shape alternates of the node,
-    /// and it allows another provider to find the node in order to change or remove it.
+    /// It is not rendered as an HTML id.
     /// </summary>
     public string Id { get; set; }
 
@@ -31,7 +31,7 @@ public class BreadcrumbItem : IPositioned
     public RouteValueDictionary RouteValues { get; set; }
 
     /// <summary>
-    /// Gets or sets the final url the node links to. This property is computed by the <see cref="IBreadcrumbManager"/>
+    /// Gets or sets the final url the node links to. This property is computed by the parent tag helper
     /// based on <see cref="Url"/> or <see cref="RouteValues"/>. It is <c>null</c> when the node is not a link, which is
     /// the case for the current node and for a node the user is not authorized to reach.
     /// </summary>
@@ -43,15 +43,26 @@ public class BreadcrumbItem : IPositioned
     public string Position { get; set; }
 
     /// <summary>
-    /// Gets or sets whether the node represents the page being rendered. The <see cref="IBreadcrumbManager"/> sets this
-    /// property on the last node of the trail.
+    /// Gets or sets whether the node represents the page being rendered. The parent tag helper sets this
+    /// property on the explicit title node appended after all providers have run.
     /// </summary>
     public bool IsCurrent { get; set; }
 
     /// <summary>
-    /// Gets or sets the resource the <see cref="Permissions"/> of the node are evaluated against.
+    /// Gets or sets whether the node may render a link. When false, it remains visible as plain text.
+    /// </summary>
+    public bool LinkEnabled { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the resource the node's <see cref="PermissionName"/> and <see cref="Permissions"/> are evaluated against.
     /// </summary>
     public object Resource { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name of an additional permission required for the link. It is resolved only for a visible
+    /// ancestor link, after providers have run. An unknown name is ignored.
+    /// </summary>
+    public string PermissionName { get; set; }
 
     /// <summary>
     /// Gets the list of <see cref="Permission"/> objects the user must all have for the node to be rendered as a link.

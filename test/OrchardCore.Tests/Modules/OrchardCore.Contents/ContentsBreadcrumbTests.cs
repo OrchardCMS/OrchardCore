@@ -1,4 +1,8 @@
+using AngleSharp.Html.Parser;
+using OrchardCore.Admin.Models;
 using OrchardCore.ContentManagement;
+using OrchardCore.Entities;
+using OrchardCore.Settings;
 using OrchardCore.Tests.Apis.Context;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Contents;
@@ -39,6 +43,30 @@ public class ContentsBreadcrumbTests
 
         // The page itself is the current node, and the trail renders its text as the breadcrumb title heading.
         Assert.Contains("oc-breadcrumb-title\">Edit Article</h1>", html);
+    }
+
+    [Fact]
+    public async Task Edit_DisabledBreadcrumb_PreservesInlineTitleWithoutTrail()
+    {
+        using var context = new SiteContext();
+
+        await context.InitializeAsync();
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
+            var site = await siteService.LoadSiteSettingsAsync();
+            site.Put(new AdminSettings { ShowBreadcrumb = false });
+            await siteService.UpdateSiteSettingsAsync(site);
+        });
+
+        var contentItemId = await CreateArticleAsync(context);
+        var html = await GetAdminPageAsync(context, $"Admin/Contents/ContentItems/{contentItemId}/Edit");
+        using var document = new HtmlParser().ParseDocument(html);
+
+        Assert.Empty(document.QuerySelectorAll("nav.oc-breadcrumb"));
+        Assert.Equal("Edit Article", Assert.Single(document.QuerySelectorAll("h1.oc-breadcrumb-title")).TextContent);
+        Assert.Equal("Test Site - Edit Article", document.Title);
     }
 
     private static async Task<string> GetAdminPageAsync(SiteContext context, string path)

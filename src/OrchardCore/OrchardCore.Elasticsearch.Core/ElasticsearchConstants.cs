@@ -29,7 +29,4 @@ public static class ElasticsearchConstants
     public const string ProviderName = "Elasticsearch";
 
     public const string LastTaskIdMetadataKey = "last_task_id";
-
-    // Breadcrumb trail names.
-    public const string Query = "ElasticsearchQuery";
 }

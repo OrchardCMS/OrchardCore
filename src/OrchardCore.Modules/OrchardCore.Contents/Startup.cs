@@ -148,7 +148,6 @@ public sealed class Startup : StartupBase
         services.AddShapeTableProvider<Shapes>();
         services.AddShapeTableProvider<AdminDashboardShapeTableProvider>();
         services.AddNavigationProvider<AdminMenu>();
-        services.AddBreadcrumbProvider<ContentsBreadcrumbProvider>();
         services.AddScoped<IContentDisplayDriver, ContentsDriver>();
         services.AddScoped<IContentHandler, ContentsHandler>();
         services.AddRecipeExecutionStep<ContentStep>();

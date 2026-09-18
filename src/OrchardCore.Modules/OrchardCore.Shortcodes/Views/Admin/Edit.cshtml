@@ -39,9 +39,8 @@
 <script asp-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.min.js" debug-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.js" at="Foot" depends-on="vuejs, vue-multiselect"></script>
 
 <zone Name="Title">
-    <breadcrumb name="ShortcodesEdit">
+    <breadcrumb name="ShortcodesEdit" title="@T["Edit Shortcode"]">
         <breadcrumb-item id="Shortcodes" action="Index" controller="Admin" area="OrchardCore.Shortcodes" permission="@ShortcodesPermissions.ManageShortcodeTemplates.Name">@T["Shortcodes"]</breadcrumb-item>
-        <breadcrumb-item id="Shortcode">@T["Edit Shortcode"]</breadcrumb-item>
     </breadcrumb>
 </zone>
 

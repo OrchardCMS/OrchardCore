@@ -1,7 +1,9 @@
 @model CreatePartViewModel
 
 <zone Name="Title">
-    <breadcrumb name="@ContentTypesConstants.PartsCreate" />
+    <breadcrumb name="ContentPartsCreate" title="@T["New Content Part"]">
+        <breadcrumb-item id="ContentParts" action="ListParts" controller="Admin" area="OrchardCore.ContentTypes" permission="@ContentTypesPermissions.ViewContentTypes.Name">@T["Content Parts"]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <form asp-action="CreatePart">

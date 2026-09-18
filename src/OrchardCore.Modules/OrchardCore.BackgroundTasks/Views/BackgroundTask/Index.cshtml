@@ -1,7 +1,7 @@
 @model BackgroundTaskIndexViewModel
 
 <zone Name="Title">
-    <breadcrumb name="@BackgroundTasksConstants.List" />
+    <breadcrumb name="BackgroundTasks" title="@T["Background Tasks"]" />
 </zone>
 
 <form asp-action="Index" method="post" class="no-multisubmit" data-list-management data-selected-label="@T["selected"]">

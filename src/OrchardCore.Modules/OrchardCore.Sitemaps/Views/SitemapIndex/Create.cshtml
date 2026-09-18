@@ -1,7 +1,9 @@
 @model CreateSitemapIndexViewModel
 
 <zone Name="Title">
-    <breadcrumb name="@SitemapsConstants.IndexesCreate" />
+    <breadcrumb name="SitemapIndexesCreate" title="@T["Create Sitemap Index"]">
+        <breadcrumb-item id="SitemapIndexes" action="List" controller="SitemapIndex" area="OrchardCore.Sitemaps" permission="@SitemapsPermissions.ManageSitemaps.Name">@T["Sitemap Indexes"]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 @if (string.IsNullOrEmpty(Site.BaseUrl))

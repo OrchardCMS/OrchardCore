@@ -1,7 +1,7 @@
 @model OrchardCore.Email.ViewModels.EmailTestViewModel
 
 <zone Name="Title">
-    <breadcrumb name="@EmailConstants.Settings" />
+    <breadcrumb name="EmailSettings" title="@T["Email"]" />
 </zone>
 
 @if (Model.Providers == null || Model.Providers.Count == 0)

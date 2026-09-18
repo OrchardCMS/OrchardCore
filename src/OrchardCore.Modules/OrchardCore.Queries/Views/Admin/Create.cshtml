@@ -1,7 +1,9 @@
 @model QueriesCreateViewModel
 
 <zone Name="Title">
-    <breadcrumb name="@QueriesConstants.Create" data="@(new { SourceName = Model.SourceName })" />
+    <breadcrumb name="QueriesCreate" title="@T["New {0} query", Model.SourceName]">
+        <breadcrumb-item id="Queries" action="Index" controller="Admin" area="OrchardCore.Queries" permission="@QueryPermissions.ManageQueries.Name">@T["Queries"]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <form asp-action="Create" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data" class="no-multisubmit">

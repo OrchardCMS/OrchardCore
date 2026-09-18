@@ -2,7 +2,9 @@
 @using OrchardCore.Roles.ViewModels
 
 <zone Name="Title">
-    <breadcrumb name="@RolesConstants.Clone" data="@(new { RoleName = Model.Role.RoleName })" />
+    <breadcrumb name="RolesClone" title="@T["Clone '{0}' Role", Model.Role.RoleName]">
+        <breadcrumb-item id="Roles" action="Index" controller="Admin" area="OrchardCore.Roles" permission="@RolesPermissions.ViewRoles.Name">@T["Roles"]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <div asp-validation-summary="ModelOnly"></div>

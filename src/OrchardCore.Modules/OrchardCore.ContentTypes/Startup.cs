@@ -44,7 +44,6 @@ public sealed class Startup : StartupBase
         });
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
-        services.AddBreadcrumbProvider<ContentTypesBreadcrumbProvider>();
         services.AddScoped<IContentDefinitionService, ContentDefinitionService>();
         services.AddScoped<IStereotypeService, StereotypeService>();
         services.AddScoped<IContentDefinitionDisplayHandler, ContentDefinitionDisplayCoordinator>();

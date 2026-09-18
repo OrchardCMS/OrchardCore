@@ -1,24 +1,38 @@
+using System.Net;
+using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Admin;
 using OrchardCore.Admin.Models;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Html;
 using OrchardCore.DisplayManagement.Title;
+using OrchardCore.DisplayManagement.Zones;
+using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Navigation.TagHelpers;
 
 /// <summary>
-/// Renders the breadcrumb trail of the given name, and registers the text of its current node as a segment of the
-/// page title. The nodes come from the <see cref="IBreadcrumbProvider"/> implementations of the trail, from the
-/// <c>breadcrumb-item</c> children declared inline in the view, or from both.
+/// Renders the breadcrumb trail of the given name. Ancestors are collected from <c>breadcrumb-item</c> children,
+/// then updated by registered providers. The explicit title is appended last as the current node.
 /// </summary>
+/// <remarks>
+/// When the admin breadcrumb setting is disabled, renders only the heading and page title without creating shapes.
+/// Providers, link, permission and shape services are not resolved. Children are not evaluated and no breadcrumb
+/// nodes are allocated; only the explicit title is used.
+/// </remarks>
 /// <example>
 /// <code>
-/// &lt;breadcrumb name="ContentsEdit" data="@(new { ContentItem = contentItem })" /&gt;
+/// &lt;breadcrumb name="ContentsEdit" title="@T["Edit Article"]"&gt;
+///     &lt;breadcrumb-item action="List" controller="Admin" area="OrchardCore.Contents"&gt;Manage Content&lt;/breadcrumb-item&gt;
+/// &lt;/breadcrumb&gt;
 /// </code>
 /// </example>
 [HtmlTargetElement("breadcrumb", Attributes = NameAttribute)]
@@ -26,38 +40,36 @@ public sealed class BreadcrumbTagHelper : TagHelper
 {
     private const string NameAttribute = "name";
 
-    private readonly IBreadcrumbManager _breadcrumbManager;
-    private readonly IShapeFactory _shapeFactory;
-    private readonly IDisplayHelper _displayHelper;
     private readonly IPageTitleBuilder _pageTitleBuilder;
     private readonly ISiteService _siteService;
+    private IAuthorizationService _authorizationService;
+    private IPermissionService _permissionService;
+    private IUrlHelper _urlHelper;
 
     public BreadcrumbTagHelper(
-        IBreadcrumbManager breadcrumbManager,
-        IShapeFactory shapeFactory,
-        IDisplayHelper displayHelper,
         IPageTitleBuilder pageTitleBuilder,
         ISiteService siteService)
     {
-        _breadcrumbManager = breadcrumbManager;
-        _shapeFactory = shapeFactory;
-        _displayHelper = displayHelper;
         _pageTitleBuilder = pageTitleBuilder;
         _siteService = siteService;
     }
 
     /// <summary>
-    /// The name of the breadcrumb to render. e.g., <c>ContentsEdit</c>.
+    /// The stable trail name used by providers to target a breadcrumb and by rendering to generate CSS classes
+    /// and shape alternates. e.g., <c>ContentsEdit</c>.
     /// </summary>
     [HtmlAttributeName(NameAttribute)]
     public string Name { get; set; }
 
     /// <summary>
-    /// The optional contextual data of the page, given to every <see cref="IBreadcrumbProvider"/> building the trail.
-    /// Each property of the object becomes an entry of <see cref="BreadcrumbBuilder.Data"/>.
+    /// The required HTML-aware page title, including a
+    /// <see cref="Microsoft.AspNetCore.Mvc.Localization.LocalizedHtmlString"/> from the view localizer.
+    /// Wrap plain text in <see cref="HtmlContentString"/> so it is safely encoded.
+    /// It is normalized to text for the heading and browser title. In a visible trail, it is also appended as the last,
+    /// unlinked node after providers have run. An empty value suppresses the title text but still adds a node to a visible trail.
     /// </summary>
-    [HtmlAttributeName("data")]
-    public object Data { get; set; }
+    [HtmlAttributeName("title")]
+    public IHtmlContent Title { get; set; }
 
     /// <summary>
     /// The html tag of the page title, rendered below the trail from the text of the current node, so that the
@@ -87,60 +99,148 @@ public sealed class BreadcrumbTagHelper : TagHelper
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        // Let any 'breadcrumb-item' children declared in the view seed the trail. They add themselves to this list
-        // while the child content renders.
-        var inlineItems = new List<BreadcrumbItem>();
-        context.Items[typeof(BreadcrumbItemTagHelper)] = inlineItems;
+        ArgumentException.ThrowIfNullOrEmpty(Name);
+        ArgumentNullException.ThrowIfNull(Title);
 
-        await output.GetChildContentAsync();
+        var isAdmin = AdminAttribute.IsApplied(ViewContext.HttpContext);
+        var heading = GetHeading(isAdmin);
+        var showTrail = !isAdmin || (await _siteService.GetSettingsAsync<AdminSettings>()).ShowBreadcrumb;
 
-        var items = await _breadcrumbManager.BuildBreadcrumbAsync(
-            Name,
-            ViewContext,
-            Data is null ? null : new RouteValueDictionary(Data),
-            inlineItems.Count > 0 ? inlineItems : null);
-
-        if (items.Count == 0)
+        if (!showTrail && !PageTitle && string.IsNullOrEmpty(heading))
         {
             output.SuppressOutput();
 
             return;
         }
 
-        if (PageTitle)
-        {
-            var current = items[^1];
+        var title = GetTitleText();
+        List<BreadcrumbItem> items = null;
 
-            if (!string.IsNullOrEmpty(current.Text))
+        if (showTrail)
+        {
+            items = [];
+            var breadcrumbContext = new BreadcrumbContext(Name, title, items, ViewContext, showTrail);
+            context.Items[typeof(BreadcrumbItemTagHelper)] = breadcrumbContext;
+
+            await output.GetChildContentAsync();
+
+            foreach (var provider in ViewContext.HttpContext.RequestServices.GetServices<IBreadcrumbProvider>())
             {
-                _pageTitleBuilder.AddSegment(new HtmlContentString(current.Text));
+                await provider.BuildBreadcrumbAsync(breadcrumbContext);
+            }
+
+            items = items.OrderBy(item => item, FlatPositionComparer.Instance).ToList();
+
+            foreach (var item in items)
+            {
+                item.IsCurrent = false;
+                item.Href = await GetHrefAsync(item);
+            }
+
+            items.Add(new BreadcrumbItem { Text = title, Id = "Title", IsCurrent = true });
+        }
+
+        if (PageTitle && !string.IsNullOrEmpty(title))
+        {
+            _pageTitleBuilder.AddSegment(new HtmlContentString(title));
+        }
+
+        if (!showTrail)
+        {
+            if (string.IsNullOrEmpty(heading) || string.IsNullOrEmpty(title))
+            {
+                output.SuppressOutput();
+
+                return;
+            }
+
+            var titleTag = new TagBuilder(heading);
+            titleTag.AddCssClass("oc-breadcrumb-title");
+            titleTag.InnerHtml.Append(title);
+
+            output.TagName = null;
+            output.Content.SetHtmlContent(titleTag);
+
+            return;
+        }
+
+        var shapeFactory = ViewContext.HttpContext.RequestServices.GetRequiredService<IShapeFactory>();
+        var displayHelper = ViewContext.HttpContext.RequestServices.GetRequiredService<IDisplayHelper>();
+        var shape = await shapeFactory.BreadcrumbAsync(
+            Name,
+            items,
+            heading,
+            string.IsNullOrWhiteSpace(DisplayType) ? (isAdmin ? "DetailAdmin" : "Detail") : DisplayType);
+
+        output.TagName = null;
+        output.Content.SetHtmlContent(await displayHelper.ShapeExecuteAsync(shape));
+    }
+
+    private string GetTitleText()
+    {
+        using var writer = new StringWriter();
+        Title.WriteTo(writer, HtmlEncoder.Default);
+
+        // HTML-localized arguments are already encoded. Normalize once before the text-only renderers encode them.
+        return WebUtility.HtmlDecode(writer.ToString());
+    }
+
+    private async Task<string> GetHrefAsync(BreadcrumbItem item)
+    {
+        if (!item.LinkEnabled || (item.RouteValues is not { Count: > 0 } && string.IsNullOrEmpty(item.Url)))
+        {
+            return null;
+        }
+
+        var httpContext = ViewContext.HttpContext;
+
+        if (!string.IsNullOrEmpty(item.PermissionName))
+        {
+            _permissionService ??= httpContext.RequestServices.GetRequiredService<IPermissionService>();
+            var permission = await _permissionService.FindByNameAsync(item.PermissionName);
+
+            if (permission is not null && !await IsAuthorizedAsync(permission, item.Resource))
+            {
+                return null;
             }
         }
 
-        // A trail rendered on the admin and a trail rendered by a front end theme are the same shape, so they are told
-        // apart by their display type, the way the rest of the display system tells those contexts apart.
-        var isAdmin = AdminAttribute.IsApplied(ViewContext.HttpContext);
-
-        // The trail can be turned off for the whole admin from the admin settings, in which case only the page title
-        // is rendered. The setting is about the admin, so a front end trail is never hidden by it.
-        var showTrail = true;
-
-        if (isAdmin)
+        foreach (var permission in item.Permissions)
         {
-            var adminSettings = await _siteService.GetSettingsAsync<AdminSettings>();
-
-            showTrail = adminSettings.ShowBreadcrumb;
+            if (!await IsAuthorizedAsync(permission, item.Resource))
+            {
+                return null;
+            }
         }
 
-        var shape = await _shapeFactory.BreadcrumbAsync(
-            Name,
-            items,
-            GetHeading(isAdmin),
-            string.IsNullOrWhiteSpace(DisplayType) ? (isAdmin ? "DetailAdmin" : "Detail") : DisplayType,
-            showTrail);
+        if (item.RouteValues is { Count: > 0 })
+        {
+            _urlHelper ??= httpContext.RequestServices.GetRequiredService<IUrlHelperFactory>().GetUrlHelper(ViewContext);
 
-        output.TagName = null;
-        output.Content.SetHtmlContent(await _displayHelper.ShapeExecuteAsync(shape));
+            return _urlHelper.RouteUrl(new UrlRouteContext { Values = item.RouteValues });
+        }
+
+        var url = item.Url;
+
+        if (url[0] == '/' || url.Contains("://"))
+        {
+            return url;
+        }
+
+        if (url.StartsWith("~/", StringComparison.Ordinal))
+        {
+            url = url[2..];
+        }
+
+        return httpContext.Request.PathBase.Add($"/{url}").Value;
+    }
+
+    private Task<bool> IsAuthorizedAsync(Permission permission, object resource)
+    {
+        var httpContext = ViewContext.HttpContext;
+        _authorizationService ??= httpContext.RequestServices.GetRequiredService<IAuthorizationService>();
+
+        return _authorizationService.AuthorizeAsync(httpContext.User, permission, resource);
     }
 
     /// <summary>

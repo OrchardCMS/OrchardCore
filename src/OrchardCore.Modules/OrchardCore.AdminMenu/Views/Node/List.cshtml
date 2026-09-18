@@ -13,7 +13,9 @@
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css"></style>
 
 <zone Name="Title">
-    <breadcrumb name="@AdminMenuConstants.Nodes" data="@(new { MenuName = localizedAdminMenuName })" />
+    <breadcrumb name="AdminMenusNodes" title="@T["Edit Nodes for '{0}'", localizedAdminMenuName]">
+        <breadcrumb-item id="AdminMenus" action="List" controller="Menu" area="OrchardCore.AdminMenu" permission="@AdminMenuPermissions.ManageAdminMenu.Name">@T["Admin Menus"]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <nav class="card text-bg-theme mb-3">

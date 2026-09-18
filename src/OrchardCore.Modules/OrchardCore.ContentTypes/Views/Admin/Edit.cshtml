@@ -60,7 +60,9 @@
 }
 
 <zone Name="Title">
-    <breadcrumb name="@ContentTypesConstants.TypesEdit" data="@(new { TypeName = Model.Name, TypeDisplayName = localizedTypeName })" />
+    <breadcrumb name="ContentTypesEdit" title="@T["Edit Content Type - {0}", localizedTypeName]">
+        <breadcrumb-item id="ContentTypes" action="List" controller="Admin" area="OrchardCore.ContentTypes" permission="@ContentTypesPermissions.ViewContentTypes.Name">@T["Content Types"]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <form method="post">

@@ -3,7 +3,9 @@
 @model ModelViewModel
 
 <zone Name="Title">
-    <breadcrumb name="@IndexingConstants.Create" data="@(new { Model.DisplayName })" />
+    <breadcrumb name="IndexesCreate" title="@T["New '{0}' index", Model.DisplayName]">
+        <breadcrumb-item id="Indexes" action="Index" controller="Admin" area="OrchardCore.Indexing" permission="@IndexingPermissions.ManageIndexes.Name">@T["Indexes"]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <form method="post" enctype="multipart/form-data" class="no-multisubmit">

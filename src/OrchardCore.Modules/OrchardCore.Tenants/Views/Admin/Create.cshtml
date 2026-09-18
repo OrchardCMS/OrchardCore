@@ -3,7 +3,9 @@
 @model EditTenantViewModel
 
 <zone Name="Title">
-    <breadcrumb name="@TenantsConstants.Create" />
+    <breadcrumb name="TenantsCreate" title="@T["Create Tenant"]">
+        <breadcrumb-item id="Tenants" action="Index" controller="Admin" area="OrchardCore.Tenants" permission="@Permissions.ManageTenants.Name">@T["Tenants"]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <div asp-validation-summary="ModelOnly"></div>

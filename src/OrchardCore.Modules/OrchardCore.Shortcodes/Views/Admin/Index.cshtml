@@ -6,9 +6,7 @@
 }
 
 <zone Name="Title">
-    <breadcrumb name="Shortcodes">
-        <breadcrumb-item id="Shortcodes" action="Index" controller="Admin" area="OrchardCore.Shortcodes" permission="@ShortcodesPermissions.ManageShortcodeTemplates.Name">@T["Shortcodes"]</breadcrumb-item>
-    </breadcrumb>
+    <breadcrumb name="Shortcodes" title="@T["Shortcodes"]" />
 </zone>
 
 @* the form is necessary to generate and antiforgery token for the delete action *@

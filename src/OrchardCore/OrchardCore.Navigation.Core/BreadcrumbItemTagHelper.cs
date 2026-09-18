@@ -1,33 +1,31 @@
+using System.Net;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using OrchardCore.Security.Permissions;
+using Microsoft.AspNetCore.Routing;
 
 namespace OrchardCore.Navigation.TagHelpers;
 
 /// <summary>
-/// Declares a single node of a breadcrumb trail inline, as a child of the <c>breadcrumb</c> tag helper. It lets a
-/// screen whose trail is static describe it in the view, without an <see cref="IBreadcrumbProvider"/>. The providers
-/// still run over the trail, so another module can add to, remove from or reorder its nodes.
+/// Declares a single ancestor of a breadcrumb trail inline, as a child of the <c>breadcrumb</c> tag helper.
+/// Its localized inner text can use data from the view model or services injected into the view.
 /// </summary>
+/// <remarks>
+/// When the admin breadcrumb setting is disabled, the parent skips its children entirely.
+/// Link permissions are resolved by the parent helper after providers have run.
+/// </remarks>
 /// <example>
 /// <code>
-/// &lt;breadcrumb name="ContentsEdit"&gt;
+/// &lt;breadcrumb name="ContentsEdit" title="@T["Edit Article"]"&gt;
 ///     &lt;breadcrumb-item action="List" controller="Admin" area="OrchardCore.Contents"&gt;Manage Content&lt;/breadcrumb-item&gt;
-///     &lt;breadcrumb-item&gt;Edit Article&lt;/breadcrumb-item&gt;
 /// &lt;/breadcrumb&gt;
 /// </code>
 /// </example>
 [HtmlTargetElement("breadcrumb-item", ParentTag = "breadcrumb")]
 public sealed class BreadcrumbItemTagHelper : TagHelper
 {
-    private readonly IPermissionService _permissionService;
-
-    public BreadcrumbItemTagHelper(IPermissionService permissionService)
-    {
-        _permissionService = permissionService;
-    }
+    private IDictionary<string, string> _routeValues;
 
     /// <summary>
-    /// The identifier of the node, used to build its shape alternates and to let a provider find it. See
+    /// The identifier of the node, used to build its shape alternates. See
     /// <see cref="BreadcrumbItem.Id"/>.
     /// </summary>
     [HtmlAttributeName("id")]
@@ -70,53 +68,81 @@ public sealed class BreadcrumbItemTagHelper : TagHelper
     [HtmlAttributeName("area")]
     public string Area { get; set; }
 
+    /// <summary>
+    /// Additional route values for the link, also supplied through <c>route-*</c> attributes.
+    /// </summary>
+    [HtmlAttributeName("route-values", DictionaryAttributePrefix = "route-")]
+    public IDictionary<string, string> RouteValues
+    {
+        get => _routeValues ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        set => _routeValues = value;
+    }
+
+    /// <summary>
+    /// The resource passed to authorization when evaluating the node's permission.
+    /// </summary>
+    [HtmlAttributeName("resource")]
+    public object Resource { get; set; }
+
+    /// <summary>
+    /// Whether the node may render a link. Set to false when the view has already determined that access is denied.
+    /// </summary>
+    [HtmlAttributeName("link-enabled")]
+    public bool LinkEnabled { get; set; } = true;
+
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var content = await output.GetChildContentAsync();
-
         output.SuppressOutput();
 
-        // The parent 'breadcrumb' tag helper puts the collecting list in the shared items before it renders its
-        // children. A stray 'breadcrumb-item' outside a 'breadcrumb' therefore just renders nothing.
-        if (!context.Items.TryGetValue(typeof(BreadcrumbItemTagHelper), out var value) || value is not List<BreadcrumbItem> items)
+        if (!context.Items.TryGetValue(typeof(BreadcrumbItemTagHelper), out var value) || value is not BreadcrumbContext breadcrumbContext)
         {
             return;
         }
 
-        var item = new BreadcrumbItem();
-        var builder = new BreadcrumbItemBuilder(item);
+        var content = await output.GetChildContentAsync();
+        // Razor has already encoded dynamic text. Store plain text so shapes and headings encode it only once.
+        var text = WebUtility.HtmlDecode(content.GetContent().Trim());
 
-        builder.Text(content.GetContent().Trim());
-
-        if (!string.IsNullOrEmpty(Id))
+        var item = new BreadcrumbItem
         {
-            builder.Id(Id);
-        }
-
-        if (!string.IsNullOrEmpty(Position))
-        {
-            builder.Position(Position);
-        }
+            Text = text,
+            Id = Id,
+            Position = string.IsNullOrEmpty(Position) ? null : Position,
+            Resource = Resource,
+            LinkEnabled = LinkEnabled,
+            PermissionName = PermissionName,
+        };
 
         if (!string.IsNullOrEmpty(Action))
         {
-            builder.Action(Action, Controller, Area);
+            item.RouteValues = new RouteValueDictionary
+            {
+                ["action"] = Action,
+            };
+
+            if (!string.IsNullOrEmpty(Controller))
+            {
+                item.RouteValues["controller"] = Controller;
+            }
+
+            if (!string.IsNullOrEmpty(Area))
+            {
+                item.RouteValues["area"] = Area;
+            }
+
+            if (_routeValues is not null)
+            {
+                foreach (var (key, routeValue) in _routeValues)
+                {
+                    item.RouteValues[key] = routeValue;
+                }
+            }
         }
         else if (!string.IsNullOrEmpty(Url))
         {
-            builder.Url(Url);
+            item.Url = Url;
         }
 
-        if (!string.IsNullOrEmpty(PermissionName))
-        {
-            var permission = await _permissionService.FindByNameAsync(PermissionName);
-
-            if (permission is not null)
-            {
-                builder.Permission(permission);
-            }
-        }
-
-        items.Add(item);
+        breadcrumbContext.Items.Add(item);
     }
 }

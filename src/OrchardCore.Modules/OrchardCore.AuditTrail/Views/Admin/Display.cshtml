@@ -1,7 +1,9 @@
 @model AuditTrailItemViewModel
 
 <zone Name="Title">
-    <breadcrumb name="@AuditTrailConstants.Display" />
+    <breadcrumb name="AuditTrailDisplay" title="@T["Audit Trail Event"]">
+        <breadcrumb-item id="AuditTrail" action="Index" controller="Admin" area="OrchardCore.AuditTrail" permission="@AuditTrailPermissions.ViewAuditTrail.Name">@T["Audit Trail"]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 @await DisplayAsync(Model.Shape)

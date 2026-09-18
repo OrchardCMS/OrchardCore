@@ -9,7 +9,9 @@
 <script asp-src="~/OrchardCore.Deployment/Scripts/steporder.min.js" debug-src="~/OrchardCore.Deployment/Scripts/steporder.js" asp-name="step-order" at="Foot" depends-on="Sortable"></script>
 
 <zone Name="Title">
-    <breadcrumb name="@DeploymentConstants.Display" />
+    <breadcrumb name="DeploymentPlansDisplay" title="@T["Deployment Plan"]">
+        <breadcrumb-item id="DeploymentPlans" action="Index" controller="DeploymentPlan" area="OrchardCore.Deployment" permission="@DeploymentPermissions.Export.Name">@T["Deployment Plans"]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <div class="d-none" id="stepOrderUrl" data-url="@orderUrl"></div>

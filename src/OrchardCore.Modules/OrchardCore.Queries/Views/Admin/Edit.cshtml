@@ -1,7 +1,9 @@
 @model QueriesEditViewModel
 
 <zone Name="Title">
-    <breadcrumb name="@QueriesConstants.Edit" data="@(new { QueryName = Model.Name })" />
+    <breadcrumb name="QueriesEdit" title="@T["Edit '{0}' query", Model.Name]">
+        <breadcrumb-item id="Queries" action="Index" controller="Admin" area="OrchardCore.Queries" permission="@QueryPermissions.ManageQueries.Name">@T["Queries"]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <form asp-action="Edit" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data" class="no-multisubmit">

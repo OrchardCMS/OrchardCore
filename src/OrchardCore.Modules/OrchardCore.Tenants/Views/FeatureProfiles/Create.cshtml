@@ -1,7 +1,9 @@
 @model FeatureProfileViewModel
 
 <zone Name="Title">
-    <breadcrumb name="@TenantsConstants.FeatureProfilesCreate" />
+    <breadcrumb name="FeatureProfilesCreate" title="@T["Create Feature Profile"]">
+        <breadcrumb-item id="FeatureProfiles" action="Index" controller="FeatureProfiles" area="OrchardCore.Tenants" permission="@Permissions.ManageTenantFeatureProfiles.Name">@T["Feature Profiles"]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <div asp-validation-summary="All"></div>

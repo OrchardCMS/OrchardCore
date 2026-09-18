@@ -58,7 +58,6 @@ public sealed class Startup : StartupBase
         services.AddScoped<IActivityDisplayManager, ActivityDisplayManager>();
         services.AddDataMigration<Migrations>();
         services.AddNavigationProvider<AdminMenu>();
-        services.AddBreadcrumbProvider<WorkflowsBreadcrumbProvider>();
         services.AddPermissionProvider<Permissions>();
         services.AddDisplayDriver<IActivity, MissingActivityDisplayDriver>();
         services.AddIndexProvider<WorkflowTypeIndexProvider>();

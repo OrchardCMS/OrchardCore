@@ -19,7 +19,10 @@
 }
 
 <zone Name="Title">
-    <breadcrumb name="@ContentTypesConstants.TypesEditPart" data="@(new { TypeName = contentTypeDefinition.Name, TypeDisplayName = localizedTypeName, PartDisplayName = localizedDisplayName })" />
+    <breadcrumb name="ContentTypesEditPart" title="@T["Edit Part - {0}", localizedDisplayName]">
+        <breadcrumb-item id="ContentTypes" action="List" controller="Admin" area="OrchardCore.ContentTypes" permission="@ContentTypesPermissions.ViewContentTypes.Name">@T["Content Types"]</breadcrumb-item>
+        <breadcrumb-item id="ContentType" action="Edit" controller="Admin" area="OrchardCore.ContentTypes" route-id="@contentTypeDefinition.Name" permission="@ContentTypesPermissions.EditContentTypes.Name">@T["Edit Content Type - {0}", localizedTypeName]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <div class="alert alert-success" role="alert">

@@ -1,207 +1,280 @@
 ---
 name: orchardcore-breadcrumbs
-description: Renders and extends the breadcrumb trail shown above the title on OrchardCore admin screens (and optionally on the front end). Use when the user needs to add a breadcrumb to a view, write or change an IBreadcrumbProvider, add a node to a trail owned by another module, resolve a parent entity for a nested editor, or theme a breadcrumb through shape alternates.
+description: Authors explicit breadcrumb titles, inline ancestors, and lightweight IBreadcrumbProvider postprocessors on OrchardCore admin screens and the front end. Use when declaring current-page titles, extending ancestors, resolving a parent entity, documenting hidden-trail processing, or theming breadcrumbs through name-based shape alternates.
 ---
 
 # OrchardCore Breadcrumbs
 
-This skill guides you through OrchardCore's breadcrumb system following project conventions.
+A breadcrumb is a **named trail with an explicit current-page title**. The parent `<breadcrumb>` requires an `IHtmlContent` title and normalizes it to text; every `<breadcrumb-item>` child is an ancestor. For visible trails, the view supplies dynamic ancestor links and localized text, and registered `IBreadcrumbProvider` implementations can postprocess only those ancestors. After ordering ancestors, the helper appends the normalized title as the final, unlinked current node. Hidden admin trails use only the explicit title and skip children and providers entirely. On the admin, the trail appears above a heading containing that text; on the front end, no heading is rendered by default.
 
-A breadcrumb is a **named trail** rendered by the `<breadcrumb>` tag helper in a view. Every `IBreadcrumbProvider` registered on the tenant is called for *every* trail; a provider decides which trail it contributes to by its name, and appends nodes to the shared builder. This is how one module adds a node to a trail owned by another module (e.g. `OrchardCore.AdminDashboard` prepends a "Dashboard" node to every admin trail). On the admin the trail renders as a **small path above the page title**, and the current node's text is also rendered below it as the `<h1>` and feeds the page title; on the front end it renders without a title. How the trail and the title sit together is decided by one template, `Breadcrumb.cshtml`, which a theme overrides to rearrange them.
+Keep built-in views inline, with the current page in `title` rather than a child. Use lightweight providers for shared or cross-module ancestor changes, not a separate manager, builder, named-provider base class, or contextual-data contract. Customize the owning view or its partials for the title and screen-specific ancestors, and use shape alternates for presentation. `INavigationProvider` remains the separate extension point for ordinary navigation menus.
+
+**Keep all Show breadcrumb logic in the tag helper.** Views and partials must not read `AdminSettings.ShowBreadcrumb` or gate lookups, child declarations, or breadcrumb markup on it. Declare nodes and resolve needed data normally; the helper alone chooses visibility and the provider/title pipeline.
 
 ## Mental model
 
-```
-<breadcrumb name="ContentsEdit" data="…" />          ← view (front end concern)
-        │
-        ▼
-IBreadcrumbManager  ──asks every──▶  IBreadcrumbProvider(s)  ──append──▶  BreadcrumbBuilder (nodes)
-        │                                                                        │
-        ▼                                                                        ▼
-order by position → resolve urls → auth → mark last node current      Breadcrumb shape + BreadcrumbItem shapes → HTML
-```
+1. Require a stable `name` and a non-null `Microsoft.AspNetCore.Html.IHtmlContent` title, including `LocalizedHtmlString`. Empty content such as `HtmlString.Empty` suppresses heading/browser-title text but still leaves a current node in a visible trail.
+2. Check visibility before any child or provider work. A hidden admin trail never calls `GetChildContentAsync`, resolves or enumerates providers, constructs or invokes them, or creates a `BreadcrumbContext` or any breadcrumb items, including the current node.
+3. For a hidden trail, only the explicit title matters. When heading or browser-title output is needed, call `WriteTo(writer, HtmlEncoder.Default)` once and HTML-decode once, then safely encode the text for output. With `heading=""` and `page-title="false"`, validate the non-null title but also skip `WriteTo`.
+4. For a visible trail, normalize the title, collect ancestor children, and await registered providers sequentially in DI registration order on the shared mutable ancestor list. Helper-created provider contexts always have `ShowTrail == true`.
+5. Stably sort visible ancestors with `FlatPositionComparer`, then unconditionally append the explicit title node with fixed `Id = "Title"`, last/current and never linked. Clearing ancestors or using `Position = "end"` cannot remove or displace it.
+6. Visible trails finalize ancestor links and render shapes. Hidden trails render only the requested explicit heading/browser title, with no URL generation, permission lookup, link authorization, or shapes. The admin setting does not affect front-end trails.
 
-- **Trail name** — a stable string (e.g. `ContentsEdit`). Declared as a `const` and passed to `<breadcrumb name="…">`. Providers match on it.
-- **Provider** — `IBreadcrumbProvider` / `NamedBreadcrumbProvider`. Adds `BreadcrumbItem` nodes to the builder for the trail(s) it recognizes.
-- **Node** (`BreadcrumbItem`) — text + optional link (`Url`/`Action`) + `Position` + `Id` + `Permission`s. The manager never links the *current* (last) node, and renders a node the user can't reach as plain text so the trail stays complete.
-- **Data** — the contextual object the view passes (`data="@(new { ContentItem = item })"`). Providers read it via `builder.GetData<T>(key)` / `TryGetData`.
-- **Shapes** — the trail renders as a `Breadcrumb` shape containing one `BreadcrumbItem` shape per node, so a theme can override presentation via alternates.
+## Naming
 
-## Naming convention (do this first)
-
-- **Reuse the AdminList name.** A screen's trail name must equal the `Name` its admin list uses, so the list and its breadcrumb never diverge. The content list trail is `Contents` — the same string as its admin list name.
-- **Declare names on a `*Constants` class**, never inline strings. The class name **must end in `Constants`**. Reuse an existing `{Module}Constants` if the module already has one (often in the module's `.Core`/abstractions project — same or ancestor namespace, so no extra `using`); only add a new file when none exists. If a `{Module}Constants` name collides with a framework type (e.g. `Microsoft.AspNetCore.Cors.Infrastructure.CorsConstants`), use `{Module}BreadcrumbConstants` instead.
-- Put both the trail-name consts (`List`, `Create`, `Edit`, `Display`, …) and the `data` keys (`ContentItemKey = "ContentItem"`, …) on that class, with XML doc comments describing which trail carries which data.
-
-```csharp
-public static class ContentsConstants
-{
-    /// <summary>The breadcrumb of the content items list. It carries <see cref="ContentTypeKey"/>.</summary>
-    public const string List = "Contents";      // == the admin list name
-    public const string Edit = "ContentsEdit";  // carries ContentItemKey
-    public const string ContentItemKey = "ContentItem";
-}
-```
+- Use stable literal strings directly in `.cshtml`: `name="ContentsEdit"` and ancestor `id="Contents"`.
+- Use `name` for provider targeting, the trail's CSS class, shape alternates, and name-based deduplication, including Dashboard. The current node automatically has `Id = "Title"`; its name-specific alternate needs no separate attribute.
+- Reuse a screen's admin list name when it has one. The content items list uses `Contents`.
+- Prefer PascalCase names without separators so shape alternate file names remain readable.
+- Do not introduce breadcrumb constants classes, contextual-data keys, or a `data` attribute.
+- Ancestor IDs and the automatic current-node ID `Title` identify node shape alternates; they are not rendered as HTML `id` attributes.
 
 ## Workflow A: add a breadcrumb to a view
 
-### Step 1: Render the trail in the Title zone
+### Step 1: Import the tag helpers
 
-Replace the `<h1>`/title with the tag helper, inside the `Title` zone. Pass the entities the trail needs as `data`.
+Reference `OrchardCore.Navigation.Core` and add this to the module's `Views/_ViewImports.cshtml` if it is not already imported:
+
+```razor
+@addTagHelper *, OrchardCore.Navigation.Core
+```
+
+The always-enabled `OrchardCore.Navigation` module supplies the shapes. Inline authoring needs no custom provider registration.
+
+### Step 2: Declare the explicit title and ancestor children
 
 ```razor
 <zone Name="Title">
-    <breadcrumb name="@ContentsConstants.Edit" data="@(new { ContentItem = contentItem })" />
+    <breadcrumb name="RecordsEdit" title="@T["Edit {0}", record.Name]">
+        <breadcrumb-item id="Records" action="Index" controller="Record" area="My.Module" permission="@MyPermissions.ManageRecords.Name">@T["Records"]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 ```
 
-- Each property of `data` becomes a `builder.Data` entry keyed by the property name — match the provider's `*Key` consts exactly.
-- `heading` — the tag of the page title rendered below the trail (from the current node's text). Defaults to `h1` on admin, none on the front end. `heading=""` renders no title.
-- `page-title` — defaults `true`; the current node's text is added as a page-title segment.
-- `display-type` — defaults `DetailAdmin` on admin, `Detail` elsewhere. Rarely set by hand.
+Prefer paired parent tags with inline ancestors. The parent supplies the current page through `title`; the helper appends it with ID `Title`. Do not add a duplicate current-page child.
 
-### Step 2: Do NOT leave a second heading
+Pass the normal Razor localizer result directly, as with `RenderTitleSegments`: `title="@T["Edit Record"]"` or `title="@T["Edit {0}", record.Name]"`. The helper renders the HTML-aware value when needed, including its formatting arguments. Do not extract `.Value` from `T[...]` or add caller conversions. Keep `@T["..."]` for ancestor child text too.
 
-The trail renders the page title (from the current node) as the `<h1>` on admin, so remove any old `<h1>`/`<h5>` title the view rendered, or the title shows twice.
+Plain strings require the existing safe wrapper `new OrchardCore.DisplayManagement.Html.HtmlContentString(value ?? string.Empty)`. For `Microsoft.Extensions.Localization.LocalizedString` and `OrchardCore.Localization.Data.DataLocalizedString` from `IDataLocalizer`, wrap `.Value ?? string.Empty`. Do not pass these non-HTML values directly, extract `T[...].Value`, or use `Html.Raw`: `HtmlContentString` encodes untrusted strings when written.
 
-### Step 3: `@using` the constants
+A self-closing helper still requires both attributes, for example `<breadcrumb name="Example" title="@T["Edit Example"]" />`. Providers may supply ancestors, but not the current title. With no ancestors, a visible trail still contains the appended current node.
 
-Add the module namespace to the view's `_ViewImports.cshtml` (or the view) so `@SomeConstants.Edit` resolves — the Razor SDK type-checks these at build time.
+| Parent attribute | Behavior |
+|------------------|----------|
+| `name` | Required stable trail name used for provider targeting, CSS, shape alternates, and name-based ancestor deduplication. |
+| `title` | Required non-null `Microsoft.AspNetCore.Html.IHtmlContent`, including `LocalizedHtmlString`. Empty content such as `HtmlString.Empty` suppresses heading/browser-title text, not the current node in a visible trail. |
+| `heading` | Defaults to `h1` on admin requests and no heading on the front end. `heading=""` suppresses the heading. |
+| `page-title` | Defaults to `true`; adds the nonempty explicit title as a browser-title segment. |
+| `display-type` | Defaults to `DetailAdmin` on admin requests and `Detail` elsewhere. Supplies shape alternates. |
 
-### Inline alternative (static trails)
+### Title normalization
 
-A screen whose trail is static can skip the provider (Workflow B) and declare nodes inline as `breadcrumb-item` children — no class, no `switch`:
+With `@using OrchardCore.DisplayManagement.Html`, prepare the view's values as follows:
+
+| Value in the view | Title expression |
+|-------------------|------------------|
+| HTML-localized label | `title="@T["Edit {0}", record.Name]"` |
+| Plain model string | `title="@(new HtmlContentString(Model.DisplayText ?? string.Empty))"` |
+| `LocalizedString` | `title="@(new HtmlContentString(localizedTitle.Value ?? string.Empty))"` |
+| `DataLocalizedString` | `title="@(new HtmlContentString(dataTitle.Value ?? string.Empty))"` |
+
+Use `title="@Microsoft.AspNetCore.Html.HtmlString.Empty"` for intentionally empty content. A null title is invalid, including on the no-output path.
+
+When needed, every title follows the same normalization: render its `IHtmlContent` once with `WriteTo(writer, HtmlEncoder.Default)`, then HTML-decode once into plain text. The helper safely encodes that string for the heading, current node, and browser title. Literal `&amp;` in a string wrapped with `HtmlContentString` stays literal `&amp;`, serialized as `&amp;amp;` in HTML. Do not pre-encode the wrapper's input. `IHtmlContent` does not enable arbitrary title markup: final title output remains text-only.
+
+### Step 3: Remove duplicate title output
+
+Remove the view's old page heading and `RenderTitleSegments` call. The helper supplies both by default on the admin. Keep the helper in the `Title` zone so it works with the admin theme's top-bar title setting.
+
+For a trail that does not own the heading, use the `Breadcrumbs` zone and `heading=""`. Also set `page-title="false"` if the page registers its browser title separately.
+
+## Child attributes and link behavior
+
+| Attribute | Type | Behavior |
+|-----------|------|----------|
+| `id` | `string` | Stable node identifier for shape alternates. |
+| `action`, `controller`, `area` | `string` | MVC route target. Prefer these over hand-built action URLs. |
+| `route-*` | `string` | Additional action route values, such as `route-id="@record.Id"`. |
+| `route-values` | `IDictionary<string, string>` | Additional action route values supplied as a dictionary. |
+| `url` | `string` | Direct link target; ignored when `action` is set. |
+| `permission` | `string` | Stored as `BreadcrumbItem.PermissionName`, resolved through `IPermissionService` during visible ancestor link processing after providers; unknown names are ignored. |
+| `resource` | `object` | Resource passed to authorization for the permission. |
+| `link-enabled` | `bool` | Defaults to `true`. Use `false` when the view has already determined that the link should be unavailable. |
+| `position` | `string` | Relative position, such as `10`, `before`, or `end`. |
+
+The inner content is localized ancestor text, for example `@T["Records"]`. Child content is HTML-decoded after Razor evaluates it, then safely encoded by the shape template. The parent's `IHtmlContent` title is rendered and decoded once as described above. Templates safely encode normalized title and provider-supplied text; do not emit them with `Html.Raw`.
+
+Every child and provider item remains an ancestor, including the last sorted item. The helper appends a separate title node after all ancestors; only that node is current and **never linked**. Ancestors with denied permissions, `link-enabled="false"`, or no link target remain visible as text. Do not omit ancestors solely because the user cannot follow their links.
+
+Children and providers only store named permissions. The helper resolves `PermissionName` after providers, sorting, and link-eligibility checks, so removed or unlinkable ancestors do not cause a name lookup. The explicit title node never needs link processing. Providers can also add `Permission` objects to `BreadcrumbItem.Permissions`; authorization evaluates applicable permissions against `Resource`. Hidden trails perform neither permission lookup nor authorization.
+
+## Workflow B: resolve a nested editor's parent
+
+Use the real parent's display name and route ID, obtained from the view model when available. For example, a model exposing `Parent` and `Record` can render:
 
 ```razor
-<breadcrumb name="MyRecordsEdit">
-    <breadcrumb-item action="Index" controller="Record" area="My.Module">@T["Records"]</breadcrumb-item>
-    <breadcrumb-item>@T["Edit {0}", record.Name]</breadcrumb-item>
-</breadcrumb>
+<zone Name="Title">
+    <breadcrumb name="RecordsEdit" title="@T["Edit {0}", Model.Record.Name]">
+        <breadcrumb-item id="Records" action="Index" controller="Record" area="My.Module" permission="@MyPermissions.ManageRecords.Name">@T["Records"]</breadcrumb-item>
+        <breadcrumb-item id="Parent" action="Edit" controller="Record" area="My.Module"
+                         route-id="@Model.Parent.Id"
+                         permission="@MyPermissions.ManageRecords.Name"
+                         resource="@Model.Parent">@T["Edit {0}", Model.Parent.Name]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 ```
 
-`breadcrumb-item` attributes: inner text (the node text), `action`/`controller`/`area` or `url` (the link), `position`, `id`, `permission` (a permission *name*, resolved through `IPermissionService`). Inline nodes **seed** the trail — providers still run over it, so the Dashboard node and any module extension still apply. Keep the `name` so a provider can target the trail. Use a provider (not inline) for node text loaded from a service, or parent resolution.
+If only the parent ID is available, inject an existing domain service into Razor, not a breadcrumb-specific service. A model with `ParentContentItemId`, for example, can use:
 
-## Workflow B: write a provider
+```razor
+@inject OrchardCore.ContentManagement.IContentManager ContentManager
+@{
+    var parent = await ContentManager.GetAsync(Model.ParentContentItemId);
+}
+```
 
-### Step 1: Inherit the right base
+Use the loaded parent's ID and display text in ancestor child items. Follow the screen's existing missing-parent handling and error reporting. Do not guard parent lookups on the breadcrumb visibility setting. Hidden trails always skip child content, but parent attribute expressions and Razor code or model lookups outside that child content still execute.
 
-- **`NamedBreadcrumbProvider`** — contributes to a *single* trail. Pass the name to `base(...)`; implement `BuildAsync`. Best for a one-screen trail.
-- **`IBreadcrumbProvider`** — implement directly and `switch (builder.Name)` when one module owns several related trails (list/create/edit/display).
+## Workflow C: postprocess a trail with a provider
 
-### Step 2: Add nodes
+Implement `OrchardCore.Navigation.IBreadcrumbProvider`:
 
 ```csharp
-public sealed class ContentsBreadcrumbProvider : IBreadcrumbProvider
+public interface IBreadcrumbProvider
 {
-    internal readonly IStringLocalizer S;
-    public ContentsBreadcrumbProvider(IStringLocalizer<ContentsBreadcrumbProvider> s) => S = s;
+    ValueTask BuildBreadcrumbAsync(BreadcrumbContext context);
+}
+```
 
-    public ValueTask BuildBreadcrumbAsync(BreadcrumbBuilder builder)
-        => builder.Name switch
-        {
-            ContentsConstants.List => BuildListAsync(builder),
-            ContentsConstants.Edit => BuildEditAsync(builder),
-            _ => ValueTask.CompletedTask,      // ignore trails this provider doesn't own
-        };
+`BreadcrumbContext` is also in `OrchardCore.Navigation`. Its public constructor is `BreadcrumbContext(string name, string title, List<BreadcrumbItem> items, ViewContext viewContext, bool showTrail)`, with `ViewContext` from `Microsoft.AspNetCore.Mvc.Rendering`. The helper passes the normalized plain-string title, not the original `IHtmlContent`. It exposes read-only properties:
 
-    private ValueTask BuildEditAsync(BreadcrumbBuilder builder)
+| Property | Type | Use |
+|----------|------|-----|
+| `Name` | `string` | Filter the trail's literal name explicitly. |
+| `Title` | `string` | Normalized plain-text explicit title, which providers cannot replace. |
+| `Items` | `List<BreadcrumbItem>` | Shared mutable ancestor list. Add, insert, remove, replace, or edit ancestors; do not replace the read-only list reference. The explicit current node is not in the list. |
+| `ViewContext` | `Microsoft.AspNetCore.Mvc.Rendering.ViewContext` | Read request context, such as `HttpContext`, when filtering by admin/front-end request. |
+| `ShowTrail` | `bool` | Whether the trail is visible. Helper-created provider contexts always have `ShowTrail == true`; hidden trails create no context and invoke no providers. |
+
+Providers see all visible trails unless they explicitly filter the context. This example targets names starting with `Example`, excluding the `Examples` list itself by name rather than localized title text:
+
+```csharp
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Navigation;
+
+public sealed class ExampleBreadcrumbProvider : IBreadcrumbProvider
+{
+    private readonly IStringLocalizer S;
+
+    public ExampleBreadcrumbProvider(IStringLocalizer<ExampleBreadcrumbProvider> localizer)
     {
-        // Parent node → links back to the list.
-        builder.Add(S["Manage Content"], item => item
-            .Id("Contents")
-            .Action("List", "Admin", new { area = "OrchardCore.Contents" })
-            .Permission(CommonPermissions.ListContent));
+        S = localizer;
+    }
 
-        // Current node → no link needed; the manager strips the last node's href.
-        builder.TryGetData<ContentItem>(ContentsConstants.ContentItemKey, out var ci);
-        builder.Add(S["Edit {0}", ci?.DisplayText], item => item.Id("ContentItem"));
+    public ValueTask BuildBreadcrumbAsync(BreadcrumbContext context)
+    {
+        if (!context.Name.StartsWith("Example", StringComparison.Ordinal) || context.Name == "Examples" ||
+            context.Items.Any(item => item.Id == "Examples"))
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        context.Items.Insert(0, new BreadcrumbItem
+        {
+            Id = "Examples",
+            Text = S["Examples"].Value,
+            Position = "start",
+            Url = "~/examples",
+        });
 
         return ValueTask.CompletedTask;
     }
 }
 ```
 
-Node builder API: `.Text` / `.Id` / `.Position` / `.Url` / `.Action(action, controller, values)` / `.Permission(...)` / `.Permissions(...)` / `.Resource(...)` / `.AddClass`. Prefer `.Action(...)` over hand-built `.Url(...)` so path base and routing are handled.
-
-### Step 3: Register the provider
+Register the provider in `Startup.ConfigureServices`:
 
 ```csharp
-// In the module's Startup.ConfigureServices
-services.AddBreadcrumbProvider<ContentsBreadcrumbProvider>();
+services.AddBreadcrumbProvider<ExampleBreadcrumbProvider>();
 ```
 
-`AddBreadcrumbs()` (which registers the `IBreadcrumbManager`) and the `Breadcrumb`/`BreadcrumbItem` shape table providers live in `OrchardCore.Navigation`'s `Startup` — a module only registers its own providers.
+Registration is scoped and uses `TryAddEnumerable`. For visible trails, providers run in DI registration order after collecting ancestor children, before sorting ancestors, appending the explicit current node, and finalizing `IsCurrent` and `Href`. Later providers observe earlier ancestor mutations.
 
-## Workflow C: a nested editor must lead back through its parent
+Use `context.Name` to target a trail, or `context.ViewContext` to target a request. An admin-only provider checks `AdminAttribute.IsApplied(context.ViewContext.HttpContext)`. Set `Text` to a plain string, not encoded HTML; use `Url` or `RouteValues`, `PermissionName` or the `Permissions` list, `Resource`, and `LinkEnabled` to describe links. Do not depend on incoming `IsCurrent` or `Href`, which the helper computes afterward.
 
-Every child screen reachable only from a parent entity must show that parent in its trail. The child view passes the **parent id** in `data`; the provider loads the parent's name from that id using an injected module service.
+The example also supplies an ancestor to a trail with no inline children. The view must still provide its title:
 
-```csharp
-// view: data="@(new { MenuId = menuId, ... })"
-private async ValueTask AddNodesAsync(BreadcrumbBuilder builder)
-{
-    var menuId = builder.GetData<string>(AdminMenuConstants.MenuIdKey);
-    if (string.IsNullOrEmpty(menuId)) return;
-
-    var menu = _adminMenuService.GetAdminMenuById(await _adminMenuService.GetAdminMenuListAsync(), menuId);
-    builder.Add(S["Edit Nodes for '{0}'", menu?.Name], item => item
-        .Id("Nodes")
-        .Action("List", "Node", new RouteValueDictionary(s_routeValues) { { "id", menuId } })
-        .Permission(AdminMenuPermissions.ManageAdminMenu));
-}
+```razor
+<breadcrumb name="Example" title="@T["Edit Example"]" />
 ```
 
-Inject whatever loads the parent by id: `IContentManager`, `ISession`/YesSql, `IAdminMenuService`, `ISitemapManager`, `IRateLimitPolicyStore`, `IEnumerable<IDeploymentStepFactory>`, etc. Show the parent's **real display name**, not a generic "Edit Step". If a lookup fails, fall back gracefully (skip the node or use a derived name) — a throwing provider is logged and ignored, dropping only that provider's nodes.
+Providers cannot remove or replace the explicit title: `Title` is read-only, and `Items` contains only ancestors. The helper appends the title node with `Id = "Title"` after sorting, even if a provider cleared every ancestor or used position `end`.
 
-## Workflow D: inject a node into every trail (cross-module)
+Hidden admin trails bypass providers completely: the helper does not resolve, enumerate, construct, or invoke `IBreadcrumbProvider` implementations. It creates no `BreadcrumbContext`; the retained `ShowTrail` property and constructor parameter are always true in helper-created provider contexts. Only the explicit title supplies hidden heading/browser-title output.
 
-A provider that reacts to *every* trail can prepend/append a global node. Use position `start` (sorts before all) or `end`. Gate on context so it only appears where it should. This is the mechanism behind the extensibility guarantee — other modules gain the node when the feature is enabled and lose it when disabled, knowing nothing about it.
+## Dashboard ancestor
 
-```csharp
-public ValueTask BuildBreadcrumbAsync(BreadcrumbBuilder builder)
-{
-    var httpContext = _httpContextAccessor.HttpContext;
-    if (httpContext is null || !AdminAttribute.IsApplied(httpContext))
-        return ValueTask.CompletedTask;   // dashboard is the admin root only
+The Admin Dashboard feature registers `OrchardCore.AdminDashboard.Services.DashboardBreadcrumbProvider` with `AddBreadcrumbProvider<DashboardBreadcrumbProvider>()`.
 
-    builder.Add(S["Dashboard"], "start", item => item
-        .Id("Dashboard")
-        .Url("~/" + _adminOptions.AdminUrlPrefix)
-        .Permission(Permissions.AccessAdminDashboard));
+The provider checks `AdminAttribute.IsApplied(context.ViewContext.HttpContext)` and leaves front-end trails unchanged. It skips insertion if `context.Name == "Dashboard"` or an ancestor already has ID `Dashboard`; it does not compare localized title text. Otherwise it inserts a localized Dashboard ancestor at index `0`, with ID `Dashboard`, position `start`, and `Url = "~/" + adminOptions.AdminUrlPrefix`.
 
-    return ValueTask.CompletedTask;
-}
-```
+Its `Permissions` list contains the static `OrchardCore.AdminDashboard.Permissions.AccessAdminDashboard` permission object, so no named-permission lookup is required. Denied access makes a visible Dashboard ancestor plain text. The Dashboard page uses `name="Dashboard"` and `title="@T["Dashboard"]"` so only the explicit current node, with ID `Title`, represents Dashboard.
+
+For visible admin trails, Dashboard can be added when there are no other ancestors, but the explicit current title is still appended afterward. Hidden trails skip this provider entirely; it never affects title text. Disabling the feature removes this provider contribution; there is no Dashboard option on the tag helper.
 
 ## Positions
 
-`FlatPositionComparer` orders nodes: `start` < `before` < numbers (`0`,`1`,`1.1`,`2`,`10` — numeric, dot inserts between) < `after` < free text < `end`. Equal positions keep insertion order. Most nodes leave `Position` null (treated as `0`) and rely on insertion order; use `start`/`end` for cross-cutting nodes.
+`FlatPositionComparer` orders ancestor positions as `start`, `before`, numbers, `after`, free text, then `end`. Numeric subpositions such as `1.1` sort between `1` and `2`. Sorting happens after providers, and equal positions preserve the resulting ancestor list order.
 
-## Theming: shape alternates
+Most inline ancestors can omit `position` and rely on declaration order unless a provider changes it. Positions cannot change the current page: the helper appends the explicit title after every ancestor, including those at `end`.
 
-Node `Id` is **not** an HTML `id` — it only feeds alternates and lets another provider find/remove the node. Override a template by dropping a `.cshtml` in a theme (most specific wins):
+## Disabled admin trails
 
-- Whole trail: `Breadcrumb.cshtml` → `Breadcrumb__[Name]` (`Breadcrumb-ContentsEdit.cshtml`) → `Breadcrumb_[DisplayType]` (`Breadcrumb.DetailAdmin.cshtml`) → `Breadcrumb_[DisplayType]__[Name]`.
-- One node: `BreadcrumbItem.cshtml` → `BreadcrumbItem__[Name]` → `BreadcrumbItem__[Id]` (`BreadcrumbItem-Dashboard.cshtml`) → `BreadcrumbItem__[Name]__[Id]` → their `_[DisplayType]` variants.
+**Show breadcrumb** under **Configuration > Settings > Admin** (`AdminSettings.ShowBreadcrumb`, default on) controls admin trail visibility, not front-end trails.
 
-`.` and `-` in a name/id are encoded (`.`→`_`, `-`→`__`) by `EncodeAlternateElement`. See `references/theming.md`.
+When disabled, the helper **skips all providers and breadcrumb items**, regardless of provider registration. It never calls `GetChildContentAsync`, never resolves, enumerates, constructs, or invokes providers (including Dashboard), and creates no `BreadcrumbContext` or items, including the title node. Child text, positions, and links are not evaluated.
 
-`Breadcrumb.cshtml` renders the trail **and** the page title, so it is the one template to override to rearrange them — e.g. render the title above the trail (swap the two output lines), drop the `oc-breadcrumb-title` block to let the trail be the title, or skip the `IsCurrent` node so the current page is not repeated. An administrator can also turn the trail off for the whole admin with the **Show breadcrumb** setting (`AdminSettings.ShowBreadcrumb`, default on); the tag helper passes the result to the shape as `ShowTrail`, and the template then renders the title alone.
+Only the explicit title supplies heading/browser-title text. When needed, it is formatted once through `WriteTo(writer, HtmlEncoder.Default)` and HTML-decoded once. The helper safely encodes the normalized string, renders the heading directly with `oc-breadcrumb-title`, and registers the browser title when `page-title` is true. It does not generate URLs, resolve permission names, authorize links, or create shapes. Breadcrumb templates and alternates do not run.
+
+When the trail is hidden and both `heading=""` and `page-title="false"` are set, the helper validates the non-null title but also skips `WriteTo`. Parent attribute expressions and Razor code or model lookups outside child content still run: `T[...]` results and `HtmlContentString` wrappers are created before the helper, even when it skips `WriteTo`. All child-only work is skipped for every hidden trail; do not add visibility guards to views. For a visible trail, these attributes suppress only heading/browser-title output, not ancestors, providers, or the explicit current node.
+
+## Theming and low-level shapes
+
+Visible trails use the existing `Breadcrumb` and `BreadcrumbItem` shapes and their name, ID, and display-type alternates:
+
+- Whole trail: `Breadcrumb.cshtml`, `Breadcrumb-ContentsEdit.cshtml`, `Breadcrumb.DetailAdmin.cshtml`, `Breadcrumb-ContentsEdit.DetailAdmin.cshtml`.
+- One node: `BreadcrumbItem.cshtml`, `BreadcrumbItem-Dashboard.cshtml`, `BreadcrumbItem-ContentsEdit-Title.DetailAdmin.cshtml`.
+
+`Breadcrumb.cshtml` owns both the visible trail and heading. Override it to rearrange them. Keep text safely encoded. See `references/theming.md` for alternate precedence, encoding, and the distinction between hidden admin trails and shape-level `ShowTrail`.
+
+The helper assigns the current node `Id = "Title"`. The existing alternate factory provides `BreadcrumbItem-Title.cshtml`, `BreadcrumbItem-[Name]-Title.cshtml`, `BreadcrumbItem-Title.[DisplayType].cshtml`, and `BreadcrumbItem-[Name]-Title.[DisplayType].cshtml`; no extra attribute or shape type is needed. Ancestor IDs still come from child `id` or provider-supplied `Id`.
+
+`IShapeFactory.BreadcrumbAsync` is a low-level presentation API for prebuilt `BreadcrumbItem` objects. Its caller supplies the complete ordered sequence, including the terminal current node, with authorized `Href` values and `IsCurrent` already resolved. It does not append a title node, invoke providers, build trails from names, load parents, add Dashboard, or register the browser title. It is not the recommended authoring path for a view.
 
 ## Gotchas
 
-- **Data key mismatch.** `data="@(new { ContentItem = x })"` must match the provider's `GetData<T>("ContentItem")`. A typo silently yields `default`, so the node's text/parent goes missing.
-- **Second heading.** Remove the view's old `<h1>`/`<h5>`; the trail already renders the page title (from the current node) on admin.
-- **Trail name ≠ admin list name.** Diverging names is the bug this convention exists to prevent — reuse the list `Name`.
-- **Don't link the last node.** The manager clears the current node's href; you can still add an `.Action(...)`, it's just ignored for the current node.
-- **Provider must be registered** with `AddBreadcrumbProvider<T>()` or the trail renders nothing (the tag helper suppresses output for an empty trail — a common "why is it blank" cause).
-- **`Constants` class collisions.** Merge into an existing `{Module}Constants` (in `.Core`) rather than creating a duplicate; rename to `{Module}BreadcrumbConstants` only to dodge a framework type.
-- **Permissions, not removal.** Give a node `.Permission(...)` rather than omitting it for unauthorized users — the manager renders it as plain text so the trail stays whole.
+- **Missing title is invalid.** Every helper, including a self-closing one, needs a non-null `IHtmlContent` title, even on the no-output path. `HtmlString.Empty` is valid and still leaves a current node in a visible trail.
+- **Wrap non-HTML title values safely.** Pass `@T[...]` directly, never its `.Value`. Use `new HtmlContentString(value ?? string.Empty)` for strings and `new HtmlContentString(localizedTitle.Value ?? string.Empty)` for non-HTML localizer results; never `Html.Raw`.
+- **HTML-aware input is still text-only output.** Do not render normalized title text as raw HTML or decode it again.
+- **Children are ancestors only.** Declare the current page in parent `title`; the helper appends it with ID `Title`, so do not duplicate it with a child.
+- **Providers cannot change the current title.** Clearing ancestors or assigning position `end` never removes or replaces the appended current node.
+- **Hidden means title-only.** The helper skips all provider resolution and execution, child evaluation, contexts, and items. Provider contexts created for visible trails always have `ShowTrail == true`.
+- **No visibility guards in views.** Do not read `AdminSettings.ShowBreadcrumb` or wrap lookups or markup in setting-dependent branches; visibility belongs to the helper.
+- **Named permissions are deferred.** Do not look them up while collecting or postprocessing ancestors; removed or unlinkable ancestors do not need that work.
+- **Second heading.** Remove the old title output when the helper owns the title.
+- **Wrong dictionary type.** `route-values` accepts `IDictionary<string, string>`, not an anonymous object or `RouteValueDictionary`.
+- **Link checks are not endpoint security.** Keep authorization on the target action; `permission` and `link-enabled` control only the rendered link.
+- **Renamed identifiers affect themes and providers.** Keep trail names and ancestor IDs stable. The automatic current-node ID is always `Title`; screen-specific title alternates use the trail name.
+- **Hidden trails bypass templates.** A breadcrumb shape override cannot change the helper's directly rendered disabled-state heading.
 
 ## References
 
-- `references/theming.md` — full alternate tables, display types, front-end vs admin, overriding a node template
-- `src/OrchardCore/OrchardCore.Navigation.Core/` (repo) — `BreadcrumbBuilder`, `BreadcrumbItem(Builder)`, `IBreadcrumbProvider`, `NamedBreadcrumbProvider`, `IBreadcrumbManager`, `BreadcrumbManager`
-- `src/OrchardCore.Modules/OrchardCore.Navigation/` (repo) — `BreadcrumbShapes`, `BreadcrumbAlternatesFactory`, `Views/Breadcrumb.cshtml`, `Views/BreadcrumbItem.cshtml`
-- `src/docs/reference/modules/Navigation/README.md` (repo) — official breadcrumb reference
-- `AGENTS.md` (repo root) — build commands
+- `references/theming.md` - alternate tables, display types, front-end usage, and heading behavior.
+- `src/OrchardCore/OrchardCore.Navigation.Core/` - `BreadcrumbTagHelper`, `BreadcrumbItemTagHelper`, `IBreadcrumbProvider`, `BreadcrumbContext`, `BreadcrumbItem`, and `ShapeFactoryExtensions`.
+- `src/OrchardCore.Modules/OrchardCore.AdminDashboard/Services/DashboardBreadcrumbProvider.cs` - feature-registered admin ancestor provider.
+- `src/OrchardCore.Modules/OrchardCore.Navigation/` - `BreadcrumbShapes`, `BreadcrumbAlternatesFactory`, and the breadcrumb views.
+- `src/docs/reference/modules/Navigation/README.md` - canonical breadcrumb reference.
+- `AGENTS.md` - project conventions.

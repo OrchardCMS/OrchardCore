@@ -66,4 +66,50 @@ public class BreadcrumbAlternatesFactoryTests
 
         Assert.Equal(["Breadcrumb__My_Trail"], alternates);
     }
+
+    [Fact]
+    public void GetBreadcrumbItemAlternates_TitleWithoutDisplayType_UsesTrailNameAndTitleRole()
+    {
+        var alternates = BreadcrumbAlternatesFactory.GetBreadcrumbItemAlternates("ContentsEdit", "Title", null);
+
+        Assert.Equal(
+            [
+                "BreadcrumbItem__ContentsEdit",
+                "BreadcrumbItem__Title",
+                "BreadcrumbItem__ContentsEdit__Title",
+            ],
+            alternates);
+    }
+
+    [Fact]
+    public void GetBreadcrumbItemAlternates_TitleWithDisplayType_UsesTrailNameAndTitleRole()
+    {
+        var alternates = BreadcrumbAlternatesFactory.GetBreadcrumbItemAlternates("ContentsEdit", "Title", "DetailAdmin");
+
+        Assert.Equal(
+            [
+                "BreadcrumbItem__ContentsEdit",
+                "BreadcrumbItem__Title",
+                "BreadcrumbItem__ContentsEdit__Title",
+                "BreadcrumbItem_DetailAdmin",
+                "BreadcrumbItem_DetailAdmin__ContentsEdit",
+                "BreadcrumbItem_DetailAdmin__Title",
+                "BreadcrumbItem_DetailAdmin__ContentsEdit__Title",
+            ],
+            alternates);
+    }
+
+    [Fact]
+    public void GetBreadcrumbItemAlternates_TitleWithDottedName_EncodesTheTrailName()
+    {
+        var alternates = BreadcrumbAlternatesFactory.GetBreadcrumbItemAlternates("My.Trail", "Title", null);
+
+        Assert.Equal(
+            [
+                "BreadcrumbItem__My_Trail",
+                "BreadcrumbItem__Title",
+                "BreadcrumbItem__My_Trail__Title",
+            ],
+            alternates);
+    }
 }

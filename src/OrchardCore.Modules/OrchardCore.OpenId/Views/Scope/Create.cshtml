@@ -3,7 +3,9 @@
 @using OrchardCore.OpenId.ViewModels
 
 <zone Name="Title">
-    <breadcrumb name="@OpenIdConstants.ScopesCreate" />
+    <breadcrumb name="OpenIdScopesCreate" title="@T["Create a new scope"]">
+        <breadcrumb-item id="OpenIdScopes" action="Index" controller="Scope" area="OrchardCore.OpenId" permission="@OpenIdPermissions.ManageScopes.Name">@T["Scopes"]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <div asp-validation-summary="ModelOnly"></div>

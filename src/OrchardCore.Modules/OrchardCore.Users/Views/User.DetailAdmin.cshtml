@@ -2,7 +2,9 @@
 @using OrchardCore.ContentManagement
 
 <zone Name="Title">
-    <breadcrumb name="@UsersConstants.Display" />
+    <breadcrumb name="UsersDisplay" title="@T["View User"]">
+        <breadcrumb-item id="Users" action="Index" controller="Admin" area="OrchardCore.Users" permission="@UsersPermissions.ListUsers.Name">@T["Users"]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <article>

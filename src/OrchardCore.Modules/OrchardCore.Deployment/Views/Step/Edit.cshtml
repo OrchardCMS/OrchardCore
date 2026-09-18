@@ -1,7 +1,42 @@
 @model EditDeploymentPlanStepViewModel
+@using Microsoft.AspNetCore.Html
+@using OrchardCore.DisplayManagement.Html
+@using OrchardCore.Mvc.Utilities
+@using YesSql
+@inject YesSql.ISession Session
+@inject IEnumerable<IDeploymentStepFactory> StepFactories
+@{
+    var plan = await Session.GetAsync<DeploymentPlan>(Model.DeploymentPlanId);
+    IHtmlContent stepName = T["Step"];
+    var stepType = Model.DeploymentStepType;
+
+    if (!string.IsNullOrEmpty(stepType))
+    {
+        var derivedName = stepType;
+        if (derivedName.EndsWith("DeploymentStep", StringComparison.Ordinal))
+        {
+            derivedName = derivedName[..^"DeploymentStep".Length];
+        }
+        else if (derivedName.EndsWith("Step", StringComparison.Ordinal))
+        {
+            derivedName = derivedName[..^"Step".Length];
+        }
+
+        stepName = new HtmlContentString(derivedName.CamelFriendly() ?? string.Empty);
+
+        var displayName = StepFactories.FirstOrDefault(factory => factory.Name == stepType)?.Create().Title;
+        if (!string.IsNullOrEmpty(displayName?.Value))
+        {
+            stepName = new HtmlContentString(displayName.Value);
+        }
+    }
+}
 
 <zone Name="Title">
-    <breadcrumb name="@DeploymentConstants.StepEdit" data="@(new { PlanId = Model.DeploymentPlanId, StepType = Model.DeploymentStepType })" />
+    <breadcrumb name="DeploymentStepsEdit" title="@stepName">
+        <breadcrumb-item id="DeploymentPlans" action="Index" controller="DeploymentPlan" area="OrchardCore.Deployment" permission="@DeploymentPermissions.Export.Name">@T["Deployment Plans"]</breadcrumb-item>
+        <breadcrumb-item id="DeploymentPlan" action="Display" controller="DeploymentPlan" area="OrchardCore.Deployment" route-id="@Model.DeploymentPlanId" permission="@DeploymentPermissions.Export.Name">@(plan?.Name ?? T["Deployment Plan"].Value)</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <div asp-validation-summary="ModelOnly"></div>

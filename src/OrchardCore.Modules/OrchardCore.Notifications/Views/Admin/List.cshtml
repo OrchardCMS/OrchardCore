@@ -1,7 +1,7 @@
 @model ListNotificationsViewModel
 
 <zone Name="Title">
-    <breadcrumb name="@NotificationsConstants.List" />
+    <breadcrumb name="Notifications" title="@T["Notification Center"]" />
 </zone>
 
 <form asp-action="List" asp-controller="Admin" method="post" id="items-form" autocomplete="off">

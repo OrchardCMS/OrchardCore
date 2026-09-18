@@ -45,7 +45,6 @@ public sealed class Startup : StartupBase
         services.AddScoped<IAuthorizationHandler, RolesPermissionsHandler>();
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
-        services.AddBreadcrumbProvider<RolesBreadcrumbProvider>();
         services.Configure<SystemRoleOptions>(options =>
         {
             var adminRoleName = _shellConfiguration.GetSection("OrchardCore_Roles").GetValue<string>("AdminRoleName");

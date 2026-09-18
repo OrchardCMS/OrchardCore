@@ -10,7 +10,10 @@
 <script asp-name="bootstrap-select" at="Foot"></script>
 
 <zone Name="Title">
-    <breadcrumb name="@WorkflowsConstants.Instances" data="@(new { TypeName = Model.WorkflowType.Name, TypeId = Model.WorkflowType.Id.ToString() })" />
+    <breadcrumb name="WorkflowInstances" title="@T["Instances"]">
+        <breadcrumb-item id="WorkflowTypes" action="Index" controller="WorkflowType" area="OrchardCore.Workflows" permission="@WorkflowsPermissions.ManageWorkflows.Name">@T["Workflows"]</breadcrumb-item>
+        <breadcrumb-item id="WorkflowType" action="Edit" controller="WorkflowType" area="OrchardCore.Workflows" route-id="@Model.WorkflowType.Id" permission="@WorkflowsPermissions.ManageWorkflows.Name">@Model.WorkflowType.Name</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <form asp-action="Index" id="workflows-form" method="post" class="no-multisubmit workflow-bulk-select-list" data-selected-text="@T["selected"]">

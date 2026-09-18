@@ -15,7 +15,7 @@
 <script asp-name="Sortable" at="Foot"></script>
 
 <zone Name="Title">
-    <breadcrumb name="@LayersConstants.List" />
+    <breadcrumb name="Layers" title="@T["Widgets and Layers"]" />
 </zone>
 
 <form id="undo-form" asp-action="UpdatePosition" method="post" class="no-multisubmit" data-update-position-url="@Url.Action("UpdatePosition", "Admin", new { area = "OrchardCore.Layers" })">

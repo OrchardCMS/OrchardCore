@@ -1,11 +1,21 @@
 @model OrchardCore.RateLimits.ViewModels.RateLimiterEditorViewModel
+@using OrchardCore.RateLimits.Models
+@inject OrchardCore.RateLimits.Core.IRateLimitPolicyStore PolicyStore
 
 @{
     var sourceId = ViewContext.HttpContext.Request.Query["id"];
+    var policyId = ViewContext.RouteData.Values["policyId"]?.ToString();
 }
 
 <zone Name="Title">
-    <breadcrumb name="@RateLimitsConstants.LimiterCreate" data="@(new { Model.DisplayName, PolicyId = ViewContext.RouteData.Values["policyId"] })" />
+    <breadcrumb name="RateLimitsLimiterCreate" title="@T["Add '{0}' Limiter", Model.DisplayName]">
+        <breadcrumb-item id="RateLimits" action="Index" controller="Admin" area="OrchardCore.RateLimits" permission="@RateLimitsPermissions.ManageRateLimits.Name">@T["Rate Limit Policies"]</breadcrumb-item>
+        @if (!string.IsNullOrEmpty(policyId))
+        {
+            var policy = await PolicyStore.FindByIdAsync(policyId, PolicyVersion.Current);
+            <breadcrumb-item id="Policy" action="Edit" controller="Admin" area="OrchardCore.RateLimits" route-policyId="@policyId" permission="@RateLimitsPermissions.ManageRateLimits.Name">@(policy?.Name ?? T["Rate Limit Policy"].Value)</breadcrumb-item>
+        }
+    </breadcrumb>
 </zone>
 
 <form asp-action="Create" method="post" class="no-multisubmit">

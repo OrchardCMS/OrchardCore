@@ -1,14 +1,16 @@
 namespace OrchardCore.Navigation;
 
 /// <summary>
-/// Describes the nodes of one or more breadcrumb trails. Every provider registered on the tenant is called for every
-/// breadcrumb that is rendered, which is how a module adds a node to a trail owned by another module.
+/// Updates a breadcrumb's ancestors after its inline children have been collected and before its explicit
+/// title is appended as the current node. Providers can also supply all ancestors when no children are declared.
 /// </summary>
 public interface IBreadcrumbProvider
 {
     /// <summary>
-    /// Adds the nodes of the breadcrumb identified by <see cref="BreadcrumbBuilder.Name"/> to the builder.
+    /// Adds, removes or updates the ancestors of the named trail. Providers run in registration order, before
+    /// positioning, link resolution and appending the title. The tag helper does not resolve or invoke providers
+    /// when the admin breadcrumb setting is disabled.
     /// </summary>
-    /// <param name="builder">The builder collecting the nodes of the breadcrumb being rendered.</param>
-    ValueTask BuildBreadcrumbAsync(BreadcrumbBuilder builder);
+    /// <param name="context">The named trail, mutable items and rendering context.</param>
+    ValueTask BuildBreadcrumbAsync(BreadcrumbContext context);
 }

@@ -1,7 +1,9 @@
 @model OrchardCore.RateLimits.ViewModels.RateLimitPolicyEditViewModel
 
 <zone Name="Title">
-    <breadcrumb name="@RateLimitsConstants.Edit" />
+    <breadcrumb name="RateLimitsEdit" title="@T["Edit Rate Limit Policy"]">
+        <breadcrumb-item id="RateLimits" action="Index" controller="Admin" area="OrchardCore.RateLimits" permission="@RateLimitsPermissions.ManageRateLimits.Name">@T["Rate Limit Policies"]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 @{

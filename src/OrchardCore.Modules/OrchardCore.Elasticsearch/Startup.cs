@@ -65,7 +65,6 @@ public sealed class Startup : StartupBase
         services.AddElasticsearchServices();
         services.AddPermissionProvider<PermissionProvider>();
         services.AddNavigationProvider<AdminMenu>();
-        services.AddBreadcrumbProvider<ElasticsearchBreadcrumbProvider>();
         services.AddDisplayDriver<Query, ElasticsearchQueryDisplayDriver>();
         services.AddDataMigration<ElasticsearchQueryMigrations>();
         services.AddScoped<IQueryHandler, ElasticsearchQueryHandler>();

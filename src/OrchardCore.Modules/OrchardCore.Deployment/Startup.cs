@@ -13,7 +13,6 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.FileStorage;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
-using OrchardCore.Deployment.Services;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 
@@ -27,7 +26,6 @@ public sealed class Startup : StartupBase
         services.AddDeploymentServices();
 
         services.AddNavigationProvider<AdminMenu>();
-        services.AddBreadcrumbProvider<DeploymentBreadcrumbProvider>();
         services.AddPermissionProvider<Permissions>();
 
         services.AddSingleton<IDeploymentTargetProvider, FileDownloadDeploymentTargetProvider>();

@@ -170,7 +170,6 @@ public sealed class Startup : StartupBase
         services.AddPermissionProvider<PermissionProvider>();
         services.AddScoped<IAuthorizationHandler, ManageMediaFolderAuthorizationHandler>();
         services.AddNavigationProvider<AdminMenu>();
-        services.AddBreadcrumbProvider<MediaProfilesBreadcrumbProvider>();
 
         // Image processing pipeline (NetVips-based)
         services.AddSingleton<IImageProcessingEngine, VipsImageProcessingEngine>();
@@ -302,7 +301,6 @@ public sealed class MediaCacheStartup : StartupBase
     {
         services.AddPermissionProvider<MediaCachePermissions>();
         services.AddNavigationProvider<MediaCacheAdminMenu>();
-        services.AddBreadcrumbProvider<MediaProfilesBreadcrumbProvider>();
     }
 }
 

@@ -41,7 +41,6 @@ public sealed class Startup : StartupBase
         services.TryAddSingleton<LuceneAnalyzerManager>();
         services.TryAddScoped<ILuceneSearchQueryService, LuceneSearchQueryService>();
         services.AddNavigationProvider<AdminMenu>();
-        services.AddBreadcrumbProvider<LuceneBreadcrumbProvider>();
         services.AddPermissionProvider<Permissions>();
 
         services.Configure<LuceneOptions>(o =>

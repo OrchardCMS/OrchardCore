@@ -20,7 +20,9 @@
     string localizedPartName = D[Model.DisplayName, "Content Types"];
 }
 <zone Name="Title">
-    <breadcrumb name="@ContentTypesConstants.PartsEdit" data="@(new { PartName = Model.Name, PartDisplayName = localizedPartName })" />
+    <breadcrumb name="ContentPartsEdit" title="@T["Edit Content Part - {0}", localizedPartName]">
+        <breadcrumb-item id="ContentParts" action="ListParts" controller="Admin" area="OrchardCore.ContentTypes" permission="@ContentTypesPermissions.ViewContentTypes.Name">@T["Content Parts"]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <form asp-action="EditPart">

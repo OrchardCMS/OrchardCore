@@ -5,7 +5,9 @@
 }
 
 <zone Name="Title">
-    <breadcrumb name="@TemplatesConstants.Edit" data="@(new { AdminTemplates = Model.AdminTemplates })" />
+    <breadcrumb name="TemplatesEdit" title="@(Model.AdminTemplates ? T["Edit Admin Template"] : T["Edit Template"])">
+        <breadcrumb-item id="Templates" action="@(Model.AdminTemplates ? "Admin" : "Index")" controller="Template" area="OrchardCore.Templates" permission="@Permissions.ManageTemplates.Name">@(Model.AdminTemplates ? T["Admin Templates"] : T["Templates"])</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <div asp-validation-summary="ModelOnly"></div>
@@ -69,4 +71,3 @@
 <style asp-name="monaco"></style>
 <script asp-name="monaco" at="Foot"></script>
 <script asp-src="~/OrchardCore.Templates/Scripts/template-editors/template-edit.min.js" debug-src="~/OrchardCore.Templates/Scripts/template-editors/template-edit.js" depends-on="liquid-intellisense monaco" at="Foot" type="module"></script>
-

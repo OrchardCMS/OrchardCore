@@ -1,9 +1,43 @@
 @model ListContentsViewModel
+@using Microsoft.AspNetCore.Html
+@using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.Contents
 @using OrchardCore.Contents.ViewModels
+@using OrchardCore.ContentTypes
+@using OrchardCore.DisplayManagement.Html
+@using OrchardCore.Localization.Data
+@inject IAuthorizationService AuthorizationService
+@inject IContentDefinitionManager ContentDefinitionManager
+@inject IContentManager ContentManager
+@inject IDataLocalizer D
+
+@{
+    var contentType = Model.Options.SelectedContentType;
+    var isFiltered = !string.IsNullOrEmpty(contentType);
+    IHtmlContent title = T["Manage Content"];
+    var canList = false;
+
+    if (isFiltered)
+    {
+        var contentTypeDefinition = await ContentDefinitionManager.GetTypeDefinitionAsync(contentType);
+        var typeDisplayName = contentTypeDefinition?.DisplayName ?? contentType.CamelFriendly();
+        title = new HtmlContentString(D[typeDisplayName, DataLocalizationContext.ContentType].Value ?? string.Empty);
+    }
+
+    if (User is not null)
+    {
+        var listableTypes = (await ContentDefinitionManager.ListTypeDefinitionsAsync()).Where(definition => definition.IsListable());
+        canList = await AuthorizationService.AuthorizeContentTypeDefinitionsAsync(User, CommonPermissions.ListContent, listableTypes, ContentManager);
+    }
+}
 
 <zone Name="Title">
-    <breadcrumb name="@ContentsConstants.List" data="@(new { ContentType = Model.Options.SelectedContentType })" />
+    <breadcrumb name="Contents" title="@title">
+        @if (isFiltered)
+        {
+            <breadcrumb-item id="Contents" action="List" controller="Admin" area="OrchardCore.Contents" route-contentTypeId="" link-enabled="@canList">@T["Manage Content"]</breadcrumb-item>
+        }
+    </breadcrumb>
 </zone>
 
 <form asp-action="List" asp-controller="Admin" method="post" id="items-form" autocomplete="off">

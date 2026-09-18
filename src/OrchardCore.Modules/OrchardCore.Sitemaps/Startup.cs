@@ -32,7 +32,6 @@ public sealed class Startup : StartupBase
     {
         services.AddDataMigration<Migrations>();
         services.AddNavigationProvider<AdminMenu>();
-        services.AddBreadcrumbProvider<SitemapsBreadcrumbProvider>();
         services.AddPermissionProvider<Permissions>();
 
         services.Configure<SitemapsOptions>(options =>

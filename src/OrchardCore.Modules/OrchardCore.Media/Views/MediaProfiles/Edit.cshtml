@@ -1,7 +1,9 @@
 @model MediaProfileViewModel
 
 <zone Name="Title">
-    <breadcrumb name="@MediaProfilesConstants.Edit" />
+    <breadcrumb name="MediaProfilesEdit" title="@T["Edit Media Profile"]">
+        <breadcrumb-item id="MediaProfiles" action="Index" controller="MediaProfiles" area="OrchardCore.Media" permission="@MediaPermissions.ManageMediaProfiles.Name">@T["Media Profiles"]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 @* TODO Trigger preview. *@
 <div asp-validation-summary="All"></div>

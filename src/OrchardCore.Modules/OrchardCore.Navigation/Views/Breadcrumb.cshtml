@@ -3,8 +3,8 @@
     // the current node, the way it appeared before the breadcrumb was introduced. This template is the single place a
     // theme overrides to change how the trail and the title sit together, e.g. to render the title above the trail, to
     // drop the heading and let the trail stand in for the title, or to move the trail elsewhere.
-    // 'ShowTrail' is false when an administrator turns the breadcrumb off in the admin settings: the shape then carries
-    // no node, and only the title renders.
+    // Low-level shape callers can hide the trail with ShowTrail. The tag helper handles the admin visibility setting
+    // itself and renders the heading directly when breadcrumbs are disabled.
     string heading = Model.Heading;
     string title = Model.Title;
     bool showTrail = Model.ShowTrail;

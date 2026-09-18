@@ -20,7 +20,6 @@ public sealed class Startup : StartupBase
     {
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
-        services.AddBreadcrumbProvider<PlacementsBreadcrumbProvider>();
 
         services.TryAddScoped<IPlacementStore, DatabasePlacementsStore>();
         services.AddScoped<PlacementsManager>();

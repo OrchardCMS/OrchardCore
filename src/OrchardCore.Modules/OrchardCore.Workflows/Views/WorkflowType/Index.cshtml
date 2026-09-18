@@ -6,7 +6,7 @@
     int endIndex = startIndex + Model.WorkflowTypes.Count - 1;
 }
 <zone Name="Title">
-    <breadcrumb name="@WorkflowsConstants.TypesList" />
+    <breadcrumb name="WorkflowTypes" title="@T["Workflows"]" />
 </zone>
 
 <form asp-action="Index" id="workflows-types-form" method="post" class="no-multisubmit workflow-bulk-select-list" data-selected-text="@T["selected"]">

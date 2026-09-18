@@ -1,7 +1,9 @@
 @model LayerEditViewModel
 
 <zone Name="Title">
-    <breadcrumb name="@LayersConstants.Create" />
+    <breadcrumb name="LayersCreate" title="@T["Create Layer"]">
+        <breadcrumb-item id="Layers" action="Index" controller="Admin" area="OrchardCore.Layers" permission="@Permissions.ManageLayers.Name">@T["Widgets and Layers"]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <form asp-action="Create" method="post" class="no-multisubmit">

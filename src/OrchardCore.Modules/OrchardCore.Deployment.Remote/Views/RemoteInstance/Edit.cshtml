@@ -1,7 +1,9 @@
 @model EditRemoteInstanceViewModel
 
 <zone Name="Title">
-    <breadcrumb name="@RemoteDeploymentConstants.InstancesEdit" />
+    <breadcrumb name="RemoteInstancesEdit" title="@T["Edit Remote Instance"]">
+        <breadcrumb-item id="RemoteInstances" action="Index" controller="RemoteInstance" area="OrchardCore.Deployment.Remote" permission="@DeploymentPermissions.ManageRemoteInstances.Name">@T["Remote Instances"]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <div asp-validation-summary="ModelOnly"></div>

@@ -30,19 +30,11 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Adds the services building the breadcrumb trails of the tenant.
+    /// Registers a scoped provider that updates breadcrumb items after their inline declarations.
     /// </summary>
-    public static IServiceCollection AddBreadcrumbs(this IServiceCollection services)
-    {
-        services.TryAddScoped<IBreadcrumbManager, BreadcrumbManager>();
-
-        return services;
-    }
-
-    /// <summary>
-    /// Registers a breadcrumb provider.
-    /// </summary>
-    /// <typeparam name="TProvider"></typeparam>
+    /// <typeparam name="TProvider">The breadcrumb provider implementation.</typeparam>
+    /// <param name="services">The tenant service collection.</param>
+    /// <returns>The service collection.</returns>
     public static IServiceCollection AddBreadcrumbProvider<TProvider>(this IServiceCollection services)
         where TProvider : class, IBreadcrumbProvider
     {

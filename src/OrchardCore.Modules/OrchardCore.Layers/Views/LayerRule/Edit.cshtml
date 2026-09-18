@@ -1,7 +1,10 @@
 @model LayerRuleEditViewModel
 
 <zone Name="Title">
-    <breadcrumb name="@LayersConstants.RuleEdit" data="@(new { LayerName = Model.Name })" />
+    <breadcrumb name="LayersRuleEdit" title="@T["Edit Rule"]">
+        <breadcrumb-item id="Layers" action="Index" controller="Admin" area="OrchardCore.Layers" permission="@Permissions.ManageLayers.Name">@T["Widgets and Layers"]</breadcrumb-item>
+        <breadcrumb-item id="Layer" action="Edit" controller="Admin" area="OrchardCore.Layers" route-name="@Model.Name" permission="@Permissions.ManageLayers.Name">@T["Edit Layer - {0}", Model.Name]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <div asp-validation-summary="ModelOnly"></div>

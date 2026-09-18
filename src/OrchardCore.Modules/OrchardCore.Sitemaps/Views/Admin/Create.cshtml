@@ -1,7 +1,9 @@
 @model CreateSitemapViewModel
 
 <zone Name="Title">
-    <breadcrumb name="@SitemapsConstants.Create" />
+    <breadcrumb name="SitemapsCreate" title="@T["Create Sitemap"]">
+        <breadcrumb-item id="Sitemaps" action="List" controller="Admin" area="OrchardCore.Sitemaps" permission="@SitemapsPermissions.ManageSitemaps.Name">@T["Sitemaps"]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 @if (string.IsNullOrEmpty(Site.BaseUrl))

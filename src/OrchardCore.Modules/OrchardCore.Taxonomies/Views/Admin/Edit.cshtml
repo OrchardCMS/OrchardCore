@@ -4,6 +4,7 @@
 @using OrchardCore.Localization.Data
 
 @inject IContentDefinitionManager ContentDefinitionManager
+@inject IContentManager ContentManager
 @inject IDataLocalizer D
 
 @{
@@ -11,10 +12,18 @@
     var contentTypeDefinition = await ContentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
     var typeDisplayName = contentTypeDefinition?.DisplayName ?? contentItem.ContentType.CamelFriendly();
     string localizedTypeDisplayName = D[typeDisplayName, "Content Types"];
+    string taxonomyContentItemId = Model.TaxonomyContentItemId;
 }
 
 <zone Name="Title">
-    <breadcrumb name="@TaxonomiesConstants.Edit" data="@(new { TermTypeDisplayName = localizedTypeDisplayName, TaxonomyContentItemId = Model.TaxonomyContentItemId })" />
+    <breadcrumb name="TaxonomiesEdit" title="@T["Edit {0}", localizedTypeDisplayName]">
+        <breadcrumb-item id="Contents" action="List" controller="Admin" area="OrchardCore.Contents" route-contentTypeId="">@T["Manage Content"]</breadcrumb-item>
+        @if (!string.IsNullOrEmpty(taxonomyContentItemId))
+        {
+            var taxonomy = await ContentManager.GetAsync(taxonomyContentItemId);
+            <breadcrumb-item id="Taxonomy" action="Edit" controller="Admin" area="OrchardCore.Contents" route-contentItemId="@taxonomyContentItemId">@T["Edit {0}", taxonomy?.DisplayText]</breadcrumb-item>
+        }
+    </breadcrumb>
 </zone>
 
 <form asp-action="Edit" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data" class="no-multisubmit">

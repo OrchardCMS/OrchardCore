@@ -36,7 +36,6 @@ public sealed class Startup : StartupBase
 #pragma warning restore CS0618 // Type or member is obsolete
 
         services.AddNavigationProvider<AdminMenu>();
-        services.AddBreadcrumbProvider<IndexingBreadcrumbProvider>();
         services.AddDisplayDriver<IndexProfile, IndexProfileDisplayDriver>();
         services.AddPermissionProvider<IndexingPermissionsProvider>();
         services.AddDataMigration<PreviewIndexingMigrations>();

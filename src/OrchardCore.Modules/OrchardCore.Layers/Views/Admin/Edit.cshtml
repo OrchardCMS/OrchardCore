@@ -12,7 +12,9 @@
 }
 
 <zone Name="Title">
-    <breadcrumb name="@LayersConstants.Edit" data="@(new { LayerName = Model.Name })" />
+    <breadcrumb name="LayersEdit" title="@T["Edit Layer - {0}", Model.Name]">
+        <breadcrumb-item id="Layers" action="Index" controller="Admin" area="OrchardCore.Layers" permission="@Permissions.ManageLayers.Name">@T["Widgets and Layers"]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <form asp-action="Edit" method="post" class="no-multisubmit">

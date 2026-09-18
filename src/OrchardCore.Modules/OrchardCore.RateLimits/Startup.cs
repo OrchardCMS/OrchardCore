@@ -44,7 +44,6 @@ public sealed class Startup : StartupBase
             .AddDisplayDriver<RateLimitLimiter, TokenBucketRateLimiterDisplayDriver>();
 
         services.AddNavigationProvider<AdminMenu>();
-        services.AddBreadcrumbProvider<RateLimitsBreadcrumbProvider>();
         services.AddPermissionProvider<Permissions>();
     }
 

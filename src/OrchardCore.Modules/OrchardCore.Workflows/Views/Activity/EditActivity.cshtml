@@ -1,8 +1,18 @@
 @model OrchardCore.Workflows.ViewModels.ActivityEditViewModel
+@using OrchardCore.Workflows.Models
+@using YesSql
+@inject YesSql.ISession Session
 
 <div data-workflow-type-id="@Model.WorkflowTypeId" data-activity-id="@Model.ActivityId">
     <zone Name="Title">
-        <breadcrumb name="@WorkflowsConstants.ActivityEdit" data="@(new { ActivityName = Model.Activity.DisplayText.Value, TypeId = Model.WorkflowTypeId })" />
+        <breadcrumb name="WorkflowsActivityEdit" title="@T["Edit {0}", Model.Activity.DisplayText.Value]">
+            <breadcrumb-item id="WorkflowTypes" action="Index" controller="WorkflowType" area="OrchardCore.Workflows" permission="@WorkflowsPermissions.ManageWorkflows.Name">@T["Workflows"]</breadcrumb-item>
+            @if (Model.WorkflowTypeId != 0)
+            {
+                var workflowType = await Session.GetAsync<WorkflowType>(Model.WorkflowTypeId);
+                <breadcrumb-item id="WorkflowType" action="Edit" controller="WorkflowType" area="OrchardCore.Workflows" route-id="@Model.WorkflowTypeId" permission="@WorkflowsPermissions.ManageWorkflows.Name">@workflowType?.Name</breadcrumb-item>
+            }
+        </breadcrumb>
     </zone>
 
     <div asp-validation-summary="ModelOnly"></div>

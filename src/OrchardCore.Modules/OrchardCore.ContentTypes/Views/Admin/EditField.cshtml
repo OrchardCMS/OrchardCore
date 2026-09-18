@@ -22,7 +22,10 @@
 }
 
 <zone Name="Title">
-    <breadcrumb name="@ContentTypesConstants.PartsEditField" data="@(new { PartName = Model.PartFieldDefinition.PartDefinition.Name, PartDisplayName = localizedPartName, FieldDisplayName = localizedFieldName })" />
+    <breadcrumb name="ContentPartsEditField" title="@T["\"{0}\" settings", localizedFieldName]">
+        <breadcrumb-item id="ContentParts" action="ListParts" controller="Admin" area="OrchardCore.ContentTypes" permission="@ContentTypesPermissions.ViewContentTypes.Name">@T["Content Parts"]</breadcrumb-item>
+        <breadcrumb-item id="ContentPart" action="EditPart" controller="Admin" area="OrchardCore.ContentTypes" route-id="@Model.PartFieldDefinition.PartDefinition.Name" permission="@ContentTypesPermissions.EditContentTypes.Name">@T["Edit Content Part - {0}", localizedPartName]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <form asp-action="EditField" asp-route-returnUrl="@ViewData["returnUrl"]">

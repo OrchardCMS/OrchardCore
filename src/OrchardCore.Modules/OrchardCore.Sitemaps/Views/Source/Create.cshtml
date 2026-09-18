@@ -1,7 +1,16 @@
 @model CreateSourceViewModel
+@using OrchardCore.Sitemaps.Services
+@inject ISitemapManager SitemapManager
 
 <zone Name="Title">
-    <breadcrumb name="@SitemapsConstants.SourceCreate" data="@(new { SitemapId = Model.SitemapId })" />
+    <breadcrumb name="SitemapsSourceCreate" title="@T["Create Sitemap Source"]">
+        <breadcrumb-item id="Sitemaps" action="List" controller="Admin" area="OrchardCore.Sitemaps" permission="@SitemapsPermissions.ManageSitemaps.Name">@T["Sitemaps"]</breadcrumb-item>
+        @if (!string.IsNullOrEmpty(Model.SitemapId))
+        {
+            var sitemap = await SitemapManager.GetSitemapAsync(Model.SitemapId);
+            <breadcrumb-item id="Sitemap" action="Display" controller="Admin" area="OrchardCore.Sitemaps" route-sitemapId="@Model.SitemapId" permission="@SitemapsPermissions.ManageSitemaps.Name">@(sitemap?.Name ?? T["Sitemap"].Value)</breadcrumb-item>
+        }
+    </breadcrumb>
 </zone>
 
 <div asp-validation-summary="ModelOnly"></div>

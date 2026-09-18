@@ -5,7 +5,9 @@
 }
 
 <zone Name="Title">
-    <breadcrumb name="@TemplatesConstants.Create" data="@(new { AdminTemplates = Model.AdminTemplates })" />
+    <breadcrumb name="TemplatesCreate" title="@T["Create Template"]">
+        <breadcrumb-item id="Templates" action="@(Model.AdminTemplates ? "Admin" : "Index")" controller="Template" area="OrchardCore.Templates" permission="@Permissions.ManageTemplates.Name">@(Model.AdminTemplates ? T["Admin Templates"] : T["Templates"])</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <div asp-validation-summary="ModelOnly"></div>

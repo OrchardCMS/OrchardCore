@@ -5,7 +5,7 @@
 }
 
 <zone Name="Title">
-    <breadcrumb name="@SitemapsConstants.IndexesList" />
+    <breadcrumb name="SitemapIndexes" title="@T["Sitemap Indexes"]" />
 </zone>
 
 @if (string.IsNullOrEmpty(Site.BaseUrl))
@@ -111,4 +111,3 @@
 @await DisplayAsync(Model.Pager)
 
 <script asp-src="~/OrchardCore.Sitemaps/Scripts/sitemap-list/sitemap-list.min.js" debug-src="~/OrchardCore.Sitemaps/Scripts/sitemap-list/sitemap-list.js" at="Foot" type="module"></script>
-

@@ -4,7 +4,7 @@
     int endIndex = startIndex + Model.DeploymentPlans.Count - 1;
 }
 <zone Name="Title">
-    <breadcrumb name="@DeploymentConstants.List" />
+    <breadcrumb name="DeploymentPlans" title="@T["Deployment Plans"]" />
 </zone>
 
 <form asp-action="Index" method="post" class="no-multisubmit" data-list-management data-selected-label="@T["selected"]">

@@ -1,5 +1,12 @@
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore.ContentManagement
+@using OrchardCore.ContentManagement.Metadata
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.Contents
+@using OrchardCore.DisplayManagement.Html
+@inject IAuthorizationService AuthorizationService
+@inject IContentDefinitionManager ContentDefinitionManager
+@inject IContentManager ContentManager
 
 @* This template is called when a Widget that has a custom Admin page is rendered. For instance a Widget with a ListPart *@
 
@@ -11,10 +18,19 @@
     Model.Classes.Add(contentTypeClassName);
 
     var tag = Tag(Model, "article");
+    var canList = false;
+
+    if (User is not null)
+    {
+        var listableTypes = (await ContentDefinitionManager.ListTypeDefinitionsAsync()).Where(definition => definition.IsListable());
+        canList = await AuthorizationService.AuthorizeContentTypeDefinitionsAsync(User, CommonPermissions.ListContent, listableTypes, ContentManager);
+    }
 }
 
 <zone Name="Title">
-    <breadcrumb name="@OrchardCore.Contents.ContentsConstants.Display" data="@(new { ContentItem = contentItem })" />
+    <breadcrumb name="ContentsDisplay" title="@(new HtmlContentString(contentItem.DisplayText ?? string.Empty))">
+        <breadcrumb-item id="Contents" action="List" controller="Admin" area="OrchardCore.Contents" route-contentTypeId="" link-enabled="@canList">@T["Manage Content"]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <article>

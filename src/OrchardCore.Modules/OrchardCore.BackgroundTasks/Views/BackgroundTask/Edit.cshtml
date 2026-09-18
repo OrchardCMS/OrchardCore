@@ -1,7 +1,9 @@
 @model BackgroundTaskViewModel
 
 <zone Name="Title">
-    <breadcrumb name="@BackgroundTasksConstants.Edit" />
+    <breadcrumb name="BackgroundTasksEdit" title="@T["Edit Task Settings"]">
+        <breadcrumb-item id="BackgroundTasks" action="Index" controller="BackgroundTask" area="OrchardCore.BackgroundTasks" permission="@Permissions.ManageBackgroundTasks.Name">@T["Background Tasks"]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <div asp-validation-summary="ModelOnly"></div>

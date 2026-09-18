@@ -2,7 +2,9 @@
 @inject IEnumerable<OrchardCore.Data.DatabaseProvider> DatabaseProviders
 
 <zone Name="Title">
-    <breadcrumb name="@TenantsConstants.Edit" />
+    <breadcrumb name="TenantsEdit" title="@T["Edit Tenant"]">
+        <breadcrumb-item id="Tenants" action="Index" controller="Admin" area="OrchardCore.Tenants" permission="@Permissions.ManageTenants.Name">@T["Tenants"]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <div asp-validation-summary="ModelOnly"></div>
