@@ -1,0 +1,28 @@
+@{
+    TagBuilder tag = Tag(Model, "li");
+    tag.AddCssClass("breadcrumb-item");
+
+    string text = Model.Text;
+    string href = Model.Href;
+
+    if (Model.IsCurrent)
+    {
+        tag.AddCssClass("active");
+        tag.Attributes["aria-current"] = "page";
+    }
+
+    if (!string.IsNullOrEmpty(href))
+    {
+        var link = new TagBuilder("a");
+        link.Attributes["href"] = href;
+        link.InnerHtml.Append(text);
+
+        tag.InnerHtml.AppendHtml(link);
+    }
+    else
+    {
+        tag.InnerHtml.Append(text);
+    }
+}
+
+@tag

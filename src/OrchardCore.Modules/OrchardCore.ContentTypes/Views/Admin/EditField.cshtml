@@ -21,7 +21,12 @@
     string localizedPartName = D[Model.PartFieldDefinition.PartDefinition.DisplayName(), "Content Types"];
 }
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["\"{0}\" settings for \"{1}\"", localizedFieldName, localizedPartName])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="ContentPartsEditField" title="@T["\"{0}\" settings", localizedFieldName]">
+        <breadcrumb-item id="ContentParts" action="ListParts" controller="Admin" area="OrchardCore.ContentTypes" permission="@ContentTypesPermissions.ViewContentTypes.Name">@T["Content Parts"]</breadcrumb-item>
+        <breadcrumb-item id="ContentPart" action="EditPart" controller="Admin" area="OrchardCore.ContentTypes" route-id="@Model.PartFieldDefinition.PartDefinition.Name" permission="@ContentTypesPermissions.EditContentTypes.Name">@T["Edit Content Part - {0}", localizedPartName]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <form asp-action="EditField" asp-route-returnUrl="@ViewData["returnUrl"]">
     @Html.ValidationSummary()

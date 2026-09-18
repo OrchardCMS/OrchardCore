@@ -1,7 +1,11 @@
 @model CreateRoleViewModel
 @using OrchardCore.Roles.ViewModels
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Create Role"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="RolesCreate" title="@T["Create Role"]">
+        <breadcrumb-item id="Roles" action="Index" controller="Admin" area="OrchardCore.Roles" permission="@RolesPermissions.ViewRoles.Name">@T["Roles"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <div asp-validation-summary="ModelOnly"></div>
 

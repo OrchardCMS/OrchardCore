@@ -106,6 +106,32 @@ If you wish to modify the look of your widget, consider incorporating a template
 </div>
 ```
 
+## Breadcrumbs
+
+Enabling the feature registers `OrchardCore.AdminDashboard.Services.DashboardBreadcrumbProvider` through `services.AddBreadcrumbProvider<DashboardBreadcrumbProvider>()`. Like other breadcrumb providers, it runs only for visible trails and receives only ancestors, after the `<breadcrumb>` tag helper collects inline children and before the helper orders ancestors and appends the required explicit `title` as the final, unlinked current node with `Id = "Title"`.
+
+The provider checks `AdminAttribute.IsApplied(context.ViewContext.HttpContext)` and leaves front-end trails unchanged. On admin requests it inserts a localized Dashboard ancestor at index `0`, with ID `Dashboard` and position `start`, unless `context.Name == "Dashboard"` or an existing ancestor already has that ID. It does not compare localized title text. Thus `Manage Content › Edit Article` becomes `Dashboard › Manage Content › Edit Article`. It can add an ancestor to a self-closing helper, which must still declare both `name` and `title`.
+
+The ancestor's `Url` is `"~/" + AdminOptions.AdminUrlPrefix`, and its `Permissions` list contains the static `OrchardCore.AdminDashboard.Permissions.AccessAdminDashboard` permission object. No permission-name lookup is needed. A user denied access sees the Dashboard ancestor as plain text. The Dashboard page declares its trail name and explicit current title, preventing a duplicate ancestor:
+
+```razor
+<breadcrumb name="Dashboard" title="@T["Dashboard"]" />
+```
+
+The parent requires a non-null `Microsoft.AspNetCore.Html.IHtmlContent` title, including `LocalizedHtmlString`. Prefer `@T[...]` directly for simple or formatted titles; ancestor child text uses it too. When needed, the helper normalizes the title by rendering it once via `WriteTo(writer, HtmlEncoder.Default)`, then HTML-decoding once. The normalized string is safely encoded for the heading, current node, and browser title; all remain text-only, not arbitrary HTML markup.
+
+Wrap plain model or literal strings in `new OrchardCore.DisplayManagement.Html.HtmlContentString(value ?? string.Empty)`. For `Microsoft.Extensions.Localization.LocalizedString` or `OrchardCore.Localization.Data.DataLocalizedString` from `IDataLocalizer`, wrap `.Value ?? string.Empty` instead. This wrapper safely encodes untrusted strings and preserves literal entity text. Do not use `Html.Raw` or extract `T[...].Value`; `T[...]` already implements the required interface.
+
+The stable `name` supports provider targeting, CSS classes, shape alternates, and Dashboard deduplication. The current node automatically has ID `Title`, so its name-specific alternate is `BreadcrumbItem-Dashboard-Title.cshtml` (or `BreadcrumbItem-Dashboard-Title.DetailAdmin.cshtml` for admin display). No separate current-node attribute is needed.
+
+Providers cannot remove or replace the explicit current title, even if they clear all ancestors or use position `end`. Their `BreadcrumbContext.Title` remains a read-only normalized plain string. Helper-created provider contexts always have `ShowTrail == true`, because providers only run for visible trails. `Microsoft.AspNetCore.Html.HtmlString.Empty` is a valid non-null title: it suppresses heading/browser-title text but still leaves a current node in a visible trail.
+
+When **Show breadcrumb** is disabled, the helper skips all providers, including Dashboard: it does not resolve, enumerate, construct, or invoke them. It never calls `GetChildContentAsync` or creates a `BreadcrumbContext` or any breadcrumb items, including the title node. There is no URL generation, link authorization, permission lookup, or shape creation. Only the explicit title matters: it is formatted once when heading or browser-title output is needed, with the heading rendered directly using `oc-breadcrumb-title`. A hidden helper with both `heading=""` and `page-title="false"` validates the non-null title but also skips `WriteTo`. The admin visibility setting does not affect front-end trails.
+
+The tag helper alone handles `AdminSettings.ShowBreadcrumb`. Views declare their title and ancestors and resolve needed data normally; they must not read the setting or gate data lookups or breadcrumb markup on it. Child-only work is always skipped when hidden. Parent attribute expressions and Razor code or model lookups outside child content still execute: `T[...]` results and `HtmlContentString` wrappers are created before the helper runs, even if it skips `WriteTo`.
+
+Disabling the feature removes its provider contribution. For other cross-module changes, implement `IBreadcrumbProvider` and filter the context explicitly; screen-specific nodes can stay in Razor views or partials. Visible breadcrumbs use the existing shape alternates, such as `BreadcrumbItem-Title.cshtml` for current nodes and `BreadcrumbItem-Dashboard-Title.cshtml` for the Dashboard page's current node. Ancestor IDs and their alternates are independent. See the [Navigation reference](../Navigation/README.md#postprocessing-with-a-provider) for the provider contract and registration.
+
 ## Provisioning widgets with a recipe
 
 Dashboard widgets are content items, so they can be created from a recipe using the `content` step. This is handy to ship a default dashboard with your site. The following sample adds an `HtmlDashboardWidget` with a list of links, positioned first and two rows tall:
