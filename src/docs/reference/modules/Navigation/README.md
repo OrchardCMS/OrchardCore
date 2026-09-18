@@ -248,17 +248,17 @@ Rendering the trail in the `Title` zone is what makes it behave like the title i
 | `page-title`   | `bool`   | Whether the text of the current node is registered as a segment of the `<title>` of the page. Defaults to `true`.                                                               |
 | `display-type` | `string` | The display type of the trail, which becomes an alternate of every shape it renders. Defaults to `DetailAdmin` on a request to the admin, and to `Detail` everywhere else.      |
 
-Nothing is rendered when no provider contributes a node to the trail, so a screen keeps working when the feature owning its provider is disabled.
+Nothing is rendered when neither inline items nor providers contribute a node to the trail, so a screen keeps working when the feature owning its provider is disabled.
 
 ### Declaring a trail inline
 
-A provider is what lets **another** module extend a trail, and it is where dynamic text, permission-gated links and parent lookups belong. A screen whose trail is static, though, can skip the provider and the `switch` and declare its nodes in the view as `breadcrumb-item` children:
+A screen whose trail can be described using text and data already available in the view can declare its nodes as `breadcrumb-item` children. It needs neither a custom provider nor shared breadcrumb constants. For example, the Shortcode Templates edit screen declares its trail entirely in the view, including its permission-gated parent link:
 
 ```html
 <zone Name="Title">
-    <breadcrumb name="MyRecordsEdit">
-        <breadcrumb-item action="Index" controller="Record" area="My.Module">@T["Records"]</breadcrumb-item>
-        <breadcrumb-item>@T["Edit {0}", record.Name]</breadcrumb-item>
+    <breadcrumb name="ShortcodesEdit">
+        <breadcrumb-item id="Shortcodes" action="Index" controller="Admin" area="OrchardCore.Shortcodes" permission="@ShortcodesPermissions.ManageShortcodeTemplates.Name">@T["Shortcodes"]</breadcrumb-item>
+        <breadcrumb-item id="Shortcode">@T["Edit Shortcode"]</breadcrumb-item>
     </breadcrumb>
 </zone>
 ```
@@ -272,7 +272,7 @@ A provider is what lets **another** module extend a trail, and it is where dynam
 | `id`                        | The identifier of the node, used to build its shape alternates.          |
 | `permission`                | The name of the permission the user must have for the node to be a link. An unknown name is ignored. |
 
-Inline nodes **seed** the trail: the providers still run over it, so a module can add to, remove from or reorder them, and the Admin Dashboard node still leads the trail. Give the `breadcrumb` a `name` so a provider can target it; a node whose text is loaded from a service, or one another module inserts by position, is still best expressed in a provider.
+Inline nodes **seed** the trail: the providers still run over it, so a module can add to, remove from or reorder them, and the Admin Dashboard node still leads the trail. Keep stable trail names and node IDs so providers and shape alternates can target them. Use a provider when a trail needs service-based parent lookups or when another module contributes nodes.
 
 ### Describing the nodes
 

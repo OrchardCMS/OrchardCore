@@ -38,7 +38,10 @@
 <script asp-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.min.js" debug-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.js" at="Foot" depends-on="vuejs, vue-multiselect"></script>
 
 <zone Name="Title">
-    <breadcrumb name="@ShortcodesConstants.Create" />
+    <breadcrumb name="ShortcodesCreate">
+        <breadcrumb-item id="Shortcodes" action="Index" controller="Admin" area="OrchardCore.Shortcodes" permission="@ShortcodesPermissions.ManageShortcodeTemplates.Name">@T["Shortcodes"]</breadcrumb-item>
+        <breadcrumb-item id="Shortcode">@T["Create Shortcode"]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <div asp-validation-summary="All"></div>
@@ -123,4 +126,3 @@
 </form>
 
 <script asp-src="~/OrchardCore.Shortcodes/Scripts/shortcode-template-editor/shortcode-template-editor.min.js" debug-src="~/OrchardCore.Shortcodes/Scripts/shortcode-template-editor/shortcode-template-editor.js" at="Foot" type="module"></script>
-
