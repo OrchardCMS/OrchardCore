@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using OpenIddict.Abstractions;
-using OpenIddict.Server;
 using OpenIddict.Server.AspNetCore;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
@@ -36,7 +35,6 @@ public sealed class AccessController : Controller
     private readonly IOpenIdAuthorizationManager _authorizationManager;
     private readonly IOpenIdScopeManager _scopeManager;
     private readonly IOpenIdServerService _serverService;
-    private readonly IOpenIddictServerDispatcher _dispatcher;
     private readonly ShellSettings _shellSettings;
 
     public AccessController(
@@ -44,14 +42,12 @@ public sealed class AccessController : Controller
         IOpenIdAuthorizationManager authorizationManager,
         IOpenIdScopeManager scopeManager,
         IOpenIdServerService serverService,
-        IOpenIddictServerDispatcher dispatcher,
         ShellSettings shellSettings)
     {
         _applicationManager = applicationManager;
         _authorizationManager = authorizationManager;
         _scopeManager = scopeManager;
         _serverService = serverService;
-        _dispatcher = dispatcher;
         _shellSettings = shellSettings;
     }
 
@@ -341,12 +337,23 @@ public sealed class AccessController : Controller
         // If the server is configured to allow skipping the confirmation prompt and a valid
         // id_token_hint matching the current authenticated user is supplied, sign the user
         // out immediately without rendering a confirmation form.
+        //
+        // Note: the id_token_hint is validated by OpenIddict before its principal is exposed via
+        // AuthenticateAsync(). As allowed for hints, its lifetime is deliberately not validated.
         var settings = await _serverService.GetSettingsAsync();
-        if (!settings.RequireEndSessionConfirmation &&
-            !string.IsNullOrEmpty(request.IdTokenHint) &&
-            await IsIdTokenHintValidForUserAsync(request, result.Principal))
+        if (!settings.RequireEndSessionConfirmation && !string.IsNullOrEmpty(request.IdTokenHint))
         {
-            return await SignOutAndRedirectAsync(request);
+            var hintResult = await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+            var hintSubject = hintResult is { Succeeded: true } ? hintResult.Principal?.GetClaim(Claims.Subject) : null;
+            var userIdentifier = result.Principal.FindUserIdentifier();
+
+            if (hintSubject is not null && userIdentifier is not null &&
+                CryptographicOperations.FixedTimeEquals(
+                    MemoryMarshal.AsBytes<char>(hintSubject.AsSpan()),
+                    MemoryMarshal.AsBytes<char>(userIdentifier.AsSpan())))
+            {
+                return await SignOutAndRedirectAsync(request);
+            }
         }
 
         return View();
@@ -417,45 +424,6 @@ public sealed class AccessController : Controller
         return SignOut(
             new AuthenticationProperties { RedirectUri = "/" },
             OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
-    }
-
-    private async Task<bool> IsIdTokenHintValidForUserAsync(OpenIddictRequest request, ClaimsPrincipal user)
-    {
-        // Note: the principal returned by AuthenticateAsync() for the OpenIddict scheme can't be used here.
-        // When end session request caching is enabled, OpenIddict validates the tokens before the cached
-        // request parameters (including the id_token_hint) are restored, so the returned principal is empty.
-        // To work around that, the id_token_hint is explicitly validated using the OpenIddict server pipeline.
-        var transaction = HttpContext.Features.Get<OpenIddictServerAspNetCoreFeature>()?.Transaction;
-        if (transaction is null)
-        {
-            return false;
-        }
-
-        // Note: like OpenIddict, the audience, presenter and lifetime of identity
-        // tokens used as hints are deliberately not validated.
-        var context = new OpenIddictServerEvents.ValidateTokenContext(transaction)
-        {
-            Token = request.IdTokenHint,
-            ValidTokenTypes = { TokenTypeIdentifiers.IdentityToken },
-            DisableAudienceValidation = true,
-            DisableLifetimeValidation = true,
-            DisablePresenterValidation = true,
-        };
-
-        await _dispatcher.DispatchAsync(context);
-
-        if (context.IsRejected || context.Principal is not ClaimsPrincipal principal)
-        {
-            return false;
-        }
-
-        var hintSubject = principal.GetClaim(Claims.Subject);
-        var userIdentifier = user.FindUserIdentifier();
-
-        return hintSubject is not null && userIdentifier is not null &&
-            CryptographicOperations.FixedTimeEquals(
-                MemoryMarshal.AsBytes<char>(hintSubject.AsSpan()),
-                MemoryMarshal.AsBytes<char>(userIdentifier.AsSpan()));
     }
 
     [AllowAnonymous, HttpPost]
