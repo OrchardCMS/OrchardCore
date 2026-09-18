@@ -41,7 +41,8 @@ public sealed class DataLocalizationTests : CmsTestBase<DataLocalizationTestsFix
         await Assertions.Expect(visibleRows).Not.ToHaveCountAsync(0);
 
         var firstInput = visibleRows.First.Locator("input[type='text']");
-        var originalKey = await visibleRows.First.Locator("code").TextContentAsync();
+        var originalKey = (await visibleRows.First.Locator("code").TextContentAsync())?.Trim();
+        Assert.False(string.IsNullOrWhiteSpace(originalKey), "Expected the first translatable row to expose a non-empty key.");
         await firstInput.FillAsync("");
         await firstInput.FillAsync("Test Translated Value");
 
@@ -63,12 +64,16 @@ public sealed class DataLocalizationTests : CmsTestBase<DataLocalizationTestsFix
         await page.ReloadAsync();
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
-        var reloadedSearchBox = page.Locator("#search-box");
-        await reloadedSearchBox.FillAsync(originalKey ?? "");
-
-        var reloadedRows = page.Locator("#translation-editor table tbody tr");
-        await Assertions.Expect(reloadedRows).Not.ToHaveCountAsync(0);
-        await Assertions.Expect(reloadedRows.First.Locator("input[type='text']")).ToHaveValueAsync("Test Translated Value");
+        // Locate the edited row by its exact key text via Playwright's own client-side
+        // filtering rather than typing into the app's #search-box: that couples this
+        // persistence assertion to the app's search feature working correctly, and a
+        // silent search-filter mismatch (e.g. no rows matching) leaves the locator free
+        // to resolve to a completely unrelated element later in the DOM - which is
+        // exactly what produced a confusing failure here previously.
+        var editedRow = page.Locator("#translation-editor table tbody tr")
+            .Filter(new LocatorFilterOptions { HasText = originalKey });
+        await Assertions.Expect(editedRow).ToHaveCountAsync(1);
+        await Assertions.Expect(editedRow.Locator("input[type='text']")).ToHaveValueAsync("Test Translated Value");
 
         Assert.Empty(consoleErrors);
         await page.CloseAsync();
