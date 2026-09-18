@@ -3682,6 +3682,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "vlad2kgithub",
+      "name": "VladAffable",
+      "avatar_url": "https://avatars.githubusercontent.com/u/62915530?v=4",
+      "profile": "https://github.com/vlad2kgithub",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
