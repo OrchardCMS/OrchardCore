@@ -161,3 +161,8 @@ public sealed class UrlRewritingRulesTestsFixture : CmsRecipeFixture
     protected override string RecipeName => "UrlRewritingRulesTests";
 }
 
+public sealed class PredefinedListEditorTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "PredefinedListEditorTests";
+}
+

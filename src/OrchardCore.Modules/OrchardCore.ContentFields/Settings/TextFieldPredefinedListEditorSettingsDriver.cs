@@ -47,6 +47,18 @@ public sealed class TextFieldPredefinedListEditorSettingsDriver : ContentPartFie
                     ? []
                     : JConvert.DeserializeObject<ListValueOption[]>(model.Options);
 
+                // PR #19581 review requirement #3 ("adding a new option with the same label and
+                // value as a different option should not silently coexist as an ambiguous
+                // duplicate"): the client-side editor's auto-fill (see options-table-editor.ts's
+                // OptionsTableAutoFillColumn) makes rows sharing a label very likely to also
+                // share a value if neither has been directly edited, so this is now easy to
+                // create by accident - flag it as a validation error rather than silently
+                // persisting a duplicate.
+                if (settings.Options.DistinctBy(o => $"{o.Name},{o.Value}").Count() != settings.Options.Length)
+                {
+                    context.Updater.ModelState.AddModelError(Prefix, S["The options can't contain more than one element with the same label and value."]);
+                }
+
                 context.Builder.WithSettings(settings);
             }
             catch
