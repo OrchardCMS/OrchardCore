@@ -31,6 +31,11 @@ observeAndInit(".options-editor-wrapper", (element) => {
         defaultColumn: defaultValueInputName
             ? { key: "value", labelKey: "DefaultColumn", mode: "radio", radioGroupName: defaultValueInputName }
             : { key: "default", labelKey: "DefaultColumn", mode: "checkbox" },
+        // Only the PredefinedList editor (the radio-mode, defaultValueInputName-present case)
+        // wants name -> value auto-fill (see options-table-editor.ts's OptionsTableAutoFillColumn
+        // for the touched-tracking rules) - matches PR #19581's original scope, which only ever
+        // touched TextFieldPredefinedListEditorSettings.Edit.cshtml, not MultiTextFieldSettings.
+        autoFillColumn: defaultValueInputName ? { sourceKey: "name", targetKey: "value" } : undefined,
         initialDefaultValue: element.dataset.defaultValue,
         filterEmptyKey: "name",
         addKey: "AddAnOption",
