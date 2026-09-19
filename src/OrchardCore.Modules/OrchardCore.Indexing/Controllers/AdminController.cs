@@ -8,6 +8,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Indexing.Core;
@@ -61,7 +62,8 @@ public sealed class AdminController : Controller
         IndexingEntityOptions options,
         PagerParameters pagerParameters,
         [FromServices] IOptions<PagerOptions> pagerOptions,
-        [FromServices] IShapeFactory shapeFactory)
+        [FromServices] IShapeFactory shapeFactory,
+        [FromServices] IAdminListService adminListService)
     {
         if (!await _authorizationService.AuthorizeAsync(User, IndexingPermissions.ManageIndexes))
         {
@@ -128,6 +130,42 @@ public sealed class AdminController : Controller
             new SelectListItem(S["Rebuild"], nameof(IndexingEntityAction.Rebuild)),
             new SelectListItem(S["Delete"], nameof(IndexingEntityAction.Remove)),
         ];
+
+        // The rows carry the attributes used by the client-side search of the list-management script.
+        var rows = new List<object>(viewModel.Models.Count);
+
+        foreach (var entry in viewModel.Models)
+        {
+            if (entry.Shape is Shape rowShape)
+            {
+                rowShape.Classes.Add("item");
+                rowShape.Attributes["data-filter-value"] = entry.Model.Name?.ToLowerInvariant() ?? string.Empty;
+            }
+
+            rows.Add(entry.Shape);
+        }
+
+        var toolbar = await shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
+        {
+            ItemsCount = viewModel.Models.Count,
+            TotalItemCount = result.Count,
+            StartIndex = viewModel.Models.Count > 0 ? pager.GetStartIndex() + 1 : 0,
+            EndIndex = pager.GetStartIndex() + viewModel.Models.Count,
+            BulkActions = viewModel.Options.BulkActions,
+        }));
+
+        // The AdminList shape renders the index profiles with the configured layout (List, Table, ...).
+        viewModel.List = await shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        {
+            Name = IndexingAdminList.Name,
+            Layout = await adminListService.GetLayoutAsync(IndexingAdminList.Name, cancellationToken: HttpContext.RequestAborted),
+            Columns = await adminListService.GetColumnsAsync(IndexingAdminList.Name, IndexingAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
+            Rows = rows,
+            Toolbar = toolbar,
+            Pager = viewModel.Pager,
+            ItemCssClass = "list-group-item",
+            EmptyMessage = H["<strong>Nothing here!</strong> There are no indexes at the moment."],
+        }));
 
         return View(viewModel);
     }

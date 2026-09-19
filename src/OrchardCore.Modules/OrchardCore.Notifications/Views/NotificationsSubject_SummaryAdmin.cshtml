@@ -1,0 +1,15 @@
+@using OrchardCore.Entities
+@using OrchardCore.Notifications.Models
+
+@model NotificationViewModel
+
+@{
+    var readInfo = Model.Notification.GetOrCreate<NotificationReadInfo>();
+}
+
+<div class="mark-notification-as-read" data-message-id="@Model.Notification.NotificationId" data-is-read="@readInfo.IsRead.ToString().ToLowerInvariant()">
+    <p class="m-0 f6 flex-auto @(readInfo.IsRead ? string.Empty : "fw-bold")">@Model.Notification.Subject</p>
+    <p class="m-0 text-normal pr-2 pr-md-0">
+        <small>@Html.Raw(Model.Notification.Summary)</small>
+    </p>
+</div>

@@ -5,11 +5,12 @@
 <div data-list-management data-client-side-search="true">
 <div class="card text-bg-theme mb-3 position-sticky action-bar">
     <div class="card-body">
-        <div class="row gx-3">
+        <div class="row gx-2">
             <div class="col">
-                <div class="has-search">
+                <div class="input-group has-search">
                     <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
-                    <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+                    <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus autocomplete="off" />
+                    <button type="submit" name="submit.Filter" class="btn btn-outline-secondary" title="@T["Search"]">@T["Go"]</button>
                 </div>
             </div>
             <div class="col-auto">
@@ -19,34 +20,15 @@
     </div>
 </div>
 
-@* the form is necessary to generate and antiforgery token for the purge action *@
+@* the form is necessary to generate an antiforgery token for the purge action *@
 <form asp-action="List">
-    @if (Model.CachedFileNames.Any())
-    {
-        <ul class="list-group">
-            @for (var i = 0; i < Model.CachedFileNames.Length; i++)
-            {
-                <li class="list-group-item" data-filter-value="@Model.CachedFileNames[i]">
-                    <div class="row">
-                        <div class="col">
-                            @Model.CachedFileNames[i]
-                        </div>
-                        <div class="col">
-                            <a asp-action="Purge" asp-route-cacheFileName="@Model.CachedFileNames[i]" class="btn btn-sm btn-danger float-end" data-title="@T["Purge"]" data-message="@T["Are you sure you want to purge this sitemap?"]" data-url-af="RemoveUrl UnsafeUrl">@T["Purge"]</a>
-                        </div>
-                    </div>
-                </li>
-            }
-        </ul>
-    }
-    else
-    {
-        <div id="list-empty" class="alert alert-info mb-1" role="alert">
-            @T["<strong>Nothing here!</strong> There are no sitemaps cached for the moment."]
-        </div>
-    }
-    <div id="list-alert" class="alert alert-info mb-1 d-none" role="alert">
-        @T["<strong>Nothing here!</strong> Your search returned no results."]
+    <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
+
+    @* The cached files are rendered by the AdminList shape using the configured layout (List, Table, ...). *@
+    @await DisplayAsync(Model.List)
+
+    <div id="list-alert" class="alert alert-info my-3 d-none text-center" role="alert">
+        @T["Your search returned no results."]
     </div>
 </form>
 </div>

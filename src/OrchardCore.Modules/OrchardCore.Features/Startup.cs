@@ -2,6 +2,9 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Deployment;
 using OrchardCore.Features.Deployment;
 using OrchardCore.Features.Recipes.Executors;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Features.Drivers;
+using OrchardCore.Features.Models;
 using OrchardCore.Features.Services;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -21,6 +24,9 @@ public sealed class Startup : StartupBase
         services.AddPermissionProvider<Permissions>();
         services.AddScoped<IModuleService, ModuleService>();
         services.AddNavigationProvider<AdminMenu>();
+
+        // Builds the rows of the features admin list.
+        services.AddDisplayDriver<FeatureEntry, FeatureEntryDisplayDriver>();
 
         services.AddDeployment<AllFeaturesDeploymentSource, AllFeaturesDeploymentStep, AllFeaturesDeploymentStepDriver>();
     }

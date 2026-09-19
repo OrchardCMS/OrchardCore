@@ -21,8 +21,10 @@ public sealed class AuditTrailEventDisplayDriver : DisplayDriver<AuditTrailEvent
         var descriptor = _auditTrailManager.DescribeEvent(auditTrailEvent);
 
         return CombineAsync(
-            Initialize<AuditTrailEventViewModel>("AuditTrailEventTags_SummaryAdmin", model => BuildViewModel(auditTrailEvent, model, descriptor))
-                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "EventTags:10"),
+            Initialize<AuditTrailEventViewModel>("AuditTrailEventName_SummaryAdmin", model => BuildViewModel(auditTrailEvent, model, descriptor))
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "EventName:10"),
+            Initialize<AuditTrailEventViewModel>("AuditTrailEventCategory_SummaryAdmin", model => BuildViewModel(auditTrailEvent, model, descriptor))
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "EventCategory:10"),
             Initialize<AuditTrailEventViewModel>("AuditTrailEventMeta_SummaryAdmin", model => BuildViewModel(auditTrailEvent, model, descriptor))
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "EventMeta:10"),
             Initialize<AuditTrailEventViewModel>("AuditTrailEventActions_SummaryAdmin", model => BuildViewModel(auditTrailEvent, model, descriptor))

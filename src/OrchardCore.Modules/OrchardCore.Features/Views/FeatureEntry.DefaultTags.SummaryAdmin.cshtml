@@ -1,0 +1,48 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Features.Models
+
+@model ShapeViewModel<FeatureEntry>
+
+@{
+    var entry = Model.Value;
+}
+
+@if (entry.DirectDependencies.Count > 0 || entry.IndirectDependencies.Count > 0 || entry.MissingDependencies.Count > 0)
+{
+    <div class="d-inline direct-dependencies">
+        @foreach (var dependency in entry.DirectDependencies)
+        {
+            <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" data-bs-title="@dependency.Description">
+                @dependency.Name
+            </span>
+        }
+    </div>
+    @if (entry.IndirectDependencies.Count > 0)
+    {
+        @* The features pulled in by the direct dependencies are only shown on demand: a feature can have many. *@
+        <div class="d-inline transitive-dependencies d-none">
+            <span class="d-none d-md-inline fw-light">|</span>
+            @foreach (var dependency in entry.IndirectDependencies)
+            {
+                <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" data-bs-title="@dependency.Description">
+                    @(string.IsNullOrEmpty(dependency.Name) ? dependency.Id : dependency.Name)
+                </span>
+            }
+        </div>
+
+        <button type="button" class="btn btn-sm btn-outline-secondary badge-show-more"
+                data-bs-toggle="tooltip"
+                data-bs-placement="bottom"
+                data-bs-title="@T["Show indirect dependencies"]">
+            <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
+            <span class="visually-hidden">@T["Show indirect dependencies"]</span>
+        </button>
+    }
+
+    @foreach (var dependency in entry.MissingDependencies)
+    {
+        <span class="badge text-bg-warning fw-normal" data-bs-toggle="tooltip" data-bs-title="@T["This dependency is not available."]">
+            @dependency.Name
+        </span>
+    }
+}

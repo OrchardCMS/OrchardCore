@@ -8,8 +8,10 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Routing;
+using OrchardCore.UrlRewriting.Endpoints.Rules;
 using OrchardCore.UrlRewriting.Models;
 using OrchardCore.UrlRewriting.ViewModels;
 
@@ -55,7 +57,10 @@ public sealed class AdminController : Controller
         H = htmlLocalizer;
     }
 
-    public async Task<IActionResult> Index(RewriteRuleOptions options)
+    public async Task<IActionResult> Index(
+        RewriteRuleOptions options,
+        [FromServices] IShapeFactory shapeFactory,
+        [FromServices] IAdminListService adminListService)
     {
         if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewritingRules))
         {
@@ -73,10 +78,21 @@ public sealed class AdminController : Controller
 
         foreach (var rule in rules)
         {
+            var shape = await _rewriteRuleDisplayManager.BuildDisplayAsync(rule, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin);
+
+            if (shape is Shape rowShape)
+            {
+                // The rules are dragged to be reordered, and the sortable script only moves the rows of that class.
+                rowShape.Classes.Add("item");
+
+                // The row carries the value used by the client-side search of the list-management script.
+                rowShape.Attributes["data-filter-value"] = rule.Name?.ToLowerInvariant();
+            }
+
             model.Rules.Add(new RewriteRuleEntry
             {
                 Rule = rule,
-                Shape = await _rewriteRuleDisplayManager.BuildDisplayAsync(rule, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin),
+                Shape = shape,
             });
         }
 
@@ -84,6 +100,47 @@ public sealed class AdminController : Controller
         [
             new SelectListItem(S["Delete"], nameof(RewriteRuleAction.Remove)),
         ];
+
+        var toolbar = await shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
+        {
+            ItemsCount = model.Rules.Count,
+            TotalItemCount = model.Rules.Count,
+            StartIndex = model.Rules.Count > 0 ? 1 : 0,
+            EndIndex = model.Rules.Count,
+            BulkActions = model.Options.BulkActions,
+        }));
+
+        var layout = await adminListService.GetLayoutAsync(UrlRewritingAdminList.Name, cancellationToken: HttpContext.RequestAborted);
+
+        // The rules are reordered by dragging them, which the Grid layout cannot express: its rows are laid out by
+        // the grid itself and have no box to drag, so the Table layout, which has the same columns, is used instead.
+        if (string.Equals(layout, AdminListConstants.Grid, StringComparison.OrdinalIgnoreCase))
+        {
+            layout = AdminListConstants.Table;
+        }
+
+        // The AdminList shape renders the rules with the configured layout (List, Table, ...).
+        model.List = await shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        {
+            Name = UrlRewritingAdminList.Name,
+            Layout = layout,
+            Columns = await adminListService.GetColumnsAsync(UrlRewritingAdminList.Name, UrlRewritingAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
+            Rows = model.Rules.Select(entry => entry.Shape).ToList(),
+            // The rules are evaluated in order, so the element holding the rows is the one the script of the page
+            // selects, reorders and saves, whichever layout renders it. See url-rewriting-admin-index.ts.
+            RowsAttributes = new Dictionary<string, string>
+            {
+                ["id"] = UrlRewritingAdminList.SortableContainerId,
+                ["class"] = "bulk-select-list",
+                ["data-checkbox-name"] = "ruleIds",
+                ["data-selected-text"] = S["selected"],
+                ["data-sort-url"] = Url.RouteUrl(SortRulesEndpoint.RouteName, new { area = "OrchardCore.UrlRewriting" }),
+                ["data-sort-error-message"] = S["Unable to sort the list. Try refreshing your page and try again."],
+            },
+            Toolbar = toolbar,
+            ItemCssClass = "list-group-item",
+            EmptyMessage = H["<strong>Nothing here!</strong> There are no rewrite rules at the moment."],
+        }));
 
         return View(model);
     }

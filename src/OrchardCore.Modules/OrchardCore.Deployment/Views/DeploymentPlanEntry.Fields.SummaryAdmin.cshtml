@@ -1,0 +1,7 @@
+@using OrchardCore.Deployment.ViewModels
+@using OrchardCore.DisplayManagement.Views
+
+@model ShapeViewModel<DeploymentPlanEntry>
+
+@* Plain link, like the title of a content item in the Manage Content list. *@
+<a asp-action="Display" asp-controller="DeploymentPlan" asp-route-id="@Model.Value.DeploymentPlan.Id">@Model.Value.DeploymentPlan.Name</a>

@@ -1,0 +1,7 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Tenants.ViewModels
+
+@model ShapeViewModel<ShellSettingsEntry>
+
+@* The extension point other features add their own badges to, e.g. the feature profiles of the tenant. *@
+@await DisplayAsync(await New.TenantActionTags(ShellSettingsEntry: Model.Value))

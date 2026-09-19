@@ -1,0 +1,11 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Roles.ViewModels
+
+@model ShapeViewModel<RoleEntry>
+
+@if (Model.Value.IsSystemRole)
+{
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["The '{0}' role cannot be deleted.", Model.Value.Name]">
+        <i class="fa-solid fa-shield text-secondary" aria-hidden="true"></i> @T["System"]
+    </span>
+}
