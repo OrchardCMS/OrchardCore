@@ -3691,6 +3691,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "yogixlogic",
+      "name": "YOGESH CHANDEWAR ",
+      "avatar_url": "https://avatars.githubusercontent.com/u/68509860?v=4",
+      "profile": "https://github.com/yogixlogic",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
