@@ -15,7 +15,7 @@ public sealed class AdminMenu : AdminNavigationProvider
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
+            .Add(S["Search"], S["Search"].PrefixPosition(), search => search
                 .Add(S["Queries"], S["Queries"].PrefixPosition(), import => import
                     .Add(S["Run Lucene Query"], S["Run Lucene Query"].PrefixPosition(), queries => queries
                         .Action("Query", "Admin", "OrchardCore.Lucene")
