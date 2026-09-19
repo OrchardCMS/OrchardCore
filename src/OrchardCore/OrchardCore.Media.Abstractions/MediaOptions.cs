@@ -102,5 +102,19 @@ public class MediaOptions
     /// </summary>
     public TimeSpan TemporaryFileLifetime { get; set; }
 
+    /// <summary>
+    /// The path used to store temporary TUS upload data.
+    /// Defaults to <c>{TempPath}/TusUploads</c>.
+    /// Configure this to a shared filesystem path for multi-instance deployments.
+    /// </summary>
+    public string TusTempPath { get; set; }
+
+    /// <summary>
+    /// Disables the thumbnails (grid) view in the media gallery, e.g. for security or performance
+    /// reasons. When enabled, the gallery always uses the list view and hides the grid/list toggle.
+    /// Defaults to <see langword="false"/>.
+    /// </summary>
+    public bool DisableThumbnails { get; set; }
+
     public const string EncryptedCommandCacheKeyPrefix = "MediaCommands:";
 }
