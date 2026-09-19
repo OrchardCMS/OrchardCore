@@ -41,25 +41,11 @@
     border: 3px dashed orange;
 }
 
-.widget-dragdrop-placeholder {
-    div {
-        margin-top: 6px;
-        margin-bottom: 6px;
-        min-height: 6px;
-        display: inline-block;
-
-        &:before {
-            position: absolute;
-            content: "";
-            width: 0;
-            height: 0;
-            border: 8px solid transparent;
-            border-left-color: orange;
-            border-right: none;
-            top: 5px;
-            margin-left: -10px;
-        }
-    }
+// SortableJS's own "ghost" element (the dragged widget's own DOM node, styled in
+// place at its current would-be drop position) replaces the old jQuery UI Sortable
+// setup's separate placeholder element.
+.widget-template-placeholder .sortable-ghost {
+    opacity: 0.7;
 }
 
 .btn-widget-metadata {

@@ -47,28 +47,4 @@
     </div>
 </div>
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        document.querySelectorAll("[data-reversetoggle]").forEach(function (toggle) {
-            toggle.addEventListener("click", function () {
-                var state = this.checked;
-                document.querySelectorAll(this.getAttribute("data-reversetoggle")).forEach(function (target) {
-                    var collapse = bootstrap.Collapse.getOrCreateInstance(target, { toggle: false });
-                    if (state) {
-                        collapse.hide();
-                    } else {
-                        collapse.show();
-                    }
-                });
-            });
-        });
-    });
-</script>
+<script asp-src="~/OrchardCore.CustomSettings/Scripts/custom-settings-deployment-step/custom-settings-deployment-step.min.js" debug-src="~/OrchardCore.CustomSettings/Scripts/custom-settings-deployment-step/custom-settings-deployment-step.js" at="Foot" type="module"></script>

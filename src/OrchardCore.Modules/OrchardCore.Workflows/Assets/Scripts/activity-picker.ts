@@ -1,59 +1,59 @@
-///<reference path='../Lib/jquery/typings.d.ts' />
+const applyFilter = function (category: string | null, q: string | null) {
+    const type = document.querySelector<HTMLElement>('.modal-activities')?.dataset.activityType;
+    category = category || document.querySelector('.activity-picker-categories .nav-link.active')?.getAttribute('href')?.substring(1) || '';
+    q = q || (document.querySelector<HTMLInputElement>('.modal-activities input[type=search]')?.value ?? '');
 
-var applyFilter = function (category: string, q: string) {
-    const type = $('.modal-activities').data('activity-type');
-    category = category || $('.activity-picker-categories .nav-link.active').attr('href').substr(1);
-    q = q || <string>$('.modal-activities input[type=search]').val();
-
-    const $cards = $('.activity.col').show();
+    const cards = Array.from(document.querySelectorAll<HTMLElement>('.activity.col'));
+    cards.forEach((card) => card.style.display = '');
 
     // Remove activities whoes type doesn't match the configured activity type.
-    $cards.filter((i, el) => {
-        return $(el).data('activity-type') != type;
-    }).hide();
+    cards.filter((card) => card.dataset.activityType != type)
+        .forEach((card) => card.style.display = 'none');
 
     if (q.length > 0) {
         // Remove activities whose title doesn't match the query.
-        $cards.filter((i, el) => {
-            return $(el).find('.card-title').text().toLowerCase().indexOf(q.toLowerCase()) < 0 && q && q.length > 0;
-        }).hide();
+        cards.filter((card) => (card.querySelector('.card-title')?.textContent ?? '').toLowerCase().indexOf(q!.toLowerCase()) < 0)
+            .forEach((card) => card.style.display = 'none');
     }
     else {
         // Remove activities whose category doesn't match the selected one.
-        $cards.filter((i, el) => {
-            return $(el).data('category').toLowerCase() != category.toLowerCase() && category.toLowerCase() != 'all';
-        }).hide();
+        cards.filter((card) => (card.dataset.category ?? '').toLowerCase() != category!.toLowerCase() && category!.toLowerCase() != 'all')
+            .forEach((card) => card.style.display = 'none');
     }
 
     // Show or hide categories based on whether there are any available activities.
-    $('.activity-picker-categories [data-category]').each((i, el) => {
-        const categoryListItem = $(el);
-        const category = categoryListItem.data('category');
+    document.querySelectorAll<HTMLElement>('.activity-picker-categories [data-category]').forEach((categoryListItem) => {
+        const category = categoryListItem.dataset.category;
 
         // Count number of activities within this category and for the specified activity type (Event or Task).
-        const activityCount = $(`.activity.col[data-category='${category}'][data-activity-type='${type}']`).length;
-        activityCount == 0 ? categoryListItem.hide() : categoryListItem.show();
+        const activityCount = document.querySelectorAll(`.activity.col[data-category='${category}'][data-activity-type='${type}']`).length;
+        categoryListItem.style.display = activityCount == 0 ? 'none' : '';
     });
 };
 
-$(() => {
-    $('.activity-picker-categories').on('click', '.nav-link', e => {
-        applyFilter($(e.target).attr('href').substr(1), null);
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelector('.activity-picker-categories')?.addEventListener('click', (e) => {
+        const link = (e.target as Element)?.closest<HTMLElement>('.nav-link');
+        if (!link) {
+            return;
+        }
+        applyFilter(link.getAttribute('href')?.substring(1) ?? null, null);
     });
 
-    $('.modal-activities input[type=search]').on('keyup', e => {
-        applyFilter(null, <string>$(e.target).val());
+    document.querySelector('.modal-activities input[type=search]')?.addEventListener('keyup', (e) => {
+        applyFilter(null, (e.target as HTMLInputElement).value);
     });
 
-    $('#activity-picker').on('show.bs.modal', function (event) {
-        var modalEvent = event as any;
-        var button = $(modalEvent.relatedTarget); // Button that triggered the modal.
-        var title = button.data('picker-title');
-        var type = button.data('activity-type');
-        var modal = $(this);
-        modal.find('[href="#all"]').click();
-        modal.find('.modal-title').text(title);
-        modal.data('activity-type', type);
+    document.getElementById('activity-picker')?.addEventListener('show.bs.modal', function (this: HTMLElement, event: Event & { relatedTarget?: HTMLElement | null }) {
+        const button = event.relatedTarget;
+        const title = button?.dataset.pickerTitle ?? '';
+        const type = button?.dataset.activityType ?? '';
+        this.querySelector<HTMLElement>('[href="#all"]')?.click();
+        const modalTitle = this.querySelector('.modal-title');
+        if (modalTitle) {
+            modalTitle.textContent = title;
+        }
+        this.dataset.activityType = type;
         applyFilter(null, null);
-    })
+    });
 });

@@ -140,7 +140,14 @@ public sealed class OrchardTestServer : IAsyncDisposable
         || (record.Category == "Microsoft.AspNetCore.Server.Kestrel"
             && record.Message.Contains("Connection processing ended abnormally"))
         || (record.Category == "Microsoft.AspNetCore.Diagnostics.ExceptionHandlerMiddleware"
-            && record.Exception?.ToString().Contains("Cannot create directory '_Users") == true);
+            && record.Exception?.ToString().Contains("Cannot create directory '_Users") == true)
+        // Fires exactly once, on the first request after a test enables
+        // OrchardCore.OpenId.Client, before that test's setup code gets a chance to save
+        // valid settings - inherent to exercising this feature at all in a test, not a
+        // product regression (OpenIdClientConfiguration's background settings-validity
+        // check runs independently of page navigation timing).
+        || (record.Category == "OrchardCore.OpenId.Configuration.OpenIdClientConfiguration"
+            && record.Message.Contains("The OpenID client settings are invalid"));
 
     public async ValueTask DisposeAsync()
     {
