@@ -16,6 +16,7 @@ using OrchardCore.Data.Documents;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Routing;
+using OrchardCore.Settings;
 
 namespace OrchardCore.ContentTypes.Controllers;
 
@@ -23,6 +24,7 @@ public sealed class AdminController : Controller
 {
     private readonly IContentDefinitionService _contentDefinitionService;
     private readonly IContentDefinitionManager _contentDefinitionManager;
+    private readonly ISiteService _siteService;
     private readonly IAuthorizationService _authorizationService;
     private readonly IDocumentStore _documentStore;
     private readonly IContentDefinitionDisplayManager _contentDefinitionDisplayManager;
@@ -38,6 +40,7 @@ public sealed class AdminController : Controller
         IContentDefinitionDisplayManager contentDefinitionDisplayManager,
         IContentDefinitionService contentDefinitionService,
         IContentDefinitionManager contentDefinitionManager,
+        ISiteService siteService,
         IAuthorizationService authorizationService,
         IDocumentStore documentStore,
         IOptions<ContentOptions> contentOptions,
@@ -48,6 +51,7 @@ public sealed class AdminController : Controller
     {
         _notifier = notifier;
         _contentDefinitionDisplayManager = contentDefinitionDisplayManager;
+        _siteService = siteService;
         _documentStore = documentStore;
         _authorizationService = authorizationService;
         _contentDefinitionService = contentDefinitionService;
@@ -77,6 +81,7 @@ public sealed class AdminController : Controller
 
         return View("List", new ListContentTypesViewModel
         {
+            ShowGrouping = (await _siteService.GetSiteSettingsAsync()).ShowContentTypesGrouping,
             Types = await GetTypesAsync(),
         });
     }
