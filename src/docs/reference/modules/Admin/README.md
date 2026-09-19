@@ -94,7 +94,7 @@ The feature is enabled by default and can be turned off from **Configuration →
 
 ## Navbar Shape
 
-The navigation bar shape is available in two display types `Detail` for the frontend and `DetailAdmin` for the backend admin. The `Navbar` shape is composed and used `TheAdmin` and `TheTheme` themes. If you wish to compose and use the `Navbar` shape in other themes, you may create it using two steps
+The navigation bar shape is available in two display types: `Detail` for the frontend and `DetailAdmin` for the backend admin. The `Navbar` shape is composed and used by the `TheAdmin` and `TheTheme` themes. If you wish to compose and use the `Navbar` shape in other themes, you may create it using two steps
 
 === "Liquid"
 
