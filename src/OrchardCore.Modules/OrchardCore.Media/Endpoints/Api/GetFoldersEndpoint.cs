@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
 
 namespace OrchardCore.Media.Endpoints.Api;
@@ -30,6 +31,8 @@ public static class GetFoldersEndpoint
     private static async Task<IResult> HandleAsync(
         HttpContext httpContext,
         IAuthorizationService authorizationService,
+        MediaPathResolutionCache pathCache,
+        MediaDirectoryTreeCache treeCache,
         IMediaFileStore mediaFileStore,
         string path,
         int skip = 0,
@@ -98,7 +101,7 @@ public static class GetFoldersEndpoint
         // Check HasChildren for the page only (not all folders), considering only accessible sub-folders.
         var hasChildrenTasks = page.Select(async folder =>
         {
-            folder.HasChildren = await MediaEndpointHelpers.HasSubDirectoriesAsync(mediaFileStore, authorizationService, httpContext.User, folder.DirectoryPath);
+            folder.HasChildren = await MediaEndpointHelpers.HasSubDirectoriesAsync(mediaFileStore, authorizationService, httpContext.User, folder.DirectoryPath, pathCache, treeCache);
         });
         await Task.WhenAll(hasChildrenTasks);
 
