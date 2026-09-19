@@ -9,6 +9,8 @@ type: task
 
 - [ ] Update `global.json` to the required SDK version.
 Use the minimal SDK version required, the `rollForward` rule will pick the latest version available on the machine. It's up to the user to update their SDK to the version they want in case there is an update and we don't want to force them into a newer version in case they can't install it.
+- [ ] Update CodeAnalysis packages in `Directory.Packages.props` to versions supported by the new SDK's Roslyn compiler. See [Upgrading the .NET SDK Version](../../src/docs/guides/upgrading-sdk-version/README.md) guide for details.
+- [ ] Run `build/verify-codeanalysis-versions.ps1` to verify package compatibility.
 - [ ] Update `src/OrchardCore.Build/TargetFrameworks.props`.
 - [ ] Decide whether to upgrade the C# language version in `src/OrchardCore.Build/OrchardCore.Commons.props`.
 - [ ] Add a custom `AspNetCorePackagesVersion` for each TFM in `Directory.Packages.props`
