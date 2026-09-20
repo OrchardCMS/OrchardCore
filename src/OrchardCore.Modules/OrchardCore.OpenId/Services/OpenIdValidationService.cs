@@ -132,7 +132,7 @@ public class OpenIdValidationService : IOpenIdValidationService
 
             if (!string.IsNullOrEmpty(settings.Tenant))
             {
-                results.Add(new ValidationResult(S["No metadada address can be set when using another tenant."], new[]
+                results.Add(new ValidationResult(S["No metadata address can be set when using another tenant."], new[]
                 {
                     nameof(settings.MetadataAddress),
                 }));
