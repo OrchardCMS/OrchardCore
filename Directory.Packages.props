@@ -6,9 +6,9 @@
   <ItemGroup>
     <PackageVersion Include="Acornima" Version="1.8.0" />
     <PackageVersion Include="AnyAscii" Version="0.3.3" />
-    <PackageVersion Include="AngleSharp" Version="1.7.2" />
-    <PackageVersion Include="AWSSDK.S3" Version="4.0.102.4" />
-    <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.101.1" />
+    <PackageVersion Include="AngleSharp" Version="1.7.3" />
+    <PackageVersion Include="AWSSDK.S3" Version="4.0.102.5" />
+    <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.101.2" />
     <PackageVersion Include="Azure.Communication.Email" Version="1.1.0" />
     <PackageVersion Include="Azure.Communication.Sms" Version="1.0.2" />
     <PackageVersion Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.5.2" />
