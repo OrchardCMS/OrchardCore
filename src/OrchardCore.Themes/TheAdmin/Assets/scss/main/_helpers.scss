@@ -4,9 +4,9 @@ $width-sizes: (25, 50, 75);
     @each $width-size in $width-sizes {
 
         @include media-breakpoint-up($breakpoint) {
-            $selctor: '.w-#{$breakpoint}-#{$width-size}';
+            $selector: '.w-#{$breakpoint}-#{$width-size}';
 
-            #{$selctor} {
+            #{$selector} {
                 width: $width-size * 1% !important;
             }
         }

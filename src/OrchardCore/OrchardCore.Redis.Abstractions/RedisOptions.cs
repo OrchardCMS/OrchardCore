@@ -18,7 +18,7 @@ public class RedisOptions
     public ConfigurationOptions ConfigurationOptions { get; set; }
 
     /// <summary>
-    /// Prefix alowing a Redis instance to be shared.
+    /// Prefix allowing a Redis instance to be shared.
     /// </summary>
     public string InstancePrefix { get; set; }
 }

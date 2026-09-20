@@ -1,0 +1,2 @@
+[codespell]
+skip = *.min.js,*.min.css,*.map,*/bin/*,*/obj/*,*/node_modules/*,*/Vendor/*,*/wwwroot/Scripts/*,*/wwwroot/Styles/*,*/Localization/*,*.ai,*.pdf,*/package-lock.json,yarn.lock,*/docs/releases/*,*/dist/*,*.svg,*.json,*/OrchardCore.Resources/Assets/trumbowyg/*,*/OrchardCore.DataLocalization/Services/*,*/OrchardCore.Localization.Core/*,*/README.md,*/ArgsUtility.cs,*/OrchardCore.DisplayManagement/Arguments.cs,*/TheBlogTheme/src/pug/about.pug

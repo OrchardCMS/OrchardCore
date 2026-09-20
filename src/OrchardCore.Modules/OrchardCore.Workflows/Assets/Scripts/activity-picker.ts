@@ -6,7 +6,7 @@ const applyFilter = function (category: string | null, q: string | null) {
     const cards = Array.from(document.querySelectorAll<HTMLElement>('.activity.col'));
     cards.forEach((card) => card.style.display = '');
 
-    // Remove activities whoes type doesn't match the configured activity type.
+    // Remove activities whose type doesn't match the configured activity type.
     cards.filter((card) => card.dataset.activityType != type)
         .forEach((card) => card.style.display = 'none');
 
