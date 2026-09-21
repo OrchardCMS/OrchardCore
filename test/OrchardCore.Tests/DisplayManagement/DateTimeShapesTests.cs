@@ -29,18 +29,17 @@ public class DateTimeShapesTests
 
         var result = Render(shapes.TimeSpan(_utc, _utc.AddDays(3), TimeTag: true));
 
-        Assert.Equal("<time datetime=\"2026-01-01T10:00:00Z\">3 days ago</time>", result);
+        Assert.Equal("<time datetime=\"2026-01-01 10:00:00Z\">3 days ago</time>", result);
     }
 
     [Fact]
-    public async Task DateTimeShouldRenderTimeTagWithLocalOffsetWhenRequested()
+    public async Task DateTimeShouldRenderLocalTextAndUtcTimeTagWhenRequested()
     {
         var shapes = CreateShapes(TimeSpan.FromHours(2));
 
-        var result = Render(await shapes.DateTime(null, _utc, "yyyy-MM-dd", TimeTag: true));
+        var result = Render(await shapes.DateTime(null, _utc, "yyyy-MM-dd HH'h'mm", TimeTag: true));
 
-        // The HTML encoder writes '+' as '&#x2B;' in attribute values; browsers decode it back.
-        Assert.Equal("<time datetime=\"2026-01-01T12:00:00&#x2B;02:00\">2026-01-01</time>", result);
+        Assert.Equal("<time datetime=\"2026-01-01 10:00:00Z\">2026-01-01 12h00</time>", result);
     }
 
     [Fact]
@@ -50,7 +49,7 @@ public class DateTimeShapesTests
 
         var result = Render(await shapes.DateTime(null, _utc, "'<b>'yyyy", TimeTag: true));
 
-        Assert.Equal("<time datetime=\"2026-01-01T10:00:00&#x2B;00:00\">&lt;b&gt;2026</time>", result);
+        Assert.Equal("<time datetime=\"2026-01-01 10:00:00Z\">&lt;b&gt;2026</time>", result);
     }
 
     private static DateTimeShapes CreateShapes(TimeSpan offset = default)

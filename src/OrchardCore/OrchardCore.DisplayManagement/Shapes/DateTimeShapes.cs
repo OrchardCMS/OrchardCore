@@ -13,8 +13,6 @@ public class DateTimeShapes : IShapeAttributeProvider
 {
     private const string TimeTagName = "time";
     private const string DateTimeAttributeName = "datetime";
-    private const string UtcDateTimeAttributeFormat = "yyyy-MM-ddTHH:mm:ssZ";
-    private const string LocalDateTimeAttributeFormat = "yyyy-MM-ddTHH:mm:sszzz";
 
     private readonly IClock _clock;
     private readonly ILocalClock _localClock;
@@ -47,9 +45,7 @@ public class DateTimeShapes : IShapeAttributeProvider
             return text;
         }
 
-        var utc = System.DateTime.SpecifyKind(Utc.Value, DateTimeKind.Utc);
-
-        return CreateTimeTag(utc.ToString(UtcDateTimeAttributeFormat, CultureInfo.InvariantCulture), text);
+        return CreateTimeTag(Utc.Value, text);
     }
 
     private LocalizedHtmlString GetRelativeTime(TimeSpan time)
@@ -143,13 +139,15 @@ public class DateTimeShapes : IShapeAttributeProvider
             return Html.Raw(Html.Encode(text));
         }
 
-        return CreateTimeTag(zonedTime.ToString(LocalDateTimeAttributeFormat, CultureInfo.InvariantCulture), new HtmlContentBuilder().Append(text));
+        return CreateTimeTag(Utc.Value, new HtmlContentBuilder().Append(text));
     }
 
-    private static TagBuilder CreateTimeTag(string dateTime, IHtmlContent content)
+    private static TagBuilder CreateTimeTag(DateTime utc, IHtmlContent content)
     {
         var tag = new TagBuilder(TimeTagName);
-        tag.Attributes[DateTimeAttributeName] = dateTime;
+
+        // The "u" universal sortable format (e.g. "2026-01-01 10:00:00Z") is a valid HTML datetime value.
+        tag.Attributes[DateTimeAttributeName] = System.DateTime.SpecifyKind(utc, DateTimeKind.Utc).ToString("u", CultureInfo.InvariantCulture);
         tag.InnerHtml.AppendHtml(content);
 
         return tag;
