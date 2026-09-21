@@ -49,7 +49,7 @@
         }
         else
         {
-            <div id="@vueElementId" class="tags" data-taxonomy-content-item-id="@Model.Taxonomy.ContentItemId" data-open="@open.ToString().ToLower()" data-leaves-only="@taxonomySettings.LeavesOnly.ToString().ToLower()" data-unique="@taxonomySettings.Unique.ToString().ToLower()" data-create-tag-error-message="@T["Error creating tag"]" data-all-tag-terms="@Model.TagTermEntries" data-create-tag-url="@createTagUrl" data-translations="@translationsJson" data-placeholder="@taxonomySettings.Placeholder" data-selected-ids-input-id="@Html.IdFor(x => x.TermContentItemIds)" data-selected-ids-input-name="@Html.NameFor(x => x.TermContentItemIds)">
+            <div id="@vueElementId" class="tags" data-taxonomy-content-item-id="@Model.Taxonomy.ContentItemId" data-open="@open.ToString().ToLower()" data-leaves-only="@taxonomySettings.LeavesOnly.ToString().ToLower()" data-unique="@taxonomySettings.Unique.ToString().ToLower()" data-create-tag-error-message='@T["Error creating tag"]' data-all-tag-terms="@Model.TagTermEntries" data-create-tag-url="@createTagUrl" data-translations="@translationsJson" data-placeholder="@taxonomySettings.Placeholder" data-selected-ids-input-id="@Html.IdFor(x => x.TermContentItemIds)" data-selected-ids-input-name="@Html.NameFor(x => x.TermContentItemIds)">
                 <div class="tags-editor-mount w-100"></div>
             </div>
 
