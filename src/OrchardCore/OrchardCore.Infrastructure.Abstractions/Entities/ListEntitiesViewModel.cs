@@ -7,6 +7,4 @@ public class ListEntitiesViewModel<TEntity, TOptions> : ListEntitiesWithOptionsV
     public IList<TEntity> Models { get; set; }
 }
 
-public class ListEntitiesViewModel : ListEntitiesViewModel<Entity, ModelOptions>
-{
-}
+public class ListEntitiesViewModel : ListEntitiesViewModel<Entity, ModelOptions>;
