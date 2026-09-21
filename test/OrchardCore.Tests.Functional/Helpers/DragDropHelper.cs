@@ -5,7 +5,7 @@ namespace OrchardCore.Tests.Functional.Helpers;
 
 /// <summary>
 /// Low-level mouse-simulated drag-and-drop primitive for the various
-/// SortableJS-based UIs outside the Menu/Taxonomies hierarchy editor (see
+/// SortableJS-based UI's outside the Menu/Taxonomies hierarchy editor (see
 /// SortableMenuHelper for that one specifically, which needs indent/outdent-
 /// aware positioning) - Layers, AdminDashboard, AdminMenu's node tree, Flows
 /// and Widgets all drive SortableJS the same basic way: mouse down on a

@@ -42,7 +42,7 @@ internal static class RequiredAttributeParser
 
         private char Current => _requiredAttributes[_index];
 
-        private bool AtEnd => _index >= _requiredAttributes.Length;
+        private bool AtEnd => _index >= _requiredAttributes.Length; /* codespell:ignore */
 
         public void AddRequiredAttributes(TagMatchingRuleDescriptorBuilder ruleBuilder)
         {
@@ -83,7 +83,7 @@ internal static class RequiredAttributeParser
                             return;
                         }
                     }
-                    else if (!AtEnd)
+                    else if (!AtEnd) /* codespell:ignore */
                     {
                         // var diagnostic = RazorDiagnosticFactory.CreateTagHelper_InvalidRequiredAttributeCharacter(Current, _requiredAttributes);
                         // attributeBuilder.Diagnostics.Add(diagnostic);
@@ -99,7 +99,7 @@ internal static class RequiredAttributeParser
                     break;
                 }
             }
-            while (!AtEnd);
+            while (!AtEnd); /* codespell:ignore */
         }
 
         private void ParsePlainSelector(RequiredAttributeDescriptorBuilder attributeBuilder)
@@ -145,7 +145,7 @@ internal static class RequiredAttributeParser
 
         private bool TryParseCssValueComparison(RequiredAttributeDescriptorBuilder builder, out RequiredAttributeDescriptor.ValueComparisonMode valueComparison)
         {
-            Debug.Assert(!AtEnd);
+            Debug.Assert(!AtEnd); /* codespell:ignore */
 
             if (s_cssValueComparisons.TryGetValue(Current, out valueComparison))
             {
@@ -257,7 +257,7 @@ internal static class RequiredAttributeParser
                 _index++;
                 return true;
             }
-            else if (AtEnd)
+            else if (AtEnd) /* codespell:ignore */
             {
                 // var diagnostic = RazorDiagnosticFactory.CreateTagHelper_CouldNotFindMatchingEndBrace(_requiredAttributes);
                 // attributeBuilder.Diagnostics.Add(diagnostic);
@@ -273,7 +273,7 @@ internal static class RequiredAttributeParser
 
         private bool EnsureNotAtEnd(RequiredAttributeDescriptorBuilder _)
         {
-            if (AtEnd)
+            if (AtEnd) /* codespell:ignore */
             {
                 // var diagnostic = RazorDiagnosticFactory.CreateTagHelper_CouldNotFindMatchingEndBrace(_requiredAttributes);
                 // builder.Diagnostics.Add(diagnostic);
@@ -286,12 +286,12 @@ internal static class RequiredAttributeParser
 
         private bool At(char c)
         {
-            return !AtEnd && Current == c;
+            return !AtEnd && Current == c; /* codespell:ignore */
         }
 
         private void PassOptionalWhitespace()
         {
-            while (!AtEnd && (Current == ' ' || Current == '\t'))
+            while (!AtEnd && (Current == ' ' || Current == '\t')) /* codespell:ignore */
             {
                 _index++;
             }

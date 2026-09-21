@@ -16,7 +16,7 @@ public class ContentItemTests
         var jsonStr = """
          {
             "NullValueDateTimeFieldTest": {
-                "Value": null 
+                "Value": null
             }
         }
         """;
@@ -113,7 +113,7 @@ public class ContentItemTests
 
         var contentItem2 = JConvert.DeserializeObject<ContentItem>(json);
 
-        Assert.Equal(0, contentItem2.Id); // Should be 0 as we dont serialize it.
+        Assert.Equal(0, contentItem2.Id); // Should be 0 as we don't serialize it.
         Assert.Equal(contentItem.ContentItemId, contentItem2.ContentItemId);
         Assert.Equal(contentItem.ContentType, contentItem2.ContentType);
         Assert.Equal(contentItem.Latest, contentItem2.Latest);

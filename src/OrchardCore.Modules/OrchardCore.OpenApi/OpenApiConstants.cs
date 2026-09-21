@@ -3,7 +3,7 @@ namespace OrchardCore.OpenApi;
 internal static class OpenApiConstants
 {
     /// <summary>
-    /// Conventional client id of the public OAuth2/PKCE application the documentation UIs
+    /// Conventional client id of the public OAuth2/PKCE application the documentation UI's
     /// (Swagger, Scalar) use to silently acquire a bearer token against the same-tenant
     /// OpenID Connect server. Provisioned by the <c>OpenApiPkce</c> recipe.
     /// </summary>

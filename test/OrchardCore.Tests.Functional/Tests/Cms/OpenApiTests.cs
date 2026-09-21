@@ -238,7 +238,7 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
     /// <summary>
     /// Regression test for a permission-hierarchy bug where ManageOpenApi was (incorrectly)
     /// implied by ViewOpenApiContent, letting a view-only role edit settings. A view-only role
-    /// must be able to view the documentation UIs (per the module's documented design) but must
+    /// must be able to view the documentation UI's (per the module's documented design) but must
     /// never be treated as ManageOpenApi.
     /// </summary>
     [Fact]
@@ -266,7 +266,7 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
     //
     // These configure a same-tenant OpenID Connect Server (so the token is issued and validated
     // by the same tenant that hosts the OpenApi-protected endpoint being called) and register the
-    // public "openapi" PKCE client the documentation UIs use. The injected openapi-ui-auth bundle
+    // public "openapi" PKCE client the documentation UI's use. The injected openapi-ui-auth bundle
     // then silently acquires a bearer token from the already-authenticated admin session (no
     // "Authorize" click), and each UI's "try it out" / "test request" action against a real
     // protected endpoint is asserted to be authenticated (not a 401/403).
@@ -304,7 +304,7 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
     }
 
     /// <summary>
-    /// Registers the public (secret-less) "openapi" PKCE client the documentation UIs use, with
+    /// Registers the public (secret-less) "openapi" PKCE client the documentation UI's use, with
     /// the silent-renew page as its redirect URI and the roles scope granted (so the issued token
     /// carries the user's roles, which the API permission checks require). Consent is "implicit"
     /// so the silent prompt=none flow never has to render a consent screen. This mirrors the
@@ -342,8 +342,8 @@ public sealed class OpenApiTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         // Skip the consent screen so the silent prompt=none flow never has to click through it.
         await page.Locator("select[name='ConsentType']").SelectOptionAsync("implicit");
 
-        // Grant the scopes the documentation UIs request; roles is what carries the caller's roles
-        // into the access token. The scope checkboxes are labelled by scope name.
+        // Grant the scopes the documentation UI's request; roles is what carries the caller's roles
+        // into the access token. The scope checkboxes are labeled by scope name.
         foreach (var scope in new[] { "email", "profile", "roles" })
         {
             var scopeCheckbox = page.GetByRole(AriaRole.Checkbox, new() { Name = scope, Exact = true });

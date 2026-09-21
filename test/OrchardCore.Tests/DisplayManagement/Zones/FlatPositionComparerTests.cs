@@ -448,7 +448,7 @@ public class FlatPositionComparerTests
         Assert.Equal(0, _comparer.Compare("", "0"));
         Assert.Equal(0, _comparer.Compare("0", ""));
 
-        // Whitespace should also be treated as "0" 
+        // Whitespace should also be treated as "0"
         Assert.Equal(0, _comparer.Compare("   ", "0"));
         Assert.Equal(0, _comparer.Compare("0", "   "));
     }
@@ -702,9 +702,9 @@ public class FlatPositionComparerTests
                 var b = s_ascending[j];
 
                 var ab = Math.Sign(_comparer.Compare(a, b));
-                var ba = Math.Sign(_comparer.Compare(b, a));
+                var ba = Math.Sign(_comparer.Compare(b, a)); /* codespell:ignore */
 
-                Assert.True(ab == -ba, $"Antisymmetry violated for '{a}' vs '{b}': {ab} / {ba}");
+                Assert.True(ab == -ba, $"Antisymmetry violated for '{a}' vs '{b}': {ab} / {ba}"); /* codespell:ignore */
             }
         }
     }

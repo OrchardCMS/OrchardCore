@@ -1,2 +1,5 @@
 [codespell]
-skip = *.min.js,*.min.css,*.map,*/bin/*,*/obj/*,*/node_modules/*,*/Vendor/*,*/wwwroot/Scripts/*,*/wwwroot/Styles/*,*/Localization/*,*.ai,*.pdf,*/package-lock.json,yarn.lock,*/docs/releases/*,*/dist/*,*.svg,*.json,*/OrchardCore.Resources/Assets/trumbowyg/*,*/OrchardCore.DataLocalization/Services/*,*/OrchardCore.Localization.Core/*,*/README.md,*/ArgsUtility.cs,*/OrchardCore.DisplayManagement/Arguments.cs,*/TheBlogTheme/src/pug/about.pug
+builtin = clear,code,en-GB_to_en-US,informal,names,rare
+ignore-regex = (<thead|<\/thead>|Ik wil een taart|Ik Wil Een Taart|lets|Lets)
+ignore-words-list = Deque, referer, Referer, ShouldBe, uint
+skip = *.min.js,*.min.css,*.map,*/bin/*,*/obj/*,*/node_modules/*,*/Vendor/*,*/wwwroot/Scripts/*,*/wwwroot/Styles/*,*/Localization/*,*.ai,*.pdf,*/package-lock.json,yarn.lock,*/docs/releases/*,*/dist/*,*.svg,*.json,*/OrchardCore.Resources/Assets/trumbowyg/*,*/OrchardCore.DataLocalization/Services/*,*/OrchardCore.Localization.Core/*,*/README.md,*/ArgsUtility.cs,*/OrchardCore.DisplayManagement/Arguments.cs,*/TheBlogTheme/src/pug/about.pug,*/src/services/__tests__/*,*/media-gallery/tsconfig.app.tsbuildinfo,*/external-login-settings.ts

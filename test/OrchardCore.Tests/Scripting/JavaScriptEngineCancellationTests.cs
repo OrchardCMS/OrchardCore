@@ -21,7 +21,7 @@ public class JavaScriptEngineCancellationTests
         var stopwatch = Stopwatch.StartNew();
 
         // Before the constraint was armed here the token was only observed while awaiting promise
-        // settlement, so a script that never yields ran to completion with the token already cancelled.
+        // settlement, so a script that never yields ran to completion with the token already canceled.
         await Assert.ThrowsAsync<OperationCanceledException>(
             () => engine.EvaluateAsync(scope, LongRunningScript, cts.Token));
 
@@ -53,7 +53,7 @@ public class JavaScriptEngineCancellationTests
         // A host filtering with 'when (e is not OperationCanceledException)' needs the cancellation it
         // asked for to be distinguishable from a script failure, and needs the token to identify it. A
         // script this small never reaches an amortized constraint check, so this also pins that a token
-        // cancelled before the call is observed before the script starts rather than not at all.
+        // canceled before the call is observed before the script starts rather than not at all.
         var exception = await Assert.ThrowsAsync<OperationCanceledException>(
             () => engine.EvaluateAsync(scope, "return 1 + 1;", cts.Token));
 
@@ -83,7 +83,7 @@ public class JavaScriptEngineCancellationTests
 
         // The constraint is disarmed in a finally, so the finished evaluation's token is not carried into
         // the next one. A scope is held for a whole request by JavascriptConditionEvaluator, so an engine
-        // really does outlive the evaluation that cancelled.
+        // really does outlive the evaluation that canceled.
         Assert.Equal(2, Convert.ToInt32(await engine.EvaluateAsync(scope, "return 1 + 1;", CancellationToken.None)));
         Assert.Equal(2, Convert.ToInt32(engine.Evaluate(scope, "return 1 + 1;")));
     }
