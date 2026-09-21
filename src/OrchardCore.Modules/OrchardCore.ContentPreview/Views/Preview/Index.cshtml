@@ -3,7 +3,7 @@
     var previewId = ViewContext.RouteData.Values["id"];
 }
 
-<iframe id="iframe-a" title="preview" style="position:fixed; top:0; left:0; bottom:0; right:0; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999990;"></iframe>
+<iframe id="iframe-a" title="preview" data-preview-id="@previewId" style="position:fixed; top:0; left:0; bottom:0; right:0; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999990;"></iframe>
 <iframe id="iframe-b" title="preview-staging" style="position:fixed; top:0; left:0; bottom:0; right:0; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999989;"></iframe>
 
 <div id="notConnectedWarning" class="alert alert-info alert-dismissible fade show" role="alert" style="position:fixed; height:60px; top:10px; right:40px; display:none; z-index:999999;">
@@ -19,104 +19,4 @@
 
 <resources type="Footer" />
 
-<script>
-    (function () {
-        var frames = [
-            document.getElementById('iframe-a'),
-            document.getElementById('iframe-b')
-        ];
-        var activeIdx = 0;
-        var navigating = false;
-        var channel = new BroadcastChannel('contentpreview-@previewId');
-
-        function getActive() { return frames[activeIdx]; }
-        function getStaging() { return frames[1 - activeIdx]; }
-
-        function swap() {
-            var active = getActive();
-            var staging = getStaging();
-
-            // Restore the exact pixel scroll position on the hidden staging frame before
-            // bringing it to the front. Because the swap is instantaneous (z-index only,
-            // no animation), the user never sees the staging frame scroll — they just see
-            // the new content already at the right position after the swap.
-            var scrollY = active.contentWindow ? active.contentWindow.scrollY : 0;
-            if (scrollY > 0 && staging.contentWindow) {
-                staging.contentWindow.scrollTo(0, scrollY);
-            }
-
-            staging.style.zIndex = '999990';
-            active.style.zIndex = '999989';
-            activeIdx = 1 - activeIdx;
-        }
-
-        function onFrameLoad() {
-            if (navigating && this === getStaging()) {
-                navigating = false;
-                swap();
-            }
-        }
-
-        frames[0].addEventListener('load', onFrameLoad);
-        frames[1].addEventListener('load', onFrameLoad);
-
-        channel.onmessage = function (ev) {
-            if (!ev.data) return;
-            switch (ev.data.type) {
-                case 'hello':
-                    // The editor (re)connected. Re-announce readiness so it sends the
-                    // current draft, which restores the preview after an editor reload.
-                    channel.postMessage({ type: 'ready' });
-                    break;
-                case 'token':
-                    navigating = true;
-                    getStaging().src = ev.data.previewUrl;
-                    document.getElementById('notConnectedWarning').style.display = 'none';
-                    break;
-                case 'error':
-                    if (ev.data.errors) {
-                        var ul = document.querySelector('#serverErrorWarning ul');
-                        ul.innerHTML = '';
-                        ev.data.errors.forEach(function (error) {
-                            console.error(error);
-                            var li = document.createElement('li');
-                            li.textContent = error;
-                            ul.appendChild(li);
-                        });
-                        document.getElementById('serverErrorWarning').style.display = 'block';
-                    }
-                    break;
-                case 'disconnected':
-                    document.getElementById('notConnectedWarning').style.display = 'block';
-                    break;
-            }
-        };
-
-        function onDocumentReady(callback) {
-            if (document.readyState !== 'loading') {
-                callback();
-            } else {
-                document.addEventListener('DOMContentLoaded', callback);
-            }
-        }
-
-        onDocumentReady(function () {
-            var closeConnectWarning = document.getElementById('close-connect-warning');
-            if (closeConnectWarning) {
-                closeConnectWarning.addEventListener('click', function () {
-                    document.getElementById('notConnectedWarning').style.display = 'none';
-                });
-            }
-
-            var closeServerWarning = document.getElementById('close-server-warning');
-            if (closeServerWarning) {
-                closeServerWarning.addEventListener('click', function () {
-                    document.getElementById('serverErrorWarning').style.display = 'none';
-                });
-            }
-
-            // Signal the editor that the preview window is ready to receive updates.
-            channel.postMessage({ type: 'ready' });
-        });
-    })();
-</script>
+<script asp-src="~/OrchardCore.ContentPreview/Scripts/preview-swap/preview-swap.min.js" debug-src="~/OrchardCore.ContentPreview/Scripts/preview-swap/preview-swap.js" type="module"></script>

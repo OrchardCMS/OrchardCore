@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-399-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-401-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key))!
@@ -551,6 +551,8 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/AniketDeshmane"><img src="https://avatars.githubusercontent.com/u/48859031?v=4?s=100" width="100px;" alt="AniketDeshmane"/><br /><sub><b>AniketDeshmane</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=AniketDeshmane" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/antonfirsov"><img src="https://avatars.githubusercontent.com/u/6835152?v=4?s=100" width="100px;" alt="Anton Firszov"/><br /><sub><b>Anton Firszov</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=antonfirsov" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="http://techiu.epizy.com/"><img src="https://avatars.githubusercontent.com/u/49456702?v=4?s=100" width="100px;" alt="Rajeev Kumar"/><br /><sub><b>Rajeev Kumar</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=RAJEEV2510" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/vlad2kgithub"><img src="https://avatars.githubusercontent.com/u/62915530?v=4?s=100" width="100px;" alt="VladAffable"/><br /><sub><b>VladAffable</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=vlad2kgithub" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/yogixlogic"><img src="https://avatars.githubusercontent.com/u/68509860?v=4?s=100" width="100px;" alt="YOGESH CHANDEWAR "/><br /><sub><b>YOGESH CHANDEWAR </b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=yogixlogic" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
