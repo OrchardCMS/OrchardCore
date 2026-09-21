@@ -59,7 +59,7 @@ public sealed class Startup : StartupBase
 
         // Taxonomy Field
         services.AddContentField<TaxonomyField>()
-            .UseDisplayDriver<TaxonomyFieldDisplayDriver>(d => !string.Equals(d, "Tags", StringComparison.OrdinalIgnoreCase))
+            .UseDisplayDriver<TaxonomyFieldDisplayDriver>(d => string.IsNullOrEmpty(d) || string.Equals(d, "Standard", StringComparison.OrdinalIgnoreCase))
             .AddHandler<TaxonomyFieldHandler>();
 
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TaxonomyFieldSettingsDriver>();
