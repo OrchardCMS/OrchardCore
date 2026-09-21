@@ -21,6 +21,11 @@ namespace OrchardCore.Roles.Controllers;
 public sealed class AdminController : Controller
 {
     /// <summary>
+    /// The submit button value that opens the new role's edit page after creating it.
+    /// </summary>
+    public const string SaveAndConfigureSubmitValue = "SaveAndConfigure";
+
+    /// <summary>
     /// The submit button value that keeps the user on the role's edit page after saving.
     /// </summary>
     public const string SaveAndContinueSubmitValue = "SaveAndContinue";
@@ -132,7 +137,7 @@ public sealed class AdminController : Controller
             {
                 await _notifier.SuccessAsync(H["Role created successfully."]);
 
-                if (submit == SaveAndContinueSubmitValue)
+                if (submit == SaveAndConfigureSubmitValue)
                 {
                     return RedirectToAction(nameof(Edit), new { id = role.RoleName });
                 }
