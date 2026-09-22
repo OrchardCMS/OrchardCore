@@ -6,11 +6,11 @@
     var providersJson = JConvert.SerializeObject(Model.Providers, JOptions.CamelCase);
     var messagesJson = JConvert.SerializeObject(new
     {
-        saved = T["Translations saved successfully."].ToString(),
-        failedDefault = T["Failed to save translations."].ToString(),
-        savingError = T["An error occurred while saving."].ToString(),
-        discardConfirm = T["You have unsaved changes. Do you want to discard them?"].ToString(),
-        loadError = T["Failed to load translations."].ToString(),
+        saved = T["Translations saved successfully."].Value,
+        failedDefault = T["Failed to save translations."].Value,
+        savingError = T["An error occurred while saving."].Value,
+        discardConfirm = T["You have unsaved changes. Do you want to discard them?"].Value,
+        loadError = T["Failed to load translations."].Value,
     }, JOptions.CamelCase);
 }
 

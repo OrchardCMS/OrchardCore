@@ -1,4 +1,5 @@
 @model EditRoleViewModel
+@using OrchardCore.Roles.Controllers
 @using OrchardCore.Roles.ViewModels
 
 <zone Name="Title">
@@ -22,7 +23,15 @@
 
     <div class="ocat-wrapper">
         <div class="ocat-end-offset">
-            <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+            <div class="btn-group">
+                <button class="btn btn-primary save" type="submit" name="submit">@T["Save"]</button>
+                <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="visually-hidden">@T["Toggle Dropdown"]</span>
+                </button>
+                <div class="dropdown-menu">
+                    <button class="dropdown-item save-continue" name="submit" type="submit" value="@AdminController.SaveAndContinueSubmitValue">@T["and continue"]</button>
+                </div>
+            </div>
             <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
         </div>
     </div>
