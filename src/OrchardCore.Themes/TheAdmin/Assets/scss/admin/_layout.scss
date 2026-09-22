@@ -26,15 +26,18 @@ body, html {
     }
 }
 
-@include media-breakpoint-down(sm) {
+// Below the medium breakpoint the menu is an off canvas drawer, so the
+// content uses the whole width of the screen.
+@include media-breakpoint-down(md) {
     .ta-content {
-        margin-left: var(--oc-start-navigation-width-when-compact);
-        transition: margin-left 0.5s ease-in-out;
+        margin-left: 0;
     }
 }
 
-.left-sidebar-compact .ta-content {
-    margin-left: var(--oc-start-navigation-width-when-compact);
+@include media-breakpoint-up(md) {
+    .left-sidebar-compact .ta-content {
+        margin-left: var(--oc-start-navigation-width-when-compact);
+    }
 }
 
 .preload * {

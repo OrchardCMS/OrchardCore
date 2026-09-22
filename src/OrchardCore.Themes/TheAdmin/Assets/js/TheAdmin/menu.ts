@@ -1,9 +1,17 @@
-import { isCompactExplicit, setCompactExplicit, getAdminPreferences, setAdminPreferences } from '../constants';
+import { setCompactExplicit, getAdminPreferences, setAdminPreferences } from '../constants';
 import { getTenantName, getAdminPrefix } from '@orchardcore/bloom/helpers/globals';
 import { persistAdminPreferences } from './userPreferencesPersistor';
 
-let leftNav: HTMLElement | null = null;
 let menuInitialized = false;
+
+// Below this width the menu is rendered as an off canvas drawer instead of a sidebar.
+const mobileQuery = '(max-width: 767.98px)';
+const sidebarOpenClass = 'ta-sidebar-open';
+const compactClass = 'left-sidebar-compact';
+
+const isMobile = () => window.matchMedia(mobileQuery).matches;
+
+const isCompact = () => document.body.classList.contains(compactClass) && !isMobile();
 
 const getSelectedNavHashStorageKey = () => `${getTenantName()}-selectedNavHash`;
 
@@ -28,25 +36,41 @@ const getSelectedNavHashFromDom = (nav: HTMLElement): string | null => {
         ?.dataset.adminHash ?? null;
 };
 
-const applySelectedNavLink = (nav: HTMLElement, selectedLink: HTMLAnchorElement) => {
+// Shows or hides a collapsible list, keeping the state of the elements toggling it in sync.
+const setExpanded = (collapsible: HTMLElement, expanded: boolean) => {
+    collapsible.classList.toggle('show', expanded);
+
+    if (!collapsible.id) {
+        return;
+    }
+
+    document.querySelectorAll(`[data-bs-target="#${collapsible.id}"]`)
+        .forEach((toggle) => toggle.setAttribute('aria-expanded', String(expanded)));
+};
+
+const applySelectedNavLink = (nav: HTMLElement, selectedLink: HTMLElement) => {
     nav.querySelectorAll('li.active').forEach(li => li.classList.remove('active'));
-    nav.querySelectorAll<HTMLElement>('ul.collapse.show').forEach(ul => ul.classList.remove('show'));
-    nav.querySelectorAll<HTMLElement>('.item-label[data-bs-toggle="collapse"][aria-expanded="true"]')
-        .forEach(label => label.setAttribute('aria-expanded', 'false'));
+    nav.querySelectorAll('li.current').forEach(li => li.classList.remove('current'));
+
+    // Only the items nested inside a group are collapsed back, the groups themselves
+    // keep the state chosen by the user.
+    nav.querySelectorAll<HTMLElement>('ul.collapse.show:not(.nav-group-items)')
+        .forEach(ul => setExpanded(ul, false));
 
     let currentItem = selectedLink.closest('li');
+    let isDeepest = true;
 
     while (currentItem) {
         currentItem.classList.add('active');
 
-        const childMenu = currentItem.querySelector<HTMLElement>(':scope > figure > ul.collapse');
-        if (childMenu) {
-            childMenu.classList.add('show');
+        if (isDeepest) {
+            currentItem.classList.add('current');
+            isDeepest = false;
         }
 
-        const toggle = currentItem.querySelector<HTMLElement>(':scope > figure > figcaption > .item-label[data-bs-toggle="collapse"]');
-        if (toggle) {
-            toggle.setAttribute('aria-expanded', 'true');
+        const childMenu = currentItem.querySelector<HTMLElement>(':scope > figure > ul.collapse');
+        if (childMenu) {
+            setExpanded(childMenu, true);
         }
 
         currentItem = currentItem.parentElement?.closest('li') ?? null;
@@ -110,6 +134,131 @@ const applySelectedNavFromSessionStorage = () => {
     return true;
 };
 
+const getNavGroups = () =>
+    Array.from(document.querySelectorAll<HTMLElement>('#left-nav > ul > li > figure > ul.nav-group-items[id]'));
+
+// Groups are expanded when the page is rendered, so only the ones the user collapsed
+// have to be restored. The group holding the current page is always kept expanded.
+const applyCollapsedNavGroupsFromPreferences = () => {
+    const groups = getNavGroups();
+
+    if (groups.length === 0) {
+        return document.readyState === 'complete';
+    }
+
+    const preferences = getAdminPreferences() as Record<string, unknown>;
+    const collapsedGroups = Array.isArray(preferences.collapsedNavGroups)
+        ? preferences.collapsedNavGroups as string[]
+        : [];
+
+    if (collapsedGroups.length > 0) {
+        groups
+            .filter(group => collapsedGroups.includes(group.id) && !group.closest('li')?.classList.contains('active'))
+            .forEach(group => setExpanded(group, false));
+    }
+
+    return document.readyState === 'complete';
+};
+
+const persistCollapsedNavGroups = () => {
+    const collapsedGroups = getNavGroups()
+        .filter(group => !group.classList.contains('show'))
+        .map(group => group.id);
+
+    const preferences = getAdminPreferences() as Record<string, unknown>;
+    preferences.collapsedNavGroups = collapsedGroups;
+    setAdminPreferences(preferences);
+};
+
+// Off canvas menu, on small screens.
+const setSidebarOpen = (open: boolean) => {
+    document.body.classList.toggle(sidebarOpenClass, open);
+
+    document.querySelectorAll('.ta-sidebar-toggler')
+        .forEach(toggler => toggler.setAttribute('aria-expanded', String(open)));
+};
+
+// Compact menu flyouts. They are placed by script because the rail scrolls, which
+// would otherwise clip them, and because they must stay inside the viewport.
+const closeFlyouts = () => {
+    document.querySelectorAll<HTMLElement>('#left-nav > ul > li.visible').forEach((item) => {
+        item.classList.remove('visible');
+
+        const flyout = item.querySelector<HTMLElement>(':scope > figure > ul');
+        if (flyout) {
+            flyout.removeAttribute('style');
+        }
+    });
+};
+
+const positionFlyout = (item: HTMLElement) => {
+    const flyout = item.querySelector<HTMLElement>(':scope > figure > ul');
+    const sidebar = document.getElementById('ta-left-sidebar');
+
+    if (!flyout || !sidebar) {
+        return;
+    }
+
+    const margin = 8;
+    const sidebarRect = sidebar.getBoundingClientRect();
+    const itemRect = item.getBoundingClientRect();
+    const maxHeight = window.innerHeight - sidebarRect.top - margin;
+
+    flyout.style.position = 'fixed';
+    flyout.style.maxHeight = `${maxHeight}px`;
+
+    if (document.documentElement.dir === 'rtl') {
+        flyout.style.right = `${window.innerWidth - sidebarRect.left}px`;
+    } else {
+        flyout.style.left = `${sidebarRect.right}px`;
+    }
+
+    const top = Math.min(itemRect.top, window.innerHeight - margin - flyout.offsetHeight);
+    flyout.style.top = `${Math.max(sidebarRect.top, top)}px`;
+};
+
+const openFlyout = (item: HTMLElement) => {
+    if (item.classList.contains('visible')) {
+        positionFlyout(item);
+        return;
+    }
+
+    closeFlyouts();
+    item.classList.add('visible');
+    positionFlyout(item);
+};
+
+// While compact, clicking a group opens its flyout instead of collapsing it, so the
+// collapse toggles are turned off and restored when the menu is expanded again.
+const setGroupTogglesEnabled = (enabled: boolean) => {
+    const selector = enabled
+        ? '#left-nav > ul > li > figure > figcaption > [data-bs-toggle-disabled]'
+        : '#left-nav > ul > li > figure > figcaption > [data-bs-toggle="collapse"]';
+
+    document.querySelectorAll(selector).forEach((toggle) => {
+        if (enabled) {
+            toggle.setAttribute('data-bs-toggle', toggle.getAttribute('data-bs-toggle-disabled') ?? 'collapse');
+            toggle.removeAttribute('data-bs-toggle-disabled');
+        } else {
+            toggle.setAttribute('data-bs-toggle-disabled', toggle.getAttribute('data-bs-toggle') ?? 'collapse');
+            toggle.removeAttribute('data-bs-toggle');
+        }
+    });
+};
+
+// Applies the behavior matching the layout currently in use. The compact rail only
+// exists on medium screens and up, below that the menu is an off canvas drawer where
+// the groups keep collapsing as they do in the expanded sidebar.
+const syncCompactState = () => {
+    const compact = isCompact();
+
+    setGroupTogglesEnabled(!compact);
+
+    if (!compact) {
+        closeFlyouts();
+    }
+};
+
 const initializeMenu = () => {
     if (menuInitialized) {
         return;
@@ -117,18 +266,9 @@ const initializeMenu = () => {
 
     menuInitialized = true;
 
-    // When we load compact status from preferences we need to do some other tasks besides adding the class to the body.
-    // UserPreferencesLoader has already added the needed class.
-    document.addEventListener('DOMContentLoaded', () => {
-        // We set leftbar to compact if :
-        // 1. That preference was stored by the user the last time he was on the page
-        // 2. Or it's the first time on page and page is small.
-        //
-        if (document.body.classList.contains('left-sidebar-compact')
-            || (document.body.classList.contains('no-admin-preferences') && window.innerWidth < 768)) {
-            setCompactStatus(false);
-        }
-    });
+    // The compact class is added by the user preferences loader before the page is rendered,
+    // the rest of the compact behavior can only be applied once the menu exists.
+    document.addEventListener('DOMContentLoaded', syncCompactState);
 
     document.querySelectorAll('span.title').forEach((el) => {
         const icon = el.previousElementSibling;
@@ -138,64 +278,99 @@ const initializeMenu = () => {
     });
 
     document.querySelector('.leftbar-compactor')?.addEventListener('click', () => {
-        if (document.body.classList.contains('left-sidebar-compact')) {
+        if (document.body.classList.contains(compactClass)) {
             unSetCompactStatus();
         } else {
             setCompactStatus(true);
         }
     });
 
-    document.querySelectorAll('#left-nav li.has-items').forEach((item) => {
-        item.addEventListener('click', function (this: Element) {
-            document.querySelectorAll('#left-nav li.has-items').forEach((el) => el.classList.remove('visible'));
-            this.classList.add('visible');
+    document.querySelectorAll('.ta-sidebar-toggler').forEach((toggler) => {
+        toggler.addEventListener('click', () => {
+            setSidebarOpen(!document.body.classList.contains(sidebarOpenClass));
         });
     });
+
+    document.querySelector('.ta-sidebar-backdrop')?.addEventListener('click', () => setSidebarOpen(false));
+
+    document.addEventListener('keydown', (event) => {
+        // Escape clears the menu filter, it must not close the menu holding it.
+        if (event.key === 'Escape' && (event.target as Element)?.id !== 'filter') {
+            setSidebarOpen(false);
+            closeFlyouts();
+        }
+    });
+
+    document.querySelectorAll<HTMLElement>('#left-nav > ul > li.has-items').forEach((item) => {
+        item.addEventListener('mouseenter', () => {
+            if (isCompact()) {
+                openFlyout(item);
+            }
+        });
+
+        item.addEventListener('mouseleave', () => {
+            if (isCompact()) {
+                closeFlyouts();
+            }
+        });
+
+        item.addEventListener('focusin', () => {
+            if (isCompact()) {
+                openFlyout(item);
+            }
+        });
+
+        item.addEventListener('click', () => {
+            if (isCompact()) {
+                openFlyout(item);
+            }
+        });
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!(event.target as Element)?.closest('#left-nav > ul > li.has-items')) {
+            closeFlyouts();
+        }
+    });
+
+    const leftNav = document.getElementById('left-nav');
 
     // When navigating via a real nav link, persist the selected item hash inside the
     // existing admin preferences cookie so the server can restore the correct selection,
     // and inside session storage so the hash survives an in-page (Turbo-style) navigation.
-    document.getElementById('left-nav')?.addEventListener('click', (event) => {
+    leftNav?.addEventListener('click', (event) => {
         const link = (event.target as Element)?.closest<HTMLElement>('a[data-admin-hash][href^="/"]');
         if (!link) {
             return;
         }
-        const prefs = getAdminPreferences() as Record<string, unknown>;
-        prefs.selectedNavHash = String(link.dataset.adminHash);
-        setAdminPreferences(prefs);
+
+        const preferences = getAdminPreferences() as Record<string, unknown>;
+        preferences.selectedNavHash = String(link.dataset.adminHash);
+        setAdminPreferences(preferences);
         persistSelectedNavHash(String(link.dataset.adminHash));
-    });
 
-    document.addEventListener('click', (event) => {
-        const target = event.target as Element;
-        const triggers = document.querySelectorAll('#left-nav li.has-items');
-        const clickedInsideTrigger = Array.from(triggers).some((el) => el === target || el.contains(target));
-        if (!clickedInsideTrigger) {
-            triggers.forEach((el) => el.classList.remove('visible'));
+        // On small screens the drawer covers the page, it has to make way for the page being opened.
+        if (isMobile()) {
+            setSidebarOpen(false);
         }
     });
 
-    leftNav = document.getElementById("left-nav");
+    // Remember which groups the user collapsed.
+    const adminMenu = document.getElementById('adminMenu');
 
-    // create an Observer instance
-    const resizeObserver = new ResizeObserver(() => {
-        if (isCompactExplicit) {
-            if (leftNav && (leftNav.scrollHeight > leftNav.clientHeight)) {
-                document.body.classList.add("scroll");
-            }
-            else {
-                document.body.classList.remove("scroll");
-            }
-        }
-        else {
-            document.body.classList.remove("scroll");
+    adminMenu?.addEventListener('hidden.bs.collapse', (event) => {
+        if ((event.target as Element)?.classList.contains('nav-group-items')) {
+            persistCollapsedNavGroups();
         }
     });
 
-    // start observing a DOM node
+    adminMenu?.addEventListener('shown.bs.collapse', (event) => {
+        if ((event.target as Element)?.classList.contains('nav-group-items')) {
+            persistCollapsedNavGroups();
+        }
+    });
+
     if (leftNav != null) {
-        resizeObserver.observe(leftNav);
-
         // If no selected nav hash is stored, try to get it from the DOM and persist it.
         let selectedNavHash: string | null = null;
 
@@ -216,41 +391,10 @@ const initializeMenu = () => {
 };
 
 const setCompactStatus = (explicit: boolean) => {
-    // This if is to avoid that when sliding from expanded to compact the
-    // underliyng ul is visible while shrinking. It is ugly.
-    if (!document.body.classList.contains('left-sidebar-compact')) {
-        const labels = document.querySelectorAll<HTMLElement>('#left-nav ul.menu-admin > li > figure > figcaption > .item-label');
-        labels.forEach((label) => label.style.backgroundColor = 'transparent');
-        setTimeout(function () {
-            labels.forEach((label) => label.style.backgroundColor = '');
-        }, 200);
-    }
+    document.body.classList.add(compactClass);
+    syncCompactState();
 
-    // Transfer scroll position from expanded scroller (.menu-admin) to compact scroller (#left-nav)
-    const menuAdmin = document.querySelector<HTMLElement>('#left-nav ul.menu-admin');
-    const savedScroll = menuAdmin ? menuAdmin.scrollTop : 0;
-
-    document.body.classList.add('left-sidebar-compact');
-
-    if (leftNav) {
-        leftNav.scrollTop = savedScroll;
-    }
-
-    // When leftbar is expanded  all ul tags are collapsed.
-    // When leftbar is compacted we don't want the first level collapsed.
-    // We want it expanded so that hovering over the root buttons shows the full submenu
-    document.querySelectorAll('#left-nav ul.menu-admin > li > figure > ul').forEach((el) => el.classList.remove('collapse'));
-    // When hovering, don't want toggling when clicking on label
-    document.querySelectorAll('#left-nav ul.menu-admin > li > figure > figcaption > .item-label').forEach((el) => el.setAttribute('data-bs-toggle', ''));
-    document.querySelectorAll('#left-nav li.has-items').forEach((el) => el.classList.remove('visible'));
-
-    //after menu has collapsed we set the transitions to none so that we don't do any transition
-    //animation when open a sub-menu
-    setTimeout(function () {
-        document.querySelectorAll<HTMLElement>('#left-nav > ul > li').forEach((el) => el.style.transition = 'none');
-    }, 200);
-
-    if (explicit == true) {
+    if (explicit === true) {
         setCompactExplicit(true);
     }
 
@@ -258,29 +402,19 @@ const setCompactStatus = (explicit: boolean) => {
 };
 
 const unSetCompactStatus = () => {
-    // Transfer scroll position from compact scroller (#left-nav) to expanded scroller (.menu-admin)
-    const savedScroll = leftNav ? leftNav.scrollTop : 0;
-
-    document.body.classList.remove('left-sidebar-compact');
-
-    // resetting what we disabled for compact state
-    document.querySelectorAll('#left-nav ul.menu-admin > li > figure > ul').forEach((el) => el.classList.add('collapse'));
-    document.querySelectorAll('#left-nav ul.menu-admin > li > figure > figcaption > button.item-label').forEach((el) => el.setAttribute('data-bs-toggle', 'collapse'));
-    document.querySelectorAll('#left-nav li.has-items').forEach((el) => el.classList.remove('visible'));
-    document.querySelectorAll<HTMLElement>('#left-nav > ul > li').forEach((el) => el.style.transition = '');
-
-    const menuAdmin = document.querySelector<HTMLElement>('#left-nav ul.menu-admin');
-    if (menuAdmin) {
-        menuAdmin.scrollTop = savedScroll;
-    }
+    document.body.classList.remove(compactClass);
+    syncCompactState();
 
     setCompactExplicit(false);
     persistAdminPreferences();
 };
 
 export {
+    applyCollapsedNavGroupsFromPreferences,
     applySelectedNavFromSessionStorage,
     initializeMenu,
     setCompactStatus,
+    setSidebarOpen,
+    syncCompactState,
     unSetCompactStatus,
 };

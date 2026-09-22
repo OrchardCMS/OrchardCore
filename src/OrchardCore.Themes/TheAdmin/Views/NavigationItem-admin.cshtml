@@ -1,6 +1,15 @@
+@using OrchardCore.Localization
 @using OrchardCore.Navigation
 @{
     TagBuilder li = Tag(Model, "li");
+
+    var level = (int)Model.Level;
+    var hasItems = (bool)Model.HasItems;
+    var isSelected = (bool)Model.Selected;
+
+    // A group is a first level item holding children. Groups are always expanded by default so
+    // that their items are reachable without a click, deeper levels stay collapsed until asked for.
+    var isGroup = level == 1 && hasItems;
 
     // Morphing the shape to keep Model untouched.
     Model.Metadata.Alternates.Clear();
@@ -27,17 +36,35 @@
         li.Attributes.Remove("class");
     }
 
-    if ((bool)Model.Selected)
+    if (isSelected)
     {
         li.AddCssClass("active");
+
+        // Only the deepest selected item represents the current page. Its ancestors are
+        // marked as active too, but they must not be highlighted the same way.
+        var hasSelectedChild = ((IEnumerable<object>)Model)
+            .OfType<NavigationItemViewModel>()
+            .Any(child => child.Selected);
+
+        if (!hasSelectedChild)
+        {
+            li.AddCssClass("current");
+        }
     }
 
+    if (level == 1)
+    {
+        li.AddCssClass("nav-group");
+    }
+
+    var figure = new TagBuilder("figure");
+    var figCaption = new TagBuilder("figcaption");
+    figCaption.AddCssClass("nav-item-row");
+
     // Render sub-items (MenuItem).
-    if (Model.HasItems)
+    if (hasItems)
     {
         li.AddCssClass("has-items");
-        var figure = new TagBuilder("figure");
-        var figCaption = new TagBuilder("figcaption");
 
         if (li.Attributes.Where(a => a.Key == "id").Any())
         {
@@ -46,17 +73,21 @@
             li.Attributes["id"] = null;
         }
 
-        var ul = new TagBuilder("ul");
-        ul.Attributes["Id"] = "m" + Model.GetHashCode().ToString();
-        ul.Attributes["data-title"] = Model.Text;
+        var targetId = "m" + (string)Model.Hash;
 
-        if ((bool)Model.Selected)
+        var ul = new TagBuilder("ul");
+        ul.Attributes["id"] = targetId;
+        ul.Attributes["data-title"] = Model.Text.ToString();
+        ul.AddCssClass("collapse");
+
+        if (isGroup)
         {
-            ul.AddCssClass("collapse show");
+            ul.AddCssClass("nav-group-items");
         }
-        else
+
+        if (isGroup || isSelected)
         {
-            ul.AddCssClass("collapse");
+            ul.AddCssClass("show");
         }
 
         foreach (var item in Model)
@@ -65,19 +96,36 @@
         }
 
         figCaption.InnerHtml.AppendHtml(await DisplayAsync(Model));
+
+        // When the item links to a real page, the label navigates and a dedicated button
+        // toggles its children, so both actions stay available.
+        var href = Model.Href?.ToString();
+
+        if (!string.IsNullOrEmpty(href) && href != "#")
+        {
+            var toggle = new TagBuilder("button");
+            toggle.Attributes["type"] = "button";
+            toggle.Attributes["data-bs-toggle"] = "collapse";
+            toggle.Attributes["data-bs-target"] = "#" + targetId;
+            toggle.Attributes["aria-controls"] = targetId;
+            toggle.Attributes["aria-expanded"] = (isGroup || isSelected) ? "true" : "false";
+            toggle.Attributes["aria-label"] = T["Toggle {0}", Model.Text.ToString()].Value;
+            toggle.AddCssClass("nav-toggle");
+            toggle.InnerHtml.AppendHtml(Html.Raw("<i class=\"fa-solid fa-chevron-" + (Orchard.CultureDir() == LanguageDirection.LTR ? "right" : "left") + " chevron\" aria-hidden=\"true\"></i>"));
+
+            figCaption.InnerHtml.AppendHtml(toggle);
+        }
+
         figure.InnerHtml.AppendHtml(figCaption);
         figure.InnerHtml.AppendHtml(ul);
-
-        li.InnerHtml.AppendHtml(figure);
     }
     else
     {
-        var figure = new TagBuilder("figure");
-        var figCaption = new TagBuilder("figcaption");
         figCaption.InnerHtml.AppendHtml(await DisplayAsync(Model));
         figure.InnerHtml.AppendHtml(figCaption);
-        li.InnerHtml.AppendHtml(figure);
     }
+
+    li.InnerHtml.AppendHtml(figure);
 }
 
 @li

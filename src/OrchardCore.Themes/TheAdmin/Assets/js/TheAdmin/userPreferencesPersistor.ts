@@ -1,11 +1,13 @@
-import { isCompactExplicit, setAdminPreferences } from '../constants';
+import { isCompactExplicit, getAdminPreferences, setAdminPreferences } from '../constants';
 
 // Each time the sidebar status is modified, that is persisted to localStorage.
-// When the page is loaded again, userPreferencesLoader.js will read that info to 
+// When the page is loaded again, userPreferencesLoader.js will read that info to
 // restore the sidebar to the previous state.
 export const persistAdminPreferences = () => {
     setTimeout(function () {
-        const adminPreferences = {} as AdminPreferences;
+        // Merge into the stored preferences, they also hold the selected menu item
+        // and the groups the user collapsed.
+        const adminPreferences = getAdminPreferences() as AdminPreferences;
         adminPreferences.leftSidebarCompact = document.body.classList.contains('left-sidebar-compact') ? true : false;
         adminPreferences.isCompactExplicit = isCompactExplicit;
         setAdminPreferences(adminPreferences);
