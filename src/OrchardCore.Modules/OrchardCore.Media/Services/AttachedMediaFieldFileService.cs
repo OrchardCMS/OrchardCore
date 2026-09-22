@@ -160,20 +160,47 @@ public class AttachedMediaFieldFileService
     // Files just uploaded and then immediately discarded.
     private async Task RemoveTemporaryAsync(List<EditMediaFieldItemInfo> items)
     {
+        var ownTempFolder = EnsureTrailingSlash(GetMediaFieldsTempSubFolder());
+
         foreach (var item in items.Where(i => i.IsRemoved && i.IsNew))
         {
-            await _fileStore.TryDeleteFileAsync(item.Path);
+            var path = await _fileStore.ResolveAuthorizedPathAsync(item.Path);
+
+            // Client-supplied paths are otherwise untrusted: only ever delete files that live under
+            // the current user's own temporary upload folder, never an arbitrary media store path.
+            if (!path.StartsWith(ownTempFolder, StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            await _fileStore.TryDeleteFileAsync(path);
         }
     }
 
     // Newly added files
     private async Task MoveNewFilesToContentItemDirAndUpdatePathsAsync(List<EditMediaFieldItemInfo> items, ContentItem contentItem)
     {
+        var ownTempFolder = EnsureTrailingSlash(GetMediaFieldsTempSubFolder());
+        var contentItemFolder = EnsureTrailingSlash(GetContentItemFolder(contentItem));
+
         // Copy to a list to allow removing files from the original items argument.
         var itemToParse = items.Where(i => !i.IsRemoved && !string.IsNullOrEmpty(i.Path)).ToList();
         foreach (var item in itemToParse)
         {
-            var fileInfo = await _fileStore.GetFileInfoAsync(item.Path);
+            var path = await _fileStore.ResolveAuthorizedPathAsync(item.Path);
+
+            // Client-supplied paths are otherwise untrusted: only ever touch a file that either lives
+            // under the current user's own temporary upload folder (a fresh upload) or already belongs
+            // to this content item's own attached-media folder (an untouched, previously saved file).
+            // Anything else - e.g. a path pointing at another content item's attached media - is rejected
+            // outright, rather than silently relocated/exfiltrated into the caller's own folder.
+            if (!path.StartsWith(ownTempFolder, StringComparison.Ordinal)
+                && !path.StartsWith(contentItemFolder, StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            var fileInfo = await _fileStore.GetFileInfoAsync(path);
 
             if (fileInfo == null)
             {
@@ -182,7 +209,7 @@ public class AttachedMediaFieldFileService
             }
 
             var targetDir = GetContentItemFolder(contentItem);
-            var finalFileName = (await GetFileHashAsync(item.Path)) + GetFileExtension(item.Path);
+            var finalFileName = (await GetFileHashAsync(path)) + GetFileExtension(path);
             var finalFilePath = _fileStore.Combine(targetDir, finalFileName);
 
             await _fileStore.TryCreateDirectoryAsync(targetDir);
@@ -194,7 +221,7 @@ public class AttachedMediaFieldFileService
             // finalFileName is a hash of the file. We preserve disk space by reusing the file.
             if (await _fileStore.GetFileInfoAsync(finalFilePath) == null)
             {
-                await _fileStore.MoveFileAsync(item.Path, finalFilePath);
+                await _fileStore.MoveFileAsync(path, finalFilePath);
             }
 
             item.Path = finalFilePath;
@@ -233,4 +260,7 @@ public class AttachedMediaFieldFileService
 
     internal string GetContentItemFolder(ContentItem contentItem)
         => _fileStore.Combine(MediaFieldsFolder, contentItem.ContentType, contentItem.ContentItemId);
+
+    private string EnsureTrailingSlash(string path)
+        => _fileStore.NormalizePath(path) + '/';
 }
