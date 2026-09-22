@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.ViewModels;
@@ -105,6 +106,9 @@ public sealed class ActivityController : Controller
             ActivityId = model.ActivityId,
             Name = activity.Name,
             Properties = activity.Properties,
+
+            // A workflow can't run without a startup task, so make the first event the startup task.
+            IsStart = activity.IsEvent() && !workflowType.HasStartActivity(),
         };
         workflowType.Activities.Add(activityRecord);
 
