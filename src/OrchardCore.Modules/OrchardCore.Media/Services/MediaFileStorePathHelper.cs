@@ -22,6 +22,20 @@ internal static class MediaFileStorePathHelper
     }
 
     /// <summary>
+    /// Checks that a canonical physical path is strictly contained in a canonical directory path.
+    /// </summary>
+    public static bool IsWithinDirectory(string directoryPath, string physicalPath)
+    {
+        var comparison = OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+
+        var directoryPrefix = Path.EndsInDirectorySeparator(directoryPath)
+            ? directoryPath
+            : directoryPath + Path.DirectorySeparatorChar;
+
+        return physicalPath.StartsWith(directoryPrefix, comparison);
+    }
+
+    /// <summary>
     /// Resolves and sanitizes a media path, collapsing any path-traversal segments (e.g. <c>..</c>)
     /// against the actual file store so that the returned path can be safely used in authorization checks.
     /// </summary>
