@@ -24,7 +24,7 @@ const getAdminPreferences = () => {
     }
 };
 
-const setAdminPreferences = (adminPreferences) => {
+const setAdminPreferences = (adminPreferences: object | null) => {
     if (adminPreferences == null) {
         console.error('Error setting admin preferences, argument is null');
         return;

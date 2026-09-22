@@ -1,5 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
+import { Buffer } from "buffer";
 
 const textOutputExtensions = new Set([
     ".css",

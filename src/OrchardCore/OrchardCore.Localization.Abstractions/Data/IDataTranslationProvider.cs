@@ -1,6 +1,3 @@
 namespace OrchardCore.Localization.Data;
 
-public interface IDataTranslationProvider : ITranslationProvider
-{
-
-}
+public interface IDataTranslationProvider : ITranslationProvider;

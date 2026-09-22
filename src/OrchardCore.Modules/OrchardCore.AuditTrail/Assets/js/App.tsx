@@ -1,4 +1,4 @@
-require('../scss/styles.scss');
+import '../scss/styles.scss';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import ReactDiff, { DiffMethod } from 'react-diff-viewer';
@@ -20,10 +20,10 @@ interface DiffViewerState {
     unifiedText: string;
 }
 
-const P = (window as any).Prism;
+const P = Prism;
 
-class DiffViewer extends React.Component<{}, DiffViewerState> {
-    public constructor(props: any) {
+class DiffViewer extends React.Component<Record<string, never>, DiffViewerState> {
+    public constructor(props: Record<string, never>) {
         super(props);
         this.state = {
             highlightLine: [],
@@ -88,7 +88,7 @@ class DiffViewer extends React.Component<{}, DiffViewerState> {
         });
     };
 
-    private syntaxHighlight = (str: string): any => {
+    private syntaxHighlight = (str: string): JSX.Element | undefined => {
         if (!str) return;
         const language = P.highlight(str, P.languages.javascript);
         return <span dangerouslySetInnerHTML={{ __html: language }} />;
