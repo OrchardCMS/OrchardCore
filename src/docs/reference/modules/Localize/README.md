@@ -129,7 +129,7 @@ msgstr "Bonjour"
 
 ### Creating a localized string without a localizer
 
-Some APIs expect a `LocalizedString` or a `LocalizedHtmlString`, but no localizer is available where the value is created. For these cases, `OrchardCore.Localization.Abstractions` adds a `Create` method to both types. The method uses the same text for the name and the value:
+Some APIs expect a `LocalizedString` or a `LocalizedHtmlString`, but no localizer is available where the value is created. For these cases, `OrchardCore.Abstractions` adds a `Create` method to both types. The method uses the same text for the name and the value:
 
 ```csharp
 using Microsoft.AspNetCore.Mvc.Localization;
