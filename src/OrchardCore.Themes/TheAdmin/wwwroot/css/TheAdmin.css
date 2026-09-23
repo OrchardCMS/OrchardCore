@@ -267,8 +267,8 @@ a:hover {
   margin-top: 0;
 }
 
-.ta-navbar-top .oc-breadcrumb .breadcrumb {
-  display: none;
+.oc-breadcrumb:not(:has(+ .oc-breadcrumb-title)) .breadcrumb {
+  margin-bottom: 1rem;
 }
 
 .card.collapsed .card-header {

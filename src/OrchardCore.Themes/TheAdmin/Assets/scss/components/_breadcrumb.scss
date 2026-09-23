@@ -29,8 +29,8 @@
     margin-top: 0;
 }
 
-// The top bar is a fixed height row: the title sits in it as before, and the trail is left to the content area rather
-// than crowding the bar.
-.ta-navbar-top .oc-breadcrumb .breadcrumb {
-    display: none;
+// When titles are displayed in the top bar, the title sits in it as before and the trail is left to the content area
+// rather than crowding the bar. With no title below it there, the trail keeps the space the title would have left.
+.oc-breadcrumb:not(:has(+ .oc-breadcrumb-title)) .breadcrumb {
+    margin-bottom: 1rem;
 }

@@ -209,7 +209,7 @@ public class InlineContentBreadcrumbTests
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
-    public async Task AddField_BreadcrumbSetting_PreservesPartParentAndTitle(bool showBreadcrumb)
+    public async Task AddField_BreadcrumbSetting_PreservesTypeParentAndTitle(bool showBreadcrumb)
     {
         using var context = new SiteContext();
         await context.InitializeAsync();
@@ -222,8 +222,8 @@ public class InlineContentBreadcrumbTests
         if (showBreadcrumb)
         {
             var trail = Assert.Single(document.QuerySelectorAll("nav.oc-breadcrumb"));
-            AssertLink(trail, "Content Parts", "/Admin/ContentTypes/ListParts");
-            AssertLink(trail, "Edit Content Part - Article", "/Admin/ContentParts/Edit/Article");
+            AssertLink(trail, "Content Types", "/Admin/ContentTypes/List");
+            AssertLink(trail, "Edit Content Type - Article", "/Admin/ContentTypes/Edit/Article");
         }
         else
         {
