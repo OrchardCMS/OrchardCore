@@ -84,13 +84,60 @@ Here are samples using logo and favicon from media module.
     </a>
     ```
 
-## Quick Search
+## Quick navigation
 
-The `TheAdmin` theme provides a quick search command palette to jump to any admin page from the keyboard. Press <kbd>Ctrl</kbd>+<kbd>K</kbd> (<kbd>Cmd</kbd>+<kbd>K</kbd> on macOS) anywhere in the admin, or click the magnifier icon in the top navbar to open it. Typing filters the admin menu items as you type; the match is case- and accent-insensitive and also looks at the parent menu names, which are displayed as a breadcrumb under each result. Use the arrow keys to move the highlight, <kbd>Enter</kbd> to open the highlighted page, and <kbd>Esc</kbd> to close the palette.
+The `TheAdmin` theme provides a quick navigation palette to jump to an admin page from the keyboard. Press <kbd>Ctrl</kbd>+<kbd>K</kbd> (<kbd>Cmd</kbd>+<kbd>K</kbd> on macOS) anywhere in the admin, or click the magnifier icon in the top navbar to open it. Typing filters navigation destinations; matching is case- and accent-insensitive and includes the parent names displayed as a breadcrumb under each result. Use the arrow keys to move the highlight, <kbd>Enter</kbd> to open the highlighted page, and <kbd>Esc</kbd> to close the palette. Quick navigation is not a full-text content search.
 
-The palette indexes the admin menu that is rendered in the left navigation, so it only lists the items the current user is allowed to see. The shortcut is not intercepted while the focus is inside a rich text or code editor, which uses <kbd>Ctrl</kbd>+<kbd>K</kbd> for its own commands.
+The built-in `AdminMenuItemNavigationSource` supplies admin menu destinations using `INavigationManager`, independently of the sidebar markup. It preserves menu ordering, breadcrumbs, link targets, authorization, localization, and tenant/admin URL prefixes. It builds its entries on demand because menu providers can depend on the current request. Only admin menu items are included by default. Enable the optional [Content Quick Navigation feature](../Contents/README.md#content-quick-navigation) to include the 50 most recently updated content items that you can edit; its count is configurable in Admin settings. The shortcut is not intercepted while the focus is inside a rich text or code editor that uses <kbd>Ctrl</kbd>+<kbd>K</kbd> for its own commands.
 
-The feature is enabled by default and can be turned off from **Configuration → Settings → Admin** (**Enable quick search**) or with the `DisplayQuickSearch` admin setting (see [Recipe Configuration](#recipe-configuration)). The navbar item is rendered by a `DisplayDriver<Navbar>` in `TheAdmin`; a custom admin theme can provide its own quick search navbar item and gate it on the same setting.
+The palette is enabled by default and can be turned off from **Configuration → Settings → Admin** (**Enable quick navigation**) or with the `DisplayQuickNavigation` admin setting (see [Recipe Configuration](#recipe-configuration)). The navbar item is rendered by `QuickNavigationNavbarDisplayDriver` in `TheAdmin`; a custom admin theme can override the `QuickNavigationNavbarItem` shape or provide its own palette using the same setting and endpoint.
+
+### Index document and caching
+
+The palette loads its JSON index from the `AdminQuickNavigationIndex` named route (`~/Admin/QuickNavigation/Index` with the default admin prefix). Generate this URL with routing helpers rather than hard-coding it. The endpoint requires authentication and the `AccessAdminPanel` permission, and returns `404` when quick navigation is disabled.
+
+Each entry contains `source`, `id`, `title`, `path` (an array of breadcrumb labels), `href`, and `target`. Titles and breadcrumbs are localized plain text. The palette filters this document locally; typing does not issue additional requests.
+
+Opening the palette requests a fresh document with `Cache-Control: no-store`. The controller executes every registered source and renders the authorized, localized results on every request; it does not use ETags or return `304 Not Modified`. The palette's URL includes the page's current culture. No index is stored in browser HTTP caches or local storage. Loading failures are shown explicitly; closing and reopening retries the request.
+
+Caching belongs to individual sources, not the controller. A source may reuse culture-independent identifiers or other user-independent data when it can reliably invalidate them as their dependencies change. It may use `IQuickNavigationIndex` or maintain its own cache, for example with change tokens from `ISignal`. Sources without a reliable invalidation mechanism remain request-driven. Authorization and localization still run when rendering entries; cached identifiers must never be treated as permission to display a destination.
+
+### Adding an opt-in source
+
+The extension points are in `OrchardCore.Admin.QuickNavigation`, in `OrchardCore.Admin.Abstractions`. Derive from `QuickNavigationSource` and register it as a scoped service in a separate feature depending on `OrchardCore.Admin`:
+
+```csharp
+[Feature("MyModule.QuickNavigation")]
+public sealed class QuickNavigationStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<QuickNavigationSource, MyNavigationSource>();
+    }
+}
+```
+
+Declare the feature in your module's manifest and leave it disabled by default. Enabling or disabling its feature controls whether the source participates, allowing administrators to choose the functionality and indexing cost they want. Sources for content types, parts, or workflow names are not enabled or supplied by the Admin module.
+
+A source implements:
+
+| Member | Responsibility |
+|--------|----------------|
+| `Name` | A unique, stable, culture-independent name. This routes indexed identifiers back to their originating source. Duplicate source names are not allowed. |
+| `GetEntryIdsAsync()` | Optionally supply request-specific identifiers. The default implementation returns none. Use this for request-dependent sources such as admin menus, or for lazy population after a tenant restart. |
+| `DisplayAsync(string entryId)` | Load the destination, check its permissions for the current user, and return a fresh `QuickNavigationResult` with localized `Title` and `Path`, a generated `Href`, and optional `Target`. Return `null` for missing or unauthorized entries. `Source` and `Id` are assigned by the endpoint. |
+
+Sources do not receive an MVC `ActionContext`. Inject `IHttpContextAccessor` to obtain the current user from `HttpContext?.User`, and authorize with `IAuthorizationService`, following other Orchard Core services. Generate links with routing services such as `LinkGenerator` using the current `HttpContext` to preserve tenant and admin URL prefixes. The admin-menu source uses the existing `GetActionContextAsync()` helper internally to call `INavigationManager`; that MVC integration is not part of the source contract.
+
+For expensive sources, inject the tenant-singleton `IQuickNavigationIndex` into a feature-owned background task or event handler. Publish a snapshot of culture-independent identifiers:
+
+```csharp
+index.Replace("MyNavigationSource", destinationIds);
+```
+
+`Replace` atomically replaces only that source's partition, removes duplicates while preserving order, and takes a defensive copy. Pass an empty collection to remove its entries. Reads return immutable snapshots, so updates can occur while a palette request is being rendered. The index is in memory, not persisted or distributed: each tenant instance must repopulate it after restart, and each server must receive updates. A source can instead maintain its own persistent/cache-backed data and expose its identifiers through `GetEntryIdsAsync`.
+
+The endpoint combines stored and request-specific identifiers, deduplicates them within each source, and calls the registered originating source's `DisplayAsync` for each identifier. Disabled/unregistered sources are never rendered. Store identifiers, not localized labels, user-specific URLs, or pre-authorized results: the same indexed identifier can then be rendered in different languages, including data-localized labels, without reindexing it. Always authorize again at display time and generate links using the current request's routing context.
 
 ## Navbar Shape
 
@@ -188,7 +235,7 @@ The admin settings can be configured using the `Settings` recipe step:
       "AdminSettings": {
         "DisplayThemeToggler": true,
         "DisplayMenuFilter": true,
-        "DisplayQuickSearch": true,
+        "DisplayQuickNavigation": true,
         "DisplayNewMenu": true,
         "DisplayTitlesInTopbar": true
       }
@@ -201,6 +248,6 @@ The admin settings can be configured using the `Settings` recipe step:
 |-------------------------|---------|-------------------------------------------------------------------|
 | `DisplayThemeToggler`   | Boolean | Whether to display the light/dark theme toggler in the admin.     |
 | `DisplayMenuFilter`     | Boolean | Whether to display the menu filter input in the admin navigation. |
-| `DisplayQuickSearch`    | Boolean | Whether to display the quick search command palette (Ctrl+K / Cmd+K) in the admin navbar. Defaults to `true`. |
+| `DisplayQuickNavigation` | Boolean | Whether to display the quick navigation palette (Ctrl+K / Cmd+K) in the admin navbar. Defaults to `true`. |
 | `DisplayNewMenu`        | Boolean | Whether to display the 'New' menu in the admin navigation.        |
 | `DisplayTitlesInTopbar` | Boolean | Whether to display page titles in the top bar.                    |

@@ -10,10 +10,10 @@ public class AdminSettings
     public bool DisplayMenuFilter { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the quick search command palette (Ctrl+K / Cmd+K) is displayed in the admin navbar.
+    /// Gets or sets a value indicating whether the quick navigation palette (Ctrl+K / Cmd+K) is displayed in the admin navbar.
     /// </summary>
     [DefaultValue(true)]
-    public bool DisplayQuickSearch { get; set; } = true;
+    public bool DisplayQuickNavigation { get; set; } = true;
 
     public bool DisplayNewMenu { get; set; }
 

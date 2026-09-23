@@ -11,7 +11,7 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDisplayDriver<Navbar, ToggleThemeNavbarDisplayDriver>();
-        services.AddDisplayDriver<Navbar, QuickSearchNavbarDisplayDriver>();
+        services.AddDisplayDriver<Navbar, QuickNavigationNavbarDisplayDriver>();
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
     }
 }

@@ -20,6 +20,14 @@ using OrchardCore.Modules.Manifest;
 )]
 
 [assembly: Feature(
+    Id = "OrchardCore.Contents.QuickNavigation",
+    Name = "Content Quick Navigation",
+    Description = "Adds recently updated content items to the admin quick navigation palette.",
+    Dependencies = ["OrchardCore.Contents", "OrchardCore.Admin"],
+    Category = "Content Management"
+)]
+
+[assembly: Feature(
     Id = "OrchardCore.Contents.VersionPruning",
     Name = "Content Version Pruning",
     Description = "Provides a background task to prune old content item versions.",

@@ -40,7 +40,7 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
         {
             model.DisplayThemeToggler = settings.DisplayThemeToggler;
             model.DisplayMenuFilter = settings.DisplayMenuFilter;
-            model.DisplayQuickSearch = settings.DisplayQuickSearch;
+            model.DisplayQuickNavigation = settings.DisplayQuickNavigation;
             model.DisplayNewMenu = settings.DisplayNewMenu;
             model.DisplayTitlesInTopbar = settings.DisplayTitlesInTopbar;
         }, settings).Location("Content:3")
@@ -62,7 +62,7 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
 
         settings.DisplayThemeToggler = model.DisplayThemeToggler;
         settings.DisplayMenuFilter = model.DisplayMenuFilter;
-        settings.DisplayQuickSearch = model.DisplayQuickSearch;
+        settings.DisplayQuickNavigation = model.DisplayQuickNavigation;
         settings.DisplayNewMenu = model.DisplayNewMenu;
         settings.DisplayTitlesInTopbar = model.DisplayTitlesInTopbar;
 

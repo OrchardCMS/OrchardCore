@@ -1,21 +1,22 @@
 import removeDiacritics from "@orchardcore/bloom/helpers/removeDiacritics";
 ///<reference path="@types/bootstrap/index.d.ts" />
 
-// Admin quick search: a command palette (Ctrl+K / Cmd+K) that filters the admin menu items
-// rendered in the left navigation. The index is built lazily from the DOM on first open, so
-// it only contains the items the current user is allowed to see.
-
-interface QuickSearchEntry {
+interface QuickNavigationDestination {
+    source: string;
+    id: string;
     title: string;
     path: string[];
     href: string;
     target: string | null;
+}
+
+interface QuickNavigationEntry extends QuickNavigationDestination {
     normalizedTitle: string;
     normalizedPath: string;
 }
 
 interface RankedEntry {
-    entry: QuickSearchEntry;
+    entry: QuickNavigationEntry;
     rank: number;
 }
 
@@ -25,91 +26,45 @@ let modalElement: HTMLElement | null = null;
 let modal: bootstrap.Modal | null = null;
 let input: HTMLInputElement | null = null;
 let list: HTMLUListElement | null = null;
-let index: QuickSearchEntry[] | null = null;
-let results: QuickSearchEntry[] = [];
+let status: HTMLElement | null = null;
+let index: QuickNavigationEntry[] | null = null;
+let results: QuickNavigationEntry[] = [];
+let request: AbortController | null = null;
+let loading = false;
+let isOpen = false;
+let closeRequested = false;
+let reopenRequested = false;
 let activeIndex = -1;
 let maxResults = 15;
 
 const normalize = (value: string): string => removeDiacritics(value).toLocaleLowerCase().trim();
 
-const readTitle = (item: Element): string =>
-    item.querySelector<HTMLElement>(":scope > figure > figcaption > .item-label > span.title")?.textContent?.trim() ?? "";
-
-const buildIndex = (): QuickSearchEntry[] => {
-    const menu = document.querySelector<HTMLElement>("nav#left-nav > ul#adminMenu");
-
-    if (!menu) {
-        return [];
+const isDestination = (value: unknown): value is QuickNavigationDestination => {
+    if (typeof value !== "object" || value === null) {
+        return false;
     }
 
-    const entries: QuickSearchEntry[] = [];
-    const seen = new Set<string>();
-
-    menu.querySelectorAll<HTMLAnchorElement>("a.item-label[href]").forEach((link) => {
-        const href = link.getAttribute("href") ?? "";
-
-        if (!href || href === "#") {
-            return;
-        }
-
-        const item = link.closest("li");
-
-        if (!item) {
-            return;
-        }
-
-        const title = readTitle(item);
-
-        if (!title) {
-            return;
-        }
-
-        const path: string[] = [];
-        let parent = item.parentElement?.closest("li") ?? null;
-
-        while (parent) {
-            const parentTitle = readTitle(parent);
-
-            if (parentTitle) {
-                path.unshift(parentTitle);
-            }
-
-            parent = parent.parentElement?.closest("li") ?? null;
-        }
-
-        const key = `${path.join("/")}/${title}|${href}`;
-
-        if (seen.has(key)) {
-            return;
-        }
-
-        seen.add(key);
-
-        entries.push({
-            title,
-            path,
-            href,
-            target: link.getAttribute("target"),
-            normalizedTitle: normalize(title),
-            normalizedPath: normalize(path.join(pathSeparator)),
-        });
-    });
-
-    return entries;
+    const entry = value as Record<string, unknown>;
+    return typeof entry.source === "string"
+        && typeof entry.id === "string"
+        && typeof entry.title === "string"
+        && Array.isArray(entry.path) && entry.path.every((part: unknown) => typeof part === "string")
+        && typeof entry.href === "string" && entry.href.length > 0
+        && ["http:", "https:"].includes(new URL(entry.href, window.location.href).protocol)
+        && (entry.target === null || typeof entry.target === "string");
 };
 
-const filter = (term: string): QuickSearchEntry[] => {
-    index ??= buildIndex();
-
+const filter = (term: string): QuickNavigationEntry[] => {
+    const entries = index ?? [];
     const normalizedTerm = normalize(term);
 
     if (!normalizedTerm) {
-        return index.slice(0, maxResults);
+        return entries.slice(0, maxResults);
     }
 
     const ranked: RankedEntry[] = [];
 
-    for (const entry of index) {
+    for (const entry of entries) {
         let rank = 0;
 
         if (entry.normalizedTitle.startsWith(normalizedTerm)) {
@@ -185,44 +140,44 @@ const setActive = (i: number) => {
 };
 
 const render = (term: string) => {
-    if (!list || !modalElement) {
+    if (!list || !modalElement || !status) {
         return;
     }
 
     list.replaceChildren();
 
+    status.hidden = results.length > 0;
+    status.textContent = results.length === 0 ? modalElement.dataset.noResults ?? "" : "";
+
     if (results.length === 0) {
-        const empty = document.createElement("li");
-        empty.className = "admin-quick-search-empty";
-        empty.textContent = modalElement.dataset.noResults ?? "";
-        list.appendChild(empty);
         setActive(-1);
         return;
     }
 
     results.forEach((entry, i) => {
         const option = document.createElement("li");
-        option.id = `adminQuickSearchOption${i}`;
+        option.id = `adminQuickNavigationOption${i}`;
         option.setAttribute("role", "option");
         option.dataset.index = String(i);
 
         const link = document.createElement("a");
-        link.className = "admin-quick-search-item";
+        link.className = "admin-quick-navigation-item";
         link.href = entry.href;
         link.tabIndex = -1;
 
         if (entry.target) {
             link.target = entry.target;
+            link.rel = "noopener";
         }
 
         const title = document.createElement("span");
-        title.className = "admin-quick-search-title";
+        title.className = "admin-quick-navigation-title";
         appendHighlighted(title, entry.title, term);
         link.appendChild(title);
 
         if (entry.path.length > 0) {
             const path = document.createElement("span");
-            path.className = "admin-quick-search-path";
+            path.className = "admin-quick-navigation-path";
             appendHighlighted(path, entry.path.join(pathSeparator), term);
             link.appendChild(path);
         }
@@ -234,9 +189,9 @@ const render = (term: string) => {
     setActive(0);
 };
 
-const navigate = (entry: QuickSearchEntry) => {
+const navigate = (entry: QuickNavigationEntry) => {
     if (entry.target && entry.target !== "_self") {
-        window.open(entry.href, entry.target);
+        window.open(entry.href, entry.target, "noopener");
         return;
     }
 
@@ -244,7 +199,7 @@ const navigate = (entry: QuickSearchEntry) => {
 };
 
 const update = () => {
-    if (!input) {
+    if (!input || loading || index === null) {
         return;
     }
 
@@ -252,13 +207,78 @@ const update = () => {
     render(input.value);
 };
 
+const loadIndex = async () => {
+    if (!modalElement || !list || !status) {
+        return;
+    }
+
+    request?.abort();
+    const controller = new AbortController();
+    request = controller;
+    loading = true;
+    index = null;
+    results = [];
+    list.replaceChildren();
+    list.setAttribute("aria-busy", "true");
+    setActive(-1);
+    status.hidden = false;
+    status.textContent = modalElement.dataset.loading ?? "";
+
+    try {
+        const url = modalElement.dataset.indexUrl;
+        if (!url) {
+            throw new Error("The quick navigation index URL is missing.");
+        }
+
+        const response = await fetch(url, { credentials: "same-origin", cache: "no-store", signal: controller.signal });
+        if (!response.ok) {
+            throw new Error(`Unable to load the quick navigation index (${response.status}).`);
+        }
+
+        const destinations: unknown = await response.json();
+        if (!Array.isArray(destinations) || !destinations.every(isDestination)) {
+            throw new Error("The quick navigation index is invalid.");
+        }
+
+        if (controller.signal.aborted) {
+            return;
+        }
+
+        index = destinations.map((entry) => ({
+            ...entry,
+            normalizedTitle: normalize(entry.title),
+            normalizedPath: normalize(entry.path.join(pathSeparator)),
+        }));
+        loading = false;
+        update();
+    } catch (error) {
+        if (!controller.signal.aborted) {
+            console.error("Unable to load quick navigation.", error);
+            status.textContent = modalElement.dataset.loadError ?? "";
+        }
+    } finally {
+        if (request === controller) {
+            request = null;
+            loading = false;
+            list.setAttribute("aria-busy", "false");
+        }
+    }
+};
+
 const open = () => {
     if (!modal) {
         return;
     }
 
-    update();
+    if (isOpen) {
+        reopenRequested = closeRequested;
+        return;
+    }
+
+    isOpen = true;
+    closeRequested = false;
     modal.show();
+    void loadIndex();
 };
 
 // Rich text and code editors bind Ctrl+K themselves (Monaco chords, CodeMirror and
@@ -276,9 +296,9 @@ const isEditorTarget = (target: EventTarget | null): boolean => {
 };
 
 const onDocumentKeydown = (e: KeyboardEvent) => {
-    // Bootstrap only handles Escape when the event originates inside the modal. Cover the case
-    // where the key is pressed while the modal is still fading in and the input is not focused yet.
-    if (e.key === "Escape" && modal && modalElement?.classList.contains("show")) {
+    // Bootstrap ignores hide() during its opening transition. Defer an early Escape until shown.
+    if (e.key === "Escape" && modal && isOpen) {
+        closeRequested = true;
         modal.hide();
         return;
     }
@@ -319,8 +339,8 @@ const onInputKeydown = (e: KeyboardEvent) => {
     }
 };
 
-const initializeQuickSearch = () => {
-    modalElement = document.getElementById("adminQuickSearchModal");
+const initializeQuickNavigation = () => {
+    modalElement = document.getElementById("adminQuickNavigationModal");
 
     if (!modalElement || typeof bootstrap === "undefined") {
         return;
@@ -329,25 +349,42 @@ const initializeQuickSearch = () => {
     // Move the modal out of the navbar so it escapes its fixed-top stacking context.
     document.body.appendChild(modalElement);
 
-    input = modalElement.querySelector<HTMLInputElement>("#adminQuickSearchInput");
-    list = modalElement.querySelector<HTMLUListElement>("#adminQuickSearchResults");
+    input = modalElement.querySelector<HTMLInputElement>("#adminQuickNavigationInput");
+    list = modalElement.querySelector<HTMLUListElement>("#adminQuickNavigationResults");
+    status = modalElement.querySelector<HTMLElement>("#adminQuickNavigationStatus");
 
-    if (!input || !list) {
+    if (!input || !list || !status) {
         return;
     }
 
     maxResults = parseInt(modalElement.dataset.maxResults ?? "", 10) || 15;
     modal = new bootstrap.Modal(modalElement);
 
-    document.getElementById("adminQuickSearchToggle")?.addEventListener("click", open);
+    document.getElementById("adminQuickNavigationToggle")?.addEventListener("click", open);
     document.addEventListener("keydown", onDocumentKeydown);
 
     modalElement.addEventListener("shown.bs.modal", () => {
+        if (closeRequested) {
+            modal?.hide();
+            return;
+        }
+
         input?.focus();
         input?.select();
     });
 
+    modalElement.addEventListener("hide.bs.modal", () => {
+        closeRequested = true;
+        request?.abort();
+        request = null;
+        loading = false;
+        list?.setAttribute("aria-busy", "false");
+    });
+
     modalElement.addEventListener("hidden.bs.modal", () => {
+        isOpen = false;
+        closeRequested = false;
+
         if (input) {
             input.value = "";
         }
@@ -355,6 +392,12 @@ const initializeQuickSearch = () => {
         results = [];
         activeIndex = -1;
         list?.replaceChildren();
+        setActive(-1);
+
+        if (reopenRequested) {
+            reopenRequested = false;
+            open();
+        }
     });
 
     input.addEventListener("input", update);
@@ -373,4 +416,4 @@ const initializeQuickSearch = () => {
     });
 };
 
-export { initializeQuickSearch };
+export { initializeQuickNavigation };
