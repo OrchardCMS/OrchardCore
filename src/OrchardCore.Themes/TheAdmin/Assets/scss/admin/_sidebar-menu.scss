@@ -205,7 +205,7 @@
     transition: transform 0.2s ease-in-out;
 }
 
-[aria-expanded="true"] .chevron {
+#ta-left-sidebar [aria-expanded="true"] .chevron {
     transform: rotate(90deg);
 }
 
@@ -440,7 +440,7 @@
 @media (prefers-reduced-motion: reduce) {
 
     #ta-left-sidebar,
-    .chevron,
+    #ta-left-sidebar .chevron,
     .ta-sidebar-backdrop,
     .leftbar-compactor {
         transition: none;

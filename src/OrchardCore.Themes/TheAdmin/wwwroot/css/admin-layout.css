@@ -325,11 +325,11 @@ body, html {
   transition: transform 0.2s ease-in-out;
 }
 
-[dir="ltr"] [aria-expanded=true] .chevron {
+[dir="ltr"] #ta-left-sidebar [aria-expanded=true] .chevron {
   transform: rotate(90deg);
 }
 
-[dir="rtl"] [aria-expanded=true] .chevron {
+[dir="rtl"] #ta-left-sidebar [aria-expanded=true] .chevron {
   transform: rotate(-90deg);
 }
 
@@ -564,7 +564,7 @@ body, html {
 
 @media (prefers-reduced-motion: reduce) {
   #ta-left-sidebar,
-  .chevron,
+  #ta-left-sidebar .chevron,
   .ta-sidebar-backdrop,
   .leftbar-compactor {
     transition: none;
