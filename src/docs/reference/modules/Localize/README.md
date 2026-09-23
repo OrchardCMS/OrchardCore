@@ -127,6 +127,25 @@ msgid "Hello"
 msgstr "Bonjour"
 ```
 
+### Creating a localized string without a localizer
+
+Some APIs expect a `LocalizedString` or a `LocalizedHtmlString`, but no localizer is available where the value is created. For these cases, `OrchardCore.Localization.Abstractions` adds a `Create` method to both types. The method uses the same text for the name and the value:
+
+```csharp
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Localization;
+
+var displayName = LocalizedString.Create("Hello");
+var message = LocalizedHtmlString.Create("<strong>Hello</strong>");
+```
+
+This is the same as `new LocalizedString("Hello", "Hello")` and `new LocalizedHtmlString("Hello", "Hello")`.
+
+`Create` is a C# 14 static extension member. The methods are in the same namespaces as the types, so no additional `using` directive is necessary. From code that does not use C# 14, call `LocalizedStringExtensions.Create("Hello")` or `LocalizedHtmlStringExtensions.Create("Hello")` instead.
+
+!!! note
+    The returned string is not translated. To show a translated value, localize it later by its name, for example with `S[displayName.Name]`. Like the `LocalizedHtmlString` constructor, `LocalizedHtmlString.Create` renders the value as HTML and does not encode it.
+
 ## Pluralization
 
 This module also provides support for pluralization.
