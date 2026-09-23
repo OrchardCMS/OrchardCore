@@ -67,7 +67,6 @@ const parametersEditor = document.querySelector<HTMLElement>(".openid-parameters
 if (parametersEditor) {
     const rows = getDatasetJson<Record<string, string>[]>(parametersEditor, "parameters") ?? [];
     const translations = getDatasetJson<Record<string, string>>(parametersEditor, "translations");
-    const modalBodyElements = document.getElementsByClassName("openid-parameters-editor-modal-body");
 
     if (translations) {
         setTranslations(translations);
@@ -89,7 +88,6 @@ if (parametersEditor) {
             jsonTextareaHintKey: "ParametersJsonHint",
             hiddenInputId: parametersEditor.dataset.parametersInputId ?? "",
             hiddenInputName: parametersEditor.dataset.parametersInputName ?? "",
-            modalBodyElements,
         });
     }
 }
