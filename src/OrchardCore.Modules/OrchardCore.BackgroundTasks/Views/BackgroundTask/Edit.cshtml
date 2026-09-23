@@ -61,7 +61,7 @@
             <div class="ocat-wrapper" asp-validation-class-for="LockTimeout">
                 <label asp-for="LockTimeout" class="ocat-label">@T["Lock timeout (ms)"]</label>
                 <div class="ocat-end">
-                    <input asp-for="LockTimeout" type="number" min="0" max="30000" class="form-control">
+                    <input asp-for="LockTimeout" type="number" min="0" class="form-control">
                     <span class="hint">@T["The timeout in milliseconds to acquire a lock before executing the task atomically. Leave it to zero to not use any locking."]</span>
                     <span class="hint">@T["Ignored if there is no distributed lock feature enabled."]</span>
                 </div>
@@ -70,7 +70,7 @@
             <div class="ocat-wrapper" asp-validation-class-for="LockExpiration">
                 <label asp-for="LockExpiration" class="ocat-label">@T["Lock expiration (ms)"]</label>
                 <div class="ocat-end">
-                    <input asp-for="LockExpiration" type="number" min="0" max="30000" class="form-control">
+                    <input asp-for="LockExpiration" type="number" min="0" class="form-control">
                     <span class="hint">@T["The expiration in milliseconds of the lock acquired before executing the task atomically. Leave it to zero to not use any locking."]</span>
                     <span class="hint">@T["Ignored if there is no distributed lock feature enabled."]</span>
                 </div>
