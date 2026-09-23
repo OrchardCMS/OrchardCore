@@ -25,6 +25,9 @@ import { getTranslations, setTranslations } from "../helpers/localizations";
 // media-gallery's App.vue does with its own "media-gallery" group.
 declare const Vue: {
     createApp(options: Record<string, unknown>): { mount(selector: string | Element): void };
+    // Used to normalize reactive row proxies back to the underlying raw objects before they are
+    // used as WeakSet keys - see touchedTargets below.
+    toRaw<T>(observed: T): T;
 };
 
 declare const bootstrap: typeof import("bootstrap");
@@ -96,6 +99,13 @@ export interface OptionsTableEditorTranslationKeys {
     removeRowKey: string;
     jsonTextareaLabelKey: string;
     jsonTextareaHintKey: string;
+    // Optional, and only meaningful alongside a radio-mode defaultColumn: when both are supplied
+    // the JSON modal also renders the "Default value" text row that the pre-#19489 Vue 2 template
+    // had (see jsonModalComponent's template) - a way to pick the default by typing its value
+    // instead of clicking a radio. Consumers with no default column, or a checkbox-mode one, omit
+    // them and the row is not rendered.
+    defaultValueLabelKey?: string;
+    defaultValueHintKey?: string;
 }
 
 export interface OptionsTableEditorConfig extends OptionsTableEditorTranslationKeys {
@@ -115,7 +125,6 @@ export interface OptionsTableEditorConfig extends OptionsTableEditorTranslationK
     // Hidden <input> that receives JSON.stringify(rows) on every change, for classic form postback.
     hiddenInputId: string;
     hiddenInputName: string;
-    modalBodyElements: HTMLCollectionOf<Element>;
 }
 
 interface RowsTableInstance {
@@ -137,6 +146,15 @@ interface JsonModalInstance {
 // would otherwise trigger unrelated re-renders on every keystroke.
 const touchedTargets = new WeakSet<Record<string, string>>();
 
+// Rows reach this module in two shapes: as the raw objects JSON.parse produced (the JSON modal's
+// replacement list, marked before the parent has assigned them into reactive state) and as the
+// reactive proxies Vue hands the template (every row the row-level handlers below see). Those are
+// DIFFERENT object identities for the same row, so keying touchedTargets on whichever shape
+// happened to arrive first silently loses the mark: a JSON-pasted row got marked as its raw
+// object, then its label edit looked the row up as a proxy, missed, and auto-filled over the
+// value the admin had just pasted. Normalizing through toRaw gives both shapes one stable key.
+const rowKey = (row: Record<string, string>): Record<string, string> => Vue.toRaw(row);
+
 // A row whose autoFillColumn.targetKey already holds a non-blank value did NOT get there via this
 // session's auto-fill (a brand new row always starts with an empty target - see add() below), so
 // it must be treated as already touched: either it's an existing, previously-saved option loaded
@@ -151,9 +169,26 @@ const markPrefilledRowsAsTouched = (rows: Record<string, string>[], autoFillColu
 
     for (const row of rows) {
         if ((row[autoFillColumn.targetKey] ?? "").trim() !== "") {
-            touchedTargets.add(row);
+            touchedTargets.add(rowKey(row));
         }
     }
+};
+
+// Maps a default VALUE back to the row object that carries it - the bridge between the two ways a
+// default can be chosen: by row identity (clicking a radio) and by text (typing it in the JSON
+// modal, or loading the persisted setting on first render). First match wins when two rows share
+// the value, which is all a value can express; identity-based selection is preserved separately by
+// the rootDefaultValue watcher below, so this never overrides a click.
+const resolveSelectedRow = (
+    rows: Record<string, string>[],
+    defaultColumn: OptionsTableDefaultColumn | undefined | null,
+    value: string,
+): Record<string, string> | null => {
+    if (!defaultColumn || defaultColumn.mode !== "radio" || !value) {
+        return null;
+    }
+
+    return rows.find((row) => row[defaultColumn.key] === value) ?? null;
 };
 
 // Table + inline row editing, with an optional "default" column that renders as either a radio
@@ -228,10 +263,39 @@ const optionsTableComponent = {
     },
     created(this: RowsTableInstance & { selectedRow: Record<string, string> | null; rootDefaultValue: string }) {
         markPrefilledRowsAsTouched(this.rows, this.autoFillColumn);
+        this.selectedRow = resolveSelectedRow(this.rows, this.defaultColumn, this.rootDefaultValue);
+    },
+    watch: {
+        // The default value can also be set by TYPING it, in the JSON modal's "Default value" row
+        // (restored from the pre-#19489 template) - that arrives here as a plain prop change with
+        // no row identity attached, so it has to be resolved back to a row by value.
+        rootDefaultValue(this: RowsTableInstance & { selectedRow: Record<string, string> | null }, value: string) {
+            const key = this.defaultColumn?.key;
+            if (!key || this.defaultColumn?.mode !== "radio") {
+                return;
+            }
 
-        if (this.defaultColumn && this.defaultColumn.mode === "radio" && this.rootDefaultValue) {
-            this.selectedRow = this.rows.find((row) => row[this.defaultColumn!.key] === this.rootDefaultValue) ?? null;
-        }
+            // Already consistent with the identity-tracked selection - this is our OWN emit coming
+            // back down (onRadioClick, or onColumnInput's auto-fill refresh). Re-resolving by
+            // value here would collapse two same-valued rows onto whichever comes first, which is
+            // exactly the review requirement #3 regression selectedRow exists to avoid.
+            if (this.selectedRow && this.selectedRow[key] === value) {
+                return;
+            }
+
+            this.selectedRow = resolveSelectedRow(this.rows, this.defaultColumn, value);
+        },
+        // Fires only when the array REFERENCE changes - a JSON-modal replacement, or a drag
+        // reorder. A reorder hands back the same row objects, so the current selection survives;
+        // a replacement does not, and the selection is re-resolved by value the way the pre-#19489
+        // value-keyed radio group did.
+        rows(this: RowsTableInstance & { selectedRow: Record<string, string> | null; rootDefaultValue: string }, rows: Record<string, string>[]) {
+            markPrefilledRowsAsTouched(rows, this.autoFillColumn);
+
+            if (!this.selectedRow || !rows.includes(this.selectedRow)) {
+                this.selectedRow = resolveSelectedRow(rows, this.defaultColumn, this.rootDefaultValue);
+            }
+        },
     },
     methods: {
         add(this: RowsTableInstance) {
@@ -263,11 +327,11 @@ const optionsTableComponent = {
                 // this row out of auto-fill - matching review requirement #1 ("when a value is
                 // defined for an option and someone changes the option label it should not
                 // change its value").
-                touchedTargets.add(row);
+                touchedTargets.add(rowKey(row));
                 return;
             }
 
-            if (columnKey === autoFill.sourceKey && !touchedTargets.has(row)) {
+            if (columnKey === autoFill.sourceKey && !touchedTargets.has(rowKey(row))) {
                 // Mirror the label into the not-yet-touched value column - requirement #2 ("when
                 // someone adds a new option the value should be prefilled with the same text as
                 // the option label"). Setting row[targetKey] here does NOT mark this row as
@@ -325,6 +389,13 @@ const jsonModalComponent = {
                                 <span class="hint">{{ t[jsonTextareaHintKey] }}</span>
                             </div>
                         </div>
+                        <div class="ocat-wrapper" v-if="showDefaultValueRow">
+                            <label class="ocat-label">{{ t[defaultValueLabelKey] }}</label>
+                            <div class="ocat-end">
+                                <input class="form-control" type="text" :value="rootDefaultValue" v-on:input="$emit('update:rootDefaultValue', $event.target.value)" />
+                                <span class="hint">{{ t[defaultValueHintKey] }}</span>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary btn-submit" v-on:click="closeModal()">{{ t[okKey] }}</button>
@@ -337,13 +408,25 @@ const jsonModalComponent = {
     props: {
         rows: { type: Array, required: true },
         autoFillColumn: { type: Object, default: null },
+        defaultColumn: { type: Object, default: null },
+        rootDefaultValue: { type: String, default: "" },
         editDataKey: { type: String, required: true },
         jsonTextareaLabelKey: { type: String, required: true },
         jsonTextareaHintKey: { type: String, required: true },
+        defaultValueLabelKey: { type: String, default: "" },
+        defaultValueHintKey: { type: String, default: "" },
         okKey: { type: String, required: true },
         cancelKey: { type: String, required: true },
     },
-    emits: ["update:rows"],
+    emits: ["update:rows", "update:rootDefaultValue"],
+    computed: {
+        // Only the radio-mode consumers have a single "the default" to type - a checkbox-mode
+        // default column is a per-row boolean, and consumers with no default column have nothing
+        // to set at all, so neither supplies the translation keys.
+        showDefaultValueRow(this: { defaultColumn: OptionsTableDefaultColumn | null; defaultValueLabelKey: string }) {
+            return this.defaultColumn?.mode === "radio" && !!this.defaultValueLabelKey;
+        },
+    },
     data() {
         return {
             t: getTranslations(),
@@ -376,7 +459,10 @@ const jsonModalComponent = {
         showModal(this: JsonModalInstance & { $refs: Record<string, Element> }) {
             const modalRoot = this.$refs.modalRoot;
             if (modalRoot) {
-                this.modal = new bootstrap.Modal(modalRoot);
+                // getOrCreateInstance, not `new bootstrap.Modal(...)`: this component's root stays
+                // mounted for the page's lifetime, so constructing a fresh Modal on every open
+                // would re-register its listeners against the same element each time.
+                this.modal = bootstrap.Modal.getOrCreateInstance(modalRoot);
                 this.modal.show();
             }
         },
@@ -391,7 +477,6 @@ const jsonModalComponent = {
 // specific column/default-column/translation-key config; see those files for the
 // observeAndInit-wrapped call site that makes this AJAX-widget-injection-safe.
 const initOptionsTableEditor = (config: OptionsTableEditorConfig): void => {
-    const modalBodyElement = config.modalBodyElements[0];
     // Consumer views mount into a dedicated inner element (class "options-table-editor-mount")
     // rather than config.element itself, since config.element is typically a shared wrapper div
     // that also holds sibling, non-Vue-owned markup (e.g. TextFieldPredefinedListEditorSettings'
@@ -423,6 +508,8 @@ const initOptionsTableEditor = (config: OptionsTableEditorConfig): void => {
                 jsonTextareaHintKey: config.jsonTextareaHintKey,
                 okKey: config.okKey,
                 cancelKey: config.cancelKey,
+                defaultValueLabelKey: config.defaultValueLabelKey ?? "",
+                defaultValueHintKey: config.defaultValueHintKey ?? "",
             };
         },
         computed: {
@@ -434,9 +521,7 @@ const initOptionsTableEditor = (config: OptionsTableEditorConfig): void => {
         },
         methods: {
             showModal(this: { $refs: Record<string, { showModal(): void }> }) {
-                if (modalBodyElement) {
-                    this.$refs.modal?.showModal();
-                }
+                this.$refs.modal?.showModal();
             },
         },
         template: `
@@ -453,7 +538,11 @@ const initOptionsTableEditor = (config: OptionsTableEditorConfig): void => {
             <options-modal
                 ref="modal"
                 v-model:rows="rows"
+                v-model:root-default-value="rootDefaultValue"
                 :auto-fill-column="autoFillColumn"
+                :default-column="defaultColumn"
+                :default-value-label-key="defaultValueLabelKey"
+                :default-value-hint-key="defaultValueHintKey"
                 :edit-data-key="editDataKey"
                 :json-textarea-label-key="jsonTextareaLabelKey"
                 :json-textarea-hint-key="jsonTextareaHintKey"

@@ -275,4 +275,121 @@ public sealed class PredefinedListEditorTests : CmsTestBase<PredefinedListEditor
         Assert.Empty(consoleErrors);
         await page.CloseAsync();
     }
+
+    [Fact]
+    public async Task JsonModal_OpensFromThePencilIcon_AndItsEditsReachTheTable()
+    {
+        // Regression test for a bug PRE-EXISTING on main since PR #19489's Vue 2 -> Vue 3
+        // migration, found while manually testing this PR: clicking the pencil icon did
+        // nothing at all. The migration moved the JSON modal's markup out of the Razor
+        // <script type="text/x-template"> and into options-table-editor.ts's own component
+        // template, but dropped the "<field id>-ModalBody" class that old template carried -
+        // while keeping BOTH each consumer entry's
+        // document.getElementsByClassName(`${element.id}-ModalBody`) lookup AND
+        // initOptionsTableEditor's `if (modalBodyElement)` guard around showModal(). Nothing
+        // in the repo rendered that class any more, so the collection was always empty, the
+        // guard always false, and the pencil a permanent no-op for all four consumers
+        // (MultiTextField, OpenId parameters and Seo custom meta tags too - OpenId's leftover
+        // class only survives inside a dead <script type="text/x-template">, whose contents
+        // are raw text, not DOM, so getElementsByClassName never saw it either). The guard was
+        // vestigial: the modal root is component-owned via ref="modalRoot".
+        var page = await Fixture.CreatePageAsync();
+        await page.LoginAsync();
+        var consoleErrors = page.CollectConsoleErrors();
+
+        var optionsTable = await OpenFieldEditorAsync(page);
+        var rows = optionsTable.Locator("tbody tr");
+
+        var modal = page.Locator(".options-table-editor-mount .modal");
+        await Assertions.Expect(modal).Not.ToBeVisibleAsync();
+
+        await page.Locator(".options-table-editor-mount a.float-end").ClickAsync();
+        await Assertions.Expect(modal).ToBeVisibleAsync();
+
+        await modal.Locator("textarea").FillAsync("""[{"name":"From JSON","value":"json-value"}]""");
+        await modal.Locator("button.btn-submit").ClickAsync();
+        await Assertions.Expect(modal).Not.ToBeVisibleAsync();
+
+        await Assertions.Expect(rows).ToHaveCountAsync(1);
+        var nameInput = rows.Nth(0).Locator("input[type='text']").Nth(0);
+        var valueInput = rows.Nth(0).Locator("input[type='text']").Nth(1);
+        await Assertions.Expect(nameInput).ToHaveValueAsync("From JSON");
+        await Assertions.Expect(valueInput).ToHaveValueAsync("json-value");
+
+        // A row pasted through the modal already carries an explicit value, so
+        // markPrefilledRowsAsTouched must treat it as touched: editing its label afterwards
+        // must not auto-fill over that value.
+        await nameInput.FillAsync("Renamed");
+        await Assertions.Expect(valueInput).ToHaveValueAsync("json-value");
+
+        // Clean up: these edits were never submitted, so navigating away is enough to leave
+        // later tests in this fixture-shared page a clean options list.
+        await page.GotoAndAssertOkAsync("/Admin/ContentParts/PredefinedListEditorTestPage/Fields/Category/Edit");
+
+        Assert.Empty(consoleErrors);
+        await page.CloseAsync();
+    }
+
+    [Fact]
+    public async Task JsonModal_DefaultValueInput_SelectsTheMatchingOptionAndPersists()
+    {
+        // The modal's "Default value" text row was dropped by PR #19489's Vue 2 -> Vue 3
+        // migration (the old Razor x-template had it bound to the same `data.selected` as the
+        // radio group) and is restored here with the same semantics: typing a value SELECTS
+        // the option carrying it, and a value matching no option selects nothing - the radio
+        // group remains the only thing that posts DefaultValue.
+        var page = await Fixture.CreatePageAsync();
+        await page.LoginAsync();
+        var consoleErrors = page.CollectConsoleErrors();
+
+        var optionsTable = await OpenFieldEditorAsync(page);
+        var rows = optionsTable.Locator("tbody tr");
+
+        await AddRowLink(page).ClickAsync();
+        await Assertions.Expect(rows).ToHaveCountAsync(1);
+        await rows.Nth(0).Locator("input[type='text']").Nth(0).FillAsync("Red");
+
+        await AddRowLink(page).ClickAsync();
+        await Assertions.Expect(rows).ToHaveCountAsync(2);
+        await rows.Nth(1).Locator("input[type='text']").Nth(0).FillAsync("Blue");
+
+        var modal = page.Locator(".options-table-editor-mount .modal");
+        await page.Locator(".options-table-editor-mount a.float-end").ClickAsync();
+        await Assertions.Expect(modal).ToBeVisibleAsync();
+
+        var defaultValueInput = modal.Locator("input[type='text']");
+        await Assertions.Expect(defaultValueInput).ToHaveCountAsync(1);
+
+        // A value matching no option selects nothing - the pre-#19489 behavior, since only a
+        // checked radio posts DefaultValue.
+        await defaultValueInput.FillAsync("not-an-option");
+        await Assertions.Expect(rows.Nth(0).Locator("input[type='radio']")).Not.ToBeCheckedAsync();
+        await Assertions.Expect(rows.Nth(1).Locator("input[type='radio']")).Not.ToBeCheckedAsync();
+
+        // Typing an option's value selects that option, exactly as clicking its radio would.
+        await defaultValueInput.FillAsync("Blue");
+        await Assertions.Expect(rows.Nth(1).Locator("input[type='radio']")).ToBeCheckedAsync();
+        await Assertions.Expect(rows.Nth(0).Locator("input[type='radio']")).Not.ToBeCheckedAsync();
+
+        await modal.Locator("button.btn-submit").ClickAsync();
+        await Assertions.Expect(modal).Not.ToBeVisibleAsync();
+        await page.Locator("button.save[type='submit']").ClickAsync();
+
+        // The selection made by typing must survive the round trip.
+        optionsTable = await OpenFieldEditorAsync(page);
+        rows = optionsTable.Locator("tbody tr");
+        await Assertions.Expect(rows).ToHaveCountAsync(2);
+        await Assertions.Expect(rows.Nth(1).Locator("input[type='radio']")).ToBeCheckedAsync();
+        await Assertions.Expect(rows.Nth(0).Locator("input[type='radio']")).Not.ToBeCheckedAsync();
+
+        // Clean up: drop both rows and save, so later tests in this fixture-shared page start
+        // from an empty options list again.
+        await rows.Nth(1).Locator("a.btn").Last.ClickAsync();
+        await rows.Nth(0).Locator("a.btn").Last.ClickAsync();
+        await Assertions.Expect(rows).ToHaveCountAsync(0);
+        await page.Locator("button.save[type='submit']").ClickAsync();
+
+        Assert.Empty(consoleErrors);
+        await page.CloseAsync();
+    }
 }

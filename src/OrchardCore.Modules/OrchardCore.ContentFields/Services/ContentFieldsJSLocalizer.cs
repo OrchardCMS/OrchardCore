@@ -28,6 +28,8 @@ public sealed class ContentFieldsJSLocalizer(IStringLocalizer<ContentFieldsJSLoc
                     "OptionsJsonHint",
                     S["A JSON representation of the allowed values, e.g. {0}", "[ { name: 'First option', value: 'option1' }, { name: 'Second option', value: 'option2' } ]"].Value
                 },
+                { "DefaultValue", S["Default value"].Value },
+                { "DefaultValueHint", S["(Optional) The default to assign to the text field."].Value },
             };
         }
 
