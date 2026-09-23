@@ -48,14 +48,12 @@ const setExpanded = (collapsible: HTMLElement, expanded: boolean) => {
         .forEach((toggle) => toggle.setAttribute('aria-expanded', String(expanded)));
 };
 
+// Marks the selected item and its ancestors, and opens what holds it so that the
+// current page is always visible. Nothing else is expanded, and nothing is ever
+// collapsed: the rest of the menu stays the way the user left it.
 const applySelectedNavLink = (nav: HTMLElement, selectedLink: HTMLElement) => {
     nav.querySelectorAll('li.active').forEach(li => li.classList.remove('active'));
     nav.querySelectorAll('li.current').forEach(li => li.classList.remove('current'));
-
-    // Only the items nested inside a group are collapsed back, the groups themselves
-    // keep the state chosen by the user.
-    nav.querySelectorAll<HTMLElement>('ul.collapse.show:not(.nav-group-items)')
-        .forEach(ul => setExpanded(ul, false));
 
     let currentItem = selectedLink.closest('li');
     let isDeepest = true;
@@ -66,11 +64,11 @@ const applySelectedNavLink = (nav: HTMLElement, selectedLink: HTMLElement) => {
         if (isDeepest) {
             currentItem.classList.add('current');
             isDeepest = false;
-        }
-
-        const childMenu = currentItem.querySelector<HTMLElement>(':scope > figure > ul.collapse');
-        if (childMenu) {
-            setExpanded(childMenu, true);
+        } else {
+            const childMenu = currentItem.querySelector<HTMLElement>(':scope > figure > ul.collapse');
+            if (childMenu) {
+                setExpanded(childMenu, true);
+            }
         }
 
         currentItem = currentItem.parentElement?.closest('li') ?? null;
@@ -134,39 +132,37 @@ const applySelectedNavFromSessionStorage = () => {
     return true;
 };
 
-const getNavGroups = () =>
-    Array.from(document.querySelectorAll<HTMLElement>('#left-nav > ul > li > figure > ul.nav-group-items[id]'));
+const getNavCollapsibles = () =>
+    Array.from(document.querySelectorAll<HTMLElement>('#left-nav ul.collapse[id]'));
 
-// Groups are expanded when the page is rendered, so only the ones the user collapsed
-// have to be restored. The group holding the current page is always kept expanded.
-const applyCollapsedNavGroupsFromPreferences = () => {
-    const groups = getNavGroups();
+// The menu is rendered fully collapsed. Restores what the user left open, plus
+// whatever holds the current page so that it is always reachable.
+const applyNavStateFromPreferences = () => {
+    const collapsibles = getNavCollapsibles();
 
-    if (groups.length === 0) {
+    if (collapsibles.length === 0) {
         return document.readyState === 'complete';
     }
 
     const preferences = getAdminPreferences() as Record<string, unknown>;
-    const collapsedGroups = Array.isArray(preferences.collapsedNavGroups)
-        ? preferences.collapsedNavGroups as string[]
+    const expandedItems = Array.isArray(preferences.expandedNavItems)
+        ? preferences.expandedNavItems as string[]
         : [];
 
-    if (collapsedGroups.length > 0) {
-        groups
-            .filter(group => collapsedGroups.includes(group.id) && !group.closest('li')?.classList.contains('active'))
-            .forEach(group => setExpanded(group, false));
-    }
+    collapsibles.forEach(collapsible => setExpanded(
+        collapsible,
+        expandedItems.includes(collapsible.id) || collapsible.querySelector('li.active') !== null));
 
     return document.readyState === 'complete';
 };
 
-const persistCollapsedNavGroups = () => {
-    const collapsedGroups = getNavGroups()
-        .filter(group => !group.classList.contains('show'))
-        .map(group => group.id);
+const persistNavState = () => {
+    const expandedItems = getNavCollapsibles()
+        .filter(collapsible => collapsible.classList.contains('show'))
+        .map(collapsible => collapsible.id);
 
     const preferences = getAdminPreferences() as Record<string, unknown>;
-    preferences.collapsedNavGroups = collapsedGroups;
+    preferences.expandedNavItems = expandedItems;
     setAdminPreferences(preferences);
 };
 
@@ -355,20 +351,11 @@ const initializeMenu = () => {
         }
     });
 
-    // Remember which groups the user collapsed.
+    // Remember what the user opened and closed, at every level.
     const adminMenu = document.getElementById('adminMenu');
 
-    adminMenu?.addEventListener('hidden.bs.collapse', (event) => {
-        if ((event.target as Element)?.classList.contains('nav-group-items')) {
-            persistCollapsedNavGroups();
-        }
-    });
-
-    adminMenu?.addEventListener('shown.bs.collapse', (event) => {
-        if ((event.target as Element)?.classList.contains('nav-group-items')) {
-            persistCollapsedNavGroups();
-        }
-    });
+    adminMenu?.addEventListener('hidden.bs.collapse', persistNavState);
+    adminMenu?.addEventListener('shown.bs.collapse', persistNavState);
 
     if (leftNav != null) {
         // If no selected nav hash is stored, try to get it from the DOM and persist it.
@@ -410,7 +397,7 @@ const unSetCompactStatus = () => {
 };
 
 export {
-    applyCollapsedNavGroupsFromPreferences,
+    applyNavStateFromPreferences,
     applySelectedNavFromSessionStorage,
     initializeMenu,
     setCompactStatus,

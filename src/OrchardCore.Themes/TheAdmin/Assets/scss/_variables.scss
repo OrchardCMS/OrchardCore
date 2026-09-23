@@ -17,30 +17,30 @@ $dropdown-max-height: 250px !default;
 
 :root {
     --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
-    /* The chrome of the admin is a silver surface tinted with the Orchard Core green
-       of the logo, '#41B670'. Every color below is derived from that accent and those
-       surfaces, so a site can rebrand the admin by redefining just those. */
-    --oc-admin-accent-rgb: 65, 182, 112;
+    /* The chrome of the admin is a silver surface built on grays that carry a faint
+       green cast, the accent being the darkest of those grays rather than a color of
+       its own. A site can rebrand the admin by redefining the accent and the surfaces. */
+    --oc-admin-accent-rgb: 74, 91, 83;
     --oc-admin-accent-color: rgb(var(--oc-admin-accent-rgb));
-    /* A darker shade of the accent, for the hairlines and text that have to stay
-       readable on the light surfaces. */
-    --oc-admin-accent-strong-color: #2b8d57;
-    --oc-admin-chrome-bg-color: #f7faf8;
-    --oc-admin-menu-bg-color: #eef3f0;
-    --oc-admin-menu-border-color: #dce5e0;
-    --oc-scrollbar-color: #c1cec6;
-    --oc-admin-menu-font-color: #5b6a63;
-    --oc-admin-menu-font-color-hover: #1c6b43;
+    /* The darker end of the scale, for the hairlines and text that have to stand out
+       against the light surfaces. */
+    --oc-admin-accent-strong-color: #3d4a44;
+    --oc-admin-chrome-bg-color: #f7f9f8;
+    --oc-admin-menu-bg-color: #eef1ef;
+    --oc-admin-menu-border-color: #dde3df;
+    --oc-scrollbar-color: #7e8781;
+    --oc-admin-menu-font-color: #5b6862;
+    --oc-admin-menu-font-color-hover: #2b332f;
     --oc-admin-menu-item-bg-color: var(--oc-admin-menu-bg-color);
-    --oc-admin-menu-item-font-color: #4f5e57;
-    --oc-admin-menu-item-font-color-active: #1c6b43;
-    --oc-admin-menu-group-font-color: #63716a;
-    /* Overlays are tinted with the accent so hovering and the current page read as one family. */
-    --oc-admin-menu-item-hover-bg-color: rgba(var(--oc-admin-accent-rgb), 0.10);
-    --oc-admin-menu-item-active-bg-color: rgba(var(--oc-admin-accent-rgb), 0.16);
-    --oc-admin-menu-separator-color: rgba(var(--oc-admin-accent-rgb), 0.22);
+    --oc-admin-menu-item-font-color: #4f5c56;
+    --oc-admin-menu-item-font-color-active: #2b332f;
+    --oc-admin-menu-group-font-color: #656f69;
+    /* Hovering and the current page are washes of the accent gray, at two strengths. */
+    --oc-admin-menu-item-hover-bg-color: rgba(var(--oc-admin-accent-rgb), 0.08);
+    --oc-admin-menu-item-active-bg-color: rgba(var(--oc-admin-accent-rgb), 0.14);
+    --oc-admin-menu-separator-color: rgba(var(--oc-admin-accent-rgb), 0.15);
     --oc-admin-menu-item-height: #{$left-navigation-item-height};
-    --oc-admin-menu-flyout-shadow: 0 0.5rem 1rem rgba(24, 71, 46, 0.18);
+    --oc-admin-menu-flyout-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.18);
     --oc-start-navigation-width-when-mobile: min(#{$left-navigation-width + 20px}, 85vw);
     --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
     --oc-zindex-dropdown: #{$zindex-dropdown};

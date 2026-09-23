@@ -12,7 +12,6 @@
 
     var level = (int)Model.Level;
     var hasItems = (bool)Model.HasItems;
-    var isSelected = (bool)Model.Selected;
     var href = Model.Href?.ToString();
 
     // When an item has children but no page of its own, the whole row toggles those children.
@@ -67,8 +66,9 @@
         tag.Attributes["data-bs-target"] = "#" + targetId;
         tag.Attributes["aria-controls"] = targetId;
 
-        // First level groups are expanded by default, deeper levels only when they hold the selection.
-        tag.Attributes["aria-expanded"] = (level == 1 || isSelected) ? "true" : "false";
+        // Nothing is expanded when the menu is rendered, the script restores what the
+        // user last left open.
+        tag.Attributes["aria-expanded"] = "false";
         tag.TagRenderMode = TagRenderMode.Normal;
     }
 

@@ -7,8 +7,8 @@
     var hasItems = (bool)Model.HasItems;
     var isSelected = (bool)Model.Selected;
 
-    // A group is a first level item holding children. Groups are always expanded by default so
-    // that their items are reachable without a click, deeper levels stay collapsed until asked for.
+    // A group is a first level item holding children. Nothing is expanded when the menu is
+    // rendered, the script restores what the user last left open.
     var isGroup = level == 1 && hasItems;
 
     // Morphing the shape to keep Model untouched.
@@ -85,11 +85,6 @@
             ul.AddCssClass("nav-group-items");
         }
 
-        if (isGroup || isSelected)
-        {
-            ul.AddCssClass("show");
-        }
-
         foreach (var item in Model)
         {
             ul.InnerHtml.AppendHtml(await DisplayAsync(item));
@@ -108,7 +103,7 @@
             toggle.Attributes["data-bs-toggle"] = "collapse";
             toggle.Attributes["data-bs-target"] = "#" + targetId;
             toggle.Attributes["aria-controls"] = targetId;
-            toggle.Attributes["aria-expanded"] = (isGroup || isSelected) ? "true" : "false";
+            toggle.Attributes["aria-expanded"] = "false";
             toggle.Attributes["aria-label"] = T["Toggle {0}", Model.Text.ToString()].Value;
             toggle.AddCssClass("nav-toggle");
             toggle.InnerHtml.AppendHtml(Html.Raw("<i class=\"fa-solid fa-chevron-" + (Orchard.CultureDir() == LanguageDirection.LTR ? "right" : "left") + " chevron\" aria-hidden=\"true\"></i>"));

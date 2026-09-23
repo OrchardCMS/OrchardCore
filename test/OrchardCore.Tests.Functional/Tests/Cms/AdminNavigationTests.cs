@@ -62,6 +62,9 @@ public sealed class AdminNavigationTests : CmsTestBase<BlogFixture>, IClassFixtu
         await page.LoginAsync();
         await page.GotoAndAssertOkAsync("/Admin");
 
+        // The menu only shows what the user opened, so the group holding the item is expanded first.
+        await page.GetByRole(AriaRole.Button, new() { Name = "Content", Exact = true }).ClickAsync();
+
         var articleLink = page.Locator("#adminMenu a[data-admin-hash][href=\"/Admin/Contents/ContentItems/Article\"]");
         var contentItemsLink = page.Locator("#adminMenu a[data-admin-hash][href=\"/Admin/Contents/ContentItems\"]");
         var activeArticleItem = articleLink.Locator("xpath=ancestor::li[1][contains(concat(' ', normalize-space(@class), ' '), ' active ')]");
@@ -89,6 +92,9 @@ public sealed class AdminNavigationTests : CmsTestBase<BlogFixture>, IClassFixtu
         var page = await Fixture.CreatePageAsync();
         await page.LoginAsync();
         await page.GotoAndAssertOkAsync("/Admin");
+
+        // The menu only shows what the user opened, so the group holding the item is expanded first.
+        await page.GetByRole(AriaRole.Button, new() { Name = "Content", Exact = true }).ClickAsync();
 
         var articleLink = page.Locator("#adminMenu a[data-admin-hash][href=\"/Admin/Contents/ContentItems/Article\"]");
         var featuresLink = page.Locator("#adminMenu a[data-admin-hash][href^=\"/Admin/Features\"]").First;
@@ -206,7 +212,7 @@ public sealed class AdminNavigationTests : CmsTestBase<BlogFixture>, IClassFixtu
         var menusLink = page.Locator("#adminMenu a[href^=\"/Admin/Contents/ContentItems/Menu\"]");
         await Assertions.Expect(menusLink).ToHaveCountAsync(1);
 
-        // The groups of the admin menu are expanded by default, so their items need no click to show up.
+        await page.GetByRole(AriaRole.Button, new() { Name = "Content", Exact = true }).ClickAsync();
         await Assertions.Expect(menusLink).ToBeVisibleAsync();
 
         await page.GotoAndAssertOkAsync("/Admin/Contents/ContentItems/Menu");

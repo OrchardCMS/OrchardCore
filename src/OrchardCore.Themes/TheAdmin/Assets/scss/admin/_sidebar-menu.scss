@@ -2,15 +2,22 @@
 // Admin sidebar menu.
 //
 // The menu is rendered as groups (first level) holding their items (second level).
-// Groups are expanded by default so that every item is reachable without a click,
-// while items owning children (third level and deeper) stay collapsed until the
-// user expands them. Each group can be collapsed and that choice is persisted.
+// It is rendered fully collapsed: the script restores what the user last left open,
+// and opens whatever holds the current page. Nothing is ever collapsed on its own.
 //
 // Three layouts are supported:
 //  1. Expanded  : the default, full width sidebar.
 //  2. Compact   : an icon only rail, each group opens as a flyout (medium screens and up).
 //  3. Off canvas: a drawer toggled from the top bar (below the medium breakpoint).
 // ---------------------------------------------------------------------------
+
+// Keyboard focus must stay visible: the hover background alone is far too faint to
+// carry it, so every control of the menu draws an outline instead.
+#ta-left-sidebar :focus-visible,
+.ta-sidebar-toggler:focus-visible {
+    outline: 2px solid var(--oc-admin-accent-strong-color);
+    outline-offset: -2px;
+}
 
 #ta-left-sidebar {
     position: fixed;
@@ -43,7 +50,6 @@
         margin: 0;
         padding: 0;
         list-style: none;
-        white-space: nowrap;
     }
 
     li {
@@ -88,6 +94,11 @@
         background-color: transparent;
         color: var(--bs-body-color);
     }
+
+    #filter:focus-visible {
+        outline: 2px solid var(--oc-admin-accent-strong-color);
+        outline-offset: -2px;
+    }
 }
 
 #left-nav {
@@ -117,7 +128,7 @@
     min-width: 0;
     min-height: var(--oc-admin-menu-item-height);
     margin: 0;
-    padding: 0 0.5rem 0 0.75rem;
+    padding: 0.3125rem 0.5rem 0.3125rem 0.75rem;
     border: none;
     background: none;
     font: inherit;
@@ -128,9 +139,13 @@
 
     > .icon {
         flex: 0 0 auto;
+        align-self: flex-start;
         width: 1.75rem;
+        min-height: calc(var(--oc-admin-menu-item-height) - 0.625rem);
+        display: flex;
+        align-items: center;
+        justify-content: center;
         font-size: 1.125rem;
-        text-align: center;
 
         svg {
             width: 1.125rem;
@@ -141,17 +156,18 @@
         flex: 1 1 auto;
         min-width: 0;
         font-size: 0.875rem;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
+        // Long words, such as a content type name, break rather than overflow.
+        overflow-wrap: break-word;
     }
 
     > .collapse-icon {
         flex: 0 0 auto;
+        align-self: flex-start;
         display: flex;
         align-items: center;
         justify-content: center;
         width: 1.25rem;
+        min-height: calc(var(--oc-admin-menu-item-height) - 0.625rem);
     }
 
     &:hover,
@@ -165,7 +181,9 @@
 // Toggles the children of an item that also links to a page.
 .nav-toggle {
     flex: 0 0 auto;
+    align-self: flex-start;
     width: 2rem;
+    min-height: var(--oc-admin-menu-item-height);
     padding: 0;
     border: none;
     background: none;
@@ -290,10 +308,6 @@
     cursor: pointer;
     transition-duration: 0.2s;
 
-    &:focus {
-        outline: none;
-    }
-
     &:hover {
         color: var(--oc-admin-accent-color);
     }
@@ -340,6 +354,8 @@
             // The icon carries the whole row on its own here, so it is drawn
             // larger than in the expanded menu.
             > .icon {
+                // The label it would line up with is hidden here, so it is centered.
+                align-self: center;
                 display: block;
                 width: 100%;
                 font-size: 1.5rem;
@@ -418,6 +434,16 @@
 
     #ta-left-sidebar .footer {
         display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    #ta-left-sidebar,
+    .chevron,
+    .ta-sidebar-backdrop,
+    .leftbar-compactor {
+        transition: none;
     }
 }
 

@@ -1,19 +1,19 @@
 @import '../../../../../../../node_modules/bootstrap/scss/mixins/_color-mode';
 
 @include color-mode(dark) {
-    /* The dark counterpart of the silver and green chrome declared in '_variables.scss'. */
-    --oc-admin-accent-rgb: 65, 182, 112;
-    /* On the dark surfaces the accent is lightened instead of darkened. */
-    --oc-admin-accent-strong-color: #5cc98a;
-    --oc-admin-chrome-bg-color: #161b18;
-    --oc-admin-menu-bg-color: #1b211e;
-    --oc-admin-menu-border-color: #2a322d;
-    --oc-scrollbar-color: #46524c;
-    --oc-admin-menu-font-color: #97a49d;
-    --oc-admin-menu-font-color-hover: #d8f0e2;
-    --oc-admin-menu-item-font-color: #97a49d;
-    --oc-admin-menu-item-font-color-active: #e6f7ed;
-    --oc-admin-menu-group-font-color: #8b968f;
+    /* The dark counterpart of the silver chrome declared in '_variables.scss'. */
+    --oc-admin-accent-rgb: 154, 173, 163;
+    /* On the dark surfaces the accent is the lightest of the grays instead of the darkest. */
+    --oc-admin-accent-strong-color: #9aada3;
+    --oc-admin-chrome-bg-color: #171b19;
+    --oc-admin-menu-bg-color: #1d2220;
+    --oc-admin-menu-border-color: #2c3330;
+    --oc-scrollbar-color: #657069;
+    --oc-admin-menu-font-color: #97a29c;
+    --oc-admin-menu-font-color-hover: #eef3f0;
+    --oc-admin-menu-item-font-color: #97a29c;
+    --oc-admin-menu-item-font-color-active: #eef3f0;
+    --oc-admin-menu-group-font-color: #808b85;
     --oc-admin-menu-flyout-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.45);
 
     @import "badge";
