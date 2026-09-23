@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using OrchardCore.ContentManagement;
 using OrchardCore.FileStorage;
@@ -107,6 +108,37 @@ public class AttachedMediaFieldFileServiceTests
         Assert.Null(await testContext.FileStore.GetFileInfoAsync(tempPath));
     }
 
+    [Fact]
+    public async Task HandleFilesOnFieldUpdateAsync_PathOutsideOwnTempAndContentItemFolder_LogsWarning()
+    {
+        // A rejected, client-supplied path has no legitimate explanation - it should be logged
+        // so an administrator can notice a probing/exploitation attempt.
+        using var testContext = await AttachedMediaFixture.CreateAsync();
+
+        var victimContentItem = new ContentItem { ContentType = "Page", ContentItemId = "victim" };
+        var attackerContentItem = new ContentItem { ContentType = "Page", ContentItemId = "attacker" };
+
+        var logger = new Mock<ILogger<AttachedMediaFieldFileService>>();
+        var service = testContext.CreateService(logger.Object);
+        var victimPath = await testContext.CreateAttachedFileAsync(service.GetContentItemFolder(victimContentItem), "secret.pdf");
+
+        var items = new List<EditMediaFieldItemInfo>
+        {
+            new() { Path = victimPath, IsNew = false, IsRemoved = false },
+        };
+
+        await service.HandleFilesOnFieldUpdateAsync(items, attackerContentItem);
+
+        logger.Verify(
+            l => l.Log(
+                LogLevel.Warning,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                null,
+                It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+            Times.Once);
+    }
+
     private sealed class AttachedMediaFixture : IDisposable
     {
         private readonly string _root;
@@ -132,7 +164,7 @@ public class AttachedMediaFieldFileServiceTests
             return Task.FromResult(new AttachedMediaFixture(root, store));
         }
 
-        public AttachedMediaFieldFileService CreateService()
+        public AttachedMediaFieldFileService CreateService(ILogger<AttachedMediaFieldFileService> logger = null)
         {
             var httpContext = new DefaultHttpContext();
             var httpContextAccessor = new Mock<IHttpContextAccessor>();
@@ -142,7 +174,11 @@ public class AttachedMediaFieldFileServiceTests
             userAssetFolderNameProvider.Setup(p => p.GetUserAssetFolderName(It.IsAny<ClaimsPrincipal>()))
                 .Returns("me");
 
-            return new AttachedMediaFieldFileService(FileStore, httpContextAccessor.Object, userAssetFolderNameProvider.Object);
+            return new AttachedMediaFieldFileService(
+                FileStore,
+                httpContextAccessor.Object,
+                userAssetFolderNameProvider.Object,
+                logger ?? NullLogger<AttachedMediaFieldFileService>.Instance);
         }
 
         public async Task<string> CreateAttachedFileAsync(string folder, string fileName)

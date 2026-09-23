@@ -1,5 +1,6 @@
 using System.IO.Hashing;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentPreview;
 using OrchardCore.FileStorage;
@@ -15,15 +16,18 @@ public class AttachedMediaFieldFileService
     private readonly IMediaFileStore _fileStore;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IUserAssetFolderNameProvider _userAssetFolderNameProvider;
+    private readonly ILogger _logger;
 
     public AttachedMediaFieldFileService(
         IMediaFileStore fileStore,
         IHttpContextAccessor httpContextAccessor,
-        IUserAssetFolderNameProvider userAssetFolderNameProvider)
+        IUserAssetFolderNameProvider userAssetFolderNameProvider,
+        ILogger<AttachedMediaFieldFileService> logger)
     {
         _fileStore = fileStore;
         _httpContextAccessor = httpContextAccessor;
         _userAssetFolderNameProvider = userAssetFolderNameProvider;
+        _logger = logger;
 
         MediaFieldsFolder = "mediafields";
         MediaFieldsTempSubFolder = _fileStore.Combine(MediaFieldsFolder, "temp");
@@ -170,6 +174,11 @@ public class AttachedMediaFieldFileService
             // the current user's own temporary upload folder, never an arbitrary media store path.
             if (!path.StartsWith(ownTempFolder, StringComparison.Ordinal))
             {
+                _logger.LogWarning(
+                    "Rejected an attempt to delete a file at '{Path}' via an attached media field: the path is outside the current user's own temporary upload folder '{OwnTempFolder}'.",
+                    path,
+                    ownTempFolder);
+
                 continue;
             }
 
@@ -197,6 +206,12 @@ public class AttachedMediaFieldFileService
             if (!path.StartsWith(ownTempFolder, StringComparison.Ordinal)
                 && !path.StartsWith(contentItemFolder, StringComparison.Ordinal))
             {
+                _logger.LogWarning(
+                    "Rejected an attempt to move a file at '{Path}' via an attached media field: the path is outside both the current user's own temporary upload folder '{OwnTempFolder}' and the target content item's own folder '{ContentItemFolder}'.",
+                    path,
+                    ownTempFolder,
+                    contentItemFolder);
+
                 continue;
             }
 
