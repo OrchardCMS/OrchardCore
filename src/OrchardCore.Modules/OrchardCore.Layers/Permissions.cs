@@ -1,10 +1,11 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Layers;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageLayers = new("ManageLayers", "Manage layers");
+    public static readonly Permission ManageLayers = new("ManageLayers", LocalizedString.Create("Manage layers", typeof(Permissions)));
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

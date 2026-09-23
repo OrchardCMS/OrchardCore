@@ -43,8 +43,10 @@ public class PermissionsLocalizationDataProvider : ILocalizationDataProvider
 
             foreach (var permission in permissions)
             {
+                var description = permission.Description?.Name;
+
                 // Skip permissions without descriptions or with template placeholders.
-                if (string.IsNullOrWhiteSpace(permission.Description) || permission.Description.Contains("{0}"))
+                if (string.IsNullOrWhiteSpace(description) || description.Contains("{0}"))
                 {
                     continue;
                 }
@@ -53,7 +55,7 @@ public class PermissionsLocalizationDataProvider : ILocalizationDataProvider
                 var groupName = GetGroupName(feature, permission.Category);
 
                 // Create a unique key for deduplication that includes the group.
-                var descriptionKey = $"{groupName}|{permission.Description}";
+                var descriptionKey = $"{groupName}|{description}";
 
                 // Avoid duplicates (same description in same group).
                 if (!seenDescriptions.Add(descriptionKey))
@@ -65,7 +67,7 @@ public class PermissionsLocalizationDataProvider : ILocalizationDataProvider
                     ? DataLocalizationContext.Permission()
                     : DataLocalizationContext.Permission(groupName);
 
-                descriptors.Add(new DataLocalizedString(context, permission.Description, string.Empty));
+                descriptors.Add(new DataLocalizedString(context, description, string.Empty));
 
                 // Also add category if present and not a template.
                 if (!string.IsNullOrWhiteSpace(permission.Category) && !permission.Category.Contains("{0}"))

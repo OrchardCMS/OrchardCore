@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Queries;
@@ -10,12 +11,12 @@ public static class QueryPermissions
     /// <summary>
     /// Allows managing named queries.
     /// </summary>
-    public static readonly Permission ManageQueries = new("ManageQueries", "Manage queries");
+    public static readonly Permission ManageQueries = new("ManageQueries", LocalizedString.Create("Manage queries", typeof(QueryPermissions)));
 
     /// <summary>
     /// Allows executing all named queries through an API.
     /// </summary>
-    public static readonly Permission ExecuteApiAll = new("ExecuteApiAll", "Execute Api - All queries", [ManageQueries]);
+    public static readonly Permission ExecuteApiAll = new("ExecuteApiAll", LocalizedString.Create("Execute Api - All queries", typeof(QueryPermissions)), [ManageQueries]);
 
     private static readonly Permission s_executeApi = new("ExecuteApi_{0}", "Execute Api - {0}", [ManageQueries, ExecuteApiAll]);
 
