@@ -181,9 +181,9 @@ public class HttpRequestTask : TaskActivity<HttpRequestTask>
         var httpMethod = HttpMethod;
         var url = await _expressionEvaluator.EvaluateAsync(Url, workflowContext, _urlEncoder);
 
-        if (!HttpRequestDestinationValidator.TryCreateUri(url, out var destination, out var failureReason))
+        if (!HttpRequestTaskHttpClient.TryCreateUri(url, out var destination))
         {
-            _logger.LogWarning("The HTTP request workflow task did not send a request because its destination was invalid: {FailureReason}", failureReason);
+            _logger.LogWarning("The HTTP request workflow task did not send a request because its destination URL was invalid.");
             return Outcome("UnhandledHttpStatus");
         }
 
@@ -214,7 +214,7 @@ public class HttpRequestTask : TaskActivity<HttpRequestTask>
         {
             response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, workflowContext.CancellationToken);
         }
-        catch (HttpRequestException exception) when (ContainsBlockedDestinationException(exception))
+        catch (HttpRequestException exception) when (HttpRequestTaskHttpClient.IsBlockedDestination(exception))
         {
             _logger.LogWarning("The HTTP request workflow task did not send a request because host '{Host}' resolved to a prohibited destination.", destination.IdnHost);
             return Outcome("UnhandledHttpStatus");
@@ -258,20 +258,5 @@ public class HttpRequestTask : TaskActivity<HttpRequestTask>
         return
             from code in text.Split(',', StringSplitOptions.RemoveEmptyEntries)
             select int.Parse(code);
-    }
-
-    private static bool ContainsBlockedDestinationException(Exception exception)
-    {
-        while (exception != null)
-        {
-            if (exception is HttpRequestDestinationNotAllowedException)
-            {
-                return true;
-            }
-
-            exception = exception.InnerException;
-        }
-
-        return false;
     }
 }

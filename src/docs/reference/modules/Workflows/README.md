@@ -251,24 +251,7 @@ The following activities are available with any default Orchard installation:
 
 ### HTTP Request task destination security
 
-The **HTTP Request** task accepts an absolute HTTP or HTTPS URL and validates the destination after evaluating any Liquid expression. By default, loopback, private, link-local, multicast, reserved, and other non-public IP addresses are blocked. Automatic redirects, cookies, proxies, and custom `Host` headers are disabled for requests sent by this task.
-
-You can permit intentional internal destinations with shell configuration. These settings aren't editable by workflow authors:
-
-```json
-{
-  "OrchardCore_Workflows": {
-    "HttpRequestTask": {
-      "AllowedHosts": [ "internal-api.example.com" ],
-      "AllowedIpAddresses": [ "10.0.0.10" ],
-      "AllowedIpNetworks": [ "10.20.0.0/16" ],
-      "AllowOnlyConfiguredDestinations": true
-    }
-  }
-}
-```
-
-Set `AllowOnlyConfiguredDestinations` to `true` to block public destinations unless their host, IP address, or network is also configured explicitly. Host entries are exact matches; wildcard host names aren't supported.
+The **HTTP Request** task accepts an absolute HTTP or HTTPS URL and validates the destination after evaluating any Liquid expression. Loopback, private, link-local, multicast, reserved, and other non-public IP addresses are blocked. Automatic redirects, proxies, and custom `Host` headers are disabled for requests sent by this task.
 
 ## Developing Custom Activities
 

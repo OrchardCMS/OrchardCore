@@ -1,9 +1,7 @@
 using System.Net;
 using System.Text.Encodings.Web;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OrchardCore.Workflows.Http.Activities;
-using OrchardCore.Workflows.Http.Models;
 using OrchardCore.Workflows.Http.Services;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
@@ -17,8 +15,7 @@ public class HttpRequestTaskTests
     [Fact]
     public async Task ExecuteAsync_RequestDrivenMetadataUrl_IsBlockedBeforeConnecting()
     {
-        var validator = new HttpRequestDestinationValidator(Options.Create(new HttpRequestTaskOptions()));
-        using var handler = HttpRequestTaskHttpClient.CreateHandler(validator);
+        using var handler = HttpRequestTaskHttpClient.CreateHandler();
         using var client = new HttpClient(handler);
         var httpClientFactory = new Mock<IHttpClientFactory>(MockBehavior.Strict);
         httpClientFactory
