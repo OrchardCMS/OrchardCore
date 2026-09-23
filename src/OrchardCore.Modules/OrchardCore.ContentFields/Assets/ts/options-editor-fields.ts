@@ -13,7 +13,6 @@ observeAndInit(".options-editor-wrapper", (element) => {
     const rows = getDatasetJson<Record<string, string>[]>(element, "options") ?? [];
     const translations = getDatasetJson<Record<string, string>>(element, "translations");
     const defaultValueInputName = element.dataset.defaultValueInputName;
-    const modalBodyElements = document.getElementsByClassName(`${element.id}-ModalBody`);
 
     if (!translations) {
         return;
@@ -31,6 +30,11 @@ observeAndInit(".options-editor-wrapper", (element) => {
         defaultColumn: defaultValueInputName
             ? { key: "value", labelKey: "DefaultColumn", mode: "radio", radioGroupName: defaultValueInputName }
             : { key: "default", labelKey: "DefaultColumn", mode: "checkbox" },
+        // Only the PredefinedList editor (the radio-mode, defaultValueInputName-present case)
+        // wants name -> value auto-fill (see options-table-editor.ts's OptionsTableAutoFillColumn
+        // for the touched-tracking rules) - matches PR #19581's original scope, which only ever
+        // touched TextFieldPredefinedListEditorSettings.Edit.cshtml, not MultiTextFieldSettings.
+        autoFillColumn: defaultValueInputName ? { sourceKey: "name", targetKey: "value" } : undefined,
         initialDefaultValue: element.dataset.defaultValue,
         filterEmptyKey: "name",
         addKey: "AddAnOption",
@@ -40,8 +44,12 @@ observeAndInit(".options-editor-wrapper", (element) => {
         removeRowKey: "RemoveElementFromList",
         jsonTextareaLabelKey: "Options",
         jsonTextareaHintKey: "OptionsJsonHint",
+        // Restores the modal's "Default value" text row from the pre-#19489 Vue 2 template -
+        // radio mode (PredefinedList) only; MultiTextField's checkbox default column has no
+        // single default to type.
+        defaultValueLabelKey: defaultValueInputName ? "DefaultValue" : undefined,
+        defaultValueHintKey: defaultValueInputName ? "DefaultValueHint" : undefined,
         hiddenInputId: element.dataset.optionsInputId ?? "",
         hiddenInputName: element.dataset.optionsInputName ?? "",
-        modalBodyElements,
     });
 });

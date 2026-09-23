@@ -5,7 +5,6 @@ import initOptionsTableEditor, { setTranslations } from "@orchardcore/bloom/comp
 observeAndInit(".seo-meta-part-custom-tags", (element) => {
     const rows = getDatasetJson<Record<string, string>[]>(element, "customMetaTags") ?? [];
     const translations = getDatasetJson<Record<string, string>>(element, "translations");
-    const modalBodyElements = document.getElementsByClassName(`${element.id}-ModalBody`);
 
     if (!translations) {
         return;
@@ -32,6 +31,5 @@ observeAndInit(".seo-meta-part-custom-tags", (element) => {
         jsonTextareaHintKey: "CustomMetaTagsJsonHint",
         hiddenInputId: element.dataset.customMetaTagsInputId ?? "",
         hiddenInputName: element.dataset.customMetaTagsInputName ?? "",
-        modalBodyElements,
     });
 });
