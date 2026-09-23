@@ -35,18 +35,26 @@ public sealed class TextFieldPredefinedListEditorSettingsDriver : ContentPartFie
         if (partFieldDefinition.Editor() == "PredefinedList")
         {
             var model = new PredefinedListSettingsViewModel();
-            var settings = new TextFieldPredefinedListEditorSettings();
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
+            ListValueOption[] options = null;
+            var isValid = true;
+
             try
             {
-                settings.DefaultValue = model.DefaultValue;
-                settings.Editor = model.Editor;
-                settings.Options = string.IsNullOrWhiteSpace(model.Options)
+                options = string.IsNullOrWhiteSpace(model.Options)
                     ? []
                     : JConvert.DeserializeObject<ListValueOption[]>(model.Options);
+            }
+            catch
+            {
+                isValid = false;
+                context.Updater.ModelState.AddModelError(Prefix, S["The options are written in an incorrect format."]);
+            }
 
+            if (options != null)
+            {
                 // PR #19581 review requirement #3 ("adding a new option with the same label and
                 // value as a different option should not silently coexist as an ambiguous
                 // duplicate"): the client-side editor's auto-fill (see options-table-editor.ts's
@@ -54,17 +62,33 @@ public sealed class TextFieldPredefinedListEditorSettingsDriver : ContentPartFie
                 // share a value if neither has been directly edited, so this is now easy to
                 // create by accident - flag it as a validation error rather than silently
                 // persisting a duplicate.
-                if (settings.Options.DistinctBy(o => $"{o.Name},{o.Value}").Count() != settings.Options.Length)
+                if (options.DistinctBy(o => $"{o.Name},{o.Value}").Count() != options.Length)
                 {
+                    isValid = false;
                     context.Updater.ModelState.AddModelError(Prefix, S["The options can't contain more than one element with the same label and value."]);
                 }
 
-                context.Builder.WithSettings(settings);
+                if (isValid)
+                {
+                    context.Builder.WithSettings(new TextFieldPredefinedListEditorSettings
+                    {
+                        DefaultValue = model.DefaultValue,
+                        Editor = model.Editor,
+                        Options = options,
+                    });
+                }
             }
-            catch
+
+            // Re-render from the posted model values, not from re-reading the (possibly stale,
+            // previously-persisted) settings via Edit(partFieldDefinition, ...): on a validation
+            // error the admin's in-progress edits would otherwise be discarded and replaced by
+            // whatever was last saved.
+            return Initialize<PredefinedListSettingsViewModel>("TextFieldPredefinedListEditorSettings_Edit", m =>
             {
-                context.Updater.ModelState.AddModelError(Prefix, S["The options are written in an incorrect format."]);
-            }
+                m.DefaultValue = model.DefaultValue;
+                m.Editor = model.Editor;
+                m.Options = model.Options;
+            }).Location("Editor");
         }
 
         return Edit(partFieldDefinition, context);

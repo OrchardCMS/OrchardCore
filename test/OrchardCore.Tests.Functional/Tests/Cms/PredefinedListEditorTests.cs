@@ -125,4 +125,98 @@ public sealed class PredefinedListEditorTests : CmsTestBase<PredefinedListEditor
         Assert.Empty(consoleErrors);
         await page.CloseAsync();
     }
+
+    [Fact]
+    public async Task ExistingSavedOption_EditingLabelDoesNotOverwriteItsSavedValue()
+    {
+        // Regression test for PR #19904 review feedback (gvkries): a row loaded from
+        // already-persisted settings has a real value that must never be silently
+        // auto-filled over just because its label gets edited - only a BRAND NEW, still-blank
+        // row should ever have its value mirrored from the label (requirement #2).
+        var page = await Fixture.CreatePageAsync();
+        await page.LoginAsync();
+        var consoleErrors = page.CollectConsoleErrors();
+
+        var optionsTable = await OpenFieldEditorAsync(page);
+        var rows = optionsTable.Locator("tbody tr");
+
+        // Create one option whose value deliberately differs from its label, and save it -
+        // so the next page load reads it back from the persisted settings as a "prefilled" row.
+        await AddRowLink(page).ClickAsync();
+        await Assertions.Expect(rows).ToHaveCountAsync(1);
+        var row = rows.Nth(0);
+        var nameInput = row.Locator("input[type='text']").Nth(0);
+        var valueInput = row.Locator("input[type='text']").Nth(1);
+        await nameInput.FillAsync("Red");
+        await valueInput.FillAsync("custom-red-value");
+
+        await page.Locator("button.save[type='submit']").ClickAsync();
+
+        optionsTable = await OpenFieldEditorAsync(page);
+        rows = optionsTable.Locator("tbody tr");
+        await Assertions.Expect(rows).ToHaveCountAsync(1);
+        row = rows.Nth(0);
+        nameInput = row.Locator("input[type='text']").Nth(0);
+        valueInput = row.Locator("input[type='text']").Nth(1);
+
+        await Assertions.Expect(nameInput).ToHaveValueAsync("Red");
+        await Assertions.Expect(valueInput).ToHaveValueAsync("custom-red-value");
+
+        // Editing the label of this freshly-loaded, already-saved row must NOT re-trigger
+        // auto-fill: the value must stay exactly what was saved.
+        await nameInput.FillAsync("Bright Red");
+        await Assertions.Expect(valueInput).ToHaveValueAsync("custom-red-value");
+
+        // Clean up: remove the row and save, so later tests in this fixture-shared page start
+        // from an empty options list again.
+        await row.Locator("a.btn").Last.ClickAsync();
+        await Assertions.Expect(rows).ToHaveCountAsync(0);
+        await page.Locator("button.save[type='submit']").ClickAsync();
+
+        Assert.Empty(consoleErrors);
+        await page.CloseAsync();
+    }
+
+    [Fact]
+    public async Task ValidationError_PreservesInProgressEdits()
+    {
+        // Regression test for PR #19904 review feedback (gvkries): a validation error (e.g. a
+        // duplicate label+value pair) must re-render the admin's in-progress, unsaved edits -
+        // not discard them and fall back to whatever was last persisted.
+        var page = await Fixture.CreatePageAsync();
+        await page.LoginAsync();
+        var consoleErrors = page.CollectConsoleErrors();
+
+        var optionsTable = await OpenFieldEditorAsync(page);
+        var rows = optionsTable.Locator("tbody tr");
+
+        await AddRowLink(page).ClickAsync();
+        await Assertions.Expect(rows).ToHaveCountAsync(1);
+        var firstRow = rows.Nth(0);
+        await firstRow.Locator("input[type='text']").Nth(0).FillAsync("Duplicate");
+
+        await AddRowLink(page).ClickAsync();
+        await Assertions.Expect(rows).ToHaveCountAsync(2);
+        var secondRow = rows.Nth(1);
+        await secondRow.Locator("input[type='text']").Nth(0).FillAsync("Duplicate");
+
+        // Both rows auto-fill to the same label+value pair - triggers the server-side duplicate
+        // validation error on submit. This POSTs back to the SAME edit action, which re-renders
+        // the shape driver's UpdateAsync() result directly (no redirect on failure) - so the
+        // rows checked below come from that same response, not from re-navigating/reloading.
+        await page.Locator("button.save[type='submit']").ClickAsync();
+
+        var optionsTableAfterFailedSubmit = page.Locator(".options-table");
+        await Assertions.Expect(optionsTableAfterFailedSubmit).ToHaveCountAsync(1);
+        var rowsAfterFailedSubmit = optionsTableAfterFailedSubmit.Locator("tbody tr");
+
+        // The two in-progress "Duplicate" rows must still be there - not reset to the
+        // last-saved (empty) state.
+        await Assertions.Expect(rowsAfterFailedSubmit).ToHaveCountAsync(2);
+        await Assertions.Expect(rowsAfterFailedSubmit.Nth(0).Locator("input[type='text']").Nth(0)).ToHaveValueAsync("Duplicate");
+        await Assertions.Expect(rowsAfterFailedSubmit.Nth(1).Locator("input[type='text']").Nth(0)).ToHaveValueAsync("Duplicate");
+
+        Assert.Empty(consoleErrors);
+        await page.CloseAsync();
+    }
 }

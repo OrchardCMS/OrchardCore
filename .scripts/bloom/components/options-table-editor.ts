@@ -137,6 +137,25 @@ interface JsonModalInstance {
 // would otherwise trigger unrelated re-renders on every keystroke.
 const touchedTargets = new WeakSet<Record<string, string>>();
 
+// A row whose autoFillColumn.targetKey already holds a non-blank value did NOT get there via this
+// session's auto-fill (a brand new row always starts with an empty target - see add() below), so
+// it must be treated as already touched: either it's an existing, previously-saved option loaded
+// from the server (the review-reported bug - editing that option's label would otherwise silently
+// overwrite its real, possibly-deliberately-different value), or it came from a JSON-modal paste
+// that already specified both a label and a value. Called for every row set the component didn't
+// itself just create blank (initial load, and every JSON-modal replacement).
+const markPrefilledRowsAsTouched = (rows: Record<string, string>[], autoFillColumn?: OptionsTableAutoFillColumn | null): void => {
+    if (!autoFillColumn) {
+        return;
+    }
+
+    for (const row of rows) {
+        if ((row[autoFillColumn.targetKey] ?? "").trim() !== "") {
+            touchedTargets.add(row);
+        }
+    }
+};
+
 // Table + inline row editing, with an optional "default" column that renders as either a radio
 // (single-select across the whole table, sharing one form-field name) or a per-row checkbox
 // (multi-select, one boolean per row) depending on the consumer - see OptionsTableDefaultColumn.
@@ -208,6 +227,8 @@ const optionsTableComponent = {
         };
     },
     created(this: RowsTableInstance & { selectedRow: Record<string, string> | null; rootDefaultValue: string }) {
+        markPrefilledRowsAsTouched(this.rows, this.autoFillColumn);
+
         if (this.defaultColumn && this.defaultColumn.mode === "radio" && this.rootDefaultValue) {
             this.selectedRow = this.rows.find((row) => row[this.defaultColumn!.key] === this.rootDefaultValue) ?? null;
         }
@@ -315,6 +336,7 @@ const jsonModalComponent = {
     `,
     props: {
         rows: { type: Array, required: true },
+        autoFillColumn: { type: Object, default: null },
         editDataKey: { type: String, required: true },
         jsonTextareaLabelKey: { type: String, required: true },
         jsonTextareaHintKey: { type: String, required: true },
@@ -329,9 +351,22 @@ const jsonModalComponent = {
         };
     },
     methods: {
-        updateFromJson(this: JsonModalInstance & { $emit: (event: string, ...args: unknown[]) => void }, value: string) {
+        updateFromJson(
+            this: JsonModalInstance & {
+                autoFillColumn?: OptionsTableAutoFillColumn | null;
+                $emit: (event: string, ...args: unknown[]) => void;
+            },
+            value: string,
+        ) {
             try {
-                this.$emit("update:rows", JSON.parse(value));
+                const rows = JSON.parse(value);
+                // Rows pasted/edited as raw JSON already specify both columns explicitly (or the
+                // admin typed only a label and expects it to still auto-fill on the next row edit
+                // if left blank) - either way these are fresh row objects the auto-fill tracking
+                // above has never seen, so treat any non-blank target value the same as an
+                // existing, previously-saved option: already touched, never silently overwritten.
+                markPrefilledRowsAsTouched(rows, this.autoFillColumn);
+                this.$emit("update:rows", rows);
             } catch {
                 // Malformed JSON mid-edit: ignore until the admin fixes it, same as the original
                 // Vue 2 template's bare `data.options = JSON.parse($event.target.value)`, which
@@ -418,6 +453,7 @@ const initOptionsTableEditor = (config: OptionsTableEditorConfig): void => {
             <options-modal
                 ref="modal"
                 v-model:rows="rows"
+                :auto-fill-column="autoFillColumn"
                 :edit-data-key="editDataKey"
                 :json-textarea-label-key="jsonTextareaLabelKey"
                 :json-textarea-hint-key="jsonTextareaHintKey"
