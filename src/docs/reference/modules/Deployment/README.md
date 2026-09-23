@@ -92,6 +92,26 @@ A module can provide a custom deployment step by implementing an `IDeploymentSou
 services.AddDeployment<MyDeploymentSource, MyDeploymentStep, MyDeploymentStepDisplayDriver>();
 ```
 
+The step model sets its `Name` and its `Category` in its parameterless constructor. The category groups the step in the list of steps that can be added to a plan. Create the category with `LocalizedString.Create()`:
+
+```csharp
+using Microsoft.Extensions.Localization;
+using OrchardCore.Deployment;
+
+namespace MyModule.Deployment;
+
+public sealed class MyDeploymentStep : DeploymentStep
+{
+    public MyDeploymentStep()
+    {
+        Name = "MyStep";
+        Category = LocalizedString.Create("Content Management");
+    }
+}
+```
+
+The category is translated when the deployment plan is shown. The translation uses the full name of the step type as the context, for example `MyModule.Deployment.MyDeploymentStep`, so a PO file entry for the category uses `msgctxt "MyModule.Deployment.MyDeploymentStep"`.
+
 The source processes the configured step and adds recipe steps or files to the `DeploymentPlanResult`. Register a custom execution destination by implementing `IDeploymentTargetProvider`.
 
 To send packages directly to another Orchard Core site, see [Remote Deployment](../Deployment.Remote/README.md).

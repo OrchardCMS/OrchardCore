@@ -11,11 +11,6 @@ public class OpenIdValidationDeploymentStep : DeploymentStep
     public OpenIdValidationDeploymentStep()
     {
         Name = "OpenID Validation";
-    }
-
-    public OpenIdValidationDeploymentStep(IStringLocalizer<OpenIdValidationDeploymentStep> S)
-        : this()
-    {
-        Category = S["OpenID Connect"];
+        Category = LocalizedString.Create("OpenID Connect");
     }
 }

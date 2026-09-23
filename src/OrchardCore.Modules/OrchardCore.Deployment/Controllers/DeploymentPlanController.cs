@@ -32,6 +32,7 @@ public sealed class DeploymentPlanController : Controller
     private readonly INotifier _notifier;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IShapeFactory _shapeFactory;
+    private readonly IStringLocalizerFactory _stringLocalizerFactory;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -43,6 +44,7 @@ public sealed class DeploymentPlanController : Controller
         ISession session,
         IOptions<PagerOptions> pagerOptions,
         IShapeFactory shapeFactory,
+        IStringLocalizerFactory stringLocalizerFactory,
         IStringLocalizer<DeploymentPlanController> stringLocalizer,
         IHtmlLocalizer<DeploymentPlanController> htmlLocalizer,
         INotifier notifier,
@@ -56,6 +58,7 @@ public sealed class DeploymentPlanController : Controller
         _notifier = notifier;
         _updateModelAccessor = updateModelAccessor;
         _shapeFactory = shapeFactory;
+        _stringLocalizerFactory = stringLocalizerFactory;
         S = stringLocalizer;
         H = htmlLocalizer;
     }
@@ -181,7 +184,7 @@ public sealed class DeploymentPlanController : Controller
             var step = factory.Create();
             var thumbnail = await _displayManager.BuildDisplayAsync(step, _updateModelAccessor.ModelUpdater, "Thumbnail");
             thumbnail.Properties["DeploymentStep"] = step;
-            var category = step.Category?.Value ?? string.Empty;
+            var category = GetCategory(step);
 
             thumbnails.Add(new DisplayDeploymentPlanThumbnailViewModel
             {
@@ -348,5 +351,18 @@ public sealed class DeploymentPlanController : Controller
         await _notifier.SuccessAsync(H["Deployment plan deleted successfully."]);
 
         return RedirectToAction(nameof(Index));
+    }
+
+    private string GetCategory(DeploymentStep step)
+    {
+        if (string.IsNullOrEmpty(step.Category?.Name))
+        {
+            return step.Category?.Value ?? string.Empty;
+        }
+
+        // Steps create their category with LocalizedString.Create(), which does not translate it.
+        // Translate the category by its name, with the step type as the context. This is the same
+        // context that IStringLocalizer<TStep> uses, so existing translations continue to work.
+        return _stringLocalizerFactory.Create(step.GetType())[step.Category.Name].Value;
     }
 }

@@ -8,12 +8,7 @@ public class ReplaceContentDefinitionDeploymentStep : DeploymentStep
     public ReplaceContentDefinitionDeploymentStep()
     {
         Name = "ReplaceContentDefinition";
-    }
-
-    public ReplaceContentDefinitionDeploymentStep(IStringLocalizer<ReplaceContentDefinitionDeploymentStep> S)
-        : this()
-    {
-        Category = S["Content Management"];
+        Category = LocalizedString.Create("Content Management");
     }
 
     public bool IncludeAll { get; set; }

@@ -9,12 +9,7 @@ public sealed class IndexProfileDeploymentStep : DeploymentStep
     public IndexProfileDeploymentStep()
     {
         Name = CreateOrUpdateIndexProfileStep.StepKey;
-    }
-
-    public IndexProfileDeploymentStep(IStringLocalizer<IndexProfileDeploymentStep> S)
-        : this()
-    {
-        Category = S["Indexing"];
+        Category = LocalizedString.Create("Indexing");
     }
 
     public bool IncludeAll { get; set; }

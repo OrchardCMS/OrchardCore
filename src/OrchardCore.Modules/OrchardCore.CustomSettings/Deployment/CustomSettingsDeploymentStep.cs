@@ -8,12 +8,7 @@ public class CustomSettingsDeploymentStep : DeploymentStep
     public CustomSettingsDeploymentStep()
     {
         Name = "CustomSettings";
-    }
-
-    public CustomSettingsDeploymentStep(IStringLocalizer<CustomSettingsDeploymentStep> S)
-        : this()
-    {
-        Category = S["Settings"];
+        Category = LocalizedString.Create("Settings");
     }
 
     public bool IncludeAll { get; set; } = true;

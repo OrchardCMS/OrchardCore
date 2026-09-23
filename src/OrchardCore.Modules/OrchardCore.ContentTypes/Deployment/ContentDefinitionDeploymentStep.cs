@@ -11,12 +11,7 @@ public class ContentDefinitionDeploymentStep : DeploymentStep
     public ContentDefinitionDeploymentStep()
     {
         Name = "ContentDefinition";
-    }
-
-    public ContentDefinitionDeploymentStep(IStringLocalizer<ContentDefinitionDeploymentStep> S)
-        : this()
-    {
-        Category = S["Content Management"];
+        Category = LocalizedString.Create("Content Management");
     }
 
     public bool IncludeAll { get; set; }

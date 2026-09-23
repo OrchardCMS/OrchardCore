@@ -10,12 +10,7 @@ public class RecipeFileDeploymentStep : DeploymentStep
     public RecipeFileDeploymentStep()
     {
         Name = nameof(RecipeFileDeploymentStep);
-    }
-
-    public RecipeFileDeploymentStep(IStringLocalizer<RecipeFileDeploymentStep> S)
-        : this()
-    {
-        Category = S["Deployment"];
+        Category = LocalizedString.Create("Deployment");
     }
 
     public string RecipeName { get; set; }

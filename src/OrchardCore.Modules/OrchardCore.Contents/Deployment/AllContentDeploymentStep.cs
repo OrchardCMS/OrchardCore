@@ -11,12 +11,7 @@ public class AllContentDeploymentStep : DeploymentStep
     public AllContentDeploymentStep()
     {
         Name = "AllContent";
-    }
-
-    public AllContentDeploymentStep(IStringLocalizer<AllContentDeploymentStep> S)
-        : this()
-    {
-        Category = S["Content Management"];
+        Category = LocalizedString.Create("Content Management");
     }
 
     public bool ExportAsSetupRecipe { get; set; }

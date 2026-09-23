@@ -11,12 +11,7 @@ public class DeleteContentDefinitionDeploymentStep : DeploymentStep
     public DeleteContentDefinitionDeploymentStep()
     {
         Name = "DeleteContentDefinition";
-    }
-
-    public DeleteContentDefinitionDeploymentStep(IStringLocalizer<DeleteContentDefinitionDeploymentStep> S)
-        : this()
-    {
-        Category = S["Content Management"];
+        Category = LocalizedString.Create("Content Management");
     }
 
     public string[] ContentTypes { get; set; } = [];

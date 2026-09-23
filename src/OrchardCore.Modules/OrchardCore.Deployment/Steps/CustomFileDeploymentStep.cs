@@ -11,12 +11,7 @@ public class CustomFileDeploymentStep : DeploymentStep
     public CustomFileDeploymentStep()
     {
         Name = nameof(CustomFileDeploymentStep);
-    }
-
-    public CustomFileDeploymentStep(IStringLocalizer<CustomFileDeploymentStep> S)
-        : this()
-    {
-        Category = S["Deployment"];
+        Category = LocalizedString.Create("Deployment");
     }
 
     [Required]

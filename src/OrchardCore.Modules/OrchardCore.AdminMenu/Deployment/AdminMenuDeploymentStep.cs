@@ -11,11 +11,6 @@ public class AdminMenuDeploymentStep : DeploymentStep
     public AdminMenuDeploymentStep()
     {
         Name = "AdminMenu";
-    }
-
-    public AdminMenuDeploymentStep(IStringLocalizer<AdminMenuDeploymentStep> S)
-        : this()
-    {
-        Category = S["Content Management"];
+        Category = LocalizedString.Create("Content Management");
     }
 }

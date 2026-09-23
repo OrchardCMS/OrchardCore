@@ -11,11 +11,6 @@ public class AllMediaProfilesDeploymentStep : DeploymentStep
     public AllMediaProfilesDeploymentStep()
     {
         Name = "AllMediaProfiles";
-    }
-
-    public AllMediaProfilesDeploymentStep(IStringLocalizer<AllMediaProfilesDeploymentStep> S)
-        : this()
-    {
-        Category = S["Content Management"];
+        Category = LocalizedString.Create("Content Management");
     }
 }

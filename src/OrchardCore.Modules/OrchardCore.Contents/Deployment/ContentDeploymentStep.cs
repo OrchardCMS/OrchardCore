@@ -11,12 +11,7 @@ public class ContentDeploymentStep : DeploymentStep
     public ContentDeploymentStep()
     {
         Name = "ContentDeploymentStep";
-    }
-
-    public ContentDeploymentStep(IStringLocalizer<ContentDeploymentStep> S)
-        : this()
-    {
-        Category = S["Content Management"];
+        Category = LocalizedString.Create("Content Management");
     }
 
     public string[] ContentTypes { get; set; }

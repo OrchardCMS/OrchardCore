@@ -11,11 +11,6 @@ public class SearchSettingsDeploymentStep : DeploymentStep
     public SearchSettingsDeploymentStep()
     {
         Name = "SearchSettings";
-    }
-
-    public SearchSettingsDeploymentStep(IStringLocalizer<SearchSettingsDeploymentStep> S)
-        : this()
-    {
-        Category = S["Search"];
+        Category = LocalizedString.Create("Search");
     }
 }

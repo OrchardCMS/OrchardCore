@@ -11,11 +11,6 @@ public class OpenIdServerDeploymentStep : DeploymentStep
     public OpenIdServerDeploymentStep()
     {
         Name = "OpenID Server";
-    }
-
-    public OpenIdServerDeploymentStep(IStringLocalizer<OpenIdServerDeploymentStep> S)
-        : this()
-    {
-        Category = S["OpenID Connect"];
+        Category = LocalizedString.Create("OpenID Connect");
     }
 }
