@@ -78,6 +78,10 @@
                         {
                             <span class="badge text-danger"><i class="fa-solid fa-power-off" aria-hidden="true"></i> @T["Disabled"]</span>
                         }
+                        @if (entry.WorkflowType.IsMissingStartActivity())
+                        {
+                            <span class="badge text-warning"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> @T["No startup task"]</span>
+                        }
                         @if (entry.HasInstances)
                         {
                             <a asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@entry.WorkflowType.Id" class="badge ta-badge"><i class="fa-solid fa-list-ol" aria-hidden="true"></i> @T["Instances"]</a>
