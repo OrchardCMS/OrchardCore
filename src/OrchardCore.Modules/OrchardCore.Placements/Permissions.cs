@@ -1,10 +1,11 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Placements;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManagePlacements = new("ManagePlacements", "Manage placements");
+    public static readonly Permission ManagePlacements = new("ManagePlacements", LocalizedString.Create("Manage placements", typeof(Permissions)));
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

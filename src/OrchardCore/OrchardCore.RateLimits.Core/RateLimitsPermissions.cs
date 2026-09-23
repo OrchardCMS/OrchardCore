@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.RateLimits.Core;
@@ -10,5 +11,5 @@ public sealed class RateLimitsPermissions
     /// <summary>
     /// Allows administrators to manage rate-limit policies and limiter settings.
     /// </summary>
-    public static readonly Permission ManageRateLimits = new("ManageRateLimits", "Manage Rate Limits");
+    public static readonly Permission ManageRateLimits = new("ManageRateLimits", LocalizedString.Create("Manage Rate Limits", typeof(RateLimitsPermissions)));
 }

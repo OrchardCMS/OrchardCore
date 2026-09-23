@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Contents;
 using OrchardCore.Contents.Security;
 using OrchardCore.Security.Permissions;
@@ -10,7 +11,7 @@ public sealed class Permissions : IPermissionProvider
         ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.EditContent.Name],
         "Menu");
 
-    public static readonly Permission ManageMenu = new("ManageMenu", "Manage menus", [s_editMenuContent]);
+    public static readonly Permission ManageMenu = new("ManageMenu", LocalizedString.Create("Manage menus", typeof(Permissions)), [s_editMenuContent]);
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

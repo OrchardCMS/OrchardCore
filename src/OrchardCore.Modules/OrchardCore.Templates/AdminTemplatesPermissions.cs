@@ -1,10 +1,11 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Templates;
 
 public sealed class AdminTemplatesPermissions : IPermissionProvider
 {
-    public static readonly Permission ManageAdminTemplates = new("ManageAdminTemplates", "Manage admin templates", isSecurityCritical: true);
+    public static readonly Permission ManageAdminTemplates = new("ManageAdminTemplates", LocalizedString.Create("Manage admin templates", typeof(AdminTemplatesPermissions)), isSecurityCritical: true);
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

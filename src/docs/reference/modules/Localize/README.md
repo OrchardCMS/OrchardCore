@@ -155,6 +155,18 @@ The name stays the text without the arguments, for example `"Hello {0}"`. For a 
 !!! note
     The returned string is not translated. To show a translated value, localize it later by its name and with the same arguments, for example with `S[displayName.Name]`. Like the `LocalizedHtmlString` constructor, `LocalizedHtmlString.Create` renders the value as HTML and does not encode it.
 
+To translate the string later with a PO file, keep the translation context with the string. Pass the type that declares the string, and translate it with `IStringLocalizerFactory.Localize()`:
+
+```csharp
+// Where the string is created, for example in a static field.
+var description = LocalizedString.Create("Manage widgets", typeof(MyPermissions));
+
+// Where the string is shown. The context is the full name of the type, the same context as IStringLocalizer<MyPermissions>.
+var translated = stringLocalizerFactory.Localize(description);
+```
+
+The type is kept in `LocalizedString.SearchedLocation`. When a `LocalizedString` has no context, `Localize()` returns it unchanged.
+
 ## Pluralization
 
 This module also provides support for pluralization.

@@ -1,10 +1,11 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Taxonomies;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageTaxonomies = new("ManageTaxonomy", "Manage taxonomies");
+    public static readonly Permission ManageTaxonomies = new("ManageTaxonomy", LocalizedString.Create("Manage taxonomies", typeof(Permissions)));
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

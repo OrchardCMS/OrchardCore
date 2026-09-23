@@ -1,12 +1,13 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Twitter;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageTwitter = new("ManageTwitter", "Manage X (Twitter) settings");
+    public static readonly Permission ManageTwitter = new("ManageTwitter", LocalizedString.Create("Manage X (Twitter) settings", typeof(Permissions)));
 
-    public static readonly Permission ManageTwitterSignin = new("ManageTwitterSignin", "Manage Sign in with X (Twitter) settings");
+    public static readonly Permission ManageTwitterSignin = new("ManageTwitterSignin", LocalizedString.Create("Manage Sign in with X (Twitter) settings", typeof(Permissions)));
 
     private readonly IEnumerable<Permission> _allPermissions =
     [
