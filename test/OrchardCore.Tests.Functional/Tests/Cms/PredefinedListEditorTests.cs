@@ -219,4 +219,60 @@ public sealed class PredefinedListEditorTests : CmsTestBase<PredefinedListEditor
         Assert.Empty(consoleErrors);
         await page.CloseAsync();
     }
+
+    [Fact]
+    public async Task DraggingARow_ReordersTheOptionsList()
+    {
+        // Regression test for PR #19904 review feedback (gvkries, second round): dragging a
+        // row via its move handle must actually reorder the underlying rows array. The inner
+        // <draggable> previously used v-model="rows" against optionsTableComponent's own
+        // "rows" PROP (owned by the parent mount, not this component) - vuedraggable replaces
+        // the whole array reference on reorder, and Vue silently refuses to write a new
+        // reference into a prop, so add/remove (which mutate in place) kept working while
+        // drag-reordering was a permanent, silent no-op.
+        var page = await Fixture.CreatePageAsync();
+        await page.LoginAsync();
+        var consoleErrors = page.CollectConsoleErrors();
+
+        var optionsTable = await OpenFieldEditorAsync(page);
+        var rows = optionsTable.Locator("tbody tr");
+
+        await AddRowLink(page).ClickAsync();
+        await Assertions.Expect(rows).ToHaveCountAsync(1);
+        await rows.Nth(0).Locator("input[type='text']").Nth(0).FillAsync("First");
+
+        await AddRowLink(page).ClickAsync();
+        await Assertions.Expect(rows).ToHaveCountAsync(2);
+        await rows.Nth(1).Locator("input[type='text']").Nth(0).FillAsync("Second");
+
+        var handle0 = rows.Nth(0).Locator(".cursor-move");
+        var handle1 = rows.Nth(1).Locator(".cursor-move");
+        var box1 = await handle1.BoundingBoxAsync();
+        var box0 = await handle0.BoundingBoxAsync();
+
+        // A native HTML5 drag (which SortableJS/vuedraggable use) needs real incremental mouse
+        // moves past the drag threshold - a single Playwright DragAndDropAsync jump is often too
+        // fast for Sortable to register a valid drag start, so step it manually.
+        await page.Mouse.MoveAsync(box1.X + box1.Width / 2, box1.Y + box1.Height / 2);
+        await page.Mouse.DownAsync();
+        for (var i = 1; i <= 10; i++)
+        {
+            var y = box1.Y + (box0.Y - box1.Y) * i / 10;
+            await page.Mouse.MoveAsync(box1.X + box1.Width / 2, y, new MouseMoveOptions { Steps = 5 });
+            await page.WaitForTimeoutAsync(50);
+        }
+        await page.WaitForTimeoutAsync(200);
+        await page.Mouse.UpAsync();
+        await page.WaitForTimeoutAsync(300);
+
+        await Assertions.Expect(rows.Nth(0).Locator("input[type='text']").Nth(0)).ToHaveValueAsync("Second");
+        await Assertions.Expect(rows.Nth(1).Locator("input[type='text']").Nth(0)).ToHaveValueAsync("First");
+
+        // Clean up: remove both rows so later tests in this fixture-shared page start clean -
+        // no save needed since these edits were never submitted.
+        await page.GotoAndAssertOkAsync("/Admin/ContentParts/PredefinedListEditorTestPage/Fields/Category/Edit");
+
+        Assert.Empty(consoleErrors);
+        await page.CloseAsync();
+    }
 }

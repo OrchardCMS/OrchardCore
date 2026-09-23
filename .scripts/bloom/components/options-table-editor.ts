@@ -168,7 +168,7 @@ const optionsTableComponent = {
                     <th scope="col" v-if="defaultColumn" :colspan="defaultColumn.mode === 'radio' ? 3 : 1">{{ t[defaultColumn.labelKey] }}</th>
                 </tr>
             </thead>
-            <draggable v-model="rows" tag="tbody" item-key="__row" handle=".cursor-move">
+            <draggable :model-value="rows" v-on:update:model-value="$emit('update:rows', $event)" tag="tbody" item-key="__row" handle=".cursor-move">
                 <template #item="{ element: row, index }">
                     <tr>
                         <td v-for="column in columns" :key="column.key">
