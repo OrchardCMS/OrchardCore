@@ -404,7 +404,13 @@ The following configuration values are used by default and can be customized:
     // The maximum chunk size when uploading files in bytes. If 0, no chunked upload is used. This is useful to work around request size limitations of a hosting environment.
     "MaxUploadChunkSize": 104857600,
     // The lifetime of temporary files created during upload. Defaults to 1 hour.
-    "TemporaryFileLifetime": "01:00:00"
+    "TemporaryFileLifetime": "01:00:00",
+    // The path used to store temporary TUS upload data. Defaults to {TempPath}/TusUploads.
+    // Configure this to a shared filesystem path for multi-instance deployments.
+    "TusTempPath": "/mnt/shared/TusUploads",
+    // Disables the thumbnails (grid) view in the media gallery, e.g. for security or performance
+    // reasons. When enabled, the gallery always uses the list view and hides the grid/list toggle.
+    "DisableThumbnails": false
   }
 }
 ```
