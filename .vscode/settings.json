@@ -1,21 +1,4 @@
 // Place your settings in this file to overwrite default and user settings.
 {
-  "omnisharp.projectLoadTimeout": 600,
-  "json.schemas": [
-    {
-      "fileMatch": [
-        "**/src/OrchardCore.Cms.Web/appsettings.json",
-        "**/src/OrchardCore.Cms.Web/appsettings.*.json",
-        "**/src/OrchardCore.Cms.Web/App_Data/appsettings.json",
-        "**/src/OrchardCore.Cms.Web/App_Data/appsettings.*.json"
-      ],
-      "url": "./src/OrchardCore.Build/OrchardCore.AppSettings.schema.json"
-    },
-    {
-      "fileMatch": [
-        "**/src/OrchardCore.Cms.Web/App_Data/Sites/*/appsettings.json"
-      ],
-      "url": "./src/OrchardCore.Build/OrchardCore.TenantAppSettings.schema.json"
-    }
-  ]
+  "omnisharp.projectLoadTimeout": 600
 }

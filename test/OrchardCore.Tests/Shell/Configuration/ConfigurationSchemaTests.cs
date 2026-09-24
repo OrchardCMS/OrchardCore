@@ -76,34 +76,6 @@ public partial class ConfigurationSchemaTests
         }
     }
 
-    [Theory]
-    [InlineData("src/OrchardCore.Build/OrchardCore.AppSettings.schema.json", "")]
-    [InlineData("src/OrchardCore.Build/OrchardCore.TenantAppSettings.schema.json", "#/properties/OrchardCore")]
-    public void CombinedSchema_ReferencesAllConfigurationSchemas(string combinedSchemaPath, string pointer)
-    {
-        var root = GetRepositoryRoot();
-        var combinedSchema = JsonNode.Parse(File.ReadAllText(Path.Combine(root, combinedSchemaPath)));
-        var directory = Path.GetDirectoryName(Path.Combine(root, combinedSchemaPath));
-
-        var references = combinedSchema["allOf"].AsArray()
-            .Select(item => item["$ref"].GetValue<string>())
-            .Select(reference =>
-            {
-                Assert.EndsWith(pointer, reference, StringComparison.Ordinal);
-
-                return Path.GetFullPath(Path.Combine(directory, reference[..^pointer.Length]));
-            })
-            .Order(StringComparer.OrdinalIgnoreCase)
-            .ToArray();
-
-        var schemas = GetConfigurationSchemas()
-            .Select(schema => Path.GetFullPath(schema.Path))
-            .Order(StringComparer.OrdinalIgnoreCase)
-            .ToArray();
-
-        Assert.Equal(schemas, references);
-    }
-
     private static JsonObject MergeOrchardCoreSections()
     {
         var sections = new JsonObject();

@@ -119,8 +119,6 @@ Besides the section and setting names, the editor suggests the known values of s
 !!! note
     Visual Studio applies the same schema to all the `appsettings.json` files of a project, so the tenant specific `App_Data/Sites/{tenant}/appsettings.json` files, whose sections are not nested in an `OrchardCore` section, don't get IntelliSense. Visual Studio Code doesn't support JSON schema segments yet.
 
-When working in the Orchard Core repository with Visual Studio Code, the `.vscode/settings.json` file maps the `appsettings.json` files of the `OrchardCore.Cms.Web` project, including the tenant specific ones, to the `src/OrchardCore.Build/OrchardCore.AppSettings.schema.json` and `src/OrchardCore.Build/OrchardCore.TenantAppSettings.schema.json` files, which combine the schemas of all the projects.
-
 !!! tip
     A module can describe its own configuration sections the same way. Include a `ConfigurationSchema.json` file describing the sections under the `OrchardCore` property at the root of the NuGet package, and a `buildTransitive/{PackageId}.targets` file declaring it as a JSON schema segment:
 
