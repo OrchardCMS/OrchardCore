@@ -152,13 +152,15 @@ The following configuration values can be customized:
 
 ```json
 {
-  "OrchardCore_Facebook": {
-    "AppId": "",
-    "AppSecret": "",
-    "FBInit": false,
-    "FBInitParams": "status:true,xfbml:true,autoLogAppEvents:true",
-    "SdkJs": "sdk.js",
-    "Version": "v3.2"
+  "OrchardCore": {
+    "Facebook": {
+      "AppId": "",
+      "AppSecret": "",
+      "FBInit": false,
+      "FBInitParams": "status:true,xfbml:true,autoLogAppEvents:true",
+      "SdkJs": "sdk.js",
+      "Version": "v3.2"
+    }
   }
 }
 ```

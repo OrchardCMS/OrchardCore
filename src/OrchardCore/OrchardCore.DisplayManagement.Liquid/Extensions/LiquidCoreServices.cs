@@ -23,7 +23,9 @@ public static class LiquidCoreServices
         services.Configure<FluidParserOptions>(options =>
         {
             var configuration = ShellScope.Services.GetRequiredService<IShellConfiguration>();
-            configuration.GetSection("OrchardCore_Liquid").Bind(options);
+
+            // The 'OrchardCore_Liquid' section is deprecated and will be removed in a future major version, use 'Liquid' instead.
+            configuration.GetSectionCompat("Liquid", "OrchardCore_Liquid").Bind(options);
 
             // Always enable the use of functions, do not expose it as a configuration option.
             options.AllowFunctions = true;

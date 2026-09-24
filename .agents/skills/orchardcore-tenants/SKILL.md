@@ -93,7 +93,7 @@ In `appsettings.json` (or any config source), declare a tenant so it exists befo
 Per-tenant module config goes under the tenant name too:
 
 ```json
-{ "OrchardCore": { "Default": { "OrchardCore_Media": { /* ... */ } } } }
+{ "OrchardCore": { "Default": { "Media": { /* ... */ } } } }
 ```
 
 ## Quick Reference
@@ -124,7 +124,7 @@ Per-tenant module config goes under the tenant name too:
 | Shared DB, table prefix | same DB + unique `TablePrefix` |
 | Shared DB, schema | `Schema` per tenant (SQL Server) |
 
-`OrchardCore_Tenants` config can enforce: `RequireTablePrefix`, `TablePrefixPattern`, `SchemaPattern` (templated with `ShellSettings`).
+`OrchardCore:Tenants` config can enforce: `RequireTablePrefix`, `TablePrefixPattern`, `SchemaPattern` (templated with `ShellSettings`).
 
 ### Feature Profiles
 

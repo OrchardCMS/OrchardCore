@@ -59,11 +59,15 @@ The following configuration values can be customized:
 
 ```json
 {
-  "OrchardCore_GitHub": {
-    "ClientID": "",
-    "ClientSecret": "",
-    "CallbackPath": "/signin-github",
-    "SaveTokens": false
+  "OrchardCore": {
+    "Authentication": {
+      "GitHub": {
+        "ClientID": "",
+        "ClientSecret": "",
+        "CallbackPath": "/signin-github",
+        "SaveTokens": false
+      }
+    }
   }
 }
 ```

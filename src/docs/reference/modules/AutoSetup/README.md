@@ -9,7 +9,7 @@ Auto-Setup parameters are defined in `appsettings.json`. Example excerpt:
 ```json
 {
   "OrchardCore": {
-    "OrchardCore_AutoSetup": {
+    "AutoSetup": {
       "AutoSetupPath": "",
       "Tenants": [
         {
@@ -81,14 +81,14 @@ If your JSON configuration contains sensitive information, or you don't want to 
 ```shell
 cd src/OrchardCore.Cms.Web
 dotnet user-secrets init
-dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:ShellName" "Default"
-dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:SiteName" "AutoSetup Example"
-dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:SiteTimeZone" "Europe/Amsterdam"
-dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:AdminUsername" "admin"
-dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:AdminEmail" "info@orchardproject.net"
-dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:AdminPassword" "OrchardCoreRules1!"
-dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:RecipeName" "SaaS"
-dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:DatabaseProvider" "Sqlite"
+dotnet user-secrets set "OrchardCore:AutoSetup:Tenants:0:ShellName" "Default"
+dotnet user-secrets set "OrchardCore:AutoSetup:Tenants:0:SiteName" "AutoSetup Example"
+dotnet user-secrets set "OrchardCore:AutoSetup:Tenants:0:SiteTimeZone" "Europe/Amsterdam"
+dotnet user-secrets set "OrchardCore:AutoSetup:Tenants:0:AdminUsername" "admin"
+dotnet user-secrets set "OrchardCore:AutoSetup:Tenants:0:AdminEmail" "info@orchardproject.net"
+dotnet user-secrets set "OrchardCore:AutoSetup:Tenants:0:AdminPassword" "OrchardCoreRules1!"
+dotnet user-secrets set "OrchardCore:AutoSetup:Tenants:0:RecipeName" "SaaS"
+dotnet user-secrets set "OrchardCore:AutoSetup:Tenants:0:DatabaseProvider" "Sqlite"
 ```
 
 If you use a setup like the above when working with the full source code of Orchard Core, then all copies of the source will use it, due to `OrchardCore.Cms.Web` having `UserSecretsId` pre-configured. This is really useful when contributing to Orchard Core. However, if you want to remove this functionality, just remove the `UserSecretsId` element from the given copy's `OrchardCore.Cms.Web.csproj`.
@@ -96,31 +96,31 @@ If you use a setup like the above when working with the full source code of Orch
 [Environment variables](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration#non-prefixed-environment-variables) are available on both server and local machine. But if you have multiple projects, you have to prefix them to avoid clashes.
 
 ```
-"OrchardCore__OrchardCore_AutoSetup__AutoSetupPath": ""
+"OrchardCore__AutoSetup__AutoSetupPath": ""
 
-"OrchardCore__OrchardCore_AutoSetup__Tenants__0__ShellName": "Default"
-"OrchardCore__OrchardCore_AutoSetup__Tenants__0__SiteName": "AutoSetup Example"
-"OrchardCore__OrchardCore_AutoSetup__Tenants__0__SiteTimeZone": "Europe/Amsterdam"
-"OrchardCore__OrchardCore_AutoSetup__Tenants__0__AdminUsername": "admin"
-"OrchardCore__OrchardCore_AutoSetup__Tenants__0__AdminEmail": "info@orchardproject.net"
-"OrchardCore__OrchardCore_AutoSetup__Tenants__0__AdminPassword": "OrchardCoreRules1!"
-"OrchardCore__OrchardCore_AutoSetup__Tenants__0__DatabaseProvider": "Sqlite"
-"OrchardCore__OrchardCore_AutoSetup__Tenants__0__DatabaseConnectionString": ""
-"OrchardCore__OrchardCore_AutoSetup__Tenants__0__DatabaseTablePrefix": ""
-"OrchardCore__OrchardCore_AutoSetup__Tenants__0__RecipeName": "SaaS"
+"OrchardCore__AutoSetup__Tenants__0__ShellName": "Default"
+"OrchardCore__AutoSetup__Tenants__0__SiteName": "AutoSetup Example"
+"OrchardCore__AutoSetup__Tenants__0__SiteTimeZone": "Europe/Amsterdam"
+"OrchardCore__AutoSetup__Tenants__0__AdminUsername": "admin"
+"OrchardCore__AutoSetup__Tenants__0__AdminEmail": "info@orchardproject.net"
+"OrchardCore__AutoSetup__Tenants__0__AdminPassword": "OrchardCoreRules1!"
+"OrchardCore__AutoSetup__Tenants__0__DatabaseProvider": "Sqlite"
+"OrchardCore__AutoSetup__Tenants__0__DatabaseConnectionString": ""
+"OrchardCore__AutoSetup__Tenants__0__DatabaseTablePrefix": ""
+"OrchardCore__AutoSetup__Tenants__0__RecipeName": "SaaS"
 
-"OrchardCore__OrchardCore_AutoSetup__Tenants__1__ShellName": "AutoSetupTenant"
-"OrchardCore__OrchardCore_AutoSetup__Tenants__1__SiteName": "AutoSetup Tenant"
-"OrchardCore__OrchardCore_AutoSetup__Tenants__1__SiteTimeZone": "Europe/Amsterdam"
-"OrchardCore__OrchardCore_AutoSetup__Tenants__1__AdminUsername": "tenantadmin"
-"OrchardCore__OrchardCore_AutoSetup__Tenants__1__AdminEmail": "tenant@orchardproject.net"
-"OrchardCore__OrchardCore_AutoSetup__Tenants__1__AdminPassword": "OrchardCoreRules1!"
-"OrchardCore__OrchardCore_AutoSetup__Tenants__1__DatabaseProvider": "Sqlite"
-"OrchardCore__OrchardCore_AutoSetup__Tenants__1__DatabaseConnectionString": ""
-"OrchardCore__OrchardCore_AutoSetup__Tenants__1__DatabaseTablePrefix": ""
-"OrchardCore__OrchardCore_AutoSetup__Tenants__1__RecipeName": "Agency"
-"OrchardCore__OrchardCore_AutoSetup__Tenants__1__RequestUrlHost": ""
-"OrchardCore__OrchardCore_AutoSetup__Tenants__1__RequestUrlPrefix": "tenant"
+"OrchardCore__AutoSetup__Tenants__1__ShellName": "AutoSetupTenant"
+"OrchardCore__AutoSetup__Tenants__1__SiteName": "AutoSetup Tenant"
+"OrchardCore__AutoSetup__Tenants__1__SiteTimeZone": "Europe/Amsterdam"
+"OrchardCore__AutoSetup__Tenants__1__AdminUsername": "tenantadmin"
+"OrchardCore__AutoSetup__Tenants__1__AdminEmail": "tenant@orchardproject.net"
+"OrchardCore__AutoSetup__Tenants__1__AdminPassword": "OrchardCoreRules1!"
+"OrchardCore__AutoSetup__Tenants__1__DatabaseProvider": "Sqlite"
+"OrchardCore__AutoSetup__Tenants__1__DatabaseConnectionString": ""
+"OrchardCore__AutoSetup__Tenants__1__DatabaseTablePrefix": ""
+"OrchardCore__AutoSetup__Tenants__1__RecipeName": "Agency"
+"OrchardCore__AutoSetup__Tenants__1__RequestUrlHost": ""
+"OrchardCore__AutoSetup__Tenants__1__RequestUrlPrefix": "tenant"
 ```
 
 For testing purposes, you may add the above environment variables into a "web" profile in the launchSettings.json file of the OrchardCore.Cms.Web project.  
@@ -165,7 +165,7 @@ You should enable the Redis Lock feature in the startup file.
 Make sure you set the Redis configuration string via an environment variable or a configuration file.
 
 ```
-"OrchardCore__OrchardCore_Redis__Configuration": "192.168.99.100:6379,allowAdmin=true"
+"OrchardCore__Redis__Configuration": "192.168.99.100:6379,allowAdmin=true"
 ```
 
 Optional Distributed Lock Parameters.
@@ -178,8 +178,8 @@ Optional Distributed Lock Parameters.
 Lock configuration parameters are optional and can be set via environment variables or a configuration file.
 
 ```
-"OrchardCore__OrchardCore_AutoSetup__LockOptions__LockTimeout": "10000"
-"OrchardCore__OrchardCore_AutoSetup__LockOptions__LockExpiration": "10000"
+"OrchardCore__AutoSetup__LockOptions__LockTimeout": "10000"
+"OrchardCore__AutoSetup__LockOptions__LockExpiration": "10000"
 ```
 
 ## Additional information

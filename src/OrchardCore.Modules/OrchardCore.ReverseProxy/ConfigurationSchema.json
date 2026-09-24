@@ -1,0 +1,53 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "ReverseProxy": {
+          "type": "object",
+          "description": "Settings of the forwarded headers processing, used when the application is hosted behind a reverse proxy. These values override the ones configured in the admin settings, and they are only applied when the 'ConfigureReverseProxySettings()' extension method is called on the OrchardCoreBuilder. See https://docs.orchardcore.net/en/latest/reference/modules/ReverseProxy/.",
+          "properties": {
+            "ForwardedHeaders": {
+              "type": "string",
+              "examples": [
+                "None",
+                "XForwardedFor",
+                "XForwardedHost",
+                "XForwardedProto",
+                "XForwardedPrefix",
+                "XForwardedFor, XForwardedProto",
+                "XForwardedFor, XForwardedHost, XForwardedProto",
+                "All"
+              ],
+              "description": "The forwarded headers to process, as a comma-separated combination of 'None', 'XForwardedFor', 'XForwardedHost', 'XForwardedProto', 'XForwardedPrefix' and 'All', e.g. 'XForwardedFor, XForwardedProto'."
+            },
+            "KnownNetworks": {
+              "type": "array",
+              "description": "The networks of the proxies that forwarded headers are accepted from, in CIDR notation.",
+              "items": {
+                "type": "string",
+                "description": "A network in CIDR notation, e.g. '10.0.0.0/8'."
+              }
+            },
+            "KnownProxies": {
+              "type": "array",
+              "description": "The IP addresses of the proxies that forwarded headers are accepted from.",
+              "items": {
+                "type": "string",
+                "description": "An IP address, e.g. '192.168.1.200'."
+              }
+            }
+          }
+        },
+        "OrchardCore_ReverseProxy": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_ReverseProxy' section is deprecated. Use 'OrchardCore:ReverseProxy' instead.",
+          "description": "Deprecated. Use 'OrchardCore:ReverseProxy' instead.",
+          "doNotSuggest": true
+        }
+      }
+    }
+  }
+}

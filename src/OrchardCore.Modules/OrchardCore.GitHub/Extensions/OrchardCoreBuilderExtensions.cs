@@ -10,9 +10,13 @@ public static class OrchardCoreBuilderExtensions
     {
         builder.ConfigureServices((tenantServices, serviceProvider) =>
         {
-            var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_GitHub");
+            var configuration = serviceProvider.GetRequiredService<IShellConfiguration>();
 
-            tenantServices.PostConfigure<GitHubAuthenticationSettings>(settings => configurationSection.Bind(settings));
+            tenantServices.PostConfigure<GitHubAuthenticationSettings>(settings =>
+            {
+                // The 'OrchardCore_GitHub' section is deprecated and will be removed in a future major version, use 'Authentication:GitHub' instead.
+                configuration.GetSectionCompat("Authentication:GitHub", "OrchardCore_GitHub").Bind(settings);
+            });
         });
 
         return builder;

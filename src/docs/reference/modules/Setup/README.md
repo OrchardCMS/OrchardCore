@@ -38,14 +38,16 @@ For example to provide a key for a tenant
 
 Other configuration keys can also be used, i.e. from the hosts `appsettings.json`
 
-`[js: configuration('OrchardCore_Admin:AdminUrlPrefix', 'Admin')]`
+`[js: configuration('Admin:AdminUrlPrefix', 'Admin')]`
 
 In this example we also provide a default value, which will be used if the key is not found.
 
 ```json
     {
-        "OrchardCore_Admin" : {
-            "AdminUrlPrefix" : "MyAdmin"
+        "OrchardCore" : {
+            "Admin" : {
+                "AdminUrlPrefix" : "MyAdmin"
+            }
         }
     }
 ```
@@ -56,45 +58,47 @@ The following configuration values are used by default and can be customized:
 
 ```json
 {
-  "OrchardCore_Setup": {
-    "DefaultCulture": "",
-    // When using "" the system OS culture will be used
-    "SupportedCultures": [
-      "ar",
-      "cs",
-      "da",
-      "de",
-      "el",
-      "en",
-      "es",
-      "fa",
-      "fi",
-      "fr",
-      "he",
-      "hr",
-      "hu",
-      "id",
-      "it",
-      "ja",
-      "ko",
-      "lt",
-      "mk",
-      "nl",
-      "pl",
-      "pt",
-      "ru",
-      "sk",
-      "sl",
-      "sr-cyrl-rs",
-      "sr-latn-rs",
-      "sv",
-      "tr",
-      "uk",
-      "vi",
-      "zh-CN",
-      "zh-TW"
-    ]
-    // "" value (InvariantCulture) is not supported for these
+  "OrchardCore": {
+    "Setup": {
+      "DefaultCulture": "",
+      // When using "" the system OS culture will be used
+      "SupportedCultures": [
+        "ar",
+        "cs",
+        "da",
+        "de",
+        "el",
+        "en",
+        "es",
+        "fa",
+        "fi",
+        "fr",
+        "he",
+        "hr",
+        "hu",
+        "id",
+        "it",
+        "ja",
+        "ko",
+        "lt",
+        "mk",
+        "nl",
+        "pl",
+        "pt",
+        "ru",
+        "sk",
+        "sl",
+        "sr-cyrl-rs",
+        "sr-latn-rs",
+        "sv",
+        "tr",
+        "uk",
+        "vi",
+        "zh-CN",
+        "zh-TW"
+      ]
+      // "" value (InvariantCulture) is not supported for these
+    }
   }
 }
 ```

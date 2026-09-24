@@ -1,0 +1,48 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "DataProtection": {
+          "type": "object",
+          "description": "Data protection settings.",
+          "properties": {
+            "Azure": {
+              "type": "object",
+              "description": "Azure Blob Storage data protection settings, used by the 'OrchardCore.DataProtection.Azure' feature to store the data protection key rings in an Azure Blob Storage container, isolated per tenant. The feature is only active when 'ConnectionString' is set. See https://docs.orchardcore.net/en/latest/reference/modules/DataProtection.Azure/.",
+              "properties": {
+                "ConnectionString": {
+                  "type": "string",
+                  "description": "The Azure Storage account connection string (required)."
+                },
+                "ContainerName": {
+                  "type": "string",
+                  "description": "The name of the Azure Blob container storing the keys. Templatable with Liquid, e.g. '{{ ShellSettings.Name }}-dataprotection' for a container per tenant. The resulting name is lowercased and must be a valid Azure container name.",
+                  "default": "dataprotection"
+                },
+                "BlobName": {
+                  "type": "string",
+                  "description": "The name of the blob storing the keys. Templatable with Liquid, e.g. '{{ ShellSettings.Name }}DataProtectionKeys.xml'. When empty, defaults to a folder per tenant, i.e. 'Sites/{tenant}/DataProtectionKeys.xml'.",
+                  "default": ""
+                },
+                "CreateContainer": {
+                  "type": "boolean",
+                  "description": "Whether the container is created if it does not already exist. Set to false to skip this check when the container already exists.",
+                  "default": true
+                }
+              }
+            }
+          }
+        },
+        "OrchardCore_DataProtection_Azure": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_DataProtection_Azure' section is deprecated. Use 'OrchardCore:DataProtection:Azure' instead.",
+          "description": "Deprecated. Use 'OrchardCore:DataProtection:Azure' instead.",
+          "doNotSuggest": true
+        }
+      }
+    }
+  }
+}

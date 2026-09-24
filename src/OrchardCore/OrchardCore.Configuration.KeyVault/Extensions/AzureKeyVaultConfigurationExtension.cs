@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using OrchardCore.Configuration.KeyVault.Services;
+using OrchardCore.Environment.Shell.Configuration;
 
 namespace OrchardCore.Configuration.KeyVault.Extensions;
 
@@ -67,14 +68,17 @@ public static class AzureKeyVaultConfigurationExtension
     private static void AddOrchardCoreAzureKeyVault(
         this IConfigurationBuilder builder, IConfiguration configuration, TokenCredential tokenCredential)
     {
-        var keyVaultEndpointUri = GetVaultHostUri(configuration);
+        // The 'OrchardCore:OrchardCore_KeyVault_Azure' section is deprecated and will be removed in a future major version, use 'OrchardCore:KeyVault:Azure' instead.
+        var keyVaultSection = configuration.GetSectionCompat("OrchardCore:KeyVault:Azure", "OrchardCore:OrchardCore_KeyVault_Azure");
+
+        var keyVaultEndpointUri = GetVaultHostUri(keyVaultSection);
 
         var configOptions = new AzureKeyVaultConfigurationOptions()
         {
             Manager = new AzureKeyVaultSecretManager(),
         };
 
-        if (double.TryParse(configuration["OrchardCore:OrchardCore_KeyVault_Azure:ReloadInterval"], out var interval))
+        if (double.TryParse(keyVaultSection["ReloadInterval"], out var interval))
         {
             configOptions.ReloadInterval = TimeSpan.FromSeconds(interval);
         }
@@ -84,30 +88,30 @@ public static class AzureKeyVaultConfigurationExtension
         builder.AddAzureKeyVault(keyVaultEndpointUri, tokenCredential, configOptions);
     }
 
-    private static Uri GetVaultHostUri(IConfiguration configuration)
+    private static Uri GetVaultHostUri(IConfiguration keyVaultSection)
     {
-        var vaultUri = configuration["OrchardCore:OrchardCore_KeyVault_Azure:VaultURI"];
+        var vaultUri = keyVaultSection["VaultURI"];
 
         if (!string.IsNullOrWhiteSpace(vaultUri))
         {
             if (!Uri.TryCreate(vaultUri, UriKind.Absolute, out var uri))
             {
-                throw new Exception("Invalid value used for 'VaultURI' property. Please provide a valid vault host name using the 'OrchardCore:OrchardCore_KeyVault_Azure:VaultURI' settings key.");
+                throw new Exception("Invalid value used for 'VaultURI' property. Please provide a valid vault host name using the 'OrchardCore:KeyVault:Azure:VaultURI' settings key.");
             }
 
             return uri;
         }
 
-        var keyVaultName = configuration["OrchardCore:OrchardCore_KeyVault_Azure:KeyVaultName"];
+        var keyVaultName = keyVaultSection["KeyVaultName"];
 
         if (string.IsNullOrEmpty(keyVaultName))
         {
-            throw new Exception("The 'KeyVaultName' property is not configured. Please configure it by specifying the 'OrchardCore:OrchardCore_KeyVault_Azure:KeyVaultName' settings key.");
+            throw new Exception("The 'KeyVaultName' property is not configured. Please configure it by specifying the 'OrchardCore:KeyVault:Azure:KeyVaultName' settings key.");
         }
 
         if (!Uri.TryCreate($"https://{keyVaultName}.vault.azure.net", UriKind.Absolute, out var host))
         {
-            throw new Exception("Invalid value used for 'KeyVaultName' property. Please provide a valid key-vault name using the 'OrchardCore:OrchardCore_KeyVault_Azure:KeyVaultName' settings key.");
+            throw new Exception("Invalid value used for 'KeyVaultName' property. Please provide a valid key-vault name using the 'OrchardCore:KeyVault:Azure:KeyVaultName' settings key.");
         }
 
         return host;

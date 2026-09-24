@@ -24,7 +24,7 @@ public sealed class Startup : StartupBase
         services.AddShapeTableProvider<PagerShapesTableProvider>();
         services.AddShapeAttributes<PagerShapes>();
 
-        var navigationConfiguration = _shellConfiguration.GetSection("OrchardCore_Navigation");
-        services.Configure<PagerOptions>(navigationConfiguration.GetSection("PagerOptions"));
+        // The 'OrchardCore_Navigation' section is deprecated and will be removed in a future major version, use 'Navigation' instead.
+        services.Configure<PagerOptions>(_shellConfiguration.GetSectionCompat("Navigation:PagerOptions", "OrchardCore_Navigation:PagerOptions"));
     }
 }

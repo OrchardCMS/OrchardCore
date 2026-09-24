@@ -28,8 +28,9 @@ public class DocumentOptionsSetup : IConfigureNamedOptions<DocumentOptions>
 
     public void Configure(string name, DocumentOptions options)
     {
+        // The 'OrchardCore_Documents' section is deprecated and will be removed in a future major version, use 'Documents' instead.
         var sharedConfig = _shellConfiguration
-            .GetSection("OrchardCore_Documents")
+            .GetSectionCompat("Documents", "OrchardCore_Documents")
             .Get<DocumentSharedOptions>()
             ?? new DocumentSharedOptions();
 

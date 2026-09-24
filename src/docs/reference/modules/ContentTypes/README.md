@@ -416,7 +416,7 @@ Default values for category and thumbnail can be configured in `appsettings.json
 ```json
 {
     "OrchardCore": {
-        "OrchardCore_ContentTypes": {
+        "ContentTypes": {
             "DefaultCategory": "Widgets",
             "DefaultThumbnailPath": "/media/thumbnails/default.png"
         }

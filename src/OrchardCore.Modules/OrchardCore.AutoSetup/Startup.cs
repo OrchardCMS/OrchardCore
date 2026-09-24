@@ -23,7 +23,10 @@ public sealed class Startup : StartupBase
     /// <summary>
     /// AutoSetup Configuration Section Name.
     /// </summary>
-    private const string ConfigSectionName = "OrchardCore_AutoSetup";
+    private const string ConfigSectionName = "AutoSetup";
+
+    // The 'OrchardCore_AutoSetup' section is deprecated and will be removed in a future major version, use 'AutoSetup' instead.
+    private const string LegacyConfigSectionName = "OrchardCore_AutoSetup";
 
     /// <summary>
     /// The Shell settings.
@@ -61,7 +64,7 @@ public sealed class Startup : StartupBase
     /// </param>
     public override void ConfigureServices(IServiceCollection services)
     {
-        var configuration = _shellConfiguration.GetSection(ConfigSectionName);
+        var configuration = _shellConfiguration.GetSectionCompat(ConfigSectionName, LegacyConfigSectionName);
         services.Configure<AutoSetupOptions>(configuration);
 
         if (configuration.Exists())

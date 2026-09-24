@@ -21,25 +21,27 @@ The following configuration values are used by default and can be customized:
 
 ```json
 {
-   "OrchardCore": {
-       "OrchardCore_Media_AmazonS3": {
-           // If you have AWS CLI installed and configured you may just specify a profile name.
-           "Profile": "",
-           // In case your AWS profiles are located not in the default place.
-           "ProfilesLocation": "",
-           "Region": "",
-           // This section needed only if Orchard will be hosted not in the AWS Cloud
-           // You can obtain all that information in the IAM Management Console
-            "Credentials": {
-              "SecretKey": "",
-              "AccessKey": ""
-           },
-           // Optionally, set to a path to store media in a subdirectory inside your container.
-           "BasePath": "/media",
-           "CreateBucket": false,
-           // Your AWS S3 Bucket name.
-           "BucketName": ""
-       }
+  "OrchardCore": {
+    "Media": {
+      "AmazonS3": {
+        // If you have AWS CLI installed and configured you may just specify a profile name.
+        "Profile": "",
+        // In case your AWS profiles are located not in the default place.
+        "ProfilesLocation": "",
+        "Region": "",
+        // This section needed only if Orchard will be hosted not in the AWS Cloud
+        // You can obtain all that information in the IAM Management Console
+        "Credentials": {
+          "SecretKey": "",
+          "AccessKey": ""
+        },
+        // Optionally, set to a path to store media in a subdirectory inside your container.
+        "BasePath": "/media",
+        "CreateBucket": false,
+        // Your AWS S3 Bucket name.
+        "BucketName": ""
+      }
+    }
   }
 }
 ```
@@ -56,7 +58,7 @@ You can find region endpoints in the [Official AWS S3 Documentation](https://doc
 
 ### AWS Credentials and its loading order
 
-`OrchardCore_Media_AmazonS3` is a subset of `AWSOptions` configuration and should be configured the same as a generic [AWSOptions](https://docs.aws.amazon.com/sdk-for-net/v3/developer-guide/net-dg-config-netcore.html).
+`OrchardCore:Media:AmazonS3` is a subset of `AWSOptions` configuration and should be configured the same as a generic [AWSOptions](https://docs.aws.amazon.com/sdk-for-net/v3/developer-guide/net-dg-config-netcore.html).
 
 #### Credentials loading order
 
@@ -124,16 +126,18 @@ The `BucketName` property and the `BasePath` property are the only templatable p
 ```json
 {
     "OrchardCore": {
-        "OrchardCore_Media_AmazonS3": {
-            "BucketName": "{{ ShellSettings.Name }}-media",
-            "Region": "",
-            "Credentials": {
-                "SecretKey": "",
-                "AccessKey": ""
-            },
-            "BasePath": "/media",
-            "Profile": "",
-            "ProfilesLocation": ""
+        "Media": {
+            "AmazonS3": {
+                "BucketName": "{{ ShellSettings.Name }}-media",
+                "Region": "",
+                "Credentials": {
+                    "SecretKey": "",
+                    "AccessKey": ""
+                },
+                "BasePath": "/media",
+                "Profile": "",
+                "ProfilesLocation": ""
+            }
         }
     }
 }
@@ -144,16 +148,18 @@ The `BucketName` property and the `BasePath` property are the only templatable p
 ```json
 {
     "OrchardCore": {
-        "OrchardCore_Media_AmazonS3": {
-            "BucketName": "",
-            "Region": "",
-            "Credentials": {
-                "SecretKey": "",
-                "AccessKey": ""
-            },
-            "BasePath": "{{ ShellSettings.Name }}/Media",
-            "Profile": "",
-            "ProfilesLocation" : ""
+        "Media": {
+            "AmazonS3": {
+                "BucketName": "",
+                "Region": "",
+                "Credentials": {
+                    "SecretKey": "",
+                    "AccessKey": ""
+                },
+                "BasePath": "{{ ShellSettings.Name }}/Media",
+                "Profile": "",
+                "ProfilesLocation" : ""
+            }
         }
     }
 }
@@ -168,23 +174,25 @@ For emulators, you'll need to configure a `ServiceURL`. Instead of the default [
 ```json
 {
     "OrchardCore": {
-        "OrchardCore_Media_AmazonS3": {
-            // Note how we use ServiceURL, just with emulators. There should be no Region specified.
-            "ServiceURL": "http://localhost:9444/",
-            "Profile": "default",
-            "ProfilesLocation": "",
-            // Providing some credentials is required but emulators don't actually use them.
-            "Credentials": {
-                "SecretKey": "dummy",
-                "AccessKey": "dummy"
-            },
-            // BasePath and BucketName can be templated too, as usual.
-            "BasePath": "/media",
-            "CreateBucket": true,
-            "RemoveBucket": true,
-            "BucketName": "media",
-            // This is required for all emulators.
-            "ForcePathStyle": true
+        "Media": {
+            "AmazonS3": {
+                // Note how we use ServiceURL, just with emulators. There should be no Region specified.
+                "ServiceURL": "http://localhost:9444/",
+                "Profile": "default",
+                "ProfilesLocation": "",
+                // Providing some credentials is required but emulators don't actually use them.
+                "Credentials": {
+                    "SecretKey": "dummy",
+                    "AccessKey": "dummy"
+                },
+                // BasePath and BucketName can be templated too, as usual.
+                "BasePath": "/media",
+                "CreateBucket": true,
+                "RemoveBucket": true,
+                "BucketName": "media",
+                // This is required for all emulators.
+                "ForcePathStyle": true
+            }
         }
     }
 }
@@ -240,18 +248,22 @@ The following configuration values are used by default and can be customized:
 ```json
 {
   "OrchardCore": {
-    "OrchardCore_Media_AmazonS3_Image_Cache": {
-      "Region": "eu-central-1",
-      "Profile": "default",
-      "ProfilesLocation": "",
-      "Credentials": {
-        "SecretKey": "",
-        "AccessKey": ""
-      },
-      "BasePath": "/media", // Optionally, set to a path to store media in a subdirectory inside your bucket.
-      "CreateBucket": true,
-      "RemoveBucket": true, // Whether the 'Bucket' is deleted if the tenant is removed, false by default.
-      "BucketName": "media-image-cache" // Set the bucket's name (mandatory).
+    "Media": {
+      "AmazonS3": {
+        "ImageCache": {
+          "Region": "eu-central-1",
+          "Profile": "default",
+          "ProfilesLocation": "",
+          "Credentials": {
+            "SecretKey": "",
+            "AccessKey": ""
+          },
+          "BasePath": "/media", // Optionally, set to a path to store media in a subdirectory inside your bucket.
+          "CreateBucket": true,
+          "RemoveBucket": true, // Whether the 'Bucket' is deleted if the tenant is removed, false by default.
+          "BucketName": "media-image-cache" // Set the bucket's name (mandatory).
+        }
+      }
     }
   }
 }

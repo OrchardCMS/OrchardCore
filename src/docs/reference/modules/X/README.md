@@ -75,11 +75,13 @@ The following configuration values can be customized:
 
 ```json
 {
-  "OrchardCore_X": {
-    "ConsumerKey": "",
-    "ConsumerSecret": "",
-    "AccessToken": "",
-    "AccessTokenSecret": ""
+  "OrchardCore": {
+    "X": {
+      "ConsumerKey": "",
+      "ConsumerSecret": "",
+      "AccessToken": "",
+      "AccessTokenSecret": ""
+    }
   }
 }
 ```

@@ -1,0 +1,40 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Redis": {
+          "type": "object",
+          "description": "Redis connection settings, used by the 'OrchardCore.Redis' feature and shared by the Redis cache, bus, lock, data protection, and SignalR backplane features. The Redis features are only active when 'Configuration' is set to a valid value. See https://docs.orchardcore.net/en/latest/reference/modules/Redis/.",
+          "properties": {
+            "Configuration": {
+              "type": "string",
+              "description": "The StackExchange.Redis configuration string used to connect to Redis (required), e.g. 'localhost:6379,password=...,ssl=true'. See https://stackexchange.github.io/StackExchange.Redis/Configuration.html."
+            },
+            "InstancePrefix": {
+              "type": "string",
+              "description": "An optional prefix added to all Redis keys, allowing a Redis instance to be shared by different applications, e.g. 'MyApp:'."
+            },
+            "DisableCertificateVerification": {
+              "type": "boolean",
+              "description": "Whether SSL/TLS certificate validation errors are ignored as long as the server provides a certificate, allowing the use of self-signed certificates.",
+              "default": false
+            },
+            "AllowAdmin": {
+              "type": "boolean",
+              "description": "Whether admin commands are allowed on the Redis server. When set, overrides the 'allowAdmin' option of the configuration string. Allows the data protection feature to check whether persistence is enabled."
+            }
+          }
+        },
+        "OrchardCore_Redis": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Redis' section is deprecated. Use 'OrchardCore:Redis' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Redis' instead.",
+          "doNotSuggest": true
+        }
+      }
+    }
+  }
+}
