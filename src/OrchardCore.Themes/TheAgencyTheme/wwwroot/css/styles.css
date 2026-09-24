@@ -326,7 +326,7 @@ th {
   text-align: -webkit-match-parent;
 }
 
-thead,
+thead, /* codespell:ignore */
 tbody,
 tfoot,
 tr,
@@ -1764,7 +1764,7 @@ progress {
 .table > tbody {
   vertical-align: inherit;
 }
-.table > thead {
+.table > thead { /* codespell:ignore */
   vertical-align: bottom;
 }
 

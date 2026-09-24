@@ -80,8 +80,8 @@ public sealed class JavaScriptEngine : IScriptingEngine
     /// </para>
     /// <para>
     /// Cancellation surfaces as <see cref="OperationCanceledException"/> carrying the token, the type the
-    /// rest of a .NET call stack already filters on, rather than as a scripting error. A token cancelled
-    /// before the call is observed before the script starts; one cancelled while the script is running is
+    /// rest of a .NET call stack already filters on, rather than as a scripting error. A token canceled
+    /// before the call is observed before the script starts; one canceled while the script is running is
     /// observed on the engine's amortized constraint cadence, so a runaway script is stopped within a
     /// bounded number of statements rather than at the exact statement the cancellation arrived. That
     /// cadence is what keeps the interpreter's tight-loop lane armed, and it is the same one the built-in
@@ -90,7 +90,7 @@ public sealed class JavaScriptEngine : IScriptingEngine
     /// </remarks>
     public async Task<object> EvaluateAsync(IScriptingScope scope, string script, CancellationToken cancellationToken = default)
     {
-        // A token that is already cancelled means the work should not start, and saying so here is what
+        // A token that is already canceled means the work should not start, and saying so here is what
         // makes that deterministic: the constraint below is amortized, so it is consulted on a statement
         // cadence rather than at every statement, and a script small enough to finish inside that cadence
         // would otherwise run to completion.
@@ -100,7 +100,7 @@ public sealed class JavaScriptEngine : IScriptingEngine
         var preparedScript = PrepareScript(script);
 
         // Find() walks the engine's constraints, so it is only worth asking when there is a token that can
-        // actually be cancelled. CancellationToken.None never can, which is what every caller in this
+        // actually be canceled. CancellationToken.None never can, which is what every caller in this
         // repository passes today.
         var deadline = cancellationToken.CanBeCanceled
             ? jsScope.Engine.Constraints.Find<OperationDeadlineConstraint>()

@@ -58,7 +58,7 @@
           "Author": "[js: parameters('AdminUsername')]",
           "Message": {},
           "TitlePart": {
-            "Title": "[1js: valiables('now')]"
+            "Title": "[1js: variables('now')]"
           }
         }
       ]

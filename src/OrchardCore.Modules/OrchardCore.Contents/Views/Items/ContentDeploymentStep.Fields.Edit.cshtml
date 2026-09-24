@@ -37,11 +37,11 @@
             @foreach (var contentTypeDefinition in (await ContentDefinitionManager.ListTypeDefinitionsAsync()).OrderBy(i => i.Name))
             {
                 var name = contentTypeDefinition.Name;
-                var checkd = contentTypes?.Contains(name);
+                var ischecked = contentTypes?.Contains(name);
 
                 <li class="list-group-item">
                     <div class="form-check">
-                        <input type="checkbox" class="form-check-input" id="@(Html.IdFor(m => m.ContentTypes) + "_" + contentTypeDefinition.Name)" name="@Html.NameFor(m => m.ContentTypes)" value="@name" checked="@checkd">
+                        <input type="checkbox" class="form-check-input" id="@(Html.IdFor(m => m.ContentTypes) + "_" + contentTypeDefinition.Name)" name="@Html.NameFor(m => m.ContentTypes)" value="@name" checked="@ischecked">
                         <label class="form-check-label" for="@(Html.IdFor(m => m.ContentTypes) + "_" + contentTypeDefinition.Name)">@D[contentTypeDefinition.DisplayName, DataLocalizationContext.ContentType]</label>
                     </div>
                 </li>

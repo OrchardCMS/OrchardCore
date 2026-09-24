@@ -43,7 +43,7 @@
     <!-- Rename type name X so that it does not end in 'Delegate', 'EventHandler', 'Permission' etc -->
     <NoWarn>$(NoWarn);CA1711</NoWarn>
 
-    <!-- Parameter name differs from original overriden implemented name -->
+    <!-- Parameter name differs from original overridden implemented name -->
     <NoWarn>$(NoWarn);CA1725</NoWarn>
 
     <!-- Reserved keyword -->

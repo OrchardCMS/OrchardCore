@@ -24,7 +24,7 @@ public static class HtmlContentBuilderExtensions
         }
 
         // At this point, we already know that the builder has at least one entry, so we append a single space to the class name.
-        // We pass create 'HtmlString' here to prevent the builder from preforming string.IsNullOrWhiteSpace again for performance reason.
+        // We pass create 'HtmlString' here to prevent the builder from performing string.IsNullOrWhiteSpace again for performance reason.
         builder.AppendWhitespace();
 
         // We use 'Append' here to ensure that the value is encoded.

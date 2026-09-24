@@ -176,7 +176,7 @@ public static class MediaHelper
         var modal = page.Locator(".action-modal").First;
         await modal.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 5_000 });
 
-        // Type folder name (action is pre-selected from the menu, no radio needed).
+        // Type folder name (action is preselected from the menu, no radio needed).
         var input = modal.Locator("input[name='create-folder']");
         await input.FillAsync(folderName);
 

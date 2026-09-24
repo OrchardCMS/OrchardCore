@@ -168,7 +168,7 @@ public class Shape : Composite, IShape, IPositioned, IEnumerable<object>
 
     public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
     {
-        // In case AddAsync() is called on a dynamic object, to prevent Composite from seing it as a property assignment.
+        // In case AddAsync() is called on a dynamic object, to prevent Composite from seeing it as a property assignment.
         if (binder.Name == "AddAsync")
         {
             result =

@@ -1,4 +1,4 @@
-import strenght from "@orchardcore/bloom/components/password-strength";
+import strength from "@orchardcore/bloom/components/password-strength";
 
 // Show or hide the connection string or table prefix section when the database provider is selected
 const toggleConnectionStringAndPrefix = () => {
@@ -137,7 +137,7 @@ const init = () => {
     };
 
     if (passwordElement) {
-        strenght(passwordElement, options);
+        strength(passwordElement, options);
     }
 
     if (passwordElement) {

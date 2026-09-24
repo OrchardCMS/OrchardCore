@@ -10,7 +10,7 @@ public interface IShellRemovalManager
     /// </summary>
     /// <param name="shellSettings">The tenant's <see cref="ShellSettings"/>.</param>
     /// <param name="localResourcesOnly">
-    /// Indicates that only local (not shared among server nodes in case of a multi-node hosting evironment) resources should be removed.
+    /// Indicates that only local (not shared among server nodes in case of a multi-node hosting environment) resources should be removed.
     /// Used to sync locally a tenant that was removed by another instance.
     /// </param>
     /// <returns>A <see cref="ShellRemovingContext"/>.</returns>

@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (url == null) {
                         const form = _this.closest("form");
                         if (form) {
-                            // This line is reuired in case we used the FormValueRequiredAttribute
+                            // This line is required in case we used the FormValueRequiredAttribute
                             const input = document.createElement("input");
                             input.type = "hidden";
                             input.name = _this.getAttribute("name") ?? "";

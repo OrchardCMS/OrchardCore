@@ -7,7 +7,7 @@ using Microsoft.Extensions.Primitives;
 namespace OrchardCore.DisplayManagement.Theming;
 
 /// <summary>
-/// Provides Theming precompiled views when specific Layout and ViewStart files are seeked on the filesystem.
+/// Provides Theming precompiled views when specific Layout and ViewStart files are sought on the filesystem.
 /// </summary>
 public class ThemingViewsFeatureProvider : IApplicationFeatureProvider<ViewsFeature>
 {

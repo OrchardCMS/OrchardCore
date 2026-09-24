@@ -39,6 +39,6 @@ public class ThemeTogglerService
             return "auto";
         }
 
-        return "lite";
+        return "lite"; /* codespell:ignore */
     }
 }

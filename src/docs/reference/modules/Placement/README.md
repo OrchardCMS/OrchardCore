@@ -42,7 +42,7 @@ Currently you can filter shapes by:
   "place":"SomeZone",
   "differentiator":"GalleryPart"
   }],
-  "GalleryPart": [{...}] //this wont work unless you registered a driver for the part
+  "GalleryPart": [{...}] //this won't work unless you registered a driver for the part
 }
 ```
 

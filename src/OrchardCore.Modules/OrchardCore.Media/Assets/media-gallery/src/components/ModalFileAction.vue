@@ -85,7 +85,7 @@ const props = defineProps({
 
 const fileActionEntry = ref<IConfirmFileEntry>({ file: props.fileItem, inputValue: props.fileItem.name });
 
-// If we copy or move a file the inital folder selected should be empty
+// If we copy or move a file the initial folder selected should be empty
 if (props.action == FileAction.Move || props.action == FileAction.Copy) {
   fileActionEntry.value.inputValue = "";
 }

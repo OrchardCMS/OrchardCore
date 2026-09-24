@@ -61,7 +61,7 @@ public class DefaultCommandManager : ICommandManager
                 var names = name.Split(' ');
                 var namesCount = names.Length;
 
-                // We check here number of arguments a command can recieve against
+                // We check here number of arguments a command can receive against
                 // arguments provided for the command to identify the correct command
                 // and avoid matching multiple commands.
                 if (name == string.Join(" ", parameters.Arguments.Take(namesCount)) && commandDescriptor.MethodInfo.GetParameters().Length == argCount - namesCount)

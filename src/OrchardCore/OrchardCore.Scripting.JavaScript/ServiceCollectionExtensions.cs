@@ -28,7 +28,7 @@ public static class ServiceCollectionExtensions
             // of the call it is serving. A factory rather than an instance, because the options are shared:
             // each engine has to get its own, or two concurrent evaluations would arm and disarm the same
             // one. Disarmed - which is every synchronous evaluation, and every asynchronous one whose token
-            // cannot be cancelled - a check reads two fields and takes no timestamp, and the constraint
+            // cannot be canceled - a check reads two fields and takes no timestamp, and the constraint
             // declares itself amortizable, so the interpreter's tight-loop lane stays armed either way.
             option.Constraint(static () => new OperationDeadlineConstraint());
 

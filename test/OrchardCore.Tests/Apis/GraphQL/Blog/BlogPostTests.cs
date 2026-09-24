@@ -41,7 +41,7 @@ public class BlogPostTests
             .CreateContentItem("BlogPost", builder =>
             {
                 builder
-                    .DisplayText = "Some sorta blogpost!";
+                    .DisplayText = "Some sort of blogpost!";
 
                 builder
                     .Weld(new AutoroutePart
@@ -60,7 +60,7 @@ public class BlogPostTests
             .CreateContentItem("BlogPost", builder =>
             {
                 builder
-                    .DisplayText = "Some sorta other blogpost!";
+                    .DisplayText = "Some sort of other blogpost!";
 
                 builder
                     .Weld(new AutoroutePart
@@ -88,7 +88,7 @@ public class BlogPostTests
             });
 
         Assert.Equal(
-            "Some sorta blogpost!",
+            "Some sort of blogpost!",
             result["data"]["blogPost"][0]["displayText"].ToString());
     }
 
@@ -121,7 +121,7 @@ public class BlogPostTests
             .CreateContentItem("BlogPost", builder =>
             {
                 builder
-                    .DisplayText = "Some sorta blogpost!";
+                    .DisplayText = "Some sort of blogpost!";
 
                 builder
                     .Weld("BlogPost", new ContentPart());

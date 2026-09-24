@@ -50,7 +50,7 @@ window.passwordManager = function () {
         }
 
         if (requiredUniqueChars > 1 && !meetUniqueRule(password, requiredUniqueChars)) {
-            // The generated password does not meet the required-unique-chars requirment, create another one
+            // The generated password does not meet the required-unique-chars requirement, create another one
             return generatePassword(requiredPasswordLength, requireUppercase, requireLowercase, requireDigit, requireNonAlphanumeric, requiredUniqueChars);
         }
 

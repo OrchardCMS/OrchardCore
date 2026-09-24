@@ -402,11 +402,11 @@ public class DefaultContentManager : IContentManager
                 var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
                 if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
                 {
-                    _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Publishing '{0}' was cancelled.", contentItem.DisplayText]);
+                    _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Publishing '{0}' was canceled.", contentItem.DisplayText]);
                 }
                 else
                 {
-                    _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Publishing {0} '{1}' was cancelled.", typeDefinition.DisplayName, contentItem.DisplayText]);
+                    _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Publishing {0} '{1}' was canceled.", typeDefinition.DisplayName, contentItem.DisplayText]);
                 }
             }
 
@@ -474,11 +474,11 @@ public class DefaultContentManager : IContentManager
                 var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
                 if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
                 {
-                    _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Unpublishing '{0}' was cancelled.", contentItem.DisplayText]);
+                    _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Unpublishing '{0}' was canceled.", contentItem.DisplayText]);
                 }
                 else
                 {
-                    _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Unpublishing {0} '{1}' was cancelled.", typeDefinition.DisplayName, contentItem.DisplayText]);
+                    _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Unpublishing {0} '{1}' was canceled.", typeDefinition.DisplayName, contentItem.DisplayText]);
                 }
             }
 
@@ -924,11 +924,11 @@ public class DefaultContentManager : IContentManager
 
             if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
             {
-                _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Deletion of '{0}' has been cancelled.", contentItem.DisplayText]);
+                _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Deletion of '{0}' has been canceled.", contentItem.DisplayText]);
             }
             else
             {
-                _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Deleting {0} '{1}' has been cancelled.", typeDefinition.DisplayName, contentItem.DisplayText]);
+                _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Deleting {0} '{1}' has been canceled.", typeDefinition.DisplayName, contentItem.DisplayText]);
             }
 
             return false;
