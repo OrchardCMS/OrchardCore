@@ -11,13 +11,8 @@ public class SiteSettingsDeploymentStep : DeploymentStep
     public SiteSettingsDeploymentStep()
     {
         Name = nameof(SiteSettings);
-    }
-
-    public SiteSettingsDeploymentStep(IStringLocalizer<SiteSettingsDeploymentStep> S)
-        : this()
-    {
-        Category = S["Configuration"];
-        Title = S["Site Settings"];
+        Category = LocalizedString.Create("Configuration");
+        Title = LocalizedString.Create("Site Settings");
     }
 
     public string[] Settings { get; set; }

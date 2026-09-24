@@ -8,11 +8,6 @@ public sealed class MicrosoftAccountDeploymentStep : DeploymentStep
     public MicrosoftAccountDeploymentStep()
     {
         Name = "MicrosoftAccount";
-    }
-
-    public MicrosoftAccountDeploymentStep(IStringLocalizer<MicrosoftAccountDeploymentStep> S)
-        : this()
-    {
-        Category = S["Microsoft Authentication"];
+        Category = LocalizedString.Create("Microsoft Authentication");
     }
 }

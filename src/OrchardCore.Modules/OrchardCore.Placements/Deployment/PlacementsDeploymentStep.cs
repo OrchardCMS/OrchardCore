@@ -11,11 +11,6 @@ public class PlacementsDeploymentStep : DeploymentStep
     public PlacementsDeploymentStep()
     {
         Name = "Placements";
-    }
-
-    public PlacementsDeploymentStep(IStringLocalizer<PlacementsDeploymentStep> S)
-        : this()
-    {
-        Category = S["Development"];
+        Category = LocalizedString.Create("Development");
     }
 }

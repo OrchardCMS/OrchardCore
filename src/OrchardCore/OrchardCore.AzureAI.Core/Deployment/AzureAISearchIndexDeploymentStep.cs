@@ -9,13 +9,8 @@ public class AzureAISearchIndexDeploymentStep : DeploymentStep
     public AzureAISearchIndexDeploymentStep()
     {
         Name = AzureAISearchIndexSettingsStep.Name;
-    }
-
-    public AzureAISearchIndexDeploymentStep(IStringLocalizer<AzureAISearchIndexDeploymentStep> S)
-        : this()
-    {
-        Category = S["Search"];
-        Title = S["Azure AI Search Indexes"];
+        Category = LocalizedString.Create("Search");
+        Title = LocalizedString.Create("Azure AI Search Indexes");
     }
 
     public bool IncludeAll { get; set; } = true;

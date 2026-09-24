@@ -9,13 +9,8 @@ public sealed class ResetIndexDeploymentStep : DeploymentStep
     public ResetIndexDeploymentStep()
     {
         Name = ResetIndexStep.Key;
-    }
-
-    public ResetIndexDeploymentStep(IStringLocalizer<ResetIndexDeploymentStep> S)
-        : this()
-    {
-        Category = S["Indexing"];
-        Title = S["Reset Indexes"];
+        Category = LocalizedString.Create("Indexing");
+        Title = LocalizedString.Create("Reset Indexes");
     }
 
     public bool IncludeAll { get; set; }

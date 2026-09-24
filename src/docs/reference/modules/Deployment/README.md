@@ -92,16 +92,29 @@ A module can provide a custom deployment step by implementing an `IDeploymentSou
 services.AddDeployment<MyDeploymentSource, MyDeploymentStep, MyDeploymentStepDisplayDriver>();
 ```
 
-Set the step's `Category` and `Title` in its constructor. `Title` is a `LocalizedString` holding the step's display name; it is shown as the heading of the step's add and edit screens (and in their breadcrumb), so the screen no longer needs a `<h5>` of its own:
+The step model sets its `Name`, `Category`, and `Title` in its parameterless constructor. Create the category and the title with `LocalizedString.Create()`:
+
+- The category groups the step in the list of steps that can be added to a plan.
+- The title is the display name of the step. It is shown as the heading of the step's add and edit screens, and in their breadcrumb, so the screens do not need an `<h5>` of their own.
 
 ```csharp
-public MyDeploymentStep()
+using Microsoft.Extensions.Localization;
+using OrchardCore.Deployment;
+
+namespace MyModule.Deployment;
+
+public sealed class MyDeploymentStep : DeploymentStep
 {
-    Name = nameof(MyDeploymentStep);
-    Category = S["Content"];
-    Title = S["Export My Data"];
+    public MyDeploymentStep()
+    {
+        Name = "MyStep";
+        Category = LocalizedString.Create("Content Management");
+        Title = LocalizedString.Create("Export My Data");
+    }
 }
 ```
+
+The category and the title are translated when they are shown. The translation uses the full name of the step type as the context, for example `MyModule.Deployment.MyDeploymentStep`, so a PO file entry for them uses `msgctxt "MyModule.Deployment.MyDeploymentStep"`.
 
 The source processes the configured step and adds recipe steps or files to the `DeploymentPlanResult`. Register a custom execution destination by implementing `IDeploymentTargetProvider`.
 

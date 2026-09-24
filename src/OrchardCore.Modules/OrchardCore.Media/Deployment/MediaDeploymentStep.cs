@@ -11,13 +11,8 @@ public class MediaDeploymentStep : DeploymentStep
     public MediaDeploymentStep()
     {
         Name = "Media";
-    }
-
-    public MediaDeploymentStep(IStringLocalizer<MediaDeploymentStep> S)
-        : this()
-    {
-        Category = S["Content Management"];
-        Title = S["Media"];
+        Category = LocalizedString.Create("Content Management");
+        Title = LocalizedString.Create("Media");
     }
 
     public bool IncludeAll { get; set; } = true;

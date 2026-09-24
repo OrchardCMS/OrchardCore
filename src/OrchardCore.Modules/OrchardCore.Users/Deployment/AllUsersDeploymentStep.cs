@@ -11,11 +11,6 @@ public class AllUsersDeploymentStep : DeploymentStep
     public AllUsersDeploymentStep()
     {
         Name = "AllUsers";
-    }
-
-    public AllUsersDeploymentStep(IStringLocalizer<AllUsersDeploymentStep> S)
-        : this()
-    {
-        Category = S["Security"];
+        Category = LocalizedString.Create("Security");
     }
 }

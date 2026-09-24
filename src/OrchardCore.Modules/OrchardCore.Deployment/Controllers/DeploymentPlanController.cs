@@ -32,6 +32,7 @@ public sealed class DeploymentPlanController : Controller
     private readonly INotifier _notifier;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IShapeFactory _shapeFactory;
+    private readonly IStringLocalizerFactory _stringLocalizerFactory;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -43,6 +44,7 @@ public sealed class DeploymentPlanController : Controller
         ISession session,
         IOptions<PagerOptions> pagerOptions,
         IShapeFactory shapeFactory,
+        IStringLocalizerFactory stringLocalizerFactory,
         IStringLocalizer<DeploymentPlanController> stringLocalizer,
         IHtmlLocalizer<DeploymentPlanController> htmlLocalizer,
         INotifier notifier,
@@ -56,6 +58,7 @@ public sealed class DeploymentPlanController : Controller
         _notifier = notifier;
         _updateModelAccessor = updateModelAccessor;
         _shapeFactory = shapeFactory;
+        _stringLocalizerFactory = stringLocalizerFactory;
         S = stringLocalizer;
         H = htmlLocalizer;
     }
@@ -181,7 +184,7 @@ public sealed class DeploymentPlanController : Controller
             var step = factory.Create();
             var thumbnail = await _displayManager.BuildDisplayAsync(step, _updateModelAccessor.ModelUpdater, "Thumbnail");
             thumbnail.Properties["DeploymentStep"] = step;
-            var category = step.Category?.Value ?? string.Empty;
+            var category = step.GetLocalizedCategory(_stringLocalizerFactory)?.Value ?? string.Empty;
 
             thumbnails.Add(new DisplayDeploymentPlanThumbnailViewModel
             {

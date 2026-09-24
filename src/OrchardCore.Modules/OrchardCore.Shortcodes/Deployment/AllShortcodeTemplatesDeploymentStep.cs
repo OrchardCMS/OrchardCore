@@ -8,11 +8,6 @@ public class AllShortcodeTemplatesDeploymentStep : DeploymentStep
     public AllShortcodeTemplatesDeploymentStep()
     {
         Name = "AllShortcodeTemplates";
-    }
-
-    public AllShortcodeTemplatesDeploymentStep(IStringLocalizer<AllShortcodeTemplatesDeploymentStep> S)
-        : this()
-    {
-        Category = S["Content"];
+        Category = LocalizedString.Create("Content");
     }
 }

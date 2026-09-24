@@ -11,11 +11,6 @@ public class SiteSettingsPropertyDeploymentStep<TModel> : DeploymentStep where T
     public SiteSettingsPropertyDeploymentStep()
     {
         Name = typeof(TModel).Name + "_SiteSettingsPropertyDeploymentStep";
-    }
-
-    public SiteSettingsPropertyDeploymentStep(IStringLocalizer<SiteSettingsPropertyDeploymentStep<TModel>> S)
-        : this()
-    {
-        Category = S["Configuration"];
+        Category = LocalizedString.Create("Configuration");
     }
 }

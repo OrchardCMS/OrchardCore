@@ -11,12 +11,7 @@ public class ExportContentToDeploymentTargetDeploymentStep : DeploymentStep
     public ExportContentToDeploymentTargetDeploymentStep()
     {
         Name = nameof(ExportContentToDeploymentTargetDeploymentStep);
-    }
-
-    public ExportContentToDeploymentTargetDeploymentStep(IStringLocalizer<ExportContentToDeploymentTargetDeploymentStep> S)
-        : this()
-    {
-        Category = S["Content Management"];
-        Title = S["Export Content To Deployment Target"];
+        Category = LocalizedString.Create("Content Management");
+        Title = LocalizedString.Create("Export Content To Deployment Target");
     }
 }

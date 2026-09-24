@@ -8,13 +8,8 @@ public class AzureAISearchIndexRebuildDeploymentStep : DeploymentStep
     public AzureAISearchIndexRebuildDeploymentStep()
     {
         Name = "AzureAISearchIndexRebuild";
-    }
-
-    public AzureAISearchIndexRebuildDeploymentStep(IStringLocalizer<AzureAISearchIndexRebuildDeploymentStep> S)
-        : this()
-    {
-        Category = S["Search"];
-        Title = S["Rebuild Azure AI Search Indices"];
+        Category = LocalizedString.Create("Search");
+        Title = LocalizedString.Create("Rebuild Azure AI Search Indices");
     }
 
     public bool IncludeAll { get; set; }

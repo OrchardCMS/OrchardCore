@@ -8,12 +8,7 @@ public class AllWorkflowTypeDeploymentStep : DeploymentStep
     public AllWorkflowTypeDeploymentStep()
     {
         Name = "AllWorkflowType";
-    }
-
-    public AllWorkflowTypeDeploymentStep(IStringLocalizer<AllWorkflowTypeDeploymentStep> S)
-        : this()
-    {
-        Category = S["Workflows"];
-        Title = S["All Workflow Types"];
+        Category = LocalizedString.Create("Workflows");
+        Title = LocalizedString.Create("All Workflow Types");
     }
 }

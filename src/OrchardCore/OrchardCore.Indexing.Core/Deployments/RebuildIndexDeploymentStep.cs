@@ -9,13 +9,8 @@ public sealed class RebuildIndexDeploymentStep : DeploymentStep
     public RebuildIndexDeploymentStep()
     {
         Name = RebuildIndexStep.Key;
-    }
-
-    public RebuildIndexDeploymentStep(IStringLocalizer<RebuildIndexDeploymentStep> S)
-        : this()
-    {
-        Category = S["Indexing"];
-        Title = S["Rebuild Indexes"];
+        Category = LocalizedString.Create("Indexing");
+        Title = LocalizedString.Create("Rebuild Indexes");
     }
 
     public bool IncludeAll { get; set; }

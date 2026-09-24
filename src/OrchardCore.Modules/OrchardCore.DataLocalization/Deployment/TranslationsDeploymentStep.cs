@@ -11,12 +11,7 @@ public class TranslationsDeploymentStep : DeploymentStep
     public TranslationsDeploymentStep()
     {
         Name = "Translations";
-    }
-
-    public TranslationsDeploymentStep(IStringLocalizer<TranslationsDeploymentStep> S)
-        : this()
-    {
-        Category = S["Internationalization"];
+        Category = LocalizedString.Create("Internationalization");
     }
 
     /// <summary>

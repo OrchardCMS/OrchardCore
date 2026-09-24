@@ -11,13 +11,8 @@ public sealed class ElasticsearchIndexRebuildDeploymentStep : DeploymentStep
     public ElasticsearchIndexRebuildDeploymentStep()
     {
         Name = "ElasticIndexRebuild";
-    }
-
-    public ElasticsearchIndexRebuildDeploymentStep(IStringLocalizer<ElasticsearchIndexRebuildDeploymentStep> S)
-        : this()
-    {
-        Category = S["Search"];
-        Title = S["Rebuild Elasticsearch Indices"];
+        Category = LocalizedString.Create("Search");
+        Title = LocalizedString.Create("Rebuild Elasticsearch Indices");
     }
 
     public bool IncludeAll { get; set; } = true;
