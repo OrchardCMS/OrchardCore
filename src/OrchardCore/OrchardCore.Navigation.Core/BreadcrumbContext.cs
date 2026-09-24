@@ -41,8 +41,9 @@ public sealed class BreadcrumbContext
     public string Title { get; }
 
     /// <summary>
-    /// Gets the mutable ancestors, initially populated by inline children. Providers can add, remove, replace
-    /// or edit them. The explicit title is not included until all providers have run.
+    /// Gets the mutable ancestors, initially populated in inline declaration order. Providers can add, insert,
+    /// remove, replace, reorder or edit them. The final list order is preserved when rendering.
+    /// The explicit title is not included until all providers have run.
     /// </summary>
     public List<BreadcrumbItem> Items { get; }
 

@@ -1,13 +1,13 @@
 using Microsoft.AspNetCore.Routing;
-using OrchardCore.DisplayManagement;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Navigation;
 
 /// <summary>
 /// Represents an ancestor declared inline or updated by a provider, or the current page's explicit title node.
+/// Nodes are rendered in the order of the breadcrumb's item list.
 /// </summary>
-public class BreadcrumbItem : IPositioned
+public class BreadcrumbItem
 {
     /// <summary>
     /// Gets or sets the text to display for the node.
@@ -36,11 +36,6 @@ public class BreadcrumbItem : IPositioned
     /// the case for the current node and for a node the user is not authorized to reach.
     /// </summary>
     public string Href { get; set; }
-
-    /// <summary>
-    /// Gets or sets the relative position of the node among the other nodes of the trail. e.g., 10, 0, "before", "end".
-    /// </summary>
-    public string Position { get; set; }
 
     /// <summary>
     /// Gets or sets whether the node represents the page being rendered. The parent tag helper sets this

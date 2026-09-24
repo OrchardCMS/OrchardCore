@@ -5,7 +5,7 @@ description: Authors explicit breadcrumb titles, inline ancestors, and lightweig
 
 # OrchardCore Breadcrumbs
 
-A breadcrumb is a **named trail with an explicit current-page title**. The parent `<breadcrumb>` requires an `IHtmlContent` title and normalizes it to text; every `<breadcrumb-item>` child is an ancestor. For visible trails, the view supplies dynamic ancestor links and localized text, and registered `IBreadcrumbProvider` implementations can postprocess only those ancestors. After ordering ancestors, the helper appends the normalized title as the final, unlinked current node. Hidden admin trails use only the explicit title and skip children and providers entirely. On the admin, the trail appears above a heading containing that text; on the front end, no heading is rendered by default.
+A breadcrumb is a **named trail with an explicit current-page title**. The parent `<breadcrumb>` requires an `IHtmlContent` title and normalizes it to text; every `<breadcrumb-item>` child is an ancestor. For visible trails, the view supplies dynamic ancestor links and localized text, and registered `IBreadcrumbProvider` implementations can postprocess only those ancestors. The helper preserves their final list order and appends the normalized title as the final, unlinked current node. Hidden admin trails use only the explicit title and skip children and providers entirely. On the admin, the trail appears above a heading containing that text; on the front end, no heading is rendered by default.
 
 Keep built-in views inline, with the current page in `title` rather than a child. Use lightweight providers for shared or cross-module ancestor changes, not a separate manager, builder, named-provider base class, or contextual-data contract. Customize the owning view or its partials for the title and screen-specific ancestors, and use shape alternates for presentation. `INavigationProvider` remains the separate extension point for ordinary navigation menus.
 
@@ -17,7 +17,7 @@ Keep built-in views inline, with the current page in `title` rather than a child
 2. Check visibility before any child or provider work. A hidden admin trail never calls `GetChildContentAsync`, resolves or enumerates providers, constructs or invokes them, or creates a `BreadcrumbContext` or any breadcrumb items, including the current node.
 3. For a hidden trail, only the explicit title matters. When heading or browser-title output is needed, call `WriteTo(writer, HtmlEncoder.Default)` once and HTML-decode once, then safely encode the text for output. With `heading=""` and `page-title="false"`, validate the non-null title but also skip `WriteTo`.
 4. For a visible trail, normalize the title, collect ancestor children, and await registered providers sequentially in DI registration order on the shared mutable ancestor list. Helper-created provider contexts always have `ShowTrail == true`.
-5. Stably sort visible ancestors with `FlatPositionComparer`, then unconditionally append the explicit title node with fixed `Id = "Title"`, last/current and never linked. Clearing ancestors or using `Position = "end"` cannot remove or displace it.
+5. Preserve the providers' final ancestor list order without sorting, then unconditionally append the explicit title node with fixed `Id = "Title"`, last/current and never linked. Clearing or reordering ancestors cannot remove or displace it.
 6. Visible trails finalize ancestor links and render shapes. Hidden trails render only the requested explicit heading/browser title, with no URL generation, permission lookup, link authorization, or shapes. The admin setting does not affect front-end trails.
 
 ## Naming
@@ -100,13 +100,12 @@ For a trail that does not own the heading, use the `Breadcrumbs` zone and `headi
 | `permission` | `string` | Stored as `BreadcrumbItem.PermissionName`, resolved through `IPermissionService` during visible ancestor link processing after providers; unknown names are ignored. |
 | `resource` | `object` | Resource passed to authorization for the permission. |
 | `link-enabled` | `bool` | Defaults to `true`. Use `false` when the view has already determined that the link should be unavailable. |
-| `position` | `string` | Relative position, such as `10`, `before`, or `end`. |
 
 The inner content is localized ancestor text, for example `@T["Records"]`. Child content is HTML-decoded after Razor evaluates it, then safely encoded by the shape template. The parent's `IHtmlContent` title is rendered and decoded once as described above. Templates safely encode normalized title and provider-supplied text; do not emit them with `Html.Raw`.
 
-Every child and provider item remains an ancestor, including the last sorted item. The helper appends a separate title node after all ancestors; only that node is current and **never linked**. Ancestors with denied permissions, `link-enabled="false"`, or no link target remain visible as text. Do not omit ancestors solely because the user cannot follow their links.
+Every child and provider item remains an ancestor, including the last item in the list. The helper appends a separate title node after all ancestors; only that node is current and **never linked**. Ancestors with denied permissions, `link-enabled="false"`, or no link target remain visible as text. Do not omit ancestors solely because the user cannot follow their links.
 
-Children and providers only store named permissions. The helper resolves `PermissionName` after providers, sorting, and link-eligibility checks, so removed or unlinkable ancestors do not cause a name lookup. The explicit title node never needs link processing. Providers can also add `Permission` objects to `BreadcrumbItem.Permissions`; authorization evaluates applicable permissions against `Resource`. Hidden trails perform neither permission lookup nor authorization.
+Children and providers only store named permissions. The helper resolves `PermissionName` after providers and link-eligibility checks, so removed or unlinkable ancestors do not cause a name lookup. The explicit title node never needs link processing. Providers can also add `Permission` objects to `BreadcrumbItem.Permissions`; authorization evaluates applicable permissions against `Resource`. Hidden trails perform neither permission lookup nor authorization.
 
 ## Workflow B: resolve a nested editor's parent
 
@@ -152,7 +151,7 @@ public interface IBreadcrumbProvider
 |----------|------|-----|
 | `Name` | `string` | Filter the trail's literal name explicitly. |
 | `Title` | `string` | Normalized plain-text explicit title, which providers cannot replace. |
-| `Items` | `List<BreadcrumbItem>` | Shared mutable ancestor list. Add, insert, remove, replace, or edit ancestors; do not replace the read-only list reference. The explicit current node is not in the list. |
+| `Items` | `List<BreadcrumbItem>` | Shared mutable ancestor list. Add, insert, remove, replace, reorder, or edit ancestors; do not replace the read-only list reference. The final list order is preserved. The explicit current node is not in the list. |
 | `ViewContext` | `Microsoft.AspNetCore.Mvc.Rendering.ViewContext` | Read request context, such as `HttpContext`, when filtering by admin/front-end request. |
 | `ShowTrail` | `bool` | Whether the trail is visible. Helper-created provider contexts always have `ShowTrail == true`; hidden trails create no context and invoke no providers. |
 
@@ -186,7 +185,6 @@ public sealed class ExampleBreadcrumbProvider : IBreadcrumbProvider
         {
             Id = "Examples",
             Text = S["Examples"].Value,
-            Position = "start",
             Url = "~/examples",
         });
 
@@ -201,7 +199,7 @@ Register the provider in `Startup.ConfigureServices`:
 services.AddBreadcrumbProvider<ExampleBreadcrumbProvider>();
 ```
 
-Registration is scoped and uses `TryAddEnumerable`. For visible trails, providers run in DI registration order after collecting ancestor children, before sorting ancestors, appending the explicit current node, and finalizing `IsCurrent` and `Href`. Later providers observe earlier ancestor mutations.
+Registration is scoped and uses `TryAddEnumerable`. For visible trails, providers run in DI registration order after collecting ancestor children, before appending the explicit current node and finalizing `IsCurrent` and `Href`. Later providers observe earlier ancestor mutations, and the helper preserves the final list order.
 
 Use `context.Name` to target a trail, or `context.ViewContext` to target a request. An admin-only provider checks `AdminAttribute.IsApplied(context.ViewContext.HttpContext)`. Set `Text` to a plain string, not encoded HTML; use `Url` or `RouteValues`, `PermissionName` or the `Permissions` list, `Resource`, and `LinkEnabled` to describe links. Do not depend on incoming `IsCurrent` or `Href`, which the helper computes afterward.
 
@@ -211,7 +209,7 @@ The example also supplies an ancestor to a trail with no inline children. The vi
 <breadcrumb name="Example" title="@T["Edit Example"]" />
 ```
 
-Providers cannot remove or replace the explicit title: `Title` is read-only, and `Items` contains only ancestors. The helper appends the title node with `Id = "Title"` after sorting, even if a provider cleared every ancestor or used position `end`.
+Providers cannot remove or replace the explicit title: `Title` is read-only, and `Items` contains only ancestors. The helper appends the title node with `Id = "Title"` after all providers have run, even if a provider cleared or reordered every ancestor.
 
 Hidden admin trails bypass providers completely: the helper does not resolve, enumerate, construct, or invoke `IBreadcrumbProvider` implementations. It creates no `BreadcrumbContext`; the retained `ShowTrail` property and constructor parameter are always true in helper-created provider contexts. Only the explicit title supplies hidden heading/browser-title output.
 
@@ -219,23 +217,23 @@ Hidden admin trails bypass providers completely: the helper does not resolve, en
 
 The Admin Dashboard feature registers `OrchardCore.AdminDashboard.Services.DashboardBreadcrumbProvider` with `AddBreadcrumbProvider<DashboardBreadcrumbProvider>()`.
 
-The provider checks `AdminAttribute.IsApplied(context.ViewContext.HttpContext)` and leaves front-end trails unchanged. It skips insertion if `context.Name == "Dashboard"` or an ancestor already has ID `Dashboard`; it does not compare localized title text. Otherwise it inserts a localized Dashboard ancestor at index `0`, with ID `Dashboard`, position `start`, and `Url = "~/" + adminOptions.AdminUrlPrefix`.
+The provider checks `AdminAttribute.IsApplied(context.ViewContext.HttpContext)` and leaves front-end trails unchanged. It skips insertion if `context.Name == "Dashboard"` or an ancestor already has ID `Dashboard`; it does not compare localized title text. Otherwise it inserts a localized Dashboard ancestor at index `0`, with ID `Dashboard` and `Url = "~/" + adminOptions.AdminUrlPrefix`. Later providers can move it just like any other ancestor.
 
 Its `Permissions` list contains the static `OrchardCore.AdminDashboard.Permissions.AccessAdminDashboard` permission object, so no named-permission lookup is required. Denied access makes a visible Dashboard ancestor plain text. The Dashboard page uses `name="Dashboard"` and `title="@T["Dashboard"]"` so only the explicit current node, with ID `Title`, represents Dashboard.
 
 For visible admin trails, Dashboard can be added when there are no other ancestors, but the explicit current title is still appended afterward. Hidden trails skip this provider entirely; it never affects title text. Disabling the feature removes this provider contribution; there is no Dashboard option on the tag helper.
 
-## Positions
+## List order
 
-`FlatPositionComparer` orders ancestor positions as `start`, `before`, numbers, `after`, free text, then `end`. Numeric subpositions such as `1.1` sort between `1` and `2`. Sorting happens after providers, and equal positions preserve the resulting ancestor list order.
+Ancestor order comes only from the list. Inline children are collected in declaration order; providers can use `Add`, `Insert`, `RemoveAt`, or other list operations to change it. The helper preserves the final list order without sorting.
 
-Most inline ancestors can omit `position` and rely on declaration order unless a provider changes it. Positions cannot change the current page: the helper appends the explicit title after every ancestor, including those at `end`.
+`BreadcrumbItem` has no `Position` property and does not implement `IPositioned`. The child helper has no `position` attribute. List changes cannot displace the current page: the helper appends the explicit title after every ancestor.
 
 ## Disabled admin trails
 
 **Show breadcrumb** under **Configuration > Settings > Admin** (`AdminSettings.ShowBreadcrumb`, default on) controls admin trail visibility, not front-end trails.
 
-When disabled, the helper **skips all providers and breadcrumb items**, regardless of provider registration. It never calls `GetChildContentAsync`, never resolves, enumerates, constructs, or invokes providers (including Dashboard), and creates no `BreadcrumbContext` or items, including the title node. Child text, positions, and links are not evaluated.
+When disabled, the helper **skips all providers and breadcrumb items**, regardless of provider registration. It never calls `GetChildContentAsync`, never resolves, enumerates, constructs, or invokes providers (including Dashboard), and creates no `BreadcrumbContext` or items, including the title node. Child text and links are not evaluated.
 
 Only the explicit title supplies heading/browser-title text. When needed, it is formatted once through `WriteTo(writer, HtmlEncoder.Default)` and HTML-decoded once. The helper safely encodes the normalized string, renders the heading directly with `oc-breadcrumb-title`, and registers the browser title when `page-title` is true. It does not generate URLs, resolve permission names, authorize links, or create shapes. Breadcrumb templates and alternates do not run.
 
@@ -260,7 +258,7 @@ The helper assigns the current node `Id = "Title"`. The existing alternate facto
 - **Wrap non-HTML title values safely.** Pass `@T[...]` directly, never its `.Value`. Use `new HtmlContentString(value ?? string.Empty)` for strings and `new HtmlContentString(localizedTitle.Value ?? string.Empty)` for non-HTML localizer results; never `Html.Raw`.
 - **HTML-aware input is still text-only output.** Do not render normalized title text as raw HTML or decode it again.
 - **Children are ancestors only.** Declare the current page in parent `title`; the helper appends it with ID `Title`, so do not duplicate it with a child.
-- **Providers cannot change the current title.** Clearing ancestors or assigning position `end` never removes or replaces the appended current node.
+- **Providers cannot change the current title.** Clearing or reordering ancestors never removes or replaces the appended current node.
 - **Hidden means title-only.** The helper skips all provider resolution and execution, child evaluation, contexts, and items. Provider contexts created for visible trails always have `ShowTrail == true`.
 - **No visibility guards in views.** Do not read `AdminSettings.ShowBreadcrumb` or wrap lookups or markup in setting-dependent branches; visibility belongs to the helper.
 - **Named permissions are deferred.** Do not look them up while collecting or postprocessing ancestors; removed or unlinkable ancestors do not need that work.

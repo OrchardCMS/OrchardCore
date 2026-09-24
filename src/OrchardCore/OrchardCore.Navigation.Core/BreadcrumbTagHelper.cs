@@ -13,7 +13,6 @@ using OrchardCore.Admin.Models;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Html;
 using OrchardCore.DisplayManagement.Title;
-using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 
@@ -21,7 +20,8 @@ namespace OrchardCore.Navigation.TagHelpers;
 
 /// <summary>
 /// Renders the breadcrumb trail of the given name. Ancestors are collected from <c>breadcrumb-item</c> children,
-/// then updated by registered providers. The explicit title is appended last as the current node.
+/// then updated by registered providers. The resulting list order is preserved, and the explicit title is
+/// appended last as the current node.
 /// </summary>
 /// <remarks>
 /// When the admin breadcrumb setting is disabled, renders only the heading and page title without creating shapes.
@@ -128,8 +128,6 @@ public sealed class BreadcrumbTagHelper : TagHelper
             {
                 await provider.BuildBreadcrumbAsync(breadcrumbContext);
             }
-
-            items = items.OrderBy(item => item, FlatPositionComparer.Instance).ToList();
 
             foreach (var item in items)
             {

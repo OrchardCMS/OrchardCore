@@ -71,7 +71,7 @@ public class BreadcrumbTagHelperTests
         helper.Heading = heading;
         helper.PageTitle = pageTitle;
 
-        var output = await RenderAsync(helper, ("Not the title", "end"));
+        var output = await RenderAsync(helper, "Not the title");
 
         Assert.Equal(expectedHtml, output.Content.GetContent());
         Assert.Equal(expectedTitle, GetTitle(titleBuilder));
@@ -137,7 +137,7 @@ public class BreadcrumbTagHelperTests
             {
                 providerContext = context;
                 calls++;
-                context.Items.Add(new BreadcrumbItem { Text = "Not the title", Position = "end" });
+                context.Items.Add(new BreadcrumbItem { Text = "Not the title" });
 
                 return ValueTask.CompletedTask;
             }),
@@ -197,7 +197,7 @@ public class BreadcrumbTagHelperTests
         var (helper, titleBuilder, _) = CreateHelper(services.Object);
         helper.Title = new HtmlContentString("");
 
-        var output = await RenderAsync(helper, ("Not the title", null));
+        var output = await RenderAsync(helper, "Not the title");
 
         Assert.Empty(output.Content.GetContent());
         Assert.Empty(GetTitle(titleBuilder));
@@ -249,7 +249,7 @@ public class BreadcrumbTagHelperTests
             calls++;
             Assert.Equal(expectedTitle, context.Title);
             Assert.Empty(context.Items);
-            context.Items.Add(new BreadcrumbItem { Text = "Not the title", Position = "end" });
+            context.Items.Add(new BreadcrumbItem { Text = "Not the title" });
 
             return ValueTask.CompletedTask;
         });
@@ -765,26 +765,21 @@ public class BreadcrumbTagHelperTests
     }
 
     [Theory]
-    [InlineData("10", "2", "Second", "First")]
-    [InlineData("1", "1", "First", "Second")]
-    [InlineData("end", "after", "Second", "First")]
-    [InlineData(null, null, "First", "Second")]
-    [InlineData("start", null, "First", "Second")]
-    [InlineData(null, "", "First", "Second")]
-    [InlineData(" ", null, "Second", "First")]
-    [InlineData("end", "end", "First", "Second")]
-    public async Task ProcessAsync_VisibleTrail_OrdersAncestorsStablyBeforeExplicitTitle(string firstPosition, string secondPosition, string firstText, string secondText)
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task ProcessAsync_VisibleTrail_PreservesDeclarationOrderBeforeExplicitTitle(bool isAdmin)
     {
         var services = CreateServices();
         var display = ConfigureRendering(services);
-        var (helper, titleBuilder, _) = CreateHelper(services.Object, showBreadcrumb: true);
+        var (helper, titleBuilder, _) = CreateHelper(services.Object, showBreadcrumb: true, isAdmin: isAdmin);
 
         await RenderItemsAsync(helper,
-            (new BreadcrumbItemTagHelper { Position = firstPosition, Url = "/first" }, "First"),
-            (new BreadcrumbItemTagHelper { Position = secondPosition, Url = "/second" }, "Second"));
+            (new BreadcrumbItemTagHelper { Url = "/first" }, "First"),
+            (new BreadcrumbItemTagHelper { Url = "/second" }, "Second"));
 
         var nodes = display.Shape.Items.Cast<BreadcrumbItemViewModel>().ToArray();
-        Assert.Equal([firstText, secondText, "Title"], nodes.Select(node => node.Text));
+        Assert.Equal(["First", "Second", "Title"], nodes.Select(node => node.Text));
+        Assert.Equal([0, 1, 2], nodes.Select(node => node.Level));
         Assert.All(nodes.Take(2), node =>
         {
             Assert.False(node.IsCurrent);
@@ -874,7 +869,7 @@ public class BreadcrumbTagHelperTests
             Assert.Equal("Index", context.Items[1].RouteValues["action"]);
             context.Items.RemoveAt(1);
             context.Items[1].Text = "Updated";
-            context.Items.Insert(0, new BreadcrumbItem { Id = "Root", Text = "Root", Position = "start", Url = "/root" });
+            context.Items.Insert(0, new BreadcrumbItem { Id = "Root", Text = "Root", Url = "/root" });
         });
         var secondProvider = new DelegateBreadcrumbProvider(context =>
         {
@@ -885,7 +880,6 @@ public class BreadcrumbTagHelperTests
             {
                 Id = "Injected",
                 Text = "Injected <ancestor> & text",
-                Position = "end",
                 Url = "/disabled",
                 PermissionName = "NeverResolve",
                 LinkEnabled = false,
@@ -902,7 +896,7 @@ public class BreadcrumbTagHelperTests
         helper.Title = new HtmlContentString("Explicit <record> & title");
 
         await RenderItemsAsync(helper,
-            (new BreadcrumbItemTagHelper { Position = "10" }, "Parent"),
+            (new BreadcrumbItemTagHelper(), "Parent"),
             (new BreadcrumbItemTagHelper { Action = "Index", PermissionName = "NeverResolve" }, "Removed"),
             (new BreadcrumbItemTagHelper(), "Original"));
 
@@ -910,8 +904,9 @@ public class BreadcrumbTagHelperTests
         Assert.Equal("Explicit &lt;record&gt; &amp; title", GetTitle(titleBuilder));
 
         var nodes = display.Shape.Items.Cast<BreadcrumbItemViewModel>().ToArray();
-        Assert.Equal(["Root", "Parent", "Injected <ancestor> & text", "Explicit <record> & title"], nodes.Select(node => node.Text));
-        Assert.Equal(["/root", "/changed-parent", null, null], nodes.Select(node => node.Href));
+        Assert.Equal(["Injected <ancestor> & text", "Parent", "Root", "Explicit <record> & title"], nodes.Select(node => node.Text));
+        Assert.Equal([null, "/changed-parent", "/root", null], nodes.Select(node => node.Href));
+        Assert.Equal([0, 1, 2, 3], nodes.Select(node => node.Level));
         Assert.Equal([false, false, false, true], nodes.Select(node => node.IsCurrent));
         AssertCurrentNode(nodes[^1], "Explicit <record> & title");
         Assert.Equal("Explicit <record> & title", display.Shape.GetProperty<string>("Title"));
@@ -932,7 +927,7 @@ public class BreadcrumbTagHelperTests
             Assert.Empty(context.Items);
             Assert.Equal("Title", context.Title);
             context.Items.Add(new BreadcrumbItem { Text = "Records", Url = "/records" });
-            context.Items.Add(new BreadcrumbItem { Text = "Provider <ancestor>", Position = "end", Url = "/provider" });
+            context.Items.Add(new BreadcrumbItem { Text = "Provider <ancestor>", Url = "/provider" });
         });
         var services = CreateServices(provider);
         var display = ConfigureRendering(services);
@@ -971,7 +966,6 @@ public class BreadcrumbTagHelperTests
             {
                 Id = ancestorId,
                 Text = context.Title,
-                Position = "end",
                 Url = "/ancestor",
                 IsCurrent = true,
                 Href = "/stale",
@@ -1015,7 +1009,6 @@ public class BreadcrumbTagHelperTests
             Assert.Equal(["Records & More", "Other"], context.Items.Select(item => item.Text));
             var ancestor = context.Items[0];
             Assert.Equal("Records", ancestor.Id);
-            Assert.Equal("end", ancestor.Position);
             Assert.Equal("ManageRecords", ancestor.PermissionName);
             Assert.Same(resource, ancestor.Resource);
             Assert.False(ancestor.LinkEnabled);
@@ -1043,7 +1036,6 @@ public class BreadcrumbTagHelperTests
                 (Helper: new BreadcrumbItemTagHelper
                 {
                     Id = "Records",
-                    Position = "end",
                     PermissionName = "ManageRecords",
                     Resource = resource,
                     LinkEnabled = false,
@@ -1073,7 +1065,7 @@ public class BreadcrumbTagHelperTests
         if (showBreadcrumb)
         {
             var nodes = display.Shape.Items.Cast<BreadcrumbItemViewModel>().ToArray();
-            Assert.Equal(["Other", "Records & More", "Title"], nodes.Select(node => node.Text));
+            Assert.Equal(["Records & More", "Other", "Title"], nodes.Select(node => node.Text));
             AssertCurrentNode(nodes[^1], "Title");
         }
         else
@@ -1102,7 +1094,7 @@ public class BreadcrumbTagHelperTests
         var display = ConfigureRendering(services);
         var (helper, titleBuilder, _) = CreateHelper(services.Object, showBreadcrumb: true);
 
-        var output = await RenderAsync(helper, ("Removed", null));
+        var output = await RenderAsync(helper, "Removed");
 
         Assert.Equal("Title", GetTitle(titleBuilder));
         AssertCurrentNode(Assert.Single(display.Shape.Items.Cast<BreadcrumbItemViewModel>()), "Title");
@@ -1112,13 +1104,15 @@ public class BreadcrumbTagHelperTests
     }
 
     [Fact]
-    public async Task ProcessAsync_VisibleProviderChangesAncestorTextAndPosition_PreservesExplicitEmptyTitle()
+    public async Task ProcessAsync_VisibleProviderMovesAncestor_PreservesExplicitEmptyTitle()
     {
         var provider = new DelegateBreadcrumbProvider(context =>
         {
             Assert.Equal("", context.Title);
-            context.Items[0].Position = "end";
-            context.Items[0].Text = "Not the title";
+            var ancestor = context.Items[0];
+            ancestor.Text = "Not the title";
+            context.Items.RemoveAt(0);
+            context.Items.Add(ancestor);
 
             return ValueTask.CompletedTask;
         });
@@ -1242,7 +1236,6 @@ public class BreadcrumbTagHelperTests
         if (isAdmin)
         {
             Assert.Equal("Dashboard", nodes[0].Item.Id);
-            Assert.Equal("start", nodes[0].Item.Position);
             Assert.Same(global::OrchardCore.AdminDashboard.Permissions.AccessAdminDashboard, Assert.Single(nodes[0].Item.Permissions));
             Assert.False(nodes[0].IsCurrent);
             Assert.Equal(authorized ? "/tenant/Backend" : null, nodes[0].Href);
@@ -1437,7 +1430,7 @@ public class BreadcrumbTagHelperTests
     }
 
     private static Task<TagHelperOutput> RenderAsync(
-        BreadcrumbTagHelper helper, params (string Text, string Position)[] children)
+        BreadcrumbTagHelper helper, params string[] children)
         => RenderItemsAsync(helper, children.Select(child => (new BreadcrumbItemTagHelper
         {
             Id = "Record",
@@ -1445,8 +1438,7 @@ public class BreadcrumbTagHelperTests
             Controller = "Admin",
             Area = "My.Module",
             PermissionName = "ManageRecords",
-            Position = child.Position,
-        }, child.Text)).ToArray());
+        }, child)).ToArray());
 
     private static async Task<TagHelperOutput> RenderItemsAsync(
         BreadcrumbTagHelper helper, params (BreadcrumbItemTagHelper Helper, string Text)[] children)

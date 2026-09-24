@@ -6,7 +6,8 @@ namespace OrchardCore.Navigation.TagHelpers;
 
 /// <summary>
 /// Declares a single ancestor of a breadcrumb trail inline, as a child of the <c>breadcrumb</c> tag helper.
-/// Its localized inner text can use data from the view model or services injected into the view.
+/// Ancestors are collected in declaration order. Their localized inner text can use data from the view model or
+/// services injected into the view.
 /// </summary>
 /// <remarks>
 /// When the admin breadcrumb setting is disabled, the parent skips its children entirely.
@@ -37,12 +38,6 @@ public sealed class BreadcrumbItemTagHelper : TagHelper
     /// </summary>
     [HtmlAttributeName("permission")]
     public string PermissionName { get; set; }
-
-    /// <summary>
-    /// The relative position of the node among the other nodes of the trail. e.g., <c>10</c>, <c>before</c>, <c>end</c>.
-    /// </summary>
-    [HtmlAttributeName("position")]
-    public string Position { get; set; }
 
     /// <summary>
     /// The url the node links to. It is ignored when <see cref="Action"/> is set.
@@ -107,7 +102,6 @@ public sealed class BreadcrumbItemTagHelper : TagHelper
         {
             Text = text,
             Id = Id,
-            Position = string.IsNullOrEmpty(Position) ? null : Position,
             Resource = Resource,
             LinkEnabled = LinkEnabled,
             PermissionName = PermissionName,

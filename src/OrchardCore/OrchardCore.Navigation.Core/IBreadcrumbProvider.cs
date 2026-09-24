@@ -7,9 +7,9 @@ namespace OrchardCore.Navigation;
 public interface IBreadcrumbProvider
 {
     /// <summary>
-    /// Adds, removes or updates the ancestors of the named trail. Providers run in registration order, before
-    /// positioning, link resolution and appending the title. The tag helper does not resolve or invoke providers
-    /// when the admin breadcrumb setting is disabled.
+    /// Adds, removes, reorders or updates the ancestors of the named trail. Providers run in registration order,
+    /// before link resolution and appending the title. The resulting list order is preserved.
+    /// The tag helper does not resolve or invoke providers when the admin breadcrumb setting is disabled.
     /// </summary>
     /// <param name="context">The named trail, mutable items and rendering context.</param>
     ValueTask BuildBreadcrumbAsync(BreadcrumbContext context);

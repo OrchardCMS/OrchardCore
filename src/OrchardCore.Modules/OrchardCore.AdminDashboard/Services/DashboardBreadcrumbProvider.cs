@@ -34,7 +34,6 @@ public sealed class DashboardBreadcrumbProvider : IBreadcrumbProvider
         {
             Id = "Dashboard",
             Text = S["Dashboard"],
-            Position = "start",
             Url = "~/" + _adminOptions.AdminUrlPrefix,
             Permissions = { Permissions.AccessAdminDashboard },
         });
