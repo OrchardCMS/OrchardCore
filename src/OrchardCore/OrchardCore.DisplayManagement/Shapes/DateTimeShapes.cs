@@ -11,6 +11,9 @@ namespace OrchardCore.DisplayManagement.Shapes;
 [Feature(Application.DefaultFeatureId)]
 public class DateTimeShapes : IShapeAttributeProvider
 {
+    private const string TimeTagName = "time";
+    private const string DateTimeAttributeName = "datetime";
+
     private readonly IClock _clock;
     private readonly ILocalClock _localClock;
     protected readonly IStringLocalizer S;
@@ -30,13 +33,23 @@ public class DateTimeShapes : IShapeAttributeProvider
     }
 
     [Shape]
-    public IHtmlContent TimeSpan(DateTime? Utc, DateTime? Origin)
+    public IHtmlContent TimeSpan(DateTime? Utc, DateTime? Origin, bool TimeTag)
     {
         Utc ??= _clock.UtcNow;
         Origin ??= _clock.UtcNow;
 
-        var time = Origin.Value - Utc.Value;
+        var text = GetRelativeTime(Origin.Value - Utc.Value);
 
+        if (!TimeTag)
+        {
+            return text;
+        }
+
+        return CreateTimeTag(Utc.Value, text);
+    }
+
+    private LocalizedHtmlString GetRelativeTime(TimeSpan time)
+    {
         if (time.TotalYears() > 1)
         {
             return H.Plural(time.TotalYears(), "1 year ago", "{0} years ago");
@@ -113,13 +126,31 @@ public class DateTimeShapes : IShapeAttributeProvider
     }
 
     [Shape]
-    public async Task<IHtmlContent> DateTime(IHtmlHelper Html, DateTime? Utc, string Format)
+    public async Task<IHtmlContent> DateTime(IHtmlHelper Html, DateTime? Utc, string Format, bool TimeTag)
     {
         Utc ??= _clock.UtcNow;
         var zonedTime = await _localClock.ConvertToLocalAsync(Utc.Value);
         Format ??= S["dddd, MMMM d, yyyy h:mm:ss tt"].Value;
 
-        return Html.Raw(Html.Encode(zonedTime.ToString(Format, CultureInfo.CurrentUICulture)));
+        var text = zonedTime.ToString(Format, CultureInfo.CurrentUICulture);
+
+        if (!TimeTag)
+        {
+            return Html.Raw(Html.Encode(text));
+        }
+
+        return CreateTimeTag(Utc.Value, new HtmlContentBuilder().Append(text));
+    }
+
+    private static TagBuilder CreateTimeTag(DateTime utc, IHtmlContent content)
+    {
+        var tag = new TagBuilder(TimeTagName);
+
+        // The "u" universal sortable format (e.g. "2026-01-01 10:00:00Z") is a valid HTML datetime value.
+        tag.Attributes[DateTimeAttributeName] = System.DateTime.SpecifyKind(utc, DateTimeKind.Utc).ToString("u", CultureInfo.InvariantCulture);
+        tag.InnerHtml.AppendHtml(content);
+
+        return tag;
     }
 
     [Shape]
