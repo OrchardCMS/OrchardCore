@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Admin;
 using OrchardCore.AdminMenu.AdminNodes;
 using OrchardCore.AdminMenu.Deployment;
 using OrchardCore.AdminMenu.Recipes;
@@ -44,6 +45,8 @@ public sealed class Startup : StartupBase
 
         // Migrate admin menu to the 3.0 format.
         services.AddDataMigration<Migrations>();
+
+        services.AddAdminListColumnProvider<AdminMenusAdminListColumnProvider>();
     }
 }
 

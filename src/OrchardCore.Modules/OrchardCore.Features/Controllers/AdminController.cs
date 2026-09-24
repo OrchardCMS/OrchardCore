@@ -62,7 +62,8 @@ public sealed class AdminController : Controller
         [FromServices] IDisplayManager<FeatureEntry> displayManager,
         [FromServices] IUpdateModelAccessor updateModelAccessor,
         [FromServices] IShapeFactory shapeFactory,
-        [FromServices] IAdminListService adminListService)
+        [FromServices] IAdminListFactory adminListFactory,
+        [FromServices] IAdminListLayoutResolver layoutResolver)
     {
         if (!await _authorizationService.AuthorizeAsync(User, FeaturesPermissions.ManageFeatures))
         {
@@ -84,12 +85,11 @@ public sealed class AdminController : Controller
             viewModel.Features = await featureService.GetModuleFeaturesAsync();
         });
 
-        var columns = await adminListService.GetColumnsAsync(FeaturesAdminList.Name, FeaturesAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted);
-        var layout = await adminListService.GetLayoutAsync(FeaturesAdminList.Name, cancellationToken: HttpContext.RequestAborted);
+        var layout = await layoutResolver.GetLayoutAsync(FeaturesAdminList.Name, HttpContext.RequestAborted);
 
-        // The categories share one layout, so the page offers it once, beside its filters, instead of letting
-        // each of its lists carry a selector of its own. Taking the offer here is what stops them.
-        var layoutOptions = await adminListService.GetLayoutOptionsAsync(FeaturesAdminList.Name, HttpContext.RequestAborted);
+        // The categories share one layout, so the page offers it once, beside its filters, and its lists do not
+        // carry a selector of their own.
+        var layoutOptions = await layoutResolver.GetLayoutOptionsAsync(HttpContext.RequestAborted);
 
         if (layoutOptions.Count > 0)
         {
@@ -106,7 +106,7 @@ public sealed class AdminController : Controller
         foreach (var group in viewModel.Features.GroupBy(feature => feature.Descriptor.Category).OrderBy(group => group.Key))
         {
             var category = group.Key ?? S["Uncategorized"].Value;
-            var rows = new List<object>();
+            var rows = new List<IShape>();
             var hasSelectableFeature = false;
 
             foreach (var feature in group.OrderBy(feature => feature.Descriptor.Name))
@@ -141,15 +141,14 @@ public sealed class AdminController : Controller
             viewModel.Groups.Add(new FeatureGroupViewModel
             {
                 Category = category,
-                List = await shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+                List = await adminListFactory.CreateAsync(new AdminListContext(FeaturesAdminList.Name)
                 {
-                    Name = FeaturesAdminList.Name,
                     Layout = layout,
-                    Columns = columns,
                     Rows = rows,
                     Toolbar = toolbar,
+                    ShowLayoutSelector = false,
                     ItemCssClass = "list-group-item",
-                })),
+                }, HttpContext.RequestAborted),
             });
         }
 

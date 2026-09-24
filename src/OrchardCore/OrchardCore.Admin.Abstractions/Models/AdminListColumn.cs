@@ -27,8 +27,8 @@ public class AdminListColumn
     /// <summary>
     /// The position of the column using the placement position syntax, e.g. <c>10</c>, <c>25</c> or <c>35.5</c>.
     /// Columns are sorted by position once every <see cref="IAdminListColumnProvider"/> ran, so a feature can insert
-    /// a column between two others without knowing which other features add columns. The list owner assigns
-    /// increasing positions to its default columns (e.g. <c>10</c>, <c>20</c>, ...); a column added without a
+    /// a column between two others without knowing which other features add columns. The module owning a list
+    /// gives its columns increasing positions (e.g. <c>10</c>, <c>20</c>, ...); a column added without a
     /// position is placed after all positioned columns.
     /// </summary>
     public string Position { get; set; }

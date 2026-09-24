@@ -1,4 +1,5 @@
 @model OrchardCore.Admin.ViewModels.AdminSettingsViewModel
+@using OrchardCore.Admin.Services
 @using OrchardCore.DisplayManagement
 @using OrchardCore.DisplayManagement.Descriptors
 @using OrchardCore.DisplayManagement.Theming
@@ -10,14 +11,12 @@
     // Layouts are discovered from the shape table, like content field editors: a layout is available
     // when a shape named AdminListLayout_Option__{Layout} exists, e.g. AdminListLayout-Table.Option.cshtml.
     var shapeTable = await ThemeManager.GetShapeTableAsync(ShapeTableManager);
-    var layoutOptionShapes = shapeTable.Bindings.Keys
-        .Where(x => x.StartsWith(AdminListConstants.OptionShapePrefix, StringComparison.OrdinalIgnoreCase))
-        .OrderBy(x => x, StringComparer.OrdinalIgnoreCase);
+    var layoutOptionShapes = AdminListOptionShapes.GetNames(shapeTable, AdminListConstants.OptionShapePrefix)
+        .Select(name => AdminListConstants.OptionShapePrefix + name);
 
     // Same convention for the layouts of the row actions: AdminListActions_Option__{Layout}.
-    var actionsLayoutOptionShapes = shapeTable.Bindings.Keys
-        .Where(x => x.StartsWith(AdminListActionsLayouts.OptionShapePrefix, StringComparison.OrdinalIgnoreCase))
-        .OrderBy(x => x, StringComparer.OrdinalIgnoreCase);
+    var actionsLayoutOptionShapes = AdminListOptionShapes.GetNames(shapeTable, AdminListActionsLayouts.OptionShapePrefix)
+        .Select(name => AdminListActionsLayouts.OptionShapePrefix + name);
 }
 
 <div class="ocat-wrapper" asp-validation-class-for="DisplayThemeToggler">

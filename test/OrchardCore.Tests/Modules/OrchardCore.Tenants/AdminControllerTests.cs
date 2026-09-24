@@ -1,5 +1,4 @@
 using OrchardCore.Admin;
-using OrchardCore.Admin.Models;
 using OrchardCore.Data;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Implementation;
@@ -45,7 +44,7 @@ public class AdminControllerTests
             },
             CreateDisplayManager(),
             Mock.Of<IUpdateModelAccessor>(),
-            CreateAdminListService());
+            CreateAdminListFactory());
 
         var viewResult = Assert.IsType<ViewResult>(result);
         var model = Assert.IsType<AdminIndexViewModel>(viewResult.Model);
@@ -113,17 +112,14 @@ public class AdminControllerTests
         return displayManager.Object;
     }
 
-    private static IAdminListService CreateAdminListService()
+    private static IAdminListFactory CreateAdminListFactory()
     {
-        var adminListService = new Mock<IAdminListService>();
-        adminListService
-            .Setup(x => x.GetLayoutAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(AdminListConstants.List);
-        adminListService
-            .Setup(x => x.GetColumnsAsync(It.IsAny<string>(), It.IsAny<IEnumerable<AdminListColumn>>(), It.IsAny<IReadOnlyDictionary<string, object>>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((string _, IEnumerable<AdminListColumn> columns, IReadOnlyDictionary<string, object> _, CancellationToken _) => columns.ToList());
+        var adminListFactory = new Mock<IAdminListFactory>();
+        adminListFactory
+            .Setup(x => x.CreateAsync(It.IsAny<AdminListContext>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(() => new Shape());
 
-        return adminListService.Object;
+        return adminListFactory.Object;
     }
 
     private static Mock<IAuthorizationService> CreateAuthorizationService()

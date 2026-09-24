@@ -58,12 +58,12 @@ public sealed class TemplateController : Controller
         PagerParameters pagerParameters,
         [FromServices] IDisplayManager<TemplateEntry> displayManager,
         [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListService adminListService)
+        [FromServices] IAdminListFactory adminListFactory)
     {
         options.AdminTemplates = true;
 
         // Used to provide a different url such that the Admin Templates menu entry doesn't collide with the Templates ones.
-        return Index(options, pagerParameters, displayManager, updateModelAccessor, adminListService);
+        return Index(options, pagerParameters, displayManager, updateModelAccessor, adminListFactory);
     }
 
     [Admin("Templates", "Templates.Index")]
@@ -72,7 +72,7 @@ public sealed class TemplateController : Controller
         PagerParameters pagerParameters,
         [FromServices] IDisplayManager<TemplateEntry> displayManager,
         [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListService adminListService)
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!options.AdminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
         {
@@ -124,7 +124,7 @@ public sealed class TemplateController : Controller
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
 
-        var rows = new List<object>(model.Templates.Count);
+        var rows = new List<IShape>(model.Templates.Count);
 
         foreach (var entry in model.Templates)
         {
@@ -166,11 +166,8 @@ public sealed class TemplateController : Controller
             }));
 
         // The AdminList shape renders the templates with the configured layout (List, Table, ...).
-        model.List = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        model.List = await adminListFactory.CreateAsync(new AdminListContext(TemplatesAdminList.Name)
         {
-            Name = TemplatesAdminList.Name,
-            Layout = await adminListService.GetLayoutAsync(TemplatesAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(TemplatesAdminList.Name, TemplatesAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             Search = search,
@@ -179,7 +176,7 @@ public sealed class TemplateController : Controller
             PageSize = pageSize,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no templates for the moment. <a class=\"seedoc\" href=\"{0}reference/modules/Templates\" target=\"_blank\">See documentation</a>", OrchardCore.Admin.Constants.DocsUrl],
-        }));
+        }, HttpContext.RequestAborted);
 
         // The 'Admin' action redirect the user to the 'Index' action.
         // To ensure we render the same 'Index' view in both cases, we have to explicitly specify the name of the view that should be rendered.

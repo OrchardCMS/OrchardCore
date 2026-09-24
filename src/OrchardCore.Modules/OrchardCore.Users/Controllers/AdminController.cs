@@ -83,7 +83,7 @@ public sealed class AdminController : Controller
     }
 
     public async Task<ActionResult> Index(
-        [FromServices] IAdminListService adminListService,
+        [FromServices] IAdminListFactory adminListFactory,
         [ModelBinder(BinderType = typeof(UserFilterEngineModelBinder), Name = "q")] QueryFilterResult<User> queryFilterResult,
         PagerParameters pagerParameters)
     {
@@ -191,16 +191,13 @@ public sealed class AdminController : Controller
         var header = await _userOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
 
         // The AdminList shape renders the users with the configured layout (List, Table, ...).
-        var listShape = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        var listShape = await adminListFactory.CreateAsync(new AdminListContext(UsersAdminList.Name)
         {
-            Name = UsersAdminList.Name,
-            Layout = await adminListService.GetLayoutAsync(UsersAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(UsersAdminList.Name, UsersAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
-            Rows = userEntries.Select(entry => (object)entry.Shape).ToList(),
+            Rows = userEntries.Select(entry => entry.Shape).ToList(),
             Header = header,
             Pager = pagerShape,
             ItemCssClass = "list-group-item",
-        }));
+        }, HttpContext.RequestAborted);
 
         var shapeViewModel = await _shapeFactory.CreateAsync<UsersIndexViewModel>("UsersAdminList", viewModel =>
         {

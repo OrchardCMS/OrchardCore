@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentTypes.Deployment;
 using OrchardCore.ContentTypes.Editors;
@@ -67,6 +68,9 @@ public sealed class Startup : StartupBase
         services.AddRecipeExecutionStep<DeleteContentDefinitionStep>();
 
         services.AddTransient<IRecipeEventHandler, LuceneRecipeEventHandler>();
+
+        services.AddAdminListColumnProvider<ContentTypesAdminListColumnProvider>();
+        services.AddAdminListColumnProvider<ContentPartsAdminListColumnProvider>();
     }
 }
 

@@ -14,6 +14,7 @@ using OpenIddict.Server.DataProtection;
 using OpenIddict.Validation;
 using OpenIddict.Validation.AspNetCore;
 using OpenIddict.Validation.DataProtection;
+using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
@@ -283,6 +284,9 @@ public sealed class ManagementStartup : StartupBase
         // Build the rows of the applications and scopes admin lists.
         services.AddDisplayDriver<OpenIdApplicationEntry, OpenIdApplicationDisplayDriver>();
         services.AddDisplayDriver<OpenIdScopeEntry, OpenIdScopeDisplayDriver>();
+
+        services.AddAdminListColumnProvider<OpenIdApplicationsAdminListColumnProvider>();
+        services.AddAdminListColumnProvider<OpenIdScopesAdminListColumnProvider>();
     }
 }
 

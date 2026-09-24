@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
+using OrchardCore.Admin;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Shell;
@@ -47,6 +48,8 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<ShellSettingsEntry, ShellSettingsEntryDisplayDriver>();
 
         services.Configure<TenantsOptions>(_shellConfiguration.GetSection("OrchardCore_Tenants"));
+
+        services.AddAdminListColumnProvider<TenantsAdminListColumnProvider>();
     }
 }
 
@@ -126,6 +129,8 @@ public sealed class FeatureProfilesStartup : StartupBase
         services.AddShapeTableProvider<TenantFeatureProfileShapeTableProvider>();
 
         services.AddRecipeExecutionStep<FeatureProfilesStep>();
+
+        services.AddAdminListColumnProvider<FeatureProfilesAdminListColumnProvider>();
     }
 }
 

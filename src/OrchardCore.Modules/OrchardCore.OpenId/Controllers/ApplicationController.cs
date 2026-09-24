@@ -66,7 +66,7 @@ public sealed class ApplicationController : Controller
         string searchText,
         [FromServices] IDisplayManager<OpenIdApplicationEntry> displayManager,
         [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListService adminListService)
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageApplications))
         {
@@ -117,7 +117,7 @@ public sealed class ApplicationController : Controller
             .ToArray(),
         };
 
-        var rows = new List<object>(model.Applications.Count);
+        var rows = new List<IShape>(model.Applications.Count);
 
         foreach (var application in model.Applications)
         {
@@ -133,17 +133,14 @@ public sealed class ApplicationController : Controller
         }));
 
         // The AdminList shape renders the applications with the configured layout (List, Table, ...).
-        model.List = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        model.List = await adminListFactory.CreateAsync(new AdminListContext(OpenIdApplicationsAdminList.Name)
         {
-            Name = OpenIdApplicationsAdminList.Name,
-            Layout = await adminListService.GetLayoutAsync(OpenIdApplicationsAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(OpenIdApplicationsAdminList.Name, OpenIdApplicationsAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             Pager = model.Pager,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no applications at the moment."],
-        }));
+        }, HttpContext.RequestAborted);
 
         return View(model);
     }

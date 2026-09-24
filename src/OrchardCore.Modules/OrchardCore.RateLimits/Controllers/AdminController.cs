@@ -85,7 +85,7 @@ public sealed class AdminController : Controller
         PagerParameters pagerParameters = null,
         [FromServices] IOptions<PagerOptions> pagerOptions = null,
         [FromServices] IShapeFactory shapeFactory = null,
-        [FromServices] IAdminListService adminListService = null)
+        [FromServices] IAdminListFactory adminListFactory = null)
     {
         if (!await _authorizationService.AuthorizeAsync(User, RateLimitsPermissions.ManageRateLimits))
         {
@@ -146,11 +146,8 @@ public sealed class AdminController : Controller
         }));
 
         // The AdminList shape renders the policies with the configured layout (List, Table, ...).
-        model.List = await shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        model.List = await adminListFactory.CreateAsync(new AdminListContext(RateLimitsAdminList.Name)
         {
-            Name = RateLimitsAdminList.Name,
-            Layout = await adminListService.GetLayoutAsync(RateLimitsAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(RateLimitsAdminList.Name, RateLimitsAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = model.Policies.Select(entry => entry.Shape).ToList(),
             Toolbar = toolbar,
             Pager = model.Pager,
@@ -158,7 +155,7 @@ public sealed class AdminController : Controller
             EmptyMessage = string.IsNullOrWhiteSpace(searchText)
                 ? H["<strong>Nothing here!</strong> There are no rate limit policies yet."]
                 : H["<strong>Nothing here!</strong> No policies match the current search."],
-        }));
+        }, HttpContext.RequestAborted);
 
         return View(model);
     }

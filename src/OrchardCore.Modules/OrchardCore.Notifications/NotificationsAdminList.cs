@@ -1,10 +1,8 @@
-using Microsoft.Extensions.Localization;
-using OrchardCore.Admin.Models;
-
 namespace OrchardCore.Notifications;
 
 /// <summary>
 /// The admin list of notifications rendered by the <c>AdminList</c> shape.
+/// Its columns are declared by <see cref="NotificationsAdminListColumnProvider"/>.
 /// </summary>
 public static class NotificationsAdminList
 {
@@ -24,46 +22,4 @@ public static class NotificationsAdminList
     /// The CSS class carried by the row of a notification that has been read.
     /// </summary>
     public const string ReadCssClass = "notification-is-read";
-
-    /// <summary>
-    /// The default columns used by layouts with columns, e.g. <c>Table</c>. Each column renders one or more
-    /// zones of the <c>Notification_SummaryAdmin</c> shape.
-    /// </summary>
-    public static List<AdminListColumn> GetDefaultColumns(IStringLocalizer S) =>
-    [
-        new()
-        {
-            Name = "Select",
-            Position = "10",
-            Zones = ["Checkbox"],
-            CssClass = "admin-list-select",
-            Width = AdminListColumn.AutoWidth,
-        },
-        new()
-        {
-            // The subject and the summary take the space left by the other columns.
-            Name = "Subject",
-            Position = "20",
-            Title = S["Subject"],
-            Zones = ["Content"],
-        },
-        new()
-        {
-            Name = "Received",
-            Position = "30",
-            Title = S["Received"],
-            Zones = ["Meta"],
-            Width = AdminListColumn.AutoWidth,
-        },
-        new()
-        {
-            // "end" keeps the actions last even when a feature adds a column without a position.
-            Name = "Actions",
-            Position = "end",
-            Title = S["Actions"],
-            Zones = ["Actions", "ActionsMenu"],
-            Width = AdminListColumn.AutoWidth,
-            Alignment = AdminListColumnAlignment.End,
-        },
-    ];
 }

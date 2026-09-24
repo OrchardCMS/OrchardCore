@@ -1,9 +1,9 @@
 using System.Globalization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 
 namespace OrchardCore.Navigation;
 
@@ -14,6 +14,15 @@ namespace OrchardCore.Navigation;
 /// </summary>
 public static class PageSizeSelector
 {
+    // The keys a new page size makes stale: the page number and the cursors, and the page size itself.
+    private static readonly HashSet<string> _resetKeys = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "pagenum",
+        "pageSize",
+        "before",
+        "after",
+    };
+
     /// <summary>
     /// Builds the options of the page size selector: one per configured size, each a link to the current page
     /// with that size. Returns <see langword="null"/> when the selection is turned off, when no size is
@@ -38,40 +47,23 @@ public static class PageSizeSelector
         }
 
         var request = httpContext.Request;
-        var basePath = (request.PathBase + request.Path).Value;
+        var path = request.PathBase + request.Path;
 
         // Preserve the current query string, but reset the page number and cursor and override the page size.
-        var preserved = new List<KeyValuePair<string, string>>();
-
-        foreach (var pair in QueryHelpers.ParseQuery(request.QueryString.Value))
-        {
-            if (string.Equals(pair.Key, "pagenum", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(pair.Key, "pageSize", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(pair.Key, "before", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(pair.Key, "after", StringComparison.OrdinalIgnoreCase))
-            {
-                continue;
-            }
-
-            foreach (var value in pair.Value)
-            {
-                preserved.Add(new KeyValuePair<string, string>(pair.Key, value));
-            }
-        }
+        var preserved = request.Query
+            .Where(pair => !_resetKeys.Contains(pair.Key))
+            .ToList();
 
         var items = new List<SelectListItem>(pagerOptions.PageSizeOptions.Length);
 
         foreach (var size in pagerOptions.PageSizeOptions)
         {
-            var optionParams = new List<KeyValuePair<string, string>>(preserved)
-            {
-                new("pageSize", size.ToString(CultureInfo.InvariantCulture)),
-            };
+            var text = size.ToString(CultureInfo.InvariantCulture);
 
             items.Add(new SelectListItem
             {
-                Text = size.ToString(CultureInfo.InvariantCulture),
-                Value = QueryHelpers.AddQueryString(basePath, optionParams),
+                Text = text,
+                Value = path + QueryString.Create(preserved.Append(new KeyValuePair<string, StringValues>("pageSize", text))),
                 Selected = size == currentPageSize,
             });
         }

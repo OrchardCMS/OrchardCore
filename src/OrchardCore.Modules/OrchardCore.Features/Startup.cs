@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Admin;
 using OrchardCore.Deployment;
 using OrchardCore.Features.Deployment;
 using OrchardCore.Features.Recipes.Executors;
@@ -29,5 +30,7 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<FeatureEntry, FeatureEntryDisplayDriver>();
 
         services.AddDeployment<AllFeaturesDeploymentSource, AllFeaturesDeploymentStep, AllFeaturesDeploymentStepDriver>();
+
+        services.AddAdminListColumnProvider<FeaturesAdminListColumnProvider>();
     }
 }

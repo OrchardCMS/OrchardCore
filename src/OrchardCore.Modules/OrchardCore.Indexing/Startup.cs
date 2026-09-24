@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Data;
@@ -42,6 +43,8 @@ public sealed class Startup : StartupBase
         services
             .AddIndexProvider<IndexProfileIndexProvider>()
             .AddDataMigration<IndexingMigrations>();
+
+        services.AddAdminListColumnProvider<IndexingAdminListColumnProvider>();
     }
 }
 

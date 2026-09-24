@@ -66,7 +66,7 @@ public sealed class AdminController : Controller
         [FromServices] IShapeFactory shapeFactory,
         [FromServices] IDisplayManager<RoleEntry> displayManager,
         [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListService adminListService)
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, RolesPermissions.ViewRoles))
         {
@@ -97,7 +97,7 @@ public sealed class AdminController : Controller
             model.RoleEntries.Add(entry);
         }
 
-        var rows = new List<object>(model.RoleEntries.Count);
+        var rows = new List<IShape>(model.RoleEntries.Count);
 
         foreach (var entry in model.RoleEntries)
         {
@@ -120,16 +120,13 @@ public sealed class AdminController : Controller
         }));
 
         // The AdminList shape renders the roles with the configured layout (List, Table, ...).
-        model.List = await shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        model.List = await adminListFactory.CreateAsync(new AdminListContext(RolesAdminList.Name)
         {
-            Name = RolesAdminList.Name,
-            Layout = await adminListService.GetLayoutAsync(RolesAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(RolesAdminList.Name, RolesAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no roles for the moment."],
-        }));
+        }, HttpContext.RequestAborted);
 
         return View(model);
     }

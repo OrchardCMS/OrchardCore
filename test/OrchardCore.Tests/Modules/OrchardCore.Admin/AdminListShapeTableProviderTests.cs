@@ -1,5 +1,6 @@
 using OrchardCore.Admin;
 using OrchardCore.Admin.Models;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Shapes;
@@ -180,7 +181,74 @@ public class AdminListShapeTableProviderTests
         Assert.Empty(shape.Metadata.Alternates);
     }
 
-    private static async Task DisplayAsync(string shapeType, Shape shape)
+    [Fact]
+    public async Task AdminListActions_WithoutLayout_UsesTheConfiguredActionsLayout()
+    {
+        var shape = new Shape();
+        shape.Metadata.Type = AdminListActionsLayouts.ShapeType;
+
+        var services = new ServiceCollection()
+            .AddSingleton(Mock.Of<IOptionsMonitor<AdminListOptions>>(m => m.CurrentValue == new AdminListOptions { DefaultActionsLayout = AdminListActionsLayouts.Menu }))
+            .BuildServiceProvider();
+
+        await DisplayAsync(AdminListActionsLayouts.ShapeType, shape, services);
+
+        Assert.Equal(AdminListActionsLayouts.Menu, shape.Properties["Layout"]);
+        Assert.Equal(["AdminListActions__Menu"], shape.Metadata.Alternates.ToArray());
+    }
+
+    [Fact]
+    public async Task AdminList_SiteLetsUsersChoose_OffersTheOtherLayouts()
+    {
+        var shape = CreateNamedList();
+
+        await DisplayAsync(AdminListConstants.ShapeType, shape, CreateSelectorServices());
+
+        var selector = Assert.IsAssignableFrom<IShape>(shape.Properties["LayoutSelector"]);
+        Assert.Equal("Contents", selector.Properties["ListName"]);
+        Assert.Equal(AdminListConstants.Table, selector.Properties["Current"]);
+        Assert.Equal(2, ((IEnumerable<AdminListLayoutOption>)selector.Properties["Layouts"]).Count());
+    }
+
+    [Fact]
+    public async Task AdminList_PageTurnsTheSelectorOff_OffersNoLayout()
+    {
+        var shape = CreateNamedList();
+        shape.Properties["ShowLayoutSelector"] = false;
+
+        await DisplayAsync(AdminListConstants.ShapeType, shape, CreateSelectorServices());
+
+        Assert.False(shape.Properties.ContainsKey("LayoutSelector"));
+    }
+
+    private static Shape CreateNamedList()
+    {
+        var shape = new Shape();
+        shape.Metadata.Type = AdminListConstants.ShapeType;
+        shape.Properties["Name"] = "Contents";
+        shape.Properties["Layout"] = AdminListConstants.Table;
+
+        return shape;
+    }
+
+    private static ServiceProvider CreateSelectorServices()
+    {
+        var layoutResolver = new Mock<IAdminListLayoutResolver>();
+        layoutResolver
+            .Setup(r => r.GetLayoutOptionsAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<AdminListLayoutOption>
+            {
+                new() { Name = AdminListConstants.List, Url = "?layout=List" },
+                new() { Name = AdminListConstants.Table, Url = "?layout=Table" },
+            });
+
+        return new ServiceCollection()
+            .AddSingleton(layoutResolver.Object)
+            .AddSingleton<IShapeFactory, TestShapeFactory>()
+            .BuildServiceProvider();
+    }
+
+    private static async Task DisplayAsync(string shapeType, Shape shape, IServiceProvider services = null)
     {
         var feature = new Mock<IFeatureInfo>();
         feature.Setup(f => f.Id).Returns("OrchardCore.Admin");
@@ -195,11 +263,35 @@ public class AdminListShapeTableProviderTests
             alteration.Alter(descriptor);
         }
 
-        var context = new ShapeDisplayContext { Shape = shape };
+        var context = new ShapeDisplayContext { Shape = shape, ServiceProvider = services };
 
         foreach (var displaying in descriptor.DisplayingAsync)
         {
             await displaying(context);
+        }
+    }
+
+    private sealed class TestShapeFactory : IShapeFactory
+    {
+        public dynamic New => this;
+
+        public async ValueTask<IShape> CreateAsync(
+            string shapeType,
+            Func<ValueTask<IShape>> shapeFactory,
+            Action<ShapeCreatingContext> creating,
+            Action<ShapeCreatedContext> created)
+        {
+            var shape = await shapeFactory();
+            shape.Metadata.Type = shapeType;
+
+            created?.Invoke(new ShapeCreatedContext
+            {
+                Shape = shape,
+                ShapeFactory = this,
+                ShapeType = shapeType,
+            });
+
+            return shape;
         }
     }
 }

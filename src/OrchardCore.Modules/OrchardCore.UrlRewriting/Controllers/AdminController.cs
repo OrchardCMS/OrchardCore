@@ -60,7 +60,8 @@ public sealed class AdminController : Controller
     public async Task<IActionResult> Index(
         RewriteRuleOptions options,
         [FromServices] IShapeFactory shapeFactory,
-        [FromServices] IAdminListService adminListService)
+        [FromServices] IAdminListFactory adminListFactory,
+        [FromServices] IAdminListLayoutResolver layoutResolver)
     {
         if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewritingRules))
         {
@@ -110,7 +111,7 @@ public sealed class AdminController : Controller
             BulkActions = model.Options.BulkActions,
         }));
 
-        var layout = await adminListService.GetLayoutAsync(UrlRewritingAdminList.Name, cancellationToken: HttpContext.RequestAborted);
+        var layout = await layoutResolver.GetLayoutAsync(UrlRewritingAdminList.Name, HttpContext.RequestAborted);
 
         // The rules are reordered by dragging them, which the Grid layout cannot express: its rows are laid out by
         // the grid itself and have no box to drag, so the Table layout, which has the same columns, is used instead.
@@ -120,11 +121,9 @@ public sealed class AdminController : Controller
         }
 
         // The AdminList shape renders the rules with the configured layout (List, Table, ...).
-        model.List = await shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        model.List = await adminListFactory.CreateAsync(new AdminListContext(UrlRewritingAdminList.Name)
         {
-            Name = UrlRewritingAdminList.Name,
             Layout = layout,
-            Columns = await adminListService.GetColumnsAsync(UrlRewritingAdminList.Name, UrlRewritingAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = model.Rules.Select(entry => entry.Shape).ToList(),
             // The rules are evaluated in order, so the element holding the rows is the one the script of the page
             // selects, reorders and saves, whichever layout renders it. See url-rewriting-admin-index.ts.
@@ -140,7 +139,7 @@ public sealed class AdminController : Controller
             Toolbar = toolbar,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no rewrite rules at the moment."],
-        }));
+        }, HttpContext.RequestAborted);
 
         return View(model);
     }

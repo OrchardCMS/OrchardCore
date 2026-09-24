@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Admin;
 using OrchardCore.Deployment;
 using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
@@ -28,6 +29,8 @@ public sealed class Startup : StartupBase
         services.AddRecipeExecutionStep<ReloadTenantStep>();
 
         services.AddDeploymentTargetHandler<RecipeDeploymentTargetHandler>();
+
+        services.AddAdminListColumnProvider<RecipesAdminListColumnProvider>();
     }
 }
 

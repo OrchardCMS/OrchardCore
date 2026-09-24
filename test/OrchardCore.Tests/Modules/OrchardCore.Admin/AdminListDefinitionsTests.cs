@@ -1,25 +1,25 @@
-using System.Reflection;
-using Microsoft.Extensions.Localization;
+using OrchardCore.Admin;
 using OrchardCore.Admin.Models;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Admin;
 
 /// <summary>
-/// Checks the admin lists every module declares, e.g. <c>QueriesAdminList</c>, rather than one of them:
-/// they are found by reflection, so a list added later is checked without touching this file.
+/// Checks the admin lists every module declares, e.g. <c>QueriesAdminList</c>, and the providers declaring their
+/// columns, rather than one of them: they are found by reflection, so a list added later is checked without
+/// touching this file.
 /// </summary>
 public class AdminListDefinitionsTests
 {
     [Fact]
-    public void EveryListHasItsOwnName()
+    public void EveryList_HasItsOwnName()
     {
         var names = GetAdminLists()
-            .Select(list => new { Type = list.Name, Name = (string)list.GetField("Name").GetRawConstantValue() })
+            .Select(list => new { Type = list.Name, Name = GetName(list) })
             .ToList();
 
         Assert.NotEmpty(names);
 
-        // Two lists sharing a name would share the columns a provider configures for it, and the
+        // Two lists sharing a name would share the columns a provider declares for it, and the
         // AdminList__{Name} alternate of one would render the rows of the other.
         var duplicates = names
             .GroupBy(list => list.Name)
@@ -31,38 +31,69 @@ public class AdminListDefinitionsTests
     }
 
     [Fact]
-    public void EveryColumnOfAListHasItsOwnNameAndRendersSomething()
+    public async Task EveryList_HasColumnsThatRenderSomething()
     {
-        var localizer = new NullStringLocalizer();
+        var providers = GetOwnerProviders();
+
+        Assert.NotEmpty(providers);
 
         foreach (var list in GetAdminLists())
         {
-            var name = (string)list.GetField("Name").GetRawConstantValue();
-            var columns = (List<AdminListColumn>)list
-                .GetMethod("GetDefaultColumns", BindingFlags.Public | BindingFlags.Static)
-                .Invoke(null, [localizer]);
+            var name = GetName(list);
+            var context = new AdminListColumnsContext(name);
 
-            Assert.NotEmpty(columns);
-
-            foreach (var column in columns)
+            // A provider adding a column without a name, or one the list already has, throws here.
+            foreach (var provider in providers)
             {
-                Assert.False(string.IsNullOrWhiteSpace(column.Name), $"A column of the {name} list has no name.");
+                await provider.BuildAsync(context, TestContext.Current.CancellationToken);
+            }
 
+            // A list without columns can only be rendered with the List layout.
+            Assert.True(context.Columns.Count > 0, $"No provider declares the columns of the {name} list.");
+
+            foreach (var column in context.Columns)
+            {
                 // A column renders the zones it names, so one without any renders an empty cell.
                 Assert.True(column.Zones is { Length: > 0 }, $"The {column.Name} column of the {name} list renders no zone.");
             }
-
-            var columnNames = columns.Select(column => column.Name).ToList();
-
-            // A provider finds a column by name, so two columns of a list cannot share one.
-            Assert.Equal(columnNames.Count, columnNames.Distinct().Count());
         }
     }
 
-    private static List<Type> GetAdminLists()
-    {
-        var lists = new List<Type>();
+    private static string GetName(Type list)
+        => (string)list.GetField("Name").GetRawConstantValue();
 
+    private static List<Type> GetAdminLists()
+        => GetExportedTypes()
+            // The lists are static classes named after the list they describe, e.g. QueriesAdminList.
+            .Where(type => type.IsAbstract && type.IsSealed && type.Name.EndsWith("AdminList", StringComparison.Ordinal))
+            .Where(type => type.GetField("Name", BindingFlags.Public | BindingFlags.Static) is { IsLiteral: true } field && field.FieldType == typeof(string))
+            .ToList();
+
+    // The providers of the modules owning the lists only need a localizer for the headers of their columns.
+    private static List<IAdminListColumnProvider> GetOwnerProviders()
+    {
+        var providers = new List<IAdminListColumnProvider>();
+
+        foreach (var type in GetExportedTypes().Where(type => !type.IsAbstract && typeof(IAdminListColumnProvider).IsAssignableFrom(type)))
+        {
+            var localizerType = typeof(IStringLocalizer<>).MakeGenericType(type);
+            var constructor = type.GetConstructor([localizerType]);
+
+            if (constructor is null)
+            {
+                continue;
+            }
+
+            var localizer = Activator.CreateInstance(typeof(NullStringLocalizer<>).MakeGenericType(type));
+
+            providers.Add((IAdminListColumnProvider)constructor.Invoke([localizer]));
+        }
+
+        return providers;
+    }
+
+    private static IEnumerable<Type> GetExportedTypes()
+    {
         foreach (var path in Directory.EnumerateFiles(AppContext.BaseDirectory, "OrchardCore.*.dll"))
         {
             Assembly assembly;
@@ -78,26 +109,12 @@ public class AdminListDefinitionsTests
 
             foreach (var type in assembly.GetExportedTypes())
             {
-                // The lists are static classes named after the list they describe, e.g. QueriesAdminList.
-                if (!type.IsAbstract || !type.IsSealed || !type.Name.EndsWith("AdminList", StringComparison.Ordinal))
-                {
-                    continue;
-                }
-
-                var nameField = type.GetField("Name", BindingFlags.Public | BindingFlags.Static);
-
-                if (nameField is { IsLiteral: true } && nameField.FieldType == typeof(string) &&
-                    type.GetMethod("GetDefaultColumns", BindingFlags.Public | BindingFlags.Static) != null)
-                {
-                    lists.Add(type);
-                }
+                yield return type;
             }
         }
-
-        return lists;
     }
 
-    private sealed class NullStringLocalizer : IStringLocalizer
+    public sealed class NullStringLocalizer<T> : IStringLocalizer<T>
     {
         public LocalizedString this[string name] => new(name, name);
 

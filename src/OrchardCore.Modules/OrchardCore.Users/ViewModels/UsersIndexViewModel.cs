@@ -1,3 +1,5 @@
+using OrchardCore.DisplayManagement;
+
 namespace OrchardCore.Users.ViewModels;
 
 public class UsersIndexViewModel
@@ -15,6 +17,6 @@ public class UsersIndexViewModel
 
 public class UserEntry
 {
-    public dynamic Shape { get; set; }
+    public IShape Shape { get; set; }
     public string UserId { get; set; }
 }

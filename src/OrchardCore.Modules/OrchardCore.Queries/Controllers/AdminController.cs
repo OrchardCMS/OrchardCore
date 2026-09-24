@@ -62,7 +62,7 @@ public sealed class AdminController : Controller
     public async Task<IActionResult> Index(
         ContentOptions options,
         PagerParameters pagerParameters,
-        [FromServices] IAdminListService adminListService)
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
         {
@@ -116,17 +116,14 @@ public sealed class AdminController : Controller
         }));
 
         // The AdminList shape renders the queries with the configured layout (List, Table, ...).
-        model.List = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        model.List = await adminListFactory.CreateAsync(new AdminListContext(QueriesAdminList.Name)
         {
-            Name = QueriesAdminList.Name,
-            Layout = await adminListService.GetLayoutAsync(QueriesAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(QueriesAdminList.Name, QueriesAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = model.Queries.Select(entry => entry.Shape).ToList(),
             Toolbar = toolbar,
             Pager = model.Pager,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no queries for the moment."],
-        }));
+        }, HttpContext.RequestAborted);
 
         return View(model);
     }

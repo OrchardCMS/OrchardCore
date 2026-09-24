@@ -1,10 +1,8 @@
-using Microsoft.Extensions.Localization;
-using OrchardCore.Admin.Models;
-
 namespace OrchardCore.Workflows;
 
 /// <summary>
 /// The admin list of workflow types rendered by the <c>AdminList</c> shape.
+/// Its columns are declared by <see cref="WorkflowTypesAdminListColumnProvider"/>.
 /// </summary>
 public static class WorkflowTypesAdminList
 {
@@ -13,52 +11,12 @@ public static class WorkflowTypesAdminList
     /// <c>AdminList__WorkflowTypes</c> and <c>AdminListCell__WorkflowTypes__{Column}</c> alternates.
     /// </summary>
     public const string Name = "WorkflowTypes";
-
-    /// <summary>
-    /// The default columns used by layouts with columns, e.g. <c>Table</c>. Each column renders one or more
-    /// zones of the <c>WorkflowTypeEntry_SummaryAdmin</c> shape.
-    /// </summary>
-    public static List<AdminListColumn> GetDefaultColumns(IStringLocalizer S) =>
-    [
-        new()
-        {
-            Name = "Select",
-            Position = "10",
-            Zones = ["Checkbox"],
-            CssClass = "admin-list-select",
-            Width = AdminListColumn.AutoWidth,
-        },
-        new()
-        {
-            // The name takes the space left by the other columns.
-            Name = "Name",
-            Position = "20",
-            Title = S["Name"],
-            Zones = ["Content", "Description"],
-        },
-        new()
-        {
-            Name = "Status",
-            Position = "30",
-            Title = S["Status"],
-            Zones = ["Tags"],
-            Width = AdminListColumn.AutoWidth,
-        },
-        new()
-        {
-            Name = "Actions",
-            Position = "end",
-            Title = S["Actions"],
-            Zones = ["Actions", "ActionsMenu"],
-            Width = AdminListColumn.AutoWidth,
-            Alignment = AdminListColumnAlignment.End,
-        },
-    ];
 }
 
 
 /// <summary>
 /// The admin list of workflow instances rendered by the <c>AdminList</c> shape.
+/// Its columns are declared by <see cref="WorkflowInstancesAdminListColumnProvider"/>.
 /// </summary>
 public static class WorkflowInstancesAdminList
 {
@@ -67,53 +25,4 @@ public static class WorkflowInstancesAdminList
     /// <c>AdminList__WorkflowInstances</c> and <c>AdminListCell__WorkflowInstances__{Column}</c> alternates.
     /// </summary>
     public const string Name = "WorkflowInstances";
-
-    /// <summary>
-    /// The default columns used by layouts with columns, e.g. <c>Table</c>. Each column renders one or more
-    /// zones of the <c>WorkflowEntry_SummaryAdmin</c> shape.
-    /// </summary>
-    public static List<AdminListColumn> GetDefaultColumns(IStringLocalizer S) =>
-    [
-        new()
-        {
-            Name = "Select",
-            Position = "10",
-            Zones = ["Checkbox"],
-            CssClass = "admin-list-select",
-            Width = AdminListColumn.AutoWidth,
-        },
-        new()
-        {
-            // The workflow id takes the space left by the other columns.
-            Name = "Workflow",
-            Position = "20",
-            Title = S["Workflow"],
-            Zones = ["Content", "Description"],
-        },
-        new()
-        {
-            Name = "Status",
-            Position = "30",
-            Title = S["Status"],
-            Zones = ["Tags"],
-            Width = AdminListColumn.AutoWidth,
-        },
-        new()
-        {
-            Name = "Created",
-            Position = "40",
-            Title = S["Created"],
-            Zones = ["Meta"],
-            Width = AdminListColumn.AutoWidth,
-        },
-        new()
-        {
-            Name = "Actions",
-            Position = "end",
-            Title = S["Actions"],
-            Zones = ["Actions", "ActionsMenu"],
-            Width = AdminListColumn.AutoWidth,
-            Alignment = AdminListColumnAlignment.End,
-        },
-    ];
 }

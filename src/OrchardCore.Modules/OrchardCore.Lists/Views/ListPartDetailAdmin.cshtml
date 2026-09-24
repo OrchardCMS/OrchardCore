@@ -6,9 +6,7 @@
 @model OrchardCore.Lists.ViewModels.ListPartViewModel
 
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
-@inject OrchardCore.DisplayManagement.IShapeFactory ShapeFactory
-@inject IAdminListService AdminListService
-@inject Microsoft.Extensions.Localization.IStringLocalizer<OrchardCore.Lists.ViewModels.ListPartViewModel> S
+@inject IAdminListFactory AdminListFactory
 
 @{
     var enableOrdering =
@@ -31,7 +29,7 @@ else
 {
     @if (Model.ContentItems.Any())
     {
-        var rows = new List<object>();
+        var rows = new List<IShape>();
 
         foreach (var contentItem in Model.ContentItems)
         {
@@ -47,20 +45,15 @@ else
         }
 
         @* Ordering is drag and drop over the rows, which only the List layout can express, so it wins over
-           the configured layout while ordering is enabled. *@
-        var layout = enableOrdering
-            ? AdminListConstants.List
-            : await AdminListService.GetLayoutAsync(ListPartContentsAdminList.Name, cancellationToken: Context.RequestAborted);
-
-        var list = await ShapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+           the configured layout while ordering is enabled, and the list offers no other layout meanwhile. *@
+        var list = await AdminListFactory.CreateAsync(new AdminListContext(ListPartContentsAdminList.Name)
         {
-            Name = ListPartContentsAdminList.Name,
-            Layout = layout,
-            Columns = await AdminListService.GetColumnsAsync(ListPartContentsAdminList.Name, ListPartContentsAdminList.GetDefaultColumns(S), cancellationToken: Context.RequestAborted),
+            Layout = enableOrdering ? AdminListConstants.List : null,
             Rows = rows,
             Pager = Model.Pager,
+            ShowLayoutSelector = !enableOrdering,
             ItemCssClass = "list-group-item list-group-item-action",
-        }));
+        }, Context.RequestAborted);
 
         <div id="ci-sortable">
             @await DisplayAsync(list)

@@ -64,7 +64,7 @@ public sealed class AdminController : Controller
         PagerParameters pagerParameters,
         [FromServices] IDisplayManager<ShapePlacement> displayManager,
         [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListService adminListService)
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManagePlacements))
         {
@@ -113,7 +113,7 @@ public sealed class AdminController : Controller
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
 
-        var rows = new List<object>(shapeList.Count);
+        var rows = new List<IShape>(shapeList.Count);
 
         foreach (var placement in shapeList)
         {
@@ -130,17 +130,14 @@ public sealed class AdminController : Controller
         }));
 
         // The AdminList shape renders the placements with the configured layout (List, Table, ...).
-        model.List = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        model.List = await adminListFactory.CreateAsync(new AdminListContext(PlacementsAdminList.Name)
         {
-            Name = PlacementsAdminList.Name,
-            Layout = await adminListService.GetLayoutAsync(PlacementsAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(PlacementsAdminList.Name, PlacementsAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             Pager = model.Pager,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no placements at the moment."],
-        }));
+        }, HttpContext.RequestAborted);
 
         return View(model);
     }

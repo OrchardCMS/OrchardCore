@@ -64,7 +64,7 @@ public sealed class SitemapIndexController : Controller
         PagerParameters pagerParameters,
         [FromServices] IDisplayManager<SitemapIndexListEntry> displayManager,
         [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListService adminListService)
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
@@ -110,7 +110,7 @@ public sealed class SitemapIndexController : Controller
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
 
-        var rows = new List<object>(model.SitemapIndexes.Count);
+        var rows = new List<IShape>(model.SitemapIndexes.Count);
 
         foreach (var entry in model.SitemapIndexes)
         {
@@ -127,17 +127,14 @@ public sealed class SitemapIndexController : Controller
         }));
 
         // The AdminList shape renders the rows with the configured layout (List, Table, ...).
-        model.List = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        model.List = await adminListFactory.CreateAsync(new AdminListContext(SitemapIndexesAdminList.Name)
         {
-            Name = SitemapIndexesAdminList.Name,
-            Layout = await adminListService.GetLayoutAsync(SitemapIndexesAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(SitemapIndexesAdminList.Name, SitemapIndexesAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             Pager = model.Pager,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no sitemap indexes for the moment."],
-        }));
+        }, HttpContext.RequestAborted);
 
         return View(model);
     }

@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -94,6 +95,9 @@ public sealed class Startup : StartupBase
         services.AddJsonDerivedTypeInfo<ContentTypesSitemapSource, SitemapSource>();
         services.AddJsonDerivedTypeInfo<CustomPathSitemapSource, SitemapSource>();
         services.AddJsonDerivedTypeInfo<SitemapIndexSource, SitemapSource>();
+
+        services.AddAdminListColumnProvider<SitemapsAdminListColumnProvider>();
+        services.AddAdminListColumnProvider<SitemapCacheAdminListColumnProvider>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

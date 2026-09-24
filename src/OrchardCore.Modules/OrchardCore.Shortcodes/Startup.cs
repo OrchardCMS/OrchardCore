@@ -1,6 +1,7 @@
 using Fluid;
 using Fluid.Values;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Admin;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Localization;
@@ -74,6 +75,8 @@ public sealed class ShortcodeTemplatesStartup : StartupBase
 
         services.AddScoped<Sc.IShortcodeProvider, TemplateShortcodeProvider>();
         services.AddScoped<IShortcodeDescriptorProvider, ShortcodeTemplatesDescriptorProvider>();
+
+        services.AddAdminListColumnProvider<ShortcodesAdminListColumnProvider>();
     }
 }
 

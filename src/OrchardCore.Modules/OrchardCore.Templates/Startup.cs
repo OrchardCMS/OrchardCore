@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Admin;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
@@ -41,6 +42,8 @@ public sealed class Startup : StartupBase
 
         services.AddScoped<AdminTemplatesManager>();
         services.AddPermissionProvider<AdminTemplatesPermissions>();
+
+        services.AddAdminListColumnProvider<TemplatesAdminListColumnProvider>();
     }
 }
 

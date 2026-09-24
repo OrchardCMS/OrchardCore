@@ -17,11 +17,6 @@ public static class AdminListConstants
     public const string List = "List";
 
     /// <summary>
-    /// The default layout, rendering the items as a vertical list.
-    /// </summary>
-    public const string DefaultLayout = List;
-
-    /// <summary>
     /// Renders the items as a table, one column per <see cref="Models.AdminListColumn"/>.
     /// </summary>
     public const string Table = "Table";

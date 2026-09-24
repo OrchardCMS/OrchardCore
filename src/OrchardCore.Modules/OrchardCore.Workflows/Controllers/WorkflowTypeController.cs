@@ -96,7 +96,7 @@ public sealed class WorkflowTypeController : Controller
         PagerParameters pagerParameters,
         [FromServices] IDisplayManager<WorkflowTypeEntry> displayManager,
         [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListService adminListService)
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows))
         {
@@ -169,7 +169,7 @@ public sealed class WorkflowTypeController : Controller
             new SelectListItem(S["Delete"], nameof(WorkflowTypeBulkAction.Delete)),
         ];
 
-        var rows = new List<object>(model.WorkflowTypes.Count);
+        var rows = new List<IShape>(model.WorkflowTypes.Count);
 
         foreach (var entry in model.WorkflowTypes)
         {
@@ -186,17 +186,14 @@ public sealed class WorkflowTypeController : Controller
         }));
 
         // The AdminList shape renders the types with the configured layout (List, Table, ...).
-        model.List = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        model.List = await adminListFactory.CreateAsync(new AdminListContext(WorkflowTypesAdminList.Name)
         {
-            Name = WorkflowTypesAdminList.Name,
-            Layout = await adminListService.GetLayoutAsync(WorkflowTypesAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(WorkflowTypesAdminList.Name, WorkflowTypesAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             Pager = model.Pager,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no workflow types for the moment."],
-        }));
+        }, HttpContext.RequestAborted);
 
         return View(model);
     }

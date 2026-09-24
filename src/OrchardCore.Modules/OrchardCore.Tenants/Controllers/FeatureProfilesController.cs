@@ -61,7 +61,7 @@ public sealed class FeatureProfilesController : Controller
         PagerParameters pagerParameters,
         [FromServices] IDisplayManager<FeatureProfileEntry> displayManager,
         [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListService adminListService)
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenantFeatureProfiles))
         {
@@ -115,7 +115,7 @@ public sealed class FeatureProfilesController : Controller
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
 
-        var rows = new List<object>(model.FeatureProfiles.Count);
+        var rows = new List<IShape>(model.FeatureProfiles.Count);
 
         foreach (var entry in model.FeatureProfiles)
         {
@@ -132,17 +132,14 @@ public sealed class FeatureProfilesController : Controller
         }));
 
         // The AdminList shape renders the profiles with the configured layout (List, Table, ...).
-        model.List = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        model.List = await adminListFactory.CreateAsync(new AdminListContext(FeatureProfilesAdminList.Name)
         {
-            Name = FeatureProfilesAdminList.Name,
-            Layout = await adminListService.GetLayoutAsync(FeatureProfilesAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(FeatureProfilesAdminList.Name, FeatureProfilesAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             Pager = model.Pager,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no feature profiles for the moment."],
-        }));
+        }, HttpContext.RequestAborted);
 
         return View(model);
     }

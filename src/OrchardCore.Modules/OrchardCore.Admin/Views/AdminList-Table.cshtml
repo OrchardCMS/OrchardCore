@@ -6,7 +6,7 @@
     Properties:
         Name          The name of the list, e.g. "Contents". Used for the AdminList__{Name} and AdminListCell__{Name}__{Column} alternates.
         Layout        The layout name, "Table" here.
-        Columns       The AdminListColumn collection, usually built by IAdminListService.GetColumnsAsync().
+        Columns       The AdminListColumn collection the column providers of the list declared, see IAdminListColumnsBuilder.
         Rows          The row shapes, usually built with the "SummaryAdmin" display type. (Not "Items": that name is the shape's own child collection.)
                       The Classes and Attributes of a row shape (e.g. data-filter-value for client-side search) are rendered on its table row.
         RowsAttributes Optional attributes rendered on the <tbody>, e.g. the id a sortable list needs. A class joins the ones the layout gives it,
@@ -17,24 +17,47 @@
         PageSize      Optional page size selector, so a layout can place it apart from the pager.
         Search        Optional search bar of the list, e.g. the AdminListSearch shape. Rendered in the action bar above the list.
         Actions       Optional buttons of the page, e.g. "Add", rendered beside the search in the action bar.
-        LayoutSelector Optional selector offering the other layouts of the list, built for the list when the site lets a user choose.
+        LayoutSelector Optional selector offering the other layouts of the list, built for the list when the site lets a user choose, unless the page turns it off with ShowLayoutSelector.
         EmptyMessage  Optional message displayed when there are no items.
 *@
 @using Microsoft.AspNetCore.Mvc.Rendering
-@using System.Text.Encodings.Web
 @using Microsoft.AspNetCore.Html
 @using OrchardCore.Admin.Models
 @using OrchardCore.DisplayManagement.Shapes
 @using OrchardCore.Mvc.Utilities
 @{
-    var rows = ((IEnumerable<object>)Model.Rows ?? []).ToList();
-    // Optional attributes for the element wrapping the rows, e.g. the id a sortable list needs.
-    var rowsAttributes = new Dictionary<string, string>((IDictionary<string, string>)Model.RowsAttributes ?? new Dictionary<string, string>(), StringComparer.OrdinalIgnoreCase);
-    // A class is merged with the ones the layout gives the element: rendering it as an attribute of its own
-    // would leave the element with two class attributes, and the browser keeps the first.
-    rowsAttributes.Remove("class", out var rowsCssClass);
-    var rowsAttributesHtml = new HtmlString(string.Join(' ', rowsAttributes.Select(attribute => $"{attribute.Key}=\"{HtmlEncoder.Default.Encode(attribute.Value)}\"")));
-    var columns = ((IEnumerable<AdminListColumn>)Model.Columns ?? []).ToList();
+    // Enumerated once, as they are: an empty list is only known once the loop over the rows ran.
+    var rows = (IEnumerable<object>)Model.Rows ?? [];
+    var hasRows = false;
+
+    // Optional attributes for the element wrapping the rows, e.g. the id a sortable list needs. A class is merged
+    // with the ones the layout gives the element: rendering it as an attribute of its own would leave the element
+    // with two class attributes, and the browser keeps the first.
+    string rowsCssClass = null;
+    IHtmlContent rowsAttributesHtml = HtmlString.Empty;
+
+    if (Model.RowsAttributes is IDictionary<string, string> rowsAttributes && rowsAttributes.Count > 0)
+    {
+        var attributesHtml = new HtmlContentBuilder();
+
+        foreach (var attribute in rowsAttributes)
+        {
+            if (string.Equals(attribute.Key, "class", StringComparison.OrdinalIgnoreCase))
+            {
+                rowsCssClass = attribute.Value;
+
+                continue;
+            }
+
+            // The value is encoded when the builder is written.
+            attributesHtml.AppendHtml(attribute.Key).AppendHtml("=\"").Append(attribute.Value).AppendHtml("\" ");
+        }
+
+        rowsAttributesHtml = attributesHtml;
+    }
+
+    // The factory passes the list it built; anything else is copied once so it can be counted.
+    IList<AdminListColumn> columns = Model.Columns as IList<AdminListColumn> ?? [.. (IEnumerable<AdminListColumn>)Model.Columns ?? []];
     var header = Model.Header;
     var toolbar = Model.Toolbar;
     string name = Model.Name;
@@ -149,42 +172,41 @@
             </tr>
         </thead>
         <tbody class="@rowsCssClass" @rowsAttributesHtml>
-            @if (rows.Count > 0)
+            @foreach (var row in rows)
             {
-                foreach (var row in rows)
+                hasRows = true;
+
+                var tr = new TagBuilder("tr");
+
+                if (row is Shape rowShape)
                 {
-                    var tr = new TagBuilder("tr");
-
-                    if (row is Shape rowShape)
+                    foreach (var cssClass in rowShape.Classes)
                     {
-                        foreach (var cssClass in rowShape.Classes)
-                        {
-                            tr.AddCssClass(cssClass);
-                        }
-
-                        tr.MergeAttributes(rowShape.Attributes);
+                        tr.AddCssClass(cssClass);
                     }
 
-                    foreach (var column in columns)
-                    {
-                        var cell = await New.AdminListCell(ListName: name, Row: row, Column: column);
-                        var td = new TagBuilder("td");
-                        td.AddCssClass(ColumnCssClass(column));
-
-                        // The title is displayed before the cell when the rows are stacked on small screens.
-                        if (column.Title != null && !string.IsNullOrEmpty(column.Title.Value))
-                        {
-                            td.Attributes["data-title"] = column.Title.Value;
-                        }
-
-                        td.InnerHtml.AppendHtml(await DisplayAsync(cell));
-                        tr.InnerHtml.AppendHtml(td);
-                    }
-
-                    @tr
+                    tr.MergeAttributes(rowShape.Attributes);
                 }
+
+                foreach (var column in columns)
+                {
+                    var cell = await New.AdminListCell(ListName: name, Row: row, Column: column);
+                    var td = new TagBuilder("td");
+                    td.AddCssClass(ColumnCssClass(column));
+
+                    // The title is displayed before the cell when the rows are stacked on small screens.
+                    if (column.Title != null && !string.IsNullOrEmpty(column.Title.Value))
+                    {
+                        td.Attributes["data-title"] = column.Title.Value;
+                    }
+
+                    td.InnerHtml.AppendHtml(await DisplayAsync(cell));
+                    tr.InnerHtml.AppendHtml(td);
+                }
+
+                @tr
             }
-            else
+            @if (!hasRows)
             {
                 <tr class="admin-list-empty">
                     <td colspan="@Math.Max(columns.Count, 1)">

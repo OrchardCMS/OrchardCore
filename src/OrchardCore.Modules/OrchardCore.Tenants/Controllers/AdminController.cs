@@ -99,7 +99,7 @@ public sealed class AdminController : Controller
         PagerParameters pagerParameters,
         [FromServices] IDisplayManager<ShellSettingsEntry> displayManager,
         [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListService adminListService)
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
         {
@@ -224,7 +224,7 @@ public sealed class AdminController : Controller
             new SelectListItem() { Text = S["Enable"], Value = nameof(TenantsBulkAction.Enable) },
         ];
 
-        var rows = new List<object>(model.ShellSettingsEntries.Count);
+        var rows = new List<IShape>(model.ShellSettingsEntries.Count);
 
         foreach (var entry in model.ShellSettingsEntries)
         {
@@ -248,17 +248,14 @@ public sealed class AdminController : Controller
         }));
 
         // The AdminList shape renders the tenants with the configured layout (List, Table, ...).
-        model.List = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        model.List = await adminListFactory.CreateAsync(new AdminListContext(TenantsAdminList.Name)
         {
-            Name = TenantsAdminList.Name,
-            Layout = await adminListService.GetLayoutAsync(TenantsAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(TenantsAdminList.Name, TenantsAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             Pager = model.Pager,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no tenants for the moment."],
-        }));
+        }, HttpContext.RequestAborted);
 
         return View(model);
     }

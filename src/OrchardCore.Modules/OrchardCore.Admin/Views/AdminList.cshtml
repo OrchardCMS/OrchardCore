@@ -14,22 +14,43 @@
         PageSize      Optional page size selector, so a layout can place it apart from the pager.
         Search        Optional search bar of the list, e.g. the AdminListSearch shape. Rendered in the action bar above the list.
         Actions       Optional buttons of the page, e.g. "Add", rendered beside the search in the action bar.
-        LayoutSelector Optional selector offering the other layouts of the list, built for the list when the site lets a user choose.
+        LayoutSelector Optional selector offering the other layouts of the list, built for the list when the site lets a user choose, unless the page turns it off with ShowLayoutSelector.
         ItemCssClass  Optional CSS classes of each item, defaults to "list-group-item list-group-item-action".
         EmptyMessage  Optional message displayed when there are no items.
 *@
 @using Microsoft.AspNetCore.Mvc.Rendering
-@using System.Text.Encodings.Web
 @using Microsoft.AspNetCore.Html
 @using OrchardCore.DisplayManagement.Shapes
 @{
-    var rows = ((IEnumerable<object>)Model.Rows ?? []).ToList();
-    // Optional attributes for the element wrapping the rows, e.g. the id a sortable list needs.
-    var rowsAttributes = new Dictionary<string, string>((IDictionary<string, string>)Model.RowsAttributes ?? new Dictionary<string, string>(), StringComparer.OrdinalIgnoreCase);
-    // A class is merged with the ones the layout gives the element: rendering it as an attribute of its own
-    // would leave the element with two class attributes, and the browser keeps the first.
-    rowsAttributes.Remove("class", out var rowsCssClass);
-    var rowsAttributesHtml = new HtmlString(string.Join(' ', rowsAttributes.Select(attribute => $"{attribute.Key}=\"{HtmlEncoder.Default.Encode(attribute.Value)}\"")));
+    // Enumerated once, as they are: an empty list is only known once the loop over the rows ran.
+    var rows = (IEnumerable<object>)Model.Rows ?? [];
+    var hasRows = false;
+
+    // Optional attributes for the element wrapping the rows, e.g. the id a sortable list needs. A class is merged
+    // with the ones the layout gives the element: rendering it as an attribute of its own would leave the element
+    // with two class attributes, and the browser keeps the first.
+    string rowsCssClass = null;
+    IHtmlContent rowsAttributesHtml = HtmlString.Empty;
+
+    if (Model.RowsAttributes is IDictionary<string, string> rowsAttributes && rowsAttributes.Count > 0)
+    {
+        var attributesHtml = new HtmlContentBuilder();
+
+        foreach (var attribute in rowsAttributes)
+        {
+            if (string.Equals(attribute.Key, "class", StringComparison.OrdinalIgnoreCase))
+            {
+                rowsCssClass = attribute.Value;
+
+                continue;
+            }
+
+            // The value is encoded when the builder is written.
+            attributesHtml.AppendHtml(attribute.Key).AppendHtml("=\"").Append(attribute.Value).AppendHtml("\" ");
+        }
+
+        rowsAttributesHtml = attributesHtml;
+    }
     var header = Model.Header;
     var toolbar = Model.Toolbar;
     string itemCssClass = Model.ItemCssClass ?? "list-group-item list-group-item-action";
@@ -96,29 +117,28 @@
             </div>
         </li>
     }
-    @if (rows.Count > 0)
+    @foreach (var row in rows)
     {
-        foreach (var row in rows)
+        hasRows = true;
+
+        var item = new TagBuilder("li");
+        item.AddCssClass(itemCssClass);
+
+        if (row is Shape rowShape)
         {
-            var item = new TagBuilder("li");
-            item.AddCssClass(itemCssClass);
-
-            if (row is Shape rowShape)
+            foreach (var cssClass in rowShape.Classes)
             {
-                foreach (var cssClass in rowShape.Classes)
-                {
-                    item.AddCssClass(cssClass);
-                }
-
-                item.MergeAttributes(rowShape.Attributes);
+                item.AddCssClass(cssClass);
             }
 
-            item.InnerHtml.AppendHtml(await DisplayAsync(row));
-
-            @item
+            item.MergeAttributes(rowShape.Attributes);
         }
+
+        item.InnerHtml.AppendHtml(await DisplayAsync(row));
+
+        @item
     }
-    else
+    @if (!hasRows)
     {
         <li class="list-group-item">
             <div class="alert alert-info mb-0">

@@ -54,7 +54,7 @@ public sealed class ScopeController : Controller
         string searchText,
         [FromServices] IDisplayManager<OpenIdScopeEntry> displayManager,
         [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListService adminListService)
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageScopes))
         {
@@ -108,7 +108,7 @@ public sealed class ScopeController : Controller
             model.Scopes.Add(entry);
         }
 
-        var rows = new List<object>(model.Scopes.Count);
+        var rows = new List<IShape>(model.Scopes.Count);
 
         foreach (var entry in model.Scopes)
         {
@@ -124,17 +124,14 @@ public sealed class ScopeController : Controller
         }));
 
         // The AdminList shape renders the scopes with the configured layout (List, Table, ...).
-        model.List = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        model.List = await adminListFactory.CreateAsync(new AdminListContext(OpenIdScopesAdminList.Name)
         {
-            Name = OpenIdScopesAdminList.Name,
-            Layout = await adminListService.GetLayoutAsync(OpenIdScopesAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(OpenIdScopesAdminList.Name, OpenIdScopesAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             Pager = model.Pager,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no scopes at the moment."],
-        }));
+        }, HttpContext.RequestAborted);
 
         return View(model);
     }

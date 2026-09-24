@@ -42,7 +42,7 @@ public sealed class SitemapCacheController : Controller
         [FromServices] IShapeFactory shapeFactory,
         [FromServices] IDisplayManager<SitemapCacheEntry> displayManager,
         [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListService adminListService)
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
@@ -54,7 +54,7 @@ public sealed class SitemapCacheController : Controller
             CachedFileNames = (await _sitemapCacheProvider.ListAsync()).ToArray(),
         };
 
-        var rows = new List<object>(model.CachedFileNames.Length);
+        var rows = new List<IShape>(model.CachedFileNames.Length);
 
         foreach (var fileName in model.CachedFileNames)
         {
@@ -77,16 +77,13 @@ public sealed class SitemapCacheController : Controller
         }));
 
         // The AdminList shape renders the cached files with the configured layout (List, Table, ...).
-        model.List = await shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        model.List = await adminListFactory.CreateAsync(new AdminListContext(SitemapCacheAdminList.Name)
         {
-            Name = SitemapCacheAdminList.Name,
-            Layout = await adminListService.GetLayoutAsync(SitemapCacheAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(SitemapCacheAdminList.Name, SitemapCacheAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no sitemaps cached for the moment."],
-        }));
+        }, HttpContext.RequestAborted);
 
         return View(model);
     }

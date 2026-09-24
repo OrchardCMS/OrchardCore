@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.Admin.Models;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
@@ -37,7 +38,7 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
 
                 if (!shape.TryGetProperty<string>("Layout", out var layout) || string.IsNullOrEmpty(layout))
                 {
-                    layout = AdminListConstants.DefaultLayout;
+                    layout = AdminListConstants.List;
                 }
 
                 alternates.Add($"{AdminListConstants.ShapeType}__{layout}");
@@ -59,7 +60,7 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
             });
 
         builder.Describe(AdminListActionsLayouts.ShapeType)
-            .OnDisplaying(async context =>
+            .OnDisplaying(context =>
             {
                 var shape = context.Shape;
 
@@ -79,13 +80,12 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
                 // The layout is resolved here, before the template is selected, so the alternates can depend on it.
                 if (!shape.TryGetProperty<string>("Layout", out var layout) || string.IsNullOrEmpty(layout))
                 {
-                    shape.TryGetProperty<string>("ListName", out var name);
+                    layout = context.ServiceProvider?.GetService<IOptionsMonitor<AdminListOptions>>()?.CurrentValue.DefaultActionsLayout;
 
-                    var adminListService = context.ServiceProvider?.GetService<IAdminListService>();
-
-                    layout = adminListService != null
-                        ? await adminListService.GetActionsLayoutAsync(name)
-                        : AdminListActionsLayouts.Buttons;
+                    if (string.IsNullOrEmpty(layout))
+                    {
+                        layout = AdminListActionsLayouts.Buttons;
+                    }
 
                     shape.Properties["Layout"] = layout;
                 }
@@ -94,7 +94,7 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
 
                 alternates.Add($"{AdminListActionsLayouts.ShapeType}__{layout}");
 
-                if (shape.TryGetProperty<string>("ListName", out var listName) && !string.IsNullOrEmpty(listName))
+                if (shape.TryGetProperty<string>(AdminListConstants.ListNameProperty, out var listName) && !string.IsNullOrEmpty(listName))
                 {
                     var n = listName.ToSafeName();
 
@@ -130,27 +130,30 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
         return ValueTask.CompletedTask;
     }
 
-    // Offers the user the other layouts of this list, unless the page placed the selector itself or took the
-    // offer for its own header, e.g. the features.
+    // Offers the user the other layouts of this list, unless the page placed a selector itself or turned it off,
+    // e.g. the features, which render one list per category and offer the layout once beside their filters.
     private static async Task AddLayoutSelectorAsync(ShapeDisplayContext context, IShape shape, string name, string layout)
     {
         var services = context.ServiceProvider;
 
-        if (services is null || string.IsNullOrEmpty(name) || shape.Properties.ContainsKey("LayoutSelector"))
+        if (services is null ||
+            string.IsNullOrEmpty(name) ||
+            shape.Properties.ContainsKey("LayoutSelector") ||
+            (shape.TryGetProperty<bool>("ShowLayoutSelector", out var showLayoutSelector) && !showLayoutSelector))
         {
             return;
         }
 
-        var adminListService = services.GetService<IAdminListService>();
+        var layoutResolver = services.GetService<IAdminListLayoutResolver>();
         var shapeFactory = services.GetService<IShapeFactory>();
 
-        if (adminListService is null || shapeFactory is null)
+        if (layoutResolver is null || shapeFactory is null)
         {
             return;
         }
 
         var cancellationToken = services.GetService<IHttpContextAccessor>()?.HttpContext?.RequestAborted ?? CancellationToken.None;
-        var layouts = await adminListService.GetLayoutOptionsAsync(name, cancellationToken);
+        var layouts = await layoutResolver.GetLayoutOptionsAsync(cancellationToken);
 
         if (layouts.Count == 0)
         {

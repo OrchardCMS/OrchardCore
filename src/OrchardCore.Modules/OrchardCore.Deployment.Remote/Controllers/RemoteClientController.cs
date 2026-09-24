@@ -61,7 +61,7 @@ public sealed class RemoteClientController : Controller
         PagerParameters pagerParameters,
         [FromServices] IDisplayManager<RemoteClient> displayManager,
         [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListService adminListService)
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageRemoteClients))
         {
@@ -104,7 +104,7 @@ public sealed class RemoteClientController : Controller
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
 
-        var rows = new List<object>(model.RemoteClients.Count);
+        var rows = new List<IShape>(model.RemoteClients.Count);
 
         foreach (var entry in model.RemoteClients)
         {
@@ -121,17 +121,14 @@ public sealed class RemoteClientController : Controller
         }));
 
         // The AdminList shape renders the rows with the configured layout (List, Table, ...).
-        model.List = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        model.List = await adminListFactory.CreateAsync(new AdminListContext(RemoteClientsAdminList.Name)
         {
-            Name = RemoteClientsAdminList.Name,
-            Layout = await adminListService.GetLayoutAsync(RemoteClientsAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(RemoteClientsAdminList.Name, RemoteClientsAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             Pager = model.Pager,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no remote clients for the moment."],
-        }));
+        }, HttpContext.RequestAborted);
 
         return View(model);
     }

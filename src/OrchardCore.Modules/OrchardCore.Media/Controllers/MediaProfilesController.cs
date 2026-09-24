@@ -61,7 +61,7 @@ public sealed class MediaProfilesController : Controller
         PagerParameters pagerParameters,
         [FromServices] IDisplayManager<MediaProfileEntry> displayManager,
         [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListService adminListService)
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaProfiles))
         {
@@ -107,7 +107,7 @@ public sealed class MediaProfilesController : Controller
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
 
-        var rows = new List<object>(model.MediaProfiles.Count);
+        var rows = new List<IShape>(model.MediaProfiles.Count);
 
         foreach (var entry in model.MediaProfiles)
         {
@@ -124,17 +124,14 @@ public sealed class MediaProfilesController : Controller
         }));
 
         // The AdminList shape renders the profiles with the configured layout (List, Table, ...).
-        model.List = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        model.List = await adminListFactory.CreateAsync(new AdminListContext(MediaProfilesAdminList.Name)
         {
-            Name = MediaProfilesAdminList.Name,
-            Layout = await adminListService.GetLayoutAsync(MediaProfilesAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(MediaProfilesAdminList.Name, MediaProfilesAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             Pager = model.Pager,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no media profiles for the moment."],
-        }));
+        }, HttpContext.RequestAborted);
 
         return View(model);
     }

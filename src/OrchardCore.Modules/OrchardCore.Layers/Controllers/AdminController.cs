@@ -87,7 +87,7 @@ public sealed class AdminController : Controller
     public async Task<IActionResult> Index(
         [FromServices] IDisplayManager<Layer> layerDisplayManager,
         [FromServices] IShapeFactory shapeFactory,
-        [FromServices] IAdminListService adminListService)
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
         {
@@ -124,7 +124,7 @@ public sealed class AdminController : Controller
             }
         }
 
-        var rows = new List<object>();
+        var rows = new List<IShape>();
 
         foreach (var layer in model.Layers)
         {
@@ -138,15 +138,12 @@ public sealed class AdminController : Controller
         }));
 
         // The AdminList shape renders the layers with the configured layout (List, Table, ...).
-        model.List = await shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        model.List = await adminListFactory.CreateAsync(new AdminListContext(LayersAdminList.Name)
         {
-            Name = LayersAdminList.Name,
-            Layout = await adminListService.GetLayoutAsync(LayersAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(LayersAdminList.Name, LayersAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             ItemCssClass = "list-group-item",
-        }));
+        }, HttpContext.RequestAborted);
 
         return View(model);
     }

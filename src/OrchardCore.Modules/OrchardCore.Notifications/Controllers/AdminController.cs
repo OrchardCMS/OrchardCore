@@ -76,7 +76,7 @@ public sealed class AdminController : Controller, IUpdateModel
         [ModelBinder(BinderType = typeof(NotificationFilterEngineModelBinder), Name = "q")] QueryFilterResult<Notification> queryFilterResult,
         PagerParameters pagerParameters,
         ListNotificationOptions options,
-        [FromServices] IAdminListService adminListService)
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(HttpContext.User, NotificationPermissions.ManageNotifications))
         {
@@ -142,17 +142,14 @@ public sealed class AdminController : Controller, IUpdateModel
         var header = await _notificationOptionsDisplayManager.BuildEditorAsync(options, this, false, string.Empty, string.Empty);
 
         // The AdminList shape renders the notifications with the configured layout (List, Table, ...).
-        var list = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        var list = await adminListFactory.CreateAsync(new AdminListContext(NotificationsAdminList.Name)
         {
-            Name = NotificationsAdminList.Name,
-            Layout = await adminListService.GetLayoutAsync(NotificationsAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(NotificationsAdminList.Name, NotificationsAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = notificationShapes,
             Header = header,
             Pager = pagerShape,
             ItemCssClass = "list-group-item notification-container-item",
             EmptyMessage = H["No notifications found."],
-        }));
+        }, HttpContext.RequestAborted);
 
         var shapeViewModel = await _shapeFactory.CreateAsync<ListNotificationsViewModel>("NotificationsAdminList", viewModel =>
         {

@@ -69,7 +69,7 @@ public sealed class AdminController : Controller, IUpdateModel
         [FromServices] IOptions<PagerOptions> pagerOptions,
         [FromServices] IShapeFactory shapeFactory,
         [FromServices] IContentsAdminListQueryService contentsAdminListQueryService,
-        [FromServices] IAdminListService adminListService,
+        [FromServices] IAdminListFactory adminListFactory,
         [ModelBinder(BinderType = typeof(ContentItemFilterEngineModelBinder), Name = "q")] QueryFilterResult<ContentItem> queryFilterResult,
         ContentOptionsViewModel options,
         PagerParameters pagerParameters,
@@ -259,30 +259,28 @@ public sealed class AdminController : Controller, IUpdateModel
 
         var header = await _contentOptionsDisplayManager.BuildEditorAsync(options, this, false, string.Empty, string.Empty);
 
+        // The AdminList shape renders the items with the configured layout (List, Table, ...).
+        var list = new AdminListContext(ContentsAdminList.Name)
+        {
+            // ListContentsViewModel.ContentItems keeps the summaries as dynamic for the templates that read it.
+            Rows = contentItemSummaries.Cast<IShape>(),
+            Header = header,
+            Pager = pagerShape,
+        };
+
         // What this listing is filtered by, so a column provider can decide on a column from it, e.g. add one
         // that only makes sense for a content type or a stereotype.
-        var columnsData = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-
         if (contentTypeIds is { Length: > 0 })
         {
-            columnsData.Add(ContentsAdminList.ContentTypesKey, contentTypeIds);
+            list.Data[ContentsAdminList.ContentTypesKey] = contentTypeIds;
         }
 
         if (stereotypes is { Length: > 0 })
         {
-            columnsData.Add(ContentsAdminList.StereotypesKey, stereotypes);
+            list.Data[ContentsAdminList.StereotypesKey] = stereotypes;
         }
 
-        // The AdminList shape renders the items with the configured layout (List, Table, ...).
-        var listShape = await shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
-        {
-            Name = ContentsAdminList.Name,
-            Layout = await adminListService.GetLayoutAsync(ContentsAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(ContentsAdminList.Name, ContentsAdminList.GetDefaultColumns(S), columnsData, HttpContext.RequestAborted),
-            Rows = contentItemSummaries,
-            Header = header,
-            Pager = pagerShape,
-        }));
+        var listShape = await adminListFactory.CreateAsync(list, HttpContext.RequestAborted);
 
         var shapeViewModel = await shapeFactory.CreateAsync<ListContentsViewModel>("ContentsAdminList", viewModel =>
         {

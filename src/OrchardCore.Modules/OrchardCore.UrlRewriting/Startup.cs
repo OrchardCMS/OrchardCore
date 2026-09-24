@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -38,6 +39,8 @@ public sealed class Startup : StartupBase
         services.AddRewriteRuleSource<UrlRewriteRuleSource>(UrlRewriteRuleSource.SourceName)
             .AddScoped<IRewriteRuleHandler, UrlRewriteRuleHandler>()
             .AddDisplayDriver<RewriteRule, UrlRewriteRuleDisplayDriver>();
+
+        services.AddAdminListColumnProvider<UrlRewritingAdminListColumnProvider>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

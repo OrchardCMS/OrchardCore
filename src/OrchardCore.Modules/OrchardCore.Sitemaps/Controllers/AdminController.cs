@@ -70,7 +70,7 @@ public sealed class AdminController : Controller
         PagerParameters pagerParameters,
         [FromServices] IDisplayManager<SitemapListEntry> displayManager,
         [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListService adminListService)
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
@@ -114,7 +114,7 @@ public sealed class AdminController : Controller
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
 
-        var rows = new List<object>(model.Sitemaps.Count);
+        var rows = new List<IShape>(model.Sitemaps.Count);
 
         foreach (var entry in model.Sitemaps)
         {
@@ -131,17 +131,14 @@ public sealed class AdminController : Controller
         }));
 
         // The AdminList shape renders the rows with the configured layout (List, Table, ...).
-        model.List = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        model.List = await adminListFactory.CreateAsync(new AdminListContext(SitemapsAdminList.Name)
         {
-            Name = SitemapsAdminList.Name,
-            Layout = await adminListService.GetLayoutAsync(SitemapsAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(SitemapsAdminList.Name, SitemapsAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             Pager = model.Pager,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no sitemaps for the moment."],
-        }));
+        }, HttpContext.RequestAborted);
 
         return View(model);
     }

@@ -64,7 +64,8 @@ public sealed class AdminController : Controller
         [FromServices] IShapeFactory shapeFactory,
         [FromServices] IDisplayManager<RecipeEntry> displayManager,
         [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListService adminListService)
+        [FromServices] IAdminListFactory adminListFactory,
+        [FromServices] IAdminListLayoutResolver layoutResolver)
     {
         if (!await _authorizationService.AuthorizeAsync(User, RecipePermissions.ManageRecipes))
         {
@@ -86,14 +87,13 @@ public sealed class AdminController : Controller
             Description = recipe.Description,
         }).ToArray();
 
-        var columns = await adminListService.GetColumnsAsync(RecipesAdminList.Name, RecipesAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted);
-        var layout = await adminListService.GetLayoutAsync(RecipesAdminList.Name, cancellationToken: HttpContext.RequestAborted);
+        var layout = await layoutResolver.GetLayoutAsync(RecipesAdminList.Name, HttpContext.RequestAborted);
 
         var model = new RecipesIndexViewModel();
 
-        // The features share one layout, so the page offers it once, beside its search bar, instead of letting
-        // each of its lists carry a selector of its own. Taking the offer here is what stops them.
-        var layoutOptions = await adminListService.GetLayoutOptionsAsync(RecipesAdminList.Name, HttpContext.RequestAborted);
+        // The features share one layout, so the page offers it once, beside its search bar, and its lists do not
+        // carry a selector of their own.
+        var layoutOptions = await layoutResolver.GetLayoutOptionsAsync(HttpContext.RequestAborted);
 
         if (layoutOptions.Count > 0)
         {
@@ -109,7 +109,7 @@ public sealed class AdminController : Controller
         // The page keeps one list per feature, and every list follows the configured layout.
         foreach (var group in entries.GroupBy(entry => entry.Feature).OrderBy(group => group.Key))
         {
-            var rows = new List<object>();
+            var rows = new List<IShape>();
 
             foreach (var entry in group.OrderBy(entry => entry.DisplayName))
             {
@@ -128,14 +128,13 @@ public sealed class AdminController : Controller
             {
                 Feature = group.Key,
                 FilterValue = group.Key + " " + string.Join(' ', group.Select(entry => entry.DisplayName)),
-                List = await shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+                List = await adminListFactory.CreateAsync(new AdminListContext(RecipesAdminList.Name)
                 {
-                    Name = RecipesAdminList.Name,
                     Layout = layout,
-                    Columns = columns,
                     Rows = rows,
+                    ShowLayoutSelector = false,
                     ItemCssClass = "list-group-item",
-                })),
+                }, HttpContext.RequestAborted),
             });
         }
 

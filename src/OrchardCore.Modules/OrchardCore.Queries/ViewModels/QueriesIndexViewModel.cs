@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.Queries.ViewModels;
 
@@ -20,7 +21,7 @@ public class QueryEntry
 {
     public Query Query { get; set; }
     public bool IsChecked { get; set; }
-    public dynamic Shape { get; set; }
+    public IShape Shape { get; set; }
 }
 
 public class ContentOptions

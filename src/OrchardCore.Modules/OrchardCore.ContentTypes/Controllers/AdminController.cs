@@ -67,9 +67,9 @@ public sealed class AdminController : Controller
         [FromServices] IShapeFactory shapeFactory,
         [FromServices] IDisplayManager<ContentTypeEntry> displayManager,
         [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListService adminListService)
+        [FromServices] IAdminListFactory adminListFactory)
     {
-        return List(shapeFactory, displayManager, updateModelAccessor, adminListService);
+        return List(shapeFactory, displayManager, updateModelAccessor, adminListFactory);
     }
 
     #region Types
@@ -79,7 +79,7 @@ public sealed class AdminController : Controller
         [FromServices] IShapeFactory shapeFactory,
         [FromServices] IDisplayManager<ContentTypeEntry> displayManager,
         [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListService adminListService)
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.ViewContentTypes))
         {
@@ -91,7 +91,7 @@ public sealed class AdminController : Controller
             Types = await GetTypesAsync(),
         };
 
-        var rows = new List<object>();
+        var rows = new List<IShape>();
 
         foreach (var type in model.Types)
         {
@@ -121,16 +121,13 @@ public sealed class AdminController : Controller
         }));
 
         // The AdminList shape renders the types with the configured layout (List, Table, ...).
-        model.List = await shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        model.List = await adminListFactory.CreateAsync(new AdminListContext(ContentTypesAdminList.Name)
         {
-            Name = ContentTypesAdminList.Name,
-            Layout = await adminListService.GetLayoutAsync(ContentTypesAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(ContentTypesAdminList.Name, ContentTypesAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no content types for the moment."],
-        }));
+        }, HttpContext.RequestAborted);
 
         return View("List", model);
     }
@@ -543,7 +540,7 @@ public sealed class AdminController : Controller
         [FromServices] IShapeFactory shapeFactory,
         [FromServices] IDisplayManager<ContentPartEntry> displayManager,
         [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListService adminListService)
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.ViewContentTypes))
         {
@@ -556,7 +553,7 @@ public sealed class AdminController : Controller
             Parts = await GetPartsAsync(metadataPartsOnly: true),
         };
 
-        var rows = new List<object>();
+        var rows = new List<IShape>();
 
         foreach (var part in model.Parts)
         {
@@ -587,16 +584,13 @@ public sealed class AdminController : Controller
         }));
 
         // The AdminList shape renders the parts with the configured layout (List, Table, ...).
-        model.List = await shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        model.List = await adminListFactory.CreateAsync(new AdminListContext(ContentPartsAdminList.Name)
         {
-            Name = ContentPartsAdminList.Name,
-            Layout = await adminListService.GetLayoutAsync(ContentPartsAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(ContentPartsAdminList.Name, ContentPartsAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no content parts for the moment."],
-        }));
+        }, HttpContext.RequestAborted);
 
         return View(model);
     }

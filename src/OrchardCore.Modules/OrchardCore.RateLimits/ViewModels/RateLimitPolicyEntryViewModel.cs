@@ -1,3 +1,4 @@
+using OrchardCore.DisplayManagement;
 using OrchardCore.RateLimits.Models;
 
 namespace OrchardCore.RateLimits.ViewModels;
@@ -11,7 +12,7 @@ public class RateLimitPolicyEntryViewModel
     /// <summary>
     /// The full <c>SummaryAdmin</c> row shape rendered by the <c>AdminList</c> shape.
     /// </summary>
-    public dynamic Shape { get; set; }
+    public IShape Shape { get; set; }
 
     public RateLimitPolicy Policy { get; set; }
 

@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks.Services;
 using OrchardCore.BackgroundTasks.ViewModels;
 using OrchardCore.BackgroundTasks.Drivers;
@@ -21,5 +22,7 @@ public sealed class Startup : StartupBase
 
         // Builds the rows of the background tasks admin list.
         services.AddDisplayDriver<BackgroundTaskEntry, BackgroundTaskEntryDisplayDriver>();
+
+        services.AddAdminListColumnProvider<BackgroundTasksAdminListColumnProvider>();
     }
 }

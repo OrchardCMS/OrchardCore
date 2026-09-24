@@ -81,7 +81,7 @@ public sealed class WorkflowController : Controller
         PagerParameters pagerParameters,
         [FromServices] IDisplayManager<WorkflowEntry> displayManager,
         [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListService adminListService,
+        [FromServices] IAdminListFactory adminListFactory,
         string returnUrl = null)
     {
         if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows))
@@ -160,7 +160,7 @@ public sealed class WorkflowController : Controller
             new SelectListItem(S["Delete"], nameof(WorkflowBulkAction.Delete)),
         ];
 
-        var rows = new List<object>(viewModel.Workflows.Count);
+        var rows = new List<IShape>(viewModel.Workflows.Count);
 
         foreach (var entry in viewModel.Workflows)
         {
@@ -184,17 +184,14 @@ public sealed class WorkflowController : Controller
         }));
 
         // The AdminList shape renders the instances with the configured layout (List, Table, ...).
-        viewModel.List = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        viewModel.List = await adminListFactory.CreateAsync(new AdminListContext(WorkflowInstancesAdminList.Name)
         {
-            Name = WorkflowInstancesAdminList.Name,
-            Layout = await adminListService.GetLayoutAsync(WorkflowInstancesAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(WorkflowInstancesAdminList.Name, WorkflowInstancesAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             Pager = viewModel.Pager,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no workflow instances at the moment."],
-        }));
+        }, HttpContext.RequestAborted);
 
         return View(viewModel);
     }

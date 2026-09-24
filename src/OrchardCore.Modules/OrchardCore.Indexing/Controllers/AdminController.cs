@@ -63,7 +63,7 @@ public sealed class AdminController : Controller
         PagerParameters pagerParameters,
         [FromServices] IOptions<PagerOptions> pagerOptions,
         [FromServices] IShapeFactory shapeFactory,
-        [FromServices] IAdminListService adminListService)
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, IndexingPermissions.ManageIndexes))
         {
@@ -132,7 +132,7 @@ public sealed class AdminController : Controller
         ];
 
         // The rows carry the attributes used by the client-side search of the list-management script.
-        var rows = new List<object>(viewModel.Models.Count);
+        var rows = new List<IShape>(viewModel.Models.Count);
 
         foreach (var entry in viewModel.Models)
         {
@@ -155,17 +155,14 @@ public sealed class AdminController : Controller
         }));
 
         // The AdminList shape renders the index profiles with the configured layout (List, Table, ...).
-        viewModel.List = await shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        viewModel.List = await adminListFactory.CreateAsync(new AdminListContext(IndexingAdminList.Name)
         {
-            Name = IndexingAdminList.Name,
-            Layout = await adminListService.GetLayoutAsync(IndexingAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(IndexingAdminList.Name, IndexingAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             Pager = viewModel.Pager,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no indexes at the moment."],
-        }));
+        }, HttpContext.RequestAborted);
 
         return View(viewModel);
     }

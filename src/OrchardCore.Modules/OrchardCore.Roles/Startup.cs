@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OrchardCore.Admin;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.Environment.Shell;
@@ -61,6 +62,8 @@ public sealed class Startup : StartupBase
                 options.SystemAdminRoleName = OrchardCoreConstants.Roles.Administrator;
             }
         });
+
+        services.AddAdminListColumnProvider<RolesAdminListColumnProvider>();
     }
 }
 

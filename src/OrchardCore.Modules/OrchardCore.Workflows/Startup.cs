@@ -1,5 +1,6 @@
 using Fluid;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Admin;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
@@ -92,6 +93,9 @@ public sealed class Startup : StartupBase
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
 
         services.AddTrimmingServices(_shellConfiguration);
+
+        services.AddAdminListColumnProvider<WorkflowTypesAdminListColumnProvider>();
+        services.AddAdminListColumnProvider<WorkflowInstancesAdminListColumnProvider>();
     }
 }
 

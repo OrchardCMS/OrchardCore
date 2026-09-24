@@ -1,10 +1,8 @@
-using Microsoft.Extensions.Localization;
-using OrchardCore.Admin.Models;
-
 namespace OrchardCore.Templates;
 
 /// <summary>
 /// The admin list of templates rendered by the <c>AdminList</c> shape.
+/// Its columns are declared by <see cref="TemplatesAdminListColumnProvider"/>.
 /// </summary>
 public static class TemplatesAdminList
 {
@@ -13,38 +11,4 @@ public static class TemplatesAdminList
     /// <c>AdminList__Templates</c> and <c>AdminListCell__Templates__{Column}</c> alternates.
     /// </summary>
     public const string Name = "Templates";
-
-    /// <summary>
-    /// The default columns used by layouts with columns, e.g. <c>Table</c>. Each column renders one or more
-    /// zones of the <c>TemplateEntry_SummaryAdmin</c> shape.
-    /// </summary>
-    public static List<AdminListColumn> GetDefaultColumns(IStringLocalizer S) =>
-    [
-        new()
-        {
-            Name = "Select",
-            Position = "10",
-            Zones = ["Checkbox"],
-            CssClass = "admin-list-select",
-            Width = AdminListColumn.AutoWidth,
-        },
-        new()
-        {
-            // The name and the description take the space left by the actions.
-            Name = "Name",
-            Position = "20",
-            Title = S["Name"],
-            Zones = ["Content", "Description"],
-        },
-        new()
-        {
-            // "end" keeps the actions last even when a feature adds a column without a position.
-            Name = "Actions",
-            Position = "end",
-            Title = S["Actions"],
-            Zones = ["Actions", "ActionsMenu"],
-            Width = AdminListColumn.AutoWidth,
-            Alignment = AdminListColumnAlignment.End,
-        },
-    ];
 }

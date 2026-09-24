@@ -60,7 +60,7 @@ public sealed class BackgroundTaskController : Controller
         PagerParameters pagerParameters,
         [FromServices] IDisplayManager<BackgroundTaskEntry> displayManager,
         [FromServices] IUpdateModelAccessor updateModelAccessor,
-        [FromServices] IAdminListService adminListService)
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
         {
@@ -144,7 +144,7 @@ public sealed class BackgroundTaskController : Controller
             Options = options,
         };
 
-        var rows = new List<object>(model.Tasks.Count);
+        var rows = new List<IShape>(model.Tasks.Count);
 
         foreach (var entry in model.Tasks)
         {
@@ -168,17 +168,14 @@ public sealed class BackgroundTaskController : Controller
         }));
 
         // The AdminList shape renders the tasks with the configured layout (List, Table, ...).
-        model.List = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+        model.List = await adminListFactory.CreateAsync(new AdminListContext(BackgroundTasksAdminList.Name)
         {
-            Name = BackgroundTasksAdminList.Name,
-            Layout = await adminListService.GetLayoutAsync(BackgroundTasksAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-            Columns = await adminListService.GetColumnsAsync(BackgroundTasksAdminList.Name, BackgroundTasksAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
             Rows = rows,
             Toolbar = toolbar,
             Pager = model.Pager,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no background tasks for the moment."],
-        }));
+        }, HttpContext.RequestAborted);
 
         return View(model);
     }

@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OrchardCore.Admin;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
@@ -39,6 +40,8 @@ public sealed class Startup : StartupBase
 
         // Recipes
         services.AddRecipeExecutionStep<PlacementStep>();
+
+        services.AddAdminListColumnProvider<PlacementsAdminListColumnProvider>();
     }
 }
 
