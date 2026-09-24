@@ -169,13 +169,15 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Media' section is deprecated. Use 'OrchardCore:Media' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Media' instead."
+          "description": "Deprecated. Use 'OrchardCore:Media' instead.",
+          "doNotSuggest": true
         },
         "OrchardCore_Media_Slugify": {
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Media_Slugify' section is deprecated. Use 'OrchardCore:Media:Slugify' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Media:Slugify' instead."
+          "description": "Deprecated. Use 'OrchardCore:Media:Slugify' instead.",
+          "doNotSuggest": true
         }
       }
     }

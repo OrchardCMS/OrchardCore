@@ -28,7 +28,8 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Sms_AzureCommunicationServices' section is deprecated. Use 'OrchardCore:Sms:Azure' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Sms:Azure' instead."
+          "description": "Deprecated. Use 'OrchardCore:Sms:Azure' instead.",
+          "doNotSuggest": true
         }
       }
     }

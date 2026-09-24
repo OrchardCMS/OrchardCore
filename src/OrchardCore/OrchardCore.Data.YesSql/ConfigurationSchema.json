@@ -66,6 +66,11 @@
                 },
                 "DefaultTableNameSeparator": {
                   "type": "string",
+                  "examples": [
+                    "_",
+                    "__",
+                    "NULL"
+                  ],
                   "default": "_",
                   "description": "The separator between a table prefix or collection name and the table name. Use one or more underscores, or 'NULL' for no separator."
                 },
@@ -86,19 +91,22 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_YesSql' section is deprecated. Use 'OrchardCore:YesSql' instead.",
-          "description": "Deprecated. Use 'OrchardCore:YesSql' instead."
+          "description": "Deprecated. Use 'OrchardCore:YesSql' instead.",
+          "doNotSuggest": true
         },
         "OrchardCore_Data_Sqlite": {
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Data_Sqlite' section is deprecated. Use 'OrchardCore:Data:Sqlite' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Data:Sqlite' instead."
+          "description": "Deprecated. Use 'OrchardCore:Data:Sqlite' instead.",
+          "doNotSuggest": true
         },
         "OrchardCore_Data_TableOptions": {
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Data_TableOptions' section is deprecated. Use 'OrchardCore:Data:TableOptions' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Data:TableOptions' instead."
+          "description": "Deprecated. Use 'OrchardCore:Data:TableOptions' instead.",
+          "doNotSuggest": true
         }
       }
     }

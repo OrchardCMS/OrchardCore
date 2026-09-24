@@ -32,7 +32,8 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Tenants' section is deprecated. Use 'OrchardCore:Tenants' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Tenants' instead."
+          "description": "Deprecated. Use 'OrchardCore:Tenants' instead.",
+          "doNotSuggest": true
         }
       }
     }

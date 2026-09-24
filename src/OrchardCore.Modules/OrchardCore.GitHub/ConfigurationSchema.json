@@ -35,7 +35,8 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_GitHub' section is deprecated. Use 'OrchardCore:Authentication:GitHub' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Authentication:GitHub' instead."
+          "description": "Deprecated. Use 'OrchardCore:Authentication:GitHub' instead.",
+          "doNotSuggest": true
         }
       }
     }

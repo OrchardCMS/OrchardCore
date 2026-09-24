@@ -24,7 +24,8 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_HealthChecks' section is deprecated. Use 'OrchardCore:HealthChecks' instead.",
-          "description": "Deprecated. Use 'OrchardCore:HealthChecks' instead."
+          "description": "Deprecated. Use 'OrchardCore:HealthChecks' instead.",
+          "doNotSuggest": true
         }
       }
     }

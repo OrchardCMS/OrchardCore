@@ -66,7 +66,8 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_AzureAISearch' section is deprecated. Use 'OrchardCore:Search:AzureAISearch' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Search:AzureAISearch' instead."
+          "description": "Deprecated. Use 'OrchardCore:Search:AzureAISearch' instead.",
+          "doNotSuggest": true
         }
       }
     }

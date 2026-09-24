@@ -51,6 +51,14 @@
         },
         "RecipeName": {
           "type": "string",
+          "examples": [
+            "Agency",
+            "Blank",
+            "Blog",
+            "ComingSoon",
+            "Headless",
+            "SaaS"
+          ],
           "description": "The name of the recipe preselected when the tenant is set up."
         },
         "Features": {
@@ -147,13 +155,15 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_BackgroundService' section is deprecated. Use 'OrchardCore:BackgroundService' instead.",
-          "description": "Deprecated. Use 'OrchardCore:BackgroundService' instead."
+          "description": "Deprecated. Use 'OrchardCore:BackgroundService' instead.",
+          "doNotSuggest": true
         },
         "OrchardCore_Localization_CultureOptions": {
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Localization_CultureOptions' section is deprecated. Use 'OrchardCore:Localization:CultureOptions' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Localization:CultureOptions' instead."
+          "description": "Deprecated. Use 'OrchardCore:Localization:CultureOptions' instead.",
+          "doNotSuggest": true
         }
       }
     }

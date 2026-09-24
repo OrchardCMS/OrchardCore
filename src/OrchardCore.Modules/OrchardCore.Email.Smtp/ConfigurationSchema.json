@@ -39,6 +39,12 @@
                 },
                 "Port": {
                   "type": "integer",
+                  "examples": [
+                    25,
+                    587,
+                    465,
+                    2525
+                  ],
                   "description": "The port of the SMTP server.",
                   "minimum": 1,
                   "default": 25
@@ -98,7 +104,8 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Email_Smtp' section is deprecated. Use 'OrchardCore:Email:Smtp' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Email:Smtp' instead."
+          "description": "Deprecated. Use 'OrchardCore:Email:Smtp' instead.",
+          "doNotSuggest": true
         }
       }
     }

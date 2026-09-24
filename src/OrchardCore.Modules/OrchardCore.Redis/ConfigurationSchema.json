@@ -31,7 +31,8 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Redis' section is deprecated. Use 'OrchardCore:Redis' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Redis' instead."
+          "description": "Deprecated. Use 'OrchardCore:Redis' instead.",
+          "doNotSuggest": true
         }
       }
     }

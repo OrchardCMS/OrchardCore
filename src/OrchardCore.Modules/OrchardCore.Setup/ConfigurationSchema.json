@@ -10,13 +10,57 @@
           "properties": {
             "DefaultCulture": {
               "type": "string",
+              "examples": [
+                "ar",
+                "cs",
+                "de",
+                "el",
+                "en",
+                "es",
+                "fa",
+                "fr",
+                "it",
+                "ja",
+                "pl",
+                "pt-BR",
+                "ru",
+                "sv",
+                "tr",
+                "vi",
+                "zh-CN",
+                "zh-TW",
+                "zh-Hans-CN",
+                "zh-Hant-TW"
+              ],
               "description": "The default culture of the setup screen, e.g. 'en'. Defaults to the installed UI culture of the operating system. When empty, the current culture of the system is used."
             },
             "SupportedCultures": {
               "type": "array",
               "description": "The cultures that can be selected on the setup screen. The invariant culture ('') is not supported.",
               "items": {
-                "type": "string"
+                "type": "string",
+                "examples": [
+                  "ar",
+                  "cs",
+                  "de",
+                  "el",
+                  "en",
+                  "es",
+                  "fa",
+                  "fr",
+                  "it",
+                  "ja",
+                  "pl",
+                  "pt-BR",
+                  "ru",
+                  "sv",
+                  "tr",
+                  "vi",
+                  "zh-CN",
+                  "zh-TW",
+                  "zh-Hans-CN",
+                  "zh-Hant-TW"
+                ]
               },
               "default": [
                 "ar",
@@ -47,7 +91,8 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Setup' section is deprecated. Use 'OrchardCore:Setup' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Setup' instead."
+          "description": "Deprecated. Use 'OrchardCore:Setup' instead.",
+          "doNotSuggest": true
         }
       }
     }

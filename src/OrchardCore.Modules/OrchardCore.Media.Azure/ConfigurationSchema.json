@@ -80,13 +80,15 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Media_Azure' section is deprecated. Use 'OrchardCore:Media:Azure' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Media:Azure' instead."
+          "description": "Deprecated. Use 'OrchardCore:Media:Azure' instead.",
+          "doNotSuggest": true
         },
         "OrchardCore_Media_Azure_ImageSharp_Cache": {
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Media_Azure_ImageSharp_Cache' section is deprecated. Use 'OrchardCore:Media:Azure:ImageCache' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Media:Azure:ImageCache' instead."
+          "description": "Deprecated. Use 'OrchardCore:Media:Azure:ImageCache' instead.",
+          "doNotSuggest": true
         }
       }
     }

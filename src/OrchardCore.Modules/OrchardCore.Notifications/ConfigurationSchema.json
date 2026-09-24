@@ -37,7 +37,8 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Notifications' section is deprecated. Use 'OrchardCore:Notifications' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Notifications' instead."
+          "description": "Deprecated. Use 'OrchardCore:Notifications' instead.",
+          "doNotSuggest": true
         }
       }
     }

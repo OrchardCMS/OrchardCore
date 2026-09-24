@@ -19,7 +19,8 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_DynamicCache' section is deprecated. Use 'OrchardCore:DynamicCache' instead.",
-          "description": "Deprecated. Use 'OrchardCore:DynamicCache' instead."
+          "description": "Deprecated. Use 'OrchardCore:DynamicCache' instead.",
+          "doNotSuggest": true
         }
       }
     }

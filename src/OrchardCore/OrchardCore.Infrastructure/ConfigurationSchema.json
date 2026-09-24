@@ -103,13 +103,15 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Documents' section is deprecated. Use 'OrchardCore:Documents' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Documents' instead."
+          "description": "Deprecated. Use 'OrchardCore:Documents' instead.",
+          "doNotSuggest": true
         },
         "OrchardCore_Shells_Database": {
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Shells_Database' section is deprecated. Use 'OrchardCore:Shells:Database' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Shells:Database' instead."
+          "description": "Deprecated. Use 'OrchardCore:Shells:Database' instead.",
+          "doNotSuggest": true
         }
       }
     }

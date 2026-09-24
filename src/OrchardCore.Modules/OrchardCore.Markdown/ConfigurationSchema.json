@@ -10,6 +10,38 @@
           "properties": {
             "Extensions": {
               "type": "string",
+              "examples": [
+                "nohtml+advanced",
+                "advanced",
+                "pipetables",
+                "gfm-pipetables",
+                "hardlinebreak",
+                "footnotes",
+                "footers",
+                "citations",
+                "attributes",
+                "gridtables",
+                "abbreviations",
+                "emojis",
+                "definitionlists",
+                "customcontainers",
+                "figures",
+                "mathematics",
+                "bootstrap",
+                "medialinks",
+                "smartypants",
+                "autoidentifiers",
+                "tasklists",
+                "diagrams",
+                "nofollowlinks",
+                "noopenerlinks",
+                "noreferrerlinks",
+                "nohtml",
+                "yaml",
+                "nonascii-noescape",
+                "autolinks",
+                "globalization"
+              ],
               "description": "The Markdig extensions enabled in the Markdown pipeline, separated by '+', e.g. 'nohtml+advanced'. Supported values include 'advanced', 'pipetables', 'gfm-pipetables', 'hardlinebreak', 'footnotes', 'footers', 'citations', 'attributes', 'gridtables', 'abbreviations', 'emojis', 'definitionlists', 'customcontainers', 'figures', 'mathematics', 'bootstrap', 'medialinks', 'smartypants', 'autoidentifiers', 'tasklists', 'diagrams', 'nofollowlinks', 'noopenerlinks', 'noreferrerlinks', 'nohtml', 'yaml', 'nonascii-noescape', 'autolinks' and 'globalization'.",
               "default": "nohtml+advanced"
             }
@@ -19,7 +51,8 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Markdown' section is deprecated. Use 'OrchardCore:Markdown' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Markdown' instead."
+          "description": "Deprecated. Use 'OrchardCore:Markdown' instead.",
+          "doNotSuggest": true
         }
       }
     }

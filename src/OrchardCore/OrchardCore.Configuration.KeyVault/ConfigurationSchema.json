@@ -36,7 +36,8 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_KeyVault_Azure' section is deprecated. Use 'OrchardCore:KeyVault:Azure' instead.",
-          "description": "Deprecated. Use 'OrchardCore:KeyVault:Azure' instead."
+          "description": "Deprecated. Use 'OrchardCore:KeyVault:Azure' instead.",
+          "doNotSuggest": true
         }
       }
     }

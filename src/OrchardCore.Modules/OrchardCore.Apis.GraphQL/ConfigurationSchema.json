@@ -61,7 +61,8 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Apis_GraphQL' section is deprecated. Use 'OrchardCore:Apis:GraphQL' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Apis:GraphQL' instead."
+          "description": "Deprecated. Use 'OrchardCore:Apis:GraphQL' instead.",
+          "doNotSuggest": true
         }
       }
     }

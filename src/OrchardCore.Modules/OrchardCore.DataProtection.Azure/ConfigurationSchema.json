@@ -39,7 +39,8 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_DataProtection_Azure' section is deprecated. Use 'OrchardCore:DataProtection:Azure' instead.",
-          "description": "Deprecated. Use 'OrchardCore:DataProtection:Azure' instead."
+          "description": "Deprecated. Use 'OrchardCore:DataProtection:Azure' instead.",
+          "doNotSuggest": true
         }
       }
     }

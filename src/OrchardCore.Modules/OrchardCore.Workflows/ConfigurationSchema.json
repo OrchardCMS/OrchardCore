@@ -26,7 +26,8 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Workflows' section is deprecated. Use 'OrchardCore:Workflows' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Workflows' instead."
+          "description": "Deprecated. Use 'OrchardCore:Workflows' instead.",
+          "doNotSuggest": true
         }
       }
     }

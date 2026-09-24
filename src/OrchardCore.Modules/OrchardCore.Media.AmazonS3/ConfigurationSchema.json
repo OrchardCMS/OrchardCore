@@ -32,6 +32,30 @@
                 },
                 "Region": {
                   "type": "string",
+                  "examples": [
+                    "us-east-1",
+                    "us-east-2",
+                    "us-west-1",
+                    "us-west-2",
+                    "ca-central-1",
+                    "sa-east-1",
+                    "eu-west-1",
+                    "eu-west-2",
+                    "eu-west-3",
+                    "eu-central-1",
+                    "eu-central-2",
+                    "eu-north-1",
+                    "eu-south-1",
+                    "ap-south-1",
+                    "ap-southeast-1",
+                    "ap-southeast-2",
+                    "ap-northeast-1",
+                    "ap-northeast-2",
+                    "ap-northeast-3",
+                    "ap-east-1",
+                    "me-south-1",
+                    "af-south-1"
+                  ],
                   "description": "The AWS region of the bucket, e.g. 'eu-central-1'. Either 'Region' or 'ServiceURL' is required."
                 },
                 "ServiceURL": {
@@ -105,13 +129,15 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Media_AmazonS3' section is deprecated. Use 'OrchardCore:Media:AmazonS3' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Media:AmazonS3' instead."
+          "description": "Deprecated. Use 'OrchardCore:Media:AmazonS3' instead.",
+          "doNotSuggest": true
         },
         "OrchardCore_Media_AmazonS3_ImageSharp_Cache": {
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Media_AmazonS3_ImageSharp_Cache' section is deprecated. Use 'OrchardCore:Media:AmazonS3:ImageCache' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Media:AmazonS3:ImageCache' instead."
+          "description": "Deprecated. Use 'OrchardCore:Media:AmazonS3:ImageCache' instead.",
+          "doNotSuggest": true
         }
       }
     }

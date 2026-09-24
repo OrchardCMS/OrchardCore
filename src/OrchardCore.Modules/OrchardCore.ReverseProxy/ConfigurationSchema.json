@@ -10,6 +10,16 @@
           "properties": {
             "ForwardedHeaders": {
               "type": "string",
+              "examples": [
+                "None",
+                "XForwardedFor",
+                "XForwardedHost",
+                "XForwardedProto",
+                "XForwardedPrefix",
+                "XForwardedFor, XForwardedProto",
+                "XForwardedFor, XForwardedHost, XForwardedProto",
+                "All"
+              ],
               "description": "The forwarded headers to process, as a comma-separated combination of 'None', 'XForwardedFor', 'XForwardedHost', 'XForwardedProto', 'XForwardedPrefix' and 'All', e.g. 'XForwardedFor, XForwardedProto'."
             },
             "KnownNetworks": {
@@ -34,7 +44,8 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_ReverseProxy' section is deprecated. Use 'OrchardCore:ReverseProxy' instead.",
-          "description": "Deprecated. Use 'OrchardCore:ReverseProxy' instead."
+          "description": "Deprecated. Use 'OrchardCore:ReverseProxy' instead.",
+          "doNotSuggest": true
         }
       }
     }

@@ -35,7 +35,8 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Google' section is deprecated. Use 'OrchardCore:Authentication:Google' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Authentication:Google' instead."
+          "description": "Deprecated. Use 'OrchardCore:Authentication:Google' instead.",
+          "doNotSuggest": true
         }
       }
     }

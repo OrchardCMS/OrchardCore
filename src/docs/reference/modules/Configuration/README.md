@@ -114,7 +114,7 @@ The Orchard Core packages that read a configuration section include a `Configura
 - `appsettings.json` and `appsettings.{Environment}.json`.
 - `App_Data/appsettings.json` and `App_Data/appsettings.{Environment}.json`, the global tenant configuration files, which the `OrchardCore.Application.Cms.Targets` package keeps in the project for this purpose.
 
-The deprecated section names are flagged as such.
+Besides the section and setting names, the editor suggests the known values of settings like the database providers, the setup recipes, the time zones, the cultures, the AWS regions, or the security headers. The deprecated section names are flagged as such, and are not suggested.
 
 !!! note
     Visual Studio applies the same schema to all the `appsettings.json` files of a project, so the tenant specific `App_Data/Sites/{tenant}/appsettings.json` files, whose sections are not nested in an `OrchardCore` section, don't get IntelliSense. Visual Studio Code doesn't support JSON schema segments yet.

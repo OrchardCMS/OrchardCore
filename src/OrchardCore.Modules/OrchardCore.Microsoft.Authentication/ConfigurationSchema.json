@@ -61,13 +61,15 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Microsoft_Authentication_MicrosoftAccount' section is deprecated. Use 'OrchardCore:Authentication:MicrosoftAccount' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Authentication:MicrosoftAccount' instead."
+          "description": "Deprecated. Use 'OrchardCore:Authentication:MicrosoftAccount' instead.",
+          "doNotSuggest": true
         },
         "OrchardCore_Microsoft_Authentication_AzureAD": {
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Microsoft_Authentication_AzureAD' section is deprecated. Use 'OrchardCore:Authentication:AzureAD' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Authentication:AzureAD' instead."
+          "description": "Deprecated. Use 'OrchardCore:Authentication:AzureAD' instead.",
+          "doNotSuggest": true
         }
       }
     }

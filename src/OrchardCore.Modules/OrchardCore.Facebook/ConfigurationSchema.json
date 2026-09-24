@@ -38,7 +38,8 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Facebook' section is deprecated. Use 'OrchardCore:Facebook' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Facebook' instead."
+          "description": "Deprecated. Use 'OrchardCore:Facebook' instead.",
+          "doNotSuggest": true
         }
       }
     }

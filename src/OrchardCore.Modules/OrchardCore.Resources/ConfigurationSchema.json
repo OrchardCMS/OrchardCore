@@ -38,7 +38,8 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Resources' section is deprecated. Use 'OrchardCore:Resources' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Resources' instead."
+          "description": "Deprecated. Use 'OrchardCore:Resources' instead.",
+          "doNotSuggest": true
         }
       }
     }

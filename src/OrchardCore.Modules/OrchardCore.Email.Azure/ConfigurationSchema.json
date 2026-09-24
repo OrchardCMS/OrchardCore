@@ -27,13 +27,15 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Email_AzureCommunicationServices' section is deprecated. Use 'OrchardCore:Email:Azure' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Email:Azure' instead."
+          "description": "Deprecated. Use 'OrchardCore:Email:Azure' instead.",
+          "doNotSuggest": true
         },
         "OrchardCore_Email_Azure": {
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Email_Azure' section is deprecated. Use 'OrchardCore:Email:Azure' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Email:Azure' instead."
+          "description": "Deprecated. Use 'OrchardCore:Email:Azure' instead.",
+          "doNotSuggest": true
         }
       }
     }

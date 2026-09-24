@@ -42,7 +42,8 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Shells_Azure' section is deprecated. Use 'OrchardCore:Shells:Azure' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Shells:Azure' instead."
+          "description": "Deprecated. Use 'OrchardCore:Shells:Azure' instead.",
+          "doNotSuggest": true
         }
       }
     }

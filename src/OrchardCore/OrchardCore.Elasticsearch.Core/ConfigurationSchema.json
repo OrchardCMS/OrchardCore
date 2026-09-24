@@ -116,7 +116,8 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Elasticsearch' section is deprecated. Use 'OrchardCore:Search:Elasticsearch' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Search:Elasticsearch' instead."
+          "description": "Deprecated. Use 'OrchardCore:Search:Elasticsearch' instead.",
+          "doNotSuggest": true
         }
       }
     }

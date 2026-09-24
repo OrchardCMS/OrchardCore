@@ -12,7 +12,8 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Email' section is deprecated. Use 'OrchardCore:Email' instead, and configure the SMTP settings in 'OrchardCore:Email:Smtp'.",
-          "description": "Deprecated. Use 'OrchardCore:Email' instead, and configure the SMTP settings in 'OrchardCore:Email:Smtp'."
+          "description": "Deprecated. Use 'OrchardCore:Email' instead, and configure the SMTP settings in 'OrchardCore:Email:Smtp'.",
+          "doNotSuggest": true
         }
       }
     }

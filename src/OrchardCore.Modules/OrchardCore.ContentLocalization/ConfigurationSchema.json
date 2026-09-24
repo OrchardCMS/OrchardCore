@@ -26,7 +26,8 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_ContentLocalization_CulturePickerOptions' section is deprecated. Use 'OrchardCore:ContentLocalization:CulturePickerOptions' instead.",
-          "description": "Deprecated. Use 'OrchardCore:ContentLocalization:CulturePickerOptions' instead."
+          "description": "Deprecated. Use 'OrchardCore:ContentLocalization:CulturePickerOptions' instead.",
+          "doNotSuggest": true
         }
       }
     }

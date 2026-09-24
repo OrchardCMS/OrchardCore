@@ -29,7 +29,8 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Liquid' section is deprecated. Use 'OrchardCore:Liquid' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Liquid' instead."
+          "description": "Deprecated. Use 'OrchardCore:Liquid' instead.",
+          "doNotSuggest": true
         }
       }
     }

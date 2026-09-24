@@ -19,7 +19,8 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Roles' section is deprecated. Use 'OrchardCore:Roles' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Roles' instead."
+          "description": "Deprecated. Use 'OrchardCore:Roles' instead.",
+          "doNotSuggest": true
         }
       }
     }

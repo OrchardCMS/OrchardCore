@@ -30,13 +30,15 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_X' section is deprecated. Use 'OrchardCore:X' instead.",
-          "description": "Deprecated. Use 'OrchardCore:X' instead."
+          "description": "Deprecated. Use 'OrchardCore:X' instead.",
+          "doNotSuggest": true
         },
         "OrchardCore_Twitter": {
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Twitter' section is deprecated. Use 'OrchardCore:X' instead.",
-          "description": "Deprecated. Use 'OrchardCore:X' instead."
+          "description": "Deprecated. Use 'OrchardCore:X' instead.",
+          "doNotSuggest": true
         }
       }
     }

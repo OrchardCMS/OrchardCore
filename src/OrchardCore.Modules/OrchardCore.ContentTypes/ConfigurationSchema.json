@@ -23,7 +23,8 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_ContentTypes' section is deprecated. Use 'OrchardCore:ContentTypes' instead.",
-          "description": "Deprecated. Use 'OrchardCore:ContentTypes' instead."
+          "description": "Deprecated. Use 'OrchardCore:ContentTypes' instead.",
+          "doNotSuggest": true
         }
       }
     }

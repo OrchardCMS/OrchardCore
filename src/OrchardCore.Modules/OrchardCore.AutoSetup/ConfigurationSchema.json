@@ -57,6 +57,12 @@
                   },
                   "DatabaseProvider": {
                     "type": "string",
+                    "enum": [
+                      "Sqlite",
+                      "SqlConnection",
+                      "MySql",
+                      "Postgres"
+                    ],
                     "description": "The database provider of the tenant, e.g. 'Sqlite', 'SqlConnection', 'MySql' or 'Postgres'. Required."
                   },
                   "DatabaseConnectionString": {
@@ -73,10 +79,37 @@
                   },
                   "RecipeName": {
                     "type": "string",
+                    "examples": [
+                      "Agency",
+                      "Blank",
+                      "Blog",
+                      "ComingSoon",
+                      "Headless",
+                      "SaaS"
+                    ],
                     "description": "The name of the setup recipe used to install the tenant, e.g. 'SaaS' or 'Agency'. Required."
                   },
                   "SiteTimeZone": {
                     "type": "string",
+                    "examples": [
+                      "Etc/UTC",
+                      "America/New_York",
+                      "America/Chicago",
+                      "America/Denver",
+                      "America/Los_Angeles",
+                      "America/Sao_Paulo",
+                      "Europe/London",
+                      "Europe/Paris",
+                      "Europe/Amsterdam",
+                      "Europe/Berlin",
+                      "Africa/Johannesburg",
+                      "Asia/Dubai",
+                      "Asia/Kolkata",
+                      "Asia/Singapore",
+                      "Asia/Shanghai",
+                      "Asia/Tokyo",
+                      "Australia/Sydney"
+                    ],
                     "description": "The time zone of the site, e.g. 'Europe/Amsterdam'. Required."
                   },
                   "RequestUrlHost": {
@@ -100,7 +133,8 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_AutoSetup' section is deprecated. Use 'OrchardCore:AutoSetup' instead.",
-          "description": "Deprecated. Use 'OrchardCore:AutoSetup' instead."
+          "description": "Deprecated. Use 'OrchardCore:AutoSetup' instead.",
+          "doNotSuggest": true
         }
       }
     }

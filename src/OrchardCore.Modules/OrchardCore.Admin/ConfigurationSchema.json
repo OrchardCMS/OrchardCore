@@ -19,7 +19,8 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Admin' section is deprecated. Use 'OrchardCore:Admin' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Admin' instead."
+          "description": "Deprecated. Use 'OrchardCore:Admin' instead.",
+          "doNotSuggest": true
         }
       }
     }

@@ -14,50 +14,134 @@
               "properties": {
                 "base-uri": {
                   "type": "string",
+                  "examples": [
+                    "'self'",
+                    "'none'",
+                    "'self' https:",
+                    "'self' 'unsafe-inline'",
+                    "*"
+                  ],
                   "description": "Restricts the URLs that can be used in the <base> element of the page."
                 },
                 "child-src": {
                   "type": "string",
+                  "examples": [
+                    "'self'",
+                    "'none'",
+                    "'self' https:",
+                    "'self' 'unsafe-inline'",
+                    "*"
+                  ],
                   "description": "Restricts the sources of web workers and nested browsing contexts, like frames."
                 },
                 "connect-src": {
                   "type": "string",
+                  "examples": [
+                    "'self'",
+                    "'none'",
+                    "'self' https:",
+                    "'self' 'unsafe-inline'",
+                    "*"
+                  ],
                   "description": "Restricts the URLs that can be loaded by script interfaces like fetch, XMLHttpRequest, WebSocket and EventSource."
                 },
                 "default-src": {
                   "type": "string",
+                  "examples": [
+                    "'self'",
+                    "'none'",
+                    "'self' https:",
+                    "'self' 'unsafe-inline'",
+                    "*"
+                  ],
                   "description": "The fallback sources for the fetch directives that are not defined."
                 },
                 "font-src": {
                   "type": "string",
+                  "examples": [
+                    "'self'",
+                    "'none'",
+                    "'self' https:",
+                    "'self' 'unsafe-inline'",
+                    "*"
+                  ],
                   "description": "Restricts the sources of fonts."
                 },
                 "form-action": {
                   "type": "string",
+                  "examples": [
+                    "'self'",
+                    "'none'",
+                    "'self' https:",
+                    "'self' 'unsafe-inline'",
+                    "*"
+                  ],
                   "description": "Restricts the URLs that can be used as the target of form submissions."
                 },
                 "frame-ancestors": {
                   "type": "string",
+                  "examples": [
+                    "'self'",
+                    "'none'",
+                    "'self' https:",
+                    "'self' 'unsafe-inline'",
+                    "*"
+                  ],
                   "description": "Restricts the parents that can embed the page in a frame. This directive obsoletes the 'X-Frame-Options' HTTP header."
                 },
                 "frame-src": {
                   "type": "string",
+                  "examples": [
+                    "'self'",
+                    "'none'",
+                    "'self' https:",
+                    "'self' 'unsafe-inline'",
+                    "*"
+                  ],
                   "description": "Restricts the sources of nested browsing contexts, like frames."
                 },
                 "img-src": {
                   "type": "string",
+                  "examples": [
+                    "'self'",
+                    "'none'",
+                    "'self' https:",
+                    "'self' 'unsafe-inline'",
+                    "*"
+                  ],
                   "description": "Restricts the sources of images."
                 },
                 "manifest-src": {
                   "type": "string",
+                  "examples": [
+                    "'self'",
+                    "'none'",
+                    "'self' https:",
+                    "'self' 'unsafe-inline'",
+                    "*"
+                  ],
                   "description": "Restricts the sources of application manifests."
                 },
                 "media-src": {
                   "type": "string",
+                  "examples": [
+                    "'self'",
+                    "'none'",
+                    "'self' https:",
+                    "'self' 'unsafe-inline'",
+                    "*"
+                  ],
                   "description": "Restricts the sources of audio and video."
                 },
                 "object-src": {
                   "type": "string",
+                  "examples": [
+                    "'self'",
+                    "'none'",
+                    "'self' https:",
+                    "'self' 'unsafe-inline'",
+                    "*"
+                  ],
                   "description": "Restricts the sources of plugins loaded by the <object> and <embed> elements."
                 },
                 "report-uri": {
@@ -70,10 +154,24 @@
                 },
                 "script-src": {
                   "type": "string",
+                  "examples": [
+                    "'self'",
+                    "'none'",
+                    "'self' https:",
+                    "'self' 'unsafe-inline'",
+                    "*"
+                  ],
                   "description": "Restricts the sources of scripts."
                 },
                 "style-src": {
                   "type": "string",
+                  "examples": [
+                    "'self'",
+                    "'none'",
+                    "'self' https:",
+                    "'self' 'unsafe-inline'",
+                    "*"
+                  ],
                   "description": "Restricts the sources of stylesheets."
                 },
                 "upgrade-insecure-requests": {
@@ -95,131 +193,291 @@
             },
             "PermissionsPolicy": {
               "type": "object",
-              "description": "The features of the 'Permissions-Policy' HTTP header, keyed by feature name, with the allowlist of the feature as value: 'self', '*', or a space-separated list of origins that may include 'self', e.g. 'self https://www.example.com'. A feature with the '()' value is omitted from the header. When the configuration is applied, these features replace the ones configured in the admin settings.",
+              "description": "The features of the 'Permissions-Policy' HTTP header, keyed by feature name, with the allowlist of the feature as value: 'self' to allow the feature for the same origin, '*' for all the origins, or '()' to omit the feature from the header. When the configuration is applied, these features replace the ones configured in the admin settings.",
               "properties": {
                 "accelerometer": {
                   "type": "string",
+                  "examples": [
+                    "self",
+                    "*",
+                    "()"
+                  ],
                   "description": "Controls the use of the accelerometer sensor."
                 },
                 "ambient-light-sensor": {
                   "type": "string",
+                  "examples": [
+                    "self",
+                    "*",
+                    "()"
+                  ],
                   "description": "Controls the use of the ambient light sensor."
                 },
                 "autoplay": {
                   "type": "string",
+                  "examples": [
+                    "self",
+                    "*",
+                    "()"
+                  ],
                   "description": "Controls whether media can play automatically."
                 },
                 "battery": {
                   "type": "string",
+                  "examples": [
+                    "self",
+                    "*",
+                    "()"
+                  ],
                   "description": "Controls the use of the Battery Status API."
                 },
                 "camera": {
                   "type": "string",
+                  "examples": [
+                    "self",
+                    "*",
+                    "()"
+                  ],
                   "description": "Controls the use of video input devices."
                 },
                 "display-capture": {
                   "type": "string",
+                  "examples": [
+                    "self",
+                    "*",
+                    "()"
+                  ],
                   "description": "Controls the capture of the screen contents."
                 },
                 "document-domain": {
                   "type": "string",
+                  "examples": [
+                    "self",
+                    "*",
+                    "()"
+                  ],
                   "description": "Controls the use of the document.domain setter."
                 },
                 "encrypted-media": {
                   "type": "string",
+                  "examples": [
+                    "self",
+                    "*",
+                    "()"
+                  ],
                   "description": "Controls the use of the Encrypted Media Extensions API."
                 },
                 "fullscreen": {
                   "type": "string",
+                  "examples": [
+                    "self",
+                    "*",
+                    "()"
+                  ],
                   "description": "Controls the use of the fullscreen mode."
                 },
                 "gamepad": {
                   "type": "string",
+                  "examples": [
+                    "self",
+                    "*",
+                    "()"
+                  ],
                   "description": "Controls the use of the Gamepad API."
                 },
                 "geolocation": {
                   "type": "string",
+                  "examples": [
+                    "self",
+                    "*",
+                    "()"
+                  ],
                   "description": "Controls the use of the Geolocation API."
                 },
                 "gyroscope": {
                   "type": "string",
+                  "examples": [
+                    "self",
+                    "*",
+                    "()"
+                  ],
                   "description": "Controls the use of the gyroscope sensor."
                 },
                 "layout-animations": {
                   "type": "string",
+                  "examples": [
+                    "self",
+                    "*",
+                    "()"
+                  ],
                   "description": "Controls the animation of the layout properties."
                 },
                 "legacy-image-format": {
                   "type": "string",
+                  "examples": [
+                    "self",
+                    "*",
+                    "()"
+                  ],
                   "description": "Controls the display of images in legacy formats."
                 },
                 "magnetometer": {
                   "type": "string",
+                  "examples": [
+                    "self",
+                    "*",
+                    "()"
+                  ],
                   "description": "Controls the use of the magnetometer sensor."
                 },
                 "microphone": {
                   "type": "string",
+                  "examples": [
+                    "self",
+                    "*",
+                    "()"
+                  ],
                   "description": "Controls the use of audio input devices."
                 },
                 "midi": {
                   "type": "string",
+                  "examples": [
+                    "self",
+                    "*",
+                    "()"
+                  ],
                   "description": "Controls the use of the Web MIDI API."
                 },
                 "oversized-images": {
                   "type": "string",
+                  "examples": [
+                    "self",
+                    "*",
+                    "()"
+                  ],
                   "description": "Controls the display of images larger than their container."
                 },
                 "payment": {
                   "type": "string",
+                  "examples": [
+                    "self",
+                    "*",
+                    "()"
+                  ],
                   "description": "Controls the use of the Payment Request API."
                 },
                 "picture-in-picture": {
                   "type": "string",
+                  "examples": [
+                    "self",
+                    "*",
+                    "()"
+                  ],
                   "description": "Controls the playback of videos in picture-in-picture mode."
                 },
                 "publickey-credentials-get": {
                   "type": "string",
+                  "examples": [
+                    "self",
+                    "*",
+                    "()"
+                  ],
                   "description": "Controls the retrieval of public key credentials through the Web Authentication API."
                 },
                 "speaker-selection": {
                   "type": "string",
+                  "examples": [
+                    "self",
+                    "*",
+                    "()"
+                  ],
                   "description": "Controls the selection of audio output devices."
                 },
                 "screen-wake-lock": {
                   "type": "string",
+                  "examples": [
+                    "self",
+                    "*",
+                    "()"
+                  ],
                   "description": "Controls the use of the Screen Wake Lock API."
                 },
                 "sync-xhr": {
                   "type": "string",
+                  "examples": [
+                    "self",
+                    "*",
+                    "()"
+                  ],
                   "description": "Controls the use of synchronous XMLHttpRequest requests."
                 },
                 "unoptimized-images": {
                   "type": "string",
+                  "examples": [
+                    "self",
+                    "*",
+                    "()"
+                  ],
                   "description": "Controls the display of unoptimized images."
                 },
                 "unsized-media": {
                   "type": "string",
+                  "examples": [
+                    "self",
+                    "*",
+                    "()"
+                  ],
                   "description": "Controls the display of media elements without explicit dimensions."
                 },
                 "usb": {
                   "type": "string",
+                  "examples": [
+                    "self",
+                    "*",
+                    "()"
+                  ],
                   "description": "Controls the use of the WebUSB API."
                 },
                 "web-share": {
                   "type": "string",
+                  "examples": [
+                    "self",
+                    "*",
+                    "()"
+                  ],
                   "description": "Controls the use of the Web Share API."
                 },
                 "xr-spatial-tracking": {
                   "type": "string",
+                  "examples": [
+                    "self",
+                    "*",
+                    "()"
+                  ],
                   "description": "Controls the use of the WebXR Device API."
                 }
               },
               "additionalProperties": {
-                "type": "string"
+                "type": "string",
+                "examples": [
+                  "self",
+                  "*",
+                  "()"
+                ]
               }
             },
             "ReferrerPolicy": {
               "type": "string",
+              "enum": [
+                "no-referrer",
+                "no-referrer-when-downgrade",
+                "origin",
+                "origin-when-cross-origin",
+                "same-origin",
+                "strict-origin",
+                "strict-origin-when-cross-origin",
+                "unsafe-url"
+              ],
               "description": "The value of the 'Referrer-Policy' HTTP header: 'no-referrer', 'no-referrer-when-downgrade', 'origin', 'origin-when-cross-origin', 'same-origin', 'strict-origin', 'strict-origin-when-cross-origin' or 'unsafe-url'.",
               "default": "no-referrer"
             }
@@ -229,7 +487,8 @@
           "type": "object",
           "deprecated": true,
           "deprecationMessage": "The 'OrchardCore_Security' section is deprecated. Use 'OrchardCore:Security' instead.",
-          "description": "Deprecated. Use 'OrchardCore:Security' instead."
+          "description": "Deprecated. Use 'OrchardCore:Security' instead.",
+          "doNotSuggest": true
         }
       }
     }
