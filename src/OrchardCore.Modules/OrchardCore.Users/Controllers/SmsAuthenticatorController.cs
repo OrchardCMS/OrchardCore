@@ -67,7 +67,7 @@ public sealed class SmsAuthenticatorController : TwoFactorAuthenticationBaseCont
             return UserNotFound();
         }
 
-        var settings = await SiteService.GetSettingsAsync<LoginSettings>();
+        var settings = await SiteService.GetSettingsAsync<PhoneLoginSettings>();
 
         var currentPhoneNumber = await UserManager.GetPhoneNumberAsync(user);
 
@@ -92,7 +92,7 @@ public sealed class SmsAuthenticatorController : TwoFactorAuthenticationBaseCont
             return UserNotFound();
         }
 
-        var settings = await SiteService.GetSettingsAsync<LoginSettings>();
+        var settings = await SiteService.GetSettingsAsync<PhoneLoginSettings>();
 
         var currentPhoneNumber = await UserManager.GetPhoneNumberAsync(user);
 

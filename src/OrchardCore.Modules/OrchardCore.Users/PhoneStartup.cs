@@ -12,5 +12,6 @@ public sealed class PhoneStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDisplayDriver<User, UserPhoneNumberDisplayDriver>();
+        services.AddSiteDisplayDriver<PhoneLoginSettingsDisplayDriver>();
     }
 }

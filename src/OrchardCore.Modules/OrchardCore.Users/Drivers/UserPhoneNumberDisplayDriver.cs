@@ -46,7 +46,7 @@ public sealed class UserPhoneNumberDisplayDriver : DisplayDriver<User>
             return null;
         }
 
-        var settings = await _siteService.GetSettingsAsync<LoginSettings>();
+        var settings = await _siteService.GetSettingsAsync<PhoneLoginSettings>();
         var canEditUserInfo = await CanEditUserInfoAsync(user);
         var required = await IsPhoneRequiredAsync();
 
@@ -102,7 +102,7 @@ public sealed class UserPhoneNumberDisplayDriver : DisplayDriver<User>
         }
         else
         {
-            var settings = await _siteService.GetSettingsAsync<LoginSettings>();
+            var settings = await _siteService.GetSettingsAsync<PhoneLoginSettings>();
 
             if (await CanEditUserInfoAsync(user))
             {
