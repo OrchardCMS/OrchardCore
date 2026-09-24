@@ -76,6 +76,11 @@ public sealed class HeadlessFixture : CmsRecipeFixture
     protected override string RecipeName => "Headless";
 }
 
+public sealed class LocalizationFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "Localization";
+}
+
 public sealed class MigrationsFixture : CmsRecipeFixture
 {
     protected override string RecipeName => "Migrations";

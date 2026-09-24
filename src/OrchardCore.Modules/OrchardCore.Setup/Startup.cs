@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Localization;
 using OrchardCore.Modules;
@@ -14,6 +15,7 @@ namespace OrchardCore.Setup;
 
 public sealed class Startup : StartupBase
 {
+    private readonly ShellSettings _shellSettings;
     private readonly string _defaultCulture = CultureInfo.InstalledUICulture.Name;
 
     private string[] _supportedCultures =
@@ -40,8 +42,10 @@ public sealed class Startup : StartupBase
         "zh-Hant-TW"
     ];
 
-    public Startup(IShellConfiguration shellConfiguration)
+    public Startup(IShellConfiguration shellConfiguration, ShellSettings shellSettings)
     {
+        _shellSettings = shellSettings;
+
         var configurationSection = shellConfiguration.GetSection("OrchardCore_Setup");
 
         _defaultCulture = configurationSection["DefaultCulture"] ?? _defaultCulture;
@@ -64,26 +68,37 @@ public sealed class Startup : StartupBase
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        var localizationOptions = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
-        var cultureOptions = serviceProvider.GetService<IOptions<CultureOptions>>().Value;
-
-        localizationOptions.CultureInfoUseUserOverride = !cultureOptions.IgnoreSystemSettings;
-
-        if (!string.IsNullOrEmpty(_defaultCulture))
+        // Only apply the setup experience's own request localization while the tenant is actually
+        // uninitialized. OrchardCore.Localization's Startup (ConfigureOrder -100) already configures
+        // RequestLocalizationOptions from the tenant's real Localization settings once it's running;
+        // calling UseRequestLocalization() again here would add a second RequestLocalizationMiddleware
+        // that runs afterward and overwrites SupportedCultures/SupportedUICultures with this module's
+        // own hard-coded, setup-wizard-only culture list — silently breaking every culture the tenant
+        // actually supports that isn't also in that list (e.g. any culture without an OrchardCore admin
+        // translation, such as most regional variants).
+        if (_shellSettings.IsUninitialized())
         {
-            localizationOptions.SetDefaultCulture(_defaultCulture);
+            var localizationOptions = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
+            var cultureOptions = serviceProvider.GetService<IOptions<CultureOptions>>().Value;
 
-            _supportedCultures = _supportedCultures.Union(new[] { _defaultCulture }).ToArray();
+            localizationOptions.CultureInfoUseUserOverride = !cultureOptions.IgnoreSystemSettings;
+
+            if (!string.IsNullOrEmpty(_defaultCulture))
+            {
+                localizationOptions.SetDefaultCulture(_defaultCulture);
+
+                _supportedCultures = _supportedCultures.Union(new[] { _defaultCulture }).ToArray();
+            }
+
+            if (_supportedCultures?.Length > 0)
+            {
+                localizationOptions
+                    .AddSupportedCultures(_supportedCultures)
+                    .AddSupportedUICultures(_supportedCultures);
+            }
+
+            app.UseRequestLocalization(localizationOptions);
         }
-
-        if (_supportedCultures?.Length > 0)
-        {
-            localizationOptions
-                .AddSupportedCultures(_supportedCultures)
-                .AddSupportedUICultures(_supportedCultures);
-        }
-
-        app.UseRequestLocalization(localizationOptions);
 
         routes.MapAreaControllerRoute(
             name: "Setup",
