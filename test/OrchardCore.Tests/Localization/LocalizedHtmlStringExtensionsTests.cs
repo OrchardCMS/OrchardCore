@@ -6,40 +6,53 @@ public class LocalizedHtmlStringExtensionsTests
     [InlineData("Hello")]
     [InlineData("<strong>Hello</strong>")]
     [InlineData("")]
-    public void Create_WithName_UsesNameAsValue(string name)
+    public void Create_WithValue_UsesValueAsName(string value)
     {
         // Act
-        var localizedHtmlString = LocalizedHtmlString.Create(name);
+        var localizedHtmlString = LocalizedHtmlString.Create(value);
 
         // Assert
-        Assert.Equal(name, localizedHtmlString.Name);
-        Assert.Equal(name, localizedHtmlString.Value);
+        Assert.Equal(value, localizedHtmlString.Name);
+        Assert.Equal(value, localizedHtmlString.Value);
         Assert.False(localizedHtmlString.IsResourceNotFound);
     }
 
     [Fact]
-    public void Create_WithHtmlName_WritesValueWithoutEncoding()
+    public void Create_WithHtmlValue_WritesValueWithoutEncoding()
     {
         // Arrange
         var localizedHtmlString = LocalizedHtmlString.Create("<strong>Hello</strong>");
 
-        using var writer = new StringWriter();
-
         // Act
-        localizedHtmlString.WriteTo(writer, HtmlEncoder.Default);
+        var html = Render(localizedHtmlString);
 
         // Assert
-        Assert.Equal("<strong>Hello</strong>", writer.ToString());
+        Assert.Equal("<strong>Hello</strong>", html);
     }
 
     [Fact]
-    public void Create_WithNullName_Throws()
+    public void Create_WithArguments_WritesEncodedArguments()
     {
-        Assert.Throws<ArgumentNullException>("name", () => LocalizedHtmlString.Create(null));
+        // Arrange
+        var localizedHtmlString = LocalizedHtmlString.Create("<strong>Hello {0}</strong>", "<Mike>");
+
+        // Act
+        var html = Render(localizedHtmlString);
+
+        // Assert
+        Assert.Equal("<strong>Hello {0}</strong>", localizedHtmlString.Name);
+        Assert.Equal("<strong>Hello {0}</strong>", localizedHtmlString.Value);
+        Assert.Equal("<strong>Hello &lt;Mike&gt;</strong>", html);
     }
 
     [Fact]
-    public void Create_CalledOnExtensionClass_UsesNameAsValue()
+    public void Create_WithNullValue_Throws()
+    {
+        Assert.Throws<ArgumentNullException>("value", () => LocalizedHtmlString.Create(null));
+    }
+
+    [Fact]
+    public void Create_CalledOnExtensionClass_UsesValueAsName()
     {
         // Act
         var localizedHtmlString = LocalizedHtmlStringExtensions.Create("Hello");
@@ -47,5 +60,13 @@ public class LocalizedHtmlStringExtensionsTests
         // Assert
         Assert.Equal("Hello", localizedHtmlString.Name);
         Assert.Equal("Hello", localizedHtmlString.Value);
+    }
+
+    private static string Render(LocalizedHtmlString localizedHtmlString)
+    {
+        using var writer = new StringWriter();
+        localizedHtmlString.WriteTo(writer, HtmlEncoder.Default);
+
+        return writer.ToString();
     }
 }

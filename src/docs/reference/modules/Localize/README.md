@@ -129,7 +129,7 @@ msgstr "Bonjour"
 
 ### Creating a localized string without a localizer
 
-Some APIs expect a `LocalizedString` or a `LocalizedHtmlString`, but no localizer is available where the value is created. For these cases, `OrchardCore.Abstractions` adds a `Create` method to both types. The method uses the same text for the name and the value:
+Some APIs expect a `LocalizedString` or a `LocalizedHtmlString`, but no localizer is available where the value is created. For these cases, `OrchardCore.Abstractions` adds a `Create` method to both types. The method takes the value, and also uses it as the name. This works because Orchard Core uses the English text both as the default value and as the name of a localized string:
 
 ```csharp
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -141,10 +141,19 @@ var message = LocalizedHtmlString.Create("<strong>Hello</strong>");
 
 This is the same as `new LocalizedString("Hello", "Hello")` and `new LocalizedHtmlString("Hello", "Hello")`.
 
+Like `S["Hello {0}", name]` and `H["Hello {0}", name]`, `Create` also accepts arguments:
+
+```csharp
+var greeting = LocalizedString.Create("Hello {0}", userName);
+var welcome = LocalizedHtmlString.Create("<strong>Welcome {0}</strong>", userName);
+```
+
+The name stays the text without the arguments, for example `"Hello {0}"`. For a `LocalizedString`, the value is the text formatted with the arguments. For a `LocalizedHtmlString`, the arguments are HTML encoded when the string is rendered. When there are no arguments, the text is not formatted.
+
 `Create` is a C# 14 static extension member. The methods are in the same namespaces as the types, so no additional `using` directive is necessary. From code that does not use C# 14, call `LocalizedStringExtensions.Create("Hello")` or `LocalizedHtmlStringExtensions.Create("Hello")` instead.
 
 !!! note
-    The returned string is not translated. To show a translated value, localize it later by its name, for example with `S[displayName.Name]`. Like the `LocalizedHtmlString` constructor, `LocalizedHtmlString.Create` renders the value as HTML and does not encode it.
+    The returned string is not translated. To show a translated value, localize it later by its name and with the same arguments, for example with `S[displayName.Name]`. Like the `LocalizedHtmlString` constructor, `LocalizedHtmlString.Create` renders the value as HTML and does not encode it.
 
 ## Pluralization
 
