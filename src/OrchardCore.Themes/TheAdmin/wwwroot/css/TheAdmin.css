@@ -6,13 +6,31 @@
 */
 :root {
   --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
-  --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
-  --oc-scrollbar-color: #CDCDCD;
-  --oc-admin-menu-font-color: var(--bs-secondary-color);
-  --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
-  --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
-  --oc-admin-menu-item-font-color: var(--bs-secondary-color);
-  --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
+  /* The chrome of the admin is a silver surface built on grays that carry a faint
+     green cast, the accent being the darkest of those grays rather than a color of
+     its own. A site can rebrand the admin by redefining the accent and the surfaces. */
+  --oc-admin-accent-rgb: 74, 91, 83;
+  --oc-admin-accent-color: rgb(var(--oc-admin-accent-rgb));
+  /* The darker end of the scale, for the hairlines and text that have to stand out
+     against the light surfaces. */
+  --oc-admin-accent-strong-color: #3d4a44;
+  --oc-admin-chrome-bg-color: #f7f9f8;
+  --oc-admin-menu-bg-color: #eef1ef;
+  --oc-admin-menu-border-color: #dde3df;
+  --oc-scrollbar-color: #7e8781;
+  --oc-admin-menu-font-color: #5b6862;
+  --oc-admin-menu-font-color-hover: #2b332f;
+  --oc-admin-menu-item-bg-color: var(--oc-admin-menu-bg-color);
+  --oc-admin-menu-item-font-color: #4f5c56;
+  --oc-admin-menu-item-font-color-active: #2b332f;
+  --oc-admin-menu-group-font-color: #656f69;
+  /* Hovering and the current page are washes of the accent gray, at two strengths. */
+  --oc-admin-menu-item-hover-bg-color: rgba(var(--oc-admin-accent-rgb), 0.08);
+  --oc-admin-menu-item-active-bg-color: rgba(var(--oc-admin-accent-rgb), 0.14);
+  --oc-admin-menu-separator-color: rgba(var(--oc-admin-accent-rgb), 0.15);
+  --oc-admin-menu-item-height: 38px;
+  --oc-admin-menu-flyout-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.18);
+  --oc-start-navigation-width-when-mobile: min(280px, 85vw);
   --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
   --oc-height-dropdown: 250px;
@@ -24,7 +42,7 @@
   --oc-start-navigation-zindex: 1033;
   --oc-link-padding-left: 16px;
   --oc-editor-fullscreen: 1054;
-  --oc-selected-indicator-color: var(--bs-primary);
+  --oc-selected-indicator-color: var(--oc-admin-accent-strong-color);
   /* Action bar should always be less than dropdown menu */
   --oc-action-bar-zindex: 980;
   --oc-second-action-bar-zindex: 983;
@@ -9421,8 +9439,12 @@ div.editor-widget.find-widget .button.codicon:active {
   border-color: transparent;
 }
 
+.ta-navbar-top.text-bg-theme {
+  background-color: var(--oc-admin-chrome-bg-color) !important;
+}
+
 .ta-navbar-top {
-  border-bottom: var(--oc-border-content);
+  border-bottom: var(--bs-border-width) solid var(--oc-admin-menu-border-color);
   z-index: var(--oc-top-nav-zindex);
   height: var(--oc-top-nav-height);
   box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03), 0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05), 0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);
@@ -9445,7 +9467,7 @@ div.editor-widget.find-widget .button.codicon:active {
   margin-top: 1rem;
 }
 
-@media (min-width: 576px) {
+@media (min-width: 768px) {
   .ta-navbar-top .brand-wrapper-title {
     display: block;
     position: absolute;
@@ -9478,22 +9500,58 @@ div.editor-widget.find-widget .button.codicon:active {
   }
 }
 
-[dir="ltr"] .left-sidebar-compact .ta-navbar-top .brand-wrapper-title {
-  left: calc(var(--oc-start-navigation-width-when-compact) + 15px);
+@media (min-width: 768px) {
+  [dir="ltr"] .left-sidebar-compact .ta-navbar-top .brand-wrapper-title {
+    left: calc(var(--oc-start-navigation-width-when-compact) + 15px);
+  }
+
+  [dir="rtl"] .left-sidebar-compact .ta-navbar-top .brand-wrapper-title {
+    right: calc(var(--oc-start-navigation-width-when-compact) + 15px);
+  }
+
+  [dir="ltr"] [dir=rtl] .left-sidebar-compact .ta-navbar-top .brand-wrapper-title {
+    right: calc(var(--oc-start-navigation-width-when-compact) + 15px);
+    left: auto;
+  }
+
+  [dir="rtl"] [dir=rtl] .left-sidebar-compact .ta-navbar-top .brand-wrapper-title {
+    left: calc(var(--oc-start-navigation-width-when-compact) + 15px);
+    right: auto;
+  }
 }
 
-[dir="rtl"] .left-sidebar-compact .ta-navbar-top .brand-wrapper-title {
-  right: calc(var(--oc-start-navigation-width-when-compact) + 15px);
+.ta-sidebar-toggler {
+  display: none;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: var(--bs-border-radius);
+  background-color: transparent;
+  color: inherit;
+  font-size: 1.125rem;
+  cursor: pointer;
 }
 
-[dir="ltr"] [dir=rtl] .left-sidebar-compact .ta-navbar-top .brand-wrapper-title {
-  right: calc(var(--oc-start-navigation-width-when-compact) + 15px);
-  left: auto;
+[dir="ltr"] .ta-sidebar-toggler {
+  margin-right: 0.25rem;
 }
 
-[dir="rtl"] [dir=rtl] .left-sidebar-compact .ta-navbar-top .brand-wrapper-title {
-  left: calc(var(--oc-start-navigation-width-when-compact) + 15px);
-  right: auto;
+[dir="rtl"] .ta-sidebar-toggler {
+  margin-left: 0.25rem;
+}
+
+.ta-sidebar-toggler:hover, .ta-sidebar-toggler:focus-visible {
+  background-color: var(--oc-admin-menu-item-hover-bg-color);
+  color: var(--oc-admin-menu-font-color-hover);
+}
+
+@media (max-width: 767.98px) {
+  .ta-sidebar-toggler {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 .brand-wrapper-title > h1 {
@@ -9515,8 +9573,10 @@ div.editor-widget.find-widget .button.codicon:active {
   height: 32px;
 }
 
-.left-sidebar-compact .ta-navbar-brand span {
-  display: none;
+@media (min-width: 768px) {
+  .left-sidebar-compact .ta-navbar-brand span {
+    display: none;
+  }
 }
 
 .user-top-navbar {
@@ -10386,8 +10446,20 @@ input:not([type=checkbox]):not([type=radio]).input-validation-error {
 }
 
 [data-bs-theme=dark] {
-  --oc-scrollbar-color: #76787A;
-  --oc-admin-menu-bg-color: var(--bs-dark);
+  /* The dark counterpart of the silver chrome declared in '_variables.scss'. */
+  --oc-admin-accent-rgb: 154, 173, 163;
+  /* On the dark surfaces the accent is the lightest of the grays instead of the darkest. */
+  --oc-admin-accent-strong-color: #9aada3;
+  --oc-admin-chrome-bg-color: #171b19;
+  --oc-admin-menu-bg-color: #1d2220;
+  --oc-admin-menu-border-color: #2c3330;
+  --oc-scrollbar-color: #657069;
+  --oc-admin-menu-font-color: #97a29c;
+  --oc-admin-menu-font-color-hover: #eef3f0;
+  --oc-admin-menu-item-font-color: #97a29c;
+  --oc-admin-menu-item-font-color-active: #eef3f0;
+  --oc-admin-menu-group-font-color: #808b85;
+  --oc-admin-menu-flyout-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.45);
 }
 
 [data-bs-theme=dark] .ta-badge {

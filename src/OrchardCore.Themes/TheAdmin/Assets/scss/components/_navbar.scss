@@ -1,5 +1,13 @@
+// The top bar and the menu are the two surfaces of the admin chrome, they share
+// the same silver and green palette declared in '_variables.scss'.
+// '!important' is needed because the dark variant of '.text-bg-theme' declares its
+// own background that way.
+.ta-navbar-top.text-bg-theme {
+    background-color: var(--oc-admin-chrome-bg-color) !important;
+}
+
 .ta-navbar-top {
-    border-bottom: var(--oc-border-content);
+    border-bottom: var(--bs-border-width) solid var(--oc-admin-menu-border-color);
     z-index: var(--oc-top-nav-zindex);
     height: var(--oc-top-nav-height);
     box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03), 0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05), 0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);
@@ -21,7 +29,7 @@
         margin-top: 1rem;
     }
 
-    @include media-breakpoint-up(sm) {
+    @include media-breakpoint-up(md) {
         .brand-wrapper-title {
             display: block;
             position: absolute;
@@ -46,14 +54,46 @@
     }
 }
 
-.left-sidebar-compact .ta-navbar-top {
-    .brand-wrapper-title {
-        left: calc(var(--oc-start-navigation-width-when-compact) + 15px);
-    }
+@include media-breakpoint-up(md) {
+    .left-sidebar-compact .ta-navbar-top {
+        .brand-wrapper-title {
+            left: calc(var(--oc-start-navigation-width-when-compact) + 15px);
+        }
 
-    [dir="rtl"] & .brand-wrapper-title {
-        right: calc(var(--oc-start-navigation-width-when-compact) + 15px);
-        left: auto;
+        [dir="rtl"] & .brand-wrapper-title {
+            right: calc(var(--oc-start-navigation-width-when-compact) + 15px);
+            left: auto;
+        }
+    }
+}
+
+// Shows or hides the off canvas menu, only rendered on small screens where
+// the menu would otherwise eat most of the available width.
+.ta-sidebar-toggler {
+    display: none;
+    width: 40px;
+    height: 40px;
+    margin-right: 0.25rem;
+    padding: 0;
+    border: none;
+    border-radius: var(--bs-border-radius);
+    background-color: transparent;
+    color: inherit;
+    font-size: 1.125rem;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+        background-color: var(--oc-admin-menu-item-hover-bg-color);
+        color: var(--oc-admin-menu-font-color-hover);
+    }
+}
+
+@include media-breakpoint-down(md) {
+    .ta-sidebar-toggler {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
 }
 
@@ -78,9 +118,11 @@
 
 // When left-sidebar is compact nav brand is compacted too.
 // It displays logo only, not text.
-.left-sidebar-compact .ta-navbar-brand {
-    span {
-        display: none;
+@include media-breakpoint-up(md) {
+    .left-sidebar-compact .ta-navbar-brand {
+        span {
+            display: none;
+        }
     }
 }
 

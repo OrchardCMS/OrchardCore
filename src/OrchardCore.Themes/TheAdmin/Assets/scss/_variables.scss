@@ -11,18 +11,37 @@ $top-nav-height: 52px !default;
 $footer-height: 40px !default;
 $left-navigation-width: 260px !default;
 $left-navigation-width-when-compact: 48px !default;
+$left-navigation-item-height: 38px !default;
 $link-padding-left: 16px !default;
 $dropdown-max-height: 250px !default;
 
 :root {
     --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
-    --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
-    --oc-scrollbar-color: #CDCDCD;
-    --oc-admin-menu-font-color: var(--bs-secondary-color);
-    --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
-    --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
-    --oc-admin-menu-item-font-color: var(--bs-secondary-color);
-    --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
+    /* The chrome of the admin is a silver surface built on grays that carry a faint
+       green cast, the accent being the darkest of those grays rather than a color of
+       its own. A site can rebrand the admin by redefining the accent and the surfaces. */
+    --oc-admin-accent-rgb: 74, 91, 83;
+    --oc-admin-accent-color: rgb(var(--oc-admin-accent-rgb));
+    /* The darker end of the scale, for the hairlines and text that have to stand out
+       against the light surfaces. */
+    --oc-admin-accent-strong-color: #3d4a44;
+    --oc-admin-chrome-bg-color: #f7f9f8;
+    --oc-admin-menu-bg-color: #eef1ef;
+    --oc-admin-menu-border-color: #dde3df;
+    --oc-scrollbar-color: #7e8781;
+    --oc-admin-menu-font-color: #5b6862;
+    --oc-admin-menu-font-color-hover: #2b332f;
+    --oc-admin-menu-item-bg-color: var(--oc-admin-menu-bg-color);
+    --oc-admin-menu-item-font-color: #4f5c56;
+    --oc-admin-menu-item-font-color-active: #2b332f;
+    --oc-admin-menu-group-font-color: #656f69;
+    /* Hovering and the current page are washes of the accent gray, at two strengths. */
+    --oc-admin-menu-item-hover-bg-color: rgba(var(--oc-admin-accent-rgb), 0.08);
+    --oc-admin-menu-item-active-bg-color: rgba(var(--oc-admin-accent-rgb), 0.14);
+    --oc-admin-menu-separator-color: rgba(var(--oc-admin-accent-rgb), 0.15);
+    --oc-admin-menu-item-height: #{$left-navigation-item-height};
+    --oc-admin-menu-flyout-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.18);
+    --oc-start-navigation-width-when-mobile: min(#{$left-navigation-width + 20px}, 85vw);
     --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
     --oc-zindex-dropdown: #{$zindex-dropdown};
     --oc-height-dropdown: #{$dropdown-max-height};
@@ -34,7 +53,7 @@ $dropdown-max-height: 250px !default;
     --oc-start-navigation-zindex: #{$zindex-fixed + 3};
     --oc-link-padding-left: #{$link-padding-left};
     --oc-editor-fullscreen: #{$zindex-modal - 1};
-    --oc-selected-indicator-color: var(--bs-primary);
+    --oc-selected-indicator-color: var(--oc-admin-accent-strong-color);
     /* Action bar should always be less than dropdown menu */
     --oc-action-bar-zindex: #{$zindex-dropdown - 20};
     --oc-second-action-bar-zindex: #{$zindex-dropdown - 17};

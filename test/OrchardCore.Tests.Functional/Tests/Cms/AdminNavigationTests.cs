@@ -62,6 +62,7 @@ public sealed class AdminNavigationTests : CmsTestBase<BlogFixture>, IClassFixtu
         await page.LoginAsync();
         await page.GotoAndAssertOkAsync("/Admin");
 
+        // The menu only shows what the user opened, so the group holding the item is expanded first.
         await page.GetByRole(AriaRole.Button, new() { Name = "Content", Exact = true }).ClickAsync();
 
         var articleLink = page.Locator("#adminMenu a[data-admin-hash][href=\"/Admin/Contents/ContentItems/Article\"]");
@@ -92,6 +93,7 @@ public sealed class AdminNavigationTests : CmsTestBase<BlogFixture>, IClassFixtu
         await page.LoginAsync();
         await page.GotoAndAssertOkAsync("/Admin");
 
+        // The menu only shows what the user opened, so the group holding the item is expanded first.
         await page.GetByRole(AriaRole.Button, new() { Name = "Content", Exact = true }).ClickAsync();
 
         var articleLink = page.Locator("#adminMenu a[data-admin-hash][href=\"/Admin/Contents/ContentItems/Article\"]");

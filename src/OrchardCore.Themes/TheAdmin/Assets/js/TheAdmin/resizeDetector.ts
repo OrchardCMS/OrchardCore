@@ -1,44 +1,19 @@
-import { setCompactStatus, unSetCompactStatus } from './menu';
-import { isCompactExplicit } from '../constants';
+import { setSidebarOpen, syncCompactState } from './menu';
 
-// System to detect when the window's size reaches a given breakpoint
-// Right now it is only used to compact the lefbar when resizing under 768px
-// In the future maybe this is useful to do other things on resizing.
+// Below 768px the menu is an off canvas drawer, above it is a sidebar that can be
+// compacted. Anything left open by one layout has to be closed when switching to the other.
 (function () {
-    const breakPoint = 768;
-    let lastDirection = '';
-    let lastDirectionManaged = '';
-    let breakpointChangeManaged = false;
-    let lastWidth = document.body.clientWidth;
+    const mobile = window.matchMedia('(max-width: 767.98px)');
 
-    window.addEventListener('resize', () => {
+    const onBreakpointChange = () => {
+        setSidebarOpen(false);
+        syncCompactState();
+    };
 
-        const width = document.body.clientWidth;
-        const direction = width < lastWidth ? 'reducing' : 'increasing';
-
-        if (direction !== lastDirection) {
-            breakpointChangeManaged = false; // need to listen for breakpoint            
-        }
-
-        if (breakpointChangeManaged == false && direction != lastDirectionManaged) {
-            if (direction == 'reducing' && width < breakPoint) {
-                // breakpoint reached while going down
-                setCompactStatus(isCompactExplicit);
-                lastDirectionManaged = direction;
-                breakpointChangeManaged = true;
-            }
-
-            if (direction == 'increasing' && width > breakPoint) {
-                // breakpoint reached while going up
-                if (isCompactExplicit == false) {
-                    unSetCompactStatus();
-                }
-                lastDirectionManaged = direction;
-                breakpointChangeManaged = true;
-            }
-        }
-
-        lastDirection = direction;
-        lastWidth = width;
-    });
+    if (typeof mobile.addEventListener === 'function') {
+        mobile.addEventListener('change', onBreakpointChange);
+    } else {
+        // Safari before 14 only supports the deprecated API.
+        (mobile as MediaQueryList).addListener(onBreakpointChange);
+    }
 })();

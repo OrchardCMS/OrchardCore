@@ -1,971 +1,315 @@
-// Layout 3 : ta-left-sidebar when expanded
-// ----------------------------------------
-body:not(.left-sidebar-compact) {
-    #ta-left-sidebar {
-        background-color: var(--oc-admin-menu-bg-color);
-        z-index: var(--oc-start-navigation-zindex);
-        position: fixed;
-        top: var(--oc-top-nav-height);
-        bottom: 0;
-        left: 0px;
-        width: var(--oc-start-navigation-width);
+// ---------------------------------------------------------------------------
+// Admin sidebar menu.
+//
+// The menu is rendered as groups (first level) holding their items (second level).
+// It is rendered fully collapsed: the script restores what the user last left open,
+// and opens whatever holds the current page. Nothing is ever collapsed on its own.
+//
+// Three layouts are supported:
+//  1. Expanded  : the default, full width sidebar.
+//  2. Compact   : an icon only rail, each group opens as a flyout (medium screens and up).
+//  3. Off canvas: a drawer toggled from the top bar (below the medium breakpoint).
+// ---------------------------------------------------------------------------
+
+// Keyboard focus must stay visible: the hover background alone is far too faint to
+// carry it, so every control of the menu draws an outline instead.
+#ta-left-sidebar :focus-visible,
+.ta-sidebar-toggler:focus-visible {
+    outline: 2px solid var(--oc-admin-accent-strong-color);
+    outline-offset: -2px;
+}
+
+#ta-left-sidebar {
+    position: fixed;
+    top: var(--oc-top-nav-height);
+    bottom: 0;
+    left: 0;
+    width: var(--oc-start-navigation-width);
+    z-index: var(--oc-start-navigation-zindex);
+    background-color: var(--oc-admin-menu-bg-color);
+    color: var(--oc-admin-menu-font-color);
+    border-right: var(--bs-border-width) solid var(--oc-admin-menu-border-color);
+    // The admin uses the default Bootstrap sans serif stack, stated here so that the
+    // menu never inherits a different font from a host application.
+    font-family: var(--bs-body-font-family);
+    transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
+
+    ::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: var(--oc-scrollbar-color);
+    }
+
+    figure {
+        margin: 0;
+    }
+
+    ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    li {
+        position: relative;
+    }
+
+    // Bootstrap's collapse rules are declared with a lower specificity than the
+    // ones below, so they have to be repeated here.
+    .collapse {
+        display: none;
+    }
+
+    .collapse.show {
+        display: block;
+    }
+}
+
+// The filter input sits on top of the menu, it is removed when the
+// 'Enable Admin Menu filter' option is turned off.
+.nav-filter {
+    position: relative;
+    flex: 0 0 auto;
+    border-bottom: var(--bs-border-width) solid var(--oc-admin-menu-border-color);
+
+    .nav-filter-icon {
+        position: absolute;
+        top: 50%;
+        left: 0.75rem;
+        transform: translateY(-50%);
+        font-size: 0.75rem;
         color: var(--oc-admin-menu-font-color);
-        border-right: var(--oc-border-content);
-        transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
+        pointer-events: none;
+    }
 
-        ::-webkit-scrollbar {
-            width: 4px;
-        }
+    #filter,
+    #filter:focus {
+        height: 38px;
+        padding-left: 2.25rem;
+        border: none;
+        border-radius: unset;
+        box-shadow: unset;
+        background-color: transparent;
+        color: var(--bs-body-color);
+    }
 
-        ::-webkit-scrollbar-thumb {
-            background-color: var(--oc-scrollbar-color);
-        }
-
-        figure {
-            margin: 0;
-        }
-        // Rotate the chevron's icon when the menu is active
-        [aria-expanded="true"] {
-            .chevron {
-                transform: translateY(-50%) rotate(90deg);
-                transition-duration: 0.2s;
-            }
-        }
-
-        [aria-expanded="false"] {
-            .chevron {
-                transform: translateY(-50%);
-                transition-duration: 0.2s;
-            }
-        }
-
-        .collapse {
-            display: none;
-        }
-
-        .collapse.show {
-            display: block;
-        }
-
-        .chevron {
-            position: absolute;
-            top: 50%;
-            left: 100%;
-            margin-left: -25px;
-            line-height: 1;
-        }
-
-        figcaption,
-        a,
-        button.item-label {
-            position: relative;
-            display: block;
-            margin: 0;
-        }
-
-        button.item-label {
-            background: none;
-            border: none;
-            padding: 0;
-            font: inherit;
-            text-align: left;
-            width: 100%;
-            color: var(--oc-admin-menu-item-font-color);
-            outline: none;
-        }
-
-        #left-nav {
-            position: relative;
-            flex: 1 1 auto;
-            height: calc(100% - 51px - 38px); // minus footer and search input heights
-            ul {
-                margin: 0;
-                padding: 0;
-                white-space: nowrap;
-            }
-
-            > ul {
-                li {
-                    position: relative;
-                    margin: 0;
-                    padding: 0;
-                    display: list-item;
-                    list-style: none;
-
-                    .item-label {
-                        flex-grow: 1;
-                        cursor: pointer;
-                    }
-                }
-
-                > li {
-                    line-height: 3em;
-                    width: var(--oc-start-navigation-width);
-                    transition: width 0.2s ease-in-out;
-                    background-color: var(--oc-admin-menu-bg-color);
-                }
-
-                > li > figure > ul > li {
-                    line-height: 2.5em;
-                }
-                // first level menu items that have no items and are active
-                > li.active:not(.has-items)::before {
-                    border-left: 3px solid;
-                    border-left-color: var(--oc-selected-indicator-color);
-                    bottom: 0;
-                    content: "";
-                    left: 0;
-                    position: absolute;
-                    top: 0;
-                }
-
-                > li.new:after {
-                    content: "";
-                    width: 92%;
-                    height: 1px;
-                    background: rgba(140, 130, 115, 0.13);
-                    display: block;
-                    margin: 0px auto;
-                }
-                // changing the padding of the icons on the first level to match
-                // the padding when leftbar is collapsed. Avoid small movement
-                // when switching between the two states
-                &.menu-admin {
-                    overflow-y: auto;
-                    overflow-x: hidden;
-                    height: 100%;
-                    margin-bottom: 40px;
-                    scrollbar-width: thin;
-                    scrollbar-color: var(--oc-scrollbar-color) var(--oc-admin-menu-bg-color);
-
-                    .item-label {
-                        padding-left: 0px !important;
-                        display: flex;
-
-                        > span.icon {
-                            padding: 0 5px;
-                            flex-shrink: 0;
-                            font-size: 22px;
-                            width: var(--oc-start-navigation-width-when-compact);
-                            text-align: center;
-
-                            svg {
-                                width: 35px;
-                            }
-                        }
-
-                        > span.title {
-                            flex-grow: 1;
-                            font-size: 14px;
-                            width: calc(100% - 48px - 45px);
-                            overflow: hidden;
-                            white-space: nowrap;
-                            text-overflow: ellipsis;
-                        }
-                    }
-
-                    > li > figure > figcaption > .item-label > .collapse-icon {
-                        color: rgba(255, 0, 0, 0);
-                        display: flex;
-                        justify-content: center;
-                    }
-                }
-            }
-
-            ul li .item-label,
-            li a:hover,
-            li a:active,
-            li a:visited,
-            li button.item-label:hover,
-            li button.item-label:active {
-                color: var(--oc-admin-menu-item-font-color);
-                text-decoration: none;
-                padding-left: $link-padding-left;
-            }
-
-            .btn-nostyle {
-                background: none;
-                color: inherit;
-                border: none;
-                padding: 0;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font: inherit;
-                cursor: pointer;
-                width: 45px;
-                outline: none;
-            }
-
-            > ul > li > figure > figcaption {
-                height: 48px;
-            }
-
-            > ul > li > figure > figcaption > .item-label {
-                height: 100%;
-            }
-            //for accessibility testing
-            /*.btn-nostyle:focus, .btn-nostyle:active {
-                background-color: rgba(0, 0, 0, 0.3);
-                color: white;
-            }*/
-        }
-
-        li.has-items .item-label,
-        li.has-items a:hover,
-        li.has-items a:active,
-        li.has-items a:visited,
-        li.has-items button.item-label:hover,
-        li.has-items button.item-label:active {
-            padding-left: $link-padding-left - 4px;
-        }
-
-        li .item-label:hover {
-            background-color: rgba(0, 0, 0, 0.1);
-        }
-
-        li > figure > ul > li.active > .item-label,
-        li > figure > ul > li.active:not(.has-items) > figure > figcaption > .item-label {
-            background: rgba(0, 0, 0, 0.1);
-            color: var(--oc-admin-menu-item-font-color-active) !important;
-            font-weight: 600;
-            padding-left: (2 * $link-padding-left + 16) !important;
-        }
-
-        li.active > figure > ul > li.active > .item-label::before,
-        li.active > figure > ul > li.active:not(.has-items) > figure > figcaption > .item-label::before {
-            border-left: 3px solid;
-            border-left-color: var(--oc-selected-indicator-color);
-            bottom: 0;
-            content: "";
-            left: 0;
-            position: absolute;
-            top: 0;
-        }
-
-        li.active > figure > ul > li > .item-label::before,
-        li.active > figure > ul > li > figure > figcaption > .item-label::before {
-            border-left: 3px solid;
-            border-left-color: rgba(0, 0, 0, 0.2);
-            bottom: 0;
-            content: "";
-            left: 0;
-            position: absolute;
-            top: 0;
-        }
-
-        li.has-items.active > figure > figcaption > .item-label {
-            padding-left: (2 * $link-padding-left + 16) !important;
-        }
-
-        li.has-items.active > figure > figcaption > .item-label::before {
-            border-left: 3px solid;
-            border-left-color: rgba(0, 0, 0, 0.1);
-            bottom: 0;
-            content: "";
-            left: 0;
-            position: absolute;
-            top: 0;
-        }
-
-        li.active > figure > figcaption > .item-label {
-            background-color: rgba(0, 0, 0, 0.05);
-            font-weight: 600;
-        }
-
-        li.active > figure > figcaption > .item-label:hover {
-            background-color: rgba(0, 0, 0, 0.1);
-        }
-
-        li .active::before {
-            border-left: 3px solid;
-            border-left-color: rgba(0, 0, 0, 0.05);
-            bottom: 0;
-            content: "";
-            left: 0;
-            position: absolute;
-            top: 0;
-        }
-
-        li .active .item-label::before {
-            border-left: 3px solid;
-            border-left-color: rgba(0, 0, 0, 0.1);
-            bottom: 0;
-            content: "";
-            left: 0;
-            position: absolute;
-            top: 0;
-        }
-
-        li ul > li > .item-label,
-        li ul > li > figure > figcaption > .item-label {
-            background: rgba(0, 0, 0, 0.05);
-            color: var(--oc-admin-menu-item-font-color) !important;
-
-            > span.icon {
-                font-size: 16px !important;
-            }
-        }
-
-        li.active ul > li > figure > figcaption > .item-label::before {
-            border-left: 3px solid;
-            border-left-color: rgba(0, 0, 0, 0.2);
-            bottom: 0;
-            content: "";
-            left: 0;
-            position: absolute;
-            top: 0;
-        }
-
-        li ul > li ul > li {
-            background: rgba(0, 0, 0, 0.1);
-        }
-        // third level indent
-        li ul > li ul > li > .item-label {
-            color: var(--oc-admin-menu-item-font-color-active);
-            padding-left: 3 * $link-padding-left !important;
-
-            &:hover {
-                background: rgba(0, 0, 0, 0.18);
-                color: var(--oc-admin-menu-font-color-hover);
-            }
-        }
-
-        li ul > li ul > .active > a {
-            padding-left: (3 * $link-padding-left - 4) !important;
-        }
-
-        .footer {
-            background-color: var(--oc-admin-menu-bg-color) !important;
-            position: relative;
-            z-index: 1;
-        }
-
-        .footer:before {
-            content: "";
-            width: 92%;
-            height: 1px;
-            background: rgba(140, 130, 115, 0.13);
-            display: block;
-            margin: 0px auto;
-        }
-
-        #filter,
-        #filter:focus {
-            border: none;
-            box-shadow: unset;
-            border-radius: unset;
-            opacity: 1;
-            visibility: visible;
-            height: 38px;
-        }
+    #filter:focus-visible {
+        outline: 2px solid var(--oc-admin-accent-strong-color);
+        outline-offset: -2px;
     }
 }
 
-// Layout 4 : ta-left-sidebar when compacted
-// -----------------------------------------
-.left-sidebar-compact {
-    #ta-left-sidebar {
-        background-color: var(--oc-admin-menu-bg-color);
-        z-index: var(--oc-start-navigation-zindex);
-        position: fixed;
-        top: var(--oc-top-nav-height);
+#left-nav {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding-top: 0.25rem;
+    padding-bottom: 0.5rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--oc-scrollbar-color) transparent;
+}
+
+// A row is made of the label and, when the item both links to a page and owns
+// children, of the button toggling those children.
+.nav-item-row {
+    display: flex;
+    align-items: stretch;
+    margin: 0;
+}
+
+.item-label {
+    position: relative;
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    min-width: 0;
+    min-height: var(--oc-admin-menu-item-height);
+    margin: 0;
+    padding: 0.3125rem 0.5rem 0.3125rem 0.75rem;
+    border: none;
+    background: none;
+    font: inherit;
+    text-align: start;
+    text-decoration: none;
+    color: var(--oc-admin-menu-item-font-color);
+    cursor: pointer;
+
+    > .icon {
+        flex: 0 0 auto;
+        align-self: flex-start;
+        width: 1.75rem;
+        min-height: calc(var(--oc-admin-menu-item-height) - 0.625rem);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.125rem;
+
+        svg {
+            width: 1.125rem;
+        }
+    }
+
+    > .title {
+        flex: 1 1 auto;
+        min-width: 0;
+        font-size: 0.875rem;
+        // Long words, such as a content type name, break rather than overflow.
+        overflow-wrap: break-word;
+    }
+
+    > .collapse-icon {
+        flex: 0 0 auto;
+        align-self: flex-start;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.25rem;
+        min-height: calc(var(--oc-admin-menu-item-height) - 0.625rem);
+    }
+
+    &:hover,
+    &:focus-visible {
+        background-color: var(--oc-admin-menu-item-hover-bg-color);
+        color: var(--oc-admin-menu-font-color-hover);
+        text-decoration: none;
+    }
+}
+
+// Toggles the children of an item that also links to a page.
+.nav-toggle {
+    flex: 0 0 auto;
+    align-self: flex-start;
+    width: 2rem;
+    min-height: var(--oc-admin-menu-item-height);
+    padding: 0;
+    border: none;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+        background-color: var(--oc-admin-menu-item-hover-bg-color);
+        color: var(--oc-admin-menu-font-color-hover);
+    }
+}
+
+// Sized here rather than with a Font Awesome class, which would scale the chevron
+// with the font size of the row, making the ones of the groups smaller than the
+// ones of the items.
+#ta-left-sidebar .chevron {
+    font-size: 0.6875rem;
+    transition: transform 0.2s ease-in-out;
+}
+
+#ta-left-sidebar [aria-expanded="true"] .chevron {
+    transform: rotate(90deg);
+}
+
+// Groups
+// ------
+#left-nav > ul > li.has-items > figure > figcaption {
+    margin-top: 0.75rem;
+}
+
+#left-nav > ul > li.has-items:first-child > figure > figcaption {
+    margin-top: 0.25rem;
+}
+
+.nav-group-label {
+    min-height: 2rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--oc-admin-menu-group-font-color);
+
+    // The icon of a group is muted like its caption and lines up with the icons
+    // of the items it holds.
+    > .icon {
+        font-size: 1rem;
+    }
+
+    &:hover,
+    &:focus-visible {
+        color: var(--oc-admin-menu-font-color-hover);
+    }
+}
+
+// Items
+// -----
+// Nested items are set apart from the items of their group.
+#left-nav ul ul ul {
+    background-color: rgba(var(--bs-emphasis-color-rgb), 0.04);
+}
+
+#left-nav ul ul ul .item-label {
+    padding-left: 2.5rem;
+
+    > .icon {
+        width: 1.5rem;
+        font-size: 1rem;
+    }
+}
+
+#left-nav ul ul ul ul .item-label {
+    padding-left: 3.5rem;
+}
+
+// The current page, and its ancestors.
+#left-nav li.current > figure > figcaption > .item-label {
+    background-color: var(--oc-admin-menu-item-active-bg-color);
+    color: var(--oc-admin-menu-item-font-color-active);
+    font-weight: 600;
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
         bottom: 0;
-        left: 0px;
-        width: var(--oc-start-navigation-width-when-compact);
-        color: var(--oc-admin-menu-font-color);
-        border-right: var(--oc-border-content);
-        transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
-        font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-
-        ::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background-color: var(--oc-scrollbar-color);
-        }
-
-        figure {
-            margin: 0;
-        }
-
-        [aria-expanded="false"] {
-            .chevron {
-                transform: translateY(-50%);
-                transition-duration: 0.2s;
-            }
-        }
-
-        .collapse {
-            display: none;
-        }
-
-        .collapse.show {
-            display: block;
-        }
-
-        .chevron {
-            position: absolute;
-            top: 50%;
-            left: 100%;
-            margin-left: -25px;
-            line-height: 1;
-        }
-
-        figcaption,
-        a,
-        button.item-label {
-            position: relative;
-            display: block;
-            margin: 0;
-        }
-
-        button.item-label {
-            background: none;
-            border: none;
-            padding: 0;
-            font: inherit;
-            text-align: left;
-            width: 100%;
-            color: var(--oc-admin-menu-item-font-color);
-            outline: none;
-        }
-
-        #left-nav {
-            flex: 1 1 auto;
-            height: calc(100% - 51px - 38px);
-            overflow-x: hidden;
-            overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: var(--oc-scrollbar-color) var(--oc-admin-menu-bg-color);
-
-            ul {
-                margin: 0;
-                padding: 0;
-                white-space: nowrap;
-                background-color: var(--oc-admin-menu-item-bg-color);
-            }
-
-            > ul {
-                li {
-                    position: relative;
-                    margin: 0;
-                    padding: 0;
-                    display: list-item;
-                    list-style: none;
-
-                    .item-label {
-                        cursor: pointer;
-                    }
-                }
-
-                > li {
-                    height: 48px;
-                    line-height: 3em;
-                    width: calc(var(--oc-start-navigation-width-when-compact) - 1);
-                    transition: width 0.2s ease-in-out;
-                    background-color: var(--oc-admin-menu-bg-color);
-
-                    &:first-child > span.title:after {
-                        content: "";
-                        width: 75%;
-                        height: 1px;
-                        background: rgba(0, 0, 0, 0.1);
-                        display: block;
-                        margin: 0px auto 4px auto;
-                    }
-
-                    > figure > figcaption > .item-label > .btn-nostyle {
-                        display: none;
-                    }
-
-                    > figure > figcaption > .item-label > span.icon-none {
-                        &::before {
-                            content: "⋯";
-                        }
-                    }
-                }
-
-                > li > figure > ul > li {
-                    line-height: 2.5em;
-                }
-
-                > li:not(.has-items) .item-label {
-                    > span.icon {
-                        font-size: 22px;
-                    }
-                }
-
-                .item-label {
-                    display: flex;
-
-                    > span.icon {
-                        padding: 0 5px;
-                        flex-shrink: 0;
-                        font-size: 16px;
-                        width: 37px;
-                        text-align: center;
-
-                        svg {
-                            width: 35px;
-                        }
-                    }
-
-                    > span.icon-none {
-                        flex-shrink: 0;
-                        font-size: 16px;
-                        width: 37px;
-                        text-align: center;
-                    }
-
-                    > span.title {
-                        flex-grow: 1;
-                        font-size: 14px;
-                        width: calc(100% - 48px);
-                        overflow: hidden;
-                        white-space: nowrap;
-                        text-overflow: ellipsis;
-                    }
-                }
-
-                > li > figure > figcaption > .item-label > .collapse-icon {
-                    color: rgba(255, 0, 0, 0);
-                    display: flex;
-                    justify-content: center;
-                }
-
-                > li > figure > figcaption > .item-label {
-                    .icon:hover {
-                        background-color: rgba(0, 0, 0, 0.1);
-                    }
-
-                    .title:hover {
-                        color: var(--oc-admin-menu-font-color-hover);
-                        background-color: rgba(0, 0, 0, 0.1);
-                    }
-                }
-
-                > li.active:not(.has-items) > figure > figcaption > .item-label::before {
-                    border-left: 3px solid;
-                    border-left-color: var(--oc-selected-indicator-color);
-                    bottom: 0;
-                    content: "";
-                    left: 0;
-                    position: absolute;
-                    top: 0;
-                }
-
-                > li.has-items.visible > figure > figcaption {
-                    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
-
-                    > .item-label {
-                        z-index: 9999;
-                    }
-                }
-
-                > li .item-label:hover:not(:first-child) {
-                    color: var(--oc-admin-menu-font-color-hover);
-                    background-color: rgba(0, 0, 0, 0.1);
-                }
-                // formatting of icons
-                > li > figure > figcaption > .item-label > span.icon {
-                    display: inline-block !important;
-                    color: var(--oc-admin-menu-item-font-color);
-                    background-color: var(--oc-admin-menu-bg-color);
-                    width: var(--oc-start-navigation-width-when-compact);
-                    text-align: center;
-                }
-
-                > li.has-items.active > figure > figcaption > .item-label::before {
-                    border-left: 3px solid;
-                    border-left-color: var(--oc-selected-indicator-color);
-                    bottom: 0;
-                    content: "";
-                    left: 0;
-                    position: absolute;
-                    top: 0;
-                }
-
-                > li.has-items.visible {
-                    -webkit-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
-                    -moz-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
-                    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
-                    z-index: 1;
-                }
-
-                li .active > figure > figcaption > .item-label:hover {
-                    background-color: rgba(0, 0, 0, 0.1);
-                }
-
-                > li {
-                    overflow: hidden;
-
-                    span.title {
-                        display: none;
-                    }
-                }
-
-                > li.visible {
-                    overflow: visible;
-                    width: calc(var(--oc-start-navigation-width-when-compact) + var(--oc-start-navigation-width));
-                    transition: none;
-                    position: static;
-
-                    > figure {
-                        position: absolute;
-                        z-index: 999;
-                    }
-
-                    span.title,
-                    span.icon {
-                        display: block;
-                    }
-                }
-
-                > li > figure > ul {
-                    position: absolute;
-                    left: var(--oc-start-navigation-width-when-compact);
-                    width: var(--oc-start-navigation-width);
-                    -webkit-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
-                    -moz-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
-                    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
-                    max-height: 250px;
-                    z-index: 1;
-                    overflow-x: hidden;
-                    overflow-y: auto;
-                    scrollbar-width: thin;
-                    scrollbar-color: var(--oc-scrollbar-color) var(--oc-admin-menu-bg-color);
-                }
-
-                > li > figure > ul li .item-label {
-                    padding-left: 0px !important;
-                }
-
-                > li > figure > ul li .item-label:hover {
-                    background-color: rgba(0, 0, 0, 0.05);
-                }
-
-                > li > figure > figcaption > .item-label {
-                    background-color: var(--oc-admin-menu-item-bg-color);
-                    color: var(--oc-admin-menu-item-font-color);
-                    padding-left: 0px !important;
-                    display: flex;
-
-                    .title {
-                        padding: 0 20px;
-
-                        &:hover {
-                            background-color: var(--oc-admin-menu-item-bg-color) !important;
-                            color: var(--oc-admin-menu-item-font-color);
-                        }
-                    }
-
-                    > span.icon {
-                        padding: 0 5px;
-                        flex-shrink: 0;
-                        font-size: 22px;
-                        width: var(--oc-start-navigation-width-when-compact);
-
-                        svg {
-                            width: 35px;
-                        }
-                    }
-
-                    > span.title {
-                        flex-grow: 1;
-                        font-size: 14px;
-                        font-weight: bold;
-                        width: calc(100% - 48px);
-                        overflow: hidden;
-                        white-space: nowrap;
-                        text-overflow: ellipsis;
-                        width: 260px;
-                    }
-
-                    > span.title:after {
-                        content: "";
-                        height: 1px;
-                        background: rgba(0, 0, 0, 0.1);
-                        display: block;
-                        margin: 0px auto;
-                        position: absolute;
-                        width: 75%;
-                        left: 63px;
-                    }
-                }
-                // first level menu items that have no items and are active
-                > li.active:not(.has-items)::before {
-                    border-left: 3px solid;
-                    border-left-color: var(--oc-selected-indicator-color);
-                    bottom: 0;
-                    content: "";
-                    left: 0;
-                    position: absolute;
-                    top: 0;
-                }
-            }
-
-            ul li .item-label,
-            li a:hover,
-            li a:active,
-            li a:visited,
-            li button.item-label:hover,
-            li button.item-label:active {
-                text-decoration: none;
-                padding-left: $link-padding-left;
-            }
-
-            .btn-nostyle {
-                background: none;
-                color: inherit;
-                border: none;
-                padding: 0;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font: inherit;
-                cursor: pointer;
-                width: 45px;
-                outline: none;
-            }
-        }
-
-        li.has-items .item-label,
-        li.has-items a:hover,
-        li.has-items a:active,
-        li.has-items a:visited,
-        li.has-items button.item-label:hover,
-        li.has-items button.item-label:active {
-            padding-left: $link-padding-left - 4px;
-        }
-
-        li > figure > ul > li.active ul > li.active .item-label {
-            background: rgba(0, 0, 0, 0.05);
-            color: rgba(var(--oc-admin-menu-item-font-color-active), 0.9) !important;
-            font-weight: 600;
-        }
-
-        li.active > figure > ul > li.active > .item-label::before {
-            border-left: 3px solid;
-            border-left-color: var(--oc-selected-indicator-color);
-            bottom: 0;
-            content: "";
-            left: 0;
-            position: absolute;
-            top: 0;
-        }
-
-        li.active > figure > ul > li.active ul > li.active .item-label::before {
-            border-left: 3px solid;
-            border-left-color: var(--oc-selected-indicator-color);
-            bottom: 0;
-            content: "";
-            left: 0;
-            position: absolute;
-            top: 0;
-        }
-
-        li.active > figure > ul > li.active:not(.has-items) > figure > figcaption > .item-label::before {
-            border-left: 3px solid;
-            border-left-color: var(--oc-selected-indicator-color);
-            bottom: 0;
-            content: "";
-            left: 0;
-            position: absolute;
-            top: 0;
-        }
-
-        li.active > figure > ul > li .item-label::before {
-            border-left: 3px solid;
-            border-left-color: rgba(0, 0, 0, 0.2);
-            bottom: 0;
-            content: "";
-            left: 0;
-            position: absolute;
-            top: 0;
-        }
-
-        li.has-items.active > .item-label {
-            padding-left: (2 * $link-padding-left + 16) !important;
-        }
-
-        li.has-items.active > .item-label::before {
-            border-left: 3px solid;
-            border-left-color: rgba(0, 0, 0, 0.2);
-            bottom: 0;
-            content: "";
-            left: 0;
-            position: absolute;
-            top: 0;
-        }
-
-        li.active > .item-label {
-            background-color: rgba(0, 0, 0, 0.1);
-            font-weight: 600;
-        }
-
-        li .active::before {
-            border-left: 3px solid;
-            border-left-color: rgba(0, 0, 0, 0.1);
-            bottom: 0;
-            content: "";
-            left: 0;
-            position: absolute;
-            top: 0;
-        }
-
-        li .active .item-label::before {
-            border-left: 3px solid;
-            border-left-color: rgba(0, 0, 0, 0.2);
-            bottom: 0;
-            content: "";
-            left: 0;
-            position: absolute;
-            top: 0;
-        }
-
-        li > figure ul > li > figure .item-label {
-            color: var(--oc-admin-menu-item-font-color) !important;
-        }
-
-        li > .item-label {
-            color: var(--oc-admin-menu-item-font-color) !important;
-        }
-
-        li.active > figure ul > li > figure > figcaption > .item-label::before {
-            border-left: 3px solid;
-            border-left-color: rgba(0, 0, 0, 0.2);
-            bottom: 0;
-            content: "";
-            left: 0;
-            position: absolute;
-            top: 0;
-        }
-
-        li > figure ul > li > figure ul > li {
-            background: rgba(0, 0, 0, 0.1);
-        }
-        // third level items: same indent as second level (no extra nesting in compact flyout)
-        li > figure ul > li > figure ul > li > figure > figcaption > a {
-            color: var(--oc-admin-menu-item-font-color-active);
-        }
-
-        .footer {
-            background-color: var(--oc-admin-menu-bg-color) !important;
-            position: relative;
-            z-index: 1;
-        }
-
-        .footer:before {
-            content: "";
-            width: 60%;
-            height: 1px;
-            background: rgba(0, 0, 0, 0.1);
-            display: block;
-            margin: 0px auto;
-        }
-
-        #filter,
-        #filter:focus {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-            height: 38px;
-        }
+        left: 0;
+        border-left: 3px solid var(--oc-selected-indicator-color);
     }
 }
 
-// Left sidebar when compacted with a scrollbar
-.left-sidebar-compact.scroll {
-    #ta-left-sidebar {
-        #left-nav {
-            > ul {
-                > li.visible {
-                    > figure {
-                        position: static;
-                        z-index: unset;
-
-                        > ul:before {
-                            content: attr(data-title);
-                            padding: 0 20px;
-                            font-size: 14px;
-                            font-weight: bold;
-                            width: 100%;
-                            display: block;
-                        }
-
-                        > ul > li:first-child::before {
-                            background: rgba(0, 0, 0, 0.1);
-                            margin: 0px auto;
-                            content: "";
-                            height: 1px;
-                            display: block;
-                            position: absolute;
-                            width: 90%;
-                            left: 15px;
-                        }
-                    }
-                }
-
-                > li > figure > ul {
-                    position: absolute;
-                    left: var(--oc-start-navigation-width-when-compact);
-                    width: var(--oc-start-navigation-width);
-                    -webkit-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
-                    -moz-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
-                    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
-                    height: calc(100vh - 52px);
-                    max-height: unset;
-                    z-index: 1;
-                    overflow-x: hidden;
-                    overflow-y: auto;
-                    scrollbar-width: thin;
-                    scrollbar-color: var(--oc-scrollbar-color) var(--oc-admin-menu-bg-color);
-                    top: 0px;
-                }
-            }
-        }
-    }
+#left-nav li.active:not(.current) > figure > figcaption > .item-label > .title {
+    color: var(--oc-admin-menu-item-font-color-active);
 }
 
-/* rtl:ignore */
-.left-sidebar-compact {
-    #ta-left-sidebar {
-        // Rotate the chevron's icon when the menu is active
-        [aria-expanded="true"] {
-            .chevron {
-                transform: translateY(-50%) rotate(90deg);
-                transition-duration: 0.2s;
-            }
-        }
-    }
+// Hidden by the filter.
+#left-nav li.nav-filtered-out {
+    display: none;
 }
 
-// Layout 5 : leftbar compactor button
-// -----------------------------------
+// Footer
+// ------
+#ta-left-sidebar .footer {
+    display: flex;
+    flex: 0 0 auto;
+    justify-content: flex-end;
+    position: relative;
+    z-index: 1;
+    border-top: var(--bs-border-width) solid var(--oc-admin-menu-border-color);
+    background-color: var(--oc-admin-menu-bg-color);
+}
+
 .leftbar-compactor {
     display: block;
     width: var(--oc-start-navigation-width-when-compact);
-    height: 50px;
-    padding: 10px;
+    height: 40px;
+    padding: 0;
     border: none;
     background-color: transparent;
     color: var(--oc-admin-menu-font-color);
-    cursor: pointer;
     font-size: 20px;
-    float: right;
+    cursor: pointer;
     transition-duration: 0.2s;
-    display: block;
-
-    &:focus {
-        outline: none;
-    }
 
     &:hover {
-        color: rgba(0, 120, 212, 1);
-        color: rgba(0, 120, 212, 1);
-        text-shadow: 0 0 4px rgba(0, 120, 212, 0.5);
+        color: var(--oc-admin-accent-color);
     }
 
     &::before {
@@ -980,5 +324,147 @@ body:not(.left-sidebar-compact) {
 
     &::before {
         transform: scale(-2, 1);
+    }
+}
+
+// Layout 2 : the compact rail, on medium screens and up.
+// ------------------------------------------------------
+@include media-breakpoint-up(md) {
+    .left-sidebar-compact {
+        #ta-left-sidebar {
+            width: var(--oc-start-navigation-width-when-compact);
+        }
+
+        .nav-filter {
+            display: none;
+        }
+
+        // Only the first level is rendered in the rail, as an icon.
+        #left-nav > ul > li > figure > figcaption {
+            margin-top: 0;
+        }
+
+        #left-nav > ul > li > figure > figcaption > .item-label {
+            justify-content: center;
+            // The icon is alone on its row, it is given room to breathe rather
+            // than the tight line height of a row holding a label.
+            min-height: 3.25rem;
+            padding: 0.5rem 0;
+
+            // The icon carries the whole row on its own here, so it is drawn
+            // larger than in the expanded menu.
+            > .icon {
+                // The label it would line up with is hidden here, so it is centered.
+                align-self: center;
+                display: block;
+                width: 100%;
+                font-size: 1.5rem;
+
+                svg {
+                    width: 1.5rem;
+                }
+            }
+
+            > .title,
+            > .collapse-icon {
+                display: none;
+            }
+        }
+
+        #left-nav > ul > li > figure > figcaption > .nav-toggle {
+            display: none;
+        }
+
+        // Each group opens as a flyout, positioned by the script so that it is
+        // never clipped by the scrollable rail nor by the viewport. The rules
+        // showing and hiding it repeat '.collapse' to outweigh the ones driving
+        // the collapse of the expanded menu.
+        #left-nav > ul > li > figure > ul.collapse.show {
+            display: none;
+        }
+
+        #left-nav > ul > li > figure > ul {
+            width: var(--oc-start-navigation-width);
+            overflow-x: hidden;
+            overflow-y: auto;
+            box-shadow: var(--oc-admin-menu-flyout-shadow);
+            border: var(--bs-border-width) solid var(--oc-admin-menu-border-color);
+            background-color: var(--oc-admin-menu-bg-color);
+            scrollbar-width: thin;
+            scrollbar-color: var(--oc-scrollbar-color) transparent;
+            z-index: var(--oc-start-navigation-zindex);
+
+            // Reminds which group the flyout belongs to.
+            &::before {
+                content: attr(data-title);
+                display: block;
+                padding: 0.5rem 0.75rem;
+                border-bottom: var(--bs-border-width) solid var(--oc-admin-menu-border-color);
+                font-size: 0.6875rem;
+                font-weight: 600;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                color: var(--oc-admin-menu-group-font-color);
+            }
+        }
+
+        #left-nav > ul > li.visible > figure > ul.collapse {
+            display: block;
+        }
+
+        #left-nav > ul > li.visible > figure > figcaption > .item-label {
+            background-color: var(--oc-admin-menu-item-hover-bg-color);
+            color: var(--oc-admin-menu-font-color-hover);
+        }
+    }
+}
+
+// Layout 3 : the off canvas drawer, below the medium breakpoint.
+// --------------------------------------------------------------
+@include media-breakpoint-down(md) {
+    #ta-left-sidebar {
+        width: var(--oc-start-navigation-width-when-mobile);
+        left: calc(-1 * var(--oc-start-navigation-width-when-mobile));
+    }
+
+    .ta-sidebar-open #ta-left-sidebar {
+        left: 0;
+        box-shadow: var(--oc-admin-menu-flyout-shadow);
+    }
+
+    #ta-left-sidebar .footer {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    #ta-left-sidebar,
+    #ta-left-sidebar .chevron,
+    .ta-sidebar-backdrop,
+    .leftbar-compactor {
+        transition: none;
+    }
+}
+
+.ta-sidebar-backdrop {
+    display: none;
+    position: fixed;
+    top: var(--oc-top-nav-height);
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: calc(var(--oc-start-navigation-zindex) - 1);
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+@include media-breakpoint-down(md) {
+    .ta-sidebar-open {
+        .ta-sidebar-backdrop {
+            display: block;
+            opacity: 1;
+        }
     }
 }
