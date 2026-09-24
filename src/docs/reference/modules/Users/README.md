@@ -66,17 +66,18 @@ The **User Time Zone** editor uses the shared `ITimeZoneSelectListProvider` serv
 If you want to specify custom paths to access the authentication related urls, you can change them by using this option in the `appsettings.json`:
 
 ``` json
+{
   "OrchardCore": {
-    "OrchardCore_Users": {
+    "Users": {
       "LoginPath": "Login",
       "LogoffPath": "Users/LogOff",
       "ChangePasswordUrl": "ChangePassword",
       "ChangePasswordConfirmationUrl": "ChangePasswordConfirmation",
       "ExternalLoginsUrl": "ExternalLogins",
-      "ExternalLoginsUrl": "ExternalLogins",
       "TwoFactorAuthenticationPath": "TwoFactor"
     }
   }
+}
 ```
 
 ## Audit Trail Integration

@@ -1,0 +1,46 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Facebook": {
+          "type": "object",
+          "description": "Settings of the Meta (Facebook) app. These values override the ones configured in the admin settings under Settings > Integrations > Meta App, and they are only applied when the 'ConfigureFacebookSettings()' extension method is called on the OrchardCoreBuilder. See https://docs.orchardcore.net/en/latest/reference/modules/Facebook/.",
+          "properties": {
+            "AppId": {
+              "type": "string",
+              "description": "The Meta application ID, available under Basic Settings in the Meta for Developers app page."
+            },
+            "AppSecret": {
+              "type": "string",
+              "description": "The Meta application secret, available under Basic Settings in the Meta for Developers app page. This is a sensitive value: provide it through user secrets, environment variables or a key vault rather than appsettings.json."
+            },
+            "FBInit": {
+              "type": "boolean",
+              "description": "Whether the Meta JavaScript SDK is initialized on every page, rather than only on the pages that need it."
+            },
+            "FBInitParams": {
+              "type": "string",
+              "description": "The comma-separated key-value parameters passed to the FB.init() call, e.g. 'status: true, xfbml: true, autoLogAppEvents: true'."
+            },
+            "SdkJs": {
+              "type": "string",
+              "description": "The name of the Meta JavaScript SDK file to load, e.g. 'sdk.js'."
+            },
+            "Version": {
+              "type": "string",
+              "description": "The Meta Graph API version used by the JavaScript SDK, in the 'v{major}.{minor}' format, e.g. 'v3.2'."
+            }
+          }
+        },
+        "OrchardCore_Facebook": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Facebook' section is deprecated. Use 'OrchardCore:Facebook' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Facebook' instead."
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,119 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Media": {
+          "type": "object",
+          "properties": {
+            "AmazonS3": {
+              "type": "object",
+              "description": "Amazon S3 media storage settings, used by the 'OrchardCore.Media.AmazonS3' feature to store media files in an Amazon S3 bucket. The section is also read as AWS SDK 'AWSOptions', so other AWS client settings can be added as well. When the settings are invalid, the local file storage is used. See https://docs.orchardcore.net/en/latest/reference/modules/Media.AmazonS3/.",
+              "properties": {
+                "BucketName": {
+                  "type": "string",
+                  "description": "The name of the Amazon S3 bucket (required). Templatable with Liquid, e.g. '{{ ShellSettings.Name }}-media' for a bucket per tenant. The resulting name must conform to the Amazon S3 bucket naming rules."
+                },
+                "BasePath": {
+                  "type": "string",
+                  "description": "An optional path to store the media files in a subdirectory inside the bucket. Templatable with Liquid, e.g. '{{ ShellSettings.Name }}/Media' for a single bucket with a base folder per tenant.",
+                  "default": ""
+                },
+                "CreateBucket": {
+                  "type": "boolean",
+                  "description": "Whether the bucket is created, without Access Control Lists, if it does not already exist when the tenant is activated.",
+                  "default": false
+                },
+                "RemoveBucket": {
+                  "type": "boolean",
+                  "description": "Whether the bucket is deleted when the tenant is removed.",
+                  "default": false
+                },
+                "Region": {
+                  "type": "string",
+                  "description": "The AWS region of the bucket, e.g. 'eu-central-1'. Either 'Region' or 'ServiceURL' is required."
+                },
+                "ServiceURL": {
+                  "type": "string",
+                  "description": "Overrides the region and sends requests to the indicated URL, e.g. 'http://localhost:9444/' when using a local S3 emulator. Either 'Region' or 'ServiceURL' is required."
+                },
+                "ForcePathStyle": {
+                  "type": "boolean",
+                  "description": "Whether path-style addressing (e.g. 'http://localhost/mybucket') is used instead of virtual-hosted-style addressing. Required by local S3 emulators."
+                },
+                "Profile": {
+                  "type": "string",
+                  "description": "The name of the AWS credential profile to use, e.g. when the AWS CLI is installed and configured on the server."
+                },
+                "ProfilesLocation": {
+                  "type": "string",
+                  "description": "The path of the AWS credential profiles file, when not in the default location (~/.aws/credentials)."
+                },
+                "SessionRoleArn": {
+                  "type": "string",
+                  "description": "An optional IAM role to assume using the resolved AWS credentials."
+                },
+                "SessionName": {
+                  "type": "string",
+                  "description": "The session name used when assuming the 'SessionRoleArn' role."
+                },
+                "Credentials": {
+                  "type": "object",
+                  "description": "Explicit AWS credentials, typically only needed when not hosted in AWS and when no credential profile or environment variables are available. Prefer profiles or environment variables over storing credentials in configuration files.",
+                  "properties": {
+                    "AccessKey": {
+                      "type": "string",
+                      "description": "The AWS access key ID."
+                    },
+                    "SecretKey": {
+                      "type": "string",
+                      "description": "The AWS secret access key."
+                    }
+                  }
+                },
+                "ImageCache": {
+                  "type": "object",
+                  "description": "Amazon S3 resized image cache settings, used by the 'OrchardCore.Media.AmazonS3.ImageCache' feature to store the cached resized images in an Amazon S3 bucket instead of the local file system. The bucket is accessed with the Amazon S3 client configured in the 'OrchardCore:Media:AmazonS3' section. See https://docs.orchardcore.net/en/latest/reference/modules/Media.AmazonS3/.",
+                  "properties": {
+                    "BucketName": {
+                      "type": "string",
+                      "description": "The name of the Amazon S3 bucket storing the resized images (required). Templatable with Liquid, e.g. '{{ ShellSettings.Name }}-imagecache' for a bucket per tenant. The resulting name must conform to the Amazon S3 bucket naming rules."
+                    },
+                    "BasePath": {
+                      "type": "string",
+                      "description": "An optional path to store the resized images in a subdirectory inside the bucket. Templatable with Liquid, e.g. '{{ ShellSettings.Name }}/ImageCache'.",
+                      "default": ""
+                    },
+                    "CreateBucket": {
+                      "type": "boolean",
+                      "description": "Whether the bucket is created if it does not already exist when the tenant is activated.",
+                      "default": false
+                    },
+                    "RemoveBucket": {
+                      "type": "boolean",
+                      "description": "Whether the bucket is deleted when the tenant is removed. Cache files are only removed when using a separate bucket per tenant.",
+                      "default": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "OrchardCore_Media_AmazonS3": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Media_AmazonS3' section is deprecated. Use 'OrchardCore:Media:AmazonS3' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Media:AmazonS3' instead."
+        },
+        "OrchardCore_Media_AmazonS3_ImageSharp_Cache": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Media_AmazonS3_ImageSharp_Cache' section is deprecated. Use 'OrchardCore:Media:AmazonS3:ImageCache' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Media:AmazonS3:ImageCache' instead."
+        }
+      }
+    }
+  }
+}

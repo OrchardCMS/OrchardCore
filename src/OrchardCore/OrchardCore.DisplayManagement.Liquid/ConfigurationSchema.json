@@ -1,0 +1,37 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Liquid": {
+          "type": "object",
+          "description": "Configures the Liquid template parser.",
+          "properties": {
+            "AllowParentheses": {
+              "type": "boolean",
+              "default": false,
+              "description": "Whether parentheses are allowed in Liquid templates."
+            },
+            "AllowLiquidTag": {
+              "type": "boolean",
+              "default": false,
+              "description": "Whether the inline 'liquid' tag is allowed in Liquid templates."
+            },
+            "AllowTrailingQuestionMark": {
+              "type": "boolean",
+              "default": false,
+              "description": "Whether identifiers can end with a question mark ('?'), which is stripped during parsing."
+            }
+          }
+        },
+        "OrchardCore_Liquid": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Liquid' section is deprecated. Use 'OrchardCore:Liquid' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Liquid' instead."
+        }
+      }
+    }
+  }
+}

@@ -27,19 +27,110 @@ Orchard Core stores all Configuration data under the `OrchardCore` section in `a
 }
 ```
 
-Each Orchard Core module has its own configuration section under the `OrchardCore` section:
+Each Orchard Core module has its own configuration section under the `OrchardCore` section. Sections are grouped by service, with a nested section for each provider of the service, so that all the settings of a service are located together. For instance, the Azure Blob Storage configuration of the Media module is located in the `OrchardCore:Media:Azure` section, next to the `OrchardCore:Media:AmazonS3` section, and the SMTP and Azure email providers are configured in the `OrchardCore:Email:Smtp` and `OrchardCore:Email:Azure` sections:
 
 ```json
 {
   "OrchardCore": {
-    "OrchardCore_Media": {
-       // individual module configuration
+    "Media": {
+      // Media module configuration
+      "Azure": {
+        // Azure Blob Storage media configuration
+      }
     }
   }
 }
 ```
 
 See the `appsettings.json` file for more examples.
+
+!!! tip
+    When creating your own modules, follow the same convention: name your configuration sections without an `OrchardCore_` prefix, and group them by service using nesting, e.g. `OrchardCore:MyService:MyProvider`. This keeps environment variable names like `OrchardCore__MyService__MyProvider__MySetting` short.
+
+!!! warning
+    Tenant specific sections share the same path as the configuration sections, e.g. `OrchardCore:MyTenant`. Avoid giving a tenant the name of a configuration section, like `Media` or `Email`.
+
+#### Deprecated section names
+
+The configuration sections used to be prefixed with `OrchardCore_`, and used underscores instead of nesting, e.g. `OrchardCore:OrchardCore_Media_Azure`. These names are deprecated but are still supported, in addition to the current names. When a setting is defined using both names, the value defined with the current name is used, and an array defined with the current name replaces the array defined with the deprecated name. The deprecated names will be removed in a future major version, so you should rename them to the current names.
+
+| Deprecated section name | Current section name |
+| --- | --- |
+| `OrchardCore_Admin` | `Admin` |
+| `OrchardCore_Apis_GraphQL` | `Apis:GraphQL` |
+| `OrchardCore_AutoSetup` | `AutoSetup` |
+| `OrchardCore_AzureAISearch` | `Search:AzureAISearch` |
+| `OrchardCore_BackgroundService` | `BackgroundService` |
+| `OrchardCore_ContentLocalization_CulturePickerOptions` | `ContentLocalization:CulturePickerOptions` |
+| `OrchardCore_ContentTypes` | `ContentTypes` |
+| `OrchardCore_Data_Sqlite` | `Data:Sqlite` |
+| `OrchardCore_Data_TableOptions` | `Data:TableOptions` |
+| `OrchardCore_DataProtection_Azure` | `DataProtection:Azure` |
+| `OrchardCore_Documents` | `Documents` |
+| `OrchardCore_DynamicCache` | `DynamicCache` |
+| `OrchardCore_Elasticsearch` | `Search:Elasticsearch` |
+| `OrchardCore_Email_Azure`, `OrchardCore_Email_AzureCommunicationServices` | `Email:Azure` |
+| `OrchardCore_Email_Smtp`, `OrchardCore_Email` | `Email:Smtp` |
+| `OrchardCore_Facebook` | `Facebook` |
+| `OrchardCore_GitHub` | `Authentication:GitHub` |
+| `OrchardCore_Google` | `Authentication:Google` |
+| `OrchardCore_HealthChecks` | `HealthChecks` |
+| `OrchardCore_KeyVault_Azure` | `KeyVault:Azure` |
+| `OrchardCore_Liquid` | `Liquid` |
+| `OrchardCore_Localization_CultureOptions` | `Localization:CultureOptions` |
+| `OrchardCore_Markdown` | `Markdown` |
+| `OrchardCore_Media` | `Media` |
+| `OrchardCore_Media_AmazonS3` | `Media:AmazonS3` |
+| `OrchardCore_Media_AmazonS3_ImageSharp_Cache` | `Media:AmazonS3:ImageCache` |
+| `OrchardCore_Media_Azure` | `Media:Azure` |
+| `OrchardCore_Media_Azure_ImageSharp_Cache` | `Media:Azure:ImageCache` |
+| `OrchardCore_Media_Slugify` | `Media:Slugify` |
+| `OrchardCore_Microsoft_Authentication_AzureAD` | `Authentication:AzureAD` |
+| `OrchardCore_Microsoft_Authentication_MicrosoftAccount` | `Authentication:MicrosoftAccount` |
+| `OrchardCore_Navigation` | `Navigation` |
+| `OrchardCore_Notifications` | `Notifications` |
+| `OrchardCore_ReCaptcha` | `ReCaptcha` |
+| `OrchardCore_Redis` | `Redis` |
+| `OrchardCore_Resources` | `Resources` |
+| `OrchardCore_ReverseProxy` | `ReverseProxy` |
+| `OrchardCore_Roles` | `Roles` |
+| `OrchardCore_Security` | `Security` |
+| `OrchardCore_Setup` | `Setup` |
+| `OrchardCore_Shells_Azure` | `Shells:Azure` |
+| `OrchardCore_Shells_Database` | `Shells:Database` |
+| `OrchardCore_Sms_AzureCommunicationServices` | `Sms:Azure` |
+| `OrchardCore_Tenants` | `Tenants` |
+| `OrchardCore_Users` | `Users` |
+| `OrchardCore_Workflows` | `Workflows` |
+| `OrchardCore_X`, `OrchardCore_Twitter` | `X` |
+| `OrchardCore_YesSql` | `YesSql` |
+
+For instance, the `OrchardCore__OrchardCore_Media_Azure__ConnectionString` environment variable becomes `OrchardCore__Media__Azure__ConnectionString`.
+
+### IntelliSense and validation of the `appsettings.json` files
+
+The Orchard Core packages that read a configuration section include a `ConfigurationSchema.json` file describing their sections. This file is declared as a JSON schema segment by the package, and flows to the projects referencing the package, even indirectly, for instance through the `OrchardCore.Application.Cms.Targets` package. Visual Studio merges the schemas of the referenced packages to provide IntelliSense, descriptions and validation when editing these files of your web project:
+
+- `appsettings.json` and `appsettings.{Environment}.json`.
+- `App_Data/appsettings.json` and `App_Data/appsettings.{Environment}.json`, the global tenant configuration files, which the `OrchardCore.Application.Cms.Targets` package keeps in the project for this purpose.
+
+The deprecated section names are flagged as such.
+
+!!! note
+    Visual Studio applies the same schema to all the `appsettings.json` files of a project, so the tenant specific `App_Data/Sites/{tenant}/appsettings.json` files, whose sections are not nested in an `OrchardCore` section, don't get IntelliSense. Visual Studio Code doesn't support JSON schema segments yet.
+
+When working in the Orchard Core repository with Visual Studio Code, the `.vscode/settings.json` file maps the `appsettings.json` files of the `OrchardCore.Cms.Web` project, including the tenant specific ones, to the `src/OrchardCore.Build/OrchardCore.AppSettings.schema.json` and `src/OrchardCore.Build/OrchardCore.TenantAppSettings.schema.json` files, which combine the schemas of all the projects.
+
+!!! tip
+    A module can describe its own configuration sections the same way. Include a `ConfigurationSchema.json` file describing the sections under the `OrchardCore` property at the root of the NuGet package, and a `buildTransitive/{PackageId}.targets` file declaring it as a JSON schema segment:
+
+    ```xml
+    <Project>
+      <ItemGroup>
+        <JsonSchemaSegment Include="$(MSBuildThisFileDirectory)..\ConfigurationSchema.json" FilePathPattern="appsettings\..*json" />
+      </ItemGroup>
+    </Project>
+    ```
 
 ### Tenant Pre-configuration
 
@@ -70,7 +161,7 @@ without having to provide a state value.
 {
   "OrchardCore": {
     "Default": {
-      "OrchardCore_Media": {
+      "Media": {
          // specific tenant configuration
       }
     }
@@ -87,7 +178,7 @@ What if you want all tenants to access the same database? The corresponding conf
   "OrchardCore": {
     "ConnectionString": "...",
     "DatabaseProvider": "SqlConnection",
-    "OrchardCore_Tenants": {
+    "Tenants": {
       "RequireTablePrefix": true,
       "TablePrefixPattern": "{{ ShellSettings.Name }}",
       "SchemaPattern": "dbo"
@@ -106,10 +197,10 @@ Notes on the above configuration:
 * Add the connection string for the database to be used by all tenants.
 * `DatabaseProvider` should correspond to the database engine used, the sample being one for SQL Server.
 * `Default:TablePrefix` configures the table prefix used by the Default tenant itself so its tables stay isolated from other tenants in the shared database. It does not automatically populate or require prefixes for tenants created later from the admin or API, and by itself it does not lock or hide database provider and connection settings for other tenants.
-* `OrchardCore_Tenants:RequireTablePrefix` can be enabled to require a table prefix whenever a new tenant is created, or an uninitialized tenant is edited, with a database provider that supports table prefixes.
+* `OrchardCore:Tenants:RequireTablePrefix` can be enabled to require a table prefix whenever a new tenant is created, or an uninitialized tenant is edited, with a database provider that supports table prefixes.
 * For providers that require a connection string, Orchard only treats the root database configuration as preset when both `DatabaseProvider` and `ConnectionString` are configured. Setting only `DatabaseProvider` does not lock setup or tenant database fields and does not bootstrap YesSql for the setup shell.
-* `OrchardCore_Tenants:TablePrefixPattern` can be used to generate each tenant's `TablePrefix` automatically so the admin and API no longer need manual input for it. The pattern uses Fluid syntax with `ShellSettings` in scope, for example `{{ ShellSettings.Name }}`.
-* `OrchardCore_Tenants:SchemaPattern` works the same way for the tenant `Schema`, for example `"dbo"` or `{{ ShellSettings.Name }}`.
+* `OrchardCore:Tenants:TablePrefixPattern` can be used to generate each tenant's `TablePrefix` automatically so the admin and API no longer need manual input for it. The pattern uses Fluid syntax with `ShellSettings` in scope, for example `{{ ShellSettings.Name }}`.
+* `OrchardCore:Tenants:SchemaPattern` works the same way for the tenant `Schema`, for example `"dbo"` or `{{ ShellSettings.Name }}`.
 * Pattern-generated and manually entered `TablePrefix` and `Schema` values are validated as SQL identifiers. Use only letters, numbers, and underscores, and start the value with a letter or underscore.
 * When a pattern is configured, Orchard uses the generated value instead of any posted manual value for tenant creation, editing uninitialized tenants, and tenant setup.
 * This shared-database pattern applies to providers such as SQL Server, MySQL, and PostgreSQL. The built-in SQLite provider does not use the root `ConnectionString` setting for tenant data and is not configured as a single shared `.db` file with per-tenant prefixes through this pattern.
@@ -153,7 +244,7 @@ services
 
         tenantServices.PostConfigure<ResourceOptions>(options =>
         {
-            options.UseCdn = shellConfiguration.GetValue<bool>("OrchardCore_Resources:UseCdn");
+            options.UseCdn = shellConfiguration.GetValue<bool>("Resources:UseCdn");
         });
     });
 ```
@@ -236,7 +327,7 @@ Additionally, these `appsettings.json` files do not need the `OrchardCore` secti
 
 ```json
 {
-  "OrchardCore_Media": {
+  "Media": {
      // specific tenant configuration
   }
 }
@@ -247,16 +338,15 @@ Additionally, these `appsettings.json` files do not need the `OrchardCore` secti
 Environment variables are also translated into `IShellConfiguration`, for example
 
 ```
-OrchardCore__OrchardCore_Media__MaxFileSize
+OrchardCore__Media__MaxFileSize
 
-OrchardCore__Default__OrchardCore_Media__MaxFileSize
+OrchardCore__Default__Media__MaxFileSize
 
-OrchardCore__MyTenant__OrchardCore_Media__MaxFileSize
+OrchardCore__MyTenant__Media__MaxFileSize
 ```
 
 !!! note
-    To support Linux the underscore `_` is used as a separator, e.g. `OrchardCore_Media`
-    `OrchardCore.Media` is supported for backwards compatibility, but users should migrate to the `_` pattern.
+    A double underscore `__` separates each level of the configuration path, e.g. `OrchardCore__Media__Azure__ConnectionString` for the `OrchardCore:Media:Azure:ConnectionString` setting.
 
 ### Configuration Sources Order
 

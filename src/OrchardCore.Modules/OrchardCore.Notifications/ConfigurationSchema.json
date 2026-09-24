@@ -1,0 +1,45 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Notifications": {
+          "type": "object",
+          "description": "Configures the notification center. The values can also be defined per tenant under 'OrchardCore:{TenantName}:Notifications'. See https://docs.orchardcore.net/en/latest/reference/modules/Notifications/.",
+          "properties": {
+            "TotalUnreadNotifications": {
+              "type": "integer",
+              "description": "The maximum number of unread notifications displayed in the navigation bar.",
+              "default": 10,
+              "minimum": 0
+            },
+            "DisableNotificationHtmlBodySanitizer": {
+              "type": "boolean",
+              "description": "Whether to disable the sanitization of the HTML body of the notifications sent from workflows.",
+              "default": false
+            },
+            "AbsoluteCacheExpirationSeconds": {
+              "type": "integer",
+              "description": "The absolute expiration in seconds of the cached unread notifications displayed in the navigation bar. A value of 0 means no absolute expiration. The notifications are only cached when this value or 'SlidingCacheExpirationSeconds' is greater than 0.",
+              "default": 0,
+              "minimum": 0
+            },
+            "SlidingCacheExpirationSeconds": {
+              "type": "integer",
+              "description": "How long in seconds the cached unread notifications can be inactive before being removed. This does not extend the lifetime beyond 'AbsoluteCacheExpirationSeconds' when set. A value of 0 disables the sliding expiration.",
+              "default": 1800,
+              "minimum": 0
+            }
+          }
+        },
+        "OrchardCore_Notifications": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Notifications' section is deprecated. Use 'OrchardCore:Notifications' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Notifications' instead."
+        }
+      }
+    }
+  }
+}

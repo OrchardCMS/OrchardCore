@@ -28,7 +28,8 @@ public sealed class AzureAISearchDefaultOptionsConfigurations : IConfigureOption
 
     public void Configure(AzureAISearchDefaultOptions options)
     {
-        var fileOptions = _shellConfiguration.GetSection("OrchardCore_AzureAISearch")
+        // The 'OrchardCore_AzureAISearch' section is deprecated and will be removed in a future major version, use 'Search:AzureAISearch' instead.
+        var fileOptions = _shellConfiguration.GetSectionCompat("Search:AzureAISearch", "OrchardCore_AzureAISearch")
             .Get<AzureAISearchDefaultOptions>()
             ?? new AzureAISearchDefaultOptions();
 

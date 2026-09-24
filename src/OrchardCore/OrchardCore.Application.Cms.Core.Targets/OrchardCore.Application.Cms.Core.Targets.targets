@@ -7,6 +7,15 @@
     <None Remove="App_Data\**;Localization\**" />
   </ItemGroup>
 
+  <!--
+    Keeps the global tenants configuration files in the project, which are only read by the application, so that Visual Studio
+    provides IntelliSense and validation for them from the configuration schemas of the packages. They are not copied to the output,
+    the 'App_Data' folder being published as a whole below.
+  -->
+  <ItemGroup>
+    <None Include="App_Data\appsettings.json;App_Data\appsettings.*.json" CopyToOutputDirectory="Never" CopyToPublishDirectory="Never" />
+  </ItemGroup>
+
   <ItemGroup>
     <ResolvedFileToPublish Include="App_Data\**" Exclude="$(DefaultItemExcludes);App_Data\**\*.log">
       <RelativePath>App_Data\%(RecursiveDir)%(Filename)%(Extension)</RelativePath>

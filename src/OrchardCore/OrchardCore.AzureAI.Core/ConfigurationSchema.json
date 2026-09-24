@@ -1,0 +1,74 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Search": {
+          "type": "object",
+          "properties": {
+            "AzureAISearch": {
+              "type": "object",
+              "description": "Configures the connection to the Azure AI Search service. Unless 'DisableUIConfiguration' is enabled, a tenant can override these values from its Azure AI Search settings. See https://docs.orchardcore.net/en/latest/reference/modules/AzureAISearch/.",
+              "properties": {
+                "Endpoint": {
+                  "type": "string",
+                  "description": "The Azure AI Search service endpoint, e.g. 'https://[search service name].search.windows.net'."
+                },
+                "AuthenticationType": {
+                  "type": "string",
+                  "enum": [
+                    "Default",
+                    "ApiKey",
+                    "ManagedIdentity"
+                  ],
+                  "default": "Default",
+                  "description": "The authentication type: 'Default' for the default Azure credential, 'ManagedIdentity' for managed-identity authentication, or 'ApiKey' for key-based authentication. 'ApiKey' is used when 'Credential:Key' is provided."
+                },
+                "IdentityClientId": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "The client id of a user-assigned managed identity. When not set, the system-assigned identity is used."
+                },
+                "Credential": {
+                  "type": "object",
+                  "description": "The credential used by the 'ApiKey' authentication type.",
+                  "properties": {
+                    "Key": {
+                      "type": "string",
+                      "description": "The Azure AI Search service key."
+                    }
+                  }
+                },
+                "IndexesPrefix": {
+                  "type": "string",
+                  "description": "A prefix added to the name of all indexes, e.g. the environment name to prevent naming conflicts when the same service is shared by production and staging."
+                },
+                "Analyzers": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The names of the analyzers that can be selected for an index. Defaults to all the built-in Azure AI Search lexical analyzers."
+                },
+                "DisableUIConfiguration": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Whether to disable the per-tenant configuration from the admin UI, so that all tenants use the values defined in this section."
+                }
+              }
+            }
+          }
+        },
+        "OrchardCore_AzureAISearch": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_AzureAISearch' section is deprecated. Use 'OrchardCore:Search:AzureAISearch' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Search:AzureAISearch' instead."
+        }
+      }
+    }
+  }
+}

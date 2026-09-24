@@ -72,7 +72,7 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     env:
-      OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
+      OrchardCore__YesSql__EnableThreadSafetyChecks: true
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - uses: ./.github/actions/setup-dotnet
@@ -124,7 +124,7 @@ jobs:
     env:
       OrchardCore__ConnectionString: "User ID=postgres;Password=admin;Host=localhost;Port=5432;Database=app;"
       OrchardCore__DatabaseProvider: "Postgres"
-      OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
+      OrchardCore__YesSql__EnableThreadSafetyChecks: true
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - uses: ./.github/actions/setup-dotnet
@@ -170,7 +170,7 @@ jobs:
     env:
       OrchardCore__ConnectionString: "server=localhost;uid=root;pwd=test123;database=test"
       OrchardCore__DatabaseProvider: "MySql"
-      OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
+      OrchardCore__YesSql__EnableThreadSafetyChecks: true
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - uses: ./.github/actions/setup-dotnet
@@ -215,9 +215,9 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     env:
-      OrchardCore__OrchardCore_Redis__Configuration: "localhost:6379"
-      OrchardCore__OrchardCore_Media_Azure__ConnectionString: "UseDevelopmentStorage=true"
-      OrchardCore__OrchardCore_Media_Azure__ContainerName: "media"
+      OrchardCore__Redis__Configuration: "localhost:6379"
+      OrchardCore__Media__Azure__ConnectionString: "UseDevelopmentStorage=true"
+      OrchardCore__Media__Azure__ContainerName: "media"
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - uses: ./.github/actions/setup-dotnet
@@ -266,7 +266,7 @@ jobs:
     env:
       OrchardCore__ConnectionString: "Server=localhost;Database=tempdb;User Id=sa;Password=Password12!;Encrypt=False"
       OrchardCore__DatabaseProvider: "SqlConnection"
-      OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
+      OrchardCore__YesSql__EnableThreadSafetyChecks: true
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - uses: ./.github/actions/setup-dotnet

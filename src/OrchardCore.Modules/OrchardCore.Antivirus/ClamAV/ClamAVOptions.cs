@@ -2,7 +2,7 @@ namespace OrchardCore.Antivirus.ClamAV;
 
 public sealed class ClamAvOptions
 {
-    public const string ConfigSection = "Antivirus_ClamAV";
+    public const string ConfigSection = "Antivirus:ClamAV";
 
     public string Host { get; set; }
 

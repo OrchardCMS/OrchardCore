@@ -1,0 +1,69 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Apis": {
+          "type": "object",
+          "description": "Configures the Orchard Core APIs.",
+          "properties": {
+            "GraphQL": {
+              "type": "object",
+              "description": "Configures the GraphQL API, including the limits used to protect the server against malicious queries. The values can also be defined per tenant under 'OrchardCore:{TenantName}:Apis:GraphQL'. See https://docs.orchardcore.net/en/latest/reference/modules/Apis.GraphQL/.",
+              "properties": {
+                "ExposeExceptions": {
+                  "type": "boolean",
+                  "description": "Whether exception details such as stack traces are exposed to GraphQL clients. Defaults to true in the Development environment and to false otherwise."
+                },
+                "MaxDepth": {
+                  "type": "integer",
+                  "description": "The maximum total nesting depth allowed across all the queries of a request.",
+                  "default": 100,
+                  "minimum": 0
+                },
+                "MaxComplexity": {
+                  "type": "integer",
+                  "description": "The maximum complexity allowed for a query. When not set, the query complexity is not limited.",
+                  "minimum": 0
+                },
+                "FieldImpact": {
+                  "type": "number",
+                  "description": "The average impact of a field, used to compute the complexity of a query. When not set, the default impact of the GraphQL library is used."
+                },
+                "DefaultNumberOfResults": {
+                  "type": "integer",
+                  "description": "The default number of results returned by all paged fields and types.",
+                  "default": 100,
+                  "minimum": 0
+                },
+                "MaxNumberOfResults": {
+                  "type": "integer",
+                  "description": "The maximum number of results returned by all paged fields and types.",
+                  "default": 1000,
+                  "minimum": 0
+                },
+                "MaxNumberOfResultsValidationMode": {
+                  "type": "string",
+                  "description": "The behavior when a pager parameter exceeds 'MaxNumberOfResults'. 'Enabled' raises a GraphQL validation error. 'Disabled' logs the information and only returns the maximum number of results. 'Default' behaves as 'Enabled' in the Development environment and as 'Disabled' otherwise.",
+                  "enum": [
+                    "Default",
+                    "Enabled",
+                    "Disabled"
+                  ],
+                  "default": "Default"
+                }
+              }
+            }
+          }
+        },
+        "OrchardCore_Apis_GraphQL": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Apis_GraphQL' section is deprecated. Use 'OrchardCore:Apis:GraphQL' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Apis:GraphQL' instead."
+        }
+      }
+    }
+  }
+}

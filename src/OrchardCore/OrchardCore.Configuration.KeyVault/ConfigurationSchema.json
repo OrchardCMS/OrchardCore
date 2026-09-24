@@ -1,0 +1,44 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "KeyVault": {
+          "type": "object",
+          "description": "Configures the key vaults used as configuration sources.",
+          "properties": {
+            "Azure": {
+              "type": "object",
+              "description": "Configures the Azure Key Vault configuration provider. Enabled with 'AddOrchardCoreAzureKeyVault()'. Read from the application configuration only, not per tenant. See https://docs.orchardcore.net/en/latest/reference/modules/KeyVault.Azure/.",
+              "properties": {
+                "KeyVaultName": {
+                  "type": "string",
+                  "description": "The name of the Azure Key Vault, used to build the 'https://{KeyVaultName}.vault.azure.net' vault URI. Not required when 'VaultURI' is set."
+                },
+                "VaultURI": {
+                  "type": "string",
+                  "description": "The absolute URI of the Azure Key Vault. Takes precedence over 'KeyVaultName'."
+                },
+                "ReloadInterval": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "description": "The number of seconds to wait between attempts at polling the Azure Key Vault for changes. Leave it unset to disable reloading."
+                }
+              }
+            }
+          }
+        },
+        "OrchardCore_KeyVault_Azure": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_KeyVault_Azure' section is deprecated. Use 'OrchardCore:KeyVault:Azure' instead.",
+          "description": "Deprecated. Use 'OrchardCore:KeyVault:Azure' instead."
+        }
+      }
+    }
+  }
+}

@@ -15,7 +15,8 @@ public sealed class MediaSlugifyOptionsConfiguration : IConfigureOptions<MediaSl
 
     public void Configure(MediaSlugifyOptions options)
     {
-        var section = _shellConfiguration.GetSection("OrchardCore_Media_Slugify");
+        // The 'OrchardCore_Media_Slugify' section is deprecated and will be removed in a future major version, use 'Media:Slugify' instead.
+        var section = _shellConfiguration.GetSectionCompat("Media:Slugify", "OrchardCore_Media_Slugify");
 
         options.Transliterate = section.GetValue(nameof(options.Transliterate), true);
     }

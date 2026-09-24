@@ -1,0 +1,50 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Shells": {
+          "type": "object",
+          "description": "Configures where the tenants settings and configuration are stored.",
+          "properties": {
+            "Azure": {
+              "type": "object",
+              "description": "Configures the Azure Shells Configuration provider, which stores the 'tenants.json' file and the tenants 'appsettings.json' files in an Azure Blob Storage container. Enabled with 'AddAzureShellsConfiguration()'. Read from the application configuration only, not per tenant. See https://docs.orchardcore.net/en/latest/reference/modules/Shells/.",
+              "properties": {
+                "ConnectionString": {
+                  "type": "string",
+                  "description": "The Azure Storage account connection string."
+                },
+                "ContainerName": {
+                  "type": "string",
+                  "description": "The Azure Blob Storage container name. The container must exist before it is used by the provider."
+                },
+                "BasePath": {
+                  "type": "string",
+                  "default": "",
+                  "description": "The base directory path inside the container, e.g. 'some/base/path'."
+                },
+                "MigrateFromFiles": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Whether to migrate the existing tenants settings and configuration files from the 'App_Data' folder to the container when they are not found in the container."
+                },
+                "UseHierarchicalNamespace": {
+                  "type": "boolean",
+                  "description": "Overrides the auto-detection of the Hierarchical Namespace (HNS / ADLS Gen2) support of the storage account. Leave it unset to auto-detect, or set it explicitly when the detection is unavailable, e.g. when using a container-scoped SAS token."
+                }
+              }
+            }
+          }
+        },
+        "OrchardCore_Shells_Azure": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Shells_Azure' section is deprecated. Use 'OrchardCore:Shells:Azure' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Shells:Azure' instead."
+        }
+      }
+    }
+  }
+}

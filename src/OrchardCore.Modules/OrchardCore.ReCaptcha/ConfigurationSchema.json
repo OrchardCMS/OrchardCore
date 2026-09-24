@@ -1,0 +1,40 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "ReCaptcha": {
+          "type": "object",
+          "description": "Settings of the reCAPTCHA service. These values override the ones configured in the admin settings, and they are only applied when the 'ConfigureReCaptchaSettings()' extension method is called on the OrchardCoreBuilder. See https://docs.orchardcore.net/en/latest/reference/modules/ReCaptcha/.",
+          "properties": {
+            "SiteKey": {
+              "type": "string",
+              "description": "The reCAPTCHA site key, used to render the reCAPTCHA widget."
+            },
+            "SecretKey": {
+              "type": "string",
+              "description": "The reCAPTCHA secret key, used to verify the reCAPTCHA responses. This is a sensitive value: provide it through user secrets, environment variables or a key vault rather than appsettings.json."
+            },
+            "ReCaptchaScriptUri": {
+              "type": "string",
+              "description": "The URI of the reCAPTCHA JavaScript file.",
+              "default": "https://www.google.com/recaptcha/api.js"
+            },
+            "ReCaptchaApiUri": {
+              "type": "string",
+              "description": "The base URI of the reCAPTCHA verification API. The reCAPTCHA service is disabled when this value is empty.",
+              "default": "https://www.google.com/recaptcha/api/"
+            }
+          }
+        },
+        "OrchardCore_ReCaptcha": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_ReCaptcha' section is deprecated. Use 'OrchardCore:ReCaptcha' instead.",
+          "description": "Deprecated. Use 'OrchardCore:ReCaptcha' instead."
+        }
+      }
+    }
+  }
+}

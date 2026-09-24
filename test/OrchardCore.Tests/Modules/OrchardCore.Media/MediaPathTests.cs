@@ -102,12 +102,8 @@ public class MediaPathTests
                 ["OrchardCore_Media:AllowedFileExtensions:0"] = ".dll",
             })
             .Build();
-        var shellConfiguration = new Mock<IShellConfiguration>();
-        shellConfiguration.Setup(c => c.GetSection("OrchardCore_Media"))
-            .Returns(configuration.GetSection("OrchardCore_Media"));
-
         var services = new ServiceCollection();
-        services.AddSingleton(shellConfiguration.Object);
+        services.AddSingleton<IShellConfiguration>(new ShellConfiguration(configuration));
         using var settings = new ShellSettings { Name = "Tenant" };
         services.AddSingleton(settings);
         services.Configure<ShellOptions>(options =>

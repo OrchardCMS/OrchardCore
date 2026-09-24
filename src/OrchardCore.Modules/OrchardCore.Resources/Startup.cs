@@ -32,8 +32,8 @@ public sealed class Startup : StartupBase
 
         serviceCollection.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
 
-        var resourceConfiguration = _shellConfiguration.GetSection("OrchardCore_Resources");
-        serviceCollection.Configure<ResourceOptions>(resourceConfiguration);
+        // The 'OrchardCore_Resources' section is deprecated and will be removed in a future major version, use 'Resources' instead.
+        serviceCollection.Configure<ResourceOptions>(_shellConfiguration.GetSectionCompat("Resources", "OrchardCore_Resources"));
 
         serviceCollection.AddScoped<IResourcesTagHelperProcessor, ResourcesTagHelperProcessor>();
     }

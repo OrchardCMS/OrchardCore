@@ -135,7 +135,7 @@ Tenant Removal can be allowed from any configuration source (e.g. `appsettings.j
 ```json
 {
   "OrchardCore": {
-    "OrchardCore_Tenants": {
+    "Tenants": {
       "TenantRemovalAllowed": false // Whether tenant removal is allowed or not. Default is false.
     }
   }
@@ -151,7 +151,7 @@ You can control tenant table prefixes and schemas from any configuration source 
 ```json
 {
   "OrchardCore": {
-    "OrchardCore_Tenants": {
+    "Tenants": {
       "RequireTablePrefix": true,
       "TablePrefixPattern": "{{ ShellSettings.Name }}",
       "SchemaPattern": "dbo"

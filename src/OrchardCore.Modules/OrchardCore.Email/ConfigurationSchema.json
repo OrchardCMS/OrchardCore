@@ -1,0 +1,20 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Email": {
+          "type": "object",
+          "description": "Email settings. Each email provider that can be configured from configuration has its own child section, e.g. 'Smtp' for the Default SMTP provider and 'AzureCommunicationServices' for the Default Azure Communication Services provider. The default provider used to send emails is selected in the admin settings under Settings > Communication > Email. See https://docs.orchardcore.net/en/latest/reference/modules/Email/."
+        },
+        "OrchardCore_Email": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Email' section is deprecated. Use 'OrchardCore:Email' instead, and configure the SMTP settings in 'OrchardCore:Email:Smtp'.",
+          "description": "Deprecated. Use 'OrchardCore:Email' instead, and configure the SMTP settings in 'OrchardCore:Email:Smtp'."
+        }
+      }
+    }
+  }
+}

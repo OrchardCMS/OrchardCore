@@ -49,13 +49,15 @@ curl --include https://example.com/health/live
 
 ## Configuration
 
-Configure the endpoint through the tenant-aware `OrchardCore_HealthChecks` configuration section:
+Configure the endpoint through the tenant-aware `OrchardCore:HealthChecks` configuration section:
 
 ```json
 {
-  "OrchardCore_HealthChecks": {
-    "Url": "/health/live",
-    "ShowDetails": false
+  "OrchardCore": {
+    "HealthChecks": {
+      "Url": "/health/live",
+      "ShowDetails": false
+    }
   }
 }
 ```
@@ -68,14 +70,14 @@ Configure the endpoint through the tenant-aware `OrchardCore_HealthChecks` confi
 The same settings can be supplied through environment variables:
 
 ```text
-OrchardCore__OrchardCore_HealthChecks__Url=/health/live
-OrchardCore__OrchardCore_HealthChecks__ShowDetails=false
+OrchardCore__HealthChecks__Url=/health/live
+OrchardCore__HealthChecks__ShowDetails=false
 ```
 
 To target a named tenant, include its shell name:
 
 ```text
-OrchardCore__CustomerA__OrchardCore_HealthChecks__Url=/health/ready
+OrchardCore__CustomerA__HealthChecks__Url=/health/ready
 ```
 
 See [Configuration](../Configuration/README.md#ishellconfiguration-via-environment-variables) for configuration sources and tenant-specific environment variable patterns.

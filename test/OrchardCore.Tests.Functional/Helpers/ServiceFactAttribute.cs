@@ -13,9 +13,9 @@ public class RedisFactAttribute : FactAttribute
         : base(sourceFilePath, sourceLineNumber)
     {
         if (string.IsNullOrEmpty(System.Environment.GetEnvironmentVariable(
-            "OrchardCore__OrchardCore_Redis__Configuration")))
+            "OrchardCore__Redis__Configuration")))
         {
-            Skip = "Redis is not configured. Set OrchardCore__OrchardCore_Redis__Configuration to run this test.";
+            Skip = "Redis is not configured. Set OrchardCore__Redis__Configuration to run this test.";
         }
     }
 }
@@ -30,9 +30,9 @@ public class AzuriteFactAttribute : FactAttribute
         : base(sourceFilePath, sourceLineNumber)
     {
         if (string.IsNullOrEmpty(System.Environment.GetEnvironmentVariable(
-            "OrchardCore__OrchardCore_Media_Azure__ConnectionString")))
+            "OrchardCore__Media__Azure__ConnectionString")))
         {
-            Skip = "Azurite is not configured. Set OrchardCore__OrchardCore_Media_Azure__ConnectionString to run this test.";
+            Skip = "Azurite is not configured. Set OrchardCore__Media__Azure__ConnectionString to run this test.";
         }
     }
 }
@@ -47,9 +47,9 @@ public class RedisAndAzuriteFactAttribute : FactAttribute
         : base(sourceFilePath, sourceLineNumber)
     {
         if (string.IsNullOrEmpty(System.Environment.GetEnvironmentVariable(
-                "OrchardCore__OrchardCore_Redis__Configuration")) ||
+                "OrchardCore__Redis__Configuration")) ||
             string.IsNullOrEmpty(System.Environment.GetEnvironmentVariable(
-                "OrchardCore__OrchardCore_Media_Azure__ConnectionString")))
+                "OrchardCore__Media__Azure__ConnectionString")))
         {
             Skip = "Both Redis and Azurite must be configured to run this test.";
         }

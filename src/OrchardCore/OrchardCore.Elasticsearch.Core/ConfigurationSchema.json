@@ -1,0 +1,124 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Search": {
+          "type": "object",
+          "properties": {
+            "Elasticsearch": {
+              "type": "object",
+              "description": "Configures the connection to the Elasticsearch server, as well as the index prefix, analyzers and token filters. See https://docs.orchardcore.net/en/latest/reference/modules/Elasticsearch/.",
+              "properties": {
+                "ConnectionType": {
+                  "type": "string",
+                  "enum": [
+                    "SingleNodeConnectionPool",
+                    "CloudConnectionPool",
+                    "StaticConnectionPool",
+                    "SniffingConnectionPool",
+                    "StickyConnectionPool"
+                  ],
+                  "default": "SingleNodeConnectionPool",
+                  "description": "The connection pool type. 'CloudConnectionPool' requires 'CloudId'; the other types connect to 'Url' on each of the 'Ports'."
+                },
+                "Url": {
+                  "type": "string",
+                  "description": "The server URL, without the port, e.g. 'http://localhost'. The connection is only considered configured when this is a valid absolute URL."
+                },
+                "Ports": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "default": [
+                    9200
+                  ],
+                  "description": "The server connection ports."
+                },
+                "CloudId": {
+                  "type": "string",
+                  "description": "The Elasticsearch cloud service id. Only used with the 'CloudConnectionPool' connection type."
+                },
+                "AuthenticationType": {
+                  "type": "string",
+                  "enum": [
+                    "Basic",
+                    "ApiKey",
+                    "Base64ApiKey",
+                    "KeyIdAndKey"
+                  ],
+                  "default": "Basic",
+                  "description": "The authentication type: 'Basic' uses 'Username' and 'Password', 'ApiKey' uses 'ApiKey', 'Base64ApiKey' uses 'Base64ApiKey', and 'KeyIdAndKey' uses 'KeyId' and 'Key'."
+                },
+                "Username": {
+                  "type": "string",
+                  "description": "The user name used by the 'Basic' authentication type."
+                },
+                "Password": {
+                  "type": "string",
+                  "description": "The password used by the 'Basic' authentication type."
+                },
+                "ApiKey": {
+                  "type": "string",
+                  "description": "The API key used by the 'ApiKey' authentication type."
+                },
+                "Base64ApiKey": {
+                  "type": "string",
+                  "description": "The Base64 encoded API key used by the 'Base64ApiKey' authentication type."
+                },
+                "KeyId": {
+                  "type": "string",
+                  "description": "The key id used by the 'KeyIdAndKey' authentication type."
+                },
+                "Key": {
+                  "type": "string",
+                  "description": "The key used by the 'KeyIdAndKey' authentication type."
+                },
+                "CertificateFingerprint": {
+                  "type": "string",
+                  "description": "The fingerprint of the server certificate. Not needed with the 'CloudConnectionPool' connection type."
+                },
+                "EnableHttpCompression": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Whether HTTP compression is enabled."
+                },
+                "EnableDebugMode": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Whether the debug mode is enabled, logging the requests and responses at the 'Debug' level."
+                },
+                "IndexPrefix": {
+                  "type": "string",
+                  "description": "A prefix added to the name of all indexes."
+                },
+                "Analyzers": {
+                  "type": "object",
+                  "description": "The built-in or custom analyzers that can be selected for an index, keyed by analyzer name, e.g. '\"standard\": { \"type\": \"standard\" }'. Defaults to the 'standard' analyzer.",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                },
+                "TokenFilters": {
+                  "type": "object",
+                  "description": "The custom token filters that can be used by the custom analyzers, keyed by token filter name, e.g. '\"english_stop\": { \"type\": \"stop\", \"stopwords\": \"_english_\" }'.",
+                  "additionalProperties": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "OrchardCore_Elasticsearch": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Elasticsearch' section is deprecated. Use 'OrchardCore:Search:Elasticsearch' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Search:Elasticsearch' instead."
+        }
+      }
+    }
+  }
+}

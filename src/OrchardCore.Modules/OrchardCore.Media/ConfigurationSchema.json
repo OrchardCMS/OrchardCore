@@ -1,0 +1,183 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Media": {
+          "type": "object",
+          "description": "Media Library settings, used by the 'OrchardCore.Media' feature. Can be set for all tenants or per tenant. See https://docs.orchardcore.net/en/latest/reference/modules/Media/.",
+          "properties": {
+            "SupportedSizes": {
+              "type": "array",
+              "description": "The accepted sizes for custom width and height when resizing images. When 'UseTokenizedQueryString' is enabled all sizes are valid and this list acts as a helper for media profiles. Replaces the default list instead of being merged with it.",
+              "items": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "default": [
+                16,
+                32,
+                50,
+                100,
+                160,
+                240,
+                480,
+                600,
+                1024,
+                2048
+              ]
+            },
+            "AllowedFileExtensions": {
+              "type": "array",
+              "description": "The file extensions, including the leading dot, that can be uploaded with the standard media upload permissions. Replaces the default list instead of being merged with it. Must not overlap with 'RestrictedFileExtensions'.",
+              "items": {
+                "type": "string"
+              },
+              "default": [
+                ".jpg",
+                ".jpeg",
+                ".png",
+                ".gif",
+                ".ico",
+                ".webp",
+                ".pdf",
+                ".doc",
+                ".docx",
+                ".ppt",
+                ".pptx",
+                ".pps",
+                ".ppsx",
+                ".odt",
+                ".xls",
+                ".xlsx",
+                ".psd",
+                ".mp3",
+                ".m4a",
+                ".ogg",
+                ".wav",
+                ".mp4",
+                ".m4v",
+                ".mov",
+                ".wmv",
+                ".avi",
+                ".mpg",
+                ".ogv",
+                ".3gp",
+                ".webm"
+              ]
+            },
+            "RestrictedFileExtensions": {
+              "type": "array",
+              "description": "The file extensions, including the leading dot, that also require the 'UploadRestrictedMedia' permission in addition to the standard media upload permissions. Replaces the default list instead of being merged with it. Must not overlap with 'AllowedFileExtensions'.",
+              "items": {
+                "type": "string"
+              },
+              "default": [
+                ".css",
+                ".js",
+                ".svg"
+              ]
+            },
+            "MaxBrowserCacheDays": {
+              "type": "integer",
+              "description": "The number of days media files are kept in the browser cache, used for the 'Cache-Control' header of served media.",
+              "minimum": 0,
+              "default": 30
+            },
+            "MaxSecureFilesBrowserCacheDays": {
+              "type": "integer",
+              "description": "The number of days secure media files are kept in the browser cache. Set to 0 to disable caching secure files.",
+              "minimum": 0,
+              "default": 0
+            },
+            "MaxCacheDays": {
+              "type": "integer",
+              "description": "The number of days a cached resized media item is valid for, before being rebuilt on request.",
+              "minimum": 0,
+              "default": 365
+            },
+            "ResizedCacheMaxStale": {
+              "type": "string",
+              "description": "The time before a stale item is removed from the resized media cache, as a TimeSpan in the 'hh:mm:ss' or 'd.hh:mm:ss' format, e.g. '01:00:00'. When not set, stale items are not cleaned up."
+            },
+            "RemoteCacheMaxStale": {
+              "type": "string",
+              "description": "The time before a stale item is removed from the remote media cache, as a TimeSpan in the 'hh:mm:ss' or 'd.hh:mm:ss' format, e.g. '01:00:00'. When not set, stale items are not cleaned up."
+            },
+            "MaxFileSize": {
+              "type": "integer",
+              "description": "The maximum size of an uploaded file, in bytes. The request size limits of the hosting server (e.g. IIS) may also need to be configured.",
+              "minimum": 0,
+              "default": 30000000
+            },
+            "CdnBaseUrl": {
+              "type": "string",
+              "description": "A CDN base URL that is prefixed to the request path when serving media, e.g. 'https://your-cdn.com'.",
+              "default": ""
+            },
+            "AssetsRequestPath": {
+              "type": "string",
+              "description": "The request path used to serve media files.",
+              "default": "/media"
+            },
+            "AssetsPath": {
+              "type": "string",
+              "description": "The relative subdirectory used to store media files inside the tenant's data directory (by default 'App_Data/Sites/{tenant}/Media'). Absolute paths, drive prefixes, empty segments, and '.' or '..' segments are not allowed.",
+              "default": "Media"
+            },
+            "AssetsUsersFolder": {
+              "type": "string",
+              "description": "The folder under 'AssetsPath' used to store the users' own media files.",
+              "default": "_Users"
+            },
+            "UseTokenizedQueryString": {
+              "type": "boolean",
+              "description": "Whether a token is added to the image processing query string to prevent disk filling attacks with arbitrary resizing commands.",
+              "default": true
+            },
+            "ContentSecurityPolicy": {
+              "type": "string",
+              "description": "The 'Content-Security-Policy' header applied to media files served from the Media Library.",
+              "default": "default-src 'self'; style-src 'unsafe-inline'"
+            },
+            "MaxUploadChunkSize": {
+              "type": "integer",
+              "description": "The maximum chunk size, in bytes, used when uploading files. Set to 0 to disable chunked uploads. Useful to work around request size limits of a hosting environment.",
+              "minimum": 0,
+              "default": 104857600
+            },
+            "TemporaryFileLifetime": {
+              "type": "string",
+              "description": "The lifetime of the temporary files created during uploads, as a TimeSpan in the 'hh:mm:ss' or 'd.hh:mm:ss' format.",
+              "default": "01:00:00"
+            },
+            "Slugify": {
+              "type": "object",
+              "description": "Media Slugify settings, used by the 'OrchardCore.Media.Slugify' feature to create SEO-friendly names for new media folders and files. See https://docs.orchardcore.net/en/latest/reference/modules/Media.Slugify/.",
+              "properties": {
+                "Transliterate": {
+                  "type": "boolean",
+                  "description": "Whether non-ASCII characters are transliterated to their ASCII equivalents when slugifying media folder and file names.",
+                  "default": true
+                }
+              }
+            }
+          }
+        },
+        "OrchardCore_Media": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Media' section is deprecated. Use 'OrchardCore:Media' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Media' instead."
+        },
+        "OrchardCore_Media_Slugify": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Media_Slugify' section is deprecated. Use 'OrchardCore:Media:Slugify' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Media:Slugify' instead."
+        }
+      }
+    }
+  }
+}

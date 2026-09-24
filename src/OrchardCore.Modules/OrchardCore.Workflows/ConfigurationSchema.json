@@ -1,0 +1,34 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Workflows": {
+          "type": "object",
+          "description": "Configures the workflows. The values can also be defined per tenant under 'OrchardCore:{TenantName}:Workflows'. See https://docs.orchardcore.net/en/latest/reference/modules/Workflows/.",
+          "properties": {
+            "Trimming": {
+              "type": "object",
+              "description": "Configures the 'Workflow Trimming' feature that deletes old workflow instances. The retention period and the trimmed statuses are configured in the site settings, and the frequency through the background task settings.",
+              "properties": {
+                "BatchSize": {
+                  "type": "integer",
+                  "description": "The maximum number of workflow instances deleted in a single run. Lower it if the trimming times out, or increase it if many instances need to be deleted and no timeout occurs.",
+                  "default": 5000,
+                  "minimum": 1
+                }
+              }
+            }
+          }
+        },
+        "OrchardCore_Workflows": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Workflows' section is deprecated. Use 'OrchardCore:Workflows' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Workflows' instead."
+        }
+      }
+    }
+  }
+}

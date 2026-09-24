@@ -1,0 +1,27 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "DynamicCache": {
+          "type": "object",
+          "description": "Dynamic Cache settings, used by the 'OrchardCore.DynamicCache' feature. See https://docs.orchardcore.net/en/latest/reference/modules/DynamicCache/.",
+          "properties": {
+            "FailoverRetryLatency": {
+              "type": "string",
+              "description": "The time during which the dynamic cache stops using the distributed cache after a read or write failure, before trying again, as a TimeSpan in the 'hh:mm:ss' format.",
+              "default": "00:00:30"
+            }
+          }
+        },
+        "OrchardCore_DynamicCache": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_DynamicCache' section is deprecated. Use 'OrchardCore:DynamicCache' instead.",
+          "description": "Deprecated. Use 'OrchardCore:DynamicCache' instead."
+        }
+      }
+    }
+  }
+}

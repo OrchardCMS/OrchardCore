@@ -1,0 +1,32 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "HealthChecks": {
+          "type": "object",
+          "description": "Configures the health check endpoint exposed by each tenant that has the Health Checks feature enabled. The values can also be defined per tenant under 'OrchardCore:{TenantName}:HealthChecks'. Changes apply when the tenant is reloaded. See https://docs.orchardcore.net/en/latest/reference/modules/HealthChecks/.",
+          "properties": {
+            "Url": {
+              "type": "string",
+              "description": "The route of the health check endpoint, relative to the tenant URL prefix.",
+              "default": "/health/live"
+            },
+            "ShowDetails": {
+              "type": "boolean",
+              "description": "Whether the endpoint returns a JSON response with the name, status and description of every check, in which case all statuses return '200 OK'. When false, the compact ASP.NET Core response is returned and an unhealthy status returns '503 Service Unavailable'. The endpoint does not require authentication, so only enable it for trusted monitoring clients.",
+              "default": false
+            }
+          }
+        },
+        "OrchardCore_HealthChecks": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_HealthChecks' section is deprecated. Use 'OrchardCore:HealthChecks' instead.",
+          "description": "Deprecated. Use 'OrchardCore:HealthChecks' instead."
+        }
+      }
+    }
+  }
+}

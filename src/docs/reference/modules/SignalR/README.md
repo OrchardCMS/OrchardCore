@@ -63,12 +63,14 @@ services.Configure<HubOptions>(options =>
 
 ## Backplane configuration
 
-Each backplane is a separate module and only registers once its feature is enabled. The Redis backplane (`OrchardCore.SignalR.Redis`) reuses the `OrchardCore.Redis` connection string (`OrchardCore_Redis:Configuration`):
+Each backplane is a separate module and only registers once its feature is enabled. The Redis backplane (`OrchardCore.SignalR.Redis`) reuses the `OrchardCore.Redis` connection string (`OrchardCore:Redis:Configuration`):
 
 ```json
 {
-  "OrchardCore_Redis": {
-    "Configuration": "your-redis-host:6379"
+  "OrchardCore": {
+    "Redis": {
+      "Configuration": "your-redis-host:6379"
+    }
   }
 }
 ```
@@ -77,10 +79,12 @@ The Azure SignalR Service backplane (`OrchardCore.SignalR.Azure`) uses its own c
 
 ```json
 {
-  "SignalR": {
-    "Azure": {
-      "ConnectionString": "Endpoint=https://<your-service>.service.signalr.net;AccessKey=...;Version=1.0;",
-      "ApplicationName": "OrchardCore"
+  "OrchardCore": {
+    "SignalR": {
+      "Azure": {
+        "ConnectionString": "Endpoint=https://<your-service>.service.signalr.net;AccessKey=...;Version=1.0;",
+        "ApplicationName": "OrchardCore"
+      }
     }
   }
 }

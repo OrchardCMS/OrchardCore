@@ -1,0 +1,65 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Navigation": {
+          "type": "object",
+          "description": "Configures the navigation and pager shapes. The values can also be defined per tenant under 'OrchardCore:{TenantName}:Navigation'. See https://docs.orchardcore.net/en/latest/reference/modules/Navigation/.",
+          "properties": {
+            "PagerOptions": {
+              "type": "object",
+              "description": "Configures the pagers. Note that the Settings module, which is always enabled, overrides these values with the paging values of the site general settings.",
+              "properties": {
+                "PageSize": {
+                  "type": "integer",
+                  "description": "The default number of items per page.",
+                  "default": 10,
+                  "minimum": 0
+                },
+                "MaxPageSize": {
+                  "type": "integer",
+                  "description": "The maximum number of items per page. A value of 0 means no maximum.",
+                  "default": 100,
+                  "minimum": 0
+                },
+                "MaxPagedCount": {
+                  "type": "integer",
+                  "description": "When greater than 0, the total number of items assumed by the content items admin pager instead of counting the items, which avoids an expensive count query on large databases. A value of 0 counts the items.",
+                  "default": 0,
+                  "minimum": 0
+                },
+                "AllowPageSizeSelection": {
+                  "type": "boolean",
+                  "description": "Whether users are allowed to change the number of items displayed per page by selecting one of the 'PageSizeOptions' values.",
+                  "default": false
+                },
+                "PageSizeOptions": {
+                  "type": "array",
+                  "description": "The page sizes a user can select from when 'AllowPageSizeSelection' is enabled.",
+                  "items": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "default": [
+                    10,
+                    25,
+                    50,
+                    100
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "OrchardCore_Navigation": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Navigation' section is deprecated. Use 'OrchardCore:Navigation' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Navigation' instead."
+        }
+      }
+    }
+  }
+}

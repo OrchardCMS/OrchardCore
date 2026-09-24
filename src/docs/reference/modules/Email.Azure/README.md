@@ -17,9 +17,13 @@ You may configure the Default Azure Email Service provider by the configuration 
 
 ```json
 {
-  "OrchardCore_Email_AzureCommunicationServices": {
-    "DefaultSender": "",
-    "ConnectionString": ""
+  "OrchardCore": {
+    "Email": {
+      "Azure": {
+        "DefaultSender": "",
+        "ConnectionString": ""
+      }
+    }
   }
 }
 ```

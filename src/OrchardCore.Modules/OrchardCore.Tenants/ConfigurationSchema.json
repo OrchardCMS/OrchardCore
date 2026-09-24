@@ -1,0 +1,40 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Tenants": {
+          "type": "object",
+          "description": "Configures the management of the tenants from the admin and the tenant API. See https://docs.orchardcore.net/en/latest/reference/modules/Tenants/.",
+          "properties": {
+            "TenantRemovalAllowed": {
+              "type": "boolean",
+              "description": "Whether a tenant can be removed when it is not set up yet or is disabled.",
+              "default": false
+            },
+            "RequireTablePrefix": {
+              "type": "boolean",
+              "description": "Whether a non-empty table prefix is required when a tenant is created, or an uninitialized tenant is edited, with a database provider that supports table prefixes. Useful when tenants share the same database.",
+              "default": false
+            },
+            "TablePrefixPattern": {
+              "type": "string",
+              "description": "A Fluid template used to generate the table prefix of each tenant instead of entering it manually, rendered with 'ShellSettings' in scope, e.g. '{{ ShellSettings.Name }}'. The result must be a valid SQL identifier."
+            },
+            "SchemaPattern": {
+              "type": "string",
+              "description": "A Fluid template used to generate the database schema of each tenant instead of entering it manually, rendered with 'ShellSettings' in scope, e.g. 'dbo' or '{{ ShellSettings.Name }}'. The result must be a valid SQL identifier."
+            }
+          }
+        },
+        "OrchardCore_Tenants": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Tenants' section is deprecated. Use 'OrchardCore:Tenants' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Tenants' instead."
+        }
+      }
+    }
+  }
+}

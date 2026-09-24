@@ -83,7 +83,7 @@ This accessor has all properties of `ISite`, with two security limitations:
    ```json
    {
      "OrchardCore": {
-       "OrchardCore_Settings_Liquid": {
+       "Liquid": {
          "PermittedSiteProperties": [
            "ExternalRegistrationSettings",
            "ExternalLoginSettings",

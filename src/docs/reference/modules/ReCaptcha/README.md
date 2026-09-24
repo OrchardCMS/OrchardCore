@@ -92,11 +92,13 @@ The following configuration values can be customized:
 
 ```json
 {
-  "OrchardCore_ReCaptcha": {
-    "SiteKey": "",
-    "SecretKey": "",
-    "ReCaptchaScriptUri": "",
-    "ReCaptchaApiUri": ""
+  "OrchardCore": {
+    "ReCaptcha": {
+      "SiteKey": "",
+      "SecretKey": "",
+      "ReCaptchaScriptUri": "",
+      "ReCaptchaApiUri": ""
+    }
   }
 }
 ```

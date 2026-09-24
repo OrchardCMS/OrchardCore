@@ -1,0 +1,106 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Email": {
+          "type": "object",
+          "properties": {
+            "Smtp": {
+              "type": "object",
+              "description": "Settings of the Default SMTP email provider, which sends emails through the Simple Mail Transfer Protocol (SMTP). This provider can only be configured from configuration, and it is available when 'DefaultSender' is set and either 'DeliveryMethod' is 'SpecifiedPickupDirectory' or 'Host' is set. See https://docs.orchardcore.net/en/latest/reference/modules/Email.Smtp/.",
+              "properties": {
+                "DefaultSender": {
+                  "type": "string",
+                  "description": "The email address used as the sender of the emails. Required to enable the provider."
+                },
+                "DeliveryMethod": {
+                  "type": "string",
+                  "description": "How the emails are delivered: 'Network' sends them to the SMTP server defined by 'Host', 'SpecifiedPickupDirectory' writes them as files to the directory defined by 'PickupDirectoryLocation'.",
+                  "enum": [
+                    "Network",
+                    "SpecifiedPickupDirectory"
+                  ],
+                  "default": "Network"
+                },
+                "PickupDirectoryLocation": {
+                  "type": "string",
+                  "description": "The directory where the emails are written when 'DeliveryMethod' is 'SpecifiedPickupDirectory', relative to 'PickupDirectoryLocationBase'. Use '/' for the base directory itself or '/Subfolder' for a folder beneath it. Absolute paths, invalid path characters and '.' or '..' segments are not allowed."
+                },
+                "PickupDirectoryLocationBase": {
+                  "type": "string",
+                  "description": "The base directory that 'PickupDirectoryLocation' is resolved against and restricted to. Supports Fluid templates with the '{{ AppData }}' (the application data folder) and '{{ ShellSettings.Name }}' (the tenant name) values. This value can only be set from configuration, and it also applies to the SMTP provider configured from the admin settings.",
+                  "default": "{{ AppData }}\\Sites\\{{ ShellSettings.Name }}\\Emails"
+                },
+                "Host": {
+                  "type": "string",
+                  "description": "The host name or IP address of the SMTP server. Required when 'DeliveryMethod' is 'Network'."
+                },
+                "Port": {
+                  "type": "integer",
+                  "description": "The port of the SMTP server.",
+                  "minimum": 1,
+                  "default": 25
+                },
+                "AutoSelectEncryption": {
+                  "type": "boolean",
+                  "description": "Whether the encryption is negotiated automatically with the SMTP server. When true, 'EncryptionMethod' is ignored.",
+                  "default": false
+                },
+                "EncryptionMethod": {
+                  "type": "string",
+                  "description": "The encryption used to connect to the SMTP server when 'AutoSelectEncryption' is false: 'None', 'SslTls' (SSL/TLS on connect) or 'StartTls'.",
+                  "enum": [
+                    "None",
+                    "SslTls",
+                    "StartTls"
+                  ],
+                  "default": "None"
+                },
+                "RequireCredentials": {
+                  "type": "boolean",
+                  "description": "Whether the SMTP server requires authentication.",
+                  "default": false
+                },
+                "UseDefaultCredentials": {
+                  "type": "boolean",
+                  "description": "Whether to authenticate with empty default credentials instead of 'UserName' and 'Password' when 'RequireCredentials' is true.",
+                  "default": false
+                },
+                "UserName": {
+                  "type": "string",
+                  "description": "The user name used to authenticate with the SMTP server when 'RequireCredentials' is true."
+                },
+                "Password": {
+                  "type": "string",
+                  "description": "The password used to authenticate with the SMTP server when 'RequireCredentials' is true. This is a sensitive value: provide it through user secrets, environment variables or a key vault rather than appsettings.json."
+                },
+                "ProxyHost": {
+                  "type": "string",
+                  "description": "The host name of the SOCKS5 proxy server used to reach the SMTP server, if any."
+                },
+                "ProxyPort": {
+                  "type": "integer",
+                  "description": "The port of the SOCKS5 proxy server defined by 'ProxyHost'.",
+                  "minimum": 0
+                },
+                "IgnoreInvalidSslCertificate": {
+                  "type": "boolean",
+                  "description": "Whether invalid SSL/TLS certificates presented by the SMTP server are accepted. Only enable it for testing.",
+                  "default": false
+                }
+              }
+            }
+          }
+        },
+        "OrchardCore_Email_Smtp": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Email_Smtp' section is deprecated. Use 'OrchardCore:Email:Smtp' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Email:Smtp' instead."
+        }
+      }
+    }
+  }
+}

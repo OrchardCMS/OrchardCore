@@ -76,7 +76,9 @@ public sealed class Startup : StartupBase
         services.Configure<UserOptions>(userOptions =>
         {
             var configuration = ShellScope.Services.GetRequiredService<IShellConfiguration>();
-            configuration.GetSection("OrchardCore_Users").Bind(userOptions);
+
+            // The 'OrchardCore_Users' section is deprecated and will be removed in a future major version, use 'Users' instead.
+            configuration.GetSectionCompat("Users", "OrchardCore_Users").Bind(userOptions);
         });
 
         // Add ILookupNormalizer as Singleton because it is needed by UserIndexProvider

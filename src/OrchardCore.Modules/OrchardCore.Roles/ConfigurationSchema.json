@@ -1,0 +1,27 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Roles": {
+          "type": "object",
+          "description": "Roles settings. See https://docs.orchardcore.net/en/latest/reference/modules/Roles/.",
+          "properties": {
+            "AdminRoleName": {
+              "type": "string",
+              "description": "The name of the system role that is granted all permissions. When not set, 'Administrator' is used.",
+              "default": "Administrator"
+            }
+          }
+        },
+        "OrchardCore_Roles": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Roles' section is deprecated. Use 'OrchardCore:Roles' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Roles' instead."
+        }
+      }
+    }
+  }
+}

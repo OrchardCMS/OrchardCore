@@ -1,0 +1,43 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Authentication": {
+          "type": "object",
+          "properties": {
+            "GitHub": {
+              "type": "object",
+              "description": "Settings of the GitHub authentication feature. These values override the ones configured in the admin settings, and they are only applied when the 'ConfigureGitHubSettings()' extension method is called on the OrchardCoreBuilder. See https://docs.orchardcore.net/en/latest/reference/modules/GitHub/.",
+              "properties": {
+                "ClientID": {
+                  "type": "string",
+                  "description": "The client ID of the GitHub OAuth app."
+                },
+                "ClientSecret": {
+                  "type": "string",
+                  "description": "The client secret of the GitHub OAuth app. This is a sensitive value: provide it through user secrets, environment variables or a key vault rather than appsettings.json."
+                },
+                "CallbackPath": {
+                  "type": "string",
+                  "description": "The request path within the application's base path where the user agent is returned after signing in with GitHub. It must start with '/'. When not set, '/signin-github' is used."
+                },
+                "SaveTokens": {
+                  "type": "boolean",
+                  "description": "Whether the access and refresh tokens are stored in the authentication properties after a successful sign-in."
+                }
+              }
+            }
+          }
+        },
+        "OrchardCore_GitHub": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_GitHub' section is deprecated. Use 'OrchardCore:Authentication:GitHub' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Authentication:GitHub' instead."
+        }
+      }
+    }
+  }
+}

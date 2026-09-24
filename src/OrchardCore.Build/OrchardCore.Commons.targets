@@ -1,2 +1,14 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!--
+    Packs the "ConfigurationSchema.json" file describing the configuration sections of a project, if any, with a
+    'buildTransitive' targets file declaring it as a 'JsonSchemaSegment', so that Visual Studio provides IntelliSense
+    and validation for these sections in the 'appsettings.json' files of the projects referencing the package.
+  -->
+  <ItemGroup Condition="Exists('$(MSBuildProjectDirectory)\ConfigurationSchema.json')">
+    <None Remove="ConfigurationSchema.json" />
+    <None Include="ConfigurationSchema.json" Pack="true" PackagePath="ConfigurationSchema.json" />
+    <None Include="$(MSBuildThisFileDirectory)ConfigurationSchema.targets" Pack="true" PackagePath="buildTransitive\$(PackageId).targets" Visible="false" />
+  </ItemGroup>
+
 </Project>

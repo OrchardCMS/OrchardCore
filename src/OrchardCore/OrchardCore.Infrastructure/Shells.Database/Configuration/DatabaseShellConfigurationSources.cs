@@ -26,9 +26,9 @@ public class DatabaseShellConfigurationSources : IShellConfigurationSources
         IOptions<ShellOptions> shellOptions)
 
     {
+        // The 'OrchardCore:OrchardCore_Shells_Database' section is deprecated and will be removed in a future major version, use 'OrchardCore:Shells:Database' instead.
         _options = configuration
-            .GetSection("OrchardCore")
-            .GetSectionCompat("OrchardCore_Shells_Database")
+            .GetSectionCompat("OrchardCore:Shells:Database", "OrchardCore:OrchardCore_Shells_Database")
             .Get<DatabaseShellsStorageOptions>()
             ?? new DatabaseShellsStorageOptions();
 

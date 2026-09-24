@@ -1,0 +1,27 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Markdown": {
+          "type": "object",
+          "description": "Configures the Markdown pipeline used to render Markdown to HTML. The values can also be defined per tenant under 'OrchardCore:{TenantName}:Markdown'. See https://docs.orchardcore.net/en/latest/reference/modules/Markdown/.",
+          "properties": {
+            "Extensions": {
+              "type": "string",
+              "description": "The Markdig extensions enabled in the Markdown pipeline, separated by '+', e.g. 'nohtml+advanced'. Supported values include 'advanced', 'pipetables', 'gfm-pipetables', 'hardlinebreak', 'footnotes', 'footers', 'citations', 'attributes', 'gridtables', 'abbreviations', 'emojis', 'definitionlists', 'customcontainers', 'figures', 'mathematics', 'bootstrap', 'medialinks', 'smartypants', 'autoidentifiers', 'tasklists', 'diagrams', 'nofollowlinks', 'noopenerlinks', 'noreferrerlinks', 'nohtml', 'yaml', 'nonascii-noescape', 'autolinks' and 'globalization'.",
+              "default": "nohtml+advanced"
+            }
+          }
+        },
+        "OrchardCore_Markdown": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Markdown' section is deprecated. Use 'OrchardCore:Markdown' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Markdown' instead."
+        }
+      }
+    }
+  }
+}

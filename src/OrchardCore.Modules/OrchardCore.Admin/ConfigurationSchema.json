@@ -1,0 +1,27 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Admin": {
+          "type": "object",
+          "description": "Configures the admin area of Orchard Core. The values can also be defined per tenant under 'OrchardCore:{TenantName}:Admin'. See https://docs.orchardcore.net/en/latest/reference/modules/Admin/.",
+          "properties": {
+            "AdminUrlPrefix": {
+              "type": "string",
+              "description": "The URL prefix used to access the admin area, e.g. 'MyAdmin' to serve the admin area from '/MyAdmin'. Leading and trailing spaces and slashes are removed.",
+              "default": "Admin"
+            }
+          }
+        },
+        "OrchardCore_Admin": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Admin' section is deprecated. Use 'OrchardCore:Admin' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Admin' instead."
+        }
+      }
+    }
+  }
+}
