@@ -12,6 +12,7 @@ public class SiteSettingsViewModel
     [Required]
     public int? PageSize { get; set; }
 
+    public bool ShowContentTypesGrouping { get; set; }
     public bool AllowPageSizeSelection { get; set; }
 
     public string PageSizeOptions { get; set; }
