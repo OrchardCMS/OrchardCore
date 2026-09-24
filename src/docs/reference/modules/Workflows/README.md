@@ -249,6 +249,10 @@ The following activities are available with any default Orchard installation:
 | **User**                      | *     | *                                                                                   | * |
 | ValidateUser                  | Task  | Used to check if the user is logged in and has the specified role(s).               |
 
+### HTTP Request task destination security
+
+The **HTTP Request** task accepts an absolute HTTP or HTTPS URL and validates the destination after evaluating any Liquid expression. Loopback, private, link-local, multicast, reserved, and other non-public IP addresses are blocked. Automatic redirects, proxies, and custom `Host` headers are disabled for requests sent by this task.
+
 ## Developing Custom Activities
 
 Orchard is built to be extended, and the `Workflows` module is no different. When creating your own module, you can develop custom workflow activities.  

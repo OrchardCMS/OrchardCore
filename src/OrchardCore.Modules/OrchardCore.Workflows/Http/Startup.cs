@@ -28,7 +28,8 @@ public sealed class Startup : StartupBase
             o.Filters.Add<WorkflowActionFilter>();
         });
 
-        services.AddHttpClient();
+        services.AddHttpClient(HttpRequestTaskHttpClient.Name)
+            .ConfigurePrimaryHttpMessageHandler(HttpRequestTaskHttpClient.CreateHandler);
 
         services.AddLiquidFilter<SignalUrlFilter>("signal_url");
 
