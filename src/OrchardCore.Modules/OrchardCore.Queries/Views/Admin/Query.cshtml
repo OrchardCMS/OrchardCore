@@ -29,7 +29,11 @@
 
 <style asp-name="codemirror"></style>
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["SQL Query"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="QueriesRun" title="@T["SQL Query"]">
+        <breadcrumb-item id="Queries" action="Index" controller="Admin" area="OrchardCore.Queries" permission="@QueryPermissions.ManageQueries.Name">@T["Queries"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <div asp-validation-summary="ModelOnly"></div>
 

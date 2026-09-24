@@ -1,6 +1,10 @@
 @model CreateDeploymentPlanViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Create Deployment Plan"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="DeploymentPlansCreate" title="@T["Create Deployment Plan"]">
+        <breadcrumb-item id="DeploymentPlans" action="Index" controller="DeploymentPlan" area="OrchardCore.Deployment" permission="@DeploymentPermissions.Export.Name">@T["Deployment Plans"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <div asp-validation-summary="All"></div>
 <form asp-action="Create" method="post" class="no-multisubmit">

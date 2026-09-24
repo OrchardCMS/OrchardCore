@@ -4,7 +4,9 @@
     int endIndex = startIndex + Model.RemoteClients.Count() - 1;
 }
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Remote Clients"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="RemoteClients" title="@T["Remote Clients"]" />
+</zone>
 
 <div class="alert alert-info text-break" role="alert">
     @T["Url to use from client instances: <b>{0}</b>", Url.Action("Import", "ImportRemoteInstance", null, Context.Request.Scheme)]

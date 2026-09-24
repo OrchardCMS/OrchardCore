@@ -7,7 +7,12 @@
 }
 
 <script asp-src="~/OrchardCore.ContentTypes/Scripts/autocomplete/autocomplete.js" at="Foot"></script>
-<zone Name="Title"><h1>@T["Add Named Part To \"{0}\"", localizedTypeName]</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="ContentTypesAddReusablePart" title="@T["Add Named Part"]">
+        <breadcrumb-item id="ContentTypes" action="List" controller="Admin" area="OrchardCore.ContentTypes" permission="@ContentTypesPermissions.ViewContentTypes.Name">@T["Content Types"]</breadcrumb-item>
+        <breadcrumb-item id="ContentType" action="Edit" controller="Admin" area="OrchardCore.ContentTypes" route-id="@Model.Type.Name" permission="@ContentTypesPermissions.EditContentTypes.Name">@T["Edit Content Type - {0}", localizedTypeName]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <form asp-action="AddReusablePartTo">
     @Html.ValidationSummary()

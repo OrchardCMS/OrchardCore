@@ -2,7 +2,11 @@
 @using OrchardCore.OpenId
 @using OrchardCore.OpenId.ViewModels
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit a scope"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="OpenIdScopesEdit" title="@T["Edit a scope"]">
+        <breadcrumb-item id="OpenIdScopes" action="Index" controller="Scope" area="OrchardCore.OpenId" permission="@OpenIdPermissions.ManageScopes.Name">@T["Scopes"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Edit" method="post" class="no-multisubmit">

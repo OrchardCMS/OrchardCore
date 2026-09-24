@@ -15,6 +15,7 @@ public sealed class ResetIndexDeploymentStep : DeploymentStep
         : this()
     {
         Category = S["Indexing"];
+        Title = S["Reset Indexes"];
     }
 
     public bool IncludeAll { get; set; }
