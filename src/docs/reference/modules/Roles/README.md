@@ -94,9 +94,9 @@ public static class MyPermissions
 }
 ```
 
-The roles editor translates the description with the full name of that type as the context, for example `MyModule.MyPermissions`, so a PO file entry for the description uses `msgctxt "MyModule.MyPermissions"`. When there is no PO file translation, the roles editor uses the Data Localization translation of the description, if there is one.
+The roles editor translates the description with the full name of that type as the context, for example `MyModule.MyPermissions`, so a PO file entry for the description uses `msgctxt "MyModule.MyPermissions"`. These descriptions are translated only with PO files. They are not listed in Data Localization.
 
-A description that is a plain `string` is still supported, for example `new Permission("ManageWidgets", "Manage widgets")`. It is not translated with PO files, but it can still be translated with Data Localization. Descriptions that are templates, for example `"Edit {0}"`, stay plain strings, because the format arguments are applied before the description is shown.
+A description that is a plain `string` is still supported, for example `new Permission("ManageWidgets", "Manage widgets")`. It is not translated with PO files, but it can be translated with Data Localization. Descriptions that are templates, for example `"Edit {0}"`, stay plain strings, because the format arguments are applied before the description is shown, so the permissions built from them, for example "Edit Article", are also translated with Data Localization. Permission categories are translated with Data Localization too.
 
 ## Video
 

@@ -7,8 +7,8 @@
 @inject IStringLocalizerFactory StringLocalizerFactory
 
 @functions {
-    // Uses the PO file translation of the description when there is one.
-    // Otherwise, uses the Data Localization translation of the description.
+    // A description with a translation context is translated with PO files.
+    // Other descriptions, for example the ones built from a template, are translated with Data Localization.
     private string GetDescription(Permission permission, string permissionsContext)
     {
         var description = permission.Description;
@@ -18,11 +18,9 @@
             return permission.Name;
         }
 
-        var localized = StringLocalizerFactory.Localize(description);
-
-        if (!localized.ResourceNotFound && localized.Value != description.Name)
+        if (!string.IsNullOrEmpty(description.SearchedLocation))
         {
-            return localized.Value;
+            return StringLocalizerFactory.Localize(description).Value;
         }
 
         return D[description.Name, permissionsContext].Value;
