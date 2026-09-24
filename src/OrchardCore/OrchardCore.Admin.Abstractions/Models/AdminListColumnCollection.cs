@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.Admin.Models;
 
@@ -16,6 +17,32 @@ public sealed class AdminListColumnCollection : KeyedCollection<string, AdminLis
     public AdminListColumnCollection()
         : base(StringComparer.OrdinalIgnoreCase)
     {
+    }
+
+    /// <summary>
+    /// Sorts the columns by <see cref="AdminListColumn.Position"/>, in place. A column without a position goes after
+    /// all the positioned ones, and the columns sharing a position keep the order they were added in.
+    /// </summary>
+    public void SortByPosition()
+    {
+        // An insertion sort: a list has a handful of columns, it allocates nothing, and unlike List<T>.Sort it
+        // keeps the order of the columns sharing a position. The items are moved without touching their keys.
+        var items = Items;
+
+        for (var i = 1; i < items.Count; i++)
+        {
+            var column = items[i];
+            var position = GetPosition(column);
+            var j = i - 1;
+
+            while (j >= 0 && FlatPositionComparer.Instance.Compare(GetPosition(items[j]), position) > 0)
+            {
+                items[j + 1] = items[j];
+                j--;
+            }
+
+            items[j + 1] = column;
+        }
     }
 
     protected override string GetKeyForItem(AdminListColumn item)
@@ -39,6 +66,9 @@ public sealed class AdminListColumnCollection : KeyedCollection<string, AdminLis
 
         base.SetItem(index, item);
     }
+
+    private static string GetPosition(AdminListColumn column)
+        => string.IsNullOrWhiteSpace(column.Position) ? "after" : column.Position;
 
     private static void EnsureName(AdminListColumn item)
     {

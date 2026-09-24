@@ -23,11 +23,12 @@
 @using Microsoft.AspNetCore.Mvc.Rendering
 @using Microsoft.AspNetCore.Html
 @using OrchardCore.Admin.Models
+@using OrchardCore.DisplayManagement
 @using OrchardCore.DisplayManagement.Shapes
 @using OrchardCore.Mvc.Utilities
 @{
     // Enumerated once, as they are: an empty list is only known once the loop over the rows ran.
-    var rows = (IEnumerable<object>)Model.Rows ?? [];
+    var rows = (IEnumerable<IShape>)Model.Rows ?? [];
     var hasRows = false;
 
     // Optional attributes for the element wrapping the rows, e.g. the id a sortable list needs. A class is merged
@@ -56,11 +57,31 @@
         rowsAttributesHtml = attributesHtml;
     }
 
-    // The factory passes the list it built; anything else is copied once so it can be counted.
-    IList<AdminListColumn> columns = Model.Columns as IList<AdminListColumn> ?? [.. (IEnumerable<AdminListColumn>)Model.Columns ?? []];
+    var columns = (IList<AdminListColumn>)Model.Columns ?? [];
     var header = Model.Header;
     var toolbar = Model.Toolbar;
     string name = Model.Name;
+
+    // The classes and the title of a column are the same on every row, so they are built once.
+    var columnCssClasses = new string[columns.Count];
+    var columnTitles = new string[columns.Count];
+
+    for (var i = 0; i < columns.Count; i++)
+    {
+        columnCssClasses[i] = ColumnCssClass(columns[i]);
+        columnTitles[i] = string.IsNullOrEmpty(columns[i].Title?.Value) ? null : columns[i].Title.Value;
+    }
+
+    async Task<IShape> CreateCellAsync(IShape row, AdminListColumn column)
+    {
+        var cell = await Factory.CreateAsync(AdminListConstants.CellShapeType);
+
+        cell.Properties[AdminListConstants.ListNameProperty] = name;
+        cell.Properties["Row"] = row;
+        cell.Properties["Column"] = column;
+
+        return cell;
+    }
 
     static string ColumnCssClass(AdminListColumn column)
     {
@@ -165,9 +186,9 @@
     <table class="table table-hover align-middle mb-0">
         <thead>
             <tr>
-                @foreach (var column in columns)
+                @for (var i = 0; i < columns.Count; i++)
                 {
-                    <th scope="col" class="@ColumnCssClass(column)" style="@HeaderStyle(column)">@column.Title</th>
+                    <th scope="col" class="@columnCssClasses[i]" style="@HeaderStyle(columns[i])">@columnTitles[i]</th>
                 }
             </tr>
         </thead>
@@ -188,23 +209,14 @@
                     tr.MergeAttributes(rowShape.Attributes);
                 }
 
-                foreach (var column in columns)
+                // The cells are written as they are rendered, between the tags of the row, rather than buffered in it.
+                // The title is displayed before a cell when the rows are stacked on small screens.
+                @tr.RenderStartTag()
+                for (var i = 0; i < columns.Count; i++)
                 {
-                    var cell = await New.AdminListCell(ListName: name, Row: row, Column: column);
-                    var td = new TagBuilder("td");
-                    td.AddCssClass(ColumnCssClass(column));
-
-                    // The title is displayed before the cell when the rows are stacked on small screens.
-                    if (column.Title != null && !string.IsNullOrEmpty(column.Title.Value))
-                    {
-                        td.Attributes["data-title"] = column.Title.Value;
-                    }
-
-                    td.InnerHtml.AppendHtml(await DisplayAsync(cell));
-                    tr.InnerHtml.AppendHtml(td);
+                    <td class="@columnCssClasses[i]" data-title="@columnTitles[i]">@await DisplayAsync(await CreateCellAsync(row, columns[i]))</td>
                 }
-
-                @tr
+                @tr.RenderEndTag()
             }
             @if (!hasRows)
             {

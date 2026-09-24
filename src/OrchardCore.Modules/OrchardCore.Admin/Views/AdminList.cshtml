@@ -20,10 +20,11 @@
 *@
 @using Microsoft.AspNetCore.Mvc.Rendering
 @using Microsoft.AspNetCore.Html
+@using OrchardCore.DisplayManagement
 @using OrchardCore.DisplayManagement.Shapes
 @{
     // Enumerated once, as they are: an empty list is only known once the loop over the rows ran.
-    var rows = (IEnumerable<object>)Model.Rows ?? [];
+    var rows = (IEnumerable<IShape>)Model.Rows ?? [];
     var hasRows = false;
 
     // Optional attributes for the element wrapping the rows, e.g. the id a sortable list needs. A class is merged
@@ -134,9 +135,10 @@
             item.MergeAttributes(rowShape.Attributes);
         }
 
-        item.InnerHtml.AppendHtml(await DisplayAsync(row));
-
-        @item
+        // The row is written as it is rendered, between the tags of its item, rather than buffered in it.
+        @item.RenderStartTag()
+        @await DisplayAsync(row)
+        @item.RenderEndTag()
     }
     @if (!hasRows)
     {

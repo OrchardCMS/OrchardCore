@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Collections.Concurrent;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin.Models;
@@ -26,6 +27,11 @@ namespace OrchardCore.Admin;
 /// </remarks>
 public sealed class AdminListShapeTableProvider : ShapeTableProvider
 {
+    // The alternates of the shapes a list renders for each row, by list and layout, and by list and column. The
+    // names of the lists, the layouts and the columns are declared in code, so these stay small.
+    private static readonly ConcurrentDictionary<(string ListName, string Layout), string[]> _actionsAlternates = new();
+    private static readonly ConcurrentDictionary<(string ListName, string Column), string[]> _cellAlternates = new();
+
     public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
     {
         builder.Describe(AdminListConstants.ShapeType)
@@ -90,17 +96,19 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
                     shape.Properties["Layout"] = layout;
                 }
 
-                var alternates = shape.Metadata.Alternates;
+                shape.TryGetProperty<string>(AdminListConstants.ListNameProperty, out var listName);
 
-                alternates.Add($"{AdminListActionsLayouts.ShapeType}__{layout}");
+                // Rendered once per row, so the alternates of a list and a layout are built once.
+                var alternates = _actionsAlternates.GetOrAdd((listName ?? string.Empty, layout), static key => string.IsNullOrEmpty(key.ListName)
+                    ? [$"{AdminListActionsLayouts.ShapeType}__{key.Layout}"]
+                    :
+                    [
+                        $"{AdminListActionsLayouts.ShapeType}__{key.Layout}",
+                        $"{AdminListActionsLayouts.ShapeType}__{key.ListName.ToSafeName()}",
+                        $"{AdminListActionsLayouts.ShapeType}__{key.ListName.ToSafeName()}__{key.Layout}",
+                    ]);
 
-                if (shape.TryGetProperty<string>(AdminListConstants.ListNameProperty, out var listName) && !string.IsNullOrEmpty(listName))
-                {
-                    var n = listName.ToSafeName();
-
-                    alternates.Add($"{AdminListActionsLayouts.ShapeType}__{n}");
-                    alternates.Add($"{AdminListActionsLayouts.ShapeType}__{n}__{layout}");
-                }
+                AddAlternates(shape, alternates);
             });
 
         // The other parts of a list, which are overridden for a layout, for a list, or for a list in a layout.
@@ -117,14 +125,18 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
                     return;
                 }
 
-                var alternates = shape.Metadata.Alternates;
+                shape.TryGetProperty<string>(AdminListConstants.ListNameProperty, out var listName);
 
-                alternates.Add($"{AdminListConstants.CellShapeType}__{column.Name}");
+                // Rendered once per row and column, so the alternates of a list and a column are built once.
+                var alternates = _cellAlternates.GetOrAdd((listName ?? string.Empty, column.Name), static key => string.IsNullOrEmpty(key.ListName)
+                    ? [$"{AdminListConstants.CellShapeType}__{key.Column}"]
+                    :
+                    [
+                        $"{AdminListConstants.CellShapeType}__{key.Column}",
+                        $"{AdminListConstants.CellShapeType}__{key.ListName.ToSafeName()}__{key.Column}",
+                    ]);
 
-                if (shape.TryGetProperty<string>("ListName", out var listName) && !string.IsNullOrEmpty(listName))
-                {
-                    alternates.Add($"{AdminListConstants.CellShapeType}__{listName.ToSafeName()}__{column.Name}");
-                }
+                AddAlternates(shape, alternates);
             });
 
         return ValueTask.CompletedTask;
@@ -226,24 +238,46 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
             }
         }
 
-        if (shape.TryGetProperty<IEnumerable<object>>("Rows", out var rows) && rows != null)
+        if (!shape.TryGetProperty<IEnumerable<IShape>>("Rows", out var rows) || rows == null)
         {
-            // A row carries them for the shapes it renders itself, e.g. the actions of the row.
-            foreach (var row in rows)
+            return;
+        }
+
+        // A row carries them for the shapes it renders itself, e.g. the actions of the row. A list of rows is
+        // indexed, since enumerating it through the interface boxes its enumerator.
+        if (rows is IList<IShape> list)
+        {
+            for (var i = 0; i < list.Count; i++)
             {
-                SetProperty(row as IShape, AdminListConstants.ListNameProperty, name);
-                SetProperty(row as IShape, AdminListConstants.ListLayoutProperty, layout);
+                SetProperty(list[i], AdminListConstants.ListNameProperty, name);
+                SetProperty(list[i], AdminListConstants.ListLayoutProperty, layout);
             }
+
+            return;
+        }
+
+        foreach (var row in rows)
+        {
+            SetProperty(row, AdminListConstants.ListNameProperty, name);
+            SetProperty(row, AdminListConstants.ListLayoutProperty, layout);
         }
     }
 
     private static void SetProperty(IShape shape, string name, string value)
     {
-        if (shape == null || string.IsNullOrEmpty(value) || shape.Properties.ContainsKey(name))
+        if (shape != null && !string.IsNullOrEmpty(value))
         {
-            return;
+            shape.Properties.TryAdd(name, value);
         }
+    }
 
-        shape.Properties[name] = value;
+    private static void AddAlternates(IShape shape, string[] alternates)
+    {
+        var target = shape.Metadata.Alternates;
+
+        for (var i = 0; i < alternates.Length; i++)
+        {
+            target.Add(alternates[i]);
+        }
     }
 }

@@ -1,3 +1,5 @@
+using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
@@ -9,6 +11,10 @@ namespace OrchardCore.Admin.Services;
 
 public sealed class DefaultAdminListLayoutResolver : IAdminListLayoutResolver
 {
+    // A shape table is built once per theme and replaced when the tenant reloads, so the layouts it declares are
+    // found once, and dropped with it.
+    private static readonly ConditionalWeakTable<ShapeTable, ReadOnlyCollection<string>> _layoutsByShapeTable = new();
+
     private readonly IOptionsMonitor<AdminListOptions> _options;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly AdminListLayoutPreference _layoutPreference;
@@ -68,17 +74,39 @@ public sealed class DefaultAdminListLayoutResolver : IAdminListLayoutResolver
             return _availableLayouts;
         }
 
-        // A layout is available when it declares itself with an option shape, which is what the admin settings
-        // list in their dropdown. The shape table is per theme, so this is resolved per request.
+        // The shape table is per theme, and the layouts it declares are found once for it.
         var shapeTable = await _themeManager.GetShapeTableAsync(_shapeTableManager);
+        var layouts = _layoutsByShapeTable.GetValue(shapeTable, static table => FindLayouts(table));
 
-        // The shape table lowercases the shapes of templates, e.g. adminlistlayout_option__grid, so the shipped
-        // layouts and the default of the site get back the name the settings store, e.g. Grid.
-        string[] knownLayouts = [_options.CurrentValue.DefaultLayout, AdminListConstants.List, AdminListConstants.Table, AdminListConstants.Grid];
+        // A custom layout the site renders its lists with gets back the name the settings store, e.g. Cards.
+        var defaultLayout = _options.CurrentValue.DefaultLayout;
 
-        return _availableLayouts = AdminListOptionShapes.GetNames(shapeTable, AdminListConstants.OptionShapePrefix)
-            .Select(name => knownLayouts.FirstOrDefault(known => string.Equals(known, name, StringComparison.OrdinalIgnoreCase)) ?? name)
-            .ToList();
+        for (var i = 0; i < layouts.Count; i++)
+        {
+            if (!string.Equals(layouts[i], defaultLayout, StringComparison.Ordinal) &&
+                string.Equals(layouts[i], defaultLayout, StringComparison.OrdinalIgnoreCase))
+            {
+                var renamed = layouts.ToArray();
+                renamed[i] = defaultLayout;
+
+                return _availableLayouts = Array.AsReadOnly(renamed);
+            }
+        }
+
+        return _availableLayouts = layouts;
+    }
+
+    // A layout is available when it declares itself with an option shape, which is what the admin settings list in
+    // their dropdown. The shape table lowercases the shapes of templates, e.g. adminlistlayout_option__grid, so the
+    // shipped layouts get back the name the settings store, e.g. Grid.
+    private static ReadOnlyCollection<string> FindLayouts(ShapeTable shapeTable)
+    {
+        string[] shippedLayouts = [AdminListConstants.List, AdminListConstants.Table, AdminListConstants.Grid];
+
+        return AdminListOptionShapes.GetNames(shapeTable, AdminListConstants.OptionShapePrefix)
+            .Select(name => shippedLayouts.FirstOrDefault(shipped => string.Equals(shipped, name, StringComparison.OrdinalIgnoreCase)) ?? name)
+            .ToList()
+            .AsReadOnly();
     }
 
     public async Task<IList<AdminListLayoutOption>> GetLayoutOptionsAsync(CancellationToken cancellationToken = default)
@@ -123,10 +151,17 @@ public sealed class DefaultAdminListLayoutResolver : IAdminListLayoutResolver
             return null;
         }
 
-        layout = layout.Trim();
-
         var layouts = await GetAvailableLayoutsAsync(cancellationToken);
+        var name = layout.AsSpan().Trim();
 
-        return layouts.FirstOrDefault(available => string.Equals(available, layout, StringComparison.OrdinalIgnoreCase));
+        for (var i = 0; i < layouts.Count; i++)
+        {
+            if (name.Equals(layouts[i], StringComparison.OrdinalIgnoreCase))
+            {
+                return layouts[i];
+            }
+        }
+
+        return null;
     }
 }

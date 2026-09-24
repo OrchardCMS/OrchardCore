@@ -59,6 +59,29 @@ public class AdminListColumnCollectionTests
     }
 
     [Fact]
+    public void SortByPosition_MixedPositions_SortsInPlaceKeepingTiesAndPuttingUnpositionedColumnsAfter()
+    {
+        var columns = new AdminListColumnCollection
+        {
+            new AdminListColumn { Name = "Actions", Position = "end" },
+            new AdminListColumn { Name = "Unpositioned" },
+            new AdminListColumn { Name = "Title", Position = "20" },
+            new AdminListColumn { Name = "Culture", Position = "20" },
+            new AdminListColumn { Name = "Select", Position = "10" },
+            new AdminListColumn { Name = "Owner", Position = "15" },
+        };
+
+        columns.SortByPosition();
+
+        // Title and Culture share a position and keep the order they were added in.
+        Assert.Equal(["Select", "Owner", "Title", "Culture", "Unpositioned", "Actions"], columns.Select(column => column.Name));
+
+        // The keys follow the columns they were moved with.
+        Assert.Equal("15", columns["Owner"].Position);
+        Assert.Equal("end", columns["actions"].Position);
+    }
+
+    [Fact]
     public void SetItem_ColumnWithoutName_Throws()
     {
         var columns = new AdminListColumnCollection { new AdminListColumn { Name = "Title" } };

@@ -19,7 +19,7 @@
     int totalItemCount = Model.TotalItemCount ?? itemsCount;
     int startIndex = Model.StartIndex ?? (itemsCount > 0 ? 1 : 0);
     int endIndex = Model.EndIndex ?? (startIndex + itemsCount - 1);
-    var bulkActions = ((IEnumerable<SelectListItem>)Model.BulkActions ?? []).ToList();
+    var bulkActions = (IList<SelectListItem>)Model.BulkActions ?? [];
     bool showSelectAll = Model.ShowSelectAll ?? true;
 }
 

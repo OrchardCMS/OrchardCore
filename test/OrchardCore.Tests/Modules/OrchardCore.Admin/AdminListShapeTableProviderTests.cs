@@ -80,7 +80,7 @@ public class AdminListShapeTableProviderTests
         shape.Properties["Toolbar"] = toolbar;
         shape.Properties["Search"] = search;
         shape.Properties["Pager"] = pager;
-        shape.Properties["Rows"] = new List<object> { row, namedRow, "not a shape" };
+        shape.Properties["Rows"] = new List<IShape> { row, namedRow };
 
         await DisplayAsync(AdminListConstants.ShapeType, shape);
 

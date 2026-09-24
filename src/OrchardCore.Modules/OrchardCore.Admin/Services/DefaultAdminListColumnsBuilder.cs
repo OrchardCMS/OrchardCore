@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging;
 using OrchardCore.Admin.Models;
-using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Admin.Services;
@@ -33,18 +32,17 @@ public sealed class DefaultAdminListColumnsBuilder : IAdminListColumnsBuilder
             cancellationToken,
             _logger);
 
-        // Columns added without a position go after all the positioned ones. The sort is stable, so columns
-        // sharing a position keep the order they were added in.
-        var columns = context.Columns
-            .OrderBy(column => string.IsNullOrWhiteSpace(column.Position) ? "after" : column.Position, FlatPositionComparer.Instance)
-            .ToList();
+        // Sorted in place and returned as is: the collection of the providers is the one the list renders.
+        var columns = context.Columns;
+        columns.SortByPosition();
 
-        // A column renders the zones it names, so one without any renders empty cells.
-        if (_logger.IsEnabled(LogLevel.Warning))
+        // A column renders the zones it names, so one without any renders empty cells. Indexed rather than
+        // enumerated: the enumerator of a Collection<T> is boxed.
+        for (var i = 0; i < columns.Count; i++)
         {
-            foreach (var column in columns.Where(column => column.Zones is not { Length: > 0 }))
+            if (columns[i].Zones is not { Length: > 0 })
             {
-                _logger.LogWarning("The '{ColumnName}' column of the '{ListName}' admin list renders no zone.", column.Name, listName);
+                _logger.LogWarning("The '{ColumnName}' column of the '{ListName}' admin list renders no zone.", columns[i].Name, listName);
             }
         }
 

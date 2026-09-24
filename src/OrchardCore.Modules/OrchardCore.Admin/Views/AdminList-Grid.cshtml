@@ -24,11 +24,12 @@
 @using Microsoft.AspNetCore.Mvc.Rendering
 @using Microsoft.AspNetCore.Html
 @using OrchardCore.Admin.Models
+@using OrchardCore.DisplayManagement
 @using OrchardCore.DisplayManagement.Shapes
 @using OrchardCore.Mvc.Utilities
 @{
     // Enumerated once, as they are: an empty list is only known once the loop over the rows ran.
-    var rows = (IEnumerable<object>)Model.Rows ?? [];
+    var rows = (IEnumerable<IShape>)Model.Rows ?? [];
     var hasRows = false;
 
     // Optional attributes for the element wrapping the rows, e.g. the id a sortable list needs. A class is merged
@@ -57,11 +58,33 @@
         rowsAttributesHtml = attributesHtml;
     }
 
-    // The factory passes the list it built; anything else is copied once so it can be counted.
-    IList<AdminListColumn> columns = Model.Columns as IList<AdminListColumn> ?? [.. (IEnumerable<AdminListColumn>)Model.Columns ?? []];
+    var columns = (IList<AdminListColumn>)Model.Columns ?? [];
     var header = Model.Header;
     var toolbar = Model.Toolbar;
     string name = Model.Name;
+
+    // The classes and the title of a column are the same on every row, so they are built once, with its track.
+    var columnCssClasses = new string[columns.Count];
+    var columnTitles = new string[columns.Count];
+    var gridTracks = new string[columns.Count];
+
+    for (var i = 0; i < columns.Count; i++)
+    {
+        columnCssClasses[i] = ColumnCssClass(columns[i]);
+        columnTitles[i] = string.IsNullOrEmpty(columns[i].Title?.Value) ? null : columns[i].Title.Value;
+        gridTracks[i] = GridTrack(columns[i]);
+    }
+
+    async Task<IShape> CreateCellAsync(IShape row, AdminListColumn column)
+    {
+        var cell = await Factory.CreateAsync(AdminListConstants.CellShapeType);
+
+        cell.Properties[AdminListConstants.ListNameProperty] = name;
+        cell.Properties["Row"] = row;
+        cell.Properties["Column"] = column;
+
+        return cell;
+    }
 
     static string ColumnCssClass(AdminListColumn column)
     {
@@ -94,10 +117,10 @@
 
     // One track per column: "auto" hugs the widest cell of the column, a width is used as is, and the columns
     // without a width share the remaining space.
-    static string GridTemplateColumns(IEnumerable<AdminListColumn> columns)
-        => string.Join(' ', columns.Select(column => column.HasAutoWidth
+    static string GridTrack(AdminListColumn column)
+        => column.HasAutoWidth
             ? "max-content"
-            : string.IsNullOrEmpty(column.Width) ? "minmax(0, 1fr)" : column.Width));
+            : string.IsNullOrEmpty(column.Width) ? "minmax(0, 1fr)" : column.Width;
 }
 
 @{
@@ -161,11 +184,11 @@
             </div>
         </div>
     }
-    <div class="admin-list-grid-table" role="table" style="--oc-admin-list-grid-columns: @GridTemplateColumns(columns);">
+    <div class="admin-list-grid-table" role="table" style="--oc-admin-list-grid-columns: @string.Join(' ', gridTracks);">
         <div class="admin-list-grid-header" role="row">
-            @foreach (var column in columns)
+            @for (var i = 0; i < columns.Count; i++)
             {
-                <div class="@ColumnCssClass(column)" role="columnheader">@column.Title</div>
+                <div class="@columnCssClasses[i]" role="columnheader">@columnTitles[i]</div>
             }
         </div>
         <div class="admin-list-grid-body @rowsCssClass" role="rowgroup" @rowsAttributesHtml>
@@ -187,29 +210,14 @@
                     rowTag.MergeAttributes(rowShape.Attributes);
                 }
 
-                foreach (var column in columns)
+                // The cells are written as they are rendered, between the tags of the row, rather than buffered in it.
+                // The title of a cell is kept for themes that want to show it when the rows are stacked.
+                @rowTag.RenderStartTag()
+                for (var i = 0; i < columns.Count; i++)
                 {
-                    var cell = await New.AdminListCell(ListName: name, Row: row, Column: column);
-                    var cellTag = new TagBuilder("div");
-                    cellTag.AddCssClass(ColumnCssClass(column));
-                    cellTag.Attributes["role"] = "cell";
-
-                    // Kept for themes that want to show the column title when the rows are stacked.
-                    if (column.Title != null && !string.IsNullOrEmpty(column.Title.Value))
-                    {
-                        cellTag.Attributes["data-title"] = column.Title.Value;
-
-                        var label = new TagBuilder("span");
-                        label.AddCssClass("admin-list-grid-label");
-                        label.InnerHtml.Append(column.Title.Value);
-                        cellTag.InnerHtml.AppendHtml(label);
-                    }
-
-                    cellTag.InnerHtml.AppendHtml(await DisplayAsync(cell));
-                    rowTag.InnerHtml.AppendHtml(cellTag);
+                    <div class="@columnCssClasses[i]" role="cell" data-title="@columnTitles[i]">@if (columnTitles[i] != null) {<span class="admin-list-grid-label">@columnTitles[i]</span>}@await DisplayAsync(await CreateCellAsync(row, columns[i]))</div>
                 }
-
-                @rowTag
+                @rowTag.RenderEndTag()
             }
             @if (!hasRows)
             {

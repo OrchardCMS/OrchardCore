@@ -2,10 +2,14 @@
     The 'Actions' column of an admin list in the 'Table' and 'Grid' layouts: delegates to the AdminListActions shape,
     which renders the 'Actions' and 'ActionsMenu' zones of the row in the configured layout (Buttons, Menu, ...).
 *@
-@{
-    string listName = Model.ListName;
-}
-@if (Model.Row != null)
+@using OrchardCore.DisplayManagement
+@if (Model.Row is IShape row)
 {
-    @await DisplayAsync(await New.AdminListActions(Row: Model.Row, ListName: listName))
+    // Rendered once per row, so the shape is created with its properties rather than through the dynamic New.
+    var actions = await Factory.CreateAsync(AdminListActionsLayouts.ShapeType);
+
+    actions.Properties["Row"] = row;
+    actions.Properties[AdminListConstants.ListNameProperty] = (string)Model.ListName;
+
+    @await DisplayAsync(actions)
 }
