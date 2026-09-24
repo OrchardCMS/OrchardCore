@@ -7,6 +7,7 @@
   -->
   <ItemGroup Condition="Exists('$(MSBuildProjectDirectory)\ConfigurationSchema.json')">
     <None Remove="ConfigurationSchema.json" />
+    <EmbeddedResource Remove="ConfigurationSchema.json" />
     <None Include="ConfigurationSchema.json" Pack="true" PackagePath="ConfigurationSchema.json" />
     <None Include="$(MSBuildThisFileDirectory)ConfigurationSchema.targets" Pack="true" PackagePath="buildTransitive\$(PackageId).targets" Visible="false" />
   </ItemGroup>
