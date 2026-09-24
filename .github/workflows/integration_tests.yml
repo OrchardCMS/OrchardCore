@@ -30,7 +30,7 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     # The hosted Ubuntu runners include a running Docker engine, which Testcontainers uses
     # to start the LocalStack (S3) and Azurite (Azure Blob) emulators automatically.
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - uses: ./.github/actions/setup-dotnet
@@ -46,7 +46,7 @@ jobs:
         github.event_name == 'push' ||
         github.event.review.state == 'APPROVED' ||
         github.event.review.state == 'CHANGES_REQUESTED'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - uses: ./.github/actions/setup-dotnet

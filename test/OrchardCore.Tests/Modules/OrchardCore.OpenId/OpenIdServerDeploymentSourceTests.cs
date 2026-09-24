@@ -41,6 +41,32 @@ public class OpenIdServerDeploymentSourceTests
         Assert.Equal(settings, updatedSettings);
     }
 
+    [Fact]
+    public async Task ServerDeploymentSource_ExportsRequireEndSessionConfirmation()
+    {
+        // Arrange
+        var settings = CreateSettings("https://deploy.localhost", OpenIdServerSettings.TokenFormat.JsonWebToken, true);
+        var openIdServerService = new Mock<IOpenIdServerService>();
+        openIdServerService
+            .Setup(m => m.GetSettingsAsync())
+            .ReturnsAsync(settings);
+
+        var fileBuilder = new MemoryFileBuilder();
+        var descriptor = new RecipeDescriptor();
+        var result = new DeploymentPlanResult(fileBuilder, descriptor);
+        var deploymentSource = new OpenIdServerDeploymentSource(openIdServerService.Object);
+
+        // Act
+        await deploymentSource.ProcessDeploymentStepAsync(new OpenIdServerDeploymentStep(), result);
+        await result.FinalizeAsync();
+
+        // Assert
+        var deploy = JsonNode.Parse(fileBuilder.GetFileContents("Recipe.json", Encoding.UTF8));
+        var exportedSettings = deploy["steps"][0]["OpenIdServerSettings"];
+
+        Assert.False(exportedSettings["RequireEndSessionConfirmation"].GetValue<bool>());
+    }
+
     private static OpenIdServerSettings CreateSettings(string authority, OpenIdServerSettings.TokenFormat tokenFormat, bool initializeAllProperties)
     {
         var result = new OpenIdServerSettings
@@ -79,6 +105,7 @@ public class OpenIdServerDeploymentSourceTests
             result.UseReferenceAccessTokens = true;
             result.RequireProofKeyForCodeExchange = true;
             result.RequirePushedAuthorizationRequests = true;
+            result.RequireEndSessionConfirmation = false;
         }
 
         return result;

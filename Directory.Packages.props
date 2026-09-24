@@ -6,9 +6,9 @@
   <ItemGroup>
     <PackageVersion Include="Acornima" Version="1.8.0" />
     <PackageVersion Include="AnyAscii" Version="0.3.3" />
-    <PackageVersion Include="AngleSharp" Version="1.7.2" />
-    <PackageVersion Include="AWSSDK.S3" Version="4.0.102.4" />
-    <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.101.1" />
+    <PackageVersion Include="AngleSharp" Version="1.7.3" />
+    <PackageVersion Include="AWSSDK.S3" Version="4.0.102.5" />
+    <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.101.2" />
     <PackageVersion Include="Azure.Communication.Email" Version="1.1.0" />
     <PackageVersion Include="Azure.Communication.Sms" Version="1.0.2" />
     <PackageVersion Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.5.2" />
@@ -21,7 +21,7 @@
     <PackageVersion Include="Castle.Core" Version="5.2.1" />
     <PackageVersion Include="Cyqwel" Version="0.3.0" />
     <PackageVersion Include="DocumentFormat.OpenXml" Version="3.5.1" />
-    <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.19.25" />
+    <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.19.26" />
     <PackageVersion Include="Fluid.Core" Version="2.40.0" />
     <PackageVersion Include="GraphQL" Version="8.8.5" />
     <PackageVersion Include="GraphQL.DataLoader" Version="8.8.5" />
@@ -54,12 +54,12 @@
     <PackageVersion Include="NJsonSchema" Version="11.6.1" />
     <PackageVersion Include="NLog.Web.AspNetCore" Version="6.2.0" />
     <PackageVersion Include="NodaTime" Version="3.3.3" />
-    <PackageVersion Include="OpenIddict.Core" Version="7.6.1" />
-    <PackageVersion Include="OpenIddict.Server.AspNetCore" Version="7.6.1" />
-    <PackageVersion Include="OpenIddict.Server.DataProtection" Version="7.6.1" />
-    <PackageVersion Include="OpenIddict.Validation.AspNetCore" Version="7.6.1" />
-    <PackageVersion Include="OpenIddict.Validation.DataProtection" Version="7.6.1" />
-    <PackageVersion Include="OpenIddict.Validation.SystemNetHttp" Version="7.6.1" />
+    <PackageVersion Include="OpenIddict.Core" Version="7.7.1" />
+    <PackageVersion Include="OpenIddict.Server.AspNetCore" Version="7.7.1" />
+    <PackageVersion Include="OpenIddict.Server.DataProtection" Version="7.7.1" />
+    <PackageVersion Include="OpenIddict.Validation.AspNetCore" Version="7.7.1" />
+    <PackageVersion Include="OpenIddict.Validation.DataProtection" Version="7.7.1" />
+    <PackageVersion Include="OpenIddict.Validation.SystemNetHttp" Version="7.7.1" />
     <PackageVersion Include="OrchardCore.Translations.All" Version="3.0.0" />
     <PackageVersion Include="PdfPig" Version="0.1.16" />
     <PackageVersion Include="Scalar.AspNetCore" Version="2.17.2" />
