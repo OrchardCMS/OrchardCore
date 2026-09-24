@@ -10,6 +10,13 @@
     </span>
 }
 
+@if (Model.Value.WorkflowType.IsMissingStartActivity())
+{
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Status"]">
+        <i class="fa-solid fa-triangle-exclamation text-warning" aria-hidden="true"></i> @T["No startup task"]
+    </span>
+}
+
 @if (Model.Value.HasInstances)
 {
     <a asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@Model.Value.WorkflowType.Id" class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Instances"]">

@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.Contents;
 using OrchardCore.ContentTypes.Shapes;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -18,17 +20,20 @@ public sealed class AdminController : Controller
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IShapeFactory _shapeFactory;
     private readonly IUpdateModelAccessor _updateModelAccessor;
+    private readonly IAuthorizationService _authorizationService;
 
     public AdminController(
         IContentManager contentManager,
         IContentDefinitionManager contentDefinitionManager,
         IShapeFactory shapeFactory,
-        IUpdateModelAccessor updateModelAccessor)
+        IUpdateModelAccessor updateModelAccessor,
+        IAuthorizationService authorizationService)
     {
         _contentManager = contentManager;
         _contentDefinitionManager = contentDefinitionManager;
         _shapeFactory = shapeFactory;
         _updateModelAccessor = updateModelAccessor;
+        _authorizationService = authorizationService;
     }
 
     public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string contentItemsName, string targetId, bool flowMetadata, string parentContentType, string partName, string cardCollectionType = null)
@@ -39,6 +44,11 @@ public sealed class AdminController : Controller
         }
 
         var contentItem = await _contentManager.NewAsync(id);
+
+        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
+        {
+            return Forbid();
+        }
 
         // Does this editor need the flow metadata editor?
         var colSize = 12;
