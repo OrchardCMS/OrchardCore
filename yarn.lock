@@ -2764,6 +2764,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@orchardcore/commonshapes@workspace:src/OrchardCore.Modules/OrchardCore.CommonShapes/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/commonshapes@workspace:src/OrchardCore.Modules/OrchardCore.CommonShapes/Assets"
+  dependencies:
+    intl-tel-input: "npm:^25.3.1"
+  languageName: unknown
+  linkType: soft
+
 "@orchardcore/contentfields@workspace:src/OrchardCore.Modules/OrchardCore.ContentFields/Assets":
   version: 0.0.0-use.local
   resolution: "@orchardcore/contentfields@workspace:src/OrchardCore.Modules/OrchardCore.ContentFields/Assets"
@@ -3196,7 +3204,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@orchardcore/users@workspace:src/OrchardCore.Modules/OrchardCore.Users/Assets"
   dependencies:
-    intl-tel-input: "npm:^25.3.1"
     qrcodejs: "npm:^1.0.0"
   languageName: unknown
   linkType: soft

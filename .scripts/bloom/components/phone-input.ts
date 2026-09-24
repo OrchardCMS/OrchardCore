@@ -1,7 +1,9 @@
+import type { Iti } from 'intl-tel-input';
+
 interface PhoneInputOptions {
     el: HTMLElement;
     input: HTMLInputElement;
-    iti: any;
+    iti: Iti;
     hiddenInput?: HTMLInputElement | null;
 }
 
