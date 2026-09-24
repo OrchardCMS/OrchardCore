@@ -1,0 +1,8 @@
+[
+  {
+    "action": "vite",
+    "name": "commonshapes-phone-input",
+    "source": "Assets/js/phone-input",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]
