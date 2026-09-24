@@ -71,6 +71,7 @@
     <ProjectReference Include="..\OrchardCore.Tests.Modules\DerivedThemeSample\DerivedThemeSample.csproj" />
     <ProjectReference Include="..\OrchardCore.Tests.Modules\DerivedThemeSample2\DerivedThemeSample2.csproj" />
     <ProjectReference Include="..\OrchardCore.Tests.Modules\ModuleSample\ModuleSample.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Taxonomies\OrchardCore.Taxonomies.csproj" />
   </ItemGroup>
 
   <ItemGroup>
