@@ -10,13 +10,8 @@ public class DeploymentPlanDeploymentStep : DeploymentStep
     public DeploymentPlanDeploymentStep()
     {
         Name = "DeploymentPlan";
-    }
-
-    public DeploymentPlanDeploymentStep(IStringLocalizer<DeploymentPlanDeploymentStep> S)
-        : this()
-    {
-        Category = S["Deployment"];
-        Title = S["Deployment Plans"];
+        Category = LocalizedString.Create("Deployment");
+        Title = LocalizedString.Create("Deployment Plans");
     }
 
     public bool IncludeAll { get; set; } = true;

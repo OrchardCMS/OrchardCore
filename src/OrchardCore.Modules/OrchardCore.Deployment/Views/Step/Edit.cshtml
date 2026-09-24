@@ -5,6 +5,7 @@
 @using YesSql
 @inject YesSql.ISession Session
 @inject IEnumerable<IDeploymentStepFactory> StepFactories
+@inject Microsoft.Extensions.Localization.IStringLocalizerFactory StringLocalizerFactory
 @{
     var plan = await Session.GetAsync<DeploymentPlan>(Model.DeploymentPlanId);
     IHtmlContent stepName = T["Step"];
@@ -24,7 +25,7 @@
 
         stepName = new HtmlContentString(derivedName.CamelFriendly() ?? string.Empty);
 
-        var displayName = StepFactories.FirstOrDefault(factory => factory.Name == stepType)?.Create().Title;
+        var displayName = StepFactories.FirstOrDefault(factory => factory.Name == stepType)?.Create().GetLocalizedTitle(StringLocalizerFactory);
         if (!string.IsNullOrEmpty(displayName?.Value))
         {
             stepName = new HtmlContentString(displayName.Value);

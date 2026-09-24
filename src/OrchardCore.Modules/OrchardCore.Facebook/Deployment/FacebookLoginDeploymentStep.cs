@@ -11,11 +11,6 @@ public class FacebookLoginDeploymentStep : DeploymentStep
     public FacebookLoginDeploymentStep()
     {
         Name = "Facebook Login";
-    }
-
-    public FacebookLoginDeploymentStep(IStringLocalizer<FacebookLoginDeploymentStep> S)
-        : this()
-    {
-        Category = S["Meta"];
+        Category = LocalizedString.Create("Meta");
     }
 }

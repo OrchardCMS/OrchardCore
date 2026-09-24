@@ -8,13 +8,8 @@ public class CustomUserSettingsDeploymentStep : DeploymentStep
     public CustomUserSettingsDeploymentStep()
     {
         Name = "CustomUserSettings";
-    }
-
-    public CustomUserSettingsDeploymentStep(IStringLocalizer<CustomUserSettingsDeploymentStep> S)
-        : this()
-    {
-        Category = S["Security"];
-        Title = S["Custom User Settings"];
+        Category = LocalizedString.Create("Security");
+        Title = LocalizedString.Create("Custom User Settings");
     }
 
     public bool IncludeAll { get; set; } = true;

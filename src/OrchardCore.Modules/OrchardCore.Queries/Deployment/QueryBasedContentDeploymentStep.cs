@@ -12,13 +12,8 @@ public class QueryBasedContentDeploymentStep : DeploymentStep
     public QueryBasedContentDeploymentStep()
     {
         Name = "QueryBasedContentDeploymentStep";
-    }
-
-    public QueryBasedContentDeploymentStep(IStringLocalizer<QueryBasedContentDeploymentStep> S)
-        : this()
-    {
-        Category = S["Content Management"];
-        Title = S["Queried Content Items"];
+        Category = LocalizedString.Create("Content Management");
+        Title = LocalizedString.Create("Queried Content Items");
     }
 
     [Required]

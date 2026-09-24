@@ -11,11 +11,6 @@ public class AllLayersDeploymentStep : DeploymentStep
     public AllLayersDeploymentStep()
     {
         Name = "AllLayers";
-    }
-
-    public AllLayersDeploymentStep(IStringLocalizer<AllLayersDeploymentStep> S)
-        : this()
-    {
-        Category = S["Content"];
+        Category = LocalizedString.Create("Content");
     }
 }

@@ -8,11 +8,6 @@ public class AllDataTranslationsDeploymentStep : DeploymentStep
     public AllDataTranslationsDeploymentStep()
     {
         Name = "AllDataTranslations";
-    }
-
-    public AllDataTranslationsDeploymentStep(IStringLocalizer<AllDataTranslationsDeploymentStep> S)
-        : this()
-    {
-        Category = S["Internationalization"];
+        Category = LocalizedString.Create("Internationalization");
     }
 }
