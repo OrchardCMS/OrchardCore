@@ -6,6 +6,9 @@
         ["ui-culture"] = CultureInfo.CurrentUICulture.Name,
     });
 }
+<style asp-name="admin-quick-navigation" depends-on="@(Orchard.IsRightToLeft() ? "bootstrap-rtl:5" : "bootstrap:5")" at="Head"></style>
+<script asp-name="admin-quick-navigation" at="Foot"></script>
+
 <li class="nav-item">
     <button type="button" class="btn btn-link nav-link" id="adminQuickNavigationToggle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@T["Quick navigation (Ctrl+K)"]" aria-label="@T["Quick navigation"]" aria-haspopup="dialog" aria-controls="adminQuickNavigationModal">
         <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>

@@ -22,7 +22,7 @@
         max-height: 60vh;
         overflow-y: auto;
         scrollbar-width: thin;
-        scrollbar-color: var(--oc-scrollbar-color) var(--bs-modal-bg);
+        scrollbar-color: var(--oc-scrollbar-color, var(--bs-secondary-color)) var(--bs-modal-bg);
 
         [role="option"] > .admin-quick-navigation-item {
             display: flex;

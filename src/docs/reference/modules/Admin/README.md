@@ -86,11 +86,25 @@ Here are samples using logo and favicon from media module.
 
 ## Quick navigation
 
-The `TheAdmin` theme provides a quick navigation palette to jump to an admin page from the keyboard. Press <kbd>Ctrl</kbd>+<kbd>K</kbd> (<kbd>Cmd</kbd>+<kbd>K</kbd> on macOS) anywhere in the admin, or click the magnifier icon in the top navbar to open it. Typing filters navigation destinations; matching is case- and accent-insensitive and includes the parent names displayed as a breadcrumb under each result. Use the arrow keys to move the highlight, <kbd>Enter</kbd> to open the highlighted page, and <kbd>Esc</kbd> to close the palette. Quick navigation is not a full-text content search.
+The `OrchardCore.Admin` module provides a quick navigation palette to jump to an admin page from the keyboard. Press <kbd>Ctrl</kbd>+<kbd>K</kbd> (<kbd>Cmd</kbd>+<kbd>K</kbd> on macOS) anywhere in the admin, or click the magnifier icon in the top navbar to open it. Typing filters navigation destinations; matching is case- and accent-insensitive and includes the parent names displayed as a breadcrumb under each result. Use the arrow keys to move the highlight, <kbd>Enter</kbd> to open the highlighted page, and <kbd>Esc</kbd> to close the palette. Quick navigation is not a full-text content search.
 
 The built-in `AdminMenuItemNavigationSource` supplies admin menu destinations using `INavigationManager`, independently of the sidebar markup. It preserves menu ordering, breadcrumbs, link targets, authorization, localization, and tenant/admin URL prefixes. It builds its entries on demand because menu providers can depend on the current request. Only admin menu items are included by default. Enable the optional [Content Quick Navigation feature](../Contents/README.md#content-quick-navigation) to include the 50 most recently updated content items that you can edit; its count is configurable in Admin settings. The shortcut is not intercepted while the focus is inside a rich text or code editor that uses <kbd>Ctrl</kbd>+<kbd>K</kbd> for its own commands.
 
-The palette is enabled by default and can be turned off from **Configuration → Settings → Admin** (**Enable quick navigation**) or with the `DisplayQuickNavigation` admin setting (see [Recipe Configuration](#recipe-configuration)). The navbar item is rendered by `QuickNavigationNavbarDisplayDriver` in `TheAdmin`; a custom admin theme can override the `QuickNavigationNavbarItem` shape or provide its own palette using the same setting and endpoint.
+The palette is enabled by default and can be turned off from **Configuration → Settings → Admin** (**Enable quick navigation**) or with the `DisplayQuickNavigation` admin setting (see [Recipe Configuration](#recipe-configuration)).
+
+### Admin theme integration
+
+The `OrchardCore.Admin` module owns `QuickNavigationNavbarDisplayDriver`, the default `QuickNavigationNavbarItem` shape, and the palette's JavaScript and CSS. Admin themes that render the [Navbar shape](#navbar-shape) with the `DetailAdmin` display type inherit the palette without adding navigation-specific files or depending on `TheAdmin`. Pre-render the navbar before the header resources, and render footer scripts as usual.
+
+The shape requires the `admin-quick-navigation` script and stylesheet resources only when the palette is enabled. The script initializes itself and depends on Bootstrap 5; the stylesheet requires Font Awesome 7 and the appropriate Bootstrap 5 stylesheet for the current text direction.
+
+Themes can customize the `.admin-quick-navigation` styles and Bootstrap color variables without copying the JavaScript or view. Load theme overrides after the `admin-quick-navigation` stylesheet, for example:
+
+```html
+<style asp-name="my-admin-theme" asp-src="~/MyAdminTheme/Styles/theme.css" depends-on="admin-quick-navigation" at="Head"></style>
+```
+
+A theme can also override the `QuickNavigationNavbarItem` shape if it needs different markup, preserving the resource requirements and the element IDs and data attributes used by the script.
 
 ### Index document and caching
 

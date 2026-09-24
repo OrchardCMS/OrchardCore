@@ -416,4 +416,8 @@ const initializeQuickNavigation = () => {
     });
 };
 
-export { initializeQuickNavigation };
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializeQuickNavigation, { once: true });
+} else {
+    initializeQuickNavigation();
+}

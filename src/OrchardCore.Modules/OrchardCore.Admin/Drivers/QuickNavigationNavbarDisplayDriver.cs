@@ -3,7 +3,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Themes.TheAdmin.Drivers;
+namespace OrchardCore.Admin.Drivers;
 
 public sealed class QuickNavigationNavbarDisplayDriver : DisplayDriver<Navbar>
 {

@@ -8,6 +8,80 @@ public sealed class AdminQuickNavigationTests : CmsTestBase<BlogFixture>, IClass
     public AdminQuickNavigationTests(BlogFixture fixture) : base(fixture) { }
 
     [Fact]
+    public async Task QuickNavigation_AlternateAdminTheme_UsesModuleAssetsAndAllowsStyleOverrides()
+    {
+        var page = await Fixture.CreatePageAsync();
+        await page.LoginAsync();
+        await page.GotoAndAssertOkAsync("/Admin/Themes");
+        try
+        {
+            await page.Locator("form[action*='SetCurrentTheme/AdminThemeSample'] button").ClickAsync();
+            await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await Assertions.Expect(page.Locator("html")).ToHaveAttributeAsync("data-admin-theme", "AdminThemeSample");
+            await Assertions.Expect(page.Locator("script[src*='/TheAdmin/'], link[href*='/TheAdmin/']")).ToHaveCountAsync(0);
+            await Assertions.Expect(page.Locator("script[src*='/OrchardCore.Admin/Scripts/quick-navigation/']")).ToHaveCountAsync(1);
+            await Assertions.Expect(page.Locator("link[href*='/OrchardCore.Admin/Styles/quick-navigation']")).ToHaveCountAsync(1);
+
+            await page.Locator("#adminQuickNavigationToggle").ClickAsync();
+            var modal = page.Locator("#adminQuickNavigationModal");
+            var input = page.Locator("#adminQuickNavigationInput");
+            await Assertions.Expect(modal).ToBeVisibleAsync();
+            await Assertions.Expect(input).ToBeFocusedAsync();
+            await input.FillAsync("features");
+            var option = modal.Locator("[role=option]").First;
+            await Assertions.Expect(option.Locator(".admin-quick-navigation-title")).ToHaveTextAsync("Features");
+            await Assertions.Expect(modal.Locator(".admin-quick-navigation-input")).ToHaveCSSAsync("display", "flex");
+
+            await page.AddStyleTagAsync(new()
+            {
+                Content = ".admin-quick-navigation .admin-quick-navigation-results .admin-quick-navigation-title { font-weight: 400; }",
+            });
+            await Assertions.Expect(option.Locator(".admin-quick-navigation-title")).ToHaveCSSAsync("font-weight", "400");
+
+            await page.Keyboard.PressAsync("Escape");
+            await Assertions.Expect(modal).ToBeHiddenAsync();
+            await page.Keyboard.PressAsync("Control+k");
+            await input.FillAsync("features");
+            await Task.WhenAll(
+                page.WaitForURLAsync("**/Admin/Features**"),
+                page.Keyboard.PressAsync("Enter"));
+            await Assertions.Expect(page.Locator("html")).ToHaveAttributeAsync("data-admin-theme", "AdminThemeSample");
+        }
+        finally
+        {
+            await page.GotoAndAssertOkAsync("/Admin/Themes");
+            await page.Locator("form[action*='SetCurrentTheme/TheAdmin'] button").ClickAsync();
+            await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await page.CloseAsync();
+        }
+    }
+
+    [Fact]
+    public async Task QuickNavigation_Disabled_DoesNotRenderPaletteOrLoadModuleAssets()
+    {
+        var page = await Fixture.CreatePageAsync();
+        await page.LoginAsync();
+        await page.GotoAndAssertOkAsync("/Admin/Settings/admin");
+        try
+        {
+            await page.GetByLabel("Enable quick navigation", new() { Exact = true }).UncheckAsync();
+            await page.GetByRole(AriaRole.Button, new() { Name = "Save", Exact = true }).ClickAsync();
+            await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await page.GotoAndAssertOkAsync("/Admin");
+            await Assertions.Expect(page.Locator("#adminQuickNavigationToggle, #adminQuickNavigationModal")).ToHaveCountAsync(0);
+            await Assertions.Expect(page.Locator("script[src*='/OrchardCore.Admin/Scripts/quick-navigation/'], link[href*='/OrchardCore.Admin/Styles/quick-navigation']")).ToHaveCountAsync(0);
+        }
+        finally
+        {
+            await page.GotoAndAssertOkAsync("/Admin/Settings/admin");
+            await page.GetByLabel("Enable quick navigation", new() { Exact = true }).CheckAsync();
+            await page.GetByRole(AriaRole.Button, new() { Name = "Save", Exact = true }).ClickAsync();
+            await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            await page.CloseAsync();
+        }
+    }
+
+    [Fact]
     public async Task QuickNavigation_WithoutSidebar_OpensPaletteAndNavigates()
     {
         var page = await Fixture.CreatePageAsync();
