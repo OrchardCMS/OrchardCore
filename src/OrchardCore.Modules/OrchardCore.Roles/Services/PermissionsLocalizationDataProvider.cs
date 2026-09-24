@@ -7,8 +7,12 @@ using OrchardCore.Security.Permissions;
 namespace OrchardCore.Roles.Services;
 
 /// <summary>
-/// Provides permission descriptions as translatable strings for data localization.
+/// Provides permission descriptions and categories as translatable strings for data localization.
 /// </summary>
+/// <remarks>
+/// Descriptions created with a translation context, for example with
+/// <c>LocalizedString.Create(description, typeof(DeclaringType))</c>, are translated with PO files and are not provided.
+/// </remarks>
 public class PermissionsLocalizationDataProvider : ILocalizationDataProvider
 {
     private readonly IEnumerable<IPermissionProvider> _permissionProviders;
@@ -43,8 +47,10 @@ public class PermissionsLocalizationDataProvider : ILocalizationDataProvider
 
             foreach (var permission in permissions)
             {
+                var description = permission.Description?.Name;
+
                 // Skip permissions without descriptions or with template placeholders.
-                if (string.IsNullOrWhiteSpace(permission.Description) || permission.Description.Contains("{0}"))
+                if (string.IsNullOrWhiteSpace(description) || description.Contains("{0}"))
                 {
                     continue;
                 }
@@ -53,19 +59,18 @@ public class PermissionsLocalizationDataProvider : ILocalizationDataProvider
                 var groupName = GetGroupName(feature, permission.Category);
 
                 // Create a unique key for deduplication that includes the group.
-                var descriptionKey = $"{groupName}|{permission.Description}";
-
-                // Avoid duplicates (same description in same group).
-                if (!seenDescriptions.Add(descriptionKey))
-                {
-                    continue;
-                }
+                var descriptionKey = $"{groupName}|{description}";
 
                 var context = string.IsNullOrWhiteSpace(groupName)
                     ? DataLocalizationContext.Permission()
                     : DataLocalizationContext.Permission(groupName);
 
-                descriptors.Add(new DataLocalizedString(context, permission.Description, string.Empty));
+                // Descriptions with a translation context are translated with PO files.
+                // Avoid duplicates (same description in same group).
+                if (string.IsNullOrEmpty(permission.Description.SearchedLocation) && seenDescriptions.Add(descriptionKey))
+                {
+                    descriptors.Add(new DataLocalizedString(context, description, string.Empty));
+                }
 
                 // Also add category if present and not a template.
                 if (!string.IsNullOrWhiteSpace(permission.Category) && !permission.Category.Contains("{0}"))

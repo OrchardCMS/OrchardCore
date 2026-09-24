@@ -76,6 +76,28 @@ For instance, to add the "CanChat" permission to the `Subscriber` role, use the 
 }
 ```
 
+## Declaring permissions
+
+A module declares its permissions in an `IPermissionProvider`. Create the description with `LocalizedString.Create()`, and pass the type that declares the permission as the translation context:
+
+```csharp
+using Microsoft.Extensions.Localization;
+using OrchardCore.Security.Permissions;
+
+namespace MyModule;
+
+public static class MyPermissions
+{
+    public static readonly Permission ManageWidgets = new(
+        "ManageWidgets",
+        LocalizedString.Create("Manage widgets", typeof(MyPermissions)));
+}
+```
+
+The roles editor translates the description with the full name of that type as the context, for example `MyModule.MyPermissions`, so a PO file entry for the description uses `msgctxt "MyModule.MyPermissions"`. These descriptions are translated only with PO files. They are not listed in Data Localization.
+
+A description that is a plain `string` is still supported, for example `new Permission("ManageWidgets", "Manage widgets")`. It is not translated with PO files, but it can be translated with Data Localization. Descriptions that are templates, for example `"Edit {0}"`, stay plain strings, because the format arguments are applied before the description is shown, so the permissions built from them, for example "Edit Article", are also translated with Data Localization. Permission categories are translated with Data Localization too.
+
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/FmgZHpFHCcg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

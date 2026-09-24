@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Navigation;
@@ -8,10 +9,14 @@ namespace OrchardCore.AdminMenu.AdminNodes;
 public sealed class PlaceholderAdminNodeDriver : DisplayDriver<MenuItem, PlaceholderAdminNode>
 {
     private readonly IPermissionService _permissionService;
+    private readonly IStringLocalizerFactory _stringLocalizerFactory;
 
-    public PlaceholderAdminNodeDriver(IPermissionService permissionService)
+    public PlaceholderAdminNodeDriver(
+        IPermissionService permissionService,
+        IStringLocalizerFactory stringLocalizerFactory)
     {
         _permissionService = permissionService;
+        _stringLocalizerFactory = stringLocalizerFactory;
     }
 
     public override Task<IDisplayResult> DisplayAsync(PlaceholderAdminNode treeNode, BuildDisplayContext context)
@@ -24,7 +29,7 @@ public sealed class PlaceholderAdminNodeDriver : DisplayDriver<MenuItem, Placeho
 
     public override IDisplayResult Edit(PlaceholderAdminNode treeNode, BuildEditorContext context)
     {
-        return Initialize<PlaceholderAdminNodeViewModel, PlaceholderAdminNode, IPermissionService>("PlaceholderAdminNode_Fields_TreeEdit", static async (model, treeNode, permissionService) =>
+        return Initialize<PlaceholderAdminNodeViewModel, PlaceholderAdminNode, IPermissionService, IStringLocalizerFactory>("PlaceholderAdminNode_Fields_TreeEdit", static async (model, treeNode, permissionService, stringLocalizerFactory) =>
         {
             model.LinkText = treeNode.LinkText;
             model.IconClass = treeNode.IconClass;
@@ -35,7 +40,7 @@ public sealed class PlaceholderAdminNodeDriver : DisplayDriver<MenuItem, Placeho
                 .Select(p => new PermissionViewModel
                 {
                     Name = p.Name,
-                    DisplayText = p.Description,
+                    DisplayText = stringLocalizerFactory.Localize(p.Description)?.Value,
                 }).ToArray();
 
             var permissions = await permissionService.GetPermissionsAsync();
@@ -44,9 +49,9 @@ public sealed class PlaceholderAdminNodeDriver : DisplayDriver<MenuItem, Placeho
                 .Select(p => new PermissionViewModel
                 {
                     Name = p.Name,
-                    DisplayText = p.Description,
+                    DisplayText = stringLocalizerFactory.Localize(p.Description)?.Value,
                 }).ToArray();
-        }, treeNode, _permissionService).Location("Content");
+        }, treeNode, _permissionService, _stringLocalizerFactory).Location("Content");
     }
 
     public override async Task<IDisplayResult> UpdateAsync(PlaceholderAdminNode treeNode, UpdateEditorContext context)

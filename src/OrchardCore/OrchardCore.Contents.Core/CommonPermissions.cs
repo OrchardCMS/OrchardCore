@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Contents;
@@ -13,35 +14,35 @@ public static class CommonPermissions
 
     // EditOwn is the permission that is ultimately required to create new content. See how the Create() method is implemented in the AdminController
 
-    public static readonly Permission PublishContent = new("PublishContent", "Publish or unpublish content for others");
+    public static readonly Permission PublishContent = new("PublishContent", LocalizedString.Create("Publish or unpublish content for others", typeof(CommonPermissions)));
 
-    public static readonly Permission PublishOwnContent = new("PublishOwnContent", "Publish or unpublish own content", [PublishContent]);
+    public static readonly Permission PublishOwnContent = new("PublishOwnContent", LocalizedString.Create("Publish or unpublish own content", typeof(CommonPermissions)), [PublishContent]);
 
-    public static readonly Permission EditContent = new("EditContent", "Edit content for others", [PublishContent]);
+    public static readonly Permission EditContent = new("EditContent", LocalizedString.Create("Edit content for others", typeof(CommonPermissions)), [PublishContent]);
 
-    public static readonly Permission EditOwnContent = new("EditOwnContent", "Edit own content", [EditContent, PublishOwnContent]);
+    public static readonly Permission EditOwnContent = new("EditOwnContent", LocalizedString.Create("Edit own content", typeof(CommonPermissions)), [EditContent, PublishOwnContent]);
 
-    public static readonly Permission DeleteContent = new("DeleteContent", "Delete content for others");
+    public static readonly Permission DeleteContent = new("DeleteContent", LocalizedString.Create("Delete content for others", typeof(CommonPermissions)));
 
-    public static readonly Permission DeleteOwnContent = new("DeleteOwnContent", "Delete own content", [DeleteContent]);
+    public static readonly Permission DeleteOwnContent = new("DeleteOwnContent", LocalizedString.Create("Delete own content", typeof(CommonPermissions)), [DeleteContent]);
 
-    public static readonly Permission ViewContent = new("ViewContent", "View all content", [EditContent]);
+    public static readonly Permission ViewContent = new("ViewContent", LocalizedString.Create("View all content", typeof(CommonPermissions)), [EditContent]);
 
-    public static readonly Permission ViewOwnContent = new("ViewOwnContent", "View own content", [ViewContent]);
+    public static readonly Permission ViewOwnContent = new("ViewOwnContent", LocalizedString.Create("View own content", typeof(CommonPermissions)), [ViewContent]);
 
-    public static readonly Permission PreviewContent = new("PreviewContent", "Preview content", [EditContent, PublishContent]);
+    public static readonly Permission PreviewContent = new("PreviewContent", LocalizedString.Create("Preview content", typeof(CommonPermissions)), [EditContent, PublishContent]);
 
-    public static readonly Permission PreviewOwnContent = new("PreviewOwnContent", "Preview own content", [PreviewContent]);
+    public static readonly Permission PreviewOwnContent = new("PreviewOwnContent", LocalizedString.Create("Preview own content", typeof(CommonPermissions)), [PreviewContent]);
 
-    public static readonly Permission CloneContent = new("CloneContent", "Clone content", [EditContent]);
+    public static readonly Permission CloneContent = new("CloneContent", LocalizedString.Create("Clone content", typeof(CommonPermissions)), [EditContent]);
 
-    public static readonly Permission CloneOwnContent = new("CloneOwnContent", "Clone own content", [CloneContent]);
+    public static readonly Permission CloneOwnContent = new("CloneOwnContent", LocalizedString.Create("Clone own content", typeof(CommonPermissions)), [CloneContent]);
 
-    public static readonly Permission ListContent = new("ListContent", "List content items");
+    public static readonly Permission ListContent = new("ListContent", LocalizedString.Create("List content items", typeof(CommonPermissions)));
 
-    public static readonly Permission EditContentOwner = new("EditContentOwner", "Edit the owner of a content item");
+    public static readonly Permission EditContentOwner = new("EditContentOwner", LocalizedString.Create("Edit the owner of a content item", typeof(CommonPermissions)));
 
-    public static readonly Permission AccessContentApi = new("AccessContentApi", "Access content via the api");
+    public static readonly Permission AccessContentApi = new("AccessContentApi", LocalizedString.Create("Access content via the api", typeof(CommonPermissions)));
 
     public static readonly Dictionary<string, Permission> OwnerPermissionsByName = [];
 

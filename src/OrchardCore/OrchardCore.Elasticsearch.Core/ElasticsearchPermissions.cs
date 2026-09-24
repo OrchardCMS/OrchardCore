@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Indexing.Core;
 using OrchardCore.Security.Permissions;
 
@@ -5,7 +6,7 @@ namespace OrchardCore.Elasticsearch;
 
 public static class ElasticsearchPermissions
 {
-    public static readonly Permission ManageElasticIndexes = new("ManageElasticIndexes", "Manage Elasticsearch Indexes", [IndexingPermissions.ManageIndexes]);
+    public static readonly Permission ManageElasticIndexes = new("ManageElasticIndexes", LocalizedString.Create("Manage Elasticsearch Indexes", typeof(ElasticsearchPermissions)), [IndexingPermissions.ManageIndexes]);
 
-    public static readonly Permission QueryElasticApi = new("QueryElasticsearchApi", "Query Elasticsearch Api", [ManageElasticIndexes]);
+    public static readonly Permission QueryElasticApi = new("QueryElasticsearchApi", LocalizedString.Create("Query Elasticsearch Api", typeof(ElasticsearchPermissions)), [ManageElasticIndexes]);
 }

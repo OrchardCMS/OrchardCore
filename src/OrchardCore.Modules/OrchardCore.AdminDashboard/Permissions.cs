@@ -1,11 +1,12 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.AdminDashboard;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageAdminDashboard = new("ManageAdminDashboard", "Manage the Admin Dashboard");
-    public static readonly Permission AccessAdminDashboard = new("AccessAdminDashboard", "Access the Admin Dashboard", new[] { ManageAdminDashboard });
+    public static readonly Permission ManageAdminDashboard = new("ManageAdminDashboard", LocalizedString.Create("Manage the Admin Dashboard", typeof(Permissions)));
+    public static readonly Permission AccessAdminDashboard = new("AccessAdminDashboard", LocalizedString.Create("Access the Admin Dashboard", typeof(Permissions)), new[] { ManageAdminDashboard });
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

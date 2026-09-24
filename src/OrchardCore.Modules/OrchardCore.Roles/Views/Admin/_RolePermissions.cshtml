@@ -1,7 +1,31 @@
 @model RolePermissionsViewModel
 @using OrchardCore.Roles.ViewModels
 @using OrchardCore.Localization.Data
+@using Microsoft.Extensions.Localization
+@using OrchardCore.Security.Permissions
 @inject IDataLocalizer D
+@inject IStringLocalizerFactory StringLocalizerFactory
+
+@functions {
+    // A description with a translation context is translated with PO files.
+    // Other descriptions, for example the ones built from a template, are translated with Data Localization.
+    private string GetDescription(Permission permission, string permissionsContext)
+    {
+        var description = permission.Description;
+
+        if (string.IsNullOrEmpty(description?.Name))
+        {
+            return permission.Name;
+        }
+
+        if (!string.IsNullOrEmpty(description.SearchedLocation))
+        {
+            return StringLocalizerFactory.Localize(description).Value;
+        }
+
+        return D[description.Name, permissionsContext].Value;
+    }
+}
 
 @if (Model.IsAdminRole)
 {
@@ -47,11 +71,10 @@ else
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var permission in group.Value.OrderBy(x => x.Description))
+                        @foreach (var (permission, description) in group.Value
+                            .Select(x => (Permission: x, Description: GetDescription(x, permissionsContext)))
+                            .OrderBy(x => x.Description, StringComparer.CurrentCultureIgnoreCase))
                         {
-                            var description = string.IsNullOrEmpty(permission.Description)
-                                ? permission.Name
-                                : permission.Description;
 
                             var isAssigned = Model.AssignedPermissions.Contains(permission.Name);
                             var isEffective = false;
@@ -67,7 +90,7 @@ else
                                 {
                                     var impliedByAssigned = effectivePermission.ImpliedBy
                                         ?.Where(p => Model.AssignedPermissions.Contains(p.Name))
-                                        .Select(p => !string.IsNullOrEmpty(p.Description) ? p.Description : p.Name)
+                                        .Select(p => GetDescription(p, permissionsContext))
                                         .ToList() ?? [];
 
                                     if (impliedByAssigned.Count > 0)
@@ -93,9 +116,9 @@ else
                                 }
                             }
 
-                            <tr data-text="@D[description, permissionsContext]">
+                            <tr data-text="@description">
                                 <td class="col-10">
-                                    @D[description, permissionsContext]
+                                    @description
                                     @if (permission.IsSecurityCritical)
                                     {
                                         <div class="float-end">
