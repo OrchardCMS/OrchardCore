@@ -11,13 +11,8 @@ public class AllFeaturesDeploymentStep : DeploymentStep
     public AllFeaturesDeploymentStep()
     {
         Name = "AllFeatures";
-    }
-
-    public AllFeaturesDeploymentStep(IStringLocalizer<AllFeaturesDeploymentStep> S)
-        : this()
-    {
-        Category = S["Infrastructure"];
-        Title = S["All Features"];
+        Category = LocalizedString.Create("Infrastructure");
+        Title = LocalizedString.Create("All Features");
     }
 
     public bool IgnoreDisabledFeatures { get; set; }

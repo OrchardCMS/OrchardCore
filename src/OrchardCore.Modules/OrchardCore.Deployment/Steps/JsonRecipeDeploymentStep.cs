@@ -10,13 +10,8 @@ public class JsonRecipeDeploymentStep : DeploymentStep
     public JsonRecipeDeploymentStep()
     {
         Name = "JsonRecipe";
-    }
-
-    public JsonRecipeDeploymentStep(IStringLocalizer<JsonRecipeDeploymentStep> S)
-        : this()
-    {
-        Category = S["Deployment"];
-        Title = S["JSON Recipe"];
+        Category = LocalizedString.Create("Deployment");
+        Title = LocalizedString.Create("JSON Recipe");
     }
 
     public string Json { get; set; }

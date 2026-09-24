@@ -15,15 +15,6 @@ public sealed class AllRateLimitPoliciesDeploymentStep : DeploymentStep
     public AllRateLimitPoliciesDeploymentStep()
     {
         Name = CreateOrUpdateRateLimitPoliciesStep.StepKey;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AllRateLimitPoliciesDeploymentStep"/> class.
-    /// </summary>
-    /// <param name="S">The localizer used to assign the deployment category.</param>
-    public AllRateLimitPoliciesDeploymentStep(IStringLocalizer<AllRateLimitPoliciesDeploymentStep> S)
-        : this()
-    {
-        Category = S["Security"];
+        Category = LocalizedString.Create("Security");
     }
 }

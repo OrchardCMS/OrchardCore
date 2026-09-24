@@ -11,13 +11,8 @@ public class LuceneIndexDeploymentStep : DeploymentStep
     public LuceneIndexDeploymentStep()
     {
         Name = "LuceneIndex";
-    }
-
-    public LuceneIndexDeploymentStep(IStringLocalizer<LuceneIndexDeploymentStep> S)
-        : this()
-    {
-        Category = S["Search"];
-        Title = S["Lucene Search Indexes"];
+        Category = LocalizedString.Create("Search");
+        Title = LocalizedString.Create("Lucene Search Indexes");
     }
 
     public bool IncludeAll { get; set; } = true;

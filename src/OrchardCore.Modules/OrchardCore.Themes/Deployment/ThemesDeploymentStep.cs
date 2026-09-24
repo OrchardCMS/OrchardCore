@@ -11,11 +11,6 @@ public class ThemesDeploymentStep : DeploymentStep
     public ThemesDeploymentStep()
     {
         Name = "Themes";
-    }
-
-    public ThemesDeploymentStep(IStringLocalizer<ThemesDeploymentStep> S)
-        : this()
-    {
-        Category = S["Theming"];
+        Category = LocalizedString.Create("Theming");
     }
 }

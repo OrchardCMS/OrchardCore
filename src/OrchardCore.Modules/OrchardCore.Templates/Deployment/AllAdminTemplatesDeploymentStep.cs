@@ -11,13 +11,8 @@ public class AllAdminTemplatesDeploymentStep : DeploymentStep
     public AllAdminTemplatesDeploymentStep()
     {
         Name = "AllAdminTemplates";
-    }
-
-    public AllAdminTemplatesDeploymentStep(IStringLocalizer<AllAdminTemplatesDeploymentStep> S)
-        : this()
-    {
-        Category = S["Development"];
-        Title = S["All Admin Templates"];
+        Category = LocalizedString.Create("Development");
+        Title = LocalizedString.Create("All Admin Templates");
     }
     public bool ExportAsFiles { get; set; }
 }

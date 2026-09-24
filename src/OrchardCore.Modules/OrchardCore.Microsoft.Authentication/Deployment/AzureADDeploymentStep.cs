@@ -11,11 +11,6 @@ public class AzureADDeploymentStep : DeploymentStep
     public AzureADDeploymentStep()
     {
         Name = "Microsoft Entra ID";
-    }
-
-    public AzureADDeploymentStep(IStringLocalizer<AzureADDeploymentStep> S)
-        : this()
-    {
-        Category = S["Microsoft Authentication"];
+        Category = LocalizedString.Create("Microsoft Authentication");
     }
 }
