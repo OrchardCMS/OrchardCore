@@ -94,8 +94,8 @@ public sealed class Startup : StartupBase
 
         services.AddTrimmingServices(_shellConfiguration);
 
-        services.AddAdminListColumnProvider<WorkflowTypesAdminListColumnProvider>();
-        services.AddAdminListColumnProvider<WorkflowInstancesAdminListColumnProvider>();
+        services.AddAdminListColumnProvider<WorkflowTypesAdminListColumnProvider>(WorkflowTypesAdminList.Name);
+        services.AddAdminListColumnProvider<WorkflowInstancesAdminListColumnProvider>(WorkflowInstancesAdminList.Name);
     }
 }
 

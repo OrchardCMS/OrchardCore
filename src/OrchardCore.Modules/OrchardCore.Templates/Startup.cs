@@ -43,7 +43,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<AdminTemplatesManager>();
         services.AddPermissionProvider<AdminTemplatesPermissions>();
 
-        services.AddAdminListColumnProvider<TemplatesAdminListColumnProvider>();
+        services.AddAdminListColumnProvider<TemplatesAdminListColumnProvider>(TemplatesAdminList.Name);
     }
 }
 

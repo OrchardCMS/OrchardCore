@@ -19,11 +19,6 @@ public sealed class TemplatesAdminListColumnProvider : IAdminListColumnProvider
 
     public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancellationToken = default)
     {
-        if (context.ListName != TemplatesAdminList.Name)
-        {
-            return Task.CompletedTask;
-        }
-
         context.Columns.Add(AdminListColumns.Select());
 
         context.Columns.Add(new AdminListColumn

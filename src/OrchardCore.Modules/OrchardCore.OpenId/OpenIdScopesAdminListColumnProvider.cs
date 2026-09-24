@@ -22,11 +22,6 @@ public sealed class OpenIdScopesAdminListColumnProvider : IAdminListColumnProvid
 
     public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancellationToken = default)
     {
-        if (context.ListName != OpenIdScopesAdminList.Name)
-        {
-            return Task.CompletedTask;
-        }
-
         context.Columns.Add(new AdminListColumn
         {
             // The display name and the description take the space left by the other columns.

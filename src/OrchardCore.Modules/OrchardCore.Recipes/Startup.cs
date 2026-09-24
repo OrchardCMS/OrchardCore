@@ -30,7 +30,7 @@ public sealed class Startup : StartupBase
 
         services.AddDeploymentTargetHandler<RecipeDeploymentTargetHandler>();
 
-        services.AddAdminListColumnProvider<RecipesAdminListColumnProvider>();
+        services.AddAdminListColumnProvider<RecipesAdminListColumnProvider>(RecipesAdminList.Name);
     }
 }
 

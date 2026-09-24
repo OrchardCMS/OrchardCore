@@ -19,11 +19,6 @@ public sealed class AdminMenusAdminListColumnProvider : IAdminListColumnProvider
 
     public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancellationToken = default)
     {
-        if (context.ListName != AdminMenusAdminList.Name)
-        {
-            return Task.CompletedTask;
-        }
-
         context.Columns.Add(AdminListColumns.Select());
 
         context.Columns.Add(new AdminListColumn

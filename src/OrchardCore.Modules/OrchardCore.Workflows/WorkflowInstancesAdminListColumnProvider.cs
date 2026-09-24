@@ -19,11 +19,6 @@ public sealed class WorkflowInstancesAdminListColumnProvider : IAdminListColumnP
 
     public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancellationToken = default)
     {
-        if (context.ListName != WorkflowInstancesAdminList.Name)
-        {
-            return Task.CompletedTask;
-        }
-
         context.Columns.Add(AdminListColumns.Select());
 
         context.Columns.Add(new AdminListColumn

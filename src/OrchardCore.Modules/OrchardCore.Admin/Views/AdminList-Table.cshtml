@@ -21,10 +21,12 @@
         EmptyMessage  Optional message displayed when there are no items.
 *@
 @using Microsoft.AspNetCore.Mvc.Rendering
+@using System.Text.Encodings.Web
 @using Microsoft.AspNetCore.Html
 @using OrchardCore.Admin.Models
 @using OrchardCore.DisplayManagement
 @using OrchardCore.DisplayManagement.Shapes
+@using OrchardCore.DisplayManagement.Zones
 @using OrchardCore.Mvc.Utilities
 @{
     // Enumerated once, as they are: an empty list is only known once the loop over the rows ran.
@@ -65,22 +67,49 @@
     // The classes and the title of a column are the same on every row, so they are built once.
     var columnCssClasses = new string[columns.Count];
     var columnTitles = new string[columns.Count];
+    var columnTitleAttributes = new IHtmlContent[columns.Count];
 
     for (var i = 0; i < columns.Count; i++)
     {
         columnCssClasses[i] = ColumnCssClass(columns[i]);
         columnTitles[i] = string.IsNullOrEmpty(columns[i].Title?.Value) ? null : columns[i].Title.Value;
+
+        // Razor renders a data- attribute even without a value, so it is only written for a column with a title.
+        columnTitleAttributes[i] = columnTitles[i] is null ? HtmlString.Empty : new HtmlString($"data-title=\"{HtmlEncoder.Default.Encode(columnTitles[i])}\"");
     }
 
-    async Task<IShape> CreateCellAsync(IShape row, AdminListColumn column)
+    // How the cells of each column are rendered: an AdminListCell shape only when a template overrides it.
+    var cellRenderings = Model.CellRenderings as AdminListCellRendering[];
+
+    async Task RenderCellAsync(IShape row, IZoneHolding zoneHolding, int i)
     {
-        var cell = await Factory.CreateAsync(AdminListConstants.CellShapeType);
+        switch (cellRenderings?[i] ?? AdminListCellRendering.Shape)
+        {
+            case AdminListCellRendering.Zones:
+                if (zoneHolding != null)
+                {
+                    foreach (var zone in columns[i].Zones)
+                    {
+                        if (zoneHolding.Zones.IsNotEmpty(zone))
+                        {
+                            @await DisplayAsync(zoneHolding.Zones[zone])
+                        }
+                    }
+                }
+                break;
 
-        cell.Properties[AdminListConstants.ListNameProperty] = name;
-        cell.Properties["Row"] = row;
-        cell.Properties["Column"] = column;
+            case AdminListCellRendering.Actions:
+                @await DisplayAsync(await Factory.CreateAdminListActionsAsync(row, name))
+                break;
 
-        return cell;
+            default:
+                var cell = await Factory.CreateAsync(AdminListConstants.CellShapeType);
+                cell.Properties[AdminListConstants.ListNameProperty] = name;
+                cell.Properties["Row"] = row;
+                cell.Properties["Column"] = columns[i];
+                @await DisplayAsync(cell)
+                break;
+        }
     }
 
     static string ColumnCssClass(AdminListColumn column)
@@ -211,10 +240,12 @@
 
                 // The cells are written as they are rendered, between the tags of the row, rather than buffered in it.
                 // The title is displayed before a cell when the rows are stacked on small screens.
+                var zoneHolding = row as IZoneHolding;
+
                 @tr.RenderStartTag()
                 for (var i = 0; i < columns.Count; i++)
                 {
-                    <td class="@columnCssClasses[i]" data-title="@columnTitles[i]">@await DisplayAsync(await CreateCellAsync(row, columns[i]))</td>
+                    <td class="@columnCssClasses[i]" @columnTitleAttributes[i]>@{ await RenderCellAsync(row, zoneHolding, i); }</td>
                 }
                 @tr.RenderEndTag()
             }

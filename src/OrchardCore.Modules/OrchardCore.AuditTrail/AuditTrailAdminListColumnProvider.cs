@@ -23,11 +23,6 @@ public sealed class AuditTrailAdminListColumnProvider : IAdminListColumnProvider
 
     public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancellationToken = default)
     {
-        if (context.ListName != AuditTrailAdminList.Name)
-        {
-            return Task.CompletedTask;
-        }
-
         // What happened and the category it happened in take a quarter of the row each, so no column of badges
         // crowds into a corner of a wide screen.
         context.Columns.Add(new AdminListColumn

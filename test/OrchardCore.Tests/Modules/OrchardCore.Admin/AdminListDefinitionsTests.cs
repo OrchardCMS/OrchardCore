@@ -31,25 +31,27 @@ public class AdminListDefinitionsTests
     }
 
     [Fact]
-    public async Task EveryList_HasColumnsThatRenderSomething()
+    public async Task EveryList_HasAProviderDeclaringColumnsThatRenderSomething()
     {
-        var providers = GetOwnerProviders();
+        var lists = GetAdminLists();
 
-        Assert.NotEmpty(providers);
+        Assert.NotEmpty(lists);
 
-        foreach (var list in GetAdminLists())
+        foreach (var list in lists)
         {
             var name = GetName(list);
-            var context = new AdminListColumnsContext(name);
+
+            // The provider of a list is named after it, e.g. QueriesAdminListColumnProvider, and registered for it.
+            var provider = CreateOwnerProvider(list);
+
+            Assert.True(provider != null, $"The {name} list has no {list.Name}ColumnProvider.");
 
             // A provider adding a column without a name, or one the list already has, throws here.
-            foreach (var provider in providers)
-            {
-                await provider.BuildAsync(context, TestContext.Current.CancellationToken);
-            }
+            var context = new AdminListColumnsContext(name);
+            await provider.BuildAsync(context, TestContext.Current.CancellationToken);
 
             // A list without columns can only be rendered with the List layout.
-            Assert.True(context.Columns.Count > 0, $"No provider declares the columns of the {name} list.");
+            Assert.True(context.Columns.Count > 0, $"{list.Name}ColumnProvider declares no column.");
 
             foreach (var column in context.Columns)
             {
@@ -69,27 +71,20 @@ public class AdminListDefinitionsTests
             .Where(type => type.GetField("Name", BindingFlags.Public | BindingFlags.Static) is { IsLiteral: true } field && field.FieldType == typeof(string))
             .ToList();
 
-    // The providers of the modules owning the lists only need a localizer for the headers of their columns.
-    private static List<IAdminListColumnProvider> GetOwnerProviders()
+    // The provider of the module owning a list only needs a localizer for the headers of its columns.
+    private static IAdminListColumnProvider CreateOwnerProvider(Type list)
     {
-        var providers = new List<IAdminListColumnProvider>();
+        var type = list.Assembly.GetType($"{list.Namespace}.{list.Name}ColumnProvider");
 
-        foreach (var type in GetExportedTypes().Where(type => !type.IsAbstract && typeof(IAdminListColumnProvider).IsAssignableFrom(type)))
+        if (type is null || !typeof(IAdminListColumnProvider).IsAssignableFrom(type))
         {
-            var localizerType = typeof(IStringLocalizer<>).MakeGenericType(type);
-            var constructor = type.GetConstructor([localizerType]);
-
-            if (constructor is null)
-            {
-                continue;
-            }
-
-            var localizer = Activator.CreateInstance(typeof(NullStringLocalizer<>).MakeGenericType(type));
-
-            providers.Add((IAdminListColumnProvider)constructor.Invoke([localizer]));
+            return null;
         }
 
-        return providers;
+        var constructor = type.GetConstructor([typeof(IStringLocalizer<>).MakeGenericType(type)]);
+        var localizer = Activator.CreateInstance(typeof(NullStringLocalizer<>).MakeGenericType(type));
+
+        return (IAdminListColumnProvider)constructor?.Invoke([localizer]);
     }
 
     private static IEnumerable<Type> GetExportedTypes()

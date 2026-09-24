@@ -20,11 +20,6 @@ public sealed class SitemapCacheAdminListColumnProvider : IAdminListColumnProvid
 
     public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancellationToken = default)
     {
-        if (context.ListName != SitemapCacheAdminList.Name)
-        {
-            return Task.CompletedTask;
-        }
-
         context.Columns.Add(new AdminListColumn
         {
             Name = "FileName",

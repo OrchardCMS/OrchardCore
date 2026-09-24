@@ -19,11 +19,6 @@ public sealed class MediaProfilesAdminListColumnProvider : IAdminListColumnProvi
 
     public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancellationToken = default)
     {
-        if (context.ListName != MediaProfilesAdminList.Name)
-        {
-            return Task.CompletedTask;
-        }
-
         context.Columns.Add(AdminListColumns.Select());
 
         context.Columns.Add(new AdminListColumn

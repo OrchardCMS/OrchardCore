@@ -70,7 +70,7 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<Navbar, NotificationNavbarDisplayDriver>();
         services.AddScoped<INotificationEvents, CacheNotificationEventsHandler>();
 
-        services.AddAdminListColumnProvider<NotificationsAdminListColumnProvider>();
+        services.AddAdminListColumnProvider<NotificationsAdminListColumnProvider>(NotificationsAdminList.Name);
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

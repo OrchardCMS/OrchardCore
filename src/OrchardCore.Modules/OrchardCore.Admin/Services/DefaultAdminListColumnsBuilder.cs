@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Admin.Models;
 using OrchardCore.Modules;
@@ -6,14 +7,17 @@ namespace OrchardCore.Admin.Services;
 
 public sealed class DefaultAdminListColumnsBuilder : IAdminListColumnsBuilder
 {
-    private readonly IEnumerable<IAdminListColumnProvider> _columnProviders;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly IEnumerable<IAdminListColumnProvider> _everyListProviders;
     private readonly ILogger _logger;
 
     public DefaultAdminListColumnsBuilder(
-        IEnumerable<IAdminListColumnProvider> columnProviders,
+        IServiceProvider serviceProvider,
+        IEnumerable<IAdminListColumnProvider> everyListProviders,
         ILogger<DefaultAdminListColumnsBuilder> logger)
     {
-        _columnProviders = columnProviders;
+        _serviceProvider = serviceProvider;
+        _everyListProviders = everyListProviders;
         _logger = logger;
     }
 
@@ -23,10 +27,17 @@ public sealed class DefaultAdminListColumnsBuilder : IAdminListColumnsBuilder
 
         var context = new AdminListColumnsContext(listName, data);
 
-        // The providers run in the order their features depend on each other, so the module owning the list adds
-        // its columns before the modules depending on it change or remove them. A provider adding a column the list
-        // already has throws, which is logged, and the columns it added before are kept.
-        await _columnProviders.InvokeAsync(
+        // The providers registered for the list are keyed by its name, so only they are created, in the order their
+        // features depend on each other: the module owning the list adds its columns before the modules depending on
+        // it change or remove them. The providers registered for every list run after them. A provider adding a
+        // column the list already has throws, which is logged, and the columns it added before are kept.
+        await _serviceProvider.GetKeyedServices<IAdminListColumnProvider>(listName).InvokeAsync(
+            static (provider, context, cancellationToken) => provider.BuildAsync(context, cancellationToken),
+            context,
+            cancellationToken,
+            _logger);
+
+        await _everyListProviders.InvokeAsync(
             static (provider, context, cancellationToken) => provider.BuildAsync(context, cancellationToken),
             context,
             cancellationToken,

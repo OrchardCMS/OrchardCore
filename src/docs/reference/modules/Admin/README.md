@@ -266,6 +266,7 @@ A list no provider declares columns for is rendered with the `List` layout, the 
 | `Actions`      | Optional. The buttons of the page, e.g. "Add", rendered beside the search.                     |
 | `LayoutSelector` | The selector offering the other layouts of the list, built for the list when the site lets a user choose. |
 | `ShowLayoutSelector` | Whether the list offers its other layouts. `false` when the page turned it off, or when the list has no columns to switch to. |
+| `CellRenderings` | Set when a layout other than `List` renders the list: how the cells of each column are rendered, one `AdminListCellRendering` per column, see [Overriding templates](#overriding-templates). |
 | `Pager`        | The pager shape.                                                                               |
 | `PageSize`     | Optional. The page size selector, so the layout places it instead of the pager. Build it with `PageSizeSelector.BuildOptions()` and set `ShowPageSizeSelector = false` on the pager so it is not rendered twice. |
 | `RowsAttributes` | Optional. Attributes rendered on the element wrapping the rows, whichever layout renders it, e.g. the id a sortable script needs. |
@@ -287,7 +288,7 @@ In the `List` layout the row shape renders as a whole. The shipped rows all foll
         @* Description *@
     </div>
     <div class="col-auto d-flex justify-content-end ps-2">
-        @await DisplayAsync(await New.AdminListActions(Row: Model))
+        @await DisplayAsync(await Factory.CreateAdminListActionsAsync((IShape)Model))
     </div>
 </div>
 ```
@@ -338,6 +339,8 @@ An alternate that names a list but no layout applies to **every** layout of that
 
 `AdminListCell` has no layout variant: cells only exist in the layouts with columns, and a column renders the same zones in both.
 
+The layouts with columns only create an `AdminListCell` shape for the cells a template overrides: `AdminListCell`, `AdminListCell-{Column}` or `AdminListCell-{Name}-{Column}`, from a theme or another module. The other cells render the zones of the row, or its actions for the `Actions` column, as the templates of the Admin module do, without a shape for every row and column. The `AdminList` shape tells a layout which is which with its `CellRenderings` property, one `AdminListCellRendering` per column, so a custom layout can do the same.
+
 ### Column properties
 
 | Property    | Description                                                                                                                                                                  |
@@ -374,7 +377,7 @@ The `Actions` and `ActionsMenu` zones of a row are rendered by the `AdminListAct
 | `Buttons` | The default. The shapes of the `Actions` zone as buttons, followed by an "Actions" dropdown for `ActionsMenu`. |
 | `Menu`    | A single dropdown opened by an ellipsis button, holding the `Actions` shapes (restyled as menu items) and the `ActionsMenu` shapes. |
 
-Row templates render it with `@await DisplayAsync(await New.AdminListActions(Row: Model))`, and the `Table` and `Grid` layouts render it in the `Actions` column, so the actions layout applies to every list layout. The alternates are `AdminListActions__{Layout}`, `AdminListActions__{ListName}` and `AdminListActions__{ListName}__{Layout}`. An actions layout is discovered like a list layout: add `AdminListActions-Icons.cshtml` to render it and `AdminListActions-Icons.Option.cshtml` to make it selectable.
+Row templates render it with `@await DisplayAsync(await Factory.CreateAdminListActionsAsync((IShape)Model))`, which creates the shape with its properties rather than through the dynamic `New`, since it is rendered once per row. The `Table` and `Grid` layouts render it in the `Actions` column, so the actions layout applies to every list layout. The alternates are `AdminListActions__{Layout}`, `AdminListActions__{ListName}` and `AdminListActions__{ListName}__{Layout}`. An actions layout is discovered like a list layout: add `AdminListActions-Icons.cshtml` to render it and `AdminListActions-Icons.Option.cshtml` to make it selectable.
 
 ### Adding a layout
 
@@ -406,11 +409,6 @@ public sealed class QueriesAdminListColumnProvider : IAdminListColumnProvider
 
     public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancellationToken = default)
     {
-        if (context.ListName != QueriesAdminList.Name)
-        {
-            return Task.CompletedTask;
-        }
-
         context.Columns.Add(AdminListColumns.Select());
 
         context.Columns.Add(new AdminListColumn
@@ -439,16 +437,16 @@ public sealed class QueriesAdminListColumnProvider : IAdminListColumnProvider
 ```
 
 ```csharp
-services.AddAdminListColumnProvider<QueriesAdminListColumnProvider>();
+services.AddAdminListColumnProvider<QueriesAdminListColumnProvider>(QueriesAdminList.Name);
 ```
 
-The provider is registered in the `Startup` of the feature rendering the list, so the columns exist exactly when the list does. The column titles are localized with the provider's own `IStringLocalizer<T>`, so they are extracted and translated like any other string of the module. `context.Columns` is an `AdminListColumnCollection` keyed by the column name ignoring case: adding a column without a name, or a second column with a name the list already has, throws. The error is logged with the provider it came from, and the columns added before it are kept. A column rendering no zone is logged as a warning once every provider ran.
+The provider is registered for its list, in the `Startup` of the feature rendering it, so the columns exist exactly when the list does. A provider registered for a list is keyed by its name: it only runs for that list, and it is only created when that list is rendered, however many providers the site has. A provider declaring the columns of several lists is registered for each of them, `AddAdminListColumnProvider<T>(firstList, secondList)`. The column titles are localized with the provider's own `IStringLocalizer<T>`, so they are extracted and translated like any other string of the module. `context.Columns` is an `AdminListColumnCollection` keyed by the column name ignoring case: adding a column without a name, or a second column with a name the list already has, throws. The error is logged with the provider it came from, and the columns added before it are kept. A column rendering no zone is logged as a warning once every provider ran.
 
 #### Adding a column
 
 Another module adds, removes or changes the columns of a list with a provider of its own. Each column names the zones of the row shape it renders and its `Position` decides where it goes, whatever the order the providers run in. `context.Find(name)` and `context.Remove(name)` help altering existing columns: to replace a column of the owner, change the one `Find` returns, or remove it before adding yours under the same name.
 
-The providers run in the order their features depend on each other, so the owner of a list declares its columns before the modules depending on it run. A module that changes or removes a column of another module's list depends on the feature owning it, e.g. `OrchardCore.Contents` for the content items list. Adding a column does not depend on that order.
+The providers of a list run in the order their features depend on each other, so the owner of a list declares its columns before the modules depending on it run. A module that changes or removes a column of another module's list depends on the feature owning it, e.g. `OrchardCore.Contents` for the content items list. Adding a column does not depend on that order. A provider registered without a list, `AddAdminListColumnProvider<T>()`, runs for every list, after the providers of that list, and checks `context.ListName` itself.
 
 ```csharp
 public sealed class CultureColumnProvider : IAdminListColumnProvider
@@ -462,18 +460,15 @@ public sealed class CultureColumnProvider : IAdminListColumnProvider
 
     public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancellationToken = default)
     {
-        if (context.ListName == "Contents")
+        // Between "Title" (20) and "Type" (30), regardless of the other providers.
+        context.Columns.Add(new AdminListColumn
         {
-            // Between "Title" (20) and "Type" (30), regardless of the other providers.
-            context.Columns.Add(new AdminListColumn
-            {
-                Name = "Culture",
-                Position = "25",
-                Title = S["Culture"],
-                Zones = ["Culture"],
-                Width = "10%",
-            });
-        }
+            Name = "Culture",
+            Position = "25",
+            Title = S["Culture"],
+            Zones = ["Culture"],
+            Width = "10%",
+        });
 
         return Task.CompletedTask;
     }
@@ -481,7 +476,7 @@ public sealed class CultureColumnProvider : IAdminListColumnProvider
 ```
 
 ```csharp
-services.AddAdminListColumnProvider<CultureColumnProvider>();
+services.AddAdminListColumnProvider<CultureColumnProvider>(ContentsAdminList.Name);
 ```
 
 #### What the page knows
@@ -503,8 +498,7 @@ var listShape = await adminListFactory.CreateAsync(list, HttpContext.RequestAbor
 public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancellationToken = default)
 {
     // Only add the column while the list is filtered by a type that has the field this column renders.
-    if (context.ListName == ContentsAdminList.Name &&
-        context.TryGetData<string[]>(ContentsAdminList.ContentTypesKey, out var contentTypes) &&
+    if (context.TryGetData<string[]>(ContentsAdminList.ContentTypesKey, out var contentTypes) &&
         contentTypes.Contains("BlogPost"))
     {
         context.Columns.Add(new AdminListColumn { Name = "Category", Position = "25", Title = S["Category"], Zones = ["Category"] });
@@ -520,7 +514,7 @@ public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancel
 
 A list is named by the constant its module publishes, e.g. `QueriesAdminList.Name`. The same name selects the columns the providers declare, the layout a user picked for the list, the `AdminList__{Name}` alternate and the `AdminListCell__{Name}__{Column}` alternates. The pages that render one list per group, e.g. the features by category and the recipes by feature, give every group the same name.
 
-The columns of a list are declared by the provider named after its class with a `ColumnProvider` suffix, e.g. `QueriesAdminListColumnProvider`. The sitemaps and the sitemap indexes present the same way and share `SitemapsAdminListColumnProvider`.
+The columns of a list are declared by the provider named after its class with a `ColumnProvider` suffix, e.g. `QueriesAdminListColumnProvider`, and registered for that list.
 
 | Name | Declared by | Module |
 | --- | --- | --- |

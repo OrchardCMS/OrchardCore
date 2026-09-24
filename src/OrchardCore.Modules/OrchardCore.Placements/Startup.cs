@@ -41,7 +41,7 @@ public sealed class Startup : StartupBase
         // Recipes
         services.AddRecipeExecutionStep<PlacementStep>();
 
-        services.AddAdminListColumnProvider<PlacementsAdminListColumnProvider>();
+        services.AddAdminListColumnProvider<PlacementsAdminListColumnProvider>(PlacementsAdminList.Name);
     }
 }
 

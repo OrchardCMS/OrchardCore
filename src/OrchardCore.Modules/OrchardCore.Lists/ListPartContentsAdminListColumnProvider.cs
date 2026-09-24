@@ -20,11 +20,6 @@ public sealed class ListPartContentsAdminListColumnProvider : IAdminListColumnPr
 
     public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancellationToken = default)
     {
-        if (context.ListName != ListPartContentsAdminList.Name)
-        {
-            return Task.CompletedTask;
-        }
-
         context.Columns.Add(new AdminListColumn
         {
             // The title takes the space left by the other columns.

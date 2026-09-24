@@ -15,7 +15,7 @@ public static class SitemapsAdminList
 
 /// <summary>
 /// The admin list of sitemap indexes rendered by the <c>AdminList</c> shape.
-/// Its columns are declared by <see cref="SitemapsAdminListColumnProvider"/>.
+/// Its columns are declared by <see cref="SitemapIndexesAdminListColumnProvider"/>.
 /// </summary>
 public static class SitemapIndexesAdminList
 {

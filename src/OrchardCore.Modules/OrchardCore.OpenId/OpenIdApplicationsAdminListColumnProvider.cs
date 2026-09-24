@@ -23,11 +23,6 @@ public sealed class OpenIdApplicationsAdminListColumnProvider : IAdminListColumn
 
     public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancellationToken = default)
     {
-        if (context.ListName != OpenIdApplicationsAdminList.Name)
-        {
-            return Task.CompletedTask;
-        }
-
         context.Columns.Add(new AdminListColumn
         {
             // The display name takes the space left by the actions.

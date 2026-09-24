@@ -19,11 +19,6 @@ public sealed class DeploymentPlansAdminListColumnProvider : IAdminListColumnPro
 
     public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancellationToken = default)
     {
-        if (context.ListName != DeploymentPlansAdminList.Name)
-        {
-            return Task.CompletedTask;
-        }
-
         context.Columns.Add(AdminListColumns.Select());
 
         context.Columns.Add(new AdminListColumn

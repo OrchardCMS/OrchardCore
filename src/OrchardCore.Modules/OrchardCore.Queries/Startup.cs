@@ -29,7 +29,7 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<Query, QueryDisplayDriver>();
         services.AddPermissionProvider<Permissions>();
 
-        services.AddAdminListColumnProvider<QueriesAdminListColumnProvider>();
+        services.AddAdminListColumnProvider<QueriesAdminListColumnProvider>(QueriesAdminList.Name);
     }
 }
 

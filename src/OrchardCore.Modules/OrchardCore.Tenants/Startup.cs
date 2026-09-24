@@ -49,7 +49,7 @@ public sealed class Startup : StartupBase
 
         services.Configure<TenantsOptions>(_shellConfiguration.GetSection("OrchardCore_Tenants"));
 
-        services.AddAdminListColumnProvider<TenantsAdminListColumnProvider>();
+        services.AddAdminListColumnProvider<TenantsAdminListColumnProvider>(TenantsAdminList.Name);
     }
 }
 
@@ -130,7 +130,7 @@ public sealed class FeatureProfilesStartup : StartupBase
 
         services.AddRecipeExecutionStep<FeatureProfilesStep>();
 
-        services.AddAdminListColumnProvider<FeatureProfilesAdminListColumnProvider>();
+        services.AddAdminListColumnProvider<FeatureProfilesAdminListColumnProvider>(FeatureProfilesAdminList.Name);
     }
 }
 

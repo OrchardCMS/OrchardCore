@@ -19,11 +19,6 @@ public sealed class RolesAdminListColumnProvider : IAdminListColumnProvider
 
     public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancellationToken = default)
     {
-        if (context.ListName != RolesAdminList.Name)
-        {
-            return Task.CompletedTask;
-        }
-
         context.Columns.Add(new AdminListColumn
         {
             // The name and the description take the space left by the other columns.

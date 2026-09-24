@@ -97,9 +97,7 @@ public class DefaultAdminListColumnsBuilderTests
     public async Task BuildAsync_ProviderAddingAColumnTheListHas_IsLoggedAndTheOtherColumnsAreKept()
     {
         var logger = new ListLogger<DefaultAdminListColumnsBuilder>();
-        var builder = new DefaultAdminListColumnsBuilder(
-            [new OwnerColumnProvider("Contents"), new PositionedColumnProvider("title", "30"), new PositionedColumnProvider("Culture", "25")],
-            logger);
+        var builder = CreateBuilder(logger, new OwnerColumnProvider("Contents"), new PositionedColumnProvider("title", "30"), new PositionedColumnProvider("Culture", "25"));
 
         var columns = await builder.BuildAsync("Contents", cancellationToken: TestContext.Current.CancellationToken);
 
@@ -116,7 +114,7 @@ public class DefaultAdminListColumnsBuilderTests
     public async Task BuildAsync_ColumnRenderingNoZone_IsLogged()
     {
         var logger = new ListLogger<DefaultAdminListColumnsBuilder>();
-        var builder = new DefaultAdminListColumnsBuilder([new PositionedColumnProvider("Empty", "40", zones: [])], logger);
+        var builder = CreateBuilder(logger, new PositionedColumnProvider("Empty", "40", zones: []));
 
         var columns = await builder.BuildAsync("Contents", cancellationToken: TestContext.Current.CancellationToken);
 
@@ -124,8 +122,82 @@ public class DefaultAdminListColumnsBuilderTests
         Assert.Contains(logger.Entries, entry => entry.Level == LogLevel.Warning && entry.Message.Contains("'Empty' column") && entry.Message.Contains("renders no zone"));
     }
 
+    [Fact]
+    public async Task BuildAsync_ProviderRegisteredForAList_IsOnlyCreatedAndRunForThatList()
+    {
+        var services = new ServiceCollection()
+            .AddAdminListColumnProvider<CountingColumnProvider>("Contents")
+            .AddLogging()
+            .AddScoped<DefaultAdminListColumnsBuilder>()
+            .BuildServiceProvider();
+
+        using var scope = services.CreateScope();
+        var builder = scope.ServiceProvider.GetRequiredService<DefaultAdminListColumnsBuilder>();
+
+        var users = await builder.BuildAsync("Users", cancellationToken: TestContext.Current.CancellationToken);
+        var createdForUsers = CountingColumnProvider.Created;
+        var contents = await builder.BuildAsync("Contents", cancellationToken: TestContext.Current.CancellationToken);
+
+        Assert.Empty(users);
+        Assert.Equal(0, createdForUsers);
+        Assert.Equal(["Counted"], contents.Select(c => c.Name));
+    }
+
+    [Fact]
+    public async Task BuildAsync_ProvidersOfTheList_RunBeforeTheProvidersOfEveryList()
+    {
+        var services = new ServiceCollection()
+            .AddKeyedSingleton<IAdminListColumnProvider>("Contents", new OwnerColumnProvider("Contents"))
+            .AddSingleton<IAdminListColumnProvider>(new RemovingColumnProvider("Title"))
+            .AddLogging()
+            .AddScoped<DefaultAdminListColumnsBuilder>()
+            .BuildServiceProvider();
+
+        using var scope = services.CreateScope();
+        var builder = scope.ServiceProvider.GetRequiredService<DefaultAdminListColumnsBuilder>();
+
+        var columns = await builder.BuildAsync("Contents", cancellationToken: TestContext.Current.CancellationToken);
+
+        // The provider of every list removes a column the owner of the list added before it ran.
+        Assert.Equal(["Select", "Actions"], columns.Select(c => c.Name));
+    }
+
+    [Fact]
+    public void AddAdminListColumnProvider_SameProviderForAListTwice_IsRegisteredOnce()
+    {
+        var services = new ServiceCollection()
+            .AddAdminListColumnProvider<CultureColumnProvider>("Contents", "Users")
+            .AddAdminListColumnProvider<CultureColumnProvider>("Contents")
+            .AddAdminListColumnProvider<CultureColumnProvider>();
+
+        Assert.Single(services, descriptor => Equals(descriptor.ServiceKey, "Contents"));
+        Assert.Single(services, descriptor => Equals(descriptor.ServiceKey, "Users"));
+        Assert.Single(services, descriptor => !descriptor.IsKeyedService);
+    }
+
     private static DefaultAdminListColumnsBuilder CreateBuilder(params IAdminListColumnProvider[] providers)
-        => new(providers, NullLogger<DefaultAdminListColumnsBuilder>.Instance);
+        => CreateBuilder(NullLogger<DefaultAdminListColumnsBuilder>.Instance, providers);
+
+    // The providers given here run for every list, and filter the lists themselves.
+    private static DefaultAdminListColumnsBuilder CreateBuilder(ILogger<DefaultAdminListColumnsBuilder> logger, params IAdminListColumnProvider[] providers)
+        => new(new ServiceCollection().BuildServiceProvider(), providers, logger);
+
+    private sealed class CountingColumnProvider : IAdminListColumnProvider
+    {
+        public static int Created { get; private set; }
+
+        public CountingColumnProvider()
+        {
+            Created++;
+        }
+
+        public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancellationToken = default)
+        {
+            context.Columns.Add(new AdminListColumn { Name = "Counted", Zones = ["Counted"] });
+
+            return Task.CompletedTask;
+        }
+    }
 
     // Declares the columns of its list, like the module owning it does.
     private sealed class OwnerColumnProvider(string listName) : IAdminListColumnProvider

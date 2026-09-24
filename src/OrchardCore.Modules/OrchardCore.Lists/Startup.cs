@@ -62,7 +62,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IDocumentIndexHandler, ContainedPartContentIndexHandler>();
         services.AddScoped<IContainerService, ContainerService>();
 
-        services.AddAdminListColumnProvider<ListPartContentsAdminListColumnProvider>();
+        services.AddAdminListColumnProvider<ListPartContentsAdminListColumnProvider>(ListPartContentsAdminList.Name);
     }
 }
 

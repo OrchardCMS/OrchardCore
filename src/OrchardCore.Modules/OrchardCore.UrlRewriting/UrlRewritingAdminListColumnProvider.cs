@@ -19,11 +19,6 @@ public sealed class UrlRewritingAdminListColumnProvider : IAdminListColumnProvid
 
     public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancellationToken = default)
     {
-        if (context.ListName != UrlRewritingAdminList.Name)
-        {
-            return Task.CompletedTask;
-        }
-
         context.Columns.Add(new AdminListColumn
         {
             // The drag handle: rules are evaluated in order, so the order is part of the data.

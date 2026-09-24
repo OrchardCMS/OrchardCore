@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin.Models;
+using OrchardCore.Admin.Services;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
+using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Admin;
@@ -62,6 +64,7 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
                 // overridden for this list, or for this layout, without a page passing them to every shape.
                 StampList(shape, name, layout);
 
+                await AddCellRenderingsAsync(context, shape, name, layout);
                 await AddLayoutSelectorAsync(context, shape, name, layout);
             });
 
@@ -140,6 +143,39 @@ public sealed class AdminListShapeTableProvider : ShapeTableProvider
             });
 
         return ValueTask.CompletedTask;
+    }
+
+    // Tells the layouts with columns how to render the cells of each column: through an AdminListCell shape when a
+    // template overrides them, otherwise directly. The List layout renders the rows whole, so it does not need it.
+    private static async Task AddCellRenderingsAsync(ShapeDisplayContext context, IShape shape, string name, string layout)
+    {
+        var services = context.ServiceProvider;
+
+        if (services is null ||
+            string.Equals(layout, AdminListConstants.List, StringComparison.OrdinalIgnoreCase) ||
+            !shape.TryGetProperty<IList<AdminListColumn>>("Columns", out var columns) ||
+            columns.Count == 0)
+        {
+            return;
+        }
+
+        var themeManager = services.GetService<IThemeManager>();
+        var shapeTableManager = services.GetService<IShapeTableManager>();
+
+        if (themeManager is null || shapeTableManager is null)
+        {
+            return;
+        }
+
+        var shapeTable = await themeManager.GetShapeTableAsync(shapeTableManager);
+        var cellRenderings = new AdminListCellRendering[columns.Count];
+
+        for (var i = 0; i < columns.Count; i++)
+        {
+            cellRenderings[i] = AdminListCellRenderings.Get(shapeTable, name, columns[i].Name);
+        }
+
+        shape.Properties["CellRenderings"] = cellRenderings;
     }
 
     // Offers the user the other layouts of this list, unless the page placed a selector itself or turned it off,

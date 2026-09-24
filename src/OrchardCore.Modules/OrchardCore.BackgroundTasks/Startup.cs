@@ -23,6 +23,6 @@ public sealed class Startup : StartupBase
         // Builds the rows of the background tasks admin list.
         services.AddDisplayDriver<BackgroundTaskEntry, BackgroundTaskEntryDisplayDriver>();
 
-        services.AddAdminListColumnProvider<BackgroundTasksAdminListColumnProvider>();
+        services.AddAdminListColumnProvider<BackgroundTasksAdminListColumnProvider>(BackgroundTasksAdminList.Name);
     }
 }

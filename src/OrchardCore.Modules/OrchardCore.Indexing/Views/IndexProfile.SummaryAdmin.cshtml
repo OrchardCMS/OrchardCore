@@ -1,4 +1,5 @@
-﻿@* The actions sit beside the whole row, centred on it, and everything else is stacked in the column
+﻿@using OrchardCore.Admin
+@* The actions sit beside the whole row, centred on it, and everything else is stacked in the column
    left of them, so the description stops where the actions begin instead of running under them. *@
 <div class="row g-0 align-items-center">
     <div class="col">
@@ -34,6 +35,6 @@
     </div>
     <div class="col-auto d-flex justify-content-end ps-2">
         @* The Actions and ActionsMenu zones are rendered in the layout configured in the admin settings (Buttons, Menu, ...). *@
-        @await DisplayAsync(await New.AdminListActions(Row: Model))
+        @await DisplayAsync(await Factory.CreateAdminListActionsAsync((IShape)Model))
     </div>
 </div>

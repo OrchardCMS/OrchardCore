@@ -19,11 +19,6 @@ public sealed class ContentPartsAdminListColumnProvider : IAdminListColumnProvid
 
     public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancellationToken = default)
     {
-        if (context.ListName != ContentPartsAdminList.Name)
-        {
-            return Task.CompletedTask;
-        }
-
         context.Columns.Add(new AdminListColumn
         {
             // The display name and the description take the space left by the actions.

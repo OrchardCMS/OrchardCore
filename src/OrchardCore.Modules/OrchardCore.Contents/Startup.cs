@@ -213,7 +213,7 @@ public sealed class Startup : StartupBase
 
         services.AddTransient<IContentsAdminListFilterProvider, DefaultContentsAdminListFilterProvider>();
 
-        services.AddAdminListColumnProvider<ContentsAdminListColumnProvider>();
+        services.AddAdminListColumnProvider<ContentsAdminListColumnProvider>(ContentsAdminList.Name);
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
