@@ -1,6 +1,10 @@
 @model EditRemoteClientViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Remote Client"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="RemoteClientsEdit" title="@T["Edit Remote Client"]">
+        <breadcrumb-item id="RemoteClients" action="Index" controller="RemoteClient" area="OrchardCore.Deployment.Remote" permission="@DeploymentPermissions.ManageRemoteClients.Name">@T["Remote Clients"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Edit" method="post" class="no-multisubmit">

@@ -1,6 +1,10 @@
 @model CreatePartViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["New Content Part"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="ContentPartsCreate" title="@T["New Content Part"]">
+        <breadcrumb-item id="ContentParts" action="ListParts" controller="Admin" area="OrchardCore.ContentTypes" permission="@ContentTypesPermissions.ViewContentTypes.Name">@T["Content Parts"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <form asp-action="CreatePart">
     @Html.ValidationSummary()

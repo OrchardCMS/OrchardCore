@@ -59,6 +59,16 @@
     </div>
 </div>
 
+<div class="ocat-wrapper" asp-validation-class-for="ShowBreadcrumb">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input asp-for="ShowBreadcrumb" class="form-check-input" type="checkbox" />
+            <label asp-for="ShowBreadcrumb" class="form-check-label">@T["Show breadcrumb"]</label>
+        </div>
+        <span class="hint">@T["Whether the breadcrumb trail is displayed on admin screens."]</span>
+    </div>
+</div>
+
 <div class="mb-3" asp-validation-class-for="ListLayout">
     <label asp-for="ListLayout" class="form-label">@T["List layout"]</label>
     <select asp-for="ListLayout" class="form-select">

@@ -1,7 +1,9 @@
 @model OpenIdScopeIndexViewModel
 @using OrchardCore.OpenId.ViewModels
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Scopes"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="OpenIdScopes" title="@T["Scopes"]" />
+</zone>
 
 <form asp-action="Index" method="get">
     <div class="card text-bg-theme mb-3 position-sticky action-bar">

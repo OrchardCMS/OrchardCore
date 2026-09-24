@@ -17,6 +17,7 @@ public class LuceneIndexRebuildDeploymentStep : DeploymentStep
         : this()
     {
         Category = S["Search"];
+        Title = S["Rebuild Lucene Search Indices"];
     }
 
     public bool IncludeAll { get; set; } = true;

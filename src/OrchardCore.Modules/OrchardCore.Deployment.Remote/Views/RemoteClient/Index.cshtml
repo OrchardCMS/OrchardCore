@@ -1,6 +1,8 @@
 @model RemoteClientIndexViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Remote Clients"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="RemoteClients" title="@T["Remote Clients"]" />
+</zone>
 
 @* the form is necessary to generate an antiforgery token for the delete action *@
 <form asp-action="Index" method="post" class="no-multisubmit bulk-select-list" data-selected-text="@T["selected"]">

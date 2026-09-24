@@ -1,10 +1,11 @@
 @using OrchardCore.ContentManagement
-@using OrchardCore.ContentManagement.Metadata
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.Contents
 @using OrchardCore.ContentTypes
-@using OrchardCore.Mvc.Utilities
 @using OrchardCore.Localization.Data
-
+@inject IAuthorizationService AuthorizationService
 @inject IContentDefinitionManager ContentDefinitionManager
+@inject IContentManager ContentManager
 @inject IDataLocalizer D
 
 @{
@@ -12,9 +13,20 @@
     var contentTypeDefinition = await ContentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
     var typeDisplayName = contentTypeDefinition?.DisplayName ?? contentItem.ContentType.CamelFriendly();
     string localizedTypeDisplayName = D[typeDisplayName, DataLocalizationContext.ContentType];
+    var canList = false;
+
+    if (User is not null)
+    {
+        var listableTypes = (await ContentDefinitionManager.ListTypeDefinitionsAsync()).Where(definition => definition.IsListable());
+        canList = await AuthorizationService.AuthorizeContentTypeDefinitionsAsync(User, CommonPermissions.ListContent, listableTypes, ContentManager);
+    }
 }
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit {0}", localizedTypeDisplayName])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="ContentsEdit" title="@T["Edit {0}", localizedTypeDisplayName]">
+        <breadcrumb-item id="Contents" action="List" controller="Admin" area="OrchardCore.Contents" route-contentTypeId="" link-enabled="@canList">@T["Manage Content"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <form asp-action="Edit" asp-route-contentitemid="@contentItem.ContentItemId" asp-route-returnUrl="@Context.Request.Query["returnUrl"]" method="post" enctype="multipart/form-data" class="no-multisubmit">
     @if (!ViewContext.ModelState.IsValid)

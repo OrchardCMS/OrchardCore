@@ -13,6 +13,9 @@ public class AdminSettings
 
     public bool DisplayTitlesInTopbar { get; set; }
 
+    [DefaultValue(true)]
+    public bool ShowBreadcrumb { get; set; } = true;
+
     /// <summary>
     /// The layout used to render admin lists, e.g. <see cref="AdminListConstants.List"/> or <see cref="AdminListConstants.Table"/>.
     /// When empty, <see cref="AdminListOptions.DefaultLayout"/> is used.

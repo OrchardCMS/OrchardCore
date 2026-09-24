@@ -1,6 +1,8 @@
 ﻿@model BackgroundTaskIndexViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Background Tasks"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="BackgroundTasks" title="@T["Background Tasks"]" />
+</zone>
 
 <form asp-action="Index" method="post" class="no-multisubmit bulk-select-list" data-checkbox-name="taskNames" data-bulk-action-name="Options.BulkAction" data-selected-text="@T["selected"]">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />

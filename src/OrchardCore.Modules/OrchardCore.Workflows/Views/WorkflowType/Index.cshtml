@@ -1,6 +1,8 @@
 @model WorkflowTypeIndexViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Workflows"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="WorkflowTypes" title="@T["Workflows"]" />
+</zone>
 
 <form asp-action="Index" id="workflows-types-form" method="post" class="no-multisubmit workflow-bulk-select-list" data-selected-text="@T["selected"]">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />

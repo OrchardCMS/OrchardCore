@@ -1,6 +1,8 @@
 @model ListShapePlacementsViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Placements"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="Placements" title="@T["Placements"]" />
+</zone>
 
 @* the form is necessary to generate and antiforgery token for the delete action *@
 <form asp-action="Index" class="bulk-select-list" data-checkbox-name="itemIds" data-bulk-action-name="Options.BulkAction" data-selected-text="@T["selected"]">

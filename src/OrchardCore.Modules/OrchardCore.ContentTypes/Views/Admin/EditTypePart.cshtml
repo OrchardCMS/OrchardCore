@@ -14,9 +14,16 @@
     var displayShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.TypePartDefinition.PartDefinition.Name + "_DisplayOption__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.TypePartDefinition.PartDefinition.Name + "_DisplayOption", StringComparison.OrdinalIgnoreCase));
     var editorShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.TypePartDefinition.PartDefinition.Name + "_Option__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.TypePartDefinition.PartDefinition.Name + "_Option", StringComparison.OrdinalIgnoreCase));
     string localizedDisplayName = D[Model.DisplayName, "Content Types"];
+    var contentTypeDefinition = typePart.ContentTypeDefinition;
+    string localizedTypeName = D[contentTypeDefinition.DisplayName, "Content Types"];
 }
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Part - {0}", localizedDisplayName])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="ContentTypesEditPart" title="@T["Edit Part - {0}", localizedDisplayName]">
+        <breadcrumb-item id="ContentTypes" action="List" controller="Admin" area="OrchardCore.ContentTypes" permission="@ContentTypesPermissions.ViewContentTypes.Name">@T["Content Types"]</breadcrumb-item>
+        <breadcrumb-item id="ContentType" action="Edit" controller="Admin" area="OrchardCore.ContentTypes" route-id="@contentTypeDefinition.Name" permission="@ContentTypesPermissions.EditContentTypes.Name">@T["Edit Content Type - {0}", localizedTypeName]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <div class="alert alert-success" role="alert">
     @T["Some part settings common to all types can also be defined at the <a href=\"{0}\">Part Definition</a> level.", Url.Action("EditPart", new { id = typePart.PartDefinition.Name })]

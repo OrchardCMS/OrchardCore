@@ -52,6 +52,7 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
             model.DisplayMenuFilter = settings.DisplayMenuFilter;
             model.DisplayNewMenu = settings.DisplayNewMenu;
             model.DisplayTitlesInTopbar = settings.DisplayTitlesInTopbar;
+            model.ShowBreadcrumb = settings.ShowBreadcrumb;
             model.ListLayout = string.IsNullOrWhiteSpace(settings.ListLayout)
                 ? adminListOptions.DefaultLayout
                 : settings.ListLayout;
@@ -80,6 +81,8 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
         settings.DisplayMenuFilter = model.DisplayMenuFilter;
         settings.DisplayNewMenu = model.DisplayNewMenu;
         settings.DisplayTitlesInTopbar = model.DisplayTitlesInTopbar;
+        settings.ShowBreadcrumb = model.ShowBreadcrumb;
+
         var listLayout = string.IsNullOrWhiteSpace(model.ListLayout) ? null : model.ListLayout.Trim();
         var listActionsLayout = string.IsNullOrWhiteSpace(model.ListActionsLayout) ? null : model.ListActionsLayout.Trim();
 

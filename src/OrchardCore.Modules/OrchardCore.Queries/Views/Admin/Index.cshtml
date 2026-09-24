@@ -1,6 +1,8 @@
 @model QueriesIndexViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Queries"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="Queries" title="@T["Queries"]" />
+</zone>
 
 @* the form is necessary to generate an antiforgery token for the delete and toggle actions *@
 <form asp-action="Index" method="post" class="no-multisubmit bulk-select-list" data-selected-text="@T["selected"]">

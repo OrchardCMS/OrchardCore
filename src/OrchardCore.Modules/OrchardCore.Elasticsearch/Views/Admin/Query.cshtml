@@ -14,7 +14,9 @@
 <script asp-name="codemirror" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Elasticsearch Query"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="ElasticsearchQuery" title="@T["Elasticsearch Query"]" />
+</zone>
 
 <form asp-action="Query" method="post">
     <div asp-validation-summary="All"></div>

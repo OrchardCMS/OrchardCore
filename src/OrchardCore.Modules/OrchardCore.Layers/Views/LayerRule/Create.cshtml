@@ -1,6 +1,11 @@
 @model LayerRuleCreateViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Create Rule"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="LayersRuleCreate" title="@T["Create Rule"]">
+        <breadcrumb-item id="Layers" action="Index" controller="Admin" area="OrchardCore.Layers" permission="@Permissions.ManageLayers.Name">@T["Widgets and Layers"]</breadcrumb-item>
+        <breadcrumb-item id="Layer" action="Edit" controller="Admin" area="OrchardCore.Layers" route-name="@Model.Name" permission="@Permissions.ManageLayers.Name">@T["Edit Layer - {0}", Model.Name]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Create" method="post" class="no-multisubmit">

@@ -1,10 +1,11 @@
 @model DisplayRoleViewModel
+@using OrchardCore.DisplayManagement.Html
 @using OrchardCore.Roles.ViewModels
 
 <zone Name="Title">
-    <h1>
-        @RenderTitleSegments(Model.Role.RoleName)
-    </h1>
+    <breadcrumb name="RolesDisplay" title="@(new HtmlContentString(Model.Role.RoleName ?? string.Empty))">
+        <breadcrumb-item id="Roles" action="Index" controller="Admin" area="OrchardCore.Roles" permission="@RolesPermissions.ViewRoles.Name">@T["Roles"]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <div data-list-management data-client-side-search="true" data-search-result-selector=".permissions-list > table > tbody > tr" data-search-text-attribute="data-text" data-search-group-selector=".permissions-list" data-search-group-visible-selector="table > tbody > tr">

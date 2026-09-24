@@ -18,6 +18,7 @@ using OrchardCore.Indexing.Indexing;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using OrchardCore.Indexing.Services;
 using OrchardCore.Recipes;
 using OrchardCore.Search.Indexing.Core;
 using OrchardCore.Security.Permissions;

@@ -1,6 +1,8 @@
 @model MediaProfileIndexViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Media Profiles"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="MediaProfiles" title="@T["Media Profiles"]" />
+</zone>
 
 @* the form is necessary to generate an antiforgery token for the delete action *@
 <form asp-action="Index" method="post" class="no-multisubmit bulk-select-list" data-selected-text="@T["selected"]">

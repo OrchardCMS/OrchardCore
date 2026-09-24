@@ -1,6 +1,8 @@
 @model ShortcodeTemplateIndexViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Shortcode Templates"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="Shortcodes" title="@T["Shortcodes"]" />
+</zone>
 
 @* the form is necessary to generate an antiforgery token for the delete action *@
 <form asp-action="Index" method="post" class="no-multisubmit bulk-select-list" data-checkbox-name="itemIds" data-bulk-action-name="Options.BulkAction" data-selected-text="@T["selected"]">

@@ -6,7 +6,11 @@
 }
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css" at="Head" ></style>
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Admin Menu: {0}", localizedAdminMenuName])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="AdminMenusEdit" title="@T["Edit Admin Menu: {0}", localizedAdminMenuName]">
+        <breadcrumb-item id="AdminMenus" action="List" controller="Menu" area="OrchardCore.AdminMenu" permission="@AdminMenuPermissions.ManageAdminMenu.Name">@T["Admin Menus"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Edit" method="post" class="no-multisubmit">
