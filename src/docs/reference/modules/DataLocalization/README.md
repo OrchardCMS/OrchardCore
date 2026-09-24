@@ -3,7 +3,7 @@
 This module provides a database-backed localization system for translating dynamic content that cannot be handled by static PO files, such as:
 
 - Content Type and Content Field display names
-- Permission names and descriptions
+- Permission descriptions that are not translated with PO files, and permission categories
 - Any custom dynamic strings via `ILocalizationDataProvider`
 
 ## Features
@@ -113,10 +113,10 @@ Provides content field display names for translation.
 
 ### Permissions Provider
 
-Provides permission descriptions for translation.
+Provides permission descriptions and categories for translation.
 
 - **Context**: `Permissions` or `Permissions:{groupName}`
-- **Strings**: Descriptions of all non-template permissions
+- **Strings**: The categories of the permissions, and the descriptions that are not templates and have no PO translation context. Descriptions created with `LocalizedString.Create(description, typeof(DeclaringType))` are translated with PO files and are not listed. See [Declaring permissions](../Roles/README.md#declaring-permissions).
 
 ### Search Provider
 
