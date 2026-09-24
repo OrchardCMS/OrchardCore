@@ -7,9 +7,9 @@ This guide explains how to upgrade the .NET SDK version used by Orchard Core and
 Orchard Core specifies a minimum .NET SDK version in `global.json`. When upgrading the SDK version, you need to:
 
 1. Update the SDK version in `global.json`
-2. Update CodeAnalysis packages to versions compatible with the new SDK's Roslyn compiler
-3. Update other framework-specific packages as needed
-4. Run the verification script to ensure compatibility
+2. Update `.github/actions/setup-dotnet/action.yml` to the same SDK version
+3. Update CodeAnalysis packages to versions compatible with the new SDK's Roslyn compiler (optional)
+4. Update other framework-specific packages as needed
 5. Update CI/CD configuration and documentation
 
 ## Understanding the Relationship
@@ -48,8 +48,6 @@ Look up the Roslyn version included in the new SDK:
 - Check [.NET SDK releases](https://github.com/dotnet/sdk/releases) for the Roslyn version included in the SDK version you are upgrading to
 - Check [Roslyn](https://github.com/dotnet/roslyn) for additional Roslyn version details
 
-Update the version requirement mapping in `build/verify-codeanalysis-versions.ps1` if this is a new minor SDK version.
-
 ### Step 3: Update CodeAnalysis Packages (Optional)
 
 Updating CodeAnalysis packages is **optional**. You may choose to update them to newer compatible versions when upgrading the SDK, but it is not required.
@@ -58,8 +56,7 @@ If you decide to update them, use `Directory.Packages.props` to update the CodeA
 
 ```xml
 <!-- Microsoft.CodeAnalysis packages must be equal to or lower than the version supported by the Roslyn 
-     compiler in global.json (10.0.4xx). Version 5.9 is the max supported version for SDK 10.0.4xx+.
-     See build/verify-codeanalysis-versions.ps1 for version verification. -->
+     compiler in global.json (10.0.4xx). Version 5.9 is the max supported version for SDK 10.0.4xx+. -->
 <ItemGroup>
   <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.9.0" />
   <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.9.0" />
@@ -67,26 +64,19 @@ If you decide to update them, use `Directory.Packages.props` to update the CodeA
 </ItemGroup>
 ```
 
-### Step 4: Update the Verification Script (If Needed)
+### Step 4: Update GitHub setup-dotnet Action
 
-If the new SDK version is a new minor version (e.g., upgrading from 10.0.3xx to 10.0.4xx), you must manually add a new entry to the `$versionRequirements` hash in `build/verify-codeanalysis-versions.ps1` with the compatible CodeAnalysis version range for that SDK version.
+Update `.github/actions/setup-dotnet/action.yml` so `dotnet-version` matches `global.json` exactly.
 
-Before committing, verify that the SDK version and CodeAnalysis packages are properly configured:
+Example:
 
-```powershell
-pwsh ./build/verify-codeanalysis-versions.ps1
+```yaml
+with:
+  dotnet-version: |
+    10.0.302
 ```
 
-This script will:
-- Parse the SDK version from `global.json`
-- Check the version mapping in the script
-- Verify that CodeAnalysis packages don't exceed the maximum supported version
-- Provide clear diagnostics if versions don't match
-
-**Expected output:**
-```
-✓ All CodeAnalysis package versions are supported by the .NET SDK (Roslyn 5.9, max version: 5.9)
-```
+This ensures CI installs the same SDK version used by the repository.
 
 ### Step 5: Update Framework-Specific Packages
 
@@ -113,7 +103,7 @@ dotnet build -c Release
 ```
 
 The CI pipeline will also automatically:
-- Run `build/verify-codeanalysis-versions.ps1` to check version compatibility
+- Install the SDK version from `.github/actions/setup-dotnet/action.yml`
 - Run all unit and functional tests
 - Verify there are no compilation errors
 
@@ -138,34 +128,17 @@ Current configuration in `renovate.json5`:
 
 ## Troubleshooting
 
-### Build fails with "CodeAnalysis package version mismatch"
+### Build fails after updating CodeAnalysis packages
 
-The CI verification script detected that CodeAnalysis packages exceed the maximum version supported by the SDK in `global.json`. Run the verification script locally to see the exact mismatch:
+CodeAnalysis packages may be newer than the Roslyn version included in the SDK pinned by `global.json`. Lower the `Microsoft.CodeAnalysis.*` package versions in `Directory.Packages.props` to versions supported by that SDK.
 
-```powershell
-pwsh ./build/verify-codeanalysis-versions.ps1
-```
+### CI fails to install the expected SDK version
 
-Then update the CodeAnalysis versions in `Directory.Packages.props` to equal or lower versions.
-
-### "No version mapping found for SDK X.Y.Z"
-
-The verification script doesn't have a mapping for your SDK version. Add a new entry to the `$versionRequirements` hash in `build/verify-codeanalysis-versions.ps1`:
-
-```powershell
-@{
-    # SDK 10.0.5xx and later (Roslyn X.Y.x)
-    minPatchVersion = 500
-    maxPatchVersion = 999
-    maxAnalyzerVersion = "X.Y"
-    maxAnalyzerMajorMinor = @(X, Y)
-    roslynVersion = "X.Y"
-}
-```
+Ensure `.github/actions/setup-dotnet/action.yml` was updated to the exact same SDK version as `global.json`.
 
 ### Local build succeeds but CI fails
 
-Make sure you have the correct .NET SDK version installed. The `global.json` file enforces a minimum SDK version. Install the required version from [dotnet.microsoft.com](https://dotnet.microsoft.com/download).
+Make sure you have the correct .NET SDK version installed locally and that CI uses the same version. Keep `global.json` and `.github/actions/setup-dotnet/action.yml` aligned, then install the required SDK from [dotnet.microsoft.com](https://dotnet.microsoft.com/download).
 
 ## References
 
