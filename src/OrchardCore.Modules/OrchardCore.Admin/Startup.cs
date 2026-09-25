@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin.Controllers;
 using OrchardCore.Admin.Drivers;
 using OrchardCore.Admin.Models;
+using OrchardCore.Admin.QuickNavigation;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -40,6 +41,8 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddNavigation();
+        services.AddSingleton<IQuickNavigationIndex, QuickNavigationIndex>();
+        services.AddScoped<QuickNavigationSource, AdminMenuItemNavigationSource>();
 
         services.Configure<MvcOptions>((options) =>
         {
@@ -59,6 +62,8 @@ public sealed class Startup : StartupBase
         services.AddNavigationProvider<AdminMenu>();
         services.AddSingleton<IPageRouteModelProvider, AdminPageRouteModelProvider>();
         services.AddDisplayDriver<Navbar, VisitSiteNavbarDisplayDriver>();
+        services.AddDisplayDriver<Navbar, QuickNavigationNavbarDisplayDriver>();
+        services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
         services.AddShapeTableProvider<AdminDashboardShapeTableProvider>();
 
         services.Configure<AdminOptions>(_configuration.GetSection("OrchardCore_Admin"));

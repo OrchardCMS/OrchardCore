@@ -2597,6 +2597,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@orchardcore/admin@workspace:src/OrchardCore.Modules/OrchardCore.Admin/Assets":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/admin@workspace:src/OrchardCore.Modules/OrchardCore.Admin/Assets"
+  dependencies:
+    "@orchardcore/bloom": "workspace:^"
+    "@types/bootstrap": "npm:5.2.7"
+  languageName: unknown
+  linkType: soft
+
 "@orchardcore/admindashboard@workspace:src/OrchardCore.Modules/OrchardCore.AdminDashboard/Assets":
   version: 0.0.0-use.local
   resolution: "@orchardcore/admindashboard@workspace:src/OrchardCore.Modules/OrchardCore.AdminDashboard/Assets"
@@ -2751,7 +2760,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@orchardcore/bloom@workspace:.scripts/bloom":
+"@orchardcore/bloom@workspace:.scripts/bloom, @orchardcore/bloom@workspace:^":
   version: 0.0.0-use.local
   resolution: "@orchardcore/bloom@workspace:.scripts/bloom"
   dependencies:
