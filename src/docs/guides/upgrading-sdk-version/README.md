@@ -7,10 +7,8 @@ This guide explains how to upgrade the .NET SDK version used by Orchard Core and
 Orchard Core specifies a minimum .NET SDK version in `global.json`. When upgrading the SDK version, you need to:
 
 1. Update the SDK version in `global.json`
-2. Update `.github/actions/setup-dotnet/action.yml` to the same SDK version
-3. Update CodeAnalysis packages to versions compatible with the new SDK's Roslyn compiler (optional)
-4. Update other framework-specific packages as needed
-5. Update CI/CD configuration and documentation
+2. Update CodeAnalysis packages to versions compatible with the new SDK's Roslyn compiler (optional)
+3. Update other framework-specific packages as needed
 
 ## Understanding the Relationship
 
@@ -64,21 +62,7 @@ If you decide to update them, use `Directory.Packages.props` to update the CodeA
 </ItemGroup>
 ```
 
-### Step 4: Update GitHub setup-dotnet Action
-
-Update `.github/actions/setup-dotnet/action.yml` so `dotnet-version` matches `global.json` exactly.
-
-Example:
-
-```yaml
-with:
-  dotnet-version: |
-    10.0.302
-```
-
-This ensures CI installs the same SDK version used by the repository.
-
-### Step 5: Update Framework-Specific Packages
+### Step 4: Update Framework-Specific Packages
 
 When upgrading to a new SDK major version, you may need to update other packages:
 
@@ -87,14 +71,14 @@ When upgrading to a new SDK major version, you may need to update other packages
 - Update package versions that have SDK-specific dependencies
 - See [target frameworks checklist](https://github.com/OrchardCMS/OrchardCore/blob/main/.github/ISSUE_TEMPLATE/target_frameworks.md) for full details
 
-### Step 6: Update CI/CD and Documentation
+### Step 5: Update CI/CD and Documentation
 
 - Update Docker base images in `Dockerfile`s
 - Update `.github/workflows` to test with the new SDK version
 - Update any documentation that mentions specific .NET versions
 - Add a release note about the new SDK version requirement
 
-### Step 7: Verify the Build
+### Step 6: Verify the Build
 
 Run the full build to ensure everything compiles:
 
@@ -131,14 +115,6 @@ Current configuration in `renovate.json5`:
 ### Build fails after updating CodeAnalysis packages
 
 CodeAnalysis packages may be newer than the Roslyn version included in the SDK pinned by `global.json`. Lower the `Microsoft.CodeAnalysis.*` package versions in `Directory.Packages.props` to versions supported by that SDK.
-
-### CI fails to install the expected SDK version
-
-Ensure `.github/actions/setup-dotnet/action.yml` was updated to the exact same SDK version as `global.json`.
-
-### Local build succeeds but CI fails
-
-Make sure you have the correct .NET SDK version installed locally and that CI uses the same version. Keep `global.json` and `.github/actions/setup-dotnet/action.yml` aligned, then install the required SDK from [dotnet.microsoft.com](https://dotnet.microsoft.com/download).
 
 ## References
 

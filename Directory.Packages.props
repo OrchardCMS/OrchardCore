@@ -84,8 +84,7 @@
     <PackageVersion Include="ZString" Version="2.6.0" />
   </ItemGroup>
   <!-- Microsoft.CodeAnalysis packages must be equal to or lower than the version supported by the Roslyn 
-       compiler in global.json (10.0.302). Version 5.6 is the max supported version for SDK 10.0.0-10.0.3xx.
-       See build/verify-codeanalysis-versions.ps1 for version verification. -->
+       compiler in global.json. Version 5.9 is supported by SDK 10.0.4xx and newer. -->
   <ItemGroup>
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.9.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.9.0" />
@@ -95,7 +94,7 @@
     <GlobalPackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.400" />
   </ItemGroup>
   <!--
-  These versions are used for tansitive dependency forced upgrades only. E.g. when a package references a vulnerable version.
+  These versions are used for transitive dependency forced upgrades only. E.g. when a package references a vulnerable version.
   To list all vulnerable direct references run 'dotnet list package -vulnerable' (use double dash, just XML comments can't contain it).
   To list all vulnerable transitive references run 'dotnet list package -vulnerable -include-transitive' (use double dash, just XML comments can't contain it).
   Add dependency graphs generated using 'dotnet nuget why <.sln> <package id>' for easier tracking.
@@ -133,8 +132,8 @@
   </ItemGroup>
   <ItemGroup>
     <!-- Aspire Packages -->
-    <!-- When updating Aspire package versions, also update the corresponding SDK version in '<Project Sdk="Aspire.AppHost.Sdk/13.4.4">' 
-    within 'src/OrchardCore.AspireHost/OrchardCore.AspireHost.csproj. -->
+    <!-- When updating Aspire package versions, also update the corresponding SDK version in '<Project Sdk="Aspire.AppHost.Sdk/13.4.4">'
+    within 'src/OrchardCore.AspireHost/OrchardCore.AspireHost.csproj'. -->
     <PackageVersion Include="Aspire.Hosting.AppHost" Version="13.5.3" />
   </ItemGroup>
   <ItemGroup>
