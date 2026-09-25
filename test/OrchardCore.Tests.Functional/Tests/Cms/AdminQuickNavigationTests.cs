@@ -173,6 +173,63 @@ public sealed class AdminQuickNavigationTests : CmsTestBase<BlogFixture>, IClass
         await page.CloseAsync();
     }
 
+    [Theory]
+    [InlineData("ltr", "Settings")]
+    [InlineData("rtl", "Settings")]
+    [InlineData("ltr", "\u0625\u0639\u062f\u0627\u062f\u0627\u062a")]
+    [InlineData("rtl", "\u0625\u0639\u062f\u0627\u062f\u0627\u062a")]
+    public async Task QuickNavigation_Breadcrumbs_RespectDirectionAndIsolateLabels(string direction, string parent)
+    {
+        var page = await Fixture.CreatePageAsync();
+        await page.LoginAsync();
+        await page.GotoAndAssertOkAsync("/Admin");
+        await page.Locator("html").EvaluateAsync("(element, direction) => element.dir = direction", direction);
+        await page.RouteAsync("**/QuickNavigation/Index**", route => route.FulfillAsync(new()
+        {
+            Json = new[]
+            {
+                new { source = "OptionalSource", id = "custom", title = "Destination", path = new[] { parent, "<b>Custom</b>" }, href = "/Admin", target = (string)null },
+            },
+        }));
+        await page.Keyboard.PressAsync("Control+k");
+
+        var path = page.Locator(".admin-quick-navigation-path");
+        var labels = path.Locator("bdi");
+        var separator = path.Locator(".admin-quick-navigation-path-separator");
+        await Assertions.Expect(page.Locator("#adminQuickNavigationInput")).ToBeFocusedAsync();
+        await Assertions.Expect(path).ToBeVisibleAsync();
+        await Assertions.Expect(labels).ToHaveTextAsync(new[] { parent, "<b>Custom</b>" });
+        await Assertions.Expect(path.Locator("b")).ToHaveCountAsync(0);
+        await Assertions.Expect(separator).ToHaveAttributeAsync("aria-hidden", "true");
+        await Assertions.Expect(separator).ToHaveCSSAsync("direction", "ltr");
+        await Assertions.Expect(separator).ToHaveCSSAsync("transform", direction == "rtl" ? "matrix(-1, 0, 0, 1, 0, 0)" : "none");
+        await Assertions.Expect(labels.First).ToHaveCSSAsync("unicode-bidi", "isolate");
+        await Assertions.Expect(labels.Last).ToHaveCSSAsync("unicode-bidi", "isolate");
+
+        var parentBounds = await labels.First.BoundingBoxAsync();
+        var childBounds = await labels.Last.BoundingBoxAsync();
+        var separatorBounds = await separator.BoundingBoxAsync();
+        Assert.NotNull(parentBounds);
+        Assert.NotNull(childBounds);
+        Assert.NotNull(separatorBounds);
+        if (direction == "rtl")
+        {
+            Assert.True(parentBounds.X > separatorBounds.X);
+            Assert.True(separatorBounds.X > childBounds.X);
+        }
+        else
+        {
+            Assert.True(parentBounds.X < separatorBounds.X);
+            Assert.True(separatorBounds.X < childBounds.X);
+        }
+
+        await page.Locator("#adminQuickNavigationInput").FillAsync(parent);
+        await Assertions.Expect(labels.First.Locator("mark")).ToHaveTextAsync(parent);
+        await page.Locator("#adminQuickNavigationInput").FillAsync("Custom");
+        await Assertions.Expect(labels.Last.Locator("mark")).ToHaveTextAsync("Custom");
+        await page.CloseAsync();
+    }
+
     [Fact]
     public async Task QuickNavigation_IndexRequest_AlwaysReturnsUncachedDocument()
     {

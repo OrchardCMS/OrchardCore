@@ -36,8 +36,17 @@
   font-weight: 600;
 }
 .admin-quick-navigation .admin-quick-navigation-results .admin-quick-navigation-path {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
   font-size: 0.8125rem;
   color: var(--bs-secondary-color);
+}
+.admin-quick-navigation .admin-quick-navigation-results .admin-quick-navigation-path:dir(rtl) .admin-quick-navigation-path-separator {
+  transform: scaleX(-1);
+}
+.admin-quick-navigation .admin-quick-navigation-results .admin-quick-navigation-path-separator {
+  direction: ltr;
 }
 .admin-quick-navigation .admin-quick-navigation-results mark {
   padding: 0;

@@ -20,8 +20,6 @@ interface RankedEntry {
     rank: number;
 }
 
-const pathSeparator = " › ";
-
 let modalElement: HTMLElement | null = null;
 let modal: bootstrap.Modal | null = null;
 let input: HTMLInputElement | null = null;
@@ -178,7 +176,19 @@ const render = (term: string) => {
         if (entry.path.length > 0) {
             const path = document.createElement("span");
             path.className = "admin-quick-navigation-path";
-            appendHighlighted(path, entry.path.join(pathSeparator), term);
+            entry.path.forEach((part, partIndex) => {
+                if (partIndex > 0) {
+                    const separator = document.createElement("span");
+                    separator.className = "admin-quick-navigation-path-separator";
+                    separator.setAttribute("aria-hidden", "true");
+                    separator.textContent = " › ";
+                    path.appendChild(separator);
+                }
+
+                const label = document.createElement("bdi");
+                appendHighlighted(label, part, term);
+                path.appendChild(label);
+            });
             link.appendChild(path);
         }
 
@@ -247,7 +257,7 @@ const loadIndex = async () => {
         index = destinations.map((entry) => ({
             ...entry,
             normalizedTitle: normalize(entry.title),
-            normalizedPath: normalize(entry.path.join(pathSeparator)),
+            normalizedPath: normalize(entry.path.join(" ")),
         }));
         loading = false;
         update();

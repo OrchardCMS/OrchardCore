@@ -98,6 +98,8 @@ The `OrchardCore.Admin` module owns `QuickNavigationNavbarDisplayDriver`, the de
 
 The shape requires the `admin-quick-navigation` script and stylesheet resources only when the palette is enabled. The script initializes itself and depends on Bootstrap 5; the stylesheet requires Font Awesome 7 and the appropriate Bootstrap 5 stylesheet for the current text direction.
 
+Breadcrumbs follow the page's text direction, with mirrored decorative separators in right-to-left layouts. Each label is directionally isolated so mixed-language paths retain their hierarchy. Sources provide localized labels; the separator itself does not require translation.
+
 Themes can customize the `.admin-quick-navigation` styles and Bootstrap color variables without copying the JavaScript or view. Load theme overrides after the `admin-quick-navigation` stylesheet, for example:
 
 ```html

@@ -45,8 +45,20 @@
         }
 
         .admin-quick-navigation-path {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
             font-size: 0.8125rem;
             color: var(--bs-secondary-color);
+
+            &:dir(rtl) .admin-quick-navigation-path-separator {
+                transform: scaleX(-1);
+            }
+        }
+
+        .admin-quick-navigation-path-separator {
+            // Mirror the decoration explicitly, independently of the labels' bidi direction.
+            direction: ltr;
         }
 
         mark {
