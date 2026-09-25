@@ -120,8 +120,8 @@
             matchUpdateTypes: ['major'],
             enabled: false,
         },
-        // Microsoft.CodeAnalysis packages must stay in sync with the Roslyn compiler in global.json (10.0.302),
-        // which requires max version 5.6. These are updated manually during .NET SDK upgrades only.
+        // Microsoft.CodeAnalysis packages must stay in sync with the Roslyn compiler in global.json (10.0.4xx),
+        // which requires max version 5.9. These are updated manually during .NET SDK upgrades only.
         {
             matchPackageNames: [
                 'Microsoft.CodeAnalysis.Analyzers',
