@@ -43,6 +43,7 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
             model.DisplayQuickNavigation = settings.DisplayQuickNavigation;
             model.DisplayNewMenu = settings.DisplayNewMenu;
             model.DisplayTitlesInTopbar = settings.DisplayTitlesInTopbar;
+            model.ShowBreadcrumb = settings.ShowBreadcrumb;
         }, settings).Location("Content:3")
         .OnGroup(SettingsGroupId);
     }
@@ -65,6 +66,7 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
         settings.DisplayQuickNavigation = model.DisplayQuickNavigation;
         settings.DisplayNewMenu = model.DisplayNewMenu;
         settings.DisplayTitlesInTopbar = model.DisplayTitlesInTopbar;
+        settings.ShowBreadcrumb = model.ShowBreadcrumb;
 
         return await EditAsync(site, settings, context);
     }

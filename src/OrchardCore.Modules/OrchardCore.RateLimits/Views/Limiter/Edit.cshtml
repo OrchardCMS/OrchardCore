@@ -1,6 +1,20 @@
 @model OrchardCore.RateLimits.ViewModels.RateLimiterEditorViewModel
+@using OrchardCore.RateLimits.Models
+@inject OrchardCore.RateLimits.Core.IRateLimitPolicyStore PolicyStore
+@{
+    var policyId = ViewContext.RouteData.Values["policyId"]?.ToString();
+}
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit '{0}' Limiter", Model.DisplayName])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="RateLimitsLimiterEdit" title="@T["Edit '{0}' Limiter", Model.DisplayName]">
+        <breadcrumb-item id="RateLimits" action="Index" controller="Admin" area="OrchardCore.RateLimits" permission="@RateLimitsPermissions.ManageRateLimits.Name">@T["Rate Limit Policies"]</breadcrumb-item>
+        @if (!string.IsNullOrEmpty(policyId))
+        {
+            var policy = await PolicyStore.FindByIdAsync(policyId, PolicyVersion.Current);
+            <breadcrumb-item id="Policy" action="Edit" controller="Admin" area="OrchardCore.RateLimits" route-policyId="@policyId" permission="@RateLimitsPermissions.ManageRateLimits.Name">@(policy?.Name ?? T["Rate Limit Policy"].Value)</breadcrumb-item>
+        }
+    </breadcrumb>
+</zone>
 
 <form asp-action="Edit" method="post" class="no-multisubmit">
     <div class="alert alert-info" role="alert">

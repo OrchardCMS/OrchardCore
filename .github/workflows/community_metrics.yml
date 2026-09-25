@@ -14,7 +14,7 @@ jobs:
     # To enable this workflow on a fork, comment out:
     if: github.repository == 'OrchardCMS/OrchardCore'
     name: Generate Community Metrics
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
     - name: Get Dates For Last Month
       shell: pwsh

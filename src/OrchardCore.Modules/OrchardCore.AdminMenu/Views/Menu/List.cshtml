@@ -6,9 +6,11 @@
     int endIndex = startIndex + Model.AdminMenu.Count - 1;
 }
 
-<style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css" at="Head" depends-on="jQuery-ui"></style>
+<style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css" at="Head"></style>
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Admin Menus"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="AdminMenus" title="@T["Admin Menus"]" />
+</zone>
 
 @* the form is necessary to generate an antiforgery token for the delete and toggle actions *@
 <form asp-action="List" data-list-management data-selected-label="@T["selected"]">
@@ -32,7 +34,7 @@
         </div>
     </div>
 
-    <ul class="list-group with-checkbox">
+    <ul class="list-group with-checkbox bulk-select-list" data-selected-text="@T["selected"]">
         @if (Model.AdminMenu.Any())
         {
             <li class="list-group-item text-bg-theme">
@@ -99,4 +101,4 @@
 
 @await DisplayAsync(Model.Pager)
 
-<script asp-name="list-management" at="Foot"></script>
+<script asp-src="~/OrchardCore.AdminMenu/Scripts/menu-list/menu-list.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/menu-list/menu-list.js" at="Foot" type="module"></script>

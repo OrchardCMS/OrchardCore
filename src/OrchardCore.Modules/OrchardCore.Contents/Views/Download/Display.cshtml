@@ -1,6 +1,9 @@
 @model DisplayJsonContentItemViewModel
+@using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.Localization.Data
+@inject IAuthorizationService AuthorizationService
 @inject IContentDefinitionManager ContentDefinitionManager
+@inject IContentManager ContentManager
 @inject IDataLocalizer D
 @{
     ContentItem contentItem = Model.ContentItem;
@@ -9,6 +12,13 @@
     string localizedTypeDisplayName = D[typeDisplayName, "Content Types"];
 
     var returnUrl = Context.Request.Query["returnUrl"];
+    var canList = false;
+
+    if (User is not null)
+    {
+        var listableTypes = (await ContentDefinitionManager.ListTypeDefinitionsAsync()).Where(definition => definition.IsListable());
+        canList = await AuthorizationService.AuthorizeContentTypeDefinitionsAsync(User, CommonPermissions.ListContent, listableTypes, ContentManager);
+    }
 }
 
 <style asp-name="codemirror"></style>
@@ -16,7 +26,11 @@
 <script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["View As JSON {0}", localizedTypeDisplayName])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="ContentsDisplay" title="@T["View As JSON {0}", localizedTypeDisplayName]">
+        <breadcrumb-item id="Contents" action="List" controller="Admin" area="OrchardCore.Contents" route-contentTypeId="" link-enabled="@canList">@T["Manage Content"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <form asp-action="Download" asp-route-contentItemId="@contentItem.ContentItemId" method="post" enctype="multipart/form-data" class="no-multisubmit">
     <div class="ocat-wrapper">
@@ -39,31 +53,4 @@
 
 </form>
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        var editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.ContentItemJson)'), {
-            autoRefresh: true,
-            lineNumbers: true,
-            styleActiveLine: true,
-            matchBrackets: true,
-            mode: { name: "javascript" },
-        });
-
-        document.getElementById('json-copy-to-clipboard')?.addEventListener('click', function () {
-            var temp = document.createElement("textarea");
-            document.body.appendChild(temp);
-            temp.value = document.getElementById('@Html.IdFor(x => x.ContentItemJson)')?.textContent || '';
-            temp.select();
-            document.execCommand("copy");
-            temp.remove();
-        });
-    });
-</script>
+<script asp-src="~/OrchardCore.Contents/Scripts/download-editors/download-display.min.js" debug-src="~/OrchardCore.Contents/Scripts/download-editors/download-display.js" at="Foot" type="module"></script>

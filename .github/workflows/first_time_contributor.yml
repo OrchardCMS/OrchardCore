@@ -14,7 +14,7 @@ jobs:
   first-time-contributor-welcome:
     # To enable this workflow on a fork, comment out:
     if: github.repository == 'OrchardCMS/OrchardCore'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
     # We don't use the actions/first-interaction action because it can't reference the author, nor can it comment after
     # PR merge.

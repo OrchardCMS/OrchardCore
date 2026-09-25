@@ -14,9 +14,16 @@
     var displayShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.TypePartDefinition.PartDefinition.Name + "_DisplayOption__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.TypePartDefinition.PartDefinition.Name + "_DisplayOption", StringComparison.OrdinalIgnoreCase));
     var editorShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.TypePartDefinition.PartDefinition.Name + "_Option__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.TypePartDefinition.PartDefinition.Name + "_Option", StringComparison.OrdinalIgnoreCase));
     string localizedDisplayName = D[Model.DisplayName, "Content Types"];
+    var contentTypeDefinition = typePart.ContentTypeDefinition;
+    string localizedTypeName = D[contentTypeDefinition.DisplayName, "Content Types"];
 }
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Part - {0}", localizedDisplayName])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="ContentTypesEditPart" title="@T["Edit Part - {0}", localizedDisplayName]">
+        <breadcrumb-item id="ContentTypes" action="List" controller="Admin" area="OrchardCore.ContentTypes" permission="@ContentTypesPermissions.ViewContentTypes.Name">@T["Content Types"]</breadcrumb-item>
+        <breadcrumb-item id="ContentType" action="Edit" controller="Admin" area="OrchardCore.ContentTypes" route-id="@contentTypeDefinition.Name" permission="@ContentTypesPermissions.EditContentTypes.Name">@T["Edit Content Type - {0}", localizedTypeName]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <div class="alert alert-success" role="alert">
     @T["Some part settings common to all types can also be defined at the <a href=\"{0}\">Part Definition</a> level.", Url.Action("EditPart", new { id = typePart.PartDefinition.Name })]
@@ -108,64 +115,4 @@
     </div>
 </form>
 
-<script at="Foot">
-    //<![CDATA[
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        document.querySelectorAll('.type-part-editor').forEach(function (element) {
-            element.style.display = 'none';
-        });
-        var typePartEditorContainer = document.getElementById('type-part-editor-container');
-        if (typePartEditorContainer) {
-            typePartEditorContainer.style.display = '';
-        }
-
-        var typePartEditorSelect = document.getElementById('type-part-editor-select');
-        if (typePartEditorSelect) {
-            document.querySelectorAll('.type-part-editor-' + typePartEditorSelect.value.toLowerCase()).forEach(function (element) {
-                element.style.display = '';
-            });
-
-            typePartEditorSelect.addEventListener('change', function () {
-                document.querySelectorAll('.type-part-editor').forEach(function (element) {
-                    element.style.display = 'none';
-                });
-                document.querySelectorAll('.type-part-editor-' + typePartEditorSelect.value.toLowerCase()).forEach(function (element) {
-                    element.style.display = '';
-                });
-            });
-        }
-
-        document.querySelectorAll('.type-part-display').forEach(function (element) {
-            element.style.display = 'none';
-        });
-        var typePartDisplayContainer = document.getElementById('type-part-display-container');
-        if (typePartDisplayContainer) {
-            typePartDisplayContainer.style.display = '';
-        }
-
-        var typePartDisplaySelect = document.getElementById('type-part-display-select');
-        if (typePartDisplaySelect) {
-            document.querySelectorAll('.type-part-display-' + typePartDisplaySelect.value.toLowerCase()).forEach(function (element) {
-                element.style.display = '';
-            });
-
-            typePartDisplaySelect.addEventListener('change', function () {
-                document.querySelectorAll('.type-part-display').forEach(function (element) {
-                    element.style.display = 'none';
-                });
-                document.querySelectorAll('.type-part-display-' + typePartDisplaySelect.value.toLowerCase()).forEach(function (element) {
-                    element.style.display = '';
-                });
-            });
-        }
-    });
-    //]]>
-</script>
+<script asp-src="~/OrchardCore.ContentTypes/Scripts/content-type-editors/edit-type-part-selector.min.js" debug-src="~/OrchardCore.ContentTypes/Scripts/content-type-editors/edit-type-part-selector.js" at="Foot" type="module"></script>

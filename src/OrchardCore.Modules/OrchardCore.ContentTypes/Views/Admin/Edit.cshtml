@@ -59,7 +59,11 @@
     string localizedTypeName = D[Model.TypeDefinition.DisplayName, DataLocalizationContext.ContentType];
 }
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Content Type - {0}", localizedTypeName])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="ContentTypesEdit" title="@T["Edit Content Type - {0}", localizedTypeName]">
+        <breadcrumb-item id="ContentTypes" action="List" controller="Admin" area="OrchardCore.ContentTypes" permission="@ContentTypesPermissions.ViewContentTypes.Name">@T["Content Types"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <form method="post">
     @Html.ValidationSummary()
@@ -227,18 +231,4 @@
     </div>
 </form>
 <script asp-name="Sortable" at="Foot"></script>
-<script at="Foot" depends-on="jquery-resizable,Sortable">
-    document.addEventListener('DOMContentLoaded', function () {
-        const fields = document.getElementById("fields");
-
-        if (fields) {
-            Sortable.create(document.getElementById("fields"));
-        }
-
-        const parts = document.getElementById("parts");
-
-        if (parts) {
-            Sortable.create(document.getElementById("parts"));
-        }
-    });
-</script>
+<script asp-src="~/OrchardCore.ContentTypes/Scripts/content-type-sortable/content-type-sortable.min.js" debug-src="~/OrchardCore.ContentTypes/Scripts/content-type-sortable/content-type-sortable.js" depends-on="Sortable" at="Foot" type="module"></script>

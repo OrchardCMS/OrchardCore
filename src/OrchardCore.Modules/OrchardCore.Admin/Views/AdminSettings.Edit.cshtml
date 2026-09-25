@@ -49,3 +49,13 @@
         <span class="hint">@T["Whether the titles are displayed in the top bar."]</span>
     </div>
 </div>
+
+<div class="ocat-wrapper" asp-validation-class-for="ShowBreadcrumb">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input asp-for="ShowBreadcrumb" class="form-check-input" type="checkbox" />
+            <label asp-for="ShowBreadcrumb" class="form-check-label">@T["Show breadcrumb"]</label>
+        </div>
+        <span class="hint">@T["Whether the breadcrumb trail is displayed on admin screens."]</span>
+    </div>
+</div>

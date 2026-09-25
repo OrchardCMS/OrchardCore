@@ -77,24 +77,4 @@
 
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        var codeMirrorOptions = {
-            autoRefresh: true,
-            lineNumbers: true,
-            styleActiveLine: true,
-            matchBrackets: true,
-            mode: { name: "liquid" },
-        };
-        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Headers)'), codeMirrorOptions);
-        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Body)'), codeMirrorOptions);
-    });
-</script>
+<script asp-src="~/OrchardCore.Workflows/Scripts/task-editors/http-request-task.min.js" debug-src="~/OrchardCore.Workflows/Scripts/task-editors/http-request-task.js" at="Foot" type="module"></script>

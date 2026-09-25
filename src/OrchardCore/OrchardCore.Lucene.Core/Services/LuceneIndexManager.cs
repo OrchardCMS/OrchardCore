@@ -1,3 +1,4 @@
+using System.Globalization;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.Spatial.Prefix;
@@ -410,11 +411,13 @@ public sealed class LuceneIndexManager : IIndexManager, IDocumentIndexManager
                             doc.Add(field);
                         }
 
-                        doc.Add(new StoredField(strategy.FieldName, $"{point.Latitude},{point.Longitude}"));
+                        var stringValue = string.Create(CultureInfo.InvariantCulture, $"{point.Latitude},{point.Longitude}");
+
+                        doc.Add(new StoredField(strategy.FieldName, stringValue));
 
                         if (storeSourceData)
                         {
-                            doc.Add(new StoredField(ContentIndexingConstants.SourceKey + strategy.FieldName, $"{point.Latitude},{point.Longitude}"));
+                            doc.Add(new StoredField(ContentIndexingConstants.SourceKey + strategy.FieldName, stringValue));
                         }
                     }
                     else

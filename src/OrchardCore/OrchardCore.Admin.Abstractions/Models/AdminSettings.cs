@@ -18,4 +18,7 @@ public class AdminSettings
     public bool DisplayNewMenu { get; set; }
 
     public bool DisplayTitlesInTopbar { get; set; }
+
+    [DefaultValue(true)]
+    public bool ShowBreadcrumb { get; set; } = true;
 }

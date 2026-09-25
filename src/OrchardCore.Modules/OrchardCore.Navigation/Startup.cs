@@ -20,6 +20,7 @@ public sealed class Startup : StartupBase
         services.AddNavigation();
 
         services.AddShapeTableProvider<NavigationShapes>();
+        services.AddShapeTableProvider<BreadcrumbShapes>();
         services.AddShapeTableProvider<PagerShapesTableProvider>();
         services.AddShapeAttributes<PagerShapes>();
 

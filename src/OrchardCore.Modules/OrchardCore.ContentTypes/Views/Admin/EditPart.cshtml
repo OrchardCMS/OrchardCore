@@ -19,7 +19,11 @@
     var fields = ContentOptions.Value.ContentFieldOptions.Select(cfo => cfo.Type).ToList();
     string localizedPartName = D[Model.DisplayName, "Content Types"];
 }
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Content Part - {0}", localizedPartName])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="ContentPartsEdit" title="@T["Edit Content Part - {0}", localizedPartName]">
+        <breadcrumb-item id="ContentParts" action="ListParts" controller="Admin" area="OrchardCore.ContentTypes" permission="@ContentTypesPermissions.ViewContentTypes.Name">@T["Content Parts"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <form asp-action="EditPart">
     @Html.ValidationSummary()
@@ -95,12 +99,4 @@
     </div>
 </form>
 <script asp-name="Sortable" at="Foot"></script>
-<script at="Foot" depends-on="Sortable">
-    document.addEventListener('DOMContentLoaded', function () {
-        const fields = document.getElementById("fields");
-
-        if (fields) {
-            Sortable.create(document.getElementById("fields"));
-        }
-    });
-</script>
+<script asp-src="~/OrchardCore.ContentTypes/Scripts/content-type-sortable/content-type-sortable.min.js" debug-src="~/OrchardCore.ContentTypes/Scripts/content-type-sortable/content-type-sortable.js" depends-on="Sortable" at="Foot" type="module"></script>
