@@ -1,5 +1,7 @@
 using System.Text.Encodings.Web;
 using Fluid.Values;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -24,6 +26,8 @@ public sealed class MarkdownFieldDisplayDriver : ContentFieldDisplayDriver<Markd
     private readonly IHtmlSanitizerService _htmlSanitizerService;
     private readonly IShortcodeService _shortcodeService;
     private readonly IMarkdownService _markdownService;
+    private readonly IAuthorizationService _authorizationService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     internal readonly IStringLocalizer S;
 
@@ -32,6 +36,8 @@ public sealed class MarkdownFieldDisplayDriver : ContentFieldDisplayDriver<Markd
         IHtmlSanitizerService htmlSanitizerService,
         IShortcodeService shortcodeService,
         IMarkdownService markdownService,
+        IAuthorizationService authorizationService,
+        IHttpContextAccessor httpContextAccessor,
         IStringLocalizer<MarkdownFieldDisplayDriver> localizer)
     {
         _liquidTemplateManager = liquidTemplateManager;
@@ -39,6 +45,8 @@ public sealed class MarkdownFieldDisplayDriver : ContentFieldDisplayDriver<Markd
         _htmlSanitizerService = htmlSanitizerService;
         _shortcodeService = shortcodeService;
         _markdownService = markdownService;
+        _authorizationService = authorizationService;
+        _httpContextAccessor = httpContextAccessor;
         S = localizer;
     }
 
@@ -79,8 +87,15 @@ public sealed class MarkdownFieldDisplayDriver : ContentFieldDisplayDriver<Markd
         .Location(OrchardCoreConstants.DisplayType.Summary, "Content");
     }
 
-    public override IDisplayResult Edit(MarkdownField field, BuildFieldEditorContext context)
+    public override async Task<IDisplayResult> EditAsync(MarkdownField field, BuildFieldEditorContext context)
     {
+        var settings = context.PartFieldDefinition.GetSettings<MarkdownFieldSettings>();
+
+        if (settings.RenderLiquid && !await CanManageLiquidTemplatesAsync())
+        {
+            return null;
+        }
+
         return Initialize<EditMarkdownFieldViewModel>(GetEditorShapeType(context), model =>
         {
             model.Markdown = field.Markdown;
@@ -94,6 +109,15 @@ public sealed class MarkdownFieldDisplayDriver : ContentFieldDisplayDriver<Markd
     {
         var viewModel = new EditMarkdownFieldViewModel();
         var settings = context.PartFieldDefinition.GetSettings<MarkdownFieldSettings>();
+
+        if (settings.RenderLiquid && !await CanManageLiquidTemplatesAsync())
+        {
+            context.Updater.ModelState.AddModelError(
+                Prefix,
+                S["You do not have permission to edit Liquid templates."]);
+
+            return null;
+        }
 
         await context.Updater.TryUpdateModelAsync(viewModel, Prefix, vm => vm.Markdown);
 
@@ -111,6 +135,11 @@ public sealed class MarkdownFieldDisplayDriver : ContentFieldDisplayDriver<Markd
             field.Markdown = viewModel.Markdown;
         }
 
-        return Edit(field, context);
+        return await EditAsync(field, context);
     }
+
+    private Task<bool> CanManageLiquidTemplatesAsync() =>
+        _authorizationService.AuthorizeAsync(
+            _httpContextAccessor.HttpContext?.User,
+            Permissions.ManageLiquidTemplates);
 }
