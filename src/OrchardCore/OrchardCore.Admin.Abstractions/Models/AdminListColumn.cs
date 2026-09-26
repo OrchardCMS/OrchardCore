@@ -3,7 +3,7 @@ using Microsoft.Extensions.Localization;
 namespace OrchardCore.Admin.Models;
 
 /// <summary>
-/// Describes a column of an admin list when it is rendered with a layout that has columns, e.g. the <c>Table</c> or <c>Grid</c> layouts.
+/// Describes a column of an admin list when it is rendered with a layout that has columns, e.g. the <c>Grid</c> layout.
 /// A column renders one or more zones of the row shape (e.g. <c>Content_SummaryAdmin</c>) in a single cell.
 /// </summary>
 public class AdminListColumn

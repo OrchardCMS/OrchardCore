@@ -6,7 +6,7 @@ namespace OrchardCore.Placements;
 
 /// <summary>
 /// Declares the columns of the <see cref="PlacementsAdminList"/> list, used by the layouts with columns, e.g.
-/// <c>Table</c>. Each column renders one or more zones of the <c>ShapePlacement_SummaryAdmin</c> shape.
+/// <c>Grid</c>. Each column renders one or more zones of the <c>ShapePlacement_SummaryAdmin</c> shape.
 /// </summary>
 public sealed class PlacementsAdminListColumnProvider : IAdminListColumnProvider
 {

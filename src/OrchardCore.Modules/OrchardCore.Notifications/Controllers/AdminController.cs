@@ -141,7 +141,7 @@ public sealed class AdminController : Controller, IUpdateModel
 
         var header = await _notificationOptionsDisplayManager.BuildEditorAsync(options, this, false, string.Empty, string.Empty);
 
-        // The AdminList shape renders the notifications with the configured layout (List, Table, ...).
+        // The AdminList shape renders the notifications with the configured layout (List, Grid, ...).
         var list = await adminListFactory.CreateAsync(new AdminListContext(NotificationsAdminList.Name)
         {
             Rows = notificationShapes,

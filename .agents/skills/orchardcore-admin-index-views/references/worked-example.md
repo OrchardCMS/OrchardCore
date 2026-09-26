@@ -1,6 +1,6 @@
 # Worked example: the Indexes admin page
 
-The real conversion of `OrchardCore.Indexing`, from a hand-written `<ul class="list-group">` to the `AdminList` shape. Four files change and the page gains the List, Table and Grid layouts plus the configured row-action layout.
+The real conversion of `OrchardCore.Indexing`, from a hand-written `<ul class="list-group">` to the `AdminList` shape. Four files change and the page gains the List and Grid layouts plus the configured row-action layout.
 
 ## 1. The row shape gains a `Checkbox` zone
 

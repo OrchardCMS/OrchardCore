@@ -6,7 +6,7 @@ namespace OrchardCore.Roles;
 
 /// <summary>
 /// Declares the columns of the <see cref="RolesAdminList"/> list, used by the layouts with columns, e.g.
-/// <c>Table</c>. There is no selection column: the page has no bulk actions to apply to the selected rows.
+/// <c>Grid</c>. There is no selection column: the page has no bulk actions to apply to the selected rows.
 /// </summary>
 public sealed class RolesAdminListColumnProvider : IAdminListColumnProvider
 {

@@ -6,7 +6,7 @@ namespace OrchardCore.Contents;
 
 /// <summary>
 /// Declares the columns of the <see cref="ContentsAdminList"/> list, used by the layouts with columns, e.g.
-/// <c>Table</c>. Each column renders one or more zones of the <c>Content_SummaryAdmin</c> shape.
+/// <c>Grid</c>. Each column renders one or more zones of the <c>Content_SummaryAdmin</c> shape.
 /// </summary>
 public sealed class ContentsAdminListColumnProvider : IAdminListColumnProvider
 {

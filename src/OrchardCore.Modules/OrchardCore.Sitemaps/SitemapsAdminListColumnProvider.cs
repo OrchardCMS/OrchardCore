@@ -6,7 +6,7 @@ namespace OrchardCore.Sitemaps;
 
 /// <summary>
 /// Declares the columns of the <see cref="SitemapsAdminList"/> list, used by the layouts with columns, e.g.
-/// <c>Table</c>. They are the columns of the <see cref="SitemapIndexesAdminList"/> list as well: both rows carry the
+/// <c>Grid</c>. They are the columns of the <see cref="SitemapIndexesAdminList"/> list as well: both rows carry the
 /// same name and enabled state, so they present the same way.
 /// </summary>
 public sealed class SitemapsAdminListColumnProvider : IAdminListColumnProvider

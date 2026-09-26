@@ -6,7 +6,7 @@ namespace OrchardCore.Recipes;
 
 /// <summary>
 /// Declares the columns of the <see cref="RecipesAdminList"/> list, used by the layouts with columns, e.g.
-/// <c>Table</c>. There is no selection column: a recipe is run one at a time, the page has no bulk actions.
+/// <c>Grid</c>. There is no selection column: a recipe is run one at a time, the page has no bulk actions.
 /// </summary>
 public sealed class RecipesAdminListColumnProvider : IAdminListColumnProvider
 {

@@ -6,7 +6,7 @@ namespace OrchardCore.OpenId;
 
 /// <summary>
 /// Declares the columns of the <see cref="OpenIdScopesAdminList"/> list, used by the layouts with columns, e.g.
-/// <c>Table</c>. Each column renders one or more zones of the <c>OpenIdScopeEntry_SummaryAdmin</c> shape.
+/// <c>Grid</c>. Each column renders one or more zones of the <c>OpenIdScopeEntry_SummaryAdmin</c> shape.
 /// </summary>
 /// <remarks>
 /// There is no selection column: the page has no bulk actions to apply to the selected rows.

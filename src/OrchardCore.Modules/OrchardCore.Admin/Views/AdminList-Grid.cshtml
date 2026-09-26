@@ -1,8 +1,8 @@
 ﻿@*
-    The 'Grid' layout of an admin list: the same columns as the 'Table' layout, rendered with a CSS grid instead of a
-    <table>. The header, the body and the rows are `display: contents` (see _admin-list.scss), so every cell shares
-    the tracks computed here from the column widths and the header always lines up with the data. When the list is
-    narrow the headers disappear and each row becomes a compact wrapped line.
+    The 'Grid' layout of an admin list: one column per AdminListColumn, laid out with a CSS grid. The header and every
+    row are subgrids of the list (see _admin-list.scss), so their cells share the tracks computed here from the column
+    widths and the header always lines up with the data, while a row keeps a box of its own, e.g. for a sortable list
+    to drag. When the list is narrow the headers disappear and each row becomes a compact wrapped line.
 
     Properties:
         Name          The name of the list, e.g. "Contents". Used for the AdminList__{Name} and AdminListCell__{Name}__{Column} alternates.

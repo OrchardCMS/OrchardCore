@@ -9,7 +9,7 @@ namespace OrchardCore.Admin.Services;
 /// <see cref="AdminListOptions.AllowUserSelection"/>.
 /// </summary>
 /// <remarks>
-/// One cookie holds every list, as <c>Contents:Table|Users:Grid</c>, which keeps a browser to a single cookie
+/// One cookie holds every list, as <c>Contents:Grid|Users:List</c>, which keeps a browser to a single cookie
 /// however many lists the user visits. Values that are not plain names are dropped while reading, so a
 /// hand-edited cookie cannot reach a template name.
 /// </remarks>

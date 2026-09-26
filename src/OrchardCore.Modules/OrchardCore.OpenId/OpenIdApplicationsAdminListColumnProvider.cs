@@ -6,7 +6,7 @@ namespace OrchardCore.OpenId;
 
 /// <summary>
 /// Declares the columns of the <see cref="OpenIdApplicationsAdminList"/> list, used by the layouts with columns,
-/// e.g. <c>Table</c>. Each column renders one or more zones of the <c>OpenIdApplicationEntry_SummaryAdmin</c>
+/// e.g. <c>Grid</c>. Each column renders one or more zones of the <c>OpenIdApplicationEntry_SummaryAdmin</c>
 /// shape.
 /// </summary>
 /// <remarks>

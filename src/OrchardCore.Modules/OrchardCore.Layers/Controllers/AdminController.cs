@@ -137,7 +137,7 @@ public sealed class AdminController : Controller
             ShowSelectAll = false,
         }));
 
-        // The AdminList shape renders the layers with the configured layout (List, Table, ...).
+        // The AdminList shape renders the layers with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(LayersAdminList.Name)
         {
             Rows = rows,

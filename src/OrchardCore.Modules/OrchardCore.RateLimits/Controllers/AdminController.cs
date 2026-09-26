@@ -145,7 +145,7 @@ public sealed class AdminController : Controller
             BulkActions = model.BulkActions,
         }));
 
-        // The AdminList shape renders the policies with the configured layout (List, Table, ...).
+        // The AdminList shape renders the policies with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(RateLimitsAdminList.Name)
         {
             Rows = model.Policies.Select(entry => entry.Shape).ToList(),

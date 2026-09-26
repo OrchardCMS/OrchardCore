@@ -1,16 +1,15 @@
 ﻿/*
  Admin lists rendered by the AdminList shape.
 
- .admin-list-list  is the default 'List' layout (a list-group, see _list-group.scss).
- .admin-list-table is the 'Table' layout: a toolbar (count, select-all, filters, bulk actions) above a <table>
-                   with one column per AdminListColumn.
- .admin-list-grid  is the 'Grid' layout: the same columns rendered with a CSS grid instead of a <table>. The header,
-                   the body and the rows are `display: contents`, so every cell of every row shares the same tracks
-                   (--oc-admin-list-grid-columns, computed by AdminList-Grid.cshtml from the column widths) and the
-                   header always lines up with the data.
+ .admin-list-list is the default 'List' layout (a list-group, see _list-group.scss).
+ .admin-list-grid is the 'Grid' layout: a toolbar (count, select-all, filters, bulk actions) above a CSS grid with
+                  one column per AdminListColumn. The header and every row are subgrids spanning the columns, so
+                  every cell of every row shares the same tracks (--oc-admin-list-grid-columns, computed by
+                  AdminList-Grid.cshtml from the column widths) and the header always lines up with the data, while
+                  a row keeps a box of its own, which a sortable list needs to drag it.
 
- Both column layouts are laid out for a wide list by default, and a container query on the list itself (not on the
- viewport, the admin sidebar takes a good part of it) collapses them when the list is narrower than
+ The Grid layout is laid out for a wide list by default, and a container query on the list itself (not on the
+ viewport, the admin sidebar takes a good part of it) collapses it when the list is narrower than
  $oc-admin-list-stack-width: the headers disappear and each row becomes a compact wrapped line, checkbox and title
  first, badges after, actions at the end, like the 'List' layout.
 
@@ -26,7 +25,7 @@
 
 $oc-admin-list-stack-width: 48rem;
 
-// Column headers, in both layouts.
+// Column headers.
 @mixin admin-list-header-cell {
     font-size: 0.8125rem;
     font-weight: 600;
@@ -36,7 +35,6 @@ $oc-admin-list-stack-width: 48rem;
     white-space: nowrap;
 }
 
-.admin-list-table,
 .admin-list-grid {
     --oc-admin-list-cell-padding-y: 0.5rem;
     --oc-admin-list-cell-padding-x: 0.75rem;
@@ -170,123 +168,6 @@ $oc-admin-list-stack-width: 48rem;
     }
 }
 
-/* Table layout */
-.admin-list-table {
-    .table {
-        margin-bottom: 0;
-
-        > :not(caption) > * > * {
-            padding: var(--oc-admin-list-cell-padding-y) var(--oc-admin-list-cell-padding-x);
-        }
-
-        thead th {
-            @include admin-list-header-cell;
-            border-bottom-width: calc(var(--bs-border-width) * 2);
-        }
-
-        tbody tr:last-child > * {
-            border-bottom: 0;
-        }
-
-        tbody tr:last-child > :first-child {
-            border-bottom-left-radius: var(--bs-border-radius);
-        }
-
-        tbody tr:last-child > :last-child {
-            border-bottom-right-radius: var(--bs-border-radius);
-        }
-    }
-
-    // A table cell is not a flex container, so the whitespace between two badges survives; this only widens
-    // the gap slightly so it matches the one the grid layout gets from its cell gap.
-    .badge + .badge {
-        margin-inline-start: 0.25rem;
-    }
-
-    // Same stacking fix as the list-group: an open dropdown must render above the sticky action bar.
-    tr:has(.dropdown-menu.show:not(.inner)) {
-        position: relative;
-        z-index: var(--oc-zindex-dropdown);
-    }
-
-    @container admin-list (max-width: #{$oc-admin-list-stack-width}) {
-        .table {
-            display: block;
-
-            thead {
-                display: none;
-            }
-
-            tbody {
-                display: block;
-                width: 100%;
-            }
-
-            tr {
-                display: flex;
-                flex-wrap: wrap;
-                align-items: center;
-                gap: 0.25rem 0.75rem;
-                padding: var(--oc-admin-list-cell-padding-y) var(--oc-admin-list-cell-padding-x);
-                border-bottom: var(--bs-border-width) solid var(--bs-border-color);
-
-                &:last-child {
-                    border-bottom: 0;
-                }
-            }
-
-            td {
-                display: block;
-                width: auto;
-                border: 0;
-                padding: 0;
-                // A cell can hold an unbreakable token, e.g. the id of a feature, which would otherwise
-                // push the row past the width of the list.
-                overflow-wrap: anywhere;
-                text-align: start !important;
-                white-space: normal;
-                background-color: transparent;
-                box-shadow: none;
-
-                // The title takes the space the other cells leave, down to a floor that keeps it readable,
-                // and its secondary line sits under it inside the same cell.
-                &.admin-list-column-fill {
-                    flex: 1 1 0;
-                    min-width: 40%;
-                }
-
-                // The actions end the first line, where the row centres them on the title and its
-                // secondary line, so every row of the list holds them in the same place.
-                &.text-end {
-                    // No auto margin here: it would eat the free space of the line, which belongs to the
-                    // title cell. The title grows instead, which pushes the actions to the end.
-                    text-align: end !important;
-                }
-
-                // Everything else, e.g. the badges of a row, takes a line under that first one, the way
-                // the summary of the List layout stacks them. The order only moves them past the actions
-                // visually: they keep their place in the document. A list with a second wide column, e.g.
-                // the dependencies of a feature, stacks that one as well: only the first is the title.
-                &:not(.admin-list-column-fill):not(.admin-list-select):not(.admin-list-column-handle):not(.text-end),
-                &.admin-list-column-fill ~ .admin-list-column-fill {
-                    order: 1;
-                    flex: 0 0 100%;
-                    min-width: 0;
-                }
-            }
-
-            tr.admin-list-empty {
-                display: block;
-                padding: 0;
-
-                td {
-                    display: block;
-                }
-            }
-        }
-    }
-}
-
 /* Grid layout */
 .admin-list-grid {
     // Wide: one CSS grid shared by the header and every row, so the columns always line up.
@@ -295,10 +176,17 @@ $oc-admin-list-stack-width: 48rem;
         grid-template-columns: var(--oc-admin-list-grid-columns, minmax(0, 1fr));
     }
 
-    .admin-list-grid-header,
-    .admin-list-grid-body,
-    .admin-list-grid-row {
+    // The body only groups the rows: they are the items of the grid, each spanning every column with the tracks
+    // of the list. A row with a box of its own is what a sortable list drags, and what its script measures.
+    .admin-list-grid-body {
         display: contents;
+    }
+
+    .admin-list-grid-header,
+    .admin-list-grid-row {
+        display: grid;
+        grid-column: 1 / -1;
+        grid-template-columns: subgrid;
     }
 
     .admin-list-grid-cell {

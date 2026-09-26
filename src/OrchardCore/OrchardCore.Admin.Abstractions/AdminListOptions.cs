@@ -9,7 +9,7 @@ namespace OrchardCore.Admin;
 /// {
 ///   "OrchardCore": {
 ///     "AdminList": {
-///       "DefaultLayout": "Table",
+///       "DefaultLayout": "Grid",
 ///       "DefaultActionsLayout": "Menu",
 ///       "AllowUserSelection": true
 ///     }
@@ -22,8 +22,8 @@ namespace OrchardCore.Admin;
 public class AdminListOptions
 {
     /// <summary>
-    /// The layout used to render admin lists, e.g. <see cref="AdminListConstants.List"/>,
-    /// <see cref="AdminListConstants.Table"/> or <see cref="AdminListConstants.Grid"/>.
+    /// The layout used to render admin lists, e.g. <see cref="AdminListConstants.List"/> or
+    /// <see cref="AdminListConstants.Grid"/>.
     /// </summary>
     public string DefaultLayout { get; set; } = AdminListConstants.List;
 

@@ -183,7 +183,7 @@ public sealed class WorkflowController : Controller
             Actions = filters,
         }));
 
-        // The AdminList shape renders the instances with the configured layout (List, Table, ...).
+        // The AdminList shape renders the instances with the configured layout (List, Grid, ...).
         viewModel.List = await adminListFactory.CreateAsync(new AdminListContext(WorkflowInstancesAdminList.Name)
         {
             Rows = rows,

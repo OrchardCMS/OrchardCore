@@ -167,7 +167,7 @@ public sealed class BackgroundTaskController : Controller
             Actions = filters,
         }));
 
-        // The AdminList shape renders the tasks with the configured layout (List, Table, ...).
+        // The AdminList shape renders the tasks with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(BackgroundTasksAdminList.Name)
         {
             Rows = rows,

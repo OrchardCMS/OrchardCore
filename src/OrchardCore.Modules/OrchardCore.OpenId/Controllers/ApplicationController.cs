@@ -132,7 +132,7 @@ public sealed class ApplicationController : Controller
             ShowSelectAll = false,
         }));
 
-        // The AdminList shape renders the applications with the configured layout (List, Table, ...).
+        // The AdminList shape renders the applications with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(OpenIdApplicationsAdminList.Name)
         {
             Rows = rows,

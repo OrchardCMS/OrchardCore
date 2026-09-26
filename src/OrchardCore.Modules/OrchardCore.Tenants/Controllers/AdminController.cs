@@ -247,7 +247,7 @@ public sealed class AdminController : Controller
             Actions = filters,
         }));
 
-        // The AdminList shape renders the tenants with the configured layout (List, Table, ...).
+        // The AdminList shape renders the tenants with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(TenantsAdminList.Name)
         {
             Rows = rows,

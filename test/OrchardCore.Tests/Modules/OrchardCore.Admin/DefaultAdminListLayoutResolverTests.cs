@@ -24,11 +24,11 @@ public class DefaultAdminListLayoutResolverTests
     public async Task GetLayoutAsync_SiteDefault_IsReturned()
     {
         var site = new SiteSettings();
-        site.Put(new AdminSettings { ListLayout = AdminListConstants.Table });
+        site.Put(new AdminSettings { ListLayout = AdminListConstants.Grid });
 
         var resolver = CreateResolver(Configure(new AdminListOptions(), site));
 
-        Assert.Equal(AdminListConstants.Table, await resolver.GetLayoutAsync("Contents", TestContext.Current.CancellationToken));
+        Assert.Equal(AdminListConstants.Grid, await resolver.GetLayoutAsync("Contents", TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -43,11 +43,11 @@ public class DefaultAdminListLayoutResolverTests
     public async Task GetLayoutAsync_SiteSetting_WinsOverTheConfiguredDefault()
     {
         var site = new SiteSettings();
-        site.Put(new AdminSettings { ListLayout = AdminListConstants.Table });
+        site.Put(new AdminSettings { ListLayout = AdminListConstants.List });
 
         var resolver = CreateResolver(Configure(new AdminListOptions { DefaultLayout = AdminListConstants.Grid }, site));
 
-        Assert.Equal(AdminListConstants.Table, await resolver.GetLayoutAsync("Contents", TestContext.Current.CancellationToken));
+        Assert.Equal(AdminListConstants.List, await resolver.GetLayoutAsync("Contents", TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -56,9 +56,9 @@ public class DefaultAdminListLayoutResolverTests
         var httpContext = new DefaultHttpContext();
         httpContext.Request.QueryString = new QueryString("?layout=Grid");
 
-        var resolver = CreateResolver(new AdminListOptions { DefaultLayout = AdminListConstants.Table }, httpContext, AdminListConstants.List, AdminListConstants.Table, AdminListConstants.Grid);
+        var resolver = CreateResolver(new AdminListOptions { DefaultLayout = AdminListConstants.List }, httpContext, AdminListConstants.List, AdminListConstants.Grid);
 
-        Assert.Equal(AdminListConstants.Table, await resolver.GetLayoutAsync("Contents", TestContext.Current.CancellationToken));
+        Assert.Equal(AdminListConstants.List, await resolver.GetLayoutAsync("Contents", TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -67,8 +67,8 @@ public class DefaultAdminListLayoutResolverTests
         var httpContext = new DefaultHttpContext();
         httpContext.Request.QueryString = new QueryString("?layout=Grid");
 
-        var options = new AdminListOptions { DefaultLayout = AdminListConstants.Table, AllowUserSelection = true };
-        var resolver = CreateResolver(options, httpContext, AdminListConstants.List, AdminListConstants.Table, AdminListConstants.Grid);
+        var options = new AdminListOptions { DefaultLayout = AdminListConstants.List, AllowUserSelection = true };
+        var resolver = CreateResolver(options, httpContext, AdminListConstants.List, AdminListConstants.Grid);
 
         Assert.Equal(AdminListConstants.Grid, await resolver.GetLayoutAsync("Contents", TestContext.Current.CancellationToken));
 
@@ -99,16 +99,17 @@ public class DefaultAdminListLayoutResolverTests
     public async Task GetLayoutAsync_LayoutThisUserPickedBefore_IsReturned()
     {
         var httpContext = new DefaultHttpContext();
-        httpContext.Request.Headers.Cookie = $"{AdminListLayoutPreference.CookieName}=Contents:Grid|Users:Table";
+        httpContext.Request.Headers.Cookie = $"{AdminListLayoutPreference.CookieName}=Contents:Grid|Users:List";
 
-        var options = new AdminListOptions { DefaultLayout = AdminListConstants.List, AllowUserSelection = true };
-        var resolver = CreateResolver(options, httpContext, AdminListConstants.List, AdminListConstants.Table, AdminListConstants.Grid);
+        // The site renders its lists with a layout of its own, so each pick differs from the default.
+        var options = new AdminListOptions { DefaultLayout = "Cards", AllowUserSelection = true };
+        var resolver = CreateResolver(options, httpContext, AdminListConstants.List, AdminListConstants.Grid, "Cards");
 
         Assert.Equal(AdminListConstants.Grid, await resolver.GetLayoutAsync("Contents", TestContext.Current.CancellationToken));
-        Assert.Equal(AdminListConstants.Table, await resolver.GetLayoutAsync("Users", TestContext.Current.CancellationToken));
+        Assert.Equal(AdminListConstants.List, await resolver.GetLayoutAsync("Users", TestContext.Current.CancellationToken));
 
         // A list the user never chose for keeps the default of the site.
-        Assert.Equal(AdminListConstants.List, await resolver.GetLayoutAsync("Queries", TestContext.Current.CancellationToken));
+        Assert.Equal("Cards", await resolver.GetLayoutAsync("Queries", TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -119,7 +120,7 @@ public class DefaultAdminListLayoutResolverTests
         httpContext.Request.Headers.Cookie = $"{AdminListLayoutPreference.CookieName}=Users:Cards";
 
         var options = new AdminListOptions { DefaultLayout = AdminListConstants.List, AllowUserSelection = true };
-        var resolver = CreateResolver(options, httpContext, AdminListConstants.List, AdminListConstants.Table, AdminListConstants.Grid);
+        var resolver = CreateResolver(options, httpContext, AdminListConstants.List, AdminListConstants.Grid);
 
         Assert.Equal(AdminListConstants.List, await resolver.GetLayoutAsync("Contents", TestContext.Current.CancellationToken));
         Assert.Equal(AdminListConstants.List, await resolver.GetLayoutAsync("Users", TestContext.Current.CancellationToken));
@@ -128,9 +129,9 @@ public class DefaultAdminListLayoutResolverTests
     [Fact]
     public async Task GetAvailableLayoutsAsync_ReturnsTheLayoutsOfTheShapeTable()
     {
-        var resolver = CreateResolver(new AdminListOptions(), new DefaultHttpContext(), AdminListConstants.Table, AdminListConstants.List);
+        var resolver = CreateResolver(new AdminListOptions(), new DefaultHttpContext(), AdminListConstants.List, AdminListConstants.Grid);
 
-        Assert.Equal([AdminListConstants.List, AdminListConstants.Table], await resolver.GetAvailableLayoutsAsync(TestContext.Current.CancellationToken));
+        Assert.Equal([AdminListConstants.Grid, AdminListConstants.List], await resolver.GetAvailableLayoutsAsync(TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -149,23 +150,23 @@ public class DefaultAdminListLayoutResolverTests
     {
         var httpContext = new DefaultHttpContext();
         httpContext.Request.Path = "/Admin/Contents/ContentItems";
-        httpContext.Request.QueryString = new QueryString("?q=post&layout=Table");
+        httpContext.Request.QueryString = new QueryString("?q=post&layout=Grid");
 
         var options = new AdminListOptions { AllowUserSelection = true };
-        var resolver = CreateResolver(options, httpContext, AdminListConstants.List, AdminListConstants.Table);
+        var resolver = CreateResolver(options, httpContext, AdminListConstants.List, AdminListConstants.Grid);
 
         var layouts = await resolver.GetLayoutOptionsAsync(TestContext.Current.CancellationToken);
 
         Assert.Collection(layouts,
             layout =>
             {
-                Assert.Equal(AdminListConstants.List, layout.Name);
-                Assert.Equal("/Admin/Contents/ContentItems?q=post&layout=List", layout.Url);
+                Assert.Equal(AdminListConstants.Grid, layout.Name);
+                Assert.Equal("/Admin/Contents/ContentItems?q=post&layout=Grid", layout.Url);
             },
             layout =>
             {
-                Assert.Equal(AdminListConstants.Table, layout.Name);
-                Assert.Equal("/Admin/Contents/ContentItems?q=post&layout=Table", layout.Url);
+                Assert.Equal(AdminListConstants.List, layout.Name);
+                Assert.Equal("/Admin/Contents/ContentItems?q=post&layout=List", layout.Url);
             });
     }
 
@@ -173,7 +174,7 @@ public class DefaultAdminListLayoutResolverTests
     public async Task GetLayoutOptionsAsync_AskedTwice_OffersTheSameLayouts()
     {
         var options = new AdminListOptions { AllowUserSelection = true };
-        var resolver = CreateResolver(options, new DefaultHttpContext(), AdminListConstants.List, AdminListConstants.Table);
+        var resolver = CreateResolver(options, new DefaultHttpContext(), AdminListConstants.List, AdminListConstants.Grid);
 
         // A page rendering several lists turns their selector off itself, so asking again changes nothing.
         var first = await resolver.GetLayoutOptionsAsync(TestContext.Current.CancellationToken);
@@ -186,7 +187,7 @@ public class DefaultAdminListLayoutResolverTests
     [Fact]
     public async Task GetLayoutOptionsAsync_SiteKeepsTheChoice_OffersNothing()
     {
-        var resolver = CreateResolver(new AdminListOptions(), new DefaultHttpContext(), AdminListConstants.List, AdminListConstants.Table);
+        var resolver = CreateResolver(new AdminListOptions(), new DefaultHttpContext(), AdminListConstants.List, AdminListConstants.Grid);
 
         Assert.Empty(await resolver.GetLayoutOptionsAsync(TestContext.Current.CancellationToken));
     }

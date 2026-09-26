@@ -120,7 +120,7 @@ public sealed class AdminController : Controller
             ShowSelectAll = false,
         }));
 
-        // The AdminList shape renders the types with the configured layout (List, Table, ...).
+        // The AdminList shape renders the types with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(ContentTypesAdminList.Name)
         {
             Rows = rows,
@@ -583,7 +583,7 @@ public sealed class AdminController : Controller
             ShowSelectAll = false,
         }));
 
-        // The AdminList shape renders the parts with the configured layout (List, Table, ...).
+        // The AdminList shape renders the parts with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(ContentPartsAdminList.Name)
         {
             Rows = rows,

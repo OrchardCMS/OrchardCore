@@ -133,7 +133,7 @@ public sealed class DeploymentPlanController : Controller
             BulkActions = model.Options.DeploymentPlansBulkAction,
         }));
 
-        // The AdminList shape renders the plans with the configured layout (List, Table, ...).
+        // The AdminList shape renders the plans with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(DeploymentPlansAdminList.Name)
         {
             Rows = rows,

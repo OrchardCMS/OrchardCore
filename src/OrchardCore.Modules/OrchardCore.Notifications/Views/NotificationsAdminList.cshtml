@@ -29,7 +29,7 @@
     </div>
 }
 
-@* The notifications, the header and the pager are rendered by the AdminList shape using the configured layout (List, Table, ...). *@
+@* The notifications, the header and the pager are rendered by the AdminList shape using the configured layout (List, Grid, ...). *@
 @await DisplayAsync(Model.List)
 </div>
 
@@ -38,11 +38,10 @@
 <script asp-src="~/OrchardCore.Notifications/Scripts/notifications-admin-list/notifications-admin-list.min.js" debug-src="~/OrchardCore.Notifications/Scripts/notifications-admin-list/notifications-admin-list.js" at="Foot" type="module"></script>
 
 <style at="Head">
-    /* The read state is a class on the row, so it applies in every layout: the <li> of the List layout,
-       the <tr> of the Table layout and the row element of the Grid layout. */
+    /* The read state is a class on the row, so it applies in every layout: the <li> of the List layout
+       and the row element of the Grid layout. */
     .admin-list .notification-is-unread,
-    .admin-list .notification-is-unread > .admin-list-grid-cell,
-    .admin-list .notification-is-unread > td {
+    .admin-list .notification-is-unread > .admin-list-grid-cell {
         color: #664d03 !important;
         background-color: #fff3cd !important;
     }

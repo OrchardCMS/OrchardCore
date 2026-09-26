@@ -101,7 +101,7 @@ public sealed class DefaultAdminListLayoutResolver : IAdminListLayoutResolver
     // shipped layouts get back the name the settings store, e.g. Grid.
     private static ReadOnlyCollection<string> FindLayouts(ShapeTable shapeTable)
     {
-        string[] shippedLayouts = [AdminListConstants.List, AdminListConstants.Table, AdminListConstants.Grid];
+        string[] shippedLayouts = [AdminListConstants.List, AdminListConstants.Grid];
 
         return AdminListOptionShapes.GetNames(shapeTable, AdminListConstants.OptionShapePrefix)
             .Select(name => shippedLayouts.FirstOrDefault(shipped => string.Equals(shipped, name, StringComparison.OrdinalIgnoreCase)) ?? name)

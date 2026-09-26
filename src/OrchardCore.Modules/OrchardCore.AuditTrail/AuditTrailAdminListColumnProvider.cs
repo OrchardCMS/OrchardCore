@@ -6,7 +6,7 @@ namespace OrchardCore.AuditTrail;
 
 /// <summary>
 /// Declares the columns of the <see cref="AuditTrailAdminList"/> list, used by the layouts with columns, e.g.
-/// <c>Table</c>. Each column renders one or more zones of the <c>AuditTrailEvent_SummaryAdmin</c> shape.
+/// <c>Grid</c>. Each column renders one or more zones of the <c>AuditTrailEvent_SummaryAdmin</c> shape.
 /// </summary>
 /// <remarks>
 /// The events are read-only, so unlike the other lists there is no selection column: the page has no

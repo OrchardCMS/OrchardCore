@@ -151,34 +151,33 @@ You can change it by overriding 'VisitSiteNavbarItem' shape, either from a [cust
 
 ## Admin List Layouts
 
-Admin lists such as the content items list are rendered by the `AdminList` shape, which supports several layouts. Three layouts are built in:
+Admin lists such as the content items list are rendered by the `AdminList` shape, which supports several layouts. Two layouts are built in:
 
 | Layout  | Description                                                                                         |
 | ------- | --------------------------------------------------------------------------------------------------- |
 | `List`  | The default. The items are rendered in a vertical list, each item by its own `SummaryAdmin` shape. |
-| `Table` | The items are rendered in a table, one column per `AdminListColumn`.                               |
-| `Grid`  | The same columns as `Table`, rendered with a CSS grid instead of a `<table>`. The header, the body and the rows are `display: contents`, so every cell shares the tracks computed from the column widths and the header always lines up with the data. |
+| `Grid`  | The items are rendered with one column per `AdminListColumn`, laid out with a CSS grid. The header and every row are subgrids of the list, so every cell shares the tracks computed from the column widths and the header always lines up with the data, while a row keeps a box of its own for a sortable list to drag. |
 
-Both column layouts use a CSS container query on the list itself: when the list is narrower than 48rem (whatever the viewport, the admin sidebar takes part of it), the headers disappear and a row takes the shape of a `List` row — the selection and the title share the first line with the actions at its end, and every other cell takes a line under them — so the page never scrolls horizontally. The cells keep a `data-title` attribute with the column title for themes that want to show it.
+The `Grid` layout uses a CSS container query on the list itself: when the list is narrower than 48rem (whatever the viewport, the admin sidebar takes part of it), the headers disappear and a row takes the shape of a `List` row — the selection and the title share the first line with the actions at its end, and every other cell takes a line under them — so the page never scrolls horizontally. The cells keep a `data-title` attribute with the column title for themes that want to show it.
 
 The layout is selected in **Configuration → Settings → Admin** under **List layout**, and stored in `AdminSettings.ListLayout`. When that setting is empty the value comes from `AdminListOptions.DefaultLayout`, which a site can set per tenant in `appsettings.json`:
 
 ```json
   "OrchardCore": {
     "AdminList": {
-      "DefaultLayout": "Table",
+      "DefaultLayout": "Grid",
       "DefaultActionsLayout": "Menu"
     }
   }
 ```
 
-`AdminListOptions` is the single place the shipped defaults are decided, so changing them for a site never means editing a template or a driver. The values are `List`, `Table` and `Grid` for `DefaultLayout`, and `Buttons` or `Menu` for `DefaultActionsLayout`. A blank or missing value falls back to `List` and `Buttons`.
+`AdminListOptions` is the single place the shipped defaults are decided, so changing them for a site never means editing a template or a driver. The values are `List` and `Grid` for `DefaultLayout`, and `Buttons` or `Menu` for `DefaultActionsLayout`. A blank or missing value falls back to `List` and `Buttons`.
 
 ### Letting a user choose
 
 **Let users choose the layout of a list** (`AdminSettings.AllowUserListLayoutSelection`, or `AllowUserSelection` in the configuration) adds a selector to every list, one button per available layout, beside the item count:
 
-Clicking one reloads the page with `?layout=Grid`, and the choice is kept in a cookie **per list**, so a user can read the content items as a table and the users as a grid while everyone else sees the site default. The layout resolves from the most specific source to the least:
+Clicking one reloads the page with `?layout=Grid`, and the choice is kept in a cookie **per list**, so a user can read the content items as a grid and the users as a list while everyone else sees the site default. The layout resolves from the most specific source to the least:
 
 | Source | Wins when |
 | --- | --- |
@@ -227,7 +226,7 @@ The options follow Orchard Core's signal-backed options pattern. `AdminListOptio
 The rows of a list are shapes built with the `SummaryAdmin` display type, e.g. `Content_SummaryAdmin`. Display drivers and `placement.json` place shapes in the zones of these rows (`Checkbox`, `Title`, `Type`, `Header`, `Tags`, `Meta`, `Actions`, `ActionsMenu`, `Content`, ...). The layout only decides how a row is presented:
 
 - In the `List` layout the row shape is rendered as a whole, so its template (e.g. `Content.SummaryAdmin.cshtml` or `Content-BlogPost.SummaryAdmin.cshtml`) decides the look.
-- In the `Table` and `Grid` layouts each column renders one or more zones of the row in an `AdminListCell` shape. The row template is not used.
+- In the `Grid` layout each column renders one or more zones of the row in an `AdminListCell` shape. The row template is not used.
 
 A layout renders the whole listing, not only the rows. The shipped ones render, in order: the action bar holding `Search` and `Actions`, then the toolbar strip holding `Toolbar` or `Header` and the layout selector, then the rows (or the empty message), then a footer holding `Pager` and `PageSize`. A custom layout is free to order them differently, to leave one out, or to put the search bar beside the pager.
 
@@ -314,7 +313,7 @@ RowsAttributes = new Dictionary<string, string> { ["id"] = "rewrite-rules-sortab
 
 Two things a sortable list has to know:
 
-- The `Grid` layout cannot be dragged: its rows are `display: contents`, so they have no box for a drag script to pick up. Fall back to `Table` when `Grid` is configured, or force `List` the way the ordering of a list part does.
+- The rows are what a drag script picks up. In the `List` layout they are the items of a list group; in the `Grid` layout they are subgrids spanning the columns, so they have a box of their own while their cells stay on the tracks of the list. The element holding the rows is `display: contents` in the `Grid` layout, so a script must measure the rows, never that element.
 - SortableJS `oldIndex` and `newIndex` count **every** sibling of the dragged element, including a toolbar rendered among the rows. Use `oldDraggableIndex` and `newDraggableIndex`, which count only the rows, so the indexes are the same in every layout.
 
 ### Overriding templates
@@ -323,7 +322,7 @@ The following alternates are available, from the least to the most specific:
 
 | Shape              | Alternates                                                                           | Template examples                                                        |
 | ------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
-| `AdminList`        | `AdminList__{Layout}`, `AdminList__{Name}`, `AdminList__{Name}__{Layout}`            | `AdminList-Table.cshtml`, `AdminList-Contents.cshtml`, `AdminList-Contents-Table.cshtml` |
+| `AdminList`        | `AdminList__{Layout}`, `AdminList__{Name}`, `AdminList__{Name}__{Layout}`            | `AdminList-Grid.cshtml`, `AdminList-Contents.cshtml`, `AdminList-Contents-Grid.cshtml` |
 | `AdminListCell`    | `AdminListCell__{Column}`, `AdminListCell__{Name}__{Column}`                         | `AdminListCell-Actions.cshtml`, `AdminListCell-Contents-Title.cshtml`    |
 | `AdminListActions` | `AdminListActions__{Layout}`, `AdminListActions__{Name}`, `AdminListActions__{Name}__{Layout}` | `AdminListActions-Menu.cshtml`, `AdminListActions-Contents.cshtml`, `AdminListActions-Contents-Menu.cshtml` |
 | `AdminListToolbar` | `AdminListToolbar__{Layout}`, `AdminListToolbar__{Name}`, `AdminListToolbar__{Name}__{Layout}` | `AdminListToolbar-Grid.cshtml`, `AdminListToolbar-Contents.cshtml`, `AdminListToolbar-Contents-Grid.cshtml` |
@@ -331,13 +330,13 @@ The following alternates are available, from the least to the most specific:
 
 `{Name}` is the name of the list, e.g. `Contents`, which each module publishes as a constant (`ContentsAdminList.Name`). The names are unique, so every alternate above targets a single list: a theme can restyle the search bar of the content items without touching any other list.
 
-`{Layout}` is the layout rendering the list (`List`, `Table`, `Grid`, or a custom one), except for `AdminListActions`, where it is the layout of the row actions (`Buttons` or `Menu`) since that is what the shape renders.
+`{Layout}` is the layout rendering the list (`List`, `Grid`, or a custom one), except for `AdminListActions`, where it is the layout of the row actions (`Buttons` or `Menu`) since that is what the shape renders.
 
 The name and the layout reach these shapes on their own. The `AdminList` shape stamps them on everything it renders — the toolbar, the search bar, the pager, the page size selector and each row — so a row template that renders `AdminListActions` without naming a list still gets the alternates of the list it belongs to. A part that already names a list keeps its own, which is what a list rendered inside another one needs.
 
-An alternate that names a list but no layout applies to **every** layout of that list, because it is more specific than the layout alternate: `AdminList-Users.cshtml` renders the users in `List`, `Table` and `Grid` alike, which effectively opts that list out of the layout setting. To change one mode only, name it: `AdminList-Users-Grid.cshtml`. The shape still carries the resolved layout, so a single template can also branch on `@Model.Layout`.
+An alternate that names a list but no layout applies to **every** layout of that list, because it is more specific than the layout alternate: `AdminList-Users.cshtml` renders the users in `List` and `Grid` alike, which effectively opts that list out of the layout setting. To change one mode only, name it: `AdminList-Users-Grid.cshtml`. The shape still carries the resolved layout, so a single template can also branch on `@Model.Layout`.
 
-`AdminListCell` has no layout variant: cells only exist in the layouts with columns, and a column renders the same zones in both.
+`AdminListCell` has no layout variant: cells only exist in the layouts with columns, and a column renders the same zones in each of them.
 
 The layouts with columns only create an `AdminListCell` shape for the cells a template overrides: `AdminListCell`, `AdminListCell-{Column}` or `AdminListCell-{Name}-{Column}`, from a theme or another module. The other cells render the zones of the row, or its actions for the `Actions` column, as the templates of the Admin module do, without a shape for every row and column. The `AdminList` shape tells a layout which is which with its `CellRenderings` property, one `AdminListCellRendering` per column, so a custom layout can do the same.
 
@@ -377,13 +376,13 @@ The `Actions` and `ActionsMenu` zones of a row are rendered by the `AdminListAct
 | `Buttons` | The default. The shapes of the `Actions` zone as buttons, followed by an "Actions" dropdown for `ActionsMenu`. |
 | `Menu`    | A single dropdown opened by an ellipsis button, holding the `Actions` shapes (restyled as menu items) and the `ActionsMenu` shapes. |
 
-Row templates render it with `@await DisplayAsync(await Factory.CreateAdminListActionsAsync((IShape)Model))`, which creates the shape with its properties rather than through the dynamic `New`, since it is rendered once per row. The `Table` and `Grid` layouts render it in the `Actions` column, so the actions layout applies to every list layout. The alternates are `AdminListActions__{Layout}`, `AdminListActions__{ListName}` and `AdminListActions__{ListName}__{Layout}`. An actions layout is discovered like a list layout: add `AdminListActions-Icons.cshtml` to render it and `AdminListActions-Icons.Option.cshtml` to make it selectable.
+Row templates render it with `@await DisplayAsync(await Factory.CreateAdminListActionsAsync((IShape)Model))`, which creates the shape with its properties rather than through the dynamic `New`, since it is rendered once per row. The `Grid` layout renders it in the `Actions` column, so the actions layout applies to every list layout. The alternates are `AdminListActions__{Layout}`, `AdminListActions__{ListName}` and `AdminListActions__{ListName}__{Layout}`. An actions layout is discovered like a list layout: add `AdminListActions-Icons.cshtml` to render it and `AdminListActions-Icons.Option.cshtml` to make it selectable.
 
 ### Adding a layout
 
 A layout is discovered from the shape table, like a content field editor. To add a `Cards` layout, add two templates to a module or a theme:
 
-- `AdminList-Cards.cshtml` renders the list. The `Rows` are the row shapes, so the template can display a row as a whole with `@await DisplayAsync(item)`, or read its zones through `IZoneHolding`, like `AdminList-Table.cshtml` does.
+- `AdminList-Cards.cshtml` renders the list. The `Rows` are the row shapes, so the template can display a row as a whole with `@await DisplayAsync(item)`, or read its zones through `IZoneHolding`, like `AdminList-Grid.cshtml` does.
 - `AdminListLayout-Cards.Option.cshtml` renders an `<option>` element so the layout can be selected in the admin settings:
 
 ```html

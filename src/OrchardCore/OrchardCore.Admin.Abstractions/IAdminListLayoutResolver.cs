@@ -20,7 +20,7 @@ public interface IAdminListLayoutResolver
 
     /// <summary>
     /// Gets the layouts this site can render, discovered from the shape table: a layout is available when a
-    /// shape named <c>AdminListLayout_Option__{Layout}</c> exists, e.g. <c>AdminListLayout-Table.Option.cshtml</c>.
+    /// shape named <c>AdminListLayout_Option__{Layout}</c> exists, e.g. <c>AdminListLayout-Grid.Option.cshtml</c>.
     /// </summary>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> to observe.</param>
     /// <returns>The layout names as their option shapes declare them, in alphabetical order.</returns>

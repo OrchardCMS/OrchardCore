@@ -9,7 +9,7 @@
 
 @{
     // Layouts are discovered from the shape table, like content field editors: a layout is available
-    // when a shape named AdminListLayout_Option__{Layout} exists, e.g. AdminListLayout-Table.Option.cshtml.
+    // when a shape named AdminListLayout_Option__{Layout} exists, e.g. AdminListLayout-Grid.Option.cshtml.
     var shapeTable = await ThemeManager.GetShapeTableAsync(ShapeTableManager);
     var layoutOptionShapes = AdminListOptionShapes.GetNames(shapeTable, AdminListConstants.OptionShapePrefix)
         .Select(name => AdminListConstants.OptionShapePrefix + name);

@@ -131,7 +131,7 @@ public sealed class MenuController : Controller
             BulkActions = model.Options.ContentsBulkAction,
         }));
 
-        // The AdminList shape renders the menus with the configured layout (List, Table, ...).
+        // The AdminList shape renders the menus with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(AdminMenusAdminList.Name)
         {
             Rows = rows,

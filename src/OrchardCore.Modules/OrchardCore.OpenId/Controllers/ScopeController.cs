@@ -123,7 +123,7 @@ public sealed class ScopeController : Controller
             ShowSelectAll = false,
         }));
 
-        // The AdminList shape renders the scopes with the configured layout (List, Table, ...).
+        // The AdminList shape renders the scopes with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(OpenIdScopesAdminList.Name)
         {
             Rows = rows,

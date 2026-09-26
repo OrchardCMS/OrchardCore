@@ -31,7 +31,7 @@ If a screen turns out to need a shared change (a new shape property, a CSS rule,
 land that shared change as its **own** commit first, then the screen conversion on top of it.
 
 If a screen turns out to be harder than its tier suggests, or its interaction cannot survive
-Table/Grid, stop and move it to Part B with a written reason rather than forcing the conversion.
+the Grid layout, stop and move it to Part B with a written reason rather than forcing the conversion.
 
 ---
 
@@ -51,7 +51,7 @@ A screen is **converted** only when every box below is ticked.
 | 8 | Hidden `submit.Filter` button stays **first** in the form (Enter key) | View markup |
 | 9 | Bulk actions still work: `#select-all` + inputs named `itemIds` | Manual click-through |
 | 10 | Row actions render through `AdminListActions`, so the Buttons/Menu setting applies | Row `Actions` zone template |
-| 11 | Renders correctly in **List**, **Table** and **Grid** layouts, and in **Buttons** and **Menu** action modes | Playwright validation, section 5 |
+| 11 | Renders correctly in the **List** and **Grid** layouts, and in **Buttons** and **Menu** action modes | Playwright validation, section 5 |
 | 12 | Column provider extension point documented if the module exposes one | README |
 
 ### Row template conventions
@@ -73,7 +73,7 @@ row, and the description stops where they begin instead of running under them. T
 and `col-auto` at every width, so the actions stay beside the row on a narrow screen rather than
 dropping onto a full-width line of their own.
 
-The `Table` and `Grid` layouts stack into the same shape under `$oc-admin-list-stack-width`: the
+The `Grid` layout stacks into the same shape under `$oc-admin-list-stack-width`: the
 selection and the title cell take the first line with the actions at its end, and every other cell
 takes a line under them, the way the `summary` of the List layout stacks below `md`.
 
@@ -98,7 +98,7 @@ takes a line under them, the way the `summary` of the List layout stacks below `
 - `int startIndex = (Model.Pager.Page - 1) * Model.Pager.PageSize + 1;` computed in the view.
   Moves to the controller and is passed to `AdminListToolbar`.
 - `<div class="has-search">` without `input-group` and without the Go button.
-- `float-end` / `float-start` positioning inside rows — breaks Table and Grid.
+- `float-end` / `float-start` positioning inside rows — breaks the Grid layout.
 - Naming the rows property `Items` on the shape — silently renders nothing, it must be `Rows`.
 
 ---
@@ -198,7 +198,7 @@ the layout setting applies; the toolbar can omit bulk actions.
 
 | # | Screen | Route | View | Why it is more work |
 |---|--------|-------|------|---------------------|
-| 4.1 | ~~Themes~~ | | | **Moved to B.11** — the card gallery has no equivalent among the List, Table and Grid layouts |
+| 4.1 | ~~Themes~~ | | | **Moved to B.11** — the card gallery has no equivalent among the List and Grid layouts |
 | 4.2 | Features | `Features/{tenant?}` | `OrchardCore.Features/Views/Admin/Features.cshtml` | Server-rendered (`@foreach`), so it is convertible. But rows are grouped by category with a per-category select-all, checkboxes are named `featureIds` (not `itemIds`), and each row carries dependency badges, "always enabled" tooltips and enable/disable state. Plan: one `AdminList` per category, a `FeaturesAdminList` with `Select`/`Name`/`Dependencies`/`State`/`Actions` columns, and the bulk-action name kept as `featureIds` |
 | 4.3 | Layers | `Layers` | `OrchardCore.Layers/Views/Admin/Index.cshtml` | Convert the **Layers list pane only**. The widget-by-zone pane on the same page is **not eligible**, see B.3. The layers list is sortable, so decision 3 applies |
 
@@ -217,7 +217,7 @@ new decision recorded here first.
 | B.2 | Admin Menu Nodes | `AdminMenu/Node` | `OrchardCore.AdminMenu/Views/Node/List.cshtml` | A hierarchical tree editor built on `jQuery.nestedSortable` (`<ol id="menu">`). Rows nest and re-parent by drag; a flat column layout cannot express depth. The parent **Admin Menus** list (A.2 #2.5) is eligible | Normalise the "Add Node" card to the standard action bar |
 | B.3 | Layers — widget/zone pane | `Layers` | `OrchardCore.Layers/Views/Admin/Index.cshtml` | Widgets grouped by theme zone with drag-and-drop between zones. It is a placement canvas, not a list. The **Layers list** on the same page is eligible (A.4 #4.3) | None |
 | B.4 | Data Localization | `DataLocalization` | `OrchardCore.DataLocalization/Views/Admin/Index.cshtml` | A Vue-rendered `<table>` of translation strings with inline editing, client-side grouping by provider and its own filter. Rows are edited in place, never navigated to | Normalise the search input to `input-group has-search` + Go |
-| B.5 | Deployment plan steps | `DeploymentPlan/{id}` | `OrchardCore.Deployment/Views/DeploymentPlan/Display.cshtml` | A sortable step pipeline (`#stepOrder`, `ui-sortable-handle`) inside an edit page. Order is the data; a Table/Grid layout would break reordering. The plans **index** is eligible (A.2 #2.9) | None |
+| B.5 | Deployment plan steps | `DeploymentPlan/{id}` | `OrchardCore.Deployment/Views/DeploymentPlan/Display.cshtml` | A sortable step pipeline (`#stepOrder`, `ui-sortable-handle`) inside an edit page. Order is the data; a column layout would break its reordering script. The plans **index** is eligible (A.2 #2.9) | None |
 | B.6 | Workflow designer | `Workflows/Types/{id}` | `OrchardCore.Workflows/Views/WorkflowType/Edit.cshtml` | An activity graph canvas with connectors. Not a list at all | None |
 | B.7 | CORS Policies | `Cors` | `OrchardCore.Cors/Views/Admin/Index.cshtml` | A Vue master/detail SPA: the list (`v-for="policy in policies"`) is client-rendered from a JSON model and swapped for a `<policy-details>` editor component in place. There is no server-side row to drive | Normalise the search input to `input-group has-search` + Go |
 | B.8 | GraphQL | `GraphQL` | `OrchardCore.Apis.GraphQL/Views/Admin/Index.cshtml` | Hosts the GraphiQL explorer. No records | None |
@@ -279,15 +279,14 @@ Then, with the Playwright MCP server:
 1. Navigate to the screen's admin route (Part A) and sign in as admin.
 2. `browser_snapshot` — confirm the action bar, search box, Go button, toolbar, rows and pager.
 3. Set **Layout = List** in `Settings → Admin` (`/Admin/Settings/admin`), reload, screenshot.
-4. Set **Layout = Table**, reload, screenshot. Confirm every column header appears and no cell is
-   empty that should not be.
-5. Set **Layout = Grid**, reload, screenshot. Confirm the header lines up with the data.
-6. Set **Row actions = Menu**, reload, confirm the kebab menu contains every action.
-7. Set **Row actions = Buttons**, reload, confirm the button group.
-8. `browser_resize` to 480x900 — confirm the container query stacks the columns and nothing overflows.
-9. Type in the search box and press Enter, then click **Go** — confirm both filter.
-10. If the list has bulk actions: tick `select-all`, confirm the count label and the Actions dropdown.
-11. `browser_console_messages` — no new errors.
+4. Set **Layout = Grid**, reload, screenshot. Confirm every column header appears, the header lines
+   up with the data, and no cell is empty that should not be.
+5. Set **Row actions = Menu**, reload, confirm the kebab menu contains every action.
+6. Set **Row actions = Buttons**, reload, confirm the button group.
+7. `browser_resize` to 480x900 — confirm the container query stacks the columns and nothing overflows.
+8. Type in the search box and press Enter, then click **Go** — confirm both filter.
+9. If the list has bulk actions: tick `select-all`, confirm the count label and the Actions dropdown.
+10. `browser_console_messages` — no new errors.
 
 Record the outcome in section 6. Reset the layout setting to **List** before starting the next screen.
 
@@ -297,48 +296,48 @@ Record the outcome in section 6. Reset the layout setting to **List** before sta
 
 Legend: ☐ not started · ◐ in progress · ☑ converted, validated and pushed
 
-¹ The Grid layout cannot host a drag-sortable list (its rows are `display: contents`), so URL
-Rewriting renders the Table layout when Grid is configured. See open decision 3.
+¹ URL Rewriting is drag-sortable in both layouts: a row of the Grid layout is a subgrid of the list,
+so it has a box to drag. See open decision 3.
 
 ² The contents of a List content item follow the configured layout, except while drag-ordering is
 enabled: ordering is expressed by the List layout, which then wins.
 
-| Screen | Driver | Columns | Controller | View | List | Table | Grid | Buttons | Menu | Pushed |
-|--------|:------:|:-------:|:----------:|:----:|:----:|:-----:|:----:|:-------:|:----:|:------:|
-| Manage Content | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| Users | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| Indexes | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 1.1 URL Rewriting | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | n/a¹ | ☑ | ☑ | ☑ |
-| 1.2 Queries | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 2.16 Placements | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 1.4 Rate Limits | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 1.5 Audit Trail | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 1.6 Notifications | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 2.1 OpenID Applications | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 2.2 OpenID Scopes | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 2.3 Templates | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 2.4 Shortcode Templates | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 2.5 Admin Menus | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 2.6 Media Profiles | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 2.7 Feature Profiles | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 2.8 Background Tasks | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 2.9 Deployment Plans | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 2.10 Remote Instances | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 2.11 Remote Clients | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 2.12 Sitemaps | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 2.13 Sitemap Indexes | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 2.14 Workflow Types | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 2.15 Tenants | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 3.1 Roles | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 3.2 Content Types | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 3.3 Content Parts | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 3.4 Recipes | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 3.5 Sitemap Cache | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 3.7 Workflow Instances | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 3.8 List Part contents | ☑ | ☑ | ☑ | ☑ | ☑ | ☑² | ☑² | ☑ | ☑ | ☑ |
-| 4.1 Themes | — | — | — | — | — | — | — | — | — | — | *(moved to B.11, see decision 1)* |
-| 4.2 Features | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
-| 4.3 Layers | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| Screen | Driver | Columns | Controller | View | List | Grid | Buttons | Menu | Pushed |
+|--------|:------:|:-------:|:----------:|:----:|:----:|:----:|:-------:|:----:|:------:|
+| Manage Content | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| Users | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| Indexes | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 1.1 URL Rewriting | ☑ | ☑ | ☑ | ☑ | ☑ | n/a¹ | ☑ | ☑ | ☑ |
+| 1.2 Queries | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 2.16 Placements | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 1.4 Rate Limits | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 1.5 Audit Trail | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 1.6 Notifications | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 2.1 OpenID Applications | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 2.2 OpenID Scopes | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 2.3 Templates | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 2.4 Shortcode Templates | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 2.5 Admin Menus | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 2.6 Media Profiles | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 2.7 Feature Profiles | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 2.8 Background Tasks | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 2.9 Deployment Plans | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 2.10 Remote Instances | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 2.11 Remote Clients | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 2.12 Sitemaps | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 2.13 Sitemap Indexes | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 2.14 Workflow Types | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 2.15 Tenants | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 3.1 Roles | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 3.2 Content Types | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 3.3 Content Parts | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 3.4 Recipes | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 3.5 Sitemap Cache | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 3.7 Workflow Instances | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 3.8 List Part contents | ☑ | ☑ | ☑ | ☑ | ☑ | ☑² | ☑ | ☑ | ☑ |
+| 4.1 Themes | — | — | — | — | — | — | — | — | — | *(moved to B.11, see decision 1)* |
+| 4.2 Features | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
+| 4.3 Layers | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ | ☑ |
 
 Part B screens are not tracked here. Their optional cosmetic fixes land in Batch G.
 
@@ -350,24 +349,24 @@ Resolve each before the batch that needs it, and record the answer here.
 
 1. **Themes (B.11)** — the theme cards must keep looking like cards.
    *Correction to the premise of this decision:* the `Grid` layout is not a card gallery. It renders
-   the same columns as `Table` with a CSS grid, with a header row and one cell per column, so a theme
+   one column per `AdminListColumn` with a CSS grid, with a header row and one cell per column, so a theme
    would lose its screenshot and its footers. The real options are:
    - add a `Cards` layout to the `AdminList` shape (one card per row shape, in a responsive column
      grid) and make it the default of the `Themes` list, which needs decision 2; or
    - leave the page as it is. It is parked in Part B (B.11) until this is decided.
    *Recommendation: the `Cards` layout.* It is the presentation this page already has, several other
    pages pick cards for the same reason (the recipe and rule pickers, the shortcodes table), and it
-   would give every list a fourth layout to switch to.
+   would give every list a third layout to switch to.
    *Decision: pending — nothing was built for it.*
 2. **Per-list default layout** — should `AdminListOptions` support a default per list name
    (Themes → Cards) rather than one site-wide default? Needed by decision 1, and by any list whose
    rows only make sense in one layout, e.g. a sortable one.
    *Decision: pending.*
 3. **Sortable lists** — URL Rewriting (1.1), List Part ordering (3.8) and the Layers list (4.3) are
-   drag-sortable. The rows container differs per layout (`<ul>`, `<tbody>`, `.admin-list-grid-body`),
+   drag-sortable. The rows container differs per layout (`<ul>`, `.admin-list-grid-body`),
    so `sortingListManager.create(selector)` had no stable target.
    *Decision: settled with the URL Rewriting conversion.* The `AdminList` shape takes a
-   `RowsAttributes` dictionary, rendered on the rows container of all three layouts, so a page can
+   `RowsAttributes` dictionary, rendered on the rows container of every layout, so a page can
    give that container the id its sortable script needs.
    Two things found while validating it, contradicting the earlier note here:
    - SortableJS `evt.oldIndex`/`evt.newIndex` count **every** sibling, so the toolbar `<li>` of the
@@ -375,9 +374,12 @@ Resolve each before the batch that needs it, and record the answer here.
      the List layout and silently ignored the first row in the Table layout. `sortable-rules.js` now
      sends `oldDraggableIndex`/`newDraggableIndex` + 1, which counts only the `.item` rows and is
      therefore the same in every layout.
-   - The Grid layout cannot be dragged at all: its rows are `display: contents`, so they have no box
-     for SortableJS to pick up. A sortable list must fall back to `Table` when `Grid` is configured
-     (URL Rewriting does this in its controller), or force `List` the way List Part ordering does.
+   - The Grid layout could not be dragged at first: its rows were `display: contents`, so they had no
+     box for SortableJS to pick up, and URL Rewriting fell back to a `Table` layout when `Grid` was
+     configured. The `Table` layout is gone now, and a row of the Grid layout is a subgrid of the list
+     instead: it has a box of its own while its cells stay on the tracks of the list, so the rules are
+     dragged in the Grid layout as they are in the List layout. List Part still forces `List` while
+     ordering is on.
 4. **Toolbar vs Header** — screens with an options editor use `Header`, the rest use
    `AdminListToolbar`. Confirm we are not consolidating these into one before Batch D starts.
    *Decision: pending.*
@@ -412,8 +414,8 @@ Resolve each before the batch that needs it, and record the answer here.
 - [x] Unit tests: `AdminListDefinitionsTests` finds every list by reflection instead of one test per
       name, so a list added later is checked without touching the test.
 - [x] Note in the release doc that per-type row templates (for example
-      `Content-BlogPost.SummaryAdmin.cshtml`) only apply in the `List` layout; customising Table and
-      Grid uses `AdminListCell-{List}-{Column}.cshtml`.
+      `Content-BlogPost.SummaryAdmin.cshtml`) only apply in the `List` layout; customising the
+      Grid layout uses `AdminListCell-{List}-{Column}.cshtml`.
 
 ---
 
@@ -424,6 +426,6 @@ Resolve each before the batch that needs it, and record the answer here.
 | Bulk actions silently break when the checkbox moves into a zone | Keep `#select-all` and `name="itemIds"` verbatim; step 10 of the validation protocol |
 | Client-side search stops matching | Set `data-filter-value` on the **row shape**, not in the layout template |
 | A theme or site overrode a row template that no longer renders | Call it out in the release notes; the old template still works under the `List` layout |
-| Sortable lists (List Part, Layers) break under Table/Grid | Open decision 3 |
+| Sortable lists (List Part, Layers) break under Grid | Open decision 3 |
 | A module adds columns twice because its provider is registered twice | `AddAdminListColumnProvider<T>` already uses `TryAddEnumerable` — do not register manually |
 | A batched commit makes one screen's regression hard to isolate | One screen per commit, pushed before the next starts — section 0 |

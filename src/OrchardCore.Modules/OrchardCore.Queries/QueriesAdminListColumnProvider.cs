@@ -6,7 +6,7 @@ namespace OrchardCore.Queries;
 
 /// <summary>
 /// Declares the columns of the <see cref="QueriesAdminList"/> list, used by the layouts with columns, e.g.
-/// <c>Table</c>. Each column renders one or more zones of the <c>Query_SummaryAdmin</c> shape.
+/// <c>Grid</c>. Each column renders one or more zones of the <c>Query_SummaryAdmin</c> shape.
 /// </summary>
 public sealed class QueriesAdminListColumnProvider : IAdminListColumnProvider
 {

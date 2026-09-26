@@ -107,7 +107,7 @@ public sealed class AdminController : Controller
 
         var header = await _auditTrailOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
 
-        // The AdminList shape renders the events with the configured layout (List, Table, ...).
+        // The AdminList shape renders the events with the configured layout (List, Grid, ...).
         var list = await adminListFactory.CreateAsync(new AdminListContext(AuditTrailAdminList.Name)
         {
             Rows = items,

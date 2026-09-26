@@ -190,7 +190,7 @@ public sealed class AdminController : Controller
 
         var header = await _userOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
 
-        // The AdminList shape renders the users with the configured layout (List, Table, ...).
+        // The AdminList shape renders the users with the configured layout (List, Grid, ...).
         var listShape = await adminListFactory.CreateAsync(new AdminListContext(UsersAdminList.Name)
         {
             Rows = userEntries.Select(entry => entry.Shape).ToList(),

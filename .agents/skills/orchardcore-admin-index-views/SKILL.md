@@ -1,6 +1,6 @@
 ---
 name: orchardcore-admin-index-views
-description: Builds OrchardCore admin index (list) pages with the AdminList shape — switchable List/Table/Grid layouts, columns mapped to row zones, the search bar, toolbar, pager and page size selector as parts of the shape, IAdminListService, IAdminListColumnProvider, row actions, per-list template alternates, and client-side search. Use when creating or converting an admin listing page (Index.cshtml, *AdminList.cshtml), adding or reordering its columns, overriding the template of one list, or changing how its rows and actions render.
+description: Builds OrchardCore admin index (list) pages with the AdminList shape — switchable List/Grid layouts, columns mapped to row zones, the search bar, toolbar, pager and page size selector as parts of the shape, IAdminListService, IAdminListColumnProvider, row actions, per-list template alternates, and client-side search. Use when creating or converting an admin listing page (Index.cshtml, *AdminList.cshtml), adding or reordering its columns, overriding the template of one list, or changing how its rows and actions render.
 ---
 
 # OrchardCore Admin Index Views
@@ -22,7 +22,7 @@ The layout only decides **how** the already-built rows are presented:
 The layout comes from `AdminListOptions`, which binds the `OrchardCore:AdminList` configuration section and is then overridden by the site settings. It follows the signal-backed options pattern, so consumers read `IOptionsMonitor<AdminListOptions>.CurrentValue` and the settings driver calls `IOptionsUpdateNotifier.RequestUpdate<AdminListOptions>()`. Never hard-code a layout name in a page; resolve it with `IAdminListService`.
 
 - `List` renders each row shape whole, so the row template (`Content.SummaryAdmin.cshtml`) decides the look.
-- `Table` and `Grid` render one **column** per `AdminListColumn`, and a column is a set of **row zones**. The row template is not used.
+- `Grid` renders one **column** per `AdminListColumn`, and a column is a set of **row zones**. The row template is not used.
 
 Because a column is just a list of zones, adding a column never means touching the layout templates — it means placing a shape in a zone.
 
@@ -385,7 +385,7 @@ The actions sit beside the whole row, centred on it, and the description is insi
 8. **Per-type row templates do not apply in column layouts.** `Content-BlogPost.SummaryAdmin.cshtml` is only used by the `List` layout. Customize a column with `AdminListCell-{ListName}-{Column}.cshtml` instead.
 9. **Never wrap `ActionsMenu` items in `<li>`.** The dropdown sits inside the `<li>` of the row in the `List` layout, and the parser hoists a nested `<li>` out of it, taking the rest of the row with it: the menu renders empty and stray links appear under the list.
 10. **Register the row driver in the feature that owns the list.** A driver registered in a neighbouring feature leaves every row empty on a site where that feature is off — the rows render, with no name, no badges and no buttons.
-11. **A sortable list cannot use the `Grid` layout.** Its rows are `display: contents`, so they have no box to drag. Fall back to `Table`, or force `List` when ordering is on. Mark the rows container with `RowsAttributes` and send SortableJS `oldDraggableIndex`/`newDraggableIndex`, which count only the rows.
+11. **A sortable list drags the rows, never their container.** A row of the `Grid` layout is a subgrid of the list, so it has a box to drag, but the element holding the rows is `display: contents` and measures as nothing. Mark that element with `RowsAttributes` and send SortableJS `oldDraggableIndex`/`newDraggableIndex`, which count only the rows, so the indexes are the same in every layout.
 12. **A shape type is `typeof(TModel).Name`.** `DisplayManager<TModel>` uses it verbatim, so register the driver against a domain model named exactly what the shape should be called, never a `*ViewModel`.
 
 ## References

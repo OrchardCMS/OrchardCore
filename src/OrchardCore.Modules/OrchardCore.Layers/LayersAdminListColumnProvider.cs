@@ -6,7 +6,7 @@ namespace OrchardCore.Layers;
 
 /// <summary>
 /// Declares the columns of the <see cref="LayersAdminList"/> list, used by the layouts with columns, e.g.
-/// <c>Table</c>. Each column renders one or more zones of the <c>Layer_SummaryAdmin</c> shape. There is no bulk
+/// <c>Grid</c>. Each column renders one or more zones of the <c>Layer_SummaryAdmin</c> shape. There is no bulk
 /// action: the checkbox of a row reveals the widgets of that layer.
 /// </summary>
 public sealed class LayersAdminListColumnProvider : IAdminListColumnProvider

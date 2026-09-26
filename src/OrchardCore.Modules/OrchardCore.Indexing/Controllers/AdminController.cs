@@ -154,7 +154,7 @@ public sealed class AdminController : Controller
             BulkActions = viewModel.Options.BulkActions,
         }));
 
-        // The AdminList shape renders the index profiles with the configured layout (List, Table, ...).
+        // The AdminList shape renders the index profiles with the configured layout (List, Grid, ...).
         viewModel.List = await adminListFactory.CreateAsync(new AdminListContext(IndexingAdminList.Name)
         {
             Rows = rows,

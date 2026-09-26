@@ -16,12 +16,12 @@ public class AdminListShapeTableProviderTests
         var shape = new Shape();
         shape.Metadata.Type = AdminListConstants.ShapeType;
         shape.Properties["Name"] = "Contents";
-        shape.Properties["Layout"] = AdminListConstants.Table;
+        shape.Properties["Layout"] = AdminListConstants.Grid;
 
         await DisplayAsync(AdminListConstants.ShapeType, shape);
 
         Assert.Equal(
-            ["AdminList__Table", "AdminList__Contents", "AdminList__Contents__Table"],
+            ["AdminList__Grid", "AdminList__Contents", "AdminList__Contents__Grid"],
             shape.Metadata.Alternates.ToArray());
     }
 
@@ -76,7 +76,7 @@ public class AdminListShapeTableProviderTests
         var shape = new Shape();
         shape.Metadata.Type = AdminListConstants.ShapeType;
         shape.Properties["Name"] = "Contents";
-        shape.Properties["Layout"] = AdminListConstants.Table;
+        shape.Properties["Layout"] = AdminListConstants.Grid;
         shape.Properties["Toolbar"] = toolbar;
         shape.Properties["Search"] = search;
         shape.Properties["Pager"] = pager;
@@ -90,9 +90,9 @@ public class AdminListShapeTableProviderTests
         Assert.Equal("Contents", row.Properties["ListName"]);
 
         // The layout rendering the list is stamped as well, so a part can be overridden for one layout.
-        Assert.Equal(AdminListConstants.Table, toolbar.Properties["ListLayout"]);
-        Assert.Equal(AdminListConstants.Table, search.Properties["ListLayout"]);
-        Assert.Equal(AdminListConstants.Table, row.Properties["ListLayout"]);
+        Assert.Equal(AdminListConstants.Grid, toolbar.Properties["ListLayout"]);
+        Assert.Equal(AdminListConstants.Grid, search.Properties["ListLayout"]);
+        Assert.Equal(AdminListConstants.Grid, row.Properties["ListLayout"]);
 
         // A part that already names a list keeps it, e.g. a list rendered inside another one.
         Assert.Equal("SomethingElse", namedRow.Properties["ListName"]);
@@ -115,12 +115,12 @@ public class AdminListShapeTableProviderTests
         var search = new Shape();
         search.Metadata.Type = AdminListConstants.SearchShapeType;
         search.Properties["ListName"] = "Contents";
-        search.Properties["ListLayout"] = AdminListConstants.Table;
+        search.Properties["ListLayout"] = AdminListConstants.Grid;
 
         await DisplayAsync(AdminListConstants.SearchShapeType, search);
 
         Assert.Equal(
-            ["AdminListSearch__Table", "AdminListSearch__Contents", "AdminListSearch__Contents__Table"],
+            ["AdminListSearch__Grid", "AdminListSearch__Contents", "AdminListSearch__Contents__Grid"],
             search.Metadata.Alternates.ToArray());
     }
 
@@ -206,7 +206,7 @@ public class AdminListShapeTableProviderTests
 
         var selector = Assert.IsAssignableFrom<IShape>(shape.Properties["LayoutSelector"]);
         Assert.Equal("Contents", selector.Properties["ListName"]);
-        Assert.Equal(AdminListConstants.Table, selector.Properties["Current"]);
+        Assert.Equal(AdminListConstants.Grid, selector.Properties["Current"]);
         Assert.Equal(2, ((IEnumerable<AdminListLayoutOption>)selector.Properties["Layouts"]).Count());
     }
 
@@ -226,7 +226,7 @@ public class AdminListShapeTableProviderTests
         var shape = new Shape();
         shape.Metadata.Type = AdminListConstants.ShapeType;
         shape.Properties["Name"] = "Contents";
-        shape.Properties["Layout"] = AdminListConstants.Table;
+        shape.Properties["Layout"] = AdminListConstants.Grid;
 
         return shape;
     }
@@ -239,7 +239,7 @@ public class AdminListShapeTableProviderTests
             .ReturnsAsync(new List<AdminListLayoutOption>
             {
                 new() { Name = AdminListConstants.List, Url = "?layout=List" },
-                new() { Name = AdminListConstants.Table, Url = "?layout=Table" },
+                new() { Name = AdminListConstants.Grid, Url = "?layout=Grid" },
             });
 
         return new ServiceCollection()

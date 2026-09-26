@@ -14,14 +14,14 @@ public class AdminListOptionsConfigurationTests
         var site = new SiteSettings();
         site.Put(new AdminSettings
         {
-            ListLayout = AdminListConstants.Table,
+            ListLayout = AdminListConstants.Grid,
             ListActionsLayout = AdminListActionsLayouts.Menu,
             AllowUserListLayoutSelection = true,
         });
 
-        var options = Configure(new AdminListOptions { DefaultLayout = AdminListConstants.Grid }, site);
+        var options = Configure(new AdminListOptions { DefaultLayout = AdminListConstants.List }, site);
 
-        Assert.Equal(AdminListConstants.Table, options.DefaultLayout);
+        Assert.Equal(AdminListConstants.Grid, options.DefaultLayout);
         Assert.Equal(AdminListActionsLayouts.Menu, options.DefaultActionsLayout);
         Assert.True(options.AllowUserSelection);
     }
@@ -53,9 +53,9 @@ public class AdminListOptionsConfigurationTests
         var site = new SiteSettings();
         site.Put(new AdminSettings { ListActionsLayout = " Menu " });
 
-        var options = Configure(new AdminListOptions { DefaultLayout = " Table " }, site);
+        var options = Configure(new AdminListOptions { DefaultLayout = " Grid " }, site);
 
-        Assert.Equal(AdminListConstants.Table, options.DefaultLayout);
+        Assert.Equal(AdminListConstants.Grid, options.DefaultLayout);
         Assert.Equal(AdminListActionsLayouts.Menu, options.DefaultActionsLayout);
     }
 

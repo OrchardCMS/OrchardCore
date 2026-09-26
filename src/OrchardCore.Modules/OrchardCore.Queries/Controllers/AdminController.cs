@@ -115,7 +115,7 @@ public sealed class AdminController : Controller
             BulkActions = model.Options.ContentsBulkAction,
         }));
 
-        // The AdminList shape renders the queries with the configured layout (List, Table, ...).
+        // The AdminList shape renders the queries with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(QueriesAdminList.Name)
         {
             Rows = model.Queries.Select(entry => entry.Shape).ToList(),

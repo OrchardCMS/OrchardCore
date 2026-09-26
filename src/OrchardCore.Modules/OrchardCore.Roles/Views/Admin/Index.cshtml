@@ -37,7 +37,7 @@
     <form asp-action="Index" class="roles">
         <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
 
-        @* The roles are rendered by the AdminList shape using the configured layout (List, Table, ...). *@
+        @* The roles are rendered by the AdminList shape using the configured layout (List, Grid, ...). *@
         @await DisplayAsync(Model.List)
     </form>
 

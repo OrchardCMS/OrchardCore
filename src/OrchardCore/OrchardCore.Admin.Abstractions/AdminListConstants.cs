@@ -5,8 +5,8 @@
 /// </summary>
 /// <remarks>
 /// A layout is a named presentation of an admin list. It is rendered by the <c>AdminList</c> shape using the
-/// alternate <c>AdminList__{Layout}</c> (e.g. <c>AdminList-Table.cshtml</c>). A layout is made available in the
-/// admin settings when a shape named <c>AdminListLayout_Option__{Layout}</c> exists (e.g. <c>AdminListLayout-Table.Option.cshtml</c>),
+/// alternate <c>AdminList__{Layout}</c> (e.g. <c>AdminList-Grid.cshtml</c>). A layout is made available in the
+/// admin settings when a shape named <c>AdminListLayout_Option__{Layout}</c> exists (e.g. <c>AdminListLayout-Grid.Option.cshtml</c>),
 /// which mirrors how content field editors are discovered.
 /// </remarks>
 public static class AdminListConstants
@@ -17,13 +17,8 @@ public static class AdminListConstants
     public const string List = "List";
 
     /// <summary>
-    /// Renders the items as a table, one column per <see cref="Models.AdminListColumn"/>.
-    /// </summary>
-    public const string Table = "Table";
-
-    /// <summary>
-    /// Renders the items with the same columns as <see cref="Table"/> but with a CSS grid instead of a table,
-    /// so the header always lines up with the data.
+    /// Renders the items with one column per <see cref="Models.AdminListColumn"/>, laid out with a CSS grid so the
+    /// header always lines up with the data.
     /// </summary>
     public const string Grid = "Grid";
 
@@ -64,7 +59,7 @@ public static class AdminListConstants
     public const string ListLayoutProperty = "ListLayout";
 
     /// <summary>
-    /// The prefix of the shapes that declare an available layout, e.g. <c>AdminListLayout_Option__Table</c>.
+    /// The prefix of the shapes that declare an available layout, e.g. <c>AdminListLayout_Option__Grid</c>.
     /// </summary>
     public const string OptionShapePrefix = "AdminListLayout_Option__";
 }

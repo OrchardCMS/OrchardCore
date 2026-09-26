@@ -33,7 +33,7 @@
     <input asp-for="BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
 
-    @* The policies, the toolbar and the pager are rendered by the AdminList shape using the configured layout (List, Table, ...). *@
+    @* The policies, the toolbar and the pager are rendered by the AdminList shape using the configured layout (List, Grid, ...). *@
     @await DisplayAsync(Model.List)
 </form>
 

@@ -259,7 +259,7 @@ public sealed class AdminController : Controller, IUpdateModel
 
         var header = await _contentOptionsDisplayManager.BuildEditorAsync(options, this, false, string.Empty, string.Empty);
 
-        // The AdminList shape renders the items with the configured layout (List, Table, ...).
+        // The AdminList shape renders the items with the configured layout (List, Grid, ...).
         var list = new AdminListContext(ContentsAdminList.Name)
         {
             // ListContentsViewModel.ContentItems keeps the summaries as dynamic for the templates that read it.

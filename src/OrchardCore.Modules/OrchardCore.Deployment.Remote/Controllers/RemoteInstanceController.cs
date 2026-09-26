@@ -113,7 +113,7 @@ public sealed class RemoteInstanceController : Controller
             BulkActions = model.Options.ContentsBulkAction,
         }));
 
-        // The AdminList shape renders the rows with the configured layout (List, Table, ...).
+        // The AdminList shape renders the rows with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(RemoteInstancesAdminList.Name)
         {
             Rows = rows,

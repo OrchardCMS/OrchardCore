@@ -57,12 +57,13 @@ public class DefaultAdminListFactoryTests
     {
         var (factory, layoutResolver, _) = CreateFactory(_columns, AdminListConstants.Grid);
 
-        var shape = await factory.CreateAsync(new AdminListContext("UrlRewriting")
+        // e.g. the items of a list part ordered by dragging them, which the page renders with the List layout.
+        var shape = await factory.CreateAsync(new AdminListContext("ListPartContents")
         {
-            Layout = AdminListConstants.Table,
+            Layout = AdminListConstants.List,
         }, TestContext.Current.CancellationToken);
 
-        Assert.Equal(AdminListConstants.Table, shape.Properties["Layout"]);
+        Assert.Equal(AdminListConstants.List, shape.Properties["Layout"]);
         layoutResolver.Verify(r => r.GetLayoutAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 

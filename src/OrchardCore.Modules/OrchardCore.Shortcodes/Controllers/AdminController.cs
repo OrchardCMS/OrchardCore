@@ -129,7 +129,7 @@ public sealed class AdminController : Controller
             BulkActions = model.Options.ContentsBulkAction,
         }));
 
-        // The AdminList shape renders the templates with the configured layout (List, Table, ...).
+        // The AdminList shape renders the templates with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(ShortcodesAdminList.Name)
         {
             Rows = rows,

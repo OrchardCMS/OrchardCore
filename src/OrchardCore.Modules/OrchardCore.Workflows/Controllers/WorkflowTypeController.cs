@@ -185,7 +185,7 @@ public sealed class WorkflowTypeController : Controller
             BulkActions = model.Options.WorkflowTypesBulkAction,
         }));
 
-        // The AdminList shape renders the types with the configured layout (List, Table, ...).
+        // The AdminList shape renders the types with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(WorkflowTypesAdminList.Name)
         {
             Rows = rows,

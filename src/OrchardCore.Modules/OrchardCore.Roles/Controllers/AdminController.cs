@@ -129,7 +129,7 @@ public sealed class AdminController : Controller
             ShowSelectAll = false,
         }));
 
-        // The AdminList shape renders the roles with the configured layout (List, Table, ...).
+        // The AdminList shape renders the roles with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(RolesAdminList.Name)
         {
             Rows = rows,

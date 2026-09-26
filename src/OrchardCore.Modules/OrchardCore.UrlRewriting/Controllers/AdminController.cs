@@ -60,8 +60,7 @@ public sealed class AdminController : Controller
     public async Task<IActionResult> Index(
         RewriteRuleOptions options,
         [FromServices] IShapeFactory shapeFactory,
-        [FromServices] IAdminListFactory adminListFactory,
-        [FromServices] IAdminListLayoutResolver layoutResolver)
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewritingRules))
         {
@@ -111,19 +110,9 @@ public sealed class AdminController : Controller
             BulkActions = model.Options.BulkActions,
         }));
 
-        var layout = await layoutResolver.GetLayoutAsync(UrlRewritingAdminList.Name, HttpContext.RequestAborted);
-
-        // The rules are reordered by dragging them, which the Grid layout cannot express: its rows are laid out by
-        // the grid itself and have no box to drag, so the Table layout, which has the same columns, is used instead.
-        if (string.Equals(layout, AdminListConstants.Grid, StringComparison.OrdinalIgnoreCase))
-        {
-            layout = AdminListConstants.Table;
-        }
-
-        // The AdminList shape renders the rules with the configured layout (List, Table, ...).
+        // The AdminList shape renders the rules with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(UrlRewritingAdminList.Name)
         {
-            Layout = layout,
             Rows = model.Rules.Select(entry => entry.Shape).ToList(),
             // The rules are evaluated in order, so the element holding the rows is the one the script of the page
             // selects, reorders and saves, whichever layout renders it. See url-rewriting-admin-index.ts.

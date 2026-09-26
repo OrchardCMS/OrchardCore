@@ -123,7 +123,7 @@ public sealed class MediaProfilesController : Controller
             BulkActions = model.Options.ContentsBulkAction,
         }));
 
-        // The AdminList shape renders the profiles with the configured layout (List, Table, ...).
+        // The AdminList shape renders the profiles with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(MediaProfilesAdminList.Name)
         {
             Rows = rows,

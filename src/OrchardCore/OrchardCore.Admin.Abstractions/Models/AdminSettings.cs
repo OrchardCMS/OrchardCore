@@ -17,7 +17,7 @@ public class AdminSettings
     public bool ShowBreadcrumb { get; set; } = true;
 
     /// <summary>
-    /// The layout used to render admin lists, e.g. <see cref="AdminListConstants.List"/> or <see cref="AdminListConstants.Table"/>.
+    /// The layout used to render admin lists, e.g. <see cref="AdminListConstants.List"/> or <see cref="AdminListConstants.Grid"/>.
     /// When empty, <see cref="AdminListOptions.DefaultLayout"/> is used.
     /// </summary>
     public string ListLayout { get; set; }

@@ -6,7 +6,7 @@ namespace OrchardCore.Lists;
 
 /// <summary>
 /// Declares the columns of the <see cref="ListPartContentsAdminList"/> list, used by the layouts with columns, e.g.
-/// <c>Table</c>. There is no selection column: the contained items are managed one at a time, the list has no bulk
+/// <c>Grid</c>. There is no selection column: the contained items are managed one at a time, the list has no bulk
 /// actions.
 /// </summary>
 public sealed class ListPartContentsAdminListColumnProvider : IAdminListColumnProvider

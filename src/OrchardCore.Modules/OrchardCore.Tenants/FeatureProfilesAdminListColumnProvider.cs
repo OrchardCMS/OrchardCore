@@ -6,7 +6,7 @@ namespace OrchardCore.Tenants;
 
 /// <summary>
 /// Declares the columns of the <see cref="FeatureProfilesAdminList"/> list, used by the layouts with columns, e.g.
-/// <c>Table</c>. Each column renders one or more zones of the <c>FeatureProfileEntry_SummaryAdmin</c> shape.
+/// <c>Grid</c>. Each column renders one or more zones of the <c>FeatureProfileEntry_SummaryAdmin</c> shape.
 /// </summary>
 public sealed class FeatureProfilesAdminListColumnProvider : IAdminListColumnProvider
 {

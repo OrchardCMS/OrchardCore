@@ -26,7 +26,7 @@
 <form asp-action="List">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
 
-    @* The cached files are rendered by the AdminList shape using the configured layout (List, Table, ...). *@
+    @* The cached files are rendered by the AdminList shape using the configured layout (List, Grid, ...). *@
     @await DisplayAsync(Model.List)
 
     <div id="list-alert" class="alert alert-info my-3 d-none text-center" role="alert">

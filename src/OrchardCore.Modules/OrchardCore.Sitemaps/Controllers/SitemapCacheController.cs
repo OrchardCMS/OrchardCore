@@ -76,7 +76,7 @@ public sealed class SitemapCacheController : Controller
             ShowSelectAll = false,
         }));
 
-        // The AdminList shape renders the cached files with the configured layout (List, Table, ...).
+        // The AdminList shape renders the cached files with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(SitemapCacheAdminList.Name)
         {
             Rows = rows,

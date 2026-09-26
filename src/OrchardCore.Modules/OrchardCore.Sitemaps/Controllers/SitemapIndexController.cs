@@ -126,7 +126,7 @@ public sealed class SitemapIndexController : Controller
             BulkActions = model.Options.ContentsBulkAction,
         }));
 
-        // The AdminList shape renders the rows with the configured layout (List, Table, ...).
+        // The AdminList shape renders the rows with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(SitemapIndexesAdminList.Name)
         {
             Rows = rows,
