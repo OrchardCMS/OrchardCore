@@ -52,6 +52,8 @@ else
             Rows = rows,
             Pager = Model.Pager,
             ShowLayoutSelector = !enableOrdering,
+            // The contained items are managed one at a time, so the list has nothing to select.
+            ShowToolbar = false,
             ItemCssClass = "list-group-item list-group-item-action",
         }, Context.RequestAborted);
 

@@ -39,7 +39,6 @@ public sealed class SitemapCacheController : Controller
     }
 
     public async Task<IActionResult> List(
-        [FromServices] IShapeFactory shapeFactory,
         [FromServices] IDisplayManager<SitemapCacheEntry> displayManager,
         [FromServices] IUpdateModelAccessor updateModelAccessor,
         [FromServices] IAdminListFactory adminListFactory)
@@ -70,17 +69,11 @@ public sealed class SitemapCacheController : Controller
             rows.Add(shape);
         }
 
-        var toolbar = await shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
-        {
-            ItemsCount = rows.Count,
-            ShowSelectAll = false,
-        }));
-
         // The AdminList shape renders the cached files with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(SitemapCacheAdminList.Name)
         {
             Rows = rows,
-            Toolbar = toolbar,
+            ShowSelectAll = false,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no sitemaps cached for the moment."],
         }, HttpContext.RequestAborted);

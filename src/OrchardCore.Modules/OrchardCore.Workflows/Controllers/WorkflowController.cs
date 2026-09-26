@@ -173,21 +173,12 @@ public sealed class WorkflowController : Controller
             Options = viewModel.Options,
         }));
 
-        var toolbar = await _shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
-        {
-            ItemsCount = viewModel.Workflows.Count,
-            TotalItemCount = count,
-            StartIndex = viewModel.Workflows.Count > 0 ? pager.GetStartIndex() + 1 : 0,
-            EndIndex = pager.GetStartIndex() + viewModel.Workflows.Count,
-            BulkActions = viewModel.Options.WorkflowsBulkAction,
-            Actions = filters,
-        }));
-
         // The AdminList shape renders the instances with the configured layout (List, Grid, ...).
         viewModel.List = await adminListFactory.CreateAsync(new AdminListContext(WorkflowInstancesAdminList.Name)
         {
             Rows = rows,
-            Toolbar = toolbar,
+            BulkActions = viewModel.Options.WorkflowsBulkAction,
+            ToolbarActions = filters,
             Pager = viewModel.Pager,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no workflow instances at the moment."],

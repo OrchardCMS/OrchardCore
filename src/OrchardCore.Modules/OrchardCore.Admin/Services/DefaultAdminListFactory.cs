@@ -44,13 +44,31 @@ public sealed class DefaultAdminListFactory : IAdminListFactory
                 : AdminListConstants.List;
         }
 
+        var rows = context.Rows ?? [];
+        var toolbar = context.Toolbar;
+
+        // A list without an options editor or a toolbar of its own gets the generic one.
+        if (toolbar is null && context.Header is null && context.ShowToolbar)
+        {
+            // The toolbar counts the rows, which the layout then enumerates again, so rows that can only be
+            // enumerated once are kept.
+            if (!rows.TryGetNonEnumeratedCount(out var itemsCount))
+            {
+                var materialized = rows.ToList();
+                rows = materialized;
+                itemsCount = materialized.Count;
+            }
+
+            toolbar = await CreateToolbarAsync(context, itemsCount);
+        }
+
         var shape = await _shapeFactory.CreateAsync(AdminListConstants.ShapeType);
         var properties = shape.Properties;
 
         properties["Name"] = context.Name;
         properties["Layout"] = layout.Trim();
         properties["Columns"] = columns;
-        properties["Rows"] = context.Rows ?? [];
+        properties["Rows"] = rows;
 
         // There is nothing to switch to when the list can only be rendered as a list.
         properties["ShowLayoutSelector"] = context.ShowLayoutSelector && hasColumns;
@@ -59,7 +77,7 @@ public sealed class DefaultAdminListFactory : IAdminListFactory
         // passed them.
         SetIfNotNull(properties, "RowsAttributes", context.RowsAttributes);
         SetIfNotNull(properties, "Header", context.Header);
-        SetIfNotNull(properties, "Toolbar", context.Toolbar);
+        SetIfNotNull(properties, "Toolbar", toolbar);
         SetIfNotNull(properties, "Search", context.Search);
         SetIfNotNull(properties, "Actions", context.Actions);
         SetIfNotNull(properties, "Pager", context.Pager);
@@ -68,6 +86,38 @@ public sealed class DefaultAdminListFactory : IAdminListFactory
         SetIfNotNull(properties, "EmptyMessage", context.EmptyMessage);
 
         return shape;
+    }
+
+    // The item count of the page, and where it sits in the whole list: the pager knows the total and the page,
+    // and a list without one shows all of its items.
+    private async Task<IShape> CreateToolbarAsync(AdminListContext context, int itemsCount)
+    {
+        var totalItemCount = itemsCount;
+        var firstIndex = 0;
+
+        if (context.Pager is { } pager && pager.TryGetProperty<int>("TotalItemCount", out var pagerTotal))
+        {
+            totalItemCount = pagerTotal;
+
+            if (pager.TryGetProperty<int>("Page", out var page) && page > 1 && pager.TryGetProperty<int>("PageSize", out var pageSize))
+            {
+                firstIndex = (page - 1) * pageSize;
+            }
+        }
+
+        var toolbar = await _shapeFactory.CreateAsync(AdminListConstants.ToolbarShapeType);
+        var properties = toolbar.Properties;
+
+        properties["ItemsCount"] = itemsCount;
+        properties["TotalItemCount"] = totalItemCount;
+        properties["StartIndex"] = itemsCount > 0 ? firstIndex + 1 : 0;
+        properties["EndIndex"] = firstIndex + itemsCount;
+        properties["ShowSelectAll"] = context.ShowSelectAll;
+
+        SetIfNotNull(properties, "BulkActions", context.BulkActions);
+        SetIfNotNull(properties, "Actions", context.ToolbarActions);
+
+        return toolbar;
     }
 
     private static void SetIfNotNull(IDictionary<string, object> properties, string name, object value)

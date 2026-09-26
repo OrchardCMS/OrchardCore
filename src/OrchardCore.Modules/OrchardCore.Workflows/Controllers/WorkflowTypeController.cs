@@ -176,20 +176,11 @@ public sealed class WorkflowTypeController : Controller
             rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
         }
 
-        var toolbar = await _shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
-        {
-            ItemsCount = model.WorkflowTypes.Count,
-            TotalItemCount = count,
-            StartIndex = model.WorkflowTypes.Count > 0 ? pager.GetStartIndex() + 1 : 0,
-            EndIndex = pager.GetStartIndex() + model.WorkflowTypes.Count,
-            BulkActions = model.Options.WorkflowTypesBulkAction,
-        }));
-
         // The AdminList shape renders the types with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(WorkflowTypesAdminList.Name)
         {
             Rows = rows,
-            Toolbar = toolbar,
+            BulkActions = model.Options.WorkflowTypesBulkAction,
             Pager = model.Pager,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no workflow types for the moment."],

@@ -59,7 +59,6 @@ public sealed class AdminController : Controller
 
     public async Task<IActionResult> Index(
         RewriteRuleOptions options,
-        [FromServices] IShapeFactory shapeFactory,
         [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewritingRules))
@@ -101,15 +100,6 @@ public sealed class AdminController : Controller
             new SelectListItem(S["Delete"], nameof(RewriteRuleAction.Remove)),
         ];
 
-        var toolbar = await shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
-        {
-            ItemsCount = model.Rules.Count,
-            TotalItemCount = model.Rules.Count,
-            StartIndex = model.Rules.Count > 0 ? 1 : 0,
-            EndIndex = model.Rules.Count,
-            BulkActions = model.Options.BulkActions,
-        }));
-
         // The AdminList shape renders the rules with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(UrlRewritingAdminList.Name)
         {
@@ -125,7 +115,7 @@ public sealed class AdminController : Controller
                 ["data-sort-url"] = Url.RouteUrl(SortRulesEndpoint.RouteName, new { area = "OrchardCore.UrlRewriting" }),
                 ["data-sort-error-message"] = S["Unable to sort the list. Try refreshing your page and try again."],
             },
-            Toolbar = toolbar,
+            BulkActions = model.Options.BulkActions,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no rewrite rules at the moment."],
         }, HttpContext.RequestAborted);

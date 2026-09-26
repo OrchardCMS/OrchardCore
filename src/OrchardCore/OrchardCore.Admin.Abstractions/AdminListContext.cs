@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.Admin;
@@ -53,9 +54,36 @@ public sealed class AdminListContext
     public IShape Header { get; set; }
 
     /// <summary>
-    /// Alternative to <see cref="Header"/>: a shape rendered as is above the rows, e.g. <c>AdminListToolbar</c>.
+    /// Alternative to <see cref="Header"/>: a shape rendered as is above the rows, for a list that needs a toolbar
+    /// of its own. When the page sets neither, the factory builds the <c>AdminListToolbar</c> shape, see
+    /// <see cref="ShowToolbar"/>.
     /// </summary>
     public IShape Toolbar { get; set; }
+
+    /// <summary>
+    /// Whether the factory builds the <c>AdminListToolbar</c> shape when the page sets neither <see cref="Header"/>
+    /// nor <see cref="Toolbar"/>: the item count, taken from <see cref="Rows"/> and <see cref="Pager"/>, the
+    /// select-all checkbox and the <see cref="BulkActions"/>. Defaults to <see langword="true"/>. A list without a
+    /// toolbar, e.g. the recipes, turns it off.
+    /// </summary>
+    public bool ShowToolbar { get; set; } = true;
+
+    /// <summary>
+    /// The bulk actions offered by the toolbar the factory builds. The <see cref="SelectListItem.Value"/> of each
+    /// is the name of the action posted with the form.
+    /// </summary>
+    public IList<SelectListItem> BulkActions { get; set; }
+
+    /// <summary>
+    /// Whether the toolbar the factory builds precedes the item count with the select-all checkbox. Defaults to
+    /// <see langword="true"/>. A list whose rows cannot be selected turns it off.
+    /// </summary>
+    public bool ShowSelectAll { get; set; } = true;
+
+    /// <summary>
+    /// A shape rendered at the end of the toolbar the factory builds, e.g. the filters of the list.
+    /// </summary>
+    public IShape ToolbarActions { get; set; }
 
     /// <summary>
     /// The search bar of the list, e.g. the <c>AdminListSearch</c> shape, rendered in the action bar above the list.

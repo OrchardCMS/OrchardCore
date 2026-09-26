@@ -114,20 +114,11 @@ public sealed class MediaProfilesController : Controller
             rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
         }
 
-        var toolbar = await _shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
-        {
-            ItemsCount = model.MediaProfiles.Count,
-            TotalItemCount = count,
-            StartIndex = model.MediaProfiles.Count > 0 ? pager.GetStartIndex() + 1 : 0,
-            EndIndex = pager.GetStartIndex() + model.MediaProfiles.Count,
-            BulkActions = model.Options.ContentsBulkAction,
-        }));
-
         // The AdminList shape renders the profiles with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(MediaProfilesAdminList.Name)
         {
             Rows = rows,
-            Toolbar = toolbar,
+            BulkActions = model.Options.ContentsBulkAction,
             Pager = model.Pager,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no media profiles for the moment."],

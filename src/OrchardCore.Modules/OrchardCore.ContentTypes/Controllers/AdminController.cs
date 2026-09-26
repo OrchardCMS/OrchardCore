@@ -64,19 +64,17 @@ public sealed class AdminController : Controller
     }
 
     public Task<ActionResult> Index(
-        [FromServices] IShapeFactory shapeFactory,
         [FromServices] IDisplayManager<ContentTypeEntry> displayManager,
         [FromServices] IUpdateModelAccessor updateModelAccessor,
         [FromServices] IAdminListFactory adminListFactory)
     {
-        return List(shapeFactory, displayManager, updateModelAccessor, adminListFactory);
+        return List(displayManager, updateModelAccessor, adminListFactory);
     }
 
     #region Types
 
     [Admin("ContentTypes/List", "ListContentTypes")]
     public async Task<ActionResult> List(
-        [FromServices] IShapeFactory shapeFactory,
         [FromServices] IDisplayManager<ContentTypeEntry> displayManager,
         [FromServices] IUpdateModelAccessor updateModelAccessor,
         [FromServices] IAdminListFactory adminListFactory)
@@ -114,17 +112,11 @@ public sealed class AdminController : Controller
             rows.Add(shape);
         }
 
-        var toolbar = await shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
-        {
-            ItemsCount = rows.Count,
-            ShowSelectAll = false,
-        }));
-
         // The AdminList shape renders the types with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(ContentTypesAdminList.Name)
         {
             Rows = rows,
-            Toolbar = toolbar,
+            ShowSelectAll = false,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no content types for the moment."],
         }, HttpContext.RequestAborted);
@@ -537,7 +529,6 @@ public sealed class AdminController : Controller
 
     [Admin("ContentTypes/ListParts", "ListContentParts")]
     public async Task<ActionResult> ListParts(
-        [FromServices] IShapeFactory shapeFactory,
         [FromServices] IDisplayManager<ContentPartEntry> displayManager,
         [FromServices] IUpdateModelAccessor updateModelAccessor,
         [FromServices] IAdminListFactory adminListFactory)
@@ -577,17 +568,11 @@ public sealed class AdminController : Controller
             rows.Add(shape);
         }
 
-        var toolbar = await shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
-        {
-            ItemsCount = rows.Count,
-            ShowSelectAll = false,
-        }));
-
         // The AdminList shape renders the parts with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(ContentPartsAdminList.Name)
         {
             Rows = rows,
-            Toolbar = toolbar,
+            ShowSelectAll = false,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no content parts for the moment."],
         }, HttpContext.RequestAborted);

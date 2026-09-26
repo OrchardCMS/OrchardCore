@@ -86,7 +86,6 @@ public sealed class AdminController : Controller
     [Admin("Layers", "Layers.Index")]
     public async Task<IActionResult> Index(
         [FromServices] IDisplayManager<Layer> layerDisplayManager,
-        [FromServices] IShapeFactory shapeFactory,
         [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
@@ -131,17 +130,11 @@ public sealed class AdminController : Controller
             rows.Add(await layerDisplayManager.BuildDisplayAsync(layer, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
         }
 
-        var toolbar = await shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
-        {
-            ItemsCount = rows.Count,
-            ShowSelectAll = false,
-        }));
-
         // The AdminList shape renders the layers with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(LayersAdminList.Name)
         {
             Rows = rows,
-            Toolbar = toolbar,
+            ShowSelectAll = false,
             ItemCssClass = "list-group-item",
         }, HttpContext.RequestAborted);
 

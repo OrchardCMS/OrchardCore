@@ -1,6 +1,6 @@
 ---
 name: orchardcore-admin-index-views
-description: Builds OrchardCore admin index (list) pages with the AdminList shape — switchable List/Grid layouts, columns mapped to row zones, the search bar, toolbar, pager and page size selector as parts of the shape, IAdminListService, IAdminListColumnProvider, row actions, per-list template alternates, and client-side search. Use when creating or converting an admin listing page (Index.cshtml, *AdminList.cshtml), adding or reordering its columns, overriding the template of one list, or changing how its rows and actions render.
+description: Builds OrchardCore admin index (list) pages with the AdminList shape — switchable List/Grid layouts, columns mapped to row zones, the search bar, toolbar, pager and page size selector as parts of the shape, IAdminListFactory and AdminListContext, IAdminListColumnProvider, row actions, per-list template alternates, and client-side search. Use when creating or converting an admin listing page (Index.cshtml, *AdminList.cshtml), adding or reordering its columns, overriding the template of one list, or changing how its rows and actions render.
 ---
 
 # OrchardCore Admin Index Views
@@ -19,7 +19,7 @@ An admin index page has three layers. Only the first is written per page.
 
 The layout only decides **how** the already-built rows are presented:
 
-The layout comes from `AdminListOptions`, which binds the `OrchardCore:AdminList` configuration section and is then overridden by the site settings. It follows the signal-backed options pattern, so consumers read `IOptionsMonitor<AdminListOptions>.CurrentValue` and the settings driver calls `IOptionsUpdateNotifier.RequestUpdate<AdminListOptions>()`. Never hard-code a layout name in a page; resolve it with `IAdminListService`.
+The layout comes from `AdminListOptions`, which binds the `OrchardCore:AdminList` configuration section and is then overridden by the site settings. It follows the signal-backed options pattern, so consumers read `IOptionsMonitor<AdminListOptions>.CurrentValue` and the settings driver calls `IOptionsUpdateNotifier.RequestUpdate<AdminListOptions>()`. Never hard-code a layout name in a page: `IAdminListFactory` resolves it for the list, and a page only sets `AdminListContext.Layout` when it can be rendered one way alone.
 
 - `List` renders each row shape whole, so the row template (`Content.SummaryAdmin.cshtml`) decides the look.
 - `Grid` renders one **column** per `AdminListColumn`, and a column is a set of **row zones**. The row template is not used.
@@ -60,87 +60,99 @@ public override Task<IDisplayResult> DisplayAsync(IndexProfile indexProfile, Bui
 
 Anything still hard-coded in the row template (a title link, a type badge, a checkbox) must move into its own shape and zone, or it will vanish in the column layouts.
 
-### Step 2: Declare the list name and its default columns
+### Step 2: Name the list and declare its columns
 
-One static class per list, so the controller, the tests and any column provider share it:
+One static class publishes the name of the list, so the controller, the tests and any column provider share it:
 
 ```csharp
 public static class IndexingAdminList
 {
     public const string Name = "Indexes";
+}
+```
 
-    public static List<AdminListColumn> GetDefaultColumns(IStringLocalizer S) =>
-    [
-        new()
-        {
-            Name = "Select",
-            Position = "10",
-            Zones = ["Checkbox"],
-            CssClass = "admin-list-select",
-            Width = AdminListColumn.AutoWidth,
-        },
-        new()
+The columns come from an `IAdminListColumnProvider`, the module's own included, registered for the list by its
+name. `AdminListColumns.Select()` and `AdminListColumns.Actions(title)` are the selection and actions columns
+most lists share:
+
+```csharp
+public sealed class IndexingAdminListColumnProvider : IAdminListColumnProvider
+{
+    private readonly IStringLocalizer S;
+
+    public IndexingAdminListColumnProvider(IStringLocalizer<IndexingAdminListColumnProvider> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
+    public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancellationToken = default)
+    {
+        context.Columns.Add(AdminListColumns.Select());
+
+        context.Columns.Add(new AdminListColumn
         {
             // No width: this column takes the space left by the others.
             Name = "Name",
             Position = "20",
             Title = S["Name"],
             Zones = ["Content"],
-        },
-        new()
+        });
+
+        context.Columns.Add(new AdminListColumn
         {
             Name = "Source",
             Position = "30",
             Title = S["Source"],
             Zones = ["Tags"],
             Width = AdminListColumn.AutoWidth,
-        },
-        new()
-        {
-            // "end" keeps the actions last even when a feature appends a column.
-            Name = "Actions",
-            Position = "end",
-            Title = S["Actions"],
-            Zones = ["Actions", "ActionsMenu"],
-            Width = AdminListColumn.AutoWidth,
-            Alignment = AdminListColumnAlignment.End,
-        },
-    ];
+        });
+
+        // Position "end" keeps the actions last even when a feature appends a column.
+        context.Columns.Add(AdminListColumns.Actions(S["Actions"]));
+
+        return Task.CompletedTask;
+    }
 }
 ```
 
+```csharp
+// Startup: keyed by the list, so the provider is only created when that list is rendered.
+services.AddAdminListColumnProvider<IndexingAdminListColumnProvider>(IndexingAdminList.Name);
+```
+
+The provider needs no `if (context.ListName == ...)` check: registered with a list name, it only runs for
+that list. A column name is unique in its list, `context.Columns` is keyed by it and throws on a duplicate.
+
 ### Step 3: Build the `AdminList` shape in the controller
 
-Inject `IAdminListService` per action with `[FromServices]` and pass the request token:
+Describe the listing with an `AdminListContext` and hand it to `IAdminListFactory`, injected per action with
+`[FromServices]`. The factory builds the columns, resolves the layout and, for a list without an options
+editor, the toolbar:
 
 ```csharp
 public async Task<IActionResult> Index(
-    [FromServices] IShapeFactory shapeFactory,
-    [FromServices] IAdminListService adminListService,
-    PagerParameters pagerParameters)
+    IndexingEntityOptions options,
+    PagerParameters pagerParameters,
+    [FromServices] IAdminListFactory adminListFactory)
 {
     // ... query, pager and row shapes ...
 
-    viewModel.List = await shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
+    viewModel.List = await adminListFactory.CreateAsync(new AdminListContext(IndexingAdminList.Name)
     {
-        Name = IndexingAdminList.Name,
-        Layout = await adminListService.GetLayoutAsync(IndexingAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-        Columns = await adminListService.GetColumnsAsync(IndexingAdminList.Name, IndexingAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
         Rows = rows,
-        Toolbar = toolbar,
-        Search = await shapeFactory.CreateAsync("AdminListSearch", Arguments.From(new
-        {
-            Name = "Options.Search",
-            Value = options.Search,
-        })),
-        Actions = await shapeFactory.CreateAsync("IndexProfileCreateButton"),
+        BulkActions = viewModel.Options.BulkActions,
         Pager = viewModel.Pager,
-        EmptyMessage = H["There are no indexes at the moment."],
-    }));
+        ItemCssClass = "list-group-item",
+        EmptyMessage = H["<strong>Nothing here!</strong> There are no indexes at the moment."],
+    }, HttpContext.RequestAborted);
 
     return View(viewModel);
 }
 ```
+
+A page that renders its search bar and its buttons through the shape passes them too, as the templates list
+does: `Search = await shapeFactory.CreateAsync("AdminListSearch", Arguments.From(new { Name = "Options.Search", Value = options.Search }))`
+and `Actions = await shapeFactory.CreateAsync("TemplateCreateButton", ...)`, so the layout places them.
 
 ### Step 4: Render it
 
@@ -166,32 +178,31 @@ The selection and the client-side search are the shared components of `.scripts/
 a list only has to keep the well-known ids `#select-all`, `#items`, `#selected-items` and `#actions`, which
 `AdminListToolbar` renders.
 
-The hidden `submit.Filter` button stays first: it is what Enter in the search box triggers. The buttons of the page are a shape of their own (`Actions`), which keeps the route values and the localization in a template rather than in the controller:
+The hidden `submit.Filter` button stays first: it is what Enter in the search box triggers. Buttons passed as `Actions` are a shape of their own, which keeps the route values and the localization in a template rather than in the controller:
 
 ```html
-@* IndexProfileCreateButton.cshtml *@
-<a asp-action="Create" class="btn btn-secondary create" role="button">@T["Add index"]</a>
+@* TemplateCreateButton.cshtml *@
+@{
+    var adminTemplates = Model.AdminTemplates != null && (bool)Model.AdminTemplates;
+}
+
+<a asp-action="Create" asp-controller="Template" asp-route-admintemplates="@adminTemplates" asp-route-returnUrl="@FullRequestPath" class="btn btn-secondary create" role="button">@T["Add Template"]</a>
 ```
 
 A page with a filter dropdown before the search box adds it to the `Filters` zone of the `AdminListSearch` shape, which renders it inside the input group.
 
-### Step 5: Wire the toolbar
+### Step 5: The toolbar
 
-Two ways to fill the strip above the rows:
+The strip above the rows comes from one of three places:
 
-- **`Header`** — the options editor shape from `IDisplayManager<TOptions>.BuildEditorAsync()`. Its `Summary` zone renders on the left (count, select-all) and its `Actions` zone on the right (filters, bulk actions). Use this when the page already has an options editor, as Contents and Users do.
-- **`Toolbar`** — any shape, rendered as is. The generic `AdminListToolbar` shape covers the common case:
+- **Nothing to do** — a list without an options editor gets the generic `AdminListToolbar` from the factory:
+  the item count, taken from `Rows` and the `Pager` (its `Page`, `PageSize` and `TotalItemCount`), the
+  select-all checkbox and a dropdown of `BulkActions`. `ShowSelectAll = false` keeps the count alone for rows
+  that cannot be selected, and `ToolbarActions` renders a shape at its end, e.g. the filters of the list.
+- **`Header`** — the options editor shape from `IDisplayManager<TOptions>.BuildEditorAsync()`. Its `Summary` zone renders on the left (count, select-all) and its `Actions` zone on the right (filters, bulk actions). Use this when the page already has an options editor, as Contents and Users do. The factory builds no toolbar then.
+- **`Toolbar`** — a shape of your own, rendered as is, e.g. the rate limits pass one whose bulk actions carry their own warning. The factory builds no toolbar then.
 
-```csharp
-var toolbar = await shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
-{
-    ItemsCount = viewModel.Models.Count,
-    TotalItemCount = result.Count,
-    StartIndex = viewModel.Models.Count > 0 ? pager.GetStartIndex() + 1 : 0,
-    EndIndex = pager.GetStartIndex() + viewModel.Models.Count,
-    BulkActions = viewModel.Options.BulkActions,
-}));
-```
+A list with no toolbar at all, e.g. the recipes, sets `ShowToolbar = false`.
 
 ## Quick reference
 
@@ -200,16 +211,15 @@ var toolbar = await shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(
 | Property | Description |
 |----------|-------------|
 | `Name` | List name, e.g. `Contents`. Drives the `__{Name}` alternates and the column providers. |
-| `Layout` | From `IAdminListService.GetLayoutAsync()`. |
-| `Columns` | From `IAdminListService.GetColumnsAsync()`. |
+| `Layout` | `AdminListContext.Layout` when the page sets it, otherwise resolved by `IAdminListLayoutResolver.GetLayoutAsync()`. |
+| `Columns` | Built by `IAdminListColumnsBuilder` from the providers of the list. |
 | `Rows` | The row shapes. **Never call this `Items`** — see Gotchas. |
 | `Header` | Options editor shape (`Summary` + `Actions` zones). |
-| `Toolbar` | Alternative to `Header`; a shape rendered as is. |
+| `Toolbar` | Alternative to `Header`; a shape rendered as is. Built by the factory from `BulkActions`, `ShowSelectAll` and `ToolbarActions` when the page sets neither, unless `ShowToolbar` is false. |
 | `Search` | Optional. The search bar, usually the `AdminListSearch` shape (`Name`, `Value`, `Placeholder`, `Id`, `SubmitName`, `Autofocus`, and a `Filters` zone before the input). |
 | `Actions` | Optional. The buttons of the page, e.g. "Add", rendered beside the search. |
 | `PageSize` | Optional. The page size selector, built with `PageSizeSelector.BuildOptions()`. Set `ShowPageSizeSelector = false` on the pager when you pass it. |
 | `LayoutSelector` | Built for the list when the site lets a user choose their layout, so a page never passes it. Pass one to render your own instead. |
-| `ShowSelectAll` | On `AdminListToolbar`, not on the list: pass `false` when the rows cannot be selected, so the count is rendered without a select-all checkbox. |
 | `Pager` | The pager shape. It renders the page size selector itself unless `ShowPageSizeSelector` is false. |
 | `RowsAttributes` | Optional. `IDictionary<string, string>` rendered on the element wrapping the rows in every layout, e.g. the id a sortable script needs. |
 | `ItemCssClass` | Per-item classes in the `List` layout. |
@@ -252,14 +262,13 @@ the pager and puts the page size selector at its end.
 
 With **Let users choose the layout of a list** on, `AdminList` builds a `LayoutSelector` of its own and the
 layouts render it beside the item count. A click reloads with `?layout=Grid`, which
-`IAdminListService.GetLayoutAsync` honours and remembers in a cookie, per list. `GetAvailableLayoutsAsync()`
+`IAdminListLayoutResolver.GetLayoutAsync` honours and remembers in a cookie, per list. `GetAvailableLayoutsAsync()`
 returns what the site can render, and a layout the site does not have is ignored wherever it comes from.
 Nothing is needed from a page: the pager and the page size selector already keep the query string.
 
-A page shows one selector however many lists it renders, because `GetLayoutOptionsAsync` hands the offer to the
-first caller of the request. A page rendering one list per group, e.g. the features or the recipes, asks for
-the options itself before building its lists and places the selector in its own header: taking the offer there
-is what keeps its lists from carrying one each.
+A page rendering one list per group, e.g. the features or the recipes, turns the selector off on its lists with
+`ShowLayoutSelector = false` and places one selector in its own header, from
+`IAdminListLayoutResolver.GetLayoutOptionsAsync()`, so the page shows one selector however many lists it renders.
 
 ### Adding a layout — two files, no C#
 
@@ -288,17 +297,14 @@ public sealed class CultureColumnProvider : IAdminListColumnProvider
 
     public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancellationToken = default)
     {
-        if (context.ListName == "Contents")
+        // Between "Title" (20) and "Type" (30), whatever order the providers run in.
+        context.Columns.Add(new AdminListColumn
         {
-            // Between "Title" (20) and "Type" (30), whatever order the providers run in.
-            context.Columns.Add(new AdminListColumn
-            {
-                Name = "Culture",
-                Position = "25",
-                Title = S["Culture"],
-                Zones = ["Culture"],
-            });
-        }
+            Name = "Culture",
+            Position = "25",
+            Title = S["Culture"],
+            Zones = ["Culture"],
+        });
 
         return Task.CompletedTask;
     }
@@ -306,7 +312,8 @@ public sealed class CultureColumnProvider : IAdminListColumnProvider
 ```
 
 ```csharp
-services.AddAdminListColumnProvider<CultureColumnProvider>();
+// Only for the content items list. Registered without a list name, a provider runs for every list.
+services.AddAdminListColumnProvider<CultureColumnProvider>(ContentsAdminList.Name);
 ```
 
 Every part of a list carries the name of the list, so each part can be overridden for one list alone:
@@ -320,20 +327,17 @@ the list, except on `AdminListActions`, where it is `Buttons` or `Menu`.
 
 `context.Find(name)` and `context.Remove(name)` alter existing columns. Never rely on the position of a column in the collection; use `Position`.
 
-A provider often needs to know more than the name of the list: the content items list is the same list whether it shows every item or only the blog posts. The page passes what it knows as the `data` argument of `GetColumnsAsync`, and the provider reads it back from the context:
+A provider often needs to know more than the name of the list: the content items list is the same list whether it shows every item or only the blog posts. The page fills `AdminListContext.Data`, and the provider reads it back from its context:
 
 ```csharp
-var data = new Dictionary<string, object>
-{
-    [ContentsAdminList.ContentTypesKey] = new[] { "BlogPost" },
-};
+var list = new AdminListContext(ContentsAdminList.Name) { Rows = rows, Header = header, Pager = pagerShape };
+list.Data[ContentsAdminList.ContentTypesKey] = new[] { "BlogPost" };
 
-var columns = await adminListService.GetColumnsAsync(ContentsAdminList.Name, ContentsAdminList.GetDefaultColumns(S), data, HttpContext.RequestAborted);
+var listShape = await adminListFactory.CreateAsync(list, HttpContext.RequestAborted);
 ```
 
 ```csharp
-if (context.ListName == ContentsAdminList.Name &&
-    context.TryGetData<string[]>(ContentsAdminList.ContentTypesKey, out var contentTypes) &&
+if (context.TryGetData<string[]>(ContentsAdminList.ContentTypesKey, out var contentTypes) &&
     contentTypes.Contains("BlogPost"))
 {
     context.Columns.Add(new AdminListColumn { Name = "Category", Position = "25", Title = S["Category"], Zones = ["Category"] });
@@ -359,7 +363,7 @@ Every shipped row follows the same structure, so the lists look alike. Copy it w
         }
     </div>
     <div class="col-auto d-flex justify-content-end ps-2">
-        @await DisplayAsync(await New.AdminListActions(Row: Model))
+        @await DisplayAsync(await Factory.CreateAdminListActionsAsync((IShape)Model))
     </div>
 </div>
 ```
@@ -376,11 +380,11 @@ The actions sit beside the whole row, centred on it, and the description is insi
 ## Gotchas
 
 1. **Do not name the rows property `Items`.** `Shape` already exposes `Items` (its child shapes), so `Model.Items` in the template silently resolves to an empty collection and the list renders no rows. The property is `Rows`.
-2. **Both interface methods take a `CancellationToken` last, defaulted.** `IAdminListService` and `IAdminListColumnProvider` end every method with `CancellationToken cancellationToken = default`. Pass `HttpContext.RequestAborted` from controllers. `GetColumnsAsync` takes the optional `data` bag before it, so name the argument (`cancellationToken: HttpContext.RequestAborted`) when the page passes no data.
+2. **The async methods take a `CancellationToken` last, defaulted.** `IAdminListFactory.CreateAsync` and `IAdminListColumnProvider.BuildAsync` end with `CancellationToken cancellationToken = default`. Pass `HttpContext.RequestAborted` from controllers.
 3. **Keep the hidden `submit.Filter` button first in the form.** It is what Enter in the search box triggers. A visible Go button reuses the same name.
-4. **Client-side search needs per-row attributes.** Set them on the row shape, not in the layout: `rowShape.Classes.Add("item")` and `rowShape.Attributes["data-filter-value"] = ...`. Both column layouts render a row shape's `Classes` and `Attributes` on its `<tr>` or row element.
+4. **Client-side search needs per-row attributes.** Set them on the row shape, not in the layout: `rowShape.Classes.Add("item")` and `rowShape.Attributes["data-filter-value"] = ...`. Every layout renders a row shape's `Classes` and `Attributes` on its row element.
 5. **Bulk actions rely on names, not markup.** Keep `#select-all` and row checkboxes named consistently, and tell the `bulk-select-list` component the name with `data-checkbox-name`; it then works in any layout. A page that sorts its rows puts that class, and its `data-sort-url`, on the rows container through `RowsAttributes` (a `class` there joins the classes of the element), because the script sorts the element it is given.
-6. **Render row actions through `AdminListActions`.** In a row template use `@await DisplayAsync(await New.AdminListActions(Row: Model))` rather than hand-writing the button group, so the configured actions layout (Buttons or Menu) applies everywhere.
+6. **Render row actions through `AdminListActions`.** In a row template use `@await DisplayAsync(await Factory.CreateAdminListActionsAsync((IShape)Model))` rather than hand-writing the button group, so the configured actions layout (Buttons or Menu) applies everywhere.
 7. **Responsive behaviour is CSS, not Razor.** The stacking below 48rem is a container query on the list in `_admin-list.scss`. Do not add viewport-based Bootstrap classes such as `d-md-none` to the layouts; the sidebar makes the viewport a poor proxy for the list width.
 8. **Per-type row templates do not apply in column layouts.** `Content-BlogPost.SummaryAdmin.cshtml` is only used by the `List` layout. Customize a column with `AdminListCell-{ListName}-{Column}.cshtml` instead.
 9. **Never wrap `ActionsMenu` items in `<li>`.** The dropdown sits inside the `<li>` of the row in the `List` layout, and the parser hoists a nested `<li>` out of it, taking the rest of the row with it: the menu renders empty and stray links appear under the list.

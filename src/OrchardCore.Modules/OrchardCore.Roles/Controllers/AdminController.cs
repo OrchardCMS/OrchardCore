@@ -73,7 +73,6 @@ public sealed class AdminController : Controller
     }
 
     public async Task<ActionResult> Index(
-        [FromServices] IShapeFactory shapeFactory,
         [FromServices] IDisplayManager<RoleEntry> displayManager,
         [FromServices] IUpdateModelAccessor updateModelAccessor,
         [FromServices] IAdminListFactory adminListFactory)
@@ -123,17 +122,11 @@ public sealed class AdminController : Controller
             rows.Add(shape);
         }
 
-        var toolbar = await shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
-        {
-            ItemsCount = rows.Count,
-            ShowSelectAll = false,
-        }));
-
         // The AdminList shape renders the roles with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(RolesAdminList.Name)
         {
             Rows = rows,
-            Toolbar = toolbar,
+            ShowSelectAll = false,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no roles for the moment."],
         }, HttpContext.RequestAborted);

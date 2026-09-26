@@ -129,7 +129,8 @@ public sealed class AdminController : Controller
                 rows.Add(shape);
             }
 
-            // A category with nothing to select has no select-all checkbox, so it gets no toolbar at all.
+            // A category with nothing to select has no select-all checkbox, so it gets no toolbar at all, not even
+            // the generic one.
             var toolbar = hasSelectableFeature
                 ? await shapeFactory.CreateAsync("FeaturesGroupToolbar", Arguments.From(new
                 {
@@ -146,6 +147,7 @@ public sealed class AdminController : Controller
                     Layout = layout,
                     Rows = rows,
                     Toolbar = toolbar,
+                    ShowToolbar = false,
                     ShowLayoutSelector = false,
                     ItemCssClass = "list-group-item",
                 }, HttpContext.RequestAborted),

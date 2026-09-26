@@ -133,6 +133,8 @@ public sealed class AdminController : Controller
                     Layout = layout,
                     Rows = rows,
                     ShowLayoutSelector = false,
+                    // A recipe is run one at a time, so the list has nothing to count or select.
+                    ShowToolbar = false,
                     ItemCssClass = "list-group-item",
                 }, HttpContext.RequestAborted),
             });

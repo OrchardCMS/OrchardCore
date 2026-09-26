@@ -43,8 +43,8 @@ A screen is **converted** only when every box below is ticked.
 |---|-------------|---------------|
 | 1 | Rows come from a display driver as a `SummaryAdmin` shape — no hard-coded `<li>` row markup | `@await DisplayAsync(Model.List)` is the only row rendering in the view |
 | 2 | Every visible piece of a row (checkbox, title, badges, meta, buttons, menu items) lives in its own shape placed in a **zone** | Row template has no literal markup other than zone rendering |
-| 3 | A `{Module}AdminList` static class declares `Name` + `GetDefaultColumns(IStringLocalizer)` | File exists next to the module root |
-| 4 | Controller injects `IAdminListService` via `[FromServices]` and builds the `AdminList` shape with `Name`, `Layout`, `Columns`, `Rows`, `Toolbar`/`Header`, `Pager`, `EmptyMessage` | Controller `Index`/`List` action |
+| 3 | A `{Module}AdminList` static class declares `Name`, and a `{List}AdminListColumnProvider` declares the columns, registered with `AddAdminListColumnProvider<T>({List}AdminList.Name)` | Files exist next to the module root; `AdminListDefinitionsTests` passes |
+| 4 | Controller injects `IAdminListFactory` via `[FromServices]` and creates the list from an `AdminListContext` with `Rows`, `BulkActions` (or a `Header`), `Pager`, `EmptyMessage` | Controller `Index`/`List` action |
 | 5 | Rows carry `Classes.Add("item")` and `Attributes["data-filter-value"]` when the page uses client-side search | Controller loop over row shapes |
 | 6 | Action bar uses `row gx-2` (**not** `gx-3`) | `grep gx-3` returns nothing for the view |
 | 7 | Search box is an `input-group has-search` with a visible **Go** button (`name="submit.Filter"`) | View markup |
@@ -94,9 +94,9 @@ takes a line under them, the way the `summary` of the List layout stacks below `
 
 - `<ul class="list-group with-checkbox">` plus a hand-written `<li class="list-group-item text-bg-theme">`
   header row containing `select-all` / `items` / `selected-items` / `#actions` dropdown.
-  Replaced by the `AdminListToolbar` shape (or the options editor `Header`).
+  Replaced by the `AdminListToolbar` shape the factory builds (or the options editor `Header`).
 - `int startIndex = (Model.Pager.Page - 1) * Model.Pager.PageSize + 1;` computed in the view.
-  Moves to the controller and is passed to `AdminListToolbar`.
+  The factory derives the indexes from the rows and the pager.
 - `<div class="has-search">` without `input-group` and without the Go button.
 - `float-end` / `float-start` positioning inside rows — breaks the Grid layout.
 - Naming the rows property `Items` on the shape — silently renders nothing, it must be `Rows`.
@@ -116,10 +116,12 @@ takes a line under them, the way the `summary` of the List layout stacks below `
    > `Models/` when only a view model exists. Missing templates surface as
    > `InvalidOperationException: The shape type '...' is not found for the theme 'TheAdmin'`.
 2. **Row template** — `{Entity}.SummaryAdmin.cshtml` renders zones only. The actions zone uses
-   `@await DisplayAsync(await New.AdminListActions(Row: Model))`.
-3. **Columns** — add `{Module}AdminList.cs` with `Name` and `GetDefaultColumns(S)`.
-4. **Controller** — build the row shapes, then the `AdminListToolbar`, then the `AdminList` shape.
-   Pass `HttpContext.RequestAborted` to both `IAdminListService` calls.
+   `@await DisplayAsync(await Factory.CreateAdminListActionsAsync((IShape)Model))`.
+3. **Columns** — add `{Module}AdminList.cs` with `Name`, and a `{List}AdminListColumnProvider` registered for
+   the list with `services.AddAdminListColumnProvider<T>({List}AdminList.Name)`.
+4. **Controller** — build the row shapes, then create the list with
+   `adminListFactory.CreateAsync(new AdminListContext({List}AdminList.Name) { Rows, BulkActions, Pager, ... }, HttpContext.RequestAborted)`.
+   The factory builds the columns, the layout and the toolbar.
 5. **View** — keep only the `<zone Name="Title">`, the form, the action bar (`gx-2` + Go button),
    `@await DisplayAsync(Model.List)`, the no-results alert, any modals, and the
    `<script asp-name="list-management" at="Foot">`.

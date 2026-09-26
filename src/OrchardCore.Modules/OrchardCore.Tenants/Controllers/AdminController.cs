@@ -237,21 +237,12 @@ public sealed class AdminController : Controller
             Options = model.Options,
         }));
 
-        var toolbar = await _shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
-        {
-            ItemsCount = model.ShellSettingsEntries.Count,
-            TotalItemCount = sortedSettings.Count,
-            StartIndex = model.ShellSettingsEntries.Count > 0 ? pager.GetStartIndex() + 1 : 0,
-            EndIndex = pager.GetStartIndex() + model.ShellSettingsEntries.Count,
-            BulkActions = model.Options.TenantsBulkAction,
-            Actions = filters,
-        }));
-
         // The AdminList shape renders the tenants with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(TenantsAdminList.Name)
         {
             Rows = rows,
-            Toolbar = toolbar,
+            BulkActions = model.Options.TenantsBulkAction,
+            ToolbarActions = filters,
             Pager = model.Pager,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no tenants for the moment."],

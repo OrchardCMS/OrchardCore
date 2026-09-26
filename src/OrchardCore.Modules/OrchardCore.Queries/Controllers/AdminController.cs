@@ -106,20 +106,11 @@ public sealed class AdminController : Controller
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
 
-        var toolbar = await _shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
-        {
-            ItemsCount = model.Queries.Count,
-            TotalItemCount = result.Count,
-            StartIndex = model.Queries.Count > 0 ? pager.GetStartIndex() + 1 : 0,
-            EndIndex = pager.GetStartIndex() + model.Queries.Count,
-            BulkActions = model.Options.ContentsBulkAction,
-        }));
-
         // The AdminList shape renders the queries with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(QueriesAdminList.Name)
         {
             Rows = model.Queries.Select(entry => entry.Shape).ToList(),
-            Toolbar = toolbar,
+            BulkActions = model.Options.ContentsBulkAction,
             Pager = model.Pager,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no queries for the moment."],

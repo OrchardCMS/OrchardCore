@@ -131,15 +131,6 @@ public sealed class TemplateController : Controller
             rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
         }
 
-        var toolbar = await _shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
-        {
-            ItemsCount = model.Templates.Count,
-            TotalItemCount = count,
-            StartIndex = model.Templates.Count > 0 ? pager.GetStartIndex() + 1 : 0,
-            EndIndex = pager.GetStartIndex() + model.Templates.Count,
-            BulkActions = model.Options.ContentsBulkAction,
-        }));
-
         var search = await _shapeFactory.CreateAsync("AdminListSearch", Arguments.From(new
         {
             Name = "Options.Search",
@@ -169,7 +160,7 @@ public sealed class TemplateController : Controller
         model.List = await adminListFactory.CreateAsync(new AdminListContext(TemplatesAdminList.Name)
         {
             Rows = rows,
-            Toolbar = toolbar,
+            BulkActions = model.Options.ContentsBulkAction,
             Search = search,
             Actions = actions,
             Pager = model.Pager,

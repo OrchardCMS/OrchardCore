@@ -251,6 +251,19 @@ var listShape = await adminListFactory.CreateAsync(new AdminListContext(Contents
 }, HttpContext.RequestAborted);
 ```
 
+A list without an options editor passes no `Header`, and the factory gives it the `AdminListToolbar` shape: the item count, which it takes from the rows and the pager, the select-all checkbox, and a dropdown of the bulk actions of the page. The page only passes what the factory cannot know:
+
+```csharp
+model.List = await adminListFactory.CreateAsync(new AdminListContext(QueriesAdminList.Name)
+{
+    Rows = model.Queries.Select(entry => entry.Shape).ToList(),
+    Pager = model.Pager,
+    BulkActions = model.Options.ContentsBulkAction,
+}, HttpContext.RequestAborted);
+```
+
+`ShowSelectAll = false` keeps the count alone for a list whose rows cannot be selected, `ToolbarActions` renders a shape at the end of the toolbar, e.g. the filters of the list, and `ShowToolbar = false` leaves a list without a toolbar. A page that needs a toolbar of its own passes it as `Toolbar`, and the factory builds none.
+
 A list no provider declares columns for is rendered with the `List` layout, the only one that does not need them, and a warning is logged. The shape carries these properties, which is what a layout template reads:
 
 | Property       | Description                                                                                    |
@@ -258,9 +271,9 @@ A list no provider declares columns for is rendered with the `List` layout, the 
 | `Name`         | The name of the list, e.g. `Contents`.                                                         |
 | `Layout`       | The layout name: `AdminListContext.Layout` when the page sets it, otherwise resolved with `IAdminListLayoutResolver.GetLayoutAsync()`. |
 | `Columns`      | The `AdminListColumn` collection the providers of the list declared, built with `IAdminListColumnsBuilder`. |
-| `Rows`         | The row shapes. (`Items` cannot be used: it is the shape's own child collection.) The `Classes` and `Attributes` of a row shape are rendered on its `<li>` or `<tr>`, e.g. `data-filter-value` for the client-side search of the page's script. |
+| `Rows`         | The row shapes. (`Items` cannot be used: it is the shape's own child collection.) The `Classes` and `Attributes` of a row shape are rendered on its `<li>` or its grid row, e.g. `data-filter-value` for the client-side search of the page's script. |
 | `Header`       | The options editor shape whose `Summary` and `Actions` zones are rendered above the items.     |
-| `Toolbar`      | Alternative to `Header` for lists without an options editor: a shape rendered as is above the items. The `AdminListToolbar` shape renders the item count, the select-all checkbox and a bulk actions dropdown from its `ItemsCount`, `TotalItemCount`, `StartIndex`, `EndIndex` and `BulkActions` properties; a list whose rows cannot be selected passes `ShowSelectAll = false` and keeps the count alone. |
+| `Toolbar`      | Alternative to `Header` for lists without an options editor: a shape rendered as is above the items. Unless the page sets one, or turns it off with `ShowToolbar = false`, the factory builds the `AdminListToolbar` shape, which renders the item count, the select-all checkbox and a bulk actions dropdown from its `ItemsCount`, `TotalItemCount`, `StartIndex`, `EndIndex`, `ShowSelectAll`, `BulkActions` and `Actions` properties. |
 | `Search`       | Optional. The search bar of the list. The `AdminListSearch` shape renders the standard one from its `Name`, `Value`, `Placeholder`, `Id`, `SubmitName` and `Autofocus` properties, and renders its `Filters` zone before the input, e.g. a filter dropdown. |
 | `Actions`      | Optional. The buttons of the page, e.g. "Add", rendered beside the search.                     |
 | `LayoutSelector` | The selector offering the other layouts of the list, built for the list when the site lets a user choose. |
@@ -272,7 +285,7 @@ A list no provider declares columns for is rendered with the `List` layout, the 
 | `ItemCssClass` | Optional. The CSS classes of each item in the `List` layout.                                   |
 | `EmptyMessage` | Optional. The message displayed when there are no items.                                       |
 
-Every property but `Columns` and `LayoutSelector` has its counterpart on `AdminListContext`. Everything a listing is made of belongs to the shape, so a layout decides where each part goes: a layout can put the search bar beside the pager, drop the page size selector, or move the actions of the page under the rows. A list that passes none of the optional properties simply renders without them.
+Every property but `Columns`, `LayoutSelector` and `CellRenderings` comes from `AdminListContext`, the `Toolbar` included when the factory builds it from the `BulkActions`, `ShowSelectAll` and `ToolbarActions` of the context. Everything a listing is made of belongs to the shape, so a layout decides where each part goes: a layout can put the search bar beside the pager, drop the page size selector, or move the actions of the page under the rows. A list that passes none of the optional properties simply renders without them.
 
 ### Row templates
 

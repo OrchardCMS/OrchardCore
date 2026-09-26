@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.Admin;
 using OrchardCore.Admin.Models;
 using OrchardCore.Admin.Services;
@@ -106,6 +107,103 @@ public class DefaultAdminListFactoryTests
             "Contents",
             It.Is<IReadOnlyDictionary<string, object>>(data => ((string[])data["ContentTypes"]).Single() == "BlogPost"),
             It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task CreateAsync_ListWithoutHeaderOrToolbar_GetsTheToolbarCountingThePageOfItems()
+    {
+        var (factory, _, _) = CreateFactory(_columns, AdminListConstants.List);
+        var bulkActions = new List<SelectListItem> { new("Delete", "Remove") };
+        var filters = new Shape();
+
+        // The third page of 10 items out of 25 holds the last 5.
+        var pager = new Shape();
+        pager.Properties["Page"] = 3;
+        pager.Properties["PageSize"] = 10;
+        pager.Properties["TotalItemCount"] = 25;
+
+        var shape = await factory.CreateAsync(new AdminListContext("Queries")
+        {
+            Rows = [new Shape(), new Shape(), new Shape(), new Shape(), new Shape()],
+            Pager = pager,
+            BulkActions = bulkActions,
+            ToolbarActions = filters,
+        }, TestContext.Current.CancellationToken);
+
+        var toolbar = Assert.IsAssignableFrom<IShape>(shape.Properties["Toolbar"]);
+
+        Assert.Equal(AdminListConstants.ToolbarShapeType, toolbar.Metadata.Type);
+        Assert.Equal(5, toolbar.Properties["ItemsCount"]);
+        Assert.Equal(25, toolbar.Properties["TotalItemCount"]);
+        Assert.Equal(21, toolbar.Properties["StartIndex"]);
+        Assert.Equal(25, toolbar.Properties["EndIndex"]);
+        Assert.Equal(true, toolbar.Properties["ShowSelectAll"]);
+        Assert.Same(bulkActions, toolbar.Properties["BulkActions"]);
+        Assert.Same(filters, toolbar.Properties["Actions"]);
+    }
+
+    [Theory]
+    [InlineData(2, 1, 2)]
+    [InlineData(0, 0, 0)]
+    public async Task CreateAsync_ListWithoutPager_CountsEveryRow(int rowCount, int startIndex, int endIndex)
+    {
+        var (factory, _, _) = CreateFactory(_columns, AdminListConstants.List);
+
+        var shape = await factory.CreateAsync(new AdminListContext("Roles")
+        {
+            Rows = Enumerable.Range(0, rowCount).Select(_ => (IShape)new Shape()).ToList(),
+            ShowSelectAll = false,
+        }, TestContext.Current.CancellationToken);
+
+        var toolbar = Assert.IsAssignableFrom<IShape>(shape.Properties["Toolbar"]);
+
+        Assert.Equal(rowCount, toolbar.Properties["ItemsCount"]);
+        Assert.Equal(rowCount, toolbar.Properties["TotalItemCount"]);
+        Assert.Equal(startIndex, toolbar.Properties["StartIndex"]);
+        Assert.Equal(endIndex, toolbar.Properties["EndIndex"]);
+        Assert.Equal(false, toolbar.Properties["ShowSelectAll"]);
+
+        // A shape reads a property it does not have as null, which the toolbar renders as nothing.
+        Assert.False(toolbar.Properties.ContainsKey("BulkActions"));
+        Assert.False(toolbar.Properties.ContainsKey("Actions"));
+    }
+
+    [Fact]
+    public async Task CreateAsync_PageWithHeaderOwnToolbarOrNone_GetsNoGenericToolbar()
+    {
+        var (factory, _, _) = CreateFactory(_columns, AdminListConstants.List);
+        var ownToolbar = new Shape();
+
+        var withHeader = await factory.CreateAsync(new AdminListContext("Contents") { Header = new Shape() }, TestContext.Current.CancellationToken);
+        var withOwnToolbar = await factory.CreateAsync(new AdminListContext("RateLimits") { Toolbar = ownToolbar }, TestContext.Current.CancellationToken);
+        var withoutToolbar = await factory.CreateAsync(new AdminListContext("Recipes") { ShowToolbar = false }, TestContext.Current.CancellationToken);
+
+        Assert.False(withHeader.Properties.ContainsKey("Toolbar"));
+        Assert.Same(ownToolbar, withOwnToolbar.Properties["Toolbar"]);
+        Assert.False(withoutToolbar.Properties.ContainsKey("Toolbar"));
+    }
+
+    [Fact]
+    public async Task CreateAsync_RowsEnumerableOnce_AreCountedAndRenderedFromOneEnumeration()
+    {
+        var (factory, _, _) = CreateFactory(_columns, AdminListConstants.List);
+        var enumerations = 0;
+
+        IEnumerable<IShape> Rows()
+        {
+            enumerations++;
+
+            yield return new Shape();
+            yield return new Shape();
+        }
+
+        var shape = await factory.CreateAsync(new AdminListContext("Queries") { Rows = Rows() }, TestContext.Current.CancellationToken);
+
+        var toolbar = Assert.IsAssignableFrom<IShape>(shape.Properties["Toolbar"]);
+
+        Assert.Equal(2, toolbar.Properties["ItemsCount"]);
+        Assert.Equal(2, ((IEnumerable<IShape>)shape.Properties["Rows"]).Count());
+        Assert.Equal(1, enumerations);
     }
 
     private static (DefaultAdminListFactory Factory, Mock<IAdminListLayoutResolver> LayoutResolver, Mock<IAdminListColumnsBuilder> ColumnsBuilder) CreateFactory(

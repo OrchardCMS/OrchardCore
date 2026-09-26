@@ -117,20 +117,11 @@ public sealed class SitemapIndexController : Controller
             rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
         }
 
-        var toolbar = await _shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
-        {
-            ItemsCount = model.SitemapIndexes.Count,
-            TotalItemCount = count,
-            StartIndex = model.SitemapIndexes.Count > 0 ? pager.GetStartIndex() + 1 : 0,
-            EndIndex = pager.GetStartIndex() + model.SitemapIndexes.Count,
-            BulkActions = model.Options.ContentsBulkAction,
-        }));
-
         // The AdminList shape renders the rows with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(SitemapIndexesAdminList.Name)
         {
             Rows = rows,
-            Toolbar = toolbar,
+            BulkActions = model.Options.ContentsBulkAction,
             Pager = model.Pager,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no sitemap indexes for the moment."],

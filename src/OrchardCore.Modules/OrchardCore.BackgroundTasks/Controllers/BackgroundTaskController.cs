@@ -157,21 +157,12 @@ public sealed class BackgroundTaskController : Controller
             Options = options,
         }));
 
-        var toolbar = await _shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
-        {
-            ItemsCount = model.Tasks.Count,
-            TotalItemCount = taskItems.Count,
-            StartIndex = model.Tasks.Count > 0 ? pager.GetStartIndex() + 1 : 0,
-            EndIndex = pager.GetStartIndex() + model.Tasks.Count,
-            BulkActions = options.BulkActions,
-            Actions = filters,
-        }));
-
         // The AdminList shape renders the tasks with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(BackgroundTasksAdminList.Name)
         {
             Rows = rows,
-            Toolbar = toolbar,
+            BulkActions = options.BulkActions,
+            ToolbarActions = filters,
             Pager = model.Pager,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no background tasks for the moment."],

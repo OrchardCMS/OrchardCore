@@ -124,20 +124,11 @@ public sealed class DeploymentPlanController : Controller
             rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
         }
 
-        var toolbar = await _shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
-        {
-            ItemsCount = model.DeploymentPlans.Count,
-            TotalItemCount = count,
-            StartIndex = model.DeploymentPlans.Count > 0 ? pager.GetStartIndex() + 1 : 0,
-            EndIndex = pager.GetStartIndex() + model.DeploymentPlans.Count,
-            BulkActions = model.Options.DeploymentPlansBulkAction,
-        }));
-
         // The AdminList shape renders the plans with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(DeploymentPlansAdminList.Name)
         {
             Rows = rows,
-            Toolbar = toolbar,
+            BulkActions = model.Options.DeploymentPlansBulkAction,
             Pager = model.Pager,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no deployment plans at the moment."],

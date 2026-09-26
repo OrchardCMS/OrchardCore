@@ -145,20 +145,11 @@ public sealed class AdminController : Controller
             rows.Add(entry.Shape);
         }
 
-        var toolbar = await shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
-        {
-            ItemsCount = viewModel.Models.Count,
-            TotalItemCount = result.Count,
-            StartIndex = viewModel.Models.Count > 0 ? pager.GetStartIndex() + 1 : 0,
-            EndIndex = pager.GetStartIndex() + viewModel.Models.Count,
-            BulkActions = viewModel.Options.BulkActions,
-        }));
-
         // The AdminList shape renders the index profiles with the configured layout (List, Grid, ...).
         viewModel.List = await adminListFactory.CreateAsync(new AdminListContext(IndexingAdminList.Name)
         {
             Rows = rows,
-            Toolbar = toolbar,
+            BulkActions = viewModel.Options.BulkActions,
             Pager = viewModel.Pager,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no indexes at the moment."],

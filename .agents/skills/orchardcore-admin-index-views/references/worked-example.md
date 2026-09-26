@@ -54,81 +54,99 @@ The row template renders the checkbox zone and delegates the actions:
     </div>
 }
 ...
-<div class="col-lg-auto col-12 d-flex justify-content-end">
+<div class="col-auto d-flex justify-content-end ps-2">
     @* Rendered in the configured actions layout (Buttons, Menu, ...). *@
-    @await DisplayAsync(await New.AdminListActions(Row: Model))
+    @await DisplayAsync(await Factory.CreateAdminListActionsAsync((IShape)Model))
 </div>
 ```
 
 ## 2. The list name and its columns
 
-`IndexingAdminList.cs`
+`IndexingAdminList.cs` publishes the name of the list:
 
 ```csharp
-using Microsoft.Extensions.Localization;
-using OrchardCore.Admin.Models;
-
 namespace OrchardCore.Indexing;
 
 public static class IndexingAdminList
 {
     public const string Name = "Indexes";
+}
+```
 
-    public static List<AdminListColumn> GetDefaultColumns(IStringLocalizer S) =>
-    [
-        new()
+`IndexingAdminListColumnProvider.cs` declares its columns, each a set of zones of the row shape:
+
+```csharp
+using Microsoft.Extensions.Localization;
+using OrchardCore.Admin;
+using OrchardCore.Admin.Models;
+
+namespace OrchardCore.Indexing;
+
+public sealed class IndexingAdminListColumnProvider : IAdminListColumnProvider
+{
+    private readonly IStringLocalizer S;
+
+    public IndexingAdminListColumnProvider(IStringLocalizer<IndexingAdminListColumnProvider> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
+    public Task BuildAsync(AdminListColumnsContext context, CancellationToken cancellationToken = default)
+    {
+        context.Columns.Add(AdminListColumns.Select());
+
+        context.Columns.Add(new AdminListColumn
         {
-            Name = "Select",
-            Position = "10",
-            Zones = ["Checkbox"],
-            CssClass = "admin-list-select",
-            Width = AdminListColumn.AutoWidth,
-        },
-        new()
-        {
+            // The name takes the space left by the other columns.
             Name = "Name",
             Position = "20",
             Title = S["Name"],
             Zones = ["Content"],
-        },
-        new()
+        });
+
+        context.Columns.Add(new AdminListColumn
         {
             Name = "Source",
             Position = "30",
             Title = S["Source"],
             Zones = ["Tags"],
             Width = AdminListColumn.AutoWidth,
-        },
-        new()
+        });
+
+        context.Columns.Add(new AdminListColumn
         {
             Name = "Modified",
             Position = "40",
             Title = S["Last modified"],
             Zones = ["Meta"],
             Width = AdminListColumn.AutoWidth,
-        },
-        new()
-        {
-            Name = "Actions",
-            Position = "end",
-            Title = S["Actions"],
-            Zones = ["Actions", "ActionsMenu"],
-            Width = AdminListColumn.AutoWidth,
-            Alignment = AdminListColumnAlignment.End,
-        },
-    ];
+        });
+
+        context.Columns.Add(AdminListColumns.Actions(S["Actions"]));
+
+        return Task.CompletedTask;
+    }
 }
+```
+
+`Startup.cs` registers it for the list, so it is only created when the list is rendered:
+
+```csharp
+services.AddAdminListColumnProvider<IndexingAdminListColumnProvider>(IndexingAdminList.Name);
 ```
 
 ## 3. The controller
 
-The page has no options editor shape, so it builds the generic `AdminListToolbar` and passes it as `Toolbar`. The rows carry the attributes the client-side search script reads.
+The page describes the list with an `AdminListContext` and hands it to `IAdminListFactory`. It has no options
+editor shape, so the factory builds the generic `AdminListToolbar`: the item count from the rows and the pager,
+the select-all checkbox and the bulk actions the page passes. The rows carry the attributes the client-side
+search script reads.
 
 `Controllers/AdminController.cs` (excerpt, after the view model is populated)
 
 ```csharp
-// The rows carry the attributes used by the client-side search of the page's script.
-var rows = new List<object>(viewModel.Models.Count);
+// The rows carry the attributes used by the client-side search of the list-management script.
+var rows = new List<IShape>(viewModel.Models.Count);
 
 foreach (var entry in viewModel.Models)
 {
@@ -141,46 +159,18 @@ foreach (var entry in viewModel.Models)
     rows.Add(entry.Shape);
 }
 
-var toolbar = await shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
+// The AdminList shape renders the index profiles with the configured layout (List, Grid, ...).
+viewModel.List = await adminListFactory.CreateAsync(new AdminListContext(IndexingAdminList.Name)
 {
-    ItemsCount = viewModel.Models.Count,
-    TotalItemCount = result.Count,
-    StartIndex = viewModel.Models.Count > 0 ? pager.GetStartIndex() + 1 : 0,
-    EndIndex = pager.GetStartIndex() + viewModel.Models.Count,
-    BulkActions = viewModel.Options.BulkActions,
-}));
-
-var search = await shapeFactory.CreateAsync("AdminListSearch", Arguments.From(new
-{
-    Name = "Options.Search",
-    Value = options.Search,
-}));
-
-viewModel.List = await shapeFactory.CreateAsync(AdminListConstants.ShapeType, Arguments.From(new
-{
-    Name = IndexingAdminList.Name,
-    Layout = await adminListService.GetLayoutAsync(IndexingAdminList.Name, cancellationToken: HttpContext.RequestAborted),
-    Columns = await adminListService.GetColumnsAsync(IndexingAdminList.Name, IndexingAdminList.GetDefaultColumns(S), cancellationToken: HttpContext.RequestAborted),
     Rows = rows,
-    Toolbar = toolbar,
-    Search = search,
-    Actions = await shapeFactory.CreateAsync("IndexProfileCreateButton"),
+    BulkActions = viewModel.Options.BulkActions,
     Pager = viewModel.Pager,
     ItemCssClass = "list-group-item",
     EmptyMessage = H["<strong>Nothing here!</strong> There are no indexes at the moment."],
-}));
+}, HttpContext.RequestAborted);
 ```
 
-`Search` and `Actions` are the search bar and the button of the page. They belong to the shape so the layout
-places them; the button is its own template, which keeps the route values and the localization out of the
-controller:
-
-```html
-@* Views/IndexProfileCreateButton.cshtml *@
-<button type="button" class="btn btn-secondary create" data-bs-toggle="modal" data-bs-target="#modalAddIndex">@T["Add index"]</button>
-```
-
-The action signature injects the service and keeps the existing parameters:
+The action signature injects the factory and keeps the existing parameters:
 
 ```csharp
 [Admin("indexing", "IndexingIndex")]
@@ -189,8 +179,11 @@ public async Task<IActionResult> Index(
     PagerParameters pagerParameters,
     [FromServices] IOptions<PagerOptions> pagerOptions,
     [FromServices] IShapeFactory shapeFactory,
-    [FromServices] IAdminListService adminListService)
+    [FromServices] IAdminListFactory adminListFactory)
 ```
+
+The shape factory is still needed for the pager. A page that renders its search bar and its buttons through
+the list passes them as `Search` and `Actions`, as the templates list does, so the layout places them.
 
 The view model gains one property:
 
@@ -200,8 +193,9 @@ public dynamic List { get; set; }
 
 ## 4. The view
 
-`Views/Admin/Index.cshtml` keeps the form and the hidden submit buttons, and replaces everything else with one
-call: the search bar, the button, the toolbar, the rows and the pager all come from the shape.
+`Views/Admin/Index.cshtml` keeps the form, the hidden submit buttons and its action bar with the search box and
+the "Add index" button, and replaces the listing with one call: the toolbar, the rows and the pager come from
+the shape.
 
 ```html
 <form asp-action="Index" method="post" class="no-multisubmit bulk-select-list" data-selected-text="@T["selected"]">
@@ -209,7 +203,9 @@ call: the search bar, the button, the toolbar, the rows and the pager all come f
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
 
-    @* Search bar, buttons, toolbar, rows, pager and page size, in the configured layout. *@
+    @* ... the action bar card with the search box and the "Add index" button ... *@
+
+    @* The index profiles, the toolbar and the pager are rendered by the AdminList shape using the configured layout (List, Grid, ...). *@
     @await DisplayAsync(Model.List)
 
     <div id="list-alert" class="alert alert-info my-3 d-none text-center" role="alert">
@@ -223,6 +219,5 @@ call: the search bar, the button, the toolbar, the rows and the pager all come f
 - The `<ul class="list-group with-checkbox">` block, the item count and select-all markup, and the bulk actions dropdown, all now in `AdminListToolbar`.
 - The per-row `<li>` with its inline checkbox and `data-filter-value`, now the row shape plus its `Classes` and `Attributes`.
 - The empty-state `<li>`, now the `EmptyMessage` property.
-- The action bar card with the search box and the create button, now the `Search` and `Actions` properties, so a layout decides where they go.
 
 The pager was previously built but never rendered; `AdminList` renders it, so the page gained working paging and the page size selector for free.

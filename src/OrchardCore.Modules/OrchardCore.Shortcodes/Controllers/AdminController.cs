@@ -120,20 +120,11 @@ public sealed class AdminController : Controller
             rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
         }
 
-        var toolbar = await _shapeFactory.CreateAsync("AdminListToolbar", OrchardCore.DisplayManagement.Arguments.From(new
-        {
-            ItemsCount = model.ShortcodeTemplates.Count,
-            TotalItemCount = count,
-            StartIndex = model.ShortcodeTemplates.Count > 0 ? pager.GetStartIndex() + 1 : 0,
-            EndIndex = pager.GetStartIndex() + model.ShortcodeTemplates.Count,
-            BulkActions = model.Options.ContentsBulkAction,
-        }));
-
         // The AdminList shape renders the templates with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(ShortcodesAdminList.Name)
         {
             Rows = rows,
-            Toolbar = toolbar,
+            BulkActions = model.Options.ContentsBulkAction,
             Pager = model.Pager,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no shortcode templates for the moment."],

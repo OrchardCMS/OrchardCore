@@ -104,20 +104,11 @@ public sealed class RemoteInstanceController : Controller
             rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
         }
 
-        var toolbar = await _shapeFactory.CreateAsync("AdminListToolbar", Arguments.From(new
-        {
-            ItemsCount = model.RemoteInstances.Count,
-            TotalItemCount = remoteInstances.Count,
-            StartIndex = model.RemoteInstances.Count > 0 ? pager.GetStartIndex() + 1 : 0,
-            EndIndex = pager.GetStartIndex() + model.RemoteInstances.Count,
-            BulkActions = model.Options.ContentsBulkAction,
-        }));
-
         // The AdminList shape renders the rows with the configured layout (List, Grid, ...).
         model.List = await adminListFactory.CreateAsync(new AdminListContext(RemoteInstancesAdminList.Name)
         {
             Rows = rows,
-            Toolbar = toolbar,
+            BulkActions = model.Options.ContentsBulkAction,
             Pager = model.Pager,
             ItemCssClass = "list-group-item",
             EmptyMessage = H["<strong>Nothing here!</strong> There are no remote instances for the moment."],
