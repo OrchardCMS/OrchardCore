@@ -1,0 +1,7 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Workflows.ViewModels
+
+@model ShapeViewModel<WorkflowEntry>
+
+@* Plain link, like the title of a content item in the Manage Content list. *@
+<a asp-action="Details" asp-controller="Workflow" asp-route-id="@Model.Value.Workflow.Id">@Model.Value.Workflow.WorkflowId</a>

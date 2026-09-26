@@ -82,7 +82,10 @@ public sealed class AdminController : Controller
         S = stringLocalizer;
     }
 
-    public async Task<ActionResult> Index([ModelBinder(BinderType = typeof(UserFilterEngineModelBinder), Name = "q")] QueryFilterResult<User> queryFilterResult, PagerParameters pagerParameters)
+    public async Task<ActionResult> Index(
+        [FromServices] IAdminListFactory adminListFactory,
+        [ModelBinder(BinderType = typeof(UserFilterEngineModelBinder), Name = "q")] QueryFilterResult<User> queryFilterResult,
+        PagerParameters pagerParameters)
     {
         // Check a dummy user account to see if the current user has permission to view users.
         if (!await _authorizationService.AuthorizeAsync(User, UsersPermissions.ListUsers, new User()))
@@ -187,12 +190,22 @@ public sealed class AdminController : Controller
 
         var header = await _userOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
 
+        // The AdminList shape renders the users with the configured layout (List, Grid, ...).
+        var listShape = await adminListFactory.CreateAsync(new AdminListContext(UsersAdminList.Name)
+        {
+            Rows = userEntries.Select(entry => entry.Shape).ToList(),
+            Header = header,
+            Pager = pagerShape,
+            ItemCssClass = "list-group-item",
+        }, HttpContext.RequestAborted);
+
         var shapeViewModel = await _shapeFactory.CreateAsync<UsersIndexViewModel>("UsersAdminList", viewModel =>
         {
             viewModel.Users = userEntries;
             viewModel.Pager = pagerShape;
             viewModel.Options = options;
             viewModel.Header = header;
+            viewModel.List = listShape;
         });
 
         return View(shapeViewModel);

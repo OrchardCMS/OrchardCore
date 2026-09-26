@@ -10,6 +10,7 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Navigation;
 using OrchardCore.Queries.ViewModels;
 using OrchardCore.Routing;
@@ -58,7 +59,10 @@ public sealed class AdminController : Controller
         H = htmlLocalizer;
     }
 
-    public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(
+        ContentOptions options,
+        PagerParameters pagerParameters,
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
         {
@@ -101,6 +105,16 @@ public sealed class AdminController : Controller
         [
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
+
+        // The AdminList shape renders the queries with the configured layout (List, Grid, ...).
+        model.List = await adminListFactory.CreateAsync(new AdminListContext(QueriesAdminList.Name)
+        {
+            Rows = model.Queries.Select(entry => entry.Shape).ToList(),
+            BulkActions = model.Options.ContentsBulkAction,
+            Pager = model.Pager,
+            ItemCssClass = "list-group-item",
+            EmptyMessage = H["<strong>Nothing here!</strong> There are no queries for the moment."],
+        }, HttpContext.RequestAborted);
 
         return View(model);
     }

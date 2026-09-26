@@ -1,4 +1,4 @@
-using Microsoft.Playwright;
+﻿using Microsoft.Playwright;
 using OrchardCore.Tests.Functional.Helpers;
 
 namespace OrchardCore.Tests.Functional.Tests.Cms;
@@ -25,6 +25,13 @@ public sealed class SitemapCacheTests : CmsTestBase<SitemapCacheTestsFixture>, I
 {
     public SitemapCacheTests(SitemapCacheTestsFixture fixture) : base(fixture) { }
 
+    // An empty list is the AdminList shape's empty message, in the list itself, rather than a missing list.
+    private static async Task AssertCacheIsEmptyAsync(IPage page)
+    {
+        await Assertions.Expect(page.Locator("form ul.list-group li.list-group-item[data-filter-value]")).ToHaveCountAsync(0);
+        await Assertions.Expect(page.Locator("form ul.list-group .alert")).ToBeVisibleAsync();
+    }
+
     [Fact]
     public async Task SitemapCache_SearchFiltersEntries_PurgeAndPurgeAllRemoveEntries()
     {
@@ -38,7 +45,9 @@ public sealed class SitemapCacheTests : CmsTestBase<SitemapCacheTestsFixture>, I
 
         await page.GotoAndAssertOkAsync("/Admin/SitemapsCache/List");
 
-        var cacheItems = page.Locator("form ul.list-group li.list-group-item");
+        // The list is rendered by the AdminList shape, whose first item is the toolbar holding the count, so
+        // the rows are the items carrying the value the search matches.
+        var cacheItems = page.Locator("form ul.list-group li.list-group-item[data-filter-value]");
         var initialCount = await cacheItems.CountAsync();
         Assert.True(initialCount >= 1, "Expected at least one cached sitemap entry after visiting the public sitemap URL.");
         var cachedFileName = (await cacheItems.First.GetAttributeAsync("data-filter-value"))!;
@@ -77,21 +86,19 @@ public sealed class SitemapCacheTests : CmsTestBase<SitemapCacheTestsFixture>, I
         await page.Locator("#modalOkButton").ClickAsync();
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
-        await Assertions.Expect(page.Locator("form ul.list-group")).ToHaveCountAsync(0);
-        await Assertions.Expect(page.Locator("#list-empty")).ToBeVisibleAsync();
+        await AssertCacheIsEmptyAsync(page);
 
         // Repopulate the cache, then confirm Purge All also clears a freshly-populated cache.
         await page.GotoAndAssertOkAsync("/sitemap-cache-test-sitemap");
         await page.GotoAndAssertOkAsync("/Admin/SitemapsCache/List");
-        Assert.True(await page.Locator("form ul.list-group li.list-group-item").CountAsync() >= 1);
+        Assert.True(await cacheItems.CountAsync() >= 1);
 
         await page.Locator("a").Filter(new LocatorFilterOptions { HasText = "Purge All" }).ClickAsync();
         await Assertions.Expect(page.Locator("#confirmRemoveModal")).ToBeVisibleAsync();
         await page.Locator("#modalOkButton").ClickAsync();
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
-        await Assertions.Expect(page.Locator("form ul.list-group")).ToHaveCountAsync(0);
-        await Assertions.Expect(page.Locator("#list-empty")).ToBeVisibleAsync();
+        await AssertCacheIsEmptyAsync(page);
 
         await page.CloseAsync();
     }

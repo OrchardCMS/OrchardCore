@@ -11,6 +11,9 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Utilities;
 using OrchardCore.Contents;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.ContentTypes.Models;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.Data.Documents;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -60,25 +63,65 @@ public sealed class AdminController : Controller
         S = stringLocalizer;
     }
 
-    public Task<ActionResult> Index()
+    public Task<ActionResult> Index(
+        [FromServices] IDisplayManager<ContentTypeEntry> displayManager,
+        [FromServices] IUpdateModelAccessor updateModelAccessor,
+        [FromServices] IAdminListFactory adminListFactory)
     {
-        return List();
+        return List(displayManager, updateModelAccessor, adminListFactory);
     }
 
     #region Types
 
     [Admin("ContentTypes/List", "ListContentTypes")]
-    public async Task<ActionResult> List()
+    public async Task<ActionResult> List(
+        [FromServices] IDisplayManager<ContentTypeEntry> displayManager,
+        [FromServices] IUpdateModelAccessor updateModelAccessor,
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.ViewContentTypes))
         {
             return Forbid();
         }
 
-        return View("List", new ListContentTypesViewModel
+        var model = new ListContentTypesViewModel
         {
             Types = await GetTypesAsync(),
-        });
+        };
+
+        var rows = new List<IShape>();
+
+        foreach (var type in model.Types)
+        {
+            var entry = new ContentTypeEntry
+            {
+                Name = type.Name,
+                DisplayName = type.DisplayName,
+                TypeDefinition = type.TypeDefinition,
+            };
+
+            var shape = await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin);
+
+            // The rows carry the attributes used by the client-side search of the list-management script.
+            if (shape is Shape rowShape)
+            {
+                rowShape.Attributes["data-filter-value"] = entry.DisplayName;
+                rowShape.Attributes["data-type-name"] = entry.Name;
+            }
+
+            rows.Add(shape);
+        }
+
+        // The AdminList shape renders the types with the configured layout (List, Grid, ...).
+        model.List = await adminListFactory.CreateAsync(new AdminListContext(ContentTypesAdminList.Name)
+        {
+            Rows = rows,
+            ShowSelectAll = false,
+            ItemCssClass = "list-group-item",
+            EmptyMessage = H["<strong>Nothing here!</strong> There are no content types for the moment."],
+        }, HttpContext.RequestAborted);
+
+        return View("List", model);
     }
 
     [Admin("ContentTypes/Create", "CreateType")]
@@ -485,18 +528,56 @@ public sealed class AdminController : Controller
     #region Parts
 
     [Admin("ContentTypes/ListParts", "ListContentParts")]
-    public async Task<ActionResult> ListParts()
+    public async Task<ActionResult> ListParts(
+        [FromServices] IDisplayManager<ContentPartEntry> displayManager,
+        [FromServices] IUpdateModelAccessor updateModelAccessor,
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.ViewContentTypes))
         {
             return Forbid();
         }
 
-        return View(new ListContentPartsViewModel
+        var model = new ListContentPartsViewModel
         {
             // Only user-defined parts (not code as they are not configurable).
             Parts = await GetPartsAsync(metadataPartsOnly: true),
-        });
+        };
+
+        var rows = new List<IShape>();
+
+        foreach (var part in model.Parts)
+        {
+            var entry = new ContentPartEntry
+            {
+                Name = part.Name,
+                DisplayName = part.PartDefinition.DisplayName(),
+                Description = part.Description,
+                PartDefinition = part.PartDefinition,
+            };
+
+            var shape = await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin);
+
+            // The rows carry the attributes used by the client-side search of the list-management script.
+            if (shape is Shape rowShape)
+            {
+                rowShape.Attributes["data-filter-value"] = entry.DisplayName;
+                rowShape.Attributes["data-type-name"] = entry.Name;
+            }
+
+            rows.Add(shape);
+        }
+
+        // The AdminList shape renders the parts with the configured layout (List, Grid, ...).
+        model.List = await adminListFactory.CreateAsync(new AdminListContext(ContentPartsAdminList.Name)
+        {
+            Rows = rows,
+            ShowSelectAll = false,
+            ItemCssClass = "list-group-item",
+            EmptyMessage = H["<strong>Nothing here!</strong> There are no content parts for the moment."],
+        }, HttpContext.RequestAborted);
+
+        return View(model);
     }
 
     [Admin("ContentParts/Create", "CreatePart")]

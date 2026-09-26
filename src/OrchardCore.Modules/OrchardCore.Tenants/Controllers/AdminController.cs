@@ -10,6 +10,8 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.Data;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Removing;
@@ -92,7 +94,12 @@ public sealed class AdminController : Controller
     }
 
     [Admin("Tenants", "Tenants")]
-    public async Task<IActionResult> Index(TenantIndexOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(
+        TenantIndexOptions options,
+        PagerParameters pagerParameters,
+        [FromServices] IDisplayManager<ShellSettingsEntry> displayManager,
+        [FromServices] IUpdateModelAccessor updateModelAccessor,
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
         {
@@ -216,6 +223,30 @@ public sealed class AdminController : Controller
             new SelectListItem() { Text = S["Disable"], Value = nameof(TenantsBulkAction.Disable) },
             new SelectListItem() { Text = S["Enable"], Value = nameof(TenantsBulkAction.Enable) },
         ];
+
+        var rows = new List<IShape>(model.ShellSettingsEntries.Count);
+
+        foreach (var entry in model.ShellSettingsEntries)
+        {
+            rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
+        }
+
+        // The category, state and sort filters render at the end of the toolbar, next to the bulk actions.
+        var filters = await _shapeFactory.CreateAsync("TenantsFilters", Arguments.From(new
+        {
+            Options = model.Options,
+        }));
+
+        // The AdminList shape renders the tenants with the configured layout (List, Grid, ...).
+        model.List = await adminListFactory.CreateAsync(new AdminListContext(TenantsAdminList.Name)
+        {
+            Rows = rows,
+            BulkActions = model.Options.TenantsBulkAction,
+            ToolbarActions = filters,
+            Pager = model.Pager,
+            ItemCssClass = "list-group-item",
+            EmptyMessage = H["<strong>Nothing here!</strong> There are no tenants for the moment."],
+        }, HttpContext.RequestAborted);
 
         return View(model);
     }

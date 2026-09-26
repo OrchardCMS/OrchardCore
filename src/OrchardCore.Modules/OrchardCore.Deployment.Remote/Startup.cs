@@ -1,7 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OrchardCore.Admin;
 using OrchardCore.Deployment.Remote;
 using OrchardCore.Deployment.Remote.Services;
+using OrchardCore.Deployment.Remote.Models;
+using OrchardCore.Deployment.Remote.Drivers;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.FileStorage;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -21,5 +25,12 @@ public sealed class Startup : StartupBase
         services.AddScoped<RemoteClientService>();
         services.AddScoped<IDeploymentTargetProvider, RemoteInstanceDeploymentTargetProvider>();
         services.AddPermissionProvider<Permissions>();
+
+        // Build the rows of the remote instances and remote clients admin lists.
+        services.AddDisplayDriver<RemoteInstance, RemoteInstanceDisplayDriver>();
+        services.AddDisplayDriver<RemoteClient, RemoteClientDisplayDriver>();
+
+        services.AddAdminListColumnProvider<RemoteInstancesAdminListColumnProvider>(RemoteInstancesAdminList.Name);
+        services.AddAdminListColumnProvider<RemoteClientsAdminListColumnProvider>(RemoteClientsAdminList.Name);
     }
 }

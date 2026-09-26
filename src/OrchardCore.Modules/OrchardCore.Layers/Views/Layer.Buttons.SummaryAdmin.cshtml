@@ -1,0 +1,8 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Layers.Models
+
+@model ShapeViewModel<Layer>
+
+<a class="btn btn-primary btn-sm" asp-action="Edit" asp-controller="Admin" asp-route-name="@Model.Value.Name">@T["Edit"]</a>
+
+<a class="btn btn-danger btn-sm" asp-action="Delete" asp-controller="Admin" asp-route-name="@Model.Value.Name" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>

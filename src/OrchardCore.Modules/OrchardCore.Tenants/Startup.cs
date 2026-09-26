@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
+using OrchardCore.Admin;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Shell;
@@ -18,6 +19,9 @@ using OrchardCore.Setup;
 using OrchardCore.Tenants.Deployment;
 using OrchardCore.Tenants.Recipes;
 using OrchardCore.Tenants.Services;
+using OrchardCore.Tenants.ViewModels;
+using OrchardCore.Tenants.Drivers;
+using OrchardCore.DisplayManagement.Handlers;
 
 namespace OrchardCore.Tenants;
 
@@ -39,7 +43,13 @@ public sealed class Startup : StartupBase
         services.AddShapeTableProvider<TenantShapeTableProvider>();
         services.AddSetup();
 
+        // Builds the rows of the tenants admin list. It belongs to this feature, not to the feature
+        // profiles one: without it the rows of the list render empty.
+        services.AddDisplayDriver<ShellSettingsEntry, ShellSettingsEntryDisplayDriver>();
+
         services.Configure<TenantsOptions>(_shellConfiguration.GetSection("OrchardCore_Tenants"));
+
+        services.AddAdminListColumnProvider<TenantsAdminListColumnProvider>(TenantsAdminList.Name);
     }
 }
 
@@ -111,11 +121,16 @@ public sealed class FeatureProfilesStartup : StartupBase
     {
         services.AddNavigationProvider<FeatureProfilesAdminMenu>();
         services.AddScoped<FeatureProfilesManager>();
+
+        // Builds the rows of the feature profiles admin list.
+        services.AddDisplayDriver<FeatureProfileEntry, FeatureProfileEntryDisplayDriver>();
         services.AddScoped<IFeatureProfilesService, FeatureProfilesService>();
         services.AddScoped<IFeatureProfilesSchemaService, FeatureProfilesSchemaService>();
         services.AddShapeTableProvider<TenantFeatureProfileShapeTableProvider>();
 
         services.AddRecipeExecutionStep<FeatureProfilesStep>();
+
+        services.AddAdminListColumnProvider<FeatureProfilesAdminListColumnProvider>(FeatureProfilesAdminList.Name);
     }
 }
 

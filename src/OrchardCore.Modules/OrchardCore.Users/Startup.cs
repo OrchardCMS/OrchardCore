@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.Admin.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -166,6 +167,8 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<LoginForm, LoginFormDisplayDriver>();
         services.AddScoped<ILoginFormEvent, EmailConfirmationLoginFormEvent>();
         services.AddScoped<ILoginFormEvent, DisabledUserLoginFormEvent>();
+
+        services.AddAdminListColumnProvider<UsersAdminListColumnProvider>(UsersAdminList.Name);
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

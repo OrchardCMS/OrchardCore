@@ -14,4 +14,10 @@ public class ListContentsViewModel
 
     [BindNever]
     public dynamic Pager { get; set; }
+
+    /// <summary>
+    /// The <c>AdminList</c> shape rendering <see cref="ContentItems"/>, <see cref="Header"/> and <see cref="Pager"/> with the configured layout.
+    /// </summary>
+    [BindNever]
+    public dynamic List { get; set; }
 }

@@ -16,6 +16,7 @@ using OrchardCore.Deployment;
 using OrchardCore.Deployment.Core.Services;
 using OrchardCore.FileStorage;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Json;
@@ -90,7 +91,12 @@ public sealed class WorkflowTypeController : Controller
     }
 
     [Admin("Workflows/Types", "WorkflowTypes")]
-    public async Task<IActionResult> Index(WorkflowTypeIndexOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(
+        WorkflowTypeIndexOptions options,
+        PagerParameters pagerParameters,
+        [FromServices] IDisplayManager<WorkflowTypeEntry> displayManager,
+        [FromServices] IUpdateModelAccessor updateModelAccessor,
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows))
         {
@@ -162,6 +168,23 @@ public sealed class WorkflowTypeController : Controller
         [
             new SelectListItem(S["Delete"], nameof(WorkflowTypeBulkAction.Delete)),
         ];
+
+        var rows = new List<IShape>(model.WorkflowTypes.Count);
+
+        foreach (var entry in model.WorkflowTypes)
+        {
+            rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
+        }
+
+        // The AdminList shape renders the types with the configured layout (List, Grid, ...).
+        model.List = await adminListFactory.CreateAsync(new AdminListContext(WorkflowTypesAdminList.Name)
+        {
+            Rows = rows,
+            BulkActions = model.Options.WorkflowTypesBulkAction,
+            Pager = model.Pager,
+            ItemCssClass = "list-group-item",
+            EmptyMessage = H["<strong>Nothing here!</strong> There are no workflow types for the moment."],
+        }, HttpContext.RequestAborted);
 
         return View(model);
     }

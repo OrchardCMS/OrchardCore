@@ -7,6 +7,8 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Media.Core.Processing;
 using OrchardCore.Media.Models;
@@ -54,7 +56,12 @@ public sealed class MediaProfilesController : Controller
     }
 
     [Admin("MediaProfiles", "MediaProfiles.Index")]
-    public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(
+        ContentOptions options,
+        PagerParameters pagerParameters,
+        [FromServices] IDisplayManager<MediaProfileEntry> displayManager,
+        [FromServices] IUpdateModelAccessor updateModelAccessor,
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaProfiles))
         {
@@ -91,6 +98,7 @@ public sealed class MediaProfilesController : Controller
         var model = new MediaProfileIndexViewModel
         {
             MediaProfiles = mediaProfiles.Select(x => new MediaProfileEntry { Name = x.Key, MediaProfile = x.Value }).ToList(),
+            Options = options,
             Pager = pagerShape,
         };
 
@@ -98,6 +106,23 @@ public sealed class MediaProfilesController : Controller
         [
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
+
+        var rows = new List<IShape>(model.MediaProfiles.Count);
+
+        foreach (var entry in model.MediaProfiles)
+        {
+            rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
+        }
+
+        // The AdminList shape renders the profiles with the configured layout (List, Grid, ...).
+        model.List = await adminListFactory.CreateAsync(new AdminListContext(MediaProfilesAdminList.Name)
+        {
+            Rows = rows,
+            BulkActions = model.Options.ContentsBulkAction,
+            Pager = model.Pager,
+            ItemCssClass = "list-group-item",
+            EmptyMessage = H["<strong>Nothing here!</strong> There are no media profiles for the moment."],
+        }, HttpContext.RequestAborted);
 
         return View(model);
     }

@@ -1,0 +1,6 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Sitemaps.Models
+
+@model ShapeViewModel<SitemapCacheEntry>
+
+<a asp-action="Purge" asp-controller="SitemapCache" asp-route-cacheFileName="@Model.Value.FileName" class="btn btn-sm btn-danger" data-title="@T["Purge"]" data-message="@T["Are you sure you want to purge this sitemap?"]" data-url-af="RemoveUrl UnsafeUrl">@T["Purge"]</a>

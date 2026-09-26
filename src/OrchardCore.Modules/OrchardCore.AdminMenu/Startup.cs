@@ -1,8 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Admin;
 using OrchardCore.AdminMenu.AdminNodes;
 using OrchardCore.AdminMenu.Deployment;
 using OrchardCore.AdminMenu.Recipes;
 using OrchardCore.AdminMenu.Services;
+using OrchardCore.AdminMenu.ViewModels;
+using OrchardCore.AdminMenu.Drivers;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.Localization;
@@ -23,6 +27,9 @@ public sealed class Startup : StartupBase
         services.AddScoped<IJSLocalizer, AdminMenuJSLocalizer>();
 
         services.AddScoped<IAdminMenuService, AdminMenuService>();
+
+        // Builds the rows of the admin menus list.
+        services.AddDisplayDriver<AdminMenuEntry, AdminMenuEntryDisplayDriver>();
         services.AddScoped<IAdminMenuAccessor, AdminMenuAccessor>();
         services.AddScoped<AdminMenuNavigationProvidersCoordinator>();
 
@@ -38,6 +45,8 @@ public sealed class Startup : StartupBase
 
         // Migrate admin menu to the 3.0 format.
         services.AddDataMigration<Migrations>();
+
+        services.AddAdminListColumnProvider<AdminMenusAdminListColumnProvider>(AdminMenusAdminList.Name);
     }
 }
 

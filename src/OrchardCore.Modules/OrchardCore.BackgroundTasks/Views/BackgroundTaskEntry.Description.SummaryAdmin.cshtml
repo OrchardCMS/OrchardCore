@@ -1,0 +1,9 @@
+@using OrchardCore.BackgroundTasks.ViewModels
+@using OrchardCore.DisplayManagement.Views
+
+@model ShapeViewModel<BackgroundTaskEntry>
+
+@if (!string.IsNullOrWhiteSpace(Model.Value.Description))
+{
+    <div class="admin-list-secondary">@Model.Value.Description</div>
+}

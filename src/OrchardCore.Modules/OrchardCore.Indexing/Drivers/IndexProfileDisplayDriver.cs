@@ -29,6 +29,8 @@ internal sealed class IndexProfileDisplayDriver : DisplayDriver<IndexProfile>
     public override Task<IDisplayResult> DisplayAsync(IndexProfile indexProfile, BuildDisplayContext context)
     {
         return CombineAsync(
+            View("IndexProfile_Checkbox_SummaryAdmin", indexProfile)
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Checkbox:1"),
             View("IndexProfile_Fields_SummaryAdmin", indexProfile)
                 .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Content:1"),
             View("IndexProfile_Buttons_SummaryAdmin", indexProfile)

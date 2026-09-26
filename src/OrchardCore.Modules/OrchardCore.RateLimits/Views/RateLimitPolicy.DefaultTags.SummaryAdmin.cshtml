@@ -1,0 +1,9 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.RateLimits.Models
+
+@model ShapeViewModel<RateLimitPolicy>
+
+<span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Status"]">
+    <i class="fa-solid @(Model.Value.IsEnabled ? "fa-check text-success" : "fa-ban text-secondary")" aria-hidden="true"></i>
+    @(Model.Value.IsEnabled ? T["Enabled"] : T["Disabled"])
+</span>

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Admin;
 using OrchardCore.Admin.Models;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
@@ -68,6 +69,8 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<User, UserNotificationPreferencesPartDisplayDriver>();
         services.AddDisplayDriver<Navbar, NotificationNavbarDisplayDriver>();
         services.AddScoped<INotificationEvents, CacheNotificationEventsHandler>();
+
+        services.AddAdminListColumnProvider<NotificationsAdminListColumnProvider>(NotificationsAdminList.Name);
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

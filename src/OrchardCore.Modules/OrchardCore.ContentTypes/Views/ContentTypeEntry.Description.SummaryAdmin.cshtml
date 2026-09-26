@@ -1,0 +1,14 @@
+@using OrchardCore.ContentManagement.Metadata.Settings
+@using OrchardCore.ContentTypes.Models
+@using OrchardCore.DisplayManagement.Views
+
+@model ShapeViewModel<ContentTypeEntry>
+
+@{
+    var settings = Model.Value.TypeDefinition.GetSettings<ContentTypeSettings>();
+}
+
+@if (!string.IsNullOrWhiteSpace(settings.Description))
+{
+    <div class="admin-list-secondary list-item-search-text">@settings.Description</div>
+}

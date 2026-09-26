@@ -1,0 +1,11 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Tenants.ViewModels
+
+@model ShapeViewModel<ShellSettingsEntry>
+
+@if (!string.IsNullOrEmpty(Model.Value.ShellSettings["RecipeName"]))
+{
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Recipe"]">
+        <i class="fa-solid fa-image text-info" aria-hidden="true"></i> @Model.Value.ShellSettings["RecipeName"]
+    </span>
+}

@@ -10,6 +10,8 @@ using OrchardCore.Admin;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.AdminMenu.ViewModels;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
@@ -51,7 +53,12 @@ public sealed class MenuController : Controller
         _logger = logger;
     }
 
-    public async Task<IActionResult> List(ContentOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> List(
+        ContentOptions options,
+        PagerParameters pagerParameters,
+        [FromServices] IDisplayManager<AdminMenuEntry> displayManager,
+        [FromServices] IUpdateModelAccessor updateModelAccessor,
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, AdminMenuPermissions.ManageAdminMenu))
         {
@@ -107,6 +114,23 @@ public sealed class MenuController : Controller
         [
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
+
+        var rows = new List<IShape>(model.AdminMenu.Count);
+
+        foreach (var entry in model.AdminMenu)
+        {
+            rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
+        }
+
+        // The AdminList shape renders the menus with the configured layout (List, Grid, ...).
+        model.List = await adminListFactory.CreateAsync(new AdminListContext(AdminMenusAdminList.Name)
+        {
+            Rows = rows,
+            BulkActions = model.Options.ContentsBulkAction,
+            Pager = model.Pager,
+            ItemCssClass = "list-group-item",
+            EmptyMessage = H["<strong>Nothing here!</strong> There are no admin menus for the moment."],
+        }, HttpContext.RequestAborted);
 
         return View(model);
     }

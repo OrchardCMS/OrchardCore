@@ -6,7 +6,7 @@ const searchBox = document.querySelector<HTMLInputElement>("#search-box");
 if (searchBox) {
     searchBox.addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
-            const visible = Array.from(document.querySelectorAll<HTMLElement>(".roles > ul > li")).filter(isVisible);
+            const visible = Array.from(document.querySelectorAll<HTMLElement>(".roles [data-filter-value]")).filter(isVisible);
 
             if (visible.length === 1) {
                 const href = visible[0].querySelector<HTMLAnchorElement>(".edit")?.getAttribute("href");
@@ -30,6 +30,8 @@ if (searchBox) {
             elementsToFilter.forEach((element) => {
                 element.classList.remove("d-none", "first-child-visible", "last-child-visible");
             });
+
+            document.getElementById("list-alert")?.classList.add("d-none");
         } else {
             elementsToFilter.forEach((element) => {
                 const text = (element.dataset.filterValue ?? "").toLowerCase();
@@ -51,7 +53,7 @@ if (searchBox) {
                 visibleElements[visibleElements.length - 1].classList.add("last-child-visible");
             }
 
-            const visible = Array.from(document.querySelectorAll<HTMLElement>(".roles > ul > li")).filter(isVisible);
+            const visible = Array.from(document.querySelectorAll<HTMLElement>(".roles [data-filter-value]")).filter(isVisible);
 
             document.getElementById("list-alert")?.classList.toggle("d-none", visible.length !== 0);
         }

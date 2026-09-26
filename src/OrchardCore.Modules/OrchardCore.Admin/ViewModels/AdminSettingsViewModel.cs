@@ -11,4 +11,10 @@ public class AdminSettingsViewModel
     public bool DisplayTitlesInTopbar { get; set; }
 
     public bool ShowBreadcrumb { get; set; }
+
+    public string ListLayout { get; set; }
+
+    public string ListActionsLayout { get; set; }
+
+    public bool AllowUserListLayoutSelection { get; set; }
 }

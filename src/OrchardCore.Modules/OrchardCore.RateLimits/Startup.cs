@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
@@ -45,6 +46,8 @@ public sealed class Startup : StartupBase
 
         services.AddNavigationProvider<AdminMenu>();
         services.AddPermissionProvider<Permissions>();
+
+        services.AddAdminListColumnProvider<RateLimitsAdminListColumnProvider>(RateLimitsAdminList.Name);
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

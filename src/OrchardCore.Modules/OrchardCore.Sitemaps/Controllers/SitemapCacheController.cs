@@ -3,6 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Sitemaps.Models;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement;
 using OrchardCore.Sitemaps.Cache;
 using OrchardCore.Sitemaps.ViewModels;
 
@@ -16,21 +21,27 @@ public sealed class SitemapCacheController : Controller
     private readonly INotifier _notifier;
 
     internal readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
 
     public SitemapCacheController(
         IAuthorizationService authorizationService,
         ISitemapCacheProvider sitemapCacheProvider,
         INotifier notifier,
-        IHtmlLocalizer<SitemapCacheController> htmlLocalizer
+        IHtmlLocalizer<SitemapCacheController> htmlLocalizer,
+        IStringLocalizer<SitemapCacheController> stringLocalizer
         )
     {
         _authorizationService = authorizationService;
         _sitemapCacheProvider = sitemapCacheProvider;
         _notifier = notifier;
         H = htmlLocalizer;
+        S = stringLocalizer;
     }
 
-    public async Task<IActionResult> List()
+    public async Task<IActionResult> List(
+        [FromServices] IDisplayManager<SitemapCacheEntry> displayManager,
+        [FromServices] IUpdateModelAccessor updateModelAccessor,
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
@@ -41,6 +52,31 @@ public sealed class SitemapCacheController : Controller
         {
             CachedFileNames = (await _sitemapCacheProvider.ListAsync()).ToArray(),
         };
+
+        var rows = new List<IShape>(model.CachedFileNames.Length);
+
+        foreach (var fileName in model.CachedFileNames)
+        {
+            var shape = await displayManager.BuildDisplayAsync(new SitemapCacheEntry { FileName = fileName }, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin);
+
+            // The rows carry the attributes used by the client-side search of the list-management script.
+            if (shape is Shape rowShape)
+            {
+                rowShape.Classes.Add("item");
+                rowShape.Attributes["data-filter-value"] = fileName.ToLowerInvariant();
+            }
+
+            rows.Add(shape);
+        }
+
+        // The AdminList shape renders the cached files with the configured layout (List, Grid, ...).
+        model.List = await adminListFactory.CreateAsync(new AdminListContext(SitemapCacheAdminList.Name)
+        {
+            Rows = rows,
+            ShowSelectAll = false,
+            ItemCssClass = "list-group-item",
+            EmptyMessage = H["<strong>Nothing here!</strong> There are no sitemaps cached for the moment."],
+        }, HttpContext.RequestAborted);
 
         return View(model);
     }

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
@@ -58,7 +59,12 @@ public sealed class SitemapIndexController : Controller
         H = htmlLocalizer;
     }
 
-    public async Task<IActionResult> List(ContentOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> List(
+        ContentOptions options,
+        PagerParameters pagerParameters,
+        [FromServices] IDisplayManager<SitemapIndexListEntry> displayManager,
+        [FromServices] IUpdateModelAccessor updateModelAccessor,
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
@@ -104,6 +110,22 @@ public sealed class SitemapIndexController : Controller
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
 
+        var rows = new List<IShape>(model.SitemapIndexes.Count);
+
+        foreach (var entry in model.SitemapIndexes)
+        {
+            rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
+        }
+
+        // The AdminList shape renders the rows with the configured layout (List, Grid, ...).
+        model.List = await adminListFactory.CreateAsync(new AdminListContext(SitemapIndexesAdminList.Name)
+        {
+            Rows = rows,
+            BulkActions = model.Options.ContentsBulkAction,
+            Pager = model.Pager,
+            ItemCssClass = "list-group-item",
+            EmptyMessage = H["<strong>Nothing here!</strong> There are no sitemap indexes for the moment."],
+        }, HttpContext.RequestAborted);
 
         return View(model);
     }

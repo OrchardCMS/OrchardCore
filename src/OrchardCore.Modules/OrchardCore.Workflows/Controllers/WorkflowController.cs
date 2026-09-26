@@ -9,6 +9,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Locking.Distributed;
@@ -74,7 +75,14 @@ public sealed class WorkflowController : Controller
     }
 
     [Admin("Workflows/Types/{workflowTypeId}/Instances/{action}", "Workflows")]
-    public async Task<IActionResult> Index(long workflowTypeId, WorkflowIndexViewModel model, PagerParameters pagerParameters, string returnUrl = null)
+    public async Task<IActionResult> Index(
+        long workflowTypeId,
+        WorkflowIndexViewModel model,
+        PagerParameters pagerParameters,
+        [FromServices] IDisplayManager<WorkflowEntry> displayManager,
+        [FromServices] IUpdateModelAccessor updateModelAccessor,
+        [FromServices] IAdminListFactory adminListFactory,
+        string returnUrl = null)
     {
         if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows))
         {
@@ -109,7 +117,8 @@ public sealed class WorkflowController : Controller
         var routeData = new RouteData();
         routeData.Values.Add("Filter", model.Options.Filter);
 
-        var pagerShape = await _shapeFactory.PagerAsync(pager, await query.CountAsync(), routeData);
+        var count = await query.CountAsync();
+        var pagerShape = await _shapeFactory.PagerAsync(pager, count, routeData);
 
         var pageOfItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
 
@@ -150,6 +159,30 @@ public sealed class WorkflowController : Controller
         [
             new SelectListItem(S["Delete"], nameof(WorkflowBulkAction.Delete)),
         ];
+
+        var rows = new List<IShape>(viewModel.Workflows.Count);
+
+        foreach (var entry in viewModel.Workflows)
+        {
+            rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
+        }
+
+        // The status and sort filters render at the end of the toolbar, next to the bulk actions.
+        var filters = await _shapeFactory.CreateAsync("WorkflowInstancesFilters", Arguments.From(new
+        {
+            Options = viewModel.Options,
+        }));
+
+        // The AdminList shape renders the instances with the configured layout (List, Grid, ...).
+        viewModel.List = await adminListFactory.CreateAsync(new AdminListContext(WorkflowInstancesAdminList.Name)
+        {
+            Rows = rows,
+            BulkActions = viewModel.Options.WorkflowsBulkAction,
+            ToolbarActions = filters,
+            Pager = viewModel.Pager,
+            ItemCssClass = "list-group-item",
+            EmptyMessage = H["<strong>Nothing here!</strong> There are no workflow instances at the moment."],
+        }, HttpContext.RequestAborted);
 
         return View(viewModel);
     }

@@ -20,20 +20,32 @@ public sealed class UrlRewritingRulesTests : CmsTestBase<UrlRewritingRulesTestsF
 {
     public UrlRewritingRulesTests(UrlRewritingRulesTestsFixture fixture) : base(fixture) { }
 
-    [Fact]
-    public async Task UrlRewritingRules_DragReorder_PersistsNewOrder()
+    // The rows are the items of a list-group in the List layout, and subgrids of the list in the Grid layout,
+    // which gives each of them a box to drag. Each case swaps the two rules, so they run in any order.
+    [Theory]
+    [InlineData("List")]
+    [InlineData("Grid")]
+    public async Task UrlRewritingRules_DragReorder_PersistsNewOrder(string layout)
     {
         var page = await Fixture.CreatePageAsync();
         await page.LoginAsync();
 
-        await page.GotoAndAssertOkAsync("/Admin/UrlRewriting/Index");
+        // The layout is asked for in the query string, which the site only honours when users can choose it.
+        await page.GotoAndAssertOkAsync("/Admin/Settings/admin");
+        await page.GetByLabel("Let users choose the layout of a list").CheckAsync();
+        await page.ClickSaveAsync();
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
-        var rows = page.Locator("#rewrite-rules-sortable-list li.item");
+        await page.GotoAndAssertOkAsync($"/Admin/UrlRewriting/Index?layout={layout}");
+        await Assertions.Expect(page.Locator($".admin-list-{layout.ToLowerInvariant()}")).ToHaveCountAsync(1);
+
+        var rows = page.Locator("#rewrite-rules-sortable-list .item");
         await Assertions.Expect(rows).ToHaveCountAsync(2);
 
-        // Confirm the seeded, pre-reorder order: Rule One first, Rule Two second.
-        await Assertions.Expect(rows.Nth(0)).ToContainTextAsync("Url Rewriting Rule One");
-        await Assertions.Expect(rows.Nth(1)).ToContainTextAsync("Url Rewriting Rule Two");
+        var first = (await rows.Nth(0).TextContentAsync()).Contains("Url Rewriting Rule One") ? "Url Rewriting Rule One" : "Url Rewriting Rule Two";
+        var second = first == "Url Rewriting Rule One" ? "Url Rewriting Rule Two" : "Url Rewriting Rule One";
+
+        await Assertions.Expect(rows.Nth(1)).ToContainTextAsync(second);
 
         var firstHandle = rows.Nth(0).Locator(".ui-sortable-handle");
         var secondRow = rows.Nth(1);
@@ -51,17 +63,17 @@ public sealed class UrlRewritingRulesTests : CmsTestBase<UrlRewritingRulesTestsF
         await page.Mouse.MoveAsync(secondBox!.X + (secondBox.Width / 2), secondBox.Y + (secondBox.Height / 2) + 5, new MouseMoveOptions { Steps = 10 });
         await page.Mouse.UpAsync();
 
-        await Assertions.Expect(rows.Nth(0)).ToContainTextAsync("Url Rewriting Rule Two");
-        await Assertions.Expect(rows.Nth(1)).ToContainTextAsync("Url Rewriting Rule One");
+        await Assertions.Expect(rows.Nth(0)).ToContainTextAsync(second);
+        await Assertions.Expect(rows.Nth(1)).ToContainTextAsync(first);
 
         // Reload to confirm the reorder was actually persisted server-side (via the
         // resort endpoint), not just a client-side DOM move that reverts on refresh.
-        await page.GotoAndAssertOkAsync("/Admin/UrlRewriting/Index");
+        await page.GotoAndAssertOkAsync($"/Admin/UrlRewriting/Index?layout={layout}");
 
-        var reloadedRows = page.Locator("#rewrite-rules-sortable-list li.item");
+        var reloadedRows = page.Locator("#rewrite-rules-sortable-list .item");
         await Assertions.Expect(reloadedRows).ToHaveCountAsync(2);
-        await Assertions.Expect(reloadedRows.Nth(0)).ToContainTextAsync("Url Rewriting Rule Two");
-        await Assertions.Expect(reloadedRows.Nth(1)).ToContainTextAsync("Url Rewriting Rule One");
+        await Assertions.Expect(reloadedRows.Nth(0)).ToContainTextAsync(second);
+        await Assertions.Expect(reloadedRows.Nth(1)).ToContainTextAsync(first);
 
         await page.CloseAsync();
     }

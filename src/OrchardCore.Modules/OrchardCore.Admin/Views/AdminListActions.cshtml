@@ -1,0 +1,41 @@
+@*
+    The 'Buttons' layout of the row actions of an admin list: the shapes of the 'Actions' zone as buttons, followed by
+    an "Actions" dropdown holding the shapes of the 'ActionsMenu' zone.
+
+    Properties:
+        Row       The row shape (a SummaryAdmin shape with 'Actions' and 'ActionsMenu' zones).
+        Layout    The layout name, resolved from the admin settings when not provided.
+        ListName  Optional name of the list, used for the AdminListActions__{ListName}__{Layout} alternates.
+*@
+@using OrchardCore.DisplayManagement.Shapes
+@using OrchardCore.DisplayManagement.Zones
+@{
+    var row = Model.Row as IZoneHolding;
+}
+@if (row != null)
+{
+    var hasActions = row.Zones.IsNotEmpty("Actions");
+    var menu = row.Zones.IsNotEmpty("ActionsMenu") ? row.Zones["ActionsMenu"] as Shape : null;
+    var hasMenu = menu is { HasItems: true };
+
+    if (hasActions || hasMenu)
+    {
+        <div class="actions admin-list-actions admin-list-actions-buttons">
+            @if (hasActions)
+            {
+                @await DisplayAsync(row.Zones["Actions"])
+            }
+            @if (hasMenu)
+            {
+                <div class="btn-group" title="@T["Actions"]">
+                    <button type="button" class="btn btn-sm btn-secondary dropdown-toggle actions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span>@T["Actions"]</span>
+                    </button>
+                    <div class="actions-menu dropdown-menu dropdown-menu-end">
+                        @await DisplayAsync(menu)
+                    </div>
+                </div>
+            }
+        </div>
+    }
+}
