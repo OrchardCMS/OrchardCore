@@ -36,6 +36,17 @@ public static class SortableMenuHelper
     // without an explicit sideways nudge - exercising sortable-menu.ts's "clamp
     // the item's original depth to whatever's still valid at its new position"
     // behavior, rather than an explicit indent/outdent gesture.
+    //
+    // Two-stage approach to the target (hover its middle first, then settle
+    // into the bottom-edge "insert after" zone) rather than one big jump:
+    // SortableJS computes the insertion side from the direction/position of
+    // the drag-over events it actually receives. Under a CPU-starved runner a
+    // single large jump straight to the final drop point can skip enough
+    // intermediate dragover events that SortableJS never registers the target
+    // as "hovered from above" and resolves the insertion index differently
+    // (observed: an item dragged to just after its target instead
+    // deterministically landed just before it, in every run under load -
+    // not a timing flake, a wrong final result).
     public static async Task DragMenuItemJustAfterAsync(this IPage page, string itemText, string targetText)
     {
         var fromBox = await MenuItem(page, itemText).Locator(".menu-item-title").BoundingBoxAsync();
@@ -48,8 +59,10 @@ public static class SortableMenuHelper
 
         var targetBox = await MenuItem(page, targetText).BoundingBoxAsync();
         Assert.NotNull(targetBox);
+        await page.Mouse.MoveAsync(targetBox.X + targetBox.Width / 2, targetBox.Y + targetBox.Height / 2, new MouseMoveOptions { Steps = 10 });
+        await page.WaitForTimeoutAsync(150);
         await page.Mouse.MoveAsync(targetBox.X + targetBox.Width / 2, targetBox.Y + targetBox.Height - 3, new MouseMoveOptions { Steps = 8 });
-        await page.WaitForTimeoutAsync(200);
+        await page.WaitForTimeoutAsync(250);
         await page.Mouse.UpAsync();
         await page.WaitForTimeoutAsync(250);
     }
@@ -60,6 +73,9 @@ public static class SortableMenuHelper
     // initial pick-up downward first, rather than upward, keeps the pointer
     // safely inside the list's bounds when dragging an item that has nothing
     // above it yet to move into.
+    //
+    // Same two-stage approach to the target as DragMenuItemJustAfterAsync, for
+    // the same reason (see its comment).
     public static async Task DragMenuItemJustBeforeAsync(this IPage page, string itemText, string targetText)
     {
         var fromBox = await MenuItem(page, itemText).Locator(".menu-item-title").BoundingBoxAsync();
@@ -72,8 +88,10 @@ public static class SortableMenuHelper
 
         var targetBox = await MenuItem(page, targetText).BoundingBoxAsync();
         Assert.NotNull(targetBox);
+        await page.Mouse.MoveAsync(targetBox.X + targetBox.Width / 2, targetBox.Y + targetBox.Height / 2, new MouseMoveOptions { Steps = 10 });
+        await page.WaitForTimeoutAsync(150);
         await page.Mouse.MoveAsync(targetBox.X + targetBox.Width / 2, targetBox.Y + 3, new MouseMoveOptions { Steps = 8 });
-        await page.WaitForTimeoutAsync(200);
+        await page.WaitForTimeoutAsync(250);
         await page.Mouse.UpAsync();
         await page.WaitForTimeoutAsync(250);
     }
