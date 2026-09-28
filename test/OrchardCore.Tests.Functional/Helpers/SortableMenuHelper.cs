@@ -120,7 +120,12 @@ public static class SortableMenuHelper
 
     private static async Task WaitForSortableOrderAsync(this IPage page, string itemText, string targetText, bool expectAfter, float x, float y)
     {
-        const int maxAttempts = 40;
+        // 150 attempts x 100ms = up to 15s of polling - generous relative to the
+        // ~30s+ delays observed elsewhere in this same CI environment under
+        // genuine contention (see ShortcodeModalTests/PredefinedListEditorTests
+        // history), since each failed attempt here also re-feeds a dragover
+        // event rather than just idling.
+        const int maxAttempts = 150;
 
         for (var attempt = 0; attempt < maxAttempts; attempt++)
         {
@@ -145,10 +150,12 @@ public static class SortableMenuHelper
                 return;
             }
 
-            // Nudge by an amount too small to visibly move the pointer but enough to
-            // register as a new dragover position, alternating direction so it can't
-            // drift the drop point away from where we actually want it.
-            var nudge = attempt % 2 == 0 ? 1 : -1;
+            // Nudge by a small amount - big enough to be a distinct pointer position
+            // (so it can't be coalesced away as a no-op) but well within the target
+            // item's own row so it can never drift the drop point onto a neighbour,
+            // alternating direction so it can't drift the drop point away from where
+            // we actually want it.
+            var nudge = attempt % 2 == 0 ? 3 : -3;
             await page.Mouse.MoveAsync(x, y + nudge);
             await page.WaitForTimeoutAsync(100);
         }
