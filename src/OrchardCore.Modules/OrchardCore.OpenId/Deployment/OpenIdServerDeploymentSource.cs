@@ -20,7 +20,7 @@ public sealed class OpenIdServerDeploymentSource
     {
         var settings = await _openIdServerService.GetSettingsAsync();
 
-        var settingsModel = new OpenIdServerSettingsStepModel
+        var settingsModel = new OpenIdServerSettingsRecipeModel
         {
             AccessTokenFormat = settings.AccessTokenFormat,
             Authority = settings.Authority?.AbsoluteUri,
@@ -58,9 +58,10 @@ public sealed class OpenIdServerDeploymentSource
             RequireEndSessionConfirmation = settings.RequireEndSessionConfirmation,
         };
 
-        var json = JObject.FromObject(settingsModel);
-        json.TryAdd("name", nameof(OpenIdServerSettings));
-
-        result.Steps.Add(json);
+        result.Steps.Add(new JsonObject
+        {
+            ["name"] = nameof(OpenIdServerSettings),
+            [nameof(OpenIdServerSettings)] = JObject.FromObject(settingsModel),
+        });
     }
 }

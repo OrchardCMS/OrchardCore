@@ -3,7 +3,12 @@ using static OrchardCore.OpenId.Settings.OpenIdServerSettings;
 
 namespace OrchardCore.OpenId.Recipes;
 
-public class OpenIdServerSettingsStepModel
+public sealed class OpenIdServerSettingsStepModel
+{
+    public OpenIdServerSettingsRecipeModel OpenIdServerSettings { get; set; }
+}
+
+public sealed class OpenIdServerSettingsRecipeModel
 {
     public TokenFormat AccessTokenFormat { get; set; } = TokenFormat.DataProtection;
     [Url]
