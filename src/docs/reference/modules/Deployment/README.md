@@ -92,6 +92,17 @@ A module can provide a custom deployment step by implementing an `IDeploymentSou
 services.AddDeployment<MyDeploymentSource, MyDeploymentStep, MyDeploymentStepDisplayDriver>();
 ```
 
+Set the step's `Category` and `Title` in its constructor. `Title` is a `LocalizedString` holding the step's display name; it is shown as the heading of the step's add and edit screens (and in their breadcrumb), so the screen no longer needs a `<h5>` of its own:
+
+```csharp
+public MyDeploymentStep()
+{
+    Name = nameof(MyDeploymentStep);
+    Category = S["Content"];
+    Title = S["Export My Data"];
+}
+```
+
 The source processes the configured step and adds recipe steps or files to the `DeploymentPlanResult`. Register a custom execution destination by implementing `IDeploymentTargetProvider`.
 
 To send packages directly to another Orchard Core site, see [Remote Deployment](../Deployment.Remote/README.md).

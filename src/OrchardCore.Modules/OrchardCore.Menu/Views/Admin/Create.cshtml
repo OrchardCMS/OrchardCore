@@ -5,6 +5,7 @@
 @using OrchardCore.Localization.Data
 
 @inject IContentDefinitionManager ContentDefinitionManager
+@inject IContentManager ContentManager
 @inject IDataLocalizer D
 
 @{
@@ -12,9 +13,19 @@
     var contentTypeDefinition = await ContentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
     var typeDisplayName = contentTypeDefinition?.DisplayName ?? contentItem.ContentType.CamelFriendly();
     string localizedTypeDisplayName = D[typeDisplayName, DataLocalizationContext.ContentType];
+    string menuContentItemId = Model.MenuContentItemId;
 }
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["New {0}", localizedTypeDisplayName])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="MenuCreate" title="@T["New {0}", localizedTypeDisplayName]">
+        <breadcrumb-item id="Contents" action="List" controller="Admin" area="OrchardCore.Contents" route-contentTypeId="">@T["Manage Content"]</breadcrumb-item>
+        @if (!string.IsNullOrEmpty(menuContentItemId))
+        {
+            var menu = await ContentManager.GetAsync(menuContentItemId);
+            <breadcrumb-item id="Menu" action="Edit" controller="Admin" area="OrchardCore.Contents" route-contentItemId="@menuContentItemId">@T["Edit {0}", menu?.DisplayText]</breadcrumb-item>
+        }
+    </breadcrumb>
+</zone>
 
 <form asp-action="Create" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data" class="no-multisubmit">
     @Html.ValidationSummary()

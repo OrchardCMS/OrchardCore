@@ -6,8 +6,8 @@
 
 @model AdminIndexViewModel
 
-<zone Name="Title" Entry>
-    <h1>@RenderTitleSegments(T["Indexes"])</h1>
+<zone Name="Title">
+    <breadcrumb name="Indexes" title="@T["Indexes"]" />
 </zone>
 
 @* The form is necessary to generate an antiforgery token for the delete and toggle actions. *@
