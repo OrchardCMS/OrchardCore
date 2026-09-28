@@ -19,10 +19,9 @@ public sealed class OpenIdValidationDeploymentSource
     {
         var validationSettings = await _openIdValidationService.GetSettingsAsync();
 
-        result.Steps.Add(new JsonObject
-        {
-            ["name"] = nameof(OpenIdValidationSettings),
-            ["OpenIdValidationSettings"] = JObject.FromObject(validationSettings),
-        });
+        var json = JObject.FromObject(validationSettings);
+        json.TryAdd("name", nameof(OpenIdValidationSettings));
+
+        result.Steps.Add(json);
     }
 }

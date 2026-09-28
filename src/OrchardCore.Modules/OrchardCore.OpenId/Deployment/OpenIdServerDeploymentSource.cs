@@ -2,6 +2,7 @@ using System.Text.Json.Nodes;
 using OrchardCore.Deployment;
 using OrchardCore.OpenId.Recipes;
 using OrchardCore.OpenId.Services;
+using OrchardCore.OpenId.Settings;
 
 namespace OrchardCore.OpenId.Deployment;
 
@@ -57,10 +58,9 @@ public sealed class OpenIdServerDeploymentSource
             RequireEndSessionConfirmation = settings.RequireEndSessionConfirmation,
         };
 
-        result.Steps.Add(new JsonObject
-        {
-            ["name"] = "OpenIdServerSettings",
-            ["OpenIdServerSettings"] = JObject.FromObject(settingsModel),
-        });
+        var json = JObject.FromObject(settingsModel);
+        json.TryAdd("name", nameof(OpenIdServerSettings));
+
+        result.Steps.Add(json);
     }
 }
