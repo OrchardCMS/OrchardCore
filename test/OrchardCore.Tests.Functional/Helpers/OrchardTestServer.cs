@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Testing;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Logging;
+using OrchardCore.Modules;
 using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Tests.Functional.Helpers;
@@ -70,6 +71,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
         // Serve test recipes from embedded resources instead of copying files.
         builder.Services.AddScoped<IRecipeHarvester, EmbeddedRecipeHarvester>();
+        builder.Services.AddSingleton<IModuleNamesProvider, TestThemeModuleNamesProvider>();
 
         ConfigureServices(builder, appDataPath, instanceId, loggerProvider);
 
@@ -112,6 +114,11 @@ public sealed class OrchardTestServer : IAsyncDisposable
         await WarmUpAsync(address, loggerProvider.Collector, timeoutSeconds: 90);
 
         return new OrchardTestServer(app, address, loggerProvider.Collector);
+    }
+
+    private sealed class TestThemeModuleNamesProvider : IModuleNamesProvider
+    {
+        public IEnumerable<string> GetModuleNames() => ["AdminThemeSample"];
     }
 
     public void AssertNoLoggedIssues()

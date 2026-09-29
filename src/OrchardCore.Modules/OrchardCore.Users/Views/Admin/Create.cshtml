@@ -1,6 +1,10 @@
 @model dynamic
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Create User"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="UsersCreate" title="@T["Create User"]">
+        <breadcrumb-item id="Users" action="Index" controller="Admin" area="OrchardCore.Users" permission="@UsersPermissions.ListUsers.Name">@T["Users"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <form asp-action="Create" method="post" enctype="multipart/form-data" class="no-multisubmit">
     @Html.ValidationSummary()

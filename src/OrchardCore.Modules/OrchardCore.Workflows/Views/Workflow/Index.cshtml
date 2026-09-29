@@ -9,16 +9,11 @@
 <style asp-name="bootstrap-select" at="Head"></style>
 <script asp-name="bootstrap-select" at="Foot"></script>
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["{0} Instances", Model.WorkflowType.Name])</h1></zone>
-
-<zone name="Breadcrumbs">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-action="Index" asp-controller="WorkflowType">@T["Workflows"]</a></li>
-            <li class="breadcrumb-item"><a asp-action="Edit" asp-controller="WorkflowType" asp-route-id="@Model.WorkflowType.Id">@Model.WorkflowType.Name</a></li>
-            <li class="breadcrumb-item active" aria-current="page">@T["Instances"]</li>
-        </ol>
-    </nav>
+<zone Name="Title">
+    <breadcrumb name="WorkflowInstances" title="@T["Instances"]">
+        <breadcrumb-item id="WorkflowTypes" action="Index" controller="WorkflowType" area="OrchardCore.Workflows" permission="@WorkflowsPermissions.ManageWorkflows.Name">@T["Workflows"]</breadcrumb-item>
+        <breadcrumb-item id="WorkflowType" action="Edit" controller="WorkflowType" area="OrchardCore.Workflows" route-id="@Model.WorkflowType.Id" permission="@WorkflowsPermissions.ManageWorkflows.Name">@Model.WorkflowType.Name</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <form asp-action="Index" id="workflows-form" method="post" class="no-multisubmit workflow-bulk-select-list" data-selected-text="@T["selected"]">

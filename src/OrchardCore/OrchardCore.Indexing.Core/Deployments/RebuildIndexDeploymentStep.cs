@@ -15,6 +15,7 @@ public sealed class RebuildIndexDeploymentStep : DeploymentStep
         : this()
     {
         Category = S["Indexing"];
+        Title = S["Rebuild Indexes"];
     }
 
     public bool IncludeAll { get; set; }

@@ -6,7 +6,12 @@
     var hasSelectedParts = Model.PartSelections.Any(x => x.IsSelected);
     string localizedTypeName = D[Model.Type.DisplayName, "Content Types"];
 }
-<zone Name="Title"><h1>@T["Add Parts To \"{0}\"", localizedTypeName]</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="ContentTypesAddParts" title="@T["Add Parts"]">
+        <breadcrumb-item id="ContentTypes" action="List" controller="Admin" area="OrchardCore.ContentTypes" permission="@ContentTypesPermissions.ViewContentTypes.Name">@T["Content Types"]</breadcrumb-item>
+        <breadcrumb-item id="ContentType" action="Edit" controller="Admin" area="OrchardCore.ContentTypes" route-id="@Model.Type.Name" permission="@ContentTypesPermissions.EditContentTypes.Name">@T["Edit Content Type - {0}", localizedTypeName]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <div class="ocat-wrapper">
     <div class="ocat-end-offset">
