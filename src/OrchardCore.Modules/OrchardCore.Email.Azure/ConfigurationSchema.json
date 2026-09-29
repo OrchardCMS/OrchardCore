@@ -1,0 +1,43 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Email": {
+          "type": "object",
+          "properties": {
+            "Azure": {
+              "type": "object",
+              "description": "Settings of the Default Azure Communication Services email provider, which sends emails through Azure Communication Services. This provider can only be configured from configuration, and it is available when both 'DefaultSender' and 'ConnectionString' are set. See https://docs.orchardcore.net/en/latest/reference/modules/Email.Azure/.",
+              "properties": {
+                "DefaultSender": {
+                  "type": "string",
+                  "description": "The email address used as the sender of the emails. Required to enable the provider."
+                },
+                "ConnectionString": {
+                  "type": "string",
+                  "description": "The connection string of the Azure Communication Services resource, e.g. 'endpoint=https://<resource>.communication.azure.com/;accesskey=<key>'. Required to enable the provider. This is a sensitive value: provide it through user secrets, environment variables or a key vault rather than appsettings.json."
+                }
+              }
+            }
+          }
+        },
+        "OrchardCore_Email_AzureCommunicationServices": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Email_AzureCommunicationServices' section is deprecated. Use 'OrchardCore:Email:Azure' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Email:Azure' instead.",
+          "doNotSuggest": true
+        },
+        "OrchardCore_Email_Azure": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Email_Azure' section is deprecated. Use 'OrchardCore:Email:Azure' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Email:Azure' instead.",
+          "doNotSuggest": true
+        }
+      }
+    }
+  }
+}
