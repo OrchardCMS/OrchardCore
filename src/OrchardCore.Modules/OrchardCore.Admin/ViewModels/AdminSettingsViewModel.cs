@@ -1,3 +1,5 @@
+using OrchardCore.Admin.Models;
+
 namespace OrchardCore.Admin.ViewModels;
 
 public class AdminSettingsViewModel
@@ -13,4 +15,6 @@ public class AdminSettingsViewModel
     public bool DisplayTitlesInTopbar { get; set; }
 
     public bool ShowBreadcrumb { get; set; }
+
+    public AdminMenuBehavior MenuBehavior { get; set; }
 }

@@ -44,6 +44,7 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
             model.DisplayNewMenu = settings.DisplayNewMenu;
             model.DisplayTitlesInTopbar = settings.DisplayTitlesInTopbar;
             model.ShowBreadcrumb = settings.ShowBreadcrumb;
+            model.MenuBehavior = settings.MenuBehavior;
         }, settings).Location("Content:3")
         .OnGroup(SettingsGroupId);
     }
@@ -67,6 +68,7 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
         settings.DisplayNewMenu = model.DisplayNewMenu;
         settings.DisplayTitlesInTopbar = model.DisplayTitlesInTopbar;
         settings.ShowBreadcrumb = model.ShowBreadcrumb;
+        settings.MenuBehavior = model.MenuBehavior;
 
         return await EditAsync(site, settings, context);
     }
