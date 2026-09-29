@@ -83,7 +83,8 @@ public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
 
     public void Configure(MediaOptions options)
     {
-        var section = _shellConfiguration.GetSection("OrchardCore_Media");
+        // The 'OrchardCore_Media' section is deprecated and will be removed in a future major version, use 'Media' instead.
+        var section = _shellConfiguration.GetSectionCompat("Media", "OrchardCore_Media");
 
         // Because IShellConfiguration treats arrays as key value pairs, we replace the array value,
         // rather than letting Configure merge the default array with the appsettings value.

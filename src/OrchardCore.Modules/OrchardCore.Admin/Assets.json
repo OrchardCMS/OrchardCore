@@ -1,0 +1,15 @@
+[
+  {
+    "action": "parcel",
+    "name": "admin-quick-navigation",
+    "source": "Assets/js/quick-navigation.ts",
+    "dest": "wwwroot/Scripts/quick-navigation/",
+    "tags": ["admin", "js"]
+  },
+  {
+    "action": "sass",
+    "name": "admin-quick-navigation",
+    "source": "Assets/scss/quick-navigation.scss",
+    "tags": ["admin", "css"]
+  }
+]

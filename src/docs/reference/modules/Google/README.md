@@ -66,11 +66,15 @@ The following configuration values can be customized:
 
 ```json
 {
-  "OrchardCore_Google": {
-    "ClientID": "",
-    "ClientSecret": "",
-    "CallbackPath": "/signin-google",
-    "SaveTokens": false
+  "OrchardCore": {
+    "Authentication": {
+      "Google": {
+        "ClientID": "",
+        "ClientSecret": "",
+        "CallbackPath": "/signin-google",
+        "SaveTokens": false
+      }
+    }
   }
 }
 ```

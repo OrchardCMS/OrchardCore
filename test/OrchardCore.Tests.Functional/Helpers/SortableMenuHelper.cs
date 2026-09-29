@@ -47,8 +47,9 @@ public static class SortableMenuHelper
     // landed just before it instead - a wrong final result, not a slow-to-
     // arrive correct one, so no fixed timeout size can be relied on to avoid
     // it), poll the live DOM for the expected order and only release the mouse
-    // once it has actually been reached, nudging the pointer slightly on each
-    // retry to keep feeding SortableJS fresh dragover events.
+    // once it has actually been reached, re-reading the target's CURRENT
+    // position on every retry (see WaitForSortableOrderAsync's comment for why
+    // a fixed coordinate goes stale) rather than nudging around a fixed point.
     public static async Task DragMenuItemJustAfterAsync(this IPage page, string itemText, string targetText)
     {
         var fromBox = await MenuItem(page, itemText).Locator(".menu-item-title").BoundingBoxAsync();
@@ -59,15 +60,7 @@ public static class SortableMenuHelper
         await page.Mouse.MoveAsync(fromBox.X + fromBox.Width / 2, fromBox.Y - 10, new MouseMoveOptions { Steps = 5 });
         await page.WaitForTimeoutAsync(150);
 
-        var targetBox = await MenuItem(page, targetText).BoundingBoxAsync();
-        Assert.NotNull(targetBox);
-        await page.Mouse.MoveAsync(targetBox.X + targetBox.Width / 2, targetBox.Y + targetBox.Height / 2, new MouseMoveOptions { Steps = 10 });
-        await page.WaitForTimeoutAsync(150);
-
-        var dropX = targetBox.X + targetBox.Width / 2;
-        var dropY = targetBox.Y + targetBox.Height - 3;
-        await page.Mouse.MoveAsync(dropX, dropY, new MouseMoveOptions { Steps = 8 });
-        await page.WaitForItemImmediatelyAfterAsync(itemText, targetText, dropX, dropY);
+        await page.WaitForSortableOrderAsync(itemText, targetText, expectAfter: true);
 
         await page.Mouse.UpAsync();
         await page.WaitForTimeoutAsync(250);
@@ -92,40 +85,34 @@ public static class SortableMenuHelper
         await page.Mouse.MoveAsync(fromBox.X + fromBox.Width / 2, fromBox.Y + 10, new MouseMoveOptions { Steps = 5 });
         await page.WaitForTimeoutAsync(150);
 
-        var targetBox = await MenuItem(page, targetText).BoundingBoxAsync();
-        Assert.NotNull(targetBox);
-        await page.Mouse.MoveAsync(targetBox.X + targetBox.Width / 2, targetBox.Y + targetBox.Height / 2, new MouseMoveOptions { Steps = 10 });
-        await page.WaitForTimeoutAsync(150);
-
-        var dropX = targetBox.X + targetBox.Width / 2;
-        var dropY = targetBox.Y + 3;
-        await page.Mouse.MoveAsync(dropX, dropY, new MouseMoveOptions { Steps = 8 });
-        await page.WaitForItemImmediatelyBeforeAsync(itemText, targetText, dropX, dropY);
+        await page.WaitForSortableOrderAsync(itemText, targetText, expectAfter: false);
 
         await page.Mouse.UpAsync();
         await page.WaitForTimeoutAsync(250);
     }
 
-    // Polls the live #menu li.menu-item order (SortableJS reorders the real
-    // DOM mid-drag under forceFallback) until `itemText`'s element is
-    // immediately followed by `targetText`'s, nudging the pointer by a
-    // sub-pixel amount on each retry to keep feeding SortableJS fresh
-    // dragover events - a stationary pointer stops producing them entirely,
-    // so simply waiting longer without nudging would never make progress.
-    private static Task WaitForItemImmediatelyAfterAsync(this IPage page, string itemText, string targetText, float x, float y)
-        => page.WaitForSortableOrderAsync(itemText, targetText, expectAfter: true, x, y);
-
-    private static Task WaitForItemImmediatelyBeforeAsync(this IPage page, string itemText, string targetText, float x, float y)
-        => page.WaitForSortableOrderAsync(itemText, targetText, expectAfter: false, x, y);
-
-    private static async Task WaitForSortableOrderAsync(this IPage page, string itemText, string targetText, bool expectAfter, float x, float y)
+    // Polls the live #menu li.menu-item order (SortableJS reorders the real DOM
+    // mid-drag under forceFallback) until `itemText`'s element is immediately
+    // next to `targetText`'s on the requested side, moving the pointer toward
+    // the target's CURRENT bounding box on every retry rather than a single
+    // coordinate captured once before the loop. A fixed coordinate goes stale
+    // the moment the first swap happens: reordering physically moves every row
+    // below the swap point (e.g. dragging an item to just-after a target
+    // shifts that target's own row up to take the dragged item's old slot),
+    // so a pointer sitting at the target's pre-swap position is no longer
+    // anywhere near its current one and can never trigger a further swap from
+    // there - confirmed live: this was consistently landing one position off
+    // in every failure (e.g. 'Earth -> Exploration -> Space' instead of
+    // 'Earth -> Space -> Exploration'), not intermittently, once the
+    // animation-timing noise that had been masking it was removed (see
+    // OrchardTestFixture's Sortable.create animation: 0 patch).
+    private static async Task WaitForSortableOrderAsync(this IPage page, string itemText, string targetText, bool expectAfter)
     {
-        // 150 attempts x 100ms = up to 15s of polling - generous relative to the
-        // ~30s+ delays observed elsewhere in this same CI environment under
-        // genuine contention (see ShortcodeModalTests/PredefinedListEditorTests
-        // history), since each failed attempt here also re-feeds a dragover
-        // event rather than just idling.
-        const int maxAttempts = 150;
+        // 50 attempts x up to ~300ms/attempt = up to ~15s of active polling,
+        // generous relative to the ~30s+ margins other tests in this same CI
+        // environment have needed under genuine runner contention (see
+        // ShortcodeModalTests/PredefinedListEditorTests history).
+        const int maxAttempts = 50;
 
         for (var attempt = 0; attempt < maxAttempts; attempt++)
         {
@@ -150,19 +137,36 @@ public static class SortableMenuHelper
                 return;
             }
 
-            // Nudge by a small amount - big enough to be a distinct pointer position
-            // (so it can't be coalesced away as a no-op) but well within the target
-            // item's own row so it can never drift the drop point onto a neighbour,
-            // alternating direction so it can't drift the drop point away from where
-            // we actually want it.
-            var nudge = attempt % 2 == 0 ? 3 : -3;
-            await page.Mouse.MoveAsync(x, y + nudge);
+            // Re-read the target's CURRENT position every time, not once before the
+            // loop - see this method's own comment for why a stale one stops working
+            // after the very first swap. Pulling the pointer well clear of the
+            // target's far edge and back to its near edge is guaranteed to cross
+            // SortableJS's swap threshold from the correct direction regardless of
+            // how small its swap zone is.
+            var targetBox = await MenuItem(page, targetText).BoundingBoxAsync();
+
+            if (targetBox is null)
+            {
+                // The target row can briefly not match any element while SortableJS's
+                // fallback clone is mid-transition; skip this attempt rather than fail.
+                await page.WaitForTimeoutAsync(100);
+                continue;
+            }
+
+            var x = targetBox.X + targetBox.Width / 2;
+            var nearY = expectAfter ? targetBox.Y + targetBox.Height - 3 : targetBox.Y + 3;
+            var awayY = expectAfter ? targetBox.Y + targetBox.Height + 40 : targetBox.Y - 40;
+
+            await page.Mouse.MoveAsync(x, awayY, new MouseMoveOptions { Steps = 3 });
             await page.WaitForTimeoutAsync(100);
+            await page.Mouse.MoveAsync(x, nearY, new MouseMoveOptions { Steps = 3 });
+            await page.WaitForTimeoutAsync(150);
         }
 
         Assert.Fail(
             $"SortableJS never reordered '{itemText}' to be immediately {(expectAfter ? "after" : "before")} '{targetText}' " +
-            $"after {maxAttempts} polling attempts.");
+            $"after {maxAttempts} polling attempts. Current order: " +
+            await page.EvaluateAsync<string>("() => Array.from(document.querySelectorAll('#menu li.menu-item')).map(el => el.textContent.trim().split('\\n')[0].trim()).join(' -> ')"));
     }
 
     public static Task<string> GetMenuItemDepthAsync(this IPage page, string itemText)
