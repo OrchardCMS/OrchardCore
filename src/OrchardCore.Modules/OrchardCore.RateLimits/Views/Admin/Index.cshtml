@@ -11,10 +11,9 @@
             <div class="row gx-2">
                 <div class="col">
                     <label for="search-text" class="visually-hidden">@T["Search policies"]</label>
-                    <div class="input-group has-search">
-                        <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
+                    <div class="input-group">
                         <input id="search-text" name="searchText" value="@Model.SearchText" class="form-control" placeholder="@T["Search policies"]" type="search" autocomplete="off" />
-                        <button type="submit" class="btn btn-outline-secondary" title="@T["Search policies"]">@T["Go"]</button>
+                        <button type="submit" class="btn btn-outline-secondary" title="@T["Search policies"]" aria-label="@T["Search policies"]"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
                     </div>
                 </div>
                 <div class="col-auto d-flex gap-1">

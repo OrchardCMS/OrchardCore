@@ -1,6 +1,6 @@
 @*
-    The search bar of an admin list: the input the page filters on, with a Go button so the filter can be
-    submitted without the keyboard. A page passes it to the AdminList shape as its 'Search' property, and
+    The search bar of an admin list: the input the page filters on, followed by a search button (a magnifying
+    glass) so the filter can be submitted without the keyboard. A page passes it to the AdminList shape as its 'Search' property, and
     the layout decides where it goes.
 
     Properties:
@@ -8,7 +8,7 @@
         Value        The current search text.
         Placeholder  The placeholder of the input, defaults to "Search".
         Id           The id of the input, defaults to "search-box", which the list-management script reads.
-        SubmitName   The name of the Go button, defaults to "submit.Filter".
+        SubmitName   The name of the search button, defaults to "submit.Filter".
         Autofocus    Whether the input takes the focus when the page opens, defaults to true.
         Filters      Zone rendered before the input, e.g. a filter dropdown. Its items open the input group.
 *@
@@ -24,13 +24,11 @@
     var filters = zones != null && zones.Zones.IsNotEmpty("Filters") ? zones.Zones["Filters"] : null;
 }
 
-@* The has-search class rounds the leading corners of the input when nothing opens the group, see _forms.scss. *@
-<div class="input-group has-search">
+<div class="input-group">
     @if (filters != null)
     {
         @await DisplayAsync(filters)
     }
-    <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
     <input id="@id" name="@name" value="@value" class="form-control" placeholder="@placeholder" type="search" autofocus="@autofocus" autocomplete="off" />
-    <button type="submit" name="@submitName" class="btn btn-outline-secondary" title="@T["Search"]">@T["Go"]</button>
+    <button type="submit" name="@submitName" class="btn btn-outline-secondary" title="@T["Search"]" aria-label="@T["Search"]"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
 </div>

@@ -335,8 +335,7 @@ if (corsSettingsElement && corsFormElement && corsAdminElement && translationsEl
                     <div class="card-body">
                         <div class="row gx-2">
                             <div class="col">
-                                <div class="has-search">
-                                    <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
+                                <div>
                                     <input id="search-box" class="form-control" :placeholder="t.Search" type="search" autofocus />
                                 </div>
                             </div>

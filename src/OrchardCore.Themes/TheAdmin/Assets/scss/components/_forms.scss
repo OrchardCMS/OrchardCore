@@ -114,7 +114,7 @@ input[type="password"]::-ms-clear {
 }
 
 // The magnifier is positioned over the input, so the input is never the input group's first child and
-// Bootstrap squares its leading corners, leaving a square edge facing the rounded Go button. Round them
+// Bootstrap squares its leading corners, leaving a square edge facing the rounded search button. Round them
 // again, unless a button really does come first, as it does when the group opens with a filter dropdown.
 // Logical properties keep this correct in RTL, and !important is needed because the Bootstrap rule is a
 // chain of :not() selectors that outweighs anything reasonable here.

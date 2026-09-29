@@ -47,7 +47,7 @@ A screen is **converted** only when every box below is ticked.
 | 4 | Controller injects `IAdminListFactory` via `[FromServices]` and creates the list from an `AdminListContext` with `Rows`, `BulkActions` (or a `Header`), `Pager`, `EmptyMessage` | Controller `Index`/`List` action |
 | 5 | Rows carry `Classes.Add("item")` and `Attributes["data-filter-value"]` when the page uses client-side search | Controller loop over row shapes |
 | 6 | Action bar uses `row gx-2` (**not** `gx-3`) | `grep gx-3` returns nothing for the view |
-| 7 | Search box is an `input-group has-search` with a visible **Go** button (`name="submit.Filter"`) | View markup |
+| 7 | Search box is an `input-group` ending with a search button showing a magnifying glass (`name="submit.Filter"`), with no icon inside the input | View markup |
 | 8 | Hidden `submit.Filter` button stays **first** in the form (Enter key) | View markup |
 | 9 | Bulk actions still work: `#select-all` + inputs named `itemIds` | Manual click-through |
 | 10 | Row actions render through `AdminListActions`, so the Buttons/Menu setting applies | Row `Actions` zone template |
@@ -97,7 +97,7 @@ takes a line under them, the way the `summary` of the List layout stacks below `
   Replaced by the `AdminListToolbar` shape the factory builds (or the options editor `Header`).
 - `int startIndex = (Model.Pager.Page - 1) * Model.Pager.PageSize + 1;` computed in the view.
   The factory derives the indexes from the rows and the pager.
-- `<div class="has-search">` without `input-group` and without the Go button.
+- A magnifying glass inside the input (`form-control-feedback`, `has-search`), or a search box without the search button.
 - `float-end` / `float-start` positioning inside rows — breaks the Grid layout.
 - Naming the rows property `Items` on the shape — silently renders nothing, it must be `Rows`.
 
@@ -122,7 +122,7 @@ takes a line under them, the way the `summary` of the List layout stacks below `
 4. **Controller** — build the row shapes, then create the list with
    `adminListFactory.CreateAsync(new AdminListContext({List}AdminList.Name) { Rows, BulkActions, Pager, ... }, HttpContext.RequestAborted)`.
    The factory builds the columns, the layout and the toolbar.
-5. **View** — keep only the `<zone Name="Title">`, the form, the action bar (`gx-2` + Go button),
+5. **View** — keep only the `<zone Name="Title">`, the form, the action bar (`gx-2` + search button),
    `@await DisplayAsync(Model.List)`, the no-results alert, any modals, and the
    `<script asp-name="list-management" at="Foot">`.
 6. **Validate** — section 5.
@@ -279,14 +279,14 @@ dotnet run --project src/OrchardCore.Cms.Web -- --urls http://localhost:5010
 Then, with the Playwright MCP server:
 
 1. Navigate to the screen's admin route (Part A) and sign in as admin.
-2. `browser_snapshot` — confirm the action bar, search box, Go button, toolbar, rows and pager.
+2. `browser_snapshot` — confirm the action bar, search box, search button, toolbar, rows and pager.
 3. Set **Layout = List** in `Settings → Admin` (`/Admin/Settings/admin`), reload, screenshot.
 4. Set **Layout = Grid**, reload, screenshot. Confirm every column header appears, the header lines
    up with the data, and no cell is empty that should not be.
 5. Set **Row actions = Menu**, reload, confirm the kebab menu contains every action.
 6. Set **Row actions = Buttons**, reload, confirm the button group.
 7. `browser_resize` to 480x900 — confirm the container query stacks the columns and nothing overflows.
-8. Type in the search box and press Enter, then click **Go** — confirm both filter.
+8. Type in the search box and press Enter, then click the magnifying glass — confirm both filter.
 9. If the list has bulk actions: tick `select-all`, confirm the count label and the Actions dropdown.
 10. `browser_console_messages` — no new errors.
 
