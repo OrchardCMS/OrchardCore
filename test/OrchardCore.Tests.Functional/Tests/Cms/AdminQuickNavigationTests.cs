@@ -41,7 +41,11 @@ public sealed class AdminQuickNavigationTests : CmsTestBase<BlogFixture>, IClass
             await page.Keyboard.PressAsync("Escape");
             await Assertions.Expect(modal).ToBeHiddenAsync();
             await page.Keyboard.PressAsync("Control+k");
+            await Assertions.Expect(modal).ToBeVisibleAsync();
+            await Assertions.Expect(input).ToBeFocusedAsync();
             await input.FillAsync("features");
+            await Assertions.Expect(option.Locator(".admin-quick-navigation-title")).ToHaveTextAsync("Features");
+            await Assertions.Expect(option).ToHaveAttributeAsync("aria-selected", "true");
             await Task.WhenAll(
                 page.WaitForURLAsync("**/Admin/Features**"),
                 page.Keyboard.PressAsync("Enter"));
