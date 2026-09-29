@@ -25,6 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\OrchardCore.Cms.Web\OrchardCore.Cms.Web.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore.Mvc.Web\OrchardCore.Mvc.Web.csproj" />
+    <ProjectReference Include="..\OrchardCore.Tests.Modules\AdminThemeSample\AdminThemeSample.csproj" />
   </ItemGroup>
 
   <Import Project="..\..\src\OrchardCore.Build\OrchardCore.Commons.targets" />
