@@ -23,20 +23,7 @@ The .NET SDK includes a specific version of the Roslyn compiler. The CodeAnalysi
 
 ### Step 1: Update global.json
 
-Update the SDK version in `global.json`:
-
-```json
-{
-  "comment": "We only update the version manually with major SDK updates to keep using any more recent SDK version possible.",
-  "sdk": {
-    "version": "10.0.4xx",
-    "rollForward": "latestMajor"
-  },
-  "test": {
-    "runner": "Microsoft.Testing.Platform"
-  }
-}
-```
+Update the SDK `version` in `global.json`.
 
 **Note:** Use `rollForward: latestMajor` to allow patch updates within the same major version, giving developers flexibility to use newer patches.
 
