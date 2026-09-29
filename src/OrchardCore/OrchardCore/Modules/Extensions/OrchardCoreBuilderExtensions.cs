@@ -98,8 +98,11 @@ public static partial class OrchardCoreBuilderExtensions
 
         builder.ApplicationServices
             .AddOptions<BackgroundServiceOptions>()
-            .Configure<IConfiguration>((options, config) => config
-                .Bind("OrchardCore:OrchardCore_BackgroundService", options));
+            .Configure<IConfiguration>((options, config) =>
+            {
+                // The 'OrchardCore:OrchardCore_BackgroundService' section is deprecated and will be removed in a future major version, use 'OrchardCore:BackgroundService' instead.
+                config.GetSectionCompat("OrchardCore:BackgroundService", "OrchardCore:OrchardCore_BackgroundService").Bind(options);
+            });
 
         builder.Configure(app =>
         {
