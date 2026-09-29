@@ -17,6 +17,7 @@ public class AllContentDeploymentStep : DeploymentStep
         : this()
     {
         Category = S["Content Management"];
+        Title = S["All Content"];
     }
 
     public bool ExportAsSetupRecipe { get; set; }

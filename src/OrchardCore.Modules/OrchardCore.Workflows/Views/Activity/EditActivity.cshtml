@@ -1,7 +1,19 @@
 @model OrchardCore.Workflows.ViewModels.ActivityEditViewModel
+@using OrchardCore.Workflows.Models
+@using YesSql
+@inject YesSql.ISession Session
 
 <div data-workflow-type-id="@Model.WorkflowTypeId" data-activity-id="@Model.ActivityId">
-    <zone Name="Title"><h1>@RenderTitleSegments(T["Edit {0}", Model.Activity.DisplayText.Value])</h1></zone>
+    <zone Name="Title">
+        <breadcrumb name="WorkflowsActivityEdit" title="@T["Edit {0}", Model.Activity.DisplayText.Value]">
+            <breadcrumb-item id="WorkflowTypes" action="Index" controller="WorkflowType" area="OrchardCore.Workflows" permission="@WorkflowsPermissions.ManageWorkflows.Name">@T["Workflows"]</breadcrumb-item>
+            @if (Model.WorkflowTypeId != 0)
+            {
+                var workflowType = await Session.GetAsync<WorkflowType>(Model.WorkflowTypeId);
+                <breadcrumb-item id="WorkflowType" action="Edit" controller="WorkflowType" area="OrchardCore.Workflows" route-id="@Model.WorkflowTypeId" permission="@WorkflowsPermissions.ManageWorkflows.Name">@workflowType?.Name</breadcrumb-item>
+            }
+        </breadcrumb>
+    </zone>
 
     <div asp-validation-summary="ModelOnly"></div>
     <form asp-action="Edit" asp-route-workflowtypeid="@Model.WorkflowTypeId" asp-route-activityid="@Model.ActivityId" asp-route-returnurl="@Model.ReturnUrl" method="post" enctype="multipart/form-data" class="no-multisubmit">

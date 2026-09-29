@@ -14,6 +14,7 @@ public class CustomUserSettingsDeploymentStep : DeploymentStep
         : this()
     {
         Category = S["Security"];
+        Title = S["Custom User Settings"];
     }
 
     public bool IncludeAll { get; set; } = true;

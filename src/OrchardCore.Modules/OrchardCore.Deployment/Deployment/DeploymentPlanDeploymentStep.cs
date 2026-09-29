@@ -16,6 +16,7 @@ public class DeploymentPlanDeploymentStep : DeploymentStep
         : this()
     {
         Category = S["Deployment"];
+        Title = S["Deployment Plans"];
     }
 
     public bool IncludeAll { get; set; } = true;

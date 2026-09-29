@@ -6,9 +6,9 @@
   <ItemGroup>
     <PackageVersion Include="Acornima" Version="1.8.0" />
     <PackageVersion Include="AnyAscii" Version="0.3.3" />
-    <PackageVersion Include="AngleSharp" Version="1.7.2" />
-    <PackageVersion Include="AWSSDK.S3" Version="4.0.102.4" />
-    <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.101.1" />
+    <PackageVersion Include="AngleSharp" Version="1.7.3" />
+    <PackageVersion Include="AWSSDK.S3" Version="4.0.103.2" />
+    <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.101.3" />
     <PackageVersion Include="Azure.Communication.Email" Version="1.1.0" />
     <PackageVersion Include="Azure.Communication.Sms" Version="1.0.2" />
     <PackageVersion Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.5.2" />
@@ -21,18 +21,18 @@
     <PackageVersion Include="Castle.Core" Version="5.2.1" />
     <PackageVersion Include="Cyqwel" Version="0.3.0" />
     <PackageVersion Include="DocumentFormat.OpenXml" Version="3.5.1" />
-    <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.19.25" />
+    <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.19.26" />
     <PackageVersion Include="Fluid.Core" Version="2.40.0" />
     <PackageVersion Include="GraphQL" Version="8.8.5" />
     <PackageVersion Include="GraphQL.DataLoader" Version="8.8.5" />
     <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.8.5" />
     <PackageVersion Include="GraphQL.SystemTextJson" Version="8.8.5" />
-    <PackageVersion Include="Jint" Version="4.16.1" />
+    <PackageVersion Include="Jint" Version="4.16.2" />
     <PackageVersion Include="JsonPath.Net" Version="2.2.0" />
     <PackageVersion Include="HtmlSanitizer" Version="9.2.1039" />
     <PackageVersion Include="Microsoft.Extensions.Compliance.Redaction" Version="10.9.0" />
-    <PackageVersion Include="Parlot" Version="1.5.8" />
-    <PackageVersion Include="libphonenumber-csharp" Version="9.0.38" />
+    <PackageVersion Include="Parlot" Version="1.5.9" />
+    <PackageVersion Include="libphonenumber-csharp" Version="9.0.39" />
     <PackageVersion Include="Lorem.Universal.NET" Version="5.0.0" />
     <PackageVersion Include="Lucene.Net" Version="4.8.0-beta00018" />
     <PackageVersion Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00018" />
@@ -55,16 +55,16 @@
     <PackageVersion Include="ncrontab" Version="3.4.0" />
     <PackageVersion Include="NJsonSchema" Version="11.6.1" />
     <PackageVersion Include="NLog.Web.AspNetCore" Version="6.2.0" />
-    <PackageVersion Include="NodaTime" Version="3.3.3" />
-    <PackageVersion Include="OpenIddict.Core" Version="7.6.1" />
-    <PackageVersion Include="OpenIddict.Server.AspNetCore" Version="7.6.1" />
-    <PackageVersion Include="OpenIddict.Server.DataProtection" Version="7.6.1" />
-    <PackageVersion Include="OpenIddict.Validation.AspNetCore" Version="7.6.1" />
-    <PackageVersion Include="OpenIddict.Validation.DataProtection" Version="7.6.1" />
-    <PackageVersion Include="OpenIddict.Validation.SystemNetHttp" Version="7.6.1" />
+    <PackageVersion Include="NodaTime" Version="3.3.4" />
+    <PackageVersion Include="OpenIddict.Core" Version="7.7.1" />
+    <PackageVersion Include="OpenIddict.Server.AspNetCore" Version="7.7.1" />
+    <PackageVersion Include="OpenIddict.Server.DataProtection" Version="7.7.1" />
+    <PackageVersion Include="OpenIddict.Validation.AspNetCore" Version="7.7.1" />
+    <PackageVersion Include="OpenIddict.Validation.DataProtection" Version="7.7.1" />
+    <PackageVersion Include="OpenIddict.Validation.SystemNetHttp" Version="7.7.1" />
     <PackageVersion Include="OrchardCore.Translations.All" Version="3.0.0" />
     <PackageVersion Include="PdfPig" Version="0.1.16" />
-    <PackageVersion Include="Scalar.AspNetCore" Version="2.17.2" />
+    <PackageVersion Include="Scalar.AspNetCore" Version="2.17.3" />
     <PackageVersion Include="Shortcodes" Version="1.3.6" />
     <PackageVersion Include="SixLabors.ImageSharp" Version="3.1.12" />
     <PackageVersion Include="NetVips" Version="3.2.0" />
@@ -77,7 +77,7 @@
     <PackageVersion Include="Testcontainers" Version="4.14.0" />
     <PackageVersion Include="Testcontainers.Azurite" Version="4.14.0" />
     <PackageVersion Include="Testcontainers.LocalStack" Version="4.14.0" />
-    <PackageVersion Include="xunit.v3.mtp-v2" Version="4.0.0" />
+    <PackageVersion Include="xunit.v3.mtp-v2" Version="4.0.1" />
     <PackageVersion Include="YesSql" Version="6.0.0" />
     <PackageVersion Include="YesSql.Abstractions" Version="6.0.0" />
     <PackageVersion Include="YesSql.Core" Version="6.0.0" />
@@ -86,7 +86,7 @@
     <PackageVersion Include="ZString" Version="2.6.0" />
   </ItemGroup>
   <ItemGroup>
-    <GlobalPackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.400" />
+    <GlobalPackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.401" />
     <GlobalPackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeStyle" Version="5.9.0" />
   </ItemGroup>
   <!--
@@ -102,29 +102,29 @@
   <!-- There may be no TFM in an evaluation phase so we can't use a conditional 'Property' -->
   <ItemGroup>
     <PackageVersion Include="AspNet.Security.OAuth.GitHub" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="10.0.11" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="10.0.11" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="10.0.11" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="10.0.11" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.11" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Twitter" Version="10.0.11" />
-    <PackageVersion Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="10.0.11" />
-    <PackageVersion Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="10.0.11" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="10.0.11" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Twitter" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.12" />
     <PackageVersion Include="Microsoft.Playwright" Version="1.62.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="10.0.11" />
-    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.11" />
-    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="10.0.11" />
-    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.12" />
     <!-- dotnet/extensions repository -->
     <PackageVersion Include="Microsoft.Extensions.Diagnostics.Testing" Version="10.9.0" />
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.9.0" />
     <!-- Serilog.AspNetCore -->
     <PackageVersion Include="Serilog.AspNetCore" Version="10.0.0" />
-    <PackageVersion Include="System.IO.Hashing" Version="10.0.11" />
+    <PackageVersion Include="System.IO.Hashing" Version="10.0.12" />
     <PackageVersion Include="tusdotnet" Version="2.11.2" />
-    <PackageVersion Include="System.Text.Json" Version="10.0.11" />
+    <PackageVersion Include="System.Text.Json" Version="10.0.12" />
   </ItemGroup>
   <ItemGroup>
     <!-- Aspire Packages -->
