@@ -91,6 +91,7 @@ public sealed class OrchardTestFixture : IAsyncDisposable
                 // GitHub Actions CI under heavy runner contention: raising the assertion/wait
                 // timeout only made the race window bigger, it didn't remove the race.
                 ReducedMotion = ReducedMotion.Reduce,
+                Locale = "en-US",
             }
         );
 
