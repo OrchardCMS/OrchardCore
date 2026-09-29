@@ -199,7 +199,7 @@ var plainText = decrypt(encryptedValue);
 |------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `variables(): string`                                      | Declare variables at the root of a recipe. Ex: `"variables": { "blogContentItemId": "[js:uuid()]" }`  Retrieve a variable value like this: `"ContentItemId": "[js: variables('blogContentItemId')]"`                   |
 | `parameters(): string`                                     | Retrieves the parameters specified during the setup. Ex: `"Owner": "[js: parameters('AdminUserId')]"` See the available [Setup Recipe parameters](../Setup/README.md#recipe-parameters)                                |
-| `configuration(key: String, defaultValue: String): string` | Retrieves the specified configuration setting by its key, optionally providing a default. Ex: `[js: configuration('OrchardCore_Admin:AdminUrlPrefix', 'Admin')]` See [IShellConfiguration](../Configuration/README.md) |
+| `configuration(key: String, defaultValue: String): string` | Retrieves the specified configuration setting by its key, optionally providing a default. Ex: `[js: configuration('Admin:AdminUrlPrefix', 'Admin')]` See [IShellConfiguration](../Configuration/README.md) |
 
 #### Workflows (`OrchardCore.Workflows.Http`)
 

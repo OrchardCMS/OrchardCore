@@ -10,14 +10,15 @@ public static class OrchardCoreBuilderExtensions
     {
         builder.ConfigureServices((tenantServices, serviceProvider) =>
         {
-            var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_Security");
+            var configuration = serviceProvider.GetRequiredService<IShellConfiguration>();
 
             tenantServices.PostConfigure<SecuritySettings>(settings =>
             {
                 settings.ContentSecurityPolicy.Clear();
                 settings.PermissionsPolicy.Clear();
 
-                configurationSection.Bind(settings);
+                // The 'OrchardCore_Security' section is deprecated and will be removed in a future major version, use 'Security' instead.
+                configuration.GetSectionCompat("Security", "OrchardCore_Security").Bind(settings);
 
                 settings.FromConfiguration = true;
             });

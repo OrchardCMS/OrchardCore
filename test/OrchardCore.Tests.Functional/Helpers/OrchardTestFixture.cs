@@ -77,7 +77,21 @@ public sealed class OrchardTestFixture : IAsyncDisposable
         var capturedTraceName = traceName ?? SanitizeFileName(TestContext.Current?.Test?.TestDisplayName);
 
         var context = await _browser.NewContextAsync(
-            new BrowserNewContextOptions { BaseURL = BaseUrl }
+            new BrowserNewContextOptions
+            {
+                BaseURL = BaseUrl,
+                // Bootstrap 5's own CSS wraps every fade/collapse transition in a
+                // `@media (prefers-reduced-motion: no-preference)` block (its built-in
+                // accessibility opt-out) and its JS reads the computed transition-duration
+                // before deciding whether to wait for `transitionend` at all. Emulating
+                // `prefers-reduced-motion: reduce` here makes that duration compute to 0,
+                // so modal/collapse show-hide becomes synchronous instead of racing a real
+                // CSS transition - the actual root cause of modal-hide assertions
+                // (ShortcodeModalTests, PredefinedListEditorTests) flaking intermittently on
+                // GitHub Actions CI under heavy runner contention: raising the assertion/wait
+                // timeout only made the race window bigger, it didn't remove the race.
+                ReducedMotion = ReducedMotion.Reduce,
+            }
         );
 
         if (s_tracingEnabled)

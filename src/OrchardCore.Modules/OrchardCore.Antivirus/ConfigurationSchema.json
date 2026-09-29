@@ -1,0 +1,44 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Antivirus": {
+          "type": "object",
+          "description": "Antivirus settings.",
+          "properties": {
+            "ClamAV": {
+              "type": "object",
+              "description": "ClamAV connection settings, used by the 'OrchardCore.Antivirus.ClamAV' feature to scan uploaded files with a 'clamd' service before they are stored. When the feature is enabled, uploads are rejected until the scanner can verify them. See https://docs.orchardcore.net/en/latest/reference/modules/Antivirus/.",
+              "properties": {
+                "Host": {
+                  "type": "string",
+                  "description": "The host name or IP address of the 'clamd' service (required), e.g. 'localhost'."
+                },
+                "Port": {
+                  "type": "integer",
+                  "description": "The TCP port of the 'clamd' service.",
+                  "minimum": 1,
+                  "default": 3310
+                },
+                "ConnectTimeoutSeconds": {
+                  "type": "integer",
+                  "description": "The timeout, in seconds, when connecting to the 'clamd' service.",
+                  "minimum": 1,
+                  "default": 5
+                },
+                "TransferTimeoutSeconds": {
+                  "type": "integer",
+                  "description": "The timeout, in seconds, when sending a file to and reading the result from the 'clamd' service.",
+                  "minimum": 1,
+                  "default": 30
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

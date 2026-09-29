@@ -1,3 +1,4 @@
+@using OrchardCore.Admin.Models
 @model OrchardCore.Admin.ViewModels.AdminSettingsViewModel
 @using OrchardCore.Admin.Services
 @using OrchardCore.DisplayManagement
@@ -35,7 +36,17 @@
             <input asp-for="DisplayMenuFilter" class="form-check-input" type="checkbox" />
             <label asp-for="DisplayMenuFilter" class="form-check-label">@T["Enable Admin Menu filter"]</label>
         </div>
-        <span class="hint">@T["Whether a quick search to filter the admin menu is displayed."]</span>
+        <span class="hint">@T["Whether a filter input is displayed above the admin menu."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper" asp-validation-class-for="DisplayQuickNavigation">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input asp-for="DisplayQuickNavigation" class="form-check-input" type="checkbox" />
+            <label asp-for="DisplayQuickNavigation" class="form-check-label">@T["Enable quick navigation"]</label>
+        </div>
+        <span class="hint">@T["Whether the quick navigation palette (Ctrl+K / Cmd+K) is displayed."]</span>
     </div>
 </div>
 
@@ -69,6 +80,27 @@
     </div>
 </div>
 
+@{
+    var menuBehaviorId = Html.IdFor(m => m.MenuBehavior);
+}
+
+<div class="ocat-wrapper" asp-validation-class-for="MenuBehavior">
+    <label class="ocat-label">@T["Navigation menu behavior"]</label>
+    <div class="ocat-end" id="@menuBehaviorId">
+        <div class="form-check">
+            <input class="form-check-input" type="radio" asp-for="MenuBehavior" id="@(menuBehaviorId)_Focused" value="@AdminMenuBehavior.Focused" checked="@(Model.MenuBehavior == AdminMenuBehavior.Focused)" />
+            <label for="@(menuBehaviorId)_Focused" class="form-check-label">@T["Focused"]</label>
+            <span class="hint d-block">@T["Only the section of the current page is open, and opening a section closes the others."]</span>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" asp-for="MenuBehavior" id="@(menuBehaviorId)_Persistent" value="@AdminMenuBehavior.Persistent" checked="@(Model.MenuBehavior == AdminMenuBehavior.Persistent)" />
+            <label for="@(menuBehaviorId)_Persistent" class="form-check-label">@T["Persistent"]</label>
+            <span class="hint d-block">@T["Sections stay open until you close them, from page to page, so several can be open at once."]</span>
+        </div>
+        <span class="hint">@T["The section holding the current page is always open, whichever behavior is chosen."]</span>
+    </div>
+</div>
+
 <div class="mb-3" asp-validation-class-for="ListLayout">
     <label asp-for="ListLayout" class="form-label">@T["List layout"]</label>
     <select asp-for="ListLayout" class="form-select">
@@ -79,7 +111,7 @@
             @await DisplayAsync(optionShape)
         }
     </select>
-    <span class="hint">@T["How the admin lists are rendered, e.g. the content items list. When left unchanged, the value configured for this site in appsettings.json under {0} is used.", "OrchardCore:AdminList:DefaultLayout"]</span>
+    <span class="hint">@T["How the admin lists are rendered, e.g. the content items list. When left unchanged, the value configured for this site in appsettings.json under {0} is used.", "OrchardCore:Admin:List:DefaultLayout"]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="ListActionsLayout">
@@ -92,7 +124,7 @@
             @await DisplayAsync(optionShape)
         }
     </select>
-    <span class="hint">@T["How the actions of each row are displayed: as buttons, or in a single compact menu. When left unchanged, the value configured for this site in appsettings.json under {0} is used.", "OrchardCore:AdminList:DefaultActionsLayout"]</span>
+    <span class="hint">@T["How the actions of each row are displayed: as buttons, or in a single compact menu. When left unchanged, the value configured for this site in appsettings.json under {0} is used.", "OrchardCore:Admin:List:DefaultActionsLayout"]</span>
 </div>
 
 <div class="ocat-wrapper" asp-validation-class-for="AllowUserListLayoutSelection">

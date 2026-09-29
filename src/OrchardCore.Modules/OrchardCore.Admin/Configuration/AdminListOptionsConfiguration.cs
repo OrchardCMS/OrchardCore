@@ -9,7 +9,7 @@ namespace OrchardCore.Admin.Configuration;
 /// <c>appsettings.json</c>, so <see cref="IOptionsMonitor{TOptions}"/> always exposes the effective defaults.
 /// </summary>
 /// <remarks>
-/// This runs after the <c>OrchardCore:AdminList</c> configuration section is bound, so what an administrator
+/// This runs after the <c>OrchardCore:Admin:List</c> configuration section is bound, so what an administrator
 /// picks in <b>Configuration → Settings → Admin</b> wins over the value configured for the tenant. The monitor
 /// cache is refreshed by <see cref="Environment.Options.IOptionsUpdateNotifier"/> once the settings
 /// update commits.

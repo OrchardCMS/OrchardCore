@@ -19,7 +19,7 @@ An admin index page has three layers. Only the first is written per page.
 
 The layout only decides **how** the already-built rows are presented:
 
-The layout comes from `AdminListOptions`, which binds the `OrchardCore:AdminList` configuration section and is then overridden by the site settings. It follows the signal-backed options pattern, so consumers read `IOptionsMonitor<AdminListOptions>.CurrentValue` and the settings driver calls `IOptionsUpdateNotifier.RequestUpdate<AdminListOptions>()`. Never hard-code a layout name in a page: `IAdminListFactory` resolves it for the list, and a page only sets `AdminListContext.Layout` when it can be rendered one way alone.
+The layout comes from `AdminListOptions`, which binds the `OrchardCore:Admin:List` configuration section and is then overridden by the site settings. It follows the signal-backed options pattern, so consumers read `IOptionsMonitor<AdminListOptions>.CurrentValue` and the settings driver calls `IOptionsUpdateNotifier.RequestUpdate<AdminListOptions>()`. Never hard-code a layout name in a page: `IAdminListFactory` resolves it for the list, and a page only sets `AdminListContext.Layout` when it can be rendered one way alone.
 
 - `List` renders each row shape whole, so the row template (`Content.SummaryAdmin.cshtml`) decides the look.
 - `Grid` renders one **column** per `AdminListColumn`, and a column is a set of **row zones**. The row template is not used.

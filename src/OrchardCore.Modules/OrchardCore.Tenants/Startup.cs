@@ -47,7 +47,8 @@ public sealed class Startup : StartupBase
         // profiles one: without it the rows of the list render empty.
         services.AddDisplayDriver<ShellSettingsEntry, ShellSettingsEntryDisplayDriver>();
 
-        services.Configure<TenantsOptions>(_shellConfiguration.GetSection("OrchardCore_Tenants"));
+        // The 'OrchardCore_Tenants' section is deprecated and will be removed in a future major version, use 'Tenants' instead.
+        services.Configure<TenantsOptions>(_shellConfiguration.GetSectionCompat("Tenants", "OrchardCore_Tenants"));
 
         services.AddAdminListColumnProvider<TenantsAdminListColumnProvider>(TenantsAdminList.Name);
     }

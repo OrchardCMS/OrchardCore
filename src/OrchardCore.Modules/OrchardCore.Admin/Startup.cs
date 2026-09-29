@@ -11,6 +11,7 @@ using OrchardCore.Admin.Configuration;
 using OrchardCore.Admin.Controllers;
 using OrchardCore.Admin.Drivers;
 using OrchardCore.Admin.Models;
+using OrchardCore.Admin.QuickNavigation;
 using OrchardCore.Admin.Services;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
@@ -42,6 +43,8 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddNavigation();
+        services.AddSingleton<IQuickNavigationIndex, QuickNavigationIndex>();
+        services.AddScoped<QuickNavigationSource, AdminMenuItemNavigationSource>();
 
         services.Configure<MvcOptions>((options) =>
         {
@@ -61,6 +64,8 @@ public sealed class Startup : StartupBase
         services.AddNavigationProvider<AdminMenu>();
         services.AddSingleton<IPageRouteModelProvider, AdminPageRouteModelProvider>();
         services.AddDisplayDriver<Navbar, VisitSiteNavbarDisplayDriver>();
+        services.AddDisplayDriver<Navbar, QuickNavigationNavbarDisplayDriver>();
+        services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
         services.AddShapeTableProvider<AdminDashboardShapeTableProvider>();
         services.AddShapeTableProvider<AdminListShapeTableProvider>();
         services.AddScoped<IAdminListFactory, DefaultAdminListFactory>();
@@ -68,11 +73,12 @@ public sealed class Startup : StartupBase
         services.AddScoped<IAdminListColumnsBuilder, DefaultAdminListColumnsBuilder>();
         services.AddScoped<AdminListLayoutPreference>();
 
-        services.Configure<AdminOptions>(_configuration.GetSection("OrchardCore_Admin"));
+        // The 'OrchardCore_Admin' section is deprecated and will be removed in a future major version, use 'Admin' instead.
+        services.Configure<AdminOptions>(_configuration.GetSectionCompat("Admin", "OrchardCore_Admin"));
 
         // The tenant configuration is bound first, then the site settings override it, so the monitor exposes
         // the effective defaults. The signal-backed change token refreshes it when the settings are saved.
-        services.Configure<AdminListOptions>(_configuration.GetSection("AdminList"))
+        services.Configure<AdminListOptions>(_configuration.GetSection("Admin:List"))
             .AddTransient<IConfigureOptions<AdminListOptions>, AdminListOptionsConfiguration>()
             .AddSignalOptionsChangeTokenSource<AdminListOptions>();
     }

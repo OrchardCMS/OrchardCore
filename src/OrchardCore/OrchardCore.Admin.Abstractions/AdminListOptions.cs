@@ -4,14 +4,16 @@ namespace OrchardCore.Admin;
 /// The defaults used by admin lists when the site settings do not specify a value.
 /// </summary>
 /// <remarks>
-/// Configurable per tenant from <c>appsettings.json</c>:
+/// Configurable per tenant from <c>appsettings.json</c>, in the <c>List</c> section of the admin:
 /// <code>
 /// {
 ///   "OrchardCore": {
-///     "AdminList": {
-///       "DefaultLayout": "Grid",
-///       "DefaultActionsLayout": "Menu",
-///       "AllowUserSelection": true
+///     "Admin": {
+///       "List": {
+///         "DefaultLayout": "Grid",
+///         "DefaultActionsLayout": "Menu",
+///         "AllowUserSelection": true
+///       }
 ///     }
 ///   }
 /// }
