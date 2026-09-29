@@ -23,8 +23,8 @@ public class AdminSettings
     public bool ShowBreadcrumb { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets how the sections of the admin menu open and close.
+    /// Gets or sets how the sections of the admin menu open and close. Defaults to
+    /// <see cref="AdminMenuBehavior.Focused"/>.
     /// </summary>
-    [DefaultValue(AdminMenuBehavior.Persistent)]
-    public AdminMenuBehavior MenuBehavior { get; set; } = AdminMenuBehavior.Persistent;
+    public AdminMenuBehavior MenuBehavior { get; set; }
 }

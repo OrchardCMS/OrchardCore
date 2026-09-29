@@ -245,8 +245,8 @@ The **Navigation menu behavior** option of the admin settings (**Configuration**
 
 | Behavior | What it does |
 |----------|--------------|
-| `Persistent` (default) | Every section keeps the state the user left it in, from page to page, so that several sections can be open at once. What is open is remembered per user in the browser. |
-| `Focused` | Only the section holding the current page is open when a page loads, and opening a section closes the other sections at the same level. |
+| `Focused` (default) | Only the section holding the current page is open when a page loads, and opening a section closes the other sections at the same level. |
+| `Persistent` | Every section keeps the state the user left it in, from page to page, so that several sections can be open at once. What is open is remembered per user in the browser. |
 
 With either behavior, the section holding the current page is always open, so the page being edited can always be found in the menu.
 
@@ -265,7 +265,7 @@ The admin settings can be configured using the `Settings` recipe step:
         "DisplayQuickNavigation": true,
         "DisplayNewMenu": true,
         "DisplayTitlesInTopbar": true,
-        "MenuBehavior": "Persistent"
+        "MenuBehavior": "Focused"
       }
     }
   ]
@@ -279,4 +279,4 @@ The admin settings can be configured using the `Settings` recipe step:
 | `DisplayQuickNavigation` | Boolean | Whether to display the quick navigation palette (Ctrl+K / Cmd+K) in the admin navbar. Defaults to `true`. |
 | `DisplayNewMenu`        | Boolean | Whether to display the 'New' menu in the admin navigation.        |
 | `DisplayTitlesInTopbar` | Boolean | Whether to display page titles in the top bar.                    |
-| `MenuBehavior`          | String  | How the sections of the admin menu open and close: `Persistent` (default) or `Focused`. See [Navigation menu behavior](#navigation-menu-behavior). |
+| `MenuBehavior`          | String  | How the sections of the admin menu open and close: `Focused` (default) or `Persistent`. See [Navigation menu behavior](#navigation-menu-behavior). |
