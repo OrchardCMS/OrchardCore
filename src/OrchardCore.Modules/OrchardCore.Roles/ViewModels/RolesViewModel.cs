@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.Roles.ViewModels;
 
@@ -9,7 +10,7 @@ public class RolesViewModel
     /// <summary>
     /// The <c>AdminList</c> shape rendering the roles in the configured layout.
     /// </summary>
-    public dynamic List { get; set; }
+    public IShape List { get; set; }
 }
 
 public class RoleEntry

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using OrchardCore.DisplayManagement;
 using OrchardCore.Media.Models;
 
 namespace OrchardCore.Media.ViewModels;
@@ -7,12 +8,12 @@ namespace OrchardCore.Media.ViewModels;
 public class MediaProfileIndexViewModel
 {
     public IList<MediaProfileEntry> MediaProfiles { get; set; }
-    public dynamic Pager { get; set; }
+    public IShape Pager { get; set; }
 
     /// <summary>
     /// The <c>AdminList</c> shape rendering the profiles, the toolbar and the pager in the configured layout.
     /// </summary>
-    public dynamic List { get; set; }
+    public IShape List { get; set; }
     public ContentOptions Options { get; set; } = new ContentOptions();
 }
 

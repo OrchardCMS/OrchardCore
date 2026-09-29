@@ -40,5 +40,5 @@ public class RecipeGroupViewModel
     /// </summary>
     public string FilterValue { get; set; }
 
-    public dynamic List { get; set; }
+    public IShape List { get; set; }
 }

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using OrchardCore.DisplayManagement;
 using OrchardCore.Shortcodes.Models;
 
 namespace OrchardCore.Shortcodes.ViewModels;
@@ -7,12 +8,12 @@ namespace OrchardCore.Shortcodes.ViewModels;
 public class ShortcodeTemplateIndexViewModel
 {
     public IList<ShortcodeTemplateEntry> ShortcodeTemplates { get; set; }
-    public dynamic Pager { get; set; }
+    public IShape Pager { get; set; }
 
     /// <summary>
     /// The <c>AdminList</c> shape rendering the templates, the toolbar and the pager in the configured layout.
     /// </summary>
-    public dynamic List { get; set; }
+    public IShape List { get; set; }
     public ContentOptions Options { get; set; } = new ContentOptions();
 }
 

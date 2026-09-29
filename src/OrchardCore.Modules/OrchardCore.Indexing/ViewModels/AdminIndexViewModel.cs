@@ -1,3 +1,4 @@
+using OrchardCore.DisplayManagement;
 using OrchardCore.Indexing.Models;
 using OrchardCore.Infrastructure.Entities;
 
@@ -10,7 +11,7 @@ public sealed class AdminIndexViewModel : ListSourcedEntitiesViewModel<IndexProf
     /// <summary>
     /// The <c>AdminList</c> shape rendering the index profiles with the configured layout.
     /// </summary>
-    public dynamic List { get; set; }
+    public IShape List { get; set; }
 }
 
 public sealed class IndexSourceGroupViewModel

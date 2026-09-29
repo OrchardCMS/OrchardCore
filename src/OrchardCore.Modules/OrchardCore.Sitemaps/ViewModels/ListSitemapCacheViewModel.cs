@@ -1,3 +1,5 @@
+using OrchardCore.DisplayManagement;
+
 namespace OrchardCore.Sitemaps.ViewModels;
 
 public class ListSitemapCacheViewModel
@@ -7,5 +9,5 @@ public class ListSitemapCacheViewModel
     /// <summary>
     /// The <c>AdminList</c> shape rendering the cached files in the configured layout.
     /// </summary>
-    public dynamic List { get; set; }
+    public IShape List { get; set; }
 }

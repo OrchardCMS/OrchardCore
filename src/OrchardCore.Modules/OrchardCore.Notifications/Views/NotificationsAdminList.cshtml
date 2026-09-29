@@ -1,4 +1,11 @@
 @model ListNotificationsViewModel
+@using OrchardCore.DisplayManagement.Zones
+@{
+    // The options editor shape: its zones hold the search bar and the buttons of the action bar.
+    var header = Model.Header as IZoneHolding;
+    var hasSearch = header?.Zones.IsNotEmpty("Search") == true;
+    var hasButtons = header?.Zones.IsNotEmpty("ActionBarButtons") == true;
+}
 
 <div class="bulk-select-list" data-checkbox-name="itemIds" data-bulk-action-name="Options.BulkAction" data-selected-text="@T["selected"]">
 <!-- Hidden submit button do not remove -->
@@ -6,22 +13,22 @@
 <input type="submit" name="submit.BulkAction" class="visually-hidden" />
 @Html.HiddenFor(o => o.Options.BulkAction)
 
-@if (Model.Header?.Search != null || Model.Header?.ActionBarButtons != null)
+@if (hasSearch || hasButtons)
 {
     <div class="card text-bg-theme mb-3 position-sticky action-bar">
         <div class="card-body">
             <div class="row gx-2">
-                @if (Model.Header.Search != null)
+                @if (hasSearch)
                 {
                     <div class="col">
-                        @await DisplayAsync(Model.Header.Search)
+                        @await DisplayAsync(header.Zones["Search"])
                     </div>
                 }
 
-                @if (Model.Header.ActionBarButtons != null)
+                @if (hasButtons)
                 {
                     <div class="col-auto">
-                        @await DisplayAsync(Model.Header.ActionBarButtons)
+                        @await DisplayAsync(header.Zones["ActionBarButtons"])
                     </div>
                 }
             </div>

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.Elasticsearch.ViewModels;
 
@@ -10,7 +11,7 @@ public class AdminIndexViewModel
     public ContentOptions Options { get; set; } = new ContentOptions();
 
     [BindNever]
-    public dynamic Pager { get; set; }
+    public IShape Pager { get; set; }
 }
 
 public class ContentOptions

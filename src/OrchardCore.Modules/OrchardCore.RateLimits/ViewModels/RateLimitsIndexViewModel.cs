@@ -1,5 +1,6 @@
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.RateLimits.ViewModels;
 
@@ -18,11 +19,11 @@ public class RateLimitsIndexViewModel
     public IList<SelectListItem> BulkActions { get; set; } = [];
 
     [BindNever]
-    public dynamic Pager { get; set; }
+    public IShape Pager { get; set; }
 
     /// <summary>
     /// The <c>AdminList</c> shape rendering the policies, the toolbar and the pager in the configured layout.
     /// </summary>
     [BindNever]
-    public dynamic List { get; set; }
+    public IShape List { get; set; }
 }
