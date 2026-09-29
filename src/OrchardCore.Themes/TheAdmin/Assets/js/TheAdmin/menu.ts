@@ -13,6 +13,11 @@ const isMobile = () => window.matchMedia(mobileQuery).matches;
 
 const isCompact = () => document.body.classList.contains(compactClass) && !isMobile();
 
+// 'persistent': every section keeps the state the user left it in, from page to page.
+// 'focused': only the section of the current page is open, and opening a section closes
+// the others at the same level. Chosen in the admin settings.
+const isFocused = () => document.getElementById('left-nav')?.dataset.menuBehavior === 'focused';
+
 const getSelectedNavHashStorageKey = () => `${getTenantName()}-selectedNavHash`;
 
 const persistSelectedNavHash = (hash: string | null) => {
@@ -49,11 +54,16 @@ const setExpanded = (collapsible: HTMLElement, expanded: boolean) => {
 };
 
 // Marks the selected item and its ancestors, and opens what holds it so that the
-// current page is always visible. Nothing else is expanded, and nothing is ever
-// collapsed: the rest of the menu stays the way the user left it.
+// current page is always visible. When the menu is persistent nothing else changes,
+// the rest of the menu stays the way the user left it. When it is focused, every
+// other section is closed.
 const applySelectedNavLink = (nav: HTMLElement, selectedLink: HTMLElement) => {
     nav.querySelectorAll('li.active').forEach(li => li.classList.remove('active'));
     nav.querySelectorAll('li.current').forEach(li => li.classList.remove('current'));
+
+    if (isFocused()) {
+        nav.querySelectorAll<HTMLElement>('ul.collapse.show').forEach(ul => setExpanded(ul, false));
+    }
 
     let currentItem = selectedLink.closest('li');
     let isDeepest = true;
@@ -135,8 +145,8 @@ const applySelectedNavFromSessionStorage = () => {
 const getNavCollapsibles = () =>
     Array.from(document.querySelectorAll<HTMLElement>('#left-nav ul.collapse[id]'));
 
-// The menu is rendered fully collapsed. Restores what the user left open, plus
-// whatever holds the current page so that it is always reachable.
+// The menu is rendered fully collapsed. Opens whatever holds the current page so that
+// it is always reachable and, when the menu is persistent, what the user left open.
 const applyNavStateFromPreferences = () => {
     const collapsibles = getNavCollapsibles();
 
@@ -145,7 +155,7 @@ const applyNavStateFromPreferences = () => {
     }
 
     const preferences = getAdminPreferences() as Record<string, unknown>;
-    const expandedItems = Array.isArray(preferences.expandedNavItems)
+    const expandedItems = !isFocused() && Array.isArray(preferences.expandedNavItems)
         ? preferences.expandedNavItems as string[]
         : [];
 
@@ -156,13 +166,53 @@ const applyNavStateFromPreferences = () => {
     return document.readyState === 'complete';
 };
 
-const persistNavState = () => {
-    const expandedItems = getNavCollapsibles()
-        .filter(collapsible => collapsible.classList.contains('show'))
-        .map(collapsible => collapsible.id);
+// When focused, opening a section closes the other sections of the list it belongs to.
+// Bootstrap does it on its own when a collapsible names that list as its parent.
+const applyFocusedAccordion = () => {
+    if (!isFocused()) {
+        return;
+    }
+
+    getNavCollapsibles().forEach((collapsible) => {
+        const list = collapsible.closest('li')?.parentElement;
+
+        if (list?.id) {
+            collapsible.setAttribute('data-bs-parent', `#${list.id}`);
+        }
+    });
+};
+
+// Records the section the user just opened or closed. It is done when the transition
+// starts rather than when it ends, so that following a link right after opening a section
+// does not lose it, and only for the section the user toggled, so that the section opened
+// on its own for the current page is not remembered as one the user chose to open.
+const persistNavState = (event: Event) => {
+    // A focused menu forgets what was opened: leaving the stored state alone means a
+    // persistent menu gets back exactly what it had, should the behavior be switched back.
+    if (isFocused()) {
+        return;
+    }
+
+    const toggled = (event.target as Element | null)?.id;
+
+    if (!toggled) {
+        return;
+    }
 
     const preferences = getAdminPreferences() as Record<string, unknown>;
-    preferences.expandedNavItems = expandedItems;
+    const stored = Array.isArray(preferences.expandedNavItems) ? preferences.expandedNavItems as string[] : [];
+
+    // Forget the sections the menu does not hold anymore.
+    const existing = new Set(getNavCollapsibles().map(collapsible => collapsible.id));
+    const expandedItems = new Set(stored.filter(id => existing.has(id)));
+
+    if (event.type === 'show.bs.collapse') {
+        expandedItems.add(toggled);
+    } else {
+        expandedItems.delete(toggled);
+    }
+
+    preferences.expandedNavItems = Array.from(expandedItems);
     setAdminPreferences(preferences);
 };
 
@@ -351,11 +401,13 @@ const initializeMenu = () => {
         }
     });
 
+    applyFocusedAccordion();
+
     // Remember what the user opened and closed, at every level.
     const adminMenu = document.getElementById('adminMenu');
 
-    adminMenu?.addEventListener('hidden.bs.collapse', persistNavState);
-    adminMenu?.addEventListener('shown.bs.collapse', persistNavState);
+    adminMenu?.addEventListener('show.bs.collapse', persistNavState);
+    adminMenu?.addEventListener('hide.bs.collapse', persistNavState);
 
     if (leftNav != null) {
         // If no selected nav hash is stored, try to get it from the DOM and persist it.

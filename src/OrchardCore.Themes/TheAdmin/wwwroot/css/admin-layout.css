@@ -5,24 +5,24 @@
 */
 :root {
   --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
-  /* The chrome of the admin is a silver surface built on grays that carry a faint
-     green cast, the accent being the darkest of those grays rather than a color of
-     its own. A site can rebrand the admin by redefining the accent and the surfaces. */
-  --oc-admin-accent-rgb: 74, 91, 83;
+  /* The menu is built on the Bootstrap gray scale, the one of the top bar ('$gray-100'),
+     one step darker so that both read as one palette. The accent is the darkest of those
+     grays rather than a color of its own. A site can rebrand the menu by redefining the
+     accent and the surfaces. */
+  --oc-admin-accent-rgb: 73, 80, 87;
   --oc-admin-accent-color: rgb(var(--oc-admin-accent-rgb));
   /* The darker end of the scale, for the hairlines and text that have to stand out
      against the light surfaces. */
-  --oc-admin-accent-strong-color: #3d4a44;
-  --oc-admin-chrome-bg-color: #f7f9f8;
-  --oc-admin-menu-bg-color: #eef1ef;
-  --oc-admin-menu-border-color: #dde3df;
-  --oc-scrollbar-color: #7e8781;
-  --oc-admin-menu-font-color: #5b6862;
-  --oc-admin-menu-font-color-hover: #2b332f;
+  --oc-admin-accent-strong-color: #343a40;
+  --oc-admin-menu-bg-color: #f1f3f5;
+  --oc-admin-menu-border-color: #dee2e6;
+  --oc-scrollbar-color: #7a838b;
+  --oc-admin-menu-font-color: #5c636a;
+  --oc-admin-menu-font-color-hover: #212529;
   --oc-admin-menu-item-bg-color: var(--oc-admin-menu-bg-color);
-  --oc-admin-menu-item-font-color: #4f5c56;
-  --oc-admin-menu-item-font-color-active: #2b332f;
-  --oc-admin-menu-group-font-color: #656f69;
+  --oc-admin-menu-item-font-color: #495057;
+  --oc-admin-menu-item-font-color-active: #212529;
+  --oc-admin-menu-group-font-color: #677078;
   /* Hovering and the current page are washes of the accent gray, at two strengths. */
   --oc-admin-menu-item-hover-bg-color: rgba(var(--oc-admin-accent-rgb), 0.08);
   --oc-admin-menu-item-active-bg-color: rgba(var(--oc-admin-accent-rgb), 0.14);
@@ -245,6 +245,7 @@ body, html {
   display: flex;
   flex: 1 1 auto;
   align-items: center;
+  column-gap: 0.375rem;
   min-width: 0;
   min-height: var(--oc-admin-menu-item-height);
   margin: 0;
@@ -268,16 +269,16 @@ body, html {
 .item-label > .icon {
   flex: 0 0 auto;
   align-self: flex-start;
-  width: 1.75rem;
+  width: 2rem;
   min-height: calc(var(--oc-admin-menu-item-height) - 0.625rem);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.125rem;
+  font-size: 1.25rem;
 }
 
 .item-label > .icon svg {
-  width: 1.125rem;
+  width: 1.25rem;
 }
 
 .item-label > .title {
@@ -342,16 +343,18 @@ body, html {
 }
 
 .nav-group-label {
-  min-height: 2rem;
-  font-size: 0.6875rem;
+  min-height: 2.5rem;
+  font-size: 0.8125rem;
   font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
   color: var(--oc-admin-menu-group-font-color);
 }
 
 .nav-group-label > .icon {
-  font-size: 1rem;
+  font-size: 1.375rem;
+}
+
+.nav-group-label > .icon svg {
+  width: 1.375rem;
 }
 
 .nav-group-label:hover, .nav-group-label:focus-visible {
@@ -372,7 +375,7 @@ body, html {
 
 #left-nav ul ul ul .item-label > .icon {
   width: 1.5rem;
-  font-size: 1rem;
+  font-size: 1.125rem;
 }
 
 [dir="ltr"] #left-nav ul ul ul ul .item-label {
@@ -476,7 +479,6 @@ body, html {
 
   .left-sidebar-compact #left-nav > ul > li > figure > figcaption > .item-label > .icon {
     align-self: center;
-    display: block;
     width: 100%;
     font-size: 1.5rem;
   }
@@ -515,10 +517,8 @@ body, html {
     display: block;
     padding: 0.5rem 0.75rem;
     border-bottom: var(--bs-border-width) solid var(--oc-admin-menu-border-color);
-    font-size: 0.6875rem;
+    font-size: 0.8125rem;
     font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
     color: var(--oc-admin-menu-group-font-color);
   }
 

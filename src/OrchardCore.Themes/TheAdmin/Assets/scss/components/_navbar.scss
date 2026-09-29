@@ -1,13 +1,5 @@
-// The top bar and the menu are the two surfaces of the admin chrome, they share
-// the same silver and green palette declared in '_variables.scss'.
-// '!important' is needed because the dark variant of '.text-bg-theme' declares its
-// own background that way.
-.ta-navbar-top.text-bg-theme {
-    background-color: var(--oc-admin-chrome-bg-color) !important;
-}
-
 .ta-navbar-top {
-    border-bottom: var(--bs-border-width) solid var(--oc-admin-menu-border-color);
+    border-bottom: var(--oc-border-content);
     z-index: var(--oc-top-nav-zindex);
     height: var(--oc-top-nav-height);
     box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03), 0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05), 0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);

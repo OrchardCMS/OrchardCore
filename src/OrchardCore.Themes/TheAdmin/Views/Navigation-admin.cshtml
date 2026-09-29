@@ -19,7 +19,7 @@
         <input id="filter" class="form-control" placeholder="@T["Filter"]" type="search" autocomplete="off" aria-label="@T["Filter the admin menu"]" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-html="true" title="Ctrl+Shift+F" />
     </div>
 }
-<nav id="left-nav" aria-label="@T["Admin menu"]">
+<nav id="left-nav" aria-label="@T["Admin menu"]" data-menu-behavior="@(adminSettings.MenuBehavior == AdminMenuBehavior.Focused ? "focused" : "persistent")">
     @tag
 </nav>
 @if (adminSettings.DisplayMenuFilter)

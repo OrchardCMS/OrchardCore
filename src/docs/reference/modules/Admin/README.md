@@ -168,6 +168,17 @@ public sealed class PersonController : Controller
 
 In this example, (if the admin prefix remains the default "Admin") you can reach the Index action at `~/Admin/Person` (or by the route name `Person`), because its own action-level attribute took precedence. You can reach Create at `~/Admin/Person/Create` (route name `PersonCreate`) and Edit for the person whose identifier string is "john-doe" at `~/Admin/Person/john-doe` (route name `PersonEdit`).
 
+## Navigation menu behavior
+
+The **Navigation menu behavior** option of the admin settings (**Configuration** > **Settings** > **Admin**) decides how the sections of the admin menu open and close:
+
+| Behavior | What it does |
+|----------|--------------|
+| `Persistent` (default) | Every section keeps the state the user left it in, from page to page, so that several sections can be open at once. What is open is remembered per user in the browser. |
+| `Focused` | Only the section holding the current page is open when a page loads, and opening a section closes the other sections at the same level. |
+
+With either behavior, the section holding the current page is always open, so the page being edited can always be found in the menu.
+
 ## Recipe Configuration
 
 The admin settings can be configured using the `Settings` recipe step:
@@ -181,7 +192,8 @@ The admin settings can be configured using the `Settings` recipe step:
         "DisplayThemeToggler": true,
         "DisplayMenuFilter": true,
         "DisplayNewMenu": true,
-        "DisplayTitlesInTopbar": true
+        "DisplayTitlesInTopbar": true,
+        "MenuBehavior": "Persistent"
       }
     }
   ]
@@ -194,3 +206,4 @@ The admin settings can be configured using the `Settings` recipe step:
 | `DisplayMenuFilter`     | Boolean | Whether to display the menu filter input in the admin navigation. |
 | `DisplayNewMenu`        | Boolean | Whether to display the 'New' menu in the admin navigation.        |
 | `DisplayTitlesInTopbar` | Boolean | Whether to display page titles in the top bar.                    |
+| `MenuBehavior`          | String  | How the sections of the admin menu open and close: `Persistent` (default) or `Focused`. See [Navigation menu behavior](#navigation-menu-behavior). |
