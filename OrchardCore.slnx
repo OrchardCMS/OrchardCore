@@ -338,6 +338,7 @@
   </Folder>
   <Folder Name="/test/OrchardCore.Tests.Modules/">
     <File Path="src/OrchardCore/OrchardCore.Module.Targets/Package.Build.props" />
+    <Project Path="test/OrchardCore.Tests.Modules/AdminThemeSample/AdminThemeSample.csproj" />
     <Project Path="test/OrchardCore.Tests.Modules/BaseThemeSample/BaseThemeSample.csproj" />
     <Project Path="test/OrchardCore.Tests.Modules/BaseThemeSample2/BaseThemeSample2.csproj" />
     <Project Path="test/OrchardCore.Tests.Modules/DerivedThemeSample/DerivedThemeSample.csproj" />

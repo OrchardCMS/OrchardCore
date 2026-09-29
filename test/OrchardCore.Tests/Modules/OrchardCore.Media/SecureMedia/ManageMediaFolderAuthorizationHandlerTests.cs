@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using OrchardCore.FileStorage;
 using OrchardCore.Media;
@@ -157,7 +158,8 @@ public class ManageMediaFolderAuthorizationHandlerTests
         var attachedMediaFieldFileService = new AttachedMediaFieldFileService(
             mockMediaFileStore.Object,
             httpContextAccessor,
-            mockUserAssetFolderNameProvider.Object);
+            mockUserAssetFolderNameProvider.Object,
+            NullLogger<AttachedMediaFieldFileService>.Instance);
 
         var mockAuthorizationService = new Mock<IAuthorizationService>();
         mockAuthorizationService

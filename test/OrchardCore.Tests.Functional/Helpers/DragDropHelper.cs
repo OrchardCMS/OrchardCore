@@ -29,6 +29,24 @@ public static class DragDropHelper
         var targetBox = await target.BoundingBoxAsync();
         Assert.NotNull(targetBox);
         await page.Mouse.MoveAsync(targetBox.X + targetBox.Width / 2, targetBox.Y + targetBox.Height / 2, new MouseMoveOptions { Steps = steps });
+
+        // SortableJS ignores drag-over events while one of its reorder animations is still running, so the
+        // last move of a multi-step glide is easily swallowed and the drop then settles wherever the step
+        // before it happened to land. Which step that is comes down to the exact pixel offsets involved, so
+        // an unrelated layout change anywhere above the list silently flips the outcome. Nudge the cursor
+        // once the animations have settled so the final position is processed. The nudge stays on the
+        // coordinates the glide ended on rather than following the target element, which the reorder may
+        // well have moved out from under the cursor - chasing it would just drag the item back again.
+        var dropX = targetBox.X + targetBox.Width / 2;
+        var dropY = targetBox.Y + targetBox.Height / 2;
+
+        for (var i = 0; i < 3; i++)
+        {
+            await page.WaitForTimeoutAsync(200);
+            await page.Mouse.MoveAsync(dropX, dropY - 1);
+            await page.Mouse.MoveAsync(dropX, dropY);
+        }
+
         await page.WaitForTimeoutAsync(200);
         await page.Mouse.UpAsync();
         await page.WaitForTimeoutAsync(250);

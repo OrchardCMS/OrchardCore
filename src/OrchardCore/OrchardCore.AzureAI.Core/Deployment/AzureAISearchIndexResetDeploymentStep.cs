@@ -14,6 +14,7 @@ public class AzureAISearchIndexResetDeploymentStep : DeploymentStep
         : this()
     {
         Category = S["Search"];
+        Title = S["Reset Azure AI Search Indices"];
     }
 
     public bool IncludeAll { get; set; }

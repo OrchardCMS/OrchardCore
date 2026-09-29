@@ -8,9 +8,13 @@ public class AdminSettingsViewModel
 
     public bool DisplayMenuFilter { get; set; }
 
+    public bool DisplayQuickNavigation { get; set; }
+
     public bool DisplayNewMenu { get; set; }
 
     public bool DisplayTitlesInTopbar { get; set; }
+
+    public bool ShowBreadcrumb { get; set; }
 
     public AdminMenuBehavior MenuBehavior { get; set; }
 }

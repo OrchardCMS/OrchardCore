@@ -61,6 +61,15 @@ public static class MoveMediaListEndpoint
         {
             var sourcePath = mediaFileStore.Combine(model.sourceFolder, name);
             var targetPath = mediaFileStore.Combine(model.targetFolder, name);
+
+            if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMediaFolder, (object)sourcePath)
+                || !await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMediaFolder, (object)targetPath))
+            {
+                filesOnError.Add(sourcePath);
+
+                continue;
+            }
+
             try
             {
                 await mediaFileStore.MoveFileAsync(sourcePath, targetPath);

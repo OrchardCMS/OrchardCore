@@ -34,6 +34,31 @@ public sealed class AdminMenuTreeTests : CmsTestBase<BlogFixture>, IClassFixture
         await page.Locator("#menu").WaitForAsync();
     }
 
+    // A move POSTs to MoveNode and then calls location.reload() from the fetch
+    // continuation (see admin-menu-node-list.ts), so a drag is only settled once
+    // that reloaded document has replaced the current one.
+    //
+    // Waiting on "#menu" cannot see that: SortableJS has already moved the node
+    // in the DOM optimistically, so #menu is present, already showing the node in
+    // its new place, while the POST is still in flight. Asserting there passes
+    // against the pre-reload DOM without the server having stored anything, and
+    // if the navigation instead lands mid-assertion the tree is momentarily being
+    // replaced and the same assertion sees no nodes at all - which is the flake.
+    //
+    // So tag the current document and wait for the tag to be gone. Only the
+    // reloaded document lacks it, which both pins the assertions to what the
+    // server actually persisted and makes a drag that never registered fail here,
+    // naming the drag, rather than further down as a puzzling count of 0.
+    private static async Task DragAndWaitForReloadAsync(IPage page, ILocator source, ILocator target)
+    {
+        await page.EvaluateAsync("() => document.documentElement.setAttribute('data-oc-pre-reload', '')");
+
+        await page.DragAsync(source, target);
+
+        await page.Locator("html:not([data-oc-pre-reload])").WaitForAsync();
+        await page.Locator("#menu").WaitForAsync();
+    }
+
     [Fact]
     public async Task AdminMenuTree_DragRootNodeIntoPlaceholder_ReparentsAndPersists()
     {
@@ -45,14 +70,19 @@ public sealed class AdminMenuTreeTests : CmsTestBase<BlogFixture>, IClassFixture
         // than onto "Content"'s own (empty-looking, ambiguously-sized) child
         // list container reliably lands the drop inside that same nested
         // list, right next to it.
-        await page.DragAsync(TreeNode(page, BlogNodeId).Locator(".menu-item-title"), TreeNode(page, ContentItemsNodeId).Locator(".menu-item-title"));
+        await DragAndWaitForReloadAsync(
+            page,
+            TreeNode(page, BlogNodeId).Locator(".menu-item-title"),
+            TreeNode(page, ContentItemsNodeId).Locator(".menu-item-title"));
 
-        // A successful move triggers location.reload() - wait for the tree to
-        // re-render, then confirm "Blog" now lives inside "Content"'s own
-        // nested list rather than at the root.
-        await page.Locator("#menu").WaitForAsync();
-        Assert.Equal(1, await TreeNode(page, ContentNodeId).Locator("> ol.menu-item-links li.menu-item[data-treenode-id='" + BlogNodeId + "']").CountAsync());
-        Assert.Equal(0, await page.Locator("#menu > li.menu-item[data-treenode-id='" + BlogNodeId + "']").CountAsync());
+        // "Blog" now lives inside "Content"'s own nested list rather than at the
+        // root. The counts are asserted through Expect so that they are retried:
+        // the reloaded tree is rendered by the server, not by the drag, so it can
+        // still be arriving when the first assertion runs.
+        await Assertions.Expect(TreeNode(page, ContentNodeId).Locator("> ol.menu-item-links li.menu-item[data-treenode-id='" + BlogNodeId + "']"))
+            .ToHaveCountAsync(1);
+        await Assertions.Expect(page.Locator("#menu > li.menu-item[data-treenode-id='" + BlogNodeId + "']"))
+            .ToHaveCountAsync(0);
 
         // Move it back out to the root, right where it started, so re-running
         // this test isn't affected by a leftover reparent from a prior run.
@@ -60,10 +90,13 @@ public sealed class AdminMenuTreeTests : CmsTestBase<BlogFixture>, IClassFixture
         // bounding box also visually contains nested child lists - targeting
         // a root-level sibling ("Main Menu") instead reliably lands the drop
         // in the root list.
-        await page.DragAsync(TreeNode(page, BlogNodeId).Locator(".menu-item-title"), TreeNode(page, MainMenuNodeId).Locator(".menu-item-title"));
-        await page.Locator("#menu").WaitForAsync();
+        await DragAndWaitForReloadAsync(
+            page,
+            TreeNode(page, BlogNodeId).Locator(".menu-item-title"),
+            TreeNode(page, MainMenuNodeId).Locator(".menu-item-title"));
 
-        Assert.Equal(1, await page.Locator("#menu > li.menu-item[data-treenode-id='" + BlogNodeId + "']").CountAsync());
+        await Assertions.Expect(page.Locator("#menu > li.menu-item[data-treenode-id='" + BlogNodeId + "']"))
+            .ToHaveCountAsync(1);
 
         await page.CloseAsync();
     }

@@ -17,6 +17,7 @@ public class CustomFileDeploymentStep : DeploymentStep
         : this()
     {
         Category = S["Deployment"];
+        Title = S["Custom File"];
     }
 
     [Required]
