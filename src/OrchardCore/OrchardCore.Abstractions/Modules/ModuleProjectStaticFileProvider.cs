@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Primitives;
+using OrchardCore.Modules.FileProviders;
 
 namespace OrchardCore.Modules;
 
@@ -10,10 +11,6 @@ namespace OrchardCore.Modules;
 /// </summary>
 public class ModuleProjectStaticFileProvider : IModuleStaticFileProvider
 {
-    private static readonly StringComparison s_pathComparison = OperatingSystem.IsWindows()
-        ? StringComparison.OrdinalIgnoreCase
-        : StringComparison.Ordinal;
-
     private static Dictionary<string, string> s_roots;
     private static readonly object s_synLock = new();
 
@@ -56,8 +53,7 @@ public class ModuleProjectStaticFileProvider : IModuleStaticFileProvider
                         // separator so that resolved file paths can be checked for containment.
                         var root = asset.ProjectAssetPath[..(index + Module.WebRoot.Length + 1)];
 
-                        roots[module.Name] = Path.TrimEndingDirectorySeparator(Path.GetFullPath(root))
-                            + Path.DirectorySeparatorChar;
+                        roots[module.Name] = PhysicalPathResolver.NormalizeRoot(root);
                     }
                 }
 
@@ -129,26 +125,9 @@ public class ModuleProjectStaticFileProvider : IModuleStaticFileProvider
             return false;
         }
 
-        string resolvedPath;
-
-        try
-        {
-            // Resolve "{ModuleProjectDirectory}wwwroot/**/*.*".
-            resolvedPath = Path.GetFullPath(root + path[(module.Length + 1)..]);
-        }
-        catch (Exception ex) when (ex is ArgumentException or NotSupportedException or IOException)
-        {
-            // The path can't be resolved to a physical path, e.g. it contains a volume separator.
-            return false;
-        }
-
-        // A relative segment may have escaped the module project "wwwroot" folder.
-        if (!resolvedPath.StartsWith(root, s_pathComparison))
-        {
-            return false;
-        }
-
-        if (!File.Exists(resolvedPath))
+        // Resolve "{ModuleProjectDirectory}wwwroot/**/*.*", but only inside that folder.
+        if (!PhysicalPathResolver.TryResolve(root, path[(module.Length + 1)..], out var resolvedPath) ||
+            !File.Exists(resolvedPath))
         {
             return false;
         }

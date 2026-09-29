@@ -78,6 +78,9 @@ public sealed class ModuleProjectStaticFileProviderTests : IDisposable
         "sub/../../outside.txt",
         // A sibling folder must not be reachable through the "wwwroot" prefix.
         $"../{Module.WebRootPath}-other/sibling.txt",
+        // Containment must not depend on the case sensitivity of the file system. On a case insensitive
+        // one this resolves to a file that does exist, and it is still rejected.
+        $"../{Module.WebRootPath.ToUpperInvariant()}/test.txt",
         // A rooted path must not replace the module project "wwwroot" folder.
         "C:/Windows/win.ini",
         "/etc/passwd",

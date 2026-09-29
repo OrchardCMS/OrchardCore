@@ -4,12 +4,17 @@ namespace OrchardCore.Modules.FileProviders;
 /// Resolves physical paths that are requested through a virtual path, while ensuring that the
 /// resolved path is contained in the root folder that the virtual path is mapped to.
 /// </summary>
+/// <remarks>
+/// Containment is checked with an ordinal comparison on every platform. The operating system is not a
+/// reliable proxy for the case sensitivity of the file system: macOS is case insensitive on a default
+/// APFS volume but not on a case sensitive one, Windows supports per directory case sensitivity, and a
+/// case insensitive volume can be mounted on Linux. Ignoring case is the permissive direction, and on a
+/// case sensitive file system it would accept a sibling folder that differs from the root only by case.
+/// An ordinal comparison is therefore the conservative choice everywhere, and it does not reject any
+/// path that stays in the root folder, because the root is then a literal prefix of the resolved path.
+/// </remarks>
 public static class PhysicalPathResolver
 {
-    private static readonly StringComparison s_pathComparison = OperatingSystem.IsWindows()
-        ? StringComparison.OrdinalIgnoreCase
-        : StringComparison.Ordinal;
-
     /// <summary>
     /// Canonicalizes a root folder path, with a trailing directory separator, so that it can be
     /// used with <see cref="TryResolve(string, string, out string)"/>.
@@ -41,7 +46,7 @@ public static class PhysicalPathResolver
             return false;
         }
 
-        if (!resolvedPath.StartsWith(root, s_pathComparison))
+        if (!resolvedPath.StartsWith(root, StringComparison.Ordinal))
         {
             return false;
         }

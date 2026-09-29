@@ -37,6 +37,9 @@ public class RazorFileProviderPathContainmentTests : IDisposable
         @"..\outside.cshtml",
         "Views/../../outside.cshtml",
         @"Views\..\..\outside.cshtml",
+        // Containment must not depend on the case sensitivity of the file system. On a case insensitive
+        // one this resolves to a file that does exist, and it is still rejected.
+        "../PROJECT/Views/Index.cshtml",
     };
 
     [Fact]
