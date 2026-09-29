@@ -243,6 +243,12 @@ For detailed patterns including Content Parts, Content Part Drivers, Content Fie
 - Local variables: `camelCase`
 - Constants: `PascalCase`
 
+### Configuration Sections
+
+- Name configuration sections without the redundant `OrchardCore_` prefix, and group them by service with a nested section per provider, e.g. `_shellConfiguration.GetSection("Email:Smtp")` for the `OrchardCore:Email:Smtp` section, next to `OrchardCore:Email:Azure`.
+- When renaming a section that has been released, keep supporting its legacy name by binding `GetSectionCompat("New:Name", "OrchardCore_Legacy")`, with a `// The 'OrchardCore_Legacy' section is deprecated and will be removed in a future major version, use 'New:Name' instead.` comment above it. The values of the new section win, and its arrays replace the legacy ones. Don't bind the two sections one after the other, as arrays would be appended.
+- Describe the sections read by a project in a `ConfigurationSchema.json` file at the project root, which is packed with a `JsonSchemaSegment` to provide IntelliSense in `appsettings.json` files.
+
 ### Async Conventions
 
 - Suffix async methods with `Async`

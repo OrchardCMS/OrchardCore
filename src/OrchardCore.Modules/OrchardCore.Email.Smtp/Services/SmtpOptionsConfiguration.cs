@@ -101,7 +101,7 @@ public sealed class SmtpOptionsConfiguration : IConfigureOptions<SmtpOptions>
         }
     }
 
+    // The 'OrchardCore_Email_Smtp' and 'OrchardCore_Email' sections are deprecated and will be removed in a future major version, use 'Email:Smtp' instead.
     private string GetConfiguredPickupDirectoryLocationBase()
-        => _shellConfiguration.GetSection("OrchardCore_Email_Smtp")[_pickupDirectoryLocationBaseKey]
-            ?? _shellConfiguration.GetSection("OrchardCore_Email")[_pickupDirectoryLocationBaseKey];
+        => _shellConfiguration.GetSectionCompat("Email:Smtp", "OrchardCore_Email_Smtp", "OrchardCore_Email")[_pickupDirectoryLocationBaseKey];
 }

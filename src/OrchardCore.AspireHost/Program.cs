@@ -10,10 +10,10 @@ var clamAv = builder.AddClamAV("antivirus")
 builder.AddProject<Projects.OrchardCore_Cms_Web>("OrchardCoreCms")
     .WithExternalHttpEndpoints()
     .WithReference(clamAv)
-    .WithEnvironment("OrchardCore__Antivirus_ClamAV__Host", clamAv.Resource.PrimaryEndpoint.Property(EndpointProperty.Host))
-    .WithEnvironment("OrchardCore__Antivirus_ClamAV__Port", clamAv.Resource.PrimaryEndpoint.Property(EndpointProperty.Port))
-    .WithEnvironment("OrchardCore__Antivirus_ClamAV__ConnectTimeoutSeconds", "5")
-    .WithEnvironment("OrchardCore__Antivirus_ClamAV__TransferTimeoutSeconds", "30");
+    .WithEnvironment("OrchardCore__Antivirus__ClamAV__Host", clamAv.Resource.PrimaryEndpoint.Property(EndpointProperty.Host))
+    .WithEnvironment("OrchardCore__Antivirus__ClamAV__Port", clamAv.Resource.PrimaryEndpoint.Property(EndpointProperty.Port))
+    .WithEnvironment("OrchardCore__Antivirus__ClamAV__ConnectTimeoutSeconds", "5")
+    .WithEnvironment("OrchardCore__Antivirus__ClamAV__TransferTimeoutSeconds", "30");
 
 var app = builder.Build();
 

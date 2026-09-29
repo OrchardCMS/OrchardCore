@@ -1,0 +1,37 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Sms": {
+          "type": "object",
+          "description": "SMS settings. Each SMS provider that can be configured from configuration has its own child section.",
+          "properties": {
+            "Azure": {
+              "type": "object",
+              "description": "Settings of the Default Azure Communication Services SMS provider, which sends SMS messages through Azure Communication Services. This provider can only be configured from configuration, and it is available when both 'PhoneNumber' and 'ConnectionString' are set. See https://docs.orchardcore.net/en/latest/reference/modules/Sms.Azure/.",
+              "properties": {
+                "PhoneNumber": {
+                  "type": "string",
+                  "description": "The phone number the SMS messages are sent from, in E.164 format, e.g. '+14255550123'. Required to enable the provider."
+                },
+                "ConnectionString": {
+                  "type": "string",
+                  "description": "The connection string of the Azure Communication Services resource, e.g. 'endpoint=https://<resource>.communication.azure.com/;accesskey=<key>'. Required to enable the provider. This is a sensitive value: provide it through user secrets, environment variables or a key vault rather than appsettings.json."
+                }
+              }
+            }
+          }
+        },
+        "OrchardCore_Sms_AzureCommunicationServices": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Sms_AzureCommunicationServices' section is deprecated. Use 'OrchardCore:Sms:Azure' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Sms:Azure' instead.",
+          "doNotSuggest": true
+        }
+      }
+    }
+  }
+}

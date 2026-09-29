@@ -66,7 +66,8 @@ public sealed class Startup : StartupBase
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
         services.AddShapeTableProvider<AdminDashboardShapeTableProvider>();
 
-        services.Configure<AdminOptions>(_configuration.GetSection("OrchardCore_Admin"));
+        // The 'OrchardCore_Admin' section is deprecated and will be removed in a future major version, use 'Admin' instead.
+        services.Configure<AdminOptions>(_configuration.GetSectionCompat("Admin", "OrchardCore_Admin"));
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

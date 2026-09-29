@@ -7,6 +7,12 @@ namespace OrchardCore.Elasticsearch.Core.Services;
 
 public sealed class ElasticsearchConnectionOptionsConfigurations : IConfigureOptions<ElasticsearchConnectionOptions>
 {
+    /// <summary>
+    /// The name of the Elasticsearch configuration section.
+    /// </summary>
+    public const string SectionName = "Search:Elasticsearch";
+
+    // The 'OrchardCore_Elasticsearch' section is deprecated and will be removed in a future major version, use 'Search:Elasticsearch' instead.
     public const string ConfigSectionName = "OrchardCore_Elasticsearch";
 
     private readonly IShellConfiguration _shellConfiguration;
@@ -18,7 +24,7 @@ public sealed class ElasticsearchConnectionOptionsConfigurations : IConfigureOpt
 
     public void Configure(ElasticsearchConnectionOptions options)
     {
-        _shellConfiguration.GetSection(ConfigSectionName).Bind(options);
+        _shellConfiguration.GetSectionCompat(SectionName, ConfigSectionName).Bind(options);
 
         if (options.Ports == null || options.Ports.Length == 0)
         {
