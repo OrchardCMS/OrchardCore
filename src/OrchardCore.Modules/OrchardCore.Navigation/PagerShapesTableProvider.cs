@@ -560,7 +560,7 @@ public class PagerShapes : IShapeAttributeProvider
     }
 
     // Default "Items per page" selector, so every theme can render a pager with page size selection
-    // enabled. Themes can still override it by providing a "Pager_PageSizeSelector" template.
+    // enabled. It is framework agnostic, themes provide a "Pager_PageSizeSelector" template to style it.
     [Shape]
     public IHtmlContent Pager_PageSizeSelector(IEnumerable<SelectListItem> Items)
     {
@@ -572,11 +572,9 @@ public class PagerShapes : IShapeAttributeProvider
         var labelText = S["Items per page"].Value;
 
         var label = new TagBuilder("label");
-        label.AddCssClass("col-form-label text-nowrap me-2");
         label.InnerHtml.Append(labelText);
 
         var select = new TagBuilder("select");
-        select.AddCssClass("form-select form-select-sm w-auto");
         select.Attributes["aria-label"] = labelText;
         select.Attributes["onchange"] = "if (this.value) { window.location.href = this.value; }";
 
@@ -595,7 +593,7 @@ public class PagerShapes : IShapeAttributeProvider
         }
 
         var wrapper = new TagBuilder("div");
-        wrapper.AddCssClass("pager-page-size d-flex align-items-center ms-auto");
+        wrapper.AddCssClass("pager-page-size");
         wrapper.InnerHtml.AppendHtml(label);
         wrapper.InnerHtml.AppendHtml(select);
 

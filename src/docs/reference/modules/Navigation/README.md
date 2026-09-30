@@ -125,8 +125,8 @@ would in turn look for the template `Pager-MainBlog.Previous.cshtml`.
 ### `Pager_PageSizeSelector`
 
 When page size selection is enabled in the **General** site settings, both the `Pager` and `PagerSlim` shapes render an _Items per page_ selector next to the pager links, using the `Pager_PageSizeSelector` shape.
-The `Navigation` module provides a default, Bootstrap based implementation of this shape, so themes don't need to provide a template for it.
-A theme can change its markup by providing its own `Pager_PageSizeSelector` template, e.g. `Views/Pager_PageSizeSelector.cshtml`.
+The `Navigation` module provides a default implementation of this shape, so themes don't need to provide a template for it. It renders plain markup without any CSS framework classes: a `<div class="pager-page-size">` containing a `<label>` and a `<select>`.
+A theme styles it by providing its own `Pager_PageSizeSelector` template, e.g. `Views/Pager_PageSizeSelector.cshtml`, as the `TheAdmin` and `TheTheme` themes do to apply Bootstrap classes.
 
 | Parameter         | Type                   | Description                                                                                       |
 |-------------------|------------------------|---------------------------------------------------------------------------------------------------|

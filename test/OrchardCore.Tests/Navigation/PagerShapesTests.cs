@@ -29,8 +29,7 @@ public class PagerShapesTests
 
         var html = ToHtmlString(result);
 
-        Assert.Contains("<div class=\"pager-page-size d-flex align-items-center ms-auto\">", html);
-        Assert.Contains(">Items per page</label>", html);
+        Assert.Contains("<div class=\"pager-page-size\"><label>Items per page</label><select", html);
         Assert.Contains("aria-label=\"Items per page\"", html);
         Assert.Contains("<option value=\"/blog?pageSize=10\">10</option>", html);
         Assert.Contains("<option selected=\"selected\" value=\"/blog?q=a&amp;pageSize=25\">25</option>", html);
