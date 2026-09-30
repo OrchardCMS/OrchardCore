@@ -15,7 +15,7 @@ public abstract class CmsRecipeFixture : IAsyncLifetime
 
     protected CmsRecipeFixture()
     {
-        _testFixture = new OrchardTestFixture(instanceId: $"{GetType().Name}_{s_instanceCounter++}");
+        _testFixture = new OrchardTestFixture(instanceId: $"{GetType().Name}_{Interlocked.Increment(ref s_instanceCounter)}");
     }
 
     public async ValueTask InitializeAsync()

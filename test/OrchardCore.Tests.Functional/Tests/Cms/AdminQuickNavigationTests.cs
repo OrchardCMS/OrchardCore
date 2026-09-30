@@ -398,7 +398,16 @@ public sealed class AdminQuickNavigationTests : CmsTestBase<BlogFixture>, IClass
 
             await page.Keyboard.PressAsync("Control+k");
             await page.Locator("#adminQuickNavigationInput").FillAsync(title);
-            await page.Locator($"#adminQuickNavigationResults a[href=\"{editUrl}\"]").ClickAsync();
+
+            // Scope by both href AND title text, not href alone: the same content item
+            // can appear twice in quick-navigation results from different sources with
+            // an identical edit href (observed live on CI - a "Main Menu" navigation
+            // item and its own "Main Menu Content" both point at the same
+            // /Admin/Contents/ContentItems/{id}/Edit URL), so an href-only locator can
+            // resolve to more than one element and trip Playwright's strict mode.
+            await page.Locator($"#adminQuickNavigationResults a[href=\"{editUrl}\"]")
+                .Filter(new LocatorFilterOptions { HasText = title })
+                .First.ClickAsync();
             await page.WaitForURLAsync("**" + editUrl);
 
             await page.GotoAndAssertOkAsync("/Admin/Settings/admin");
