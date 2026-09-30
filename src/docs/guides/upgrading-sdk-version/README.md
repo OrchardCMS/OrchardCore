@@ -82,21 +82,6 @@ The CI pipeline will also automatically:
 
 Automatic updates of CodeAnalysis packages are **disabled** in `renovate.json5` to prevent accidental version mismatches. These packages should only be updated manually during SDK upgrades.
 
-Current configuration in `renovate.json5`:
-
-```json5
-{
-    // Microsoft.CodeAnalysis packages must stay in sync with the Roslyn compiler in global.json,
-    // which requires equal or lower versions. These are updated manually during .NET SDK upgrades only.
-    matchPackageNames: [
-        'Microsoft.CodeAnalysis.Analyzers',
-        'Microsoft.CodeAnalysis.CSharp',
-        'Microsoft.CodeAnalysis.CSharp.CodeStyle',
-    ],
-    enabled: false,
-}
-```
-
 ## Troubleshooting
 
 ### Build fails after updating CodeAnalysis packages
