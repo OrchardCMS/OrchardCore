@@ -101,13 +101,11 @@ public class FileSystemStoreTests : IDisposable
     }
 
     [Fact]
-    public async Task CreateFile_CaseVariantRootEscapeOnNonWindows_RejectsWrite()
+    public async Task CreateFile_CaseVariantRootEscape_RejectsWrite()
     {
-        if (OperatingSystem.IsWindows())
-        {
-            return;
-        }
-
+        // Containment does not depend on the case sensitivity of the file system, so a folder that differs
+        // from the store root only by case is rejected on every platform, including the case insensitive
+        // ones where it resolves to the store root itself.
         Directory.CreateDirectory(Path.Combine(_root, "Media"));
         var store = new FileSystemStore(Path.Combine(_root, "Media"), NullLogger<FileSystemStore>.Instance);
         using var stream = new MemoryStream("replacement"u8.ToArray());
