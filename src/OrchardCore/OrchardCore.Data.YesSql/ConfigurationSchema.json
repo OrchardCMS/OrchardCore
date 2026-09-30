@@ -1,0 +1,114 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "YesSql": {
+          "type": "object",
+          "description": "Configures the YesSql document store of the tenants. See https://docs.orchardcore.net/en/latest/reference/modules/Data/.",
+          "properties": {
+            "CommandsPageSize": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 500,
+              "description": "The maximum number of commands in a YesSql command page. Larger sets of commands are split into multiple pages."
+            },
+            "QueryGatingEnabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Whether identical concurrent queries are coalesced so that YesSql executes them once and shares the result."
+            },
+            "EnableThreadSafetyChecks": {
+              "type": "boolean",
+              "default": false,
+              "description": "Whether to enable checks that help diagnosing the concurrent use of a YesSql session."
+            },
+            "IsolationLevel": {
+              "type": "string",
+              "enum": [
+                "Unspecified",
+                "Chaos",
+                "ReadUncommitted",
+                "ReadCommitted",
+                "RepeatableRead",
+                "Serializable",
+                "Snapshot"
+              ],
+              "default": "ReadCommitted",
+              "description": "The default transaction isolation level passed to the database provider."
+            }
+          }
+        },
+        "Data": {
+          "type": "object",
+          "description": "Configures the tenants database access. See https://docs.orchardcore.net/en/latest/reference/modules/Data/.",
+          "properties": {
+            "Sqlite": {
+              "type": "object",
+              "description": "Configures the SQLite database provider. See https://docs.orchardcore.net/en/latest/reference/modules/Data/.",
+              "properties": {
+                "UseConnectionPooling": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Whether SQLite connections are pooled. Pooled connections can keep the database file open, which may prevent operations such as copying or replacing the file for a backup. Disabling pooling can reduce performance."
+                }
+              }
+            },
+            "TableOptions": {
+              "type": "object",
+              "description": "Defines the table naming presets copied into the tenant settings when a tenant is set up. Changing them later doesn't rename existing tables or alter existing identity columns. See https://docs.orchardcore.net/en/latest/reference/modules/Data/.",
+              "properties": {
+                "DefaultDocumentTable": {
+                  "type": "string",
+                  "default": "Document",
+                  "description": "The name of the default YesSql document table."
+                },
+                "DefaultTableNameSeparator": {
+                  "type": "string",
+                  "examples": [
+                    "_",
+                    "__",
+                    "NULL"
+                  ],
+                  "default": "_",
+                  "description": "The separator between a table prefix or collection name and the table name. Use one or more underscores, or 'NULL' for no separator."
+                },
+                "DefaultIdentityColumnSize": {
+                  "type": "string",
+                  "enum": [
+                    "Int32",
+                    "Int64"
+                  ],
+                  "default": "Int64",
+                  "description": "The size of the identity columns."
+                }
+              }
+            }
+          }
+        },
+        "OrchardCore_YesSql": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_YesSql' section is deprecated. Use 'OrchardCore:YesSql' instead.",
+          "description": "Deprecated. Use 'OrchardCore:YesSql' instead.",
+          "doNotSuggest": true
+        },
+        "OrchardCore_Data_Sqlite": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Data_Sqlite' section is deprecated. Use 'OrchardCore:Data:Sqlite' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Data:Sqlite' instead.",
+          "doNotSuggest": true
+        },
+        "OrchardCore_Data_TableOptions": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Data_TableOptions' section is deprecated. Use 'OrchardCore:Data:TableOptions' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Data:TableOptions' instead.",
+          "doNotSuggest": true
+        }
+      }
+    }
+  }
+}

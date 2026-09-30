@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using OrchardCore.Modules;
 using OrchardCore.Twitter.Services;
 using OrchardCore.Twitter.Settings;
@@ -81,6 +82,51 @@ public class TwitterClientTests
         Assert.NotNull(message.Headers.Authorization);
         Assert.Equal(ExpectedOauthHeader, message.Headers.Authorization.ToString());
     }
+
+    [Fact]
+    public async Task ConfigureOAuthAsync_CalledTwice_KeepsSettingsProtected()
+    {
+        HttpRequestMessage message = null;
+
+        _mockFakeHttpMessageHandler.Setup(c => c.Send(It.IsAny<HttpRequestMessage>()))
+            .Returns(() => new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(UpdateStatusResponse) })
+            .Callback<HttpRequestMessage>(msg => message = msg);
+
+        var twitterClient = new Mock<TwitterClient>(new HttpClient(_mockFakeHttpMessageHandler.Object), Mock.Of<ILogger<TwitterClient>>())
+        {
+            CallBase = true,
+        };
+
+        await twitterClient.Object.UpdateStatus("Hello Ladies + Gentlemen, a signed OAuth request!", "include_entities=true");
+
+        var protector = new PrefixDataProtector();
+        var settings = new TwitterSettings
+        {
+            AccessToken = "370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb",
+            AccessTokenSecret = protector.Protect("LswwdoUaIvS8ltyTt5jkRh4J50vUPVVHtR2YPi5kE"),
+            ConsumerKey = "xvz1evFS4wEEPTGEFPHBog",
+            ConsumerSecret = protector.Protect("kAcSOqF21Fu85e7zjz7ZN2U4ZRhfV3WpwPAoE3Z7kBw"),
+        };
+
+        var protectedAccessTokenSecret = settings.AccessTokenSecret;
+        var protectedConsumerSecret = settings.ConsumerSecret;
+
+        var ticks = 13186229580000000 + 621355968000000000;
+        var handler = new Mock<TwitterClientMessageHandler>(
+            Mock.Of<IClock>(i => i.UtcNow == new DateTime(ticks)),
+            Options.Create(settings),
+            Mock.Of<IDataProtectionProvider>(dpp => dpp.CreateProtector(It.IsAny<string>()) == protector));
+
+        handler.Setup(c => c.GetNonce()).Returns(() => "kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg");
+
+        // The settings instance is shared, so the secrets must still be protected for the next requests.
+        await handler.Object.ConfigureOAuthAsync(message);
+        await handler.Object.ConfigureOAuthAsync(message);
+
+        Assert.Equal(ExpectedOauthHeader, message.Headers.Authorization.ToString());
+        Assert.Equal(protectedAccessTokenSecret, settings.AccessTokenSecret);
+        Assert.Equal(protectedConsumerSecret, settings.ConsumerSecret);
+    }
 }
 
 public class FakeHttpMessageHandler : HttpMessageHandler
@@ -93,6 +139,28 @@ public class FakeHttpMessageHandler : HttpMessageHandler
     protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, System.Threading.CancellationToken cancellationToken)
     {
         return Task.FromResult(Send(request));
+    }
+}
+
+/// <summary>
+/// A data protector that fails to unprotect data it did not protect, like a real one.
+/// </summary>
+public sealed class PrefixDataProtector : IDataProtector
+{
+    private static readonly byte[] _prefix = Encoding.UTF8.GetBytes("protected:");
+
+    public IDataProtector CreateProtector(string purpose) => this;
+
+    public byte[] Protect(byte[] plaintext) => [.. _prefix, .. plaintext];
+
+    public byte[] Unprotect(byte[] protectedData)
+    {
+        if (!protectedData.AsSpan().StartsWith(_prefix))
+        {
+            throw new CryptographicException("The payload was not protected.");
+        }
+
+        return protectedData[_prefix.Length..];
     }
 }
 
