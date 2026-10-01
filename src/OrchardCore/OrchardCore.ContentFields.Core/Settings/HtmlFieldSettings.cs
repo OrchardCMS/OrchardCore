@@ -6,7 +6,7 @@ namespace OrchardCore.ContentFields.Settings;
 public class HtmlFieldSettings : FieldSettings
 {
     /// <summary>
-    /// Whether to sanitize the Html input.
+    /// Whether to sanitize the rendered HTML.
     /// </summary>
     [DefaultValue(true)]
     public bool SanitizeHtml { get; set; } = true;

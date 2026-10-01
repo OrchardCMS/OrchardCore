@@ -31,7 +31,7 @@
 <div class="ocat-wrapper">
     <label asp-for="Html" class="ocat-label">@T["Html"]</label>
     <div class="ocat-end">
-        <input asp-for="Html" class="form-control" />
-        <span class="hint">This field will be rendered raw in place of the name; it will be enclosed in the anchor tag.</span>
+        <textarea asp-for="Html" class="form-control" rows="3"></textarea>
+        <span class="hint">@T["This field is rendered in place of the name inside the anchor tag and is sanitized when HTML sanitization is enabled."]</span>
     </div>
 </div>

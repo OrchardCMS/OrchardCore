@@ -1,4 +1,5 @@
 @model OrchardCore.ContentFields.ViewModels.MultiTextFieldSettingsViewModel
+@using System.Text.Json
 
 <div class="ocat-wrapper">
     <div class="ocat-end-offset">
@@ -22,7 +23,11 @@
 <style asp-src="~/OrchardCore.ContentFields/Styles/optionsEditor.min.css" debug-src="~/OrchardCore.ContentFields/Styles/optionsEditor.css"></style>
 
 <script at="Foot">
-    initializeOptionsEditor(document.getElementById('@Html.IdFor(m => m)'), @Html.Raw(Model.Options), '', document.getElementsByClassName('@Html.IdFor(m => m)-ModalBody'));
+    initializeOptionsEditor(
+        document.getElementById('@Html.IdFor(m => m)'),
+        JSON.parse(@Html.Raw(JsonSerializer.Serialize(Model.Options ?? "[]"))),
+        '',
+        document.getElementsByClassName('@Html.IdFor(m => m)-ModalBody'));
 </script>
 
 <script type="text/x-template" id="options-table">

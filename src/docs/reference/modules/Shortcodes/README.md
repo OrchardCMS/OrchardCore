@@ -12,6 +12,8 @@ Shortcode templates with [Liquid](../Liquid/README.md) are created through the _
 
 Shortcode templates are designed to be able to override a code based Shortcode of the same name.
 
+Managing shortcode templates requires the security-critical `ManageShortcodeTemplates` permission, which is granted to the Administrator and Editor roles by default. Shortcode templates are executable Liquid, so only grant this permission to users who are trusted to author templates. Shortcode output rendered inside HTML or Markdown parts and fields is sanitized when `Sanitize Html` is enabled on that part or field.
+
 | Parameter          | Description                                                                              |
 |--------------------|------------------------------------------------------------------------------------------|
 | `Name`             | The name of your Shortcode, without brackets.                                            |

@@ -61,6 +61,8 @@ It defines the following widgets:
 - Save
 - Share
 
+The body of each plugin is a [Liquid](../Liquid/README.md) template that is editable per content item. Creating or editing content items with the `FacebookPlugin` part therefore requires the security-critical `ManageLiquidTemplates` permission.
+
 ## Meta Pixel
 
 This feature provides you a way to add Meta Pixel tracking to your site. Simply navigate to _Settings -> Integrations -> Meta Pixel_ settings and provide your `Pixel Identifier`.

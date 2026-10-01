@@ -2,7 +2,7 @@
 
 An HTML Sanitizer is available as part of the Orchard Core Infrastructure.
 
-The Sanitizer cleans user input that could lead to XSS attacks.
+The Sanitizer cleans rendered HTML that could lead to XSS attacks. The original authored HTML or Markdown is preserved unchanged.
 
 It is used by default for the following parts and fields:
 
@@ -13,7 +13,16 @@ It is used by default for the following parts and fields:
 - Markdown Field
 
 !!! note
-    To disable sanitization on these fields disable the `Sanitize Html` option in the field or part settings.
+    `Sanitize Html` is a final-output safeguard. Disabling it opts into trusted output and can allow dangerous markup produced by stored source, Liquid, or shortcodes.
+
+For the built-in HTML surfaces, rendering follows this order:
+
+- HTML Body Part and HTML Field: stored HTML, Liquid, shortcodes, sanitizer.
+- Markdown Body Part and Markdown Field: stored Markdown, Liquid, Markdown conversion, shortcodes, sanitizer.
+- HTML Menu Item Part: stored HTML and URL are sanitized on a render-only copy. URLs whose scheme is not in the sanitizer's `AllowedSchemes` (such as `javascript:`) are not rendered, without changing the persisted menu item. Relative URLs are always allowed.
+- Link Menu Item Part: URLs are checked the same way as for the HTML Menu Item Part, regardless of the `Sanitize Html` setting.
+
+The setting applies consistently to the built-in Detail, Summary, preview, `BodyAspect`, and GraphQL rendered-HTML outputs.
 
 ## Razor Helper
 
