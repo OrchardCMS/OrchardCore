@@ -9,15 +9,25 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Menu;
 
 public class MenuShapesTests
 {
-    private static readonly IHtmlSanitizerService _sanitizer =
-        new HtmlSanitizerService(Options.Create(new HtmlSanitizerOptions()));
+    private static readonly IHtmlSanitizerService _sanitizer = CreateSanitizer();
 
     [Theory]
     [InlineData("https://orchardcore.net/", true)]
     [InlineData("/docs/reference", true)]
     [InlineData("#section", true)]
+    [InlineData("~/about", true)]
+    [InlineData("/search?q=a+b", true)]
+    [InlineData("/search?q=a b&tag={x}|y", true)]
+    [InlineData("/caf\u00e9", true)]
+    [InlineData("/it's", true)]
+    [InlineData("https://example.com/#/route", true)]
+    [InlineData("mailto:info@orchardcore.net", true)]
+    [InlineData("tel:+15551234567", true)]
     [InlineData("javascript:alert(1)", false)]
     [InlineData("JaVaScRiPt:alert(1)", false)]
+    [InlineData(" javascript:alert(1)", false)]
+    [InlineData("java\tscript:alert(1)", false)]
+    [InlineData("vbscript:msgbox(1)", false)]
     [InlineData("data:text/html,<script>alert(1)</script>", false)]
     [InlineData("http://[", false)]
     public void IsSafeUrlShouldRejectUnsafeSchemes(string url, bool expected)
@@ -79,5 +89,20 @@ public class MenuShapesTests
 
         Assert.Equal(html, renderedPart.Html);
         Assert.Equal("/safe", renderedPart.Url);
+    }
+
+    private static HtmlSanitizerService CreateSanitizer()
+    {
+        // Mirrors the default configuration applied by AddHtmlSanitizer().
+        var options = new HtmlSanitizerOptions();
+        options.Configure.Add(sanitizer =>
+        {
+            sanitizer.AllowedAttributes.Add("class");
+            sanitizer.AllowedTags.Remove("form");
+            sanitizer.AllowedSchemes.Add("mailto");
+            sanitizer.AllowedSchemes.Add("tel");
+        });
+
+        return new HtmlSanitizerService(Options.Create(options));
     }
 }

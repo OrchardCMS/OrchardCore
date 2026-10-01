@@ -228,23 +228,16 @@ public class MenuShapes : ShapeTableProvider
             return true;
         }
 
-        var urlWithoutFragment = url.Split('#', 2)[0];
-
-        if (!Uri.IsWellFormedUriString(urlWithoutFragment, UriKind.RelativeOrAbsolute) ||
-            !Uri.TryCreate(urlWithoutFragment, UriKind.RelativeOrAbsolute, out var uri))
+        if (!Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out _))
         {
             return false;
         }
 
-        var urlToValidate = uri.GetComponents(
-            UriComponents.SerializationInfoString,
-            UriFormat.UriEscaped);
-        var link = $"<a href=\"{htmlEncoder.Encode(urlToValidate)}\"></a>";
+        // The sanitizer removes the href attribute when the URL scheme is not allowed. Only its presence
+        // is checked since the sanitizer may serialize an allowed URL differently than it was authored.
+        var sanitizedLink = htmlSanitizerService.Sanitize($"<a href=\"{htmlEncoder.Encode(url)}\"></a>");
 
-        return string.Equals(
-            link,
-            htmlSanitizerService.Sanitize(link),
-            StringComparison.OrdinalIgnoreCase);
+        return sanitizedLink.Contains(" href=", StringComparison.OrdinalIgnoreCase);
     }
 
     private async static Task<bool> ShouldCreateAsync(

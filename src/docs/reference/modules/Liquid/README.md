@@ -8,7 +8,7 @@ Liquid syntax is powered by Fluid. Check <https://github.com/sebastienros/fluid>
 
 Creating or editing executable Liquid requires the security-critical `ManageLiquidTemplates` permission. The permission is granted to the Administrator and Editor roles by default.
 
-This permission is required in addition to feature-specific permissions, such as `ManageTemplates` or `ManageAdminTemplates`. It also protects `LiquidPart`, template preview, enabling `Render Liquid` on HTML or Markdown definitions, and content mutations for definitions where Liquid rendering is enabled, including API mutations.
+This permission is required in addition to feature-specific permissions, such as `ManageTemplates` or `ManageAdminTemplates`. It also protects `LiquidPart`, the Meta social plugins `FacebookPluginPart`, template preview, enabling `Render Liquid` on HTML or Markdown definitions, and content mutations for definitions where Liquid rendering is enabled, including API mutations.
 
 `LiquidPart` is not HTML-specific and is therefore not constrained by the HTML sanitizer. HTML and Markdown parts and fields can instead sanitize their final rendered HTML by enabling `Sanitize Html`.
 

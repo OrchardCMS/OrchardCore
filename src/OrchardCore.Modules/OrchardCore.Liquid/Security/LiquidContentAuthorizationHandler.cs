@@ -6,7 +6,6 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Contents;
 using OrchardCore.Security;
-using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Liquid.Security;
 
@@ -18,6 +17,13 @@ internal sealed class LiquidContentAuthorizationHandler : AuthorizationHandler<P
         CommonPermissions.EditOwnContent.Name,
         CommonPermissions.PublishContent.Name,
         CommonPermissions.PublishOwnContent.Name,
+    };
+
+    // Parts whose content is always an executable Liquid template.
+    private static readonly HashSet<string> _liquidPartNames = new(StringComparer.Ordinal)
+    {
+        "LiquidPart",
+        "FacebookPluginPart",
     };
 
     private readonly IServiceProvider _serviceProvider;
@@ -157,10 +163,7 @@ internal sealed class LiquidContentAuthorizationHandler : AuthorizationHandler<P
 
         foreach (var typePartDefinition in contentTypeDefinition.Parts)
         {
-            if (string.Equals(
-                typePartDefinition.PartDefinition.Name,
-                "LiquidPart",
-                StringComparison.Ordinal))
+            if (_liquidPartNames.Contains(typePartDefinition.PartDefinition.Name))
             {
                 return true;
             }
@@ -202,6 +205,21 @@ internal sealed class LiquidContentAuthorizationHandler : AuthorizationHandler<P
         return false;
     }
 
-    private static bool RendersLiquid(JsonObject settings, string settingsName) =>
-        settings?[settingsName]?["RenderLiquid"]?.GetValue<bool>() == true;
+    private static bool RendersLiquid(JsonObject settings, string settingsName)
+    {
+        if (settings?[settingsName]?["RenderLiquid"] is not JsonValue value)
+        {
+            return false;
+        }
+
+        if (value.TryGetValue<bool>(out var renderLiquid))
+        {
+            return renderLiquid;
+        }
+
+        // Fail closed on values stored as strings, e.g. from hand-written recipes.
+        return value.TryGetValue<string>(out var text) &&
+            bool.TryParse(text, out renderLiquid) &&
+            renderLiquid;
+    }
 }
