@@ -4,5 +4,12 @@
     "name": "ci-list-ordering",
     "source": "Assets/Scripts/ci-list-ordering.js",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "lists-admin-node",
+    "source": "Assets/ts/lists-admin-node.ts",
+    "dest": "wwwroot/Scripts/lists-admin-node/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

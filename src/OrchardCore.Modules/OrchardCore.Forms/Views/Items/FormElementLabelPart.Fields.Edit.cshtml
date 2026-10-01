@@ -4,7 +4,7 @@
 @{
     var wrapperId = Html.IdFor(m => m);
 }
-<div class="properties-wrapper show-for-input" id="@wrapperId">
+<div class="properties-wrapper show-for-input form-element-label-part-editor" id="@wrapperId">
 
     <div class="ocat-wrapper show-for-input-label">
         <label asp-for="LabelOption" class="ocat-label">@T["Label option"]</label>
@@ -29,10 +29,4 @@
 
 <script asp-src="~/OrchardCore.Forms/Scripts/formElementLabelManager.min.js" debug-src="~/OrchardCore.Forms/Scripts/formElementLabelManager.js" asp-name="formElementLabelManager" at="Foot"></script>
 
-<script at="Foot" depends-on="formElementLabelManager">
-    var wrapper = document.getElementById('@wrapperId');
-
-    if (wrapper != null) {
-        formElementLabelManager.initilize(wrapper);
-    }
-</script>
+<script asp-src="~/OrchardCore.Forms/Scripts/form-element-label-part/form-element-label-part.min.js" debug-src="~/OrchardCore.Forms/Scripts/form-element-label-part/form-element-label-part.js" depends-on="formElementLabelManager" at="Foot" type="module"></script>

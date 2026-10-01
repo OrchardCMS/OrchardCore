@@ -62,6 +62,7 @@ public sealed class AdminNavigationTests : CmsTestBase<BlogFixture>, IClassFixtu
         await page.LoginAsync();
         await page.GotoAndAssertOkAsync("/Admin");
 
+        // The menu only shows what the user opened, so the group holding the item is expanded first.
         await page.GetByRole(AriaRole.Button, new() { Name = "Content", Exact = true }).ClickAsync();
 
         var articleLink = page.Locator("#adminMenu a[data-admin-hash][href=\"/Admin/Contents/ContentItems/Article\"]");
@@ -92,6 +93,7 @@ public sealed class AdminNavigationTests : CmsTestBase<BlogFixture>, IClassFixtu
         await page.LoginAsync();
         await page.GotoAndAssertOkAsync("/Admin");
 
+        // The menu only shows what the user opened, so the group holding the item is expanded first.
         await page.GetByRole(AriaRole.Button, new() { Name = "Content", Exact = true }).ClickAsync();
 
         var articleLink = page.Locator("#adminMenu a[data-admin-hash][href=\"/Admin/Contents/ContentItems/Article\"]");
@@ -214,7 +216,9 @@ public sealed class AdminNavigationTests : CmsTestBase<BlogFixture>, IClassFixtu
         await Assertions.Expect(menusLink).ToBeVisibleAsync();
 
         await page.GotoAndAssertOkAsync("/Admin/Contents/ContentItems/Menu");
-        await Assertions.Expect(page.GetByRole(AriaRole.Heading, new() { Name = "Manage Content" })).ToBeVisibleAsync();
+        // The content list renders a breadcrumb in place of its title: "Manage Content" is now a link, and the
+        // content type filtered on becomes the current node heading.
+        await Assertions.Expect(page.GetByRole(AriaRole.Link, new() { Name = "Manage Content", Exact = true })).ToBeVisibleAsync();
 
         var editUrl = await page.GetByRole(AriaRole.Link, new() { Name = "Edit", Exact = true })
             .First

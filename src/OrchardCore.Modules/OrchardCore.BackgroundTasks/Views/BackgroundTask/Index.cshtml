@@ -1,6 +1,8 @@
 @model BackgroundTaskIndexViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Background Tasks"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="BackgroundTasks" title="@T["Background Tasks"]" />
+</zone>
 
 <form asp-action="Index" method="post" class="no-multisubmit" data-list-management data-selected-label="@T["selected"]">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
@@ -116,4 +118,4 @@
 <style asp-name="bootstrap-select" at="Head"></style>
 <script asp-name="bootstrap-select" at="Foot"></script>
 
-<script asp-name="list-management" at="Foot"></script>
+<script asp-src="~/OrchardCore.BackgroundTasks/Scripts/background-task-editors/background-task-index.min.js" debug-src="~/OrchardCore.BackgroundTasks/Scripts/background-task-editors/background-task-index.js" at="Foot" type="module"></script>

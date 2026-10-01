@@ -17,11 +17,11 @@
     return;
 }
 
-<div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty))" id="@Html.IdFor(x => x.Text)_FieldWrapper">
+<div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty)) text-field-monaco" id="@Html.IdFor(x => x.Text)_FieldWrapper" data-options="@(string.IsNullOrWhiteSpace(monacoSettings.Options) ? "{}" : monacoSettings.Options)">
     <label asp-for="Text" class="ocat-label @(settings.Required ? "ocat-label-required" : "")">@localizedFieldName</label>
     <div class="ocat-end">
-        <div id="@Html.IdFor(x => x.Text)_editor" asp-for="Text" style="min-height: 400px;" class="form-control" dir="@culture.GetLanguageDirection()"></div>
-        <textarea asp-for="Text" hidden>@Html.Raw(Model.Text)</textarea>
+        <div id="@Html.IdFor(x => x.Text)_editor" asp-for="Text" style="min-height: 400px;" class="form-control text-field-monaco-container" dir="@culture.GetLanguageDirection()"></div>
+        <textarea asp-for="Text" hidden class="text-field-monaco-value">@Html.Raw(Model.Text)</textarea>
         <span asp-validation-for="Text"></span>
         @if (!string.IsNullOrEmpty(settings.Hint))
         {
@@ -30,57 +30,6 @@
     </div>
 </div>
 
+<style asp-name="monaco"></style>
 <script asp-name="monaco" at="Foot"></script>
-<script at="Foot" depends-on="monaco">
-    function onDocumentReady(fn) {
-        if (document.readyState === "loading") {
-            document.addEventListener("DOMContentLoaded", fn);
-        } else {
-            fn();
-        }
-    }
-
-    onDocumentReady(function () {
-        require(['vs/editor/editor.main'], function () {
-
-            const divEditor = document.getElementById('@Html.IdFor(x => x.Text)_editor');
-
-            if (!divEditor) {
-                return;
-            }
-
-            var settings = @Html.Raw(string.IsNullOrWhiteSpace(monacoSettings.Options) ? "{}" : monacoSettings.Options);
-            if (settings.automaticLayout == undefined) {
-                settings.automaticLayout = true;
-            }
-
-            const html = document.documentElement;
-            const mutationObserver = new MutationObserver(setTheme);
-            mutationObserver.observe(html, { attributes: true });
-
-            function setTheme() {
-                var theme = html.dataset.bsTheme;
-                if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                    monaco.editor.setTheme('vs-dark')
-                } else {
-                    monaco.editor.setTheme('vs')
-                }
-            }
-
-            setTheme();
-
-            var editor = monaco.editor.create(divEditor, settings);
-            var textArea = document.getElementById('@Html.IdFor(x => x.Text)');
-
-            editor.getModel().setValue(textArea.value);
-
-            window.addEventListener("submit", function () {
-                textArea.value = editor.getValue();
-            });
-            editor.getModel().onDidChangeContent((event) => {
-                textArea.value = editor.getValue();
-                document.dispatchEvent(new Event('contentpreview:render'));
-            });
-        });
-    });
-</script>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/text-field-editors/text-field-monaco.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/text-field-editors/text-field-monaco.js" depends-on="monaco" at="Foot" type="module"></script>

@@ -46,7 +46,8 @@ public sealed class Startup : StartupBase
     {
         _shellSettings = shellSettings;
 
-        var configurationSection = shellConfiguration.GetSection("OrchardCore_Setup");
+        // The 'OrchardCore_Setup' section is deprecated and will be removed in a future major version, use 'Setup' instead.
+        var configurationSection = shellConfiguration.GetSectionCompat("Setup", "OrchardCore_Setup");
 
         _defaultCulture = configurationSection["DefaultCulture"] ?? _defaultCulture;
         _supportedCultures = configurationSection.GetSection("SupportedCultures").Get<List<string>>()?.ToArray() ?? _supportedCultures;

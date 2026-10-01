@@ -1,7 +1,9 @@
 @model RecipeViewModel[]
 @using OrchardCore.Recipes.ViewModels
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Recipes"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="Recipes" title="@T["Recipes"]" />
+</zone>
 
 <div data-list-management
      data-client-side-search="true"
@@ -84,5 +86,4 @@
         }
     }
 </form>
-</div>
-<script asp-name="list-management" at="Foot"></script>
+<script asp-src="~/OrchardCore.Recipes/Scripts/recipes-index/recipes-index.min.js" debug-src="~/OrchardCore.Recipes/Scripts/recipes-index/recipes-index.js" at="Foot" type="module"></script>

@@ -17,6 +17,7 @@ public class AllFeaturesDeploymentStep : DeploymentStep
         : this()
     {
         Category = S["Infrastructure"];
+        Title = S["All Features"];
     }
 
     public bool IgnoreDisabledFeatures { get; set; }

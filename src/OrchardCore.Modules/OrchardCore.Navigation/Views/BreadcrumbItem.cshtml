@@ -1,0 +1,59 @@
+@using OrchardCore.DisplayManagement
+
+@{
+    TagBuilder tag = Tag(Model, "li");
+    tag.AddCssClass("breadcrumb-item");
+
+    string text;
+    string href;
+    bool isCurrent;
+
+    if (Model is BreadcrumbItemViewModel item)
+    {
+        text = item.Text;
+        href = item.Href;
+        isCurrent = item.IsCurrent;
+    }
+    else
+    {
+        // A BreadcrumbItem shape can also be created by other code, e.g. as a dynamic shape or as a proxy of a model
+        // of its own, which doesn't necessarily define every member of the view model. Reading such a member
+        // dynamically would throw, so a missing one is treated as unset instead.
+        text = GetValue<string>(Model, nameof(BreadcrumbItemViewModel.Text));
+        href = GetValue<string>(Model, nameof(BreadcrumbItemViewModel.Href));
+        isCurrent = GetValue<bool>(Model, nameof(BreadcrumbItemViewModel.IsCurrent));
+    }
+
+    if (isCurrent)
+    {
+        tag.AddCssClass("active");
+        tag.Attributes["aria-current"] = "page";
+    }
+
+    if (!string.IsNullOrEmpty(href))
+    {
+        var link = new TagBuilder("a");
+        link.Attributes["href"] = href;
+        link.InnerHtml.Append(text);
+
+        tag.InnerHtml.AppendHtml(link);
+    }
+    else
+    {
+        tag.InnerHtml.Append(text);
+    }
+}
+
+@tag
+
+@functions {
+    private static T GetValue<T>(object model, string name)
+    {
+        if (model is IShape shape && shape.TryGetProperty<T>(name, out var value))
+        {
+            return value;
+        }
+
+        return model?.GetType().GetProperty(name)?.GetValue(model) is T property ? property : default;
+    }
+}

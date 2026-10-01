@@ -1,0 +1,46 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "X": {
+          "type": "object",
+          "description": "Settings of the X (Twitter) integration feature, used by the X API client. These values override the ones configured in the admin settings, and they are only applied when the 'ConfigureTwitterSettings()' extension method is called on the OrchardCoreBuilder. See https://docs.orchardcore.net/en/latest/reference/modules/X/.",
+          "properties": {
+            "ConsumerKey": {
+              "type": "string",
+              "description": "The API key (consumer key) of the X app, found in the keys and tokens tab of the app."
+            },
+            "ConsumerSecret": {
+              "type": "string",
+              "description": "The API secret key (consumer secret) of the X app. This is a sensitive value: provide it through user secrets, environment variables or a key vault rather than appsettings.json."
+            },
+            "AccessToken": {
+              "type": "string",
+              "description": "The access token of the X app, found in the keys and tokens tab of the app."
+            },
+            "AccessTokenSecret": {
+              "type": "string",
+              "description": "The access token secret of the X app. This is a sensitive value: provide it through user secrets, environment variables or a key vault rather than appsettings.json."
+            }
+          }
+        },
+        "OrchardCore_X": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_X' section is deprecated. Use 'OrchardCore:X' instead.",
+          "description": "Deprecated. Use 'OrchardCore:X' instead.",
+          "doNotSuggest": true
+        },
+        "OrchardCore_Twitter": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Twitter' section is deprecated. Use 'OrchardCore:X' instead.",
+          "description": "Deprecated. Use 'OrchardCore:X' instead.",
+          "doNotSuggest": true
+        }
+      }
+    }
+  }
+}

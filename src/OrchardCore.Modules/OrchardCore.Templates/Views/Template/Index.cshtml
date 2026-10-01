@@ -5,14 +5,9 @@
     var formAction = Model.Options.AdminTemplates ? "admin" : "index";
 }
 
-@if (Model.Options.AdminTemplates)
-{
-    <zone Name="Title"><h1>@RenderTitleSegments(T["Admin Templates"])</h1></zone>
-}
-else
-{
-    <zone Name="Title"><h1>@RenderTitleSegments(T["Templates"])</h1></zone>
-}
+<zone Name="Title">
+    <breadcrumb name="Templates" title="@(Model.Options.AdminTemplates ? T["Admin Templates"] : T["Templates"])" />
+</zone>
 
 @* the form is necessary to generate and antiforgery token for the delete action *@
 <form asp-action="@formAction" data-list-management data-selected-label="@T["selected"]">
@@ -36,7 +31,7 @@ else
             </div>
         </div>
     </div>
-    <ul class="list-group with-checkbox">
+    <ul class="list-group with-checkbox bulk-select-list" data-checkbox-name="itemIds" data-bulk-action-name="Options.BulkAction" data-selected-text="@T["selected"]">
         @if (Model.Templates.Count > 0)
         {
             <li class="list-group-item text-bg-theme">
@@ -99,4 +94,4 @@ else
 
 @await DisplayAsync(Model.Pager)
 
-<script asp-name="list-management" at="Foot"></script>
+<script asp-src="~/OrchardCore.Templates/Scripts/template-editors/template-index.min.js" debug-src="~/OrchardCore.Templates/Scripts/template-editors/template-index.js" at="Foot" type="module"></script>

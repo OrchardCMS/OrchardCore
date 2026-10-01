@@ -1,6 +1,17 @@
 @model AdminNodeEditViewModel
+@using OrchardCore.AdminMenu.Services
+@inject IAdminMenuService AdminMenuService
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Create Node"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="AdminMenusNodeCreate" title="@T["Create Node"]">
+        <breadcrumb-item id="AdminMenus" action="List" controller="Menu" area="OrchardCore.AdminMenu" permission="@AdminMenuPermissions.ManageAdminMenu.Name">@T["Admin Menus"]</breadcrumb-item>
+        @if (!string.IsNullOrEmpty(Model.AdminMenuId))
+        {
+            var adminMenu = AdminMenuService.GetAdminMenuById(await AdminMenuService.GetAdminMenuListAsync(), Model.AdminMenuId);
+            <breadcrumb-item id="Nodes" action="List" controller="Node" area="OrchardCore.AdminMenu" route-id="@Model.AdminMenuId" permission="@AdminMenuPermissions.ManageAdminMenu.Name">@T["Edit Nodes for '{0}'", adminMenu?.Name]</breadcrumb-item>
+        }
+    </breadcrumb>
+</zone>
 
 <div asp-validation-summary="All"></div>
 <form asp-action="Create" method="post" class="no-multisubmit">

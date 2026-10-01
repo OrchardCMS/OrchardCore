@@ -9,6 +9,4 @@ namespace OrchardCore.DisplayManagement;
 /// The generated class directly accesses properties on-demand without creating intermediate arrays.
 /// </remarks>
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = false, Inherited = false)]
-public sealed class GenerateArgumentsAttribute : Attribute
-{
-}
+public sealed class GenerateArgumentsAttribute : Attribute;

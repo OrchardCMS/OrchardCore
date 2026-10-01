@@ -56,19 +56,4 @@
     </div>
 </div>
 
-<script at="Foot">
-    (function () {
-        const collapseCheckbox = document.getElementById("@(Html.IdFor(x => x.Settings.Collapse))");
-        const preventFieldNameCollisionCheckbox = document.getElementById("@(Html.IdFor(x => x.Settings.PreventFieldNameCollision))");
-        const setFieldVisibility = (checked) => {
-            preventFieldNameCollisionCheckbox.parentElement.style.display = checked ? 'block' : 'none';
-
-            if (!checked) {
-                preventFieldNameCollisionCheckbox.checked = false;
-            }            
-        };
-        collapseCheckbox.addEventListener('change', (e) => setFieldVisibility(e.target.checked));
-
-        setFieldVisibility(@(collapsed.ToString().ToLower()));
-    })();
-</script>
+<script asp-src="~/OrchardCore.ContentTypes/Scripts/content-type-editors/graphql-content-type-part-settings.min.js" debug-src="~/OrchardCore.ContentTypes/Scripts/content-type-editors/graphql-content-type-part-settings.js" at="Foot" type="module"></script>

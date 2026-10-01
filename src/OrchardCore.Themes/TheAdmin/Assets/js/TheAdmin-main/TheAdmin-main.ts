@@ -3,11 +3,12 @@
 // We need to apply the classes BEFORE the page is rendered.
 // That is why we use a MutationObserver instead of document.Ready().
 import { getAdminPreferences, setCompactExplicit } from '../constants';
-import { applySelectedNavFromSessionStorage } from '../TheAdmin/menu';
+import { applyNavStateFromPreferences, applySelectedNavFromSessionStorage } from '../TheAdmin/menu';
 
 const userPreferencesLoader = () => {
     let bodyInitialized = false;
     let selectedNavApplied = false;
+    let navGroupsApplied = false;
 
     const applyState = () => {
         if (!bodyInitialized && document.body) {
@@ -27,11 +28,15 @@ const userPreferencesLoader = () => {
             bodyInitialized = true;
         }
 
+        if (!navGroupsApplied) {
+            navGroupsApplied = applyNavStateFromPreferences();
+        }
+
         if (!selectedNavApplied) {
             selectedNavApplied = applySelectedNavFromSessionStorage();
         }
 
-        return bodyInitialized && selectedNavApplied;
+        return bodyInitialized && navGroupsApplied && selectedNavApplied;
     };
 
     if (applyState()) {
