@@ -1,4 +1,5 @@
 @model HtmlBodyPartViewModel
+@using System.Text.Json
 
 @{
     var settings = Model.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
@@ -58,7 +59,7 @@ else
         @if (!string.IsNullOrEmpty(trumbowygSettings.Options))
         {
             <text>
-            var settings = @Html.Raw(trumbowygSettings.Options);
+            var settings = Function('"use strict"; return (' + @Html.Raw(JsonSerializer.Serialize(trumbowygSettings.Options)) + ')')();
             settings['lang'] = '@culture.TwoLetterISOLanguageName';
             </text>
         }

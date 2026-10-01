@@ -9,6 +9,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Html.Models;
 using OrchardCore.Html.Settings;
 using OrchardCore.Html.ViewModels;
+using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Shortcodes.Services;
 using Shortcodes;
@@ -52,11 +53,19 @@ public class HtmlBodyQueryObjectType : ObjectGraphType<HtmlBodyPart>
             html = await liquidTemplateManager.RenderStringAsync(html, htmlEncoder, model, new Dictionary<string, FluidValue> { ["ContentItem"] = new ObjectValue(model.ContentItem) });
         }
 
-        return await shortcodeService.ProcessAsync(html,
+        html = await shortcodeService.ProcessAsync(html,
             new Context
             {
                 ["ContentItem"] = ctx.Source.ContentItem,
                 ["TypePartDefinition"] = contentTypePartDefinition,
             });
+
+        if (settings.SanitizeHtml)
+        {
+            var htmlSanitizerService = ctx.RequestServices.GetRequiredService<IHtmlSanitizerService>();
+            html = htmlSanitizerService.Sanitize(html);
+        }
+
+        return html;
     }
 }

@@ -39,13 +39,6 @@ public sealed class HtmlMenuItemPartDisplayDriver : ContentPartDisplayDriver<Htm
 
     public override IDisplayResult Display(HtmlMenuItemPart part, BuildPartDisplayContext context)
     {
-        var settings = context.TypePartDefinition.GetSettings<HtmlMenuItemPartSettings>();
-
-        if (settings.SanitizeHtml)
-        {
-            part.Html = _htmlSanitizerService.Sanitize(part.Html);
-        }
-
         return Combine(
             Dynamic("HtmlMenuItemPart_Admin", shape =>
             {
@@ -74,12 +67,11 @@ public sealed class HtmlMenuItemPartDisplayDriver : ContentPartDisplayDriver<Htm
 
     public override async Task<IDisplayResult> UpdateAsync(HtmlMenuItemPart part, UpdatePartEditorContext context)
     {
-        var settings = context.TypePartDefinition.GetSettings<HtmlMenuItemPartSettings>();
         var model = new HtmlMenuItemPartEditViewModel();
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
         part.ContentItem.DisplayText = model.Name;
-        part.Html = settings.SanitizeHtml ? _htmlSanitizerService.Sanitize(model.Html) : model.Html;
+        part.Html = model.Html;
         part.Url = model.Url;
         part.Target = model.Target;
 

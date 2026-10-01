@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -7,6 +9,7 @@ using OrchardCore.Facebook.Widgets.Models;
 using OrchardCore.Facebook.Widgets.Settings;
 using OrchardCore.Facebook.Widgets.ViewModels;
 using OrchardCore.Liquid;
+using LiquidPermissions = OrchardCore.Liquid.Permissions;
 
 namespace OrchardCore.Facebook.Widgets.Drivers;
 
@@ -14,16 +17,22 @@ public sealed class FacebookPluginPartDisplayDriver : ContentPartDisplayDriver<F
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
+    private readonly IAuthorizationService _authorizationService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     internal readonly IStringLocalizer S;
 
     public FacebookPluginPartDisplayDriver(
         IContentDefinitionManager contentDefinitionManager,
         ILiquidTemplateManager liquidTemplateManager,
+        IAuthorizationService authorizationService,
+        IHttpContextAccessor httpContextAccessor,
         IStringLocalizer<FacebookPluginPartDisplayDriver> localizer)
     {
         _contentDefinitionManager = contentDefinitionManager;
         _liquidTemplateManager = liquidTemplateManager;
+        _authorizationService = authorizationService;
+        _httpContextAccessor = httpContextAccessor;
         S = localizer;
     }
 
@@ -48,8 +57,13 @@ public sealed class FacebookPluginPartDisplayDriver : ContentPartDisplayDriver<F
         model.ContentItem = part.ContentItem;
     }
 
-    public override IDisplayResult Edit(FacebookPluginPart part, BuildPartEditorContext context)
+    public override async Task<IDisplayResult> EditAsync(FacebookPluginPart part, BuildPartEditorContext context)
     {
+        if (!await CanManageLiquidTemplatesAsync())
+        {
+            return null;
+        }
+
         return Initialize<FacebookPluginPartViewModel>("FacebookPluginPart_Edit", async model =>
         {
             model.Settings = await GetFacebookPluginPartSettingsAsync(part);
@@ -69,6 +83,15 @@ public sealed class FacebookPluginPartDisplayDriver : ContentPartDisplayDriver<F
 
     public override async Task<IDisplayResult> UpdateAsync(FacebookPluginPart model, UpdatePartEditorContext context)
     {
+        if (!await CanManageLiquidTemplatesAsync())
+        {
+            context.Updater.ModelState.AddModelError(
+                Prefix,
+                S["You do not have permission to edit Liquid templates."]);
+
+            return null;
+        }
+
         var viewModel = new FacebookPluginPartViewModel();
 
         await context.Updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Liquid);
@@ -82,6 +105,11 @@ public sealed class FacebookPluginPartDisplayDriver : ContentPartDisplayDriver<F
             model.Liquid = viewModel.Liquid;
         }
 
-        return Edit(model, context);
+        return await EditAsync(model, context);
     }
+
+    private Task<bool> CanManageLiquidTemplatesAsync() =>
+        _authorizationService.AuthorizeAsync(
+            _httpContextAccessor.HttpContext?.User,
+            LiquidPermissions.ManageLiquidTemplates);
 }

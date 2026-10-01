@@ -1,9 +1,12 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Templates.ViewModels;
+using LiquidPermissions = OrchardCore.Liquid.Permissions;
 
 namespace OrchardCore.Templates.Settings;
 
@@ -11,13 +14,26 @@ public sealed class TemplateContentTypePartDefinitionDriver : ContentTypePartDef
 {
     internal readonly IStringLocalizer S;
 
-    public TemplateContentTypePartDefinitionDriver(IStringLocalizer<TemplateContentTypePartDefinitionDriver> localizer)
+    private readonly IAuthorizationService _authorizationService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public TemplateContentTypePartDefinitionDriver(
+        IStringLocalizer<TemplateContentTypePartDefinitionDriver> localizer,
+        IAuthorizationService authorizationService,
+        IHttpContextAccessor httpContextAccessor)
     {
         S = localizer;
+        _authorizationService = authorizationService;
+        _httpContextAccessor = httpContextAccessor;
     }
 
-    public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
+    public override async Task<IDisplayResult> EditAsync(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
     {
+        if (!await IsAuthorizedAsync())
+        {
+            return null;
+        }
+
         return Initialize<ContentSettingsViewModel>("TemplateSettings", model =>
         {
             var contentType = contentTypePartDefinition.ContentTypeDefinition.Name;
@@ -38,4 +54,12 @@ public sealed class TemplateContentTypePartDefinitionDriver : ContentTypePartDef
                 });
         }).Location("Shortcuts");
     }
+
+    private async Task<bool> IsAuthorizedAsync() =>
+        await _authorizationService.AuthorizeAsync(
+            _httpContextAccessor.HttpContext?.User,
+            Permissions.ManageTemplates) &&
+        await _authorizationService.AuthorizeAsync(
+            _httpContextAccessor.HttpContext?.User,
+            LiquidPermissions.ManageLiquidTemplates);
 }

@@ -1,14 +1,18 @@
 using System.Security.Claims;
 using System.Text;
+using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Contents;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.Infrastructure.Html;
 using OrchardCore.Menu.Models;
+using OrchardCore.Menu.Settings;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Security.Permissions;
 
@@ -151,13 +155,42 @@ public class MenuShapes : ShapeTableProvider
             });
 
         builder.Describe("MenuItemLink")
-            .OnDisplaying(displaying =>
+            .OnDisplaying(async displaying =>
             {
                 var menuItem = displaying.Shape;
                 var level = menuItem.GetProperty<int>("Level");
                 var differentiator = menuItem.Metadata.Differentiator;
 
                 var menuContentItem = menuItem.GetProperty<ContentItem>("ContentItem");
+
+                if (menuContentItem.TryGet<HtmlMenuItemPart>(out _))
+                {
+                    var contentDefinitionManager = displaying.ServiceProvider.GetRequiredService<IContentDefinitionManager>();
+                    var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(menuContentItem.ContentType);
+                    var typePartDefinition = contentTypeDefinition?.Parts.FirstOrDefault(part =>
+                        string.Equals(
+                            part.PartDefinition.Name,
+                            nameof(HtmlMenuItemPart),
+                            StringComparison.Ordinal));
+                    var settings = typePartDefinition?.GetSettings<HtmlMenuItemPartSettings>() ?? new();
+                    var htmlSanitizerService = displaying.ServiceProvider.GetRequiredService<IHtmlSanitizerService>();
+                    var htmlEncoder = displaying.ServiceProvider.GetRequiredService<HtmlEncoder>();
+                    menuItem.Properties["ContentItem"] = CreateSafeContentItem(
+                        menuContentItem,
+                        settings,
+                        htmlSanitizerService,
+                        htmlEncoder);
+                }
+                else if (menuContentItem.TryGet<LinkMenuItemPart>(out var linkMenuItemPart))
+                {
+                    var htmlSanitizerService = displaying.ServiceProvider.GetRequiredService<IHtmlSanitizerService>();
+                    var htmlEncoder = displaying.ServiceProvider.GetRequiredService<HtmlEncoder>();
+
+                    if (!IsSafeUrl(linkMenuItemPart.Url, htmlSanitizerService, htmlEncoder))
+                    {
+                        menuItem.Properties["ContentItem"] = CreateSafeLinkContentItem(menuContentItem);
+                    }
+                }
 
                 // Get cached alternates and add them efficiently
                 var cachedAlternates = MenuItemAlternatesFactory.GetMenuItemLinkAlternates(
@@ -169,6 +202,61 @@ public class MenuShapes : ShapeTableProvider
             });
 
         return ValueTask.CompletedTask;
+    }
+
+    internal static ContentItem CreateSafeContentItem(
+        ContentItem contentItem,
+        HtmlMenuItemPartSettings settings,
+        IHtmlSanitizerService htmlSanitizerService,
+        HtmlEncoder htmlEncoder)
+    {
+        var renderedContentItem = contentItem.Clone();
+
+        renderedContentItem.Alter<HtmlMenuItemPart>(part =>
+        {
+            if (settings.SanitizeHtml)
+            {
+                part.Html = htmlSanitizerService.Sanitize(part.Html);
+            }
+
+            if (!IsSafeUrl(part.Url, htmlSanitizerService, htmlEncoder))
+            {
+                part.Url = string.Empty;
+            }
+        });
+
+        return renderedContentItem;
+    }
+
+    internal static ContentItem CreateSafeLinkContentItem(ContentItem contentItem)
+    {
+        var renderedContentItem = contentItem.Clone();
+
+        renderedContentItem.Alter<LinkMenuItemPart>(part => part.Url = string.Empty);
+
+        return renderedContentItem;
+    }
+
+    internal static bool IsSafeUrl(
+        string url,
+        IHtmlSanitizerService htmlSanitizerService,
+        HtmlEncoder htmlEncoder)
+    {
+        if (string.IsNullOrEmpty(url))
+        {
+            return true;
+        }
+
+        if (!Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out _))
+        {
+            return false;
+        }
+
+        // The sanitizer removes the href attribute when the URL scheme is not allowed. Only its presence
+        // is checked since the sanitizer may serialize an allowed URL differently than it was authored.
+        var sanitizedLink = htmlSanitizerService.Sanitize($"<a href=\"{htmlEncoder.Encode(url)}\"></a>");
+
+        return sanitizedLink.Contains(" href=", StringComparison.OrdinalIgnoreCase);
     }
 
     private async static Task<bool> ShouldCreateAsync(

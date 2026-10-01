@@ -50,9 +50,11 @@ The following properties are available on the `MarkdownFieldViewModel` class.
 
 ## Sanitization
 
-Markdown output is sanitized during the rendering of content with Display Management.
+The exact authored Markdown source is persisted. When `Sanitize HTML` is enabled, the final rendered HTML is sanitized after Liquid rendering, Markdown conversion, and shortcode processing. This also protects previously stored content when it is rendered.
 
-You can disable this by unchecking the `Sanitize HTML` setting, or further configuring the [HTML Sanitizer](../Sanitizer/README.md)
+You can disable this trusted-output safeguard by unchecking the `Sanitize HTML` setting, or further configure the [HTML Sanitizer](../Sanitizer/README.md).
+
+Enabling `Render Liquid` makes the source executable and requires the security-critical `ManageLiquidTemplates` permission to configure or edit the content.
 
 When rendering content directly you can disable sanitization by passing a boolean to the helper.
 
