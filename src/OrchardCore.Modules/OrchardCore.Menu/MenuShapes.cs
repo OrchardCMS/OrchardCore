@@ -181,6 +181,16 @@ public class MenuShapes : ShapeTableProvider
                         htmlSanitizerService,
                         htmlEncoder);
                 }
+                else if (menuContentItem.TryGet<LinkMenuItemPart>(out var linkMenuItemPart))
+                {
+                    var htmlSanitizerService = displaying.ServiceProvider.GetRequiredService<IHtmlSanitizerService>();
+                    var htmlEncoder = displaying.ServiceProvider.GetRequiredService<HtmlEncoder>();
+
+                    if (!IsSafeUrl(linkMenuItemPart.Url, htmlSanitizerService, htmlEncoder))
+                    {
+                        menuItem.Properties["ContentItem"] = CreateSafeLinkContentItem(menuContentItem);
+                    }
+                }
 
                 // Get cached alternates and add them efficiently
                 var cachedAlternates = MenuItemAlternatesFactory.GetMenuItemLinkAlternates(
@@ -214,6 +224,15 @@ public class MenuShapes : ShapeTableProvider
                 part.Url = string.Empty;
             }
         });
+
+        return renderedContentItem;
+    }
+
+    internal static ContentItem CreateSafeLinkContentItem(ContentItem contentItem)
+    {
+        var renderedContentItem = contentItem.Clone();
+
+        renderedContentItem.Alter<LinkMenuItemPart>(part => part.Url = string.Empty);
 
         return renderedContentItem;
     }

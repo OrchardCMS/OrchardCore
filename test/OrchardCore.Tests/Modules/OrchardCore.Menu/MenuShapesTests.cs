@@ -91,6 +91,30 @@ public class MenuShapesTests
         Assert.Equal("/safe", renderedPart.Url);
     }
 
+    [Fact]
+    public void CreateSafeLinkContentItemShouldNotMutatePersistedContent()
+    {
+        const string url = "javascript:alert(1)";
+        var contentItem = new ContentItem
+        {
+            ContentType = "LinkMenuItem",
+        };
+        contentItem.Weld(new LinkMenuItemPart
+        {
+            Url = url,
+            Target = "_blank",
+        });
+
+        var renderedContentItem = MenuShapes.CreateSafeLinkContentItem(contentItem);
+
+        var sourcePart = contentItem.Get<LinkMenuItemPart>(nameof(LinkMenuItemPart));
+        var renderedPart = renderedContentItem.Get<LinkMenuItemPart>(nameof(LinkMenuItemPart));
+
+        Assert.Equal(url, sourcePart.Url);
+        Assert.Empty(renderedPart.Url);
+        Assert.Equal("_blank", renderedPart.Target);
+    }
+
     private static HtmlSanitizerService CreateSanitizer()
     {
         // Mirrors the default configuration applied by AddHtmlSanitizer().

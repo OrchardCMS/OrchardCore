@@ -20,6 +20,7 @@ For the built-in HTML surfaces, rendering follows this order:
 - HTML Body Part and HTML Field: stored HTML, Liquid, shortcodes, sanitizer.
 - Markdown Body Part and Markdown Field: stored Markdown, Liquid, Markdown conversion, shortcodes, sanitizer.
 - HTML Menu Item Part: stored HTML and URL are sanitized on a render-only copy. URLs whose scheme is not in the sanitizer's `AllowedSchemes` (such as `javascript:`) are not rendered, without changing the persisted menu item. Relative URLs are always allowed.
+- Link Menu Item Part: URLs are checked the same way as for the HTML Menu Item Part, regardless of the `Sanitize Html` setting.
 
 The setting applies consistently to the built-in Detail, Summary, preview, `BodyAspect`, and GraphQL rendered-HTML outputs.
 
