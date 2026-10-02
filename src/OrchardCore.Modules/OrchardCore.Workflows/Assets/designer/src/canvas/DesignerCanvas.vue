@@ -53,6 +53,10 @@ let pointerFocus = false;
 
 const nodeById = computed(() => new Map(state.nodes.map((node) => [node.id, node])));
 const highlighted = computed(() => new Set(props.highlightedIds));
+
+// The activities the instance shown by the viewer waits on.
+// TODO: Phase 5 records the executed activities; highlight the executed path here then.
+const blockingIds = computed(() => new Set(state.instance?.blockingActivityIds ?? []));
 const selectedIds = computed(() => new Set(state.selectedNodeIds));
 
 const issuesByActivity = computed(() => {
@@ -687,6 +691,7 @@ defineExpose({
                 :drop-target="connecting?.targetId === node.id"
                 :highlighted="highlighted.has(node.id)"
                 :read-only="readOnly"
+                :blocking="blockingIds.has(node.id)"
                 :issues="issuesByActivity.get(node.id) ?? NO_ISSUES"
                 :connected-outcomes="connectedOutcomes.get(node.id) ?? NO_OUTCOMES"
                 @node-pointerdown="onNodePointerDown(node, $event)"

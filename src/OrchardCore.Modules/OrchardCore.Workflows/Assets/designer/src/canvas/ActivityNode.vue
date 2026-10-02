@@ -13,10 +13,12 @@ const props = withDefaults(
         dropTarget?: boolean;
         highlighted?: boolean;
         readOnly?: boolean;
+        // The instance shown by the viewer waits on this activity.
+        blocking?: boolean;
         issues?: DesignIssue[];
         connectedOutcomes?: string[];
     }>(),
-    { selected: false, lifted: false, dropTarget: false, highlighted: false, readOnly: false, issues: () => [], connectedOutcomes: () => [] },
+    { selected: false, lifted: false, dropTarget: false, highlighted: false, readOnly: false, blocking: false, issues: () => [], connectedOutcomes: () => [] },
 );
 
 const emit = defineEmits<{
@@ -41,6 +43,10 @@ const accessibleName = computed(() => {
 
     if (props.node.isStart) {
         parts.push(t("StartActivity"));
+    }
+
+    if (props.blocking) {
+        parts.push(t("BlockingActivity"));
     }
 
     if (props.issues.length > 0) {
@@ -105,7 +111,7 @@ onMounted(() => {
 onBeforeUnmount(() => observer?.disconnect());
 
 watch(
-    () => [props.node.outcomes, props.node.designHtml, props.node.isStart],
+    () => [props.node.outcomes, props.node.designHtml, props.node.isStart, props.blocking],
     () => nextTick(measure),
     { deep: true },
 );
@@ -138,6 +144,7 @@ const onKeyDown = (event: KeyboardEvent) => {
             'is-lifted': lifted,
             'is-drop-target': dropTarget,
             'is-highlighted': highlighted,
+            'is-blocking': blocking,
             'has-errors': errorCount > 0,
         }"
         :style="{ transform: `translate(${node.x}px, ${node.y}px)` }"
@@ -158,6 +165,10 @@ const onKeyDown = (event: KeyboardEvent) => {
             <i :class="icon" aria-hidden="true"></i>
             <span class="wfd-node-type text-truncate">{{ node.displayText }}</span>
             <span v-if="node.isStart" class="badge text-bg-success wfd-node-badge" data-cy="start-badge">{{ t("Start") }}</span>
+            <span v-if="blocking" class="badge text-bg-info wfd-node-badge" :title="t('BlockingActivityHint')" data-cy="blocking-badge">
+                <i class="fa-solid fa-hourglass-half" aria-hidden="true"></i>
+                {{ t("Blocking") }}
+            </span>
             <span
                 v-if="issues.length > 0"
                 class="badge wfd-node-badge"

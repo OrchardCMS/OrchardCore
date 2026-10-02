@@ -1,5 +1,5 @@
 import { reactive } from "vue";
-import type { DesignIssue, DesignerDefinition, DesignerNode, DesignerTransition, SavePayload, SaveResult, WorkflowSettings } from "../api/types";
+import type { DesignIssue, DesignerDefinition, DesignerInstance, DesignerNode, DesignerTransition, SavePayload, SaveResult, WorkflowSettings } from "../api/types";
 import { History, type Command } from "./history";
 import type { Graph } from "./commands";
 
@@ -29,6 +29,10 @@ export interface DesignerState {
      */
     currentUserId: string | null;
     runningInstanceCount: number;
+    /**
+     * The workflow instance shown by the read-only instance viewer.
+     */
+    instance: DesignerInstance | null;
     settings: WorkflowSettings | null;
     nodes: DesignerNode[];
     transitions: DesignerTransition[];
@@ -56,6 +60,7 @@ const createInitialState = (): DesignerState => ({
     draftModifiedUtc: null,
     currentUserId: null,
     runningInstanceCount: 0,
+    instance: null,
     settings: null,
     nodes: [],
     transitions: [],
@@ -123,6 +128,7 @@ export const createDesignerStore = () => {
                 draftModifiedByUserId: definition.draftModifiedByUserId ?? null,
                 draftModifiedUtc: definition.draftModifiedUtc ?? null,
                 runningInstanceCount: definition.runningInstanceCount,
+                instance: definition.instance ?? null,
                 settings: definition.settings,
                 nodes: definition.nodes,
                 transitions: definition.transitions,

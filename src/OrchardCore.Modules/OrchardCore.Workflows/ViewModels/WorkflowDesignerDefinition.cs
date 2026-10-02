@@ -66,6 +66,11 @@ public sealed class WorkflowDesignerDefinition
     /// The number of instances of this type that haven't completed.
     /// </summary>
     public int RunningInstanceCount { get; init; }
+
+    /// <summary>
+    /// The instance shown by the read-only instance viewer, or <see langword="null"/> in the designer.
+    /// </summary>
+    public WorkflowDesignerInstance Instance { get; init; }
 }
 
 /// <summary>

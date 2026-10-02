@@ -327,13 +327,31 @@ Files: `src/panel/` — `PropertiesPanel.vue` (resizable and collapsible, with t
     - A change after publishing starts a new draft at revision 1, and Discard works through the admin dialog.
     - Saves failing at the network level show "Not saved. Retrying…" with the leave guard on, then save on the retry.
 
-### - [ ] 1.9 Read-only instance viewer
+### - [x] 1.9 Read-only instance viewer
 
 - `M/Views/Workflow/Details.cshtml` mounts the same app with `readOnly: true` and an instance payload: the blocking activity ids and the status. Add a `GET` JSON action to `WorkflowController`, or embed the payload in `data-config`.
 - Read-only mode hides the toolbox and the editing tools. Clicking a node shows a read-only summary: title, type and whether it's blocking.
 - Highlight blocking activities as `workflow-viewer.ts` does today. **Executed-path highlighting waits for Phase 5**: `ExecutedActivities` isn't recorded yet, so add a visible TODO hook only, no engine change.
 - Keep the existing State tab. Remove the stale `<script asp-name="bootstrap" version="4">` at `Details.cshtml:115`.
 - **Tests**: covered in step 1.13.
+- **Notes from implementing this step:**
+  - **Endpoint.** `GET WorkflowDesigner/Instance?instanceId=` returns a `WorkflowDesignerDefinition` of the **live** workflow type, which the instance runs on, so a draft doesn't show. It also returns `instance`: id, `WorkflowId`, status name and `blockingActivityIds`. An instance of another type returns 404. `WorkflowController.Details` renders the config with `readOnly: true` and this URL as `urls.definition`.
+  - **Shared config.** `WorkflowDesignerConfigBuilder` builds the `data-config` of both the designer and the viewer. The viewer only gets the definition URL.
+  - **Viewer.**
+    - No toolbox, save status, undo/redo, Publish or Discard.
+    - The panel has the Activity tab only. It shows the activity's type, whether the instance waits on it, and its design body.
+    - The canvas is read-only and fits the whole workflow on load.
+    - Blocking activities get an info-colored ring and header and a "Blocking" badge, and are announced in their accessible name. The toolbar shows a legend.
+    - The executed-path TODO hooks are on `WorkflowDesignerInstance`, the client `DesignerInstance` type and `DesignerCanvas` (Phase 5).
+  - **Details page.** It keeps the details card, the State tab and the Back/Restart/Delete buttons. The stale Bootstrap 4 script, the jsPlumb stylesheet and the `workflow-viewer` script and stylesheet are no longer referenced; step 1.11 removes those assets. The Workflow tab label is now localized.
+  - **For the release notes (1.12): breaking change for template overrides.**
+    - `WorkflowViewModel.ActivityDesignShapes` and `WorkflowViewModel.WorkflowTypeJson` are replaced by `DesignerConfigJson`.
+    - The `Activity_DesignReadOnly` shape (`Activity.DesignReadonly.cshtml`), which only the jsPlumb viewer used, is removed.
+  - **Verified** in a running CMS:
+    - An HTTP-started instance halted on a Signal event shows as Halted, with the Signal event highlighted.
+    - Selecting it shows "Waiting on this activity".
+    - The view is fitted to all 17 activities.
+    - The State tab works, and there are no console errors.
 
 ### - [ ] 1.10 Theming, RTL, accessibility and localization
 

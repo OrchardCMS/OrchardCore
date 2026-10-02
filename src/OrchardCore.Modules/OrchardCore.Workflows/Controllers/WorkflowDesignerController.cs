@@ -1,5 +1,3 @@
-using System.Security.Claims;
-using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -41,6 +39,7 @@ public sealed class WorkflowDesignerController : Controller
 
     private readonly IAuthorizationService _authorizationService;
     private readonly IWorkflowTypeStore _workflowTypeStore;
+    private readonly IWorkflowStore _workflowStore;
     private readonly IWorkflowTypeDraftManager _draftManager;
     private readonly WorkflowDesignerModelBuilder _modelBuilder;
     private readonly IWorkflowManager _workflowManager;
@@ -55,6 +54,7 @@ public sealed class WorkflowDesignerController : Controller
     public WorkflowDesignerController(
         IAuthorizationService authorizationService,
         IWorkflowTypeStore workflowTypeStore,
+        IWorkflowStore workflowStore,
         IWorkflowTypeDraftManager draftManager,
         WorkflowDesignerModelBuilder modelBuilder,
         IWorkflowManager workflowManager,
@@ -67,6 +67,7 @@ public sealed class WorkflowDesignerController : Controller
     {
         _authorizationService = authorizationService;
         _workflowTypeStore = workflowTypeStore;
+        _workflowStore = workflowStore;
         _draftManager = draftManager;
         _modelBuilder = modelBuilder;
         _workflowManager = workflowManager;
@@ -96,7 +97,7 @@ public sealed class WorkflowDesignerController : Controller
         return View(DesignerViewPath, new WorkflowDesignerViewModel
         {
             WorkflowType = workflowType,
-            ConfigJson = JsonSerializer.Serialize(BuildConfig(workflowType), JOptions.CamelCase),
+            ConfigJson = WorkflowDesignerConfigBuilder.Build(Url, User, _jsLocalizers, workflowType),
         });
     }
 
@@ -135,19 +136,51 @@ public sealed class WorkflowDesignerController : Controller
             DraftModifiedBy = draft?.ModifiedByUserName,
             DraftModifiedByUserId = draft?.ModifiedByUserId,
             DraftModifiedUtc = draft?.ModifiedUtc,
-            Settings = new WorkflowTypeDraftSettings
-            {
-                Name = source.Name,
-                IsEnabled = source.IsEnabled,
-                IsSingleton = source.IsSingleton,
-                LockTimeout = source.LockTimeout,
-                LockExpiration = source.LockExpiration,
-                DeleteFinishedWorkflows = source.DeleteFinishedWorkflows,
-            },
+            Settings = SettingsOf(source),
             Nodes = await _modelBuilder.BuildNodesAsync(source),
             Transitions = source.Transitions.Select(WorkflowDesignerTransition.From).ToList(),
             Issues = issues,
             RunningInstanceCount = runningInstanceCount,
+        });
+    }
+
+    /// <summary>
+    /// The graph of the read-only instance viewer: the live workflow type, which the instance runs on (not
+    /// the draft), with the activities the instance waits on.
+    /// </summary>
+    [HttpGet]
+    public async Task<IActionResult> Instance(long workflowTypeId, long instanceId)
+    {
+        if (!await CanManageAsync())
+        {
+            return this.ApiForbidProblem();
+        }
+
+        var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
+        var workflow = workflowType is null ? null : await _workflowStore.GetAsync(instanceId);
+
+        if (workflow is null || workflow.WorkflowTypeId != workflowType.WorkflowTypeId)
+        {
+            return this.ApiNotFoundProblem();
+        }
+
+        return Ok(new WorkflowDesignerDefinition
+        {
+            Id = workflowType.Id,
+            WorkflowTypeId = workflowType.WorkflowTypeId,
+            Settings = SettingsOf(workflowType),
+            Nodes = await _modelBuilder.BuildNodesAsync(workflowType),
+            Transitions = workflowType.Transitions.Select(WorkflowDesignerTransition.From).ToList(),
+            Instance = new WorkflowDesignerInstance
+            {
+                Id = workflow.Id,
+                WorkflowId = workflow.WorkflowId,
+                Status = workflow.Status.ToString(),
+                BlockingActivityIds = workflow.BlockingActivities.Select(activity => activity.ActivityId).Distinct().ToList(),
+
+                // TODO: Phase 5 records the executed activities (ExecutedActivities); return them here so the
+                // viewer highlights the executed path.
+            },
         });
     }
 
@@ -458,32 +491,16 @@ public sealed class WorkflowDesignerController : Controller
         return Ok(new { });
     }
 
-    private object BuildConfig(WorkflowType workflowType)
-    {
-        var area = new { area = "OrchardCore.Workflows", workflowTypeId = workflowType.Id };
-
-        return new
+    private static WorkflowTypeDraftSettings SettingsOf(WorkflowType workflowType)
+        => new()
         {
-            WorkflowTypeId = workflowType.Id,
-            ReadOnly = false,
-            Urls = new
-            {
-                Definition = Url.Action(nameof(Definition), area),
-                Library = Url.Action(nameof(Library), area),
-                Save = Url.Action(nameof(Save), area),
-                AddActivity = Url.Action(nameof(AddActivity), area),
-                Editor = Url.Action(nameof(Editor), area),
-                Settings = Url.Action(nameof(Settings), area),
-                Publish = Url.Action(nameof(Publish), area),
-                Discard = Url.Action(nameof(Discard), area),
-            },
-            InstancesUrl = Url.Action("Index", "Workflow", area),
-            ExportUrl = Url.Action("Export", "WorkflowType", new { area = "OrchardCore.Workflows", id = workflowType.Id }),
-            ListUrl = Url.Action("Index", "WorkflowType", new { area = "OrchardCore.Workflows" }),
-            CurrentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier),
-            Translations = _jsLocalizers.GetMergedLocalizations(WorkflowsDesignerJSLocalizer.Group),
+            Name = workflowType.Name,
+            IsEnabled = workflowType.IsEnabled,
+            IsSingleton = workflowType.IsSingleton,
+            LockTimeout = workflowType.LockTimeout,
+            LockExpiration = workflowType.LockExpiration,
+            DeleteFinishedWorkflows = workflowType.DeleteFinishedWorkflows,
         };
-    }
 
     private Task<bool> CanManageAsync()
         => _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows);

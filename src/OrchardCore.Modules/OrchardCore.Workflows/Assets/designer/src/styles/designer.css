@@ -29,6 +29,18 @@
     font-weight: 600;
 }
 
+.wfd.wfd-readonly {
+    height: min(calc(100vh - 11rem), 40rem);
+    min-height: 24rem;
+}
+
+.wfd-legend {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    white-space: nowrap;
+}
+
 .wfd-save-status {
     display: inline-flex;
     align-items: center;
@@ -191,6 +203,22 @@
     flex: 1 1 auto;
     color: var(--bs-secondary-color);
     font-size: 0.8125rem;
+}
+
+.wfd-summary-list {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.25rem 0.75rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.8125rem;
+}
+
+.wfd-summary-list dt {
+    font-weight: 600;
+}
+
+.wfd-summary-list dd {
+    margin: 0;
 }
 
 .wfd-issue {
@@ -493,6 +521,18 @@
     box-shadow: 0 0 0 3px var(--bs-warning);
 }
 
+/* The instance shown by the viewer waits on this activity. */
+.wfd-node.is-blocking {
+    border-color: var(--bs-info-border-subtle);
+    box-shadow: 0 0 0 3px rgba(var(--bs-info-rgb), 0.6);
+}
+
+.wfd-node.is-blocking.is-selected {
+    box-shadow:
+        0 0 0 2px var(--bs-primary),
+        0 0 0 5px rgba(var(--bs-info-rgb), 0.6);
+}
+
 .wfd-node-header {
     display: flex;
     align-items: center;
@@ -513,6 +553,11 @@
 .wfd-node.is-start .wfd-node-header {
     background-color: var(--bs-success-bg-subtle);
     color: var(--bs-success-text-emphasis);
+}
+
+.wfd-node.is-blocking .wfd-node-header {
+    background-color: var(--bs-info-bg-subtle);
+    color: var(--bs-info-text-emphasis);
 }
 
 .wfd-node-type {

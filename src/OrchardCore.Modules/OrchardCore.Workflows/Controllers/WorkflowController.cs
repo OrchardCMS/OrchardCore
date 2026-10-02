@@ -9,8 +9,8 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Localization;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
@@ -34,11 +34,10 @@ public sealed class WorkflowController : Controller
     private readonly IWorkflowTypeStore _workflowTypeStore;
     private readonly IWorkflowStore _workflowStore;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IActivityDisplayManager _activityDisplayManager;
     private readonly INotifier _notifier;
-    private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IShapeFactory _shapeFactory;
     private readonly IDistributedLock _distributedLock;
+    private readonly IEnumerable<IJSLocalizer> _jsLocalizers;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -50,13 +49,12 @@ public sealed class WorkflowController : Controller
         IWorkflowTypeStore workflowTypeStore,
         IWorkflowStore workflowStore,
         IAuthorizationService authorizationService,
-        IActivityDisplayManager activityDisplayManager,
         IShapeFactory shapeFactory,
         INotifier notifier,
         IHtmlLocalizer<WorkflowController> htmlLocalizer,
         IDistributedLock distributedLock,
         IStringLocalizer<WorkflowController> stringLocalizer,
-        IUpdateModelAccessor updateModelAccessor)
+        IEnumerable<IJSLocalizer> jsLocalizers)
     {
         _pagerOptions = pagerOptions.Value;
         _session = session;
@@ -64,13 +62,12 @@ public sealed class WorkflowController : Controller
         _workflowTypeStore = workflowTypeStore;
         _workflowStore = workflowStore;
         _authorizationService = authorizationService;
-        _activityDisplayManager = activityDisplayManager;
         _notifier = notifier;
-        _updateModelAccessor = updateModelAccessor;
         _shapeFactory = shapeFactory;
         H = htmlLocalizer;
         _distributedLock = distributedLock;
         S = stringLocalizer;
+        _jsLocalizers = jsLocalizers;
     }
 
     [Admin("Workflows/Types/{workflowTypeId}/Instances/{action}", "Workflows")]
@@ -178,50 +175,13 @@ public sealed class WorkflowController : Controller
         }
 
         var workflowType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
-        var blockingActivities = workflow.BlockingActivities.ToDictionary(x => x.ActivityId);
-        var workflowContext = await _workflowManager.CreateWorkflowExecutionContextAsync(workflowType, workflow);
-        var activityContexts = await Task.WhenAll(workflowType.Activities.Select(x => _workflowManager.CreateActivityExecutionContextAsync(x, x.Properties)));
-
-        var activityDesignShapes = new List<dynamic>();
-
-        foreach (var activityContext in activityContexts)
-        {
-            activityDesignShapes.Add(await BuildActivityDisplayAsync(activityContext, workflowType.Id, blockingActivities.ContainsKey(activityContext.ActivityRecord.ActivityId), "Design"));
-        }
-
-        var activitiesDataQuery = new List<object>();
-
-        foreach (var activityContext in activityContexts)
-        {
-            activitiesDataQuery.Add(new
-            {
-                Id = activityContext.ActivityRecord.ActivityId,
-                activityContext.ActivityRecord.X,
-                activityContext.ActivityRecord.Y,
-                activityContext.ActivityRecord.Name,
-                activityContext.ActivityRecord.IsStart,
-                IsEvent = activityContext.Activity.IsEvent(),
-                IsBlocking = workflow.BlockingActivities.Any(a => a.ActivityId == activityContext.ActivityRecord.ActivityId),
-                Outcomes = (await activityContext.Activity.GetPossibleOutcomesAsync(workflowContext, activityContext)).ToArray(),
-            });
-        }
-
-        var workflowTypeData = new
-        {
-            workflowType.Id,
-            workflowType.Name,
-            workflowType.IsEnabled,
-            Activities = activitiesDataQuery,
-            workflowType.Transitions,
-        };
 
         var viewModel = new WorkflowViewModel
         {
             Workflow = workflow,
             WorkflowType = workflowType,
-            WorkflowTypeJson = JConvert.SerializeObject(workflowTypeData, JOptions.CamelCase),
             WorkflowJson = JConvert.SerializeObject(workflow, JOptions.CamelCaseIndented),
-            ActivityDesignShapes = activityDesignShapes,
+            DesignerConfigJson = WorkflowDesignerConfigBuilder.Build(Url, User, _jsLocalizers, workflowType, workflow),
         };
 
         return View(viewModel);
@@ -339,17 +299,5 @@ public sealed class WorkflowController : Controller
             }
         }
         return RedirectToAction(nameof(Index), new { workflowTypeId, pagenum = pagerParameters.Page, pagesize = pagerParameters.PageSize });
-    }
-
-    private async Task<dynamic> BuildActivityDisplayAsync(ActivityContext activityContext, long workflowTypeId, bool isBlocking, string displayType)
-    {
-        var activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity, _updateModelAccessor.ModelUpdater, displayType);
-        activityShape.Metadata.Type = $"Activity_{displayType}ReadOnly";
-        activityShape.Properties["Activity"] = activityContext.Activity;
-        activityShape.Properties["ActivityRecord"] = activityContext.ActivityRecord;
-        activityShape.Properties["WorkflowTypeId"] = workflowTypeId;
-        activityShape.Properties["IsBlocking"] = isBlocking;
-
-        return activityShape;
     }
 }

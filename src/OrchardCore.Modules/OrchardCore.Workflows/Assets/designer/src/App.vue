@@ -315,6 +315,12 @@ onMounted(async () => {
     } finally {
         loading.value = false;
     }
+
+    // The viewer shows the whole workflow, which is in a smaller frame than the designer.
+    if (props.config.readOnly && !loadError.value) {
+        await nextTick();
+        canvas.value?.fit();
+    }
 });
 
 onBeforeUnmount(() => {
@@ -330,6 +336,14 @@ defineExpose({ canvas, panel, addActivity, autosave, publish, discard });
     <div class="wfd" :class="{ 'wfd-readonly': config.readOnly }" data-cy="workflow-designer">
         <header class="wfd-toolbar" data-cy="designer-toolbar">
             <h2 class="wfd-title text-truncate">{{ state.settings?.name }}</h2>
+
+            <span v-if="config.readOnly && state.instance" class="wfd-legend small text-body-secondary" data-cy="viewer-legend">
+                <span class="badge text-bg-info">
+                    <i class="fa-solid fa-hourglass-half" aria-hidden="true"></i>
+                    {{ t("Blocking") }}
+                </span>
+                {{ t("BlockingLegend") }}
+            </span>
 
             <template v-if="!config.readOnly && !loading && !loadError">
                 <SaveStatusIndicator :status="state.saveStatus" @retry="autosave.save()" @resolve="conflictOpen = true" />

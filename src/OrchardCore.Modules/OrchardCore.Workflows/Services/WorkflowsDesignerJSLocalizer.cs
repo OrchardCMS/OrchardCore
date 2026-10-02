@@ -115,6 +115,18 @@ public sealed class WorkflowsDesignerJSLocalizer : IJSLocalizer
             { "DraftDiscarded", S["The draft was discarded."].Value },
             { "DiscardFailed", S["The draft couldn't be discarded. Try again."].Value },
 
+            // Instance viewer.
+            { "SelectActivityToView", S["Select an activity to see its details."].Value },
+            { "ActivityType", S["Type"].Value },
+            { "InstanceStatus", S["This instance"].Value },
+            { "WaitingOnActivity", S["Waiting on this activity"].Value },
+            { "NotWaitingOnActivity", S["Not waiting on this activity"].Value },
+            { "MissingActivity", S["This activity type isn't available. Enable its feature to run it."].Value },
+            { "Blocking", S["Blocking"].Value },
+            { "BlockingActivity", S["the instance waits on it"].Value },
+            { "BlockingActivityHint", S["The workflow instance waits on this activity."].Value },
+            { "BlockingLegend", S["The instance waits on these activities."].Value },
+
             // Canvas.
             { "Canvas", S["Workflow canvas"].Value },
             { "CanvasInstructions", S["Workflow canvas. Tab to an activity to select it; arrow keys move it, Delete removes it, Enter edits it, and the context menu key shows more actions."].Value },

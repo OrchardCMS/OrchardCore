@@ -48,6 +48,16 @@ export interface WorkflowSettings {
     deleteFinishedWorkflows: boolean;
 }
 
+// The workflow instance shown by the read-only instance viewer.
+export interface DesignerInstance {
+    id: number;
+    workflowId: string;
+    status: string;
+    // The activities the instance waits on.
+    blockingActivityIds: string[];
+    // TODO: Phase 5 records the executed activities; the viewer then highlights the executed path.
+}
+
 export interface DesignerDefinition {
     id: number;
     workflowTypeId: string;
@@ -61,6 +71,7 @@ export interface DesignerDefinition {
     transitions: DesignerTransition[];
     issues: DesignIssue[];
     runningInstanceCount: number;
+    instance?: DesignerInstance | null;
 }
 
 export interface LibraryActivity {

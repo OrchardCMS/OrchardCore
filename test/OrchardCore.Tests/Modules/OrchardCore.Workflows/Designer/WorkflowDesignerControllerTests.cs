@@ -405,6 +405,72 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         });
     }
 
+    [Fact]
+    public async Task Instance_BlockedInstance_ReturnsTheLiveGraphWithItsBlockingActivities()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true, x: 10), Activity("notify", "NotifyTask", x: 300));
+
+        // The instance runs on the live type, so a draft change doesn't show.
+        using (var saved = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Save", new
+        {
+            revision = 0,
+            nodes = new[] { new { id = "start", x = 99, y = 0, isStart = true }, new { id = "notify", x = 300, y = 0, isStart = false } },
+            transitions = Array.Empty<object>(),
+            removedActivityIds = Array.Empty<string>(),
+        }))
+        {
+            Assert.Equal(HttpStatusCode.OK, saved.StatusCode);
+        }
+
+        var instanceId = await _fixture.CreateInstanceAsync(workflowTypeId, WorkflowStatus.Halted, "notify");
+
+        var json = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Instance?instanceId={instanceId}");
+
+        Assert.False(json["hasDraft"].GetValue<bool>());
+        Assert.Equal(10, json["nodes"][0]["x"].GetValue<int>());
+        Assert.False(string.IsNullOrWhiteSpace(json["nodes"][1]["designHtml"].GetValue<string>()));
+        var instance = json["instance"];
+        Assert.Equal(instanceId, instance["id"].GetValue<long>());
+        Assert.Equal("Halted", instance["status"].GetValue<string>());
+        Assert.Equal(["notify"], instance["blockingActivityIds"].AsArray().Select(x => x.GetValue<string>()));
+    }
+
+    [Fact]
+    public async Task Instance_OfAnotherWorkflowType_ReturnsNotFoundProblem()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));
+        var (_, otherWorkflowTypeId) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));
+        var instanceId = await _fixture.CreateInstanceAsync(otherWorkflowTypeId, WorkflowStatus.Halted, "start");
+
+        using var response = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/{id}/Designer/Instance?instanceId={instanceId}", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        Assert.Equal("application/problem+json", response.Content.Headers.ContentType?.MediaType);
+    }
+
+    [Fact]
+    public async Task Details_Instance_MountsTheReadOnlyDesigner()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));
+        var instanceId = await _fixture.CreateInstanceAsync(workflowTypeId, WorkflowStatus.Halted, "start");
+
+        using var response = await _fixture.Context.Client.GetAsync($"Admin/OrchardCore.Workflows/Workflow/Details/{instanceId}", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var document = new HtmlParser().ParseDocument(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        var config = JsonNode.Parse(Assert.Single(document.QuerySelectorAll("#workflow-designer")).GetAttribute("data-config"));
+        Assert.True(config["readOnly"].GetValue<bool>());
+        Assert.EndsWith($"Admin/Workflows/Types/{id}/Designer/Instance?instanceId={instanceId}", config["urls"]["definition"].GetValue<string>());
+        Assert.Null(config["urls"]["save"]);
+
+        // The State tab is kept, and the jsPlumb viewer and the stale Bootstrap 4 script are gone.
+        Assert.NotNull(document.QuerySelector("#state pre"));
+        var scripts = document.QuerySelectorAll("script[src]").Select(x => x.GetAttribute("src")).ToList();
+        Assert.Contains(scripts, x => x.Contains("workflows-designer"));
+        Assert.DoesNotContain(scripts, x => x.Contains("workflow-viewer") || x.Contains("jsplumb"));
+        Assert.DoesNotContain(scripts, x => x.Contains("bootstrap") && x.Contains("4."));
+    }
+
     private Task<(long Id, string WorkflowTypeId)> CreateWorkflowTypeAsync(params ActivityRecord[] activities)
         => WorkflowDesignerSiteFixture.CreateWorkflowTypeAsync(_fixture.Context, activities);
 
@@ -541,6 +607,22 @@ public sealed class WorkflowDesignerSiteFixture : IAsyncLifetime
         await context.UsingTenantScopeAsync(scope => scope.ServiceProvider.GetRequiredService<IWorkflowTypeStore>().SaveAsync(workflowType));
 
         return (workflowType.Id, workflowType.WorkflowTypeId);
+    }
+
+    public async Task<long> CreateInstanceAsync(string workflowTypeId, WorkflowStatus status, params string[] blockingActivityIds)
+    {
+        var workflow = new Workflow
+        {
+            WorkflowId = Guid.NewGuid().ToString("n"),
+            WorkflowTypeId = workflowTypeId,
+            Status = status,
+            CreatedUtc = DateTime.UtcNow,
+            BlockingActivities = blockingActivityIds.Select(activityId => new BlockingActivity { ActivityId = activityId, Name = activityId }).ToList(),
+        };
+
+        await Context.UsingTenantScopeAsync(scope => scope.ServiceProvider.GetRequiredService<IWorkflowStore>().SaveAsync(workflow));
+
+        return workflow.Id;
     }
 
     public static async Task EnableFeaturesAsync(SiteContext context, params string[] featureIds)

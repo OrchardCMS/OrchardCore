@@ -38,6 +38,15 @@ describe("ActivityNode", () => {
         expect(wrapper.get("[data-cy=activity-n1]").classes()).toEqual(expect.arrayContaining(["is-event", "is-start", "has-errors"]));
     });
 
+    it("render_BlockingInTheViewer_ShowsTheBlockingBadgeAndState", () => {
+        const wrapper = mount(ActivityNode, { props: { node: createNode("n1"), blocking: true, readOnly: true } });
+        const root = wrapper.get("[data-cy=activity-n1]");
+
+        expect(root.classes()).toContain("is-blocking");
+        expect(wrapper.get("[data-cy=blocking-badge]").text()).toBe("Blocking");
+        expect(root.attributes("aria-label")).toContain("BlockingActivity");
+    });
+
     it("render_MissingAndSelected_AppliesStateClasses", () => {
         const wrapper = mount(ActivityNode, { props: { node: createNode("n1", { isMissing: true }), selected: true, dropTarget: true } });
 

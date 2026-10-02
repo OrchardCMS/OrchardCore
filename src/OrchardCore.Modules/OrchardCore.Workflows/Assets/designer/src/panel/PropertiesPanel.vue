@@ -53,6 +53,7 @@ const settingsHost = ref<InstanceType<typeof ServerFormHost> | null>(null);
 const selectedId = computed(() => (state.selectedNodeIds.length === 1 ? state.selectedNodeIds[0] : null));
 const editingNode = computed(() => (editingId.value ? props.store.getNode(editingId.value) : undefined));
 const errorCount = computed(() => state.issues.filter((issue) => issue.severity === "Error").length);
+const isBlocking = computed(() => !!editingNode.value && !!state.instance?.blockingActivityIds.includes(editingNode.value.id));
 
 const readWidth = () => {
     try {
@@ -294,7 +295,7 @@ defineExpose({ open, settle, selectTab, discardChanges, refresh, hasPendingChang
                         {{ t("WorkflowTab") }}
                     </button>
                 </li>
-                <li class="nav-item" role="presentation">
+                <li v-if="!readOnly" class="nav-item" role="presentation">
                     <button type="button" role="tab" class="nav-link" :class="{ active: tab === 'issues' }" :aria-selected="tab === 'issues'" data-cy="panel-tab-issues" @click="selectTab('issues')">
                         {{ t("IssuesTab") }}
                         <span v-if="state.issues.length > 0" class="badge ms-1" :class="errorCount > 0 ? 'text-bg-danger' : 'text-bg-warning'" data-cy="issues-count">
@@ -321,13 +322,30 @@ defineExpose({ open, settle, selectTab, discardChanges, refresh, hasPendingChang
                 <p v-if="state.selectedNodeIds.length > 1" class="wfd-panel-message" data-cy="panel-multiple">
                     {{ t("MultipleSelected", state.selectedNodeIds.length) }}
                 </p>
-                <p v-else-if="!editingNode" class="wfd-panel-message" data-cy="panel-empty">{{ t("SelectActivityToEdit") }}</p>
-                <p v-else-if="editingNode.isMissing" class="wfd-panel-message text-warning" data-cy="panel-missing">{{ t("MissingActivityCannotBeEdited") }}</p>
+                <p v-else-if="!editingNode" class="wfd-panel-message" data-cy="panel-empty">{{ readOnly ? t("SelectActivityToView") : t("SelectActivityToEdit") }}</p>
                 <div v-else-if="readOnly" class="wfd-panel-summary" data-cy="panel-summary">
-                    <h3 class="h6">{{ editingNode.title }}</h3>
-                    <p class="text-secondary mb-2">{{ editingNode.displayText }}</p>
+                    <h3 class="wfd-panel-title h6">
+                        <i :class="editingNode.icon || 'fa-solid fa-gear'" aria-hidden="true"></i>
+                        {{ editingNode.title }}
+                    </h3>
+                    <dl class="wfd-summary-list">
+                        <dt>{{ t("ActivityType") }}</dt>
+                        <dd>{{ editingNode.displayText }}</dd>
+                        <template v-if="state.instance">
+                            <dt>{{ t("InstanceStatus") }}</dt>
+                            <dd data-cy="panel-summary-blocking">
+                                <span v-if="isBlocking" class="badge text-bg-info">
+                                    <i class="fa-solid fa-hourglass-half" aria-hidden="true"></i>
+                                    {{ t("WaitingOnActivity") }}
+                                </span>
+                                <span v-else>{{ t("NotWaitingOnActivity") }}</span>
+                            </dd>
+                        </template>
+                    </dl>
+                    <p v-if="editingNode.isMissing" class="text-warning small">{{ t("MissingActivity") }}</p>
                     <div class="wfd-node-body" v-html="editingNode.designHtml"></div>
                 </div>
+                <p v-else-if="editingNode.isMissing" class="wfd-panel-message text-warning" data-cy="panel-missing">{{ t("MissingActivityCannotBeEdited") }}</p>
                 <template v-else>
                     <h3 class="wfd-panel-title h6" data-cy="panel-activity-title">
                         <i :class="editingNode.icon || 'fa-solid fa-gear'" aria-hidden="true"></i>
