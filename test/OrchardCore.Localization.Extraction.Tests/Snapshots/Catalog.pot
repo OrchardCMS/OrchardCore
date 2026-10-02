@@ -1,0 +1,22 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Example\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-OrchardCore-Catalog-Schema: 1\n"
+
+#. A translator note.
+#: Messages.cs:10
+msgctxt "A.Context"
+msgid "Line\n\"quoted\"\\tail\t"
+msgstr ""
+
+#: Other.cs:2
+#: Views/Test.cshtml:3
+#, csharp-format
+msgctxt "Z.Context"
+msgid "One item"
+msgid_plural "{0} items"
+msgstr[0] ""
+msgstr[1] ""

@@ -10,6 +10,8 @@
     <!-- https://aka.ms/vs-build-acceleration -->
     <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
     <RestoreUseStaticGraphEvaluation Condition="'$(RestoreUseStaticGraphEvaluation)' == ''">true</RestoreUseStaticGraphEvaluation>
+
+    <GenerateLocalizationCatalog Condition="'$(GenerateLocalizationCatalog)' == ''">true</GenerateLocalizationCatalog>
   </PropertyGroup>
 
   <PropertyGroup Label="Analysis rules">
