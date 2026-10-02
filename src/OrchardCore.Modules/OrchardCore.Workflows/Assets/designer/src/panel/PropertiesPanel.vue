@@ -11,13 +11,22 @@ import type { FormApplyResult } from "./types";
 import type { RevisionTask } from "../services/revisionQueue";
 import { showToast } from "../ui/toasts";
 import { confirmAction } from "../ui/confirm";
+import { usePeek } from "../ui/usePeek";
+import { readPreference, writePreference } from "../ui/preferences";
 import { t } from "../i18n";
 
 type Tab = "activity" | "workflow" | "issues";
 
 const MIN_WIDTH = 288;
 const MAX_WIDTH = 720;
-const WIDTH_KEY = "orchardcore:workflows-designer:panel-width";
+const WIDTH_KEY = "panel-width";
+const COLLAPSED_KEY = "panel-collapsed";
+
+const TAB_ICONS: Record<Tab, string> = {
+    activity: "fa-solid fa-sliders",
+    workflow: "fa-solid fa-gear",
+    issues: "fa-solid fa-triangle-exclamation",
+};
 
 const props = withDefaults(
     defineProps<{
@@ -45,16 +54,33 @@ const emit = defineEmits<{
 
 const state = props.store.state;
 const tab = ref<Tab>("activity");
-const collapsed = ref(false);
+// Read before the first render, so a collapsed panel doesn't open and close on load.
+const collapsed = ref(readPreference(COLLAPSED_KEY) === "true");
 const width = ref(384);
 const editingId = ref<string | null>(null);
 const activityHost = ref<InstanceType<typeof ServerFormHost> | null>(null);
 const settingsHost = ref<InstanceType<typeof ServerFormHost> | null>(null);
 const body = ref<HTMLElement | null>(null);
 const tabList = ref<HTMLElement | null>(null);
+const panel = ref<HTMLElement | null>(null);
 const ids = `wfd-panel-${useId()}`;
 
 const tabs = computed<Tab[]>(() => (props.readOnly ? ["activity"] : ["activity", "workflow", "issues"]));
+
+// Collapsed, the panel is a rail of its tabs; hovering it opens the panel over the canvas (a "peek").
+const peek = usePeek((element) => !!element && !!panel.value?.contains(element));
+const peeking = computed(() => collapsed.value && peek.open.value);
+
+// Direct t("…") calls, so the translations spec sees every key.
+const tabLabel = (item: Tab) => ({ activity: t("ActivityTab"), workflow: t("WorkflowTab"), issues: t("IssuesTab") })[item];
+
+const tabHint = (item: Tab) => {
+    if (item === "activity") {
+        return props.readOnly ? t("ActivityTabHintReadOnly") : t("ActivityTabHint");
+    }
+
+    return item === "workflow" ? t("WorkflowTabHint") : t("IssuesTabHint");
+};
 
 // Set by open({ focus: true }): the first field of the activity editor gets the focus once it is loaded.
 let focusOnLoad = false;
@@ -65,21 +91,17 @@ const errorCount = computed(() => state.issues.filter((issue) => issue.severity 
 const isBlocking = computed(() => !!editingNode.value && !!state.instance?.blockingActivityIds.includes(editingNode.value.id));
 
 const readWidth = () => {
-    try {
-        const stored = Number(window.localStorage.getItem(WIDTH_KEY));
+    const stored = Number(readPreference(WIDTH_KEY));
 
-        return stored >= MIN_WIDTH && stored <= MAX_WIDTH ? stored : null;
-    } catch {
-        return null;
-    }
+    return stored >= MIN_WIDTH && stored <= MAX_WIDTH ? stored : null;
 };
 
-const storeWidth = () => {
-    try {
-        window.localStorage.setItem(WIDTH_KEY, String(width.value));
-    } catch {
-        // The width is a per-viewer convenience; ignore storage failures.
-    }
+const storeWidth = () => writePreference(WIDTH_KEY, String(width.value));
+
+const setCollapsed = (value: boolean) => {
+    collapsed.value = value;
+    peek.close();
+    writePreference(COLLAPSED_KEY, String(value));
 };
 
 /**
@@ -141,14 +163,36 @@ const toggleCollapsed = async () => {
         return;
     }
 
-    collapsed.value = !collapsed.value;
+    setCollapsed(!collapsed.value);
+};
+
+/**
+ * Expands the collapsed panel, on `next` when it is given.
+ */
+const expand = async (next?: Tab) => {
+    setCollapsed(false);
+
+    if (next) {
+        await selectTab(next);
+    }
+};
+
+// Hovering a tab of the rail shows that tab, unless the open form has changes to apply first.
+const peekAt = (next: Tab) => {
+    const host = tab.value === "workflow" ? settingsHost.value : activityHost.value;
+
+    if (next !== tab.value && !host?.isDirty() && !host?.isInvalid()) {
+        tab.value = next;
+    }
 };
 
 /**
  * Shows the editor of an activity, for example after a double-click or adding it from the toolbox.
  */
-const open = async (activityId: string, options: { focus?: boolean } = {}) => {
-    collapsed.value = false;
+const open = async (activityId: string, options: { focus?: boolean; expand?: boolean } = {}) => {
+    if ((options.expand ?? true) && collapsed.value) {
+        setCollapsed(false);
+    }
 
     if (tab.value !== "activity" && !(await settle())) {
         return;
@@ -192,7 +236,20 @@ const onActivityLoaded = () => {
 const onBodyKeyDown = (event: KeyboardEvent) => {
     const target = event.target as Element | null;
 
-    if (event.key !== "Escape" || event.defaultPrevented || !editingId.value || target?.closest(".monaco-editor, .CodeMirror")) {
+    if (event.key !== "Escape" || event.defaultPrevented || target?.closest(".monaco-editor, .CodeMirror")) {
+        return;
+    }
+
+    // Escape closes the panel opened over the canvas.
+    if (peeking.value) {
+        event.preventDefault();
+        peek.close();
+        panel.value?.querySelector<HTMLElement>(`[data-cy=panel-rail-${tab.value}]`)?.focus();
+
+        return;
+    }
+
+    if (!editingId.value) {
         return;
     }
 
@@ -330,169 +387,169 @@ const refresh = async () => {
  */
 const hasPendingChanges = () => !!(activityHost.value?.isDirty() || settingsHost.value?.isDirty());
 
-defineExpose({ open, settle, selectTab, discardChanges, refresh, hasPendingChanges });
+defineExpose({ open, settle, selectTab, expand, discardChanges, refresh, hasPendingChanges });
 </script>
 
 <template>
     <aside
+        ref="panel"
         class="wfd-panel"
-        :class="{ 'is-collapsed': collapsed }"
+        :class="{ 'is-collapsed': collapsed, 'is-peeking': peeking }"
         :style="collapsed ? undefined : { flexBasis: `${width}px`, width: `${width}px` }"
         :aria-label="t('Properties')"
         data-cy="designer-panel"
+        @mouseenter="collapsed && peek.enter()"
+        @mouseleave="collapsed && peek.leave()"
+        @focusout="collapsed && peek.focusOut($event)"
     >
-        <div
-            v-if="!collapsed"
-            class="wfd-panel-resizer"
-            role="separator"
-            aria-orientation="vertical"
-            :aria-label="t('ResizePanel')"
-            :aria-valuenow="width"
-            :aria-valuemin="MIN_WIDTH"
-            :aria-valuemax="MAX_WIDTH"
-            tabindex="0"
-            data-cy="panel-resizer"
-            @pointerdown="startResize"
-            @keydown="onResizerKeyDown"
-        ></div>
-
-        <div class="wfd-panel-header">
-            <ul v-if="!collapsed" ref="tabList" class="nav nav-tabs wfd-panel-tabs" role="tablist" @keydown="onTabKeyDown">
-                <li class="nav-item" role="presentation">
-                    <button
-                        :id="`${ids}-tab-activity`"
-                        type="button"
-                        role="tab"
-                        class="nav-link"
-                        :class="{ active: tab === 'activity' }"
-                        :aria-selected="tab === 'activity'"
-                        :aria-controls="`${ids}-body`"
-                        :tabindex="tab === 'activity' ? 0 : -1"
-                        data-cy="panel-tab-activity"
-                        @click="selectTab('activity')"
-                    >
-                        {{ t("ActivityTab") }}
-                    </button>
-                </li>
-                <li v-if="!readOnly" class="nav-item" role="presentation">
-                    <button
-                        :id="`${ids}-tab-workflow`"
-                        type="button"
-                        role="tab"
-                        class="nav-link"
-                        :class="{ active: tab === 'workflow' }"
-                        :aria-selected="tab === 'workflow'"
-                        :aria-controls="`${ids}-body`"
-                        :tabindex="tab === 'workflow' ? 0 : -1"
-                        data-cy="panel-tab-workflow"
-                        @click="selectTab('workflow')"
-                    >
-                        {{ t("WorkflowTab") }}
-                    </button>
-                </li>
-                <li v-if="!readOnly" class="nav-item" role="presentation">
-                    <button
-                        :id="`${ids}-tab-issues`"
-                        type="button"
-                        role="tab"
-                        class="nav-link"
-                        :class="{ active: tab === 'issues' }"
-                        :aria-selected="tab === 'issues'"
-                        :aria-controls="`${ids}-body`"
-                        :tabindex="tab === 'issues' ? 0 : -1"
-                        data-cy="panel-tab-issues"
-                        @click="selectTab('issues')"
-                    >
-                        {{ t("IssuesTab") }}
-                        <span v-if="state.issues.length > 0" class="badge ms-1" :class="errorCount > 0 ? 'text-bg-danger' : 'text-bg-warning'" data-cy="issues-count">
-                            {{ state.issues.length }}
-                        </span>
-                    </button>
-                </li>
-            </ul>
+        <div v-if="collapsed" class="wfd-rail" data-cy="panel-rail">
+            <button type="button" class="wfd-rail-button" :title="t('ExpandPanel')" :aria-label="t('ExpandPanel')" aria-expanded="false" data-cy="panel-expand" @click="expand()">
+                <i class="fa-solid fa-angles-left wfd-mirror-rtl" aria-hidden="true"></i>
+            </button>
             <button
+                v-for="item in tabs"
+                :key="item"
                 type="button"
-                class="btn btn-sm btn-link wfd-panel-toggle"
-                :title="collapsed ? t('ExpandPanel') : t('CollapsePanel')"
-                :aria-label="collapsed ? t('ExpandPanel') : t('CollapsePanel')"
-                :aria-expanded="!collapsed"
-                data-cy="panel-collapse"
-                @click="toggleCollapsed"
+                class="wfd-rail-button"
+                :class="{ active: item === tab }"
+                :title="tabHint(item)"
+                :aria-label="tabLabel(item)"
+                :data-cy="`panel-rail-${item}`"
+                @click="expand(item)"
+                @mouseenter="peekAt(item)"
             >
-                <i class="fa-solid wfd-mirror-rtl" :class="collapsed ? 'fa-angles-left' : 'fa-angles-right'" aria-hidden="true"></i>
+                <i :class="TAB_ICONS[item]" aria-hidden="true"></i>
+                <span v-if="item === 'issues' && state.issues.length > 0" class="badge wfd-rail-badge" :class="errorCount > 0 ? 'text-bg-danger' : 'text-bg-warning'">
+                    {{ state.issues.length }}
+                </span>
             </button>
         </div>
 
-        <div
-            v-show="!collapsed"
-            :id="`${ids}-body`"
-            ref="body"
-            class="wfd-panel-body"
-            role="tabpanel"
-            :aria-labelledby="`${ids}-tab-${tab}`"
-            @keydown="onBodyKeyDown"
-        >
-            <template v-if="tab === 'activity'">
-                <p v-if="state.selectedNodeIds.length > 1" class="wfd-panel-message" data-cy="panel-multiple">
-                    {{ t("MultipleSelected", state.selectedNodeIds.length) }}
-                </p>
-                <p v-else-if="!editingNode" class="wfd-panel-message" data-cy="panel-empty">{{ readOnly ? t("SelectActivityToView") : t("SelectActivityToEdit") }}</p>
-                <div v-else-if="readOnly" class="wfd-panel-summary" data-cy="panel-summary">
-                    <h3 class="wfd-panel-title h6" tabindex="-1">
-                        <i :class="editingNode.icon || 'fa-solid fa-gear'" aria-hidden="true"></i>
-                        {{ editingNode.title }}
-                    </h3>
-                    <dl class="wfd-summary-list">
-                        <dt>{{ t("ActivityType") }}</dt>
-                        <dd>{{ editingNode.displayText }}</dd>
-                        <template v-if="state.instance">
-                            <dt>{{ t("InstanceStatus") }}</dt>
-                            <dd data-cy="panel-summary-blocking">
-                                <span v-if="isBlocking" class="badge text-bg-info">
-                                    <i class="fa-solid fa-hourglass-half" aria-hidden="true"></i>
-                                    {{ t("WaitingOnActivity") }}
-                                </span>
-                                <span v-else>{{ t("NotWaitingOnActivity") }}</span>
-                            </dd>
-                        </template>
-                    </dl>
-                    <p v-if="editingNode.isMissing" class="text-warning small">{{ t("MissingActivity") }}</p>
-                    <div class="wfd-node-body" v-html="editingNode.designHtml"></div>
-                </div>
-                <p v-else-if="editingNode.isMissing" class="wfd-panel-message text-warning" data-cy="panel-missing">{{ t("MissingActivityCannotBeEdited") }}</p>
-                <template v-else>
-                    <h3 class="wfd-panel-title h6" tabindex="-1" data-cy="panel-activity-title">
-                        <i :class="editingNode.icon || 'fa-solid fa-gear'" aria-hidden="true"></i>
-                        {{ editingNode.title }}
-                        <small class="text-secondary">{{ editingNode.displayText }}</small>
-                    </h3>
+        <div v-show="!collapsed || peeking" class="wfd-panel-sheet" :style="peeking ? { width: `${width}px` } : undefined" data-cy="panel-sheet">
+            <div
+                v-if="!collapsed"
+                class="wfd-panel-resizer"
+                role="separator"
+                aria-orientation="vertical"
+                :aria-label="t('ResizePanel')"
+                :aria-valuenow="width"
+                :aria-valuemin="MIN_WIDTH"
+                :aria-valuemax="MAX_WIDTH"
+                tabindex="0"
+                data-cy="panel-resizer"
+                @pointerdown="startResize"
+                @keydown="onResizerKeyDown"
+            ></div>
+
+            <div class="wfd-panel-header">
+                <ul ref="tabList" class="nav nav-tabs wfd-panel-tabs" role="tablist" @keydown="onTabKeyDown">
+                    <li v-for="item in tabs" :key="item" class="nav-item" role="presentation">
+                        <button
+                            :id="`${ids}-tab-${item}`"
+                            type="button"
+                            role="tab"
+                            class="nav-link"
+                            :class="{ active: tab === item }"
+                            :aria-selected="tab === item"
+                            :aria-controls="`${ids}-body`"
+                            :tabindex="tab === item ? 0 : -1"
+                            :title="tabHint(item)"
+                            :data-cy="`panel-tab-${item}`"
+                            @click="selectTab(item)"
+                        >
+                            {{ tabLabel(item) }}
+                            <span
+                                v-if="item === 'issues' && state.issues.length > 0"
+                                class="badge ms-1"
+                                :class="errorCount > 0 ? 'text-bg-danger' : 'text-bg-warning'"
+                                data-cy="issues-count"
+                            >
+                                {{ state.issues.length }}
+                            </span>
+                        </button>
+                    </li>
+                </ul>
+                <button
+                    type="button"
+                    class="btn btn-sm btn-link wfd-panel-toggle"
+                    :title="collapsed ? t('ExpandPanel') : t('CollapsePanel')"
+                    :aria-label="collapsed ? t('ExpandPanel') : t('CollapsePanel')"
+                    :aria-expanded="!collapsed"
+                    data-cy="panel-collapse"
+                    @click="collapsed ? expand() : toggleCollapsed()"
+                >
+                    <i class="fa-solid wfd-mirror-rtl" :class="collapsed ? 'fa-angles-left' : 'fa-angles-right'" aria-hidden="true"></i>
+                </button>
+            </div>
+
+            <div :id="`${ids}-body`" ref="body" class="wfd-panel-body" role="tabpanel" :aria-labelledby="`${ids}-tab-${tab}`" @keydown="onBodyKeyDown">
+                <template v-if="tab === 'activity'">
+                    <p v-if="state.selectedNodeIds.length > 1" class="wfd-panel-message" data-cy="panel-multiple">
+                        {{ t("MultipleSelected", state.selectedNodeIds.length) }}
+                    </p>
+                    <p v-else-if="!editingNode" class="wfd-panel-message" data-cy="panel-empty">{{ readOnly ? t("SelectActivityToView") : t("SelectActivityToEdit") }}</p>
+                    <div v-else-if="readOnly" class="wfd-panel-summary" data-cy="panel-summary">
+                        <h3 class="wfd-panel-title h6" tabindex="-1">
+                            <i :class="editingNode.icon || 'fa-solid fa-gear'" aria-hidden="true"></i>
+                            {{ editingNode.title }}
+                        </h3>
+                        <dl class="wfd-summary-list">
+                            <dt>{{ t("ActivityType") }}</dt>
+                            <dd>{{ editingNode.displayText }}</dd>
+                            <template v-if="state.instance">
+                                <dt>{{ t("InstanceStatus") }}</dt>
+                                <dd data-cy="panel-summary-blocking">
+                                    <span v-if="isBlocking" class="badge text-bg-info">
+                                        <i class="fa-solid fa-hourglass-half" aria-hidden="true"></i>
+                                        {{ t("WaitingOnActivity") }}
+                                    </span>
+                                    <span v-else>{{ t("NotWaitingOnActivity") }}</span>
+                                </dd>
+                            </template>
+                        </dl>
+                        <p v-if="editingNode.isMissing" class="text-warning small">{{ t("MissingActivity") }}</p>
+                        <div class="wfd-node-body" v-html="editingNode.designHtml"></div>
+                    </div>
+                    <p v-else-if="editingNode.isMissing" class="wfd-panel-message text-warning" data-cy="panel-missing">{{ t("MissingActivityCannotBeEdited") }}</p>
+                    <template v-else>
+                        <h3 class="wfd-panel-title h6" tabindex="-1" data-cy="panel-activity-title">
+                            <i :class="editingNode.icon || 'fa-solid fa-gear'" aria-hidden="true"></i>
+                            {{ editingNode.title }}
+                            <small class="text-secondary">{{ editingNode.displayText }}</small>
+                        </h3>
+                        <ServerFormHost
+                            ref="activityHost"
+                            :form-key="editingNode.id"
+                            :load="loadActivity"
+                            :submit="submitActivity"
+                            :label="t('ActivityTab')"
+                            data-cy="panel-activity-form"
+                            @loaded="onActivityLoaded"
+                            @applied="onActivityApplied"
+                            @error="onError"
+                        />
+                    </template>
+                </template>
+
+                <template v-else-if="tab === 'workflow'">
+                    <p class="wfd-panel-intro">{{ t("WorkflowTabHint") }}</p>
                     <ServerFormHost
-                        ref="activityHost"
-                        :form-key="editingNode.id"
-                        :load="loadActivity"
-                        :submit="submitActivity"
-                        :label="t('ActivityTab')"
-                        data-cy="panel-activity-form"
-                        @loaded="onActivityLoaded"
-                        @applied="onActivityApplied"
+                        ref="settingsHost"
+                        form-key="settings"
+                        :load="loadSettings"
+                        :submit="submitSettings"
+                        :label="t('WorkflowTab')"
+                        data-cy="panel-settings-form"
+                        @applied="onSettingsApplied"
                         @error="onError"
                     />
                 </template>
-            </template>
 
-            <ServerFormHost
-                v-else-if="tab === 'workflow'"
-                ref="settingsHost"
-                form-key="settings"
-                :load="loadSettings"
-                :submit="submitSettings"
-                :label="t('WorkflowTab')"
-                data-cy="panel-settings-form"
-                @applied="onSettingsApplied"
-                @error="onError"
-            />
-
-            <IssuesList v-else :issues="state.issues" :nodes="state.nodes" @select="onIssueSelected" />
+                <template v-else>
+                    <p class="wfd-panel-intro">{{ t("IssuesTabHint") }}</p>
+                    <IssuesList :issues="state.issues" :nodes="state.nodes" @select="onIssueSelected" />
+                </template>
+            </div>
         </div>
     </aside>
 </template>

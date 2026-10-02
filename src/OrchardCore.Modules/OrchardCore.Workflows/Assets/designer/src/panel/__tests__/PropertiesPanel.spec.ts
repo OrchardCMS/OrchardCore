@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
+import { nextTick } from "vue";
 import PropertiesPanel from "../PropertiesPanel.vue";
 import { createDesignerStore } from "../../state/designerStore";
 import { transitionKey } from "../../state/commands";
@@ -236,15 +237,62 @@ describe("PropertiesPanel", () => {
         expect(wrapper.emitted("return-focus")).toEqual([["a"]]);
     });
 
-    it("collapse_Toggle_HidesAndShowsTheBody", async () => {
-        const { wrapper } = setup(() => Promise.resolve({ valid: true }));
+    it("collapse_Toggle_ShowsTheTabsOnARailAndIsRemembered", async () => {
+        const { store, api, wrapper } = setup(() => Promise.resolve({ valid: true }));
+        const panel = wrapper.get("[data-cy=designer-panel]");
 
         await wrapper.get("[data-cy=panel-collapse]").trigger("click");
         await flushPromises();
-        expect(wrapper.get("[data-cy=designer-panel]").classes()).toContain("is-collapsed");
 
+        expect(panel.classes()).toContain("is-collapsed");
+        expect(wrapper.get("[data-cy=panel-sheet]").isVisible()).toBe(false);
+        expect(wrapper.findAll("[data-cy^=panel-rail-]").map((button) => button.attributes("data-cy"))).toEqual([
+            "panel-rail-activity",
+            "panel-rail-workflow",
+            "panel-rail-issues",
+        ]);
+
+        // Another designer in this browser starts collapsed.
+        const other = mount(PropertiesPanel, { props: { store, api } });
+        expect(other.get("[data-cy=designer-panel]").classes()).toContain("is-collapsed");
+        other.unmount();
+
+        // A tab of the rail expands the panel on that tab.
+        await wrapper.get("[data-cy=panel-rail-workflow]").trigger("click");
+        await flushPromises();
+
+        expect(panel.classes()).not.toContain("is-collapsed");
+        expect(wrapper.get("[data-cy=panel-tab-workflow]").attributes("aria-selected")).toBe("true");
+    });
+
+    it("rail_Hover_OpensThePanelOverTheCanvasUntilThePointerLeaves", async () => {
+        const { store, wrapper } = setup(() => Promise.resolve({ valid: true }));
+        store.state.issues = [{ severity: "Error", code: "InvalidTransition", message: "Broken", activityId: "a" }];
         await wrapper.get("[data-cy=panel-collapse]").trigger("click");
         await flushPromises();
-        expect(wrapper.get("[data-cy=designer-panel]").classes()).not.toContain("is-collapsed");
+        const panel = wrapper.get("[data-cy=designer-panel]");
+        expect(wrapper.get("[data-cy=panel-rail-issues]").text()).toBe("1");
+
+        vi.useFakeTimers();
+
+        try {
+            await panel.trigger("mouseenter");
+            await wrapper.get("[data-cy=panel-rail-issues]").trigger("mouseenter");
+            vi.advanceTimersByTime(150);
+            await nextTick();
+
+            expect(panel.classes()).toEqual(expect.arrayContaining(["is-collapsed", "is-peeking"]));
+            expect(wrapper.get("[data-cy=panel-sheet]").isVisible()).toBe(true);
+            expect(wrapper.get("[data-cy=panel-tab-issues]").attributes("aria-selected")).toBe("true");
+
+            await panel.trigger("mouseleave");
+            vi.advanceTimersByTime(300);
+            await nextTick();
+
+            expect(panel.classes()).not.toContain("is-peeking");
+            expect(wrapper.get("[data-cy=panel-sheet]").isVisible()).toBe(false);
+        } finally {
+            vi.useRealTimers();
+        }
     });
 });

@@ -467,6 +467,27 @@ Files: `src/panel/` — `PropertiesPanel.vue` (resizable and collapsible, with t
 - [ ] Existing recipes and deployment packages with `WorkflowType` steps import and render unchanged (covered by the seeded fixture).
 - [ ] Docs and release notes are updated.
 
+## Review feedback
+
+Requested by the maintainer while reviewing the running designer after step 1.11.
+
+- [x] **R1. Explain the panel tabs.** The Activity, Workflow and Issues tabs stay. Each tab and its rail button gets a tooltip that says what it is for, and the Workflow and Issues tabs start with a one-line explanation.
+- [x] **R2. Collapsed panel rail.** A collapsed properties panel is a rail showing the three tabs as icons, with the issue count on Issues, like the admin menu in its compact mode.
+  - Clicking an icon expands the panel on that tab.
+  - Hovering the rail opens the panel over the canvas on that tab. It closes when the pointer leaves, and stays open while the focus is in it; Escape closes it.
+  - Hovering only switches tabs when the open form has nothing to apply.
+- [x] **R3. Collapsible toolbox.** The activities toolbox can also be collapsed to a rail, to give the canvas more room. Hovering the rail opens it over the canvas; it stays open while an activity is dragged from it and closes after the drop.
+  - Adding an activity while the panel is collapsed doesn't expand it; editing one (Enter, double-click) does.
+- **Collapsed state.** Both collapsed states are remembered per browser (`localStorage`), like the panel width. Nothing is stored with the workflow (D7).
+- [ ] **F1. Collapse a branch and zoom to an activity (after Phase 1).** To be done once steps 1.12–1.13 and the Definition of done are complete:
+  - Collapsing an activity (for example the third one) hides the activities that come after it.
+  - The collapsed activity shows an indicator with the number of hidden activities, and a control to expand them again.
+  - "Zoom to activity" centers and zooms the canvas on one activity, so the user can focus on part of a large workflow.
+  - Decided: the collapsed branches are remembered **per browser**, per workflow type, like the other view preferences. No persisted format changes (D7).
+  - To settle when implementing:
+    - which activities count as "after" (all activities reachable from it, or only those that aren't reachable some other way);
+    - how hidden activities behave with selection, search, issues and autosave (they stay in the graph and are saved as usual).
+
 ## Open questions
 
 Record questions here while executing. Decide them with the maintainer before working around them.

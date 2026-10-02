@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
+import { nextTick } from "vue";
 import App from "../App.vue";
 import { createDesignerStore } from "../state/designerStore";
 import { loadTranslations } from "../i18n";
@@ -63,6 +64,49 @@ describe("App", () => {
         // The links of the old editor's toolbar.
         expect(wrapper.get("[data-cy=toolbar-instances]").attributes("href")).toBe("/instances");
         expect(wrapper.get("[data-cy=toolbar-export]").attributes()).toMatchObject({ href: "/export", "data-url-af": "UnsafeUrl" });
+        wrapper.unmount();
+    });
+
+    it("toolbox_Collapsed_HoverOpensItAndADragKeepsItOpen", async () => {
+        const api = {
+            getDefinition: vi.fn().mockResolvedValue(createDefinition()),
+            getLibrary: vi.fn().mockResolvedValue({ categories: [] }),
+        } as unknown as DesignerApi;
+        const wrapper = mount(App, { props: { config, api, store: createDesignerStore() }, attachTo: document.body });
+        await flushPromises();
+        const toolbox = wrapper.get("[data-cy=designer-toolbox]");
+
+        await wrapper.get("[data-cy=toolbox-collapse]").trigger("click");
+
+        expect(toolbox.classes()).toContain("is-collapsed");
+        expect(wrapper.get("[data-cy=toolbox-sheet]").isVisible()).toBe(false);
+        expect(window.localStorage.getItem("orchardcore:workflows-designer:toolbox-collapsed")).toBe("true");
+
+        vi.useFakeTimers();
+
+        try {
+            await toolbox.trigger("mouseenter");
+            vi.advanceTimersByTime(150);
+            await nextTick();
+            expect(toolbox.classes()).toContain("is-peeking");
+
+            // Dragging an activity to the canvas leaves the toolbox; it stays open until the drag ends.
+            await wrapper.get("[data-cy=toolbox-sheet]").trigger("dragstart");
+            await toolbox.trigger("mouseleave");
+            vi.advanceTimersByTime(1000);
+            await nextTick();
+            expect(toolbox.classes()).toContain("is-peeking");
+
+            await wrapper.get("[data-cy=toolbox-sheet]").trigger("dragend");
+            vi.advanceTimersByTime(300);
+            await nextTick();
+            expect(toolbox.classes()).not.toContain("is-peeking");
+        } finally {
+            vi.useRealTimers();
+        }
+
+        await wrapper.get("[data-cy=toolbox-expand]").trigger("click");
+        expect(toolbox.classes()).not.toContain("is-collapsed");
         wrapper.unmount();
     });
 

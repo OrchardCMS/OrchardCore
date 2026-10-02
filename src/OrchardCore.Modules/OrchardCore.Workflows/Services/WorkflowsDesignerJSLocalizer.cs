@@ -56,6 +56,14 @@ public sealed class WorkflowsDesignerJSLocalizer : IJSLocalizer
 
             // Properties panel.
             { "ActivityTab", S["Activity"].Value },
+            { "ActivityTabHint", S["Edit the selected activity. Changes are saved as you make them."].Value },
+            { "ActivityTabHintReadOnly", S["The details of the selected activity."].Value },
+            { "WorkflowTabHint", S["The settings of this workflow: its name, whether it is enabled, and how its instances run."].Value },
+            { "IssuesTabHint", S["Problems found in this workflow. Errors must be fixed before publishing; select one to go to its activity."].Value },
+            { "Activities", S["Activities"].Value },
+            { "ActivitiesHint", S["Drag an activity to the canvas, or click it to add it."].Value },
+            { "ExpandToolbox", S["Show the activities"].Value },
+            { "CollapseToolbox", S["Hide the activities"].Value },
             { "WorkflowTab", S["Workflow"].Value },
             { "IssuesTab", S["Issues"].Value },
             { "SelectActivityToEdit", S["Select an activity to edit it."].Value },

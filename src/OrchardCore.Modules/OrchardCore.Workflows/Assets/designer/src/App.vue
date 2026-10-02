@@ -18,6 +18,8 @@ import { createRevisionQueue } from "./services/revisionQueue";
 import { createAutosave } from "./services/autosave";
 import { showToast } from "./ui/toasts";
 import { confirmAction } from "./ui/confirm";
+import { usePeek } from "./ui/usePeek";
+import { readPreference, writePreference } from "./ui/preferences";
 import { selectNode } from "./canvas/useConnect";
 import { DEFAULT_NODE_HEIGHT, NODE_WIDTH, snap, type Point } from "./canvas/geometry";
 import { t } from "./i18n";
@@ -38,6 +40,25 @@ const conflictOpen = ref(false);
 const publishDialog = ref<Exclude<PublishDecision, { kind: "publish" }> | null>(null);
 const busy = ref(false);
 const bannerDismissed = ref(false);
+
+// The toolbox can be collapsed into a rail, to give the canvas more room; hovering the rail opens it over
+// the canvas, and it stays open while an activity is dragged from it.
+const TOOLBOX_COLLAPSED_KEY = "toolbox-collapsed";
+const toolbox = ref<HTMLElement | null>(null);
+const toolboxCollapsed = ref(readPreference(TOOLBOX_COLLAPSED_KEY) === "true");
+const toolboxPeek = usePeek((element) => !!element && !!toolbox.value?.contains(element));
+const toolboxPeeking = computed(() => toolboxCollapsed.value && toolboxPeek.open.value);
+
+const setToolboxCollapsed = (value: boolean) => {
+    toolboxCollapsed.value = value;
+    toolboxPeek.close();
+    writePreference(TOOLBOX_COLLAPSED_KEY, String(value));
+};
+
+const closeToolboxPeek = () => {
+    toolboxPeek.close();
+    toolbox.value?.querySelector<HTMLElement>("[data-cy=toolbox-rail-activities]")?.focus();
+};
 
 // Every request that changes the draft goes through this queue, so each one has the current revision.
 const queue = createRevisionQueue(props.store);
@@ -68,11 +89,7 @@ const autosave = createAutosave({
 const hasChanges = computed(() => state.hasDraft || state.saveStatus !== "saved");
 const canPublish = computed(() => hasChanges.value && !busy.value && state.saveStatus !== "conflict");
 const showBanner = computed(
-    () =>
-        !bannerDismissed.value &&
-        state.hasDraft &&
-        !!state.draftModifiedByUserId &&
-        state.draftModifiedByUserId !== (props.config.currentUserId ?? null),
+    () => !bannerDismissed.value && state.hasDraft && !!state.draftModifiedByUserId && state.draftModifiedByUserId !== (props.config.currentUserId ?? null),
 );
 
 // Editing an activity (Enter or double-click on it) moves the focus to its first field; Escape in the
@@ -143,8 +160,7 @@ const onOverwrite = async () => {
     await autosave.overwrite();
 };
 
-const isEditable = (target: EventTarget | null) =>
-    target instanceof HTMLElement && (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName));
+const isEditable = (target: EventTarget | null) => target instanceof HTMLElement && (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName));
 
 // Undo and redo work anywhere in the designer except in form fields, where they edit the field.
 const onKeyDown = (event: KeyboardEvent) => {
@@ -199,7 +215,8 @@ const addActivity = async (activityName: string, position: Point) => {
         canvas.value?.focusNode(result.node.id);
 
         if (result.node.hasEditor) {
-            void panel.value?.open(result.node.id);
+            // A collapsed panel stays collapsed; its Activity tab shows the new activity.
+            void panel.value?.open(result.node.id, { expand: false });
         }
     } catch (error) {
         onRequestError(error, t("AddActivityFailed"));
@@ -427,8 +444,66 @@ defineExpose({ canvas, panel, addActivity, autosave, publish, discard });
         <DraftBanner v-if="showBanner" :modified-by="state.draftModifiedBy" :modified-utc="state.draftModifiedUtc" @dismiss="bannerDismissed = true" />
 
         <div class="wfd-body">
-            <aside v-if="!config.readOnly" class="wfd-toolbox" :aria-label="t('Toolbox')" data-cy="designer-toolbox">
-                <ActivityToolbox :library="library" :loading="libraryLoading" :error="libraryError" @add="onAddActivity" />
+            <aside
+                v-if="!config.readOnly"
+                ref="toolbox"
+                class="wfd-toolbox"
+                :class="{ 'is-collapsed': toolboxCollapsed, 'is-peeking': toolboxPeeking }"
+                :aria-label="t('Toolbox')"
+                data-cy="designer-toolbox"
+                @mouseenter="toolboxCollapsed && toolboxPeek.enter()"
+                @mouseleave="toolboxCollapsed && toolboxPeek.leave()"
+                @focusout="toolboxCollapsed && toolboxPeek.focusOut($event)"
+                @keydown.esc="toolboxPeeking && closeToolboxPeek()"
+            >
+                <div v-if="toolboxCollapsed" class="wfd-rail" data-cy="toolbox-rail">
+                    <button
+                        type="button"
+                        class="wfd-rail-button"
+                        :title="t('ExpandToolbox')"
+                        :aria-label="t('ExpandToolbox')"
+                        aria-expanded="false"
+                        data-cy="toolbox-expand"
+                        @click="setToolboxCollapsed(false)"
+                    >
+                        <i class="fa-solid fa-angles-right wfd-mirror-rtl" aria-hidden="true"></i>
+                    </button>
+                    <button
+                        type="button"
+                        class="wfd-rail-button"
+                        :title="t('ActivitiesHint')"
+                        :aria-label="t('Activities')"
+                        data-cy="toolbox-rail-activities"
+                        @click="setToolboxCollapsed(false)"
+                    >
+                        <i class="fa-solid fa-shapes" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div
+                    v-show="!toolboxCollapsed || toolboxPeeking"
+                    class="wfd-toolbox-sheet"
+                    data-cy="toolbox-sheet"
+                    @dragstart="toolboxPeek.hold()"
+                    @dragend="toolboxPeek.release()"
+                >
+                    <div class="wfd-toolbox-header">
+                        <h3 class="wfd-toolbox-title" :title="t('ActivitiesHint')">{{ t("Activities") }}</h3>
+                        <button
+                            type="button"
+                            class="btn btn-sm btn-link wfd-toolbox-toggle"
+                            :title="toolboxCollapsed ? t('ExpandToolbox') : t('CollapseToolbox')"
+                            :aria-label="toolboxCollapsed ? t('ExpandToolbox') : t('CollapseToolbox')"
+                            :aria-expanded="!toolboxCollapsed"
+                            data-cy="toolbox-collapse"
+                            @click="setToolboxCollapsed(!toolboxCollapsed)"
+                        >
+                            <i class="fa-solid wfd-mirror-rtl" :class="toolboxCollapsed ? 'fa-angles-right' : 'fa-angles-left'" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    <div class="wfd-toolbox-scroll">
+                        <ActivityToolbox :library="library" :loading="libraryLoading" :error="libraryError" @add="onAddActivity" />
+                    </div>
+                </div>
             </aside>
 
             <section class="wfd-canvas-host" :aria-label="t('Canvas')" :aria-busy="loading" data-cy="designer-canvas">
@@ -437,14 +512,7 @@ defineExpose({ canvas, panel, addActivity, autosave, publish, discard });
                     {{ t("Loading") }}
                 </div>
                 <div v-else-if="loadError" class="wfd-message text-danger" role="alert">{{ loadError }}</div>
-                <DesignerCanvas
-                    v-else
-                    ref="canvas"
-                    :store="store"
-                    :read-only="config.readOnly"
-                    @edit="editActivity"
-                    @drop-activity="onDropActivity"
-                />
+                <DesignerCanvas v-else ref="canvas" :store="store" :read-only="config.readOnly" @edit="editActivity" @drop-activity="onDropActivity" />
             </section>
 
             <PropertiesPanel
@@ -460,8 +528,21 @@ defineExpose({ canvas, panel, addActivity, autosave, publish, discard });
             />
         </div>
 
-        <ConflictDialog v-if="conflictOpen && autosave.conflict.value" :problem="autosave.conflict.value" @reload="onReload" @overwrite="onOverwrite" @close="conflictOpen = false" />
-        <PublishDialog v-if="publishDialog" :decision="publishDialog" :nodes="state.nodes" @publish="doPublish" @close="publishDialog = null" @select-issue="onPublishIssueSelected" />
+        <ConflictDialog
+            v-if="conflictOpen && autosave.conflict.value"
+            :problem="autosave.conflict.value"
+            @reload="onReload"
+            @overwrite="onOverwrite"
+            @close="conflictOpen = false"
+        />
+        <PublishDialog
+            v-if="publishDialog"
+            :decision="publishDialog"
+            :nodes="state.nodes"
+            @publish="doPublish"
+            @close="publishDialog = null"
+            @select-issue="onPublishIssueSelected"
+        />
 
         <ToastHost />
     </div>
