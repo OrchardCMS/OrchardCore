@@ -446,7 +446,7 @@ Files: `src/panel/` — `PropertiesPanel.vue` (resizable and collapsible, with t
     - **New features › Workflow Designer.**
   - **Verified** with `mkdocs build --strict`. No `mkdocs.yml` change was needed, since no page was added.
 
-### - [ ] 1.13 End-to-end tests (Playwright for .NET)
+### - [x] 1.13 End-to-end tests (Playwright for .NET)
 
 - **Setup**:
   - Fixture `WorkflowsDesignerTestsFixture : CmsRecipeFixture` in `test/OrchardCore.Tests.Functional/Tests/Cms/CmsRecipeFixture.cs`, with `RecipeName => "WorkflowsDesignerTests"`.
@@ -471,6 +471,24 @@ Files: `src/panel/` — `PropertiesPanel.vue` (resizable and collapsible, with t
   15. A user without `ManageWorkflows` gets 403 from the designer endpoints.
 - **Canvas drags** use `DragDropHelper.DragAsync`. Add a port-to-node helper to `Helpers/` if needed.
 - **Run locally** with the commands in `README.md`. Fix every server warning surfaced by `CmsTestBase.AssertNoLoggedIssues()`.
+- **Notes from implementing this step:**
+  - **Recipe.** `workflows-designer-tests.recipe.json`:
+    - enables the features listed above (plus the base admin features);
+    - adds a `WorkflowViewer` role that has `AccessAdminPanel` but not `ManageWorkflows`;
+    - seeds "Seeded approval", an HTTP request → Notify → Signal "approve" → Notify workflow with known ids and positions.
+  - **Helper.** `Helpers/WorkflowDesignerHelper.cs` covers:
+    - creating a workflow type and finding one by name;
+    - opening the designer;
+    - adding an activity by dragging its toolbox card (an HTML drag, `DragToAsync`) to a point on the canvas;
+    - connecting a port to an activity (`DragDropHelper.DragAsync`);
+    - opening an activity's editor;
+    - waiting for autosave;
+    - publishing, confirming the dialog when there is one;
+    - generating an HTTP event's URL.
+  - **Setup.** Tests that change a workflow create their own; the seeded one is only read. Pages use a 1600 × 1000 viewport, since 1280 × 720 leaves about 350 px of canvas between the admin menu, the toolbox and the panel.
+  - **The 15 scenarios** are one test each, and every test asserts no console errors. The conflict test allows only the browser's own "409" message for the rejected request. The test for a user without `ManageWorkflows` creates a user in the `WorkflowViewer` role and calls the JSON endpoints, which return 403.
+  - **Gotcha.** The `data-cy` element of a dialog (`.wfd-modal-host`) has no box of its own, because the modal inside is fixed, so Playwright considers it hidden. Tests check the dialog's buttons instead.
+  - **Results.** 15/15, twice in a row (about 1 minute), with no server warnings reported by `AssertNoLoggedIssues()`.
 
 ## Definition of done (Phase 1)
 
