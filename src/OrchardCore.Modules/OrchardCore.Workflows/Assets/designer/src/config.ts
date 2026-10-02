@@ -23,6 +23,11 @@ export interface DesignerConfig {
      * The signed-in user's id, to tell whether someone else last edited the draft.
      */
     currentUserId?: string | null;
+    /**
+     * The activity to select and open when the designer loads (the `activityId` query string parameter,
+     * which the old activity edit URLs redirect with).
+     */
+    initialActivityId?: string | null;
     translations: Record<string, string>;
 }
 

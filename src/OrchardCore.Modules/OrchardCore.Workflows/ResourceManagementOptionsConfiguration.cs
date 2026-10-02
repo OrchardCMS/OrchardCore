@@ -12,6 +12,8 @@ public sealed class ResourceManagementOptionsConfiguration
     {
         s_manifest = new ResourceManifest();
 
+        // Obsolete: the workflow designer no longer uses jsPlumb. The resources are kept for third parties
+        // and will be removed in a future major version.
         s_manifest
             .DefineScript("jsplumb")
             .SetUrl(
@@ -43,24 +45,6 @@ public sealed class ResourceManagementOptionsConfiguration
                 "sha384-Q0wOomiqdBpz2z6/yYA8b3gc8A9t7z7QjD14d1WABvXVHbRYBu/IGOv3SOR57anB"
             )
             .SetVersion("2.15.5");
-
-        s_manifest
-            .DefineScript("workflow-editor")
-            .SetDependencies("jsplumb", "bootstrap")
-            .SetUrl(
-                "~/OrchardCore.Workflows/Scripts/Workflows/editor/workflow-editor.min.js",
-                "~/OrchardCore.Workflows/Scripts/Workflows/editor/workflow-editor.js"
-            )
-            .SetVersion("1.0.0");
-
-        s_manifest
-            .DefineScript("workflow-viewer")
-            .SetDependencies("jsplumb", "bootstrap")
-            .SetUrl(
-                "~/OrchardCore.Workflows/Scripts/Workflows/viewer/workflow-viewer.min.js",
-                "~/OrchardCore.Workflows/Scripts/Workflows/viewer/workflow-viewer.js"
-            )
-            .SetVersion("1.0.0");
 
         s_manifest
             .DefineScript("workflow-url-generator")

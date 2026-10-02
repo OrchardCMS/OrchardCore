@@ -46,11 +46,11 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
     }
 
     [Fact]
-    public async Task Index_ManageWorkflows_RendersDesignerWithTenantAwareConfig()
+    public async Task Edit_ManageWorkflows_RendersDesignerWithTenantAwareConfig()
     {
         var (id, _) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));
 
-        using var response = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/{id}/Designer/Index", TestContext.Current.CancellationToken);
+        using var response = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/Edit/{id}", TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var document = new HtmlParser().ParseDocument(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
@@ -65,6 +65,8 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         Assert.False(string.IsNullOrEmpty(config["translations"]["Undo"].GetValue<string>()));
         Assert.NotNull(document.QuerySelector("input[name='__RequestVerificationToken']"));
         Assert.Contains(document.QuerySelectorAll("script[src]"), x => x.GetAttribute("src").Contains("workflows-designer") && x.GetAttribute("type") == "module");
+        Assert.DoesNotContain(document.QuerySelectorAll("script[src]"), x => x.GetAttribute("src").Contains("workflow-editor") || x.GetAttribute("src").Contains("jsplumb"));
+        Assert.Null(config["initialActivityId"]);
 
         // The designer compares the signed-in user with the draft's last editor to show the draft banner, so
         // both are the same claim (null values are left out of the config).
@@ -78,6 +80,34 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         Assert.Equal(HttpStatusCode.OK, saved.StatusCode);
         var definition = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition");
         Assert.Equal(config["currentUserId"]?.GetValue<string>(), definition["draftModifiedByUserId"]?.GetValue<string>());
+    }
+
+    [Fact]
+    public async Task Edit_ActivityIdQuery_OpensThatActivity()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
+
+        using var response = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/Edit/{id}?activityId=notify", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var document = new HtmlParser().ParseDocument(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        var config = JsonNode.Parse(Assert.Single(document.QuerySelectorAll("#workflow-designer")).GetAttribute("data-config"));
+        Assert.Equal("notify", config["initialActivityId"].GetValue<string>());
+    }
+
+    [Theory]
+    [InlineData("Designer/Index", "")]
+    [InlineData("Designer/Index?activityId=notify", "?activityId=notify")]
+    [InlineData("Activity/notify/Edit", "?activityId=notify")]
+    [InlineData("Activity/NotifyTask/Add", "")]
+    public async Task OldUrls_DesignerAndActivityPages_RedirectToTheDesigner(string path, string expectedQuery)
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
+
+        using var response = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/{id}/{path}", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+        Assert.Equal($"/{_fixture.Context.TenantName}/Admin/Workflows/Types/Edit/{id}{expectedQuery}", response.Headers.Location?.OriginalString);
     }
 
     [Fact]

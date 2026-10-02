@@ -114,6 +114,11 @@ public sealed class WorkflowsDesignerJSLocalizer : IJSLocalizer
             { "DiscardDraftMessage", S["All changes since the workflow was last published are lost."].Value },
             { "DraftDiscarded", S["The draft was discarded."].Value },
             { "DiscardFailed", S["The draft couldn't be discarded. Try again."].Value },
+            { "MoreActions", S["More actions"].Value },
+            { "Instances", S["Instances"].Value },
+            { "RunningInstanceCount", S["{0} running instance(s)"].Value },
+            { "Export", S["Export"].Value },
+            { "ExportHint", S["Exports the published workflow, without the draft."].Value },
 
             // Instance viewer.
             { "SelectActivityToView", S["Select an activity to see its details."].Value },

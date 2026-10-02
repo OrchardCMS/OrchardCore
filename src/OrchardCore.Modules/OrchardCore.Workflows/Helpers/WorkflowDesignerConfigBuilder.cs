@@ -19,8 +19,15 @@ internal static class WorkflowDesignerConfigBuilder
     /// <summary>
     /// The configuration of the designer of <paramref name="workflowType"/>, or, when
     /// <paramref name="instance"/> is set, of the read-only viewer of that instance.
+    /// <paramref name="initialActivityId"/> is the activity the designer selects and opens when it loads.
     /// </summary>
-    public static string Build(IUrlHelper url, ClaimsPrincipal user, IEnumerable<IJSLocalizer> localizers, WorkflowType workflowType, Workflow instance = null)
+    public static string Build(
+        IUrlHelper url,
+        ClaimsPrincipal user,
+        IEnumerable<IJSLocalizer> localizers,
+        WorkflowType workflowType,
+        Workflow instance = null,
+        string initialActivityId = null)
     {
         var route = new { area = Area, workflowTypeId = workflowType.Id };
 
@@ -58,6 +65,7 @@ internal static class WorkflowDesignerConfigBuilder
             ExportUrl = url.Action("Export", "WorkflowType", new { area = Area, id = workflowType.Id }),
             ListUrl = url.Action("Index", "WorkflowType", new { area = Area }),
             CurrentUserId = user.FindFirstValue(ClaimTypes.NameIdentifier),
+            InitialActivityId = string.IsNullOrEmpty(initialActivityId) ? null : initialActivityId,
             Translations = localizers.GetMergedLocalizations(WorkflowsDesignerJSLocalizer.Group),
         };
 

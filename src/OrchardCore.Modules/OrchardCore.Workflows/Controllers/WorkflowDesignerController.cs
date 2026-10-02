@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Indexes;
@@ -25,7 +24,6 @@ namespace OrchardCore.Workflows.Controllers;
 public sealed class WorkflowDesignerController : Controller
 {
     private const string FragmentViewName = "Fragment";
-    private const string DesignerViewPath = "~/Areas/OrchardCore.Workflows/Views/WorkflowType/Designer.cshtml";
     private const string SettingsPartialName = "WorkflowDesignerSettings";
 
     private static readonly WorkflowStatus[] s_runningStatuses =
@@ -47,7 +45,6 @@ public sealed class WorkflowDesignerController : Controller
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly ISession _session;
     private readonly IClock _clock;
-    private readonly IEnumerable<IJSLocalizer> _jsLocalizers;
 
     internal readonly IStringLocalizer S;
 
@@ -62,7 +59,6 @@ public sealed class WorkflowDesignerController : Controller
         IUpdateModelAccessor updateModelAccessor,
         ISession session,
         IClock clock,
-        IEnumerable<IJSLocalizer> jsLocalizers,
         IStringLocalizer<WorkflowDesignerController> stringLocalizer)
     {
         _authorizationService = authorizationService;
@@ -75,31 +71,15 @@ public sealed class WorkflowDesignerController : Controller
         _updateModelAccessor = updateModelAccessor;
         _session = session;
         _clock = clock;
-        _jsLocalizers = jsLocalizers;
         S = stringLocalizer;
     }
 
+    /// <summary>
+    /// The designer's first URL; the designer is now at <c>WorkflowType/Edit</c>.
+    /// </summary>
     [HttpGet]
-    public async Task<IActionResult> Index(long workflowTypeId)
-    {
-        if (!await CanManageAsync())
-        {
-            return Forbid();
-        }
-
-        var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
-
-        if (workflowType is null)
-        {
-            return NotFound();
-        }
-
-        return View(DesignerViewPath, new WorkflowDesignerViewModel
-        {
-            WorkflowType = workflowType,
-            ConfigJson = WorkflowDesignerConfigBuilder.Build(Url, User, _jsLocalizers, workflowType),
-        });
-    }
+    public IActionResult Index(long workflowTypeId, string activityId = null)
+        => RedirectToAction("Edit", "WorkflowType", new { area = "OrchardCore.Workflows", id = workflowTypeId, activityId });
 
     [HttpGet]
     public async Task<IActionResult> Definition(long workflowTypeId)

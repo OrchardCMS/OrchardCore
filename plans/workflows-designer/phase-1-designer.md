@@ -385,7 +385,7 @@ Files: `src/panel/` — `PropertiesPanel.vue` (resizable and collapsible, with t
     - Delete: Delete removes the node and shows the undo toast.
     - Publish: Enter on Publish opens the dialog focused on its confirm button, Tab stays inside the dialog, Enter publishes, and the focus goes to the canvas.
 
-### - [ ] 1.11 Make the new designer the default and retire the legacy editor
+### - [x] 1.11 Make the new designer the default and retire the legacy editor
 
 - `WorkflowTypeController.Edit` (GET) renders the new designer. Remove the POST `Edit` that saves the canvas state, and `WorkflowTypeUpdateModel`; `WorkflowDesigner/Index` from step 1.4 can then redirect to `Edit`.
 - **Old activity URLs**:
@@ -397,6 +397,29 @@ Files: `src/panel/` — `PropertiesPanel.vue` (resizable and collapsible, with t
   - Keep the `jsplumb` resource registered for third parties, with an "obsolete" comment and a note in the release notes (D7).
 - **Keep these server shapes unchanged**: `Activity_Design`, `Activity_Thumbnail` and `Activity_Edit` (the designer renders them).
 - Run `yarn build` and commit the `wwwroot` changes, including removal of obsolete output files.
+- **Notes from implementing this step:**
+  - **Edit.** `WorkflowType/Edit/{id}` renders the designer. The designer view moved from `Views/WorkflowType/Designer.cshtml` to `Edit.cshtml` (model `WorkflowDesignerViewModel`).
+    - `?activityId=` selects that activity, centers it and opens its editor (the `initialActivityId` config value).
+    - `WorkflowDesigner/Index` redirects to `Edit`, keeping `activityId`.
+  - **Toolbar.** It gets the old editor's Instances link (with the running instance count) and Export. Export posts through the admin theme's `data-url-af="UnsafeUrl"` handler and exports the published workflow, not the draft, as its tooltip says. Properties moved to the Workflow tab in step 1.7.
+  - **Old activity URLs.** `ActivityController` only redirects now:
+    - `…/Activity/{activityId}/Edit` goes to `Edit/{id}?activityId=…`;
+    - `…/Activity/{activityName}/Add` goes to `Edit/{id}`.
+    - Their views, the POST actions and their `sessionStorage` local state (`localId`) are gone.
+  - **Removed.**
+    - Server: the POST `Edit`, `WorkflowTypeViewModel`, `WorkflowTypeUpdateModel`, `ActivityEditViewModel`, `RenderActivity.cshtml`, and the services `WorkflowTypeController` no longer uses.
+    - Client: `workflow-editor.ts`, `activity-picker.ts`, `workflow-canvas.ts`, `workflow-viewer.ts` and `workflow-models.ts`, which only those used. Also the editor and viewer stylesheets (`orchard.workflows-editor.scss`, `orchard.workflows-viewer.scss`, `workflow-canvas.scss`), with their `Assets.json` entries, `workflow-editor`/`workflow-viewer` resources and `wwwroot` output.
+    - Dependencies: the module's `bootstrap`, `@popperjs/core` and `@types/bootstrap`, which only those scripts used (`yarn.lock` updated).
+  - **Kept.** The `jsplumb` script and `jsplumbtoolkit-defaults` style resources stay registered for third parties, with an obsolete comment; their `Assets.json` entries stay so the files are still built. The `Activity_Design`, `Activity_Thumbnail` and `Activity_Edit` shapes are unchanged.
+  - **For the release notes (1.12).** These public types and views are removed or changed:
+    - removed: `WorkflowTypeViewModel`, `WorkflowTypeUpdateModel`, `ActivityEditViewModel`;
+    - `WorkflowType/Edit.cshtml` now uses `WorkflowDesignerViewModel`;
+    - `Activity/Create` and `Activity/EditActivity` are removed;
+    - the `workflow-editor` and `workflow-viewer` resources are removed.
+  - **Verified** in a running CMS:
+    - `Edit/10` shows the designer with Instances (1) and Export, and no jsPlumb.
+    - `Designer/Index`, `Activity/{id}/Edit` and `Activity/{name}/Add` redirect to it.
+    - The activity edit URL opens with that activity selected and its editor loaded.
 
 ### - [ ] 1.12 Documentation and release notes
 

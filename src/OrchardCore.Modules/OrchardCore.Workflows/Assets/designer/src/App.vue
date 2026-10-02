@@ -341,6 +341,15 @@ onMounted(async () => {
         await nextTick();
         canvas.value?.fit();
     }
+
+    // An activity to open, for example from an old activity edit URL.
+    const initialActivityId = props.config.initialActivityId;
+
+    if (!props.config.readOnly && initialActivityId && props.store.getNode(initialActivityId)) {
+        await nextTick();
+        canvas.value?.centerOn(initialActivityId);
+        await panel.value?.open(initialActivityId);
+    }
 });
 
 onBeforeUnmount(() => {
@@ -391,6 +400,18 @@ defineExpose({ canvas, panel, addActivity, autosave, publish, discard });
                     >
                         <i class="fa-solid fa-rotate-right wfd-mirror-rtl" aria-hidden="true"></i>
                     </button>
+                </div>
+
+                <div class="btn-group btn-group-sm" role="group" :aria-label="t('MoreActions')">
+                    <a :href="config.instancesUrl" class="btn btn-outline-secondary" data-cy="toolbar-instances">
+                        {{ t("Instances") }}
+                        <span v-if="state.runningInstanceCount > 0" class="badge text-bg-secondary ms-1" :title="t('RunningInstanceCount', state.runningInstanceCount)">
+                            {{ state.runningInstanceCount }}
+                        </span>
+                    </a>
+                    <a :href="config.exportUrl" class="btn btn-outline-secondary" data-url-af="UnsafeUrl" :title="t('ExportHint')" data-cy="toolbar-export">
+                        {{ t("Export") }}
+                    </a>
                 </div>
 
                 <button type="button" class="btn btn-sm btn-outline-danger" :disabled="!hasChanges || busy" data-cy="toolbar-discard" @click="discard">

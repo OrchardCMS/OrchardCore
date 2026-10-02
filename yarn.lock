@@ -3237,9 +3237,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@orchardcore/workflows@workspace:src/OrchardCore.Modules/OrchardCore.Workflows/Assets"
   dependencies:
-    "@popperjs/core": "npm:2.11.8"
-    "@types/bootstrap": "npm:5.2.7"
-    bootstrap: "npm:5.3.8"
     jsplumb: "npm:2.15.6"
   languageName: unknown
   linkType: soft
