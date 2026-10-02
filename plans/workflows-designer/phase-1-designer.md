@@ -33,7 +33,7 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
 
 ---
 
-### - [ ] 1.0 Spike: validate the two riskiest assumptions (throwaway code, not committed)
+### - [x] 1.0 Spike: validate the two riskiest assumptions (throwaway code, not committed)
 
 Time-box this step and record the findings in **Spike findings** at the bottom of this file. That record is the only thing committed.
 
@@ -321,4 +321,51 @@ Record questions here while executing. Decide them with the maintainer before wo
 
 ## Spike findings
 
-_Record the results of step 1.0 here._
+Recorded on 2026-10-02 against `df4ae1a93a`. The throwaway code (a scratch `[Admin]` controller and fragment view in the Workflows module, a standalone canvas page and a jsPlumb comparison page) was not committed. **Both assumptions hold: decision D2 (in-house canvas) and D3 (injected server-rendered editors) stand**, with the constraints below.
+
+### Injected editors
+
+Method: a scratch admin page loaded each editor over AJAX with `BuildEditorAsync(activity, updater, isNew: true, "", "")` into a `<form>` inside a `<div data-workflow-type-id data-activity-id>` wrapper, ran the scripts, posted the form as `FormData` with the `RequestVerificationToken` header, and bound it with `UpdateEditorAsync`. Every one of the 59 activities registered in a ComingSoon tenant (Workflows, Http, Contents, Email, Users, Tenants, Forms, ReCaptcha) was loaded twice in a row. The six named in step 1.0 were also posted back.
+
+- **The Flows fragment pattern misses most scripts.** `IResourceManager.GetRegisteredHeadScripts()` / `GetRegisteredFootScripts()` only return raw blocks registered with `RegisterHeadScript` / `RegisterFootScript`. Resources required through `<script asp-name>` / `<script asp-src … at="Foot">` (all the editors in this list) are not in them, so `IfElseTask` returned an empty `scripts`. The fragment (step 1.2) must render with `ResourceManager.RenderHeadScript(writer)` + `RenderFootScript(writer)`. That includes dependencies, for example the seven CodeMirror files plus `liquid.js` for `CorrelateTask`.
+- **Stylesheets must be collected too**, with `RenderStylesheet(writer)`: `codemirror.css` (every CodeMirror editor) and `monaco-loader.css` (Monaco) are not on the admin page otherwise.
+- **Script execution order matters, so bloom `evalScripts` is not enough as is.** Script-inserted external classic scripts are async. `workflow-monaco-text-editor.js` (module) ran before `monaco-loader.js` (classic) had set `window.__orchardCoreMonacoReady`, and logged "Monaco is not loaded on this page" with no editor created. Running the scripts one at a time, awaiting `load` for each external classic script, fixed it (no console errors across all 59 editors). `ServerFormHost` (step 1.7) needs an ordered runner. Add it to bloom as an option or a sibling helper, with a Vitest spec.
+- **Classic scripts must be deduplicated by `src`.** Re-appending the same tags (naive `evalScripts`) inserted `workflow-url-generator.js` and `crossbrowserclipboardcopy.js` twice, and would re-run `codemirror.js`, which replaces the global `CodeMirror` and its registered modes. Module scripts are executed only once per page by the browser regardless.
+- **Values in rich editors only reach their `<textarea>` on `submit`.** CodeMirror (`fromTextArea`) saves on the form's `submit`, and `bloom/components/monaco-text-editor` saves on a window `submit` listener. Posting `new FormData(form)` without a submit lost the edits (EmailTask `TextBody`/`HtmlBody`, CreateContentTask `ContentProperties` and ScriptTask `Script` were posted with their old values). Dispatching a synthetic `new Event("submit", { bubbles: true, cancelable: true })` on the panel form before building `FormData` synced all of them and does not navigate. `ServerFormHost` must do this before every apply.
+- **Top-level initializers** (they run once per page, so the second editor shown gets no CodeMirror):
+  - `OrchardCore.Workflows` `task-editors`: `correlate-task.ts`, `liquid-task.ts`, `http-request-task.ts`, `http-response-task.ts`.
+  - `OrchardCore.Contents` `content-task-editor.ts` (Create/UpdateContentTask: `UpdateContentTask` got no editor even on its first load once `CreateContentTask` had been shown, because they share the module).
+  - `OrchardCore.Email` `email-task.ts`. It also calls `document.querySelector("select")` and adds a `change` listener to **every** `<select>` on the page; it must be scoped to its editor.
+  - `OrchardCore.Tenants` `create-tenant-task.ts`, `setup-tenant-task.ts`. These look for `textarea[id$=…]`, but both views render `<input type="text">`, so they never initialize, even on today's full page. Converting them keeps behavior identical; fixing the selector is out of scope.
+  - **Not in the plan's list:** `OrchardCore.Notifications` `notification-task-field-editor.ts` (NotifyContentOwnerTask, NotifyUserTaskActivity), `OrchardCore.Sms` `sms-task.ts` (SmsTask), and `OrchardCore.Contents` `Assets/js/content-type-check-all.js` (the `SelectContentTypes` view component used by the seven `Content*Event` editors; it waits for `DOMContentLoaded`, so "check all" never works when injected).
+- **`workflow-url-generator.ts` never initializes when injected**: it waits for `DOMContentLoaded`, so the URL stayed empty and "Regenerate" did nothing. It also reads the *first* `[data-workflow-type-id]` / `[data-activity-id]` on the page and fixed ids (`#workflow-url-text`, `#generate-url-button`, `#token-lifespan`). Step 1.3 must convert it to `observeAndInit` and resolve everything from the closest wrapper. The fragment wrapper from step 1.2 is found correctly.
+- **Already safe:** `workflow-syntax-toggle` (IfElse, ForEach, ForLoop, SetOutput, SetProperty, WhileLoop) initializes on every load, after an invalid re-render, and toggles once per change (no double initialization, thanks to the `WeakSet` in `observeAndInit`). `workflow-monaco-text-editor` re-initializes too (once the ordering issue is fixed).
+- **Leaks:** Monaco leaks. After loading `ScriptTask` twice and switching to another editor, `monaco.editor.getEditors()` / `getModels()` still held 2 editors and 2 models, and each instance keeps its window `submit` listener. The `oc:editor-unmounting` disposal in step 1.3 is needed. CodeMirror 5 instances live inside the replaced container and left nothing behind in the document.
+- **Binding and validation work as planned.** NotifyTask, IfElseTask, ScriptTask, HttpRequestEvent, EmailTask and CreateContentTask bound from `FormData`. An invalid IfElse Liquid condition returned the re-rendered editor with the error ("Condition doesn't contain a valid Liquid expression…") and the Liquid group still visible. Field names carry the driver prefix (`NotifyTask.Message`, `IActivity.ActivityMetadata.Title`), so tests and the panel must not assume bare names.
+- No editor contains inline `<script>` blocks. The only inline handler is HttpRequestEvent's `onclick="select_all_and_copy(…)"`, which works once `crossbrowserclipboardcopy.js` has loaded.
+
+### Canvas performance
+
+Method: one Vue 3.5 app rendering 200 HTML nodes (header, summary, one to three outcome ports) and 300 SVG cubic Bézier edges with arrow markers inside a single `translate() scale()` layer. Each benchmark mutated state once per animation frame for 3 seconds: dragging the most connected node (degree 8), dragging 50 nodes at once, and panning, at zoom 100% and 35%. The same graph was drawn with jsPlumb 2.15.6 (the D2 fallback) for comparison. Runs used Playwright for .NET (1600×900) with CDP CPU throttling (1× and 4×, 4× standing in for a mid-range laptop), both headless (SwiftShader) and headed on an Intel UHD integrated GPU. Main-thread cost per frame comes from CDP `Performance.getMetrics`.
+
+| Scenario (headed iGPU, final technique) | In-house 1× | In-house 4× | jsPlumb 1× | jsPlumb 4× |
+|---|---|---|---|---|
+| Drag one node, zoom 100% | 59–60 fps | 57–58 fps | 36–48 fps | 16–24 fps |
+| Drag one node, zoom 35% | 50–60 fps | 38–43 fps | 34–59 fps | 7–9 fps |
+| Pan, zoom 100% | 58–59 fps | 53–57 fps | 35–46 fps | 25–29 fps |
+| Drag 50 nodes, zoom 100% | 17–23 fps | 7–8 fps | 10–12 fps | 1 fps |
+| Main-thread script + layout + style per frame (one-node drag, 4×) | | ≈ 3 ms | | ≈ 50–65 ms |
+
+- **Vue reactivity is not the bottleneck.** The update cost of a one-node drag was 0.3 ms per frame (≈ 3 ms at 4×), and about 2 ms for 50 nodes (≈ 15 ms at 4×). jsPlumb spent 20–100× more main-thread time, mostly in forced layout (50 nodes at 4×: about 1.7 s per frame).
+- **The remaining cost is raster, and two rendering rules remove it.** Without them, a one-node drag at 100% ran at only 17–28 fps on the iGPU (any change re-rasterized the large static layer). Shadows, markers, the dot-grid background, hit-testing, node `contain` and one-SVG-per-edge made no measurable difference. What worked:
+  1. Set `will-change: transform` on the viewport layer **only while panning or zooming** (pan went from 23–32 fps to 58–60 fps). Leaving it on permanently is harmful: dragging at 35% zoom fell to 1–17 fps because the oversized layer was re-rasterized.
+  2. **Lift what is being dragged:** while dragging, give the dragged node `will-change: transform` and render the edges attached to it in a second SVG overlay with `will-change: transform`, so the static content is never re-rasterized. One-node drag went from about 20 fps to 58–60 fps. Lifting each of 50 nodes into its own layer, or translating them as one group layer, did not help large selections (5–23 fps on the iGPU, GPU-bound by the re-rasterized overlay of about 150 attached edges). That's still better than jsPlumb; lift individually only up to about 10 selected nodes.
+- Coalesce `pointermove` into one state update per animation frame (the benchmark already applied one update per frame).
+- **Verdict:** dragging a node and panning stay smooth on an integrated GPU with 4× CPU throttling, so the in-house canvas is viable and outperforms the jsPlumb fallback in every scenario measured. Dragging 50 nodes at once degrades on integrated GPUs (jsPlumb stalls completely there). Step 1.5 must implement the two rendering rules above and should show a lighter drag preview if large-selection drags matter.
+
+### Consequences for later steps (no decision changes)
+
+- **1.2 Fragment view:** use `RenderHeadScript` + `RenderFootScript` for `scripts` and `RenderStylesheet` for `styles`, not the Flows `GetRegistered*` calls.
+- **1.3:** besides the plan's list, convert `notification-task-field-editor.ts` (Notifications), `sms-task.ts` (Sms) and `content-type-check-all.js` (Contents), scope `email-task.ts` to its editor, and rework `workflow-url-generator.ts`. Add disposal to `bloom/components/monaco-text-editor.ts`, and make it sync its textarea on model changes so it doesn't rely only on `submit`.
+- **1.5:** apply the layer rules above, and never set a permanent `will-change` on the zoomed layer.
+- **1.7 `ServerFormHost`:** execute scripts in order, deduplicate classic scripts and stylesheets by URL, and dispatch a synthetic `submit` on the panel form before building `FormData`.
