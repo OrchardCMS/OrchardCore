@@ -20,16 +20,20 @@
     },
     {
       "name": "OpenIdServerSettings",
-      "EnableTokenEndpoint": true,
-      "EnableAuthorizationEndpoint": true,
-      "EnableLogoutEndpoint": true,
-      "EnableUserInfoEndpoint": true,
-      "AllowAuthorizationCodeFlow": true,
-      "RequireProofKeyForCodeExchange": true
+      "OpenIdServerSettings": {
+        "EnableTokenEndpoint": true,
+        "EnableAuthorizationEndpoint": true,
+        "EnableLogoutEndpoint": true,
+        "EnableUserInfoEndpoint": true,
+        "AllowAuthorizationCodeFlow": true,
+        "RequireProofKeyForCodeExchange": true
+      }
     },
     {
       "name": "OpenIdValidationSettings",
-      "Tenant": "Default"
+      "OpenIdValidationSettings": {
+        "Tenant": "Default"
+      }
     },
     {
       "name": "OpenIdApplication",
