@@ -185,6 +185,28 @@ public sealed class WorkflowTypeDraftManagerTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task SaveGraphAsync_RemovedThenRestored_RestoresActivityWithProperties()
+    {
+        var removeUpdate = GraphOf(_workflowType);
+        removeUpdate.RemovedActivityIds = ["fork"];
+        removeUpdate.Nodes = removeUpdate.Nodes.Where(x => x.Id != "fork").ToList();
+        removeUpdate.Transitions = [];
+        var removed = await CreateManager().SaveGraphAsync(_workflowType.WorkflowTypeId, 0, removeUpdate);
+
+        Assert.DoesNotContain(removed.Draft.Activities, x => x.ActivityId == "fork");
+
+        var restoreUpdate = GraphOf(_workflowType);
+        restoreUpdate.RestoredActivityIds = ["fork"];
+        var restored = await CreateManager().SaveGraphAsync(_workflowType.WorkflowTypeId, removed.Revision, restoreUpdate);
+
+        Assert.True(restored.Succeeded);
+        var fork = Assert.Single(restored.Draft.Activities, x => x.ActivityId == "fork");
+        Assert.Equal(["A", "B"], fork.Properties["Forks"].AsArray().Select(x => x.GetValue<string>()));
+        Assert.Equal(3, restored.Draft.Transitions.Count);
+        Assert.Empty(restored.Draft.RemovedActivities);
+    }
+
+    [Fact]
     public async Task AddActivityAsync_FirstEventWithoutStart_BecomesStartActivity()
     {
         _workflowType.Activities.Single(x => x.ActivityId == "start").IsStart = false;

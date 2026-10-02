@@ -6,6 +6,7 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Liquid;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
@@ -65,6 +66,7 @@ public sealed class Startup : StartupBase
         services.AddIndexProvider<WorkflowTypeDraftIndexProvider>();
         services.AddScoped<IWorkflowTypeDraftManager, WorkflowTypeDraftManager>();
         services.AddScoped<WorkflowDesignerModelBuilder>();
+        services.AddScoped<IJSLocalizer, WorkflowsDesignerJSLocalizer>();
         services.AddScoped<IWorkflowTypeEventHandler, WorkflowTypeDraftHandler>();
         services.AddScoped<IWorkflowExecutionContextHandler, DefaultWorkflowExecutionContextHandler>();
         services.AddScoped<IWorkflowExpressionEvaluator, LiquidWorkflowExpressionEvaluator>();

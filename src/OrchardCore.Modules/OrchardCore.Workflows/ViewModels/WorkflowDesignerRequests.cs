@@ -37,6 +37,11 @@ public sealed class WorkflowDesignerSaveRequest
     /// The identifiers of the activities that were removed.
     /// </summary>
     public IList<string> RemovedActivityIds { get; set; } = [];
+
+    /// <summary>
+    /// The identifiers of removed activities that were brought back, for example by undo.
+    /// </summary>
+    public IList<string> RestoredActivityIds { get; set; } = [];
 }
 
 /// <summary>

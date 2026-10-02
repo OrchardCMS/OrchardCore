@@ -1,9 +1,11 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Indexes;
@@ -24,6 +26,7 @@ namespace OrchardCore.Workflows.Controllers;
 public sealed class WorkflowDesignerController : Controller
 {
     private const string FragmentViewName = "Fragment";
+    private const string DesignerViewPath = "~/Areas/OrchardCore.Workflows/Views/WorkflowType/Designer.cshtml";
     private const string SettingsPartialName = "WorkflowDesignerSettings";
 
     private static readonly WorkflowStatus[] s_runningStatuses =
@@ -44,6 +47,7 @@ public sealed class WorkflowDesignerController : Controller
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly ISession _session;
     private readonly IClock _clock;
+    private readonly IEnumerable<IJSLocalizer> _jsLocalizers;
 
     internal readonly IStringLocalizer S;
 
@@ -57,6 +61,7 @@ public sealed class WorkflowDesignerController : Controller
         IUpdateModelAccessor updateModelAccessor,
         ISession session,
         IClock clock,
+        IEnumerable<IJSLocalizer> jsLocalizers,
         IStringLocalizer<WorkflowDesignerController> stringLocalizer)
     {
         _authorizationService = authorizationService;
@@ -68,7 +73,30 @@ public sealed class WorkflowDesignerController : Controller
         _updateModelAccessor = updateModelAccessor;
         _session = session;
         _clock = clock;
+        _jsLocalizers = jsLocalizers;
         S = stringLocalizer;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Index(long workflowTypeId)
+    {
+        if (!await CanManageAsync())
+        {
+            return Forbid();
+        }
+
+        var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
+
+        if (workflowType is null)
+        {
+            return NotFound();
+        }
+
+        return View(DesignerViewPath, new WorkflowDesignerViewModel
+        {
+            WorkflowType = workflowType,
+            ConfigJson = JsonSerializer.Serialize(BuildConfig(workflowType), JOptions.CamelCase),
+        });
     }
 
     [HttpGet]
@@ -163,6 +191,7 @@ public sealed class WorkflowDesignerController : Controller
             Nodes = request.Nodes ?? [],
             Transitions = (request.Transitions ?? []).Where(transition => transition is not null).Select(transition => transition.ToTransition()).ToList(),
             RemovedActivityIds = request.RemovedActivityIds ?? [],
+            RestoredActivityIds = request.RestoredActivityIds ?? [],
         });
 
         if (!result.Succeeded)
@@ -426,6 +455,32 @@ public sealed class WorkflowDesignerController : Controller
         await _draftManager.DiscardAsync(workflowType.WorkflowTypeId);
 
         return Ok(new { });
+    }
+
+    private object BuildConfig(WorkflowType workflowType)
+    {
+        var area = new { area = "OrchardCore.Workflows", workflowTypeId = workflowType.Id };
+
+        return new
+        {
+            WorkflowTypeId = workflowType.Id,
+            ReadOnly = false,
+            Urls = new
+            {
+                Definition = Url.Action(nameof(Definition), area),
+                Library = Url.Action(nameof(Library), area),
+                Save = Url.Action(nameof(Save), area),
+                AddActivity = Url.Action(nameof(AddActivity), area),
+                Editor = Url.Action(nameof(Editor), area),
+                Settings = Url.Action(nameof(Settings), area),
+                Publish = Url.Action(nameof(Publish), area),
+                Discard = Url.Action(nameof(Discard), area),
+            },
+            InstancesUrl = Url.Action("Index", "Workflow", area),
+            ExportUrl = Url.Action("Export", "WorkflowType", new { area = "OrchardCore.Workflows", id = workflowType.Id }),
+            ListUrl = Url.Action("Index", "WorkflowType", new { area = "OrchardCore.Workflows" }),
+            Translations = _jsLocalizers.GetMergedLocalizations(WorkflowsDesignerJSLocalizer.Group),
+        };
     }
 
     private Task<bool> CanManageAsync()

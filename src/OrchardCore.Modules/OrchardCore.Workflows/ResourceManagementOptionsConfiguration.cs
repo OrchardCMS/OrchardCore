@@ -79,6 +79,23 @@ public sealed class ResourceManagementOptionsConfiguration
             .SetVersion("1.0.0");
 
         s_manifest
+            .DefineScript("workflows-designer")
+            .SetUrl(
+                "~/OrchardCore.Workflows/Scripts/Workflows/designer/workflows-designer.min.js",
+                "~/OrchardCore.Workflows/Scripts/Workflows/designer/workflows-designer.js"
+            )
+            .SetAttribute("type", "module")
+            .SetVersion("1.0.0");
+
+        s_manifest
+            .DefineStyle("workflows-designer")
+            .SetUrl(
+                "~/OrchardCore.Workflows/Styles/workflows-designer.min.css",
+                "~/OrchardCore.Workflows/Styles/workflows-designer.css"
+            )
+            .SetVersion("1.0.0");
+
+        s_manifest
             .DefineScript("workflow-monaco-text-editor")
             .SetDependencies("monaco")
             .SetUrl(

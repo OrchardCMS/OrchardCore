@@ -1,0 +1,63 @@
+/* Workflow designer. Only Bootstrap and --bs-* / --oc-* variables, so light, dark and RTL work. */
+
+.wfd {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 11rem);
+    min-height: 32rem;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-body-bg);
+    overflow: hidden;
+}
+
+.wfd-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+    background-color: var(--bs-tertiary-bg);
+}
+
+.wfd-title {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.wfd-body {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.wfd-toolbox {
+    flex: 0 0 16rem;
+    border-right: var(--bs-border-width) solid var(--bs-border-color);
+    overflow: auto;
+}
+
+.wfd-canvas-host {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.wfd-panel {
+    flex: 0 0 24rem;
+    border-left: var(--bs-border-width) solid var(--bs-border-color);
+    overflow: auto;
+}
+
+.wfd-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 100%;
+    color: var(--bs-secondary-color);
+}

@@ -17,9 +17,14 @@ public sealed class WorkflowGraphUpdate
     public IList<Transition> Transitions { get; set; } = [];
 
     /// <summary>
-    /// The identifiers of the activities to remove.
+    /// The identifiers of the activities to remove. They can be restored later with <see cref="RestoredActivityIds"/>.
     /// </summary>
     public IList<string> RemovedActivityIds { get; set; } = [];
+
+    /// <summary>
+    /// The identifiers of previously removed activities to bring back, with their properties.
+    /// </summary>
+    public IList<string> RestoredActivityIds { get; set; } = [];
 }
 
 /// <summary>

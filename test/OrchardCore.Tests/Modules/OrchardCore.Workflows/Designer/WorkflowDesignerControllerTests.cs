@@ -46,6 +46,28 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
     }
 
     [Fact]
+    public async Task Index_ManageWorkflows_RendersDesignerWithTenantAwareConfig()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));
+
+        using var response = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/{id}/Designer/Index", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var document = new HtmlParser().ParseDocument(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        var host = Assert.Single(document.QuerySelectorAll("#workflow-designer"));
+        var config = JsonNode.Parse(host.GetAttribute("data-config"));
+        var tenantPrefix = $"/{_fixture.Context.TenantName}/";
+
+        Assert.Equal(id, config["workflowTypeId"].GetValue<long>());
+        Assert.False(config["readOnly"].GetValue<bool>());
+        Assert.Equal($"{tenantPrefix}Admin/Workflows/Types/{id}/Designer/Definition", config["urls"]["definition"].GetValue<string>());
+        Assert.Equal($"{tenantPrefix}Admin/Workflows/Types/{id}/Designer/Editor", config["urls"]["editor"].GetValue<string>());
+        Assert.False(string.IsNullOrEmpty(config["translations"]["Undo"].GetValue<string>()));
+        Assert.NotNull(document.QuerySelector("input[name='__RequestVerificationToken']"));
+        Assert.Contains(document.QuerySelectorAll("script[src]"), x => x.GetAttribute("src").Contains("workflows-designer") && x.GetAttribute("type") == "module");
+    }
+
+    [Fact]
     public async Task Definition_NoDraftThenSave_ReturnsLiveThenDraftGraph()
     {
         var (id, _) = await CreateWorkflowTypeAsync(

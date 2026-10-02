@@ -1,0 +1,16 @@
+@model WorkflowDesignerViewModel
+@using OrchardCore.DisplayManagement.Html
+
+<zone Name="Title">
+    <breadcrumb name="WorkflowTypesEdit" title="@(new HtmlContentString(Model.WorkflowType.Name ?? string.Empty))">
+        <breadcrumb-item id="WorkflowTypes" action="Index" controller="WorkflowType" area="OrchardCore.Workflows" permission="@WorkflowsPermissions.ManageWorkflows.Name">@T["Workflows"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
+
+@* The designer reads the antiforgery token from this form for its POST requests. *@
+<form id="workflow-designer-antiforgery" class="d-none">@Html.AntiForgeryToken()</form>
+
+<div id="workflow-designer" data-config="@Model.ConfigJson"></div>
+
+<style asp-name="workflows-designer"></style>
+<script asp-name="workflows-designer" at="Foot"></script>

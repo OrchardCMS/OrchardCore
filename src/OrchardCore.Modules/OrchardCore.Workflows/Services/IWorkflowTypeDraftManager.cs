@@ -27,8 +27,9 @@ public interface IWorkflowTypeDraftManager
     Task<WorkflowTypeDraft> GetOrCreateAsync(WorkflowType workflowType);
 
     /// <summary>
-    /// Saves positions, start flags, transitions and removed activities into the draft. Transitions whose
-    /// source or destination activity doesn't exist are dropped.
+    /// Saves positions, start flags, transitions, removed and restored activities into the draft. Removed
+    /// activities are kept aside so they can be restored with their properties. Transitions whose source or
+    /// destination activity doesn't exist are dropped.
     /// </summary>
     /// <param name="workflowTypeId">The <see cref="WorkflowType.WorkflowTypeId"/>.</param>
     /// <param name="expectedRevision">The revision the caller last saw.</param>

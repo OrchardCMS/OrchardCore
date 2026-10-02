@@ -15,6 +15,9 @@ namespace OrchardCore.Workflows.Services;
 /// <inheritdoc />
 public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
 {
+    // The number of removed activities a draft keeps so that undo can restore them.
+    private const int MaxRemovedActivities = 100;
+
     private readonly ISession _session;
     private readonly IWorkflowTypeStore _workflowTypeStore;
     private readonly IWorkflowManager _workflowManager;
@@ -84,11 +87,30 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
 
         return ChangeAsync(workflowTypeId, expectedRevision, (_, draft) =>
         {
+            draft.RemovedActivities ??= [];
+
+            foreach (var activityId in update.RestoredActivityIds ?? [])
+            {
+                var removed = draft.RemovedActivities.LastOrDefault(activity => activity.ActivityId == activityId);
+
+                if (removed is not null && !draft.Activities.Any(activity => activity.ActivityId == activityId))
+                {
+                    draft.RemovedActivities.Remove(removed);
+                    draft.Activities.Add(removed);
+                }
+            }
+
             var removedIds = new HashSet<string>(update.RemovedActivityIds ?? [], StringComparer.Ordinal);
 
             foreach (var activity in draft.Activities.Where(activity => removedIds.Contains(activity.ActivityId)).ToList())
             {
                 draft.Activities.Remove(activity);
+                draft.RemovedActivities.Add(activity);
+            }
+
+            while (draft.RemovedActivities.Count > MaxRemovedActivities)
+            {
+                draft.RemovedActivities.RemoveAt(0);
             }
 
             var activities = draft.Activities.ToDictionary(activity => activity.ActivityId, StringComparer.Ordinal);

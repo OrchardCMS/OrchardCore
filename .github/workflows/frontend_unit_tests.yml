@@ -36,6 +36,9 @@ jobs:
     - name: Run vitest unit tests (media-picker)
       working-directory: src/OrchardCore.Modules/OrchardCore.Media/Assets/media-picker
       run: yarn vitest run
+    - name: Run vitest unit tests (workflows-designer)
+      working-directory: src/OrchardCore.Modules/OrchardCore.Workflows/Assets/designer
+      run: yarn vitest run
     - name: Upload vitest test results
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       if: always()
@@ -45,4 +48,5 @@ jobs:
           .scripts/bloom/testing/vitest-results.xml
           src/OrchardCore.Modules/OrchardCore.Media/Assets/media-gallery/testing/vitest-results.xml
           src/OrchardCore.Modules/OrchardCore.Media/Assets/media-picker/testing/vitest-results.xml
+          src/OrchardCore.Modules/OrchardCore.Workflows/Assets/designer/testing/vitest-results.xml
         retention-days: 30

@@ -151,7 +151,7 @@ Goal: every editor initializes correctly when injected into the panel, more than
   - bloom has its own Vitest setup (`.scripts/bloom/vitest.config.ts`, run in `frontend_unit_tests.yml`).
   - Verified in a running CMS, both injected over AJAX (switching between editors and back) and on the legacy full pages. Every editor initialized each time, with no leftover CodeMirror or Monaco instances and no console errors.
 
-### - [ ] 1.4 Front-end scaffold
+### - [x] 1.4 Front-end scaffold
 
 - **Create `M/Assets/designer/`**, mirroring `OrchardCore.Media/Assets/media-gallery`:
   - `package.json`: name `@orchardcore/workflows-designer`, private, scripts `check` (`vue-tsc --noEmit`) and `test:unit` (`vitest`).
@@ -174,6 +174,11 @@ Goal: every editor initializes correctly when injected into the panel, more than
   - `App.vue`: layout shell with the toolbar, toolbox, canvas and panel.
 - **Mount in a new view**: `M/Views/WorkflowType/Designer.cshtml`. The existing `Edit.cshtml` stays the default until step 1.11. Until then the new designer is reachable at `WorkflowDesigner/Index` (add that GET action to the controller from step 1.2), so both can be compared.
 - **Tests**: Vitest specs for history (undo/redo, drag coalescing, cap) and for the store's serialization to the `Save` payload. Add a `M/Assets/designer` step to `.github/workflows/frontend_unit_tests.yml`.
+- **Notes from implementing this step:**
+  - `vue` is **not** aliased to `vue/dist/vue.esm-bundler.js`. The designer only uses precompiled SFCs, and the runtime-only build halves the bundle (152 kB instead of 302 kB minified).
+  - **Undo across autosave.** Once a removal is autosaved, the server no longer has the activity, so undoing it locally would lose its properties. The draft therefore keeps removed activities in `WorkflowTypeDraft.RemovedActivities` (the last 100; never published), and `Save` takes `restoredActivityIds`. The store compares the graph with the activity ids the server last had: missing ones go in `removedActivityIds`, re-appeared ones in `restoredActivityIds`. This is draft-only state, so the persisted formats (D7) don't change.
+  - Editor applies replace the node and call `History.markBoundary()`, which clears the undo/redo stacks.
+  - **For step 1.8:** every mutating request (Save, AddActivity, Editor and Settings posts, Publish) takes the current revision and returns the next one, so autosave must send them one at a time through a single queue.
 
 ### - [ ] 1.5 Canvas
 

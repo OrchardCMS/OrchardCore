@@ -76,6 +76,12 @@
     "tags": ["workflows", "js"]
   },
   {
+    "action": "vite",
+    "name": "workflows-designer",
+    "source": "Assets/designer",
+    "tags": ["admin", "workflows"]
+  },
+  {
     "action": "parcel",
     "name": "task-editors",
     "source": [
