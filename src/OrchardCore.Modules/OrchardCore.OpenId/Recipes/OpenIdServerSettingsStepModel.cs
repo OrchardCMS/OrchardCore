@@ -5,7 +5,7 @@ namespace OrchardCore.OpenId.Recipes;
 
 public sealed class OpenIdServerSettingsStepModel
 {
-    public OpenIdServerSettingsRecipeModel OpenIdServerSettings { get; set; }
+    public OpenIdServerSettingsRecipeModel OpenIdServerSettings { get; set; } = new OpenIdServerSettingsRecipeModel();
 }
 
 public sealed class OpenIdServerSettingsRecipeModel
