@@ -96,7 +96,7 @@ public class TitlePartHandlerTests
     private static TitlePartHandler CreateHandler(ILiquidTemplateManager liquidTemplateManager, TitlePartOptions options)
     {
         var typeDefinition = new ContentTypeDefinitionBuilder()
-            .Named(ContentType)
+            .WithName(ContentType)
             .WithPart(nameof(TitlePart), part => part.WithSettings(new TitlePartSettings
             {
                 Options = options,
