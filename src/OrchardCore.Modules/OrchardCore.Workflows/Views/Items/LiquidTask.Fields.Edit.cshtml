@@ -1,12 +1,14 @@
 @using OrchardCore.Workflows.ViewModels
 @model LiquidTaskViewModel
 
-<div class="ocat-wrapper" asp-validation-class-for="Expression">
-    <label asp-for="Expression" class="ocat-label">@T["Expression"]</label>
-    <div class="ocat-end">
-        <textarea asp-for="Expression" class="form-control"></textarea>
-        <span asp-validation-for="Expression"></span>
-        <span class="hint">@T["The Liquid expression to evaluate. The result is stored as the last result. Example: {0}", "{{ Workflow.Input.ContentItem.DisplayText }}"]</span>
+<div data-task-editor="liquid" data-expression-id="@Html.IdFor(m => m.Expression)">
+    <div class="ocat-wrapper" asp-validation-class-for="Expression">
+        <label asp-for="Expression" class="ocat-label">@T["Expression"]</label>
+        <div class="ocat-end">
+            <textarea asp-for="Expression" class="form-control"></textarea>
+            <span asp-validation-for="Expression"></span>
+            <span class="hint">@T["The Liquid expression to evaluate. The result is stored as the last result. Example: {0}", "{{ Workflow.Input.ContentItem.DisplayText }}"]</span>
+        </div>
     </div>
 </div>
 

@@ -2,24 +2,26 @@
 @using OrchardCore.Workflows.ViewModels
 @model CorrelateTaskViewModel
 
-<div class="ocat-wrapper" asp-validation-class-for="Syntax">
-    <label asp-for="Syntax" class="ocat-label">@T["Syntax"]</label>
-    <div class="ocat-end">
-        <select asp-for="Syntax" class="form-select">
-            <option value="@nameof(WorkflowScriptSyntax.JavaScript)">@T["JavaScript"]</option>
-            <option value="@nameof(WorkflowScriptSyntax.Liquid)">@T["Liquid"]</option>
-        </select>
-        <span asp-validation-for="Syntax"></span>
+<div data-task-editor="correlate" data-syntax-id="@Html.IdFor(m => m.Syntax)" data-value-id="@Html.IdFor(m => m.Value)">
+    <div class="ocat-wrapper" asp-validation-class-for="Syntax">
+        <label asp-for="Syntax" class="ocat-label">@T["Syntax"]</label>
+        <div class="ocat-end">
+            <select asp-for="Syntax" class="form-select">
+                <option value="@nameof(WorkflowScriptSyntax.JavaScript)">@T["JavaScript"]</option>
+                <option value="@nameof(WorkflowScriptSyntax.Liquid)">@T["Liquid"]</option>
+            </select>
+            <span asp-validation-for="Syntax"></span>
+        </div>
     </div>
-</div>
 
-<div class="ocat-wrapper" asp-validation-class-for="Value">
-    <label asp-for="Value" class="ocat-label">@T["Value"]</label>
-    <div class="ocat-end">
-        <textarea asp-for="Value" class="form-control" data-mode="@(Model.Syntax.GetSyntaxName())"></textarea>
-        <span asp-validation-for="Value"></span>
-        <span id="liquid_hint" class="hint @(Model.Syntax == WorkflowScriptSyntax.Liquid ? "" : "d-none")">@T["The value to correlate workflow instances with. With Liquid support."]</span>
-        <span id="javascript_hint" class="hint @(Model.Syntax == WorkflowScriptSyntax.JavaScript ? "" : "d-none")">@T["The value to correlate workflow instances with. With JavaScript support."]</span>
+    <div class="ocat-wrapper" asp-validation-class-for="Value">
+        <label asp-for="Value" class="ocat-label">@T["Value"]</label>
+        <div class="ocat-end">
+            <textarea asp-for="Value" class="form-control" data-mode="@(Model.Syntax.GetSyntaxName())"></textarea>
+            <span asp-validation-for="Value"></span>
+            <span id="liquid_hint" class="hint @(Model.Syntax == WorkflowScriptSyntax.Liquid ? "" : "d-none")">@T["The value to correlate workflow instances with. With Liquid support."]</span>
+            <span id="javascript_hint" class="hint @(Model.Syntax == WorkflowScriptSyntax.JavaScript ? "" : "d-none")">@T["The value to correlate workflow instances with. With JavaScript support."]</span>
+        </div>
     </div>
 </div>
 

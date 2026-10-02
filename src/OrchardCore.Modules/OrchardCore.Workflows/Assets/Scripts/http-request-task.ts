@@ -1,7 +1,8 @@
 import initLiquidPatternEditor from "@orchardcore/bloom/components/liquid-pattern-editor";
 
-const headers = document.getElementById("Headers") as HTMLTextAreaElement | null;
-const body = document.getElementById("Body") as HTMLTextAreaElement | null;
+const editor = document.querySelector<HTMLElement>('[data-task-editor="http-request"]');
+const headers = document.getElementById(editor?.dataset.headersId ?? "") as HTMLTextAreaElement | null;
+const body = document.getElementById(editor?.dataset.bodyId ?? "") as HTMLTextAreaElement | null;
 
 if (headers) {
     initLiquidPatternEditor(headers);
