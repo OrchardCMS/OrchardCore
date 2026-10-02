@@ -21,6 +21,7 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
+    (event: "loaded"): void;
     (event: "applied", result: FormApplyResult & { valid: true }): void;
     (event: "error", error: unknown): void;
 }>();
@@ -66,6 +67,7 @@ const reload = async () => {
 
         if (token === loadToken) {
             await render(fragment);
+            emit("loaded");
         }
     } catch (error) {
         if (token === loadToken) {

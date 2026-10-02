@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, watch } from "vue";
+import { computed, nextTick, onMounted, ref, useId, watch } from "vue";
 import type { DesignerApi } from "../api/designerApi";
 import { DesignerApiError } from "../api/designerApi";
 import type { DesignIssue, EditorApplied, SettingsApplied } from "../api/types";
@@ -39,6 +39,7 @@ const mutate = <T,>(task: RevisionTask<T>) => (props.mutate ? props.mutate(task)
 
 const emit = defineEmits<{
     (event: "focus-activity", activityId: string): void;
+    (event: "return-focus", activityId: string): void;
     (event: "conflict", error: DesignerApiError): void;
 }>();
 
@@ -49,6 +50,14 @@ const width = ref(384);
 const editingId = ref<string | null>(null);
 const activityHost = ref<InstanceType<typeof ServerFormHost> | null>(null);
 const settingsHost = ref<InstanceType<typeof ServerFormHost> | null>(null);
+const body = ref<HTMLElement | null>(null);
+const tabList = ref<HTMLElement | null>(null);
+const ids = `wfd-panel-${useId()}`;
+
+const tabs = computed<Tab[]>(() => (props.readOnly ? ["activity"] : ["activity", "workflow", "issues"]));
+
+// Set by open({ focus: true }): the first field of the activity editor gets the focus once it is loaded.
+let focusOnLoad = false;
 
 const selectedId = computed(() => (state.selectedNodeIds.length === 1 ? state.selectedNodeIds[0] : null));
 const editingNode = computed(() => (editingId.value ? props.store.getNode(editingId.value) : undefined));
@@ -138,16 +147,80 @@ const toggleCollapsed = async () => {
 /**
  * Shows the editor of an activity, for example after a double-click or adding it from the toolbox.
  */
-const open = async (activityId: string) => {
+const open = async (activityId: string, options: { focus?: boolean } = {}) => {
     collapsed.value = false;
 
     if (tab.value !== "activity" && !(await settle())) {
         return;
     }
 
+    const loaded = tab.value === "activity" && editingId.value === activityId;
+
     tab.value = "activity";
+    focusOnLoad = !!options.focus;
     selectNode(props.store, activityId);
     await nextTick();
+
+    // The editor of this activity is already open, so it won't load again.
+    if (loaded && focusOnLoad) {
+        focusOnLoad = false;
+        focusFirstField();
+    }
+};
+
+const isVisible = (element: HTMLElement) => (typeof element.checkVisibility === "function" ? element.checkVisibility() : true);
+
+const FIELDS = ".wfd-form-content input:not([type=hidden]), .wfd-form-content select, .wfd-form-content textarea, .wfd-form-content button";
+
+/**
+ * Moves the focus to the first field of the open form, or to the panel's title.
+ */
+const focusFirstField = () => {
+    const field = Array.from(body.value?.querySelectorAll<HTMLElement>(FIELDS) ?? []).find((element) => !element.hasAttribute("disabled") && isVisible(element));
+
+    (field ?? body.value?.querySelector<HTMLElement>(".wfd-panel-title"))?.focus();
+};
+
+const onActivityLoaded = () => {
+    if (focusOnLoad) {
+        focusOnLoad = false;
+        focusFirstField();
+    }
+};
+
+// Escape goes back to the activity on the canvas, unless a rich editor uses it (suggestions, search).
+const onBodyKeyDown = (event: KeyboardEvent) => {
+    const target = event.target as Element | null;
+
+    if (event.key !== "Escape" || event.defaultPrevented || !editingId.value || target?.closest(".monaco-editor, .CodeMirror")) {
+        return;
+    }
+
+    event.preventDefault();
+    emit("return-focus", editingId.value);
+};
+
+// The tabs follow the ARIA tabs pattern: one tab stop, arrow keys (mirrored in RTL), Home and End.
+const onTabKeyDown = async (event: KeyboardEvent) => {
+    const index = tabs.value.indexOf(tab.value);
+    const rtl = !!tabList.value && getComputedStyle(tabList.value).direction === "rtl";
+    let next: number;
+
+    if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
+        next = index + ((event.key === "ArrowRight") !== rtl ? 1 : -1);
+    } else if (event.key === "Home") {
+        next = 0;
+    } else if (event.key === "End") {
+        next = tabs.value.length - 1;
+    } else {
+        return;
+    }
+
+    event.preventDefault();
+    next = (next + tabs.value.length) % tabs.value.length;
+    await selectTab(tabs.value[next]);
+    await nextTick();
+    tabList.value?.querySelector<HTMLElement>(`[data-cy=panel-tab-${tab.value}]`)?.focus();
 };
 
 const onError = (error: unknown) => {
@@ -284,19 +357,52 @@ defineExpose({ open, settle, selectTab, discardChanges, refresh, hasPendingChang
         ></div>
 
         <div class="wfd-panel-header">
-            <ul v-if="!collapsed" class="nav nav-tabs wfd-panel-tabs" role="tablist">
+            <ul v-if="!collapsed" ref="tabList" class="nav nav-tabs wfd-panel-tabs" role="tablist" @keydown="onTabKeyDown">
                 <li class="nav-item" role="presentation">
-                    <button type="button" role="tab" class="nav-link" :class="{ active: tab === 'activity' }" :aria-selected="tab === 'activity'" data-cy="panel-tab-activity" @click="selectTab('activity')">
+                    <button
+                        :id="`${ids}-tab-activity`"
+                        type="button"
+                        role="tab"
+                        class="nav-link"
+                        :class="{ active: tab === 'activity' }"
+                        :aria-selected="tab === 'activity'"
+                        :aria-controls="`${ids}-body`"
+                        :tabindex="tab === 'activity' ? 0 : -1"
+                        data-cy="panel-tab-activity"
+                        @click="selectTab('activity')"
+                    >
                         {{ t("ActivityTab") }}
                     </button>
                 </li>
                 <li v-if="!readOnly" class="nav-item" role="presentation">
-                    <button type="button" role="tab" class="nav-link" :class="{ active: tab === 'workflow' }" :aria-selected="tab === 'workflow'" data-cy="panel-tab-workflow" @click="selectTab('workflow')">
+                    <button
+                        :id="`${ids}-tab-workflow`"
+                        type="button"
+                        role="tab"
+                        class="nav-link"
+                        :class="{ active: tab === 'workflow' }"
+                        :aria-selected="tab === 'workflow'"
+                        :aria-controls="`${ids}-body`"
+                        :tabindex="tab === 'workflow' ? 0 : -1"
+                        data-cy="panel-tab-workflow"
+                        @click="selectTab('workflow')"
+                    >
                         {{ t("WorkflowTab") }}
                     </button>
                 </li>
                 <li v-if="!readOnly" class="nav-item" role="presentation">
-                    <button type="button" role="tab" class="nav-link" :class="{ active: tab === 'issues' }" :aria-selected="tab === 'issues'" data-cy="panel-tab-issues" @click="selectTab('issues')">
+                    <button
+                        :id="`${ids}-tab-issues`"
+                        type="button"
+                        role="tab"
+                        class="nav-link"
+                        :class="{ active: tab === 'issues' }"
+                        :aria-selected="tab === 'issues'"
+                        :aria-controls="`${ids}-body`"
+                        :tabindex="tab === 'issues' ? 0 : -1"
+                        data-cy="panel-tab-issues"
+                        @click="selectTab('issues')"
+                    >
                         {{ t("IssuesTab") }}
                         <span v-if="state.issues.length > 0" class="badge ms-1" :class="errorCount > 0 ? 'text-bg-danger' : 'text-bg-warning'" data-cy="issues-count">
                             {{ state.issues.length }}
@@ -313,18 +419,26 @@ defineExpose({ open, settle, selectTab, discardChanges, refresh, hasPendingChang
                 data-cy="panel-collapse"
                 @click="toggleCollapsed"
             >
-                <i class="fa-solid" :class="collapsed ? 'fa-angles-left' : 'fa-angles-right'" aria-hidden="true"></i>
+                <i class="fa-solid wfd-mirror-rtl" :class="collapsed ? 'fa-angles-left' : 'fa-angles-right'" aria-hidden="true"></i>
             </button>
         </div>
 
-        <div v-show="!collapsed" class="wfd-panel-body" role="tabpanel">
+        <div
+            v-show="!collapsed"
+            :id="`${ids}-body`"
+            ref="body"
+            class="wfd-panel-body"
+            role="tabpanel"
+            :aria-labelledby="`${ids}-tab-${tab}`"
+            @keydown="onBodyKeyDown"
+        >
             <template v-if="tab === 'activity'">
                 <p v-if="state.selectedNodeIds.length > 1" class="wfd-panel-message" data-cy="panel-multiple">
                     {{ t("MultipleSelected", state.selectedNodeIds.length) }}
                 </p>
                 <p v-else-if="!editingNode" class="wfd-panel-message" data-cy="panel-empty">{{ readOnly ? t("SelectActivityToView") : t("SelectActivityToEdit") }}</p>
                 <div v-else-if="readOnly" class="wfd-panel-summary" data-cy="panel-summary">
-                    <h3 class="wfd-panel-title h6">
+                    <h3 class="wfd-panel-title h6" tabindex="-1">
                         <i :class="editingNode.icon || 'fa-solid fa-gear'" aria-hidden="true"></i>
                         {{ editingNode.title }}
                     </h3>
@@ -347,7 +461,7 @@ defineExpose({ open, settle, selectTab, discardChanges, refresh, hasPendingChang
                 </div>
                 <p v-else-if="editingNode.isMissing" class="wfd-panel-message text-warning" data-cy="panel-missing">{{ t("MissingActivityCannotBeEdited") }}</p>
                 <template v-else>
-                    <h3 class="wfd-panel-title h6" data-cy="panel-activity-title">
+                    <h3 class="wfd-panel-title h6" tabindex="-1" data-cy="panel-activity-title">
                         <i :class="editingNode.icon || 'fa-solid fa-gear'" aria-hidden="true"></i>
                         {{ editingNode.title }}
                         <small class="text-secondary">{{ editingNode.displayText }}</small>
@@ -359,6 +473,7 @@ defineExpose({ open, settle, selectTab, discardChanges, refresh, hasPendingChang
                         :submit="submitActivity"
                         :label="t('ActivityTab')"
                         data-cy="panel-activity-form"
+                        @loaded="onActivityLoaded"
                         @applied="onActivityApplied"
                         @error="onError"
                     />

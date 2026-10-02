@@ -17,7 +17,7 @@ const runAction = (toast: Toast) => {
             :key="toast.id"
             class="toast show align-items-center border-0"
             :class="`text-bg-${toast.variant === 'info' ? 'dark' : toast.variant}`"
-            role="status"
+            :role="toast.variant === 'danger' ? 'alert' : 'status'"
             data-cy="toast"
         >
             <div class="d-flex align-items-center">
@@ -31,7 +31,13 @@ const runAction = (toast: Toast) => {
                 >
                     {{ toast.action.label }}
                 </button>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" :aria-label="t('Close')" @click="dismissToast(toast.id)"></button>
+                <button
+                    type="button"
+                    class="btn-close me-2 m-auto"
+                    :class="{ 'btn-close-white': toast.variant !== 'warning' }"
+                    :aria-label="t('Close')"
+                    @click="dismissToast(toast.id)"
+                ></button>
             </div>
         </div>
     </div>

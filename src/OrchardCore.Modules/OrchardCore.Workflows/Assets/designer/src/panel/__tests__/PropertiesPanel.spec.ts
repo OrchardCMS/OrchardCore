@@ -193,6 +193,49 @@ describe("PropertiesPanel", () => {
         expect(wrapper.emitted("focus-activity")).toEqual([["b"]]);
     });
 
+    it("tabs_ArrowKeys_MoveTheSelectionAndTheFocus", async () => {
+        const { wrapper } = setup(() => Promise.resolve({ valid: true }));
+        const activityTab = wrapper.get("[data-cy=panel-tab-activity]");
+
+        expect(activityTab.attributes("tabindex")).toBe("0");
+        expect(wrapper.get("[data-cy=panel-tab-issues]").attributes("tabindex")).toBe("-1");
+        expect(wrapper.get("[role=tabpanel]").attributes("aria-labelledby")).toBe(activityTab.attributes("id"));
+
+        await activityTab.trigger("keydown", { key: "ArrowRight" });
+        await flushPromises();
+
+        expect(wrapper.get("[data-cy=panel-tab-workflow]").attributes("aria-selected")).toBe("true");
+        expect(document.activeElement).toBe(wrapper.get("[data-cy=panel-tab-workflow]").element);
+
+        await wrapper.get("[data-cy=panel-tab-workflow]").trigger("keydown", { key: "End" });
+        await flushPromises();
+        expect(document.activeElement).toBe(wrapper.get("[data-cy=panel-tab-issues]").element);
+
+        // The arrows wrap around.
+        await wrapper.get("[data-cy=panel-tab-issues]").trigger("keydown", { key: "ArrowRight" });
+        await flushPromises();
+        expect(document.activeElement).toBe(wrapper.get("[data-cy=panel-tab-activity]").element);
+    });
+
+    it("open_WithFocus_FocusesTheFirstFieldOnceLoaded", async () => {
+        const { wrapper } = setup(() => Promise.resolve({ valid: true }));
+
+        await (wrapper.vm as unknown as { open: (id: string, options: { focus: boolean }) => Promise<void> }).open("a", { focus: true });
+        await flushPromises();
+
+        expect(document.activeElement).toBe(wrapper.get("input[name='Task.Value']").element);
+    });
+
+    it("escape_InTheEditor_ReturnsTheFocusToTheActivity", async () => {
+        const { store, wrapper } = setup(() => Promise.resolve({ valid: true }));
+        selectNode(store, "a");
+        await flushPromises();
+
+        await wrapper.get("input[name='Task.Value']").trigger("keydown", { key: "Escape" });
+
+        expect(wrapper.emitted("return-focus")).toEqual([["a"]]);
+    });
+
     it("collapse_Toggle_HidesAndShowsTheBody", async () => {
         const { wrapper } = setup(() => Promise.resolve({ valid: true }));
 

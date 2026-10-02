@@ -614,6 +614,7 @@ defineExpose({
     fit,
     centerOn,
     focusNode,
+    focus: () => host.value?.focus({ preventScroll: true }),
     zoomIn: () => zoomTo(viewport.zoom * ZOOM_STEP),
     zoomOut: () => zoomTo(viewport.zoom / ZOOM_STEP),
     resetZoom: () => zoomTo(1),

@@ -41,6 +41,11 @@
     white-space: nowrap;
 }
 
+/* Directional icons outside the canvas point the other way in RTL. */
+[dir="rtl"] .wfd-mirror-rtl {
+    transform: scaleX(-1);
+}
+
 .wfd-save-status {
     display: inline-flex;
     align-items: center;

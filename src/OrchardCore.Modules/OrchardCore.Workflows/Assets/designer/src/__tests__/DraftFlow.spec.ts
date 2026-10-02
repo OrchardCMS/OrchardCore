@@ -77,6 +77,8 @@ describe("draft flow", () => {
         expect(store.state.hasDraft).toBe(false);
         expect(store.state.revision).toBe(0);
         expect(useToasts().map((toast) => toast.variant)).toEqual(["success"]);
+        // Publish is disabled now, so the focus goes to the canvas instead of being lost.
+        expect(document.activeElement?.getAttribute("data-cy")).toBe("canvas-surface");
         wrapper.unmount();
     });
 

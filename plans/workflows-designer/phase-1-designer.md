@@ -353,12 +353,37 @@ Files: `src/panel/` — `PropertiesPanel.vue` (resizable and collapsible, with t
     - The view is fitted to all 17 activities.
     - The State tab works, and there are no console errors.
 
-### - [ ] 1.10 Theming, RTL, accessibility and localization
+### - [x] 1.10 Theming, RTL, accessibility and localization
 
 - **Styling**: only `--oc-*` / `--bs-*` variables (`src/OrchardCore.Themes/TheAdmin/Assets/scss/_variables.scss`) and Bootstrap classes. Check light, dark and auto `data-bs-theme`. The canvas grid and edges must stay legible in both themes.
 - **RTL**: the panel and toolbox mirror. The canvas coordinate space does **not** mirror; workflow layouts stay the same for every user. Document this.
 - **Localization**: every client string goes through the `workflows-designer` JS localizer from step 1.4, and server messages use `IStringLocalizer`.
 - **Accessibility**: keyboard-only walkthrough (add, connect, edit, delete, publish). Visible focus. `aria-live` for save status and toasts.
+- **Notes from implementing this step:**
+  - **Styling.**
+    - Every color in the designer stylesheet and components is a `--bs-*` variable or a Bootstrap class.
+    - In the dark theme, the grid dots, edges, labels and node text stay legible.
+    - The blocking (info), event (warning), start (success), error (danger) and selection (primary) colors stay distinct.
+    - The filled inactive panel tabs come from the admin theme's own `.nav-tabs` style, so they are kept for consistency with the other admin tabs.
+  - **RTL.**
+    - The toolbox and panel swap sides, their borders flip, and the panel's resize handle stays on the edge facing the canvas.
+    - The canvas keeps `direction: ltr` and the same coordinates, so a workflow looks the same for every user. Step 1.12 documents this.
+    - Directional icons outside the canvas (panel collapse, category carets, undo/redo) get `wfd-mirror-rtl` and flip in RTL.
+  - **Localization.**
+    - A Vitest spec checks that every `t("…")` key the sources use is defined in `WorkflowsDesignerJSLocalizer`, and that every defined key is used.
+    - Server messages already go through `IStringLocalizer`. The instance page's Correlation ID fallback ("None") and Workflow tab label are now localized.
+  - **Accessibility.**
+    - The canvas region is a labeled `<section>` instead of `<main>`, since the admin layout has no main landmark of its own.
+    - The panel tabs follow the ARIA tabs pattern: ids with `aria-controls` and `aria-labelledby`, one tab stop, arrow keys (mirrored in RTL), Home and End.
+    - Editing an activity (Enter or double-click) moves the focus to its first field. Escape in the panel returns it to the activity, except inside Monaco or CodeMirror.
+    - Error toasts use `role="alert"`, and the others `role="status"` inside a polite live region. The close button stays dark on warning toasts.
+    - When a dialog closes on a control that is now disabled (Publish) or replaced (Reload, Discard), the focus goes to the canvas instead of being lost.
+  - **Keyboard walkthrough (verified in a running CMS, real key presses):**
+    - Add: Enter on a toolbox card adds the activity and focuses its node.
+    - Connect: Shift+F10, then "Connect an outcome to…", choosing the target, then Connect. The connection is drawn and autosaved, and the focus is back on the node.
+    - Edit: Enter focuses the Title field; typing then Escape returns to the node, and the change is applied on blur.
+    - Delete: Delete removes the node and shows the undo toast.
+    - Publish: Enter on Publish opens the dialog focused on its confirm button, Tab stays inside the dialog, Enter publishes, and the focus goes to the canvas.
 
 ### - [ ] 1.11 Make the new designer the default and retire the legacy editor
 

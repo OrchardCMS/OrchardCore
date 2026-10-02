@@ -75,8 +75,24 @@ const showBanner = computed(
         state.draftModifiedByUserId !== (props.config.currentUserId ?? null),
 );
 
+// Editing an activity (Enter or double-click on it) moves the focus to its first field; Escape in the
+// panel brings it back.
 const editActivity = (activityId: string) => {
-    void panel.value?.open(activityId);
+    void panel.value?.open(activityId, { focus: true });
+};
+
+const returnFocus = (activityId: string) => {
+    canvas.value?.focusNode(activityId);
+};
+
+// After a dialog closes on a control that is now disabled (Publish) or an element that was replaced
+// (Reload), the focus would be lost; it goes to the canvas instead.
+const keepFocus = async () => {
+    await nextTick();
+
+    if (!document.activeElement || document.activeElement === document.body) {
+        canvas.value?.focus();
+    }
 };
 
 const focusActivity = (activityId: string) => {
@@ -117,6 +133,8 @@ const onReload = async () => {
     } catch {
         showToast({ message: t("ReloadFailed"), variant: "danger" });
     }
+
+    await keepFocus();
 };
 
 const onOverwrite = async () => {
@@ -181,7 +199,7 @@ const addActivity = async (activityName: string, position: Point) => {
         canvas.value?.focusNode(result.node.id);
 
         if (result.node.hasEditor) {
-            editActivity(result.node.id);
+            void panel.value?.open(result.node.id);
         }
     } catch (error) {
         onRequestError(error, t("AddActivityFailed"));
@@ -210,6 +228,7 @@ const doPublish = async () => {
         });
 
         showToast({ message: t("Published"), variant: "success" });
+        await keepFocus();
     } catch (error) {
         if (error instanceof DesignerApiError && error.status === 400 && error.problem.issues) {
             // The draft has errors the designer didn't know about yet.
@@ -287,6 +306,7 @@ const discard = async () => {
         await mutate(() => props.api.discard());
         await reloadDefinition();
         showToast({ message: t("DraftDiscarded"), variant: "info" });
+        await keepFocus();
     } catch (error) {
         onRequestError(error, t("DiscardFailed"));
     } finally {
@@ -358,7 +378,7 @@ defineExpose({ canvas, panel, addActivity, autosave, publish, discard });
                         data-cy="toolbar-undo"
                         @click="store.undo()"
                     >
-                        <i class="fa-solid fa-rotate-left" aria-hidden="true"></i>
+                        <i class="fa-solid fa-rotate-left wfd-mirror-rtl" aria-hidden="true"></i>
                     </button>
                     <button
                         type="button"
@@ -369,7 +389,7 @@ defineExpose({ canvas, panel, addActivity, autosave, publish, discard });
                         data-cy="toolbar-redo"
                         @click="store.redo()"
                     >
-                        <i class="fa-solid fa-rotate-right" aria-hidden="true"></i>
+                        <i class="fa-solid fa-rotate-right wfd-mirror-rtl" aria-hidden="true"></i>
                     </button>
                 </div>
 
@@ -390,7 +410,7 @@ defineExpose({ canvas, panel, addActivity, autosave, publish, discard });
                 <ActivityToolbox :library="library" :loading="libraryLoading" :error="libraryError" @add="onAddActivity" />
             </aside>
 
-            <main class="wfd-canvas-host" :aria-label="t('Canvas')" :aria-busy="loading" data-cy="designer-canvas">
+            <section class="wfd-canvas-host" :aria-label="t('Canvas')" :aria-busy="loading" data-cy="designer-canvas">
                 <div v-if="loading" class="wfd-message">
                     <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
                     {{ t("Loading") }}
@@ -404,7 +424,7 @@ defineExpose({ canvas, panel, addActivity, autosave, publish, discard });
                     @edit="editActivity"
                     @drop-activity="onDropActivity"
                 />
-            </main>
+            </section>
 
             <PropertiesPanel
                 v-if="!loading && !loadError"
@@ -414,6 +434,7 @@ defineExpose({ canvas, panel, addActivity, autosave, publish, discard });
                 :read-only="config.readOnly"
                 :mutate="mutate"
                 @focus-activity="focusActivity"
+                @return-focus="returnFocus"
                 @conflict="autosave.reportConflict"
             />
         </div>

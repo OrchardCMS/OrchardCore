@@ -84,7 +84,7 @@ const kinds: { value: ActivityKind; label: string }[] = [
                     :data-cy="`toolbox-category-${category.name}`"
                     @click="toggle(category.name)"
                 >
-                    <i class="fa-solid fa-fw" :class="isExpanded(category.name) ? 'fa-caret-down' : 'fa-caret-right'" aria-hidden="true"></i>
+                    <i class="fa-solid fa-fw wfd-mirror-rtl" :class="isExpanded(category.name) ? 'fa-caret-down' : 'fa-caret-right'" aria-hidden="true"></i>
                     {{ category.name }}
                     <span class="badge text-bg-secondary ms-1">{{ category.activities.length }}</span>
                 </button>
