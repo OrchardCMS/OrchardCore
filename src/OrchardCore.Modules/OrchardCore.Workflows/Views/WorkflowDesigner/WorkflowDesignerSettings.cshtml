@@ -1,0 +1,58 @@
+@model WorkflowTypePropertiesViewModel
+
+<div class="ocat-wrapper" asp-validation-class-for="Name">
+    <label asp-for="Name" class="ocat-label ocat-label-required">@T["Name"]</label>
+    <div class="ocat-end">
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+        <span class="hint">@T["The name of the workflow."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input asp-for="IsEnabled" type="checkbox" class="form-check-input" />
+            <label class="form-check-label" asp-for="IsEnabled">@T["Enabled"]</label>
+        </div>
+        <span class="hint">@T["Uncheck to prevent workflows of this type from being executed."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input asp-for="IsSingleton" type="checkbox" class="form-check-input" />
+            <label class="form-check-label" asp-for="IsSingleton">@T["Single instance"]</label>
+        </div>
+        <span class="hint">@T["Check to ensure only one workflow of this type can execute at a time. Leave unchecked to allow any number of workflows to execute at the same time."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input asp-for="DeleteFinishedWorkflows" type="checkbox" class="form-check-input" />
+            <label class="form-check-label" asp-for="DeleteFinishedWorkflows">@T["Delete successfully completed workflows"]</label>
+        </div>
+        <span class="hint">@T["Check to automatically delete workflows that have completed successfully. Leave unchecked to maintain a history of executed workflows."]</span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="LockTimeout">
+    <label asp-for="LockTimeout" class="ocat-label">@T["Lock timeout (ms)"]</label>
+    <div class="ocat-limited">
+        <input asp-for="LockTimeout" type="number" min="0" max="30000" class="form-control" />
+        <span asp-validation-for="LockTimeout" class="text-danger"></span>
+        <span class="hint">@T["The timeout in milliseconds to acquire a lock before resuming a given workflow instance of this type atomically. Leave it to zero to not use any locking."]</span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="LockExpiration">
+    <label asp-for="LockExpiration" class="ocat-label">@T["Lock expiration (ms)"]</label>
+    <div class="ocat-limited">
+        <input asp-for="LockExpiration" type="number" min="0" max="30000" class="form-control" />
+        <span asp-validation-for="LockExpiration" class="text-danger"></span>
+        <span class="hint">@T["The expiration in milliseconds of the lock acquired before resuming a workflow instance of this type atomically. Leave it to zero to not use any locking."]</span>
+    </div>
+</div>

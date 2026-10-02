@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace OrchardCore.Workflows.Models;
 
 /// <summary>
@@ -43,8 +45,9 @@ public sealed class WorkflowDesignIssue
 }
 
 /// <summary>
-/// The severity of a <see cref="WorkflowDesignIssue"/>.
+/// The severity of a <see cref="WorkflowDesignIssue"/>. It serializes as its name.
 /// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter<WorkflowDesignIssueSeverity>))]
 public enum WorkflowDesignIssueSeverity
 {
     /// <summary>

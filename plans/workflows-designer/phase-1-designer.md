@@ -94,7 +94,7 @@ Goal: a server-side draft for each workflow type, which the designer autosaves i
   - deleting a type deletes its draft;
   - a recipe import replacing a type deletes its draft.
 
-### - [ ] 1.2 Server: designer JSON API
+### - [x] 1.2 Server: designer JSON API
 
 Goal: everything the designer needs, as an `[Admin]` MVC controller returning JSON, with shapes rendered on the server.
 
@@ -126,6 +126,10 @@ Goal: everything the designer needs, as an `[Admin]` MVC controller returning JS
   - `Publish` registers the `HttpRequestEvent` route (assert through the HTTP route entries service) and the draft disappears;
   - `Discard` works;
   - a POST without an antiforgery token is rejected.
+- **Notes from implementing this step:**
+  - `Activity.Design.cshtml` and `Activity.Thumbnail.cshtml` wrap the activity's own shape with legacy canvas/picker markup (absolute positions, links to `ActivityController`). The model builder still builds `Activity_Design` / `Activity_Thumbnail` through `IActivityDisplayManager`, but renders only their `Content` zone, which holds `{Name}_Fields_Design` / `{Name}_Fields_Thumbnail`. Overrides of the activity's own shapes keep working; overrides of the legacy wrappers don't apply in the designer.
+  - Route entries are only registered for `HttpRequestFilterEvent` start activities. `HttpRequestEvent` is invoked through its signed token URL (`workflows/invoke/{token}`), which resolves the activity on the live type. The publish test asserts both: the filter event's route entry appears, and the token URL returns 404 before publishing and responds after.
+  - Publishing a draft with `Error` issues returns 400 ProblemDetails with an `issues` extension.
 
 ### - [ ] 1.3 Make every activity editor safe to inject
 

@@ -430,7 +430,7 @@ public sealed class WorkflowTypeController : Controller
                 activityContext.ActivityRecord.Name,
                 activityContext.ActivityRecord.IsStart,
                 IsEvent = activityContext.Activity.IsEvent(),
-                Outcomes = (await activityContext.Activity.GetPossibleOutcomesAsync(workflowContext, activityContext)).ToArray(),
+                Outcomes = await WorkflowDesignerModelBuilder.GetOutcomesAsync(workflowContext, activityContext),
             });
         }
 
