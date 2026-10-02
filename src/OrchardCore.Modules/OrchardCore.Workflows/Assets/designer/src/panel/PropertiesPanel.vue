@@ -8,6 +8,7 @@ import { selectNode } from "../canvas/useConnect";
 import ServerFormHost from "./ServerFormHost.vue";
 import IssuesList from "./IssuesList.vue";
 import type { FormApplyResult } from "./types";
+import type { RevisionTask } from "../services/revisionQueue";
 import { showToast } from "../ui/toasts";
 import { confirmAction } from "../ui/confirm";
 import { t } from "../i18n";
@@ -18,7 +19,23 @@ const MIN_WIDTH = 288;
 const MAX_WIDTH = 720;
 const WIDTH_KEY = "orchardcore:workflows-designer:panel-width";
 
-const props = withDefaults(defineProps<{ store: DesignerStore; api: DesignerApi; readOnly?: boolean }>(), { readOnly: false });
+const props = withDefaults(
+    defineProps<{
+        store: DesignerStore;
+        api: DesignerApi;
+        readOnly?: boolean;
+        /**
+         * Runs a request that changes the draft, in the designer's revision queue.
+         */
+        mutate?: <T>(task: RevisionTask<T>) => Promise<T>;
+    }>(),
+    {
+        readOnly: false,
+        mutate: undefined,
+    },
+);
+
+const mutate = <T,>(task: RevisionTask<T>) => (props.mutate ? props.mutate(task) : task(props.store.state.revision));
 
 const emit = defineEmits<{
     (event: "focus-activity", activityId: string): void;
@@ -144,7 +161,12 @@ const onError = (error: unknown) => {
 
 const loadActivity = () => props.api.getEditor(editingId.value!);
 
-const submitActivity = (form: FormData) => props.api.postEditor(editingId.value!, state.revision, form) as Promise<FormApplyResult>;
+const submitActivity = (form: FormData) => {
+    // The request may wait in the queue, so it keeps the activity being edited now.
+    const activityId = editingId.value!;
+
+    return mutate((revision) => props.api.postEditor(activityId, revision, form)) as Promise<FormApplyResult>;
+};
 
 const onActivityApplied = (result: FormApplyResult & { valid: true }) => {
     const applied = result as unknown as EditorApplied;
@@ -159,7 +181,7 @@ const onActivityApplied = (result: FormApplyResult & { valid: true }) => {
 
 const loadSettings = () => props.api.getSettings();
 
-const submitSettings = (form: FormData) => props.api.postSettings(state.revision, form) as Promise<FormApplyResult>;
+const submitSettings = (form: FormData) => mutate((revision) => props.api.postSettings(revision, form)) as Promise<FormApplyResult>;
 
 const onSettingsApplied = (result: FormApplyResult & { valid: true }) => {
     const applied = result as unknown as SettingsApplied;
@@ -213,7 +235,28 @@ onMounted(() => {
     editingId.value = selectedId.value;
 });
 
-defineExpose({ open, settle, selectTab });
+/**
+ * Forgets the unapplied changes of the open forms, for example before loading the definition again.
+ */
+const discardChanges = () => {
+    activityHost.value?.discard();
+    settingsHost.value?.discard();
+};
+
+/**
+ * Loads the open form again, for example after loading the definition again.
+ */
+const refresh = async () => {
+    await nextTick();
+    await (tab.value === "workflow" ? settingsHost.value : activityHost.value)?.reload();
+};
+
+/**
+ * Whether an open form has changes that weren't applied.
+ */
+const hasPendingChanges = () => !!(activityHost.value?.isDirty() || settingsHost.value?.isDirty());
+
+defineExpose({ open, settle, selectTab, discardChanges, refresh, hasPendingChanges });
 </script>
 
 <template>

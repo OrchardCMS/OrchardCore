@@ -3,7 +3,11 @@ import type { DesignIssue, DesignerDefinition, DesignerNode, DesignerTransition,
 import { History, type Command } from "./history";
 import type { Graph } from "./commands";
 
-export type SaveStatus = "saved" | "saving" | "unsaved" | "offline" | "conflict";
+/**
+ * The autosave status: `offline` is retrying after a network or server error, `failed` was rejected by
+ * the server and waits for a retry, and `conflict` waits for the user to reload or overwrite.
+ */
+export type SaveStatus = "saved" | "saving" | "unsaved" | "offline" | "failed" | "conflict";
 
 export interface Viewport {
     panX: number;
@@ -20,6 +24,10 @@ export interface DesignerState {
     draftModifiedBy: string | null;
     draftModifiedByUserId: string | null;
     draftModifiedUtc: string | null;
+    /**
+     * The signed-in user, so the draft's last editor becomes them when they change it.
+     */
+    currentUserId: string | null;
     runningInstanceCount: number;
     settings: WorkflowSettings | null;
     nodes: DesignerNode[];
@@ -46,6 +54,7 @@ const createInitialState = (): DesignerState => ({
     draftModifiedBy: null,
     draftModifiedByUserId: null,
     draftModifiedUtc: null,
+    currentUserId: null,
     runningInstanceCount: 0,
     settings: null,
     nodes: [],
@@ -88,6 +97,14 @@ export const createDesignerStore = () => {
 
     const markChanged = () => {
         state.changeVersion++;
+    };
+
+    // The server changed the draft on behalf of the signed-in user, who is now its last editor.
+    const touchDraft = () => {
+        state.hasDraft = true;
+        state.draftModifiedBy = null;
+        state.draftModifiedByUserId = state.currentUserId;
+        state.draftModifiedUtc = new Date().toISOString();
     };
 
     return {
@@ -158,7 +175,7 @@ export const createDesignerStore = () => {
             serverActivityIds.add(node.id);
             state.revision = revision;
             state.issues = issues;
-            state.hasDraft = true;
+            touchDraft();
         },
 
         /**
@@ -201,7 +218,7 @@ export const createDesignerStore = () => {
         applyServerChange(revision: number, issues: DesignIssue[]) {
             state.revision = revision;
             state.issues = issues;
-            state.hasDraft = true;
+            touchDraft();
         },
 
         /**
@@ -230,7 +247,24 @@ export const createDesignerStore = () => {
             serverActivityIds = new Set(payload.nodes.map((node) => node.id));
             state.revision = result.revision;
             state.issues = result.issues;
-            state.hasDraft = true;
+            touchDraft();
+        },
+
+        /**
+         * Records a successful publish: the draft is gone, so the next change starts a new one from the live
+         * type (revision 0), and undo can't restore what the draft's trash held.
+         */
+        markPublished(issues: DesignIssue[]) {
+            Object.assign(state, {
+                revision: 0,
+                hasDraft: false,
+                draftModifiedBy: null,
+                draftModifiedByUserId: null,
+                draftModifiedUtc: null,
+                issues,
+            });
+
+            history.clear();
         },
 
         reset() {

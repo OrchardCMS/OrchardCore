@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -479,6 +480,7 @@ public sealed class WorkflowDesignerController : Controller
             InstancesUrl = Url.Action("Index", "Workflow", area),
             ExportUrl = Url.Action("Export", "WorkflowType", new { area = "OrchardCore.Workflows", id = workflowType.Id }),
             ListUrl = Url.Action("Index", "WorkflowType", new { area = "OrchardCore.Workflows" }),
+            CurrentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier),
             Translations = _jsLocalizers.GetMergedLocalizations(WorkflowsDesignerJSLocalizer.Group),
         };
     }

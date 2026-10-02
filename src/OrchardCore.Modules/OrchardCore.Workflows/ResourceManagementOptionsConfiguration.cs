@@ -89,6 +89,8 @@ public sealed class ResourceManagementOptionsConfiguration
 
         s_manifest
             .DefineStyle("workflows-designer")
+            // After Bootstrap, so the designer's rules win over the Bootstrap classes they refine.
+            .SetDependencies("bootstrap")
             .SetUrl(
                 "~/OrchardCore.Workflows/Styles/workflows-designer.min.css",
                 "~/OrchardCore.Workflows/Styles/workflows-designer.css"

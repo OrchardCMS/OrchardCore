@@ -280,7 +280,7 @@ Files: `src/panel/` — `PropertiesPanel.vue` (resizable and collapsible, with t
     - The Issues tab lists the warnings.
     - No new console errors on fresh pages, in either editor order.
 
-### - [ ] 1.8 Draft autosave, publish and discard
+### - [x] 1.8 Draft autosave, publish and discard
 
 - **Autosave**:
   - `src/services/autosave.ts` debounces graph changes (800 ms) and keeps a single request in flight, coalescing pending changes.
@@ -294,6 +294,38 @@ Files: `src/panel/` — `PropertiesPanel.vue` (resizable and collapsible, with t
 - **Draft banner**: when a draft exists and its last editor is someone else, show a banner: "Draft last edited by {user} at {time}."
 - **Leave guard**: a `beforeunload` prompt while a save is pending or failed.
 - **Tests (Vitest)**: coalescing, a single in-flight request, the retry schedule, conflict handling for both choices, and the publish dialog decision logic.
+- **Notes from implementing this step:**
+  - **One queue for every draft change.** `src/services/revisionQueue.ts` runs Save, AddActivity, the Editor and Settings posts, Publish, Discard and the reloads one at a time.
+    - Each request gets the revision that is current when it starts.
+    - A revision it returns becomes current inside the queue, before the next request starts. Otherwise a queued Save could read a stale revision while the panel was still handling an apply.
+  - **Autosave** (`src/services/autosave.ts`):
+    - Saves 800 ms after the last graph change, with one Save in flight at a time. Changes made meanwhile are saved together after it.
+    - Network and 5xx errors are retried after 1, 2, 5 and 10 s, then every 30 s ("Not saved. Retrying…"). Other errors stop with "Not saved." and a Retry button.
+    - `flush` saves pending changes right away (used by Publish).
+    - `pause`/`resume` hold saves during Discard, keeping the changes if it fails.
+  - **Conflicts.** A 409 from any request stops autosave and opens the conflict dialog, which "Resolve…" next to the toolbar status reopens.
+    - **Reload** loads the draft again and drops the local changes and unapplied form edits.
+    - **Overwrite** saves the graph with the draft's current revision, applies the unapplied form edits, then loads the result. Save replaces positions, start flags and connections but keeps the activities it doesn't list, so the other person's added activities and property changes stay, and are then shown.
+  - **Publish.**
+    - It applies the open form and saves pending changes first, then decides with `src/draft/publishDecision.ts`:
+      - errors block it, with a dialog listing them (clicking one selects the activity);
+      - warnings or running instances ask first, with Publish anyway (or Publish) and "N running instance(s) will continue on the new definition.";
+      - otherwise it publishes right away.
+    - A 400 with issues from the server opens the blocked dialog.
+    - Publishing clears the draft state (revision 0) and the undo history, since the draft's trash is gone.
+  - **Discard** asks through the admin `confirmDialog`, then loads the live definition.
+  - **Draft banner.** It compares the draft's `draftModifiedByUserId` with the new `currentUserId` config value. Both come from the `NameIdentifier` claim. The banner hides once the user changes the draft and can be dismissed.
+  - **Leave guard.** `beforeunload` prompts while a save is pending, retrying, failed or in conflict, while a request is queued, or while a form has unapplied changes.
+  - **Dialogs.** `src/ui/ModalDialog.vue` uses Bootstrap modal markup with a focus trap, Esc to close, and focus restored on close. It is teleported to `<body>`, like the admin `confirmDialog`, so the backdrop also covers the admin navigation bar.
+  - **Fix: stylesheet order.** The `workflows-designer` stylesheet now depends on `bootstrap`, so it loads after it. Before, Bootstrap won over the designer's single-class rules on the same elements; for example, issue rows rendered as underlined link buttons.
+  - **Verified** in a running CMS:
+    - Autosave after a keyboard move (one Save).
+    - A second writer's save causing the conflict dialog.
+    - Overwrite: one Save with the current revision, then positions are ours and the other writer's added activity appears.
+    - Reload: the local move is dropped and their position is shown.
+    - Publish with 15 warnings through the dialog: the draft is gone and both buttons are disabled.
+    - A change after publishing starts a new draft at revision 1, and Discard works through the admin dialog.
+    - Saves failing at the network level show "Not saved. Retrying…" with the leave guard on, then save on the retry.
 
 ### - [ ] 1.9 Read-only instance viewer
 

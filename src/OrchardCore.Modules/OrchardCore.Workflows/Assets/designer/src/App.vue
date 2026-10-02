@@ -1,19 +1,26 @@
 <script setup lang="ts">
-import { nextTick, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
 import type { DesignerConfig } from "./config";
-import type { DesignerApi } from "./api/designerApi";
-import type { Library } from "./api/types";
+import { DesignerApiError, type DesignerApi } from "./api/designerApi";
+import type { DesignIssue, Library } from "./api/types";
 import { designerStore, type DesignerStore } from "./state/designerStore";
 import { addNodeCommand } from "./state/commands";
 import DesignerCanvas from "./canvas/DesignerCanvas.vue";
 import ActivityToolbox from "./toolbox/ActivityToolbox.vue";
 import PropertiesPanel from "./panel/PropertiesPanel.vue";
 import ToastHost from "./ui/ToastHost.vue";
+import SaveStatusIndicator from "./draft/SaveStatusIndicator.vue";
+import ConflictDialog from "./draft/ConflictDialog.vue";
+import PublishDialog from "./draft/PublishDialog.vue";
+import DraftBanner from "./draft/DraftBanner.vue";
+import { decidePublish, type PublishDecision } from "./draft/publishDecision";
+import { createRevisionQueue } from "./services/revisionQueue";
+import { createAutosave } from "./services/autosave";
 import { showToast } from "./ui/toasts";
+import { confirmAction } from "./ui/confirm";
 import { selectNode } from "./canvas/useConnect";
 import { DEFAULT_NODE_HEIGHT, NODE_WIDTH, snap, type Point } from "./canvas/geometry";
 import { t } from "./i18n";
-import type { DesignerApiError } from "./api/designerApi";
 
 const props = withDefaults(defineProps<{ config: DesignerConfig; api: DesignerApi; store?: DesignerStore }>(), {
     store: () => designerStore,
@@ -27,6 +34,46 @@ const libraryLoading = ref(false);
 const libraryError = ref<string | null>(null);
 const canvas = ref<InstanceType<typeof DesignerCanvas> | null>(null);
 const panel = ref<InstanceType<typeof PropertiesPanel> | null>(null);
+const conflictOpen = ref(false);
+const publishDialog = ref<Exclude<PublishDecision, { kind: "publish" }> | null>(null);
+const busy = ref(false);
+const bannerDismissed = ref(false);
+
+// Every request that changes the draft goes through this queue, so each one has the current revision.
+const queue = createRevisionQueue(props.store);
+const mutate = queue.run;
+
+// Overwriting saves this graph over the draft; the result is then loaded, since the draft keeps the
+// activities the other person added.
+let reloadAfterSave = false;
+
+const autosave = createAutosave({
+    store: props.store,
+    queue,
+    save: (payload) => props.api.save(payload),
+    onConflict: () => {
+        conflictOpen.value = true;
+    },
+    onSaved: () => {
+        if (reloadAfterSave) {
+            reloadAfterSave = false;
+            void (async () => {
+                await panel.value?.settle();
+                await reloadDefinition();
+            })();
+        }
+    },
+});
+
+const hasChanges = computed(() => state.hasDraft || state.saveStatus !== "saved");
+const canPublish = computed(() => hasChanges.value && !busy.value && state.saveStatus !== "conflict");
+const showBanner = computed(
+    () =>
+        !bannerDismissed.value &&
+        state.hasDraft &&
+        !!state.draftModifiedByUserId &&
+        state.draftModifiedByUserId !== (props.config.currentUserId ?? null),
+);
 
 const editActivity = (activityId: string) => {
     void panel.value?.open(activityId);
@@ -37,9 +84,45 @@ const focusActivity = (activityId: string) => {
     canvas.value?.focusNode(activityId);
 };
 
-// Step 1.8 turns this into the conflict dialog.
-const onConflict = (error: DesignerApiError) => {
-    showToast({ message: t("ConflictDetected", error.problem.modifiedBy ?? "?"), variant: "danger", timeout: 0 });
+const onRequestError = (error: unknown, message: string) => {
+    if (error instanceof DesignerApiError && error.isConflict) {
+        autosave.reportConflict(error);
+    } else {
+        showToast({ message, variant: "danger" });
+    }
+};
+
+/**
+ * Loads the definition again, dropping the local changes.
+ */
+const reloadDefinition = () =>
+    mutate(async () => {
+        reloadAfterSave = false;
+
+        const definition = await props.api.getDefinition();
+
+        panel.value?.discardChanges();
+        props.store.loadDefinition(definition);
+        autosave.reset();
+        bannerDismissed.value = false;
+        await panel.value?.refresh();
+    });
+
+const onReload = async () => {
+    conflictOpen.value = false;
+
+    try {
+        await reloadDefinition();
+        showToast({ message: t("Reloaded"), variant: "info" });
+    } catch {
+        showToast({ message: t("ReloadFailed"), variant: "danger" });
+    }
+};
+
+const onOverwrite = async () => {
+    conflictOpen.value = false;
+    reloadAfterSave = true;
+    await autosave.overwrite();
 };
 
 const isEditable = (target: EventTarget | null) =>
@@ -62,6 +145,14 @@ const onKeyDown = (event: KeyboardEvent) => {
     }
 };
 
+// Leaving while a change isn't saved asks first (the browser shows its own message).
+const onBeforeUnload = (event: BeforeUnloadEvent) => {
+    if (!props.config.readOnly && (autosave.hasUnsavedChanges() || panel.value?.hasPendingChanges())) {
+        event.preventDefault();
+        event.returnValue = "";
+    }
+};
+
 const loadLibrary = async () => {
     libraryLoading.value = true;
 
@@ -80,7 +171,7 @@ const loadLibrary = async () => {
  */
 const addActivity = async (activityName: string, position: Point) => {
     try {
-        const result = await props.api.addActivity(state.revision, activityName, snap(position.x), snap(position.y));
+        const result = await mutate((revision) => props.api.addActivity(revision, activityName, snap(position.x), snap(position.y)));
 
         props.store.execute(addNodeCommand(props.store.graph, result.node));
         props.store.registerServerNode(result.node, result.revision, result.issues);
@@ -92,8 +183,8 @@ const addActivity = async (activityName: string, position: Point) => {
         if (result.node.hasEditor) {
             editActivity(result.node.id);
         }
-    } catch {
-        showToast({ message: t("AddActivityFailed"), variant: "danger" });
+    } catch (error) {
+        onRequestError(error, t("AddActivityFailed"));
     }
 };
 
@@ -107,8 +198,107 @@ const onAddActivity = (activityName: string) => {
     return addActivity(activityName, { x: center.x - NODE_WIDTH / 2, y: center.y - DEFAULT_NODE_HEIGHT / 2 });
 };
 
+const doPublish = async () => {
+    publishDialog.value = null;
+    busy.value = true;
+
+    try {
+        await mutate(async (revision) => {
+            const result = await props.api.publish(revision);
+
+            props.store.markPublished(result.issues);
+        });
+
+        showToast({ message: t("Published"), variant: "success" });
+    } catch (error) {
+        if (error instanceof DesignerApiError && error.status === 400 && error.problem.issues) {
+            // The draft has errors the designer didn't know about yet.
+            state.issues = error.problem.issues;
+            publishDialog.value = { kind: "blocked", errors: error.problem.issues.filter((issue) => issue.severity === "Error") };
+        } else {
+            onRequestError(error, t("PublishFailed"));
+        }
+    } finally {
+        busy.value = false;
+    }
+};
+
+/**
+ * Applies the open form, saves the pending changes, then publishes: right away, or after a dialog when
+ * the draft has errors (which block it), warnings, or running instances.
+ */
+const publish = async () => {
+    if (!canPublish.value) {
+        return;
+    }
+
+    busy.value = true;
+
+    try {
+        if (!(await (panel.value?.settle() ?? true))) {
+            return;
+        }
+
+        if (!(await autosave.flush())) {
+            if (state.saveStatus !== "conflict") {
+                showToast({ message: t("SaveBeforePublishFailed"), variant: "danger" });
+            }
+
+            return;
+        }
+    } finally {
+        busy.value = false;
+    }
+
+    const decision = decidePublish(state.issues, state.runningInstanceCount);
+
+    if (decision.kind === "publish") {
+        await doPublish();
+    } else {
+        publishDialog.value = decision;
+    }
+};
+
+const onPublishIssueSelected = (issue: DesignIssue) => {
+    publishDialog.value = null;
+
+    if (issue.activityId) {
+        selectNode(props.store, issue.activityId);
+        focusActivity(issue.activityId);
+    }
+};
+
+const discard = async () => {
+    const confirmed = await confirmAction({
+        title: t("DiscardDraftTitle"),
+        message: t("DiscardDraftMessage"),
+        okText: t("DiscardDraft"),
+        cancelText: t("Cancel"),
+    });
+
+    if (!confirmed) {
+        return;
+    }
+
+    busy.value = true;
+    autosave.pause();
+
+    try {
+        await mutate(() => props.api.discard());
+        await reloadDefinition();
+        showToast({ message: t("DraftDiscarded"), variant: "info" });
+    } catch (error) {
+        onRequestError(error, t("DiscardFailed"));
+    } finally {
+        autosave.resume();
+        busy.value = false;
+    }
+};
+
 onMounted(async () => {
     document.addEventListener("keydown", onKeyDown);
+    window.addEventListener("beforeunload", onBeforeUnload);
+    state.currentUserId = props.config.currentUserId ?? null;
 
     if (!props.config.readOnly) {
         void loadLibrary();
@@ -116,6 +306,10 @@ onMounted(async () => {
 
     try {
         props.store.loadDefinition(await props.api.getDefinition());
+
+        if (!props.config.readOnly) {
+            autosave.start();
+        }
     } catch {
         loadError.value = t("LoadFailed");
     } finally {
@@ -123,9 +317,13 @@ onMounted(async () => {
     }
 });
 
-onBeforeUnmount(() => document.removeEventListener("keydown", onKeyDown));
+onBeforeUnmount(() => {
+    document.removeEventListener("keydown", onKeyDown);
+    window.removeEventListener("beforeunload", onBeforeUnload);
+    autosave.stop();
+});
 
-defineExpose({ canvas, panel, addActivity });
+defineExpose({ canvas, panel, addActivity, autosave, publish, discard });
 </script>
 
 <template>
@@ -133,31 +331,45 @@ defineExpose({ canvas, panel, addActivity });
         <header class="wfd-toolbar" data-cy="designer-toolbar">
             <h2 class="wfd-title text-truncate">{{ state.settings?.name }}</h2>
 
-            <div v-if="!config.readOnly" class="btn-group btn-group-sm" role="group" :aria-label="t('History')">
-                <button
-                    type="button"
-                    class="btn btn-outline-secondary"
-                    :title="t('UndoShortcut')"
-                    :aria-label="t('Undo')"
-                    :disabled="!state.canUndo"
-                    data-cy="toolbar-undo"
-                    @click="store.undo()"
-                >
-                    <i class="fa-solid fa-rotate-left" aria-hidden="true"></i>
+            <template v-if="!config.readOnly && !loading && !loadError">
+                <SaveStatusIndicator :status="state.saveStatus" @retry="autosave.save()" @resolve="conflictOpen = true" />
+
+                <div class="btn-group btn-group-sm" role="group" :aria-label="t('History')">
+                    <button
+                        type="button"
+                        class="btn btn-outline-secondary"
+                        :title="t('UndoShortcut')"
+                        :aria-label="t('Undo')"
+                        :disabled="!state.canUndo"
+                        data-cy="toolbar-undo"
+                        @click="store.undo()"
+                    >
+                        <i class="fa-solid fa-rotate-left" aria-hidden="true"></i>
+                    </button>
+                    <button
+                        type="button"
+                        class="btn btn-outline-secondary"
+                        :title="t('RedoShortcut')"
+                        :aria-label="t('Redo')"
+                        :disabled="!state.canRedo"
+                        data-cy="toolbar-redo"
+                        @click="store.redo()"
+                    >
+                        <i class="fa-solid fa-rotate-right" aria-hidden="true"></i>
+                    </button>
+                </div>
+
+                <button type="button" class="btn btn-sm btn-outline-danger" :disabled="!hasChanges || busy" data-cy="toolbar-discard" @click="discard">
+                    {{ t("DiscardDraft") }}
                 </button>
-                <button
-                    type="button"
-                    class="btn btn-outline-secondary"
-                    :title="t('RedoShortcut')"
-                    :aria-label="t('Redo')"
-                    :disabled="!state.canRedo"
-                    data-cy="toolbar-redo"
-                    @click="store.redo()"
-                >
-                    <i class="fa-solid fa-rotate-right" aria-hidden="true"></i>
+                <button type="button" class="btn btn-sm btn-primary" :disabled="!canPublish" data-cy="toolbar-publish" @click="publish">
+                    <span v-if="busy" class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                    {{ t("Publish") }}
                 </button>
-            </div>
+            </template>
         </header>
+
+        <DraftBanner v-if="showBanner" :modified-by="state.draftModifiedBy" :modified-utc="state.draftModifiedUtc" @dismiss="bannerDismissed = true" />
 
         <div class="wfd-body">
             <aside v-if="!config.readOnly" class="wfd-toolbox" :aria-label="t('Toolbox')" data-cy="designer-toolbox">
@@ -186,10 +398,14 @@ defineExpose({ canvas, panel, addActivity });
                 :store="store"
                 :api="api"
                 :read-only="config.readOnly"
+                :mutate="mutate"
                 @focus-activity="focusActivity"
-                @conflict="onConflict"
+                @conflict="autosave.reportConflict"
             />
         </div>
+
+        <ConflictDialog v-if="conflictOpen && autosave.conflict.value" :problem="autosave.conflict.value" @reload="onReload" @overwrite="onOverwrite" @close="conflictOpen = false" />
+        <PublishDialog v-if="publishDialog" :decision="publishDialog" :nodes="state.nodes" @publish="doPublish" @close="publishDialog = null" @select-issue="onPublishIssueSelected" />
 
         <ToastHost />
     </div>

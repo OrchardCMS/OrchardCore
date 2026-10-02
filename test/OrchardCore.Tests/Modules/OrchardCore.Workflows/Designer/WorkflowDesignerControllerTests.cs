@@ -65,6 +65,19 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         Assert.False(string.IsNullOrEmpty(config["translations"]["Undo"].GetValue<string>()));
         Assert.NotNull(document.QuerySelector("input[name='__RequestVerificationToken']"));
         Assert.Contains(document.QuerySelectorAll("script[src]"), x => x.GetAttribute("src").Contains("workflows-designer") && x.GetAttribute("type") == "module");
+
+        // The designer compares the signed-in user with the draft's last editor to show the draft banner, so
+        // both are the same claim (null values are left out of the config).
+        using var saved = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Save", new
+        {
+            revision = 0,
+            nodes = new[] { new { id = "start", x = 0, y = 0, isStart = true } },
+            transitions = Array.Empty<object>(),
+            removedActivityIds = Array.Empty<string>(),
+        });
+        Assert.Equal(HttpStatusCode.OK, saved.StatusCode);
+        var definition = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition");
+        Assert.Equal(config["currentUserId"]?.GetValue<string>(), definition["draftModifiedByUserId"]?.GetValue<string>());
     }
 
     [Fact]

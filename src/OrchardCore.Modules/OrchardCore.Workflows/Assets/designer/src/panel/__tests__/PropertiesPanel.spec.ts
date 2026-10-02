@@ -126,6 +126,37 @@ describe("PropertiesPanel", () => {
         expect(useToasts().map((toast) => toast.variant)).toEqual(["warning"]);
     });
 
+    it("apply_QueuedBehindAnotherRequest_PostsWithTheRevisionCurrentWhenItRuns", async () => {
+        const store = createDesignerStore();
+        store.loadDefinition(createDefinition());
+        const api = {
+            getEditor: vi.fn((id: string) => Promise.resolve(editor(id))),
+            postEditor: vi.fn(() => Promise.resolve({ valid: true, revision: 8, node: createNode("a", { x: 600 }), removedTransitions: [], issues: [] })),
+        } as unknown as DesignerApi & Record<"postEditor", ReturnType<typeof vi.fn>>;
+        let release!: () => void;
+        const mutate = vi.fn(
+            <T,>(task: (revision: number) => Promise<T>) =>
+                new Promise<T>((resolve) => {
+                    release = () => resolve(task(7));
+                }),
+        );
+        const wrapper = mount(PropertiesPanel, { props: { store, api, mutate }, attachTo: document.body });
+        selectNode(store, "a");
+        await flushPromises();
+        await edit(wrapper);
+
+        await wrapper.get("form").trigger("submit");
+        await flushPromises();
+        expect(mutate).toHaveBeenCalledTimes(1);
+        expect(api.postEditor).not.toHaveBeenCalled();
+
+        release();
+        await flushPromises();
+
+        expect(api.postEditor).toHaveBeenCalledWith("a", 7, expect.any(FormData));
+        expect(store.state.revision).toBe(8);
+    });
+
     it("workflowTab_SettingsApplied_UpdatesTheSettings", async () => {
         const { store, api, wrapper } = setup(() => Promise.resolve({ valid: true }));
 

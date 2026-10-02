@@ -19,6 +19,10 @@ export interface DesignerConfig {
     instancesUrl: string;
     exportUrl: string;
     listUrl: string;
+    /**
+     * The signed-in user's id, to tell whether someone else last edited the draft.
+     */
+    currentUserId?: string | null;
     translations: Record<string, string>;
 }
 
