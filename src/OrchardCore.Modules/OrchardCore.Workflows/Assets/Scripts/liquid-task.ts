@@ -1,4 +1,5 @@
-const textArea = document.getElementById("Expression") as HTMLTextAreaElement | null;
+const editor = document.querySelector<HTMLElement>('[data-task-editor="liquid"]');
+const textArea = document.getElementById(editor?.dataset.expressionId ?? "") as HTMLTextAreaElement | null;
 
 if (textArea) {
     CodeMirror.fromTextArea(textArea, {

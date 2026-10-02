@@ -9,7 +9,7 @@ internal sealed class MediaOptionsValidator : IValidateOptions<MediaOptions>
         if (!MediaFileStorePathHelper.IsValidRelativePath(options.AssetsPath?.TrimEnd(PathExtensions.PathSeparators)))
         {
             return ValidateOptionsResult.Fail(
-                "The OrchardCore_Media setting AssetsPath must be a relative subdirectory of the tenant's data directory, " +
+                "The OrchardCore:Media:AssetsPath setting must be a relative subdirectory of the tenant's data directory, " +
                 "without empty, '.' or '..' segments, drive prefixes, or segments ending in a dot or space.");
         }
 
@@ -21,7 +21,7 @@ internal sealed class MediaOptionsValidator : IValidateOptions<MediaOptions>
         if (overlappingExtensions.Length > 0)
         {
             return ValidateOptionsResult.Fail(
-                $"The OrchardCore_Media settings AllowedFileExtensions and RestrictedFileExtensions must not overlap. " +
+                $"The OrchardCore:Media:AllowedFileExtensions and OrchardCore:Media:RestrictedFileExtensions settings must not overlap. " +
                 $"Remove these extensions from one of the lists: {string.Join(", ", overlappingExtensions)}.");
         }
 

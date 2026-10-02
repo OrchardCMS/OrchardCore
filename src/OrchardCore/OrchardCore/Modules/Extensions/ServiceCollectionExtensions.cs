@@ -182,7 +182,8 @@ public static class ServiceCollectionExtensions
 
             var configuration = serviceProvider.GetService<IShellConfiguration>();
 
-            services.Configure<CultureOptions>(configuration.GetSection("OrchardCore_Localization_CultureOptions"));
+            // The 'OrchardCore_Localization_CultureOptions' section is deprecated and will be removed in a future major version, use 'Localization:CultureOptions' instead.
+            services.Configure<CultureOptions>(configuration.GetSectionCompat("Localization:CultureOptions", "OrchardCore_Localization_CultureOptions"));
             services.Configure<TempDirectoryOptions>(configuration.GetSection("TempDirectory"));
         });
 

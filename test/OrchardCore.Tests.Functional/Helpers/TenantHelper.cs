@@ -93,6 +93,30 @@ public static class TenantHelper
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 
+    public static async Task SetLocalizationCultureAsync(this IPage page, string prefix, string culture)
+    {
+        await page.GotoAsync($"{prefix}/Admin/Settings/localization");
+        var editor = page.Locator(".localization-settings-wrapper");
+        await editor.WaitForAsync();
+
+        await editor.EvaluateAsync(
+            @"(element, cultureName) => {
+                const supportedInput = element.querySelector('input[id$=""_SupportedCultures""], input[name$=""SupportedCultures""]');
+                const defaultInput = element.querySelector('input[id$=""_DefaultCulture""], input[name$=""DefaultCulture""]');
+
+                if (!supportedInput || !defaultInput) {
+                    throw new Error('Localization settings inputs were not found.');
+                }
+
+                supportedInput.value = JSON.stringify([cultureName]);
+                defaultInput.value = cultureName;
+            }",
+            culture);
+
+        await page.ClickSaveAsync();
+        await page.Locator(".message-success").WaitForAsync();
+    }
+
     public static async Task NewTenantAsync(this IPage page, TenantInfo tenant)
     {
         await page.LoginAsync();

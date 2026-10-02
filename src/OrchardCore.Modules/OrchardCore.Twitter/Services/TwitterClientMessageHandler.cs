@@ -37,18 +37,16 @@ public class TwitterClientMessageHandler : DelegatingHandler
 
     public async Task ConfigureOAuthAsync(HttpRequestMessage request)
     {
-        var protrector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
-        var queryString = request.RequestUri.Query;
+        var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
 
-        if (!string.IsNullOrWhiteSpace(_twitterSettings.ConsumerSecret))
-        {
-            _twitterSettings.ConsumerSecret = protrector.Unprotect(_twitterSettings.ConsumerSecret);
-        }
+        // Unprotect the secrets in local variables, as the settings instance is shared by all the requests.
+        var consumerSecret = !string.IsNullOrWhiteSpace(_twitterSettings.ConsumerSecret)
+            ? protector.Unprotect(_twitterSettings.ConsumerSecret)
+            : _twitterSettings.ConsumerSecret;
 
-        if (!string.IsNullOrWhiteSpace(_twitterSettings.AccessTokenSecret))
-        {
-            _twitterSettings.AccessTokenSecret = protrector.Unprotect(_twitterSettings.AccessTokenSecret);
-        }
+        var accessTokenSecret = !string.IsNullOrWhiteSpace(_twitterSettings.AccessTokenSecret)
+            ? protector.Unprotect(_twitterSettings.AccessTokenSecret)
+            : _twitterSettings.AccessTokenSecret;
 
         var nonce = GetNonce();
         var timeStamp = Convert.ToInt64((_clock.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds).ToString();
@@ -92,7 +90,7 @@ public class TwitterClientMessageHandler : DelegatingHandler
             Uri.EscapeDataString(request.RequestUri.AbsoluteUri.ToString()), "&",
             Uri.EscapeDataString(string.Join("&", sortedParameters.Select(c => string.Format("{0}={1}", c.Key, c.Value)))));
 
-        var secret = string.Concat(_twitterSettings.ConsumerSecret, "&", _twitterSettings.AccessTokenSecret);
+        var secret = string.Concat(consumerSecret, "&", accessTokenSecret);
 
 #pragma warning disable CA5350 // Do not use weak cryptographic hashing algorithm
         var signature = Convert.ToBase64String(HMACSHA1.HashData(key: Encoding.UTF8.GetBytes(secret), source: Encoding.UTF8.GetBytes(baseString)));
