@@ -1,6 +1,7 @@
 /* Workflow designer. Only Bootstrap and --bs-* / --oc-* variables, so light, dark and RTL work. */
 
 .wfd {
+    position: relative;
     display: flex;
     flex-direction: column;
     height: calc(100vh - 11rem);
@@ -60,4 +61,351 @@
     gap: 0.5rem;
     height: 100%;
     color: var(--bs-secondary-color);
+}
+
+/* Canvas. The canvas coordinate space never mirrors in RTL: a workflow lays out the same for everyone. */
+
+/* rtl:begin:ignore */
+
+.wfd-canvas {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    direction: ltr;
+    outline: none;
+    touch-action: none;
+    user-select: none;
+    background-color: var(--bs-body-bg);
+}
+
+.wfd-canvas:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--bs-primary);
+}
+
+.wfd-canvas.is-space-held,
+.wfd-canvas.is-panning {
+    cursor: grabbing;
+}
+
+.wfd-grid {
+    position: absolute;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+    background-image: radial-gradient(var(--bs-border-color) 1px, transparent 1px);
+    will-change: transform;
+}
+
+.wfd-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform-origin: 0 0;
+}
+
+.wfd-edges {
+    position: absolute;
+    left: 0;
+    top: 0;
+    overflow: visible;
+}
+
+.wfd-edges.is-lifted {
+    pointer-events: none;
+    will-change: transform;
+}
+
+.wfd-edge-hit {
+    fill: none;
+    stroke: transparent;
+    stroke-width: 12;
+    pointer-events: stroke;
+    cursor: pointer;
+}
+
+.wfd-edge-line {
+    fill: none;
+    stroke: var(--bs-secondary-color);
+    stroke-width: 1.5;
+    pointer-events: none;
+}
+
+.wfd-edge:hover .wfd-edge-line {
+    stroke: var(--bs-primary);
+    stroke-width: 2;
+}
+
+.wfd-edge.is-selected .wfd-edge-line {
+    stroke: var(--bs-primary);
+    stroke-width: 2.5;
+}
+
+.wfd-arrow {
+    fill: var(--bs-secondary-color);
+}
+
+.wfd-arrow.is-selected {
+    fill: var(--bs-primary);
+}
+
+.wfd-edge-label {
+    font-size: 11px;
+    fill: var(--bs-secondary-color);
+    paint-order: stroke;
+    stroke: var(--bs-body-bg);
+    stroke-width: 3px;
+    pointer-events: none;
+}
+
+.wfd-edge-delete {
+    cursor: pointer;
+}
+
+.wfd-edge-delete circle {
+    fill: var(--bs-danger);
+}
+
+.wfd-edge-delete path {
+    stroke: var(--bs-white);
+    stroke-width: 2;
+}
+
+.wfd-edge-delete:focus-visible circle {
+    stroke: var(--bs-body-color);
+    stroke-width: 2;
+}
+
+.wfd-edge-preview {
+    fill: none;
+    stroke: var(--bs-primary);
+    stroke-width: 2;
+    stroke-dasharray: 6 4;
+    pointer-events: none;
+}
+
+.wfd-node {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 220px;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-body-bg);
+    box-shadow: var(--bs-box-shadow-sm);
+    font-size: 0.8125rem;
+    cursor: move;
+    outline: none;
+}
+
+.wfd-canvas.is-readonly .wfd-node {
+    cursor: pointer;
+}
+
+.wfd-node:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: 2px;
+}
+
+.wfd-node.is-selected {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 2px var(--bs-primary);
+}
+
+.wfd-node.is-lifted {
+    will-change: transform;
+    box-shadow: var(--bs-box-shadow);
+}
+
+.wfd-node.is-drop-target {
+    box-shadow: 0 0 0 3px var(--bs-success);
+}
+
+.wfd-node.is-missing {
+    border-style: dashed;
+    border-color: var(--bs-warning);
+}
+
+.wfd-node.has-errors {
+    border-color: var(--bs-danger);
+}
+
+.wfd-node.is-highlighted {
+    box-shadow: 0 0 0 3px var(--bs-warning);
+}
+
+.wfd-node-header {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.5rem;
+    border-bottom: var(--bs-border-width) solid var(--bs-border-color-translucent);
+    border-radius: var(--bs-border-radius) var(--bs-border-radius) 0 0;
+    background-color: var(--bs-tertiary-bg);
+    color: var(--bs-secondary-color);
+    font-size: 0.75rem;
+}
+
+.wfd-node.is-event .wfd-node-header {
+    background-color: var(--bs-warning-bg-subtle);
+    color: var(--bs-warning-text-emphasis);
+}
+
+.wfd-node.is-start .wfd-node-header {
+    background-color: var(--bs-success-bg-subtle);
+    color: var(--bs-success-text-emphasis);
+}
+
+.wfd-node-type {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.wfd-node-badge {
+    font-size: 0.625rem;
+}
+
+/* The outcome ports sit in a column beside the body (not below it), which keeps nodes about as tall as
+   in the legacy editor, so existing layouts don't overlap. */
+.wfd-node-content {
+    display: flex;
+    align-items: stretch;
+}
+
+.wfd-node-body {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-height: 6rem;
+    padding: 0.375rem 0.5rem;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+}
+
+.wfd-node-body header h4 {
+    margin: 0 0 0.125rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.wfd-node-body header h4 i {
+    margin-inline-end: 0.375rem;
+}
+
+.wfd-node-body em,
+.wfd-node-body span {
+    color: var(--bs-secondary-color);
+}
+
+.wfd-node-ports {
+    display: flex;
+    flex: 0 1 auto;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 0.125rem;
+    max-width: 50%;
+    padding: 0.25rem 0;
+}
+
+.wfd-port {
+    position: relative;
+    display: flex;
+    align-items: center;
+    max-width: 100%;
+    padding: 0.0625rem 0.875rem 0.0625rem 0.5rem;
+    border: 0;
+    border-radius: var(--bs-border-radius-sm);
+    background: none;
+    color: var(--bs-body-color);
+    font-size: 0.6875rem;
+    line-height: 1.4;
+    cursor: crosshair;
+}
+
+.wfd-port-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.wfd-port:disabled {
+    color: var(--bs-body-color);
+    cursor: inherit;
+}
+
+.wfd-port:focus-visible {
+    outline: 2px solid var(--bs-primary);
+}
+
+.wfd-port-dot {
+    position: absolute;
+    right: -6px;
+    top: 50%;
+    width: 11px;
+    height: 11px;
+    margin-top: -5.5px;
+    border: 2px solid var(--bs-success);
+    border-radius: 50%;
+    background-color: var(--bs-body-bg);
+}
+
+.wfd-port.is-connected .wfd-port-dot {
+    background-color: var(--bs-success);
+}
+
+.wfd-port:not(:disabled):hover .wfd-port-dot {
+    transform: scale(1.3);
+}
+
+.wfd-marquee {
+    position: absolute;
+    left: 0;
+    top: 0;
+    border: 1px dashed var(--bs-primary);
+    background-color: rgba(var(--bs-primary-rgb), 0.08);
+    pointer-events: none;
+}
+
+.wfd-empty {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: var(--bs-secondary-color);
+    text-align: center;
+    pointer-events: none;
+}
+
+.wfd-zoom-controls {
+    position: absolute;
+    right: 0.75rem;
+    bottom: 0.75rem;
+}
+
+.wfd-zoom-level {
+    min-width: 3.5rem;
+}
+
+.wfd-context-menu {
+    position: absolute;
+    z-index: 10;
+}
+
+.wfd-connect-dialog {
+    position: absolute;
+    top: 1rem;
+    left: 50%;
+    z-index: 10;
+    width: 20rem;
+    transform: translateX(-50%);
+}
+
+/* rtl:end:ignore */
+
+.wfd-toasts {
+    position: absolute;
+    left: 0.75rem;
+    bottom: 0.75rem;
+    z-index: 20;
 }

@@ -30,6 +30,7 @@ export interface DesignerNode {
     category: string;
     designHtml: string;
     outcomes: Outcome[];
+    icon?: string | null;
 }
 
 export interface DesignerTransition {

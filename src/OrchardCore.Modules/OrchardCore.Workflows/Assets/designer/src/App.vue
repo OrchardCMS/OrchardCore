@@ -1,19 +1,46 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 import type { DesignerConfig } from "./config";
 import type { DesignerApi } from "./api/designerApi";
 import { designerStore, type DesignerStore } from "./state/designerStore";
+import DesignerCanvas from "./canvas/DesignerCanvas.vue";
+import ToastHost from "./ui/ToastHost.vue";
 import { t } from "./i18n";
 
 const props = withDefaults(defineProps<{ config: DesignerConfig; api: DesignerApi; store?: DesignerStore }>(), {
     store: () => designerStore,
 });
 
+const emit = defineEmits<{ (event: "edit", activityId: string): void }>();
+
 const state = props.store.state;
 const loading = ref(true);
 const loadError = ref<string | null>(null);
+const canvas = ref<InstanceType<typeof DesignerCanvas> | null>(null);
+
+const isEditable = (target: EventTarget | null) =>
+    target instanceof HTMLElement && (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName));
+
+// Undo and redo work anywhere in the designer except in form fields, where they edit the field.
+const onKeyDown = (event: KeyboardEvent) => {
+    if (props.config.readOnly || !(event.ctrlKey || event.metaKey) || isEditable(event.target)) {
+        return;
+    }
+
+    const key = event.key.toLowerCase();
+
+    if (key === "z" && !event.shiftKey) {
+        event.preventDefault();
+        props.store.undo();
+    } else if (key === "y" || (key === "z" && event.shiftKey)) {
+        event.preventDefault();
+        props.store.redo();
+    }
+};
 
 onMounted(async () => {
+    document.addEventListener("keydown", onKeyDown);
+
     try {
         props.store.loadDefinition(await props.api.getDefinition());
     } catch {
@@ -22,6 +49,10 @@ onMounted(async () => {
         loading.value = false;
     }
 });
+
+onBeforeUnmount(() => document.removeEventListener("keydown", onKeyDown));
+
+defineExpose({ canvas });
 </script>
 
 <template>
@@ -33,7 +64,7 @@ onMounted(async () => {
                 <button
                     type="button"
                     class="btn btn-outline-secondary"
-                    :title="t('Undo')"
+                    :title="t('UndoShortcut')"
                     :aria-label="t('Undo')"
                     :disabled="!state.canUndo"
                     data-cy="toolbar-undo"
@@ -44,7 +75,7 @@ onMounted(async () => {
                 <button
                     type="button"
                     class="btn btn-outline-secondary"
-                    :title="t('Redo')"
+                    :title="t('RedoShortcut')"
                     :aria-label="t('Redo')"
                     :disabled="!state.canRedo"
                     data-cy="toolbar-redo"
@@ -64,9 +95,12 @@ onMounted(async () => {
                     {{ t("Loading") }}
                 </div>
                 <div v-else-if="loadError" class="wfd-message text-danger" role="alert">{{ loadError }}</div>
+                <DesignerCanvas v-else ref="canvas" :store="store" :read-only="config.readOnly" @edit="emit('edit', $event)" />
             </main>
 
             <aside class="wfd-panel" :aria-label="t('Properties')" data-cy="designer-panel"></aside>
         </div>
+
+        <ToastHost />
     </div>
 </template>

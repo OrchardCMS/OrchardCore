@@ -180,7 +180,7 @@ Goal: every editor initializes correctly when injected into the panel, more than
   - Editor applies replace the node and call `History.markBoundary()`, which clears the undo/redo stacks.
   - **For step 1.8:** every mutating request (Save, AddActivity, Editor and Settings posts, Publish) takes the current revision and returns the next one, so autosave must send them one at a time through a single queue.
 
-### - [ ] 1.5 Canvas
+### - [x] 1.5 Canvas
 
 Files: `src/canvas/` — `DesignerCanvas.vue`, `ActivityNode.vue`, `OutcomePort.vue`, `TransitionEdge.vue`, `geometry.ts`, `viewport.ts`, `useDrag.ts`, `useConnect.ts`.
 
@@ -208,6 +208,17 @@ Files: `src/canvas/` — `DesignerCanvas.vue`, `ActivityNode.vue`, `OutcomePort.
   - connecting an outcome replaces the old edge; self-loops are rejected;
   - deleting removes attached edges;
   - component tests for node and edge rendering.
+- **Notes from implementing this step:**
+  - **Node size.** Nodes are 220 px wide, and the outcome ports sit in a column beside the body, not below it. That keeps nodes about as tall as in the legacy editor (60–125 px on the seeded ComingSoon "User Registration" workflow, with no overlaps at its stored positions).
+  - **Gestures.** Dragging the background pans; **Shift+drag** on the background draws the marquee. The mouse wheel pans, and Ctrl/⌘+wheel zooms around the cursor. Activities are ordered by z-index in document order, newest last.
+  - **Spike rules applied.**
+    - `will-change: transform` is set on the viewport layer only while panning or zooming.
+    - Dragged activities (up to 10) and their edges are lifted onto their own layers during a drag.
+    - Pointer moves are coalesced into one update per animation frame (`useDrag.ts`).
+    - The dot grid is a separate layer, translated by the pan modulo one cell, so panning never repaints it.
+  - **Keyboard access.** The node context menu (context-menu key or Shift+F10) offers Edit, Set/Unset start, "Connect an outcome to…" (a dialog listing outcomes and target activities), one "Remove connection {outcome} → {target}" entry per connection, and Delete. Enter on a port opens the same dialog. Tabbing to an activity selects it.
+  - **RTL.** The canvas rules are wrapped in `/* rtl:begin:ignore */ … /* rtl:end:ignore */` and the canvas uses `direction: ltr`, so `postcss-rtlcss` never mirrors the coordinate space.
+  - **Verified** in a running CMS with synthetic pointer events on the seeded workflow: grid-snapped drag, connecting a port to a node (replacing the existing transition, with a toast), undo with Ctrl+Z, panning (`will-change` only during the pan) and Ctrl+wheel zoom. No console errors.
 
 ### - [ ] 1.6 Toolbox
 
