@@ -68,6 +68,23 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
     }
 
     [Fact]
+    public async Task Library_RegisteredActivities_ReturnsRegistrationIconsAndCategoryDefaults()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync();
+
+        var library = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Library");
+        var activities = library["categories"].AsArray().SelectMany(x => x["activities"].AsArray()).ToDictionary(x => x["name"].GetValue<string>());
+
+        // Set on the registration of a built-in Workflows activity.
+        Assert.Equal("fa-solid fa-bell", activities["NotifyTask"]["icon"].GetValue<string>());
+        Assert.Equal("fa-solid fa-globe", activities["HttpRequestEvent"]["icon"].GetValue<string>());
+        // Not set by its module (Forms), so the default of its category applies.
+        Assert.Equal("fa-solid fa-check-double", activities["ValidateFormTask"]["icon"].GetValue<string>());
+        Assert.False(string.IsNullOrWhiteSpace(activities["NotifyTask"]["thumbnailHtml"].GetValue<string>()));
+        Assert.True(activities["HttpRequestEvent"]["isEvent"].GetValue<bool>());
+    }
+
+    [Fact]
     public async Task Definition_NoDraftThenSave_ReturnsLiveThenDraftGraph()
     {
         var (id, _) = await CreateWorkflowTypeAsync(
@@ -85,6 +102,7 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         Assert.True(start["isEvent"].GetValue<bool>());
         Assert.Contains("Done", start["outcomes"].AsArray().Select(x => x["name"].GetValue<string>()));
         Assert.False(string.IsNullOrWhiteSpace(start["designHtml"].GetValue<string>()));
+        Assert.Equal("fa-solid fa-globe", start["icon"].GetValue<string>());
         Assert.Contains(live["issues"].AsArray(), x => x["code"].GetValue<string>() == "UnreachableActivity" && x["severity"].GetValue<string>() == "Warning");
 
         using var saved = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Save", new

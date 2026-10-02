@@ -134,6 +134,11 @@ public sealed class WorkflowDesignerNode
     public string DesignHtml { get; init; }
 
     /// <summary>
+    /// The Font Awesome icon class of the activity.
+    /// </summary>
+    public string Icon { get; init; }
+
+    /// <summary>
     /// The outcomes the activity can produce, given its current properties.
     /// </summary>
     public IReadOnlyList<WorkflowDesignerOutcome> Outcomes { get; init; } = [];

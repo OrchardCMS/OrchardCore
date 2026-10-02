@@ -63,7 +63,7 @@ public sealed class WorkflowDesignerActivityDescriptor
     public string ThumbnailHtml { get; init; }
 
     /// <summary>
-    /// An optional Font Awesome icon class.
+    /// The Font Awesome icon class: the one set on the activity's registration, else a default for its category.
     /// </summary>
     public string Icon { get; init; }
 }

@@ -73,21 +73,21 @@ public sealed class Startup : StartupBase
         services.AddScoped<IWorkflowScriptEvaluator, JavaScriptWorkflowScriptEvaluator>();
 
         services.AddScoped<IWorkflowFaultHandler, DefaultWorkflowFaultHandler>();
-        services.AddActivity<WorkflowFaultEvent, WorkflowFaultEventDisplayDriver>();
+        services.AddActivity<WorkflowFaultEvent, WorkflowFaultEventDisplayDriver>(activity => activity.Icon = "fa-solid fa-bug");
         services.AddActivity<Activity, ActivityMetadataDisplayDriver>();
-        services.AddActivity<NotifyTask, NotifyTaskDisplayDriver>();
-        services.AddActivity<SetPropertyTask, SetVariableTaskDisplayDriver>();
-        services.AddActivity<SetOutputTask, SetOutputTaskDisplayDriver>();
-        services.AddActivity<CorrelateTask, CorrelateTaskDisplayDriver>();
-        services.AddActivity<ForkTask, ForkTaskDisplayDriver>();
-        services.AddActivity<JoinTask, JoinTaskDisplayDriver>();
-        services.AddActivity<ForLoopTask, ForLoopTaskDisplayDriver>();
-        services.AddActivity<ForEachTask, ForEachTaskDisplayDriver>();
-        services.AddActivity<WhileLoopTask, WhileLoopTaskDisplayDriver>();
-        services.AddActivity<IfElseTask, IfElseTaskDisplayDriver>();
-        services.AddActivity<ScriptTask, ScriptTaskDisplayDriver>();
-        services.AddActivity<LiquidTask, LiquidTaskDisplayDriver>();
-        services.AddActivity<LogTask, LogTaskDisplayDriver>();
+        services.AddActivity<NotifyTask, NotifyTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-bell");
+        services.AddActivity<SetPropertyTask, SetVariableTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-pen-to-square");
+        services.AddActivity<SetOutputTask, SetOutputTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-right-from-bracket");
+        services.AddActivity<CorrelateTask, CorrelateTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-link");
+        services.AddActivity<ForkTask, ForkTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-code-fork");
+        services.AddActivity<JoinTask, JoinTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-code-merge");
+        services.AddActivity<ForLoopTask, ForLoopTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-repeat");
+        services.AddActivity<ForEachTask, ForEachTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-list-ol");
+        services.AddActivity<WhileLoopTask, WhileLoopTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-rotate");
+        services.AddActivity<IfElseTask, IfElseTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-code-branch");
+        services.AddActivity<ScriptTask, ScriptTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-code");
+        services.AddActivity<LiquidTask, LiquidTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-droplet");
+        services.AddActivity<LogTask, LogTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-file-lines");
 
         services.AddRecipeExecutionStep<WorkflowTypeStep>();
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
@@ -110,7 +110,7 @@ public sealed class SessionStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddActivity<CommitTransactionTask, CommitTransactionTaskDisplayDriver>();
+        services.AddActivity<CommitTransactionTask, CommitTransactionTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-database");
     }
 }
 

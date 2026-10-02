@@ -220,13 +220,20 @@ Files: `src/canvas/` — `DesignerCanvas.vue`, `ActivityNode.vue`, `OutcomePort.
   - **RTL.** The canvas rules are wrapped in `/* rtl:begin:ignore */ … /* rtl:end:ignore */` and the canvas uses `direction: ltr`, so `postcss-rtlcss` never mirrors the coordinate space.
   - **Verified** in a running CMS with synthetic pointer events on the seeded workflow: grid-snapped drag, connecting a port to a node (replacing the existing transition, with a toast), undo with Ctrl+Z, panning (`will-change` only during the pan) and Ctrl+wheel zoom. No console errors.
 
-### - [ ] 1.6 Toolbox
+### - [x] 1.6 Toolbox
 
 - `src/toolbox/ActivityToolbox.vue` replaces the `#activity-picker` modal and `activity-picker.ts`. Data comes from `GET Library`.
 - It has a search box (display text and category), collapsible categories, and an Events/Tasks filter. Cards render `thumbnailHtml` plus an icon. Drag a card onto the canvas to add it at the drop point, or click to add it at the center of the view.
 - **Icons**: use a default per category; activities can override it. Add an optional `Icon` (a Font Awesome class) to `ActivityRegistration` (`A/Options/ActivityRegistration.cs`) and an `AddActivity<TActivity, TDriver>(…, configure)` overload, so third parties can opt in without breaking. Set icons for the built-in Workflows activities only.
 - Adding an activity calls `AddActivity`. If `hasEditor`, the panel then opens on the new activity.
 - **Tests**: Vitest specs for filtering and search; a component test that dropping a card at a point calls the API with canvas coordinates (correct under pan and zoom).
+- **Notes from implementing this step:**
+  - **Icon registration.** `ActivityRegistration.Icon`, `WorkflowOptions.RegisterActivity(type, driver, configure)`, `WorkflowOptions.GetActivityRegistration(type)` and `services.AddActivity<TActivity, TDriver>(activity => activity.Icon = "fa-solid fa-star")`. All are additive.
+  - **Icon resolution.** The icon is resolved on the server (`WorkflowDesignerIcons`): the registration's icon, else a default keyed by the category's resource name (`LocalizedString.Name`, so it doesn't depend on the culture), else a generic event or task icon. Missing activities get a warning icon. Both the toolbox (`Library`) and the nodes (`Definition`) carry it.
+  - **Toolbox behavior.** Categories start collapsed and expand while a search or kind filter is active. Search splits the query into terms that must all match the display text or category, ignoring case and accents. Cards are buttons (Enter/Space adds) and use HTML drag and drop (`application/x-orchard-workflow-activity`).
+  - **Placement.** A dropped activity is placed with its header centered on the pointer; a clicked one is centered in the visible area. Both positions snap to the grid.
+  - **After adding.** The new activity is selected and focused. The add is undoable: undo removes it from the draft on the next save, and redo restores it from the draft trash. The panel opening for activities that have an editor is wired in step 1.7.
+  - **Verified** in a running CMS: icons, search, click-to-add and a real `DataTransfer` drop (position and icon), with the draft updated on the server.
 
 ### - [ ] 1.7 Properties panel
 

@@ -30,6 +30,7 @@ describe("App", () => {
                 issues: [],
                 runningInstanceCount: 0,
             }),
+            getLibrary: vi.fn().mockResolvedValue({ categories: [] }),
         } as unknown as DesignerApi;
 
         const wrapper = mount(App, { props: { config, api, store: createDesignerStore() } });

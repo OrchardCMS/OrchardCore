@@ -1,4 +1,5 @@
 using System.Text.Encodings.Web;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Zones;
@@ -7,6 +8,7 @@ using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Options;
 using OrchardCore.Workflows.ViewModels;
 
 namespace OrchardCore.Workflows.Services;
@@ -23,6 +25,7 @@ public sealed class WorkflowDesignerModelBuilder
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IDisplayHelper _displayHelper;
     private readonly HtmlEncoder _htmlEncoder;
+    private readonly WorkflowOptions _workflowOptions;
 
     public WorkflowDesignerModelBuilder(
         IWorkflowManager workflowManager,
@@ -30,7 +33,8 @@ public sealed class WorkflowDesignerModelBuilder
         IActivityDisplayManager activityDisplayManager,
         IUpdateModelAccessor updateModelAccessor,
         IDisplayHelper displayHelper,
-        HtmlEncoder htmlEncoder)
+        HtmlEncoder htmlEncoder,
+        IOptions<WorkflowOptions> workflowOptions)
     {
         _workflowManager = workflowManager;
         _activityLibrary = activityLibrary;
@@ -38,6 +42,7 @@ public sealed class WorkflowDesignerModelBuilder
         _updateModelAccessor = updateModelAccessor;
         _displayHelper = displayHelper;
         _htmlEncoder = htmlEncoder;
+        _workflowOptions = workflowOptions.Value;
     }
 
     /// <summary>
@@ -109,6 +114,7 @@ public sealed class WorkflowDesignerModelBuilder
                     IsEvent = activity.IsEvent(),
                     HasEditor = activity.HasEditor,
                     ThumbnailHtml = await RenderContentZoneAsync(shape),
+                    Icon = WorkflowDesignerIcons.Resolve(activity, _workflowOptions),
                 });
             }
 
@@ -156,6 +162,7 @@ public sealed class WorkflowDesignerModelBuilder
             DisplayText = activity.DisplayText.Value,
             Category = activity.Category.Value,
             DesignHtml = await RenderContentZoneAsync(shape),
+            Icon = WorkflowDesignerIcons.Resolve(activity, _workflowOptions),
             Outcomes = outcomes
                 .Select(outcome => new WorkflowDesignerOutcome
                 {

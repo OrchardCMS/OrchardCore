@@ -1,10 +1,16 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from "vue";
+import { nextTick, onBeforeUnmount, onMounted, ref } from "vue";
 import type { DesignerConfig } from "./config";
 import type { DesignerApi } from "./api/designerApi";
+import type { Library } from "./api/types";
 import { designerStore, type DesignerStore } from "./state/designerStore";
+import { addNodeCommand } from "./state/commands";
 import DesignerCanvas from "./canvas/DesignerCanvas.vue";
+import ActivityToolbox from "./toolbox/ActivityToolbox.vue";
 import ToastHost from "./ui/ToastHost.vue";
+import { showToast } from "./ui/toasts";
+import { selectNode } from "./canvas/useConnect";
+import { DEFAULT_NODE_HEIGHT, NODE_WIDTH, snap, type Point } from "./canvas/geometry";
 import { t } from "./i18n";
 
 const props = withDefaults(defineProps<{ config: DesignerConfig; api: DesignerApi; store?: DesignerStore }>(), {
@@ -16,6 +22,9 @@ const emit = defineEmits<{ (event: "edit", activityId: string): void }>();
 const state = props.store.state;
 const loading = ref(true);
 const loadError = ref<string | null>(null);
+const library = ref<Library | null>(null);
+const libraryLoading = ref(false);
+const libraryError = ref<string | null>(null);
 const canvas = ref<InstanceType<typeof DesignerCanvas> | null>(null);
 
 const isEditable = (target: EventTarget | null) =>
@@ -38,8 +47,57 @@ const onKeyDown = (event: KeyboardEvent) => {
     }
 };
 
+const loadLibrary = async () => {
+    libraryLoading.value = true;
+
+    try {
+        library.value = await props.api.getLibrary();
+    } catch {
+        libraryError.value = t("LibraryLoadFailed");
+    } finally {
+        libraryLoading.value = false;
+    }
+};
+
+/**
+ * Adds an activity with its top-left corner at `position` (canvas coordinates, snapped to the grid). The
+ * activity is created on the server first, so it has an id and properties; the canvas change is undoable.
+ */
+const addActivity = async (activityName: string, position: Point) => {
+    try {
+        const result = await props.api.addActivity(state.revision, activityName, snap(position.x), snap(position.y));
+
+        props.store.execute(addNodeCommand(props.store.graph, result.node));
+        props.store.registerServerNode(result.node, result.revision, result.issues);
+        selectNode(props.store, result.node.id);
+
+        await nextTick();
+        canvas.value?.focusNode(result.node.id);
+
+        if (result.node.hasEditor) {
+            emit("edit", result.node.id);
+        }
+    } catch {
+        showToast({ message: t("AddActivityFailed"), variant: "danger" });
+    }
+};
+
+// A dropped card is placed under the pointer, its header centered on it.
+const onDropActivity = (activityName: string, point: Point) => addActivity(activityName, { x: point.x - NODE_WIDTH / 2, y: point.y - 16 });
+
+// A clicked card is placed in the middle of the visible part of the canvas.
+const onAddActivity = (activityName: string) => {
+    const center = canvas.value?.visibleCenter() ?? { x: NODE_WIDTH, y: DEFAULT_NODE_HEIGHT };
+
+    return addActivity(activityName, { x: center.x - NODE_WIDTH / 2, y: center.y - DEFAULT_NODE_HEIGHT / 2 });
+};
+
 onMounted(async () => {
     document.addEventListener("keydown", onKeyDown);
+
+    if (!props.config.readOnly) {
+        void loadLibrary();
+    }
 
     try {
         props.store.loadDefinition(await props.api.getDefinition());
@@ -52,7 +110,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => document.removeEventListener("keydown", onKeyDown));
 
-defineExpose({ canvas });
+defineExpose({ canvas, addActivity });
 </script>
 
 <template>
@@ -87,7 +145,9 @@ defineExpose({ canvas });
         </header>
 
         <div class="wfd-body">
-            <aside v-if="!config.readOnly" class="wfd-toolbox" :aria-label="t('Toolbox')" data-cy="designer-toolbox"></aside>
+            <aside v-if="!config.readOnly" class="wfd-toolbox" :aria-label="t('Toolbox')" data-cy="designer-toolbox">
+                <ActivityToolbox :library="library" :loading="libraryLoading" :error="libraryError" @add="onAddActivity" />
+            </aside>
 
             <main class="wfd-canvas-host" :aria-label="t('Canvas')" :aria-busy="loading" data-cy="designer-canvas">
                 <div v-if="loading" class="wfd-message">
@@ -95,7 +155,14 @@ defineExpose({ canvas });
                     {{ t("Loading") }}
                 </div>
                 <div v-else-if="loadError" class="wfd-message text-danger" role="alert">{{ loadError }}</div>
-                <DesignerCanvas v-else ref="canvas" :store="store" :read-only="config.readOnly" @edit="emit('edit', $event)" />
+                <DesignerCanvas
+                    v-else
+                    ref="canvas"
+                    :store="store"
+                    :read-only="config.readOnly"
+                    @edit="emit('edit', $event)"
+                    @drop-activity="onDropActivity"
+                />
             </main>
 
             <aside class="wfd-panel" :aria-label="t('Properties')" data-cy="designer-panel"></aside>

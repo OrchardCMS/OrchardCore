@@ -42,6 +42,18 @@ public sealed class WorkflowsDesignerJSLocalizer : IJSLocalizer
             { "Close", S["Close"].Value },
             { "Cancel", S["Cancel"].Value },
 
+            // Toolbox.
+            { "SearchActivities", S["Search activities"].Value },
+            { "ActivityKind", S["Kind of activities"].Value },
+            { "All", S["All"].Value },
+            { "Events", S["Events"].Value },
+            { "Tasks", S["Tasks"].Value },
+            { "LoadingActivities", S["Loading the activities…"].Value },
+            { "LibraryLoadFailed", S["The activities couldn't be loaded."].Value },
+            { "NoActivitiesFound", S["No activities match the search."].Value },
+            { "AddActivity", S["Add {0}"].Value },
+            { "AddActivityFailed", S["The activity couldn't be added. Reload the page and try again."].Value },
+
             // Canvas.
             { "Canvas", S["Workflow canvas"].Value },
             { "CanvasInstructions", S["Workflow canvas. Tab to an activity to select it; arrow keys move it, Delete removes it, Enter edits it, and the context menu key shows more actions."].Value },

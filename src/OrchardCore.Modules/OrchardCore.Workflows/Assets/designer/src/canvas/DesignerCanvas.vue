@@ -13,6 +13,7 @@ import { ZOOM_STEP, canvasToScreen, fitToContent, screenToCanvas, visibleCenter,
 import { startPointerDrag } from "./useDrag";
 import { clearSelection, connectOutcome, deleteSelection, nudgeSelection, selectAll, selectNode, selectTransition, toggleStart } from "./useConnect";
 import { showToast } from "../ui/toasts";
+import { ACTIVITY_DRAG_TYPE } from "../toolbox/filter";
 import { t } from "../i18n";
 
 // Dragged activities and their edges get their own compositing layers while they move, so the rest of the
@@ -27,7 +28,10 @@ const props = withDefaults(defineProps<{ store: DesignerStore; readOnly?: boolea
     highlightedIds: () => [],
 });
 
-const emit = defineEmits<{ (event: "edit", activityId: string): void }>();
+const emit = defineEmits<{
+    (event: "edit", activityId: string): void;
+    (event: "drop-activity", activityName: string, point: Point): void;
+}>();
 
 const state = props.store.state;
 const viewport = state.viewport;
@@ -557,6 +561,25 @@ const onWheel = (event: WheelEvent) => {
     markZooming();
 };
 
+// Toolbox cards are dropped with HTML drag and drop; the drop point is converted to canvas coordinates.
+const onDragOver = (event: DragEvent) => {
+    if (!props.readOnly && event.dataTransfer?.types.includes(ACTIVITY_DRAG_TYPE)) {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "copy";
+    }
+};
+
+const onDrop = (event: DragEvent) => {
+    const activityName = event.dataTransfer?.getData(ACTIVITY_DRAG_TYPE);
+
+    if (props.readOnly || !activityName) {
+        return;
+    }
+
+    event.preventDefault();
+    emit("drop-activity", activityName, toCanvas(event));
+};
+
 let resizeObserver: ResizeObserver | null = null;
 
 onMounted(() => {
@@ -607,6 +630,8 @@ defineExpose({
         @pointerdown="onBackgroundPointerDown"
         @keydown="onKeyDown"
         @keyup="onKeyUp"
+        @dragover="onDragOver"
+        @drop="onDrop"
         @contextmenu.prevent
     >
         <div class="wfd-grid" :style="gridStyle" aria-hidden="true"></div>

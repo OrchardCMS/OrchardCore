@@ -63,6 +63,104 @@
     color: var(--bs-secondary-color);
 }
 
+/* Toolbox. */
+
+.wfd-toolbox-inner {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+
+.wfd-toolbox-filters {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: 0.5rem;
+    border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+    background-color: var(--bs-body-bg);
+}
+
+.wfd-toolbox-message {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    color: var(--bs-secondary-color);
+    font-size: 0.8125rem;
+}
+
+.wfd-toolbox-category-title {
+    margin: 0;
+    font-size: 0.8125rem;
+}
+
+.wfd-toolbox-category-title .btn {
+    font-weight: 600;
+}
+
+.wfd-toolbox-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    margin: 0;
+    padding: 0 0.5rem 0.5rem;
+    list-style: none;
+}
+
+.wfd-toolbox-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.375rem 0.5rem;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    font-size: 0.75rem;
+    text-align: start;
+    cursor: grab;
+}
+
+.wfd-toolbox-card:hover {
+    border-color: var(--bs-primary);
+}
+
+.wfd-toolbox-card:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: 1px;
+}
+
+.wfd-toolbox-card.is-event {
+    border-inline-start: 3px solid var(--bs-warning);
+}
+
+.wfd-toolbox-icon {
+    margin-top: 0.125rem;
+    color: var(--bs-secondary-color);
+}
+
+.wfd-toolbox-thumb {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.wfd-toolbox-thumb h4 {
+    margin: 0 0 0.125rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+/* The thumbnail templates start with their own icon; the card already shows one. */
+.wfd-toolbox-thumb h4 > i:first-child {
+    display: none;
+}
+
+.wfd-toolbox-thumb p {
+    margin: 0;
+    color: var(--bs-secondary-color);
+}
+
 /* Canvas. The canvas coordinate space never mirrors in RTL: a workflow lays out the same for everyone. */
 
 /* rtl:begin:ignore */
