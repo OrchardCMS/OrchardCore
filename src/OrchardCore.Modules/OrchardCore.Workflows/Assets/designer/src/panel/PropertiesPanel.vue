@@ -1,0 +1,322 @@
+<script setup lang="ts">
+import { computed, nextTick, onMounted, ref, watch } from "vue";
+import type { DesignerApi } from "../api/designerApi";
+import { DesignerApiError } from "../api/designerApi";
+import type { DesignIssue, EditorApplied, SettingsApplied } from "../api/types";
+import type { DesignerStore } from "../state/designerStore";
+import { selectNode } from "../canvas/useConnect";
+import ServerFormHost from "./ServerFormHost.vue";
+import IssuesList from "./IssuesList.vue";
+import type { FormApplyResult } from "./types";
+import { showToast } from "../ui/toasts";
+import { confirmAction } from "../ui/confirm";
+import { t } from "../i18n";
+
+type Tab = "activity" | "workflow" | "issues";
+
+const MIN_WIDTH = 288;
+const MAX_WIDTH = 720;
+const WIDTH_KEY = "orchardcore:workflows-designer:panel-width";
+
+const props = withDefaults(defineProps<{ store: DesignerStore; api: DesignerApi; readOnly?: boolean }>(), { readOnly: false });
+
+const emit = defineEmits<{
+    (event: "focus-activity", activityId: string): void;
+    (event: "conflict", error: DesignerApiError): void;
+}>();
+
+const state = props.store.state;
+const tab = ref<Tab>("activity");
+const collapsed = ref(false);
+const width = ref(384);
+const editingId = ref<string | null>(null);
+const activityHost = ref<InstanceType<typeof ServerFormHost> | null>(null);
+const settingsHost = ref<InstanceType<typeof ServerFormHost> | null>(null);
+
+const selectedId = computed(() => (state.selectedNodeIds.length === 1 ? state.selectedNodeIds[0] : null));
+const editingNode = computed(() => (editingId.value ? props.store.getNode(editingId.value) : undefined));
+const errorCount = computed(() => state.issues.filter((issue) => issue.severity === "Error").length);
+
+const readWidth = () => {
+    try {
+        const stored = Number(window.localStorage.getItem(WIDTH_KEY));
+
+        return stored >= MIN_WIDTH && stored <= MAX_WIDTH ? stored : null;
+    } catch {
+        return null;
+    }
+};
+
+const storeWidth = () => {
+    try {
+        window.localStorage.setItem(WIDTH_KEY, String(width.value));
+    } catch {
+        // The width is a per-viewer convenience; ignore storage failures.
+    }
+};
+
+/**
+ * Applies the pending changes of the open form. When the form is invalid, asks whether to discard them;
+ * resolves to false when the user wants to keep editing.
+ */
+const settle = async () => {
+    const host = tab.value === "workflow" ? settingsHost.value : activityHost.value;
+
+    if (!host || (await host.apply()) || !host.isInvalid()) {
+        return true;
+    }
+
+    const discard = await confirmAction({
+        title: t("DiscardChangesTitle"),
+        message: t("DiscardChangesMessage"),
+        okText: t("Discard"),
+        cancelText: t("KeepEditing"),
+    });
+
+    if (discard) {
+        host.discard();
+    }
+
+    return discard;
+};
+
+watch(selectedId, async (next) => {
+    if (next === editingId.value) {
+        return;
+    }
+
+    if (editingId.value && !(await settle())) {
+        // Keep the invalid activity selected so its errors stay visible.
+        selectNode(props.store, editingId.value);
+
+        return;
+    }
+
+    editingId.value = next;
+});
+
+// The edited activity was deleted (or undone away).
+watch(editingNode, (node) => {
+    if (!node && editingId.value) {
+        activityHost.value?.discard();
+        editingId.value = selectedId.value;
+    }
+});
+
+const selectTab = async (next: Tab) => {
+    if (next !== tab.value && (await settle())) {
+        tab.value = next;
+    }
+};
+
+const toggleCollapsed = async () => {
+    if (!collapsed.value && !(await settle())) {
+        return;
+    }
+
+    collapsed.value = !collapsed.value;
+};
+
+/**
+ * Shows the editor of an activity, for example after a double-click or adding it from the toolbox.
+ */
+const open = async (activityId: string) => {
+    collapsed.value = false;
+
+    if (tab.value !== "activity" && !(await settle())) {
+        return;
+    }
+
+    tab.value = "activity";
+    selectNode(props.store, activityId);
+    await nextTick();
+};
+
+const onError = (error: unknown) => {
+    if (error instanceof DesignerApiError && error.isConflict) {
+        emit("conflict", error);
+
+        return;
+    }
+
+    showToast({ message: t("ApplyFailed"), variant: "danger" });
+};
+
+const loadActivity = () => props.api.getEditor(editingId.value!);
+
+const submitActivity = (form: FormData) => props.api.postEditor(editingId.value!, state.revision, form) as Promise<FormApplyResult>;
+
+const onActivityApplied = (result: FormApplyResult & { valid: true }) => {
+    const applied = result as unknown as EditorApplied;
+
+    props.store.applyServerChange(applied.revision, applied.issues);
+    const removed = props.store.replaceNode(applied.node);
+
+    if (removed.length > 0) {
+        showToast({ message: t("TransitionsRemoved", removed.length), variant: "warning" });
+    }
+};
+
+const loadSettings = () => props.api.getSettings();
+
+const submitSettings = (form: FormData) => props.api.postSettings(state.revision, form) as Promise<FormApplyResult>;
+
+const onSettingsApplied = (result: FormApplyResult & { valid: true }) => {
+    const applied = result as unknown as SettingsApplied;
+
+    props.store.applyServerChange(applied.revision, applied.issues);
+    state.settings = applied.settings;
+};
+
+const onIssueSelected = (issue: DesignIssue) => {
+    if (issue.activityId) {
+        selectNode(props.store, issue.activityId);
+        emit("focus-activity", issue.activityId);
+    }
+};
+
+const startResize = (event: PointerEvent) => {
+    const startX = event.clientX;
+    const startWidth = width.value;
+
+    // The panel is on the inline-end side, so it grows as the pointer moves toward the inline start.
+    const direction = getComputedStyle(event.currentTarget as Element).direction === "rtl" ? 1 : -1;
+
+    const onMove = (moveEvent: PointerEvent) => {
+        width.value = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, startWidth + direction * (moveEvent.clientX - startX)));
+    };
+
+    const onUp = () => {
+        window.removeEventListener("pointermove", onMove);
+        window.removeEventListener("pointerup", onUp);
+        storeWidth();
+    };
+
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+    event.preventDefault();
+};
+
+const onResizerKeyDown = (event: KeyboardEvent) => {
+    const step = event.shiftKey ? 64 : 16;
+
+    if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+        event.preventDefault();
+        const grow = (event.key === "ArrowLeft") !== (getComputedStyle(event.currentTarget as Element).direction === "rtl");
+        width.value = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, width.value + (grow ? step : -step)));
+        storeWidth();
+    }
+};
+
+onMounted(() => {
+    width.value = readWidth() ?? width.value;
+    editingId.value = selectedId.value;
+});
+
+defineExpose({ open, settle, selectTab });
+</script>
+
+<template>
+    <aside
+        class="wfd-panel"
+        :class="{ 'is-collapsed': collapsed }"
+        :style="collapsed ? undefined : { flexBasis: `${width}px`, width: `${width}px` }"
+        :aria-label="t('Properties')"
+        data-cy="designer-panel"
+    >
+        <div
+            v-if="!collapsed"
+            class="wfd-panel-resizer"
+            role="separator"
+            aria-orientation="vertical"
+            :aria-label="t('ResizePanel')"
+            :aria-valuenow="width"
+            :aria-valuemin="MIN_WIDTH"
+            :aria-valuemax="MAX_WIDTH"
+            tabindex="0"
+            data-cy="panel-resizer"
+            @pointerdown="startResize"
+            @keydown="onResizerKeyDown"
+        ></div>
+
+        <div class="wfd-panel-header">
+            <ul v-if="!collapsed" class="nav nav-tabs wfd-panel-tabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button type="button" role="tab" class="nav-link" :class="{ active: tab === 'activity' }" :aria-selected="tab === 'activity'" data-cy="panel-tab-activity" @click="selectTab('activity')">
+                        {{ t("ActivityTab") }}
+                    </button>
+                </li>
+                <li v-if="!readOnly" class="nav-item" role="presentation">
+                    <button type="button" role="tab" class="nav-link" :class="{ active: tab === 'workflow' }" :aria-selected="tab === 'workflow'" data-cy="panel-tab-workflow" @click="selectTab('workflow')">
+                        {{ t("WorkflowTab") }}
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button type="button" role="tab" class="nav-link" :class="{ active: tab === 'issues' }" :aria-selected="tab === 'issues'" data-cy="panel-tab-issues" @click="selectTab('issues')">
+                        {{ t("IssuesTab") }}
+                        <span v-if="state.issues.length > 0" class="badge ms-1" :class="errorCount > 0 ? 'text-bg-danger' : 'text-bg-warning'" data-cy="issues-count">
+                            {{ state.issues.length }}
+                        </span>
+                    </button>
+                </li>
+            </ul>
+            <button
+                type="button"
+                class="btn btn-sm btn-link wfd-panel-toggle"
+                :title="collapsed ? t('ExpandPanel') : t('CollapsePanel')"
+                :aria-label="collapsed ? t('ExpandPanel') : t('CollapsePanel')"
+                :aria-expanded="!collapsed"
+                data-cy="panel-collapse"
+                @click="toggleCollapsed"
+            >
+                <i class="fa-solid" :class="collapsed ? 'fa-angles-left' : 'fa-angles-right'" aria-hidden="true"></i>
+            </button>
+        </div>
+
+        <div v-show="!collapsed" class="wfd-panel-body" role="tabpanel">
+            <template v-if="tab === 'activity'">
+                <p v-if="state.selectedNodeIds.length > 1" class="wfd-panel-message" data-cy="panel-multiple">
+                    {{ t("MultipleSelected", state.selectedNodeIds.length) }}
+                </p>
+                <p v-else-if="!editingNode" class="wfd-panel-message" data-cy="panel-empty">{{ t("SelectActivityToEdit") }}</p>
+                <p v-else-if="editingNode.isMissing" class="wfd-panel-message text-warning" data-cy="panel-missing">{{ t("MissingActivityCannotBeEdited") }}</p>
+                <div v-else-if="readOnly" class="wfd-panel-summary" data-cy="panel-summary">
+                    <h3 class="h6">{{ editingNode.title }}</h3>
+                    <p class="text-secondary mb-2">{{ editingNode.displayText }}</p>
+                    <div class="wfd-node-body" v-html="editingNode.designHtml"></div>
+                </div>
+                <template v-else>
+                    <h3 class="wfd-panel-title h6" data-cy="panel-activity-title">
+                        <i :class="editingNode.icon || 'fa-solid fa-gear'" aria-hidden="true"></i>
+                        {{ editingNode.title }}
+                        <small class="text-secondary">{{ editingNode.displayText }}</small>
+                    </h3>
+                    <ServerFormHost
+                        ref="activityHost"
+                        :form-key="editingNode.id"
+                        :load="loadActivity"
+                        :submit="submitActivity"
+                        :label="t('ActivityTab')"
+                        data-cy="panel-activity-form"
+                        @applied="onActivityApplied"
+                        @error="onError"
+                    />
+                </template>
+            </template>
+
+            <ServerFormHost
+                v-else-if="tab === 'workflow'"
+                ref="settingsHost"
+                form-key="settings"
+                :load="loadSettings"
+                :submit="submitSettings"
+                :label="t('WorkflowTab')"
+                data-cy="panel-settings-form"
+                @applied="onSettingsApplied"
+                @error="onError"
+            />
+
+            <IssuesList v-else :issues="state.issues" :nodes="state.nodes" @select="onIssueSelected" />
+        </div>
+    </aside>
+</template>

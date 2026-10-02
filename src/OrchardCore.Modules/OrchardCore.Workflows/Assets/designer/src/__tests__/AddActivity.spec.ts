@@ -23,7 +23,8 @@ const setup = async () => {
         getDefinition: vi.fn().mockResolvedValue(createDefinition()),
         getLibrary: vi.fn().mockResolvedValue({ categories: [] }),
         addActivity: vi.fn().mockResolvedValue({ revision: 1, node: added, issues: [] }),
-    } as unknown as DesignerApi & { addActivity: ReturnType<typeof vi.fn> };
+        getEditor: vi.fn().mockResolvedValue({ valid: true, content: '<input name="NotifyTask.Message" />', scripts: "", styles: "" }),
+    } as unknown as DesignerApi & { addActivity: ReturnType<typeof vi.fn>; getEditor: ReturnType<typeof vi.fn> };
     const store = createDesignerStore();
     const wrapper = mount(App, { props: { config, api, store }, attachTo: document.body });
     await flushPromises();
@@ -57,7 +58,9 @@ describe("adding activities", () => {
         expect(store.state.selectedNodeIds).toEqual(["new"]);
         expect(store.state.revision).toBe(1);
         expect(store.state.canUndo).toBe(true);
-        expect(wrapper.emitted("edit")).toEqual([["new"]]);
+        // It has an editor, so the panel opens on it.
+        expect(api.getEditor).toHaveBeenCalledWith("new");
+        expect(wrapper.find("[data-cy=panel-activity-form] input[name='NotifyTask.Message']").exists()).toBe(true);
 
         // Undoing the add removes the node; the next save reports it as removed.
         store.undo();

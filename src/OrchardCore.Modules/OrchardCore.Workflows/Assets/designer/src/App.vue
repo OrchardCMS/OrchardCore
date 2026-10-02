@@ -7,17 +7,17 @@ import { designerStore, type DesignerStore } from "./state/designerStore";
 import { addNodeCommand } from "./state/commands";
 import DesignerCanvas from "./canvas/DesignerCanvas.vue";
 import ActivityToolbox from "./toolbox/ActivityToolbox.vue";
+import PropertiesPanel from "./panel/PropertiesPanel.vue";
 import ToastHost from "./ui/ToastHost.vue";
 import { showToast } from "./ui/toasts";
 import { selectNode } from "./canvas/useConnect";
 import { DEFAULT_NODE_HEIGHT, NODE_WIDTH, snap, type Point } from "./canvas/geometry";
 import { t } from "./i18n";
+import type { DesignerApiError } from "./api/designerApi";
 
 const props = withDefaults(defineProps<{ config: DesignerConfig; api: DesignerApi; store?: DesignerStore }>(), {
     store: () => designerStore,
 });
-
-const emit = defineEmits<{ (event: "edit", activityId: string): void }>();
 
 const state = props.store.state;
 const loading = ref(true);
@@ -26,6 +26,21 @@ const library = ref<Library | null>(null);
 const libraryLoading = ref(false);
 const libraryError = ref<string | null>(null);
 const canvas = ref<InstanceType<typeof DesignerCanvas> | null>(null);
+const panel = ref<InstanceType<typeof PropertiesPanel> | null>(null);
+
+const editActivity = (activityId: string) => {
+    void panel.value?.open(activityId);
+};
+
+const focusActivity = (activityId: string) => {
+    canvas.value?.centerOn(activityId);
+    canvas.value?.focusNode(activityId);
+};
+
+// Step 1.8 turns this into the conflict dialog.
+const onConflict = (error: DesignerApiError) => {
+    showToast({ message: t("ConflictDetected", error.problem.modifiedBy ?? "?"), variant: "danger", timeout: 0 });
+};
 
 const isEditable = (target: EventTarget | null) =>
     target instanceof HTMLElement && (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName));
@@ -75,7 +90,7 @@ const addActivity = async (activityName: string, position: Point) => {
         canvas.value?.focusNode(result.node.id);
 
         if (result.node.hasEditor) {
-            emit("edit", result.node.id);
+            editActivity(result.node.id);
         }
     } catch {
         showToast({ message: t("AddActivityFailed"), variant: "danger" });
@@ -110,7 +125,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => document.removeEventListener("keydown", onKeyDown));
 
-defineExpose({ canvas, addActivity });
+defineExpose({ canvas, panel, addActivity });
 </script>
 
 <template>
@@ -160,12 +175,20 @@ defineExpose({ canvas, addActivity });
                     ref="canvas"
                     :store="store"
                     :read-only="config.readOnly"
-                    @edit="emit('edit', $event)"
+                    @edit="editActivity"
                     @drop-activity="onDropActivity"
                 />
             </main>
 
-            <aside class="wfd-panel" :aria-label="t('Properties')" data-cy="designer-panel"></aside>
+            <PropertiesPanel
+                v-if="!loading && !loadError"
+                ref="panel"
+                :store="store"
+                :api="api"
+                :read-only="config.readOnly"
+                @focus-activity="focusActivity"
+                @conflict="onConflict"
+            />
         </div>
 
         <ToastHost />

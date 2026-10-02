@@ -232,10 +232,10 @@ Files: `src/canvas/` — `DesignerCanvas.vue`, `ActivityNode.vue`, `OutcomePort.
   - **Icon resolution.** The icon is resolved on the server (`WorkflowDesignerIcons`): the registration's icon, else a default keyed by the category's resource name (`LocalizedString.Name`, so it doesn't depend on the culture), else a generic event or task icon. Missing activities get a warning icon. Both the toolbox (`Library`) and the nodes (`Definition`) carry it.
   - **Toolbox behavior.** Categories start collapsed and expand while a search or kind filter is active. Search splits the query into terms that must all match the display text or category, ignoring case and accents. Cards are buttons (Enter/Space adds) and use HTML drag and drop (`application/x-orchard-workflow-activity`).
   - **Placement.** A dropped activity is placed with its header centered on the pointer; a clicked one is centered in the visible area. Both positions snap to the grid.
-  - **After adding.** The new activity is selected and focused. The add is undoable: undo removes it from the draft on the next save, and redo restores it from the draft trash. The panel opening for activities that have an editor is wired in step 1.7.
+  - **After adding.** The new activity is selected and focused. The add is undoable: undo removes it from the draft on the next save, and redo restores it from the draft trash. Since step 1.7, the panel opens on activities that have an editor.
   - **Verified** in a running CMS: icons, search, click-to-add and a real `DataTransfer` drop (position and icon), with the draft updated on the server.
 
-### - [ ] 1.7 Properties panel
+### - [x] 1.7 Properties panel
 
 Files: `src/panel/` — `PropertiesPanel.vue` (resizable and collapsible, with tabs **Activity**, **Workflow** and **Issues**), `ServerFormHost.vue`, `IssuesList.vue`.
 
@@ -254,6 +254,31 @@ Files: `src/panel/` — `PropertiesPanel.vue` (resizable and collapsible, with t
   - removed transitions are applied;
   - styles are injected once;
   - `oc:editor-unmounting` is dispatched before replacing content.
+- **Notes from implementing this step:**
+  - **Ordered script loading.** Per the spike, the host doesn't use `evalScripts`. bloom gains `loadScripts(html, { target, waitFor })` and `loadStyles(html)` (`helpers/loadAssets.ts`):
+    - scripts run one at a time in document order, and each external classic script is awaited (`async = false` plus its `load` event);
+    - external scripts already on the page are skipped (by `src`), and inline scripts run every time;
+    - stylesheets are added once (by `href`, or by text for inline `<style>`).
+  - **Applying.** `input` marks the form dirty, and `change` applies it after 600 ms. Apply, a selection change, a tab switch or collapsing the panel applies pending input at once. A form with nothing pending isn't posted. Before building the `FormData`, the host dispatches a synthetic `submit` on the form, so Monaco and CodeMirror copy their values into their textareas.
+  - **Invalid result.** The returned content is rendered with its errors and a status message. Leaving the activity or the tab asks through the admin `confirmDialog` ("Discard changes?", with Discard and Keep editing). Keep editing selects the activity again.
+  - **Valid result.**
+    - The node is replaced with the server's node, keeping its canvas position.
+    - Transitions from removed outcomes are dropped from the graph, including unsaved local ones, with a warning toast.
+    - The revision and issues are updated.
+    - Property changes are applied on the server, so undo can't go back past them: applying clears the history (`History.markBoundary`, step 1.4). Undo therefore can't bring back a transition from an outcome that was removed.
+  - **Panel.**
+    - It is collapsible and resizable from 288 to 720 px, with the pointer or the arrow keys on its separator. The width is kept per browser in `localStorage`.
+    - Missing activities and multiple selections show a message instead of a form.
+    - In read-only mode, the Activity tab shows a summary of the selected activity (for step 1.9).
+  - **Conflicts.** A 409 from `POST Editor` or `POST Settings` is reported to the app with a `conflict` event. A toast stands in until step 1.8 adds the conflict dialog.
+  - **Server fix: shapes rendered outside a view.** The designer endpoints return JSON, so there is no view context. The first shape template of each request was therefore rendered as a main page and wrapped in the theme layout: a full admin page in the `designHtml` of the first node, the `thumbnailHtml` of the first toolbox card, and the node returned by `POST Editor`. `WorkflowDesignerModelBuilder` now renders shapes in a view context without output, as Liquid templates do, and restores the previous context afterwards. `RenderedShapes_JsonEndpoints_AreNotWrappedInTheLayout` covers it and fails without the fix.
+  - **Verified** in a running CMS:
+    - Monaco (Script Task) is created in the panel and disposed (0 editors and 0 models) when switching to the Liquid Task, whose CodeMirror editor loads.
+    - The If/Else syntax toggle works. An invalid Liquid condition shows its error, and the confirm dialog works with both answers: Keep editing keeps the activity selected with its value, and Discard leaves the stored activity unchanged.
+    - Editing Fork branches updates its ports and body.
+    - Renaming the workflow on the Workflow tab updates the toolbar.
+    - The Issues tab lists the warnings.
+    - No new console errors on fresh pages, in either editor order.
 
 ### - [ ] 1.8 Draft autosave, publish and discard
 

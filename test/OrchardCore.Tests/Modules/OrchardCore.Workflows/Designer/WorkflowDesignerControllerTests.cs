@@ -258,6 +258,38 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
     }
 
     [Fact]
+    public async Task RenderedShapes_JsonEndpoints_AreNotWrappedInTheLayout()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"), Activity("start", "HttpRequestEvent", isStart: true));
+
+        // The first shape rendered in a request is the one that would be rendered as a main page.
+        var definition = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition");
+        AssertFragment(definition["nodes"][0]["designHtml"].GetValue<string>());
+
+        var library = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Library");
+        AssertFragment(library["categories"][0]["activities"][0]["thumbnailHtml"].GetValue<string>());
+
+        using var response = await PostFormAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId=notify&revision=0", new Dictionary<string, string>
+        {
+            ["IActivity.ActivityMetadata.Title"] = string.Empty,
+            ["NotifyTask.NotificationType"] = "Success",
+            ["NotifyTask.Message"] = "Hello",
+        });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var designHtml = (await ReadJsonAsync(response))["node"]["designHtml"].GetValue<string>();
+        AssertFragment(designHtml);
+        Assert.Contains("Hello", designHtml);
+
+        static void AssertFragment(string html)
+        {
+            Assert.False(string.IsNullOrWhiteSpace(html));
+            Assert.DoesNotContain("<html", html, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("<title", html, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
+    [Fact]
     public async Task Publish_DraftWithHttpEvents_RegistersRoutesAndDeletesDraft()
     {
         var (id, workflowTypeId) = await CreateWorkflowTypeAsync();

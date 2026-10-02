@@ -49,9 +49,150 @@
 }
 
 .wfd-panel {
+    position: relative;
+    display: flex;
     flex: 0 0 24rem;
+    flex-direction: column;
+    min-width: 0;
     border-left: var(--bs-border-width) solid var(--bs-border-color);
+    background-color: var(--bs-body-bg);
+}
+
+.wfd-panel.is-collapsed {
+    flex: 0 0 2.5rem;
+    width: 2.5rem;
+}
+
+.wfd-panel-resizer {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -3px;
+    z-index: 2;
+    width: 6px;
+    cursor: col-resize;
+}
+
+.wfd-panel-resizer:hover,
+.wfd-panel-resizer:focus-visible {
+    outline: none;
+    background-color: rgba(var(--bs-primary-rgb), 0.35);
+}
+
+.wfd-panel-header {
+    display: flex;
+    align-items: flex-end;
+    border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+}
+
+.wfd-panel-tabs {
+    flex: 1 1 auto;
+    border-bottom: 0;
+    padding-top: 0.25rem;
+    padding-inline-start: 0.25rem;
+}
+
+.wfd-panel-tabs .nav-link {
+    padding: 0.375rem 0.625rem;
+    font-size: 0.8125rem;
+}
+
+.wfd-panel-toggle {
+    align-self: center;
+    margin-inline-start: auto;
+}
+
+.wfd-panel-body {
+    flex: 1 1 auto;
+    min-height: 0;
     overflow: auto;
+}
+
+.wfd-panel-title {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0.75rem 0.75rem 0;
+}
+
+.wfd-panel-title small {
+    margin-inline-start: auto;
+    font-weight: 400;
+}
+
+.wfd-panel-message {
+    margin: 0;
+    padding: 1rem 0.75rem;
+    color: var(--bs-secondary-color);
+}
+
+.wfd-panel-summary {
+    padding: 0.75rem;
+}
+
+/* The server-rendered forms use the admin's two-column 'ocat-*' rows; the panel is narrow, so they stack. */
+.wfd-form {
+    padding: 0.75rem;
+}
+
+.wfd-form .ocat-wrapper,
+.wfd-form .ocat-limited-wrapper {
+    display: block;
+    margin-bottom: 0.75rem;
+}
+
+.wfd-form .ocat-label,
+.wfd-form .ocat-end,
+.wfd-form .ocat-end-offset,
+.wfd-form .ocat-limited {
+    width: auto;
+    max-width: none;
+    margin-inline-start: 0;
+    padding-inline: 0;
+    text-align: start;
+}
+
+.wfd-form-actions {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin: 0 -0.75rem -0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-top: var(--bs-border-width) solid var(--bs-border-color);
+    background-color: var(--bs-body-bg);
+}
+
+.wfd-form-status {
+    flex: 1 1 auto;
+    color: var(--bs-secondary-color);
+    font-size: 0.8125rem;
+}
+
+.wfd-issue {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    color: var(--bs-body-color);
+    text-decoration: none;
+    font-size: 0.8125rem;
+}
+
+.wfd-issue:hover:not(:disabled) {
+    background-color: var(--bs-tertiary-bg);
+}
+
+.wfd-issue:disabled {
+    opacity: 1;
+}
+
+.wfd-issue-activity {
+    display: block;
+    font-weight: 600;
 }
 
 .wfd-message {

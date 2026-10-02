@@ -162,17 +162,46 @@ export const createDesignerStore = () => {
         },
 
         /**
-         * Replaces a node with the server's version after an editor apply. Its properties changed on the
-         * server and can't be reverted locally, so the undo history is cleared.
+         * Replaces a node with the server's version after an editor apply, and removes the transitions of the
+         * outcomes it no longer has (including unsaved local ones, which the server doesn't know about).
+         * Its properties changed on the server and can't be reverted locally, so the undo history is cleared.
+         * Returns the removed transitions.
          */
-        replaceNode(node: DesignerNode) {
+        replaceNode(node: DesignerNode): DesignerTransition[] {
             const index = state.nodes.findIndex((existing) => existing.id === node.id);
 
             if (index >= 0) {
                 state.nodes.splice(index, 1, { ...node, x: state.nodes[index].x, y: state.nodes[index].y, isStart: state.nodes[index].isStart });
             }
 
+            const outcomes = new Set(node.outcomes.map((outcome) => outcome.name));
+            const removed: DesignerTransition[] = [];
+
+            for (let i = state.transitions.length - 1; i >= 0; i--) {
+                const transition = state.transitions[i];
+
+                if (transition.sourceActivityId === node.id && !outcomes.has(transition.sourceOutcomeName)) {
+                    removed.unshift(transition);
+                    state.transitions.splice(i, 1);
+                }
+            }
+
+            if (removed.length > 0) {
+                markChanged();
+            }
+
             history.markBoundary();
+
+            return removed;
+        },
+
+        /**
+         * Records the revision and issues returned by a successful server change.
+         */
+        applyServerChange(revision: number, issues: DesignIssue[]) {
+            state.revision = revision;
+            state.issues = issues;
+            state.hasDraft = true;
         },
 
         /**

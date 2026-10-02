@@ -1,6 +1,12 @@
 using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Entities;
@@ -24,6 +30,9 @@ public sealed class WorkflowDesignerModelBuilder
     private readonly IActivityDisplayManager _activityDisplayManager;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IDisplayHelper _displayHelper;
+    private readonly ViewContextAccessor _viewContextAccessor;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly ITempDataProvider _tempDataProvider;
     private readonly HtmlEncoder _htmlEncoder;
     private readonly WorkflowOptions _workflowOptions;
 
@@ -33,6 +42,9 @@ public sealed class WorkflowDesignerModelBuilder
         IActivityDisplayManager activityDisplayManager,
         IUpdateModelAccessor updateModelAccessor,
         IDisplayHelper displayHelper,
+        ViewContextAccessor viewContextAccessor,
+        IHttpContextAccessor httpContextAccessor,
+        ITempDataProvider tempDataProvider,
         HtmlEncoder htmlEncoder,
         IOptions<WorkflowOptions> workflowOptions)
     {
@@ -41,6 +53,9 @@ public sealed class WorkflowDesignerModelBuilder
         _activityDisplayManager = activityDisplayManager;
         _updateModelAccessor = updateModelAccessor;
         _displayHelper = displayHelper;
+        _viewContextAccessor = viewContextAccessor;
+        _httpContextAccessor = httpContextAccessor;
+        _tempDataProvider = tempDataProvider;
         _htmlEncoder = htmlEncoder;
         _workflowOptions = workflowOptions.Value;
     }
@@ -183,11 +198,46 @@ public sealed class WorkflowDesignerModelBuilder
             return string.Empty;
         }
 
-        var content = await _displayHelper.ShapeExecuteAsync(zoneHolding.Zones["Content"]);
+        // Shape templates are rendered as partial views of the current view. The designer endpoints return JSON,
+        // so there is no view, and the first template of the request would be rendered as a main page instead,
+        // wrapped in the theme layout. Render them in a view context without output, as Liquid templates do.
+        var previousViewContext = _viewContextAccessor.ViewContext;
 
-        using var writer = new StringWriter();
-        content.WriteTo(writer, _htmlEncoder);
+        if (previousViewContext?.View is null && _httpContextAccessor.HttpContext is { } httpContext)
+        {
+            var actionContext = await httpContext.GetActionContextAsync();
 
-        return writer.ToString();
+            _viewContextAccessor.ViewContext = new ViewContext(
+                actionContext,
+                NullView.Instance,
+                new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary()),
+                new TempDataDictionary(httpContext, _tempDataProvider),
+                TextWriter.Null,
+                new HtmlHelperOptions());
+        }
+
+        try
+        {
+            var content = await _displayHelper.ShapeExecuteAsync(zoneHolding.Zones["Content"]);
+
+            using var writer = new StringWriter();
+            content.WriteTo(writer, _htmlEncoder);
+
+            return writer.ToString();
+        }
+        finally
+        {
+            _viewContextAccessor.ViewContext = previousViewContext;
+        }
+    }
+
+    private sealed class NullView : IView
+    {
+        public static readonly NullView Instance = new();
+
+        public string Path => string.Empty;
+
+        public Task RenderAsync(ViewContext context)
+            => Task.CompletedTask;
     }
 }
