@@ -421,7 +421,7 @@ Files: `src/panel/` — `PropertiesPanel.vue` (resizable and collapsible, with t
     - `Designer/Index`, `Activity/{id}/Edit` and `Activity/{name}/Add` redirect to it.
     - The activity edit URL opens with that activity selected and its editor loaded.
 
-### - [ ] 1.12 Documentation and release notes
+### - [x] 1.12 Documentation and release notes
 
 - **Module docs**: update `src/docs/reference/modules/Workflows/README.md`:
   - designer tour: toolbox, canvas, panel, issues, drafts and publish, keyboard shortcuts;
@@ -432,6 +432,19 @@ Files: `src/panel/` — `PropertiesPanel.vue` (resizable and collapsible, with t
 - **Release notes**: add to `src/docs/releases/4.0.0.md` under `### Workflows`:
   - **New features**: the designer, drafts, autosave and publish.
   - **Breaking changes**: the activity editor full pages are replaced by redirects; the `workflow-editor` and `workflow-viewer` resources are removed; the `jsplumb` resource is obsolete; third-party editor scripts must be safe to inject.
+- **Notes from implementing this step:**
+  - **Module docs.** `reference/modules/Workflows/README.md` gets a **Workflow Designer** section covering:
+    - the three areas, the tabs and the collapsible rails;
+    - drafts and publishing: save status, Publish and Discard, conflicts, the draft banner;
+    - keyboard shortcuts;
+    - right-to-left languages: the canvas isn't mirrored;
+    - the instance viewer.
+  - **Updated sections.** The Vocabulary (Workflow Designer, Activity Editor, Activities Pane, Transition) and "Developing Custom Activities" (what the display types render in the designer) are updated. Two sections are new: **Activity Icons** and **Activity Editors in the Designer**, the injectable-editor contract, with the bloom helpers and an example.
+  - **Screenshots.** `docs/workflow-designer.png` and `docs/workflow-instance-viewer.png` replace `docs/workflow-editor.png`, which only the replaced section used. They were captured at 1600 × 1000 from a sample "Article approval" workflow, with a throwaway Playwright script that isn't committed.
+  - **Release notes.** `releases/4.0.0.md` gets:
+    - **Breaking changes › Workflows Module:** drafts and when `IWorkflowTypeEventHandler`s run, the removed pages, view models, views, shapes and resources, the obsolete `jsplumb` resources, template overrides, and the editor contract, with links to the docs;
+    - **New features › Workflow Designer.**
+  - **Verified** with `mkdocs build --strict`. No `mkdocs.yml` change was needed, since no page was added.
 
 ### - [ ] 1.13 End-to-end tests (Playwright for .NET)
 

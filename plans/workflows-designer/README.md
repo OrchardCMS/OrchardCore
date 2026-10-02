@@ -78,7 +78,7 @@ Update the **Status** column as work lands (`Not started` / `In progress` / `Don
 
 | Phase | Scope | Depends on | Status |
 |---|---|---|---|
-| **1** | **New designer**: canvas, toolbox, side-panel editors, drafts with autosave and publish, read-only instance viewer, tests. See [`phase-1-designer.md`](phase-1-designer.md). | — | In progress (1.0–1.11 done) |
+| **1** | **New designer**: canvas, toolbox, side-panel editors, drafts with autosave and publish, read-only instance viewer, tests. See [`phase-1-designer.md`](phase-1-designer.md). | — | In progress (1.0–1.12 done) |
 | 2 | Workflow versioning (drafts → versions, instances pinned to a version, history, revert) | 1 | Not started |
 | 3 | Typed variables, activity outputs and data binding | 2 | Not started |
 | 4 | Per-input expression syntax (Literal / Liquid / JavaScript / pluggable providers) | 3 (recommended) | Not started |

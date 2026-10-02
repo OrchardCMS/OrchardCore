@@ -20,17 +20,68 @@ A workflow can have more than one start event. This allows you to trigger (run) 
 Each activity has one or more **outcomes**, which represent a source endpoint from which a connection can be made to the next activity, which are called transitions.  
 By connecting activities, you are effectively creating a program that can be executed by Orchard in response to a multitude of events.
 
-![The workflow editor](docs/workflow-editor.png)
+## Workflow Designer
 
-1. Activity Picker (Task / Event)
-2. Activity actions (click an activity to display activity actions)
-3. An activity configured as the starting activity of the workflow.
-4. An activity.
-5. An Outcome ("Done") of an activity.
-6. A transition between two activities (from "Content Created" via the "Done" outcome to the "Send Email" activity).
-7. The workflow editor design surface.
-8. Edit the workflow definition properties (Name, Enabled, etc.)
-9. List the workflow instances for this workflow definition.
+Workflow definitions are edited in the workflow designer: open **Workflows** in the admin menu, then select a workflow.
+
+![The workflow designer](docs/workflow-designer.png)
+
+The designer has three areas:
+
+- **Activities** (on the left) lists the activities you can add, grouped by category. Search them by name or category, or show only events or tasks. Drag an activity onto the canvas, or click it to add it in the middle of the view.
+- **The canvas** (in the middle) shows the activities and the transitions between them. Each activity shows its type, its settings, and one port per outcome.
+    - Drag from an outcome's port to another activity to connect them. An outcome has at most one transition, so connecting it again replaces its previous transition.
+    - Start activities show a **Start** badge, and activities with problems show their number of issues.
+    - Right-click an activity, a transition or the canvas for more actions, such as making an event the start activity.
+- **The properties panel** (on the right) has three tabs:
+    - **Activity**: the editor of the selected activity. Double-click an activity, or select it and press Enter, to edit it.
+    - **Workflow**: the settings of the workflow: its name, whether it is enabled, whether it is a singleton, its lock settings, and whether finished instances are deleted.
+    - **Issues**: the problems found in the workflow, errors first. Select one to go to its activity.
+
+The activities pane and the properties panel can be collapsed to a narrow rail, to give the canvas more room. Hover a rail to open its pane over the canvas, or click it to expand the pane again. The properties rail shows the three tabs, so you can go straight to one of them. The width of the properties panel and whether each pane is collapsed are remembered in your browser.
+
+### Drafts and Publishing
+
+The designer saves your changes as you make them, to a **draft** of the workflow. A draft doesn't run: the workflow keeps running its published definition until you publish the draft.
+
+- The toolbar shows whether all changes are saved. When the connection is lost, the designer retries until it can save, and leaving the page asks first while changes aren't saved.
+- **Publish** makes the draft the published definition. Errors must be fixed first. When the workflow has warnings or running instances, the designer asks before publishing. Running instances continue on the new definition.
+- **Discard draft** deletes the draft and goes back to the published definition.
+- When someone else changes the workflow while you edit it, the designer stops saving and asks what to do. **Reload** loads their version and drops your unsaved changes. **Overwrite** saves your layout and connections over theirs.
+- When someone else last changed the draft, a banner shows who and when.
+
+The changes made in an activity editor are applied when you leave a field, and when you select another activity. When a field is invalid, the editor shows the error, and the designer asks before you leave that activity.
+
+**Instances** lists the instances of the workflow, and **Export** downloads its published definition as a recipe.
+
+### Keyboard Shortcuts
+
+| Keys | Action |
+|------|--------|
+| Ctrl+Z, Ctrl+Y (or Ctrl+Shift+Z) | Undo, redo a change on the canvas |
+| Tab | Move between activities; the focused activity is selected |
+| Enter | Edit the selected activity |
+| Escape, in the properties panel | Go back to the activity on the canvas |
+| Arrow keys | Move the selected activities by one grid cell, or by one pixel with Shift |
+| Delete, Backspace | Delete the selection; the toast that follows can undo it |
+| Ctrl+A | Select all the activities |
+| Escape | Clear the selection |
+| Shift+F10, Menu key | Open the actions of the focused activity, including **Connect an outcome to…** |
+| +, − | Zoom in, zoom out |
+| Ctrl+wheel | Zoom around the pointer |
+| Drag the background, Space+drag, middle button, wheel | Pan |
+
+Undo covers the changes made on the canvas: adding, moving, connecting and deleting activities. The changes made in an activity editor are applied on the server, so the undo history starts over after them.
+
+### Right-to-Left Languages
+
+In right-to-left languages, the activities pane and the properties panel swap sides, but the canvas isn't mirrored: a workflow looks the same to every user, whatever their language.
+
+### Workflow Instances
+
+The page of a workflow instance shows its workflow in a read-only designer, with the activities the instance waits on (its **blocking** activities) highlighted. Select an activity to see its details. The **State** tab shows the instance's state as JSON.
+
+![A workflow instance waiting on a signal](docs/workflow-instance-viewer.png)
 
 ## Vocabulary
 
@@ -61,20 +112,18 @@ A specialized type of activity.
 Like tasks, events can perform actions, but typically all they do is halt the workflow, awaiting an event to happen before continuing on to the next activity.  
 When an event is configured as the starting activity of a workflow, that workflow is started when that event is triggered.
 
-### Workflow Editor
+### Workflow Designer
 
-An editor that allows you to create and manage a workflow definition using a drag & drop visual interface.
+The editor that allows you to create and manage a workflow definition visually. See [Workflow Designer](#workflow-designer).
 
 ### Activity Editor
 
-Most activities expose settings that can be configured via the activity editor.  
-To configure an activity, you can either double-click an activity on the design surface of the workflow editor, or click an activity once to activate a small popup that provides various actions you can perform on an activity.  
-One of these actions is the *Edit* action.
+Most activities expose settings that can be configured in the activity editor, on the **Activity** tab of the designer's properties panel.
+To configure an activity, double-click it on the canvas, or select it and press Enter.
 
-### Activity Picker
+### Activities Pane
 
-When you are in the Workflow Editor, you use the Activity Picker to add activities to the design surface.  
-Open the activity picker by clicking **Add Task** or **Add Event** to add a task or event, respectively.
+The list of the activities you can add to a workflow, on the left of the designer. Drag an activity onto the canvas, or click it to add it.
 
 ### Outcome
 
@@ -87,7 +136,7 @@ When the email was sent successfully, it yields "Done" as the outcome, and "Fail
 
 ### Transition
 
-A transition is the connection between the outcome of one activity to another activity. Transitions are created using drag & drop operations in the workflow editor.
+A transition is the connection between the outcome of one activity to another activity. Transitions are created by dragging from an outcome's port to another activity in the designer, or with the **Connect an outcome to…** action of an activity.
 
 ### Workflow Manager
 
@@ -255,7 +304,7 @@ Orchard is built to be extended, and the `Workflows` module is no different. Whe
 Developing custom activities involve the following steps:
 
 1. Create a new class that directly or indirectly implements `IActivity`. In most cases, you either derive from `TaskActivity` or `EventActivity`, depending on whether your activity represents an event or not. Although not required, it is recommended to keep this class in a folder called `Activities`.
-2. Create a new **display driver** class that directly or indirectly implements `IDisplayDriver`. An activity display driver controls the activity's display on the **workflow editor canvas**, the **activity picker** and the **activity editor**. Although not required, it is recommended to keep this class in a folder called `Drivers`.
+2. Create a new **display driver** class that directly or indirectly implements `IDisplayDriver`. An activity display driver controls the activity's display on the designer's **canvas**, in its **activities pane** and in the **activity editor**. Although not required, it is recommended to keep this class in a folder called `Drivers`.
 3. Optionally implement a **view model** if your activity has properties that the user should be able to configure.
 4. Implement the various Razor views for the various shapes provided by the driver. Although not required, it is recommended to store these files in the `Views/Items` folder. Note that it is required for your views to be discoverable by the display engine.  
 
@@ -290,10 +339,50 @@ An activity has the following display types:
 - Design
 
 **Thumbnail**
-Used when the activity is rendered as part of the activity picker.
+Used for the activity's card in the designer's activities pane.
 
 **Design**
-Used when the activity is rendered as part of the workflow editor design surface.
+Used for the body of the activity on the designer's canvas.
+
+The designer renders the `Content` zone of these shapes, where `ActivityDisplayDriver` places the `{Name}_Fields_Thumbnail` and `{Name}_Fields_Design` shapes. It draws the card, the node, the icon and the outcome ports itself.
+
+### Activity Icons
+
+The designer shows an icon for each activity, on the canvas and in the activities pane. An activity that doesn't declare one gets the default icon of its category, or a generic event or task icon. To declare one, set a Font Awesome class when registering the activity:
+
+```csharp
+services.AddActivity<NotifyTask, NotifyTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-bell");
+```
+
+### Activity Editors in the Designer
+
+The designer loads an activity's editor (the `{Name}_Fields_Edit` shape) into its properties panel without reloading the page. It posts the editor as a form when a field changes, and replaces it when another activity is selected. Editors made of plain form fields need nothing more. An editor that has a script must be safe to inject:
+
+- **Register the script as a resource** (`<script asp-name="…" at="Foot">` or `asp-src`), so the designer loads it with the editor. A script that is already on the page isn't loaded again, so it must also initialize the editors that are added to the page later. In the Orchard Core repository, `observeAndInit(selector, init)` from `@orchardcore/bloom/helpers/observeAndInit` does this: it runs `init` once for every matching element, including the ones added later.
+- **Scope the script to its editor**, for example with a `data-task-editor="my-task"` wrapper element, and read element ids from `data-` attributes rather than hard-coding them.
+- **Keep the form fields up to date.** The designer collects the form with `FormData`. It dispatches a `submit` event on the form first, so rich editors that copy their value when the form is submitted keep working. Dispatch a bubbling `change` event on a field when the user commits an edit, so the designer applies it.
+- **Release what the script creates** when the editor is removed. Right before replacing an editor, the designer dispatches the bubbling `oc:editor-unmounting` event on the element that contains it.
+
+The bloom helpers in `@orchardcore/bloom/helpers/editorLifecycle` implement this contract:
+
+- `onEditorUnmounting(element, dispose)` calls `dispose` once, when the editor is removed.
+- `dispatchFieldChange(field)` reports an edit.
+- `bindCodeMirrorToTextArea(editor, textArea)` does all of it for a CodeMirror 5 editor.
+
+```typescript
+import observeAndInit from "@orchardcore/bloom/helpers/observeAndInit";
+import { bindCodeMirrorToTextArea } from "@orchardcore/bloom/helpers/editorLifecycle";
+
+observeAndInit('[data-task-editor="my-task"]', (element) => {
+    const textArea = element.querySelector<HTMLTextAreaElement>(`#${CSS.escape(element.dataset.expressionId ?? "")}`);
+
+    if (textArea) {
+        bindCodeMirrorToTextArea(CodeMirror.fromTextArea(textArea, { mode: { name: "liquid" } }), textArea);
+    }
+});
+```
+
+The validation errors that the driver's `UpdateAsync` adds are shown in the editor.
 
 ### IActivity
 
