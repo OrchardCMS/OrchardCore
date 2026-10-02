@@ -92,6 +92,21 @@ public sealed class Migrations : DataMigration
         return 4;
     }
 
+    public async Task<int> UpdateFrom4Async()
+    {
+        await SchemaBuilder.CreateMapIndexTableAsync<WorkflowTypeDraftIndex>(table => table
+            .Column<string>("WorkflowTypeId")
+        );
+
+        await SchemaBuilder.AlterIndexTableAsync<WorkflowTypeDraftIndex>(table => table
+            .CreateIndex("IDX_WorkflowTypeDraftIndex_DocumentId",
+                "DocumentId",
+                "WorkflowTypeId")
+        );
+
+        return 5;
+    }
+
     // This code can be removed in a later version.
     public async Task<int> UpdateFrom3Async()
     {

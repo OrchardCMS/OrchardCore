@@ -62,6 +62,9 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<IActivity, MissingActivityDisplayDriver>();
         services.AddIndexProvider<WorkflowTypeIndexProvider>();
         services.AddIndexProvider<WorkflowIndexProvider>();
+        services.AddIndexProvider<WorkflowTypeDraftIndexProvider>();
+        services.AddScoped<IWorkflowTypeDraftManager, WorkflowTypeDraftManager>();
+        services.AddScoped<IWorkflowTypeEventHandler, WorkflowTypeDraftHandler>();
         services.AddScoped<IWorkflowExecutionContextHandler, DefaultWorkflowExecutionContextHandler>();
         services.AddScoped<IWorkflowExpressionEvaluator, LiquidWorkflowExpressionEvaluator>();
         services.AddScoped<IWorkflowScriptEvaluator, JavaScriptWorkflowScriptEvaluator>();

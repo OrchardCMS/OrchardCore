@@ -54,7 +54,7 @@ Time-box this step and record the findings in **Spike findings** at the bottom o
 
 ---
 
-### - [ ] 1.1 Server: workflow type drafts
+### - [x] 1.1 Server: workflow type drafts
 
 Goal: a server-side draft for each workflow type, which the designer autosaves into. Publishing goes through `IWorkflowTypeStore` so every `IWorkflowTypeEventHandler` runs. This also fixes the store bypass in `ActivityController`.
 
