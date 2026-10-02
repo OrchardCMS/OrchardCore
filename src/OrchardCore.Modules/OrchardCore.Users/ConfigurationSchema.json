@@ -1,0 +1,53 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Users": {
+          "type": "object",
+          "description": "Paths of the authentication related pages, relative to the tenant base path. Leading and trailing '/' characters are ignored. See https://docs.orchardcore.net/en/latest/reference/modules/Users/.",
+          "properties": {
+            "LoginPath": {
+              "type": "string",
+              "description": "The path of the login page.",
+              "default": "Login"
+            },
+            "LogoffPath": {
+              "type": "string",
+              "description": "The path used to log off.",
+              "default": "Users/LogOff"
+            },
+            "ChangePasswordUrl": {
+              "type": "string",
+              "description": "The path of the change password page.",
+              "default": "ChangePassword"
+            },
+            "ChangePasswordConfirmationUrl": {
+              "type": "string",
+              "description": "The path of the page displayed after the password is changed.",
+              "default": "ChangePasswordConfirmation"
+            },
+            "ExternalLoginsUrl": {
+              "type": "string",
+              "description": "The path of the page used to manage the external logins of the current user.",
+              "default": "ExternalLogins"
+            },
+            "TwoFactorAuthenticationPath": {
+              "type": "string",
+              "description": "The path of the two-factor authentication page.",
+              "default": "TwoFactor"
+            }
+          }
+        },
+        "OrchardCore_Users": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Users' section is deprecated. Use 'OrchardCore:Users' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Users' instead.",
+          "doNotSuggest": true
+        }
+      }
+    }
+  }
+}

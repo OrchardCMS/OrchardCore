@@ -1,6 +1,7 @@
-using Microsoft.Extensions.FileProviders;
+﻿using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Primitives;
+using OrchardCore.Modules.FileProviders;
 
 namespace OrchardCore.Modules;
 
@@ -48,8 +49,11 @@ public class ModuleProjectStaticFileProvider : IModuleStaticFileProvider
                         // Resolve "{ModuleProjectDirectory}wwwroot/" from the project asset.
                         var index = asset.ProjectAssetPath.IndexOf('/' + Module.WebRoot, StringComparison.Ordinal);
 
-                        // Add the module project "wwwroot" folder.
-                        roots[module.Name] = asset.ProjectAssetPath[..(index + Module.WebRoot.Length + 1)];
+                        // Add the module project "wwwroot" folder, canonicalized and with a trailing
+                        // separator so that resolved file paths can be checked for containment.
+                        var root = asset.ProjectAssetPath[..(index + Module.WebRoot.Length + 1)];
+
+                        roots[module.Name] = PhysicalPathResolver.NormalizeRoot(root);
                     }
                 }
 
@@ -70,27 +74,11 @@ public class ModuleProjectStaticFileProvider : IModuleStaticFileProvider
             return new NotFoundFileInfo(subpath);
         }
 
-        var path = NormalizePath(subpath);
-        var index = path.IndexOf('/');
-
         // "{ModuleId}/**/*.*".
-        if (index != -1)
+        if (TryGetProjectFilePath(NormalizePath(subpath), out var filePath))
         {
-            // Resolve the module id.
-            var module = path[..index];
-
-            // Get the module project "wwwroot" folder.
-            if (s_roots.TryGetValue(module, out var root))
-            {
-                // Resolve "{ModuleProjectDirectory}wwwroot/**/*.*"
-                var filePath = root + path[(module.Length + 1)..];
-
-                if (File.Exists(filePath))
-                {
-                    // Serve the file from the physical file system.
-                    return new PhysicalFileInfo(new FileInfo(filePath));
-                }
-            }
+            // Serve the file from the physical file system.
+            return new PhysicalFileInfo(new FileInfo(filePath));
         }
 
         return new NotFoundFileInfo(subpath);
@@ -103,30 +91,50 @@ public class ModuleProjectStaticFileProvider : IModuleStaticFileProvider
             return NullChangeToken.Singleton;
         }
 
-        var path = NormalizePath(filter);
-        var index = path.IndexOf('/');
-
         // "{ModuleId}/**/*.*".
-        if (index != -1)
+        if (TryGetProjectFilePath(NormalizePath(filter), out var filePath))
         {
-            // Resolve the module id.
-            var module = path[..index];
-
-            // Get the module project "wwwroot" folder.
-            if (s_roots.TryGetValue(module, out var root))
-            {
-                // Resolve "{ModuleProjectDirectory}wwwroot/**/*.*"
-                var filePath = root + path[(module.Length + 1)..];
-
-                if (File.Exists(filePath))
-                {
-                    // Watch the file from the physical file system.
-                    return new PollingFileChangeToken(new FileInfo(filePath));
-                }
-            }
+            // Watch the file from the physical file system.
+            return new PollingFileChangeToken(new FileInfo(filePath));
         }
 
         return NullChangeToken.Singleton;
+    }
+
+    /// <summary>
+    /// Resolves an existing physical file path from a "{ModuleId}/**/*.*" path, only if the
+    /// canonical path is contained in the module project "wwwroot" folder.
+    /// </summary>
+    private static bool TryGetProjectFilePath(string path, out string filePath)
+    {
+        filePath = null;
+
+        var index = path.IndexOf('/');
+
+        if (index == -1)
+        {
+            return false;
+        }
+
+        // Resolve the module id.
+        var module = path[..index];
+
+        // Get the module project "wwwroot" folder.
+        if (!s_roots.TryGetValue(module, out var root))
+        {
+            return false;
+        }
+
+        // Resolve "{ModuleProjectDirectory}wwwroot/**/*.*", but only inside that folder.
+        if (!PhysicalPathResolver.TryResolve(root, path[(module.Length + 1)..], out var resolvedPath) ||
+            !File.Exists(resolvedPath))
+        {
+            return false;
+        }
+
+        filePath = resolvedPath;
+
+        return true;
     }
 
     private static string NormalizePath(string path) => path.Replace('\\', '/').Trim('/').Replace("//", "/");
