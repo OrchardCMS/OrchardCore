@@ -131,7 +131,7 @@ Goal: everything the designer needs, as an `[Admin]` MVC controller returning JS
   - Route entries are only registered for `HttpRequestFilterEvent` start activities. `HttpRequestEvent` is invoked through its signed token URL (`workflows/invoke/{token}`), which resolves the activity on the live type. The publish test asserts both: the filter event's route entry appears, and the token URL returns 404 before publishing and responds after.
   - Publishing a draft with `Error` issues returns 400 ProblemDetails with an `issues` extension.
 
-### - [ ] 1.3 Make every activity editor safe to inject
+### - [x] 1.3 Make every activity editor safe to inject
 
 Goal: every editor initializes correctly when injected into the panel, more than once, without leaks. This is the same class of problem `plans/es-module-migration.md` addressed for Flows and Widgets.
 
@@ -144,6 +144,12 @@ Goal: every editor initializes correctly when injected into the panel, more than
 - **Disposal**: before the panel replaces editor content, the designer dispatches a `oc:editor-unmounting` DOM event on the container. Monaco and CodeMirror initializers in Workflows listen for it and dispose their instances (expose this from bloom if it doesn't exist yet). Document the event for third-party activity authors in the module docs (step 1.12).
 - **Keep the full-page editors working** until step 1.11 removes them. Both paths must work in this step.
 - **Tests**: covered end to end in step 1.13. Add Vitest specs for any bloom helper you add.
+- **Notes from implementing this step:**
+  - The new bloom helper `helpers/editorLifecycle.ts` provides `EDITOR_UNMOUNTING_EVENT`, `dispatchEditorUnmounting`, `onEditorUnmounting` and `bindCodeMirrorToTextArea`. The binding keeps the textarea in sync, fires a `change` on the textarea when the editor loses focus after an edit (like a native field), and calls `toTextArea()` on unmount. `components/monaco-text-editor.ts` does the same for Monaco and disposes the editor and its model.
+  - Once an editor script has run in the designer, its `observeAndInit` registration stays active for the rest of the page. Broad selectors such as `textarea[id$='Body']` (Sms) or `textarea[id$='HtmlBody']` (Notifications) would then also match other editors (EmailTask). So each module editor now has a `data-task-editor` wrapper (`email`, `sms`, `notification`, `content`, `create-tenant`, `setup-tenant`), and its script only looks inside it. Overrides of those `*.Fields.Edit.cshtml` views must keep the wrapper (release notes, step 1.12).
+  - `content-type-check-all.js` is now `Assets/ts/content-type-check-all.ts`, built by Parcel into `Scripts/content-type-check-all/` and loaded as a module.
+  - bloom has its own Vitest setup (`.scripts/bloom/vitest.config.ts`, run in `frontend_unit_tests.yml`).
+  - Verified in a running CMS, both injected over AJAX (switching between editors and back) and on the legacy full pages. Every editor initialized each time, with no leftover CodeMirror or Monaco instances and no console errors.
 
 ### - [ ] 1.4 Front-end scaffold
 

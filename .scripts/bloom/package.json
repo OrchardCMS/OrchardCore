@@ -11,6 +11,11 @@
         "oidc-client-ts": "^3.1.0"
     },
     "scripts": {
-        "check": "vue-tsc --noEmit"
+        "check": "vue-tsc --noEmit",
+        "test:unit": "vitest"
+    },
+    "devDependencies": {
+        "jsdom": "^29.1.1",
+        "vitest": "4.1.10"
     }
 }

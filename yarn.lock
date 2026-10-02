@@ -2767,9 +2767,11 @@ __metadata:
     "@microsoft/signalr": "npm:^8.0.0"
     axios: "npm:^1.20.0"
     debug: "npm:^4.3.4"
+    jsdom: "npm:^29.1.1"
     mitt: "npm:^3.0.0"
     monaco-editor: "npm:0.52.2"
     oidc-client-ts: "npm:^3.1.0"
+    vitest: "npm:4.1.10"
   languageName: unknown
   linkType: soft
 

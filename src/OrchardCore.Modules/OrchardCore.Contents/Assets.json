@@ -18,12 +18,6 @@
     "tags": ["admin", "dashboard", "js"]
   },
   {
-    "action": "min",
-    "name": "content-localization",
-    "source": "Assets/js/content-type-check-all.js",
-    "tags": ["admin", "dashboard", "js"]
-  },
-  {
     "action": "parcel",
     "name": "deployment-modals",
     "source": [
@@ -73,6 +67,13 @@
     "name": "full-text-aspect-settings",
     "source": "Assets/ts/full-text-aspect-settings.ts",
     "dest": "wwwroot/Scripts/full-text-aspect-settings/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "content-type-check-all",
+    "source": "Assets/ts/content-type-check-all.ts",
+    "dest": "wwwroot/Scripts/content-type-check-all/",
     "tags": ["admin", "dashboard", "js"]
   },
   {
