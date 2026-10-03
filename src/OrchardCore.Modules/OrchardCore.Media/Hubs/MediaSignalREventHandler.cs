@@ -1,72 +1,67 @@
 using Microsoft.AspNetCore.SignalR;
 using OrchardCore.Media.Events;
+using OrchardCore.Media.Realtime;
 
 namespace OrchardCore.Media.Hubs;
 
 public class MediaSignalREventHandler : IMediaEventHandler
 {
     private readonly IHubContext<MediaHub> _hubContext;
+    private readonly MediaChangeEventFactory _eventFactory;
 
-    public MediaSignalREventHandler(IHubContext<MediaHub> hubContext)
+    public MediaSignalREventHandler(IHubContext<MediaHub> hubContext, MediaChangeEventFactory eventFactory)
     {
         _hubContext = hubContext;
+        _eventFactory = eventFactory;
     }
 
     public Task MediaDeletedFileAsync(MediaDeletedContext context)
-        => _hubContext.Clients.Group(FolderGroup(context.Path)).SendAsync("MediaChanged", new
-        {
-            action = "fileDeleted",
-            path = context.Path,
-        });
+        => SendAsync("fileDeleted", context.Path, includeItem: false);
 
     public Task MediaDeletedDirectoryAsync(MediaDeletedContext context)
-        => _hubContext.Clients.Group(FolderGroup(context.Path)).SendAsync("MediaChanged", new
-        {
-            action = "directoryDeleted",
-            path = context.Path,
-        });
+        => SendAsync("directoryDeleted", context.Path, includeItem: false);
 
     public Task MediaMovedAsync(MediaMoveContext context)
-    {
-        var oldGroup = FolderGroup(context.OldPath);
-        var newGroup = FolderGroup(context.NewPath);
-        var payload = new { action = "fileMoved", path = context.OldPath, newPath = context.NewPath };
-
-        // If both paths share the same parent directory, avoid sending a duplicate notification.
-        if (oldGroup == newGroup)
-        {
-            return _hubContext.Clients.Group(oldGroup).SendAsync("MediaChanged", payload);
-        }
-
-        return _hubContext.Clients.Groups(oldGroup, newGroup).SendAsync("MediaChanged", payload);
-    }
+        => SendAsync("fileMoved", context.OldPath, context.NewPath, includeItem: true);
 
     public Task MediaCreatedDirectoryAsync(MediaCreatedContext context)
-        => _hubContext.Clients.Group(FolderGroup(context.Path)).SendAsync("MediaChanged", new
-        {
-            action = "directoryCreated",
-            path = context.Path,
-        });
+        => SendAsync("directoryCreated", context.Path, includeItem: false);
 
     public Task MediaCreatedFileAsync(MediaCreatedContext context)
-        => _hubContext.Clients.Group(FolderGroup(context.Path)).SendAsync("MediaChanged", new
-        {
-            action = "fileUploaded",
-            path = context.Path,
-        });
+        => SendAsync("fileUploaded", context.Path, includeItem: true);
 
     public Task MediaCopiedFileAsync(MediaMoveContext context)
-    {
-        var oldGroup = FolderGroup(context.OldPath);
-        var newGroup = FolderGroup(context.NewPath);
-        var payload = new { action = "fileCopied", path = context.OldPath, newPath = context.NewPath };
+        => SendAsync("fileCopied", context.OldPath, context.NewPath, includeItem: true);
 
-        if (oldGroup == newGroup)
+    private Task SendAsync(string action, string path, bool includeItem)
+        => SendAsync(action, path, newPath: null, includeItem);
+
+    private async Task SendAsync(string action, string path, string newPath, bool includeItem)
+    {
+        // The payload carries the affected entry so clients patch their store instead of each reloading
+        // the directory. It is resolved once here, not once per connected client.
+        var message = await _eventFactory.CreateAsync(action, path, newPath, includeItem);
+
+        var group = FolderGroup(path);
+
+        if (newPath is null)
         {
-            return _hubContext.Clients.Group(oldGroup).SendAsync("MediaChanged", payload);
+            await _hubContext.Clients.Group(group).SendAsync("MediaChanged", message);
+
+            return;
         }
 
-        return _hubContext.Clients.Groups(oldGroup, newGroup).SendAsync("MediaChanged", payload);
+        var newGroup = FolderGroup(newPath);
+
+        // If both paths share the same parent directory, avoid sending a duplicate notification.
+        if (group == newGroup)
+        {
+            await _hubContext.Clients.Group(group).SendAsync("MediaChanged", message);
+
+            return;
+        }
+
+        await _hubContext.Clients.Groups(group, newGroup).SendAsync("MediaChanged", message);
     }
 
     // Returns the SignalR group name for the parent directory of the supplied path.
