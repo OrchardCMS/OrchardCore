@@ -794,7 +794,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
     }
 
     /// <summary>
-    /// Tries to wait for the min idle time after the max busy time, returns false if it was cancelled.
+    /// Tries to wait for the min idle time after the max busy time, returns false if it was canceled.
     /// </summary>
     private async Task<bool> TryWaitAfterBusyTime(CancellationToken stoppingToken)
     {
@@ -812,7 +812,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
     }
 
     /// <summary>
-    /// Tries to wait for a given delay, returns false if it was cancelled.
+    /// Tries to wait for a given delay, returns false if it was canceled.
     /// </summary>
     private static async Task<bool> TryWaitAsync(TimeSpan delay, CancellationToken stoppingToken)
     {

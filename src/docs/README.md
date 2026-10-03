@@ -32,7 +32,7 @@ Orchard Core CMS is a complete rewrite of Orchard CMS on ASP.NET Core. It's not 
 
 - **Liquid templates support**. Editors can safely change the HTML templates with the Liquid template language. It was chosen as it's both very well documented (Jekyll, Shopify, …) and secure.
 
-- **Custom queries**. We wanted to provide a way for developers to access all their data as simply as possible. We created a module that lets you create custom ad-hoc SQL and Lucene queries that can be re-used to display custom content, or exposed as API endpoints. You can use it to create efficient queries, or expose your data to SPA applications.
+- **Custom queries**. We wanted to provide a way for developers to access all their data as simply as possible. We created a module that lets you create custom ad-hoc SQL and Lucene queries that can be reused to display custom content, or exposed as API endpoints. You can use it to create efficient queries, or expose your data to SPA applications.
 
 - **Deployment plans**. Deployment plans are scripts that can contain content and metadata to build a website. You can now include binary files, and even use them to deploy your sites remotely from a staging to a production environment for instance. They can also be part of NuGet Packages, allowing you to ship predefined websites.
 

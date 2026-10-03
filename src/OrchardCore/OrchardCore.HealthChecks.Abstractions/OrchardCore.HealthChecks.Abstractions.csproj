@@ -3,7 +3,7 @@
   <PropertyGroup>
     <RootNamespace>OrchardCore.HealthChecks</RootNamespace>
     <!-- NuGet properties-->
-    <Title>OrchardCore Health Chekcs Abstractions</Title>
+    <Title>OrchardCore Health Checks Abstractions</Title>
     <Description>
       $(OCCMSDescription)
 

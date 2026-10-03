@@ -73,7 +73,7 @@ public sealed class WorkflowExecutionContext : IDisposable
     public Stack<ExecutedActivity> ExecutedActivities { get; set; }
 
     /// <summary>
-    /// Gets a cancellation token that gets signaled when the workflow is cancelled.
+    /// Gets a cancellation token that gets signaled when the workflow is canceled.
     /// </summary>
     public CancellationToken CancellationToken => _cancellationTokenSource.Token;
 

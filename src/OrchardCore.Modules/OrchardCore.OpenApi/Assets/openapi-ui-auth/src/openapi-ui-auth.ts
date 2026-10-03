@@ -6,10 +6,10 @@ import {
 } from "@bloom/services/auth/silent-oidc";
 
 /**
- * Silent OAuth2 authorization-code + PKCE bearer auth for the OpenAPI documentation UIs
+ * Silent OAuth2 authorization-code + PKCE bearer auth for the OpenAPI documentation UI's
  * (Swagger, Scalar).
  *
- * The UIs are only reachable by an already cookie-authenticated admin (the module's auth gate
+ * The UI's are only reachable by an already cookie-authenticated admin (the module's auth gate
  * redirects anonymous visitors to /admin), so we acquire a bearer access token silently
  * (prompt=none in a hidden iframe) against the same-tenant OpenID Connect server and renew it the
  * same way — no interactive "Authorize" step. That silent core (token acquisition, renewal, the

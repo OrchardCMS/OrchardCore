@@ -10,9 +10,9 @@ import { resolveEmbeddedConfig } from "./RuntimeConfig";
  * OAuth2 authorization-code + PKCE authentication for the media gallery SPA.
  *
  * The silent core (token acquisition, renewal, the silent-renew callback) lives in
- * @bloom/services/auth/silent-oidc and is shared with the OpenAPI documentation UIs. This module
+ * @bloom/services/auth/silent-oidc and is shared with the OpenAPI documentation UI's. This module
  * adds the media-gallery-specific layer: mapping the element/config-json config to the core's
- * settings, and the interactive (standalone) full-page login flow the silent-only OpenAPI UIs
+ * settings, and the interactive (standalone) full-page login flow the silent-only OpenAPI UI's
  * don't have.
  *
  * The silent-renew iframe loads media-gallery-oidc-silent.html, which re-enters this module (see

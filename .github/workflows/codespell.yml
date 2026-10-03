@@ -1,0 +1,10 @@
+name: Codespell
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+jobs:
+  codespell:
+    name: Codespell
+    uses: Lombiq/GitHub-Actions/.github/workflows/codespell.yml@dev

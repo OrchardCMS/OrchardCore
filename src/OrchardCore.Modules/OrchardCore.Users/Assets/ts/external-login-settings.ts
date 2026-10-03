@@ -54,7 +54,7 @@ switch (context.loginProvider) {
         context.claimsToUpdate={"displayName":"UserDisplayName"}
         context.propertiesToUpdate={"UserProfile":{"UserProfile":{"DisplayName":"UserDisplayNameValue"}}}
         context.externalClaims.forEach(claim => {
-            if (claim.type === "http://schemas.microsoft.com/ws/2008/06/identity/claims/role") {
+            if (claim.type === "http://schemas.microsoft.com/ws/2008/06/identity/claims/role") { 
                 switch (claim.value) {
                     case "Writer":
                         context.rolesToAdd.push("Author");

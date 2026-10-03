@@ -120,7 +120,7 @@ internal sealed class VipsImageProcessingEngine : IImageProcessingEngine
                 height: height,
                 size: Enums.Size.Down,
                 noRotate: !autoOrient,
-                crop: Enums.Interesting.Centre);
+                crop: Enums.Interesting.Centre); /* codespell:ignore */
         }
 
         // Focal-point (or single-axis) crop: scale to cover, then extract. The cover scale is

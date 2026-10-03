@@ -14,7 +14,7 @@ public class CustomPathSitemapSource : SitemapSource
     public string Path { get; set; }
 
     /// <summary>
-    /// Gets and sets last update date time. Updated automatically by te system.
+    /// Gets and sets last update date time. Updated automatically by the system.
     /// </summary>
     public DateTime? LastUpdate { get; set; } = DateTime.Now;
 

@@ -67,7 +67,7 @@ public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
     private const bool DefaultUseTokenizedQueryString = true;
 
     // default-src self applied to prevent possible svg xss injection.
-    // style-src applied to allow browser behaviour of wrapping raw images in a styled img element.
+    // style-src applied to allow browser behavior of wrapping raw images in a styled img element.
     private const string DefaultContentSecurityPolicy = "default-src 'self'; style-src 'unsafe-inline'";
 
     private const int DefaultMaxUploadChunkSize = 104_857_600; // 100MB

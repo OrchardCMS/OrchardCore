@@ -67,12 +67,12 @@ public sealed class TaxonomyFieldTagsDisplayDriver : ContentFieldDisplayDriver<T
                     .ToArray();
 
                 TaxonomyFieldDriverHelper.PopulateTermEntries(termEntries, field, sortedTerms, 0);
-                var tagTermEntries = termEntries.Select(te => new TagTermEntry
+                var tagTermEntries = termEntries.Select(entry => new TagTermEntry
                 {
-                    ContentItemId = te.ContentItemId,
-                    Selected = te.Selected,
-                    DisplayText = te.Term.DisplayText,
-                    IsLeaf = te.IsLeaf,
+                    ContentItemId = entry.ContentItemId,
+                    Selected = entry.Selected,
+                    DisplayText = entry.Term.DisplayText,
+                    IsLeaf = entry.IsLeaf,
                 });
 
                 model.TagTermEntries = JNode.FromObject(tagTermEntries, JOptions.CamelCase).ToJsonString(JOptions.Default);

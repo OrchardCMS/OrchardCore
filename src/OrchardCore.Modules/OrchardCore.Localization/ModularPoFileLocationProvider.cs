@@ -23,7 +23,7 @@ public class ModularPoFileLocationProvider : ILocalizationFileLocationProvider
     private readonly string _shellDataContainer;
 
     /// <summary>
-    /// Creates a new intance of the <see cref="ModularPoFileLocationProvider"/>.
+    /// Creates a new instance of the <see cref="ModularPoFileLocationProvider"/>.
     /// </summary>
     /// <param name="extensionsManager">The <see cref="IExtensionManager"/>.</param>
     /// <param name="hostingEnvironment">The <see cref="IHostEnvironment"/>.</param>

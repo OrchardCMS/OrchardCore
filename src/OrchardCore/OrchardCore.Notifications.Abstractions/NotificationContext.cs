@@ -21,7 +21,7 @@ public class NotificationContext
     }
 
     /// <summary>
-    /// Gets ot sets the notification.
+    /// Gets or sets the notification.
     /// </summary>
     public Notification Notification { get; set; }
 

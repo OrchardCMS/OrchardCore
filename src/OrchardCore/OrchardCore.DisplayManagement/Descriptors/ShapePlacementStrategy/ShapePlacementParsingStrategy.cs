@@ -43,7 +43,7 @@ public class ShapePlacementParsingStrategy : ShapeTableProvider, IShapeTableHarv
         if (!_placementFileCache.TryGetValue(featureDescriptor.Extension.Id, out var placementFile))
         {
             // TODO : (ngm) Replace with configuration Provider and read from that.
-            // Dont use JSON Deserializer directly.
+            // Don't use JSON Deserializer directly.
             var virtualFileInfo = _hostingEnvironment
                 .GetExtensionFileInfo(featureDescriptor.Extension, "placement.json");
 

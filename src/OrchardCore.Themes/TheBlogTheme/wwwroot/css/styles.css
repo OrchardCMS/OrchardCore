@@ -318,7 +318,7 @@ th {
   text-align: -webkit-match-parent;
 }
 
-thead,
+thead, /* codespell:ignore */
 tbody,
 tfoot,
 tr,
@@ -1979,7 +1979,7 @@ progress {
 .table > tbody {
   vertical-align: inherit;
 }
-.table > thead {
+.table > thead { /* codespell:ignore */
   vertical-align: bottom;
 }
 .table > :not(:first-child) {
@@ -11242,7 +11242,7 @@ header.masthead .site-heading .h1 {
   text-decoration: none;
 }
 @media (min-width: 992px) {
-  .post-preview > a > .post-title {
+  .post-preview > a > .post-title { 
     font-size: 2.25rem;
   }
 }

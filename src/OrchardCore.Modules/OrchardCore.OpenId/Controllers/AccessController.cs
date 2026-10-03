@@ -613,7 +613,7 @@ public sealed class AccessController : Controller
             }
         }
 
-        // By default, re-use the principal stored in the authorization code/refresh token.
+        // By default, reuse the principal stored in the authorization code/refresh token.
         var principal = info.Principal;
 
         // If the user service is available, try to refresh the principal by retrieving

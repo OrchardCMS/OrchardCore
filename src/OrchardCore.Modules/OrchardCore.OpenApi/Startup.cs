@@ -50,7 +50,7 @@ public sealed class Startup : StartupBase
 
             // The API is bearer-only. Declaring a single HTTP bearer scheme keeps the generated
             // OpenAPI document honest (operations show as secured) and makes the generated NSwag
-            // clients token-aware. The documentation UIs never surface a manual "Authorize" step:
+            // clients token-aware. The documentation UI's never surface a manual "Authorize" step:
             // they acquire and attach the token silently (see the injected openapi-ui-auth bundle).
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {

@@ -16,8 +16,8 @@ public class RecipeExecutorTests
 {
     [Theory]
     [InlineData("recipe1", "[locale en]You have successfully registered![/locale][locale fr]Vous vous êtes inscrit avec succès![/locale]")]
-    [InlineData("recipe2", "[1js: valiables('now')]")]
-    [InlineData("recipe3", "js: valiables('now')")]
+    [InlineData("recipe2", "[1js: variables('now')]")]
+    [InlineData("recipe3", "js: variables('now')")]
     [InlineData("recipe4", "[locale en]This text contains a colon ':' symbol[/locale][locale fr]Ce texte contient un deux-points ':'[/locale]")]
     [InlineData("recipe5", "[sc text='some : text'/]")]
     public async Task Trim_ValidScriptExpression_Succeeds(string recipeName, string expected)

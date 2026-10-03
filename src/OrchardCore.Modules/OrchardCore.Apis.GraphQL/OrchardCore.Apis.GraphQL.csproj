@@ -6,7 +6,7 @@
     <Title>OrchardCore GraphQL Apis</Title>
     <Description>$(OCFrameworkDescription)
 
-    Provies apis using the GraphQL Specification.</Description>
+    Provides apis using the GraphQL Specification.</Description>
     <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
   </PropertyGroup>
 

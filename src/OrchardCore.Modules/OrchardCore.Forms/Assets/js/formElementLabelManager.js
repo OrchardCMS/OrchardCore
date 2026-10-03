@@ -1,5 +1,5 @@
 window.formElementLabelManager = function () {
-    const initilize = (wrapper) => {
+    const initialize = (wrapper) => {
         var selectMenus = wrapper.getElementsByClassName('field-label-option-select-menu');
 
         for (let i = 0; i < selectMenus.length; i++) {
@@ -19,10 +19,10 @@ window.formElementLabelManager = function () {
     };
 
     return {
-        initilize: initilize
+        initialize: initialize
     };
 }();
 
 document.addEventListener('DOMContentLoaded', function () {
-    window.formElementLabelManager.initilize(document);
+    window.formElementLabelManager.initialize(document);
 });

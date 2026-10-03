@@ -22,7 +22,7 @@ public class ShellFeatureApplicationPart :
     private IEnumerable<ITagHelpersProvider> _tagHelpers;
 
     /// <summary>
-    /// Initalizes a new <see cref="AssemblyPart"/> instance.
+    /// Initializes a new <see cref="AssemblyPart"/> instance.
     /// </summary>
     public ShellFeatureApplicationPart()
     {

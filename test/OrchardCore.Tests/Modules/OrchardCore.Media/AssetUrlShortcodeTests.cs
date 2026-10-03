@@ -67,7 +67,7 @@ public class AssetUrlShortcodeTests
     [InlineData(@"foo <a href=""[asset_url]bàr.jpeg?width=100 onload=""javascript: alert('XSS')""[/asset_url]"">baz</a>", @"foo <a href=""[asset_url]bàr.jpeg?width=100 onload="">baz</a>")]
     public void Sanitize_Unprocessed_Succeeds(string text, string expected)
     {
-        // The html parts santize on save, so do not process the shortcode first.
+        // The html parts sanitize on save, so do not process the shortcode first.
         var sanitizer = new HtmlSanitizerService(Options.Create(new HtmlSanitizerOptions()));
         var sanitized = sanitizer.Sanitize(text);
         Assert.Equal(expected, sanitized);

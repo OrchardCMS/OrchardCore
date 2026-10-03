@@ -6,7 +6,7 @@ public static class OpenApiPermissions
 {
     public static readonly Permission ManageOpenApi = new(
         "ManageOpenApi",
-        "Manage OpenAPI settings and access interactive documentation UIs"
+        "Manage OpenAPI settings and access interactive documentation UI's"
     );
 
     public static readonly Permission ViewOpenApiContent = new(

@@ -84,7 +84,7 @@
         } else {
             rgb = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/);
             if (rgb == null) {
-                return 'transparent'; // No match, return transparent as unkown color
+                return 'transparent'; // No match, return transparent as unknown color
             }
             return hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
         }

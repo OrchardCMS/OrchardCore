@@ -43,7 +43,7 @@ public class SecuritySettings
                 return;
             }
 
-            // Exlude 'None' values and clone the dictionary to not be shared by site settings and options instances.
+            // Exclude 'None' values and clone the dictionary to not be shared by site settings and options instances.
             _permissionsPolicy = value
                 .Where(kvp => kvp.Value != PermissionsPolicyOriginValue.None)
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);

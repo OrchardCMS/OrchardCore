@@ -318,17 +318,17 @@ th {
   text-align: inherit;
   text-align: -webkit-match-parent;
 }
-
-thead,
+thead, /* codespell:ignore */
 tbody,
 tfoot,
 tr,
 td,
 th {
-  border-color: inherit;
-  border-style: solid;
-  border-width: 0;
+    border-color: inherit;
+    border-style: solid;
+    border-width: 0;
 }
+/* codespell:ignore */
 
 label {
   display: inline-block;
@@ -1981,9 +1981,10 @@ progress {
 .table > tbody {
   vertical-align: inherit;
 }
-.table > thead {
-  vertical-align: bottom;
+.table > thead { /* codespell:ignore */
+    vertical-align: bottom;
 }
+
 .table > :not(:first-child) {
   border-top: 2px solid currentColor;
 }

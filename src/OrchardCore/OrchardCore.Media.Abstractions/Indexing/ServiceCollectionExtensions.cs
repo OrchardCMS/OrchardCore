@@ -16,7 +16,7 @@ public static class ServiceCollectionExtensions
     /// The <see cref="IServiceCollection"/> to add the <see cref="IMediaFileTextProvider"/> implementation to.
     /// </param>
     /// <param name="fileExtension">
-    /// The file extension of those files, wit a leading dot, that the given <see
+    /// The file extension of those files, with a leading dot, that the given <see
     /// cref="IMediaFileTextProvider"/> implementation will process.
     /// </param>
     public static IServiceCollection AddMediaFileTextProvider<TMediaFileTextProvider>(this IServiceCollection services, string fileExtension)

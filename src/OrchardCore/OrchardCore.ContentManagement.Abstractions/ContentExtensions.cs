@@ -39,9 +39,9 @@ public static class ContentExtensions
             return null;
         }
 
-        if (result is TElement te)
+        if (result is TElement t)
         {
-            return te;
+            return t;
         }
 
         throw new InvalidCastException($"Failed casting content to '{typeof(TElement).Name}', check you have registered your content part with AddContentPart?");

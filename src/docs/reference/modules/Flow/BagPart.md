@@ -19,7 +19,7 @@ An example of this can be found in TheAgencyTheme where four Named BagParts are 
 
 ## Blocks Editor
 
-The blocks editor provides an alternative editor for BagPart that uses a modal-based content type picker instead of the standard dropdown menu. Content types displayed in the picker can be organised with categories and thumbnails. See [Content Type Settings for Block Pickers](../ContentTypes/README.md#content-type-settings-for-block-pickers) for configuration details.
+The blocks editor provides an alternative editor for BagPart that uses a modal-based content type picker instead of the standard dropdown menu. Content types displayed in the picker can be organized with categories and thumbnails. See [Content Type Settings for Block Pickers](../ContentTypes/README.md#content-type-settings-for-block-pickers) for configuration details.
 
 ### Enabling the Blocks Editor
 
