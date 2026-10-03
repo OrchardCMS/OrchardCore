@@ -1,12 +1,16 @@
+@using System.Text.Json.Serialization
 @model dynamic
 
 <div class="w-100">
     <div class="float-end">
-        <a asp-action="Edit"
-           asp-controller="Step"
-           asp-route-id="@Model.DeploymentPlanId"
-           asp-route-stepId="@Model.DeploymentStep.Id"
-           class="btn btn-primary btn-sm">@T["Edit"]</a>
+        @if (Model.DeploymentStep is not IUnknownTypePlaceholder)
+        {
+            <a asp-action="Edit"
+               asp-controller="Step"
+               asp-route-id="@Model.DeploymentPlanId"
+               asp-route-stepId="@Model.DeploymentStep.Id"
+               class="btn btn-primary btn-sm">@T["Edit"]</a>
+        }
 
         <a asp-action="Delete"
            asp-controller="Step"

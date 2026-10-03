@@ -55,7 +55,7 @@ public class TwilioProviderOptionsConfigurations : IConfigureOptions<SmsProvider
         var typeOptions = new SmsProviderTypeOptions(typeof(TwilioSmsProvider));
 
         var site = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
-        var settings = site.As<TwilioSettings>();
+        var settings = site.GetOrCreate<TwilioSettings>();
 
         typeOptions.IsEnabled = settings.IsEnabled;
 
@@ -63,6 +63,44 @@ public class TwilioProviderOptionsConfigurations : IConfigureOptions<SmsProvider
     }
 }
 ```
+
+## Recipe Configuration
+
+SMS settings can be configured using the `Settings` recipe step:
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "SmsSettings": {
+        "DefaultProviderName": "Twilio"
+      },
+      "TwilioSettings": {
+        "IsEnabled": true,
+        "PhoneNumber": "+1234567890",
+        "AccountSID": "your-account-sid",
+        "AuthToken": "your-auth-token"
+      }
+    }
+  ]
+}
+```
+
+### SmsSettings
+
+| Property              | Type   | Description                           |
+|-----------------------|--------|---------------------------------------|
+| `DefaultProviderName` | String | The name of the default SMS provider. |
+
+### TwilioSettings
+
+| Property      | Type    | Description                                                      |
+|---------------|---------|------------------------------------------------------------------|
+| `IsEnabled`   | Boolean | Whether the Twilio SMS provider is enabled.                      |
+| `PhoneNumber` | String  | The Twilio phone number to send SMS messages from. **Required.** |
+| `AccountSID`  | String  | The Twilio Account SID. **Required.**                            |
+| `AuthToken`   | String  | The Twilio Auth Token. **Required.**                             |
 
 ## Sending SMS Message
 
@@ -107,6 +145,10 @@ When both the `SMS` and `Workflows` features are enabled at the same time, a new
 ## SMS Notification (`OrchardCore.Notifications.Sms`)
 
 This feature provides you a way to send user notifications using SMS based on user preferences. [Click here](../Notifications/README.md) to read more about notifications.
+
+## Health Checks
+
+This module provides a health check to report the status for the Twilio SMS service. Refer also to the [Health Checks Section](../HealthChecks/README.md).
 
 ## Credits
 

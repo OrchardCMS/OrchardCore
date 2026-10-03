@@ -105,7 +105,7 @@ public class CredentialMigrationTests
         "AzureEmail" => new(typeof(global::OrchardCore.Email.Azure.Migrations), "AzureEmailSettings", "ConnectionString", "AzureEmailSettings", "ConnectionStringSecretName", global::OrchardCore.Email.Services.AzureEmailOptionsConfiguration.ProtectorName, "AzureEmail.ConnectionString"),
         "Smtp" => new(typeof(global::OrchardCore.Email.Smtp.Secrets.Migrations), "SmtpSettings", "Password", "SmtpSecretSettings", "PasswordSecretName", "SmtpSettingsConfiguration", "Smtp.Password"),
         "OpenIdClient" => new(typeof(global::OrchardCore.OpenId.Migrations.ClientSecretsMigration), "OpenIdClientSettings", "ClientSecret", "OpenIdClientSettings", "ClientSecretSecretName", "OpenIdClientConfiguration", "OpenIdClient.ClientSecret"),
-        "AzureAI" => new(typeof(global::OrchardCore.Search.AzureAI.Migrations.ApiKeySecretsMigration), "AzureAISearchDefaultSettings", "ApiKey", "AzureAISearchDefaultSettings", "ApiKeySecretName", global::OrchardCore.Search.AzureAI.Services.AzureAISearchDefaultOptionsConfigurations.ProtectorName, "AzureAISearch.ApiKey"),
+        "AzureAI" => new(typeof(global::OrchardCore.AzureAI.Migrations.ApiKeySecretsMigration), "AzureAISearchDefaultSettings", "ApiKey", "AzureAISearchDefaultSettings", "ApiKeySecretName", global::OrchardCore.AzureAI.Services.AzureAISearchDefaultOptionsConfigurations.ProtectorName, "AzureAISearch.ApiKey"),
         _ => throw new ArgumentOutOfRangeException(nameof(integration)),
     };
 

@@ -9,7 +9,7 @@ namespace OrchardCore.DataLocalization.Services.Tests;
 public class DataLocalizationProviderTests
 {
     [Fact]
-    public async Task ContentTypeDataLocalizationProvider_GetLocalizedStrings()
+    public async Task ContentTypeDataLocalizationProvider_GetLocalizedStrings_Succeeds()
     {
         var contentDefinitionManager = new Mock<IContentDefinitionManager>();
         contentDefinitionManager.Setup(cds => cds.ListTypeDefinitionsAsync())
@@ -26,7 +26,7 @@ public class DataLocalizationProviderTests
     }
 
     [Fact]
-    public async Task ContentFieldDataLocalizationProvider_GetLocalizedStrings()
+    public async Task ContentFieldDataLocalizationProvider_GetLocalizedStrings_Succeeds()
     {
         var contentDefinitionManager = new Mock<IContentDefinitionManager>();
         contentDefinitionManager.Setup(cds => cds.ListTypeDefinitionsAsync())

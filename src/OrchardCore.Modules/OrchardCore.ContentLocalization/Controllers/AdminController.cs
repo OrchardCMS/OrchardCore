@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -51,14 +52,12 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        if (!await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, contentItem.ContentType, User.Identity.Name))
+        if (!await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, contentItem.ContentType, User.FindFirstValue(ClaimTypes.NameIdentifier)))
         {
             return Forbid();
         }
 
-        var part = contentItem.As<LocalizationPart>();
-
-        if (part == null)
+        if (!contentItem.TryGet<LocalizationPart>(out var part))
         {
             return NotFound();
         }

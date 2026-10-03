@@ -55,7 +55,7 @@ public sealed class HomeController : Controller
         contentItem.Content.TestContentPartA.Line = text + "blah";
 
         // Explicit syntax
-        var testPart = contentItem.As<TestContentPartA>();
+        var testPart = contentItem.GetOrCreate<TestContentPartA>();
         testPart.Line = text;
         contentItem.Apply(testPart);
 
@@ -102,7 +102,12 @@ public sealed class HomeController : Controller
             return NotFound();
         }
 
-        var shape = await Shape.Foo(Line: contentItem.As<TestContentPartA>().Line);
+        if (!contentItem.TryGet<TestContentPartA>(out var testPart))
+        {
+            return NotFound();
+        }
+
+        var shape = await Shape.Foo(Line: testPart.Line);
 
         return View(shape);
     }

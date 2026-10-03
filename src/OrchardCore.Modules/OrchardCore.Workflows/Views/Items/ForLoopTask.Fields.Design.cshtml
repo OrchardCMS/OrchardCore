@@ -1,6 +1,16 @@
+@using OrchardCore.Workflows.Models
 @model ActivityViewModel<ForLoopTask>
+
+@{
+    var fromExpression = Model.Activity.Syntax == WorkflowScriptSyntax.Liquid
+        ? Model.Activity.LiquidFrom?.Expression
+        : Model.Activity.From?.Expression;
+    var toExpression = Model.Activity.Syntax == WorkflowScriptSyntax.Liquid
+        ? Model.Activity.LiquidTo?.Expression
+        : Model.Activity.To?.Expression;
+}
 
 <header>
     <h4><i class="fa-solid fa-circle-notch" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["For Loop"])</h4>
 </header>
-<span>@T["Iterate <em>{0}</em> from <em>{1}</em> to <em>{2}</em>", Model.Activity.LoopVariableName, Model.Activity.From, Model.Activity.To]</span>
+<span>@T["Iterate <em>{0}</em> from <em>{1}</em> to <em>{2}</em>", Model.Activity.LoopVariableName, fromExpression, toExpression]</span>

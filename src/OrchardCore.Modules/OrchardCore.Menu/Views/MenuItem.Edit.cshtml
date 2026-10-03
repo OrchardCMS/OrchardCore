@@ -1,4 +1,3 @@
-@using OrchardCore
 <style asp-src="~/OrchardCore.Contents/Styles/Contents.min.css" debug-src="~/OrchardCore.Contents/Styles/Contents.css"></style>
 
 <div class="edit-container">
@@ -18,10 +17,10 @@
             }
         </div>
 
-        <div class="@Orchard.GetWrapperClasses("edit-item-secondary","group")">
+        <div class="ocat-wrapper edit-item-secondary group">
             @if (Model.Actions != null)
             {
-                <div class="@Orchard.GetEndClasses(true, "edit-item-actions")">
+                <div class="ocat-end-offset edit-item-actions">
                     @await DisplayAsync(Model.Actions)
                 </div>
             }

@@ -20,7 +20,7 @@ public static class HttpContextExtensions
 
         var actionDescriptor = endpoint?.Metadata.GetMetadata<ActionDescriptor>() ?? new ActionDescriptor();
 
-        var actionContext = new ActionContext(httpContext, routeData, actionDescriptor );
+        var actionContext = new ActionContext(httpContext, routeData, actionDescriptor);
         var filters = httpContext.RequestServices.GetServices<IAsyncViewActionFilter>();
 
         foreach (var filter in filters)

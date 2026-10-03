@@ -20,7 +20,7 @@ public class DefaultContentManager : IContentManager
 {
     private const int _importBatchSize = 500;
 
-    private static readonly JsonMergeSettings _updateJsonMergeSettings = new()
+    private static readonly JsonMergeSettings s_updateJsonMergeSettings = new()
     {
         MergeArrayHandling = MergeArrayHandling.Replace,
     };
@@ -839,11 +839,6 @@ public class DefaultContentManager : IContentManager
 
         await ReversedHandlers.InvokeAsync((handler, context) => handler.ValidatedAsync(context), validateContext, _logger);
 
-        if (!validateContext.ContentValidateResult.Succeeded)
-        {
-            await _session.CancelAsync();
-        }
-
         return validateContext.ContentValidateResult;
     }
 
@@ -867,7 +862,7 @@ public class DefaultContentManager : IContentManager
         var validationResult = await ValidateAsync(contentItem);
         if (!validationResult.Succeeded)
         {
-            // The session is already cancelled.
+            await _session.CancelAsync();
             return validationResult;
         }
 
@@ -919,7 +914,7 @@ public class DefaultContentManager : IContentManager
             return true;
         }
 
-        var context = new RemoveContentContext(contentItem, true);
+        var context = new RemoveContentContext(contentItem, true, RemoveContentReason.Deletion);
 
         await Handlers.InvokeAsync((handler, context) => handler.RemovingAsync(context), context, _logger);
 
@@ -1044,6 +1039,7 @@ public class DefaultContentManager : IContentManager
         var result = await ValidateAsync(contentItem);
         if (!result.Succeeded)
         {
+            await _session.CancelAsync();
             return result;
         }
 
@@ -1138,16 +1134,16 @@ public class DefaultContentManager : IContentManager
             await RemovePublishedVersionAsync(updatingVersion, evictionVersions);
         }
 
-        updatingVersion.Merge(updatedVersion, _updateJsonMergeSettings);
+        updatingVersion.Merge(updatedVersion, s_updateJsonMergeSettings);
         updatingVersion.Latest = importingLatest;
         updatingVersion.Published = importingPublished;
 
         await UpdateAsync(updatingVersion);
         var result = await ValidateAsync(updatingVersion);
 
-        // Session is cancelled now so previous updates to versions are cancelled also.
         if (!result.Succeeded)
         {
+            await _session.CancelAsync();
             return result;
         }
 
@@ -1223,7 +1219,7 @@ public class DefaultContentManager : IContentManager
 
         if (publishedVersion != null)
         {
-            var removeContext = new RemoveContentContext(contentItem, true);
+            var removeContext = new RemoveContentContext(contentItem, true, RemoveContentReason.NewVersion);
 
             await Handlers.InvokeAsync((handler, context) => handler.RemovingAsync(context), removeContext, _logger);
 
@@ -1251,7 +1247,7 @@ public class DefaultContentManager : IContentManager
 
         if (activeVersions.Any())
         {
-            var removeContext = new RemoveContentContext(contentItem, true);
+            var removeContext = new RemoveContentContext(contentItem, true, RemoveContentReason.NewVersion);
 
             await Handlers.InvokeAsync((handler, context) => handler.RemovingAsync(context), removeContext, _logger);
 

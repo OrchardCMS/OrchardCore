@@ -14,9 +14,7 @@ public class ContainedPartContentIndexHandler : IDocumentIndexHandler
             return Task.CompletedTask;
         }
 
-        var parent = contentItem.As<ContainedPart>();
-
-        if (parent == null)
+        if (!contentItem.TryGet<ContainedPart>(out var parent))
         {
             return Task.CompletedTask;
         }

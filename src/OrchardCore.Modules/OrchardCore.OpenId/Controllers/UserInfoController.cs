@@ -1,11 +1,14 @@
 using System.Globalization;
+using System.Net.Mime;
 using System.Security.Claims;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Modules;
+using OrchardCore.OpenId.Abstractions.Handlers;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace OrchardCore.OpenId.Controllers;
@@ -15,10 +18,19 @@ namespace OrchardCore.OpenId.Controllers;
 [Feature(OpenIdConstants.Features.Server), SkipStatusCodePages]
 public sealed class UserInfoController : Controller
 {
+    private readonly IEnumerable<IUserInfoClaimsProvider> _claimsProviders;
+    private readonly ILogger _logger;
+
+    public UserInfoController(IEnumerable<IUserInfoClaimsProvider> claimsProviders, ILogger<UserInfoController> logger)
+    {
+        _claimsProviders = claimsProviders;
+        _logger = logger;
+    }
+
     // GET/POST: /connect/userinfo
     [AcceptVerbs("GET", "POST")]
     [IgnoreAntiforgeryToken]
-    [Produces("application/json")]
+    [Produces(MediaTypeNames.Application.Json)]
     public async Task<IActionResult> Me()
     {
         // Warning: this action is decorated with IgnoreAntiforgeryTokenAttribute to override
@@ -151,6 +163,9 @@ public sealed class UserInfoController : Controller
 
         // Note: the complete list of standard claims supported by the OpenID Connect specification
         // can be found here: http://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
+
+        var context = new UserInfoClaimsContext(principal, claims);
+        await _claimsProviders.InvokeAsync((claimsProvider, ctx) => claimsProvider.GenerateAsync(ctx), context, _logger);
 
         return Ok(claims);
     }

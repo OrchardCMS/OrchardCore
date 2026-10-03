@@ -6,7 +6,7 @@ namespace OrchardCore.Search;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", SearchConstants.SearchSettingsGroupId },
@@ -28,7 +28,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                     .AddClass("search")
                     .Id("search")
                     .Add(S["Settings"], S["Settings"].PrefixPosition(), settings => settings
-                        .Action("Index", "Admin", _routeValues)
+                        .Action("Index", "Admin", s_routeValues)
                         .AddClass("searchsettings")
                         .Id("searchsettings")
                         .Permission(SearchPermissions.ManageSearchSettings)
@@ -43,7 +43,7 @@ public sealed class AdminMenu : AdminNavigationProvider
             .Add(S["Settings"], settings => settings
                 .Add(S["Search"], S["Search"].PrefixPosition(), search => search
                     .Add(S["Site Search"], S["Site Search"].PrefixPosition(), search => search
-                        .Action("Index", "Admin", _routeValues)
+                        .Action("Index", "Admin", s_routeValues)
                         .AddClass("searchsettings")
                         .Id("searchsettings")
                         .Permission(SearchPermissions.ManageSearchSettings)

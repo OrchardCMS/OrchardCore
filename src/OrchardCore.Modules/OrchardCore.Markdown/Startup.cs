@@ -48,6 +48,7 @@ public sealed class Startup : StartupBase
             .AddHandler<MarkdownBodyPartHandler>();
 
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, MarkdownBodyPartSettingsDisplayDriver>();
+        services.AddScoped<IContentTypePartDefinitionDisplayDriver, MarkdownBodyPartWysiwygEditorSettingsDriver>();
         services.AddDataMigration<Migrations>();
         services.AddScoped<IContentPartIndexHandler, MarkdownBodyPartIndexHandler>();
 
@@ -56,12 +57,15 @@ public sealed class Startup : StartupBase
             .UseDisplayDriver<MarkdownFieldDisplayDriver>();
 
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MarkdownFieldSettingsDriver>();
+        services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MarkdownFieldWysiwygEditorSettingsDriver>();
         services.AddScoped<IContentFieldIndexHandler, MarkdownFieldIndexHandler>();
 
         services.AddOptions<MarkdownPipelineOptions>();
         services.ConfigureMarkdownPipeline((pipeline) =>
         {
-            var extensions = _shellConfiguration.GetValue("OrchardCore_Markdown:Extensions", DefaultMarkdownExtensions);
+            // The 'OrchardCore_Markdown' section is deprecated and will be removed in a future major version, use 'Markdown' instead.
+            var extensions = _shellConfiguration.GetSectionCompat("Markdown", "OrchardCore_Markdown")
+                .GetValue("Extensions", DefaultMarkdownExtensions);
             pipeline.Configure(extensions);
         });
 

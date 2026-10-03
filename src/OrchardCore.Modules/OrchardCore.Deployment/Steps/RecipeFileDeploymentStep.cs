@@ -1,3 +1,5 @@
+using OrchardCore.Localization;
+
 namespace OrchardCore.Deployment.Steps;
 
 /// <summary>
@@ -5,9 +7,14 @@ namespace OrchardCore.Deployment.Steps;
 /// </summary>
 public class RecipeFileDeploymentStep : DeploymentStep
 {
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<RecipeFileDeploymentStep>("Deployment");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<RecipeFileDeploymentStep>("Recipe File");
+
     public RecipeFileDeploymentStep()
     {
         Name = nameof(RecipeFileDeploymentStep);
+        Category = s_category;
+        Title = s_title;
     }
 
     public string RecipeName { get; set; }

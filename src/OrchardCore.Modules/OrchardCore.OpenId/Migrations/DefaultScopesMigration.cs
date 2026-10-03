@@ -9,9 +9,7 @@ namespace OrchardCore.OpenId.Migrations;
 
 public sealed class DefaultScopesMigration : DataMigration
 {
-#pragma warning disable CA1822 // Mark members as static
-    public int Create()
-#pragma warning restore CA1822 // Mark members as static
+    public static int Create()
     {
         ShellScope.AddDeferredTask(async shellScope =>
         {
@@ -68,9 +66,7 @@ public sealed class DefaultScopesMigration : DataMigration
         return 2;
     }
 
-#pragma warning disable CA1822 // Mark members as static
-    public int UpdateFrom1()
-#pragma warning restore CA1822 // Mark members as static
+    public static int UpdateFrom1()
     {
         ShellScope.AddDeferredTask(async shellScope =>
         {

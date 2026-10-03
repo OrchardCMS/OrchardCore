@@ -23,7 +23,7 @@ public sealed class SqlQueryHandler : QueryHandlerBase
 
         if (!string.IsNullOrEmpty(template))
         {
-            var metadata = context.Query.As<SqlQueryMetadata>();
+            var metadata = context.Query.GetOrCreate<SqlQueryMetadata>();
 
             metadata.Template = template;
             context.Query.Put(metadata);

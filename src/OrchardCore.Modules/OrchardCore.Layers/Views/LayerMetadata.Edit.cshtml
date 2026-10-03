@@ -1,16 +1,15 @@
-@using OrchardCore
 @model OrchardCore.Layers.ViewModels.LayerMetadataEditViewModel
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Title">
-    <label asp-for="Title" class="@Orchard.GetLabelClasses()">@T["Title"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="Title">
+    <label asp-for="Title" class="ocat-label">@T["Title"]</label>
+    <div class="ocat-end">
         <input asp-for="Title" class="form-control" type="text" />
         <span asp-validation-for="Title"></span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <div class="@Orchard.GetEndClasses(true)">
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="LayerMetadata.RenderTitle" checked="@Model.LayerMetadata.RenderTitle">
             <label class="form-check-label" asp-for="LayerMetadata.RenderTitle">@T["Render title"]</label>
@@ -19,9 +18,9 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="LayerMetadata.Layer">
-    <label asp-for="LayerMetadata.Layer" class="@Orchard.GetLabelClasses()">@T["The layer"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper" asp-validation-class-for="LayerMetadata.Layer">
+    <label asp-for="LayerMetadata.Layer" class="ocat-label">@T["The layer"]</label>
+    <div class="ocat-end">
         <select asp-for="LayerMetadata.Layer" class="form-select">
             <option value="">@T["Select a layer"]</option>
             @foreach (var layer in Model.Layers)

@@ -9,7 +9,7 @@ public class StringExtensionsTests
     [InlineData("414243", new byte[] { 0x41, 0x42, 0x43 })]
     [InlineData("48656C6C6F20576F726C64", new byte[] { 0x48, 0x65, 0x6C, 0x6C, 0x6F, 0x20, 0x57, 0x6F, 0x72, 0x6C, 0x64 })]
     [InlineData("", new byte[0])]
-    public void ToByteArray_ShouldConvertToByteArray(string hex, byte[] expected)
+    public void ToByteArray_Default_ConvertsToByteArray(string hex, byte[] expected)
     {
         // Arrange
 
@@ -21,7 +21,7 @@ public class StringExtensionsTests
     }
 
     [Fact]
-    public void ToByteArray_ShouldThrowException_WhenHexContainsOddNumberOfCharacters()
+    public void ToByteArray_HexContainsOddNumberOfCharacters_ThrowsException()
     {
         // Arrange
         var hex = "41424";
@@ -31,7 +31,7 @@ public class StringExtensionsTests
     }
 
     [Fact]
-    public void ToByteArray_ShouldThrowException_WhenHexIsNotValid()
+    public void ToByteArray_HexIsNotValid_ThrowsException()
     {
         // Arrange
         var hex = "GHIJK";

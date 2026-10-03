@@ -1,9 +1,9 @@
 @model ContentItemDeploymentStepViewModel
-<div class="mb-3" asp-validation-class-for="ContentItemId">
-    <label asp-for="ContentItemId" class="form-label">@T["Content Item Id"]</label>
-    <div class="input-group">
-        <input type="text" asp-for="ContentItemId" class="form-control" asp-validation-class-for="ContentItemId" />
+<div class="ocat-wrapper" asp-validation-class-for="ContentItemId">
+    <label asp-for="ContentItemId" class="ocat-label">@T["Content Item Id"]</label>
+    <div class="ocat-end">
+        <input type="text" asp-for="ContentItemId" class="form-control" />
         <span asp-validation-for="ContentItemId"></span>
+        <span class="hint">@T["Provide a content item id."]</span>
     </div>
-    <span class="hint">@T["Provide a content item id."]</span>
 </div>

@@ -25,9 +25,7 @@ public class RetrieveContentTask : ContentTask
     public override LocalizedString Category => S["Content"];
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Retrieved"]);
-    }
+        => Outcome(S["Retrieved"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -45,6 +43,6 @@ public class RetrieveContentTask : ContentTask
         workflowContext.Properties[ContentEventConstants.ContentItemInputKey] = contentItem;
         workflowContext.LastResult = contentItem;
 
-        return Outcomes("Retrieved");
+        return Outcome("Retrieved");
     }
 }

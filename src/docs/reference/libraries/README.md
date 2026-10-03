@@ -1,6 +1,6 @@
 # Libraries
 
-The below table lists the different .NET libraries used in Orchard Core:
+The table below lists the different .NET libraries used in Orchard Core:
 
 | Library                                                                                                                                                                                                                    | Usage                                                                                                                                                   | License                                                                           |
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|
@@ -46,12 +46,12 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [YesSql](https://github.com/sebastienros/yessql)                                                                                                                                                                           | .NET document database working on any RDBMS.                                                                                                            | [MIT](https://github.com/sebastienros/yessql/blob/dev/LICENSE)                    |
 | [ZString](https://github.com/Cysharp/ZString)                                                                                                                                                                              | Zero Allocation StringBuilder for .NET Core and Unity.                                                                                                  | [MIT](https://github.com/Cysharp/ZString/blob/master/LICENSE)                     |
 
-The below table lists the different libraries used as Resources:
+The table below lists the different libraries used as resources:
 
 | Library | Usage | License |
 |--- | --- | --- |
 | [Bootstrap](https://github.com/twbs/bootstrap) | HTML, CSS, and JavaScript framework for developing responsive, mobile first projects on the web. | [MIT](https://github.com/twbs/bootstrap/blob/main/LICENSE) |
-| [bootstrap-select](https://github.com/snapappointments/bootstrap-select) | jQuery plugin for select elements. | [MIT](https://github.com/snapappointments/bootstrap-select/blob/v1.14-dev/LICENSE) |
+| [bootstrap-select](https://github.com/CrestApps/bootstrap-select) | A Bootstrap-powered library that brings select elements into the 21st century with intuitive multi-selection, search, and more. | [MIT](https://github.com/CrestApps/bootstrap-select/blob/main/LICENSE) |
 | [Code Mirror](https://github.com/codemirror/CodeMirror) | In-browser code editor. | [MIT](https://github.com/codemirror/CodeMirror/blob/master/LICENSE) |
 | [Font Awesome](https://github.com/FortAwesome/Font-Awesome) | The iconic SVG, font, and CSS toolkit. | [Font Awesome Free License](https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt) |
 | [jQuery](https://github.com/jquery/jquery) | jQuery JavaScript Library. | [MIT](https://github.com/jquery/jquery/blob/master/LICENSE.txt) |
@@ -96,8 +96,7 @@ The below table lists the different Tests libraries:
 | Library | Usage | License |
 |--- | --- | --- |
 | [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet) | Powerful .NET library for benchmarking. | [MIT](https://github.com/dotnet/BenchmarkDotNet/blob/master/LICENSE.md) |
-| [Cypress](https://github.com/cypress-io/cypress) | Fast, easy and reliable testing for anything that runs in a browser. | [MIT](https://github.com/cypress-io/cypress/blob/develop/LICENSE) |
-| [Cypress Orchard](https://www.npmjs.com/package/cypress-orchardcore) | A collection of cypress commands for Orchard Core. | MIT |
+| [Playwright](https://github.com/microsoft/playwright) | Reliable end-to-end testing for modern web apps. | [Apache-2.0](https://github.com/microsoft/playwright/blob/main/LICENSE) |
 | [Moq](https://github.com/moq/moq) | The most popular and friendly mocking framework for .NET. | [MIT](https://github.com/moq/moq/blob/main/LICENSE) |
 | [VS Test SDK](https://github.com/microsoft/vstest/) | Visual Studio Test Platform. | [MIT](https://github.com/microsoft/vstest/blob/master/LICENSE) |
 | [xUnit](https://github.com/xunit/xunit) | Free, open source, community-focused unit testing tool for the .NET Framework. | [MIT](https://github.com/xunit/xunit/blob/main/LICENSE) |

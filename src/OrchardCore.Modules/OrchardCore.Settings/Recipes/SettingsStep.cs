@@ -2,8 +2,6 @@ using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
-using OrchardCore.Settings;
-using Json.Path;
 
 namespace OrchardCore.Settings.Recipes;
 
@@ -58,6 +56,14 @@ public sealed class SettingsStep : NamedRecipeStepHandler
 
                 case "PageSize":
                     site.PageSize = property.Value.Value<int>();
+                    break;
+
+                case "AllowPageSizeSelection":
+                    site.AllowPageSizeSelection = property.Value.Value<bool>();
+                    break;
+
+                case "PageSizeOptions":
+                    site.PageSizeOptions = property.Value.ToObject<int[]>();
                     break;
 
                 case "ResourceDebugMode":

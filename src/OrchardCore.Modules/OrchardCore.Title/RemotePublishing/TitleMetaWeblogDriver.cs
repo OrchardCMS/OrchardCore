@@ -18,8 +18,7 @@ public sealed class TitleMetaWeblogDriver : MetaWeblogDriver
 
     public override void BuildPost(XRpcStruct rpcStruct, XmlRpcContext context, ContentItem contentItem)
     {
-        var titlePart = contentItem.As<TitlePart>();
-        if (titlePart == null)
+        if (!contentItem.TryGet<TitlePart>(out var titlePart))
         {
             return;
         }

@@ -6,10 +6,13 @@ on:
   # it manually in a PR.
   workflow_dispatch:
     
+permissions:
+  contents: write
+
 jobs:
   update-contributor-map:
     name: Update Contributor Map
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     
     steps:
       - name: Update Contributor Map

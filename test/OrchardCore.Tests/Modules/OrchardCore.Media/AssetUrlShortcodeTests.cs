@@ -1,6 +1,7 @@
 using OrchardCore.FileStorage;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Media.Core;
+using OrchardCore.Media.Core.Helpers;
 using OrchardCore.Media.Shortcodes;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Shortcodes.Services;
@@ -24,14 +25,25 @@ public class AssetUrlShortcodeTests
     [InlineData("", "foo [asset_url]bar[/asset_url] baz foo [asset_url]bar[/asset_url] baz", @"foo /media/bar baz foo /media/bar baz")]
     [InlineData("", @"foo <a href=""[asset_url]bàr.jpeg[/asset_url]"">baz</a>", @"foo <a href=""/media/b%C3%A0r.jpeg"">baz</a>")]
     [InlineData("", @"foo <a href=""[asset_url]bàr.jpeg?width=100[/asset_url]"">baz</a>", @"foo <a href=""/media/b%C3%A0r.jpeg?width=100"">baz</a>")]
-    public async Task ShouldProcess(string cdnBaseUrl, string text, string expected)
+    [InlineData("", @"foo [asset_url]foo bar.jpg[/asset_url] baz", @"foo /media/foo%20bar.jpg baz")]
+    [InlineData("", @"foo [asset_url]my folder/foo bar.jpg[/asset_url] baz", @"foo /media/my%20folder/foo%20bar.jpg baz")]
+    [InlineData("", @"foo <a href=""[asset_url]foo bar.jpg[/asset_url]"">baz</a>", @"foo <a href=""/media/foo%20bar.jpg"">baz</a>")]
+    public async Task Process_Default_Succeeds(string cdnBaseUrl, string text, string expected)
     {
+        var stringLocalizerMock = new Mock<IStringLocalizer<FileSizeHelper>>();
+        stringLocalizerMock.Setup(x => x[It.IsAny<string>()])
+            .Returns((string key) => new LocalizedString(key, key));
+
+        stringLocalizerMock.Setup(x => x[It.IsAny<string>(), It.IsAny<object[]>()])
+            .Returns((string key, object[] args) => new LocalizedString(key, string.Format(key, args)));
+
         var fileStore = new DefaultMediaFileStore(
             Mock.Of<IFileStore>(),
             "/media",
             cdnBaseUrl,
             [],
             [],
+            new FileSizeHelper(stringLocalizerMock.Object),
             Mock.Of<ILogger<DefaultMediaFileStore>>());
 
         var defaultHttpContext = new DefaultHttpContext();
@@ -53,7 +65,7 @@ public class AssetUrlShortcodeTests
     [InlineData(@"foo <a href=""[asset_url]bàr.jpeg[/asset_url]"">baz</a>", @"foo <a href=""[asset_url]bàr.jpeg[/asset_url]"">baz</a>")]
     // Sanitizing strips the closing shortcode tag when it finds onload. This is fine, as the user cannot expect a good shortcode when they attempt xss
     [InlineData(@"foo <a href=""[asset_url]bàr.jpeg?width=100 onload=""javascript: alert('XSS')""[/asset_url]"">baz</a>", @"foo <a href=""[asset_url]bàr.jpeg?width=100 onload="">baz</a>")]
-    public void ShouldSanitizeUnprocessed(string text, string expected)
+    public void Sanitize_Unprocessed_Succeeds(string text, string expected)
     {
         // The html parts santize on save, so do not process the shortcode first.
         var sanitizer = new HtmlSanitizerService(Options.Create(new HtmlSanitizerOptions()));

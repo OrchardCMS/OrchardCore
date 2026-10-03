@@ -1,0 +1,168 @@
+using Microsoft.Playwright;
+using OrchardCore.Tests.Functional.Helpers;
+
+namespace OrchardCore.Tests.Functional.Tests.Cms;
+
+public abstract class CmsRecipeFixture : IAsyncLifetime
+{
+    private static int s_instanceCounter;
+    private readonly OrchardTestFixture _testFixture;
+
+    protected abstract string RecipeName { get; }
+
+    public IBrowser Browser => _testFixture.Browser;
+    public string BaseUrl => _testFixture.BaseUrl;
+
+    protected CmsRecipeFixture()
+    {
+        _testFixture = new OrchardTestFixture(instanceId: $"{GetType().Name}_{Interlocked.Increment(ref s_instanceCounter)}");
+    }
+
+    public async ValueTask InitializeAsync()
+    {
+        await _testFixture.InitializeAsync();
+
+        var page = await CreatePageAsync();
+        try
+        {
+            await page.GotoAsync("/");
+
+            if (await page.Locator("#SiteName").CountAsync() > 0)
+            {
+                await page.SiteSetupAsync(new TenantInfo
+                {
+                    Name = $"Testing {RecipeName}",
+                    Prefix = string.Empty,
+                    SetupRecipe = RecipeName,
+                });
+            }
+        }
+        finally
+        {
+            await page.CloseAsync();
+        }
+    }
+
+    public void AssertNoLoggedIssues() => _testFixture.AssertNoLoggedIssues();
+
+    public async Task<IPage> CreatePageAsync()
+    {
+        return await _testFixture.CreatePageAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await _testFixture.DisposeAsync();
+    }
+}
+
+public sealed class AgencyFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "Agency";
+}
+
+public sealed class BlogFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "Blog";
+}
+
+public sealed class ComingSoonFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "ComingSoon";
+}
+
+public sealed class HeadlessFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "Headless";
+}
+
+public sealed class MigrationsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "Migrations";
+}
+
+public sealed class WidgetDragTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "WidgetDragTests";
+}
+
+public sealed class EsModuleTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "EsModuleTests";
+}
+
+public sealed class BulkSelectListTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "BulkSelectListTests";
+}
+
+public sealed class FormsFieldEditorTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "FormsFieldEditorTests";
+}
+
+public sealed class SeoMetaPartTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "SeoMetaPartTests";
+}
+
+public sealed class CorsAdminTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "CorsAdminTests";
+}
+
+public sealed class DataLocalizationTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "DataLocalizationTests";
+}
+
+public sealed class DeploymentPlanStepOrderTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "DeploymentPlanStepOrderTests";
+}
+
+public sealed class AzureAiSearchSettingsTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "AzureAiSearchSettingsTests";
+}
+
+public sealed class RecipesIndexTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "RecipesIndexTests";
+}
+
+public sealed class ContentTypesEditorTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "ContentTypesEditorTests";
+}
+
+public sealed class UserFieldsTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "UserFieldsTests";
+}
+
+public sealed class AliasPartEditorTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "AliasPartEditorTests";
+}
+
+public sealed class NotificationPreferencesTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "NotificationPreferencesTests";
+}
+
+public sealed class SitemapCacheTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "SitemapCacheTests";
+}
+
+public sealed class UrlRewritingRulesTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "UrlRewritingRulesTests";
+}
+
+public sealed class PredefinedListEditorTestsFixture : CmsRecipeFixture
+{
+    protected override string RecipeName => "PredefinedListEditorTests";
+}
+

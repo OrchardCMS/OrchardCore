@@ -11,7 +11,7 @@ public class StringExtensionsTests
     [InlineData("Orchard", "Orchard")]
     [InlineData("OrchardCore", "Orchard Core")]
     [InlineData("orchardCore", "orchard Core")]
-    public void CamelFriendly_ShouldReturnCamelCase(string value, string expected)
+    public void CamelFriendly_Default_ReturnsCamelCase(string value, string expected)
     {
         // Arrange & Act
         var result = StringExtensions.CamelFriendly(value);
@@ -26,7 +26,7 @@ public class StringExtensionsTests
     [InlineData("Orchard Core", 70, "Orchard Core")]
     [InlineData("Orchard Core", 4, $"Orch{DefaultEllipsis}")]
     [InlineData("Orchard Core", 7, $"Orchard{DefaultEllipsis}")]
-    public void Ellipsize_ShouldTrimString(string text, int characterCount, string expected)
+    public void Ellipsize_Default_TrimsString(string text, int characterCount, string expected)
     {
         // Arrange & Act
         var result = StringExtensions.Ellipsize(text, characterCount);
@@ -46,7 +46,7 @@ public class StringExtensionsTests
     [InlineData("Orchard Core", 7, DefaultEllipsis, true, DefaultEllipsis)]
     [InlineData("Orchard Core", 7, CustomEllipsis, true, CustomEllipsis)]
     [InlineData("Orchard Core", 10, CustomEllipsis, true, $"Orchard{CustomEllipsis}")]
-    public void Ellipsize_ShouldTrimString_WithCustomEllipsisString(string text, int characterCount, string ellipsis, bool wordBoundary, string expected)
+    public void Ellipsize_CustomEllipsisString_TrimssString(string text, int characterCount, string ellipsis, bool wordBoundary, string expected)
     {
         // Arrange & Act
         var result = StringExtensions.Ellipsize(text, characterCount, ellipsis, wordBoundary);
@@ -60,7 +60,7 @@ public class StringExtensionsTests
     [InlineData("", "")]
     [InlineData("Welcome to <h1>Orchard Core</h1>", "Welcome to Orchard Core")]
     [InlineData("Welcome to Orchard Core", "Welcome to Orchard Core")]
-    public void ShouldRemoveTagsFromString(string text, string expected)
+    public void Remove_TagsFromString_Succeeds(string text, string expected)
     {
         // Arrange & Act
         var result = StringExtensions.RemoveTags(text);
@@ -80,7 +80,7 @@ public class StringExtensionsTests
     [InlineData("Welcome to <h1>Orchard Core</h1>", true, "Welcome to Orchard Core")]
     [InlineData("Welcome to &lt;h1&gt;Orchard Core&lt;/h1&gt;", true, "Welcome to <h1>Orchard Core</h1>")]
     [InlineData("Welcome to Orchard Core", true, "Welcome to Orchard Core")]
-    public void ShouldRemoveTagsFromString_WithHtmlDecode(string text, bool htmlEncode, string expected)
+    public void RemoveTagsFromString_HtmlDecode_Succeeds(string text, bool htmlEncode, string expected)
     {
         // Arrange & Act
         var result = StringExtensions.RemoveTags(text, htmlEncode);
@@ -95,7 +95,7 @@ public class StringExtensionsTests
     [InlineData("Orchard", null, "Orchard")]
     [InlineData("Orchard", new char[] { }, "Orchard")]
     [InlineData("Orchardion", new[] { 'i', 'o', 'n' }, "Orchard")]
-    public void ShouldStripCharactersFromString(string text, char[] strippedChars, string expected)
+    public void Strip_CharactersFromString_Succeeds(string text, char[] strippedChars, string expected)
     {
         // Arrange & Act
         var result = StringExtensions.Strip(text, strippedChars);
@@ -105,7 +105,7 @@ public class StringExtensionsTests
     }
 
     [Fact]
-    public void ShouldStripCharactersFromStringByPredicate()
+    public void Strip_CharactersFromStringByPredicate_Succeeds()
     {
         // Arrange
         var text = "$Welcome$ to Orchard Core$";
@@ -124,7 +124,7 @@ public class StringExtensionsTests
     [InlineData("Orchard Core", new char[] { }, false)]
     [InlineData("Orchard Core", new[] { 'a', 'e', 'i', 'o', 'u' }, true)]
     [InlineData("Orchard Core", new[] { 'i', 'u' }, false)]
-    public void ShouldMatchAnyCharacterInString(string text, char[] chars, bool expected)
+    public void Match_AnyCharacterInString_Succeeds(string text, char[] chars, bool expected)
     {
         // Arrange & Act
         var result = StringExtensions.Any(text, chars);
@@ -139,7 +139,7 @@ public class StringExtensionsTests
     [InlineData("Orchard Core", new char[] { }, false)]
     [InlineData("Orchard Core", new[] { 'a', 'e', 'i', 'o', 'u' }, false)]
     [InlineData("Orchard Core", new[] { 'a', 'e' }, false)]
-    public void ShouldMatchAllCharactersInString(string text, char[] chars, bool expected)
+    public void Match_AllCharactersInString_Succeeds(string text, char[] chars, bool expected)
     {
         // Arrange & Act
         var result = StringExtensions.All(text, chars);
@@ -154,7 +154,7 @@ public class StringExtensionsTests
     [InlineData("Orchid Core", "Orchid", "Orchard", "Orchard Core")]
     [InlineData("OrCHid .. Orchid Core", "Orchid", "Orchard", "OrCHid .. Orchard Core")]
     [InlineData("Orchid .. OrCHid Core", "Orchid", "Orchard", "Orchard .. OrCHid Core")]
-    public void ShouldReplaceLastOccuranceInString(string text, string searchedText, string replacedText, string expected)
+    public void Replace_LastOccuranceInString_Succeeds(string text, string searchedText, string replacedText, string expected)
     {
         // Arrange & Act
         var result = StringExtensions.ReplaceLastOccurrence(text, searchedText, replacedText);
@@ -167,7 +167,7 @@ public class StringExtensionsTests
     [InlineData("Hisham Bin Ateya", "Hisham Bin Ateya")]
     [InlineData("Sébastien Ros", "Sebastien Ros")]
     [InlineData("Zoltán Lehóczky", "Zoltan Lehoczky")]
-    public void ShouldRemoveDiacriticsFromString(string text, string expected)
+    public void Remove_DiacriticsFromString_Succeeds(string text, string expected)
     {
         // Arrange & Act
         var result = StringExtensions.RemoveDiacritics(text);

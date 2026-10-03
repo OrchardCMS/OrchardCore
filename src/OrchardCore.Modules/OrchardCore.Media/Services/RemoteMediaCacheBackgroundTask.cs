@@ -12,7 +12,7 @@ namespace OrchardCore.Media.Services;
 [BackgroundTask(Schedule = "30 0 * * *", Description = "Remote media cache cleanup.")]
 public sealed class RemoteMediaCacheBackgroundTask : IBackgroundTask
 {
-    private static readonly EnumerationOptions _enumerationOptions = new() { RecurseSubdirectories = true };
+    private static readonly EnumerationOptions s_enumerationOptions = new() { RecurseSubdirectories = true };
 
     private readonly IMediaFileStore _mediaFileStore;
     private readonly ILogger _logger;
@@ -58,7 +58,7 @@ public sealed class RemoteMediaCacheBackgroundTask : IBackgroundTask
         try
         {
             // Lookup for all cache directories.
-            var directories = Directory.GetDirectories(_cachePath, "*", _enumerationOptions);
+            var directories = Directory.GetDirectories(_cachePath, "*", s_enumerationOptions);
             foreach (var directory in directories)
             {
                 // Check if the directory is retained.
@@ -68,7 +68,8 @@ public sealed class RemoteMediaCacheBackgroundTask : IBackgroundTask
                     continue;
                 }
 
-                var path = Path.GetRelativePath(_cachePath, directoryInfo.FullName);
+                // Cached names are escaped for the local file system, unescape to get the media path.
+                var path = MediaCachePathEscaper.Unescape(Path.GetRelativePath(_cachePath, directoryInfo.FullName));
 
                 // Check if the remote directory doesn't exist.
                 var entry = await _mediaFileStore.GetDirectoryInfoAsync(path);
@@ -79,7 +80,7 @@ public sealed class RemoteMediaCacheBackgroundTask : IBackgroundTask
             }
 
             // Lookup for all cache files.
-            var files = Directory.GetFiles(_cachePath, "*", _enumerationOptions);
+            var files = Directory.GetFiles(_cachePath, "*", s_enumerationOptions);
             foreach (var file in files)
             {
                 // Check if the file is retained.
@@ -89,7 +90,8 @@ public sealed class RemoteMediaCacheBackgroundTask : IBackgroundTask
                     continue;
                 }
 
-                var path = Path.GetRelativePath(_cachePath, fileInfo.FullName);
+                // Cached names are escaped for the local file system, unescape to get the media path.
+                var path = MediaCachePathEscaper.Unescape(Path.GetRelativePath(_cachePath, fileInfo.FullName));
 
                 // Check if the remote media doesn't exist or was updated.
                 var entry = await _mediaFileStore.GetFileInfoAsync(path);

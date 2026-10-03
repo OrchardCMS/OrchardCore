@@ -8,6 +8,7 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Indexing;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
@@ -24,6 +25,7 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDataMigration<Migrations>();
+        services.AddScoped<IJSLocalizer, SeoJSLocalizer>();
 
         services.AddContentPart<SeoMetaPart>()
             .UseDisplayDriver<SeoMetaPartDisplayDriver>()
@@ -44,6 +46,13 @@ public sealed class Startup : StartupBase
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        app.UseMiddleware<RobotsMiddleware>();
+        var pipeline = routes.CreateApplicationBuilder()
+            .UseMiddleware<RobotsMiddleware>()
+            .Build();
+
+        var path = "/" + SeoConstants.RobotsFileName;
+
+        routes.Map(path, pipeline);
+        routes.Map($"{path}/{{**robotsPath}}", pipeline);
     }
 }

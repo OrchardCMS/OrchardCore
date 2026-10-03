@@ -7,7 +7,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Options;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
 using OrchardCore.Sms.Azure.Models;
@@ -18,7 +18,7 @@ namespace OrchardCore.Sms.Azure.Drivers;
 
 public sealed class AzureSettingsDisplayDriver : SiteDisplayDriver<AzureSmsSettings>
 {
-    private readonly IShellReleaseManager _shellReleaseManager;
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IPhoneFormatValidator _phoneFormatValidator;
@@ -31,7 +31,7 @@ public sealed class AzureSettingsDisplayDriver : SiteDisplayDriver<AzureSmsSetti
         => SmsSettings.GroupId;
 
     public AzureSettingsDisplayDriver(
-        IShellReleaseManager shellReleaseManager,
+        IOptionsUpdateNotifier optionsUpdateNotifier,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IPhoneFormatValidator phoneFormatValidator,
@@ -39,7 +39,7 @@ public sealed class AzureSettingsDisplayDriver : SiteDisplayDriver<AzureSmsSetti
         IHtmlLocalizer<AzureSettingsDisplayDriver> htmlLocalizer,
         IStringLocalizer<AzureSettingsDisplayDriver> stringLocalizer)
     {
-        _shellReleaseManager = shellReleaseManager;
+        _optionsUpdateNotifier = optionsUpdateNotifier;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _phoneFormatValidator = phoneFormatValidator;
@@ -58,7 +58,7 @@ public sealed class AzureSettingsDisplayDriver : SiteDisplayDriver<AzureSmsSetti
             model.ConnectionStringSecretName = settings.ConnectionStringSecretName;
             model.HasConnectionString = !string.IsNullOrEmpty(settings.ConnectionString);
         }).Location("Content:5#Azure Communication Services")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, SmsPermissions.ManageSmsSettings))
+        .RenderWhen(static (driver) => driver._authorizationService.AuthorizeAsync(driver._httpContextAccessor.HttpContext?.User, SmsPermissions.ManageSmsSettings), this)
         .OnGroup(SettingsGroupId);
 #pragma warning restore CS0618 // Type or member is obsolete
     }
@@ -74,7 +74,7 @@ public sealed class AzureSettingsDisplayDriver : SiteDisplayDriver<AzureSmsSetti
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        var smsSettings = site.As<SmsSettings>();
+        var smsSettings = site.GetOrCreate<SmsSettings>();
 
         var hasChanges = settings.IsEnabled != model.IsEnabled;
         if (!model.IsEnabled)
@@ -130,7 +130,9 @@ public sealed class AzureSettingsDisplayDriver : SiteDisplayDriver<AzureSmsSetti
 
         if (hasChanges)
         {
-            _shellReleaseManager.RequestRelease();
+            _optionsUpdateNotifier
+                .RequestUpdate<AzureSmsOptions>()
+                .RequestUpdate<SmsProviderOptions>();
         }
 
         return Edit(site, settings, context);

@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using AngleSharp;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
@@ -18,7 +19,7 @@ public class ResourceManagerTests : IDisposable
     }
 
     [Fact]
-    public void FindResourceFromManifestProviders()
+    public void FindResourceFromManifestProviders_Default_Succeeds()
     {
         var options = new ResourceManagementOptions();
         var manifest = new ResourceManifest();
@@ -44,7 +45,7 @@ public class ResourceManagerTests : IDisposable
     }
 
     [Fact]
-    public void FindHighestVersionedResourceFromManifest()
+    public void FindHighestVersionedResourceFromManifest_Default_Succeeds()
     {
         var options = new ResourceManagementOptions();
         var manifest = new ResourceManifest();
@@ -76,7 +77,7 @@ public class ResourceManagerTests : IDisposable
     }
 
     [Fact]
-    public void RegisterResourceUrl()
+    public void RegisterResourceUrl_Default_Succeeds()
     {
         var resourceManager = new ResourceManager(
             new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
@@ -93,7 +94,7 @@ public class ResourceManagerTests : IDisposable
     }
 
     [Fact]
-    public void RegisteredResouceUrlIsRequired()
+    public void RegisteredResouceUrlIsRequired_Default_Succeeds()
     {
         var resourceManager = new ResourceManager(
             new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
@@ -112,7 +113,7 @@ public class ResourceManagerTests : IDisposable
     }
 
     [Fact]
-    public void RegisteredResouceNameIsRequired()
+    public void RegisteredResouceNameIsRequired_Default_Succeeds()
     {
         var options = new ResourceManagementOptions();
         var manifest = new ResourceManifest();
@@ -138,7 +139,7 @@ public class ResourceManagerTests : IDisposable
     }
 
     [Fact]
-    public void RequireDependencies()
+    public void RequireDependencies_Default_Succeeds()
     {
         var options = new ResourceManagementOptions();
         var manifest = new ResourceManifest();
@@ -201,7 +202,7 @@ public class ResourceManagerTests : IDisposable
     }
 
     [Fact]
-    public void RequireCircularDependenciesShouldThrowException()
+    public void RequireCircularDependencies_Default_ThrowsException()
     {
         var options = new ResourceManagementOptions();
         var manifest = new ResourceManifest();
@@ -225,7 +226,7 @@ public class ResourceManagerTests : IDisposable
     }
 
     [Fact]
-    public void RequireCircularNestedDependencyShouldThrowException()
+    public void RequireCircularNestedDependency_Default_ThrowsException()
     {
         var options = new ResourceManagementOptions();
         var manifest = new ResourceManifest();
@@ -252,7 +253,7 @@ public class ResourceManagerTests : IDisposable
     }
 
     [Fact]
-    public void RequireByDependencyResourceThatDependsOnLastPositionedResourceShouldRegisterResourceLast()
+    public void RequireByDependencyResourceThatDependsOnLastPositionedResource_Default_RegisterResourceLast()
     {
         var options = new ResourceManagementOptions();
         var manifest = new ResourceManifest();
@@ -286,7 +287,7 @@ public class ResourceManagerTests : IDisposable
     }
 
     [Fact]
-    public void RequireFirstPositionedResourceThatDependsOnByDependencyResourceShouldRegisterDependencyFirst()
+    public void RequireFirstPositionedResourceThatDependsOnByDependencyResource_Default_RegisterDependencyFirst()
     {
         var options = new ResourceManagementOptions();
         var manifest = new ResourceManifest();
@@ -320,7 +321,7 @@ public class ResourceManagerTests : IDisposable
     }
 
     [Fact]
-    public void RequireFirstPositionedResourceWithDependencyToResourcePositionedLastShouldThrowException()
+    public void RequireFirstPositionedResourceWithDependencyToResourcePositionedLast_Default_ThrowsException()
     {
         var options = new ResourceManagementOptions();
         var manifest = new ResourceManifest();
@@ -348,7 +349,7 @@ public class ResourceManagerTests : IDisposable
     }
 
     [Fact]
-    public void RemoveRequiredResource()
+    public void RemoveRequiredResource_Default_Succeeds()
     {
         var options = new ResourceManagementOptions();
         var manifest = new ResourceManifest();
@@ -379,7 +380,7 @@ public class ResourceManagerTests : IDisposable
     }
 
     [Fact]
-    public void RemoveRequiredResourceDependency()
+    public void RemoveRequiredResourceDependency_Default_Succeeds()
     {
         var options = new ResourceManagementOptions();
         var manifest = new ResourceManifest();
@@ -413,7 +414,7 @@ public class ResourceManagerTests : IDisposable
     }
 
     [Fact]
-    public void RegisterHeadScript()
+    public void RegisterHeadScript_Default_Succeeds()
     {
         var resourceManager = new ResourceManager(
             new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
@@ -429,7 +430,7 @@ public class ResourceManagerTests : IDisposable
     }
 
     [Fact]
-    public void RegisterFootScript()
+    public void RegisterFootScript_Default_Succeeds()
     {
         var resourceManager = new ResourceManager(
             new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
@@ -445,7 +446,7 @@ public class ResourceManagerTests : IDisposable
     }
 
     [Fact]
-    public void RegisterStyle()
+    public void RegisterStyle_Default_Succeeds()
     {
         var resourceManager = new ResourceManager(
             new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
@@ -461,7 +462,7 @@ public class ResourceManagerTests : IDisposable
     }
 
     [Fact]
-    public void RegisterLink()
+    public void RegisterLink_Default_Succeeds()
     {
         var resourceManager = new ResourceManager(
             new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
@@ -482,7 +483,7 @@ public class ResourceManagerTests : IDisposable
     }
 
     [Fact]
-    public void RegisterMeta()
+    public void RegisterMeta_Default_Succeeds()
     {
         var resourceManager = new ResourceManager(
             new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
@@ -499,7 +500,7 @@ public class ResourceManagerTests : IDisposable
     }
 
     [Fact]
-    public async Task AppendMeta()
+    public async Task AppendMeta_Default_Succeeds()
     {
         var resourceManager = new ResourceManager(
             new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
@@ -527,7 +528,7 @@ public class ResourceManagerTests : IDisposable
     }
 
     [Fact]
-    public async Task RenderMeta()
+    public async Task RenderMeta_Default_Succeeds()
     {
         var resourceManager = new ResourceManager(
             new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
@@ -554,7 +555,7 @@ public class ResourceManagerTests : IDisposable
     }
 
     [Fact]
-    public async Task RenderHeadLink()
+    public async Task RenderHeadLink_Default_Succeeds()
     {
         var resourceManager = new ResourceManager(
             new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
@@ -562,8 +563,8 @@ public class ResourceManagerTests : IDisposable
         );
 
         resourceManager.RegisterUrl("stylesheet", "other.min.css", "other.css");    // Should not be rendered
-        resourceManager.RegisterLink(new LinkEntry { Rel = "icon", Href = "/favicon.ico" });
-        resourceManager.RegisterLink(new LinkEntry { Rel = "alternate", Type = "application/pdf", Href = "/pdf" });
+        resourceManager.RegisterLink(new LinkEntry { Rel = "icon", Href = "/favicon.ico", Sizes = "16x16" });
+        resourceManager.RegisterLink(new LinkEntry { Rel = "alternate", Type = MediaTypeNames.Application.Pdf, Href = "/pdf" });
 
         using var sw = new StringWriter();
         resourceManager.RenderHeadLink(sw);
@@ -575,12 +576,12 @@ public class ResourceManagerTests : IDisposable
             .QuerySelectorAll<IHtmlLinkElement>("link");
 
         Assert.Equal(2, links.Count());
-        Assert.Contains(links, link => link.Relation == "icon" && link.Href == $"{BasePath}/favicon.ico");
-        Assert.Contains(links, link => link.Relation == "alternate" && link.Type == "application/pdf" && link.Href == $"{BasePath}/pdf");
+        Assert.Contains(links, link => link.Relation == "icon" && link.Href == $"{BasePath}/favicon.ico" && link.Sizes[0] == "16x16");
+        Assert.Contains(links, link => link.Relation == "alternate" && link.Type == MediaTypeNames.Application.Pdf && link.Href == $"{BasePath}/pdf");
     }
 
     [Fact]
-    public async Task RenderStylesheet()
+    public async Task RenderStylesheet_Default_Succeeds()
     {
         var options = new ResourceManagementOptions();
         var manifest = new ResourceManifest();
@@ -637,7 +638,7 @@ public class ResourceManagerTests : IDisposable
     }
 
     [Fact]
-    public async Task RenderHeadScript()
+    public async Task RenderHeadScript_Default_Succeeds()
     {
         var options = new ResourceManagementOptions();
         var manifest = new ResourceManifest();
@@ -689,7 +690,7 @@ public class ResourceManagerTests : IDisposable
     }
 
     [Fact]
-    public async Task RenderFootScript()
+    public async Task RenderFootScript_Default_Succeeds()
     {
         var options = new ResourceManagementOptions();
         var manifest = new ResourceManifest();
@@ -741,7 +742,7 @@ public class ResourceManagerTests : IDisposable
     }
 
     [Fact]
-    public async Task RenderHeadAndFootScriptWithSameDependency()
+    public async Task RenderHeadAndFootScriptWithSameDependency_Default_Succeeds()
     {
         var options = new ResourceManagementOptions();
         var manifest = new ResourceManifest();
@@ -809,7 +810,7 @@ public class ResourceManagerTests : IDisposable
     }
 
     [Fact]
-    public async Task RenderLocalScript()
+    public async Task RenderLocalScript_Default_Succeeds()
     {
         var options = new ResourceManagementOptions();
         var manifest = new ResourceManifest();
@@ -849,7 +850,7 @@ public class ResourceManagerTests : IDisposable
     }
 
     [Fact]
-    public async Task RenderLocalStyle()
+    public async Task RenderLocalStyle_Default_Succeeds()
     {
         var options = new ResourceManagementOptions();
         var manifest = new ResourceManifest();

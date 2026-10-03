@@ -4,41 +4,41 @@
 
 @model AzureSettingsViewModel
 
-<div class="mb-3">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="IsEnabled" checked="@Model.IsEnabled" role="button" data-bs-toggle="collapse" data-bs-target="#Azure_Provider_Settings" aria-expanded="@Model.IsEnabled.ToString().ToLowerInvariant()" aria-controls="Azure_Provider_Settings" />
-        <label class="form-check-label" asp-for="IsEnabled">@T["Enable"]</label>
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="IsEnabled" checked="@Model.IsEnabled" role="button" data-bs-toggle="collapse" data-bs-target="#Azure_Provider_Settings" aria-expanded="@Model.IsEnabled.ToString().ToLowerInvariant()" aria-controls="Azure_Provider_Settings" />
+            <label class="form-check-label" asp-for="IsEnabled">@T["Enable"]</label>
+        </div>
     </div>
 </div>
 
 <div id="Azure_Provider_Settings" class="collapse@(Model.IsEnabled ? " show" : string.Empty)">
-
-    <div class="mb-3" asp-validation-class-for="PhoneNumber">
-        <label asp-for="PhoneNumber" class="form-label">@T["Phone Number"]</label>
-        <input asp-for="PhoneNumber" class="form-control" />
-        <span asp-validation-for="PhoneNumber"></span>
-        <span class="hint">@T["The default phone number to use as a sender. Phone number must include a country code. For example, +1 for United States."]</span>
+    <div class="ocat-wrapper" asp-validation-class-for="PhoneNumber">
+        <label asp-for="PhoneNumber" class="ocat-label">@T["Phone Number"]</label>
+        <div class="ocat-end">
+            <input asp-for="PhoneNumber" class="form-control" />
+            <span asp-validation-for="PhoneNumber"></span>
+            <span class="hint">@T["The default phone number to use as a sender. Phone number must include a country code. For example, +1 for United States."]</span>
+        </div>
     </div>
 
-    <div class="mb-3" asp-validation-class-for="ConnectionStringSecretName">
-        <label asp-for="ConnectionStringSecretName" class="form-label">@T["Connection String Secret"]</label>
-        @await Component.InvokeAsync("SelectSecret", new
-        {
-            secretTypes = new[] { "TextSecret" },
-            selectedSecret = Model.ConnectionStringSecretName,
-            htmlId = "ConnectionStringSecretName",
-            htmlName = Html.NameFor(m => m.ConnectionStringSecretName).ToString(),
-            required = false
-        })
-        <span asp-validation-for="ConnectionStringSecretName"></span>
-        <span class="hint">@T["Select a secret containing the Azure Communication Services connection string."]</span>
-        @if (Model.HasConnectionString && string.IsNullOrWhiteSpace(Model.ConnectionStringSecretName))
-        {
-            <div class="alert alert-warning mt-2">
-                <i class="fa-solid fa-exclamation-triangle"></i>
-                @T["A legacy connection string is configured. Please migrate to using a secret for improved security."]
-            </div>
-        }
+    <div class="ocat-wrapper" asp-validation-class-for="ConnectionStringSecretName">
+        <label asp-for="ConnectionStringSecretName" class="ocat-label">@T["Connection String"]</label>
+        <div class="ocat-end">
+            @await Component.InvokeAsync("SelectSecret", new
+            {
+                secretTypes = new[] { "TextSecret" },
+                selectedSecret = Model.ConnectionStringSecretName,
+                htmlId = Html.IdFor(m => m.ConnectionStringSecretName).ToString(),
+                htmlName = Html.NameFor(m => m.ConnectionStringSecretName).ToString(),
+                required = false
+            })
+            <span asp-validation-for="ConnectionStringSecretName"></span>
+            @if (Model.HasConnectionString && string.IsNullOrWhiteSpace(Model.ConnectionStringSecretName))
+            {
+                <p class="alert alert-warning mt-2">@T["A legacy connection string is configured. Please migrate to using a secret for improved security."]</p>
+            }
+        </div>
     </div>
-
 </div>

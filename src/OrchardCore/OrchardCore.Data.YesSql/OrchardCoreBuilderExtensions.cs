@@ -1,5 +1,4 @@
 using System.Buffers;
-using System.Data;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data;
@@ -39,7 +38,8 @@ public static class OrchardCoreBuilderExtensions
         {
             var configuration = serviceProvider.GetService<IShellConfiguration>();
 
-            services.Configure<YesSqlOptions>(configuration.GetSection("OrchardCore_YesSql"));
+            // The 'OrchardCore_YesSql' section is deprecated and will be removed in a future major version, use 'YesSql' instead.
+            services.Configure<YesSqlOptions>(configuration.GetSectionCompat("YesSql", "OrchardCore_YesSql"));
             services.AddScoped<IDbConnectionValidator, DbConnectionValidator>();
             services.AddScoped<IDataMigrationManager, DataMigrationManager>();
             services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
@@ -57,7 +57,6 @@ public static class OrchardCoreBuilderExtensions
             services.AddSingleton(sp =>
             {
                 var shellSettings = sp.GetService<ShellSettings>();
-
                 // Before the setup, a 'DatabaseProvider' may be configured without a required 'ConnectionString'.
                 if (shellSettings.IsUninitialized() || shellSettings["DatabaseProvider"] is null)
                 {

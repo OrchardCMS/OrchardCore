@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Modules;
+using OrchardCore.RateLimits;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
@@ -21,7 +22,7 @@ public sealed class ResetPasswordController : Controller
     private readonly UserManager<IUser> _userManager;
     private readonly ISiteService _siteService;
     private readonly IEnumerable<IPasswordRecoveryFormEvents> _passwordRecoveryFormEvents;
-    private readonly RegistrationOptions _registrationOptions;
+    private readonly IOptionsMonitor<RegistrationOptions> _registrationOptions;
     private readonly ILogger _logger;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IDisplayManager<ForgotPasswordForm> _forgotPasswordDisplayManager;
@@ -40,7 +41,7 @@ public sealed class ResetPasswordController : Controller
         UserEmailService userEmailService,
         IDisplayManager<ResetPasswordForm> resetPasswordDisplayManager,
         IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents,
-        IOptions<RegistrationOptions> registrationOptions,
+        IOptionsMonitor<RegistrationOptions> registrationOptions,
         IStringLocalizer<ResetPasswordController> stringLocalizer)
     {
         _userService = userService;
@@ -52,7 +53,7 @@ public sealed class ResetPasswordController : Controller
         _userEmailService = userEmailService;
         _resetPasswordDisplayManager = resetPasswordDisplayManager;
         _passwordRecoveryFormEvents = passwordRecoveryFormEvents;
-        _registrationOptions = registrationOptions.Value;
+        _registrationOptions = registrationOptions;
         S = stringLocalizer;
     }
 
@@ -72,11 +73,11 @@ public sealed class ResetPasswordController : Controller
     [HttpPost]
     [AllowAnonymous]
     [ActionName(nameof(ForgotPassword))]
+    [RateLimitGroup(UserRateLimiterPolicyNames.PasswordRecovery)]
     public async Task<IActionResult> ForgotPasswordPOST()
     {
         var site = await _siteService.GetSiteSettingsAsync();
-
-        if (!site.As<ResetPasswordSettings>().AllowResetPassword)
+        if (!site.TryGet<ResetPasswordSettings>(out var settings) || !settings.AllowResetPassword)
         {
             return NotFound();
         }
@@ -95,7 +96,7 @@ public sealed class ResetPasswordController : Controller
                 return RedirectToAction(nameof(ForgotPasswordConfirmation));
             }
 
-            if (_registrationOptions.UsersMustValidateEmail && !await _userManager.IsEmailConfirmedAsync(user))
+            if (_registrationOptions.CurrentValue.UsersMustValidateEmail && !await _userManager.IsEmailConfirmedAsync(user))
             {
                 ModelState.AddModelError(string.Empty, S["Before you can reset your password, you need to verify your email address."]);
             }
@@ -143,6 +144,7 @@ public sealed class ResetPasswordController : Controller
     [HttpPost]
     [AllowAnonymous]
     [ActionName(nameof(ResetPassword))]
+    [RateLimitGroup(UserRateLimiterPolicyNames.PasswordRecovery)]
     public async Task<IActionResult> ResetPasswordPOST()
     {
         if (!(await _siteService.GetSettingsAsync<ResetPasswordSettings>()).AllowResetPassword)

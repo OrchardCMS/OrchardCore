@@ -1,8 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DataLocalization.Deployment;
+using OrchardCore.DataLocalization.Liquid;
 using OrchardCore.DataLocalization.Recipes;
 using OrchardCore.DataLocalization.Services;
 using OrchardCore.Deployment;
+using OrchardCore.Liquid;
 using OrchardCore.Localization.Data;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -21,6 +23,8 @@ public class Startup : StartupBase
     /// <inheritdocs />
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddLiquidFilter<DataLocalizationFilter>("d");
+
         services.AddScoped<TranslationsManager>();
         services.AddRecipeExecutionStep<TranslationsStep>();
 

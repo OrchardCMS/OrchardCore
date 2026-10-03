@@ -2,7 +2,7 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Indexing.Core.Deployments;
-using OrchardCore.Search.AzureAI.ViewModels;
+using OrchardCore.AzureAI.ViewModels;
 
 namespace OrchardCore.Indexing.Deployments;
 

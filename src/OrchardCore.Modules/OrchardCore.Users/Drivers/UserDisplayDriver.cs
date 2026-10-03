@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -15,18 +14,15 @@ public sealed class UserDisplayDriver : DisplayDriver<User>
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
-    internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
 
     public UserDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IHtmlLocalizer<UserDisplayDriver> htmlLocalizer,
         IStringLocalizer<UserDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
-        H = htmlLocalizer;
         S = stringLocalizer;
     }
 

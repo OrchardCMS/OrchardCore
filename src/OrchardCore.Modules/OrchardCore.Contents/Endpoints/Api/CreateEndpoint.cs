@@ -16,7 +16,7 @@ namespace OrchardCore.Contents.Endpoints.Api;
 
 public static class CreateEndpoint
 {
-    private static readonly JsonMergeSettings _updateJsonMergeSettings = new()
+    private static readonly JsonMergeSettings s_updateJsonMergeSettings = new()
     {
         MergeArrayHandling = MergeArrayHandling.Replace,
     };
@@ -24,26 +24,28 @@ public static class CreateEndpoint
     public static IEndpointRouteBuilder AddCreateContentEndpoint(this IEndpointRouteBuilder builder)
     {
         builder.MapPost("api/content", HandleAsync)
+            .WithName("ApiCreateContentItem")
             .AllowAnonymous()
             .DisableAntiforgery();
 
         return builder;
     }
 
-    [Authorize(AuthenticationSchemes = "Api")]
+    [Authorize(AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api)]
     private static async Task<IResult> HandleAsync(
         ContentItem model,
         IContentManager contentManager,
         IAuthorizationService authorizationService,
         IContentDefinitionManager contentDefinitionManager,
         IUpdateModelAccessor updateModelAccessor,
+        YesSql.ISession session,
         HttpContext httpContext,
         IOptions<DocumentJsonSerializerOptions> options,
         bool draft = false)
     {
         if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.AccessContentApi))
         {
-            return httpContext.ChallengeOrForbid("Api");
+            return httpContext.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
 
         if (model is null)
@@ -65,7 +67,7 @@ public static class CreateEndpoint
 
             if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.PublishContent, contentItem))
             {
-                return httpContext.ChallengeOrForbid("Api");
+                return httpContext.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
             }
             contentItem.Merge(model);
 
@@ -79,6 +81,7 @@ public static class CreateEndpoint
             {
                 // Add the validation results to the ModelState to present the errors as part of the response.
                 AddValidationErrorsToModelState(result, modelState);
+                await session.CancelAsync();
             }
 
             // We check the model state after calling all handlers because they trigger WF content events so, even they are not
@@ -94,10 +97,10 @@ public static class CreateEndpoint
         {
             if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.EditContent, contentItem))
             {
-                return httpContext.ChallengeOrForbid("Api");
+                return httpContext.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
             }
 
-            contentItem.Merge(model, _updateJsonMergeSettings);
+            contentItem.Merge(model, s_updateJsonMergeSettings);
 
             await contentManager.UpdateAsync(contentItem);
             var result = await contentManager.ValidateAsync(contentItem);
@@ -106,6 +109,7 @@ public static class CreateEndpoint
             {
                 // Add the validation results to the ModelState to present the errors as part of the response.
                 AddValidationErrorsToModelState(result, modelState);
+                await session.CancelAsync();
             }
 
             // We check the model state after calling all handlers because they trigger WF content events so, even they are not

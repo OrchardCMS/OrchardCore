@@ -26,7 +26,8 @@ public class SelectSecretViewComponent : ViewComponent
         string htmlId,
         string htmlName,
         IEnumerable<string> secretTypes = null,
-        bool required = false)
+        bool required = false,
+        string cssClass = null)
     {
         var secretInfos = await _secretManager.GetSecretInfosAsync();
 
@@ -52,6 +53,7 @@ public class SelectSecretViewComponent : ViewComponent
         {
             HtmlId = htmlId,
             HtmlName = htmlName,
+            CssClass = cssClass,
             Secrets = secrets,
         };
 

@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -103,7 +104,7 @@ public sealed class WorkflowController : Controller
             _ => query.OrderByDescending(x => x.CreatedUtc),
         };
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
 
         var routeData = new RouteData();
         routeData.Values.Add("Filter", model.Options.Filter);
@@ -305,7 +306,7 @@ public sealed class WorkflowController : Controller
             return Forbid();
         }
 
-        if (itemIds?.Count() > 0)
+        if (itemIds?.Any() == true)
         {
             var checkedEntries = await _session.Query<Workflow, WorkflowIndex>().Where(x => x.DocumentId.IsIn(itemIds)).ListAsync();
             switch (options.BulkAction)
@@ -313,6 +314,8 @@ public sealed class WorkflowController : Controller
                 case WorkflowBulkAction.None:
                     break;
                 case WorkflowBulkAction.Delete:
+                    var deletedWorkflowIds = new List<string>();
+
                     foreach (var entry in checkedEntries)
                     {
                         var workflow = await _workflowStore.GetAsync(entry.Id);
@@ -320,9 +323,15 @@ public sealed class WorkflowController : Controller
                         if (workflow != null)
                         {
                             await _workflowStore.DeleteAsync(workflow);
-                            await _notifier.SuccessAsync(H["Workflow {0} has been deleted.", workflow.Id]);
+                            deletedWorkflowIds.Add(workflow.Id.ToString(CultureInfo.InvariantCulture));
                         }
                     }
+
+                    if (deletedWorkflowIds.Count > 0)
+                    {
+                        await _notifier.SuccessAsync(H.Plural(deletedWorkflowIds.Count, "The workflow \"{1}\" has been deleted.", "The following workflows have been deleted: {1}.", string.Join(", ", deletedWorkflowIds)));
+                    }
+
                     break;
 
                 default:

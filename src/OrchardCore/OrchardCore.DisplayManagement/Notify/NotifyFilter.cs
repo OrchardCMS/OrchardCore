@@ -126,39 +126,38 @@ public sealed class NotifyFilter : IActionFilter, IAsyncResultFilter, IPageFilte
 
     #endregion
 
-    public async Task OnResultExecutionAsync(ResultExecutingContext filterContext, ResultExecutionDelegate next)
+    public Task OnResultExecutionAsync(ResultExecutingContext filterContext, ResultExecutionDelegate next)
     {
         if (_shouldDeleteCookie)
         {
             DeleteCookies(filterContext);
 
-            await next();
-            return;
+            return next();
         }
 
         if (!filterContext.IsViewOrPageResult())
         {
-            await next();
-            return;
+            return next();
         }
 
         if (_existingEntries.Length == 0)
         {
-            await next();
-            return;
+            return next();
         }
 
+        return OnResultExecutionAsyncCore(filterContext, next);
+    }
+
+    private async Task OnResultExecutionAsyncCore(ResultExecutingContext filterContext, ResultExecutionDelegate next)
+    {
         var layout = await _layoutAccessor.GetLayoutAsync();
 
         var messagesZone = layout.Zones["Messages"];
 
         if (messagesZone is IShape zone)
         {
-            foreach (var messageEntry in _existingEntries)
-            {
-                // Also retrieve the actual zone in case it was only a temporary empty zone created on demand.
-                zone = await zone.AddAsync(await _shapeFactory.CreateAsync("Message", Arguments.From(messageEntry)));
-            }
+            // Also retrieve the actual zone in case it was only a temporary empty zone created on demand.
+            zone = await zone.AddAsync(await _shapeFactory.CreateAsync("NotifyMessages", new { Entries = _existingEntries }));
         }
 
         DeleteCookies(filterContext);

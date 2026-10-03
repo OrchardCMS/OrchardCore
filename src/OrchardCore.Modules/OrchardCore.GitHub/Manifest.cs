@@ -17,5 +17,6 @@ using OrchardCore.Modules.Manifest;
     Dependencies =
     [
         "OrchardCore.Users.ExternalAuthentication",
+        "OrchardCore.Secrets",
     ]
 )]

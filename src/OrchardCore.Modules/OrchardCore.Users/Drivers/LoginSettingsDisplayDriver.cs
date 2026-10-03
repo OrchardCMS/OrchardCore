@@ -35,8 +35,10 @@ public sealed class LoginSettingsDisplayDriver : SiteDisplayDriver<LoginSettings
             model.AllowChangingEmail = settings.AllowChangingEmail;
             model.AllowChangingUsername = settings.AllowChangingUsername;
             model.AllowChangingPhoneNumber = settings.AllowChangingPhoneNumber;
+            model.AllowRememberMe = settings.AllowRememberMe;
+            model.UsePersistentAuthenticationCookie = settings.UsePersistentAuthenticationCookie;
         }).Location("Content:5#General")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, UsersPermissions.ManageUsers))
+        .RenderWhen(static (driver) => driver._authorizationService.AuthorizeAsync(driver._httpContextAccessor.HttpContext.User, UsersPermissions.ManageUsers), this)
         .OnGroup(SettingsGroupId);
     }
 

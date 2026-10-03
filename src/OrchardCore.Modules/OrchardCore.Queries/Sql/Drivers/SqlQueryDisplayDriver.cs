@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
 using OrchardCore.Mvc.ModelBinding;
@@ -10,10 +12,18 @@ namespace OrchardCore.Queries.Sql.Drivers;
 
 public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
 {
+    private readonly INotifier _notifier;
+    private readonly SqlLiquidOutputExpressionDetector _outputExpressionDetector;
+
     internal readonly IStringLocalizer S;
 
-    public SqlQueryDisplayDriver(IStringLocalizer<SqlQueryDisplayDriver> stringLocalizer)
+    public SqlQueryDisplayDriver(
+        INotifier notifier,
+        SqlLiquidOutputExpressionDetector outputExpressionDetector,
+        IStringLocalizer<SqlQueryDisplayDriver> stringLocalizer)
     {
+        _notifier = notifier;
+        _outputExpressionDetector = outputExpressionDetector;
         S = stringLocalizer;
     }
 
@@ -25,36 +35,44 @@ public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
         }
 
         return Combine(
-            Dynamic("SqlQuery_SummaryAdmin", model =>
+            Dynamic("SqlQuery_SummaryAdmin", static (model, query) =>
             {
                 model.Query = query;
-            }).Location("Content:5"),
-            Dynamic("SqlQuery_Buttons_SummaryAdmin", model =>
+            }, query).Location("Content:5"),
+            Dynamic("SqlQuery_Buttons_SummaryAdmin", static (model, query) =>
             {
                 model.Query = query;
-            }).Location("Actions:2")
+            }, query).Location("Actions:2")
         );
     }
 
-    public override IDisplayResult Edit(Query query, BuildEditorContext context)
+    public override async Task<IDisplayResult> EditAsync(Query query, BuildEditorContext context)
     {
         if (query.Source != SqlQuerySource.SourceName)
         {
             return null;
         }
 
-        return Initialize<SqlQueryViewModel>("SqlQuery_Edit", async model =>
+        var template = string.Empty;
+        if (query.TryGet<SqlQueryMetadata>(out var metadata))
+        {
+            template = metadata.Template;
+        }
+
+        // Extract query from the query string if we come from the main query editor.
+        // Create model object here, to make sure that TryUpdateModelAsync work on a specific object type, not over a proxied one
+        var viewModel = new SqlQueryViewModel();
+        if (string.IsNullOrEmpty(template))
+        {
+            await context.Updater.TryUpdateModelAsync(viewModel, string.Empty, m => m.Query);
+            template = viewModel.Query;
+        }
+
+        return Initialize<SqlQueryViewModel>("SqlQuery_Edit", model =>
         {
             model.ReturnDocuments = query.ReturnContentItems;
-
-            var metadata = query.As<SqlQueryMetadata>();
-            model.Query = metadata.Template;
-
-            // Extract query from the query string if we come from the main query editor.
-            if (string.IsNullOrEmpty(metadata.Template))
-            {
-                await context.Updater.TryUpdateModelAsync(model, string.Empty, m => m.Query);
-            }
+            model.Query = template;
+            model.HasLiquidOutputExpressions = _outputExpressionDetector.ContainsOutputStatement(model.Query);
         }).Location("Content:5");
     }
 
@@ -74,6 +92,24 @@ public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Query), S["The query field is required"]);
         }
+        else if (!ContainsLiquidSyntax(viewModel.Query))
+        {
+            foreach (var message in SqlParser.Validate(viewModel.Query))
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Query), message);
+            }
+        }
+
+        viewModel.HasLiquidOutputExpressions = _outputExpressionDetector.ContainsOutputStatement(viewModel.Query);
+
+        if (viewModel.HasLiquidOutputExpressions)
+        {
+            await _notifier.AddAsync(
+                NotifyType.Warning,
+                new LocalizedHtmlString(
+                    nameof(SqlQueryDisplayDriver),
+                    S["Potentially unsafe Liquid output expressions ('{{ ... }}') were detected in this SQL query. Avoid injecting user input with Liquid output and use SQL parameters instead."].Value));
+        }
 
         query.ReturnContentItems = viewModel.ReturnDocuments;
         query.Put(new SqlQueryMetadata()
@@ -81,6 +117,10 @@ public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
             Template = viewModel.Query,
         });
 
-        return Edit(query, context);
+        return await EditAsync(query, context);
     }
+
+    private static bool ContainsLiquidSyntax(string query) =>
+        query.Contains("{{", StringComparison.Ordinal) ||
+        query.Contains("{%", StringComparison.Ordinal);
 }

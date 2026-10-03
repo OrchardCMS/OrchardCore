@@ -5,7 +5,7 @@ namespace OrchardCore.Tests.Commands;
 public class CommandHandlerDescriptorBuilderTests
 {
     [Fact]
-    public void BuilderShouldCreateDescriptor()
+    public void Builder_Default_CreatesDescriptor()
     {
         var builder = new CommandHandlerDescriptorBuilder();
         var descriptor = builder.Build(typeof(MyCommand));
@@ -50,7 +50,7 @@ public class CommandHandlerDescriptorBuilderTests
     }
 
     [Fact]
-    public void BuilderShouldReturnPublicMethodsOnly()
+    public void Builder_Default_ReturnsPublicMethodsOnly()
     {
         var builder = new CommandHandlerDescriptorBuilder();
         var descriptor = builder.Build(typeof(PublicMethodsOnly));

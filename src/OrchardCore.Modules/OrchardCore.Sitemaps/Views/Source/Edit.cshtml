@@ -1,6 +1,17 @@
 @model EditSourceViewModel
+@using OrchardCore.Sitemaps.Services
+@inject ISitemapManager SitemapManager
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Sitemap Source"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="SitemapsSourceEdit" title="@T["Edit Sitemap Source"]">
+        <breadcrumb-item id="Sitemaps" action="List" controller="Admin" area="OrchardCore.Sitemaps" permission="@SitemapsPermissions.ManageSitemaps.Name">@T["Sitemaps"]</breadcrumb-item>
+        @if (!string.IsNullOrEmpty(Model.SitemapId))
+        {
+            var sitemap = await SitemapManager.GetSitemapAsync(Model.SitemapId);
+            <breadcrumb-item id="Sitemap" action="Display" controller="Admin" area="OrchardCore.Sitemaps" route-sitemapId="@Model.SitemapId" permission="@SitemapsPermissions.ManageSitemaps.Name">@(sitemap?.Name ?? T["Sitemap"].Value)</breadcrumb-item>
+        }
+    </breadcrumb>
+</zone>
 
 @if (string.IsNullOrEmpty(Site.BaseUrl))
 {
@@ -15,23 +26,25 @@
     <input type="hidden" asp-for="SitemapSourceId" />
 
     <fieldset>
-        <div class="mb-3">
-            <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
+                <button class="btn btn-primary save" type="submit">@T["Save"]</button>
 
-            <a class="btn btn-danger delete"
-               role="button"
-               asp-action="Delete"
-               asp-controller="Source"
-               asp-route-sitemapId="@Model.SitemapId"
-               asp-route-sourceId="@Model.SitemapSourceId"
-               data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                <a class="btn btn-danger delete"
+                   role="button"
+                   asp-action="Delete"
+                   asp-controller="Source"
+                   asp-route-sitemapId="@Model.SitemapId"
+                   asp-route-sourceId="@Model.SitemapSourceId"
+                   data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
 
-            <a class="btn btn-secondary cancel"
-               role="button"
-               asp-route-action="Display"
-               asp-route-controller="Admin"
-               asp-route-sitemapId="@Model.SitemapId">@T["Cancel"]</a>
+                <a class="btn btn-secondary cancel"
+                   role="button"
+                   asp-route-action="Display"
+                   asp-route-controller="Admin"
+                   asp-route-sitemapId="@Model.SitemapId">@T["Cancel"]</a>
 
+            </div>
         </div>
     </fieldset>
 </form>

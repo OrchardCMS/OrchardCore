@@ -69,7 +69,8 @@ public sealed class ContentPickerStartup : StartupBase
         services.AddSiteDisplayDriver<ContentRequestCultureProviderSettingsDriver>();
 
         services.Configure<RequestLocalizationOptions>(options => options.AddInitialRequestCultureProvider(new ContentRequestCultureProvider()));
-        services.Configure<CulturePickerOptions>(_shellConfiguration.GetSection("OrchardCore_ContentLocalization_CulturePickerOptions"));
+        // The 'OrchardCore_ContentLocalization_CulturePickerOptions' section is deprecated and will be removed in a future major version, use 'ContentLocalization:CulturePickerOptions' instead.
+        services.Configure<CulturePickerOptions>(_shellConfiguration.GetSectionCompat("ContentLocalization:CulturePickerOptions", "OrchardCore_ContentLocalization_CulturePickerOptions"));
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

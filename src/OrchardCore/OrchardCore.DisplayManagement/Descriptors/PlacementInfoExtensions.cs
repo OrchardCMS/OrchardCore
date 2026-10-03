@@ -19,13 +19,31 @@ public static class PlacementInfoExtensions
         }
         else if (second != null)
         {
+            // Determine which placement has location data
+            // Second overrides first if it has zones
+            var hasSecondLocation = second.Zones.Length > 0;
+
+            var zones = hasSecondLocation ? second.Zones : first.Zones;
+            var position = hasSecondLocation ? second.ExplicitPosition : first.ExplicitPosition;
+            var tabGrouping = hasSecondLocation ? second.Tab : first.Tab;
+            var group = hasSecondLocation ? second.Group : first.Group;
+            var cardGrouping = hasSecondLocation ? second.Card : first.Card;
+            var columnGrouping = hasSecondLocation ? second.Column : first.Column;
+            var isLayoutZone = hasSecondLocation ? second.IsLayoutZone() : first.IsLayoutZone();
+
             var combined = new PlacementInfo(
-                string.IsNullOrEmpty(second.Location) ? first.Location : second.Location,
                 $"{first.Source},{second.Source}",
                 string.IsNullOrEmpty(second.ShapeType) ? first.ShapeType : second.ShapeType,
                 string.IsNullOrEmpty(second.DefaultPosition) ? first.DefaultPosition : second.DefaultPosition,
                 CombineArrays(first.Alternates, second.Alternates),
-                CombineArrays(first.Wrappers, second.Wrappers)
+                CombineArrays(first.Wrappers, second.Wrappers),
+                zones,
+                position,
+                tabGrouping,
+                group,
+                cardGrouping,
+                columnGrouping,
+                isLayoutZone
             );
 
             return combined;

@@ -33,9 +33,7 @@ public sealed class ContainedPartDisplayDriver : ContentDisplayDriver
         // the query string contains a ListPart.ContainerId value, or when an
         // existing content item has ContainedPart value. In both cases the hidden field
         // needs to be rendered in the edit form to maintain the relationship with the parent.
-        var containedPart = model.As<ContainedPart>();
-
-        if (containedPart != null)
+        if (model.TryGet<ContainedPart>(out var containedPart))
         {
             return await BuildViewModelAsync(containedPart.ListContentItemId, containedPart.ListContentType, model.ContentType);
         }

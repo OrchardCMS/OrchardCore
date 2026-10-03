@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Tests.ResourceManagement;
@@ -17,7 +18,7 @@ public class ResourceDefinitionTests
     [InlineData("")]
     [InlineData("/tenant")]
     [InlineData("/virtualpath/tenant")]
-    public void GetScriptResourceWithUrl(string applicationPath)
+    public void GetScriptResourceWithUrl_Default_Succeeds(string applicationPath)
     {
         var resourceDefinition = _resourceManifest.DefineScript("foo")
             .SetUrl("~/foo.js", "~/foo.debug.js")
@@ -32,7 +33,7 @@ public class ResourceDefinitionTests
 
     [Theory]
     [InlineData("/base")]
-    public void GetScriptResourceWithBasePath(string basePath)
+    public void GetScriptResourceWithBasePath_Default_Succeeds(string basePath)
     {
         var resourceDefinition = _resourceManifest.DefineScript("foo")
             .SetUrl("~/foo.js", "~/foo.debug.js")
@@ -49,7 +50,7 @@ public class ResourceDefinitionTests
     [InlineData("")]
     [InlineData("/tenant")]
     [InlineData("/virtualpath/tenant")]
-    public void GetScriptResourceWithDebugUrl(string applicationPath)
+    public void GetScriptResourceWithDebugUrl_Default_Succeeds(string applicationPath)
     {
         var resourceDefinition = _resourceManifest.DefineScript("foo")
             .SetUrl("~/foo.js", "~/foo.debug.js")
@@ -66,7 +67,7 @@ public class ResourceDefinitionTests
     [InlineData("")]
     [InlineData("/tenant")]
     [InlineData("/virtualpath/tenant")]
-    public void GetScriptResourceWithCdnUrl(string applicationPath)
+    public void GetScriptResourceWithCdnUrl_Default_Succeeds(string applicationPath)
     {
         var resourceDefinition = _resourceManifest.DefineScript("foo")
             .SetUrl("~/foo.js", "~/foo.debug.js")
@@ -83,7 +84,7 @@ public class ResourceDefinitionTests
     [InlineData("")]
     [InlineData("/tenant")]
     [InlineData("/virtualpath/tenant")]
-    public void GetScriptResourceWithDebugCdnUrl(string applicationPath)
+    public void GetScriptResourceWithDebugCdnUrl_Default_Succeeds(string applicationPath)
     {
         var resourceDefinition = _resourceManifest.DefineScript("foo")
             .SetUrl("~/foo.js", "~/foo.debug.js")
@@ -105,7 +106,7 @@ public class ResourceDefinitionTests
     [InlineData("/tenant", "http://external.com/foo.js", "http://external.com/foo.js")]
     [InlineData("", "https://external.com/foo.js", "https://external.com/foo.js")]
     [InlineData("/tenant", "https://external.com/foo.js", "https://external.com/foo.js")]
-    public void GetLocalScriptResourceWithCdnBaseUrl(string applicationPath, string url, string expected)
+    public void GetLocalScriptResourceWithCdnBaseUrl_Default_Succeeds(string applicationPath, string url, string expected)
     {
         var resourceDefinition = _resourceManifest.DefineScript("foo")
             .SetUrl(url, url);
@@ -121,7 +122,7 @@ public class ResourceDefinitionTests
     [InlineData("")]
     [InlineData("/tenant")]
     [InlineData("/virtualpath/tenant")]
-    public void GetScriptResourceWithInlineContent(string applicationPath)
+    public void GetScriptResourceWithInlineContent_Default_Succeeds(string applicationPath)
     {
         var resourceDefinition = _resourceManifest.DefineScript("foo")
             .SetInnerContent("console.log('foo');");
@@ -138,7 +139,7 @@ public class ResourceDefinitionTests
     [InlineData("")]
     [InlineData("/tenant")]
     [InlineData("/virtualpath/tenant")]
-    public void GetStyleResourceWithUrl(string applicationPath)
+    public void GetStyleResourceWithUrl_Default_Succeeds(string applicationPath)
     {
         var resourceDefinition = _resourceManifest.DefineStyle("foo")
             .SetUrl("~/foo.css", "~/foo.debug.css")
@@ -148,7 +149,7 @@ public class ResourceDefinitionTests
         var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
 
         Assert.Equal("link", tagBuilder.TagName);
-        Assert.Equal("text/css", tagBuilder.Attributes["type"]);
+        Assert.Equal(MediaTypeNames.Text.Css, tagBuilder.Attributes["type"]);
         Assert.Equal("stylesheet", tagBuilder.Attributes["rel"]);
         Assert.Equal($"{applicationPath}/foo.css", tagBuilder.Attributes["href"]);
     }
@@ -157,7 +158,7 @@ public class ResourceDefinitionTests
     [InlineData("")]
     [InlineData("/tenant")]
     [InlineData("/virtualpath/tenant")]
-    public void GetStyleResourceWithDebugUrl(string applicationPath)
+    public void GetStyleResourceWithDebugUrl_Default_Succeeds(string applicationPath)
     {
         var resourceDefinition = _resourceManifest.DefineStyle("foo")
             .SetUrl("~/foo.css", "~/foo.debug.css")
@@ -167,7 +168,7 @@ public class ResourceDefinitionTests
         var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
 
         Assert.Equal("link", tagBuilder.TagName);
-        Assert.Equal("text/css", tagBuilder.Attributes["type"]);
+        Assert.Equal(MediaTypeNames.Text.Css, tagBuilder.Attributes["type"]);
         Assert.Equal("stylesheet", tagBuilder.Attributes["rel"]);
         Assert.Equal($"{applicationPath}/foo.debug.css", tagBuilder.Attributes["href"]);
     }
@@ -176,7 +177,7 @@ public class ResourceDefinitionTests
     [InlineData("")]
     [InlineData("/tenant")]
     [InlineData("/virtualpath/tenant")]
-    public void GetStyleResourceWithCdnUrl(string applicationPath)
+    public void GetStyleResourceWithCdnUrl_Default_Succeeds(string applicationPath)
     {
         var resourceDefinition = _resourceManifest.DefineStyle("foo")
             .SetUrl("~/foo.css", "~/foo.debug.css")
@@ -186,7 +187,7 @@ public class ResourceDefinitionTests
         var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
 
         Assert.Equal("link", tagBuilder.TagName);
-        Assert.Equal("text/css", tagBuilder.Attributes["type"]);
+        Assert.Equal(MediaTypeNames.Text.Css, tagBuilder.Attributes["type"]);
         Assert.Equal("stylesheet", tagBuilder.Attributes["rel"]);
         Assert.Equal("https://cdn.tld/foo.css", tagBuilder.Attributes["href"]);
     }
@@ -200,7 +201,7 @@ public class ResourceDefinitionTests
     [InlineData("/tenant", "http://external.com/foo.css", "http://external.com/foo.css")]
     [InlineData("", "https://external.com/foo.css", "https://external.com/foo.css")]
     [InlineData("/tenant", "https://external.com/foo.css", "https://external.com/foo.css")]
-    public void GetLocalStyleResourceWithCdnBaseUrl(string applicationPath, string url, string expected)
+    public void GetLocalStyleResourceWithCdnBaseUrl_Default_Succeeds(string applicationPath, string url, string expected)
     {
         var resourceDefinition = _resourceManifest.DefineStyle("foo")
             .SetUrl(url, url);
@@ -209,7 +210,7 @@ public class ResourceDefinitionTests
         var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
 
         Assert.Equal("link", tagBuilder.TagName);
-        Assert.Equal("text/css", tagBuilder.Attributes["type"]);
+        Assert.Equal(MediaTypeNames.Text.Css, tagBuilder.Attributes["type"]);
         Assert.Equal("stylesheet", tagBuilder.Attributes["rel"]);
         Assert.Equal(expected, tagBuilder.Attributes["href"]);
     }
@@ -218,7 +219,7 @@ public class ResourceDefinitionTests
     [InlineData("")]
     [InlineData("/tenant")]
     [InlineData("/virtualpath/tenant")]
-    public void GetStyleResourceWithDebugCdnUrl(string applicationPath)
+    public void GetStyleResourceWithDebugCdnUrl_Default_Succeeds(string applicationPath)
     {
         var resourceDefinition = _resourceManifest.DefineStyle("foo")
             .SetUrl("~/foo.css", "~/foo.debug.css")
@@ -228,7 +229,7 @@ public class ResourceDefinitionTests
         var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
 
         Assert.Equal("link", tagBuilder.TagName);
-        Assert.Equal("text/css", tagBuilder.Attributes["type"]);
+        Assert.Equal(MediaTypeNames.Text.Css, tagBuilder.Attributes["type"]);
         Assert.Equal("stylesheet", tagBuilder.Attributes["rel"]);
         Assert.Equal("https://cdn.tld/foo.debug.css", tagBuilder.Attributes["href"]);
     }
@@ -237,7 +238,7 @@ public class ResourceDefinitionTests
     [InlineData("")]
     [InlineData("/tenant")]
     [InlineData("/virtualpath/tenant")]
-    public void GetStyleResourceWithAttributes(string applicationPath)
+    public void GetStyleResourceWithAttributes_Default_Succeeds(string applicationPath)
     {
         var resourceDefinition = _resourceManifest.DefineStyle("foo")
             .SetUrl("~/foo.css", "~/foo.debug.css")
@@ -248,7 +249,7 @@ public class ResourceDefinitionTests
         var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
 
         Assert.Equal("link", tagBuilder.TagName);
-        Assert.Equal("text/css", tagBuilder.Attributes["type"]);
+        Assert.Equal(MediaTypeNames.Text.Css, tagBuilder.Attributes["type"]);
         Assert.Equal("stylesheet", tagBuilder.Attributes["rel"]);
         Assert.Equal("foo", tagBuilder.Attributes["id"]);
         Assert.Equal("all", tagBuilder.Attributes["media"]);
@@ -258,7 +259,7 @@ public class ResourceDefinitionTests
     [InlineData("")]
     [InlineData("/tenant")]
     [InlineData("/virtualpath/tenant")]
-    public void GetStyleResourceWithInlineContent(string applicationPath)
+    public void GetStyleResourceWithInlineContent_Default_Succeeds(string applicationPath)
     {
         var resourceDefinition = _resourceManifest.DefineStyle("foo")
             .SetInnerContent("body { background-color: white; }");

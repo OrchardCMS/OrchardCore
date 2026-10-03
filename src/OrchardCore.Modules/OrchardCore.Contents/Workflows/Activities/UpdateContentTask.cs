@@ -11,6 +11,7 @@ using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
+using YesSql;
 
 namespace OrchardCore.Contents.Workflows.Activities;
 
@@ -19,6 +20,7 @@ public class UpdateContentTask : ContentTask
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
     private readonly JavaScriptEncoder _javaScriptEncoder;
+    private readonly ISession _session;
 
     public UpdateContentTask(
         IContentManager contentManager,
@@ -26,12 +28,14 @@ public class UpdateContentTask : ContentTask
         IWorkflowExpressionEvaluator expressionEvaluator,
         IWorkflowScriptEvaluator scriptEvaluator,
         IStringLocalizer<UpdateContentTask> localizer,
-        JavaScriptEncoder javaScriptEncoder)
+        JavaScriptEncoder javaScriptEncoder,
+        ISession session)
         : base(contentManager, scriptEvaluator, localizer)
     {
         _updateModelAccessor = updateModelAccessor;
         _expressionEvaluator = expressionEvaluator;
         _javaScriptEncoder = javaScriptEncoder;
+        _session = session;
     }
 
     public override string Name => nameof(UpdateContentTask);
@@ -63,9 +67,7 @@ public class UpdateContentTask : ContentTask
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"], S["Failed"]);
-    }
+        => Outcome(S["Done"], S["Failed"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -156,7 +158,7 @@ public class UpdateContentTask : ContentTask
             workflowContext.Properties[ContentEventConstants.ContentItemInputKey] = contentItem;
             workflowContext.LastResult = contentItem;
 
-            return Outcomes("Done");
+            return Outcome("Done");
         }
 
         if (inlineEventOfSameContentItemId)
@@ -168,6 +170,8 @@ public class UpdateContentTask : ContentTask
 
         workflowContext.LastResult = result;
 
-        return Outcomes("Failed");
+        await _session.CancelAsync();
+
+        return Outcome("Failed");
     }
 }

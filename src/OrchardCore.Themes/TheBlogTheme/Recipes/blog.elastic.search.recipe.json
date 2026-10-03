@@ -13,7 +13,7 @@
     {
       "name": "feature",
       "enable": [
-        "OrchardCore.Search.Elasticsearch",
+        "OrchardCore.Elasticsearch",
         "OrchardCore.Search"
       ]
     },

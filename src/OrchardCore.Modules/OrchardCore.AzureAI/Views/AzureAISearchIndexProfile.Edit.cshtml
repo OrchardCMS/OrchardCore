@@ -1,0 +1,10 @@
+@model AzureAISettingsIndexProfileViewModel
+
+<div class="ocat-wrapper" asp-validation-class-for="AnalyzerName">
+    <label asp-for="AnalyzerName" class="ocat-label">@T["Analyzer"]</label>
+    <div class="ocat-end">
+    <select asp-for="AnalyzerName" asp-items="Model.Analyzers" class="form-select"></select>
+    <span asp-validation-for="AnalyzerName" class="text-danger"></span>
+    </div>
+</div>
+

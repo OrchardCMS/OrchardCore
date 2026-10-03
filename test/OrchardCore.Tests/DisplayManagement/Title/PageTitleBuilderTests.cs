@@ -20,7 +20,7 @@ public class PageTitleBuilderTests
     }
 
     [Fact]
-    public void GenerateTitleEmpty()
+    public void GenerateTitleEmpty_Default_Succeeds()
     {
         // Arrange
         var pageTitleBuilder = _serviceProvider.GetService<IPageTitleBuilder>();
@@ -30,7 +30,7 @@ public class PageTitleBuilderTests
     }
 
     [Fact]
-    public void FixedTitleSet()
+    public void FixedTitleSet_Default_Succeeds()
     {
         // Arrange
         var pageTitleBuilder = _serviceProvider.GetService<IPageTitleBuilder>();
@@ -41,7 +41,7 @@ public class PageTitleBuilderTests
     }
 
     [Fact]
-    public void FixedTitleClearAndCheck()
+    public void FixedTitleClearAndCheck_Default_Succeeds()
     {
         // Arrange
         var pageTitleBuilder = _serviceProvider.GetService<IPageTitleBuilder>();
@@ -53,7 +53,7 @@ public class PageTitleBuilderTests
     }
 
     [Fact]
-    public void FixedTitleAddSegment()
+    public void FixedTitleAddSegment_Default_Succeeds()
     {
         // Arrange
         var pageTitleBuilder = _serviceProvider.GetService<IPageTitleBuilder>();
@@ -65,7 +65,7 @@ public class PageTitleBuilderTests
     }
 
     [Fact]
-    public void TitleAddSegment()
+    public void TitleAddSegment_Default_Succeeds()
     {
         // Arrange
         var pageTitleBuilder = _serviceProvider.GetService<IPageTitleBuilder>();
@@ -77,7 +77,7 @@ public class PageTitleBuilderTests
     }
 
     [Fact]
-    public void TitleMultiAddSegment()
+    public void TitleMultiAddSegment_Default_Succeeds()
     {
         // Arrange
         var pageTitleBuilder = _serviceProvider.GetService<IPageTitleBuilder>();
@@ -91,7 +91,7 @@ public class PageTitleBuilderTests
     }
 
     [Fact]
-    public void TitleAddAndClear()
+    public void TitleAddAndClear_Default_Succeeds()
     {
         // Arrange
         var pageTitleBuilder = _serviceProvider.GetService<IPageTitleBuilder>();
@@ -105,7 +105,7 @@ public class PageTitleBuilderTests
     }
 
     [Fact]
-    public void TitleMultiGenerateTitle()
+    public void TitleMultiGenerateTitle_Default_Succeeds()
     {
         // Arrange
         var pageTitleBuilder = _serviceProvider.GetService<IPageTitleBuilder>();
@@ -120,7 +120,7 @@ public class PageTitleBuilderTests
     }
 
     [Fact]
-    public void TitleAddSegments()
+    public void TitleAddSegments_Default_Succeeds()
     {
         // Arrange
         var pageTitleBuilder = (PageTitleBuilder)_serviceProvider.GetService<IPageTitleBuilder>();

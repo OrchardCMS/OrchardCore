@@ -1,3 +1,4 @@
+using Fluid;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
@@ -9,15 +10,18 @@ namespace OrchardCore.Media.AmazonS3.Services;
 
 internal sealed class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOptions>
 {
+    private readonly FluidParser _fluidParser;
     private readonly IShellConfiguration _shellConfiguration;
     private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;
 
     public AwsStorageOptionsConfiguration(
+        FluidParser fluidParser,
         IShellConfiguration shellConfiguration,
         ShellSettings shellSettings,
         ILogger<AwsStorageOptionsConfiguration> logger)
     {
+        _fluidParser = fluidParser;
         _shellConfiguration = shellConfiguration;
         _shellSettings = shellSettings;
         _logger = logger;
@@ -25,9 +29,9 @@ internal sealed class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStor
 
     public void Configure(AwsStorageOptions options)
     {
-        options.BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3, _shellConfiguration, _logger);
+        options.BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3, AmazonS3Constants.ConfigSections.LegacyAmazonS3, _shellConfiguration, _logger);
 
-        var parser = new FluidOptionsParser<AwsStorageOptions>(_shellSettings);
+        var parser = new FluidOptionsParser<AwsStorageOptions>(_fluidParser, _shellSettings);
 
         try
         {

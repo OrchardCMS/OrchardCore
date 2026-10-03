@@ -15,8 +15,8 @@ public static class ServiceCollectionExtensions
     /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
     public static IServiceCollection AddSecrets(this IServiceCollection services)
     {
-        services.AddScoped<ISecretManager, SecretManager>();
-        services.AddScoped<ISecretEncryptionService, SecretEncryptionService>();
+        services.AddSingleton<ISecretManager, SecretManager>();
+        services.AddSingleton<ISecretEncryptionService, SecretEncryptionService>();
 
         return services;
     }
@@ -29,7 +29,7 @@ public static class ServiceCollectionExtensions
     /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
     public static IServiceCollection AddSecretStore<T>(this IServiceCollection services) where T : class, ISecretStore
     {
-        services.AddScoped<ISecretStore, T>();
+        services.AddSingleton<ISecretStore, T>();
 
         return services;
     }
@@ -42,7 +42,7 @@ public static class ServiceCollectionExtensions
     /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
     public static IServiceCollection AddSecretType<T>(this IServiceCollection services) where T : class, ISecretTypeProvider
     {
-        services.AddScoped<ISecretTypeProvider, T>();
+        services.AddSingleton<ISecretTypeProvider, T>();
 
         return services;
     }

@@ -3,10 +3,11 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Title.Models;
 
 namespace OrchardCore.Tests.ContentManagement;
+
 public class ContentElementTests
 {
     [Fact]
-    public void Get_WhenCastingBaseTypeThenConcreteType_ReturnNewInstance()
+    public void Get_CastingBaseTypeThenConcreteTypeReturnNewInstance_Succeeds()
     {
         var contentItem = new ContentItem();
         var titlePart = new TitlePart
@@ -37,7 +38,7 @@ public class ContentElementTests
     }
 
     [Fact]
-    public void Get_WhenCastingConcreteTypeThenBaseType_ReturnNewInstance()
+    public void Get_CastingConcreteTypeThenBaseTypeReturnNewInstance_Succeeds()
     {
         var contentItem = new ContentItem();
         var titlePart = new TitlePart
@@ -68,7 +69,7 @@ public class ContentElementTests
     }
 
     [Fact]
-    public void Apply_WhenCalledWithNullProperty_SetThePropertyToNull()
+    public void Apply_CalledWithNullPropertySetThePropertyToNull_Succeeds()
     {
         var contentItem = new ContentItem();
 
@@ -77,7 +78,7 @@ public class ContentElementTests
             Minutes = -15,
         });
 
-        var instance = contentItem.As<TestContentPart>();
+        var instance = contentItem.GetOrCreate<TestContentPart>();
 
         Assert.NotNull(instance);
         Assert.Equal(-15, instance.Minutes);

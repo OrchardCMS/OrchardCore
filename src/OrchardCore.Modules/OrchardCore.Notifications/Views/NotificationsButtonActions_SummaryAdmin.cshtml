@@ -1,7 +1,7 @@
 @model NotificationViewModel
 @using OrchardCore.Entities
 @{
-    var readInfo = Model.Notification.As<NotificationReadInfo>();
+    var readInfo = Model.Notification.GetOrCreate<NotificationReadInfo>();
 }
 @if (readInfo.IsRead)
 {

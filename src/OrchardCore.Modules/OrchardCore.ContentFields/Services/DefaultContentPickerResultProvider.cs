@@ -61,6 +61,7 @@ public class DefaultContentPickerResultProvider : IContentPickerResultProvider
             {
                 results.Add(new ContentPickerResult
                 {
+                    ContentItem = contentItem,
                     ContentItemId = contentItem.ContentItemId,
                     DisplayText = await _templateManager.RenderStringAsync(settings.TitlePattern, NullEncoder.Default, contentItem,
                         new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(contentItem) }),

@@ -11,13 +11,25 @@ public static class AuthorizationServiceExtensions
         return AuthorizeAsync(service, user, permission, null);
     }
 
-    public static async Task<bool> AuthorizeAsync(this IAuthorizationService service, ClaimsPrincipal user, Permission permission, object resource)
+    public static Task<bool> AuthorizeAsync(this IAuthorizationService service, ClaimsPrincipal user, Permission permission, object resource)
     {
         if (user == null)
         {
-            return false;
+            return Task.FromResult(false);
         }
 
-        return (await service.AuthorizeAsync(user, resource, new PermissionRequirement(permission))).Succeeded;
+        var task = service.AuthorizeAsync(user, resource, new PermissionRequirement(permission));
+
+        if (task.IsCompletedSuccessfully)
+        {
+            return Task.FromResult(task.Result.Succeeded);
+        }
+
+        return Awaited(task);
+
+        static async Task<bool> Awaited(Task<AuthorizationResult> task)
+        {
+            return (await task).Succeeded;
+        }
     }
 }

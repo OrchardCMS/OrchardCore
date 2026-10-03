@@ -1,6 +1,5 @@
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
@@ -8,7 +7,7 @@ namespace OrchardCore.ContentTypes.Deployment;
 
 public sealed class DeleteContentDefinitionDeploymentStepDriver : DisplayDriver<DeploymentStep, DeleteContentDefinitionDeploymentStep>
 {
-    private static readonly char[] _separator = [' ', ','];
+    private static readonly char[] s_separator = [' ', ','];
 
     public override Task<IDisplayResult> DisplayAsync(DeleteContentDefinitionDeploymentStep step, BuildDisplayContext context)
     {
@@ -34,8 +33,8 @@ public sealed class DeleteContentDefinitionDeploymentStepDriver : DisplayDriver<
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        step.ContentTypes = model.ContentTypes.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
-        step.ContentParts = model.ContentParts.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
+        step.ContentTypes = model.ContentTypes.Split(s_separator, StringSplitOptions.RemoveEmptyEntries);
+        step.ContentParts = model.ContentParts.Split(s_separator, StringSplitOptions.RemoveEmptyEntries);
 
         return Edit(step, context);
     }

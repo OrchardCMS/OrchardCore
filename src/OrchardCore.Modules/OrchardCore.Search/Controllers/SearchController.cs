@@ -60,11 +60,23 @@ public sealed class SearchController : Controller
         _logger = logger;
     }
 
+    [HttpGet]
     [Route("search/{index?}")]
     public async Task<IActionResult> Search(string index, string terms, PagerSlimParameters pagerParameters)
     {
         var siteSettings = await _siteService.GetSiteSettingsAsync();
-        var searchSettings = siteSettings.As<SearchSettings>();
+        var hasSearchSettings = siteSettings.TryGet<SearchSettings>(out var searchSettings);
+
+        string pageTitle = null;
+        string placeholder = null;
+
+        if (hasSearchSettings)
+        {
+            pageTitle = searchSettings?.PageTitle;
+            placeholder = searchSettings?.Placeholder;
+        }
+
+        var defaultIndexProfileName = searchSettings?.DefaultIndexProfileName;
 
         IndexProfile indexProfile = null;
 
@@ -73,9 +85,9 @@ public sealed class SearchController : Controller
         if (!hasIndexName)
         {
             // Try to find the default index configured in site search settings.
-            if (!string.IsNullOrEmpty(searchSettings.DefaultIndexProfileName))
+            if (!string.IsNullOrEmpty(defaultIndexProfileName))
             {
-                indexProfile = await _indexProfileStore.FindByNameAsync(searchSettings.DefaultIndexProfileName);
+                indexProfile = await _indexProfileStore.FindByNameAsync(defaultIndexProfileName);
             }
 
             if (indexProfile is null)
@@ -111,17 +123,23 @@ public sealed class SearchController : Controller
 
         if (string.IsNullOrWhiteSpace(terms))
         {
-            return View(new SearchIndexViewModel()
+            var model = new SearchIndexViewModel()
             {
                 Index = indexProfile.Name,
-                PageTitle = searchSettings.PageTitle,
                 SearchForm = new SearchFormViewModel()
                 {
                     Terms = terms,
-                    Placeholder = searchSettings.Placeholder,
                     Index = indexProfile.Name,
                 },
-            });
+            };
+
+            if (hasSearchSettings)
+            {
+                model.PageTitle = pageTitle;
+                model.SearchForm.Placeholder = placeholder;
+            }
+
+            return View(model);
         }
 
         var pager = new PagerSlim(pagerParameters, siteSettings.PageSize);
@@ -156,14 +174,12 @@ public sealed class SearchController : Controller
         {
             await _searchHandlers.InvokeAsync((handler, context) => handler.SearchedAsync(context), searchContext, _logger);
 
-            return View(new SearchIndexViewModel()
+            var model = new SearchIndexViewModel()
             {
                 Index = indexProfile.Name,
-                PageTitle = searchSettings.PageTitle,
                 SearchForm = new SearchFormViewModel()
                 {
                     Terms = terms,
-                    Placeholder = searchSettings.Placeholder,
                     Index = indexProfile.Name,
                 },
                 SearchResults = new SearchResultsViewModel()
@@ -171,7 +187,15 @@ public sealed class SearchController : Controller
                     Index = indexProfile.Name,
                     ContentItems = [],
                 },
-            });
+            };
+
+            if (hasSearchSettings)
+            {
+                model.PageTitle = pageTitle;
+                model.SearchForm.Placeholder = placeholder;
+            }
+
+            return View(model);
         }
 
         // Query the database to retrieve content items.
@@ -206,7 +230,7 @@ public sealed class SearchController : Controller
 
         pager.After = null;
 
-        if (containedItems.Count() == pager.PageSize + 1)
+        if (containedItems.Count == pager.PageSize + 1)
         {
             pager.After = (size - 1).ToString();
         }
@@ -214,12 +238,10 @@ public sealed class SearchController : Controller
         var shape = new SearchIndexViewModel()
         {
             Index = indexProfile.Name,
-            PageTitle = searchSettings.PageTitle,
             Terms = terms,
             SearchForm = new SearchFormViewModel()
             {
                 Terms = terms,
-                Placeholder = searchSettings.Placeholder,
                 Index = indexProfile.Name,
             },
             SearchResults = new SearchResultsViewModel()
@@ -236,6 +258,12 @@ public sealed class SearchController : Controller
                 { nameof(index), indexProfile.Name },
             }),
         };
+
+        if (hasSearchSettings)
+        {
+            shape.PageTitle = pageTitle;
+            shape.SearchForm.Placeholder = placeholder;
+        }
 
         return View(shape);
     }

@@ -33,7 +33,12 @@ public static class ServiceCollectionExtensions
     /// <param name="implementationType"></param>
     /// <param name="action"></param>
     /// <returns></returns>
-    public static IServiceCollection AddIndexingSource<TManager, TDocumentManager, TNamingProvider>(this IServiceCollection services, string providerName, string implementationType, Action<IndexingOptionsEntry> action = null)
+    public static IServiceCollection AddIndexingSource<TManager, TDocumentManager, TNamingProvider>(
+        this IServiceCollection services,
+        string providerName,
+        string implementationType,
+        Action<IndexingOptionsEntry> action = null,
+        Action<IndexingProviderOptionsEntry> providerAction = null)
         where TManager : class, IIndexManager
         where TDocumentManager : class, IDocumentIndexManager
         where TNamingProvider : class, IIndexNameProvider
@@ -45,7 +50,7 @@ public static class ServiceCollectionExtensions
 
         services.Configure<IndexingOptions>(options =>
         {
-            options.AddIndexingSource(providerName, implementationType, action);
+            options.AddIndexingSource(providerName, implementationType, action, providerAction);
         });
 
         return services;
@@ -64,7 +69,12 @@ public static class ServiceCollectionExtensions
     /// <param name="implementationType"></param>
     /// <param name="action"></param>
     /// <returns></returns>
-    public static IServiceCollection AddIndexingSource<TManager, TDocumentManager, TNamingProvider, TOptions>(this IServiceCollection services, string providerName, string implementationType, Action<IndexingOptionsEntry> action = null)
+    public static IServiceCollection AddIndexingSource<TManager, TDocumentManager, TNamingProvider, TOptions>(
+        this IServiceCollection services,
+        string providerName,
+        string implementationType,
+        Action<IndexingOptionsEntry> action = null,
+        Action<IndexingProviderOptionsEntry> providerAction = null)
         where TManager : class, IIndexManager
         where TDocumentManager : class, IDocumentIndexManager
         where TNamingProvider : class, IIndexNameProvider
@@ -83,7 +93,7 @@ public static class ServiceCollectionExtensions
 
                 if (o.Value.ConfigurationExists())
                 {
-                    options.AddIndexingSource(providerName, implementationType, action);
+                    options.AddIndexingSource(providerName, implementationType, action, providerAction);
                 }
             });
 

@@ -1,27 +1,27 @@
 using Microsoft.Extensions.Options;
 using OrchardCore.Email.Azure.Models;
-using OrchardCore.Email.Core.Services;
+using OrchardCore.Email.Services;
 
 namespace OrchardCore.Email.Azure.Services;
 
 public sealed class AzureEmailProviderOptionsConfigurations : IConfigureOptions<EmailProviderOptions>
 {
-    private readonly AzureEmailOptions _azureOptions;
-    private readonly DefaultAzureEmailOptions _defaultAzureOptions;
+    private readonly IOptionsMonitor<AzureEmailOptions> _azureOptions;
+    private readonly IOptionsMonitor<DefaultAzureEmailOptions> _defaultAzureOptions;
 
     public AzureEmailProviderOptionsConfigurations(
-        IOptions<AzureEmailOptions> azureOptions,
-        IOptions<DefaultAzureEmailOptions> defaultAzureOptions)
+        IOptionsMonitor<AzureEmailOptions> azureOptions,
+        IOptionsMonitor<DefaultAzureEmailOptions> defaultAzureOptions)
     {
-        _azureOptions = azureOptions.Value;
-        _defaultAzureOptions = defaultAzureOptions.Value;
+        _azureOptions = azureOptions;
+        _defaultAzureOptions = defaultAzureOptions;
     }
 
     public void Configure(EmailProviderOptions options)
     {
         ConfigureTenantProvider(options);
 
-        if (_defaultAzureOptions.IsEnabled)
+        if (_defaultAzureOptions.CurrentValue.IsEnabled)
         {
             // Only configure the default provider, if settings are provided by the configuration provider.
             ConfigureDefaultProvider(options);
@@ -32,7 +32,7 @@ public sealed class AzureEmailProviderOptionsConfigurations : IConfigureOptions<
     {
         var typeOptions = new EmailProviderTypeOptions(typeof(AzureEmailProvider))
         {
-            IsEnabled = _azureOptions.IsEnabled,
+            IsEnabled = _azureOptions.CurrentValue.IsEnabled,
         };
 
         options.TryAddProvider(AzureEmailProvider.TechnicalName, typeOptions);

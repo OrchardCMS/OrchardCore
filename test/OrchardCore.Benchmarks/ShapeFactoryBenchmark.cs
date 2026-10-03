@@ -20,13 +20,13 @@ namespace OrchardCore.Benchmarks;
 [MemoryDiagnoser]
 public class ShapeFactoryBenchmark
 {
-    private static readonly FilterArguments _filterArguments = new FilterArguments().Add("utc", new DateTimeValue(DateTime.UtcNow)).Add("format", StringValue.Create("MMMM dd, yyyy"));
-    private static readonly FluidValue _input = StringValue.Create("DateTime");
-    private static readonly TemplateContext _templateContext;
+    private static readonly FilterArguments s_filterArguments = new FilterArguments().Add("utc", new DateTimeValue(DateTime.UtcNow)).Add("format", StringValue.Create("MMMM dd, yyyy"));
+    private static readonly FluidValue s_input = StringValue.Create("DateTime");
+    private static readonly TemplateContext s_templateContext;
 
     static ShapeFactoryBenchmark()
     {
-        _templateContext = new TemplateContext();
+        s_templateContext = new TemplateContext();
         var defaultShapeTable = new ShapeTable
         (
             new Dictionary<string, ShapeDescriptor>(),
@@ -39,7 +39,7 @@ public class ShapeFactoryBenchmark
             shapeTableManager: new TestShapeTableManager(defaultShapeTable),
             themeManager: new MockThemeManager(new ExtensionInfo("path", new ManifestInfo(new ModuleAttribute()), (x, y) => [])));
 
-        _templateContext.AmbientValues["DisplayHelper"] = new DisplayHelper(null, shapeFactory, null);
+        s_templateContext.AmbientValues["DisplayHelper"] = new DisplayHelper(null, shapeFactory, null);
     }
 
     // TODO this benchmark is meaningless as the benchmark noops as the input is not a shape.
@@ -48,7 +48,7 @@ public class ShapeFactoryBenchmark
     public async Task OriginalShapeRender()
 #pragma warning restore CA1822 // Mark members as static
     {
-        await ShapeRenderOriginal(_input, _filterArguments, _templateContext);
+        await ShapeRenderOriginal(s_input, s_filterArguments, s_templateContext);
     }
 
 

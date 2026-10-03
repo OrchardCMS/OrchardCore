@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Admin;
@@ -38,7 +39,7 @@ public sealed class UserPickerAdminController : Controller
             return BadRequest("Part, field and contentType are required parameters");
         }
 
-        if (!await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, contentType, User.Identity.Name))
+        if (!await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, contentType, User.FindFirstValue(ClaimTypes.NameIdentifier)))
         {
             return Forbid();
         }

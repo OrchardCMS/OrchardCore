@@ -77,9 +77,7 @@ public sealed class Migrations : DataMigration
     }
 
     // Migrate null LocalizedContentItemIndex Latest column.
-#pragma warning disable CA1822 // Mark members as static
-    public int UpdateFrom3()
-#pragma warning restore CA1822 // Mark members as static
+    public static int UpdateFrom3()
     {
         // Defer this until after the subsequent migrations have succeeded as the schema has changed.
         ShellScope.AddDeferredTask(async scope =>

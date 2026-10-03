@@ -14,7 +14,7 @@ The below table lists the different code/features areas and their owners:
 | [Hisham Bin Ateya](https://github.com/hishamco)            | Cultures, Email, Localization, RTL, Translation, UI |
 | [Jean-Philippe Tissot](https://github.com/jptissot)        | Localization, Tests                                 |
 | [Larrem Panganiban](https://github.com/larremp)            | Workshops                                           |
-| [Lukas Kabrt](https://github.com/lukaskabrt)               | Po files extractor                                  |
+| [Lukas Kabrt](https://github.com/lukaskabrt)               | PO files extractor                                  |
 | [Matias Molleja](https://github.com/matiasmolleja)         | Media                                               |
 | [Michael Petrinolis](https://github.com/MichaelPetrinolis) | External authentication providers                   |
 | [Zoltán Lehóczky](https://github.com/Piedone)              | PublishLater, Preview packages                      |

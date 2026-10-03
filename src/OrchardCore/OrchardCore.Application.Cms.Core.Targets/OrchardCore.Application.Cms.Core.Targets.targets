@@ -7,18 +7,28 @@
     <None Remove="App_Data\**;Localization\**" />
   </ItemGroup>
 
+  <!--
+    Keeps the global tenants configuration files in the project, which are only read by the application, so that Visual Studio
+    provides IntelliSense and validation for them from the configuration schemas of the packages. They are not copied to the output,
+    the 'App_Data' folder being published as a whole below.
+  -->
+  <ItemGroup>
+    <None Include="App_Data\appsettings.json;App_Data\appsettings.*.json" CopyToOutputDirectory="Never" CopyToPublishDirectory="Never" />
+  </ItemGroup>
+
   <ItemGroup>
     <ResolvedFileToPublish Include="App_Data\**" Exclude="$(DefaultItemExcludes);App_Data\**\*.log">
       <RelativePath>App_Data\%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
     </ResolvedFileToPublish>
   </ItemGroup>
 
-  <Target Name="MakeWebRootFolder" BeforeTargets="MakeLocalizationFolder" Condition="!Exists('wwwroot/.placeholder')">
-    <WriteLinesToFile Lines="" Encoding="Unicode" File="wwwroot/.placeholder" />
-  </Target>
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+    <Folder Include="Localization\" />
+  </ItemGroup>
 
-  <Target Name="MakeLocalizationFolder" BeforeTargets="Build" Condition="!Exists('Localization/.placeholder')">
-    <WriteLinesToFile Lines="" Encoding="Unicode" File="Localization/.placeholder" />
+  <Target Name="EnsureRequiredDirectoriesExist" BeforeTargets="Build;Publish">
+    <MakeDir Directories="$(MSBuildProjectDirectory)\wwwroot;$(MSBuildProjectDirectory)\Localization" />
   </Target>
 
   <Target

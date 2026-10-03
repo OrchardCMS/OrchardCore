@@ -1,10 +1,10 @@
-@using OrchardCore.Environment.Shell
 @using OrchardCore.Themes.Services
 
+@inject IOptions<AdminOptions> AdminOptions
 @inject ThemeTogglerService ThemeTogglerService
 
 <!DOCTYPE html>
-<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-bs-theme="@await ThemeTogglerService.CurrentTheme()" data-tenant="@ThemeTogglerService.CurrentTenant">
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-bs-theme="@await ThemeTogglerService.CurrentTheme()" data-tenant="@ThemeTogglerService.CurrentTenant" data-admin-prefix="@Url.Content("~/" + AdminOptions.Value.AdminUrlPrefix)">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <meta charset="utf-8">
@@ -27,7 +27,7 @@
         <style asp-name="TheAdminLogin" asp-src="~/TheAdmin/css/login.min.css" debug-src="~/TheAdmin/css/login.css" at="Foot"></style>
     }
 
-    <script asp-name="font-awesome" at="Foot" version="7"></script>
+    <style asp-name="font-awesome" at="Head" version="7"></style>
 
     <resources type="Header" />
     @await RenderSectionAsync("HeadMeta", required: false)

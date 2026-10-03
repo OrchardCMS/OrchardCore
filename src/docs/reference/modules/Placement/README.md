@@ -46,6 +46,109 @@ Currently you can filter shapes by:
 }
 ```
 
+The same distinction applies to editors. Content part editors are wrapped in a `ContentPart_Edit` shape, so hiding or moving the whole editor row in the admin UI should target `ContentPart_Edit`, not only the inner part editor shape.
+
+For example, to hide the `Services` named part on the `LandingPage` editor:
+
+```json
+{
+  "ContentPart_Edit": [{
+    "place":"-",
+    "differentiator":"LandingPage-Services"
+  }]
+}
+```
+
+If you target only an inner editor shape such as `BagPart_Edit`, the wrapper may still render unless its child shapes are also removed.
+
+## Differentiator patterns
+
+The differentiator to use depends on **which shape type you are targeting**, not just on the content part or field you are thinking about.
+
+| Shape type | Typical usage | Differentiator pattern | Example |
+|---|---|---|---|
+| `BagPart`, `FlowPart`, `TitlePart` | Part display shape, or inner `XxxPart_Edit` shape from a part driver | `{PartName}` | `Services`, `FlowPart`, `TitlePart` |
+| `ContentPart` | Display wrapper for parts without their own display driver | `{PartName}` | `GalleryPart` |
+| `ContentPart_Edit` | Admin editor wrapper for a content part | `{ContentType}-{PartName}` | `PlacementTest-BagPart`, `LandingPage-Services`, `Article-TitlePart` |
+| `TextField`, `HtmlField`, `ContentPickerField`, etc. | Standard field display/editor shapes | `{PartName}-{FieldName}` | `Article-Subtitle`, `Address-City` |
+| `TextField_Display`, `HtmlField_Display`, etc. | Field display-mode shapes | `{PartName}-{FieldName}-{FieldType}_Display__{DisplayMode}` | `Blog-Subtitle-TextField_Display__Header` |
+
+`PartName` is the name of the attached part. For non-named parts this is usually the part type, such as `BagPart`, `FlowPart`, `WidgetsListPart`, or `TitlePart`. For named parts, use the custom part name such as `Services`.
+
+### Examples by shape type
+
+#### Content part display shapes
+
+To hide a named `Services` BagPart on the front end:
+
+```json
+{
+  "BagPart": [{
+    "differentiator":"Services",
+    "place":"-"
+  }]
+}
+```
+
+To hide a `TitlePart` display shape on the front end:
+
+```json
+{
+  "TitlePart": [{
+    "differentiator":"TitlePart",
+    "place":"-"
+  }]
+}
+```
+
+#### Content part editor wrappers
+
+To hide the whole BagPart editor row on the `PlacementTest` editor:
+
+```json
+{
+  "ContentPart_Edit": [{
+    "differentiator":"PlacementTest-BagPart",
+    "place":"-"
+  }]
+}
+```
+
+To hide the whole FlowPart editor row:
+
+```json
+{
+  "ContentPart_Edit": [{
+    "differentiator":"PlacementTest-FlowPart",
+    "place":"-"
+  }]
+}
+```
+
+To hide the whole WidgetsListPart editor row:
+
+```json
+{
+  "ContentPart_Edit": [{
+    "differentiator":"PlacementTest-WidgetsListPart",
+    "place":"-"
+  }]
+}
+```
+
+To hide the whole TitlePart editor row:
+
+```json
+{
+  "ContentPart_Edit": [{
+    "differentiator":"PlacementTest-TitlePart",
+    "place":"-"
+  }]
+}
+```
+
+Use `ContentPart_Edit` when you want to move or hide the whole editor row, including its label, description, and wrapper. Shapes such as `BagPart_Edit`, `FlowPart_Edit`, or `TitlePart_Edit` only target the inner editor content.
+
 Additional custom filter providers can be added by implementing `IPlacementNodeFilterProvider`.
 
 For shapes that are built from a content item, you can filter by the following built in filter providers:
@@ -60,6 +163,58 @@ Placement information consists of:
 - `alternates` (Optional): An array of alternate shape types to add to the current shape's metadata.
 - `wrappers` (Optional): An array of shape types to use as wrappers for the current shape.
 - `shape` (Optional): A substitution shape type.
+
+#### Position format
+
+The `place` value follows the format `Zone:Position`, where:
+
+- **Zone** is the target zone name (e.g., `Content`, `Parts`).
+- **Position** is an optional numeric value that determines the ordering of shapes within the zone.
+
+Examples:
+
+| Place Value      | Zone    | Position                | Description                                              |
+|------------------|---------|-------------------------|----------------------------------------------------------|
+| `Content`        | Content | *(empty, treated as 0)* | Places in Content zone at default position               |
+| `Content:5`      | Content | 5                       | Places in Content zone at position 5                     |
+| `Content:5.1`    | Content | 5.1                     | Places in Content zone at position 5.1 (between 5 and 6) |
+| `Content:before` | Content | before                  | Places before all numbered positions                     |
+| `Content:after`  | Content | after                   | Places after all numbered positions                      |
+| `Content:start`  | Content | start                   | Places truly first, before everything (including `before`) |
+| `Content:end`    | Content | end                     | Places truly last, after everything (including free text) |
+
+##### Position ordering rules
+
+Shapes within a zone are sorted by their position using these rules:
+
+- Positions are compared **numerically**, not alphabetically (e.g., `2` comes before `10`).
+- **Dot notation** is supported for sub-positioning: `1.1` comes after `1` but before `2`. Positions like `1.5` can be used to insert shapes between `1` and `2`.
+- The special keyword **`before`** places a shape before all numbered positions (internally mapped to `-9999`).
+- The special keyword **`after`** places a shape after all numbered positions (internally mapped to `9999`).
+- The special keyword **`start`** places a shape truly first — before *every* other position, including `before`.
+- The special keyword **`end`** places a shape truly last — after *every* other position, including non-numeric (free-text) positions.
+- A shape with **no position** (empty string) is treated as position `0`.
+- When multiple shapes share the **same position**, they maintain their registration order (stable sort).
+
+The full ordering is:
+
+```
+start  <  before  <  0 (empty)  <  1  <  1.1  <  2  <  10  <  after  <  free-text  <  end
+```
+
+###### `after` vs `end`, and `before` vs `start`
+
+`before` and `after` are anchors **within the numeric range** — they behave like a very small and a very large number. Any **non-numeric** position (for example a value produced by the admin-menu `PrefixPosition()` helper, which alphabetizes sibling items) is *not* a number, so it sorts **after `after`**. Likewise, nothing sorts before `before` in the numeric range, but `before` is still just the low end of that range.
+
+Use the **terminal sentinels** when an item must sort truly first or truly last regardless of *any* other position, including free text:
+
+- **`end`** always sorts after everything, including free-text positions — use it when `after` is "not last enough."
+- **`start`** always sorts before everything, including `before` — use it when `before` is "not first enough."
+
+Like `before`/`after`, the sentinels support sub-ordering: `end.50` sorts before `end.100`, and a bare `end` sorts before both (the same way bare `after` sorts before `after.50`).
+
+!!! note
+    Position ordering within a zone is determined solely by the position value. The module or project name does not affect the order of shapes within a zone.
 
 ```json
 {
@@ -93,6 +248,28 @@ Fields have a custom differentiator as their shape is used in many places.
 It is built using the `Part` it's contained in, and the name of the `Field`.  
 For instance, if a field named `MyField` would be added to an `Article` content type, its differentiator would be `Article-MyField`.  
 If a field named `City` was added to an `Address` part then its differentiator would be `Address-City`.
+
+For example, to place a `TextField` named `Subtitle` attached directly to the `Article` content type:
+
+```json
+{
+  "TextField": [{
+    "differentiator":"Article-Subtitle",
+    "place":"Content:2"
+  }]
+}
+```
+
+For a field named `City` attached to an `Address` part:
+
+```json
+{
+  "TextField": [{
+    "differentiator":"Address-City",
+    "place":"Content:3"
+  }]
+}
+```
 
 ### Field Display Modes
 
@@ -144,6 +321,16 @@ Each of these modifiers support a position modifier for the group, in the format
 To apply a position modifier, or column width modifier, apply the appropriate value to every group name.
 
 Fields or Parts which do not have a grouping will fall into the default `Content` group when other fields apply a grouping.
+
+!!! warning "Shape position vs. group position"
+    The **position** (the number after `:`) controls the order of shapes **within a zone**. The **group position** (the number after `;`) controls the order of the **groups themselves** (e.g., which tab appears first). These are two different things.
+
+    For example, in `Parts:2#Settings;1`:
+
+    - `:2` → The shape renders at position **2** within the zone (after shapes at position 1).
+    - `#Settings;1` → The **Settings tab** is ordered at group position **1** among other tabs.
+
+    If multiple shapes share the same position value (e.g., all use `:1`), their order will depend on module registration order, which may not be predictable. Always use **distinct positions** for shapes that need a specific order within a zone.
 
 ### Examples
 
@@ -227,6 +414,74 @@ We also specify that the `Content` column will take 9 columns, of the default 12
     By default the columns will break responsively at the `md` breakpoint, and a modifier will be parsed to `col-md-9`.
     If you want to change the breakpoint, you could also specify `Content_lg-9`, which is parsed to `col-lg-9`.
 
+#### Column layout behavior
+
+Each shape with a column modifier (`|ColumnName`) gets its own **column wrapper** inside a Bootstrap **row** (`<div class="row">`). The column name is an arbitrary label used for the CSS class — it has no special meaning (e.g., `|MyCol_4` is the same as `|Sidebar_4` — neither implies left or right positioning).
+
+The column **width** (the number after `_`) maps to Bootstrap's 12-column grid. For example, `_4` means `col-md-4` (4/12 = 1/3 width). If the total widths exceed 12, columns wrap to the next line automatically (standard Bootstrap behavior).
+
+The column **position** (the number after `;`) determines the order of columns within the row.
+
+Shapes **without** a column modifier are rendered as **full-width content outside the row**. Their vertical position relative to the column row is determined by their order in the placement sequence:
+
+- Shapes positioned **before** the first column-specified shape render above the row.
+- Shapes positioned **after** the first column-specified shape render below the row.
+
+**Example: Three equal-width columns with a full-width field below**
+
+``` json
+{
+    "TextField_Edit" : [
+        {
+            "place" : "Parts:1%Details;1|Col_4;1",
+            "differentiator": "MyPart-FieldA"
+        },
+        {
+            "place" : "Parts:1%Details;1|Col_4;2",
+            "differentiator": "MyPart-FieldB"
+        },
+        {
+            "place" : "Parts:1%Details;1|Col_4;3",
+            "differentiator": "MyPart-FieldC"
+        },
+        {
+            "place": "Parts:2%Details;1",
+            "differentiator": "MyPart-FieldD"
+        }
+    ]
+}
+```
+
+This produces:
+
+- A row with three columns, each 4/12 width (1/3): FieldA, FieldB, FieldC side by side.
+- Below the row: FieldD rendered at full width (no column wrapper).
+
+**Example: Two columns with different widths**
+
+``` json
+{
+    "TextField_Edit" : [
+        {
+            "place" : "Parts:1|Sidebar_3;1",
+            "differentiator": "MyPart-FieldA"
+        },
+        {
+            "place" : "Parts:1|Main_9;2",
+            "differentiator": "MyPart-FieldB"
+        }
+    ]
+}
+```
+
+This produces a row with a 3/12 width column (FieldA) and a 9/12 width column (FieldB).
+
+!!! note
+    The column name (e.g., `Col`, `Sidebar`, `Main`) is just an identifier used for CSS targeting via the generated class `column-{name}`. You can use any name — it does not affect positioning. To put multiple fields in separate columns, give each field a column modifier; the position (`;N`) controls their order in the row.
+
+!!! warning
+    All column-specified shapes within the same grouping level (same tab/card) share a single row. If you need multiple separate column rows, place them in different cards.
+
 ### Dynamic part placement
 
 In the following example we place a dynamic part (part without driver, i.e. created in json) `GalleryPart` in a zone called `MyGalleryZone`. When displaying that part inside Content template we would execute:
@@ -274,6 +529,88 @@ Our placement would look like this (note the `_Summary` suffix to ContentPart na
 ```
 
 This setup would then show your template  (e.g. `GalleryPart.cshtml` or `GalleryPart.Summary.cshtml`) where `DisplayAsync` was called.
+
+## Fluent Location API
+
+When setting placement locations in display drivers, you can use the `PlacementLocationBuilder` fluent API as an alternative to manually constructing location strings. This makes the placement intent more explicit and reduces mistakes.
+
+The builder enforces the **nesting hierarchy** through the rendering order (**Zone → Tab → Card → Column**), using a single fluent `PlacementLocationBuilder` class where all methods return the same instance for easy chaining.
+
+### String syntax vs. Fluent API
+
+```csharp
+// String syntax (traditional):
+.Location("Parameters:5#Settings;1")
+
+// Fluent API (equivalent):
+.Location(l => l.Zone("Parameters", "5").Tab("Settings", "1"))
+```
+
+### Available methods
+
+The builder starts with `.Zone()` and all methods return the same `PlacementLocationBuilder` instance for fluent chaining:
+
+| Method                      | Description                                        | String equivalent |
+|-----------------------------|----------------------------------------------------|-------------------|
+| `.Zone("Content", "5")`     | Sets the target zone and shape position (required) | `Content:5`       |
+| `.AsLayoutZone()`           | Targets a layout zone                              | `/` prefix        |
+| `.Tab("Settings", "1")`     | Groups into a tab with optional group position     | `#Settings;1`     |
+| `.Card("Details", "2")`     | Groups into a card with optional group position    | `%Details;2`      |
+| `.Column("Left", "1", "9")` | Groups into a column with position and width       | `\|Left_9;1`      |
+| `.Group("search")`          | Assigns a group identifier for filtering           | `@search`         |
+
+!!! note
+    The `.Column()` method parameters are: `name`, `position`, `width`. For example, `.Column("Left", "1", "9")` creates a column named "Left" at position 1 with width 9.
+
+Methods can be called in any order after `.Zone()`. Levels can be skipped (e.g., `.Zone().Card()` without a `.Tab()` is valid).
+
+### Examples
+
+Place a shape at position 5 in the Content zone:
+
+```csharp
+.Location(l => l.Zone("Content", "5"))
+// Produces: "Content:5"
+```
+
+Place a shape in a tab:
+
+```csharp
+.Location(l => l.Zone("Parameters", "1").Tab("Settings", "1"))
+// Produces: "Parameters:1#Settings;1"
+```
+
+Full nesting — zone → tab → card → column:
+
+```csharp
+.Location(l => l
+    .Zone("Parameters", "5")
+    .Tab("Settings", "1")
+    .Card("Details", "2")
+    .Column("Left", "3", "9"))
+    // Produces: "Parameters:5#Settings;1%Details;2|Left_9;3"
+```
+
+Place a shape in a column with a width (skipping tab and card):
+
+```csharp
+.Location(l => l.Zone("Parts", "0").Column("Content", "1", "9"))
+    // Produces: "Parts:0|Content_9;1"
+```
+
+Place a shape in a layout zone:
+
+```csharp
+.Location(l => l.Zone("Content", "5").AsLayoutZone())
+// Produces: "/Content:5"
+```
+
+Set location per display type:
+
+```csharp
+.Location("Summary", l => l.Zone("Content", "1"))
+// Produces: "Content:1" for the "Summary" display type
+```
 
 ## Videos
 

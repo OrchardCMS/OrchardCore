@@ -12,13 +12,275 @@ import buildConfig from "./config.mjs";
 import clean from "./clean.mjs";
 import getAllAssetGroups from "./assetGroups.mjs";
 import process from 'node:process';
+import readline from 'node:readline';
+import os from 'node:os';
+import { execSync } from 'node:child_process';
+
+function prompt(question) {
+    return new Promise((resolve) => {
+        const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+        rl.question(question, (ans) => {
+            rl.close();
+            resolve(ans.trim().toLowerCase());
+        });
+    });
+}
+
+function isCommandAvailable(cmd) {
+    try {
+        execSync(`${cmd} --version`, { stdio: "ignore" });
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+// A freshly run curl-install script only updates shell rc files, which only
+// take effect in *new* shell sessions - this process's own PATH needs
+// extending too, or every execSync call for the rest of this run (and every
+// "yarn build" re-run in the same terminal until it's restarted) will still
+// fail to find the tool that was just installed to disk.
+function addInstallDirToPath(candidateDirs, binaryName) {
+    const exe = process.platform === "win32" ? `${binaryName}.exe` : binaryName;
+    for (const dir of candidateDirs) {
+        if (fs.existsSync(path.join(dir, exe))) {
+            process.env.PATH = `${dir}${path.delimiter}${process.env.PATH}`;
+            return true;
+        }
+    }
+    return false;
+}
+
+// Known install locations, checked directly on disk rather than relying on
+// PATH - a terminal opened before fnm/Volta was installed (or one whose
+// shell rc never got the installer's hook, e.g. a different shell / an
+// already-open VS Code terminal) will never see them on PATH without being
+// restarted, on any OS.
+const managerInstallDirs = {
+    fnm: [path.join(os.homedir(), ".local/share/fnm"), path.join(os.homedir(), ".fnm")],
+    volta: [path.join(os.homedir(), ".volta/bin")],
+};
+
+function findManagerBinary(managerName) {
+    return isCommandAvailable(managerName) || addInstallDirToPath(managerInstallDirs[managerName], managerName);
+}
+
+// Once a manager binary is locatable (whether via PATH or by extending it
+// above), check whether it already has the expected Node version installed,
+// so a version that was set up in a *previous* run/terminal can be reused
+// silently instead of re-prompting.
+function managerHasVersion(managerName, version) {
+    try {
+        const listCommand = managerName === "fnm" ? "fnm list" : "volta list node";
+        const output = execSync(listCommand, { encoding: "utf8" });
+        return output.includes(version);
+    } catch {
+        return false;
+    }
+}
+
+const versionManagers = {
+    fnm: {
+        name: "fnm",
+        install(expectedVersion) {
+            console.log(chalk.cyan("Installing fnm (Fast Node Manager)..."));
+            if (process.platform === "win32") {
+                execSync("winget install Schniz.fnm", { stdio: "inherit" });
+                console.log(chalk.yellow("\nPlease restart your terminal, then run the following commands:"));
+                console.log(chalk.white(`  fnm install ${expectedVersion}`));
+                console.log(chalk.white("  corepack enable"));
+                console.log(chalk.white("  yarn build"));
+                process.exit(0);
+            }
+
+            execSync("curl -fsSL https://fnm.vercel.app/install | bash", { stdio: "inherit" });
+
+            const found = addInstallDirToPath(managerInstallDirs.fnm, "fnm");
+
+            if (!found && !isCommandAvailable("fnm")) {
+                console.log(chalk.yellow("\nfnm was just installed but could not be found on PATH in this terminal session."));
+                console.log(chalk.yellow("Please restart your terminal (close and reopen it), then run:"));
+                console.log(chalk.white("  yarn build"));
+                process.exit(0);
+            }
+        },
+        useNode(version) {
+            execSync(`fnm install ${version}`, { stdio: "inherit" });
+            try {
+                execSync(`fnm exec --using ${version} -- corepack enable`, { stdio: "inherit" });
+            } catch (err) {
+                if (process.platform === "win32") {
+                    console.log(
+                        chalk.yellow(
+                            `\nfnm was just installed but its shims are not yet on PATH in this terminal session.`
+                        )
+                    );
+                    console.log(chalk.yellow("Please restart your terminal (close and reopen it), then run:"));
+                    console.log(chalk.white("  yarn build"));
+                    process.exit(0);
+                }
+                throw err;
+            }
+        },
+        execCommand(version, args) {
+            return `fnm exec --using ${version} -- corepack yarn ${args}`;
+        },
+    },
+    volta: {
+        name: "volta",
+        install(expectedVersion) {
+            console.log(chalk.cyan("Installing Volta..."));
+            if (process.platform === "win32") {
+                execSync("winget install Volta.Volta", { stdio: "inherit" });
+                console.log(chalk.yellow("\nPlease restart your terminal, then run the following commands:"));
+                console.log(chalk.white(`  volta install node@${expectedVersion}`));
+                console.log(chalk.white("  corepack enable"));
+                console.log(chalk.white("  yarn build"));
+                process.exit(0);
+            }
+
+            execSync("curl https://get.volta.sh | bash", { stdio: "inherit" });
+
+            const found = addInstallDirToPath(managerInstallDirs.volta, "volta");
+
+            if (!found && !isCommandAvailable("volta")) {
+                console.log(chalk.yellow("\nVolta was just installed but could not be found on PATH in this terminal session."));
+                console.log(chalk.yellow("Please restart your terminal (close and reopen it), then run:"));
+                console.log(chalk.white("  yarn build"));
+                process.exit(0);
+            }
+        },
+        useNode(version) {
+            try {
+                execSync(`volta install node@${version}`, { stdio: "inherit" });
+                execSync("corepack enable", { stdio: "inherit" });
+            } catch (err) {
+                if (process.platform === "win32") {
+                    console.log(
+                        chalk.yellow(
+                            `\nVolta was just installed but its shims are not yet on PATH in this terminal session.`
+                        )
+                    );
+                    console.log(chalk.yellow("Please restart your terminal (close and reopen it), then run:"));
+                    console.log(chalk.white("  yarn build"));
+                    process.exit(0);
+                }
+                throw err;
+            }
+        },
+        execCommand(version, args) {
+            return `volta run --node ${version} -- corepack yarn ${args}`;
+        },
+    },
+};
+
+// Check that the running Node.js version matches .node-version
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+const nodeVersionFile = path.join(repoRoot, ".node-version");
+if (fs.existsSync(nodeVersionFile)) {
+    const expectedVersion = fs.readFileSync(nodeVersionFile, "utf8").trim();
+    const isCI = !!(process.env.CI || process.env.TF_BUILD || process.env.GITHUB_ACTIONS);
+    if (process.versions.node !== expectedVersion) {
+        if (isCI) {
+            console.error(
+                chalk.red(
+                    `✖ Error: CI is running Node.js ${process.versions.node}, but this repository requires Node.js ${expectedVersion} (see .node-version).`
+                )
+            );
+            process.exit(1);
+        }
+
+        // A previous run may have already installed the expected version via
+        // fnm/Volta - that doesn't make plain "node"/"yarn" resolve to it
+        // going forward (that requires either restarting the terminal so
+        // shell rc changes take effect, or the manager's own default/pin
+        // being set), so re-check on disk every time and silently re-exec
+        // through the manager instead of re-prompting.
+        for (const managerName of Object.keys(versionManagers)) {
+            if (findManagerBinary(managerName) && managerHasVersion(managerName, expectedVersion)) {
+                const manager = versionManagers[managerName];
+                console.log(
+                    chalk.cyan(`Node.js ${expectedVersion} is already installed via ${manager.name}; using it...`)
+                );
+                const args = process.argv.slice(2).join(" ");
+                execSync(manager.execCommand(expectedVersion, args), {
+                    stdio: "inherit",
+                    cwd: repoRoot,
+                });
+                process.exit(0);
+            }
+        }
+
+        console.warn(
+            chalk.yellow(
+                `⚠ Warning: You are using Node.js ${process.versions.node}, but this repository requires Node.js ${expectedVersion} (see .node-version).`
+            )
+        );
+        console.log("");
+        console.log(chalk.white("  1) Continue anyway"));
+        console.log(chalk.white("  2) Abort"));
+        console.log(chalk.white(`  3) Install via fnm, Node.js ${expectedVersion} and build`));
+        console.log(chalk.white(`  4) Install via Volta, Node.js ${expectedVersion} and build`));
+        console.log("");
+
+        const answer = await prompt(chalk.yellow("Select an option (1-4): "));
+
+        const managerByOption = { "3": "fnm", "4": "volta" };
+
+        if (answer === "1") {
+            // Continue with current Node version
+        } else if (managerByOption[answer]) {
+            const manager = versionManagers[managerByOption[answer]];
+            try {
+                if (!isCommandAvailable(manager.name)) {
+                    manager.install(expectedVersion);
+                }
+                console.log(chalk.cyan(`Installing Node.js ${expectedVersion} via ${manager.name}...`));
+                manager.useNode(expectedVersion);
+                console.log(chalk.green(`\nRestarting build with Node.js ${expectedVersion}...\n`));
+                const args = process.argv.slice(2).join(" ");
+                execSync(manager.execCommand(expectedVersion, args), {
+                    stdio: "inherit",
+                    cwd: repoRoot,
+                });
+            } catch (err) {
+                console.error(chalk.red(`Failed: ${err.message}`));
+                process.exit(1);
+            }
+            process.exit(0);
+        } else {
+            console.log(chalk.red("Build aborted."));
+            process.exit(1);
+        }
+    }
+}
 
 const startTime = performance.now();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-let parsedArgs = parseArgs(process.argv.slice(2));
+let parsedArgs = parseArgs(process.argv.slice(2), {
+    string: ["n", "t", "b", "name", "names", "tag", "tags", "bundle"],
+    alias: {
+        n: ["name", "names"],
+        t: ["tag", "tags"],
+        b: ["bundle"],
+    },
+});
+
+const parseFilterValues = (value) => {
+    if (value == undefined) {
+        return [];
+    }
+
+    const rawValues = Array.isArray(value) ? value : [value];
+
+    return rawValues
+        .flatMap((entry) => entry.toString().split(/[\s,]+/))
+        .map((entry) => entry.trim())
+        .filter((entry) => entry.length > 0);
+};
 
 let task = parsedArgs._[0];
 
@@ -29,55 +291,49 @@ console.log(chalk.green("Task: ", task));
 
 let groups = getAllAssetGroups();
 
-// Filter the packages if the user passes the -n cli flag
-let packagesStr = parsedArgs.n;
-if (packagesStr != undefined) {
-    const packages = packagesStr.split(" ");
-    if (packages.length > 0) {
-        console.log(chalk.yellow("Filtering groups based on packages: "), packages.join(", "));
-        groups = groups.filter((g) => packages.includes(g.name));
-    }
+// Filter the packages if the user passes the -n/--name/--names cli flag
+const packageNames = parseFilterValues(parsedArgs.n);
+if (packageNames.length > 0) {
+    console.log(chalk.yellow("Filtering groups based on packages: "), packageNames.join(", "));
+    groups = groups.filter((g) => packageNames.includes(g.name));
 }
 
-// Filter the tags if the user passes the -t cli flag
-let tagsStr = parsedArgs.t;
-if (tagsStr != undefined) {
-    const tags = tagsStr.split(" ");
-    if (tags.length > 0) {
-        console.log(chalk.yellow("Filtering groups based on tag: "), tags.join(", "));
-        groups = groups.filter((g) => {
-            if (Array.isArray(g.tags)) {
-                return _.intersection(tags, g.tags)?.length > 0;
-            } else {
-                return tags.includes(g.tags);
-            }
-        });
-    }
+// Filter the tags if the user passes the -t/--tag/--tags cli flag
+const tags = parseFilterValues(parsedArgs.t);
+if (tags.length > 0) {
+    console.log(chalk.yellow("Filtering groups based on tag: "), tags.join(", "));
+    groups = groups.filter((g) => {
+        if (Array.isArray(g.tags)) {
+            return _.intersection(tags, g.tags)?.length > 0;
+        } else {
+            return tags.includes(g.tags);
+        }
+    });
 }
 
-if (task === "watch" && tagsStr != undefined) {
+if (task === "watch" && tags.length > 0) {
     console.log(chalk.yellow("Cannot watch based on tags, Specify packages to watch with -n cli flag"));
     process.exit(0);
 }
 
-if (task === "watch" && packagesStr == undefined) {
+if (task === "watch" && packageNames.length === 0) {
     console.log(chalk.yellow("Specify packages to watch with -n cli flag"));
     process.exit(0);
 }
 
-if (task === "host" && tagsStr != undefined) {
+if (task === "host" && tags.length > 0) {
     console.log(chalk.yellow("Cannot host based on tags, Specify packages to host with -n cli flag"));
     process.exit(0);
 }
 
-if (task === "host" && packagesStr == undefined) {
+if (task === "host" && packageNames.length === 0) {
     console.log(chalk.yellow("Specify packages to host with -n cli flag"));
     process.exit(0);
 }
 
-// Filter the tags if the user passes the -b cli flag
-let bundleStr = parsedArgs.b;
-if (bundleStr != undefined) {
+// Filter for bundling if the user passes the -b/--bundle cli flag
+const shouldBuildBundle = parsedArgs.b != undefined;
+if (shouldBuildBundle) {
     console.log(chalk.yellow("Filtering groups for orchardcore-bundle"));
     groups = groups.filter((g) => g.bundleEntrypoint);
 }

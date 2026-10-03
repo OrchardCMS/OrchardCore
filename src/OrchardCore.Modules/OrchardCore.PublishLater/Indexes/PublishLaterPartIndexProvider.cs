@@ -27,11 +27,9 @@ public class PublishLaterPartIndexProvider : ContentHandlerBase, IIndexProvider,
 
     private async Task UpdatePublishLaterPartAsync(ContentItem contentItem)
     {
-        var part = contentItem.As<PublishLaterPart>();
-
         // Validate that the content definition contains this part, this prevents indexing parts
         // that have been removed from the type definition, but are still present in the elements.            
-        if (part != null)
+        if (contentItem.TryGet<PublishLaterPart>(out _))
         {
             // Lazy initialization because of ISession cyclic dependency.
             _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
@@ -62,8 +60,7 @@ public class PublishLaterPartIndexProvider : ContentHandlerBase, IIndexProvider,
                     return null;
                 }
 
-                var part = contentItem.As<PublishLaterPart>();
-                if (part == null || !part.ScheduledPublishUtc.HasValue)
+                if (!contentItem.TryGet<PublishLaterPart>(out var part) || !part.ScheduledPublishUtc.HasValue)
                 {
                     return null;
                 }

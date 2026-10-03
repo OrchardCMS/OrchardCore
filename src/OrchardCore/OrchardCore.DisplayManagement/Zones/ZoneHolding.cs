@@ -18,15 +18,18 @@ namespace OrchardCore.DisplayManagement.Zones;
 public class ZoneHolding : Shape, IZoneHolding
 {
     private readonly Func<ValueTask<IShape>> _zoneFactory;
+    private Zones _zones;
 
     public ZoneHolding(Func<ValueTask<IShape>> zoneFactory)
     {
         _zoneFactory = zoneFactory;
     }
 
-    private Zones _zones;
+    protected ZoneHolding()
+    {
+    }
 
-    public Zones Zones => _zones ??= new Zones(_zoneFactory, this);
+    public Zones Zones => _zones ??= new Zones(this);
 
     public override bool TryGetMember(System.Dynamic.GetMemberBinder binder, out object result)
     {
@@ -36,10 +39,32 @@ public class ZoneHolding : Shape, IZoneHolding
         {
             // substitute nil results with a robot that turns adds a zone on
             // the parent when .Add is invoked
-            result = new ZoneOnDemand(_zoneFactory, this, name);
+            result = new ZoneOnDemand(this, name);
             TrySetMemberImpl(name, result);
         }
 
         return true;
+    }
+
+    internal virtual ValueTask<IShape> CreateZoneAsync()
+    {
+        return _zoneFactory != null ? _zoneFactory() : ValueTask.FromResult<IShape>(null);
+    }
+}
+
+public sealed class ZoneHolding<T> : ZoneHolding
+{
+    private readonly Func<T, ValueTask<IShape>> _zoneFactoryWithState;
+    private readonly T _state;
+
+    public ZoneHolding(Func<T, ValueTask<IShape>> zoneFactory, T state)
+    {
+        _zoneFactoryWithState = zoneFactory;
+        _state = state;
+    }
+
+    internal override ValueTask<IShape> CreateZoneAsync()
+    {
+        return _zoneFactoryWithState != null ? _zoneFactoryWithState(_state) : base.CreateZoneAsync();
     }
 }

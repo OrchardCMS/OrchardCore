@@ -9,11 +9,11 @@ namespace OrchardCore.Localization;
 /// </summary>
 public class DefaultPluralRuleProvider : IPluralRuleProvider
 {
-    private static readonly Dictionary<string, PluralizationRuleDelegate> _rules;
+    private static readonly Dictionary<string, PluralizationRuleDelegate> s_rules;
 
     static DefaultPluralRuleProvider()
     {
-        _rules = [];
+        s_rules = [];
 
         AddRule(["ay", "bo", "cgg", "dz", "fa", "id", "ja", "jbo", "ka", "kk", "km", "ko", "ky", "lo", "ms", "my", "sah", "su", "th", "tt", "ug", "vi", "wo", "zh"], n => 0);
         AddRule(["ach", "ak", "am", "arn", "br", "fil", "fr", "gun", "ln", "mfe", "mg", "mi", "oc", "pt-BR", "tg", "ti", "tr", "uz", "wa"], n => (n > 1 ? 1 : 0));
@@ -46,14 +46,14 @@ public class DefaultPluralRuleProvider : IPluralRuleProvider
     {
         var cultureForPlural = GetBaseCulture(culture);
 
-        return _rules.TryGetValue(cultureForPlural.Name, out rule);
+        return s_rules.TryGetValue(cultureForPlural.Name, out rule);
     }
 
     private static void AddRule(string[] cultures, PluralizationRuleDelegate rule)
     {
         foreach (var culture in cultures)
         {
-            _rules.Add(culture, rule);
+            s_rules.Add(culture, rule);
         }
     }
 

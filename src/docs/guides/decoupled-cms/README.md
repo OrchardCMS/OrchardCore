@@ -69,7 +69,7 @@ This will allow for the Razor Pages to be reloaded without the need to recompile
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="OrchardCore.Application.Cms.Core.Targets" Version="2.2.1" />
+  <PackageReference Include="OrchardCore.Application.Cms.Core.Targets" Version="3.0.1" />
 </ItemGroup>
 ```
 
@@ -109,23 +109,17 @@ builder.Services.AddOrchardCms();
 Here is a sample of a bare minimum `Program.cs` file
 
 ```csharp
-public class Program
-{
-    public static void Main(string[] args)
-    {
-        var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container.
-        builder.Services.AddOrchardCms();
+// Add services to the container.
+builder.Services.AddOrchardCms();
 
-        var app = builder.Build();
+var app = builder.Build();
 
-        app.UseStaticFiles();
-        app.UseOrchardCore();
-        
-        app.Run();
-    }
-}
+app.UseStaticFiles();
+app.UseOrchardCore();
+
+app.Run();
 ```
 
 Start the application, the Setup screen shows up:
@@ -173,7 +167,7 @@ Let's create a new content type named `Blog Post` and add some necessary content
 - From the running website, open the url `/admin`.
 - In the login screen, enter the user credentials that were used during the setup.
 - You are presented with the administrative side of the site.
-- In the left menu, select __Content Definition__ then __Content Types__.
+- In the left menu, select __Design__ then __Content Definition__ then __Content Types__.
 - Click on __Create new type__ in the top right corner
 - In __Display Name__ enter `Blog Post`. The __Technical Name__ will be generated automatically with the value `BlogPost`, like this:
 
@@ -201,12 +195,12 @@ The __Blog Post__ content type is ready to use.
 
 ### Creating blog posts
 
-- In the left menu, select __New__ then click on __Blog Post__ to reveal an editor for the newly created `BlogPost` content type.
+- In the left menu, select __Content__ then __ContentItems__
+- Click on __New Blog Post__ to reveal an editor for the newly created `BlogPost` content type.
 
 ![Edit Blog Post](images/edit-blogpost.jpg)
 
 - Fill in the __Title__ and the __MarkdownBody__ form elements with some content, then click on __Publish__. For the sake of this example we'll use `This is a new day` and some Lorem Ipsum text.
-- In the menu, click on __Content > Content Items__ to display all the available content items.
 
 ![Content Items](images/content-items-1.jpg)
 
@@ -214,7 +208,7 @@ This shows that we now have a new blog post content item named `This is a new da
 
 ## Rendering content on the website
 
-The next step is to create a custom Razor Page that will display any blog post with a custom url.
+The next step is to create a custom Razor Page that will display any blog post with a custom URL.
 
 ### Creating a custom Razor Page
 
@@ -232,10 +226,10 @@ The next step is to create a custom Razor Page that will display any blog post w
 }
 ```
 
-- Open the url `/blogpost/1` to display the previous page.
+- Open the URL `/blogpost/1` to display the previous page.
 
 !!! info "Accessing route values"
-    In the route, url segment named `{id}` is automatically assigned to the `Id` property that is rendered with the `@Id` syntax.
+    In the route, the URL segment named `{id}` is automatically assigned to the `Id` property that is rendered with the `@Id` syntax.
 
 ### Loading a Blog Post from its identifier
 
@@ -245,7 +239,8 @@ Each content item in Orchard Core has a unique and immutable Content Item Identi
 
 ```html hl_lines="2 10"
 @page "/blogpost/{id}"
-@inject OrchardCore.IOrchardHelper Orchard
+@using OrchardCore
+@inject IOrchardHelper Orchard
 
 @{
     var blogPost = await Orchard.GetContentItemByIdAsync(Id);
@@ -261,11 +256,11 @@ Each content item in Orchard Core has a unique and immutable Content Item Identi
 ```
 
 - In the Content Items page, click on the blog post we created in the previous section.
-- Find the part of the url after `/ContentItems/`, which is `4tavbc16br9mx2htvyggzvzmd3` in the following screenshot:
+- Find the part of the URL after `/ContentItems/`, which is `4tavbc16br9mx2htvyggzvzmd3` in the following screenshot:
 
 ![Content Item id](images/content-item-id.jpg)
 
-- Open the url `/blogpost/[YOUR_ID]` by replacing the `[YOUR_ID]` section with the values for your own blog post.
+- Open the URL `/blogpost/[YOUR_ID]` by replacing the `[YOUR_ID]` section with the values for your own blog post.
 - The page should display the actual title of the blog post.
 
 ![Blog Post by Id](images/blogpost-id.jpg)
@@ -319,7 +314,7 @@ Even though we can load blog posts from their Content Item Id, this is not user 
 
 In Orchard Core CMS the __Alias Part__ allows to provide a custom user friendly text to identify a content item.
 
-- In the admin section of the site, open __Content Definition__ > __Content Types__ > __Blog Post__
+- In the admin section of the site, open __Design__ > __Content Definition__ > __Content Types__ > __Blog Post__
 - At the bottom of the page, select __Add Parts__
 - Select __Alias__ and click __Save__
 - Move __Alias__ under __Title__ and save
@@ -333,7 +328,8 @@ We can now update the Razor Page to use the alias instead of the content item id
 
 ```html
 @page "/blogpost/{slug}"
-@inject OrchardCore.IOrchardHelper Orchard
+@using OrchardCore
+@inject IOrchardHelper Orchard
 
 @{
     var blogPost = await Orchard.GetContentItemByHandleAsync($"alias:{Slug}");
@@ -350,7 +346,7 @@ We can now update the Razor Page to use the alias instead of the content item id
 
 The changes consist in using the `slug` name in both the route and the local property, and also use a new method to load a content item with an alias.
 
-- Open the page `/blogpost/new-day` which should display the exact same result, but using a more SEO and user friendly url.
+- Open the page `/blogpost/new-day` which should display the exact same result, but using a more SEO- and user-friendly URL.
 
 ### Generating the slug using a custom pattern
 
@@ -376,7 +372,7 @@ The alias is now `this-is-a-new-day`:
 ![This Is A New Day](images/this-is-a-new-day.jpg)
 
 !!! note "Assignment"
-    Create a new Blog Post with a __Title__ and verify that the alias is auto-generated, and that it can be displayed using its own custom url.
+    Create a new Blog Post with a __Title__ and verify that the alias is auto-generated, and that it can be displayed using its own custom URL.
 
 ## Configuring the Preview feature for Blog Posts
 

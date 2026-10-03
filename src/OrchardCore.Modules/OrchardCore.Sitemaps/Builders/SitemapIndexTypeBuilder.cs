@@ -10,9 +10,9 @@ namespace OrchardCore.Sitemaps.Builders;
 
 public class SitemapIndexTypeBuilder : SitemapTypeBuilderBase<SitemapIndex>
 {
-    private static readonly XNamespace _namespace = "http://www.sitemaps.org/schemas/sitemap/0.9";
-    private static readonly XNamespace _schemaInstance = "http://www.w3.org/2001/XMLSchema-instance";
-    private static readonly XNamespace _schemaLocation = "http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/siteindex.xsd";
+    private static readonly XNamespace s_namespace = "http://www.sitemaps.org/schemas/sitemap/0.9";
+    private static readonly XNamespace s_schemaInstance = "http://www.w3.org/2001/XMLSchema-instance";
+    private static readonly XNamespace s_schemaLocation = "http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/siteindex.xsd";
 
     private readonly ISitemapManager _sitemapManager;
     private readonly ISitemapModifiedDateProvider _sitemapModifiedDateProvider;
@@ -33,9 +33,9 @@ public class SitemapIndexTypeBuilder : SitemapTypeBuilderBase<SitemapIndex>
     {
         context.Response = new SitemapResponse
         {
-            ResponseElement = new XElement(_namespace + "sitemapindex",
-                new XAttribute(XNamespace.Xmlns + "xsi", _schemaInstance),
-                new XAttribute(_schemaInstance + "schemaLocation", _schemaLocation)),
+            ResponseElement = new XElement(s_namespace + "sitemapindex",
+                new XAttribute(XNamespace.Xmlns + "xsi", s_schemaInstance),
+                new XAttribute(s_schemaInstance + "schemaLocation", s_schemaLocation)),
         };
 
         var indexSource = sitemap.SitemapSources.FirstOrDefault() as SitemapIndexSource;
@@ -50,8 +50,8 @@ public class SitemapIndexTypeBuilder : SitemapTypeBuilderBase<SitemapIndex>
 
         foreach (var containedSitemap in containedSitemaps)
         {
-            var xmlSitemap = new XElement(_namespace + "sitemap");
-            var loc = new XElement(_namespace + "loc");
+            var xmlSitemap = new XElement(s_namespace + "sitemap");
+            var loc = new XElement(s_namespace + "loc");
 
             var routeValues = new RouteValueDictionary(_sitemapsOptions.GlobalRouteValues)
             {
@@ -64,7 +64,7 @@ public class SitemapIndexTypeBuilder : SitemapTypeBuilderBase<SitemapIndex>
             var lastModDate = await _sitemapModifiedDateProvider.GetLastModifiedDateAsync(containedSitemap);
             if (lastModDate.HasValue)
             {
-                var lastMod = new XElement(_namespace + "lastmod");
+                var lastMod = new XElement(s_namespace + "lastmod");
                 lastMod.Add(lastModDate.GetValueOrDefault().ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture));
                 xmlSitemap.Add(lastMod);
             }

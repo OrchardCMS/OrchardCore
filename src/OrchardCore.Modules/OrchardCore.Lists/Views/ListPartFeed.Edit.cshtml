@@ -1,20 +1,28 @@
 @using OrchardCore.Lists.Feeds
 @model ListFeedEditViewModel
 
-<div class="mb-3 form-check" asp-validation-class-for="DisableRssFeed">
-    <input type="checkbox" class="form-check-input" asp-for="DisableRssFeed">
-    <label class="form-check-label" asp-for="DisableRssFeed">@T["Disable RSS feed link generation."]</label>
+<div class="ocat-wrapper" asp-validation-class-for="DisableRssFeed">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="DisableRssFeed">
+            <label class="form-check-label" asp-for="DisableRssFeed">@T["Disable RSS feed link generation."]</label>
+        </div>
+    </div>
 </div>
 
-<div class="mb-3">
-    <label asp-for="FeedProxyUrl" class="form-label">@T["Feed proxy Url"]</label>
-    <input asp-for="FeedProxyUrl" class="form-control" />
-    <span class="hint">@T["Provide a custom public url which will be used to proxy the local rss feed."]</span>
-    <span class="hint">@T["The current feed is available at <a href=\"{0}\" target=\"_blank\">{0}</a>.", Url.Action("Index", "Feed", new { area = "OrchardCore.Feeds", ContentItemId = Model.ContentItem.ContentItemId }, Context.Request.Scheme)]</span>
+<div class="ocat-wrapper">
+    <label asp-for="FeedProxyUrl" class="ocat-label">@T["Feed proxy Url"]</label>
+    <div class="ocat-end">
+        <input asp-for="FeedProxyUrl" class="form-control" />
+        <span class="hint">@T["Provide a custom public url which will be used to proxy the local rss feed."]</span>
+        <span class="hint">@T["The current feed is available at <a href='{0}' target='_blank'>{0}</a>.", Url.Action("Index", "Feed", new { area = "OrchardCore.Feeds", ContentItemId = Model.ContentItem.ContentItemId }, Context.Request.Scheme)]</span>
+    </div>
 </div>
 
-<div class="mb-3">
-    <label asp-for="FeedItemsCount" class="form-label">@T["Feed items count"]</label>
-    <input asp-for="FeedItemsCount" class="form-control" />
-    <span class="hint">@T["The number of elements to display in the feed."]</span>
+<div class="ocat-wrapper">
+    <label asp-for="FeedItemsCount" class="ocat-label">@T["Feed items count"]</label>
+    <div class="ocat-end">
+        <input asp-for="FeedItemsCount" class="form-control" />
+        <span class="hint">@T["The number of elements to display in the feed."]</span>
+    </div>
 </div>

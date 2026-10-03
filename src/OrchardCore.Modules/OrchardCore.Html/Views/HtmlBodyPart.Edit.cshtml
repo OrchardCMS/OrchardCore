@@ -1,5 +1,4 @@
 @model HtmlBodyPartViewModel
-@using OrchardCore
 @{
     var settings = Model.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
     var culture = await Orchard.GetContentCultureAsync(Model.ContentItem);
@@ -7,10 +6,10 @@
 
 @await DisplayAsync(await New.ShortcodeModal())
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="Html" class="@Orchard.GetLabelClasses()">@Model.TypePartDefinition.DisplayName()</label>
-    <div class="@Orchard.GetEndClasses()">
-        <textarea asp-for="Html" rows="5" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()"></textarea>
+<div class="ocat-wrapper">
+    <label asp-for="Html" class="ocat-label">@Model.TypePartDefinition.DisplayName()</label>
+    <div class="ocat-end">
+        <textarea asp-for="Html" rows="5" class="form-control content-preview-text html-body-part-codemirror" dir="@culture.GetLanguageDirection()"></textarea>
         <span class="hint">@T["The body of the content item."]</span>
     </div>
 </div>
@@ -25,42 +24,4 @@
 <script asp-name="codemirror-mode-htmlmixed" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
-<script at="Foot">
-    $(function () {
-        var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Html)');
-        @* When part rendered by a flow part only the elements scripts are rendered, so the html element will not exist. *@
-            if (optionsTextArea) {
-            var editor = CodeMirror.fromTextArea(optionsTextArea, {
-                autoCloseTags: true,
-                autoRefresh: true,
-                lineNumbers: true,
-                lineWrapping: true,
-                matchBrackets: true,
-                styleActiveLine: true,
-                mode: { name: "htmlmixed" }
-            });
-
-            var html = document.documentElement;
-            const mutationObserver = new MutationObserver(setTheme);
-            mutationObserver.observe(html, { attributes: true });
-
-            function setTheme() {
-                var theme = html.dataset.bsTheme;
-                if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                    editor.setOption('theme', 'monokai');
-                } else {
-                    editor.setOption('theme', 'default');
-                }
-            }
-
-            setTheme();
-
-            initializeCodeMirrorShortcodeWrapper(editor);
-
-            editor.on('change', function (cmEditor) {
-                cmEditor.save();
-                $(document).trigger('contentpreview:render');
-            });
-        }
-    });
-</script>
+<script asp-src="~/OrchardCore.Html/Scripts/html-body-part-editors/html-body-part.min.js" debug-src="~/OrchardCore.Html/Scripts/html-body-part-editors/html-body-part.js" at="Foot" type="module"></script>

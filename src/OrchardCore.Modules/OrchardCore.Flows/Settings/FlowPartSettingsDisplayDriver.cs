@@ -24,7 +24,7 @@ public sealed class FlowPartSettingsDisplayDriver : ContentTypePartDefinitionDis
             model.FlowPartSettings = contentTypePartDefinition.GetSettings<FlowPartSettings>();
             model.ContainedContentTypes = model.FlowPartSettings.ContainedContentTypes;
             model.CollapseContainedItems = model.FlowPartSettings.CollapseContainedItems;
-            model.DefaultAlignment = model.FlowPartSettings.DefaultAlignment; 
+            model.DefaultAlignment = model.FlowPartSettings.DefaultAlignment;
             model.ContentTypes = [];
 
             foreach (var contentTypeDefinition in (await _contentDefinitionManager.ListTypeDefinitionsAsync()).Where(t => t.GetStereotype() == "Widget"))

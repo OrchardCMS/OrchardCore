@@ -1,0 +1,13 @@
+{
+    "name": "@orchardcore/openapi-ui-auth",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "dependencies": {
+        "oidc-client-ts": "^3.1.0"
+    },
+    "devDependencies": {
+        "typescript": "^5.7.3",
+        "vite": "^8.1.5"
+    }
+}

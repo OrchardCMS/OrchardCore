@@ -71,7 +71,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
 
         var sitemaps = (await _sitemapManager.GetSitemapsAsync())
             .OfType<Sitemap>();
@@ -335,7 +335,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        if (itemIds?.Count() > 0)
+        if (itemIds?.Any() == true)
         {
             var sitemapsList = await _sitemapManager.LoadSitemapsAsync();
             var checkedContentItems = sitemapsList.Where(x => itemIds.Contains(x.SitemapId));

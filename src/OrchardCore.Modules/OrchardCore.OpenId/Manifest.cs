@@ -25,6 +25,7 @@ using OrchardCore.OpenId;
     [
         OpenIdConstants.Features.Core,
         "OrchardCore.Users.ExternalAuthentication",
+        "OrchardCore.Secrets",
     ]
 )]
 

@@ -2,7 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using OrchardCore.ContentManagement;
 using OrchardCore.Html.Models;
-using OrchardCore.Search.Lucene;
+using OrchardCore.Lucene;
 using OrchardCore.Tests.Apis.Context;
 
 namespace OrchardCore.Tests.Apis.Lucene;
@@ -10,7 +10,7 @@ namespace OrchardCore.Tests.Apis.Lucene;
 public class LuceneQueryTests
 {
     [Fact]
-    public async Task BoostingTitleShouldHaveTitlesContainingOrchardAppearFirst()
+    public async Task BoostingTitle_Default_HaveTitlesContainingOrchardAppearFirst()
     {
         using var context = new LuceneContext();
         await context.InitializeAsync();
@@ -46,7 +46,7 @@ public class LuceneQueryTests
     }
 
     [Fact]
-    public async Task BoostingBodyShouldHaveTitlesNotContainingOrchardAppearFirst()
+    public async Task BoostingBody_Default_HaveTitlesNotContainingOrchardAppearFirst()
     {
         using var context = new LuceneContext();
         await context.InitializeAsync();
@@ -81,7 +81,7 @@ public class LuceneQueryTests
     }
 
     [Fact]
-    public async Task SimpleQueryWildcardHasResults()
+    public async Task SimpleQueryWildcardHasResults_Default_Succeeds()
     {
         using var context = new LuceneContext();
         await context.InitializeAsync();
@@ -120,7 +120,7 @@ public class LuceneQueryTests
     }
 
     [Fact]
-    public async Task TwoWildcardQueriesWithBoostHasResults()
+    public async Task TwoWildcardQueriesWithBoostHasResults_Default_Succeeds()
     {
         using (var context = new LuceneContext())
         {
@@ -166,8 +166,8 @@ public class LuceneQueryTests
             Assert.NotEmpty(contentItems);
             Assert.True(contentItems.Count() >= 4);
 
-            Assert.Contains("Orchard", contentItems.ElementAt(0).As<HtmlBodyPart>().Html, StringComparison.OrdinalIgnoreCase);
-            Assert.Contains("Orchard", contentItems.ElementAt(1).As<HtmlBodyPart>().Html, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("Orchard", contentItems.ElementAt(0).GetOrCreate<HtmlBodyPart>().Html, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("Orchard", contentItems.ElementAt(1).GetOrCreate<HtmlBodyPart>().Html, StringComparison.OrdinalIgnoreCase);
             Assert.Contains("Orchard", contentItems.ElementAt(2).DisplayText, StringComparison.OrdinalIgnoreCase);
             Assert.Contains("Orchard", contentItems.ElementAt(3).DisplayText, StringComparison.OrdinalIgnoreCase);
         }
@@ -175,7 +175,7 @@ public class LuceneQueryTests
     }
 
     [Fact]
-    public async Task LuceneQueryTemplateWithSpecialCharactersShouldNotThrowError()
+    public async Task LuceneQueryTemplateWithSpecialCharacters_Default_DoesNotThrowError()
     {
         using var context = new LuceneContext();
         await context.InitializeAsync();

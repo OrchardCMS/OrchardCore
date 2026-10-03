@@ -1,11 +1,12 @@
 @model OrchardCore.ContentFields.ViewModels.EditNumericFieldViewModel
 @using System.Globalization
+@using OrchardCore.ContentFields
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore.Localization.Data
 @inject IDataLocalizer D
 @{
     var settings = Model.PartFieldDefinition.GetSettings<NumericFieldSettings>();
-    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields{Constants.ContextSeparator}{Model.PartFieldDefinition.PartDefinition.Name}"];
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
     string step = Math.Pow(10, 0 - settings.Scale).ToString(CultureInfo.InvariantCulture);
     decimal min = settings.Minimum.HasValue ? settings.Minimum.Value : 0;
     decimal max = settings.Maximum.HasValue ? settings.Maximum.Value : 10000;
@@ -14,48 +15,31 @@
     string serverDecimalSeparator = CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator;
 }
 
-<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Value)_FieldWrapper">
-    <label asp-for="Value" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@localizedFieldName</label>
-    <div class="@Orchard.GetEndClasses()">
-        <div class="@Orchard.GetLimitedWidthWrapperClasses()">
-            <div class="@Orchard.GetLimitedWidthClasses()">
+<div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty)) numeric-field-range" id="@Html.IdFor(x => x.Value)_FieldWrapper" data-js-decimal-separator="@javascriptDecimalSeparator" data-server-decimal-separator="@serverDecimalSeparator">
+    <label asp-for="Value" class="ocat-label @(settings.Required ? "ocat-label-required" : "")">@localizedFieldName</label>
+    <div class="ocat-end">
+        <div class="ocat-limited-wrapper">
+            <div class="ocat-limited">
                 <div class="input-group mb-2">
                     @if (settings.Minimum.HasValue)
                     {
                         <span class="input-group-text">@min</span>
                     }
-                    <input asp-for="Value" class="form-control content-preview-select" placeholder="@settings.Placeholder" onchange="numericFieldRangeSync('@(id)-range', value);" />
+                    <input asp-for="Value" class="form-control content-preview-select numeric-field-range-text" placeholder="@settings.Placeholder" />
                     @if (settings.Maximum.HasValue)
                     {
                         <span class="input-group-text">@max</span>
                     }
                 </div>
-                <input id="@(id)-range" class="form-control-range" type="range" min="@min" max="@max" step="@step" oninput="numericFieldRange('@(id)', value);" onchange="numericFieldRange('@(id)', value);" />
+                <input id="@(id)-range" class="form-control-range numeric-field-range-slider" type="range" min="@min" max="@max" step="@step" />
                 <span asp-validation-for="Value"></span>
             </div>
         </div>
         @if (!string.IsNullOrEmpty(settings.Hint))
         {
-            <span class="hint">@settings.Hint</span>
+            @await DisplayAsync(await New.Hint_Admin(Hint: settings.Hint))
         }
     </div>
 </div>
 
-<script asp-name="numericFieldRange" at="Foot">
-    function numericFieldRange(id, value) {
-        @if (javascriptDecimalSeparator != serverDecimalSeparator)
-        {
-        <text>value = value.replace('@(javascriptDecimalSeparator)', '@(serverDecimalSeparator)'); </text>
-        }
-        $('#' + id).val(value);
-    }
-
-    function numericFieldRangeSync(id, value) {
-        @if (javascriptDecimalSeparator != serverDecimalSeparator)
-        {
-        <text>value = value.replace('@(serverDecimalSeparator)', '@(javascriptDecimalSeparator)'); </text>
-        }
-        value = (Number(value) || 0);
-        $('#' + id).val(value);
-    }
-</script>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/numeric-field-range/numeric-field-range.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/numeric-field-range/numeric-field-range.js" at="Foot" type="module"></script>

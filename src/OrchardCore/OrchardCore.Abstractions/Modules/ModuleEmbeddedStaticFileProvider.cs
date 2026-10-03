@@ -1,5 +1,4 @@
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Primitives;
 
 namespace OrchardCore.Modules;
@@ -44,16 +43,8 @@ public class ModuleEmbeddedStaticFileProvider : IModuleStaticFileProvider
                 // Resolve the embedded file subpath: "wwwroot/**/*.*"
                 var fileSubPath = Module.WebRoot + path[(index + 1)..];
 
-                if (module != application.Name)
-                {
-                    // Get the embedded file info from the module assembly.
-                    return application.GetModule(module).GetFileInfo(fileSubPath);
-                }
-
-                // Application static files can be still requested in a regular way "/**/*.*".
-                // Here, it's done through the Application's module "{ApplicationName}/**/*.*".
-                // But we still serve them from the same physical files "{WebRootPath}/**/*.*".
-                return new PhysicalFileInfo(new FileInfo(application.Root + fileSubPath));
+                // Get the embedded file info from the module assembly.
+                return application.GetModule(module).GetFileInfo(fileSubPath);
             }
         }
 

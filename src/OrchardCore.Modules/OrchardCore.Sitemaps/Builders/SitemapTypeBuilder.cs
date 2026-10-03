@@ -5,7 +5,7 @@ namespace OrchardCore.Sitemaps.Builders;
 
 public class SitemapTypeBuilder : SitemapTypeBuilderBase<Sitemap>
 {
-    private static readonly XNamespace _namespace = "http://www.sitemaps.org/schemas/sitemap/0.9";
+    private static readonly XNamespace s_namespace = "http://www.sitemaps.org/schemas/sitemap/0.9";
 
     private readonly IEnumerable<ISitemapSourceBuilder> _sitemapSourceBuilders;
 
@@ -18,7 +18,7 @@ public class SitemapTypeBuilder : SitemapTypeBuilderBase<Sitemap>
     {
         context.Response = new SitemapResponse
         {
-            ResponseElement = new XElement(_namespace + "urlset"),
+            ResponseElement = new XElement(s_namespace + "urlset"),
         };
 
         foreach (var source in sitemap.SitemapSources)

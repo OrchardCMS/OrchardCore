@@ -5,8 +5,13 @@ public sealed class TemporaryFileBuilder : IFileBuilder, IDisposable
     private readonly bool _deleteOnDispose;
 
     public TemporaryFileBuilder(bool deleteOnDispose = true)
+        : this(Path.GetTempPath(), deleteOnDispose)
     {
-        Folder = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+    }
+
+    public TemporaryFileBuilder(string baseDirectory, bool deleteOnDispose = true)
+    {
+        Folder = PathExtensions.Combine(baseDirectory, Path.GetRandomFileName());
         _deleteOnDispose = deleteOnDispose;
     }
 

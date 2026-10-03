@@ -41,6 +41,8 @@ public sealed partial class TextFieldSettingsDriver : ContentPartFieldDefinition
             model.DefaultValue = settings.DefaultValue;
             model.Type = settings.Type;
             model.Pattern = settings.Pattern;
+            model.MinLength = settings.MinLength;
+            model.MaxLength = settings.MaxLength;
             model.Types = new List<SelectListItem>
             {
                 new(S["Editable"], nameof(FieldBehaviorType.Editable)),
@@ -69,7 +71,22 @@ public sealed partial class TextFieldSettingsDriver : ContentPartFieldDefinition
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.Pattern), S["Pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(' ', errors)]);
             }
         }
-        
+
+        if (model.MinLength < 0)
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.MinLength), S["The minimum length can't be a negative number."]);
+        }
+
+        if (model.MaxLength < 0)
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.MaxLength), S["The maximum length can't be a negative number."]);
+        }
+
+        if (model.MinLength > 0 && model.MaxLength > 0 && model.MinLength > model.MaxLength)
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.MaxLength), S["The maximum length can't be smaller than the minimum length."]);
+        }
+
         if (contentPartFieldSettings.Editor == TextFieldColorEditor &&
             !string.IsNullOrEmpty(model.DefaultValue) &&
             !HexColorRegex().IsMatch(model.DefaultValue))
@@ -85,6 +102,8 @@ public sealed partial class TextFieldSettingsDriver : ContentPartFieldDefinition
             DefaultValue = model.DefaultValue,
             Type = model.Type,
             Pattern = model.Pattern,
+            MinLength = model.MinLength,
+            MaxLength = model.MaxLength,
         });
 
         return Edit(partFieldDefinition, context);

@@ -7,7 +7,7 @@ namespace OrchardCore.Tests.Serializers;
 public class DefaultDocumentSerializerTests
 {
     [Fact]
-    public async Task ShouldSerializeAndDeserialize()
+    public async Task Serialize_Deserialize_Succeeds()
     {
         var settings = new SiteSettings
         {

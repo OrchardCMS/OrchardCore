@@ -2,9 +2,21 @@ namespace OrchardCore;
 
 public static class OrchardCoreConstants
 {
+    public const char DataLocalizationSeparator = ':';
+
     public static class Shell
     {
         public const string TenantsFileName = "tenants.json";
+    }
+
+    public static class AuthenticationSchemes
+    {
+        public const string Api = "Api";
+    }
+
+    public static class TokenNames
+    {
+        public const string AccessToken = "access_token";
     }
 
     public static class Configuration
@@ -33,36 +45,36 @@ public static class OrchardCoreConstants
     {
         public const int Default = 0;
 
-        // The configuration for authentication should be set up early, prior to any non-security modules.
+        /// <summary>
+        /// The configuration for authentication should be set up early, prior to any non-security modules.
+        /// </summary>
         public const int Authentication = -150;
 
-        // The reverse proxy should always be configured before the 'Authentication' and security initialization logic.
+        /// <summary>
+        /// The reverse proxy should always be configured before the 'Authentication' and security initialization logic.
+        /// </summary>
         public const int ReverseProxy = Authentication * 2;
 
-        // The CORS module should be registered after the reverse proxy module to ensure that the correct host is used.
+        /// <summary>
+        /// The CORS module should be registered after the reverse proxy module to ensure that the correct host is used.
+        /// </summary>
         public const int Cors = ReverseProxy + 10;
 
-        // The Security module should be registered after the reverse proxy module.
+        /// <summary>
+        /// The Security module should be registered after the reverse proxy module.
+        /// </summary>
         public const int Security = ReverseProxy + 10;
 
+        /// <summary>
+        /// The Media module should use Default order to ensure other modules can correctly order by dependency.
+        /// </summary>
         public const int Media = Default;
-
-        // Image cache overrides Media configurations and services.
-        // The order number should always be greater than Media module. 
-        public const int ImageSharpCache = Media + 5;
-
-        // Image cache overrides Media configurations and services.
-        // The order number should always be greater than Media module. 
-        public const int AzureImageSharpCache = Media + 5;
-
-        // Azure media storage overrides Media configurations and services.
-        // The order number should always be greater than Media module.
-        public const int AzureMediaStorage = Media + 10;
 
         public const int DataProtection = Default;
 
-        // Azure DataProtection will override default data-protection configurations.
-        // The order number should always be greater than data protection modules. 
+        /// <summary>
+        /// Azure DataProtection will override default data-protection configurations. The order number should always be greater than data protection modules.
+        /// </summary>
         public const int AzureDataProtection = DataProtection + 10;
 
         public const int Autoroute = -100;
@@ -71,14 +83,19 @@ public static class OrchardCoreConstants
 
         public const int AdminPages = 1000;
 
-        // Services that should always be registered before everything else.
+        /// <summary>
+        /// Services that should always be registered before everything else.
+        /// </summary>
         public const int InfrastructureService = int.MinValue + 100;
 
-        // The UrlRewriting module should be registered before any other module that deals with URLs.
+        /// <summary>
+        /// The UrlRewriting module should be registered before any other module that deals with URLs.
+        /// </summary>
         public const int UrlRewriting = InfrastructureService + 100;
 
-        // The Workflows content handler should be registered before other content handlers to ensure it
-        // processes content events last.
+        /// <summary>
+        /// The Workflows content handler should be registered before other content handlers to ensure it processes content events last.
+        /// </summary>
         public const int WorkflowsContentHandlers = InfrastructureService + 100;
     }
 
@@ -91,5 +108,10 @@ public static class OrchardCoreConstants
         public const string DetailAdmin = "DetailAdmin";
 
         public const string SummaryAdmin = "SummaryAdmin";
+    }
+
+    public static class Security
+    {
+        public const string ScriptingEncryptionPurpose = "oc-scripting";
     }
 }

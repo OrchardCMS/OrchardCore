@@ -8,11 +8,16 @@ namespace OrchardCore.Workflows.Activities;
 public class WhileLoopTask : TaskActivity<WhileLoopTask>
 {
     private readonly IWorkflowScriptEvaluator _scriptEvaluator;
+    private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
     protected readonly IStringLocalizer S;
 
-    public WhileLoopTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<WhileLoopTask> localizer)
+    public WhileLoopTask(
+        IWorkflowScriptEvaluator scriptEvaluator,
+        IWorkflowExpressionEvaluator expressionEvaluator,
+        IStringLocalizer<WhileLoopTask> localizer)
     {
         _scriptEvaluator = scriptEvaluator;
+        _expressionEvaluator = expressionEvaluator;
         S = localizer;
     }
 
@@ -29,14 +34,30 @@ public class WhileLoopTask : TaskActivity<WhileLoopTask>
         set => SetProperty(value);
     }
 
-    public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    public WorkflowExpression<bool> LiquidCondition
     {
-        return Outcomes(S["Iterate"], S["Done"]);
+        get => GetProperty(() => new WorkflowExpression<bool>());
+        set => SetProperty(value);
     }
+
+    public WorkflowScriptSyntax Syntax
+    {
+        get => GetProperty(() => WorkflowScriptSyntax.JavaScript);
+        set => SetProperty(value);
+    }
+
+    public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        => Outcome(S["Iterate"], S["Done"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var loop = await _scriptEvaluator.EvaluateAsync(Condition, workflowContext);
-        return Outcomes(loop ? "Iterate" : "Done");
+        var loop = Syntax switch
+        {
+            WorkflowScriptSyntax.Liquid => await _expressionEvaluator.EvaluateAsync(LiquidCondition, workflowContext, null),
+            WorkflowScriptSyntax.JavaScript => await _scriptEvaluator.EvaluateAsync(Condition, workflowContext),
+            _ => throw new NotSupportedException($"The syntax {Syntax} isn't supported for WhileLoopTask.")
+        };
+
+        return Outcome(loop ? "Iterate" : "Done");
     }
 }

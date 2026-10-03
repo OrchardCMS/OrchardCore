@@ -2,6 +2,29 @@
 
 This module provides Content Management services.
 
+## Content Quick Navigation
+
+Enable **Content Quick Navigation** (`OrchardCore.Contents.QuickNavigation`) from **Configuration → Features** to add recently updated content items to the [admin quick navigation palette](../Admin/README.md#quick-navigation). This feature is opt-in and depends on `OrchardCore.Contents` and `OrchardCore.Admin`.
+
+The `ContentItemNavigationSource` contributes the **50 most recently updated content items** by default. Each destination uses the item's full display text and opens its **Edit** view. Only items that the current user can edit are displayed, using the same content-item authorization as the edit page.
+
+Configure **Recent content items in quick navigation** under **Configuration → Settings → Admin**. The count must be at least 1 and defaults to 50. This field appears only while the feature is enabled and requires the **Manage Admin Settings** permission. Quick navigation itself must also be enabled in the Admin settings.
+
+The source queries the latest content item versions, ordered by `ModifiedUtc` descending and then by content item ID for consistent ordering. This includes drafts and unpublished items, but not removed items or older versions. The limit is applied before filtering out items the user cannot edit or whose display text is empty, so fewer destinations may be displayed. Content translations remain separate content items with their own display text; the **Content** breadcrumb is localized for the current UI culture.
+
+The source queries recent items and refreshes its contribution on each palette load rather than caching content objects or rendered results. Updates, removals, permission changes, and count changes are reflected on the next palette open. The JSON response is not cached by the browser, and the source performs no queries when the feature is disabled.
+
+The count can also be configured through a `settings` recipe step:
+
+```json
+{
+  "name": "settings",
+  "ContentQuickNavigationSettings": {
+    "MaxItems": 50
+  }
+}
+```
+
 ## Content Life Cycle
 
 The content life cycle is managed through different content item versions. In Orchard Core, the content item could be:
@@ -582,6 +605,93 @@ Now, when a user searches for a product's serial number in the administration UI
 
 The `UseExactMatch` option in the `ContentsAdminListFilterOptions` class modifies the default search behavior by enclosing searched terms within quotation marks, creating an exact match search by default, this unless if the search text explicitly uses 'OR' or 'AND' operators.
 
+## Documenting Filters in the Admin UI
+
+The content items admin list has a **Filters** dropdown next to the search box. Its **Filter syntax** entry opens the **Available Filters** dialog, which lists every filter a user can type into the search box (`text:`, `type:`, `status:`, `sort:`, …) as a compact grid of cards.
+
+Each card is a shape rendered with the `Thumbnail` display type of the `ContentOptionsViewModel`. The cards are provided by display drivers, so a module can add its own card without replacing any existing view. This only documents a filter for the end user; the filter itself still has to be implemented with an `IContentsAdminListFilterProvider` (see [Full-Text Search for Admin UI](#full-text-search-for-admin-ui) above).
+
+### Registering a filter card
+
+Implement a `DisplayDriver<ContentOptionsViewModel>` and return a `View` result placed in the `Content` zone of the `Thumbnail` display type. The position after `Content:` controls the order the card appears in.
+
+```csharp
+public sealed class ProductContentsAdminListDisplayDriver : DisplayDriver<ContentOptionsViewModel>
+{
+    public override IDisplayResult Display(ContentOptionsViewModel model, BuildDisplayContext context)
+    {
+        // The first argument is the shape type; the second is the display type/position.
+        return View("ContentsAdminFilters_Thumbnail__Product", model)
+            .Location("Thumbnail", "Content:35");
+    }
+}
+```
+
+Register the driver in your module's `Startup`:
+
+```csharp
+services.AddDisplayDriver<ContentOptionsViewModel, ProductContentsAdminListDisplayDriver>();
+```
+
+### The card template
+
+The shape name `ContentsAdminFilters_Thumbnail__Product` resolves to a Razor view named `ContentsAdminFilters-Product.Thumbnail.cshtml` placed under `Views/Items/`. Each card is automatically wrapped in a Bootstrap card and laid out in the responsive grid, so the template only supplies the card's inner content: a title with its capability icons on the first line, the filter token below it, and a short description.
+
+```html
+@model ShapeViewModel<ContentOptionsViewModel>
+@{
+    var term = Model.Value.FilterResult.FirstOrDefault(x => x.TermName == "product");
+}
+
+<div class="d-flex justify-content-between align-items-center gap-2">
+    <h6 class="card-title fw-semibold mb-0">@T["Product"]</h6>
+    <span class="text-primary text-nowrap">
+        <i class="fa-solid fa-sm fa-bars" title="@T["Supports logical operators and groups"]" aria-hidden="true"></i>
+    </span>
+</div>
+<div class="mt-1"><code class="small text-nowrap">@(term?.ToString() ?? "product:...")</code></div>
+<p class="card-text small text-body-secondary mt-1 mb-0">@T["Filters on a product serial number."]</p>
+```
+
+The capability icons next to the title summarize what the filter accepts. Use the same icons the built-in filters use so the shared legend at the bottom of the dialog stays accurate:
+
+| Icon | Font Awesome class | Meaning |
+|------|--------------------|---------|
+| ✓ | `fa-check` | **Default** term &mdash; may be entered with or without the term name. |
+| − | `fa-minus` | **Single** &mdash; accepts a single value. |
+| ☰ | `fa-bars` | **Multiple** &mdash; supports logical operators (`AND`, `OR`, `NOT`) and groups. |
+
+The same pattern is used by the [users admin list](../Users/README.md#documenting-filters-in-the-admin-ui) (`UserIndexOptions`) and the audit trail admin list (`AuditTrailIndexOptions`); provide a `DisplayDriver<UserIndexOptions>` or `DisplayDriver<AuditTrailIndexOptions>` and matching `UsersAdminFilters-*.Thumbnail.cshtml` / `AuditTrailAdminFilters-*.Thumbnail.cshtml` views to extend those dialogs.
+
+## Content Version Pruning
+
+The `Content Version Pruning` feature (`OrchardCore.Contents.VersionPruning`) provides a background task that periodically deletes old **archived** content item versions — versions that are neither the *latest* nor the *published* one. On sites that are edited often, every save or publish leaves the previous version behind in the database. Over time, these accumulate, growing the storage footprint and slowing version-history queries. Pruning keeps that history bounded.
+
+The latest draft and the published version of an item are **never** deleted; only superseded (archived) versions are eligible.
+
+### Settings
+
+Enable the feature, then configure it under **Configuration** → **Settings** → **Content Version Pruning** (requires the `Manage Content Version Pruning settings` permission, granted to the `Administrator` role by default).
+
+| Setting                              | Default | Description                                                                                                                                  |
+|--------------------------------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| **Disable**                          | `false` | Disables the pruning task while leaving the feature enabled.                                                                                |
+| **Retention period (days)**          | `30`    | Archived versions whose `ModifiedUtc` is older than this many days are eligible for deletion.                                               |
+| **Archived versions to keep per item** | `1`   | The number of most-recent archived versions always retained per content item, regardless of age. Set to `0` to disable this protection.     |
+| **Content types to prune**           | *(none)*| The content types whose archived versions are pruned. When no type is selected, **nothing** is pruned.                                      |
+
+### How it works
+
+A background task — *Content Version Pruning Background Task* — runs on a daily schedule (`0 0 * * *`). It is **disabled by default**; enable it under **Configuration** → **Tasks** → **Background Tasks** in addition to enabling the feature and selecting content types. When it runs, it:
+
+1. Skips entirely if the **Disable** setting is on, or if no content types are selected.
+2. Computes a retention threshold of `now - RetentionDays`.
+3. For each selected content item, orders its archived versions newest-first by `ModifiedUtc` (versions with no `ModifiedUtc` sort last), always keeps the newest **Archived versions to keep** of them, and from the remainder deletes those modified before the threshold (or with no modification date).
+
+Deletions are flushed in batches to keep the unit of work bounded, and a failure to delete one version is logged and skipped without aborting the run.
+
+!!! warning
+    Pruned versions are permanently removed from the database and cannot be restored. Choose a retention period and version-keep count that match your audit and rollback needs before enabling the task.
 
 ## Videos
 

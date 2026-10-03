@@ -1,6 +1,10 @@
 @model DisplaySitemapViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Sitemap"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="SitemapsDisplay" title="@T["Sitemap"]">
+        <breadcrumb-item id="Sitemaps" action="List" controller="Admin" area="OrchardCore.Sitemaps" permission="@SitemapsPermissions.ManageSitemaps.Name">@T["Sitemaps"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 @if (string.IsNullOrEmpty(Site.BaseUrl))
 {
@@ -22,29 +26,33 @@
 </div>
 @* do we need antiforgery here ?*@
 <form>
-    <div class="mb-3">
-        @if (Model.Items.Any())
-        {
-            <ul class="list-group">
-                @foreach (var item in Model.Items)
-                {
-                    item.SitemapPlanId = Model.Sitemap.SitemapId;
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            @if (Model.Items.Any())
+            {
+                <ul class="list-group">
+                    @foreach (var item in Model.Items)
+                    {
+                        item.SitemapPlanId = Model.Sitemap.SitemapId;
 
-                    <li class="list-group-item">
-                        @await DisplayAsync(item)
-                    </li>
-                }
-            </ul>
-        }
-        else
-        {
-            <div class="alert alert-info mb-0" role="alert">
-                @T["<strong>Nothing here!</strong> There are no sources on this sitemap for the moment."]
-            </div>
-        }
+                        <li class="list-group-item">
+                            @await DisplayAsync(item)
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <div class="alert alert-info mb-0" role="alert">
+                    @T["<strong>Nothing here!</strong> There are no sources on this sitemap for the moment."]
+                </div>
+            }
+        </div>
     </div>
-    <div class="mb-3">
-        <a class="btn btn-secondary" asp-route-controller="admin" asp-route-action="List">@T["Back"]</a>
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <a class="btn btn-secondary" asp-route-controller="admin" asp-route-action="List">@T["Back"]</a>
+        </div>
     </div>
 </form>
 

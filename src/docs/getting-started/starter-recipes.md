@@ -11,7 +11,7 @@ The first package `OrchardCore.Application.Cms.Core.Targets` is intended for use
 - Developing a Headless Web Site
 - Developing a Themed Web Site from scratch
 
-The `Core.Targets` package contains the minimum you need to setup an Orchard Core installation.
+The `Core.Targets` package contains the minimum you need to set up an Orchard Core installation.
 It contains `TheAdmin` theme, and two recipes to base your installation on, but no front end themes.
 
 !!! tip
@@ -23,7 +23,7 @@ The second package `OrchardCore.Application.Cms.Targets` contains all of the abo
 - Setup recipes for the Themes
 - Multiple CMS Starter Themes
 
-Recipes in Orchard Core help you get your site setup by enabling features,
+Recipes in Orchard Core help you set up your site by enabling features,
 and / or creating content types, and content for your site.
 
 Orchard Core Themes can contain Razor or Liquid views, and by default use

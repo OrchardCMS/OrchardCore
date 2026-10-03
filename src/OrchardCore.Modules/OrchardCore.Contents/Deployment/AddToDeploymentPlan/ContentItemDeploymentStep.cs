@@ -1,4 +1,5 @@
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan;
 
@@ -7,9 +8,12 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan;
 /// </summary>
 public class ContentItemDeploymentStep : DeploymentStep
 {
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<ContentItemDeploymentStep>("Content Management");
+
     public ContentItemDeploymentStep()
     {
         Name = nameof(ContentItemDeploymentStep);
+        Category = s_category;
     }
 
     public string ContentItemId { get; set; }

@@ -22,7 +22,7 @@ public class FacebookLoginService : IFacebookLoginService
     public async Task<FacebookLoginSettings> LoadSettingsAsync()
     {
         var container = await _siteService.LoadSiteSettingsAsync();
-        return container.As<FacebookLoginSettings>();
+        return container.GetOrCreate<FacebookLoginSettings>();
     }
 
     public async Task UpdateSettingsAsync(FacebookLoginSettings settings)

@@ -27,7 +27,7 @@ To enable the blocks editor for a BagPart, set the **Editor** option to `Blocks`
 
 This can be done in the admin UI:
 
-1. Navigate to **Content Definition** → **Content Types**
+1. Navigate to **Design** → **Content Definition** → **Content Types**
 2. Edit the content type containing the BagPart
 3. Click **Edit** on the BagPart
 4. Set the **Editor** field to `Blocks`
@@ -47,7 +47,7 @@ _contentDefinitionManager.AlterTypeDefinition("MyContentType", type => type
 When the blocks editor is enabled for a BagPart, additional settings become available in the part editor options:
 
 | Setting          | Description                                                                 |
-| ---------------- | --------------------------------------------------------------------------- |
+|------------------|-----------------------------------------------------------------------------|
 | Add Button Text  | Custom text for the "Add" button. Defaults to "Add Block".                  |
 | Modal Title Text | Custom title for the content type picker modal. Defaults to "Select Block". |
 
@@ -142,6 +142,49 @@ The name of a BagPart is used as the differentiator in `placement.json`
     ]
 }
 ```
+
+This targets the BagPart display shape itself. For example, the following hides a named `Services` BagPart on the front end:
+
+```json
+{
+    "BagPart": [
+        {
+            "differentiator": "Services",
+            "place": "-"
+        }
+    ]
+}
+```
+
+To hide or move the **editor** in the admin UI, target the `ContentPart_Edit` wrapper shape instead of `BagPart_Edit`. The part editor is rendered inside this wrapper, whose differentiator is `{ContentType}-{PartName}`.
+
+For example, to hide a named `Services` BagPart on the `LandingPage` content type editor:
+
+```json
+{
+    "ContentPart_Edit": [
+        {
+            "differentiator": "LandingPage-Services",
+            "place": "-"
+        }
+    ]
+}
+```
+
+For a non-named BagPart, use the part type as the part name:
+
+```json
+{
+    "ContentPart_Edit": [
+        {
+            "differentiator": "LandingPage-BagPart",
+            "place": "-"
+        }
+    ]
+}
+```
+
+`BagPart_Edit` only targets the inner editor shape. If you want to hide or reposition the whole editor, including its label and description wrapper, use `ContentPart_Edit`.
 
 ## Video
 

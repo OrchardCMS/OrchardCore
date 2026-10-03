@@ -6,10 +6,12 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Email;
 using OrchardCore.Email.Azure;
+using OrchardCore.Email.Azure.Models;
 using OrchardCore.Email.Azure.Services;
 using OrchardCore.Email.Azure.ViewModels;
+using OrchardCore.Email.Services;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Options;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
 
@@ -17,7 +19,7 @@ namespace OrchardCore.Azure.Email.Drivers;
 
 public sealed class AzureEmailSettingsDisplayDriver : SiteDisplayDriver<AzureEmailSettings>
 {
-    private readonly IShellReleaseManager _shellReleaseManager;
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IEmailAddressValidator _emailValidator;
@@ -25,13 +27,13 @@ public sealed class AzureEmailSettingsDisplayDriver : SiteDisplayDriver<AzureEma
     internal readonly IStringLocalizer S;
 
     public AzureEmailSettingsDisplayDriver(
-        IShellReleaseManager shellReleaseManager,
+        IOptionsUpdateNotifier optionsUpdateNotifier,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IEmailAddressValidator emailValidator,
         IStringLocalizer<AzureEmailSettingsDisplayDriver> stringLocalizer)
     {
-        _shellReleaseManager = shellReleaseManager;
+        _optionsUpdateNotifier = optionsUpdateNotifier;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _emailValidator = emailValidator;
@@ -71,7 +73,7 @@ public sealed class AzureEmailSettingsDisplayDriver : SiteDisplayDriver<AzureEma
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        var emailSettings = site.As<EmailSettings>();
+        var emailSettings = site.GetOrCreate<EmailSettings>();
 
         var hasChanges = model.IsEnabled != settings.IsEnabled;
 
@@ -126,7 +128,10 @@ public sealed class AzureEmailSettingsDisplayDriver : SiteDisplayDriver<AzureEma
 
             if (hasChanges)
             {
-                _shellReleaseManager.RequestRelease();
+                _optionsUpdateNotifier
+                    .RequestUpdate<AzureEmailOptions>()
+                    .RequestUpdate<EmailProviderOptions>()
+                    .RequestUpdate<EmailOptions>();
             }
         }
 

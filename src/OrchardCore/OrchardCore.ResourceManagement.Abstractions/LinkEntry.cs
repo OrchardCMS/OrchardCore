@@ -25,6 +25,17 @@ public class LinkEntry
         set { SetAttribute("rel", value); }
     }
 
+    public string Sizes
+    {
+        get
+        {
+            _builder.Attributes.TryGetValue("sizes", out var value);
+
+            return value;
+        }
+        set => SetAttribute("sizes", value);
+    }
+
     public string Type
     {
         get

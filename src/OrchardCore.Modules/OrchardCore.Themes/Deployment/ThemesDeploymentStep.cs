@@ -1,4 +1,5 @@
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Themes.Deployment;
 
@@ -7,8 +8,11 @@ namespace OrchardCore.Themes.Deployment;
 /// </summary>
 public class ThemesDeploymentStep : DeploymentStep
 {
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<ThemesDeploymentStep>("Theming");
+
     public ThemesDeploymentStep()
     {
         Name = "Themes";
+        Category = s_category;
     }
 }

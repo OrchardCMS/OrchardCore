@@ -13,7 +13,7 @@ namespace OrchardCore.Roles.Migrations;
 
 public sealed class RolesMigrations : DataMigration
 {
-    private static readonly string _alternativeAdminRoleName = "SiteOwner";
+    private static readonly string s_alternativeAdminRoleName = "SiteOwner";
 
     private readonly SystemRoleOptions _systemRoleOptions;
     private readonly ShellSettings _shellSettings;
@@ -175,12 +175,12 @@ public sealed class RolesMigrations : DataMigration
     private static string GenerateNewAdminRoleName(List<IRole> roles)
     {
         var counter = 1;
-        var roleName = _alternativeAdminRoleName;
+        var roleName = s_alternativeAdminRoleName;
 
         while (RoleExists(roles, roleName))
         {
             // Generate names like this SiteOwner1, SiteOwner2...SiteOwner{N}
-            roleName = _alternativeAdminRoleName + counter++;
+            roleName = s_alternativeAdminRoleName + counter++;
         }
 
         return roleName;

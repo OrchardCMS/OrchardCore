@@ -19,6 +19,7 @@ public class LinkTag
         string condition = null;
         string title = null;
         string type = null;
+        string sizes = null;
         bool? appendVersion = null;
 
         Dictionary<string, string> customAttributes = null;
@@ -27,13 +28,30 @@ public class LinkTag
         {
             switch (argument.Name)
             {
-                case "src": src = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "rel": rel = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "condition": condition = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "title": title = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "type": type = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                case "append_version": appendVersion = (await argument.Expression.EvaluateAsync(context)).ToBooleanValue(); break;
-                default: (customAttributes ??= [])[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                case "src":
+                    src = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                    break;
+                case "rel":
+                    rel = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                    break;
+                case "condition":
+                    condition = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                    break;
+                case "title":
+                    title = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                    break;
+                case "type":
+                    type = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                    break;
+                case "sizes":
+                    sizes = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                    break;
+                case "append_version":
+                    appendVersion = (await argument.Expression.EvaluateAsync(context)).ToBooleanValue();
+                    break;
+                default:
+                    (customAttributes ??= [])[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                    break;
             }
         }
 
@@ -62,6 +80,11 @@ public class LinkTag
         if (!string.IsNullOrEmpty(type))
         {
             linkEntry.Type = type;
+        }
+
+        if (!string.IsNullOrEmpty(sizes))
+        {
+            linkEntry.Sizes = sizes;
         }
 
         if (appendVersion.HasValue)

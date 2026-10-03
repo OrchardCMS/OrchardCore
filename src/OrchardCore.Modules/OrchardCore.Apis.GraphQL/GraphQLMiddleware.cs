@@ -17,20 +17,21 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Apis.GraphQL.ValidationRules;
+using OrchardCore.Infrastructure;
 using OrchardCore.Routing;
 
 namespace OrchardCore.Apis.GraphQL;
 
-public class GraphQLMiddleware : IMiddleware
+public sealed class GraphQLMiddleware
 {
     private readonly ILogger _logger;
     private readonly GraphQLSettings _settings;
     private readonly IGraphQLTextSerializer _graphQLTextSerializer;
     private readonly IGraphQLSerializer _serializer;
     private readonly IDocumentExecuter _executer;
-    internal static readonly Encoding _utf8Encoding = new UTF8Encoding(false);
-    private static readonly MediaType _jsonMediaType = new("application/json");
-    private static readonly MediaType _graphQlMediaType = new("application/graphql");
+    internal static readonly Encoding s_utf8Encoding = new UTF8Encoding(false);
+    private static readonly MediaType s_jsonMediaType = new(MediaTypeNames.Application.Json);
+    private static readonly MediaType s_graphQlMediaType = new(MediaTypeNamesExtended.Application.GraphQL);
 
     public GraphQLMiddleware(
         IOptions<GraphQLSettings> settingsOption,
@@ -45,33 +46,40 @@ public class GraphQLMiddleware : IMiddleware
         _graphQLTextSerializer = graphQLTextSerializer;
         _logger = logger;
     }
-    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+
+    public Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         if (!IsGraphQLRequest(context))
         {
-            await next(context);
+            return next(context);
         }
         else
         {
-            var authenticationService = context.RequestServices.GetService<IAuthenticationService>();
-            var authenticateResult = await authenticationService.AuthenticateAsync(context, "Api");
-            if (authenticateResult.Succeeded)
-            {
-                context.User = authenticateResult.Principal;
-            }
-            var authorizationService = context.RequestServices.GetService<IAuthorizationService>();
-            var authorized = await authorizationService.AuthorizeAsync(context.User, GraphQLPermissions.ExecuteGraphQL);
-
-            if (authorized)
-            {
-                await ExecuteAsync(context);
-            }
-            else
-            {
-                await context.ChallengeAsync("Api");
-            }
+            return ProcessGraphQLRequestAsync(context);
         }
     }
+
+    private async Task ProcessGraphQLRequestAsync(HttpContext context)
+    {
+        var authenticationService = context.RequestServices.GetService<IAuthenticationService>();
+        var authenticateResult = await authenticationService.AuthenticateAsync(context, OrchardCoreConstants.AuthenticationSchemes.Api);
+        if (authenticateResult.Succeeded)
+        {
+            context.User = authenticateResult.Principal;
+        }
+        var authorizationService = context.RequestServices.GetService<IAuthorizationService>();
+        var authorized = await authorizationService.AuthorizeAsync(context.User, GraphQLPermissions.ExecuteGraphQL);
+
+        if (authorized)
+        {
+            await ExecuteAsync(context);
+        }
+        else
+        {
+            await context.ChallengeAsync(OrchardCoreConstants.AuthenticationSchemes.Api);
+        }
+    }
+
     private bool IsGraphQLRequest(HttpContext context)
     {
         return context.Request.Path.StartsWithNormalizedSegments(_settings.Path, StringComparison.OrdinalIgnoreCase);
@@ -89,10 +97,10 @@ public class GraphQLMiddleware : IMiddleware
             {
                 var mediaType = new MediaType(context.Request.ContentType);
 
-                if (mediaType.IsSubsetOf(_jsonMediaType) || mediaType.IsSubsetOf(_graphQlMediaType))
+                if (mediaType.IsSubsetOf(s_jsonMediaType) || mediaType.IsSubsetOf(s_graphQlMediaType))
                 {
                     using var sr = new StreamReader(context.Request.Body, leaveOpen: true);
-                    if (mediaType.IsSubsetOf(_graphQlMediaType))
+                    if (mediaType.IsSubsetOf(s_graphQlMediaType))
                     {
                         request = new GraphQLNamedQueryRequest
                         {
@@ -150,6 +158,7 @@ public class GraphQLMiddleware : IMiddleware
             options.OperationName = request.OperationName;
             options.Variables = request.Variables;
             options.UserContext = _settings.BuildUserContext?.Invoke(context);
+            options.User = context.User;
             options.ValidationRules = DocumentValidator.CoreRules
             .Concat(context.RequestServices.GetServices<IValidationRule>())
             .Append(new ComplexityValidationRule(new ComplexityOptions

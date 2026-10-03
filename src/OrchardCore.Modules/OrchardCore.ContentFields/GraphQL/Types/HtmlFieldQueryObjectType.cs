@@ -48,7 +48,7 @@ public class HtmlFieldQueryObjectType : ObjectGraphType<HtmlField>
 
         var html = ctx.Source.Html;
 
-        if (!settings.SanitizeHtml)
+        if (settings.RenderLiquid)
         {
             var model = new EditHtmlFieldViewModel()
             {

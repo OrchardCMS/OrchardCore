@@ -36,13 +36,16 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
             return null;
         }
 
-        return Initialize<AdminSettingsViewModel>("AdminSettings_Edit", model =>
+        return Initialize<AdminSettingsViewModel, AdminSettings>("AdminSettings_Edit", static (model, settings) =>
         {
             model.DisplayThemeToggler = settings.DisplayThemeToggler;
             model.DisplayMenuFilter = settings.DisplayMenuFilter;
+            model.DisplayQuickNavigation = settings.DisplayQuickNavigation;
             model.DisplayNewMenu = settings.DisplayNewMenu;
             model.DisplayTitlesInTopbar = settings.DisplayTitlesInTopbar;
-        }).Location("Content:3")
+            model.ShowBreadcrumb = settings.ShowBreadcrumb;
+            model.MenuBehavior = settings.MenuBehavior;
+        }, settings).Location("Content:3")
         .OnGroup(SettingsGroupId);
     }
 
@@ -61,8 +64,11 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
 
         settings.DisplayThemeToggler = model.DisplayThemeToggler;
         settings.DisplayMenuFilter = model.DisplayMenuFilter;
+        settings.DisplayQuickNavigation = model.DisplayQuickNavigation;
         settings.DisplayNewMenu = model.DisplayNewMenu;
         settings.DisplayTitlesInTopbar = model.DisplayTitlesInTopbar;
+        settings.ShowBreadcrumb = model.ShowBreadcrumb;
+        settings.MenuBehavior = model.MenuBehavior;
 
         return await EditAsync(site, settings, context);
     }

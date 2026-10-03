@@ -3,7 +3,10 @@ using OrchardCore.AdminMenu.AdminNodes;
 using OrchardCore.AdminMenu.Deployment;
 using OrchardCore.AdminMenu.Recipes;
 using OrchardCore.AdminMenu.Services;
+using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
+using OrchardCore.Localization.Data;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
@@ -17,8 +20,10 @@ public sealed class Startup : StartupBase
     {
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
+        services.AddScoped<IJSLocalizer, AdminMenuJSLocalizer>();
 
         services.AddScoped<IAdminMenuService, AdminMenuService>();
+        services.AddScoped<IAdminMenuAccessor, AdminMenuAccessor>();
         services.AddScoped<AdminMenuNavigationProvidersCoordinator>();
 
         services.AddRecipeExecutionStep<AdminMenuStep>();
@@ -30,5 +35,19 @@ public sealed class Startup : StartupBase
 
         // link treeNode
         services.AddAdminNode<LinkAdminNode, LinkAdminNodeNavigationBuilder, LinkAdminNodeDriver>();
+
+        // Migrate admin menu to the 3.0 format.
+        services.AddDataMigration<Migrations>();
+    }
+}
+
+[RequireFeatures("OrchardCore.DataLocalization")]
+public sealed class DataLocalizationStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<ILocalizationDataProvider, AdminMenuDataLocalizationProvider>();
+        services.AddScoped<ILocalizationDataProvider, LinkAdminNodeDataLocalizationProvider>();
+        services.AddScoped<ILocalizationDataProvider, PlaceholderAdminNodeDataLocalizationProvider>();
     }
 }

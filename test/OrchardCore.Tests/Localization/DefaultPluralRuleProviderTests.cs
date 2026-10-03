@@ -12,7 +12,7 @@ public class DefaultPluralRuleProviderTests
     [InlineData("zh-Hans-CN", "zh")]
     [InlineData("zh-Hans", "zh")]
     [InlineData("zh-Hant", "zh")]
-    public void TryGetRuleShouldReturnRuleForTopCulture(string culture, string expected)
+    public void TryGetRule_Default_ReturnsRuleForTopCulture(string culture, string expected)
     {
         var expectedCulture = CultureInfo.GetCultureInfo(expected);
         var testCulture = CultureInfo.GetCultureInfo(culture);

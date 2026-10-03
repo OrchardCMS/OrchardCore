@@ -22,66 +22,26 @@ public class ContentCardShapes : ShapeTableProvider
             {
                 // Defines Edit Alternates for the Content Item being edited.
                 var contentCardEditor = context.Shape;
-                
+
                 // Access properties - works with both dynamic and strongly typed shapes
-                var collectionType = (contentCardEditor as ContentCardShape)?.CollectionShapeType 
+                var collectionType = (contentCardEditor as ContentCardShape)?.CollectionShapeType
                     ?? contentCardEditor.GetProperty<string>("CollectionShapeType");
-                var contentType = (contentCardEditor as ContentCardShape)?.ContentTypeValue 
+                var contentType = (contentCardEditor as ContentCardShape)?.ContentTypeValue
                     ?? contentCardEditor.GetProperty<string>("ContentTypeValue");
-                var parentContentType = (contentCardEditor as ContentCardShape)?.ParentContentType 
+                var parentContentType = (contentCardEditor as ContentCardShape)?.ParentContentType
                     ?? contentCardEditor.GetProperty<string>("ParentContentType");
-                var namedPart = (contentCardEditor as ContentCardShape)?.CollectionPartName 
+                var namedPart = (contentCardEditor as ContentCardShape)?.CollectionPartName
                     ?? contentCardEditor.GetProperty<string>("CollectionPartName");
-                var buildEditor = (contentCardEditor as ContentCardShape)?.BuildEditor 
+                var buildEditor = (contentCardEditor as ContentCardShape)?.BuildEditor
                     ?? contentCardEditor.TryGetProperty<bool>("BuildEditor", out var be) && be;
-                    
+
                 if (buildEditor)
                 {
-                    // Define edit card shape per collection type
-                    // ContentCard_Edit__[CollectionType]
-                    // e.g. ContentCard_Edit__FlowPart, ContentCard_Edit__BagPart, ContentCard_Edit__WidgetsListPart
-                    contentCardEditor.Metadata.Alternates.Add($"{ContentCardEdit}__{collectionType}");
-
-                    // Define edit card shape per content type
-                    // ContentCard_Edit__[ContentType] e.g. ContentCard_Edit__Paragraph, ContentCard_Edit__Form, ContentCard_Edit__Input
-                    contentCardEditor.Metadata.Alternates.Add($"{ContentCardEdit}__{contentType}");
-
-                    // Define edit card shape per content type per collection type
-                    // ContentCard_Edit__[CollectionType]__[ContentType]
-                    // e.g. ContentCard_Edit__FlowPart__Paragraph, ContentCard_Edit__BagPart__Form, ContentCard_Edit__FlowPart__Input
-                    contentCardEditor.Metadata.Alternates.Add($"{ContentCardEdit}__{collectionType}__{contentType}");
-
-                    // If we have Parent Content Type,
-                    if (!string.IsNullOrWhiteSpace(parentContentType))
-                    {
-                        // Define edit card shape for all child  in collection per parent content type
-                        // ContentCard_Edit__[ParentContentType]__[CollectionType]
-                        // e.g. ContentCard_Edit__Page__FlowPart, ContentCard_Edit__Form__FlowPart, ContentCard_Edit__Services__BagPart
-                        contentCardEditor.Metadata.Alternates.Add($"{ContentCardEdit}__{parentContentType}__{collectionType}");
-
-                        // Define edit card shape for selected child  with specific type per parent content type
-                        // ContentCard_Edit__[ParentContentType]__[ContentType]
-                        // e.g. ContentCard_Edit__Page__Form, ContentCard_Edit__Form__Label, ContentCard_Edit__LandingPage__Service
-                        contentCardEditor.Metadata.Alternates.Add($"{ContentCardEdit}__{parentContentType}__{contentType}");
-
-                        // Define edit card shape for selected child  with specific type per parent content type for given collection
-                        // ContentCard_Edit__[ParentContentType]__[CollectionType]__[ContentType] e.g. ContentCard_Edit__LandingPage__FlowPart__Service,
-                        // ContentCard_Edit__LandingPage__BagPart__Service, ContentCard_Edit__Form__FlowPart__Label
-                        contentCardEditor.Metadata.Alternates.Add($"{ContentCardEdit}__{parentContentType}__{collectionType}__{contentType}");
-
-                        if (!string.IsNullOrWhiteSpace(namedPart) && !(namedPart.Equals(collectionType, StringComparison.Ordinal)))
-                        {
-                            // Define edit card shape for selected child  with specific type and partname per parent content type
-                            // ContentCard_Edit__[ParentContentType]__[PartName]
-                            // e.g. ContentCard_Edit__Grid__LeftColumn, ContentCard_Edit__LandingPage__Services
-                            contentCardEditor.Metadata.Alternates.Add($"{ContentCardEdit}__{parentContentType}__{namedPart}");
-
-                            // Define edit card shape for selected child  with specific type and partname per parent content type
-                            // ContentCard_Edit__[ContentType]__[ContentType]
-                            // e.g. ContentCard_Edit__Grid__LeftColumn__Client, ContentCard_Edit__LandingPage__Services__Service
-                            contentCardEditor.Metadata.Alternates.Add($"{ContentCardEdit}__{parentContentType}__{namedPart}__{contentType}");
-                        }
-                    }
+                    contentCardEditor.Metadata.Alternates.AddRange(ContentCardAlternatesFactory.GetEditAlternates(
+                        collectionType,
+                        contentType,
+                        parentContentType,
+                        namedPart));
                 }
             });
 
@@ -90,94 +50,54 @@ public class ContentCardShapes : ShapeTableProvider
             {
                 // Alternates for Outer Frame of ContentCard
                 var contentCardFrame = context.Shape;
-                
+
                 // Access ChildContent - works with both dynamic and strongly typed shapes
-                var childContent = (contentCardFrame as ContentCardFrameShape)?.ChildContent 
+                var childContent = (contentCardFrame as ContentCardFrameShape)?.ChildContent
                     ?? contentCardFrame.GetProperty<IShape>("ChildContent");
-                    
+
                 if (childContent == null)
                 {
                     return;
                 }
-                
+
                 // Access properties from ChildContent
-                var collectionType = (childContent as ContentCardShape)?.CollectionShapeType 
+                var collectionType = (childContent as ContentCardShape)?.CollectionShapeType
                     ?? childContent.GetProperty<string>("CollectionShapeType");
-                var contentType = (childContent as ContentCardShape)?.ContentTypeValue 
+                var contentType = (childContent as ContentCardShape)?.ContentTypeValue
                     ?? childContent.GetProperty<string>("ContentTypeValue");
-                var parentContentType = (childContent as ContentCardShape)?.ParentContentType 
+                var parentContentType = (childContent as ContentCardShape)?.ParentContentType
                     ?? childContent.GetProperty<string>("ParentContentType");
-                var namedPart = (childContent as ContentCardShape)?.CollectionPartName 
+                var namedPart = (childContent as ContentCardShape)?.CollectionPartName
                     ?? childContent.GetProperty<string>("CollectionPartName");
 
-                // Define Frame card shape per collection type
-                // ContentCard_Frame__[CollectionType]
-                // e.g. ContentCard_Frame__FlowPart, ContentCard_Frame__BagPart, ContentCard_Frame__WidgetsListPart
-                contentCardFrame.Metadata.Alternates.Add($"{ContentCardFrame}__{collectionType}");
-
-                // Define Frame card shape per content type
-                // ContentCard_Frame__[ContentType]
-                // e.g. ContentCard_Frame__Paragraph, ContentCard_Frame__Form, ContentCard_Frame__Input
-                contentCardFrame.Metadata.Alternates.Add($"{ContentCardFrame}__{contentType}");
-
-                // Define Frame card shape per content type per collection type
-                // ContentCard_Frame__[CollectionType]__[ContentType]
-                // e.g. ContentCard_Frame__FlowPart__Paragraph, ContentCard_Frame__BagPart__Form, ContentCard_Frame__FlowPart__Input
-                contentCardFrame.Metadata.Alternates.Add($"{ContentCardFrame}__{collectionType}__{contentType}");
-
-                if (!string.IsNullOrWhiteSpace(parentContentType))
-                {
-                    // Define frame card shape for children per parent content type for given collection
-                    // ContentCard_Frame__[ParentContentType]__[CollectionType]
-                    // e.g. ContentCard_Frame__Page__FlowPart, ContentCard_Frame__LandingPage__BagPart, ContentCard_Frame__Form__FlowPart
-                    contentCardFrame.Metadata.Alternates.Add($"{ContentCardFrame}__{parentContentType}__{collectionType}");
-
-                    // Define frame card shape for child with specific type per parent content type
-                    // ContentCard_Frame__[ParentContentType]__[ContentType]
-                    // e.g. ContentCard_Frame__Page__Form, ContentCard_Frame__Form__Label
-                    contentCardFrame.Metadata.Alternates.Add($"{ContentCardFrame}__{parentContentType}__{contentType}");
-
-                    // Define edit frame shape for selected child  with specific type per parent content type for given collection
-                    // ContentCard_Frame__[ParentContentType]__[CollectionType]__[ContentType]
-                    // e.g. ContentCard_Frame__Page__FlowPart__Container, ContentCard_Frame__LandingPage__BagPart__Service, ContentCard_Frame__Form__FlowPart__Label
-                    contentCardFrame.Metadata.Alternates.Add($"{ContentCardFrame}__{parentContentType}__{collectionType}__{contentType}");
-
-                    if (!string.IsNullOrWhiteSpace(namedPart) && !namedPart.Equals(collectionType, StringComparison.Ordinal))
-                    {
-                        // Define frame card shape for child  with specific partname and parent content type
-                        // ContentCard_Frame__[ParentContentType]__[PartName]
-                        // e.g. ContentCard_Frame__Grid__LeftColumn, ContentCard_Frame__LandingPage__Services
-                        contentCardFrame.Metadata.Alternates.Add($"{ContentCardFrame}__{parentContentType}__{namedPart}");
-
-                        // Define edit card shape for selected child with specific type per parent content type
-                        // ContentCard_Frame__[ParentContentType]__[NamedPart]__[ContentType]
-                        // e.g. ContentCard_Frame__Grid__LeftColumn__Client, ContentCard_Frame__LandingPage__Clients__Client
-                        contentCardFrame.Metadata.Alternates.Add($"{ContentCardFrame}__{parentContentType}__{namedPart}__{contentType}");
-                    }
-                }
+                contentCardFrame.Metadata.Alternates.AddRange(ContentCardAlternatesFactory.GetFrameAlternates(
+                    collectionType,
+                    contentType,
+                    parentContentType,
+                    namedPart));
             });
 
         builder.Describe(ContentCardFieldsEdit)
            .OnDisplaying(context =>
            {
                var contentCardEditorFields = context.Shape;
-               
+
                // Access CardShape property - works with both dynamic and strongly typed shapes
-               var cardShape = (contentCardEditorFields as ContentCardFieldsEditShape)?.CardShape 
+               var cardShape = (contentCardEditorFields as ContentCardFieldsEditShape)?.CardShape
                    ?? contentCardEditorFields.GetProperty<IShape>("CardShape");
-                   
+
                if (cardShape == null)
                {
                    return;
                }
-               
+
                // Access CollectionShapeType from CardShape
-               var collectionType = (cardShape as ContentCardShape)?.CollectionShapeType 
+               var collectionType = (cardShape as ContentCardShape)?.CollectionShapeType
                    ?? cardShape.GetProperty<string>("CollectionShapeType");
-                   
+
                if (!string.IsNullOrEmpty(collectionType))
                {
-                   contentCardEditorFields.Metadata.Alternates.Add($"{collectionType}_Fields_Edit");
+                   contentCardEditorFields.Metadata.Alternates.AddRange(ContentCardAlternatesFactory.GetFieldsEditAlternates(collectionType));
                }
            });
 

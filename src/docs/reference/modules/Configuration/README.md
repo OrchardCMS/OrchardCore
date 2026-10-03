@@ -4,18 +4,13 @@ Orchard Core extends ASP.NET Core `IConfiguration` with `IShellConfiguration` to
 
 To learn more about ASP.NET Core `IConfiguration` visit <https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration>.
 
-Note that while this documentation page explains configuration happening in the root web app project on the example of `OrchardCore.Cms.Web.csproj` if you use Orchard from NuGet packages in your own web app then same is available in that web app project too.
+Note that while this documentation page explains configuration in the root web app project by using `OrchardCore.Cms.Web.csproj` as an example, if you use Orchard from NuGet packages in your own web app, the same is available in that web app project too.
 
-## Config Sources
+## Configuration Sources
 
-Orchard Core supports a hierarchy of Configuration Sources
+Orchard Core is built on top of the ASP.NET Core configuration framework, which supports a variety of different configuration options. Developers are not limited to using a single configuration source. In fact, several may be set up together such that a default configuration is overridden by settings from another source if they are present.
 
-* The `Startup` ASP.NET Core Project, e.g. `OrchardCore.Cms.Web.csproj`, `appsettings.json`, or by environment  `appsettings.Development.json`.
-* Global Tenant Configuration `App_Data/appsettings.json`, or by environment `App_Data/appsettings.Development.json`.
-* Individual Tenant Configuration files located under each Tenant Folder in the `App_Data/Sites/{tenant_name}/appsettings.json` folder. **Note:** These are mutable files, and do not support an Environment version.
-* Environment Variables, or AppSettings as Environment Variables via Azure.
-
-The Configuration Sources are loaded in the above order, and settings lower in the hierarchy will override values configured higher up, i.e. an Global Tenant value will always be overridden by an Environment Variable.
+The Configuration Sources are loaded in the order described in [Configuration Sources Order](#configuration-sources-order) below.
 
 !!! note
     The `IShellConfiguration` patterns in the `appsettings.json` examples below will only work for modules that specifically support such configuration. You can check out the given module's code or documentation to see if this is the case.
@@ -32,19 +27,108 @@ Orchard Core stores all Configuration data under the `OrchardCore` section in `a
 }
 ```
 
-Each Orchard Core module has its own configuration section under the `OrchardCore` section:
+Each Orchard Core module has its own configuration section under the `OrchardCore` section. Sections are grouped by service, with a nested section for each provider of the service, so that all the settings of a service are located together. For instance, the Azure Blob Storage configuration of the Media module is located in the `OrchardCore:Media:Azure` section, next to the `OrchardCore:Media:AmazonS3` section, and the SMTP and Azure email providers are configured in the `OrchardCore:Email:Smtp` and `OrchardCore:Email:Azure` sections:
 
 ```json
 {
   "OrchardCore": {
-    "OrchardCore_Media": {
-       // individual module configuration
+    "Media": {
+      // Media module configuration
+      "Azure": {
+        // Azure Blob Storage media configuration
+      }
     }
   }
 }
 ```
 
 See the `appsettings.json` file for more examples.
+
+!!! tip
+    When creating your own modules, follow the same convention: name your configuration sections without an `OrchardCore_` prefix, and group them by service using nesting, e.g. `OrchardCore:MyService:MyProvider`. This keeps environment variable names like `OrchardCore__MyService__MyProvider__MySetting` short.
+
+!!! warning
+    Tenant specific sections share the same path as the configuration sections, e.g. `OrchardCore:MyTenant`. Avoid giving a tenant the name of a configuration section, like `Media` or `Email`.
+
+#### Deprecated section names
+
+The configuration sections used to be prefixed with `OrchardCore_`, and used underscores instead of nesting, e.g. `OrchardCore:OrchardCore_Media_Azure`. These names are deprecated but are still supported, in addition to the current names. When a setting is defined using both names, the value defined with the current name is used, and an array defined with the current name replaces the array defined with the deprecated name. The deprecated names will be removed in a future major version, so you should rename them to the current names.
+
+| Deprecated section name | Current section name |
+| --- | --- |
+| `OrchardCore_Admin` | `Admin` |
+| `OrchardCore_Apis_GraphQL` | `Apis:GraphQL` |
+| `OrchardCore_AutoSetup` | `AutoSetup` |
+| `OrchardCore_AzureAISearch` | `Search:AzureAISearch` |
+| `OrchardCore_BackgroundService` | `BackgroundService` |
+| `OrchardCore_ContentLocalization_CulturePickerOptions` | `ContentLocalization:CulturePickerOptions` |
+| `OrchardCore_ContentTypes` | `ContentTypes` |
+| `OrchardCore_Data_Sqlite` | `Data:Sqlite` |
+| `OrchardCore_Data_TableOptions` | `Data:TableOptions` |
+| `OrchardCore_DataProtection_Azure` | `DataProtection:Azure` |
+| `OrchardCore_Documents` | `Documents` |
+| `OrchardCore_DynamicCache` | `DynamicCache` |
+| `OrchardCore_Elasticsearch` | `Search:Elasticsearch` |
+| `OrchardCore_Email_Azure`, `OrchardCore_Email_AzureCommunicationServices` | `Email:Azure` |
+| `OrchardCore_Email_Smtp`, `OrchardCore_Email` | `Email:Smtp` |
+| `OrchardCore_Facebook` | `Facebook` |
+| `OrchardCore_GitHub` | `Authentication:GitHub` |
+| `OrchardCore_Google` | `Authentication:Google` |
+| `OrchardCore_HealthChecks` | `HealthChecks` |
+| `OrchardCore_KeyVault_Azure` | `KeyVault:Azure` |
+| `OrchardCore_Liquid` | `Liquid` |
+| `OrchardCore_Localization_CultureOptions` | `Localization:CultureOptions` |
+| `OrchardCore_Markdown` | `Markdown` |
+| `OrchardCore_Media` | `Media` |
+| `OrchardCore_Media_AmazonS3` | `Media:AmazonS3` |
+| `OrchardCore_Media_AmazonS3_ImageSharp_Cache` | `Media:AmazonS3:ImageCache` |
+| `OrchardCore_Media_Azure` | `Media:Azure` |
+| `OrchardCore_Media_Azure_ImageSharp_Cache` | `Media:Azure:ImageCache` |
+| `OrchardCore_Media_Slugify` | `Media:Slugify` |
+| `OrchardCore_Microsoft_Authentication_AzureAD` | `Authentication:AzureAD` |
+| `OrchardCore_Microsoft_Authentication_MicrosoftAccount` | `Authentication:MicrosoftAccount` |
+| `OrchardCore_Navigation` | `Navigation` |
+| `OrchardCore_Notifications` | `Notifications` |
+| `OrchardCore_ReCaptcha` | `ReCaptcha` |
+| `OrchardCore_Redis` | `Redis` |
+| `OrchardCore_Resources` | `Resources` |
+| `OrchardCore_ReverseProxy` | `ReverseProxy` |
+| `OrchardCore_Roles` | `Roles` |
+| `OrchardCore_Security` | `Security` |
+| `OrchardCore_Setup` | `Setup` |
+| `OrchardCore_Shells_Azure` | `Shells:Azure` |
+| `OrchardCore_Shells_Database` | `Shells:Database` |
+| `OrchardCore_Sms_AzureCommunicationServices` | `Sms:Azure` |
+| `OrchardCore_Tenants` | `Tenants` |
+| `OrchardCore_Users` | `Users` |
+| `OrchardCore_Workflows` | `Workflows` |
+| `OrchardCore_X`, `OrchardCore_Twitter` | `X` |
+| `OrchardCore_YesSql` | `YesSql` |
+
+For instance, the `OrchardCore__OrchardCore_Media_Azure__ConnectionString` environment variable becomes `OrchardCore__Media__Azure__ConnectionString`.
+
+### IntelliSense and validation of the `appsettings.json` files
+
+The Orchard Core packages that read a configuration section include a `ConfigurationSchema.json` file describing their sections. This file is declared as a JSON schema segment by the package, and flows to the projects referencing the package, even indirectly, for instance through the `OrchardCore.Application.Cms.Targets` package. Visual Studio merges the schemas of the referenced packages to provide IntelliSense, descriptions and validation when editing these files of your web project:
+
+- `appsettings.json` and `appsettings.{Environment}.json`.
+- `App_Data/appsettings.json` and `App_Data/appsettings.{Environment}.json`, the global tenant configuration files, which the `OrchardCore.Application.Cms.Targets` package keeps in the project for this purpose.
+
+Besides the section and setting names, the editor suggests the known values of settings like the database providers, the setup recipes, the time zones, the cultures, the AWS regions, or the security headers. The deprecated section names are flagged as such, and are not suggested.
+
+!!! note
+    Visual Studio applies the same schema to all the `appsettings.json` files of a project, so the tenant specific `App_Data/Sites/{tenant}/appsettings.json` files, whose sections are not nested in an `OrchardCore` section, don't get IntelliSense. Visual Studio Code doesn't support JSON schema segments yet.
+
+!!! tip
+    A module can describe its own configuration sections the same way. Include a `ConfigurationSchema.json` file describing the sections under the `OrchardCore` property at the root of the NuGet package, and a `buildTransitive/{PackageId}.targets` file declaring it as a JSON schema segment:
+
+    ```xml
+    <Project>
+      <ItemGroup>
+        <JsonSchemaSegment Include="$(MSBuildThisFileDirectory)..\ConfigurationSchema.json" FilePathPattern="appsettings\..*json" />
+      </ItemGroup>
+    </Project>
+    ```
 
 ### Tenant Pre-configuration
 
@@ -75,7 +159,7 @@ without having to provide a state value.
 {
   "OrchardCore": {
     "Default": {
-      "OrchardCore_Media": {
+      "Media": {
          // specific tenant configuration
       }
     }
@@ -92,6 +176,11 @@ What if you want all tenants to access the same database? The corresponding conf
   "OrchardCore": {
     "ConnectionString": "...",
     "DatabaseProvider": "SqlConnection",
+    "Tenants": {
+      "RequireTablePrefix": true,
+      "TablePrefixPattern": "{{ ShellSettings.Name }}",
+      "SchemaPattern": "dbo"
+    },
     "Default" : {
       "State": "Uninitialized",
       "TablePrefix": "Default"
@@ -105,7 +194,14 @@ Notes on the above configuration:
 * Be aware that while you can use the same configuration keys for tenants, as demonstrated previously, this is in the root of the `OrchardCore` section.
 * Add the connection string for the database to be used by all tenants.
 * `DatabaseProvider` should correspond to the database engine used, the sample being one for SQL Server.
-* `TablePrefix` needs to be configured to the prefix used by the Default tenant so tables can be separated for each tenant (otherwise just the Default tenant's tables would lack prefixes). Other tenants should then be set up with a different prefix.
+* `Default:TablePrefix` configures the table prefix used by the Default tenant itself so its tables stay isolated from other tenants in the shared database. It does not automatically populate or require prefixes for tenants created later from the admin or API, and by itself it does not lock or hide database provider and connection settings for other tenants.
+* `OrchardCore:Tenants:RequireTablePrefix` can be enabled to require a table prefix whenever a new tenant is created, or an uninitialized tenant is edited, with a database provider that supports table prefixes.
+* For providers that require a connection string, Orchard only treats the root database configuration as preset when both `DatabaseProvider` and `ConnectionString` are configured. Setting only `DatabaseProvider` does not lock setup or tenant database fields and does not bootstrap YesSql for the setup shell.
+* `OrchardCore:Tenants:TablePrefixPattern` can be used to generate each tenant's `TablePrefix` automatically so the admin and API no longer need manual input for it. The pattern uses Fluid syntax with `ShellSettings` in scope, for example `{{ ShellSettings.Name }}`.
+* `OrchardCore:Tenants:SchemaPattern` works the same way for the tenant `Schema`, for example `"dbo"` or `{{ ShellSettings.Name }}`.
+* Pattern-generated and manually entered `TablePrefix` and `Schema` values are validated as SQL identifiers. Use only letters, numbers, and underscores, and start the value with a letter or underscore.
+* When a pattern is configured, Orchard uses the generated value instead of any posted manual value for tenant creation, editing uninitialized tenants, and tenant setup.
+* This shared-database pattern applies to providers such as SQL Server, MySQL, and PostgreSQL. The built-in SQLite provider does not use the root `ConnectionString` setting for tenant data and is not configured as a single shared `.db` file with per-tenant prefixes through this pattern.
 
 This way, the app can be easily moved between environments (like a staging and production one) by configuring the corresponding database's settings in the given environment. Tenants' shell settings won't contain this information, all tenants will use the same, global configuration.
 
@@ -146,13 +242,71 @@ services
 
         tenantServices.PostConfigure<ResourceOptions>(options =>
         {
-            options.UseCdn = shellConfiguration.GetValue<bool>("OrchardCore_Resources:UseCdn");
+            options.UseCdn = shellConfiguration.GetValue<bool>("Resources:UseCdn");
         });
     });
 ```
 
 !!! note
     On the admin there will be no indication that this override happened, and the value displayed there will still be the one configured in site settings, so if you choose to do this you'll need to let your users know.
+
+#### Live tenant options with `IOptionsMonitor`
+
+Orchard Core keeps the standard `IOptionsMonitor<TOptions>` implementation. To make a specific options type refresh after tenant data changes, opt it in by registering Orchard Core's signal-backed `IOptionsChangeTokenSource<TOptions>`.
+
+Use `IOptionsMonitor<TOptions>` when an options type is built from mutable tenant state such as site settings, documents, or other values that can change from the admin UI without restarting the application. Continue to use `IOptions<TOptions>` for values that are effectively immutable for the lifetime of the tenant shell, such as options coming only from startup code or static configuration.
+
+When a settings editor updates data that feeds an options type, request an invalidation through `IOptionsUpdateNotifier`. Orchard Core defers the notification until the current document session commits successfully, so failed or rolled-back updates do not refresh the options cache.
+
+```csharp
+public sealed class Startup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddSignalOptionsChangeTokenSource<MyOptions>();
+    }
+}
+
+public sealed class MySettingsDisplayDriver : SiteDisplayDriver<MySettings>
+{
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
+
+    public MySettingsDisplayDriver(IOptionsUpdateNotifier optionsUpdateNotifier)
+    {
+        _optionsUpdateNotifier = optionsUpdateNotifier;
+    }
+
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, MySettings settings, UpdateEditorContext context)
+    {
+        await context.Updater.TryUpdateModelAsync(settings, Prefix);
+
+        if (context.Updater.ModelState.IsValid)
+        {
+            _optionsUpdateNotifier.RequestUpdate<MyOptions>();
+        }
+
+        return await EditAsync(site, settings, context);
+    }
+}
+
+public sealed class MyService
+{
+    private readonly IOptionsMonitor<MyOptions> _options;
+
+    public MyService(IOptionsMonitor<MyOptions> options)
+    {
+        _options = options;
+    }
+
+    public string GetValue() => _options.CurrentValue.SomeSetting;
+}
+```
+
+Queue update requests only after validation succeeds and only for the options types affected by the change. The notifier is intentionally one-way: Orchard Core coalesces requests per shell scope and dispatches them after commit, so there is no `RemoveUpdateRequest()` API to cancel earlier requests.
+
+For named options, register `IOptionsChangeTokenSource<TOptions>` manually with `SignalOptionsChangeTokenSource<TOptions>` for the matching name and call `RequestUpdate<TOptions>(name)` with the same value.
+
+In multi-node environments, use a distributed `ISignal` implementation such as the Redis Bus feature from [`OrchardCore.Redis`](../Redis/README.md). This ensures every node invalidates its local `IOptionsMonitor<TOptions>` cache and rebuilds the updated options from the committed tenant state.
 
 ### `ORCHARD_APP_DATA` Environment Variable
 
@@ -166,12 +320,12 @@ These settings can also be located in an `App_Data/appsettings.json` folder (not
 
 ### `IShellConfiguration` in the Individual Tenants Folder
 
-These settings are mutable and written during the setup for the Tenant. For this reason reading from Environment Name is not supported.
-Additionally these `appsettings.json` files do not need the `OrchardCore` section
+These settings are mutable and written during the setup for the tenant. For this reason, reading from Environment Name is not supported.
+Additionally, these `appsettings.json` files do not need the `OrchardCore` section.
 
 ```json
 {
-  "OrchardCore_Media": {
+  "Media": {
      // specific tenant configuration
   }
 }
@@ -182,29 +336,27 @@ Additionally these `appsettings.json` files do not need the `OrchardCore` sectio
 Environment variables are also translated into `IShellConfiguration`, for example
 
 ```
-OrchardCore__OrchardCore_Media__MaxFileSize
+OrchardCore__Media__MaxFileSize
 
-OrchardCore__Default__OrchardCore_Media__MaxFileSize
+OrchardCore__Default__Media__MaxFileSize
 
-OrchardCore__MyTenant__OrchardCore_Media__MaxFileSize
+OrchardCore__MyTenant__Media__MaxFileSize
 ```
 
 !!! note
-    To support Linux the underscore `_` is used as a separator, e.g. `OrchardCore_Media`
-    `OrchardCore.Media` is supported for backwards compatibility, but users should migrate to the `_` pattern.
+    A double underscore `__` separates each level of the configuration path, e.g. `OrchardCore__Media__Azure__ConnectionString` for the `OrchardCore:Media:Azure:ConnectionString` setting.
 
-### Order of hierarchy
+### Configuration Sources Order
 
 By default an Orchard Core site will use `CreateDefaultBuilder` in the Startup Project's `Program.cs` which will load `IConfiguration` in the following order
 
-1. Startup project `appsettings.json`
-2. Startup project `appsettings.{environment}.json`
-3. User Secrets (if environment is **Development**)
-4. Environment Variables
-5. Command Line Args
-6. `IShellConfiguration` will then add these
-    1. `App_Data/appsettings.json`
-    2. `App_Data/Sites/{tenant_name}/appsettings.json` for the particular tenant
+1. The `Startup` ASP.NET Core Project, e.g. `OrchardCore.Cms.Web.csproj`, `appsettings.json`, or by environment `appsettings.Development.json`.
+2. User Secrets (if environment is **Development**)
+3. Environment Variables, or AppSettings as Environment Variables via Azure.
+4. Command Line Args
+5. `IShellConfiguration` will then add these
+    1. Global Tenant Configuration `App_Data/appsettings.json`
+    2. Individual Tenant Configuration files located under each Tenant Folder in the `App_Data/Sites/{tenant_name}/appsettings.json` folder.
 
 !!! note
     Configurations with the same key that are loaded later take precedence over those which were loaded earlier (last wins).

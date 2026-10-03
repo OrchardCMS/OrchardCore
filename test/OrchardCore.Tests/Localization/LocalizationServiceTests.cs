@@ -1,4 +1,3 @@
-using OrchardCore.Localization;
 using OrchardCore.Localization.Services;
 using OrchardCore.Settings;
 
@@ -7,7 +6,7 @@ namespace OrchardCore.Tests.Localization;
 public class LocalizationServiceTest
 {
     [Fact]
-    public void GetAllCulturesAndAliases_ShouldContainsChineseCultures()
+    public void GetAllCulturesAndAliases_Default_ContainsChineseCultures()
     {
         // Arrange
         var localizationService = new LocalizationService(Mock.Of<ISiteService>());

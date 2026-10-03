@@ -1,15 +1,26 @@
 @model LayerRuleEditViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Rule"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="LayersRuleEdit" title="@T["Edit Rule"]">
+        <breadcrumb-item id="Layers" action="Index" controller="Admin" area="OrchardCore.Layers" permission="@Permissions.ManageLayers.Name">@T["Widgets and Layers"]</breadcrumb-item>
+        <breadcrumb-item id="Layer" action="Edit" controller="Admin" area="OrchardCore.Layers" route-name="@Model.Name" permission="@Permissions.ManageLayers.Name">@T["Edit Layer - {0}", Model.Name]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Edit" method="post" class="no-multisubmit">
-    @await DisplayAsync(Model.Editor)
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            @await DisplayAsync(Model.Editor)
+        </div>
+    </div>
 
     <input type="hidden" asp-for="Name" />
     <input type="hidden" asp-for="ConditionId" />
 
-    <div class="mb-3 mt-3">
-        <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+    <div class="ocat-wrapper mt-3">
+        <div class="ocat-end-offset">
+            <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+        </div>
     </div>
 </form>

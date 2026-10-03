@@ -9,7 +9,7 @@
 
 <h4>@T["Roles"]</h4>
 <ul class="list-unstyled">
-    @foreach (var roleName in Model.User.RoleNames)
+    @foreach (var roleName in Model.User.RoleNames.OrderBy(r => r))
     {
         if (!roles.TryGetValue(roleName, out var role))
         {

@@ -6,15 +6,14 @@ namespace OrchardCore.Workflows;
 public sealed class ResourceManagementOptionsConfiguration
     : IConfigureOptions<ResourceManagementOptions>
 {
-    private static readonly ResourceManifest _manifest;
+    private static readonly ResourceManifest s_manifest;
 
     static ResourceManagementOptionsConfiguration()
     {
-        _manifest = new ResourceManifest();
+        s_manifest = new ResourceManifest();
 
-        _manifest
+        s_manifest
             .DefineScript("jsplumb")
-            .SetDependencies("jQuery")
             .SetUrl(
                 "~/OrchardCore.Workflows/Scripts/jsplumb.min.js",
                 "~/OrchardCore.Workflows/Scripts/jsplumb.js"
@@ -29,7 +28,7 @@ public sealed class ResourceManagementOptionsConfiguration
             )
             .SetVersion("2.15.5");
 
-        _manifest
+        s_manifest
             .DefineStyle("jsplumbtoolkit-defaults")
             .SetUrl(
                 "~/OrchardCore.Workflows/Styles/jsplumbtoolkit-defaults.min.css",
@@ -45,7 +44,7 @@ public sealed class ResourceManagementOptionsConfiguration
             )
             .SetVersion("2.15.5");
 
-        _manifest
+        s_manifest
             .DefineScript("workflow-editor")
             .SetDependencies("jsplumb", "bootstrap")
             .SetUrl(
@@ -54,7 +53,7 @@ public sealed class ResourceManagementOptionsConfiguration
             )
             .SetVersion("1.0.0");
 
-        _manifest
+        s_manifest
             .DefineScript("workflow-viewer")
             .SetDependencies("jsplumb", "bootstrap")
             .SetUrl(
@@ -63,18 +62,34 @@ public sealed class ResourceManagementOptionsConfiguration
             )
             .SetVersion("1.0.0");
 
-        _manifest
+        s_manifest
             .DefineScript("workflow-url-generator")
-            .SetDependencies("jQuery")
             .SetUrl(
                 "~/OrchardCore.Workflows/Scripts/Workflows/url-generator/workflow-url-generator.min.js",
                 "~/OrchardCore.Workflows/Scripts/Workflows/url-generator/workflow-url-generator.js"
+            )
+            .SetVersion("1.0.0");
+
+        s_manifest
+            .DefineScript("workflow-syntax-toggle")
+            .SetUrl(
+                "~/OrchardCore.Workflows/Scripts/Workflows/syntax-toggle/workflow-syntax-toggle.min.js",
+                "~/OrchardCore.Workflows/Scripts/Workflows/syntax-toggle/workflow-syntax-toggle.js"
+            )
+            .SetVersion("1.0.0");
+
+        s_manifest
+            .DefineScript("workflow-monaco-text-editor")
+            .SetDependencies("monaco")
+            .SetUrl(
+                "~/OrchardCore.Workflows/Scripts/Workflows/monaco-text-editor/workflow-monaco-text-editor.min.js",
+                "~/OrchardCore.Workflows/Scripts/Workflows/monaco-text-editor/workflow-monaco-text-editor.js"
             )
             .SetVersion("1.0.0");
     }
 
     public void Configure(ResourceManagementOptions options)
     {
-        options.ResourceManifests.Add(_manifest);
+        options.ResourceManifests.Add(s_manifest);
     }
 }

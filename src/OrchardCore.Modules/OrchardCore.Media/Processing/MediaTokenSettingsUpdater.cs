@@ -61,7 +61,7 @@ public class MediaTokenSettingsUpdater : FeatureEventHandler, IModularTenantEven
         }
 
         var siteSettings = await _siteService.LoadSiteSettingsAsync();
-        var mediaTokenSettings = siteSettings.As<MediaTokenSettings>();
+        var mediaTokenSettings = siteSettings.GetOrCreate<MediaTokenSettings>();
 
         mediaTokenSettings.HashKey = RandomNumberGenerator.GetBytes(DefaultMediaTokenKeySize);
         siteSettings.Put(mediaTokenSettings);

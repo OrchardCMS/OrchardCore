@@ -16,7 +16,8 @@ public class AssetUrlFilter : ILiquidFilter
     public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
     {
         var url = input.ToStringValue();
-        var imageUrl = _mediaFileStore.MapPathToPublicUrl(url);
+        url = url.RemoveQueryString(out string queryString);
+        var imageUrl = _mediaFileStore.MapPathToPublicUrl(url) + queryString;
 
         return ValueTask.FromResult<FluidValue>(StringValue.Create(imageUrl ?? url));
     }

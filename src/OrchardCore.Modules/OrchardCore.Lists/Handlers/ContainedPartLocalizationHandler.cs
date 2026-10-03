@@ -22,9 +22,8 @@ public class ContainedPartLocalizationHandler : ContentLocalizationPartHandlerBa
     /// </summary>
     public override async Task LocalizingAsync(LocalizationContentContext context, LocalizationPart part)
     {
-        var containedPart = context.ContentItem.As<ContainedPart>();
         // todo: remove this check and change the handler to target ContainedPart when issue 3890 is fixed
-        if (containedPart != null)
+        if (context.ContentItem.TryGet<ContainedPart>(out var containedPart))
         {
             var list = await _session.QueryIndex<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.ContentItemId == containedPart.ListContentItemId).FirstOrDefaultAsync();
             var normalizedCulture = context.Culture.ToLowerInvariant();
@@ -53,8 +52,7 @@ public class LocalizationContainedPartHandler : ContentPartHandler<LocalizationP
     /// </summary>
     public override async Task CreatingAsync(CreateContentContext context, LocalizationPart instance)
     {
-        var containedPart = context.ContentItem.As<ContainedPart>();
-        if (containedPart != null)
+        if (context.ContentItem.TryGet<ContainedPart>(out var containedPart))
         {
             var list = await _session.QueryIndex<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.ContentItemId == containedPart.ListContentItemId).FirstOrDefaultAsync();
             var normalizedCulture = instance.Culture.ToLowerInvariant();

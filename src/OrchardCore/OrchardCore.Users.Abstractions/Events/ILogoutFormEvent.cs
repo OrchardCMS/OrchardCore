@@ -1,0 +1,21 @@
+namespace OrchardCore.Users.Events;
+
+/// <summary>
+/// Contract for logout events.
+/// </summary>
+public interface ILogoutFormEvent
+{
+    /// <summary>
+    /// Occurs when the user is logging out, before the user is signed out.
+    /// </summary>
+    /// <param name="user">The <see cref="IUser"/> that is being signed out.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to cancel the operation.</param>
+    Task LoggingOutAsync(IUser user, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Occurs when the user has logged out, after the user is signed out.
+    /// </summary>
+    /// <param name="user">The <see cref="IUser"/> that was signed out.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to cancel the operation.</param>
+    Task LoggedOutAsync(IUser user, CancellationToken cancellationToken = default);
+}

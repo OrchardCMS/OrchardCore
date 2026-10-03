@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Environment.Shell.Builders;
 
 namespace OrchardCore.Environment.Shell.Scope;
 

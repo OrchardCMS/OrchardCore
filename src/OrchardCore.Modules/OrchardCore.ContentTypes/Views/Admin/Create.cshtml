@@ -1,26 +1,34 @@
 @model CreateTypeViewModel
 
-<script asp-src="~/OrchardCore.ContentTypes/Scripts/autocomplete/autocomplete.js" at="Foot" depends-on="jQuery"></script>
-<zone Name="Title"><h1>@RenderTitleSegments(T["New Content Type"])</h1></zone>
+<script asp-src="~/OrchardCore.ContentTypes/Scripts/autocomplete/autocomplete.js" at="Foot"></script>
+<zone Name="Title">
+    <breadcrumb name="ContentTypesCreate" title="@T["New Content Type"]">
+        <breadcrumb-item id="ContentTypes" action="List" controller="Admin" area="OrchardCore.ContentTypes" permission="@ContentTypesPermissions.ViewContentTypes.Name">@T["Content Types"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <form asp-action="Create">
     @Html.ValidationSummary()
 
-    <div class="mb-3">
-        <label asp-for="DisplayName" class="form-label">@T["Display Name"]</label>
-        <input data-displayname="@Html.IdFor(m => m.DisplayName)" asp-for="DisplayName" class="form-control w-md-75 w-xl-50" autofocus />
-        <span class="hint">@T["Name of the type as it will be displayed on screens."]</span>
+    <div class="ocat-limited-wrapper">
+        <label asp-for="DisplayName" class="ocat-label">@T["Display Name"]</label>
+        <div class="ocat-limited">
+            <input data-displayname="@Html.IdFor(m => m.DisplayName)" asp-for="DisplayName" class="form-control" autofocus />
+            <span class="hint">@T["Name of the type as it will be displayed on screens."]</span>
+        </div>
     </div>
 
-    <div class="mb-3">
-        <label asp-for="Name" class="form-label">@T["Technical Name"]</label>
-        <input data-name="@Html.IdFor(m => m.DisplayName)" asp-for="Name" class="form-control w-md-75 w-xl-50" />
-        <span class="hint">@T["Technical name of the type."]</span>
+    <div class="ocat-limited-wrapper">
+        <label asp-for="Name" class="ocat-label">@T["Technical Name"]</label>
+        <div class="ocat-limited">
+            <input data-name="@Html.IdFor(m => m.DisplayName)" asp-for="Name" class="form-control" />
+            <span class="hint">@T["Technical name of the type."]</span>
+        </div>
     </div>
 
-    <div class="mb-3">
-        <button class="btn btn-primary create" type="submit">@T["Create"]</button>
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <button class="btn btn-primary create" type="submit">@T["Create"]</button>
+        </div>
     </div>
 </form>
-
-

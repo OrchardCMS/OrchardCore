@@ -1,0 +1,24 @@
+using Microsoft.Playwright;
+
+namespace OrchardCore.Tests.Functional.Helpers;
+
+public static class FeatureHelper
+{
+    public static async Task EnableFeatureAsync(this IPage page, string prefix, string featureName)
+    {
+        await page.GotoAsync($"{prefix}/Admin/Features");
+        await page.Locator($"#btn-enable-{featureName.Replace('.', '_')}").ClickAsync();
+
+        // The click submits a form; wait for the resulting navigation so a caller navigating
+        // away immediately afterwards cannot cancel the in-flight enable request.
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+    }
+
+    public static async Task DisableFeatureAsync(this IPage page, string prefix, string featureName)
+    {
+        await page.GotoAsync($"{prefix}/Admin/Features");
+        await page.Locator($"#btn-disable-{featureName.Replace('.', '_')}").ClickAsync();
+        await page.Locator("#modalOkButton").ClickAsync();
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+    }
+}

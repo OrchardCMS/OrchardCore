@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -12,7 +12,7 @@ namespace OrchardCore.ContentTypes.Editors;
 
 public sealed class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisplayDriver
 {
-    private static readonly ContentTypeDefinitionDriverOptions _defaultOptions = new();
+    private static readonly ContentTypeDefinitionDriverOptions s_defaultOptions = new();
     private readonly IStereotypeService _stereotypeService;
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly ContentTypeDefinitionOptions _options;
@@ -103,7 +103,7 @@ public sealed class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisp
 
     private async Task<ContentTypeDefinitionDriverOptions> GetOptionsAsync(ContentTypeDefinition contentTypeDefinition, string stereotype)
     {
-        var options = _defaultOptions;
+        var options = s_defaultOptions;
 
         if (contentTypeDefinition.Name != null
             && _options.ContentTypes.TryGetValue(contentTypeDefinition.Name, out var typeOptions))

@@ -15,6 +15,8 @@ public static class ServiceCollectionExtensions
     /// <summary>
     /// Registers a delegate used to configure asynchronously a type of options just after a tenant container is created.
     /// </summary>
+    [Obsolete("This method is no longer supported and will be removed in a future version. " +
+        "Use the synchronous Configure<TOptions>(this IServiceCollection, Action<TOptions>) method instead.")]
     public static IServiceCollection Configure<TOptions>(
         this IServiceCollection services, Func<IServiceProvider, TOptions, ValueTask> configureAsync)
         where TOptions : class, IAsyncOptions, new()
@@ -38,6 +40,8 @@ public static class ServiceCollectionExtensions
     /// Registers an <see cref="IAsyncConfigureOptions{TOptions}"/> used to configure
     /// asynchronously a type of options just after a tenant container is created.
     /// </summary>
+    [Obsolete("This method is no longer supported and will be removed in a future version. " +
+        "Use the synchronous ConfigureOptions<TConfigureOptions>(this IServiceCollection) method instead.")]
     public static IServiceCollection Configure<TOptions, TConfigure>(this IServiceCollection services)
         where TOptions : class, IAsyncOptions, new()
         where TConfigure : IAsyncConfigureOptions<TOptions>

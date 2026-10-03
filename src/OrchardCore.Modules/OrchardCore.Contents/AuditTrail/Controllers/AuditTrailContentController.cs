@@ -26,7 +26,6 @@ public sealed class AuditTrailContentController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
     private readonly INotifier _notifier;
-    private readonly ILogger _logger;
 
     internal readonly IHtmlLocalizer H;
 
@@ -37,8 +36,7 @@ public sealed class AuditTrailContentController : Controller
         IAuthorizationService authorizationService,
         IContentItemDisplayManager contentItemDisplayManager,
         INotifier notifier,
-        IHtmlLocalizer<AuditTrailContentController> htmlLocalizer,
-        ILogger<AuditTrailContentController> logger)
+        IHtmlLocalizer<AuditTrailContentController> htmlLocalizer)
     {
         _session = session;
         _contentManager = contentManager;
@@ -47,7 +45,6 @@ public sealed class AuditTrailContentController : Controller
         _contentItemDisplayManager = contentItemDisplayManager;
         _notifier = notifier;
         H = htmlLocalizer;
-        _logger = logger;
     }
 
     public async Task<ActionResult> Display(string auditTrailEventId)
@@ -55,7 +52,7 @@ public sealed class AuditTrailContentController : Controller
         var auditTrailContentEvent = (await _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
             .Where(index => index.EventId == auditTrailEventId)
             .FirstOrDefaultAsync())
-            ?.As<AuditTrailContentEvent>();
+            ?.GetOrCreate<AuditTrailContentEvent>();
 
         if (auditTrailContentEvent == null || auditTrailContentEvent.ContentItem == null)
         {
@@ -76,8 +73,7 @@ public sealed class AuditTrailContentController : Controller
             return Forbid();
         }
 
-        var auditTrailPart = contentItem.As<AuditTrailPart>();
-        if (auditTrailPart != null)
+        if (contentItem.TryGet<AuditTrailPart>(out var auditTrailPart))
         {
             auditTrailPart.ShowComment = true;
         }
@@ -95,7 +91,7 @@ public sealed class AuditTrailContentController : Controller
         var contentItem = (await _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
             .Where(index => index.EventId == auditTrailEventId)
             .FirstOrDefaultAsync())
-            ?.As<AuditTrailContentEvent>()
+            ?.GetOrCreate<AuditTrailContentEvent>()
             ?.ContentItem;
 
         if (contentItem == null)
@@ -114,12 +110,14 @@ public sealed class AuditTrailContentController : Controller
 
         if (!result.Succeeded)
         {
-            await _notifier.WarningAsync(H["'{0}' was not restored, the version is not valid.", contentItem.DisplayText]);
-
-            foreach (var error in result.Errors)
+            var errorMessages = result.Errors.Select(error => error.ErrorMessage).ToArray();
+            if (errorMessages.Length > 0)
             {
-                // Pass ErrorMessage as an argument to ensure it is encoded
-                await _notifier.WarningAsync(new LocalizedHtmlString(nameof(AuditTrailContentController.Restore), "{0}", false, error.ErrorMessage));
+                await _notifier.WarningAsync(H.Plural(errorMessages.Length, "'{1}' was not restored, the version is not valid. {2}", "'{1}' was not restored, the version is not valid. Errors: {2}", contentItem.DisplayText, string.Join(", ", errorMessages)));
+            }
+            else
+            {
+                await _notifier.WarningAsync(H["'{0}' was not restored, the version is not valid.", contentItem.DisplayText]);
             }
 
             return RedirectToAction("Index", "Admin", new { area = "OrchardCore.AuditTrail" });

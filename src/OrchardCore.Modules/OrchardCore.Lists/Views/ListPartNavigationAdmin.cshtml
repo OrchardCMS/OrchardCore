@@ -1,16 +1,19 @@
 @using Microsoft.AspNetCore.Authorization
 @using OrchardCore.ContentManagement
 @using OrchardCore.Contents
+@using OrchardCore.ContentTypes
 @using OrchardCore.Localization.Data
+@using System.Security.Claims
 @model OrchardCore.Lists.ViewModels.ListPartNavigationAdminViewModel
 @inject IContentManager ContentManager
 @inject IAuthorizationService AuthorizationService
 @inject IDataLocalizer D
 @{
+    var actionName = ViewContext.RouteData.Values["action"]?.ToString();
     var authorizedContentTypeDefinitions = new List<ContentTypeDefinition>();
     foreach (var contentTypeDefinition in Model.ContainedContentTypeDefinitions)
     {
-        if (!await AuthorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, contentTypeDefinition.Name, User.Identity.Name))
+        if (!await AuthorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, contentTypeDefinition.Name, User.FindFirstValue(ClaimTypes.NameIdentifier)))
         {
             continue;
         }
@@ -22,15 +25,22 @@
     <div class="card-body">
         <div class="d-flex justify-content-end">
 
-            @if (await AuthorizationService.AuthorizeContentTypeDefinitionsAsync(User, CommonPermissions.ViewContent, Model.ContainedContentTypeDefinitions, ContentManager))
+            @if (actionName != "Display" && await AuthorizationService.AuthorizeContentTypeDefinitionsAsync(User, CommonPermissions.ViewContent, Model.ContainedContentTypeDefinitions, ContentManager))
             {
-                <a class="btn btn-secondary me-1" asp-action="Display" asp-controller="Admin" asp-route-contentItemId="@Model.Container.ContentItemId">@T["List Items"]</a>
+                if (Model.ContainedContentTypeDefinitions.Length == 1)
+                {
+                    <a class="btn btn-secondary me-1" asp-action="Display" asp-controller="Admin" asp-route-contentItemId="@Model.Container.ContentItemId">@T["List {0} Items", D[Model.ContainedContentTypeDefinitions[0].DisplayName, DataLocalizationContext.ContentType]]</a>
+                }
+                else
+                {
+                    <a class="btn btn-secondary me-1" asp-action="Display" asp-controller="Admin" asp-route-contentItemId="@Model.Container.ContentItemId">@T["List Items"]</a>
+                }
             }
 
-            @if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, Model.Container))
+            @if (actionName != "Edit" && await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, Model.Container))
             {
                 <a class="btn btn-primary me-1" asp-action="Edit" asp-controller="Admin" asp-route-contentItemId="@Model.Container.ContentItemId" asp-route-area="OrchardCore.Contents">
-                    @T["Edit {0}", D[Model.ContainerContentTypeDefinition?.DisplayName, "Content Types"]]
+                    @T["Edit {0}", D[Model.ContainerContentTypeDefinition?.DisplayName, DataLocalizationContext.ContentType]]
                 </a>
             }
 
@@ -39,7 +49,7 @@
                 var contentTypeDefinition = authorizedContentTypeDefinitions.FirstOrDefault();
 
                 <a class="btn btn-secondary" asp-action="Create" asp-controller="Admin" asp-route-id="@contentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.Container.ContentItemId" asp-route-ListPart.ContainerContentType="@Model.ContainerContentTypeDefinition?.Name" asp-route-ListPart.ContentType="@contentTypeDefinition.Name" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering" asp-route-returnUrl="@FullRequestPath">
-                    @T["Create {0}", D[contentTypeDefinition.DisplayName, "Content Types"]]
+                    @T["Create {0}", D[contentTypeDefinition.DisplayName, DataLocalizationContext.ContentType]]
                 </a>
             }
             else if (authorizedContentTypeDefinitions.Count > 1)

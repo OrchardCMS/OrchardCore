@@ -11,7 +11,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Rules;
 public class RuleTests
 {
     [Fact]
-    public async Task ShouldEvaluateRuleFalseWhenNoConditions()
+    public async Task Evaluate_NoConditions_Succeeds()
     {
         var rule = new Rule();
 
@@ -29,7 +29,7 @@ public class RuleTests
     [InlineData("/notthehomepage", true, false)]
     [InlineData("/", false, false)]
     [InlineData("/notthehomepage", false, true)]
-    public async Task ShouldEvaluateHomepage(string path, bool isHomepage, bool expected)
+    public async Task Evaluate_Homepage_Succeeds(string path, bool isHomepage, bool expected)
     {
         var rule = new Rule
         {
@@ -62,7 +62,7 @@ public class RuleTests
     [Theory]
     [InlineData(true, true)]
     [InlineData(false, false)]
-    public async Task ShouldEvaluateBoolean(bool boolean, bool expected)
+    public async Task Evaluate_Boolean_Succeeds(bool boolean, bool expected)
     {
         var rule = new Rule
         {
@@ -86,7 +86,7 @@ public class RuleTests
     [InlineData(false, true, true)]
     [InlineData(true, true, true)]
     [InlineData(false, false, false)]
-    public async Task ShouldEvaluateAny(bool first, bool second, bool expected)
+    public async Task Evaluate_Any_Succeeds(bool first, bool second, bool expected)
     {
         var rule = new Rule
         {
@@ -117,7 +117,7 @@ public class RuleTests
     [Theory]
     [InlineData("/foo", "/foo", true)]
     [InlineData("/bar", "/foo", false)]
-    public async Task ShouldEvaluateUrlEquals(string path, string requestPath, bool expected)
+    public async Task Evaluate_UrlEquals_Succeeds(string path, string requestPath, bool expected)
     {
         var rule = new Rule
         {
@@ -151,7 +151,7 @@ public class RuleTests
     [Theory]
     [InlineData("isHomepage()", "/", true)]
     [InlineData("isHomepage()", "/foo", false)]
-    public async Task ShouldEvaluateJavascriptCondition(string script, string requestPath, bool expected)
+    public async Task Evaluate_JavascriptCondition_Succeeds(string script, string requestPath, bool expected)
     {
         var rule = new Rule
         {
@@ -184,6 +184,34 @@ public class RuleTests
         Assert.Equal(expected, await ruleService.EvaluateAsync(rule));
     }
 
+    [Fact]
+    public async Task Evaluate_JavascriptConditionWithAsyncGlobalMethod_Succeeds()
+    {
+        var rule = new Rule
+        {
+            Conditions =
+            [
+                new JavascriptCondition
+                {
+                    Script = "isAsyncAllowedAsync()",
+                }
+            ],
+        };
+
+        var services = CreateRuleServiceCollection()
+            .AddRuleCondition<JavascriptCondition, JavascriptConditionEvaluator>()
+            .AddSingleton<IGlobalMethodProvider, AsyncBooleanMethodProvider>()
+            .AddMemoryCache()
+            .AddScripting()
+            .AddJavaScriptEngine();
+
+        var serviceProvider = services.BuildServiceProvider();
+
+        var ruleService = serviceProvider.GetRequiredService<IRuleService>();
+
+        Assert.True(await ruleService.EvaluateAsync(rule));
+    }
+
     public static ServiceCollection CreateRuleServiceCollection()
     {
         var services = new ServiceCollection();
@@ -201,5 +229,22 @@ public class RuleTests
         services.AddTransient<IConfigureOptions<ConditionOperatorOptions>, ConditionOperatorConfigureOptions>();
 
         return services;
+    }
+
+    private sealed class AsyncBooleanMethodProvider : IGlobalMethodProvider
+    {
+        public IEnumerable<GlobalMethod> GetMethods()
+        {
+            yield return new GlobalMethod
+            {
+                Name = "isAsyncAllowed",
+                Method = serviceProvider => (Func<bool>)(() => false),
+                AsyncMethod = serviceProvider => (Func<Task<bool>>)(async () =>
+                {
+                    await Task.Yield();
+                    return true;
+                }),
+            };
+        }
     }
 }

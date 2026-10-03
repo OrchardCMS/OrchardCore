@@ -4,7 +4,7 @@ Here you can find some guidelines and graphic assets for Orchard Core's branding
 
 # Branding Guidelines
 
-When referring to Orchard Core please use one of the logo variations, without altering anything apart from the resolution (so don't change the colors, aspect ratio, graphics, or anything else). Further information on how to use these assets and colors see the [Branding Guidelines (PDF)](assets/orchard-core-branding-guidelines.pdf) (and [here's the AI version](assets/orchard-core-branding-guidelines.ai)).
+When referring to Orchard Core, please use one of the logo variations, without altering anything apart from the resolution (so don't change the colors, aspect ratio, graphics, or anything else). For further information on how to use these assets and colors, see the [Branding Guidelines (PDF)](assets/orchard-core-branding-guidelines.pdf) (and [here's the AI version](assets/orchard-core-branding-guidelines.ai)).
 
 # Logo Variations
 
@@ -32,7 +32,7 @@ Other formats:
 
 ## Light Logo
 
-The background of this logo in the below display is set to black so it's actually visible but otherwise it has a transparent background.
+The background of this logo in the display below is set to black so it's actually visible, but otherwise it has a transparent background.
 
 <img src="assets/logo/light/orchard-core-logo-light.png" alt="Light Orchard Core logo" style="background-color: #000;">
 
@@ -65,7 +65,7 @@ Other formats:
 
 ## Light Symbol Logo
 
-The background of this logo in the below display is set to black so it's actually visible but otherwise it has a transparent background.
+The background of this logo in the display below is set to black so it's actually visible, but otherwise it has a transparent background.
 
 <img src="assets/logo/symbol/light/orchard-core-symbol-logo-light.png" alt="Light Orchard Core symbol logo" style="background-color: #000;">
 
@@ -75,6 +75,21 @@ Other formats:
 - [PDF](assets/logo/symbol/light/orchard-core-symbol-logo-light.pdf)
 - [SVG](assets/logo/symbol/light/orchard-core-symbol-logo-light.svg)
 
+# Printable 3D Logo
+
+A printable 3D model of the Orchard Core symbol logo is available below.
+
+![Orchard Core 3D logo](assets/stl/OrchardCoreLogo3D.png)
+
+- [STL](assets/stl/OrchardCoreLogo3D.stl)
+- [Orca Slicer project file](assets/stl/OrchardCoreLogo3D.3mf) that contains the model with colored surfaces.
+
 # Fonts
 
 We use the [Open Sans font family](https://fonts.google.com/specimen/Open+Sans). You can find all the font files in [the `assets/fonts` folder](https://github.com/OrchardCMS/OrchardCore/tree/main/src/docs/reference/branding/assets/fonts) of this documentation page. Be sure to adhere to [the font's license](assets/fonts/LICENSE.txt).
+
+# Screensaver
+
+Displays a bouncing (DVD-style) Orchard Core logo, with the logo being encoded into the file, i.e. it is self-contained and offline-compatible. Double-clicking anywhere displays a dialog to set up (or remove) a countdown in the middle of the screen.
+
+- [Orchard Core Screensaver with Countdown](assets/orchard-core-screensaver.html)

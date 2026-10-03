@@ -4,5 +4,33 @@
     "name": "notification-manager",
     "source": "Assets/js/notification-manager.js",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "notifications-admin-list",
+    "source": "Assets/ts/notifications-admin-list.ts",
+    "dest": "wwwroot/Scripts/notifications-admin-list/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "notification-task-field-editor",
+    "source": "Assets/ts/notification-task-field-editor.ts",
+    "dest": "wwwroot/Scripts/notification-task-field-editor/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "user-notification-preferences-part",
+    "source": "Assets/ts/user-notification-preferences-part.ts",
+    "dest": "wwwroot/Scripts/user-notification-preferences-part/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "user-notification-navbar",
+    "source": "Assets/ts/user-notification-navbar.ts",
+    "dest": "wwwroot/Scripts/user-notification-navbar/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

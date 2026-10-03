@@ -29,9 +29,7 @@ public class SitemapsRobotsProvider : IRobotsProvider
             return null;
         }
 
-        var settings = site.As<SitemapsRobotsSettings>();
-
-        if (!settings.IncludeSitemaps)
+        if (!site.TryGet<SitemapsRobotsSettings>(out var settings) || !settings.IncludeSitemaps)
         {
             return null;
         }

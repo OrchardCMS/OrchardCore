@@ -69,8 +69,6 @@ public sealed class SqlQueryFieldTypeProvider : ISchemaBuilder
                 var type = querySchema["type"].ToString();
                 FieldType fieldType;
 
-                var metadata = query.As<SqlQueryMetadata>();
-
                 var fieldTypeName = querySchema["fieldTypeName"]?.ToString() ?? query.Name;
 
                 if (query.ReturnContentItems && type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
@@ -163,6 +161,8 @@ public sealed class SqlQueryFieldTypeProvider : ISchemaBuilder
             Type = typeof(ListGraphType<ObjectGraphType<JsonObject>>),
         };
 
+        fieldType.RequirePermission(QueryPermissions.CreatePermissionForQuery(query.Name));
+
         async ValueTask<object> ResolveAsync(IResolveFieldContext<object> context)
         {
             var queryManager = context.RequestServices.GetRequiredService<IQueryManager>();
@@ -202,6 +202,8 @@ public sealed class SqlQueryFieldTypeProvider : ISchemaBuilder
             Resolver = new LockedAsyncFieldResolver<object, object>(ResolveAsync),
             Type = typeType.Type,
         };
+
+        fieldType.RequirePermission(QueryPermissions.CreatePermissionForQuery(query.Name));
 
         async ValueTask<object> ResolveAsync(IResolveFieldContext<object> context)
         {

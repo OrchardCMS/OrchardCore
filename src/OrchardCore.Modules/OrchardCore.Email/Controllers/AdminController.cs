@@ -1,4 +1,3 @@
-using Fluid.Parser;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -7,7 +6,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Email.Core.Services;
+using OrchardCore.Email.Services;
 using OrchardCore.Email.ViewModels;
 
 namespace OrchardCore.Email.Controllers;
@@ -16,8 +15,8 @@ public sealed class AdminController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
-    private readonly EmailOptions _emailOptions;
-    private readonly EmailProviderOptions _providerOptions;
+    private readonly IOptionsMonitor<EmailOptions> _emailOptions;
+    private readonly IOptionsMonitor<EmailProviderOptions> _providerOptions;
     private readonly IEmailService _emailService;
     private readonly IEmailProviderResolver _emailProviderResolver;
 
@@ -27,8 +26,8 @@ public sealed class AdminController : Controller
     public AdminController(
         IAuthorizationService authorizationService,
         INotifier notifier,
-        IOptions<EmailProviderOptions> providerOptions,
-        IOptions<EmailOptions> emailOptions,
+        IOptionsMonitor<EmailProviderOptions> providerOptions,
+        IOptionsMonitor<EmailOptions> emailOptions,
         IEmailService emailService,
         IEmailProviderResolver emailProviderResolver,
         IHtmlLocalizer<AdminController> htmlLocalizer,
@@ -36,8 +35,8 @@ public sealed class AdminController : Controller
     {
         _authorizationService = authorizationService;
         _notifier = notifier;
-        _emailOptions = emailOptions.Value;
-        _providerOptions = providerOptions.Value;
+        _emailOptions = emailOptions;
+        _providerOptions = providerOptions;
         _emailService = emailService;
         _emailProviderResolver = emailProviderResolver;
         H = htmlLocalizer;
@@ -54,7 +53,7 @@ public sealed class AdminController : Controller
 
         var model = new EmailTestViewModel()
         {
-            Provider = _emailOptions.DefaultProviderName,
+            Provider = _emailOptions.CurrentValue.DefaultProviderName,
         };
 
         await PopulateModelAsync(model);
@@ -137,7 +136,7 @@ public sealed class AdminController : Controller
     {
         var options = new List<SelectListItem>();
 
-        foreach (var entry in _providerOptions.Providers)
+        foreach (var entry in _providerOptions.CurrentValue.Providers)
         {
             if (!entry.Value.IsEnabled)
             {

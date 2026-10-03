@@ -5,6 +5,7 @@ import chalk from "chalk";
 import path from "path";
 import { Buffer } from "buffer";
 import process from "node:process";
+import { copyAssetFile } from "./output.mjs";
 
 let action = process.argv[2];
 const encodedGroup = process.argv[3] ?? process.env.ASSETS_MANAGER_ENCODED_GROUP;
@@ -87,7 +88,7 @@ async function processSources() {
                 try {
                     const stat = await fs.stat(normalizedFile);
                     if (!stat.isDirectory()) {
-                        await fs.copy(normalizedFile, target);
+                        await copyAssetFile(normalizedFile, target);
                         console.log(`Copied (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(normalizedFile), chalk.cyan(target));
                         allFilesProcessed++;
                     }

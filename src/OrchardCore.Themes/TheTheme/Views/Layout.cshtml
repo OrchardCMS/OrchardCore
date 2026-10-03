@@ -37,7 +37,7 @@
     <script asp-name="bootstrap" version="5" at="Foot"></script>
     <script asp-name="theme-manager" at="Foot"></script>
 
-    <script asp-name="font-awesome" at="Foot" version="7"></script>
+    <style asp-name="font-awesome" at="Head" version="7"></style>
     <resources type="Header" />
     @await RenderSectionAsync("HeadMeta", required: false)
 </head>
@@ -57,7 +57,7 @@
         </div>
     </nav>
     @await RenderSectionAsync("Header", required: false)
-    <main class="container">
+    <main class="container" style="--oc-notify-offset-top: 60px;">
         @await RenderSectionAsync("Messages", required: false)
         @await RenderBodyAsync()
     </main>

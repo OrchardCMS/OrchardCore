@@ -6,26 +6,17 @@ namespace OrchardCore.Tests.Apis.ContentManagement;
 public class DefaultContentManagerTests
 {
     [Fact]
-    public async Task GetAsync_WithMultipleContentItemIds_ShouldReturnItemsInSameOrderAsInput()
+    public async Task GetAsync_MultipleContentItemIds_ReturnsItemsInSameOrderAsInput()
     {
         using var context = new BlogContext();
         await context.InitializeAsync();
 
         // Create multiple blog posts
-        var blogPost1Id = await context.CreateContentItem("BlogPost", builder =>
-        {
-            builder.DisplayText = "First Blog Post";
-        });
+        var blogPost1Id = await CreateBlogPostAsync(context, "First Blog Post");
 
-        var blogPost2Id = await context.CreateContentItem("BlogPost", builder =>
-        {
-            builder.DisplayText = "Second Blog Post";
-        });
+        var blogPost2Id = await CreateBlogPostAsync(context, "Second Blog Post");
 
-        var blogPost3Id = await context.CreateContentItem("BlogPost", builder =>
-        {
-            builder.DisplayText = "Third Blog Post";
-        });
+        var blogPost3Id = await CreateBlogPostAsync(context, "Third Blog Post");
 
         // Test with different input orders to ensure ordering is preserved
         await context.UsingTenantScopeAsync(async scope =>
@@ -65,21 +56,15 @@ public class DefaultContentManagerTests
     }
 
     [Fact]
-    public async Task GetAsync_WithDuplicateIds_ShouldReturnUniqueItemsInCorrectOrder()
+    public async Task GetAsync_DuplicateIds_ReturnsUniqueItemsInCorrectOrder()
     {
         using var context = new BlogContext();
         await context.InitializeAsync();
 
         // Create blog posts
-        var blogPost1Id = await context.CreateContentItem("BlogPost", builder =>
-        {
-            builder.DisplayText = "First Blog Post";
-        });
+        var blogPost1Id = await CreateBlogPostAsync(context, "First Blog Post");
 
-        var blogPost2Id = await context.CreateContentItem("BlogPost", builder =>
-        {
-            builder.DisplayText = "Second Blog Post";
-        });
+        var blogPost2Id = await CreateBlogPostAsync(context, "Second Blog Post");
 
         await context.UsingTenantScopeAsync(async scope =>
         {
@@ -99,21 +84,15 @@ public class DefaultContentManagerTests
     }
 
     [Fact]
-    public async Task GetAsync_WithPartiallyExistingIds_ShouldReturnFoundItemsInCorrectOrder()
+    public async Task GetAsync_PartiallyExistingIds_ReturnsFoundItemsInCorrectOrder()
     {
         using var context = new BlogContext();
         await context.InitializeAsync();
 
         // Create only some blog posts
-        var blogPost1Id = await context.CreateContentItem("BlogPost", builder =>
-        {
-            builder.DisplayText = "First Blog Post";
-        });
+        var blogPost1Id = await CreateBlogPostAsync(context, "First Blog Post");
 
-        var blogPost3Id = await context.CreateContentItem("BlogPost", builder =>
-        {
-            builder.DisplayText = "Third Blog Post";
-        });
+        var blogPost3Id = await CreateBlogPostAsync(context, "Third Blog Post");
 
         await context.UsingTenantScopeAsync(async scope =>
         {
@@ -132,7 +111,7 @@ public class DefaultContentManagerTests
     }
 
     [Fact]
-    public async Task GetAsync_WithEmptyInput_ShouldReturnEmptyResult()
+    public async Task GetAsync_EmptyInput_ReturnsEmptyResult()
     {
         using var context = new BlogContext();
         await context.InitializeAsync();
@@ -148,7 +127,7 @@ public class DefaultContentManagerTests
     }
 
     [Fact]
-    public async Task GetAsync_WithNullInput_ShouldReturnEmptyResult()
+    public async Task GetAsync_NullInput_ReturnsEmptyResult()
     {
         using var context = new BlogContext();
         await context.InitializeAsync();
@@ -164,21 +143,15 @@ public class DefaultContentManagerTests
     }
 
     [Fact]
-    public async Task GetAsync_WithVersionOptions_ShouldMaintainOrderRegardlessOfVersionRequested()
+    public async Task GetAsync_VersionOptions_MaintainOrderRegardlessOfVersionRequested()
     {
         using var context = new BlogContext();
         await context.InitializeAsync();
 
         // Create and publish blog posts
-        var blogPost1Id = await context.CreateContentItem("BlogPost", builder =>
-        {
-            builder.DisplayText = "First Blog Post";
-        });
+        var blogPost1Id = await CreateBlogPostAsync(context, "First Blog Post");
 
-        var blogPost2Id = await context.CreateContentItem("BlogPost", builder =>
-        {
-            builder.DisplayText = "Second Blog Post";
-        });
+        var blogPost2Id = await CreateBlogPostAsync(context, "Second Blog Post");
 
         await context.UsingTenantScopeAsync(async scope =>
         {
@@ -205,19 +178,16 @@ public class DefaultContentManagerTests
     }
 
     [Fact]
-    public async Task GetAsync_WithLargeSetOfIds_ShouldMaintainOrderAtScale()
+    public async Task GetAsync_LargeSetOfIds_MaintainOrderAtScale()
     {
         using var context = new BlogContext();
         await context.InitializeAsync();
 
         // Create a larger set of blog posts
         var createdIds = new List<string>();
-        for (int i = 0; i < 10; i++)
+        for (var i = 0; i < 10; i++)
         {
-            var blogPostId = await context.CreateContentItem("BlogPost", builder =>
-            {
-                builder.DisplayText = $"Blog Post {i}";
-            });
+            var blogPostId = await CreateBlogPostAsync(context, $"Blog Post {i}");
             createdIds.Add(blogPostId);
         }
 
@@ -241,5 +211,15 @@ public class DefaultContentManagerTests
                 Assert.Equal(shuffledOrder[i], resultIds[i]);
             }
         });
+    }
+
+    private static async Task<string> CreateBlogPostAsync(BlogContext context, string displayText)
+    {
+        var contentItemId = await context.CreateContentItem("BlogPost", builder =>
+        {
+            builder.DisplayText = displayText;
+        });
+
+        return contentItemId;
     }
 }

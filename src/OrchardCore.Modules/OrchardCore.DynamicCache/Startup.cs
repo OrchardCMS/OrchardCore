@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DynamicCache.EventHandlers;
 using OrchardCore.DynamicCache.Services;
@@ -36,6 +35,7 @@ public sealed class Startup : StartupBase
         services.AddTagHelpers<CacheDependencyTagHelper>();
 
         services.AddTransient<IConfigureOptions<CacheOptions>, CacheOptionsConfiguration>();
-        services.Configure<DynamicCacheOptions>(_shellConfiguration.GetSection("OrchardCore_DynamicCache"));
+        // The 'OrchardCore_DynamicCache' section is deprecated and will be removed in a future major version, use 'DynamicCache' instead.
+        services.Configure<DynamicCacheOptions>(_shellConfiguration.GetSectionCompat("DynamicCache", "OrchardCore_DynamicCache"));
     }
 }

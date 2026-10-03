@@ -35,3 +35,37 @@ The following properties are available in the `TitlePartViewModel` class.
 |-------------|-------------|---------------------------------|
 | `Title`     | `string`    | The title property of the part. |
 | `TitlePart` | `TitlePart` | The `TitlePart` instance.       |
+
+## Placement
+
+For front-end placement, the `TitlePart` shape uses the part name as its differentiator.
+
+For example, to hide the title on the front end:
+
+```json
+{
+    "TitlePart": [
+        {
+            "differentiator": "TitlePart",
+            "place": "-"
+        }
+    ]
+}
+```
+
+To hide or move the **editor** in the admin UI, target the `ContentPart_Edit` wrapper shape instead of `TitlePart_Edit`. The wrapper differentiator is `{ContentType}-{PartName}`.
+
+For example, to hide the `TitlePart` editor row on the `Article` content type editor:
+
+```json
+{
+    "ContentPart_Edit": [
+        {
+            "differentiator": "Article-TitlePart",
+            "place": "-"
+        }
+    ]
+}
+```
+
+`TitlePart_Edit` only targets the inner editor shape. Use `ContentPart_Edit` when you want to hide or move the whole editor row, including its wrapper.

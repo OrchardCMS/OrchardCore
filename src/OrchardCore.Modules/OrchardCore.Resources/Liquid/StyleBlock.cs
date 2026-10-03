@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using System.Text.Encodings.Web;
 using Cysharp.Text;
 using Fluid;
@@ -11,7 +12,7 @@ namespace OrchardCore.Resources.Liquid;
 
 public class StyleBlock
 {
-    private static readonly char[] _separators = [',', ' '];
+    private static readonly char[] s_separators = [',', ' '];
 
     public static async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
     {
@@ -89,7 +90,7 @@ public class StyleBlock
             // This allows additions to the pre registered style dependencies.
             if (!string.IsNullOrEmpty(dependsOn))
             {
-                setting.SetDependencies(dependsOn.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
+                setting.SetDependencies(dependsOn.Split(s_separators, StringSplitOptions.RemoveEmptyEntries));
             }
 
             var content = "";
@@ -152,7 +153,7 @@ public class StyleBlock
             // If no type was specified, define a default one
             if (!builder.Attributes.ContainsKey("type"))
             {
-                builder.Attributes.Add("type", "text/css");
+                builder.Attributes.Add("type", MediaTypeNames.Text.Css);
             }
 
             if (at == ResourceLocation.Inline)

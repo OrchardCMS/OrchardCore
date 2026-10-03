@@ -12,7 +12,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController;
 public class BlogPostApiControllerTests
 {
     [Fact]
-    public async Task ShouldCreateDraftOfExistingContentItem()
+    public async Task Create_DraftOfExistingContentItem_Succeeds()
     {
         using var context = new BlogPostApiControllerContext();
 
@@ -31,7 +31,7 @@ public class BlogPostApiControllerTests
     }
 
     [Fact]
-    public async Task ShouldCreateAndPublishExistingContentItem()
+    public async Task Create_PublishExistingContentItem_Succeeds()
     {
         using var context = new BlogPostApiControllerContext();
 
@@ -51,7 +51,7 @@ public class BlogPostApiControllerTests
     }
 
     [Fact]
-    public async Task ShouldOnlyCreateTwoContentItemRecordsForExistingContentItem()
+    public async Task Only_CreateTwoContentItemRecordsForExistingContentItem_Succeeds()
     {
         using var context = new BlogPostApiControllerContext();
 
@@ -71,12 +71,12 @@ public class BlogPostApiControllerTests
             var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
                 x.ContentType == "BlogPost").ListAsync();
 
-            Assert.Equal(2, blogPosts.Count());
+            Assert.Equal(2, blogPosts.Count);
         });
     }
 
     [Fact]
-    public async Task ShouldCreateDraftOfNewContentItem()
+    public async Task Create_DraftOfNewContentItem_Succeeds()
     {
         using var context = new BlogPostApiControllerContext();
 
@@ -128,11 +128,11 @@ public class BlogPostApiControllerTests
         Assert.True(draftContentItem.Latest);
         Assert.False(draftContentItem.Published);
         Assert.Equal(displayText, draftContentItem.DisplayText);
-        Assert.NotNull(draftContentItem.As<AutoroutePart>());
+        Assert.NotNull(draftContentItem.GetOrCreate<AutoroutePart>());
     }
 
     [Fact]
-    public async Task ShouldCreateAndPublishNewContentItem()
+    public async Task Create_PublishNewContentItem_Succeeds()
     {
         using var context = new BlogPostApiControllerContext();
 
@@ -185,11 +185,11 @@ public class BlogPostApiControllerTests
         Assert.True(publishedContentItem.Latest);
         Assert.True(publishedContentItem.Published);
         Assert.Equal(displayText, publishedContentItem.DisplayText);
-        Assert.Equal(path, publishedContentItem.As<AutoroutePart>()?.Path);
+        Assert.Equal(path, publishedContentItem.GetOrCreate<AutoroutePart>()?.Path);
     }
 
     [Fact]
-    public async Task ShouldFailValidationWhenAutoroutePathIsNotUnique()
+    public async Task Fail_AutoroutePathIsNotUnique_Succeeds()
     {
         using var context = new BlogPostApiControllerContext();
 
@@ -251,7 +251,7 @@ public class BlogPostApiControllerTests
     }
 
     [Fact]
-    public async Task ShouldGenerateUniqueAutoroutePath()
+    public async Task Generate_UniqueAutoroutePath_Succeeds()
     {
         using var context = new BlogPostApiControllerContext();
 
@@ -308,7 +308,7 @@ public class BlogPostApiControllerTests
 
             // The Autoroute part was not welded on, so ContentManager.NewAsync should add it
             // with an empty path and then generate a unique path from the liquid pattern.
-            Assert.Equal("blog/some-other-blog-post", publishedContentItem.As<AutoroutePart>().Path);
+            Assert.Equal("blog/some-other-blog-post", publishedContentItem.GetOrCreate<AutoroutePart>().Path);
         });
     }
 }

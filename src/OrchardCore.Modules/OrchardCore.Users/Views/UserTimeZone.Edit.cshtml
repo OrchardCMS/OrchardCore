@@ -1,17 +1,23 @@
+@using OrchardCore.Modules
 @model UserTimeZoneViewModel
-@inject OrchardCore.Modules.IClock Clock
 
-<div class="mb-3" asp-validation-class-for="TimeZoneId">
-    <label asp-for="TimeZoneId" class="form-label">@T["Default Time Zone"]</label>
-    <select asp-for="TimeZoneId" class="form-select">
-        <option value="">@T["Use site's time zone"]</option>
-        @foreach (var timeZone in Clock.GetTimeZones())
+@inject ITimeZoneSelectListProvider TimeZoneSelectListProvider
+@{
+    var timeZoneSelectList = (await TimeZoneSelectListProvider.GetTimeZoneSelectListAsync())
+        .Select(item => new SelectListItem
         {
-            <option value="@timeZone.TimeZoneId" selected="@(Model.TimeZoneId == timeZone.TimeZoneId)">
-                @timeZone
-            </option>
-        }
-    </select>
-    <span asp-validation-for="TimeZoneId"></span>
-    <span class="hint">@T["Determines the time zone used when displaying and editing dates and times."]</span>
+            Value = item.Key,
+            Text = item.Value
+        });
+}
+
+<div class="ocat-wrapper" asp-validation-class-for="TimeZoneId">
+    <label asp-for="TimeZoneId" class="ocat-label">@T["Default Time Zone"]</label>
+    <div class="ocat-end">
+        <select asp-for="TimeZoneId" class="form-select" asp-items="timeZoneSelectList">
+            <option value="">@T["Use site's time zone"]</option>
+        </select>
+        <span asp-validation-for="TimeZoneId"></span>
+        <span class="hint">@T["Determines the time zone used when displaying and editing dates and times."]</span>
+    </div>
 </div>

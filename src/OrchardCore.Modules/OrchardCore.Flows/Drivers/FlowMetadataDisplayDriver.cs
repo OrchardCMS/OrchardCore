@@ -10,9 +10,7 @@ public sealed class FlowMetadataDisplayDriver : ContentDisplayDriver
 {
     public override IDisplayResult Edit(ContentItem model, BuildEditorContext context)
     {
-        var flowMetadata = model.As<FlowMetadata>();
-
-        if (flowMetadata == null)
+        if (!model.TryGet<FlowMetadata>(out var flowMetadata))
         {
             return null;
         }
@@ -26,9 +24,7 @@ public sealed class FlowMetadataDisplayDriver : ContentDisplayDriver
 
     public override async Task<IDisplayResult> UpdateAsync(ContentItem contentItem, UpdateEditorContext context)
     {
-        var flowMetadata = contentItem.As<FlowMetadata>();
-
-        if (flowMetadata == null)
+        if (!contentItem.TryGet<FlowMetadata>(out _))
         {
             return null;
         }

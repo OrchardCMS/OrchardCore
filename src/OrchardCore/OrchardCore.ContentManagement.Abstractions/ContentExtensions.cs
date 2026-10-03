@@ -18,7 +18,7 @@ public static class ContentExtensions
         MergeNullValueHandling = MergeNullValueHandling.Merge,
     };
 
-    private static readonly JsonSerializerOptions _jsonReadExistingObjectSettings = new(JOptions.Default)
+    private static readonly JsonSerializerOptions s_jsonReadExistingObjectSettings = new(JOptions.Default)
     {
         DefaultIgnoreCondition = JsonIgnoreCondition.Never,
     };
@@ -144,7 +144,7 @@ public static class ContentExtensions
             {
                 element.Data = JObject.FromObject(element);
             }
-            
+
             element.ContentItem = contentElement.ContentItem;
 
             contentElement.Data[name] = element.Data;
@@ -198,7 +198,7 @@ public static class ContentExtensions
         var elementData = contentElement.Data[name] as JsonObject;
         if (elementData is not null)
         {
-            elementData.Merge(JObject.FromObject(element, _jsonReadExistingObjectSettings), _jsonMergeSettings);
+            elementData.Merge(JObject.FromObject(element, s_jsonReadExistingObjectSettings), _jsonMergeSettings);
         }
         else
         {

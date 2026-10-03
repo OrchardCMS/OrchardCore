@@ -1,20 +1,3 @@
 <a id="exportContentToDeploymentTargetBulkActions" class="dropdown-item" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to export these items?"]">@T["Export to deployment target"]</a>
 
-<script at="Foot" depends-on="jQuery">
-    $(function () {
-        $('#exportContentToDeploymentTargetBulkActions').on('click', function () {
-            if ($(":checkbox[name='itemIds']:checked").length > 1) {
-                var $this = $(this);
-                confirmDialog({
-                    ...$this.data(), callback: function (r) {
-                        if (r) {
-                            console.log('t')
-                            var modal = new bootstrap.Modal($('#modalExportContentToDeploymentTargetContentBulkActionsTarget'));
-                            modal.show();
-                        }
-                    }
-                });
-            }
-        });
-    });
-</script>
+<script asp-src="~/OrchardCore.Contents/Scripts/deployment-modals/export-to-deployment-target-bulk-button.min.js" debug-src="~/OrchardCore.Contents/Scripts/deployment-modals/export-to-deployment-target-bulk-button.js" at="Foot" type="module"></script>

@@ -10,8 +10,7 @@ public sealed class HtmlBodyMetaWeblogDriver : MetaWeblogDriver
 {
     public override void BuildPost(XRpcStruct rpcStruct, XmlRpcContext context, ContentItem contentItem)
     {
-        var bodyPart = contentItem.As<HtmlBodyPart>();
-        if (bodyPart == null)
+        if (!contentItem.TryGet<HtmlBodyPart>(out var bodyPart))
         {
             return;
         }
@@ -21,7 +20,7 @@ public sealed class HtmlBodyMetaWeblogDriver : MetaWeblogDriver
 
     public override void EditPost(XRpcStruct rpcStruct, ContentItem contentItem)
     {
-        if (contentItem.As<HtmlBodyPart>() != null)
+        if (contentItem.TryGet<HtmlBodyPart>(out _))
         {
             contentItem.Alter<HtmlBodyPart>(x => x.Html = rpcStruct.Optional<string>("description"));
         }

@@ -22,6 +22,8 @@ using OrchardCore.Microsoft.Authentication.Services;
 using OrchardCore.Microsoft.Authentication.Settings;
 using OrchardCore.Secrets;
 using OrchardCore.Settings;
+using OrchardCore.Sms.Models;
+using OrchardCore.Sms.Services;
 using OrchardCore.Twitter.Services;
 using OrchardCore.Twitter.Settings;
 using OrchardCore.Twitter.Signin.Configuration;
@@ -130,6 +132,25 @@ public class AuthenticationSecretReferenceTests
         var options = new TwitterOptions();
         configuration.Configure(TwitterDefaults.AuthenticationScheme, options);
         Assert.Equal("resolved", options.ConsumerSecret);
+    }
+
+    [Fact]
+    public void Twilio_ResolvesReferenceInOptions()
+    {
+        _site.Put(new TwilioSettings
+        {
+            IsEnabled = true,
+            AccountSID = "account",
+            PhoneNumber = "+15555555555",
+            AuthTokenSecretName = "reference",
+        });
+        var configuration = new TwilioOptionsConfiguration(_siteService.Object, new EphemeralDataProtectionProvider(), _manager.Object);
+        var options = new TwilioOptions();
+
+        configuration.Configure(options);
+
+        Assert.True(options.IsEnabled);
+        Assert.Equal("resolved", options.AuthToken);
     }
 
     private static IStringLocalizer<T> Localizer<T>()

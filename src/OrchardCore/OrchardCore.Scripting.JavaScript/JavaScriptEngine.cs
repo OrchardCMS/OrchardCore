@@ -1,4 +1,8 @@
+using Acornima.Ast;
 using Jint;
+using Jint.Constraints;
+using Jint.Native;
+using Jint.Runtime.Descriptors;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
@@ -8,45 +12,233 @@ namespace OrchardCore.Scripting.JavaScript;
 
 public sealed class JavaScriptEngine : IScriptingEngine
 {
+    private static readonly MemoryCacheEntryOptions ScriptCacheEntryOptions = new MemoryCacheEntryOptions()
+        .SetSlidingExpiration(TimeSpan.FromMinutes(30))
+        ;
+
+    // The attributes Engine.SetValue(string, Delegate) gives a global, so that a lazily declared global is
+    // indistinguishable from an eagerly set one once it is materialized.
+    private const PropertyFlag GlobalPropertyFlags = PropertyFlag.NonEnumerable;
+
     private readonly IMemoryCache _memoryCache;
     private readonly JintOptions _jintOptions;
+    private readonly Dictionary<string, LazyGlobalMethod> _lazyGlobals;
 
-    public JavaScriptEngine(IMemoryCache memoryCache, IOptions<JintOptions> jintOptions)
+    public JavaScriptEngine(
+        IMemoryCache memoryCache,
+        IOptions<JintOptions> jintOptions,
+        IEnumerable<IGlobalMethodProvider> globalMethodProviders)
     {
         _memoryCache = memoryCache;
         _jintOptions = jintOptions.Value;
+        _jintOptions.ExperimentalFeatures |= ExperimentalFeature.TaskInterop;
+        _lazyGlobals = RegisterLazyGlobals(_jintOptions, globalMethodProviders);
     }
 
     public string Prefix => "js";
 
+    /// <summary>
+    /// Creates a scope backed by a new engine.
+    /// </summary>
+    /// <remarks>
+    /// The globals of the registered <see cref="IGlobalMethodProvider"/> instances are installed on every
+    /// engine as lazy properties, whether or not <paramref name="methods"/> contains them. A lazy property
+    /// only builds its delegate when a script actually reads the name, so the ones a script does not use
+    /// cost nothing. Methods that are not registered by a provider, such as the ones a caller adds for a
+    /// single evaluation, are installed eagerly and take precedence over a registered global of the same name.
+    /// </remarks>
     public IScriptingScope CreateScope(IEnumerable<GlobalMethod> methods, IServiceProvider serviceProvider, IFileProvider fileProvider, string basePath)
     {
         var engine = new Engine(_jintOptions);
 
-        foreach (var method in methods)
-        {
-            engine.SetValue(method.Name, method.Method(serviceProvider));
-        }
-
-        return new JavaScriptScope(engine, serviceProvider);
+        return new JavaScriptScope(engine, serviceProvider, methods, _lazyGlobals, ownsEngine: true);
     }
 
     public object Evaluate(IScriptingScope scope, string script)
     {
-        static void ThrowInvalidScopeTypeException()
+        var jsScope = GetJavaScriptScope(scope);
+
+        var result = jsScope.Engine.Evaluate(PrepareScript(script)).ToObject();
+
+        return result;
+    }
+
+    /// <summary>
+    /// Evaluates a script, observing <paramref name="cancellationToken"/> for the whole evaluation.
+    /// </summary>
+    /// <remarks>
+    /// Jint's own <c>EvaluateAsync</c> observes the token only while awaiting promise settlement — the
+    /// script is interpreted to completion first — so forwarding it there bounds an evaluation that awaits
+    /// something and nothing at all for one that does not. A script that never yields is the case that
+    /// matters, and it was the case the token did not cover.
+    /// <para>
+    /// The interpreter is bounded instead by the engine's <see cref="OperationDeadlineConstraint"/>, armed
+    /// here with the token and disarmed in the <see langword="finally"/>. It is armed with
+    /// <see cref="Timeout.InfiniteTimeSpan"/>, which is that constraint's cancellation-only shape: no time
+    /// budget is introduced, because how long a script may run is a policy for the site to set through
+    /// <c>IOptions&lt;Jint.Options&gt;</c> and not for this method to invent.
+    /// </para>
+    /// <para>
+    /// Cancellation surfaces as <see cref="OperationCanceledException"/> carrying the token, the type the
+    /// rest of a .NET call stack already filters on, rather than as a scripting error. A token cancelled
+    /// before the call is observed before the script starts; one cancelled while the script is running is
+    /// observed on the engine's amortized constraint cadence, so a runaway script is stopped within a
+    /// bounded number of statements rather than at the exact statement the cancellation arrived. That
+    /// cadence is what keeps the interpreter's tight-loop lane armed, and it is the same one the built-in
+    /// <c>CancellationToken</c> and <c>TimeoutInterval</c> constraints are checked on.
+    /// </para>
+    /// </remarks>
+    public async Task<object> EvaluateAsync(IScriptingScope scope, string script, CancellationToken cancellationToken = default)
+    {
+        // A token that is already cancelled means the work should not start, and saying so here is what
+        // makes that deterministic: the constraint below is amortized, so it is consulted on a statement
+        // cadence rather than at every statement, and a script small enough to finish inside that cadence
+        // would otherwise run to completion.
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var jsScope = GetJavaScriptScope(scope);
+        var preparedScript = PrepareScript(script);
+
+        // Find() walks the engine's constraints, so it is only worth asking when there is a token that can
+        // actually be cancelled. CancellationToken.None never can, which is what every caller in this
+        // repository passes today.
+        var deadline = cancellationToken.CanBeCanceled
+            ? jsScope.Engine.Constraints.Find<OperationDeadlineConstraint>()
+            : null;
+
+        if (deadline is null)
+        {
+            // Either there is nothing to observe, or a site has replaced the constraints this module
+            // registers. Neither is a reason to fail the evaluation; it behaves as it did before.
+            var unbounded = await jsScope.Engine.EvaluateAsync(preparedScript, cancellationToken);
+
+            return unbounded.ToObject();
+        }
+
+        deadline.Begin(Timeout.InfiniteTimeSpan, cancellationToken);
+
+        try
+        {
+            var result = await jsScope.Engine.EvaluateAsync(preparedScript, cancellationToken);
+
+            return result.ToObject();
+        }
+        finally
+        {
+            // Awaited rather than returned, so the constraint is disarmed once the evaluation has actually
+            // finished rather than once its Task exists. An engine that outlives this call - a scope held
+            // for a whole request - must not carry a finished evaluation's token into the next one.
+            deadline.End();
+        }
+    }
+
+    private Prepared<Script> PrepareScript(string script)
+        => _memoryCache.GetOrCreate(
+            new PreparedScriptCacheKey(script),
+            static entry => Engine.PrepareScript(((PreparedScriptCacheKey)entry.Key).Script),
+            ScriptCacheEntryOptions);
+
+    private static JavaScriptScope GetJavaScriptScope(IScriptingScope scope)
+    {
+        if (scope is not JavaScriptScope jsScope)
         {
             throw new ArgumentException($"Expected a scope of type {nameof(JavaScriptScope)}", nameof(scope));
         }
 
-        if (scope is not JavaScriptScope jsScope)
+        return jsScope;
+    }
+
+    /// <summary>
+    /// Namespaces the prepared script entries stored in the shared <see cref="IMemoryCache"/>. Using a
+    /// dedicated key type instead of the raw script text guarantees that a key registered by another
+    /// component cannot be read back as a prepared script.
+    /// </summary>
+    private readonly record struct PreparedScriptCacheKey(string Script);
+
+    /// <summary>
+    /// Declares the globals of the registered method providers on the shared options, so that every engine
+    /// built from them gets its own lazy property per global instead of a delegate that has to be created,
+    /// reflected over and wrapped up front. The options replay the declarations for each engine, so a global
+    /// is materialized at most once per engine, on the first read of its name.
+    /// </summary>
+    private static Dictionary<string, LazyGlobalMethod> RegisterLazyGlobals(JintOptions options, IEnumerable<IGlobalMethodProvider> globalMethodProviders)
+    {
+        var candidates = new Dictionary<string, GlobalMethod>(StringComparer.Ordinal);
+        var ambiguous = new HashSet<string>(StringComparer.Ordinal);
+
+        foreach (var method in globalMethodProviders.SelectMany(provider => provider.GetMethods()))
         {
-            ThrowInvalidScopeTypeException();
+            if (!candidates.TryAdd(method.Name, method))
+            {
+                // Several providers contribute a global with the same name. Which one wins depends on the
+                // order they are set in, so leave them all to the eager path where that order is observable.
+                ambiguous.Add(method.Name);
+            }
         }
 
-        var parsedAst = _memoryCache.GetOrCreate(script, static entry => Engine.PrepareScript((string)entry.Key));
+        var lazyGlobals = new Dictionary<string, LazyGlobalMethod>(candidates.Count, StringComparer.Ordinal);
 
-        var result = jsScope.Engine.Evaluate(parsedAst).ToObject();
+        foreach (var (name, method) in candidates)
+        {
+            // A method named 'x' with an asynchronous variant and a method named 'xAsync' would both claim
+            // the 'xAsync' global; keep those on the eager path as well.
+            if (ambiguous.Contains(name) || (method.AsyncMethod != null && candidates.ContainsKey(name + "Async")))
+            {
+                continue;
+            }
 
-        return result;
+            var hasSyncGlobal = method.Method != null;
+            var hasAsyncGlobal = method.AsyncMethod != null;
+
+            if (hasSyncGlobal)
+            {
+                var factory = method.Method;
+                options.AddLazyGlobal(name, engine => CreateGlobal(engine, name, factory), GlobalPropertyFlags);
+            }
+
+            if (hasAsyncGlobal)
+            {
+                var asyncName = name + "Async";
+                var factory = method.AsyncMethod;
+                options.AddLazyGlobal(asyncName, engine => CreateGlobal(engine, asyncName, factory), GlobalPropertyFlags);
+            }
+
+            if (hasSyncGlobal || hasAsyncGlobal)
+            {
+                lazyGlobals[name] = new LazyGlobalMethod(method, hasSyncGlobal, hasAsyncGlobal);
+            }
+        }
+
+        return lazyGlobals;
     }
+
+    private static JsValue CreateGlobal(Engine engine, string name, Func<IServiceProvider, Delegate> factory)
+    {
+        // The factory captures the services it is given, so the delegate has to be built with the services
+        // of the scope that owns this engine, and cannot be shared between engines. The scope records them
+        // in the engine's [[HostDefined]] slot, which Jint reserves for the host and which no part of the
+        // engine reads.
+        if (engine.Advanced.HostDefined is not IServiceProvider serviceProvider)
+        {
+            // The lazy property stores whatever this returns and never runs again, so returning a value here
+            // would leave the global permanently undefined and fail as 'x is not a function' somewhere else.
+            // Reaching this means an engine was built from these options without a scope, or that the slot
+            // already held something of the caller's own when the scope was built - either way a defect in
+            // the caller rather than a state a script should have to cope with.
+            throw new InvalidOperationException(
+                $"No scripting scope is associated with the engine reading the global '{name}'. Engines that expose the globals of the registered {nameof(IGlobalMethodProvider)} instances must be created through {nameof(IScriptingEngine)}.{nameof(CreateScope)}, and must not have their {nameof(Engine)}.{nameof(Engine.Advanced)}.{nameof(Engine.AdvancedOperations.HostDefined)} slot used for anything else.");
+        }
+
+        // This is only equivalent to what Engine.SetValue(string, Delegate) installs while no IObjectConverter
+        // is registered on the options: FromObject consults the registered converters before it falls back to
+        // wrapping the delegate, so a converter handling Delegate would give a materialized global a different
+        // shape than an eagerly set one, in the same engine.
+        return JsValue.FromObject(engine, factory(serviceProvider));
+    }
+
+    /// <summary>
+    /// A <see cref="GlobalMethod"/> whose globals are declared on the engine options, and which of the two
+    /// globals it can contribute are covered by that declaration.
+    /// </summary>
+    internal readonly record struct LazyGlobalMethod(GlobalMethod Method, bool HasSyncGlobal, bool HasAsyncGlobal);
 }

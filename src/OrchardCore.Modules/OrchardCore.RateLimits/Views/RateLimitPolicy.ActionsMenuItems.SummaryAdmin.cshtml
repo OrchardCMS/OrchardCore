@@ -1,0 +1,35 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.RateLimits.Models
+
+@model ShapeViewModel<RateLimitPolicy>
+
+<li>
+    <button type="button" class="dropdown-item" data-clone-policy-id="@Model.Value.PolicyId">@T["Clone"]</button>
+</li>
+<li>
+    @if (Model.Value.IsEnabled)
+    {
+        <button type="button"
+                class="dropdown-item"
+                data-disable-policy-id="@Model.Value.PolicyId"
+                data-title="@T["Disable Policy"]"
+                data-message="@T["Are you sure you want to disable this policy? This website will restart after disabling it."]">@T["Disable"]</button>
+    }
+    else
+    {
+        <button type="button"
+                class="dropdown-item"
+                data-enable-policy-id="@Model.Value.PolicyId"
+                data-title="@T["Enable Policy"]"
+                data-message="@T["Are you sure you want to enable this policy? This website will restart after enabling it."]">@T["Enable"]</button>
+    }
+</li>
+<li>
+    <button type="button"
+            class="dropdown-item text-danger"
+            data-delete-policy-id="@Model.Value.PolicyId"
+            data-title="@T["Delete Policy"]"
+            data-message="@(Model.Value.IsEnabled
+                ? T["Are you sure you want to delete this enabled policy? This website will restart after deleting it."]
+                : T["Are you sure you want to delete this disabled policy?"])">@T["Delete"]</button>
+</li>

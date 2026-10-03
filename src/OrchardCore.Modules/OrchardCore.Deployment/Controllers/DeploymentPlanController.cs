@@ -11,6 +11,7 @@ using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Mvc.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using YesSql;
@@ -31,6 +32,7 @@ public sealed class DeploymentPlanController : Controller
     private readonly INotifier _notifier;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IShapeFactory _shapeFactory;
+    private readonly IStringLocalizerFactory _stringLocalizerFactory;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -42,6 +44,7 @@ public sealed class DeploymentPlanController : Controller
         ISession session,
         IOptions<PagerOptions> pagerOptions,
         IShapeFactory shapeFactory,
+        IStringLocalizerFactory stringLocalizerFactory,
         IStringLocalizer<DeploymentPlanController> stringLocalizer,
         IHtmlLocalizer<DeploymentPlanController> htmlLocalizer,
         INotifier notifier,
@@ -55,6 +58,7 @@ public sealed class DeploymentPlanController : Controller
         _notifier = notifier;
         _updateModelAccessor = updateModelAccessor;
         _shapeFactory = shapeFactory;
+        _stringLocalizerFactory = stringLocalizerFactory;
         S = stringLocalizer;
         H = htmlLocalizer;
     }
@@ -71,7 +75,7 @@ public sealed class DeploymentPlanController : Controller
             return Forbid();
         }
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
 
         var deploymentPlans = _session.Query<DeploymentPlan, DeploymentPlanIndex>();
 
@@ -130,7 +134,7 @@ public sealed class DeploymentPlanController : Controller
             return Forbid();
         }
 
-        if (itemIds?.Count() > 0)
+        if (itemIds?.Any() == true)
         {
             var checkedItems = await _session.Query<DeploymentPlan, DeploymentPlanIndex>().Where(x => x.DocumentId.IsIn(itemIds)).ListAsync();
             switch (options.BulkAction)
@@ -174,18 +178,36 @@ public sealed class DeploymentPlanController : Controller
             items.Add(item);
         }
 
-        var thumbnails = new Dictionary<string, dynamic>();
-        foreach (var factory in _factories)
+        var thumbnails = new List<DisplayDeploymentPlanThumbnailViewModel>();
+        foreach (var factory in _factories.OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase))
         {
             var step = factory.Create();
             var thumbnail = await _displayManager.BuildDisplayAsync(step, _updateModelAccessor.ModelUpdater, "Thumbnail");
             thumbnail.Properties["DeploymentStep"] = step;
-            thumbnails.Add(factory.Name, thumbnail);
+            var category = _stringLocalizerFactory.Localize(step.Category)?.Value ?? string.Empty;
+
+            thumbnails.Add(new DisplayDeploymentPlanThumbnailViewModel
+            {
+                Category = category,
+                CategoryId = category.HtmlClassify(),
+                Thumbnail = thumbnail,
+                Type = factory.Name,
+            });
         }
 
         var model = new DisplayDeploymentPlanViewModel
         {
             DeploymentPlan = deploymentPlan,
+            Categories = thumbnails
+                .Where(x => !string.IsNullOrWhiteSpace(x.Category))
+                .Select(x => new DisplayDeploymentPlanCategoryViewModel
+                {
+                    Name = x.Category,
+                    Id = x.CategoryId,
+                })
+                .DistinctBy(x => x.Id, StringComparer.OrdinalIgnoreCase)
+                .OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
+                .ToArray(),
             Items = items,
             Thumbnails = thumbnails,
         };

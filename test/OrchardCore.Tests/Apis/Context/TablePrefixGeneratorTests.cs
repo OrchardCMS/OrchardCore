@@ -3,7 +3,7 @@ namespace OrchardCore.Tests.Apis.Context;
 public class TablePrefixGeneratorTests
 {
     [Fact]
-    public async Task TenantPrefixShouldBeUnique()
+    public async Task TenantPrefix_Default_BeUnique()
     {
         var tablePrefixGenerator = new TablePrefixGenerator();
         var prefixes = new HashSet<string>();

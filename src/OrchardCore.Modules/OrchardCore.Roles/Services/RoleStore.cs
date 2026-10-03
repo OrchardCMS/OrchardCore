@@ -209,6 +209,11 @@ public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
 
         await UpdateRolesAsync(roles);
 
+        var roleUpdatedEventHandlers = _serviceProvider.GetRequiredService<IEnumerable<IRoleUpdatedEventHandler>>();
+
+        await roleUpdatedEventHandlers.InvokeAsync(static (handler, roleToUpdate) =>
+            handler.RoleUpdatedAsync(roleToUpdate.RoleName), role, _logger);
+
         return IdentityResult.Success;
     }
 

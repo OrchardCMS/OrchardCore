@@ -1,11 +1,12 @@
 @model OrchardCore.ContentFields.ViewModels.EditTextFieldViewModel
+@using OrchardCore.ContentFields
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore.Localization.Data
 @inject IDataLocalizer D
 @{
     var settings = Model.PartFieldDefinition.GetSettings<TextFieldSettings>();
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
-    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), $"Content Fields{Constants.ContextSeparator}{Model.PartFieldDefinition.PartDefinition.Name}"];
+    string localizedFieldName = D[Model.PartFieldDefinition.DisplayName(), DataLocalizationContext.ContentField(Model.PartFieldDefinition.PartDefinition.Name)];
 }
 
 @if (settings.Type == FieldBehaviorType.GeneratedHidden)
@@ -15,21 +16,21 @@
     return;
 }
 
-<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Text)_FieldWrapper">
-    <label asp-for="Text" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@localizedFieldName</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty))" id="@Html.IdFor(x => x.Text)_FieldWrapper">
+    <label asp-for="Text" class="ocat-label @(settings.Required ? "ocat-label-required" : "")">@localizedFieldName</label>
+    <div class="ocat-end">
         @if (settings.Type == FieldBehaviorType.GeneratedDisabled)
         {
-            <textarea asp-for="Text" rows="5" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()" disabled></textarea>
+            <textarea asp-for="Text" rows="5" class="form-control content-preview-text text-field-codemirror" dir="@culture.GetLanguageDirection()" disabled></textarea>
         }
         else
         {
-            <textarea asp-for="Text" rows="5" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()"></textarea>
+            <textarea asp-for="Text" rows="5" class="form-control content-preview-text text-field-codemirror" dir="@culture.GetLanguageDirection()"></textarea>
         }
         <span asp-validation-for="Text"></span>
         @if (!string.IsNullOrEmpty(settings.Hint))
         {
-            <span class="hint">@settings.Hint</span>
+            @await DisplayAsync(await New.Hint_Admin(Hint: settings.Hint))
         }
     </div>
 </div>
@@ -43,25 +44,4 @@
 <script asp-name="codemirror-mode-htmlmixed" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
-<script at="Foot">
-    $(function () {
-        var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Text)');
-        // When part rendered by a flow part only the elements scripts are rendered, so the html element will not exist.
-        if (optionsTextArea) {
-            var editor = CodeMirror.fromTextArea(optionsTextArea, {
-                autoCloseTags: true,
-                autoRefresh: true,
-                lineNumbers: true,
-                lineWrapping: true,
-                matchBrackets: true,
-                styleActiveLine: true,
-                mode: { name: "htmlmixed" }
-            });
-
-            editor.on('change', function (cmEditor) {
-                cmEditor.save();
-                $(document).trigger('contentpreview:render');
-            });
-        }
-    });
-</script>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/text-field-editors/text-field-codemirror.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/text-field-editors/text-field-codemirror.js" at="Foot" type="module"></script>

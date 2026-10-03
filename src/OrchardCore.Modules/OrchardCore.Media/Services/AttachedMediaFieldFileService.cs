@@ -1,5 +1,6 @@
 using System.IO.Hashing;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentPreview;
 using OrchardCore.FileStorage;
@@ -15,22 +16,107 @@ public class AttachedMediaFieldFileService
     private readonly IMediaFileStore _fileStore;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IUserAssetFolderNameProvider _userAssetFolderNameProvider;
+    private readonly ILogger _logger;
 
     public AttachedMediaFieldFileService(
         IMediaFileStore fileStore,
         IHttpContextAccessor httpContextAccessor,
-        IUserAssetFolderNameProvider userAssetFolderNameProvider)
+        IUserAssetFolderNameProvider userAssetFolderNameProvider,
+        ILogger<AttachedMediaFieldFileService> logger)
     {
         _fileStore = fileStore;
         _httpContextAccessor = httpContextAccessor;
         _userAssetFolderNameProvider = userAssetFolderNameProvider;
+        _logger = logger;
 
         MediaFieldsFolder = "mediafields";
         MediaFieldsTempSubFolder = _fileStore.Combine(MediaFieldsFolder, "temp");
     }
 
     public string MediaFieldsFolder { get; }
+
     public string MediaFieldsTempSubFolder { get; }
+
+    /// <summary>
+    /// Copies the files to a folder specific for the content item.
+    /// </summary>
+    /// <param name="paths">The paths of the files to copy.</param>
+    /// <param name="contentItem">The content item to which the files belong.</param>
+    /// <returns>The updated paths of the copied files.</returns>
+    public async Task<string[]> CopyFilesAsync(string[] paths, ContentItem contentItem)
+    {
+        var updatedPaths = (string[])paths.Clone();
+        for (var i = 0; i < paths.Length; i++)
+        {
+            var path = paths[i];
+            if (string.IsNullOrEmpty(path))
+            {
+                continue;
+            }
+
+            var sourceFileInfo = await _fileStore.GetFileInfoAsync(path);
+            if (sourceFileInfo == null)
+            {
+                // File not found — keep the reference so the user can see which files are missing.
+                continue;
+            }
+
+            var targetDir = GetContentItemFolder(contentItem);
+            var finalFileName = sourceFileInfo.Name;
+            var finalFilePath = _fileStore.Combine(targetDir, finalFileName);
+
+            await _fileStore.TryCreateDirectoryAsync(targetDir);
+
+            if (await _fileStore.GetFileInfoAsync(finalFilePath) is null)
+            {
+                await _fileStore.CopyFileAsync(path, finalFilePath);
+            }
+
+            updatedPaths[i] = finalFilePath;
+        }
+
+        return updatedPaths;
+    }
+
+    /// <summary>
+    /// Moves an existing file into the content item's attached media folder using the attached editor naming convention.
+    /// </summary>
+    public async Task<string> MoveFileToContentItemFolderAsync(string path, ContentItem contentItem)
+    {
+        if (string.IsNullOrEmpty(path))
+        {
+            return path;
+        }
+
+        var sourceFileInfo = await _fileStore.GetFileInfoAsync(path);
+        if (sourceFileInfo == null)
+        {
+            // File not found — keep the reference so the user can see which files are missing.
+            return path;
+        }
+
+        var targetDir = GetContentItemFolder(contentItem);
+        var finalFileName = (await GetFileHashAsync(path)) + GetFileExtension(path);
+        var finalFilePath = _fileStore.Combine(targetDir, finalFileName);
+
+        if (string.Equals(_fileStore.NormalizePath(path), finalFilePath, StringComparison.OrdinalIgnoreCase))
+        {
+            return path;
+        }
+
+        await _fileStore.TryCreateDirectoryAsync(targetDir);
+
+        if (await _fileStore.GetFileInfoAsync(finalFilePath) is null)
+        {
+            await _fileStore.MoveFileAsync(path, finalFilePath);
+        }
+        else
+        {
+            await _fileStore.TryDeleteFileAsync(path);
+        }
+
+        return finalFilePath;
+    }
 
     /// <summary>
     /// Removes the assets attached to a content item through an attached media field.
@@ -78,33 +164,67 @@ public class AttachedMediaFieldFileService
     // Files just uploaded and then immediately discarded.
     private async Task RemoveTemporaryAsync(List<EditMediaFieldItemInfo> items)
     {
+        var ownTempFolder = EnsureTrailingSlash(GetMediaFieldsTempSubFolder());
+
         foreach (var item in items.Where(i => i.IsRemoved && i.IsNew))
         {
-            await _fileStore.TryDeleteFileAsync(item.Path);
+            var path = await _fileStore.ResolveAuthorizedPathAsync(item.Path);
+
+            // Client-supplied paths are otherwise untrusted: only ever delete files that live under
+            // the current user's own temporary upload folder, never an arbitrary media store path.
+            if (!path.StartsWith(ownTempFolder, StringComparison.Ordinal))
+            {
+                _logger.LogWarning(
+                    "Rejected an attempt to delete a file at '{Path}' via an attached media field: the path is outside the current user's own temporary upload folder '{OwnTempFolder}'.",
+                    path,
+                    ownTempFolder);
+
+                continue;
+            }
+
+            await _fileStore.TryDeleteFileAsync(path);
         }
     }
 
     // Newly added files
     private async Task MoveNewFilesToContentItemDirAndUpdatePathsAsync(List<EditMediaFieldItemInfo> items, ContentItem contentItem)
     {
-        var exceptions = new List<Exception>();
+        var ownTempFolder = EnsureTrailingSlash(GetMediaFieldsTempSubFolder());
+        var contentItemFolder = EnsureTrailingSlash(GetContentItemFolder(contentItem));
+
         // Copy to a list to allow removing files from the original items argument.
         var itemToParse = items.Where(i => !i.IsRemoved && !string.IsNullOrEmpty(i.Path)).ToList();
         foreach (var item in itemToParse)
         {
-            var fileInfo = await _fileStore.GetFileInfoAsync(item.Path);
+            var path = await _fileStore.ResolveAuthorizedPathAsync(item.Path);
+
+            // Client-supplied paths are otherwise untrusted: only ever touch a file that either lives
+            // under the current user's own temporary upload folder (a fresh upload) or already belongs
+            // to this content item's own attached-media folder (an untouched, previously saved file).
+            // Anything else - e.g. a path pointing at another content item's attached media - is rejected
+            // outright, rather than silently relocated/exfiltrated into the caller's own folder.
+            if (!path.StartsWith(ownTempFolder, StringComparison.Ordinal)
+                && !path.StartsWith(contentItemFolder, StringComparison.Ordinal))
+            {
+                _logger.LogWarning(
+                    "Rejected an attempt to move a file at '{Path}' via an attached media field: the path is outside both the current user's own temporary upload folder '{OwnTempFolder}' and the target content item's own folder '{ContentItemFolder}'.",
+                    path,
+                    ownTempFolder,
+                    contentItemFolder);
+
+                continue;
+            }
+
+            var fileInfo = await _fileStore.GetFileInfoAsync(path);
 
             if (fileInfo == null)
             {
-                // Use the AttachedFileName property, as it contains the original file name and may be more familiar to the user.
-                exceptions.Add(new FileNotFoundException($"A file with the path '{item.Path}' does not exist.", item.AttachedFileName));
-                // Remove the item to prevent users from seeing the not-found files in the media field editor.
-                items.Remove(item);
+                // File not found — keep the reference so the user can see which files are missing.
                 continue;
             }
 
             var targetDir = GetContentItemFolder(contentItem);
-            var finalFileName = (await GetFileHashAsync(item.Path)) + GetFileExtension(item.Path);
+            var finalFileName = (await GetFileHashAsync(path)) + GetFileExtension(path);
             var finalFilePath = _fileStore.Combine(targetDir, finalFileName);
 
             await _fileStore.TryCreateDirectoryAsync(targetDir);
@@ -116,7 +236,7 @@ public class AttachedMediaFieldFileService
             // finalFileName is a hash of the file. We preserve disk space by reusing the file.
             if (await _fileStore.GetFileInfoAsync(finalFilePath) == null)
             {
-                await _fileStore.MoveFileAsync(item.Path, finalFilePath);
+                await _fileStore.MoveFileAsync(path, finalFilePath);
             }
 
             item.Path = finalFilePath;
@@ -124,15 +244,6 @@ public class AttachedMediaFieldFileService
             await DeleteDirIfEmptyAsync(previousDirPath);
         }
 
-        if (exceptions.Count > 0)
-        {
-            throw new AggregateException("Some files could not be processed.", exceptions);
-        }
-    }
-
-    private string GetContentItemFolder(ContentItem contentItem)
-    {
-        return _fileStore.Combine(MediaFieldsFolder, contentItem.ContentType, contentItem.ContentItemId);
     }
 
     private async Task<string> GetFileHashAsync(string filePath)
@@ -161,4 +272,10 @@ public class AttachedMediaFieldFileService
             await _fileStore.TryDeleteDirectoryAsync(previousDirPath);
         }
     }
+
+    internal string GetContentItemFolder(ContentItem contentItem)
+        => _fileStore.Combine(MediaFieldsFolder, contentItem.ContentType, contentItem.ContentItemId);
+
+    private string EnsureTrailingSlash(string path)
+        => _fileStore.NormalizePath(path) + '/';
 }

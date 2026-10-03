@@ -5,7 +5,7 @@ namespace OrchardCore.Roles.Tests;
 public class DefaultSystemRoleProviderTests
 {
     [Fact]
-    public void GetSystemRoles_WhenCalledByDefault_ContainsAdministratorAuthenticatedAndAnonymousRoles()
+    public void GetSystemRoles_CalledByDefaultContainsAdministratorAuthenticatedAndAnonymousRoles_Succeeds()
     {
         // Arrange
         var shellSettings = new ShellSettings();
@@ -13,7 +13,9 @@ public class DefaultSystemRoleProviderTests
         options.Setup(o => o.Value)
             .Returns(new SystemRoleOptions());
 
-        var provider = new DefaultSystemRoleProvider(shellSettings, options.Object);
+        var localizer = new Mock<IStringLocalizer<DefaultSystemRoleProvider>>();
+
+        var provider = new DefaultSystemRoleProvider(shellSettings, localizer.Object, options.Object);
 
         // Act
         var roles = provider.GetSystemRoles();
@@ -26,7 +28,7 @@ public class DefaultSystemRoleProviderTests
     }
 
     [Fact]
-    public void GetAdminRole_FromOptions_ReturnAdminRoleName()
+    public void GetAdminRole_FromOptions_ReturnsAdminRoleName()
     {
         // Arrange
         var shellSettings = new ShellSettings();
@@ -38,7 +40,8 @@ public class DefaultSystemRoleProviderTests
                 SystemAdminRoleName = configureSystemAdminRoleName,
             });
 
-        var provider = new DefaultSystemRoleProvider(shellSettings, options.Object);
+        var localizer = new Mock<IStringLocalizer<DefaultSystemRoleProvider>>();
+        var provider = new DefaultSystemRoleProvider(shellSettings, localizer.Object, options.Object);
 
         // Act
         var role = provider.GetAdminRole();
@@ -60,7 +63,8 @@ public class DefaultSystemRoleProviderTests
         options.Setup(o => o.Value)
         .Returns(new SystemRoleOptions());
 
-        var provider = new DefaultSystemRoleProvider(shellSettings, options.Object);
+        var localizer = new Mock<IStringLocalizer<DefaultSystemRoleProvider>>();
+        var provider = new DefaultSystemRoleProvider(shellSettings, localizer.Object, options.Object);
 
         // Act
         var role = provider.GetAdminRole();
@@ -81,7 +85,7 @@ public class DefaultSystemRoleProviderTests
     [InlineData("TEST", false)]
     [InlineData("TesT", false)]
     [InlineData("test", false)]
-    public void IsSystemRole_IfTheRoleExists_ReturnsTrue(string roleName, bool expectedResult)
+    public void IsSystemRole_TheRoleExistsReturnsTrue_IsSystemRole(string roleName, bool expectedResult)
     {
         // Arrange
         var shellSettings = new ShellSettings();
@@ -90,7 +94,8 @@ public class DefaultSystemRoleProviderTests
         options.Setup(o => o.Value)
             .Returns(new SystemRoleOptions());
 
-        var provider = new DefaultSystemRoleProvider(shellSettings, options.Object);
+        var localizer = new Mock<IStringLocalizer<DefaultSystemRoleProvider>>();
+        var provider = new DefaultSystemRoleProvider(shellSettings, localizer.Object, options.Object);
 
         // Act
         var result = provider.IsSystemRole(roleName);
@@ -108,7 +113,7 @@ public class DefaultSystemRoleProviderTests
     [InlineData("TEST", false)]
     [InlineData("TesT", false)]
     [InlineData("test", false)]
-    public void IsAdminRole_WhenCalled_ReturnsAdministrator(string roleName, bool expectedResult)
+    public void IsAdminRole_CalledReturnsAdministrator_IsAdminRole(string roleName, bool expectedResult)
     {
         // Arrange
         var shellSettings = new ShellSettings();
@@ -117,7 +122,8 @@ public class DefaultSystemRoleProviderTests
         options.Setup(o => o.Value)
             .Returns(new SystemRoleOptions());
 
-        var provider = new DefaultSystemRoleProvider(shellSettings, options.Object);
+        var localizer = new Mock<IStringLocalizer<DefaultSystemRoleProvider>>();
+        var provider = new DefaultSystemRoleProvider(shellSettings, localizer.Object, options.Object);
 
         // Act
         var result = provider.IsAdminRole(roleName);

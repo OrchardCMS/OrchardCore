@@ -3,23 +3,15 @@ using System.Reflection;
 namespace OrchardCore.Modules;
 
 /// <summary>
-/// When used on a class, it will include the service only
-/// if the specific features are enabled.
+/// When used on a class, it includes the service only if the specified features are enabled.
+/// Omitting the attribute or declaring it without feature names adds no named feature requirements.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
 public class RequireFeaturesAttribute : Attribute
 {
-    public RequireFeaturesAttribute(string featureName)
+    public RequireFeaturesAttribute(params string[] featureNames)
     {
-        RequiredFeatureNames = new string[] { featureName };
-    }
-
-    public RequireFeaturesAttribute(string featureName, params string[] otherFeatureNames)
-    {
-        RequiredFeatureNames = new List<string>(otherFeatureNames)
-        {
-            featureName,
-        };
+        RequiredFeatureNames = featureNames;
     }
 
     /// <summary>
@@ -27,6 +19,10 @@ public class RequireFeaturesAttribute : Attribute
     /// </summary>
     public IList<string> RequiredFeatureNames { get; }
 
+    /// <summary>
+    /// Gets the feature names required by the specified type.
+    /// </summary>
+    /// <param name="type">The type to inspect.</param>
     public static IList<string> GetRequiredFeatureNamesForType(Type type)
     {
         var attribute = type.GetCustomAttributes<RequireFeaturesAttribute>(false).FirstOrDefault();

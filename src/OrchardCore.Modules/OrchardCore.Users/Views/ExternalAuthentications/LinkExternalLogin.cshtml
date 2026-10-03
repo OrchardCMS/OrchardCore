@@ -13,23 +13,17 @@
     <div asp-validation-summary="ModelOnly"></div>
 
     <div class="mb-3">
-        <label for="UserName" class="col-md-3 form-label">@T["Username"]</label>
-        <div class="col-md-9">
-            <input id="UserName" value="@ViewData["UserName"]" class="form-control" disabled />
-        </div>
+        <label for="UserName" class="form-label">@T["Username"]</label>
+        <input id="UserName" value="@ViewData["UserName"]" class="form-control" disabled />
     </div>
 
     <div class="mb-3">
-        <label asp-for="Password" class="col-md-3 form-label">@T["Password"]</label>
-        <div class="col-md-9">
-            <input asp-for="Password" class="form-control" required autofocus />
-            <span asp-validation-for="Password" class="text-danger"></span>
-        </div>
+        <label asp-for="Password" class="form-label">@T["Password"]</label>
+        <input asp-for="Password" class="form-control" required autofocus />
+        <span asp-validation-for="Password" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <div class="col-md-offset-3 col-md-9">
-            <button type="submit" class="btn btn-primary">@T["Register"]</button>
-        </div>
+        <button type="submit" class="btn btn-primary">@T["Register"]</button>
     </div>
 </form>

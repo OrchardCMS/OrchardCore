@@ -8,14 +8,14 @@
     string localizedDisplayName = D[Model.DisplayName, "Content Types"];
 }
 <div class="d-flex">
-    <div class="me-auto">
+    <div class="me-auto list-item-search-text">
         <a asp-route-action="Edit" asp-route-area="OrchardCore.ContentTypes" asp-route-id="@Model.Name">@localizedDisplayName</a>
 
-        <span class="badge rounded-pill ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Technical Name"]"><i class="fa-solid fa-file-alt text-danger" aria-hidden="true"></i> @Model.Name</span>
+        <span class="badge rounded-pill ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Technical Name"]"><i class="fa-solid fa-file-alt text-danger" aria-hidden="true"></i> @Model.Name</span>
 
         @if (!string.IsNullOrWhiteSpace(settings.Stereotype))
         {
-            <span class="badge rounded-pill ta-badge font-weight-normal" data-bs-toggle="tooltip" title="Stereotype"><i class="fa-solid fa-file text-info" aria-hidden="true"></i> @settings.Stereotype</span>
+            <span class="badge rounded-pill ta-badge fw-normal" data-bs-toggle="tooltip" title="Stereotype"><i class="fa-solid fa-file text-info" aria-hidden="true"></i> @settings.Stereotype</span>
         }
     </div>
     <div>
@@ -24,7 +24,7 @@
             <a id="btn-create-@Model.Name" asp-route-area="OrchardCore.Contents" asp-route-action="Create" asp-route-id="@Model.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-success btn-sm">@T["Create New {0}", localizedDisplayName]</a>
         }
         <a role="btn-list-@Model.Name" asp-route-action="List" asp-route-area="OrchardCore.Contents" asp-route-contentTypeId="@Model.Name" class="btn btn-secondary btn-sm">@T["List Items"]</a>
-        <a role="btn-edit-@Model.Name" asp-route-action="Edit" asp-route-area="OrchardCore.ContentTypes" asp-route-id="@Model.Name" class="btn btn-primary btn-sm edit-button">@T["Edit"]</a>
+        <a role="btn-edit-@Model.Name" asp-route-action="Edit" asp-route-area="OrchardCore.ContentTypes" asp-route-id="@Model.Name" class="btn btn-primary btn-sm edit-button list-item-action">@T["Edit"]</a>
         @if (contentSettings.IsSystemDefined)
         {
             <div class="d-inline" data-bs-toggle="tooltip" data-bs-title="@T["System-defined types are integral components of the system and cannot be removed."]">
@@ -44,7 +44,7 @@
 {
     <div class="row">
         <div class="col">
-            <p class="mb-0"><small class="text-muted">@settings.Description</small></p>
+            <p class="mb-0"><small class="text-muted list-item-search-text">@settings.Description</small></p>
         </div>
     </div>
 }

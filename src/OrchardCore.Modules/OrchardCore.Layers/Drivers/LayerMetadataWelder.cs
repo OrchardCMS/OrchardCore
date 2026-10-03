@@ -35,9 +35,7 @@ public sealed class LayerMetadataWelder : ContentDisplayDriver
 
     public override async Task<IDisplayResult> EditAsync(ContentItem model, BuildEditorContext context)
     {
-        var layerMetadata = model.As<LayerMetadata>();
-
-        if (layerMetadata == null)
+        if (!model.TryGet<LayerMetadata>(out var layerMetadata))
         {
             layerMetadata = new LayerMetadata();
             await context.Updater.TryUpdateModelAsync(layerMetadata, Prefix, m => m.Zone, m => m.Position);

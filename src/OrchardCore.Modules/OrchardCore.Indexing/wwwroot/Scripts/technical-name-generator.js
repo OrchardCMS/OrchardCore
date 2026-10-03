@@ -1,0 +1,2 @@
+window.TechnicalNameGenerator={initialize:function(e,n){var t=document.getElementById(e),i=document.getElementById(n);if(t&&i){var a=""!==i.value.trim();i.addEventListener("input",function(){a=""!==i.value.trim()}),t.addEventListener("input",function(){!a&&(i.value=(t.value||"").trim().split(/[^A-Za-z0-9]+/).filter(function(e){return e.length>0}).map(function(e){return e.toLowerCase()}).join("-"))})}}};
+//# sourceMappingURL=technical-name-generator.map

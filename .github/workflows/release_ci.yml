@@ -11,10 +11,16 @@ on:
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
+permissions:
+  contents: read
 jobs:
   test:
     runs-on: ${{ matrix.os }}
     name: Build, Test, Deploy
+    environment: release
+    permissions:
+      contents: read
+      id-token: write
     strategy:
       fail-fast: false
       matrix:
@@ -27,11 +33,7 @@ jobs:
           VERSION="${GITHUB_REF_NAME#v}"
           echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
       shell: bash
-    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-    - uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
-      with:
-        node-version: "15"
-        package-manager-cache: false
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - uses: ./.github/actions/setup-dotnet
     - name: Set build number 
       if: matrix.os == 'ubuntu-24.04'
@@ -40,35 +42,57 @@ jobs:
       # NuGetAudit is intentionally not disabled here like it is for other CI builds, because we need to address any
       # vulnerable packages before releasing a new version.
       run: |
-        dotnet build -c Release /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true -p:Version=${{ steps.get_version.outputs.VERSION }}
+        dotnet build -c Release -p:TreatWarningsAsErrors=true --warnaserror -p:RunAnalyzers=true -p:Version=${{ steps.get_version.outputs.VERSION }}
     - name: Unit Tests
       run: |
         dotnet test --project ./test/OrchardCore.Tests/OrchardCore.Tests.csproj -c Release --no-build
-    - name: Functional Tests
+    - name: Cache Playwright Browsers
+      if: matrix.os == 'ubuntu-24.04'
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-${{ hashFiles('Directory.Packages.props') }}
+    - name: Install Playwright Browsers
       if: matrix.os == 'ubuntu-24.04'
       run: |
-        cd test/OrchardCore.Tests.Functional
-        npm install
-        npm run cms:test
-        npm run mvc:test
-    - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
+    - name: Functional Tests - CMS
+      if: matrix.os == 'ubuntu-24.04'
+      run: |
+        dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Cms*"
+    - name: Functional Tests - MVC
+      if: matrix.os == 'ubuntu-24.04'
+      env:
+        # The MVC app uses neither Redis nor Azurite; don't start those containers for this run.
+        ORCHARD_TEST_DOCKER_SERVICES: "false"
+      run: |
+        dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Mvc*"
+    - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       if: matrix.os == 'ubuntu-24.04' && failure()
       with:
         name: Functional Test failure
         path: |
-          test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
-          src/OrchardCore.Cms.Web/App_Data_Tests/logs
+          src/OrchardCore.Cms.Web/App_Data_Tests_*/logs
+          src/OrchardCore.Mvc.Web/App_Data_Tests/logs
+          test/OrchardCore.Tests.Functional/traces
+        retention-days: 3
+    - name: NuGet login
+      if: matrix.os == 'ubuntu-24.04'  
+      id: nuget-login
+      uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1
+      with:
+        user: Orchard        
     - name: Deploy release NuGet packages
       if: matrix.os == 'ubuntu-24.04'
       run: |
         dotnet pack -c Release --no-build -p:Version=${{ steps.get_version.outputs.VERSION }} -p:TreatWarningsAsErrors=false
-        dotnet nuget push './src/**/*.nupkg' -t 600 -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json --skip-duplicate
+        dotnet nuget push './src/**/*.nupkg' -t 600 --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}" -s https://api.nuget.org/v3/index.json --skip-duplicate
     - name: Set up Docker Buildx
       if: matrix.os == 'ubuntu-24.04'
-      uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+      uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
     - name: Login to DockerHub
       if: matrix.os == 'ubuntu-24.04'
-      uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+      uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
@@ -77,8 +101,8 @@ jobs:
       shell: pwsh
       run: |
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse | Remove-Item -Recurse -Confirm:$false
-        Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data_Tests -Recurse | Remove-Item -Recurse -Confirm:$false
+        Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data_Tests_* -Recurse | Remove-Item -Recurse -Confirm:$false
         $output = [System.IO.Path]::GetFullPath("./.build/release")
-        dotnet publish -c Release --property:PublishDir=$output --no-build --framework net10.0
+        dotnet publish src/OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj -c Release --property:PublishDir=$output --no-build --framework net10.0
         docker buildx build -f Dockerfile-CI --platform=linux/amd64 -t orchardproject/orchardcore-cms-linux:latest -t orchardproject/orchardcore-cms-linux:${{ steps.get_version.outputs.VERSION }} --push .
         docker buildx build -f Dockerfile-CI --platform=windows/amd64 -t orchardproject/orchardcore-cms-windows:latest -t orchardproject/orchardcore-cms-windows:${{ steps.get_version.outputs.VERSION }} --push .

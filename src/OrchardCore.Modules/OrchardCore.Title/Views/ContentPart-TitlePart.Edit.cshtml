@@ -1,21 +1,29 @@
+@using OrchardCore.ContentManagement
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentManagement.Metadata.Settings
-@using OrchardCore.ContentManagement
-@using OrchardCore
+@using OrchardCore.ContentTypes
 @using OrchardCore.Title.Models
+@using OrchardCore.Mvc.Utilities
 
 @{
+    var shapes = Model.Items;
+
+    if (shapes.Count == 0)
+    {
+        return;
+    }
+
     ContentTypePartDefinition typePartDefinition = Model.ContentTypePartDefinition;
     var settings = typePartDefinition.GetSettings<TitlePartSettings>();
+
+    if (settings.Options == TitlePartOptions.GeneratedHidden)
+    {
+        return;
+    }
 }
 
-@if (settings.Options == TitlePartOptions.GeneratedHidden)
-{
-    return;
-}
-
-<div class="@Orchard.GetPartWrapperClasses(typePartDefinition)">
-    @foreach (var shape in Model)
+<div class="@($"ocat-wrapper content-part-wrapper content-part-wrapper-{typePartDefinition.PartDefinition.Name.HtmlClassify()}" + (typePartDefinition.IsNamedPart() ? $" content-part-wrapper-{typePartDefinition.Name.HtmlClassify()}" : string.Empty))">
+    @foreach (var shape in shapes)
     {
         @await DisplayAsync(shape)
     }

@@ -8,28 +8,32 @@ using OrchardCore.Environment.Cache;
 
 namespace OrchardCore.DisplayManagement.Views;
 
+#nullable enable
+
 public class ShapeResult : IDisplayResult
 {
     private readonly string _shapeType;
-    private readonly Func<IBuildShapeContext, ValueTask<IShape>> _shapeBuilder;
-    private readonly Func<IShape, Task> _initializingAsync;
+    private readonly Func<IBuildShapeContext, ValueTask<IShape>>? _shapeBuilder;
+    private readonly Func<IShape, ValueTask>? _initializingAsync;
 
-    private string _defaultLocation;
-    private string _name;
-    private string _differentiator;
-    private string _prefix;
-    private string _cacheId;
+    private PlacementInfo? _defaultLocation;
+    private string? _name;
+    private string? _differentiator;
+    private string? _prefix;
+    private string? _cacheId;
     private StringValues _groupIds;
-    private Dictionary<string, string> _otherLocations;
-    private string _firstDisplayType;
-    private string _firstLocation;
-    private string _secondDisplayType;
-    private string _secondLocation;
+    private Dictionary<string, PlacementInfo?>? _otherLocations;
+    private string? _firstDisplayType;
+    private PlacementInfo? _firstLocation;
+    private string? _secondDisplayType;
+    private PlacementInfo? _secondLocation;
 
-    private Action<CacheContext> _cache;
-    private Action<ShapeDisplayContext> _displaying;
-    private Func<IShape, Task> _processingAsync;
-    private Func<Task<bool>> _renderPredicateAsync;
+    private Action<CacheContext>? _cache;
+    private Action<ShapeDisplayContext>? _displaying;
+    private Func<IShape, Task>? _processingAsync;
+    private Func<object?, object?, Task<bool>>? _renderPredicateInvoker;
+    private object? _renderPredicateDelegate;
+    private object? _renderPredicateState;
 
     /// <summary>
     /// Creates a new instance of <see cref="ShapeResult"/>.
@@ -47,15 +51,43 @@ public class ShapeResult : IDisplayResult
     /// <param name="shapeType">The Shape type used for the created Shape.</param>
     /// <param name="shapeBuilder">A delegate that creates the shape instance.</param>
     /// <param name="initializing">A delegate that is executed after the shape is created.</param>
-    public ShapeResult(string shapeType, Func<IBuildShapeContext, ValueTask<IShape>> shapeBuilder, Func<IShape, Task> initializing)
+    public ShapeResult(string shapeType, Func<IBuildShapeContext, ValueTask<IShape>> shapeBuilder, Func<IShape, ValueTask>? initializing)
     {
         // The shape type is necessary before the shape is created as it will drive the placement
         // resolution which itself can prevent the shape from being created.
-
         _shapeType = shapeType;
         _shapeBuilder = shapeBuilder;
         _initializingAsync = initializing;
     }
+
+    /// <summary>
+    /// Creates a new instance of <see cref="ShapeResult"/> for use by derived classes.
+    /// Derived classes must override <see cref="BuildShapeAsync"/> to provide a shape builder.
+    /// </summary>
+    protected ShapeResult(string shapeType)
+    {
+        _shapeType = shapeType;
+    }
+
+    /// <summary>
+    /// Creates a new <see cref="ShapeResult"/> with typed builder state to avoid boxing.
+    /// </summary>
+    public static ShapeResult Create<TBuilderState>(
+        string shapeType,
+        Func<IBuildShapeContext, TBuilderState, ValueTask<IShape>> builder,
+        TBuilderState builderState)
+        => new TypedShapeResult<TBuilderState>(shapeType, builder, builderState);
+
+    /// <summary>
+    /// Creates a new <see cref="ShapeResult"/> with typed builder and initializer state to avoid boxing.
+    /// </summary>
+    public static ShapeResult Create<TBuilderState, TInitState>(
+        string shapeType,
+        Func<IBuildShapeContext, TBuilderState, ValueTask<IShape>> builder,
+        TBuilderState builderState,
+        Func<IShape, TInitState, ValueTask>? initializer,
+        TInitState initState)
+        => new TypedShapeResult<TBuilderState, TInitState>(shapeType, builder, builderState, initializer, initState);
 
     public Task ApplyAsync(BuildDisplayContext context)
     {
@@ -84,7 +116,25 @@ public class ShapeResult : IDisplayResult
     /// </summary>
     public ShapeResult Location(string location)
     {
-        _defaultLocation = location;
+        _defaultLocation = PlacementInfo.FromLocation(location);
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the default location of the shape using a fluent builder.
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// .Location(l => l.Zone("Content", "5").Tab("Settings", "1"))
+    /// </code>
+    /// </example>
+    public ShapeResult Location(Action<PlacementLocationBuilder> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        var builder = new PlacementLocationBuilder();
+        configure(builder);
+        _defaultLocation = builder.Build();
         return this;
     }
 
@@ -92,6 +142,12 @@ public class ShapeResult : IDisplayResult
     /// Sets the location to use for a matching display type.
     /// </summary>
     public ShapeResult Location(string displayType, string location)
+        => Location(displayType, PlacementInfo.FromLocation(location));
+
+    /// <summary>
+    /// Sets the location to use for a matching display type.
+    /// </summary>
+    public ShapeResult Location(string displayType, PlacementInfo location)
     {
         if (_otherLocations != null)
         {
@@ -109,7 +165,7 @@ public class ShapeResult : IDisplayResult
         }
         else
         {
-            _otherLocations = new Dictionary<string, string>(4)
+            _otherLocations = new Dictionary<string, PlacementInfo?>(4)
             {
                 [_firstDisplayType] = _firstLocation,
                 [_secondDisplayType] = _secondLocation,
@@ -125,10 +181,30 @@ public class ShapeResult : IDisplayResult
     }
 
     /// <summary>
+    /// Sets the location to use for a matching display type using a fluent builder.
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// .Location("Summary", l => l.Zone("Content", "1"))
+    /// </code>
+    /// </example>
+    public ShapeResult Location(string displayType, Action<PlacementLocationBuilder> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        var builder = new PlacementLocationBuilder();
+        configure(builder);
+        Location(displayType, builder.Build());
+        return this;
+    }
+
+    /// <summary>
     /// Sets the delegate to be executed when the shape is being displayed.
     /// </summary>
     public ShapeResult Displaying(Action<ShapeDisplayContext> displaying)
     {
+        ArgumentNullException.ThrowIfNull(displaying);
+
         _displaying = displaying;
         return this;
     }
@@ -138,6 +214,8 @@ public class ShapeResult : IDisplayResult
     /// </summary>
     public ShapeResult Processing(Func<IShape, Task> processing)
     {
+        ArgumentNullException.ThrowIfNull(processing);
+
         _processingAsync = processing;
         return this;
     }
@@ -147,7 +225,9 @@ public class ShapeResult : IDisplayResult
     /// </summary>
     public ShapeResult Processing<T>(Func<T, Task> processing)
     {
-        _processingAsync = shape => processing?.Invoke((T)shape);
+        ArgumentNullException.ThrowIfNull(processing);
+
+        _processingAsync = (shape) => processing((T)shape);
         return this;
     }
 
@@ -200,7 +280,7 @@ public class ShapeResult : IDisplayResult
     /// <summary>
     /// Sets the caching properties of the shape to render.
     /// </summary>
-    public ShapeResult Cache(string cacheId, Action<CacheContext> cache = null)
+    public ShapeResult Cache(string cacheId, Action<CacheContext>? cache = null)
     {
         _cacheId = cacheId;
         _cache = cache;
@@ -213,18 +293,65 @@ public class ShapeResult : IDisplayResult
     /// </summary>
     public ShapeResult RenderWhen(Func<Task<bool>> renderPredicateAsync)
     {
-        _renderPredicateAsync = renderPredicateAsync;
+        ArgumentNullException.ThrowIfNull(renderPredicateAsync);
+
+        _renderPredicateInvoker = static (renderPredicate, _) => ((Func<Task<bool>>)renderPredicate!)();
+        _renderPredicateDelegate = renderPredicateAsync;
+        _renderPredicateState = null;
+
         return this;
     }
 
-    public IShape Shape { get; private set; }
+    /// <summary>
+    /// Sets a condition that must return true for the shape to render.
+    /// The condition is only evaluated if the shape has been placed.
+    /// </summary>
+    public ShapeResult RenderWhen(Func<object?, Task<bool>> renderPredicateAsync, object? state)
+    {
+        ArgumentNullException.ThrowIfNull(renderPredicateAsync);
+
+        _renderPredicateInvoker = static (renderPredicate, state) => ((Func<object?, Task<bool>>)renderPredicate!)(state);
+        _renderPredicateDelegate = renderPredicateAsync;
+        _renderPredicateState = state;
+
+        return this;
+    }
+
+    /// <summary>
+    /// Sets a condition that must return true for the shape to render.
+    /// The condition is only evaluated if the shape has been placed.
+    /// </summary>
+    public ShapeResult RenderWhen<TState>(Func<TState, Task<bool>> renderPredicateAsync, TState state)
+    {
+        ArgumentNullException.ThrowIfNull(renderPredicateAsync);
+
+        _renderPredicateInvoker = static (renderPredicate, state) => ((Func<TState, Task<bool>>)renderPredicate!)((TState)state!);
+        _renderPredicateDelegate = renderPredicateAsync;
+        _renderPredicateState = state;
+
+        return this;
+    }
+
+    public IShape? Shape { get; private set; }
+
+    /// <summary>
+    /// Builds the shape asynchronously. Override in derived classes to provide a typed shape builder.
+    /// </summary>
+    protected virtual ValueTask<IShape> BuildShapeAsync(IBuildShapeContext ctx)
+        => _shapeBuilder!(ctx);
+
+    /// <summary>
+    /// Initializes the shape after it has been built. Override in derived classes to provide typed initialization.
+    /// </summary>
+    protected virtual ValueTask InitializeShapeAsync(IShape shape)
+        => _initializingAsync?.Invoke(shape) ?? ValueTask.CompletedTask;
 
     private Task ApplyImplementationAsync(BuildShapeContext context, string displayType)
     {
         // If no location is set from the driver, use the one from the context.
-        if (string.IsNullOrEmpty(_defaultLocation))
+        if (_defaultLocation is null && !string.IsNullOrEmpty(context.DefaultZone))
         {
-            _defaultLocation = context.DefaultZone;
+            _defaultLocation = PlacementInfo.FromLocation(context.DefaultZone);
         }
 
         // Look into specific implementations of placements (like placement.json files and IShapePlacementProviders).
@@ -253,12 +380,13 @@ public class ShapeResult : IDisplayResult
         // If no placement is found, use the default location.
         if (placement == null)
         {
-            placement = PlacementInfo.FromLocation(_defaultLocation);
-            
-            // Only create a new instance if we need to add default position
+            placement = _defaultLocation;
+
+            // Only create a new instance if we need to add default position.
             if (placement != null && context.DefaultPosition != null)
             {
-                placement = placement.WithDefaults(_defaultLocation, context.DefaultPosition);
+                // Pass null for defaults since we're not changing the location, only updating DefaultPosition.
+                placement = placement.WithDefaults(null, context.DefaultPosition);
             }
             else if (placement == null)
             {
@@ -269,7 +397,7 @@ public class ShapeResult : IDisplayResult
         }
         else
         {
-            // Use the WithDefaults method to avoid unnecessary allocations
+            // Use the WithDefaults method to merge defaults from _defaultLocation.
             placement = placement.WithDefaults(_defaultLocation, context.DefaultPosition);
         }
 
@@ -280,7 +408,7 @@ public class ShapeResult : IDisplayResult
         }
 
         // Parse group placement.
-        var groupId = placement.GetGroup();
+        var groupId = placement.Group;
 
         // Apply group constraints from placement
         if (!string.IsNullOrEmpty(groupId))
@@ -307,9 +435,9 @@ public class ShapeResult : IDisplayResult
         }
 
         // If a condition has been applied to this result evaluate it only if the shape has been placed.
-        if (_renderPredicateAsync != null)
+        if (_renderPredicateInvoker != null)
         {
-            var renderPredicateTask = _renderPredicateAsync();
+            var renderPredicateTask = _renderPredicateInvoker(_renderPredicateDelegate, _renderPredicateState);
 
             if (renderPredicateTask.IsCompletedSuccessfully)
             {
@@ -329,14 +457,14 @@ public class ShapeResult : IDisplayResult
         return BuildAndAddShapeAsync(context, displayType, placement, renderPredicateTask: null);
     }
 
-    private async Task BuildAndAddShapeAsync(BuildShapeContext context, string displayType, PlacementInfo placement, Task<bool> renderPredicateTask)
+    private async Task BuildAndAddShapeAsync(BuildShapeContext context, string displayType, PlacementInfo placement, Task<bool>? renderPredicateTask)
     {
         if (renderPredicateTask != null && !await renderPredicateTask)
         {
             return;
         }
 
-        var newShape = Shape = await _shapeBuilder(context);
+        var newShape = Shape = await BuildShapeAsync(context);
 
         // Ignore it if the driver returned a null shape.
         if (newShape == null)
@@ -350,19 +478,16 @@ public class ShapeResult : IDisplayResult
         newShapeMetadata.Differentiator = _differentiator ?? _shapeType;
         newShapeMetadata.DisplayType = displayType;
         newShapeMetadata.PlacementSource = placement.Source;
-        newShapeMetadata.Tab = placement.GetTab();
-        newShapeMetadata.Card = placement.GetCard();
-        newShapeMetadata.Column = placement.GetColumn();
+        newShapeMetadata.TabGrouping = placement.Tab;
+        newShapeMetadata.CardGrouping = placement.Card;
+        newShapeMetadata.ColumnGrouping = placement.Column;
         newShapeMetadata.Type = _shapeType;
 
         // Invoke the initialization code first when all Displaying events are invoked.
         // These Displaying methods are used to create alternates for instance, so the
         // Shape needs to have required properties available first.
 
-        if (_initializingAsync != null)
-        {
-            await _initializingAsync.Invoke(Shape);
-        }
+        await InitializeShapeAsync(Shape);
 
         if (_displaying != null)
         {
@@ -405,8 +530,8 @@ public class ShapeResult : IDisplayResult
             parentShape = context.Layout;
         }
 
-        var position = placement.GetPosition();
-        var zones = placement.GetZones();
+        var position = placement.Position;
+        var zones = placement.Zones;
 
         foreach (var zone in zones)
         {
@@ -427,9 +552,53 @@ public class ShapeResult : IDisplayResult
             }
         }
 
-        if (parentShape is Shape shape)
+        if (parentShape != null)
         {
-            await shape.AddAsync(newShape, position);
+            await parentShape.AddAsync(newShape, position);
         }
+    }
+
+    private sealed class TypedShapeResult<TBuilderState> : ShapeResult
+    {
+        private readonly Func<IBuildShapeContext, TBuilderState, ValueTask<IShape>> _builder;
+        private readonly TBuilderState _builderState;
+
+        public TypedShapeResult(string shapeType, Func<IBuildShapeContext, TBuilderState, ValueTask<IShape>> builder, TBuilderState builderState)
+            : base(shapeType)
+        {
+            _builder = builder;
+            _builderState = builderState;
+        }
+
+        protected override ValueTask<IShape> BuildShapeAsync(IBuildShapeContext ctx)
+            => _builder(ctx, _builderState);
+    }
+
+    private sealed class TypedShapeResult<TBuilderState, TInitState> : ShapeResult
+    {
+        private readonly Func<IBuildShapeContext, TBuilderState, ValueTask<IShape>> _builder;
+        private readonly TBuilderState _builderState;
+        private readonly Func<IShape, TInitState, ValueTask>? _initializer;
+        private readonly TInitState _initState;
+
+        public TypedShapeResult(
+            string shapeType,
+            Func<IBuildShapeContext, TBuilderState, ValueTask<IShape>> builder,
+            TBuilderState builderState,
+            Func<IShape, TInitState, ValueTask>? initializer,
+            TInitState initState)
+            : base(shapeType)
+        {
+            _builder = builder;
+            _builderState = builderState;
+            _initializer = initializer;
+            _initState = initState;
+        }
+
+        protected override ValueTask<IShape> BuildShapeAsync(IBuildShapeContext ctx)
+            => _builder(ctx, _builderState);
+
+        protected override ValueTask InitializeShapeAsync(IShape shape)
+            => _initializer?.Invoke(shape, _initState) ?? ValueTask.CompletedTask;
     }
 }

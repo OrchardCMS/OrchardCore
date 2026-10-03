@@ -8,6 +8,7 @@ import _ from "lodash";
 import buildConfig from "./config.mjs";
 import { Buffer } from "buffer";
 import process from "node:process";
+import { normalizeLineEndings, writeAssetFile } from "./output.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -179,8 +180,8 @@ const createProdJsFile = async (assetConfig) => {
             const jsFile = filePath;
 
             if (path.extname(jsFile) === ".js") {
-                const fileContent = await fs.readFile(filePath, "utf8");
-                const lines = fileContent.split(/\r?\n/);
+                const fileContent = normalizeLineEndings(await fs.readFile(filePath, "utf8"));
+                const lines = fileContent.split("\n");
 
                 lines.forEach((line, index) => {
                     if (line.startsWith("//# sourceMappingURL=")) {
@@ -190,7 +191,7 @@ const createProdJsFile = async (assetConfig) => {
 
                 const newContent = lines.join("\n");
                 const prodFilePath = filePath.replace(/\.js$/, ".min.js");
-                await fs.writeFile(prodFilePath, newContent);
+                await writeAssetFile(prodFilePath, newContent);
             }
         }
     }
@@ -209,19 +210,23 @@ const createProdJsFile = async (assetConfig) => {
  */
 
 const normalizeSourceMap = async (assetConfig) => {
-    const files = await fs.readdir(assetConfig.dest);
+    const normalizeDir = async (dir) => {
+        const entries = await fs.readdir(dir);
 
-    for (const file of files) {
-        const filePath = path.join(assetConfig.dest, file);
-        const stats = await fs.stat(filePath);
+        for (const entry of entries) {
+            const filePath = path.join(dir, entry);
+            const stats = await fs.stat(filePath);
 
-        if (stats.isFile()) {
-            if (path.extname(filePath) === ".map") {
+            if (stats.isDirectory()) {
+                await normalizeDir(filePath);
+            } else if (stats.isFile() && path.extname(filePath) === ".map") {
                 const fileContent = await fs.readFile(filePath, "utf8");
-                await fs.writeFile(filePath, fileContent.replace(/(?:\\r\\n)/g, "\\n"));
+                await writeAssetFile(filePath, fileContent);
             }
         }
-    }
+    };
+
+    await normalizeDir(assetConfig.dest);
 };
 
 await runParcel(action, config);

@@ -664,7 +664,7 @@ When building custom modules that need to reference secrets, you can use the `Se
 
 ```html
 @await Component.InvokeAsync("SelectSecret", new { 
-    secretType = "TextSecret",      // Filter by type (optional)
+    secretTypes = new[] { "TextSecret" }, // Filter by type (optional)
     selectedSecret = Model.SecretName,
     htmlId = "SecretName",
     htmlName = "SecretName",
@@ -673,6 +673,8 @@ When building custom modules that need to reference secrets, you can use the `Se
 ```
 
 This renders a dropdown populated with all secrets of the specified type, making it easy to let administrators select which secret to use for a particular configuration.
+
+Use `Html.IdFor` and `Html.NameFor` when the editor has a binding prefix. The optional `cssClass` parameter adds a CSS class to the select element for client-side behavior.
 
 ## Permissions
 
@@ -696,7 +698,7 @@ public class MyCustomSecretStore : ISecretStore
         // Implementation
     }
 
-    public Task SaveSecretAsync<T>(string name, T secret) where T : class, ISecret
+    public Task SaveSecretAsync<T>(string name, T secret, SecretSaveOptions options = null) where T : class, ISecret
     {
         // Implementation
     }
@@ -721,6 +723,8 @@ public override void ConfigureServices(IServiceCollection services)
     services.AddSecretStore<MyCustomSecretStore>();
 }
 ```
+
+The secret manager, encryption service, stores, and type providers are registered as singletons within each tenant's shell. This allows singleton options monitors to resolve credentials. Custom stores and providers must support concurrent calls and must not depend directly on scoped services.
 
 **Potential custom store implementations:**
 

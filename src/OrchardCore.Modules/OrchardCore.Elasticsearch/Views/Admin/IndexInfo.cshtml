@@ -1,0 +1,22 @@
+@model IndexInfoViewModel
+
+<h2>@T["Elasticsearch index information"]</h2>
+
+<div class="ocat-limited-wrapper">
+    <div class="ocat-limited">
+        <div class="ocat-wrapper monaco-json-model-editor" data-model-uri="x://orchardcore.search.elastic.mappings.json" data-schema-uri="x://orchardcore.search.elastic.mappings.schema.json" data-schema='@Model.IndexInfo'>
+            <label asp-for="IndexInfo" class="ocat-label">@T["Info for '{0}' index.", Model.IndexDisplayText]</label>
+            <div class="ocat-end">
+                <div class="form-control">
+                    <div style="min-height: 400px;" dir="@Orchard.CultureDir()" class="monaco-json-model-editor-container"></div>
+                </div>
+                <textarea asp-for="IndexInfo" hidden class="monaco-json-model-editor-value"></textarea>
+                <span class="hint">@T["The Elasticsearch index information. For reference only."]</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style asp-name="monaco"></style>
+<script asp-name="monaco" at="Foot"></script>
+<script asp-src="~/OrchardCore.Elasticsearch/Scripts/index-info/index-info.min.js" debug-src="~/OrchardCore.Elasticsearch/Scripts/index-info/index-info.js" depends-on="monaco, admin" at="Foot" type="module"></script>

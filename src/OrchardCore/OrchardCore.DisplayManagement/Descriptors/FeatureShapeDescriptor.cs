@@ -7,12 +7,31 @@ namespace OrchardCore.DisplayManagement.Descriptors;
 public sealed class FeatureShapeDescriptor : ShapeDescriptor
 {
     public FeatureShapeDescriptor(IFeatureInfo feature, string shapeType)
+        : this(feature, shapeType, requiredFeatureIds: null)
+    {
+    }
+
+    public FeatureShapeDescriptor(IFeatureInfo feature, string shapeType, IList<string> requiredFeatureIds = null)
     {
         Feature = feature;
         ShapeType = shapeType;
+        RequiredFeatureIds = requiredFeatureIds ?? [];
     }
 
     public IFeatureInfo Feature { get; }
+
+    /// <summary>
+    /// The feature ids that must be enabled (as checked by <see cref="Modules.RequireFeaturesAttribute"/>
+    /// on the <see cref="IShapeTableProvider"/> that produced this descriptor) for it to apply.
+    /// This is tracked separately from <see cref="Feature"/> because these descriptors are cached
+    /// statically and reused across tenants/shells: a provider gated by RequireFeatures only runs
+    /// (and is only added to <c>s_shapeDescriptors</c>) for shells that satisfy the gate, but once
+    /// cached the entry would otherwise be reused for any other shell where <see cref="Feature"/>
+    /// happens to be enabled too, even if that shell does not satisfy the original RequireFeatures
+    /// gate (e.g. a shape provider attributed to its owning extension's feature id because it has no
+    /// explicit [Feature] attribute of its own).
+    /// </summary>
+    public IList<string> RequiredFeatureIds { get; }
 }
 
 public sealed class ShapeDescriptorIndex : ShapeDescriptor

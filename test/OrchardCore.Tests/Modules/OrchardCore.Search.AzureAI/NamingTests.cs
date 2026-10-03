@@ -1,28 +1,28 @@
-using OrchardCore.Search.AzureAI;
+using OrchardCore.AzureAI;
 
-namespace OrchardCore.Tests.Modules.OrchardCore.Search.AzureAI;
+namespace OrchardCore.Tests.Modules.OrchardCore.AzureAI;
 
 public class NamingTests
 {
-    private static readonly string _maxName = new('a', 128);
-    private static readonly string _overMaxLength = new('a', 129);
+    private static readonly string s_maxName = new('a', 128);
+    private static readonly string s_overMaxLength = new('a', 129);
 
     [Fact]
-    public void CreateLengthSafeIndexName()
+    public void CreateLengthSafeIndexName_Default_Succeeds()
     {
 
 
-        var isValid1 = AzureAISearchIndexNamingHelper.TryGetSafeIndexName(_maxName, out var result1);
+        var isValid1 = AzureAISearchIndexNamingHelper.TryGetSafeIndexName(s_maxName, out var result1);
 
         Assert.True(isValid1);
 
-        Assert.Equal(_maxName, result1);
+        Assert.Equal(s_maxName, result1);
 
-        var isValid2 = AzureAISearchIndexNamingHelper.TryGetSafeIndexName(_overMaxLength, out var result2);
+        var isValid2 = AzureAISearchIndexNamingHelper.TryGetSafeIndexName(s_overMaxLength, out var result2);
 
         Assert.True(isValid2);
 
-        Assert.Equal(_maxName, result2);
+        Assert.Equal(s_maxName, result2);
     }
 
     [Theory]
@@ -34,7 +34,7 @@ public class NamingTests
     [InlineData("1234t", "1234t")]
     [InlineData("a", null)]
     [InlineData("___%^&", null)]
-    public void CreateSafeIndexName(string indexName, string expectedName)
+    public void CreateSafeIndexName_Default_Succeeds(string indexName, string expectedName)
     {
         var valid = AzureAISearchIndexNamingHelper.TryGetSafeIndexName(indexName, out var result);
 
@@ -51,19 +51,19 @@ public class NamingTests
     }
 
     [Fact]
-    public void CreateLengthSafeFieldName()
+    public void CreateLengthSafeFieldName_Default_Succeeds()
     {
-        var isValid1 = AzureAISearchIndexNamingHelper.TryGetSafeFieldName(_maxName, out var result1);
+        var isValid1 = AzureAISearchIndexNamingHelper.TryGetSafeFieldName(s_maxName, out var result1);
 
         Assert.True(isValid1);
 
-        Assert.Equal(_maxName, result1);
+        Assert.Equal(s_maxName, result1);
 
-        var isValid2 = AzureAISearchIndexNamingHelper.TryGetSafeFieldName(_overMaxLength, out var result2);
+        var isValid2 = AzureAISearchIndexNamingHelper.TryGetSafeFieldName(s_overMaxLength, out var result2);
 
         Assert.True(isValid2);
 
-        Assert.Equal(_maxName, result2);
+        Assert.Equal(s_maxName, result2);
     }
 
     [Theory]
@@ -80,7 +80,7 @@ public class NamingTests
     [InlineData("a1", "a1")]
     [InlineData("azureSearchFieldName", "FieldName")]
     [InlineData("azureSearch_FieldName", "FieldName")]
-    public void CreateSafeFieldName(string indexName, string expectedName)
+    public void CreateSafeFieldName_Default_Succeeds(string indexName, string expectedName)
     {
         var valid = AzureAISearchIndexNamingHelper.TryGetSafeFieldName(indexName, out var result);
 

@@ -12,7 +12,7 @@ namespace OrchardCore.Sms.Controllers;
 
 public sealed class AdminController : Controller
 {
-    private readonly SmsProviderOptions _smsProviderOptions;
+    private readonly IOptionsMonitor<SmsProviderOptions> _smsProviderOptions;
     private readonly IPhoneFormatValidator _phoneFormatValidator;
     private readonly INotifier _notifier;
     private readonly IAuthorizationService _authorizationService;
@@ -22,7 +22,7 @@ public sealed class AdminController : Controller
     internal readonly IStringLocalizer S;
 
     public AdminController(
-        IOptions<SmsProviderOptions> smsProviderOptions,
+        IOptionsMonitor<SmsProviderOptions> smsProviderOptions,
         IPhoneFormatValidator phoneFormatValidator,
         ISmsProviderResolver smsProviderResolver,
         INotifier notifier,
@@ -30,7 +30,7 @@ public sealed class AdminController : Controller
         IHtmlLocalizer<AdminController> htmlLocalizer,
         IStringLocalizer<AdminController> stringLocalizer)
     {
-        _smsProviderOptions = smsProviderOptions.Value;
+        _smsProviderOptions = smsProviderOptions;
         _phoneFormatValidator = phoneFormatValidator;
         _smsProviderResolver = smsProviderResolver;
         _notifier = notifier;
@@ -102,7 +102,7 @@ public sealed class AdminController : Controller
 
     private void PopulateModel(SmsTestViewModel model)
     {
-        model.Providers = _smsProviderOptions.Providers
+        model.Providers = _smsProviderOptions.CurrentValue.Providers
             .Where(entry => entry.Value.IsEnabled)
             .Select(entry => new SelectListItem(entry.Key, entry.Key))
             .OrderBy(item => item.Text)

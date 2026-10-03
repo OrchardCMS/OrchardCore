@@ -6,7 +6,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Users;
 public class UserValidatorTests
 {
     [Fact]
-    public async Task CanValidateUser()
+    public async Task CanValidateUser_Default_Succeeds()
     {
         // Arrange
         var userManager = UsersMockHelper.MockUserManager<IUser>();
@@ -24,7 +24,7 @@ public class UserValidatorTests
     }
 
     [Fact]
-    public async Task ShouldRequireEmail()
+    public async Task Require_Email_Succeeds()
     {
         // Arrange
         var describer = new IdentityErrorDescriber();
@@ -44,7 +44,7 @@ public class UserValidatorTests
     }
 
     [Fact]
-    public async Task ShouldRequireValidEmail()
+    public async Task Require_ValidEmail_Succeeds()
     {
         // Arrange
         var describer = new IdentityErrorDescriber();
@@ -64,7 +64,7 @@ public class UserValidatorTests
     }
 
     [Fact]
-    public async Task ShouldRequireUniqueEmail()
+    public async Task Require_UniqueEmail_Succeeds()
     {
         // Arrange
         var describer = new IdentityErrorDescriber();
@@ -91,7 +91,7 @@ public class UserValidatorTests
     }
 
     [Fact]
-    public async Task ShouldRequireUserNameIsNotAnEmailAddress()
+    public async Task Require_UserNameIsNotAnEmailAddress_Succeeds()
     {
         // Arrange
         var describer = new IdentityErrorDescriber();
@@ -111,7 +111,7 @@ public class UserValidatorTests
     }
 
     [Fact]
-    public async Task ShouldRequireUniqueUserName()
+    public async Task Require_UniqueUserName_Succeeds()
     {
         // Arrange
         var describer = new IdentityErrorDescriber();

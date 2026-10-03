@@ -1,4 +1,3 @@
-using OrchardCore.Tests.Modules.OrchardCore.Users;
 using OrchardCore.Users;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
@@ -10,7 +9,7 @@ public class DefaultUserClaimsPrincipalProviderFactoryTests
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
-    public async Task EnsurePrincipalHasExpectedClaims(bool emailVerified)
+    public async Task EnsurePrincipalHasExpectedClaims_Default_Succeeds(bool emailVerified)
     {
         //Arrange
         var userManager = UsersMockHelper.MockUserManager<IUser>();

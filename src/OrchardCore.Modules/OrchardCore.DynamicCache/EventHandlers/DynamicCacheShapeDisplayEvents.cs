@@ -2,7 +2,6 @@ using System.Text.Encodings.Web;
 using Cysharp.Text;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.Options;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Environment.Cache;
 

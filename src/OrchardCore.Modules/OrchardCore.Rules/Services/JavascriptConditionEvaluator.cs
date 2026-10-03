@@ -19,11 +19,11 @@ public class JavascriptConditionEvaluator : ConditionEvaluator<JavascriptConditi
         _serviceProvider = serviceProvider;
     }
 
-    public override ValueTask<bool> EvaluateAsync(JavascriptCondition condition)
+    public override async ValueTask<bool> EvaluateAsync(JavascriptCondition condition)
     {
         _engine ??= _scriptingManager.GetScriptingEngine("js");
         _scope ??= _engine.CreateScope(_scriptingManager.GlobalMethodProviders.SelectMany(x => x.GetMethods()), _serviceProvider, null, null);
 
-        return Convert.ToBoolean(_engine.Evaluate(_scope, condition.Script)) ? True : False;
+        return Convert.ToBoolean(await _engine.EvaluateAsync(_scope, condition.Script));
     }
 }

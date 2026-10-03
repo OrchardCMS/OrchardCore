@@ -357,7 +357,7 @@ For instance if a field has two selected terms, there will be two records with a
 
 ## Tags
 
-Tags are a editor and display mode option for taxonomies to allow tagging of content items while editing.
+Tags are an editor and display mode option for taxonomies to allow tagging of content items while editing.
 
 When using the `Tags` mode the display text property of the tag is stored as well as the `TermContentItemId`.
 
@@ -393,6 +393,29 @@ Provides taxonomy filters in the admin contents list.
 ## Listing Taxonomy Items
 
 When listing taxonomy items in the front end, you can use the `IContentTaxonomyListFilter` to filter content items by taxonomy terms or manipulate the query.
+
+## Recipe Configuration
+
+Taxonomy admin list settings can be configured using the `Settings` recipe step:
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "TaxonomyContentsAdminListSettings": {
+        "TaxonomyContentItemIds": [
+          "4k2v5q8m1nh3y9x6p0w7r2t4jz"
+        ]
+      }
+    }
+  ]
+}
+```
+
+| Property                 | Type            | Description                                                                     |
+|--------------------------|-----------------|---------------------------------------------------------------------------------|
+| `TaxonomyContentItemIds` | Array of String | The content item IDs of taxonomies to use as filters in the admin content list. |
 
 ## Videos
 

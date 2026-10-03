@@ -30,7 +30,7 @@ public sealed class Migrations : DataMigration
         }
 
         // Shortcut other migration steps on new content definition schemas.
-        return 2;
+        return 3;
     }
 
     // Upgrade an existing installation.
@@ -73,33 +73,33 @@ public sealed class Migrations : DataMigration
 
         // YouTube field
         await _contentDefinitionManager.MigrateFieldSettingsAsync<YoutubeField, YoutubeFieldSettings>();
-
-        // Keep in sync the upgrade process.
-        await UpdateFrom1Async();
     }
 
-    // This step is part of the upgrade process.
-    public async Task<int> UpdateFrom1Async()
+    // Previously, Liquid rendering was enabled by not having Html sanitization enabled and UpdateFrom1Async disabled
+    // sanitization to ensure that HtmlFields kept Liquid rendering enabled. Since Liquid rendering is now controlled
+    // by a separate setting, disabling sanitization is no longer necessary.
+
+    public async Task<int> UpdateFrom2Async()
     {
-        // For backwards compatibility with liquid filters we disable html sanitization on existing field definitions.
+        // To keep the same behavior as before, RenderLiquid is initialized to the opposite of SanitizeHtml.
         var partDefinitions = await _contentDefinitionManager.LoadPartDefinitionsAsync();
         foreach (var partDefinition in partDefinitions)
         {
-            if (partDefinition.Fields.Any(x => x.FieldDefinition.Name == "HtmlField"))
+            if (partDefinition.Fields.Any(f => f.FieldDefinition.Name == "HtmlField"))
             {
                 await _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, partBuilder =>
                 {
-                    foreach (var fieldDefinition in partDefinition.Fields.Where(x => x.FieldDefinition.Name == "HtmlField"))
+                    foreach (var fieldDefinition in partDefinition.Fields.Where(f => f.FieldDefinition.Name == "HtmlField"))
                     {
                         partBuilder.WithField(fieldDefinition.Name, fieldBuilder =>
                         {
-                            fieldBuilder.MergeSettings<HtmlFieldSettings>(x => x.SanitizeHtml = false);
+                            fieldBuilder.MergeSettings<HtmlFieldSettings>(s => s.RenderLiquid = !s.SanitizeHtml);
                         });
                     }
                 });
             }
         }
 
-        return 2;
+        return 3;
     }
 }

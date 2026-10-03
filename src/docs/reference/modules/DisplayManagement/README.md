@@ -102,6 +102,22 @@ Properties can be passed to a shape by adding attributes to the shape tag helper
 
 This is the same as `<shape type="MyShape" prop-foo="1" prop-bar="a" prop-content="@someHtmlContentVariable" />` where you'd have to construct `someHtmlContentVariable` separately. Of course, you can mix and match the different formats, for example, to only use `<add-property>` when you want to pass HTML content as property.
 
+### Shape debug information
+
+You can instruct Orchard Core to write HTML comments around rendered shapes. This makes it easier to determine which Razor or Liquid template produced a specific fragment in the final page output.
+
+Enable it per site from **Settings** -> **Debugging** by checking **Write shape debug information**. The setting is disabled by default.
+
+When enabled, rendered shapes are wrapped with comments similar to the following:
+
+```html
+<!--shape-start type:Menu bindings:Menu__Main => Themes/Contoso/Views/Menu-Main.cshtml (razor) -->
+...
+<!--shape-end type:Menu-->
+```
+
+The start comment contains the shape type and the binding that was used. Razor bindings report the `.cshtml` path, while Liquid bindings report a virtual `.liquid` source.
+
 ### Date Time shapes
 
 #### `DateTime`
@@ -156,4 +172,3 @@ Tag helper example:
 
 ### Related Articles
 - [Placement](../Placement/README.md)
-

@@ -1,5 +1,8 @@
 using System.Collections.Immutable;
+using System.Net.Mime;
+using System.Runtime.InteropServices;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -12,9 +15,12 @@ using OpenIddict.Server.AspNetCore;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.OpenId.Abstractions.Managers;
+using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.ViewModels;
+using OrchardCore.RateLimits;
 using OrchardCore.Routing;
 using OrchardCore.Security.Services;
+using OrchardCore.Users;
 using OrchardCore.Users.Services;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
@@ -28,17 +34,20 @@ public sealed class AccessController : Controller
     private readonly IOpenIdApplicationManager _applicationManager;
     private readonly IOpenIdAuthorizationManager _authorizationManager;
     private readonly IOpenIdScopeManager _scopeManager;
+    private readonly IOpenIdServerService _serverService;
     private readonly ShellSettings _shellSettings;
 
     public AccessController(
         IOpenIdApplicationManager applicationManager,
         IOpenIdAuthorizationManager authorizationManager,
         IOpenIdScopeManager scopeManager,
+        IOpenIdServerService serverService,
         ShellSettings shellSettings)
     {
         _applicationManager = applicationManager;
         _authorizationManager = authorizationManager;
         _scopeManager = scopeManager;
+        _serverService = serverService;
         _shellSettings = shellSettings;
     }
 
@@ -265,8 +274,10 @@ public sealed class AccessController : Controller
         }
     }
 
-    [ActionName(nameof(Authorize)), DisableCors]
-    [FormValueRequired("submit.Deny"), HttpPost]
+    [ActionName(nameof(Authorize))]
+    [DisableCors]
+    [FormValueRequired("submit.Deny")]
+    [HttpPost]
     public IActionResult AuthorizeDeny()
     {
         var response = HttpContext.GetOpenIddictServerResponse();
@@ -288,7 +299,11 @@ public sealed class AccessController : Controller
         return Forbid(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
     }
 
-    [AllowAnonymous, DisableCors, HttpGet, HttpPost, IgnoreAntiforgeryToken]
+    [AllowAnonymous]
+    [DisableCors]
+    [HttpGet]
+    [HttpPost]
+    [IgnoreAntiforgeryToken]
     public async Task<IActionResult> Logout()
     {
         var response = HttpContext.GetOpenIddictServerResponse();
@@ -307,14 +322,37 @@ public sealed class AccessController : Controller
             return NotFound();
         }
 
-        if (!string.IsNullOrEmpty(request.PostLogoutRedirectUri))
+        // Authenticate the current cookie session once and reuse the result for all branches.
+        var result = await HttpContext.AuthenticateAsync();
+
+        // If the user is not logged in, allow redirecting the user agent back without
+        // rendering a confirmation form.
+        if (result == null || !result.Succeeded)
         {
-            // If the user is not logged in, allow redirecting the user agent back to the
-            // specified post_logout_redirect_uri without rendering a confirmation form.
-            var result = await HttpContext.AuthenticateAsync();
-            if (result == null || !result.Succeeded)
+            return SignOut(
+                new AuthenticationProperties { RedirectUri = "/" },
+                OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        }
+
+        // If the server is configured to allow skipping the confirmation prompt and a valid
+        // id_token_hint matching the current authenticated user is supplied, sign the user
+        // out immediately without rendering a confirmation form.
+        //
+        // Note: the id_token_hint is validated by OpenIddict before its principal is exposed via
+        // AuthenticateAsync(). As allowed for hints, its lifetime is deliberately not validated.
+        var settings = await _serverService.GetSettingsAsync();
+        if (!settings.RequireEndSessionConfirmation && !string.IsNullOrEmpty(request.IdTokenHint))
+        {
+            var hintResult = await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+            var hintSubject = hintResult is { Succeeded: true } ? hintResult.Principal?.GetClaim(Claims.Subject) : null;
+            var userIdentifier = result.Principal.FindUserIdentifier();
+
+            if (!string.IsNullOrEmpty(hintSubject) && !string.IsNullOrEmpty(userIdentifier) &&
+                CryptographicOperations.FixedTimeEquals(
+                    MemoryMarshal.AsBytes<char>(hintSubject.AsSpan()),
+                    MemoryMarshal.AsBytes<char>(userIdentifier.AsSpan())))
             {
-                return SignOut(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+                return await SignOutAndRedirectAsync(request);
             }
         }
 
@@ -346,16 +384,7 @@ public sealed class AccessController : Controller
         // sent by a malicious client that could abuse this interactive endpoint to silently
         // log the user out without the user explicitly approving the log out operation.
 
-        await HttpContext.SignOutAsync();
-
-        // If no post_logout_redirect_uri was specified, redirect the user agent
-        // to the root page, that should correspond to the home page in most cases.
-        if (string.IsNullOrEmpty(request.PostLogoutRedirectUri))
-        {
-            return Redirect("~/");
-        }
-
-        return SignOut(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        return await SignOutAndRedirectAsync(request);
     }
 
     [ActionName(nameof(Logout)), AllowAnonymous, DisableCors]
@@ -381,9 +410,26 @@ public sealed class AccessController : Controller
         return Redirect("~/");
     }
 
+    private async Task<IActionResult> SignOutAndRedirectAsync(OpenIddictRequest request)
+    {
+        await HttpContext.SignOutAsync();
+
+        // If no post_logout_redirect_uri was specified, redirect the user agent
+        // to the root page, that should correspond to the home page in most cases.
+        if (string.IsNullOrEmpty(request.PostLogoutRedirectUri))
+        {
+            return Redirect("~/");
+        }
+
+        return SignOut(
+            new AuthenticationProperties { RedirectUri = "/" },
+            OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+    }
+
     [AllowAnonymous, HttpPost]
     [IgnoreAntiforgeryToken]
-    [Produces("application/json")]
+    [Produces(MediaTypeNames.Application.Json)]
+    [RateLimitGroup(UserRateLimiterPolicyNames.PasswordAuthentication)]
     public Task<IActionResult> Token()
     {
         // Warning: this action is decorated with IgnoreAntiforgeryTokenAttribute to override

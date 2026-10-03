@@ -16,9 +16,11 @@ public static class ServiceExtensions
             .AddCommands()
 
             .AddSecurity()
+            .AddApiProblemDetails()
             .AddMvc()
             .AddIdGeneration()
             .AddEmailAddressValidator()
+            .AddPhoneFormatValidator()
             .AddHtmlSanitizer()
             .AddSetupFeatures("OrchardCore.Setup")
 

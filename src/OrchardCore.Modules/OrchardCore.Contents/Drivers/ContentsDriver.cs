@@ -31,46 +31,37 @@ public sealed class ContentsDriver : ContentDisplayDriver
         // We add custom alternates. This could be done generically to all shapes coming from ContentDisplayDriver but right now it's
         // only necessary on this shape. Otherwise c.f. ContentPartDisplayDriver.
 
-        var results = new List<IDisplayResult>()
+        var results = new List<IDisplayResult>(6)
         {
-            Shape("ContentsTags_SummaryAdmin", new ContentItemViewModel(contentItem)).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Tags:10"),
-            Shape("ContentsMeta_SummaryAdmin", new ContentItemViewModel(contentItem)).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Meta:20"),
+            Factory("ContentsCheckbox_SummaryAdmin", static item => new ContentItemViewModel(item), contentItem).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Checkbox:10"),
+            Factory("ContentsTags_SummaryAdmin", static item => new ContentItemViewModel(item), contentItem).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Tags:10"),
+            Factory("ContentsMeta_SummaryAdmin", static item => new ContentItemViewModel(item), contentItem).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Meta:20"),
         };
 
         var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
         if (contentTypeDefinition != null)
         {
-            var contentsMetadataShape = Shape("ContentsMetadata", new ContentItemViewModel(contentItem))
+            var contentsMetadataShape = Factory("ContentsMetadata", static item => new ContentItemViewModel(item), contentItem)
                 .Location(OrchardCoreConstants.DisplayType.Detail, "Content:before");
 
             contentsMetadataShape.Displaying(ctx =>
             {
-                var hasStereotype = contentTypeDefinition.TryGetStereotype(out var stereotype);
-
-                if (hasStereotype && !string.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
-                {
-                    ctx.Shape.Metadata.Alternates.Add($"{stereotype}__ContentsMetadata");
-                }
-
                 var displayType = ctx.Shape.Metadata.DisplayType;
 
-                if (!string.IsNullOrEmpty(displayType) && displayType != "Detail")
-                {
-                    ctx.Shape.Metadata.Alternates.Add($"ContentsMetadata_{ctx.Shape.Metadata.DisplayType}");
+                // Get cached alternates and add them efficiently
+                var alternates = ContentsMetadataAlternatesFactory.GetAlternates(
+                    contentTypeDefinition.GetStereotype(),
+                    displayType);
 
-                    if (hasStereotype && !string.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
-                    {
-                        ctx.Shape.Metadata.Alternates.Add($"{stereotype}_{displayType}__ContentsMetadata");
-                    }
-                }
+                ctx.Shape.Metadata.Alternates.AddRange(alternates);
             });
 
             var user = _httpContextAccessor.HttpContext.User;
 
             results.Add(contentsMetadataShape);
-            results.Add(Shape("ContentsButtonEdit_SummaryAdmin", new ContentItemViewModel(contentItem)).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:10"));
-            results.Add(Shape("ContentsButtonActions_SummaryAdmin", new ContentItemViewModel(contentItem)).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:10")
+            results.Add(Factory("ContentsButtonEdit_SummaryAdmin", static item => new ContentItemViewModel(item), contentItem).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:10"));
+            results.Add(Factory("ContentsButtonActions_SummaryAdmin", static item => new ContentItemViewModel(item), contentItem).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:10")
                 .RenderWhen(async () =>
                 {
                     var hasPublishPermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.PublishContent, contentItem);
@@ -79,8 +70,7 @@ public sealed class ContentsDriver : ContentDisplayDriver
                     var hasClonePermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.CloneContent, contentItem);
 
                     return hasPublishPermission || hasDeletePermission || hasPreviewPermission || hasClonePermission;
-                })
-            );
+                }));
         }
 
         return Combine(results);

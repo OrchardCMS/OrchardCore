@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Localization;
@@ -16,18 +17,18 @@ namespace OrchardCore.ReCaptcha.Services;
 [Feature("OrchardCore.ReCaptcha")]
 public sealed class ReCaptchaShape : IShapeAttributeProvider
 {
-    private readonly ISiteService _siteService;
+    private readonly IOptionsMonitor<ReCaptchaSettings> _settings;
     private readonly ILocalizationService _localizationService;
     private readonly IResourceManager _resourceManager;
     private readonly ILogger _logger;
 
     public ReCaptchaShape(
-        ISiteService siteService,
+        IOptionsMonitor<ReCaptchaSettings> options,
         ILocalizationService localizationService,
         IResourceManager resourceManager,
         ILogger<ReCaptchaShape> logger)
     {
-        _siteService = siteService;
+        _settings = options;
         _localizationService = localizationService;
         _resourceManager = resourceManager;
         _logger = logger;
@@ -36,7 +37,7 @@ public sealed class ReCaptchaShape : IShapeAttributeProvider
     [Shape]
     public async Task<IHtmlContent> ReCaptcha(string language, string onload)
     {
-        var settings = await _siteService.GetSettingsAsync<ReCaptchaSettings>();
+        var settings = _settings.CurrentValue;
 
         if (!settings.ConfigurationExists())
         {

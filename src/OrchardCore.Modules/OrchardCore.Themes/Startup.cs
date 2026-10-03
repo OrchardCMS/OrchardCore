@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Deployment;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Modules;
@@ -31,5 +32,6 @@ public sealed class Startup : StartupBase
         services.AddScoped<ThemeTogglerService>();
         services.AddDeployment<ThemesDeploymentSource, ThemesDeploymentStep, ThemesDeploymentStepDriver>();
         services.AddDisplayDriver<ThemeEntry, ThemeEntryDisplayDriver>();
+        services.AddShapeTableProvider<AdminDashboardShapeTableProvider>();
     }
 }

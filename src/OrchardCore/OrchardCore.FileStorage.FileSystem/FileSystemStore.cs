@@ -1,14 +1,21 @@
 using Microsoft.Extensions.FileProviders.Physical;
+using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.FileStorage.FileSystem;
 
 public class FileSystemStore : IFileStore
 {
+    private readonly ILogger<FileSystemStore> _logger;
     private readonly string _fileSystemPath;
 
-    public FileSystemStore(string fileSystemPath)
+    public string StorageName => "Local";
+
+    public IFileStoreCapabilities Capabilities { get; } = new FileStoreCapabilities(hasHierarchicalNamespace: true, supportsAtomicMove: true);
+
+    public FileSystemStore(string fileSystemPath, ILogger<FileSystemStore> logger)
     {
-        _fileSystemPath = Path.GetFullPath(fileSystemPath);
+        _logger = logger;
+        _fileSystemPath = Path.TrimEndingDirectorySeparator(Path.GetFullPath(fileSystemPath));
     }
 
     public Task<IFileStoreEntry> GetFileInfoAsync(string path)
@@ -21,7 +28,10 @@ public class FileSystemStore : IFileStore
 
             if (fileInfo.Exists)
             {
-                return Task.FromResult<IFileStoreEntry>(new FileSystemStoreEntry(path, fileInfo));
+                var fileRelativePath = physicalPath[_fileSystemPath.Length..];
+                var filePath = this.NormalizePath(fileRelativePath);
+
+                return Task.FromResult<IFileStoreEntry>(new FileSystemStoreEntry(filePath, fileInfo));
             }
 
             return Task.FromResult<IFileStoreEntry>(null);
@@ -42,7 +52,10 @@ public class FileSystemStore : IFileStore
 
             if (directoryInfo.Exists)
             {
-                return Task.FromResult<IFileStoreEntry>(new FileSystemStoreEntry(path, directoryInfo));
+                var directoryRelativePath = physicalPath[_fileSystemPath.Length..];
+                var directoryPath = this.NormalizePath(directoryRelativePath);
+
+                return Task.FromResult<IFileStoreEntry>(new FileSystemStoreEntry(directoryPath, directoryInfo));
             }
 
             return Task.FromResult<IFileStoreEntry>(null);
@@ -94,6 +107,64 @@ public class FileSystemStore : IFileStore
         catch (Exception ex)
         {
             throw new FileStoreException($"Cannot get directory content with path '{path}'.", ex);
+        }
+    }
+
+    public IAsyncEnumerable<IFileStoreEntry> GetFilesAsync(string path = null)
+    {
+        try
+        {
+            var physicalPath = GetPhysicalPath(path);
+
+            if (!Directory.Exists(physicalPath))
+            {
+                return Array.Empty<IFileStoreEntry>().ToAsyncEnumerable();
+            }
+
+            var results = Directory
+                .GetFiles(physicalPath, "*", SearchOption.TopDirectoryOnly)
+                .Select(f =>
+                {
+                    var fileSystemInfo = new PhysicalFileInfo(new FileInfo(f));
+                    var fileRelativePath = f[_fileSystemPath.Length..];
+                    var filePath = this.NormalizePath(fileRelativePath);
+                    return (IFileStoreEntry)new FileSystemStoreEntry(filePath, fileSystemInfo);
+                });
+
+            return results.ToAsyncEnumerable();
+        }
+        catch (Exception ex)
+        {
+            throw new FileStoreException($"Cannot get files with path '{path}'.", ex);
+        }
+    }
+
+    public IAsyncEnumerable<IFileStoreEntry> GetDirectoriesAsync(string path = null)
+    {
+        try
+        {
+            var physicalPath = GetPhysicalPath(path);
+
+            if (!Directory.Exists(physicalPath))
+            {
+                return Array.Empty<IFileStoreEntry>().ToAsyncEnumerable();
+            }
+
+            var results = Directory
+                .GetDirectories(physicalPath, "*", SearchOption.TopDirectoryOnly)
+                .Select(f =>
+                {
+                    var fileSystemInfo = new PhysicalDirectoryInfo(new DirectoryInfo(f));
+                    var fileRelativePath = f[_fileSystemPath.Length..];
+                    var filePath = this.NormalizePath(fileRelativePath);
+                    return (IFileStoreEntry)new FileSystemStoreEntry(filePath, fileSystemInfo);
+                });
+
+            return results.ToAsyncEnumerable();
+        }
+        catch (Exception ex)
+        {
+            throw new FileStoreException($"Cannot get directories with path '{path}'.", ex);
         }
     }
 
@@ -303,10 +374,8 @@ public class FileSystemStore : IFileStore
             Directory.CreateDirectory(physicalDirectoryPath);
 
             var fileInfo = new FileInfo(physicalPath);
-            using (var outputStream = fileInfo.Create())
-            {
-                await inputStream.CopyToAsync(outputStream);
-            }
+            await using var outputStream = fileInfo.Create();
+            await inputStream.CopyToAsync(outputStream);
 
             return path;
         }
@@ -317,6 +386,29 @@ public class FileSystemStore : IFileStore
         catch (Exception ex)
         {
             throw new FileStoreException($"Cannot create file '{path}'.", ex);
+        }
+    }
+
+    public Task<long?> GetPermittedStorageAsync()
+    {
+        try
+        {
+            var path = GetPhysicalPath(null);
+            var driveOfStoreRoot = DriveInfo
+                .GetDrives()
+                .OrderByDescending(drive => drive.Name.Length)
+                .FirstOrDefault(drive => path.StartsWith(drive.Name));
+
+            return Task.FromResult(driveOfStoreRoot?.AvailableFreeSpace);
+        }
+        catch (Exception ex)
+        {
+            // It is possible, that the process only has limited access to the drive and trying to get this information
+            // raises some kind of error, yet regular use within the _fileSystemPath still works. So any error raised
+            // here should not be blocking.
+            _logger?.LogWarning(ex, "Unable to get free disk space for the file system store.");
+
+            return Task.FromResult<long?>(null);
         }
     }
 
@@ -332,10 +424,13 @@ public class FileSystemStore : IFileStore
         {
             path = this.NormalizePath(path);
 
-            var physicalPath = string.IsNullOrEmpty(path) ? _fileSystemPath : Path.Combine(_fileSystemPath, path);
+            var physicalPath = string.IsNullOrEmpty(path) ? _fileSystemPath : Path.GetFullPath(Path.Combine(_fileSystemPath, path));
 
-            // Verify that the resulting path is inside the root file system path.
-            var pathIsAllowed = Path.GetFullPath(physicalPath).StartsWith(_fileSystemPath, StringComparison.OrdinalIgnoreCase);
+            // Verify that the resulting path is inside the root file system path. An ordinal comparison is
+            // used on every platform, because ignoring case is the permissive direction and the operating
+            // system is not a reliable proxy for the case sensitivity of the file system.
+            var rootPrefix = Path.EndsInDirectorySeparator(_fileSystemPath) ? _fileSystemPath : _fileSystemPath + Path.DirectorySeparatorChar;
+            var pathIsAllowed = physicalPath.Equals(_fileSystemPath, StringComparison.Ordinal) || physicalPath.StartsWith(rootPrefix, StringComparison.Ordinal);
             if (!pathIsAllowed)
             {
                 throw new FileStoreException($"The path '{path}' resolves to a physical path outside the file system store root.");
