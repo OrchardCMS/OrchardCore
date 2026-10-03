@@ -17,8 +17,8 @@ The following properties are available on the `MarkdownBodyPartViewModel` class.
 
 | Property           | Type                       | Description                                              |
 |--------------------|----------------------------|----------------------------------------------------------|
-| `Markdown`         | `string`                   | The Markdown value after all tokens have been processed. |
-| `Html`             | `string`                   | The HTML content resulting from the Markdown source.     |
+| `Markdown`         | `string`                   | The exact authored Markdown source.                       |
+| `Html`             | `string`                   | The HTML after Markdown conversion, shortcodes, and sanitization. |
 | `ContentItem`      | `ContentItem`              | The content item of the part.                            |
 | `MarkdownBodyPart` | `MarkdownBodyPart`         | The `MarkdownBodyPart` instance.                         |
 | `TypePartSettings` | `MarkdownBodyPartSettings` | The settings of the part.                                |
@@ -29,7 +29,7 @@ The following properties are available on `MarkdownBodyPart`:
 
 | Name          | Type                                                                                                                                                             | Description |
 |---------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|
-| `Markdown`    | The Markdown content. It can contain Liquid tags so using it directly might result in unexpected results. Prefer rendering the `MarkdownBodyPart` shape instead. |
+| `Markdown`    | The exact authored Markdown source. Liquid syntax is not executed. |
 | `Content`     | The raw content of the part.                                                                                                                                     |
 | `ContentItem` | The content item containing this part.                                                                                                                           |
 
@@ -42,15 +42,15 @@ The following properties are available on the `MarkdownFieldViewModel` class.
 
 | Property              | Type                         | Description                                             |
 |-----------------------|------------------------------|---------------------------------------------------------|
-| `Markdown`            | `string`                     | The Markdown value once all tokens have been processed. |
-| `Html`                | `string`                     | The HTML content resulting from the Markdown source.    |
+| `Markdown`            | `string`                     | The exact authored Markdown source.                     |
+| `Html`                | `string`                     | The HTML after Markdown conversion, shortcodes, and sanitization. |
 | `Field`               | `MarkdownField`              | The `MarkdownField` instance.                           |
 | `Part`                | `ContentPart`                | The part this field is attached to.                     |
 | `PartFieldDefinition` | `ContentPartFieldDefinition` | The part field definition.                              |
 
 ## Sanitization
 
-Markdown output is sanitized during the rendering of content with Display Management.
+Markdown output is sanitized after Markdown conversion and shortcode processing. The authored Markdown source is persisted unchanged.
 
 You can disable this by unchecking the `Sanitize HTML` setting, or further configuring the [HTML Sanitizer](../Sanitizer/README.md)
 
@@ -135,20 +135,12 @@ To render a Markdown string to HTML within Razor use the `MarkdownToHtmlAsync` h
 
 In this example we assume that `Model.ContentItem.Content.MarkdownParagraph.Content` represents an `MarkdownField`, and `Markdown` is the field value, and we cast to a string, as extension methods do not support dynamic dispatching.
 
-This helper will also parse any liquid included in the Markdown.
-
-By default this helper will also sanitize the Markdown.
+By default this helper sanitizes the final rendered HTML.
 
 To disable sanitization:
 
 ```csharp
 @await Orchard.MarkdownToHtmlAsync((string)Model.ContentItem.Content.MarkdownParagraph.Content.Markdown, sanitize: false)
-```
-
-Liquid code included in the Markdown can be rendered before the Markdown is converted into HTML. To enable this, set the `renderLiquid` parameter to `true`:
-
-```csharp
-@await Orchard.MarkdownToHtmlAsync((string)Model.ContentItem.Content.MarkdownParagraph.Content.Markdown, renderLiquid: true)
 ```
 
 ## Markdown Configuration

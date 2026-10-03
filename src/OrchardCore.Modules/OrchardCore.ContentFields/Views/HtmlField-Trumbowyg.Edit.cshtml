@@ -4,7 +4,9 @@
 @using OrchardCore.ContentFields.Settings
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore.Localization.Data
+@using OrchardCore.Infrastructure.Html
 @inject IDataLocalizer D
+@inject IHtmlSanitizerService HtmlSanitizerService
 @{
     var settings = Model.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
     var trumbowygSettings = Model.PartFieldDefinition.GetSettings<HtmlFieldTrumbowygEditorSettings>();
@@ -26,7 +28,7 @@ else
     <script asp-name="trumbowyg-media-tag" at="Foot"></script>
 }
 
-<div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty) + " html-field-trumbowyg-editor")" id="@Html.IdFor(x => x.Html)_FieldWrapper" data-language-code="@culture.TwoLetterISOLanguageName" data-is-rtl="@(culture.GetLanguageDirection() == LanguageDirection.RTL ? "true" : "false")" data-language-direction="@culture.GetLanguageDirection()" data-options="@trumbowygSettings.Options">
+<div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty) + " html-field-trumbowyg-editor")" id="@Html.IdFor(x => x.Html)_FieldWrapper" data-language-code="@culture.TwoLetterISOLanguageName" data-is-rtl="@(culture.GetLanguageDirection() == LanguageDirection.RTL ? "true" : "false")" data-language-direction="@culture.GetLanguageDirection()" data-options="@trumbowygSettings.Options" data-editor-value="@HtmlSanitizerService.Sanitize(Model.Html ?? string.Empty)">
     <label asp-for="Html" class="ocat-label">@localizedFieldName</label>
     <div class="ocat-end">
         @await DisplayAsync(await New.ShortcodeModal())

@@ -1,0 +1,10 @@
+@using OrchardCore.Mvc.Utilities
+@model OrchardCore.Liquid.ViewModels.LiquidFieldViewModel
+
+@{
+    var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
+}
+
+<div class="field field-type-liquidfield field-name-@name">
+    @Html.Raw(Model.Html)
+</div>

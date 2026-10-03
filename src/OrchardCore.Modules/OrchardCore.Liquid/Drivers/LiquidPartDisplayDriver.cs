@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -10,14 +12,20 @@ namespace OrchardCore.Liquid.Drivers;
 
 public sealed class LiquidPartDisplayDriver : ContentPartDisplayDriver<LiquidPart>
 {
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAuthorizationService _authorizationService;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
 
     internal readonly IStringLocalizer S;
 
     public LiquidPartDisplayDriver(
+        IHttpContextAccessor httpContextAccessor,
+        IAuthorizationService authorizationService,
         ILiquidTemplateManager liquidTemplateManager,
         IStringLocalizer<LiquidPartDisplayDriver> localizer)
     {
+        _httpContextAccessor = httpContextAccessor;
+        _authorizationService = authorizationService;
         _liquidTemplateManager = liquidTemplateManager;
         S = localizer;
     }
@@ -34,11 +42,22 @@ public sealed class LiquidPartDisplayDriver : ContentPartDisplayDriver<LiquidPar
 
     public override IDisplayResult Edit(LiquidPart liquidPart, BuildPartEditorContext context)
     {
-        return Initialize<LiquidPartViewModel>("LiquidPart_Edit", m => BuildViewModel(m, liquidPart));
+        return Initialize<LiquidPartViewModel>("LiquidPart_Edit", m => BuildViewModel(m, liquidPart))
+            .RenderWhen(static driver => driver.IsAuthorizedAsync(), this);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(LiquidPart model, UpdatePartEditorContext context)
     {
+        if (!await IsAuthorizedAsync())
+        {
+            context.Updater.ModelState.AddModelError(
+                Prefix,
+                nameof(model.Liquid),
+                S["You do not have permission to manage Liquid templates."]);
+
+            return Edit(model, context);
+        }
+
         var viewModel = new LiquidPartViewModel();
 
         await context.Updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Liquid);
@@ -54,6 +73,11 @@ public sealed class LiquidPartDisplayDriver : ContentPartDisplayDriver<LiquidPar
 
         return Edit(model, context);
     }
+
+    private Task<bool> IsAuthorizedAsync()
+        => _authorizationService.AuthorizeAsync(
+            _httpContextAccessor.HttpContext?.User,
+            Permissions.ManageLiquidTemplates);
 
     private static void BuildViewModel(LiquidPartViewModel model, LiquidPart liquidPart)
     {
