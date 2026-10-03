@@ -200,6 +200,23 @@ In this example
 !!! warning
     You should not hardcode a number in the singular or plural forms because different languages have different rules about when each form is used.
 
+### Pluralizing a deferred `LocalizationSource`
+
+`IStringLocalizerFactory` and `IHtmlLocalizerFactory` also expose a `Plural` extension for a `LocalizationSource` declared without an available localizer, for example a static field evaluated before a tenant or culture is known. It requires `OrchardCore.Localization.Abstractions` and lives in the same namespaces as the plural helpers above (`Microsoft.Extensions.Localization` / `Microsoft.AspNetCore.Mvc.Localization`):
+
+```csharp
+using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
+
+private static readonly LocalizationSource _item = new("{0} item for {1}", typeof(MyMessages));
+
+var result = stringLocalizerFactory.Plural(count, _item, "{0} items for {1}", ownerName);
+```
+
+The source's `Value` is the singular PO `msgid`, exactly like `Localize`. `count` is always inserted automatically as the first format argument (`{0}`); any additional arguments you pass, such as `ownerName`, follow it (`{1}`, `{2}`, ...). The HTML factory extension has the same signature and semantics, deferring HTML encoding of the arguments to render time, like `Localize`.
+
+For a context-bearing source (`Type` set), the extension resolves `factory.Create(source.Type)` and delegates to the existing `IStringLocalizer.Plural`/`IHtmlLocalizer.Plural` extension, so the culture's PO `PluralRule` always decides the translated form, including languages with a dedicated zero form or more than two plural forms. For a context-free source (`Type` null, no PO lookup possible), the extension falls back to the English rule — singular only when `count == 1` — without resolving a factory, matching the existing context-free behavior of `Localize`. A null source returns `null` without resolving a factory, same as `Localize`.
+
 ### Extract translations to PO files
 
 In order to generate the .po files, you can use [this tool](https://github.com/OrchardCoreContrib/OrchardCoreContrib.PoExtractor).
