@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using OrchardCore.Navigation;
 using OrchardCore.Elasticsearch.Core.Models;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.Elasticsearch;
 
@@ -27,7 +27,7 @@ public sealed class AdminMenu : AdminNavigationProvider
         }
 
         builder
-            .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
+            .Add(S["Search"], S["Search"].PrefixPosition(), search => search
                 .AddClass("search")
                 .Id("search")
                 .Add(S["Queries"], S["Queries"].PrefixPosition(), import => import
