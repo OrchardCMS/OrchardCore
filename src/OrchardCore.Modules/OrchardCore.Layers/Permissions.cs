@@ -5,7 +5,7 @@ namespace OrchardCore.Layers;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageLayers = new("ManageLayers", LocalizationSource.Create("Manage layers", typeof(Permissions)));
+    public static readonly Permission ManageLayers = new("ManageLayers", LocalizationSource.Create<Permissions>("Manage layers"));
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

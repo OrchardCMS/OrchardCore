@@ -63,7 +63,7 @@ public class StringLocalizerFactoryPluralExtensionsTests
     [Fact]
     public void Plural_WithContext_DelegatesToLocalizerPluralUsingSourceType()
     {
-        var source = LocalizationSource.Create("item", typeof(StringLocalizerFactoryPluralExtensionsTests));
+        var source = LocalizationSource.Create<StringLocalizerFactoryPluralExtensionsTests>("item");
         var localizer = new Mock<IStringLocalizer>(MockBehavior.Strict);
         localizer.Setup(l => l["item", It.Is<PluralizationArgument>(a => a.Count == 2 && a.Forms[0] == "item" && a.Forms[1] == "items")])
             .Returns(new LocalizedString("item", "2 translated-items"));
@@ -82,7 +82,7 @@ public class StringLocalizerFactoryPluralExtensionsTests
     [Fact]
     public void Plural_SourceImmutability_DoesNotChangeAfterUse()
     {
-        var source = LocalizationSource.Create("{0} item", typeof(StringLocalizerFactoryPluralExtensionsTests));
+        var source = LocalizationSource.Create<StringLocalizerFactoryPluralExtensionsTests>("{0} item");
         var localizer = new Mock<IStringLocalizer>(MockBehavior.Strict);
         localizer.Setup(l => l["{0} item", It.IsAny<PluralizationArgument>()]).Returns(new LocalizedString("{0} item", "2 items"));
         var factory = new Mock<IStringLocalizerFactory>(MockBehavior.Strict);
@@ -139,7 +139,7 @@ public class StringLocalizerFactoryPluralExtensionsTests
             NullLogger<PortableObjectStringLocalizerFactory>.Instance);
 
         using var cultureScope = CultureScope.Create("ru");
-        var source = LocalizationSource.Create("{0} item for {1}", typeof(StringLocalizerFactoryPluralExtensionsTests));
+        var source = LocalizationSource.Create<StringLocalizerFactoryPluralExtensionsTests>("{0} item for {1}");
 
         var result = factory.Plural(5, source, "{0} items for {1}", "Mike");
 
@@ -149,7 +149,7 @@ public class StringLocalizerFactoryPluralExtensionsTests
     [Fact]
     public void Plural_And_Localize_OnSameSource_BothResolveTheSameLocalizerType()
     {
-        var source = LocalizationSource.Create("item", typeof(StringLocalizerFactoryPluralExtensionsTests));
+        var source = LocalizationSource.Create<StringLocalizerFactoryPluralExtensionsTests>("item");
         var localizer = new Mock<IStringLocalizer>(MockBehavior.Strict);
         localizer.Setup(l => l["item"]).Returns(new LocalizedString("item", "translated-item"));
         localizer.Setup(l => l["item", It.IsAny<PluralizationArgument>()]).Returns(new LocalizedString("item", "2 translated-items"));

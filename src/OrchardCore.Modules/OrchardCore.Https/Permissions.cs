@@ -5,7 +5,7 @@ namespace OrchardCore.Https;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageHttps = new("ManageHttps", LocalizationSource.Create("Manage HTTPS", typeof(Permissions)));
+    public static readonly Permission ManageHttps = new("ManageHttps", LocalizationSource.Create<Permissions>("Manage HTTPS"));
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

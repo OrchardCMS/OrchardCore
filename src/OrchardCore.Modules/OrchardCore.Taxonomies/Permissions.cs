@@ -5,7 +5,7 @@ namespace OrchardCore.Taxonomies;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageTaxonomies = new("ManageTaxonomy", LocalizationSource.Create("Manage taxonomies", typeof(Permissions)));
+    public static readonly Permission ManageTaxonomies = new("ManageTaxonomy", LocalizationSource.Create<Permissions>("Manage taxonomies"));
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

@@ -53,7 +53,7 @@ public class StringLocalizerFactoryExtensionsTests
     [Fact]
     public void Localize_WithContext_UsesSourceType()
     {
-        var source = LocalizationSource.Create("Hello", typeof(StringLocalizerFactoryExtensionsTests));
+        var source = LocalizationSource.Create<StringLocalizerFactoryExtensionsTests>("Hello");
         var localizer = new Mock<IStringLocalizer>(MockBehavior.Strict);
         localizer.Setup(l => l["Hello"]).Returns(new LocalizedString("Hello", "Bonjour"));
         var factory = new Mock<IStringLocalizerFactory>(MockBehavior.Strict);
@@ -71,7 +71,7 @@ public class StringLocalizerFactoryExtensionsTests
     [Fact]
     public void Localize_WithContextAndArguments_FormatsTranslation()
     {
-        var source = LocalizationSource.Create("Hello {0}", typeof(StringLocalizerFactoryExtensionsTests));
+        var source = LocalizationSource.Create<StringLocalizerFactoryExtensionsTests>("Hello {0}");
         object[] arguments = ["Mike"];
         var localizer = new Mock<IStringLocalizer>(MockBehavior.Strict);
         localizer.Setup(l => l[source.Value, arguments]).Returns(new LocalizedString(source.Value, "Bonjour Mike"));

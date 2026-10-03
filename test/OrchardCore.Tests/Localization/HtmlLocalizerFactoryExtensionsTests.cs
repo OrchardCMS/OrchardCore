@@ -76,7 +76,7 @@ public class HtmlLocalizerFactoryExtensionsTests
     [Fact]
     public void Localize_WithContext_UsesSourceType()
     {
-        var source = LocalizationSource.Create("Hello", typeof(HtmlLocalizerFactoryExtensionsTests));
+        var source = LocalizationSource.Create<HtmlLocalizerFactoryExtensionsTests>("Hello");
         var localizer = new Mock<IHtmlLocalizer>(MockBehavior.Strict);
         localizer.Setup(l => l["Hello"]).Returns(new LocalizedHtmlString("Hello", "<strong>Bonjour</strong>"));
         var factory = new Mock<IHtmlLocalizerFactory>(MockBehavior.Strict);
@@ -94,7 +94,7 @@ public class HtmlLocalizerFactoryExtensionsTests
     [Fact]
     public void Localize_SameSourceWithDifferentFactories_DefersEncodingToRendering()
     {
-        var source = LocalizationSource.Create("Hello {0}", typeof(HtmlLocalizerFactoryExtensionsTests));
+        var source = LocalizationSource.Create<HtmlLocalizerFactoryExtensionsTests>("Hello {0}");
         object[] arguments = ["<Mike>"];
         var localizer = new Mock<IStringLocalizer>(MockBehavior.Strict);
         localizer.Setup(l => l[source.Value]).Returns(new LocalizedString(source.Value, "<strong>Bonjour {0}</strong>"));

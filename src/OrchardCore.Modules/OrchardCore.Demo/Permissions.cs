@@ -6,8 +6,8 @@ namespace OrchardCore.Demo;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission DemoAPIAccess = new("DemoAPIAccess", LocalizationSource.Create("Access to Demo API ", typeof(Permissions)));
-    public static readonly Permission ManageOwnUserProfile = new("ManageOwnUserProfile", LocalizationSource.Create("Manage own user profile", typeof(Permissions)), new Permission[] { UsersPermissions.ManageUsers });
+    public static readonly Permission DemoAPIAccess = new("DemoAPIAccess", LocalizationSource.Create<Permissions>("Access to Demo API "));
+    public static readonly Permission ManageOwnUserProfile = new("ManageOwnUserProfile", LocalizationSource.Create<Permissions>("Manage own user profile"), new Permission[] { UsersPermissions.ManageUsers });
 
     private static readonly IEnumerable<Permission> s_allPermissions =
     [

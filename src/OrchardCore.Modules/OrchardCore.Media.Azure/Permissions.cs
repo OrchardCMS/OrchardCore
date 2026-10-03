@@ -5,7 +5,7 @@ namespace OrchardCore.Media.Azure;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ViewAzureMediaOptions = new("ViewAzureMediaOptions", LocalizationSource.Create("View Azure Media Options", typeof(Permissions)));
+    public static readonly Permission ViewAzureMediaOptions = new("ViewAzureMediaOptions", LocalizationSource.Create<Permissions>("View Azure Media Options"));
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

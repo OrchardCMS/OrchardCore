@@ -5,7 +5,7 @@ namespace OrchardCore.Cors;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageCorsSettings = new("ManageCorsSettings", LocalizationSource.Create("Managing Cors Settings", typeof(Permissions)), isSecurityCritical: true);
+    public static readonly Permission ManageCorsSettings = new("ManageCorsSettings", LocalizationSource.Create<Permissions>("Managing Cors Settings"), isSecurityCritical: true);
 
 
     private readonly IEnumerable<Permission> _allPermissions =

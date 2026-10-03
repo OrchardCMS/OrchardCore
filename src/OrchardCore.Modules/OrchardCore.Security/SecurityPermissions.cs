@@ -5,7 +5,7 @@ namespace OrchardCore.Security;
 
 public sealed class SecurityPermissions : IPermissionProvider
 {
-    public static readonly Permission ManageSecurityHeadersSettings = new("ManageSecurityHeadersSettings", LocalizationSource.Create("Manage Security Headers Settings", typeof(SecurityPermissions)));
+    public static readonly Permission ManageSecurityHeadersSettings = new("ManageSecurityHeadersSettings", LocalizationSource.Create<SecurityPermissions>("Manage Security Headers Settings"));
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

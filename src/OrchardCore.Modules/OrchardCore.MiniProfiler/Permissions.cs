@@ -5,8 +5,8 @@ namespace OrchardCore.MiniProfiler;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ViewMiniProfilerOnFrontEnd = new("ViewMiniProfilerOnFrontEnd", LocalizationSource.Create("View Mini Profiler widget on front end pages", typeof(Permissions)));
-    public static readonly Permission ViewMiniProfilerOnBackEnd = new("ViewMiniProfilerOnBackEnd", LocalizationSource.Create("View Mini Profiler widget on back end pages", typeof(Permissions)));
+    public static readonly Permission ViewMiniProfilerOnFrontEnd = new("ViewMiniProfilerOnFrontEnd", LocalizationSource.Create<Permissions>("View Mini Profiler widget on front end pages"));
+    public static readonly Permission ViewMiniProfilerOnBackEnd = new("ViewMiniProfilerOnBackEnd", LocalizationSource.Create<Permissions>("View Mini Profiler widget on back end pages"));
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

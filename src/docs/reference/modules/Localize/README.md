@@ -137,7 +137,7 @@ using OrchardCore.Localization;
 var description = LocalizationSource.Create("Manage widgets", typeof(MyPermissions));
 ```
 
-Use `LocalizationSource.Create(value, type)` for an explicit source type, or `LocalizationSource.Create<T>(value)` to use `typeof(T)`. The explicit-type overload also supports static classes, which cannot be generic type arguments. Both methods preserve the original value and type without translating or formatting them. Prefer these explicit factory calls over constructor syntax so source-extraction tools can identify the declaration without inferring the type of `new(...)`.
+Prefer `LocalizationSource.Create<T>(value)` when the source type can be a generic type argument. Use `LocalizationSource.Create(value, type)` for a runtime source type or a static class, which cannot be a generic type argument. Both methods preserve the original value and type without translating or formatting them. Prefer these explicit factory calls over constructor syntax so source-extraction tools can identify the declaration without inferring the type of `new(...)`.
 
 `Value` is the original text, used as the PO `msgid`. `Type` supplies the localizer's context, just as with `IStringLocalizer<MyPermissions>` or `IHtmlLocalizer<MyPermissions>`. For example:
 

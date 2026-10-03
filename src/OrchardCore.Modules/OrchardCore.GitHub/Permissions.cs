@@ -5,7 +5,7 @@ namespace OrchardCore.GitHub;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageGitHubAuthentication = new("ManageGitHubAuthentication", LocalizationSource.Create("Manage GitHub Authentication settings", typeof(Permissions)));
+    public static readonly Permission ManageGitHubAuthentication = new("ManageGitHubAuthentication", LocalizationSource.Create<Permissions>("Manage GitHub Authentication settings"));
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

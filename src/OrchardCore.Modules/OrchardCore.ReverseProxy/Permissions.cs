@@ -5,7 +5,7 @@ namespace OrchardCore.ReverseProxy;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageReverseProxySettings = new("ManageReverseProxySettings", LocalizationSource.Create("Manage Reverse Proxy Settings", typeof(Permissions)));
+    public static readonly Permission ManageReverseProxySettings = new("ManageReverseProxySettings", LocalizationSource.Create<Permissions>("Manage Reverse Proxy Settings"));
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

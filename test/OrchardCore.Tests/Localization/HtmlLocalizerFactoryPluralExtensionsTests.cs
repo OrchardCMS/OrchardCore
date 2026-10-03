@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Html;
 using OrchardCore.Localization;
 using OrchardCore.Localization.PortableObject;
 
@@ -63,7 +62,7 @@ public class HtmlLocalizerFactoryPluralExtensionsTests
     [Fact]
     public void Plural_WithContext_UsesSourceTypeAndDeferEncodingToRendering()
     {
-        var source = LocalizationSource.Create("item", typeof(HtmlLocalizerFactoryPluralExtensionsTests));
+        var source = LocalizationSource.Create<HtmlLocalizerFactoryPluralExtensionsTests>("item");
         var localizer = new Mock<IHtmlLocalizer>(MockBehavior.Strict);
         localizer.Setup(l => l["item", It.IsAny<PluralizationArgument>()])
             .Returns(new LocalizedHtmlString("item", "<strong>2 Bonjour</strong>"));
@@ -82,7 +81,7 @@ public class HtmlLocalizerFactoryPluralExtensionsTests
     [Fact]
     public void Plural_SourceImmutability_DoesNotChangeAfterUse()
     {
-        var source = LocalizationSource.Create("{0} item", typeof(HtmlLocalizerFactoryPluralExtensionsTests));
+        var source = LocalizationSource.Create<HtmlLocalizerFactoryPluralExtensionsTests>("{0} item");
         var localizer = new Mock<IHtmlLocalizer>(MockBehavior.Strict);
         localizer.Setup(l => l["{0} item", It.IsAny<PluralizationArgument>()]).Returns(new LocalizedHtmlString("{0} item", "2 items"));
         var factory = new Mock<IHtmlLocalizerFactory>(MockBehavior.Strict);
@@ -128,7 +127,7 @@ public class HtmlLocalizerFactoryPluralExtensionsTests
     [Fact]
     public void Plural_And_Localize_OnSameSource_ProduceConsistentEncodingSemantics()
     {
-        var source = LocalizationSource.Create("item", typeof(HtmlLocalizerFactoryPluralExtensionsTests));
+        var source = LocalizationSource.Create<HtmlLocalizerFactoryPluralExtensionsTests>("item");
         var localizer = new Mock<IHtmlLocalizer>(MockBehavior.Strict);
         localizer.Setup(l => l["item"]).Returns(new LocalizedHtmlString("item", "<strong>translated</strong>"));
         localizer.Setup(l => l["item", It.IsAny<PluralizationArgument>()]).Returns(new LocalizedHtmlString("item", "<strong>2 translated</strong>"));
@@ -143,7 +142,7 @@ public class HtmlLocalizerFactoryPluralExtensionsTests
         factory.Verify(f => f.Create(source.Type), Times.Exactly(2));
     }
 
-    private static string Render(IHtmlContent content)
+    private static string Render(LocalizedHtmlString content)
     {
         using var writer = new StringWriter();
         content.WriteTo(writer, HtmlEncoder.Default);

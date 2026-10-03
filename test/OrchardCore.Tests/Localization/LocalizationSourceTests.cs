@@ -5,13 +5,13 @@ namespace OrchardCore.Tests.Localization;
 public class LocalizationSourceTests
 {
     [Theory]
-    [InlineData("")]
-    [InlineData("Hello")]
-    [InlineData("Hello {0}")]
-    [InlineData("<strong>Hello</strong>")]
-    public void Create_WithType_KeepsUntranslatedValueAndType(string value)
+    [InlineData("", typeof(LocalizationSourceTests))]
+    [InlineData("Hello", typeof(LocalizationSourceTests))]
+    [InlineData("Hello {0}", typeof(LocalizationSourceTests))]
+    [InlineData("<strong>Hello</strong>", typeof(LocalizationSourceTests))]
+    public void Create_WithType_KeepsUntranslatedValueAndType(string value, Type type)
     {
-        var source = LocalizationSource.Create(value, typeof(LocalizationSourceTests));
+        var source = LocalizationSource.Create(value, type);
         var genericSource = LocalizationSource.Create<LocalizationSourceTests>(value);
 
         Assert.Equal(value, source.Value);
@@ -39,11 +39,13 @@ public class LocalizationSourceTests
         Assert.Equal(typeof(Math), source.Type);
     }
 
-    [Fact]
-    public void Create_WithNullValue_Throws()
+    [Theory]
+    [InlineData(typeof(LocalizationSourceTests))]
+    [InlineData(typeof(Math))]
+    public void Create_WithNullValue_Throws(Type type)
     {
         Assert.Throws<ArgumentNullException>("value", () => LocalizationSource.Create(null));
-        Assert.Throws<ArgumentNullException>("value", () => LocalizationSource.Create(null, typeof(LocalizationSourceTests)));
+        Assert.Throws<ArgumentNullException>("value", () => LocalizationSource.Create(null, type));
         Assert.Throws<ArgumentNullException>("value", () => LocalizationSource.Create<LocalizationSourceTests>(null));
     }
 

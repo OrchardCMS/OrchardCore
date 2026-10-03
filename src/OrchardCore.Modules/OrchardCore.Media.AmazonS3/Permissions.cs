@@ -5,7 +5,7 @@ namespace OrchardCore.Media.AmazonS3;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ViewAmazonS3MediaOptions = new("ViewAmazonS3MediaOptions", LocalizationSource.Create("View Amazon S3 Media Options", typeof(Permissions)));
+    public static readonly Permission ViewAmazonS3MediaOptions = new("ViewAmazonS3MediaOptions", LocalizationSource.Create<Permissions>("View Amazon S3 Media Options"));
 
     private readonly IEnumerable<Permission> _allPermissions =
     [
