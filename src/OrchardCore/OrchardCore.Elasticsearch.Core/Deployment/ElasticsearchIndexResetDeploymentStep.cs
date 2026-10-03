@@ -1,5 +1,5 @@
-using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Elasticsearch.Core.Deployment;
 
@@ -8,16 +8,14 @@ namespace OrchardCore.Elasticsearch.Core.Deployment;
 /// </summary>
 public sealed class ElasticsearchIndexResetDeploymentStep : DeploymentStep
 {
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<ElasticsearchIndexResetDeploymentStep>("Search");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<ElasticsearchIndexResetDeploymentStep>("Reset Elasticsearch Indices");
+
     public ElasticsearchIndexResetDeploymentStep()
     {
         Name = "ElasticIndexReset";
-    }
-
-    public ElasticsearchIndexResetDeploymentStep(IStringLocalizer<ElasticsearchIndexResetDeploymentStep> S)
-        : this()
-    {
-        Category = S["Search"];
-        Title = S["Reset Elasticsearch Indices"];
+        Category = s_category;
+        Title = s_title;
     }
 
     public bool IncludeAll { get; set; } = true;
