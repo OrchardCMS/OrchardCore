@@ -70,6 +70,7 @@ test/OrchardCore.Tests.Functional/
       ComingSoonTests.cs         # Tests for the ComingSoon recipe
       HeadlessTests.cs           # Tests for the Headless recipe
       MigrationsTests.cs         # Tests for database migrations via custom recipe
+      SecretsTests.cs            # Secrets administration, validation, and metadata tests
       SaasFixture.cs             # Fixture for SaaS multi-tenancy tests
       SaasTests.cs               # Tests tenant creation and isolation
     Mvc/
