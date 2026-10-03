@@ -75,8 +75,18 @@ public sealed class Migrations : DataMigration
                 "Latest")
         );
 
+        await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
+            .CreateIndex("IDX_ContentItemIndex_ContentItemId",
+                "ContentItemId",
+                "Published",
+                "Latest",
+                "DocumentId",
+                "ContentType",
+                "DisplayText")
+        );
+
         // Shortcut other migration steps on new content definition schemas.
-        return 6;
+        return 7;
     }
 
     public async Task<int> UpdateFrom1Async()
@@ -231,5 +241,20 @@ public sealed class Migrations : DataMigration
         );
 
         return 6;
+    }
+
+    public async Task<int> UpdateFrom6Async()
+    {
+        await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
+            .CreateIndex("IDX_ContentItemIndex_ContentItemId",
+                "ContentItemId",
+                "Published",
+                "Latest",
+                "DocumentId",
+                "ContentType",
+                "DisplayText")
+        );
+
+        return 7;
     }
 }
