@@ -279,6 +279,11 @@ public class MetaWeblogHandler : IXmlRpcHandler
             driver.EditPost(content, contentItem);
         }
 
+        await CheckMutationAccessAsync(
+            publish ? CommonPermissions.PublishContent : CommonPermissions.EditContent,
+            user,
+            contentItem);
+
         await _contentManager.CreateAsync(contentItem, VersionOptions.Draft);
 
         // Try to get the UTC time zone by default.
@@ -364,6 +369,11 @@ public class MetaWeblogHandler : IXmlRpcHandler
         {
             driver.EditPost(content, contentItem);
         }
+
+        await CheckMutationAccessAsync(
+            publish ? CommonPermissions.PublishContent : CommonPermissions.EditContent,
+            user,
+            contentItem);
 
         // Try to get the UTC time zone by default.
         var publishedUtc = content.Optional<DateTime?>("date_created_gmt");
@@ -481,6 +491,19 @@ public class MetaWeblogHandler : IXmlRpcHandler
         if (!await _authorizationService.AuthorizeAsync(user, permission, contentItem))
         {
             throw new InvalidOperationException(S["Not authorized to delete this content"].Value);
+        }
+    }
+
+    private async Task CheckMutationAccessAsync(
+        Permission permission,
+        ClaimsPrincipal user,
+        ContentItem contentItem)
+    {
+        if (!await _authorizationService.AuthorizeAsync(user, permission, contentItem))
+        {
+            await _session.CancelAsync();
+
+            throw new InvalidOperationException(S["Not authorized to edit this content"].Value);
         }
     }
 

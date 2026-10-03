@@ -39,8 +39,14 @@ public sealed class PreviewController : Controller
         _homeUrl = httpContextAccessor.HttpContext.Request.PathBase.Add("/");
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates) ||
+            !await _authorizationService.AuthorizeAsync(User, OrchardCore.Liquid.Permissions.ManageLiquidTemplates))
+        {
+            return this.ChallengeOrForbid();
+        }
+
         return View();
     }
 

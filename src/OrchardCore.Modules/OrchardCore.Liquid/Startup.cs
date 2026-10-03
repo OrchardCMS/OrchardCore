@@ -2,6 +2,7 @@ using System.Text.Json.Dynamic;
 using System.Text.Json.Nodes;
 using Fluid;
 using Fluid.Values;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,6 +21,7 @@ using OrchardCore.Liquid.Indexing;
 using OrchardCore.Liquid.DataMigrations;
 using OrchardCore.Liquid.Models;
 using OrchardCore.Liquid.Services;
+using OrchardCore.Liquid.Security;
 using OrchardCore.Liquid.ViewModels;
 using OrchardCore.Modules;
 using OrchardCore.Security.Permissions;
@@ -115,6 +117,7 @@ public sealed class LiquidPartStartup : StartupBase
             .UseDisplayDriver<LiquidFieldDisplayDriver>()
             .AddHandler<LiquidFieldHandler>();
 
+        services.AddScoped<IAuthorizationHandler, LiquidContentAuthorizationHandler>();
         services.AddDataMigration<Migrations>();
         services.AddScoped<IContentPartIndexHandler, LiquidPartIndexHandler>();
         services.AddScoped<IContentFieldIndexHandler, LiquidFieldIndexHandler>();
