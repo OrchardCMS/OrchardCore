@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Deployment.Deployment;
 
@@ -7,16 +7,14 @@ namespace OrchardCore.Deployment.Deployment;
 /// </summary>
 public class DeploymentPlanDeploymentStep : DeploymentStep
 {
+    private static readonly LocalizationSource s_category = new("Deployment", typeof(DeploymentPlanDeploymentStep));
+    private static readonly LocalizationSource s_title = new("Deployment Plans", typeof(DeploymentPlanDeploymentStep));
+
     public DeploymentPlanDeploymentStep()
     {
         Name = "DeploymentPlan";
-    }
-
-    public DeploymentPlanDeploymentStep(IStringLocalizer<DeploymentPlanDeploymentStep> S)
-        : this()
-    {
-        Category = S["Deployment"];
-        Title = S["Deployment Plans"];
+        Category = s_category;
+        Title = s_title;
     }
 
     public bool IncludeAll { get; set; } = true;

@@ -1,5 +1,5 @@
-using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Queries.Deployment;
 
@@ -8,14 +8,11 @@ namespace OrchardCore.Queries.Deployment;
 /// </summary>
 public class AllQueriesDeploymentStep : DeploymentStep
 {
+    private static readonly LocalizationSource s_category = new("Content Management", typeof(AllQueriesDeploymentStep));
+
     public AllQueriesDeploymentStep()
     {
         Name = "AllQueries";
-    }
-
-    public AllQueriesDeploymentStep(IStringLocalizer<AllQueriesDeploymentStep> S)
-        : this()
-    {
-        Category = S["Content Management"];
+        Category = s_category;
     }
 }

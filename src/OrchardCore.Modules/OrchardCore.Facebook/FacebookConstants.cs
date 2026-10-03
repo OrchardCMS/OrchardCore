@@ -1,3 +1,4 @@
+using OrchardCore.Localization;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Facebook;
@@ -5,7 +6,7 @@ namespace OrchardCore.Facebook;
 public static class FacebookConstants
 {
     public static readonly Permission ManageFacebookPixelPermission
-        = new("ManageFacebookPixel", "Manage Facebook Pixel settings.");
+        = new("ManageFacebookPixel", new LocalizationSource("Manage Facebook Pixel settings.", typeof(FacebookConstants)));
 
     public const string PixelSettingsGroupId = "facebook-pixel";
 

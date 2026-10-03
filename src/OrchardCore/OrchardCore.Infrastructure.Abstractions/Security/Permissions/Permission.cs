@@ -1,4 +1,6 @@
 using System.Security.Claims;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Security.Permissions;
 
@@ -36,7 +38,21 @@ public class Permission
     /// <remarks>
     /// The permission name must be unique across the system.
     /// </remarks>
-    public Permission(string name, string description, bool isSecurityCritical = false) : this(name)
+    public Permission(string name, string description, bool isSecurityCritical = false)
+        : this(name, description is null ? null : new LocalizationSource(description), isSecurityCritical)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Permission"/> class with a localization source and security flag.
+    /// </summary>
+    /// <param name="name">The name of the permission.</param>
+    /// <param name="description">The description of the permission. Use <c>new LocalizationSource(description, typeof(DeclaringType))</c> so that the description can be translated.</param>
+    /// <param name="isSecurityCritical">Indicates whether the permission is security critical.</param>
+    /// <remarks>
+    /// The permission name must be unique across the system.
+    /// </remarks>
+    public Permission(string name, LocalizationSource description, bool isSecurityCritical = false) : this(name)
     {
         Description = description;
         IsSecurityCritical = isSecurityCritical;
@@ -58,6 +74,21 @@ public class Permission
     }
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="Permission"/> class with a localization source, implying permissions, and security flag.
+    /// </summary>
+    /// <param name="name">The name of the permission.</param>
+    /// <param name="description">The description of the permission. Use <c>new LocalizationSource(description, typeof(DeclaringType))</c> so that the description can be translated.</param>
+    /// <param name="impliedBy">The permissions implying this permission.</param>
+    /// <param name="isSecurityCritical">Indicates whether the permission is security critical.</param>
+    /// <remarks>
+    /// The permission name must be unique across the system.
+    /// </remarks>
+    public Permission(string name, LocalizationSource description, IEnumerable<Permission> impliedBy, bool isSecurityCritical = false) : this(name, description, isSecurityCritical)
+    {
+        ImpliedBy = impliedBy;
+    }
+
+    /// <summary>
     /// Gets the name of the permission.
     /// </summary>
     /// <remarks>
@@ -68,7 +99,12 @@ public class Permission
     /// <summary>
     /// Gets or sets the description of the permission.
     /// </summary>
-    public string Description { get; set; }
+    /// <remarks>
+    /// The description is not translated. When it has a source type, translate it at display time with
+    /// <see cref="StringLocalizerFactoryExtensions.Localize(IStringLocalizerFactory, LocalizationSource, object[])"/>.
+    /// Descriptions without a source type can be translated with Data Localization.
+    /// </remarks>
+    public LocalizationSource Description { get; set; }
 
     /// <summary>
     /// Gets or sets the category of the permission.

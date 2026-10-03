@@ -1,5 +1,5 @@
-using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Features.Deployment;
 
@@ -8,16 +8,14 @@ namespace OrchardCore.Features.Deployment;
 /// </summary>
 public class AllFeaturesDeploymentStep : DeploymentStep
 {
+    private static readonly LocalizationSource s_category = new("Infrastructure", typeof(AllFeaturesDeploymentStep));
+    private static readonly LocalizationSource s_title = new("All Features", typeof(AllFeaturesDeploymentStep));
+
     public AllFeaturesDeploymentStep()
     {
         Name = "AllFeatures";
-    }
-
-    public AllFeaturesDeploymentStep(IStringLocalizer<AllFeaturesDeploymentStep> S)
-        : this()
-    {
-        Category = S["Infrastructure"];
-        Title = S["All Features"];
+        Category = s_category;
+        Title = s_title;
     }
 
     public bool IgnoreDisabledFeatures { get; set; }

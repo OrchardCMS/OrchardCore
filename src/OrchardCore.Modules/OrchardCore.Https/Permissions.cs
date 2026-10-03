@@ -1,10 +1,11 @@
+using OrchardCore.Localization;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Https;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageHttps = new("ManageHttps", "Manage HTTPS");
+    public static readonly Permission ManageHttps = new("ManageHttps", new LocalizationSource("Manage HTTPS", typeof(Permissions)));
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

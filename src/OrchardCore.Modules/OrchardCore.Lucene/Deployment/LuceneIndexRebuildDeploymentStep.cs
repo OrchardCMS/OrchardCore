@@ -1,5 +1,5 @@
-using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Lucene.Deployment;
 
@@ -8,16 +8,14 @@ namespace OrchardCore.Lucene.Deployment;
 /// </summary>
 public class LuceneIndexRebuildDeploymentStep : DeploymentStep
 {
+    private static readonly LocalizationSource s_category = new("Search", typeof(LuceneIndexRebuildDeploymentStep));
+    private static readonly LocalizationSource s_title = new("Rebuild Lucene Search Indices", typeof(LuceneIndexRebuildDeploymentStep));
+
     public LuceneIndexRebuildDeploymentStep()
     {
         Name = "LuceneIndexRebuild";
-    }
-
-    public LuceneIndexRebuildDeploymentStep(IStringLocalizer<LuceneIndexRebuildDeploymentStep> S)
-        : this()
-    {
-        Category = S["Search"];
-        Title = S["Rebuild Lucene Search Indices"];
+        Category = s_category;
+        Title = s_title;
     }
 
     public bool IncludeAll { get; set; } = true;

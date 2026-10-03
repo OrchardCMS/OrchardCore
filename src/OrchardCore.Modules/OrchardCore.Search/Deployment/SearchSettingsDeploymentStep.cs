@@ -1,5 +1,5 @@
-using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Search.Deployment;
 
@@ -8,15 +8,13 @@ namespace OrchardCore.Search.Deployment;
 /// </summary>
 public class SearchSettingsDeploymentStep : DeploymentStep
 {
+    private static readonly LocalizationSource s_category = new("Search", typeof(SearchSettingsDeploymentStep));
+    private static readonly LocalizationSource s_title = new("Search Settings", typeof(SearchSettingsDeploymentStep));
+
     public SearchSettingsDeploymentStep()
     {
         Name = "SearchSettings";
-    }
-
-    public SearchSettingsDeploymentStep(IStringLocalizer<SearchSettingsDeploymentStep> S)
-        : this()
-    {
-        Category = S["Search"];
-        Title = S["Search Settings"];
+        Category = s_category;
+        Title = s_title;
     }
 }

@@ -1,3 +1,4 @@
+using OrchardCore.Localization;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Google;
@@ -5,11 +6,11 @@ namespace OrchardCore.Google;
 public static class Permissions
 {
     public static readonly Permission ManageGoogleAuthentication
-        = new("ManageGoogleAuthentication", "Manage Google Authentication settings");
+        = new("ManageGoogleAuthentication", new LocalizationSource("Manage Google Authentication settings", typeof(Permissions)));
 
     public static readonly Permission ManageGoogleAnalytics
-        = new("ManageGoogleAnalytics", "Manage Google Analytics settings");
+        = new("ManageGoogleAnalytics", new LocalizationSource("Manage Google Analytics settings", typeof(Permissions)));
 
     public static readonly Permission ManageGoogleTagManager
-        = new("ManageGoogleTagManager", "Manage Google Tag Manager settings");
+        = new("ManageGoogleTagManager", new LocalizationSource("Manage Google Tag Manager settings", typeof(Permissions)));
 }

@@ -1,5 +1,5 @@
-using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Layers.Deployment;
 
@@ -8,14 +8,11 @@ namespace OrchardCore.Layers.Deployment;
 /// </summary>
 public class AllLayersDeploymentStep : DeploymentStep
 {
+    private static readonly LocalizationSource s_category = new("Content", typeof(AllLayersDeploymentStep));
+
     public AllLayersDeploymentStep()
     {
         Name = "AllLayers";
-    }
-
-    public AllLayersDeploymentStep(IStringLocalizer<AllLayersDeploymentStep> S)
-        : this()
-    {
-        Category = S["Content"];
+        Category = s_category;
     }
 }

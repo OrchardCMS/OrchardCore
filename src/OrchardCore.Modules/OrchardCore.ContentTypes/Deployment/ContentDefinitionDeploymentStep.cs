@@ -1,5 +1,5 @@
-using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.ContentTypes.Deployment;
 
@@ -8,16 +8,14 @@ namespace OrchardCore.ContentTypes.Deployment;
 /// </summary>
 public class ContentDefinitionDeploymentStep : DeploymentStep
 {
+    private static readonly LocalizationSource s_category = new("Content Management", typeof(ContentDefinitionDeploymentStep));
+    private static readonly LocalizationSource s_title = new("Update Content Definitions", typeof(ContentDefinitionDeploymentStep));
+
     public ContentDefinitionDeploymentStep()
     {
         Name = "ContentDefinition";
-    }
-
-    public ContentDefinitionDeploymentStep(IStringLocalizer<ContentDefinitionDeploymentStep> S)
-        : this()
-    {
-        Category = S["Content Management"];
-        Title = S["Update Content Definitions"];
+        Category = s_category;
+        Title = s_title;
     }
 
     public bool IncludeAll { get; set; }

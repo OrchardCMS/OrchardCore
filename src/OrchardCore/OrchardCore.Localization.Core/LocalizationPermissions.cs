@@ -4,5 +4,5 @@ namespace OrchardCore.Localization;
 
 public static class LocalizationPermissions
 {
-    public static readonly Permission ManageCultures = new("ManageCultures", "Manage supported culture");
+    public static readonly Permission ManageCultures = new("ManageCultures", new LocalizationSource("Manage supported culture", typeof(LocalizationPermissions)));
 }

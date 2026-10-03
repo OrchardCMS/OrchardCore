@@ -76,6 +76,28 @@ For instance, to add the "CanChat" permission to the `Subscriber` role, use the 
 }
 ```
 
+## Declaring permissions
+
+A module declares its permissions in an `IPermissionProvider`. Create the description with `LocalizationSource`, and pass the type that declares the permission as the translation context:
+
+```csharp
+using OrchardCore.Localization;
+using OrchardCore.Security.Permissions;
+
+namespace MyModule;
+
+public static class MyPermissions
+{
+    public static readonly Permission ManageWidgets = new(
+        "ManageWidgets",
+        new LocalizationSource("Manage widgets", typeof(MyPermissions)));
+}
+```
+
+The roles editor and the admin menu and menu item permission pickers translate the description with the full name of that type as the context, for example `MyModule.MyPermissions`, so a PO file entry for the description uses `msgctxt "MyModule.MyPermissions"`. These descriptions are translated only with PO files. They are not listed in Data Localization. The source remains untranslated; use `IStringLocalizerFactory.Localize(permission.Description)` at display time, or `permission.Description.Value` when the original text is needed.
+
+A description passed as a plain `string` is still supported, for example `new Permission("ManageWidgets", "Manage widgets")`. The constructor wraps it in a `LocalizationSource` without a type. It is not translated with PO files, but it can be translated with Data Localization in the roles editor. Built-in templates, for example `"Edit {0}"`, use this context-free path because the format arguments are applied before the description is shown; the permissions built from them, for example "Edit Article", are also translated with Data Localization. Permission categories are translated with Data Localization too.
+
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/FmgZHpFHCcg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

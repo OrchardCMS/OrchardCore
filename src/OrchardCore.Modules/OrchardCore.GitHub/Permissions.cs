@@ -1,10 +1,11 @@
+using OrchardCore.Localization;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.GitHub;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageGitHubAuthentication = new("ManageGitHubAuthentication", "Manage GitHub Authentication settings");
+    public static readonly Permission ManageGitHubAuthentication = new("ManageGitHubAuthentication", new LocalizationSource("Manage GitHub Authentication settings", typeof(Permissions)));
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

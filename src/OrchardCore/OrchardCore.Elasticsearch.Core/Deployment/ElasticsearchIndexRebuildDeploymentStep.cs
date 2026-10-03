@@ -1,5 +1,5 @@
-using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Elasticsearch.Core.Deployment;
 
@@ -8,16 +8,14 @@ namespace OrchardCore.Elasticsearch.Core.Deployment;
 /// </summary>
 public sealed class ElasticsearchIndexRebuildDeploymentStep : DeploymentStep
 {
+    private static readonly LocalizationSource s_category = new("Search", typeof(ElasticsearchIndexRebuildDeploymentStep));
+    private static readonly LocalizationSource s_title = new("Rebuild Elasticsearch Indices", typeof(ElasticsearchIndexRebuildDeploymentStep));
+
     public ElasticsearchIndexRebuildDeploymentStep()
     {
         Name = "ElasticIndexRebuild";
-    }
-
-    public ElasticsearchIndexRebuildDeploymentStep(IStringLocalizer<ElasticsearchIndexRebuildDeploymentStep> S)
-        : this()
-    {
-        Category = S["Search"];
-        Title = S["Rebuild Elasticsearch Indices"];
+        Category = s_category;
+        Title = s_title;
     }
 
     public bool IncludeAll { get; set; } = true;

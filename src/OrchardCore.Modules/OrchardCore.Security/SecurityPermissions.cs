@@ -1,10 +1,11 @@
+using OrchardCore.Localization;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Security;
 
 public sealed class SecurityPermissions : IPermissionProvider
 {
-    public static readonly Permission ManageSecurityHeadersSettings = new("ManageSecurityHeadersSettings", "Manage Security Headers Settings");
+    public static readonly Permission ManageSecurityHeadersSettings = new("ManageSecurityHeadersSettings", new LocalizationSource("Manage Security Headers Settings", typeof(SecurityPermissions)));
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

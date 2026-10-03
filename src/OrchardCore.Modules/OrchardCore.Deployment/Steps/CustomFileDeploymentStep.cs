@@ -1,5 +1,5 @@
+using OrchardCore.Localization;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Deployment.Steps;
 
@@ -8,16 +8,14 @@ namespace OrchardCore.Deployment.Steps;
 /// </summary>
 public class CustomFileDeploymentStep : DeploymentStep
 {
+    private static readonly LocalizationSource s_category = new("Deployment", typeof(CustomFileDeploymentStep));
+    private static readonly LocalizationSource s_title = new("Custom File", typeof(CustomFileDeploymentStep));
+
     public CustomFileDeploymentStep()
     {
         Name = nameof(CustomFileDeploymentStep);
-    }
-
-    public CustomFileDeploymentStep(IStringLocalizer<CustomFileDeploymentStep> S)
-        : this()
-    {
-        Category = S["Deployment"];
-        Title = S["Custom File"];
+        Category = s_category;
+        Title = s_title;
     }
 
     [Required]

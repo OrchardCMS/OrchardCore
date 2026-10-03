@@ -1,5 +1,5 @@
-using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Media.Deployment;
 
@@ -8,16 +8,14 @@ namespace OrchardCore.Media.Deployment;
 /// </summary>
 public class MediaDeploymentStep : DeploymentStep
 {
+    private static readonly LocalizationSource s_category = new("Content Management", typeof(MediaDeploymentStep));
+    private static readonly LocalizationSource s_title = new("Media", typeof(MediaDeploymentStep));
+
     public MediaDeploymentStep()
     {
         Name = "Media";
-    }
-
-    public MediaDeploymentStep(IStringLocalizer<MediaDeploymentStep> S)
-        : this()
-    {
-        Category = S["Content Management"];
-        Title = S["Media"];
+        Category = s_category;
+        Title = s_title;
     }
 
     public bool IncludeAll { get; set; } = true;

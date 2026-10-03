@@ -127,6 +127,48 @@ msgid "Hello"
 msgstr "Bonjour"
 ```
 
+### Deferring localization with `LocalizationSource`
+
+When no localizer is available where a string is declared, use `LocalizationSource` from `OrchardCore.Abstractions` to keep the untranslated value and the source type of its localizer:
+
+```csharp
+using OrchardCore.Localization;
+
+var description = new LocalizationSource("Manage widgets", typeof(MyPermissions));
+```
+
+`Value` is the original text, used as the PO `msgid`. `Type` supplies the localizer's context, just as with `IStringLocalizer<MyPermissions>` or `IHtmlLocalizer<MyPermissions>`. For example:
+
+```po
+msgctxt "MyModule.MyPermissions"
+msgid "Manage widgets"
+msgstr "Gérer les widgets"
+```
+
+`LocalizationSource` is a sealed record with get-only properties. It does not translate, format, or encode the value, so a static readonly source can safely be reused across instances, tenants, and cultures. Resolve the translation at display time, using the current tenant and culture's factory:
+
+```csharp
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Localization;
+
+LocalizedString text = stringLocalizerFactory.Localize(description);
+LocalizedHtmlString html = htmlLocalizerFactory.Localize(description);
+```
+
+Both extensions call `factory.Create(source.Type)` and look up `source.Value`. The same source can be rendered as text or HTML; it does not commit to an encoding policy at declaration time. A string localizer returns a `LocalizedString` that Razor HTML encodes when rendered. An HTML localizer returns a `LocalizedHtmlString` that preserves markup in the translation and HTML encodes its format arguments.
+
+Pass format arguments to `Localize`, not to the source constructor, so that the original key is preserved and the translated template is formatted:
+
+```csharp
+var welcome = new LocalizationSource("<strong>Welcome {0}</strong>", typeof(MyMessages));
+var translated = htmlLocalizerFactory.Localize(welcome, userName);
+```
+
+With string localization, no formatting is applied when no arguments are supplied. HTML localization follows `LocalizedHtmlString`'s composite formatting rules when rendered: supply arguments for placeholders and escape literal braces as `{{` and `}}`. A source constructed without a type, for example `new LocalizationSource("Hello")`, has no PO context: the factory extensions return the original value, with any supplied arguments applied. A null source produces a null result.
+
+!!! warning
+    Use HTML localization only for trusted translation markup. It does not encode the translation itself. For plain labels, permission descriptions, attributes, and other text, use string localization and retain the rendering layer's encoding.
+
 ## Pluralization
 
 This module also provides support for pluralization.

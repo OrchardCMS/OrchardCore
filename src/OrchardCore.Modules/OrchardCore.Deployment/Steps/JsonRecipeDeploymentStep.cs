@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Deployment.Steps;
 
@@ -7,16 +7,14 @@ namespace OrchardCore.Deployment.Steps;
 /// </summary>
 public class JsonRecipeDeploymentStep : DeploymentStep
 {
+    private static readonly LocalizationSource s_category = new("Deployment", typeof(JsonRecipeDeploymentStep));
+    private static readonly LocalizationSource s_title = new("JSON Recipe", typeof(JsonRecipeDeploymentStep));
+
     public JsonRecipeDeploymentStep()
     {
         Name = "JsonRecipe";
-    }
-
-    public JsonRecipeDeploymentStep(IStringLocalizer<JsonRecipeDeploymentStep> S)
-        : this()
-    {
-        Category = S["Deployment"];
-        Title = S["JSON Recipe"];
+        Category = s_category;
+        Title = s_title;
     }
 
     public string Json { get; set; }
