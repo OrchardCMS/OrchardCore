@@ -1,0 +1,6 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.RateLimits.Models
+
+@model ShapeViewModel<RateLimitPolicy>
+
+<a asp-action="Edit" asp-controller="Admin" asp-route-policyId="@Model.Value.PolicyId" class="btn btn-primary btn-sm">@T["Edit"]</a>

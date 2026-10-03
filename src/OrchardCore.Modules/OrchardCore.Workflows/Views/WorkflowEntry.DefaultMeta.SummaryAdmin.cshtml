@@ -1,0 +1,8 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Workflows.ViewModels
+
+@model ShapeViewModel<WorkflowEntry>
+
+<span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Created"]">
+    <i class="fa-solid fa-calendar text-secondary" aria-hidden="true"></i> @await DisplayAsync(await New.TimeSpan(Utc: Model.Value.Workflow.CreatedUtc))
+</span>

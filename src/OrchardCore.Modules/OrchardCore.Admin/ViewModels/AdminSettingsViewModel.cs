@@ -17,4 +17,10 @@ public class AdminSettingsViewModel
     public bool ShowBreadcrumb { get; set; }
 
     public AdminMenuBehavior MenuBehavior { get; set; }
+
+    public string ListLayout { get; set; }
+
+    public string ListActionsLayout { get; set; }
+
+    public bool AllowUserListLayoutSelection { get; set; }
 }

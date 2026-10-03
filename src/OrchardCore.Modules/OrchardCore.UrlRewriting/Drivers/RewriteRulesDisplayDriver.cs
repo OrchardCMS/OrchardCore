@@ -25,6 +25,8 @@ public sealed class RewriteRulesDisplayDriver : DisplayDriver<RewriteRule>
     public override Task<IDisplayResult> DisplayAsync(RewriteRule rule, BuildDisplayContext context)
     {
         return CombineAsync(
+            View("RewriteRule_Handle_SummaryAdmin", rule).Location("Handle:1"),
+            View("RewriteRule_Checkbox_SummaryAdmin", rule).Location("Checkbox:1"),
             View("RewriteRule_Fields_SummaryAdmin", rule).Location("Content:1"),
             View("RewriteRule_Buttons_SummaryAdmin", rule).Location("Actions:5"),
             View("RewriteRule_DefaultTags_SummaryAdmin", rule).Location("Tags:5"),

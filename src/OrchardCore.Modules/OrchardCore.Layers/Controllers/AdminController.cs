@@ -84,7 +84,9 @@ public sealed class AdminController : Controller
     }
 
     [Admin("Layers", "Layers.Index")]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(
+        [FromServices] IDisplayManager<Layer> layerDisplayManager,
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
         {
@@ -120,6 +122,21 @@ public sealed class AdminController : Controller
                 await _notifier.WarningAsync(H["The Widget content item with id {0} has no matching {1} content type definition.", widget.ContentItem.ContentItemId, widget.ContentItem.ContentType]);
             }
         }
+
+        var rows = new List<IShape>();
+
+        foreach (var layer in model.Layers)
+        {
+            rows.Add(await layerDisplayManager.BuildDisplayAsync(layer, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
+        }
+
+        // The AdminList shape renders the layers with the configured layout (List, Grid, ...).
+        model.List = await adminListFactory.CreateAsync(new AdminListContext(LayersAdminList.Name)
+        {
+            Rows = rows,
+            ShowSelectAll = false,
+            ItemCssClass = "list-group-item",
+        }, HttpContext.RequestAborted);
 
         return View(model);
     }

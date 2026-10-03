@@ -1,27 +1,34 @@
 @model ListNotificationsViewModel
+@using OrchardCore.DisplayManagement.Zones
+@{
+    // The options editor shape: its zones hold the search bar and the buttons of the action bar.
+    var header = Model.Header as IZoneHolding;
+    var hasSearch = header?.Zones.IsNotEmpty("Search") == true;
+    var hasButtons = header?.Zones.IsNotEmpty("ActionBarButtons") == true;
+}
 
-<div data-list-management data-selected-label="@T["selected"]">
+<div class="bulk-select-list" data-checkbox-name="itemIds" data-bulk-action-name="Options.BulkAction" data-selected-text="@T["selected"]">
 <!-- Hidden submit button do not remove -->
 <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
 <input type="submit" name="submit.BulkAction" class="visually-hidden" />
 @Html.HiddenFor(o => o.Options.BulkAction)
 
-@if (Model.Header?.Search != null || Model.Header?.ActionBarButtons)
+@if (hasSearch || hasButtons)
 {
     <div class="card text-bg-theme mb-3 position-sticky action-bar">
         <div class="card-body">
-            <div class="row gx-3">
-                @if (Model.Header.Search != null)
+            <div class="row gx-2">
+                @if (hasSearch)
                 {
                     <div class="col">
-                        @await DisplayAsync(Model.Header.Search)
+                        @await DisplayAsync(header.Zones["Search"])
                     </div>
                 }
 
-                @if (Model.Header.ActionBarButtons != null)
+                @if (hasButtons)
                 {
                     <div class="col-auto">
-                        @await DisplayAsync(Model.Header.ActionBarButtons)
+                        @await DisplayAsync(header.Zones["ActionBarButtons"])
                     </div>
                 }
             </div>
@@ -29,47 +36,20 @@
     </div>
 }
 
-<div class="list-group with-checkbox notification-container bulk-select-list" data-checkbox-name="itemIds" data-bulk-action-name="Options.BulkAction" data-selected-text="@T["selected"]">
-    @if (Model.Header?.Summary != null || Model.Header?.Actions != null)
-    {
-        <div class="list-group-item text-bg-theme">
-            <div class="row gx-3">
-                @if (Model.Header.Summary != null)
-                {
-                    <div class="col">
-                        @await DisplayAsync(Model.Header.Summary)
-                    </div>
-                }
-                @if (Model.Header.Actions != null)
-                {
-                    <div class="col col-md-auto text-end">
-                        @await DisplayAsync(Model.Header.Actions)
-                    </div>
-                }
-            </div>
-        </div>
-    }
-    @if (Model.Notifications.Any())
-    {
-        @foreach (var notification in Model.Notifications)
-        {
-            @await DisplayAsync(notification)
-        }
-    }
-    else
-    {
-        <div class="list-group-item">
-            <div class="alert alert-info mb-0">
-                @T["No notifications found."]
-            </div>
-        </div>
-    }
-</div>
-
-@await DisplayAsync(Model.Pager)
-
+@* The notifications, the header and the pager are rendered by the AdminList shape using the configured layout (List, Grid, ...). *@
+@await DisplayAsync(Model.List)
 </div>
 
 <style asp-name="bootstrap-select" at="Head"></style>
 <script asp-name="bootstrap-select" at="Foot"></script>
 <script asp-src="~/OrchardCore.Notifications/Scripts/notifications-admin-list/notifications-admin-list.min.js" debug-src="~/OrchardCore.Notifications/Scripts/notifications-admin-list/notifications-admin-list.js" at="Foot" type="module"></script>
+
+<style at="Head">
+    /* The read state is a class on the row, so it applies in every layout: the <li> of the List layout
+       and the row element of the Grid layout. */
+    .admin-list .notification-is-unread,
+    .admin-list .notification-is-unread > .admin-list-grid-cell {
+        color: #664d03 !important;
+        background-color: #fff3cd !important;
+    }
+</style>

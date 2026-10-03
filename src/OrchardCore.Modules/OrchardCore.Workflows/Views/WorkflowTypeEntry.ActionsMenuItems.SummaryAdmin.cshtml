@@ -1,0 +1,9 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Workflows.ViewModels
+
+@model ShapeViewModel<WorkflowTypeEntry>
+
+@* Bare items, never wrapped in <li>: AdminListActions renders the menu in a <div class="dropdown-menu">. *@
+<a asp-action="Duplicate" asp-controller="WorkflowType" asp-route-id="@Model.Value.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" class="dropdown-item">@T["Duplicate"]</a>
+
+<a asp-action="Export" asp-controller="WorkflowType" asp-route-id="@Model.Value.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" class="dropdown-item" data-url-af="UnsafeUrl">@T["Export"]</a>

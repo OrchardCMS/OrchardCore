@@ -1,0 +1,27 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Environment.Shell.Models
+@using OrchardCore.Tenants.ViewModels
+
+@model ShapeViewModel<ShellSettingsEntry>
+
+@* The badge links to the list filtered by that state, the way the content type badge of a content item does. *@
+<a asp-controller="Admin" asp-action="Index" asp-route-Options.Status="@Model.Value.ShellSettings.State">
+    @switch (Model.Value.ShellSettings.State)
+    {
+        case TenantState.Uninitialized:
+            <span class="badge ta-badge fw-normal"><i class="fa-solid fa-gear text-secondary" aria-hidden="true"></i> @T["Uninitialized"]</span>
+            break;
+        case TenantState.Initializing:
+            <span class="badge ta-badge fw-normal"><i class="fa-solid fa-hourglass-start text-info" aria-hidden="true"></i> @T["Initializing"]</span>
+            break;
+        case TenantState.Running:
+            <span class="badge ta-badge fw-normal"><i class="fa-solid fa-check text-success" aria-hidden="true"></i> @T["Running"]</span>
+            break;
+        case TenantState.Disabled:
+            <span class="badge ta-badge fw-normal"><i class="fa-solid fa-xmark text-danger" aria-hidden="true"></i> @T["Disabled"]</span>
+            break;
+        case TenantState.Invalid:
+            <span class="badge ta-badge fw-normal"><i class="fa-solid fa-triangle-exclamation text-warning" aria-hidden="true"></i> @T["Invalid"]</span>
+            break;
+    }
+</a>

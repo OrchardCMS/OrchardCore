@@ -1,17 +1,23 @@
+@using OrchardCore.Admin
+@using OrchardCore.Lists
+@using OrchardCore.DisplayManagement
+@using OrchardCore.DisplayManagement.Shapes
+
 @model OrchardCore.Lists.ViewModels.ListPartViewModel
+
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+@inject IAdminListFactory AdminListFactory
+
 @{
     var enableOrdering =
         Model.EnableOrdering &&
         Model.ContentItems.Count() > 1 &&
         Model.ListPartFilterViewModel.Status == ContentsStatus.Latest && string.IsNullOrEmpty(Model.ListPartFilterViewModel.DisplayText);
 
-
     if (enableOrdering)
     {
         <script asp-src="~/OrchardCore.Lists/Scripts/ci-list-ordering.min.js" debug-src="~/OrchardCore.Lists/Scripts/ci-list-ordering.js" asp-name="ci-list-ordering" at="Foot" depends-on="Sortable"></script>
     }
-  
 }
 @if (!Model.ContainedContentTypeDefinitions.Any())
 {
@@ -21,26 +27,40 @@
 }
 else
 {
-
     @if (Model.ContentItems.Any())
     {
-        <ul class="list-group" id="ci-sortable">
-            @foreach (var contentItem in Model.ContentItems)
+        var rows = new List<IShape>();
+
+        foreach (var contentItem in Model.ContentItems)
+        {
+            var contentItemSummary = (dynamic)await ContentItemDisplayManager.BuildDisplayAsync(contentItem, Model.Context.Updater, "SummaryAdmin", Model.Context.GroupId);
+            contentItemSummary.Checkbox = null;
+
+            if (enableOrdering)
             {
-                var contentItemSummary = (dynamic)await ContentItemDisplayManager.BuildDisplayAsync(contentItem, Model.Context.Updater, "SummaryAdmin", Model.Context.GroupId);
-                contentItemSummary.Checkbox = null;
-
-                if (enableOrdering)
-                {
-                    await contentItemSummary.Selectors.AddAsync(await New.ListPart_Sortable());
-                }
-                <li class="list-group-item list-group-item-action">
-                    @await DisplayAsync(contentItemSummary)
-                </li>
+                await contentItemSummary.Selectors.AddAsync(await New.ListPart_Sortable());
             }
-        </ul>
 
-        @await DisplayAsync(Model.Pager)
+            rows.Add(contentItemSummary);
+        }
+
+        @* Ordering is drag and drop over the rows, which only the List layout can express, so it wins over
+           the configured layout while ordering is enabled, and the list offers no other layout meanwhile. *@
+        var list = await AdminListFactory.CreateAsync(new AdminListContext(ListPartContentsAdminList.Name)
+        {
+            Layout = enableOrdering ? AdminListConstants.List : null,
+            Rows = rows,
+            Pager = Model.Pager,
+            ShowLayoutSelector = !enableOrdering,
+            // The contained items are managed one at a time, so the list has nothing to select.
+            ShowToolbar = false,
+            ItemCssClass = "list-group-item list-group-item-action",
+        }, Context.RequestAborted);
+
+        <div id="ci-sortable">
+            @await DisplayAsync(list)
+        </div>
+
         @if (enableOrdering)
         {
             <div id="ordering-url" class="d-none" data-url="@Url.Action("UpdateContentItemOrders", "Order", new { area = "OrchardCore.Lists" })" />

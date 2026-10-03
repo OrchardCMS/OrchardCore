@@ -7,10 +7,12 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin.Configuration;
 using OrchardCore.Admin.Controllers;
 using OrchardCore.Admin.Drivers;
 using OrchardCore.Admin.Models;
 using OrchardCore.Admin.QuickNavigation;
+using OrchardCore.Admin.Services;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -65,9 +67,20 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<Navbar, QuickNavigationNavbarDisplayDriver>();
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
         services.AddShapeTableProvider<AdminDashboardShapeTableProvider>();
+        services.AddShapeTableProvider<AdminListShapeTableProvider>();
+        services.AddScoped<IAdminListFactory, DefaultAdminListFactory>();
+        services.AddScoped<IAdminListLayoutResolver, DefaultAdminListLayoutResolver>();
+        services.AddScoped<IAdminListColumnsBuilder, DefaultAdminListColumnsBuilder>();
+        services.AddScoped<AdminListLayoutPreference>();
 
         // The 'OrchardCore_Admin' section is deprecated and will be removed in a future major version, use 'Admin' instead.
         services.Configure<AdminOptions>(_configuration.GetSectionCompat("Admin", "OrchardCore_Admin"));
+
+        // The tenant configuration is bound first, then the site settings override it, so the monitor exposes
+        // the effective defaults. The signal-backed change token refreshes it when the settings are saved.
+        services.Configure<AdminListOptions>(_configuration.GetSection("Admin:List"))
+            .AddTransient<IConfigureOptions<AdminListOptions>, AdminListOptionsConfiguration>()
+            .AddSignalOptionsChangeTokenSource<AdminListOptions>();
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

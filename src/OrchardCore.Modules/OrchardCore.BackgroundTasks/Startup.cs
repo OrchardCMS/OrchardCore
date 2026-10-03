@@ -1,5 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks.Services;
+using OrchardCore.BackgroundTasks.ViewModels;
+using OrchardCore.BackgroundTasks.Drivers;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
@@ -15,5 +19,10 @@ public sealed class Startup : StartupBase
             .AddPermissionProvider<Permissions>()
             .AddNavigationProvider<AdminMenu>()
             .AddScoped<IBackgroundTaskSettingsProvider, BackgroundTaskSettingsProvider>();
+
+        // Builds the rows of the background tasks admin list.
+        services.AddDisplayDriver<BackgroundTaskEntry, BackgroundTaskEntryDisplayDriver>();
+
+        services.AddAdminListColumnProvider<BackgroundTasksAdminListColumnProvider>(BackgroundTasksAdminList.Name);
     }
 }

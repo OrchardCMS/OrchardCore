@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using OrchardCore.DisplayManagement;
 using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.ViewModels;
@@ -8,7 +9,12 @@ public class WorkflowTypeIndexViewModel
 {
     public IList<WorkflowTypeEntry> WorkflowTypes { get; set; }
     public WorkflowTypeIndexOptions Options { get; set; }
-    public dynamic Pager { get; set; }
+    public IShape Pager { get; set; }
+
+    /// <summary>
+    /// The <c>AdminList</c> shape rendering the types, the toolbar and the pager in the configured layout.
+    /// </summary>
+    public IShape List { get; set; }
 }
 
 public class WorkflowTypeEntry

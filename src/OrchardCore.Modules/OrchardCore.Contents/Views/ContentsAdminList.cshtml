@@ -1,8 +1,13 @@
 @model ListContentsViewModel
+@using OrchardCore.DisplayManagement.Zones
+@{
+    // The options editor shape: its zones hold the search bar and the buttons of the action bar.
+    var header = (IZoneHolding)Model.Header;
+}
 
 <style asp-name="bootstrap-select" at="Head"></style>
 <script asp-name="bootstrap-select" at="Foot"></script>
-<div data-list-management data-selected-label="@T["selected"]">
+<div class="bulk-select-list" data-checkbox-name="itemIds" data-bulk-action-name="Options.BulkAction" data-selected-text="@T["selected"]">
 
 <!-- Hidden submit button do not remove -->
 <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
@@ -11,46 +16,19 @@
 
 <div class="card text-bg-theme mb-3 position-sticky action-bar">
     <div class="card-body">
-        <div class="row gx-3">
+        <div class="row gx-2">
             <div class="col">
-                @await DisplayAsync(Model.Header.Search)
+                @await DisplayAsync(header.Zones["Search"])
             </div>
             <div class="col-auto">
-                @await DisplayAsync(Model.Header.Create)
+                @await DisplayAsync(header.Zones["Create"])
             </div>
         </div>
     </div>
 </div>
-<ul class="list-group with-checkbox bulk-select-list" data-checkbox-name="itemIds" data-bulk-action-name="Options.BulkAction" data-selected-text="@T["selected"]">
-    <li class="list-group-item text-bg-theme">
-        <div class="row gx-3">
-            <div class="col">
-                @await DisplayAsync(Model.Header.Summary)
-            </div>
-            <div class="col col-md-auto text-end">
-                @await DisplayAsync(Model.Header.Actions)
-            </div>
-        </div>
-    </li>
-    @if (Model.ContentItems.Count > 0)
-    {
-        @foreach (var contentItemSummary in Model.ContentItems)
-        {
-            <li class="list-group-item list-group-item-action">
-                @await DisplayAsync(contentItemSummary)
-            </li>
-        }
-    }
-    else
-    {
-        <li class="list-group-item">
-            <div class="alert alert-info mb-0">
-                @T["No results found."]
-            </div>
-        </li>
-    }
-</ul>
+@* The items, the summary/actions bar and the pager are rendered by the AdminList shape using the configured layout (List, Grid, ...). *@
+@await DisplayAsync(Model.List)
 
-@await DisplayAsync(Model.Pager)
+</div>
 
 <script asp-src="~/OrchardCore.Contents/Scripts/contents-admin-list/contents-admin-list.min.js" debug-src="~/OrchardCore.Contents/Scripts/contents-admin-list/contents-admin-list.js" at="Foot" type="module"></script>

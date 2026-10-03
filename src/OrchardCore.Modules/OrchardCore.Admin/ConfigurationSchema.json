@@ -12,6 +12,35 @@
               "type": "string",
               "description": "The URL prefix used to access the admin area, e.g. 'MyAdmin' to serve the admin area from '/MyAdmin'. Leading and trailing spaces and slashes are removed.",
               "default": "Admin"
+            },
+            "List": {
+              "type": "object",
+              "description": "The defaults of the admin lists, e.g. the content items list. An administrator can override them from Configuration > Settings > Admin. See https://docs.orchardcore.net/en/latest/reference/modules/Admin/#admin-list-layouts.",
+              "properties": {
+                "DefaultLayout": {
+                  "type": "string",
+                  "description": "How the items of a list are rendered. 'List' renders each item whole, 'Grid' renders one column per column of the list. A theme or a module can add other layouts.",
+                  "examples": [
+                    "List",
+                    "Grid"
+                  ],
+                  "default": "List"
+                },
+                "DefaultActionsLayout": {
+                  "type": "string",
+                  "description": "How the actions of each row are rendered: 'Buttons', or 'Menu' for a single compact dropdown.",
+                  "examples": [
+                    "Buttons",
+                    "Menu"
+                  ],
+                  "default": "Buttons"
+                },
+                "AllowUserSelection": {
+                  "type": "boolean",
+                  "description": "Whether each list shows a selector with the available layouts. A user's choice is kept in a cookie, per list, and applies to that user only.",
+                  "default": false
+                }
+              }
             }
           }
         },

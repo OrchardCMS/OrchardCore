@@ -1,0 +1,11 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Tenants.ViewModels
+
+@model ShapeViewModel<ShellSettingsEntry>
+
+@if (!string.IsNullOrEmpty(Model.Value.ShellSettings["DatabaseProvider"]))
+{
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Database provider"]">
+        <i class="fa-solid fa-database text-info" aria-hidden="true"></i> @Model.Value.ShellSettings["DatabaseProvider"]
+    </span>
+}
