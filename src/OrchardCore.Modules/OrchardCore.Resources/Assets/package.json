@@ -28,12 +28,9 @@
     "sortablejs": "1.15.3",
     "trumbowyg": "2.31.0",
     "vue": "^3.5.40",
-    "vue-2.7.16": "npm:vue@2.7.16",
     "vue-3.5.13": "npm:vue@3.5.13",
     "vue-multiselect": "3.2.0",
-    "vue-multiselect-2.1.6": "npm:vue-multiselect@2.1.6",
-    "vuedraggable": "^4.1.0",
-    "vuedraggable-2.24.3": "npm:vuedraggable@2.24.3"
+    "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
     "typescript-json-schema": "^0.51.0"

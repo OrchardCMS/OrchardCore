@@ -10,7 +10,7 @@
 <div class="ocat-wrapper">
     <div class="ocat-end-offset">
         <div class="form-check">
-            <input asp-for="IndexAll" class="form-check-input" />
+            <input asp-for="IndexAll" class="form-check-input content-types-sitemap-index-all" />
             <label asp-for="IndexAll" class="form-check-label">@T["Index All Content Types"]</label>
         </div>
     </div>
@@ -19,7 +19,7 @@
 <div id="ContentTypesSitemapSource_LimitItems_Container" class="ocat-wrapper" style="@(Model.IndexAll ? "display: none" : "")">
     <div class="ocat-end-offset">
         <div class="form-check">
-            <input asp-for="LimitItems" class="form-check-input" />
+            <input asp-for="LimitItems" class="form-check-input content-types-sitemap-limit-items" />
             <label asp-for="LimitItems" class="form-check-label">@T["Limit Items"]</label>
             <span class="hint">@T["Limit the amount of content items to provide from this source. Note: Only one content type is selectable when this option is selected."]</span>
         </div>
@@ -214,99 +214,4 @@
     </div>
 </div>
 
-<script at="Foot">
-    function onDocumentReady(callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
-            document.addEventListener('DOMContentLoaded', callback);
-        }
-    }
-
-    onDocumentReady(function () {
-        function showElement(element) {
-            if (element) {
-                element.style.display = 'block';
-            }
-        }
-
-        function hideElement(element) {
-            if (element) {
-                element.style.display = 'none';
-            }
-        }
-
-        function switchContentTypesCheckBoxes() {
-            var indexAll = document.getElementById('ContentTypesSitemapSource_IndexAll')?.checked;
-            var limitItems = document.getElementById('ContentTypesSitemapSource_LimitItems')?.checked;
-            if (indexAll) {
-                showElement(document.getElementById('index-all-row'));
-                hideElement(document.getElementById('index-selected-row'));
-                hideElement(document.getElementById('index-limit-row'));
-                hideElement(document.getElementById('ContentTypesSitemapSource_LimitItems_Container'));
-            } else {
-                hideElement(document.getElementById('index-all-row'));
-                showElement(document.getElementById('ContentTypesSitemapSource_LimitItems_Container'));
-                if (limitItems) {
-                    hideElement(document.getElementById('index-selected-row'));
-                    showElement(document.getElementById('index-limit-row'));
-                } else {
-                    showElement(document.getElementById('index-selected-row'));
-                    hideElement(document.getElementById('index-limit-row'));
-                }
-            }
-        }
-
-        document.querySelectorAll('.content-type-checkbox').forEach(function (checkbox) {
-            checkbox.addEventListener('click', function (e) {
-                var listItem = e.target.closest('.list-group-item');
-                var selected = e.target.checked;
-
-                listItem?.querySelectorAll('select, input:not(.content-type-checkbox)').forEach(function (element) {
-                    if (selected) {
-                        element.readOnly = false;
-                        element.disabled = false;
-                    } else {
-                        element.readOnly = true;
-                        element.disabled = true;
-                    }
-                });
-            });
-        });
-
-        document.querySelectorAll('.content-type-radio').forEach(function (radio) {
-            radio.addEventListener('click', function (e) {
-                var selectedContentType = e.target.value;
-
-                document.querySelectorAll('#index-limit-row .list-group-item').forEach(function (listItem) {
-                    var contentType = listItem.querySelector('.content-type-radio')?.value;
-                    if (contentType === selectedContentType) {
-                        listItem.querySelectorAll('select, input:not(.content-type-radio)').forEach(function (element) {
-                            element.readOnly = false;
-                        });
-                        listItem.querySelectorAll('select').forEach(function (element) {
-                            element.disabled = false;
-                        });
-                    } else {
-                        listItem.querySelectorAll('input:not(.content-type-radio)').forEach(function (element) {
-                            element.readOnly = true;
-                        });
-
-                        listItem.querySelectorAll('select').forEach(function (element) {
-                            element.disabled = true;
-                        });
-                    }
-                });
-            });
-        });
-
-        document.getElementById('ContentTypesSitemapSource_IndexAll')?.addEventListener('change', function () {
-            switchContentTypesCheckBoxes();
-        });
-
-        document.getElementById('ContentTypesSitemapSource_LimitItems')?.addEventListener('change', function () {
-            switchContentTypesCheckBoxes();
-        });
-
-    });
-</script>
+<script asp-src="~/OrchardCore.Contents/Scripts/content-types-sitemap-source/content-types-sitemap-source.min.js" debug-src="~/OrchardCore.Contents/Scripts/content-types-sitemap-source/content-types-sitemap-source.js" at="Foot" type="module"></script>

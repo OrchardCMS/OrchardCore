@@ -9,6 +9,7 @@ using OrchardCore.Modules.Manifest;
     Category = "Infrastructure",
     Dependencies =
     [
+        "OrchardCore.Resources",
         "OrchardCore.Settings"
     ]
 )]

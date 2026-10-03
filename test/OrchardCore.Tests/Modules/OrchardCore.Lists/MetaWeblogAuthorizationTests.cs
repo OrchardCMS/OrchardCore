@@ -2,6 +2,7 @@ using System.Security.Claims;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using Moq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
@@ -136,6 +137,7 @@ public class MetaWeblogAuthorizationTests
             contentDefinitionManager,
             Mock.Of<IMediaFileStore>(),
             null,
+            Options.Create(new MediaOptions()),
             [driver],
             CreateLocalizer());
     }

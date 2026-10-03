@@ -19,7 +19,7 @@ import { useFileActionModal } from "../services/FileActionModalService";
 import { useGlobals } from "../services/Globals";
 import { useEventBus } from "../services/UseEventBus";
 import { getTranslations } from "@bloom/helpers/localizations"
-import { downloadFile } from "../services/Utils";
+import { downloadFile, resolveMediaUrl } from "../services/Utils";
 import { ModalsContainer } from 'vue-final-modal'
 import dbg from "debug";
 
@@ -78,6 +78,13 @@ const items = computed(() => {
           command: () => {
             const modal = { showModal: showModal.value, files: [props.fileItem], modalName: 'copy', uuid: uuidv4(), isEdit: true, modalTitle: t.CopySingleFileTitle, action: FileAction.Copy } as IModalFileEvent;
             showFileActionModal(modal);
+          }
+        },
+        {
+          label: t.View,
+          icon: 'fa-solid fa-eye',
+          command: () => {
+            window.open(resolveMediaUrl(props.fileItem.url), "_blank");
           }
         },
         {

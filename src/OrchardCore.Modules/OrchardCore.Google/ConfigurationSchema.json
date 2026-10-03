@@ -1,0 +1,44 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Authentication": {
+          "type": "object",
+          "properties": {
+            "Google": {
+              "type": "object",
+              "description": "Settings of the Google authentication feature. These values override the ones configured in the admin settings, and they are only applied when the 'ConfigureGoogleSettings()' extension method is called on the OrchardCoreBuilder. See https://docs.orchardcore.net/en/latest/reference/modules/Google/.",
+              "properties": {
+                "ClientID": {
+                  "type": "string",
+                  "description": "The OAuth client ID of the Google Cloud project, i.e. the 'client_id' value of the downloaded credentials file."
+                },
+                "ClientSecret": {
+                  "type": "string",
+                  "description": "The OAuth client secret of the Google Cloud project, i.e. the 'client_secret' value of the downloaded credentials file. This is a sensitive value: provide it through user secrets, environment variables or a key vault rather than appsettings.json."
+                },
+                "CallbackPath": {
+                  "type": "string",
+                  "description": "The request path within the application's base path where the user agent is returned after signing in with Google. It must start with '/'. When not set, '/signin-google' is used."
+                },
+                "SaveTokens": {
+                  "type": "boolean",
+                  "description": "Whether the access and refresh tokens are stored in the authentication properties after a successful sign-in."
+                }
+              }
+            }
+          }
+        },
+        "OrchardCore_Google": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Google' section is deprecated. Use 'OrchardCore:Authentication:Google' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Authentication:Google' instead.",
+          "doNotSuggest": true
+        }
+      }
+    }
+  }
+}

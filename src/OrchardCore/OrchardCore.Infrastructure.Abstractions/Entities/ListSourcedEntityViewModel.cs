@@ -22,10 +22,6 @@ public class ListSourcedEntityViewModel<TSource> : ListEntitiesViewModel
     public IEnumerable<TSource> Sources { get; set; }
 }
 
-public class ListSourcedEntitiesViewModel<TSource, TEntity> : ListSourcedEntityViewModel<TSource>
-{
-}
+public class ListSourcedEntitiesViewModel<TSource, TEntity> : ListSourcedEntityViewModel<TSource>;
 
-public class ListSourcedEntitiesViewModel<TEntity> : ListSourcedEntityViewModel<string, ModelEntry<TEntity>>
-{
-}
+public class ListSourcedEntitiesViewModel<TEntity> : ListSourcedEntityViewModel<string, ModelEntry<TEntity>>;

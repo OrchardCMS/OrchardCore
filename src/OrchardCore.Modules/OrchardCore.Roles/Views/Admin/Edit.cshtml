@@ -1,8 +1,11 @@
 @model EditRoleViewModel
+@using OrchardCore.Roles.Controllers
 @using OrchardCore.Roles.ViewModels
 
 <zone Name="Title">
-    <h1>@RenderTitleSegments(T["Edit '{0}' Role", Model.Role.RoleName])</h1>
+    <breadcrumb name="RolesEdit" title="@T["Edit '{0}' Role", Model.Role.RoleName]">
+        <breadcrumb-item id="Roles" action="Index" controller="Admin" area="OrchardCore.Roles" permission="@RolesPermissions.ViewRoles.Name">@T["Roles"]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
 <div asp-validation-summary="ModelOnly"></div>
@@ -20,10 +23,18 @@
 
     <div class="ocat-wrapper">
         <div class="ocat-end-offset">
-            <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+            <div class="btn-group">
+                <button class="btn btn-primary save" type="submit" name="submit">@T["Save"]</button>
+                <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="visually-hidden">@T["Toggle Dropdown"]</span>
+                </button>
+                <div class="dropdown-menu">
+                    <button class="dropdown-item save-continue" name="submit" type="submit" value="@AdminController.SaveAndContinueSubmitValue">@T["and continue"]</button>
+                </div>
+            </div>
             <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
         </div>
     </div>
 </form>
 
-<script asp-name="list-management" at="Foot"></script>
+<script asp-src="~/OrchardCore.Roles/Scripts/roles-editors/roles-edit.min.js" debug-src="~/OrchardCore.Roles/Scripts/roles-editors/roles-edit.js" at="Foot" type="module"></script>

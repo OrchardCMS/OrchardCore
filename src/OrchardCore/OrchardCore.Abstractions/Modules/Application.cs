@@ -13,7 +13,7 @@ public class Application
 
     public const string ModuleName = "Application Main Feature";
     public const string ModuleDescription = "Provides components defined at the application level.";
-    public static readonly string ModulePriority = int.MinValue.ToString();
+    public static readonly string ModulePriority = int.MinValue.ToString(System.Globalization.CultureInfo.InvariantCulture);
     public const string ModuleCategory = "Application";
 
     public const string DefaultFeatureId = "Application.Default";

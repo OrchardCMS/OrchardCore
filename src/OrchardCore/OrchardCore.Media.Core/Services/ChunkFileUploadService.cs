@@ -6,28 +6,33 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
+using OrchardCore.FileStorage;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Media.Services;
 
 public sealed class ChunkFileUploadService : IChunkFileUploadService
 {
-    private const string UploadIdFormKey = "__chunkedFileUploadId";
-    private const string TempFolderPrefix = "ChunkedFileUploads";
+    private const string s_uploadIdFormKey = "__chunkedFileUploadId";
+    private const string s_tempFolderName = "ChunkedFileUploads";
+
     private readonly IClock _clock;
     private readonly ILogger _logger;
     private readonly IOptions<MediaOptions> _options;
+    private readonly ITempDirectoryProvider _tempDirectoryProvider;
     private readonly string _tempFileNamePrefix;
 
     public ChunkFileUploadService(
         ShellSettings shellSettings,
         IClock clock,
         ILogger<ChunkFileUploadService> logger,
-        IOptions<MediaOptions> options)
+        IOptions<MediaOptions> options,
+        ITempDirectoryProvider tempDirectoryProvider)
     {
         _clock = clock;
         _logger = logger;
         _options = options;
+        _tempDirectoryProvider = tempDirectoryProvider;
 
         _tempFileNamePrefix = $"{shellSettings.TenantId}_";
     }
@@ -41,7 +46,7 @@ public sealed class ChunkFileUploadService : IChunkFileUploadService
 
         if (_options.Value.MaxUploadChunkSize <= 0 ||
             contentRangeHeader.Count is 0 ||
-            !request.Form.TryGetValue(UploadIdFormKey, out var uploadIdValue))
+            !request.Form.TryGetValue(s_uploadIdFormKey, out var uploadIdValue))
         {
             return await completedAsync(request.Form.Files);
         }
@@ -143,13 +148,7 @@ public sealed class ChunkFileUploadService : IChunkFileUploadService
 
     private FileStream GetOrCreateTemporaryFile(Guid uploadId, IFormFile formFile, long size)
     {
-        var siteTempFolderPath = GetTempFolderPath();
-
-        if (!Directory.Exists(siteTempFolderPath))
-        {
-            Directory.CreateDirectory(siteTempFolderPath);
-        }
-
+        // GetTempFilePath resolves the tenant-scoped temp folder via ITempDirectoryProvider, which ensures it exists.
         var tempFilePath = GetTempFilePath(uploadId, formFile);
 
         return File.Exists(tempFilePath) switch
@@ -173,8 +172,14 @@ public sealed class ChunkFileUploadService : IChunkFileUploadService
         };
     }
 
-    private static string GetTempFolderPath() =>
-        Path.Combine(Path.GetTempPath(), TempFolderPrefix);
+    private string GetTempFolderPath()
+    {
+        var tempFolderPath = Path.Combine(_tempDirectoryProvider.GetRootDirectory(), s_tempFolderName);
+
+        Directory.CreateDirectory(tempFolderPath);
+
+        return tempFolderPath;
+    }
 
     private string GetTempFilePath(Guid uploadId, IFormFile formFile) =>
         Path.Combine(

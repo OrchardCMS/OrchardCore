@@ -21,7 +21,6 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
 
     private readonly IServiceProvider _serviceProvider;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IContentManager _contentManager;
     private readonly IMediaFileStore _fileStore;
     private readonly IUserAssetFolderNameProvider _userAssetFolderNameProvider;
     private readonly MediaOptions _mediaOptions;
@@ -34,14 +33,12 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
         AttachedMediaFieldFileService attachedMediaFieldFileService,
         IMediaFileStore fileStore,
         IOptions<MediaOptions> options,
-        IUserAssetFolderNameProvider userAssetFolderNameProvider,
-        IContentManager contentManager)
+        IUserAssetFolderNameProvider userAssetFolderNameProvider)
     {
         _serviceProvider = serviceProvider;
         _httpContextAccessor = httpContextAccessor;
         _fileStore = fileStore;
         _userAssetFolderNameProvider = userAssetFolderNameProvider;
-        _contentManager = contentManager;
         _mediaOptions = options.Value;
         _mediaFieldsFolder = EnsureTrailingSlash(attachedMediaFieldFileService.MediaFieldsFolder);
         _usersFolder = EnsureTrailingSlash(_mediaOptions.AssetsUsersFolder);
@@ -80,7 +77,7 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
             // Note: The file path is currently not authorized during upload, only the folder is checked. Therefore checking 
             // the file extensions is not actually required, but let's leave this in case we add an authorization call later.
             if (await _fileStore.GetFileInfoAsync(folderPath) is not null ||
-               _mediaOptions.AllowedFileExtensions.Any(ext => path.EndsWith(ext, StringComparison.OrdinalIgnoreCase)))
+               _mediaOptions.IsFileExtensionAllowed(Path.GetExtension(path), hasAdditionalPermission: true))
             {
                 path = string.Empty;
             }
@@ -182,7 +179,12 @@ public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<P
             // Authorize by using the content item permission. The user must have access to the content item to allow its media
             // as well.
             var contentItemId = attachedMediaPathParts.Length > 1 ? attachedMediaPathParts[1] : null;
-            var contentItem = !string.IsNullOrEmpty(contentItemId) ? await _contentManager.GetAsync(contentItemId, VersionOptions.Latest) : null;
+
+            // The content manager is resolved here rather than injected: building it builds every content handler, and any of them
+            // depending on IAuthorizationService would otherwise create a circular dependency with this authorization handler.
+            var contentItem = !string.IsNullOrEmpty(contentItemId)
+                ? await _serviceProvider.GetRequiredService<IContentManager>().GetAsync(contentItemId, VersionOptions.Latest)
+                : null;
 
             // Disallow if content item is not found or allowed
             if (contentItem is not null)

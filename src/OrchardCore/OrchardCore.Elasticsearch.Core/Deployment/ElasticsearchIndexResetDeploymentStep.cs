@@ -17,6 +17,7 @@ public sealed class ElasticsearchIndexResetDeploymentStep : DeploymentStep
         : this()
     {
         Category = S["Search"];
+        Title = S["Reset Elasticsearch Indices"];
     }
 
     public bool IncludeAll { get; set; } = true;

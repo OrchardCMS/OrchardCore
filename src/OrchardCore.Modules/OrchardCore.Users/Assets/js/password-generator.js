@@ -1,9 +1,9 @@
-passwordManager = function () {
+window.passwordManager = function () {
     const allowed = {
         uppers: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
         lowers: 'abcdefghijklmnopqrstuvwxyz',
         digits: '0123456789',
-        symbols: '!#$%&\()*+,-./:;<=>\'?@@[\]^_`{|}~'
+        symbols: '!#$%&()*+,-./:;<=>\'?@@[]^_`{|}~'
     };
 
     const getRandomChar = (str) => str.charAt(Math.floor(Math.random() * str.length));

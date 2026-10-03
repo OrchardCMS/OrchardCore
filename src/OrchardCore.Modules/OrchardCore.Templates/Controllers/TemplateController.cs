@@ -67,7 +67,7 @@ public sealed class TemplateController : Controller
             return Forbid();
         }
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
         var templatesDocument = options.AdminTemplates
             ? await _adminTemplatesManager.GetTemplatesDocumentAsync()
             : await _templatesManager.GetTemplatesDocumentAsync()

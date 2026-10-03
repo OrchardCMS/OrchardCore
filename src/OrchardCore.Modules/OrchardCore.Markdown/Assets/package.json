@@ -1,6 +1,10 @@
 {
   "name": "@orchardcore/markdown",
   "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "check": "vue-tsc --noEmit"
+  },
   "dependencies": {
     "@popperjs/core": "2.11.8",
     "bootstrap": "5.3.8",

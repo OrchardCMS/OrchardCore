@@ -12,7 +12,9 @@
 <style asp-name="bootstrap-select" at="Head"></style>
 <script asp-name="bootstrap-select" at="Foot"></script>
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Tenants"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="Tenants" title="@T["Tenants"]" />
+</zone>
 
 <form asp-action="Index" method="post" class="no-multisubmit" data-list-management data-selected-label="@T["selected"]">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
@@ -34,7 +36,7 @@
             </div>
         </div>
     </div>
-    <ul class="list-group with-checkbox">
+    <ul class="list-group with-checkbox bulk-select-list" data-checkbox-name="tenantNames" data-bulk-action-name="BulkAction" data-selected-text="@T["selected"]">
         <li class="list-group-item text-bg-theme">
             <div class="row gx-3">
                 <div class="col text-nowrap">
@@ -120,4 +122,4 @@
 
 @await DisplayAsync(Model.Pager)
 
-<script asp-name="list-management" at="Foot"></script>
+<script asp-src="~/OrchardCore.Tenants/Scripts/tenants-admin-lists/tenants-admin-list.min.js" debug-src="~/OrchardCore.Tenants/Scripts/tenants-admin-lists/tenants-admin-list.js" at="Foot" type="module"></script>

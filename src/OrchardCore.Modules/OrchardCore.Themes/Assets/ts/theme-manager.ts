@@ -1,9 +1,9 @@
 import { darkThemeName, getPreferredTheme, getStoredTheme, lightThemeName, setStoredTheme, setTheme } from "./constants";
 
-const showActiveTheme = (theme, focus = false) => {
+const showActiveTheme = (theme: string | null, focus = false) => {
     const themeSwitcher = <HTMLButtonElement>document.querySelector("#bd-theme");
 
-    if (!themeSwitcher) {
+    if (!themeSwitcher || !theme) {
         return;
     }
 

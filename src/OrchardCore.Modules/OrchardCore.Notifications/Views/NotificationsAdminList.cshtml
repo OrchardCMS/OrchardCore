@@ -29,7 +29,7 @@
     </div>
 }
 
-<div class="list-group with-checkbox notification-container">
+<div class="list-group with-checkbox notification-container bulk-select-list" data-checkbox-name="itemIds" data-bulk-action-name="Options.BulkAction" data-selected-text="@T["selected"]">
     @if (Model.Header?.Summary != null || Model.Header?.Actions != null)
     {
         <div class="list-group-item text-bg-theme">
@@ -72,4 +72,4 @@
 
 <style asp-name="bootstrap-select" at="Head"></style>
 <script asp-name="bootstrap-select" at="Foot"></script>
-<script asp-name="list-management" at="Foot"></script>
+<script asp-src="~/OrchardCore.Notifications/Scripts/notifications-admin-list/notifications-admin-list.min.js" debug-src="~/OrchardCore.Notifications/Scripts/notifications-admin-list/notifications-admin-list.js" at="Foot" type="module"></script>

@@ -61,7 +61,7 @@ public sealed class FeatureProfilesController : Controller
             return Forbid();
         }
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
         var featureProfilesDocument = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();
 
         var featureProfiles = featureProfilesDocument.FeatureProfiles.ToList();

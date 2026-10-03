@@ -1,0 +1,9 @@
+[
+  {
+    "action": "parcel",
+    "name": "title-part-settings",
+    "source": "Assets/ts/title-part-settings.ts",
+    "dest": "wwwroot/Scripts/title-part-settings/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

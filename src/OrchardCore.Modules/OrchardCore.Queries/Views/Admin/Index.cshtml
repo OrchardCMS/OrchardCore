@@ -4,7 +4,9 @@
     int endIndex = startIndex + Model.Queries.Count - 1;
 }
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Queries"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="Queries" title="@T["Queries"]" />
+</zone>
 
 @* the form is necessary to generate an antiforgery token for the delete and toggle actions *@
 <form asp-action="Index" method="post" class="no-multisubmit" data-list-management data-selected-label="@T["selected"]">
@@ -27,7 +29,7 @@
             </div>
         </div>
     </div>
-    <ul class="list-group with-checkbox">
+    <ul class="list-group with-checkbox bulk-select-list" data-selected-text="@T["selected"]">
         @if (Model.Queries.Any())
         {
             <li class="list-group-item text-bg-theme">
@@ -112,4 +114,4 @@
     </div>
 </div>
 
-<script asp-name="list-management" at="Foot"></script>
+<script asp-src="~/OrchardCore.Queries/Scripts/queries-index/queries-index.min.js" debug-src="~/OrchardCore.Queries/Scripts/queries-index/queries-index.js" at="Foot" type="module"></script>

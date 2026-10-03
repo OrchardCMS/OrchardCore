@@ -20,6 +20,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- The 'appsettings.json' files of the CMS web project are also items of this project, so they need the same schemas. -->
+    <JsonSchemaSegment Include="..\..\src\OrchardCore\*\ConfigurationSchema.json;..\..\src\OrchardCore.Modules\*\ConfigurationSchema.json" FilePathPattern="appsettings\..*json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Apis\Lucene\Recipes\luceneQueryTest.json" />
     <None Remove="Apis\GraphQL\ContentManagement\Recipes\DynamicContentTypeQueryTest.json" />
     <None Remove="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe1.json" />
@@ -61,6 +66,8 @@
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Apis.GraphQL.Client\OrchardCore.Apis.GraphQL.Client.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Media.Core\OrchardCore.Media.Core.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.SourceGenerators\OrchardCore.SourceGenerators.csproj" OutputItemType="Analyzer" />
+    <ProjectReference Include="..\..\src\OrchardCore.Modules\OrchardCore.Autoroute\OrchardCore.Autoroute.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.ContentManagement\OrchardCore.ContentManagement.csproj" />
   </ItemGroup>
 
   <ItemGroup>

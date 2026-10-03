@@ -331,7 +331,7 @@ public sealed class ScalarUIStartup : StartupBase
                 .WithTitle("OrchardCore OpenAPI Documentation")
                 // Disable Scalar's default external proxy so all requests (token + API)
                 // go directly from the browser to this server.
-                .WithProxyUrl("");
+                .WithProxy("");
 
             // Inject the self-bootstrapping silent-auth bundle; it wraps window.fetch on load so
             // the bearer token is attached to API calls (spec/UI fetches keep the cookie).

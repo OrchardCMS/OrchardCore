@@ -149,8 +149,10 @@ The following configuration values are used by default and can be customized:
 
 ```json
 {
-  "OrchardCore_Markdown": {
-    "Extensions": "nohtml+advanced"
+  "OrchardCore": {
+    "Markdown": {
+      "Extensions": "nohtml+advanced"
+    }
   }
 }
 ```

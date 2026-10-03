@@ -382,8 +382,22 @@ await garage.AddAsync(firstCar, "1");
 
 The `Items` collection is sorted lazily when it is read. Positions use numeric,
 hierarchical ordering rather than string ordering: `1`, `1.1`, `2`, and `10`
-appear in that order. `before` and `after` place items at the beginning and end,
-and an empty position is treated as `0`.
+appear in that order. `before` and `after` place items at the beginning and end
+of the numeric range, and an empty position is treated as `0`.
+
+Any non-numeric position (for example the value produced by `PrefixPosition()`,
+which alphabetizes sibling menu items) sorts *after* `after`, because `before`
+and `after` are anchors within the numeric range rather than absolute terminals.
+When an item must sort truly first or truly last regardless of every other
+position — including free text — use the `start` and `end` sentinels. The full
+order is:
+
+```
+start  <  before  <  numbers  <  after  <  free-text  <  end
+```
+
+Like `before`/`after`, the sentinels support sub-ordering, so `end.50` sorts
+before `end.100`, and a bare `end` sorts before both.
 
 A container binding normally renders each item:
 

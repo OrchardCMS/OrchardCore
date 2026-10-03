@@ -311,101 +311,147 @@ The following configuration values are used by default and can be customized:
 
 ```json
 {
-  "OrchardCore_Media": {
-    // The accepted sizes for custom width and height.
-    // When the 'UseTokenizedQueryString' is True (default) all sizes are valid.
-    "SupportedSizes": [
-      16,
-      32,
-      50,
-      100,
-      160,
-      240,
-      480,
-      600,
-      1024,
-      2048
-    ],
-    // The number of days to store images in the browser cache.
-    // NB: To control cache headers for module static assets, refer to the Orchard Core Modules Section.
-    "MaxBrowserCacheDays": 30,
-    // The number of days to store secure media files in the browser cache.
-    // Set to 0 (default) to disable caching secure files.
-    "MaxSecureFilesBrowserCacheDays": 0,
-    // The number of days a cached resized media item will be valid for, before being rebuilt on request.
-    "MaxCacheDays": 365,
-    // The maximum size of an uploaded file in bytes. 
-    // NB: You might still need to configure the limit in IIS (https://docs.microsoft.com/en-us/iis/configuration/system.webserver/security/requestfiltering/requestlimits/)
-    "MaxFileSize": 30000000,
-    // A CDN base url that will be prefixed to the request path when serving images.
-    "CdnBaseUrl": "https://your-cdn.com",
-    // The path used when serving media assets.
-    "AssetsRequestPath": "/media",
-    // The name of the folder used to store media assets inside the App_Data folder.
-    "AssetsPath": "Media",
-    // Whether to use a token in the query string to prevent disc filling.
-    "UseTokenizedQueryString": true,
-    // The list of allowed file extensions
-    "AllowedFileExtensions": [
-      // Images
-      ".jpg",
-      ".jpeg",
-      ".png",
-      ".gif",
-      ".ico",
-      ".svg",
-      // Documents
-      ".pdf",
-      // Portable Document Format; Adobe Acrobat
-      ".doc",
-      // Microsoft Word Document
-      ".docx",
-      ".ppt",
-      // Microsoft PowerPoint Presentation
-      ".pptx",
-      ".pps",
-      ".ppsx",
-      ".odt",
-      // OpenDocument Text Document
-      ".xls",
-      // Microsoft Excel Document
-      ".xlsx",
-      ".psd",
-      // Adobe Photoshop Document
+  "OrchardCore": {
+    "Media": {
+      // The accepted sizes for custom width and height.
+      // When the 'UseTokenizedQueryString' is True (default) all sizes are valid.
+      "SupportedSizes": [
+        16,
+        32,
+        50,
+        100,
+        160,
+        240,
+        480,
+        600,
+        1024,
+        2048
+      ],
+      // The number of days to store images in the browser cache.
+      // NB: To control cache headers for module static assets, refer to the Orchard Core Modules Section.
+      "MaxBrowserCacheDays": 30,
+      // The number of days to store secure media files in the browser cache.
+      // Set to 0 (default) to disable caching secure files.
+      "MaxSecureFilesBrowserCacheDays": 0,
+      // The number of days a cached resized media item will be valid for, before being rebuilt on request.
+      "MaxCacheDays": 365,
+      // The maximum size of an uploaded file in bytes. 
+      // NB: You might still need to configure the limit in IIS (https://docs.microsoft.com/en-us/iis/configuration/system.webserver/security/requestfiltering/requestlimits/)
+      "MaxFileSize": 30000000,
+      // A CDN base url that will be prefixed to the request path when serving images.
+      "CdnBaseUrl": "https://your-cdn.com",
+      // The path used when serving media assets.
+      "AssetsRequestPath": "/media",
+      // The relative subdirectory used to store media assets inside the tenant's data directory.
+      "AssetsPath": "Media",
+      // Whether to use a token in the query string to prevent disc filling.
+      "UseTokenizedQueryString": true,
+      // The list of file extensions that require the standard media upload permissions.
+      "AllowedFileExtensions": [
+        // Images
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".gif",
+        ".ico",
+        // Documents
+        ".pdf",
+        // Portable Document Format; Adobe Acrobat
+        ".doc",
+        // Microsoft Word Document
+        ".docx",
+        ".ppt",
+        // Microsoft PowerPoint Presentation
+        ".pptx",
+        ".pps",
+        ".ppsx",
+        ".odt",
+        // OpenDocument Text Document
+        ".xls",
+        // Microsoft Excel Document
+        ".xlsx",
+        ".psd",
+        // Adobe Photoshop Document
 
-      // Audio
-      ".mp3",
-      ".m4a",
-      ".ogg",
-      ".wav",
-      // Video
-      ".mp4",
-      // MPEG-4
-      ".m4v",
-      ".mov",
-      // QuickTime
-      ".wmv",
-      // Windows Media Video
-      ".avi",
-      ".mpg",
-      ".ogv",
-      // Ogg
-      ".3gp",
-      // 3GPP
-      ".webm"
-    ],
-    // The Content Security Policy to apply to assets served from the media library.
-    "ContentSecurityPolicy": "default-src 'self'; style-src 'unsafe-inline'",
-    // The maximum chunk size when uploading files in bytes. If 0, no chunked upload is used. This is useful to work around request size limitations of a hosting environment.
-    "MaxUploadChunkSize": 104857600,
-    // The lifetime of temporary files created during upload. Defaults to 1 hour.
-    "TemporaryFileLifetime": "01:00:00",
-    // The path used to store temporary TUS upload data. Defaults to {TempPath}/TusUploads.
-    // Configure this to a shared filesystem path for multi-instance deployments.
-    "TusTempPath": "/mnt/shared/TusUploads"
+        // Audio
+        ".mp3",
+        ".m4a",
+        ".ogg",
+        ".wav",
+        // Video
+        ".mp4",
+        // MPEG-4
+        ".m4v",
+        ".mov",
+        // QuickTime
+        ".wmv",
+        // Windows Media Video
+        ".avi",
+        ".mpg",
+        ".ogv",
+        // Ogg
+        ".3gp",
+        // 3GPP
+        ".webm"
+      ],
+      // The list of file extensions that also require the UploadRestrictedMedia permission.
+      "RestrictedFileExtensions": [
+        ".css",
+        ".js",
+        ".svg"
+      ],
+      // The Content Security Policy to apply to assets served from the media library.
+      "ContentSecurityPolicy": "default-src 'self'; style-src 'unsafe-inline'",
+      // The maximum chunk size when uploading files in bytes. If 0, no chunked upload is used. This is useful to work around request size limitations of a hosting environment.
+      "MaxUploadChunkSize": 104857600,
+      // The lifetime of temporary files created during upload. Defaults to 1 hour.
+      "TemporaryFileLifetime": "01:00:00"
+    }
   }
 }
 ```
+
+### Media storage location
+
+`AssetsPath` is relative to the current tenant's data directory, which defaults to `App_Data/Sites/{tenant}`.
+The default value `Media` therefore stores files in `App_Data/Sites/{tenant}/Media`. Nested directories such as
+`Assets/Media` are supported, and both `/` and `\` can be used as separators.
+
+Absolute paths, drive prefixes (including drive-relative paths such as `C:Media`), empty paths or segments,
+and segments ending in a dot or space (including `.` and `..`) are rejected. A trailing directory separator is
+allowed. Invalid configuration fails Media options validation instead of exposing another tenant's data or
+the application directory through the media store or static file provider.
+
+To relocate tenant data to another volume, configure the host's application data location (for example, with
+the `ORCHARD_APP_DATA` environment variable) rather than using an absolute path or traversal in `AssetsPath`.
+
+### Temporary upload storage location
+
+When files are uploaded, in-progress data (chunked uploads, resumable TUS uploads) is written to a temporary
+directory before being committed to the media store. By default this lives under the operating system temporary
+directory (`Path.GetTempPath()`), whose available space is often limited. When many users upload large files at the
+same time this can exhaust the temporary volume.
+
+The base location is configurable through the framework-level `OrchardCore:TempDirectory` section, so you can point
+temporary storage at a larger or shared volume (such as a mounted Azure Files or AWS EFS/FSx share). This setting
+applies to all temporary file consumers, not just media. See [Temporary File Storage](../../core/temporary-file-storage.md)
+for configuration, mount instructions, and how to consume `ITempDirectoryProvider` from your own code.
+
+`AllowedFileExtensions` and `RestrictedFileExtensions` are case-insensitive and must not overlap. An overlap causes Media options validation to fail when the tenant starts. Extensions in neither list are rejected.
+
+Configuration arrays replace the defaults rather than extending them. When setting either extension array, include every extension that should remain available in that category.
+
+Users need the existing media upload and folder permissions for all uploads. They additionally need `UploadRestrictedMedia` for extensions in `RestrictedFileExtensions`. The Media Gallery publishes the effective extension list for the current user, and the server enforces the same policy for regular uploads, API copy/rename operations, remote publishing, and TUS uploads, including completion.
+
+!!! warning
+    Permission-gating risky or active file types is defense in depth, not file sanitization. Validate file contents separately, use a restrictive content security policy, and configure the web server and storage provider appropriately for the file types you accept.
+
+Recipe media imports are trusted system operations and do not use an ambient HTTP user. They may import extensions from either configured list, but extensions absent from both lists are rejected.
+The `TargetPath` (or its `Path` alias) must be a relative file path within the media store. Rooted paths,
+drive prefixes, empty segments, and segments ending in a dot or space (including `.` and `..`) are rejected
+before any source is read or file is overwritten. This applies equally to `Base64`, `SourcePath`, and `SourceUrl`
+imports. Valid imports can overwrite existing media files, but cannot target application assemblies or files
+outside the tenant's media directory.
 
 To configure the `StaticFileOptions` in more detail, including event handlers, for the Media Library `StaticFileMiddleware` apply:
 
@@ -582,6 +628,7 @@ The available media permissions are:
 | `ManageOwnMediaContent` | Manage Own Media | Implied by `ManageOthersMediaContent`. Lets a user manage their own media. |
 | `ManageAttachedMediaFieldsFolder` | Manage Attached Media Fields Folder | Implied by `ManageMediaFolder`. Used for files stored under `mediafields/`. |
 | `ManageMediaContent` | Manage Media | Minimum permission for opening the Media Library. Implied by `ManageOwnMediaContent` and `ManageAttachedMediaFieldsFolder`. |
+| `UploadRestrictedMedia` | Upload media file extensions requiring additional permission | Security-sensitive permission required in addition to the standard media upload and folder permissions for extensions configured in `RestrictedFileExtensions`. Granted to Editors and Administrators by default. |
 | `ManageMediaProfiles` | Manage Media Profiles | Controls media profile management. |
 | `ViewMediaOptions` | View Media Options | Controls visibility of media options. |
 | `ManageAssetCache` | Manage Asset Cache Folder | Controls the media asset cache folder. |

@@ -112,23 +112,6 @@ Output
 this-is-some-text
 ```
 
-There is an option to transliterate (by default `true`) which first transliterates and slugifies afterwards:
-
-```liquid
-{{ "Ελληνικά" | slugify }}
-```
-or 
-```liquid
-{{ "Ελληνικά" | slugify: transliterate: true}}
-```
-
-Output
-
-```text
-ellinika
-```
-
-
 ### `local`
 
 Converts a UTC date and time to the local date and time based on the site settings.
@@ -708,7 +691,7 @@ Here is an example of how to use the `TrackingConsent` object in a Liquid templa
 {% endif %}
 ```
 
-## Localization Filters
+## Data Localization Filters
 
 ### `d`
 

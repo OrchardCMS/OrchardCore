@@ -3,6 +3,7 @@
 @{
     var supportedSizes = string.Join(", ", Model.SupportedSizes.Select(s => s.ToString()).ToArray());
     var allowedFileExtensions = string.Join(", ", Model.AllowedFileExtensions.Select(s => s.ToString()).ToArray());
+    var restrictedFileExtensions = string.Join(", ", Model.RestrictedFileExtensions.Select(s => s.ToString()).ToArray());
     var storageName = MediaFileStore.StorageName;
     var hasHierarchicalNamespace = MediaFileStore.Capabilities.HasHierarchicalNamespace;
     var supportsAtomicMove = MediaFileStore.Capabilities.SupportsAtomicMove;
@@ -21,6 +22,14 @@
     <div class="col-sm-10">
         <code><input type="text" class="form-control-plaintext" value="@supportedSizes" readonly /></code>
         <span class="hint">@T["The accepted sizes for custom width and height."]</span>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label asp-for="RestrictedFileExtensions" class="col-sm-2 col-form-label">@T["Restricted file extensions"]</label>
+    <div class="col-sm-10">
+        <code><input type="text" class="form-control-plaintext" value="@restrictedFileExtensions" readonly /></code>
+        <span class="hint">@T["Users need the 'Upload media file extensions requiring additional permission' permission to upload files with these extensions."]</span>
     </div>
 </div>
 

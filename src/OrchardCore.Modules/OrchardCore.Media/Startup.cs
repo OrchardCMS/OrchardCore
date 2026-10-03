@@ -27,6 +27,7 @@ using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Localization;
 using OrchardCore.Media.Core;
+using OrchardCore.Media.Core.Helpers;
 using OrchardCore.Media.Deployment;
 using OrchardCore.Media.Drivers;
 using OrchardCore.Media.Endpoints.Api;
@@ -88,11 +89,13 @@ public sealed class Startup : StartupBase
         services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
 
         services.AddTransient<IConfigureOptions<MediaOptions>, MediaOptionsConfiguration>();
+        services.AddSingleton<IValidateOptions<MediaOptions>, MediaOptionsValidator>();
 
         // Builds the "MediaApi" authorization policy from MediaApiSettings (cookie default / bearer).
         services.AddTransient<IConfigureOptions<AuthorizationOptions>, MediaApiAuthorizationOptionsConfiguration>();
         services.AddSiteDisplayDriver<MediaApiSettingsDisplayDriver>();
         services.TryAddTransient<FileCreationService>();
+        services.AddTransient<FileSizeHelper>();
 
         services.AddSingleton<IMediaFileProvider>(serviceProvider =>
         {
@@ -120,6 +123,7 @@ public sealed class Startup : StartupBase
             var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
             var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
             var mediaEventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
+            var fileSizeHelper = serviceProvider.GetService<FileSizeHelper>();
             var mediaCreatingEventHandlers =
                 serviceProvider.GetServices<IMediaCreatingEventHandler>();
             var fileSystemStoreLogger = serviceProvider.GetRequiredService<
@@ -158,6 +162,7 @@ public sealed class Startup : StartupBase
                 mediaOptions.CdnBaseUrl,
                 mediaEventHandlers,
                 mediaCreatingEventHandlers,
+                fileSizeHelper,
                 defaultMediaFileStoreLogger
             );
         });
@@ -267,18 +272,44 @@ public sealed class Startup : StartupBase
 
     }
 
-    private static string GetMediaPath(
+    internal static string GetMediaPath(
         ShellOptions shellOptions,
         ShellSettings shellSettings,
         string assetsPath
     )
     {
-        return PathExtensions.Combine(
+        assetsPath = assetsPath?.TrimEnd(PathExtensions.PathSeparators);
+
+        if (!MediaFileStorePathHelper.IsValidRelativePath(assetsPath))
+        {
+            throw new ArgumentException("The media assets path must be a relative subdirectory of the tenant's data directory.", nameof(assetsPath));
+        }
+
+        // The tenant name is a path segment too. It is validated when a tenant is created, but not every
+        // code path that can create one is guaranteed to do so, so don't trust it to stay in its container.
+        var tenantsPath = Path.GetFullPath(Path.Combine(
             shellOptions.ShellsApplicationDataPath,
-            shellOptions.ShellsContainerName,
-            shellSettings.Name,
-            assetsPath
-        );
+            shellOptions.ShellsContainerName
+        ));
+
+        var tenantPath = Path.GetFullPath(Path.Combine(tenantsPath, shellSettings.Name ?? string.Empty));
+
+        if (!MediaFileStorePathHelper.IsWithinDirectory(tenantsPath, tenantPath))
+        {
+            throw new ArgumentException("The tenant name must resolve to a subdirectory of the tenants directory.", nameof(shellSettings));
+        }
+
+        var mediaPath = Path.GetFullPath(Path.Combine(
+            tenantPath,
+            assetsPath.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar)
+        ));
+
+        if (!MediaFileStorePathHelper.IsWithinDirectory(tenantPath, mediaPath))
+        {
+            throw new ArgumentException("The media assets path must be a relative subdirectory of the tenant's data directory.", nameof(assetsPath));
+        }
+
+        return mediaPath;
     }
 }
 
@@ -521,12 +552,20 @@ public sealed class MediaTusStartup : StartupBase
                     httpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
                     return null;
                 }
+                var canUploadRestrictedMedia = await authService.AuthorizeAsync(
+                    httpContext.User,
+                    MediaPermissions.UploadRestrictedMedia
+                );
 
                 var store =
                     httpContext.RequestServices.GetRequiredService<DistributedMediaTusStore>();
                 var mediaOptions = httpContext.RequestServices.GetRequiredService<
                     IOptions<MediaOptions>
                 >();
+                var mediaFileStore =
+                    httpContext.RequestServices.GetRequiredService<IMediaFileStore>();
+                var mediaNameNormalizerService =
+                    httpContext.RequestServices.GetService<IMediaNameNormalizerService>();
                 var fileLockProvider =
                     httpContext.RequestServices.GetRequiredService<DistributedFileLockProvider>();
 
@@ -552,14 +591,14 @@ public sealed class MediaTusStartup : StartupBase
                             }
 
                             var fileName = fileNameMeta.GetString(System.Text.Encoding.UTF8);
+                            if (mediaNameNormalizerService != null)
+                            {
+                                fileName = mediaNameNormalizerService.NormalizeFileName(fileName);
+                            }
+                            fileName = MediaEndpointHelpers.GetFileName(mediaFileStore, fileName);
                             var extension = Path.GetExtension(fileName);
 
-                            if (
-                                !mediaOptions.Value.AllowedFileExtensions.Contains(
-                                    extension,
-                                    StringComparer.OrdinalIgnoreCase
-                                )
-                            )
+                            if (!mediaOptions.Value.IsFileExtensionAllowed(extension, canUploadRestrictedMedia))
                             {
                                 ctx.FailRequest($"File extension not allowed: {extension}");
                                 return;
@@ -601,12 +640,11 @@ public sealed class MediaTusStartup : StartupBase
                                 : string.Empty;
 
                             // Normalize file name if the service is available.
-                            var nameNormalizer =
-                                httpContext.RequestServices.GetService<IMediaNameNormalizerService>();
-                            if (nameNormalizer != null)
+                            if (mediaNameNormalizerService != null)
                             {
-                                fileName = nameNormalizer.NormalizeFileName(fileName);
+                                fileName = mediaNameNormalizerService.NormalizeFileName(fileName);
                             }
+                            fileName = MediaEndpointHelpers.GetFileName(mediaFileStore, fileName);
 
                             var metadataStore =
                                 httpContext.RequestServices.GetRequiredService<DistributedTusUploadMetadataStore>();
@@ -636,8 +674,22 @@ public sealed class MediaTusStartup : StartupBase
                                 return;
                             }
 
-                            var mediaFileStore =
-                                httpContext.RequestServices.GetRequiredService<IMediaFileStore>();
+                            if (
+                                !await authService.AuthorizeAsync(
+                                    httpContext.User,
+                                    MediaPermissions.ManageMediaFolder,
+                                    (object)entry.DestinationPath
+                                )
+                                || !mediaOptions.Value.IsFileExtensionAllowed(
+                                    Path.GetExtension(entry.FileName),
+                                    canUploadRestrictedMedia
+                                )
+                            )
+                            {
+                                httpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
+                                return;
+                            }
+
                             var mediaFilePath = await GetAvailableMediaFilePathAsync(
                                 mediaFileStore,
                                 entry.DestinationPath,

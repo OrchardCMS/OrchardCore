@@ -1,6 +1,10 @@
 @model AdminMenuCreateViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Create Admin Menu {0}", Model.Name])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="AdminMenusCreate" title="@T["Create Admin Menu"]">
+        <breadcrumb-item id="AdminMenus" action="List" controller="Menu" area="OrchardCore.AdminMenu" permission="@AdminMenuPermissions.ManageAdminMenu.Name">@T["Admin Menus"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <div asp-validation-summary="ModelOnly"></div>
 

@@ -17,6 +17,7 @@ using OrchardCore.Media.Azure.Filters;
 using OrchardCore.Media.Azure.Services;
 using OrchardCore.Media.Core;
 using OrchardCore.Media.Core.Events;
+using OrchardCore.Media.Core.Helpers;
 using OrchardCore.Media.Events;
 using OrchardCore.Media.Services;
 using OrchardCore.Modules;
@@ -44,7 +45,8 @@ public sealed class Startup : Modules.StartupBase
         services.AddTransient<IConfigureOptions<MediaBlobStorageOptions>, MediaBlobStorageOptionsConfiguration>();
 
         // Only replace default implementation if options are valid.
-        var section = _configuration.GetSection("OrchardCore_Media_Azure");
+        // The 'OrchardCore_Media_Azure' section is deprecated and will be removed in a future major version, use 'Media:Azure' instead.
+        var section = _configuration.GetSectionCompat("Media:Azure", "OrchardCore_Media_Azure");
         var connectionString = section.GetValue<string>(nameof(MediaBlobStorageOptions.ConnectionString));
         var containerName = section.GetValue<string>(nameof(MediaBlobStorageOptions.ContainerName));
 
@@ -102,6 +104,7 @@ public sealed class Startup : Modules.StartupBase
                 var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
                 var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
                 var mediaEventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
+                var fileSizeHelper = serviceProvider.GetService<FileSizeHelper>();
                 var mediaCreatingEventHandlers = serviceProvider.GetServices<IMediaCreatingEventHandler>();
                 var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStore>>();
 
@@ -116,7 +119,14 @@ public sealed class Startup : Modules.StartupBase
                     mediaUrlBase = fileStore.Combine(originalPathBase.Value, mediaUrlBase);
                 }
 
-                return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl, mediaEventHandlers, mediaCreatingEventHandlers, logger);
+                return new DefaultMediaFileStore(
+                    fileStore,
+                    mediaUrlBase,
+                    mediaOptions.CdnBaseUrl,
+                    mediaEventHandlers,
+                    mediaCreatingEventHandlers,
+                    fileSizeHelper,
+                    logger);
             }));
 
             services.AddSingleton<IMediaEventHandler, DefaultMediaFileStoreCacheEventHandler>();
@@ -169,7 +179,8 @@ public sealed class MediaAzureImageCacheStartup : Modules.StartupBase
         services.AddTransient<IConfigureOptions<MediaBlobImageCacheOptions>, MediaBlobImageCacheOptionsConfiguration>();
 
         // Only replace the default local cache implementation if options are valid.
-        var section = _configuration.GetSection("OrchardCore_Media_Azure_Image_Cache");
+        // The 'OrchardCore_Media_Azure_ImageSharp_Cache' section is deprecated and will be removed in a future major version, use 'Media:Azure:ImageCache' instead.
+        var section = _configuration.GetSectionCompat("Media:Azure:ImageCache", "OrchardCore_Media_Azure_ImageSharp_Cache");
         var connectionString = section.GetValue<string>(nameof(MediaBlobStorageOptions.ConnectionString));
         var containerName = section.GetValue<string>(nameof(MediaBlobStorageOptions.ContainerName));
 

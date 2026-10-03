@@ -4,5 +4,36 @@
     "name": "deployment",
     "source": "Assets/js/steporder.js",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "deployment-step-editors",
+    "source": [
+      "Assets/ts/deployment-plan-deployment-step.ts",
+      "Assets/ts/json-recipe-deployment-step.ts"
+    ],
+    "dest": "wwwroot/Scripts/deployment-step-editors/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "deployment-plan-index",
+    "source": "Assets/ts/deployment-plan-index.ts",
+    "dest": "wwwroot/Scripts/deployment-plan-index/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "import-json",
+    "source": "Assets/ts/import-json.ts",
+    "dest": "wwwroot/Scripts/import-json/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "deployment-plan-display",
+    "source": "Assets/ts/deployment-plan-display.ts",
+    "dest": "wwwroot/Scripts/deployment-plan-display/",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

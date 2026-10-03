@@ -76,6 +76,33 @@ When building custom admin editor views, use the `ocat-*` classes so your views 
 </div>
 ```
 
+### Customizing Content Field Hints
+
+Content field editors render their configured hint with the `Hint_Admin` shape. The default
+`Hint.Admin.cshtml` template displays the hint as text:
+
+```cshtml
+<span class="hint dashed">@Model.Hint</span>
+```
+
+To customize all content field hints, add a `Views/Hint.Admin.cshtml` template to your custom
+admin theme. For example, the following template renders an accessible button with a Bootstrap
+tooltip:
+
+```cshtml
+<button type="button"
+        class="btn btn-link p-0 align-baseline"
+        data-bs-toggle="tooltip"
+        data-bs-placement="top"
+        title="@Model.Hint"
+        aria-label="@Model.Hint">
+    <i class="fa-regular fa-circle-question" aria-hidden="true"></i>
+</button>
+```
+
+The shape exposes the configured hint through `Model.Hint`. The default admin theme initializes
+Bootstrap tooltips for elements with the `data-bs-toggle="tooltip"` attribute.
+
 ### Creating a Horizontal Form Layout
 
 To achieve a horizontal form layout, override the `ocat-*` classes in your custom admin theme CSS or SCSS. Here's a pure CSS example:

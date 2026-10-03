@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
@@ -20,17 +21,20 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
     private readonly IContainerService _containerService;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IShapeFactory _shapeFactory;
+    private readonly PagerOptions _pagerOptions;
 
     public ListPartDisplayDriver(
         IContentDefinitionManager contentDefinitionManager,
         IContainerService containerService,
         IUpdateModelAccessor updateModelAccessor,
-        IShapeFactory shapeFactory)
+        IShapeFactory shapeFactory,
+        IOptions<PagerOptions> pagerOptions)
     {
         _contentDefinitionManager = contentDefinitionManager;
         _containerService = containerService;
         _updateModelAccessor = updateModelAccessor;
         _shapeFactory = shapeFactory;
+        _pagerOptions = pagerOptions.Value;
     }
 
     public override IDisplayResult Edit(ListPart part, BuildPartEditorContext context)
@@ -222,24 +226,26 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
         .Location(OrchardCoreConstants.DisplayType.Detail, "Content:10");
     }
 
-    private static async Task<PagerSlim> GetPagerSlimAsync(BuildPartDisplayContext context)
+    private async Task<PagerSlim> GetPagerSlimAsync(BuildPartDisplayContext context)
     {
         var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
         var pagerParameters = new PagerSlimParameters();
         await context.Updater.TryUpdateModelAsync(pagerParameters);
 
-        var pager = new PagerSlim(pagerParameters, settings.PageSize);
-        return pager;
+        var pageSize = _pagerOptions.GetPageSize(pagerParameters.PageSize, settings.PageSize);
+
+        return new PagerSlim(pagerParameters.Before, pagerParameters.After, pageSize);
     }
 
-    private static async Task<Pager> GetPagerAsync(BuildPartDisplayContext context)
+    private async Task<Pager> GetPagerAsync(BuildPartDisplayContext context)
     {
         var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
         var pagerParameters = new PagerParameters();
         await context.Updater.TryUpdateModelAsync(pagerParameters);
 
-        var pager = new Pager(pagerParameters, settings.PageSize);
-        return pager;
+        var pageSize = _pagerOptions.GetPageSize(pagerParameters.PageSize, settings.PageSize);
+
+        return new Pager(pagerParameters.Page, pageSize, pageSize);
     }
 
     private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(ListPartSettings settings)

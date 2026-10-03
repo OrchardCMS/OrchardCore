@@ -92,6 +92,8 @@ The module includes these built-in `ILocalizationDataProvider` implementations:
 
 Provides admin menu display names for translation.
 
+Admin menu providers, including content-type admin menu nodes, require both `OrchardCore.DataLocalization` and `OrchardCore.AdminMenu`. Content type and content field display names remain available for translation when `OrchardCore.Contents` and `OrchardCore.DataLocalization` are enabled, even if `OrchardCore.AdminMenu` is disabled.
+
 - **Context**: `Admin Menus` or `Admin Menus:{menuName}`
 - **Strings**: Display names of all admin menu / sub menu items
 

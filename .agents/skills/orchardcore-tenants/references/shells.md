@@ -112,4 +112,4 @@ Feature `OrchardCore.Tenants.FeatureProfiles` registers `IFeatureProfilesService
 | One DB, separate tables | shared DB + unique `TablePrefix` |
 | One DB, separate schema | `Schema` per tenant (SQL Server) |
 
-Enforce via `OrchardCore_Tenants`: `RequireTablePrefix`, `TablePrefixPattern` (e.g. `{{ ShellSettings.Name }}`), `SchemaPattern`.
+Enforce via `OrchardCore:Tenants`: `RequireTablePrefix`, `TablePrefixPattern` (e.g. `{{ ShellSettings.Name }}`), `SchemaPattern`.
