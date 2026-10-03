@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <ModuleType>Module</ModuleType>
+    <IsPackable>false</IsPackable>
+    <LocalizationBuildDirectory Condition="'$(LocalizationBuildDirectory)' == ''">$(MSBuildThisFileDirectory)../../../../src/OrchardCore/OrchardCore.Localization.Build</LocalizationBuildDirectory>
+  </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <EmbeddedResource Include="Views/Nested.liquid" />
+  </ItemGroup>
+  <Import Project="$(LocalizationBuildDirectory)/OrchardCore.Localization.Build.props" />
+  <Target Name="RewriteModuleResources" AfterTargets="AfterResolveReferences" BeforeTargets="GenerateAssemblyInfo">
+    <ItemGroup>
+      <EmbeddedResource LogicalName="module.asset.%(Filename)%(Extension)" />
+    </ItemGroup>
+  </Target>
+  <Import Project="$(LocalizationBuildDirectory)/OrchardCore.Localization.Build.targets" />
+</Project>
