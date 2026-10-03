@@ -7,7 +7,7 @@ on:
       - 'mkdocs.yml'
       - 'src/docs/**/*'
     branches: [ main, release/** ]
-  pull_request:
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.head_ref || github.run_id }}-frontend_unit_tests

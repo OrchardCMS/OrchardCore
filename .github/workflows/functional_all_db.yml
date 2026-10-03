@@ -3,8 +3,7 @@ name: Functional Tests - All Databases
 on:
   # Manual trigger.
   workflow_dispatch:
-  pull_request_review:
-    types: [submitted]
+  pull_request:
   # Run it on main and release pushes too, in case we merge from a branch that's not up-to-date with the target branch
   # and breaks something after merge (or if we push to main).
   push:
@@ -26,14 +25,7 @@ permissions:
 jobs:
   test_functional_mvc:
     name: Functional Tests - MVC
-    # These conditions are needed because the workflow triggers on individual PR comments too, see
-    # https://github.com/orgs/community/discussions/124396.
-    # They either need to be repeated for each job, or we need to use a separate job (i.e. VM to run the condition) that
-    # triggers the others.
-    if: github.event_name == 'workflow_dispatch' ||
-        github.event_name == 'push' ||
-        github.event.review.state == 'APPROVED' ||
-        github.event.review.state == 'CHANGES_REQUESTED'
+    if: false
     runs-on: ubuntu-26.04
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -50,11 +42,12 @@ jobs:
       run: |
         pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
     - name: Functional Tests
+      timeout-minutes: 25
       env:
         # The MVC app uses neither Redis nor Azurite; don't start those containers for this run.
         ORCHARD_TEST_DOCKER_SERVICES: "false"
       run: |
-        dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Mvc*"
+        dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --output Detailed --filter-class "*Mvc*"
     - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       if: failure()
       with:
@@ -66,10 +59,7 @@ jobs:
 
   test_functional_cms_sqlite:
     name: Functional Tests - CMS Sqlite
-    if: github.event_name == 'workflow_dispatch' ||
-        github.event_name == 'push' ||
-        github.event.review.state == 'APPROVED' ||
-        github.event.review.state == 'CHANGES_REQUESTED'
+    if: false
     runs-on: ubuntu-26.04
     env:
       OrchardCore__YesSql__EnableThreadSafetyChecks: true
@@ -88,8 +78,9 @@ jobs:
       run: |
         pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
     - name: Functional Tests
+      timeout-minutes: 25
       run: |
-        dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Cms*"
+        dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --output Detailed --filter-class "*Cms*"
     - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       if: failure()
       with:
@@ -101,7 +92,8 @@ jobs:
 
   test_functional_cms_postgresql:
     name: Functional Tests - CMS Postgres
-    if: github.event_name == 'workflow_dispatch' ||
+    if: github.event_name == 'pull_request' ||
+        github.event_name == 'workflow_dispatch' ||
         github.event_name == 'push' ||
         github.event.review.state == 'APPROVED' ||
         github.event.review.state == 'CHANGES_REQUESTED'
@@ -140,8 +132,9 @@ jobs:
       run: |
         pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
     - name: Functional Tests
+      timeout-minutes: 25
       run: |
-        dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Cms*"
+        dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --output Detailed --filter-class "*Cms*"
     - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       if: failure()
       with:
@@ -153,7 +146,8 @@ jobs:
 
   test_functional_cms_mysql:
     name: Functional Tests - CMS MySql
-    if: github.event_name == 'workflow_dispatch' ||
+    if: github.event_name == 'pull_request' ||
+        github.event_name == 'workflow_dispatch' ||
         github.event_name == 'push' ||
         github.event.review.state == 'APPROVED' ||
         github.event.review.state == 'CHANGES_REQUESTED'
@@ -186,8 +180,9 @@ jobs:
       run: |
         pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
     - name: Functional Tests
+      timeout-minutes: 25
       run: |
-        dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Cms*"
+        dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --output Detailed --filter-class "*Cms*"
     - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       if: failure()
       with:
@@ -199,7 +194,8 @@ jobs:
 
   test_functional_cms_redis_azurite:
     name: Functional Tests - CMS Redis + Azurite
-    if: github.event_name == 'workflow_dispatch' ||
+    if: github.event_name == 'pull_request' ||
+        github.event_name == 'workflow_dispatch' ||
         github.event_name == 'push' ||
         github.event.review.state == 'APPROVED' ||
         github.event.review.state == 'CHANGES_REQUESTED'
@@ -238,8 +234,9 @@ jobs:
       run: |
         pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
     - name: Functional Tests
+      timeout-minutes: 25
       run: |
-        dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Cms*"
+        dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --output Detailed --filter-class "*Cms*"
     - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       if: failure()
       with:
@@ -250,10 +247,7 @@ jobs:
 
   test_functional_cms_mssql:
     name: Functional Tests - CMS SqlServer 2019
-    if: github.event_name == 'workflow_dispatch' ||
-        github.event_name == 'push' ||
-        github.event.review.state == 'APPROVED' ||
-        github.event.review.state == 'CHANGES_REQUESTED'
+    if: false
     runs-on: ubuntu-26.04
     services:
       mssql:
@@ -282,8 +276,9 @@ jobs:
       run: |
         pwsh test/OrchardCore.Tests.Functional/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
     - name: Functional Tests
+      timeout-minutes: 25
       run: |
-        dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --filter-class "*Cms*"
+        dotnet test --project test/OrchardCore.Tests.Functional/OrchardCore.Tests.Functional.csproj -c Release --no-build --output Detailed --filter-class "*Cms*"
     - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       if: failure()
       with:

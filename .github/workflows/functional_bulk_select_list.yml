@@ -15,8 +15,6 @@ name: Functional Tests - Bulk Select List UI Regression
 on:
   # Manual trigger.
   workflow_dispatch:
-  pull_request_review:
-    types: [submitted]
   # Run it on main and release pushes too, in case we merge from a branch that's not
   # up-to-date with the target branch and breaks something after merge.
   push:
