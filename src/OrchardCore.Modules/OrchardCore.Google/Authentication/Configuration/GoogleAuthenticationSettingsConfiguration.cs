@@ -1,3 +1,5 @@
+#pragma warning disable CS0618 // Type or member is obsolete
+
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Options;
 using OrchardCore.Google.Authentication.Settings;
@@ -24,6 +26,7 @@ public sealed class GoogleAuthenticationSettingsConfiguration : IConfigureOption
             options.CallbackPath = settings.CallbackPath;
             options.ClientID = settings.ClientID;
             options.ClientSecret = settings.ClientSecret;
+            options.ClientSecretSecretName = settings.ClientSecretSecretName;
             options.SaveTokens = settings.SaveTokens;
         }
     }

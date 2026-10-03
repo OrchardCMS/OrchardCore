@@ -12,7 +12,7 @@ public class AzureAISearchDefaultSettingsViewModel
 
     public string Endpoint { get; set; }
 
-    public string ApiKey { get; set; }
+    public string ApiKeySecretName { get; set; }
 
     public string IdentityClientId { get; set; }
 

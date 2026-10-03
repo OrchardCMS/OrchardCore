@@ -13,7 +13,8 @@ using OrchardCore.Twitter;
     Id = TwitterConstants.Features.Twitter,
     Name = "X (Twitter) Integration",
     Category = "X (Twitter)",
-    Description = "Provides a TwitterClient and Workflow Activities to integrate with X (Twitter)"
+    Description = "Provides a TwitterClient and Workflow Activities to integrate with X (Twitter)",
+    Dependencies = ["OrchardCore.Secrets"]
 )]
 
 [assembly: Feature(

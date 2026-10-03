@@ -37,15 +37,23 @@
         </div>
     </div>
 
-    <div class="ocat-wrapper" asp-validation-class-for="AuthToken">
-        <label asp-for="AuthToken" class="ocat-label">@T["Auth Token"]</label>
+    <div class="ocat-wrapper" asp-validation-class-for="AuthTokenSecretName">
+        <label asp-for="AuthTokenSecretName" class="ocat-label">@T["Auth Token"]</label>
         <div class="ocat-end">
-            <input asp-for="AuthToken" class="form-control" />
-            <span asp-validation-for="AuthToken"></span>
-            @if (Model.HasAuthToken)
+            @await Component.InvokeAsync("SelectSecret", new
             {
-                <span class="hint">@T["Auth token was securely saved. Enter a new value if you wish to replace the existing secret."]</span>
+                secretTypes = new[] { "TextSecret" },
+                selectedSecret = Model.AuthTokenSecretName,
+                htmlId = Html.IdFor(m => m.AuthTokenSecretName).ToString(),
+                htmlName = Html.NameFor(m => m.AuthTokenSecretName).ToString(),
+                required = false
+            })
+            <span asp-validation-for="AuthTokenSecretName"></span>
+            @if (Model.HasAuthToken && string.IsNullOrWhiteSpace(Model.AuthTokenSecretName))
+            {
+                <p class="alert alert-warning mt-2">@T["A legacy auth token is configured. Please migrate to using a secret for improved security."]</p>
             }
+
         </div>
     </div>
 </div>

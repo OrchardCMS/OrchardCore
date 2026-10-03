@@ -10,14 +10,7 @@
     </div>
 </div>
 
-@if (Model.HasDecryptionError)
-{
-    <div class="ocat-wrapper">
-        <div class="ocat-end-offset">
-            <p class="alert alert-danger">@T["An error occurred while decrypting a setting. Please apply and save."]</p>
-        </div>
-    </div>
-}
+
 
 <div class="ocat-wrapper">
     <div class="ocat-end-offset">
@@ -34,11 +27,22 @@
     </div>
 </div>
 
-<div class="ocat-wrapper" asp-validation-class-for="AppSecret">
-    <label asp-for="AppSecret" class="ocat-label">@T["Secret Key"]</label>
+<div class="ocat-wrapper" asp-validation-class-for="AppSecretSecretName">
+    <label asp-for="AppSecretSecretName" class="ocat-label">@T["Secret Key"]</label>
     <div class="ocat-end">
-        <input asp-for="AppSecret" class="form-control" type="password" value="@Model.AppSecret" autocomplete="off" />
-        <span asp-validation-for="AppSecret"></span>
+        @await Component.InvokeAsync("SelectSecret", new
+        {
+            secretTypes = new[] { "TextSecret" },
+            selectedSecret = Model.AppSecretSecretName,
+            htmlId = Html.IdFor(m => m.AppSecretSecretName).ToString(),
+            htmlName = Html.NameFor(m => m.AppSecretSecretName).ToString(),
+            required = false
+        })
+        <span asp-validation-for="AppSecretSecretName"></span>
+        @if (Model.HasAppSecret && string.IsNullOrWhiteSpace(Model.AppSecretSecretName))
+        {
+            <p class="alert alert-info">@T["A legacy app secret is configured. Please create a new secret using the Secrets module and select it below, then save to complete the migration."]</p>
+        }
         <span class="hint">@T["The Application secret key found on the Microsoft developer portal parameters."]</span>
     </div>
 </div>

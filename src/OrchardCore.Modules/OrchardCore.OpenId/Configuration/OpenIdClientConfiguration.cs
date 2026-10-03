@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
+using OrchardCore.Secrets;
 
 namespace OrchardCore.OpenId.Configuration;
 
@@ -16,17 +17,20 @@ public sealed class OpenIdClientConfiguration :
     IConfigureNamedOptions<OpenIdConnectOptions>
 {
     private readonly IOpenIdClientService _clientService;
+    private readonly ISecretManager _secretManager;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;
 
     public OpenIdClientConfiguration(
         IOpenIdClientService clientService,
+        ISecretManager secretManager,
         IDataProtectionProvider dataProtectionProvider,
         ShellSettings shellSettings,
         ILogger<OpenIdClientConfiguration> logger)
     {
         _clientService = clientService;
+        _secretManager = secretManager;
         _dataProtectionProvider = dataProtectionProvider;
         _shellSettings = shellSettings;
         _logger = logger;
@@ -78,18 +82,40 @@ public sealed class OpenIdClientConfiguration :
             }
         }
 
-        if (!string.IsNullOrEmpty(settings.ClientSecret))
+        // Try to get the secret from the Secrets module first.
+        if (!string.IsNullOrWhiteSpace(settings.ClientSecretSecretName))
         {
-            var protector = _dataProtectionProvider.CreateProtector(nameof(OpenIdClientConfiguration));
+            var secret = _secretManager.GetSecretAsync<TextSecret>(settings.ClientSecretSecretName)
+                .GetAwaiter()
+                .GetResult();
 
-            try
+            if (secret != null)
             {
-                options.ClientSecret = protector.Unprotect(settings.ClientSecret);
+                options.ClientSecret = secret.Text;
             }
-            catch
+            else
             {
-                _logger.LogError("The client secret could not be decrypted. It may have been encrypted using a different key.");
+                _logger.LogError("The OpenID client secret '{SecretName}' could not be found.", settings.ClientSecretSecretName);
             }
+        }
+        else
+        {
+            // Fall back to legacy encrypted setting.
+#pragma warning disable CS0618 // Type or member is obsolete
+            if (!string.IsNullOrEmpty(settings.ClientSecret))
+            {
+                var protector = _dataProtectionProvider.CreateProtector(nameof(OpenIdClientConfiguration));
+
+                try
+                {
+                    options.ClientSecret = protector.Unprotect(settings.ClientSecret);
+                }
+                catch
+                {
+                    _logger.LogError("The client secret could not be decrypted. It may have been encrypted using a different key.");
+                }
+            }
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         if (settings.Parameters != null && settings.Parameters.Length > 0)

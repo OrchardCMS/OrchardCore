@@ -16,7 +16,7 @@ public class OpenIdClientSettingsViewModel
     [Required(ErrorMessage = "ClientId is required")]
     public string ClientId { get; set; }
 
-    public string ClientSecret { get; set; }
+    public string ClientSecretSecretName { get; set; }
 
     [BindNever]
     public bool HasClientSecret { get; set; }

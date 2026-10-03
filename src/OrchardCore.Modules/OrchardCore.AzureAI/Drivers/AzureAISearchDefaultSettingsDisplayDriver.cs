@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
@@ -23,7 +22,6 @@ public sealed class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDrive
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IOptionsMonitor<AzureAISearchDefaultOptions> _searchOptions;
-    private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
 
     internal readonly IStringLocalizer S;
@@ -36,14 +34,12 @@ public sealed class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDrive
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IOptionsMonitor<AzureAISearchDefaultOptions> searchOptions,
-        IDataProtectionProvider dataProtectionProvider,
         IStringLocalizer<AzureAISearchDefaultSettingsDisplayDriver> stringLocalizer)
     {
         _optionsUpdateNotifier = optionsUpdateNotifier;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _searchOptions = searchOptions;
-        _dataProtectionProvider = dataProtectionProvider;
         S = stringLocalizer;
     }
 
@@ -56,6 +52,7 @@ public sealed class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDrive
             return null;
         }
 
+#pragma warning disable CS0618 // Type or member is obsolete
         return Initialize<AzureAISearchDefaultSettingsViewModel>("AzureAISearchDefaultSettings_Edit", model =>
         {
             model.AuthenticationTypes =
@@ -70,10 +67,12 @@ public sealed class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDrive
             model.UseCustomConfiguration = settings.UseCustomConfiguration;
             model.Endpoint = settings.Endpoint;
             model.IdentityClientId = settings.IdentityClientId;
+            model.ApiKeySecretName = settings.ApiKeySecretName;
             model.ApiKeyExists = !string.IsNullOrEmpty(settings.ApiKey);
         }).Location("Content")
         .RenderWhen(static (driver) => driver._authorizationService.AuthorizeAsync(driver._httpContextAccessor.HttpContext.User, AzureAISearchPermissions.ManageAzureAISearchISettings), this)
         .OnGroup(SettingsGroupId);
+#pragma warning restore CS0618 // Type or member is obsolete
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, AzureAISearchDefaultSettings settings, UpdateEditorContext context)
@@ -100,6 +99,7 @@ public sealed class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDrive
         }
 
         var useCustomConfigurationChanged = settings.UseCustomConfiguration != model.UseCustomConfiguration;
+        var apiKeyChanged = settings.ApiKeySecretName != model.ApiKeySecretName;
 
         if (model.UseCustomConfiguration)
         {
@@ -118,25 +118,22 @@ public sealed class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDrive
 
             if (model.AuthenticationType == AzureAIAuthenticationType.ApiKey)
             {
-                var hasNewKey = !string.IsNullOrWhiteSpace(model.ApiKey);
+                settings.ApiKeySecretName = model.ApiKeySecretName;
 
-                if (!hasNewKey && string.IsNullOrEmpty(settings.ApiKey))
+#pragma warning disable CS0618 // Type or member is obsolete
+                // Require either a secret or legacy API key.
+                if (string.IsNullOrWhiteSpace(model.ApiKeySecretName) && string.IsNullOrEmpty(settings.ApiKey))
                 {
-                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.ApiKey), S["API Key is required when using API Key authentication type."]);
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.ApiKeySecretName), S["API Key is required when using API Key authentication type."]);
                 }
-                else if (hasNewKey)
-                {
-                    var protector = _dataProtectionProvider.CreateProtector(AzureAISearchDefaultOptionsConfigurations.ProtectorName);
-
-                    settings.ApiKey = protector.Protect(model.ApiKey);
-                }
+#pragma warning restore CS0618 // Type or member is obsolete
             }
         }
 
         settings.UseCustomConfiguration = model.UseCustomConfiguration;
 
         if (context.Updater.ModelState.IsValid &&
-            (searchOptions.Credential?.Key != model.ApiKey ||
+            (apiKeyChanged ||
              searchOptions.Endpoint != settings.Endpoint ||
              searchOptions.AuthenticationType != settings.AuthenticationType ||
              searchOptions.IdentityClientId != settings.IdentityClientId ||

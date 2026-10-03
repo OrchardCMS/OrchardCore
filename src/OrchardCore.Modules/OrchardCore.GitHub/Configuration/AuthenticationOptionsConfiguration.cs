@@ -1,3 +1,5 @@
+#pragma warning disable CS0618 // Type or member is obsolete
+
 using AspNet.Security.OAuth.GitHub;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
@@ -30,7 +32,7 @@ internal sealed class AuthenticationOptionsConfiguration : IConfigureOptions<Aut
         }
 
         if (string.IsNullOrWhiteSpace(settings.ClientID) ||
-            string.IsNullOrWhiteSpace(settings.ClientSecret))
+            (string.IsNullOrWhiteSpace(settings.ClientSecretSecretName) && string.IsNullOrWhiteSpace(settings.ClientSecret)))
         {
             _logger.LogWarning("The GitHub login provider is enabled but not configured.");
 

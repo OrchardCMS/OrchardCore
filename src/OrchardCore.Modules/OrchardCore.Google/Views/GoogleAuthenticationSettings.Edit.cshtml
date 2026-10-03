@@ -10,14 +10,7 @@
     </div>
 </div>
 
-@if (Model.HasDecryptionError)
-{
-    <div class="ocat-wrapper">
-        <div class="ocat-end-offset">
-            <p class="alert alert-danger">@T["An error occurred while decrypting a setting. Please apply and save."]</p>
-        </div>
-    </div>
-}
+
 
 <div class="ocat-wrapper">
     <div class="ocat-end-offset">
@@ -34,11 +27,22 @@
     </div>
 </div>
 
-<div class="ocat-limited-wrapper" asp-validation-class-for="ClientSecret">
-    <label asp-for="ClientSecret" class="ocat-label">@T["API secret key"]</label>
+<div class="ocat-limited-wrapper" asp-validation-class-for="ClientSecretSecretName">
+    <label asp-for="ClientSecretSecretName" class="ocat-label">@T["API secret key"]</label>
     <div class="ocat-limited">
-        <input asp-for="ClientSecret" class="form-control" type="password" value="@Model.ClientSecret" autocomplete="off" />
-        <span asp-validation-for="ClientSecret"></span>
+        @await Component.InvokeAsync("SelectSecret", new
+        {
+            secretTypes = new[] { "TextSecret" },
+            selectedSecret = Model.ClientSecretSecretName,
+            htmlId = Html.IdFor(m => m.ClientSecretSecretName).ToString(),
+            htmlName = Html.NameFor(m => m.ClientSecretSecretName).ToString(),
+            required = false
+        })
+        <span asp-validation-for="ClientSecretSecretName"></span>
+        @if (Model.HasClientSecret && string.IsNullOrWhiteSpace(Model.ClientSecretSecretName))
+        {
+            <p class="alert alert-warning mt-2">@T["A legacy client secret is configured. Please migrate to using a secret for improved security."]</p>
+        }
         <span class="hint">@T["The client secret defined in Google API console for the application."]</span>
     </div>
 </div>
