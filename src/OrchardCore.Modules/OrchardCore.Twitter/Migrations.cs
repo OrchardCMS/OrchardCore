@@ -31,10 +31,8 @@ public sealed class Migrations : DataMigration
     {
         await MigrateTwitterSecretsAsync();
 
-        return 2;
+        return 1;
     }
-
-    public Task<int> UpdateFrom1Async() => CreateAsync();
 
     private async Task MigrateTwitterSecretsAsync()
     {

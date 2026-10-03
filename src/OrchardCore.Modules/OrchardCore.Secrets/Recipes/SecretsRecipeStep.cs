@@ -49,7 +49,7 @@ public sealed class SecretsRecipeStep : NamedRecipeStepHandler
         var encryptionKeyName = context.Step["EncryptionKeyName"]?.GetValue<string>();
         var hasEncryptionKey = !string.IsNullOrEmpty(encryptionKeyName);
 
-        // Handle both object format (encrypted) and array format (legacy/unencrypted)
+        // Handle encrypted object imports and unencrypted array imports.
         if (secretsNode is JsonObject secretsObject)
         {
             await ImportFromObjectAsync(context, secretsObject, encryptionKeyName, hasEncryptionKey);
@@ -149,7 +149,6 @@ public sealed class SecretsRecipeStep : NamedRecipeStepHandler
 
     private async Task ImportFromArrayAsync(RecipeExecutionContext context, JsonArray secrets)
     {
-        // Legacy format: array of { Name, Store, Type, Value? }
         foreach (var token in secrets.OfType<JsonObject>())
         {
             var name = token["Name"]?.GetValue<string>();
@@ -182,21 +181,8 @@ public sealed class SecretsRecipeStep : NamedRecipeStepHandler
         }
     }
 
-    private string GetSecretValueFromConfiguration(string name)
-    {
-        // Look for secret value in configuration using pattern: OrchardCore_Secrets__{SecretName}
-        var configKey = $"OrchardCore_Secrets__{name}";
-        var value = _configuration[configKey];
-
-        // Also try with colons for nested configuration
-        if (string.IsNullOrEmpty(value))
-        {
-            configKey = $"OrchardCore:Secrets:{name}";
-            value = _configuration[configKey];
-        }
-
-        return value;
-    }
+    private string GetSecretValueFromConfiguration(string name) =>
+        _configuration[$"OrchardCore:Secrets:{name}"];
 
     private async Task SaveSecretAsync(string name, ISecret secret, string store, SecretSaveOptions options = null)
     {

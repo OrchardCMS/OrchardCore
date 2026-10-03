@@ -73,7 +73,7 @@ public class SecretEncryptionServiceTests
     }
 
     [Fact]
-    public async Task DecryptAsync_RejectsLegacyUnauthenticatedEnvelope()
+    public async Task DecryptAsync_RejectsUnauthenticatedEnvelope()
     {
         await Assert.ThrowsAsync<CryptographicException>(() => _service.DecryptAsync(new EncryptedSecretData(), "key",
             new SecretInfo { Name = "secret", Type = nameof(TextSecret) }));

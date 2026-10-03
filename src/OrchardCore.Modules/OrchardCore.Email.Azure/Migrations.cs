@@ -32,10 +32,8 @@ public sealed class Migrations : DataMigration
     public async Task<int> CreateAsync()
     {
         await MigrateConnectionStringAsync();
-        return 2;
+        return 1;
     }
-
-    public Task<int> UpdateFrom1Async() => CreateAsync();
 
     private async Task MigrateConnectionStringAsync()
     {

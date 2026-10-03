@@ -2,7 +2,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Azure;
-using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -16,12 +15,16 @@ namespace OrchardCore.Secrets.Azure;
 public class AzureKeyVaultSecretStore : ISecretStore
 {
     private const string TenantTag = "OrchardTenant";
+    private const string PrefixTag = "OrchardPrefix";
     private const string NameTag = "OrchardName";
     private const string TypeTag = "OrchardType";
     private const string DescriptionTag = "OrchardDescription";
+    private const int MaximumVaultNameLength = 127;
+    private const int HashSuffixLength = 24;
 
     private readonly SecretClient _secretClient;
     private readonly string _tenant;
+    private readonly string _prefix;
     private readonly IEnumerable<ISecretTypeProvider> _providers;
     private readonly ILogger _logger;
 
@@ -30,21 +33,28 @@ public class AzureKeyVaultSecretStore : ISecretStore
         ShellSettings shellSettings,
         IEnumerable<ISecretTypeProvider> providers,
         ILogger<AzureKeyVaultSecretStore> logger)
-        : this(CreateClient(options.Value), shellSettings.Name, providers, logger)
+        : this(CreateClient(options.Value), shellSettings.Name, options.Value.NamePrefix, providers, logger)
     {
     }
 
     public AzureKeyVaultSecretStore(
         SecretClient secretClient,
         string tenantName,
+        string namePrefix,
         IEnumerable<ISecretTypeProvider> providers,
         ILogger<AzureKeyVaultSecretStore> logger)
     {
         ArgumentNullException.ThrowIfNull(secretClient);
         ArgumentException.ThrowIfNullOrWhiteSpace(tenantName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(namePrefix);
+        if (namePrefix.Length > 256)
+        {
+            throw new ArgumentException("The Key Vault name prefix must not exceed 256 characters.", nameof(namePrefix));
+        }
 
         _secretClient = secretClient;
-        _tenant = Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(tenantName)));
+        _tenant = tenantName;
+        _prefix = namePrefix;
         _providers = providers;
         _logger = logger;
     }
@@ -83,6 +93,7 @@ public class AzureKeyVaultSecretStore : ISecretStore
         var entry = new KeyVaultSecret(GetVaultName(name), secret is TextSecret text ? text.Text : provider.Serialize(secret));
         entry.Properties.ContentType = secret is TextSecret ? "text/plain" : "application/json";
         entry.Properties.Tags[TenantTag] = _tenant;
+        entry.Properties.Tags[PrefixTag] = _prefix;
         entry.Properties.Tags[NameTag] = name;
         entry.Properties.Tags[TypeTag] = provider.Name;
 
@@ -135,7 +146,8 @@ public class AzureKeyVaultSecretStore : ISecretStore
         {
             await foreach (var properties in _secretClient.GetPropertiesOfSecretsAsync())
             {
-                if (!properties.Tags.TryGetValue(TenantTag, out var tenant) || tenant != _tenant ||
+                if (!properties.Tags.TryGetValue(PrefixTag, out var prefix) || prefix != _prefix ||
+                    !properties.Tags.TryGetValue(TenantTag, out var tenant) || tenant != _tenant ||
                     !properties.Tags.TryGetValue(NameTag, out var name) || properties.Name != GetVaultName(name) ||
                     !properties.Tags.TryGetValue(TypeTag, out var type))
                 {
@@ -170,7 +182,8 @@ public class AzureKeyVaultSecretStore : ISecretStore
         {
             var response = await _secretClient.GetSecretAsync(GetVaultName(name));
             var entry = response.Value;
-            if (!entry.Properties.Tags.TryGetValue(TenantTag, out var tenant) || tenant != _tenant ||
+            if (!entry.Properties.Tags.TryGetValue(PrefixTag, out var prefix) || prefix != _prefix ||
+                !entry.Properties.Tags.TryGetValue(TenantTag, out var tenant) || tenant != _tenant ||
                 !entry.Properties.Tags.TryGetValue(NameTag, out var originalName) || originalName != name ||
                 !entry.Properties.Tags.ContainsKey(TypeTag))
             {
@@ -190,8 +203,31 @@ public class AzureKeyVaultSecretStore : ISecretStore
         }
     }
 
-    private string GetVaultName(string name) =>
-        "oc-" + Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new[] { _tenant, name }))));
+    private string GetVaultName(string name)
+    {
+        var hash = Convert.ToHexStringLower(SHA256.HashData(
+            Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new[] { _prefix, _tenant, name }))))[..HashSuffixLength];
+        var readableLength = MaximumVaultNameLength - HashSuffixLength - 1;
+        var readable = new StringBuilder(readableLength);
+        foreach (var character in $"{_prefix}-{_tenant}-{name}")
+        {
+            if (char.IsAsciiLetterOrDigit(character))
+            {
+                readable.Append(char.ToLowerInvariant(character));
+            }
+            else if (readable.Length > 0 && readable[^1] != '-')
+            {
+                readable.Append('-');
+            }
+
+            if (readable.Length == readableLength)
+            {
+                break;
+            }
+        }
+
+        return $"{readable.ToString().TrimEnd('-')}-{hash}";
+    }
 
     private ISecretTypeProvider GetProvider(string type) =>
         _providers.FirstOrDefault(p => p.Name == type || p.SecretType.FullName == type)
@@ -208,8 +244,6 @@ public class AzureKeyVaultSecretStore : ISecretStore
         }
 
         var vaultUri = new Uri(options.VaultUri);
-        return !string.IsNullOrEmpty(options.ClientId) && !string.IsNullOrEmpty(options.ClientSecret)
-            ? new SecretClient(vaultUri, new ClientSecretCredential(options.TenantId, options.ClientId, options.ClientSecret))
-            : new SecretClient(vaultUri, new DefaultAzureCredential());
+        return new SecretClient(vaultUri, AzureKeyVaultCredentialFactory.Create(options));
     }
 }

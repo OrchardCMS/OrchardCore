@@ -15,11 +15,14 @@ public class AzureKeyVaultSecretStoreOptionsSetup : IConfigureOptions<AzureKeyVa
 
     public void Configure(AzureKeyVaultSecretStoreOptions options)
     {
-        var section = _shellConfiguration.GetSection("OrchardCore_Secrets_Azure");
+        var section = _shellConfiguration.GetSection("Secrets:Azure");
 
         options.VaultUri = section["VaultUri"];
+        options.NamePrefix = section["NamePrefix"] ?? options.NamePrefix;
+        options.CredentialType = section.GetValue<AzureKeyVaultCredentialType?>("CredentialType");
         options.TenantId = section["TenantId"];
         options.ClientId = section["ClientId"];
         options.ClientSecret = section["ClientSecret"];
+        options.TokenFilePath = section["TokenFilePath"];
     }
 }

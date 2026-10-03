@@ -47,7 +47,7 @@ public class CredentialMigrationTests
 
         using var retryServices = CreateServices(siteService.Object, manager.Object, provider);
         migration = ActivatorUtilities.CreateInstance(retryServices, scenario.Migration);
-        Assert.Equal(2, await InvokeMigrationAsync(migration, "UpdateFrom1Async"));
+        Assert.Equal(1, await InvokeMigrationAsync(migration, "CreateAsync"));
         Assert.Null(site.Properties[scenario.Settings][scenario.LegacyProperty]);
         Assert.Equal(scenario.SecretName, site.Properties[scenario.ReferenceSettings][scenario.ReferenceProperty].GetValue<string>());
         Assert.Contains(manager.Invocations, call => call.Method.Name == nameof(ISecretManager.SaveSecretAsync) &&

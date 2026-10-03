@@ -32,10 +32,8 @@ public sealed class ClientSecretsMigration : DataMigration
     {
         await MigrateClientSecretAsync();
 
-        return 2;
+        return 1;
     }
-
-    public Task<int> UpdateFrom1Async() => CreateAsync();
 
     private async Task MigrateClientSecretAsync()
     {

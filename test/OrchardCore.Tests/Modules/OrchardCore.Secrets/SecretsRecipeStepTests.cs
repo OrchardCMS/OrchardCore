@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -36,6 +37,50 @@ public class SecretsRecipeStepTests
             _configurationMock.Object,
             _loggerMock.Object,
             _localizerMock.Object);
+    }
+
+    [Theory]
+    [InlineData("SmtpPassword")]
+    [InlineData("Smtp.Password")]
+    public async Task ExecuteAsync_ImportsSecretFromHierarchicalConfiguration(string name)
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string>
+            {
+                [$"OrchardCore:Secrets:{name}"] = "configured-value",
+            })
+            .Build();
+        var step = new SecretsRecipeStep(
+            _secretManagerMock.Object,
+            _encryptionServiceMock.Object,
+            configuration,
+            _loggerMock.Object,
+            _localizerMock.Object);
+        var context = new RecipeExecutionContext
+        {
+            Name = "Secrets",
+            Step = new JsonObject
+            {
+                ["name"] = "Secrets",
+                ["Secrets"] = new JsonArray
+                {
+                    new JsonObject { ["Name"] = name },
+                },
+            },
+        };
+        _secretManagerMock
+            .Setup(manager => manager.SaveSecretAsync(
+                name,
+                It.IsAny<ISecret>(),
+                It.IsAny<SecretSaveOptions>()))
+            .Returns(Task.CompletedTask);
+
+        await step.ExecuteAsync(context);
+
+        _secretManagerMock.Verify(manager => manager.SaveSecretAsync(
+            name,
+            It.Is<ISecret>(secret => secret is TextSecret && ((TextSecret)secret).Text == "configured-value"),
+            It.IsAny<SecretSaveOptions>()), Times.Once);
     }
 
     [Fact]
@@ -110,7 +155,7 @@ public class SecretsRecipeStepTests
 
         // Setup configuration to return value from environment variable pattern
         _configurationMock
-            .Setup(c => c["OrchardCore_Secrets__EnvSecret"])
+            .Setup(c => c["OrchardCore:Secrets:EnvSecret"])
             .Returns("env-secret-value");
 
         ISecret capturedSecret = null;
@@ -158,10 +203,6 @@ public class SecretsRecipeStepTests
             Step = recipeStep,
         };
 
-        // First pattern returns null, second pattern returns value
-        _configurationMock
-            .Setup(c => c["OrchardCore_Secrets__ColonSecret"])
-            .Returns((string)null);
         _configurationMock
             .Setup(c => c["OrchardCore:Secrets:ColonSecret"])
             .Returns("colon-secret-value");
@@ -374,4 +415,3 @@ public class SecretsRecipeStepTests
             Times.Never);
     }
 }
-

@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.RegularExpressions;
 using Microsoft.Playwright;
 using OrchardCore.Tests.Functional.Helpers;
@@ -25,6 +26,38 @@ public sealed class SecretsTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await Assertions.Expect(page.Locator("#adminMenu")).ToContainTextAsync("Secrets");
         await Assertions.Expect(page.Locator(".alert-info")).ToContainTextAsync("Nothing here");
         await Assertions.Expect(page.Locator("button.create")).ToBeVisibleAsync();
+    }
+
+    [Fact]
+    public async Task ExpiringSecrets_ShowAdminWideWarningAndReviewLink()
+    {
+        var page = await CreateAdminPageAsync();
+        await Assertions.Expect(page.Locator(".secrets-expiration-warning")).ToHaveCountAsync(0);
+        await CreateTextSecretAsync(page, "ExpiredKey", "expired-value",
+            expiration: DateTime.UtcNow.AddDays(-1).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+        await CreateTextSecretAsync(page, "ExpiringKey", "expiring-value",
+            expiration: DateTime.UtcNow.AddDays(10).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+
+        await page.GotoAndAssertOkAsync($"{Tenant.Prefix}/Admin/Features");
+
+        var warning = page.Locator(".secrets-expiration-warning");
+        await Assertions.Expect(warning).ToHaveCountAsync(1);
+        await Assertions.Expect(warning).ToContainTextAsync("One secret has expired.");
+        await Assertions.Expect(warning).ToContainTextAsync("One secret expires within 30 days.");
+        await Assertions.Expect(warning).Not.ToContainTextAsync("expired-value");
+        await Assertions.Expect(warning).Not.ToContainTextAsync("expiring-value");
+        await warning.GetByRole(AriaRole.Link, new LocatorGetByRoleOptions { Name = "Review secrets" }).ClickAsync();
+        await Assertions.Expect(page).ToHaveURLAsync(s_indexUrl);
+
+        await OpenEditEditorAsync(page, "ExpiredKey");
+        await page.Locator("#ExpiresUtc").FillAsync(string.Empty);
+        await SaveAsync(page, "updated");
+        await OpenEditEditorAsync(page, "ExpiringKey");
+        await page.Locator("#ExpiresUtc").FillAsync(string.Empty);
+        await SaveAsync(page, "updated");
+        await page.GotoAndAssertOkAsync($"{Tenant.Prefix}/Admin/Features");
+
+        await Assertions.Expect(page.Locator(".secrets-expiration-warning")).ToHaveCountAsync(0);
     }
 
     [Fact]

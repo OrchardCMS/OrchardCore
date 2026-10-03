@@ -6,6 +6,8 @@ The Secrets module provides a secure, centralized way to store and manage sensit
 
 ### The Problem
 
+Orchard Core modules need a comprehensive, consistent way to store, retrieve, and manage secrets. Without a shared abstraction, each module must invent its own solution for credential storage, encryption, configuration, and deployment, leading to duplicated code and inconsistent behavior.
+
 Managing sensitive configuration in web applications presents several challenges:
 
 1. **Security Risks**: Storing passwords and API keys in `appsettings.json` or environment variables can lead to accidental exposure through source control, logs, or configuration dumps.
@@ -19,6 +21,8 @@ Managing sensitive configuration in web applications presents several challenges
 5. **Audit and Rotation**: Without a centralized secret store, it's difficult to track who accessed secrets or rotate them across all services.
 
 ### The Solution
+
+The `OrchardCore.Secrets.Abstractions` project defines the shared contracts for secrets management, including `ISecretManager`, `ISecretStore`, and `ISecretTypeProvider`, along with secret types and metadata. Modules can depend on these abstractions to consume secrets without coupling their code to a particular storage implementation.
 
 The Secrets module provides:
 
@@ -97,9 +101,10 @@ When deploying new tenants with recipes, define which secrets are needed without
 
 **Environment variables (set during deployment):**
 ```bash
-export OrchardCore_Secrets__Smtp__Password="actual-password"
-export OrchardCore_Secrets__Payment__ApiKey="actual-api-key"
-export OrchardCore_Secrets__Analytics__TrackingId="UA-12345"
+env 'OrchardCore__Secrets__Smtp.Password=actual-password' \
+    'OrchardCore__Secrets__Payment.ApiKey=actual-api-key' \
+    'OrchardCore__Secrets__Analytics.TrackingId=UA-12345' \
+    dotnet OrchardCore.Cms.Web.dll
 ```
 
 ### 6. Azure Key Vault for Production
@@ -109,8 +114,12 @@ For production environments, use Azure Key Vault for hardware-backed security an
 ```json
 {
   "OrchardCore": {
-    "OrchardCore_Secrets_Azure": {
-      "VaultUri": "https://mycompany-prod.vault.azure.net/"
+    "Secrets": {
+      "Azure": {
+        "VaultUri": "https://mycompany-prod.vault.azure.net/",
+        "NamePrefix": "mycompany",
+        "CredentialType": "ManagedIdentity"
+      }
     }
   }
 }
@@ -188,7 +197,8 @@ Secrets can have an optional expiration date. This is an **informational** featu
 
 - **Purpose**: Track when secrets should be rotated or renewed
 - **Behavior**: Expired secrets **continue to work** - expiration does not automatically disable them
-- **Visual Indicators**: 
+- **Admin-Wide Warning**: Users with the Manage Secrets permission see a warning on admin pages when secrets have expired or expire within 30 days, with counts and a link to review the secrets. The warning uses metadata only and does not expose secret values.
+- **List-Page Visual Indicators**:
   - Expired secrets show a red "Expired" badge
   - Secrets expiring within 30 days show a yellow "Expiring" badge
   - The secrets list highlights expired/expiring secrets with colored backgrounds
@@ -215,21 +225,42 @@ To use Azure Key Vault as a secret store, enable the `OrchardCore.Secrets.Azure`
 ```json
 {
   "OrchardCore": {
-    "OrchardCore_Secrets_Azure": {
-      "VaultUri": "https://your-vault.vault.azure.net/",
-      "TenantId": "your-tenant-id",
-      "ClientId": "your-client-id",
-      "ClientSecret": "your-client-secret"
+    "Secrets": {
+      "Azure": {
+        "VaultUri": "https://your-vault.vault.azure.net/",
+        "NamePrefix": "myapp",
+        "CredentialType": "ClientSecret",
+        "TenantId": "your-tenant-id",
+        "ClientId": "your-client-id"
+      }
     }
   }
 }
 ```
 
-If running in Azure with Managed Identity, you can omit the `TenantId`, `ClientId`, and `ClientSecret` - the module will use `DefaultAzureCredential` which supports managed identities automatically.
+`CredentialType` must be configured explicitly. The module never selects `DefaultAzureCredential` merely because other credentials are absent. Missing or unsupported selections and missing provider-required settings fail explicitly.
 
-Key Vault names are SHA-256 hashes of the exact Orchard tenant name and logical secret name. The store records tenant ownership, the original name, the registered secret type, and description in tags, and only lists entries belonging to the current tenant. `TenantId` in the configuration is the Microsoft Entra tenant ID, not the Orchard tenant name. Renaming an Orchard tenant changes its namespace; plan an explicit secret migration before doing so.
+| CredentialType | Required settings | Usage |
+| --- | --- | --- |
+| `ManagedIdentity` | None beyond `VaultUri` and `CredentialType`; optional `ClientId` | System-assigned managed identity when `ClientId` is omitted, or a user-assigned identity when it is supplied. |
+| `WorkloadIdentity` | `TenantId`, `ClientId`, `TokenFilePath` | Federated workload identity, such as an Azure Kubernetes Service workload. |
+| `ClientSecret` | `TenantId`, `ClientId`, `ClientSecret` | Application credentials supplied through secure configuration. |
+| `AzureCli` | An authenticated Azure CLI session | Local development using only Azure CLI credentials. |
+| `AzurePowerShell` | An authenticated Azure PowerShell session | Local development using only Azure PowerShell credentials. |
+| `VisualStudio` | An authenticated Visual Studio account | Local development using only Visual Studio credentials. |
+| `DefaultAzureCredential` | Configuration appropriate for the SDK credential chain | Explicit opt-in to SDK credential discovery; not recommended for production. |
 
-These namespaces prevent accidental cross-tenant access through the store but are not an Azure authorization boundary: code with the vault credentials can bypass them. Use separate vaults or appropriately restricted identities for mutually untrusted tenants. Entries created by older versions of this module or outside Orchard without ownership tags are not automatically adopted. Recreate them through the tenant's secret manager; do not rely on the old character-replacement naming scheme.
+For production web applications, use a deterministic provider as recommended in [Azure authentication best practices](https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication/best-practices). Specific providers do not fall back to another identity after authentication fails. The tenant-shell singleton store reuses its credential and `SecretClient` across operations.
+
+For client secret authentication, provide `ClientSecret` through a secure configuration source, for example the `OrchardCore__Secrets__Azure__ClientSecret` environment variable, rather than storing it in `appsettings.json`.
+
+`NamePrefix` defines an application namespace even for single-tenant sites. It defaults to `oc`; use a distinct prefix for each application sharing a vault. Prefixes must be nonblank and no longer than 256 characters.
+
+Key Vault names combine a normalized readable prefix, Orchard tenant name, and logical secret name with a 24-character hexadecimal SHA-256 suffix. For example, `myapp-default-payment-apikey-<hash>` represents `Payment.ApiKey` in the `Default` tenant with prefix `myapp`. The readable portion uses lowercase ASCII letters, digits, and hyphens, and is truncated as needed to keep the entire name within Key Vault's 127-character limit. The 96-bit hash covers the exact, unambiguously encoded `(prefix, tenant name, logical secret name)` tuple, so names differing only by case, punctuation, or truncated characters remain distinct.
+
+The store records the exact prefix, tenant name, original secret name, registered secret type, and description in tags. Reads, updates, and deletes validate ownership metadata; listing includes only entries matching the configured prefix and tenant. `TenantId` is the Microsoft Entra tenant ID, not the Orchard tenant name. Changing `NamePrefix` or renaming an Orchard tenant changes its namespace; plan an explicit secret migration before doing so.
+
+These namespaces prevent accidental cross-tenant access through the store but are not an Azure authorization boundary: code with the vault credentials can bypass them. Use separate vaults or appropriately restricted identities for mutually untrusted tenants. Entries created outside Orchard without ownership tags are not automatically adopted. Create entries through the tenant's secret manager.
 
 Deletion is a normal Key Vault soft delete. It never purges secrets, so purge permission is not required and purge protection remains effective. Azure's retention rules may prevent reusing a deleted name until it is recovered or its retention period ends.
 
@@ -303,16 +334,18 @@ Secrets can be imported using a recipe step. Note that for security reasons, you
 
 ### Providing Secret Values
 
-Secret values should be provided via environment variables using one of these patterns:
+Secret values should be provided through the `OrchardCore:Secrets:{SecretName}` configuration key. For environment variables, use double underscores as hierarchy separators:
 
-- `OrchardCore_Secrets__SecretName` (double underscore)
-- `OrchardCore:Secrets:SecretName` (colon-separated)
+- `OrchardCore__Secrets__SecretName` (environment variable)
+- `OrchardCore:Secrets:SecretName` (configuration key)
 
 For example:
 ```bash
-export OrchardCore_Secrets__SmtpPassword=mypassword
-export OrchardCore_Secrets__ApiKey=myapikey
+export OrchardCore__Secrets__SmtpPassword=mypassword
+export OrchardCore__Secrets__ApiKey=myapikey
 ```
+
+Secret names are matched exactly. A dot in a name such as `Smtp.Password` is not a configuration hierarchy separator; retain it in the environment variable name as shown in the deployment example above. Recipe values are read from application configuration, separately from the tenant-scoped Azure provider options.
 
 ## Deployment Step
 
@@ -325,12 +358,16 @@ By default, secrets are exported without their values for security. The import p
 ```json
 {
   "name": "Secrets",
-  "Secrets": [
-    {
-      "Name": "SmtpPassword",
-      "Store": "Database"
+  "Secrets": {
+    "SmtpPassword": {
+      "SecretInfo": {
+        "Store": "Database",
+        "Type": "TextSecret",
+        "Description": null,
+        "ExpiresUtc": null
+      }
     }
-  ]
+  }
 }
 ```
 
@@ -339,6 +376,8 @@ By default, secrets are exported without their values for security. The import p
 For scenarios where you need to transfer actual secret values (e.g., tenant migration, environment cloning), you can use encrypted export with RSA or X509 keys.
 
 #### How It Works
+
+Export does not contact the destination server or discover its public key. Before exporting, provision the destination's public key on the source and the corresponding private key on the destination. `EncryptionKeyName` is a logical secret name resolved independently in each tenant, not a destination URL. Only the public key needs to be shared with the source.
 
 1. **Export**: Secrets are encrypted using RSA+AES hybrid encryption
    - A random AES-256 key is generated for each secret
@@ -354,7 +393,7 @@ For scenarios where you need to transfer actual secret values (e.g., tenant migr
 
 **Option 1: Using RsaKeySecret (Recommended)**
 
-1. Create an `RsaKeySecret` on **both** source and target systems with the same key material:
+Generate the key pair once on the **destination**, using its tenant's `ISecretManager`:
 
 ```csharp
 using var rsa = RSA.Create(2048);
@@ -362,29 +401,33 @@ var deploymentKey = new RsaKeySecret
 {
     PublicKey = Convert.ToBase64String(rsa.ExportRSAPublicKey()),
     PrivateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey()),
-    IncludesPrivateKey = true
+    IncludesPrivateKey = true,
 };
 await _secretManager.SaveSecretAsync("Deployment.EncryptionKey", deploymentKey);
 ```
 
-Or create via Admin UI:
+Copy the Base64 `PublicKey` to the source through a trusted channel. On the **source**, provision a public-key-only secret with the same logical name:
 
-1. Go to **Settings → Security → Secrets**
-2. Click **Add Secret**
-3. Select type **RsaKeySecret**
-4. Check **Generate New Key**
-5. Name it `Deployment.EncryptionKey`
-6. Save
+```csharp
+var deploymentKey = new RsaKeySecret
+{
+    PublicKey = destinationPublicKey,
+    IncludesPrivateKey = false,
+};
+await _secretManager.SaveSecretAsync("Deployment.EncryptionKey", deploymentKey);
+```
 
-Then export this key and import it on the target system (via recipe or manual creation).
+Here, `destinationPublicKey` is the exact Base64 public key from the destination, not a newly generated key. Do not generate independent key pairs on both systems: the public and private keys must match. Never copy the destination's private key to the source or include it in the deployment recipe.
+
+The admin RSA creation page can generate a key pair on the destination, but it does not provide a complete public-key transfer/import workflow. Use the service-based provisioning above when configuring a public-key-only source. The selected encryption-key secret is excluded from the deployment export; it must already exist on the destination before encrypted secrets can be imported, including when using a setup recipe.
 
 **Option 2: Using X509Secret**
 
-Use an X.509 certificate installed on both systems:
+Use an RSA-capable X.509 certificate:
 
-1. Install the same certificate on source and target machines
-2. Create an `X509Secret` pointing to the certificate on both systems
-3. Ensure the certificate has a private key for decryption
+1. Install the public certificate on the source and the matching certificate with its private key on the destination.
+2. Create an `X509Secret` under the same logical name in each tenant, pointing to that machine's certificate store location, store name, and thumbprint.
+3. Ensure the destination application's identity can access the certificate's private key. The source needs only the public key.
 
 #### Creating an Encrypted Export
 
@@ -393,6 +436,8 @@ Use an X.509 certificate installed on both systems:
 3. Add a **Secrets** step
 4. In the **Encryption Key** dropdown, select your encryption key (e.g., `Deployment.EncryptionKey`)
 5. Execute the deployment plan
+
+Export runs on the source and reads its local key secret. No destination key-discovery endpoint is invoked.
 
 The exported JSON will contain encrypted secret values:
 
@@ -418,7 +463,7 @@ The exported JSON will contain encrypted secret values:
 }
 ```
 
-Version 1 envelopes use authenticated encryption. Legacy AES-CBC exports without a version and tag are rejected and must be re-exported. Do not edit names, store names, types, descriptions, or expiration dates in an encrypted recipe: changes invalidate authentication. A failed encrypted export fails the deployment instead of emitting a metadata-only fallback. Duplicate logical names across stores must be resolved before export.
+Version 1 envelopes use authenticated encryption. Envelopes with an unsupported version or missing authentication tag are rejected. Do not edit names, store names, types, descriptions, or expiration dates in an encrypted recipe: changes invalidate authentication. A failed encrypted export fails the deployment instead of emitting a metadata-only fallback. Duplicate logical names across stores must be resolved before export.
 
 Export and import use registered `ISecretTypeProvider` instances, including custom types. Providers can override `Serialize` and `Deserialize` for their own wire format; the default implementation uses JSON for the provider's concrete CLR type. Register the same provider on the source and destination.
 
@@ -431,6 +476,29 @@ Export and import use registered `ISecretTypeProvider` instances, including cust
    - Decrypt each secret
    - Save to the secrets store
 
+The destination needs the matching private key, the registered secret type providers, and the store named in each entry's metadata. A missing key or a decryption/authentication failure is reported as a recipe error; encrypted imports do not fall back to plaintext or environment variables. Changing authenticated metadata to target a different store invalidates the envelope, so configure the destination store before import.
+
+#### Generating Encrypted Secrets Locally
+
+This module does not include a standalone CLI for encrypting recipe values. Run an Orchard instance locally and execute a Secrets deployment plan, or use `ISecretEncryptionService` from custom code in a configured tenant scope:
+
+```csharp
+var info = new SecretInfo
+{
+    Name = "SmtpPassword",
+    Store = "Database",
+    Type = nameof(TextSecret),
+};
+var encrypted = await _secretEncryptionService.EncryptAsync(
+    new TextSecret { Text = password },
+    "Deployment.EncryptionKey",
+    info);
+```
+
+The local instance needs the destination's public key registered as `Deployment.EncryptionKey`. `_secretEncryptionService` is the tenant's injected `ISecretEncryptionService`; `password` comes from a secure input, not a source-code literal. Copy the returned `Version`, `EncryptedKey`, `EncryptedData`, `IV`, and `Tag` into the recipe entry shown above, preserving `info.Name` as its key and the same store, type, description, and expiration in `SecretInfo`.
+
+An external encryption tool must reproduce the provider's serialization, versioned envelope, RSA-OAEP-SHA256 key wrapping, and AES-GCM authenticated metadata exactly. A generic RSA or AES command does not by itself produce an importable recipe.
+
 **Important Requirements:**
 - The encryption key must exist on the target with the same name
 - For `RsaKeySecret`: `IncludesPrivateKey` must be `true`
@@ -440,46 +508,12 @@ Export and import use registered `ISecretTypeProvider` instances, including cust
 
 **Scenario:** Clone secrets from `TenantA` to `TenantB`
 
-**Step 1: Create Deployment Key on Source**
-```bash
-# On TenantA, create an RSA key for deployment
-# Use Admin UI or programmatically
-```
+1. In TenantB's scope, generate and save the RSA key pair as `Deployment.EncryptionKey` using the destination provisioning example above.
+2. Copy only its public key to TenantA and save a public-key-only `Deployment.EncryptionKey` in TenantA's scope. Keep the private key in TenantB.
+3. In TenantA, execute a deployment plan with a Secrets step selecting `Deployment.EncryptionKey`. Download the generated recipe, which excludes the selected key secret.
+4. In TenantB, ensure the named destination stores and secret type providers are available, then import the recipe. TenantB resolves its local private key, verifies the authenticated entries, and saves the decrypted secrets.
 
-**Step 2: Export Key Material**
-```json
-{
-  "steps": [
-    {
-      "name": "Secrets",
-      "Secrets": [
-        {
-          "Name": "Deployment.EncryptionKey",
-          "Store": "Database",
-          "Value": "... (if exporting unencrypted for initial setup)"
-        }
-      ]
-    }
-  ]
-}
-```
-
-**Step 3: Import Key on Target**
-
-- Create the same `Deployment.EncryptionKey` on TenantB
-- Must have identical key material (public + private)
-
-**Step 4: Export Secrets from Source**
-
-1. Create deployment plan with Secrets step
-2. Select `Deployment.EncryptionKey` for encryption
-3. Execute and download the recipe JSON
-
-**Step 5: Import on Target**
-
-1. Upload the recipe JSON to TenantB
-2. Run the recipe
-3. Secrets are decrypted and stored
+No request to TenantB is made during export. Do not attempt to provision an RSA key using an array recipe's text `Value` field: that field creates a `TextSecret`, not an `RsaKeySecret`.
 
 ### Security Best Practices
 
@@ -762,7 +796,7 @@ Use Azure Blob Storage and Azure Key Vault for key persistence:
 // In Program.cs or Startup.cs
 services.AddDataProtection()
     .PersistKeysToAzureBlobStorage(new Uri("https://yourstorage.blob.core.windows.net/dataprotection/keys.xml"))
-    .ProtectKeysWithAzureKeyVault(new Uri("https://yourvault.vault.azure.net/keys/DataProtectionKey"), new DefaultAzureCredential());
+    .ProtectKeysWithAzureKeyVault(new Uri("https://yourvault.vault.azure.net/keys/DataProtectionKey"), new ManagedIdentityCredential(ManagedIdentityId.SystemAssigned));
 ```
 
 Or use the `OrchardCore.DataProtection.Azure` module:
@@ -807,6 +841,8 @@ All servers must share the same Data Protection keys. Options:
 4. **Shared file system** (NFS, Azure Files)
 
 ### Encryption at Rest
+
+Encryption at rest means **data is encrypted while it is stored somewhere**, rather than while it is moving between systems. Protecting data as it moves between systems is called encryption in transit.
 
 All secrets stored in the database are encrypted using ASP.NET Core Data Protection. This means:
 
@@ -857,7 +893,7 @@ This module addresses several long-standing issues in Orchard Core:
 
 ## Migration Guide
 
-Credential migrations only replace legacy settings after successful Data Protection decryption and secret persistence. Missing keys, unavailable stores, and other failures are logged and propagated so migrations can be retried after fixing the cause; encrypted payloads are never treated as plaintext. Migration version 2 retries previously skipped version 1 credential migrations when legacy values remain. Preserve the original Data Protection key ring during upgrades. If an older migration already cleared a legacy value after a decryption failure, recover it from a trusted backup before retrying.
+Credential migrations only replace existing settings after successful Data Protection decryption and secret persistence. Missing keys, unavailable stores, and other failures are logged and propagated so migrations can be retried after fixing the cause; encrypted payloads are never treated as plaintext. Preserve the original Data Protection key ring during upgrades.
 
 ### From appsettings.json Passwords
 

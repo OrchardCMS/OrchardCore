@@ -33,8 +33,8 @@ public class AzureKeyVaultSecretStoreTests
                 [Page<SecretProperties>.FromValues(_entries.Values.Select(e => e.Properties).ToList(), null, Mock.Of<Response>())]));
     }
 
-    private AzureKeyVaultSecretStore CreateStore(string tenant) =>
-        new(_client.Object, tenant,
+    private AzureKeyVaultSecretStore CreateStore(string tenant, string prefix = "oc") =>
+        new(_client.Object, tenant, prefix,
             [new TextSecretTypeProvider(Mock.Of<IStringLocalizer<TextSecretTypeProvider>>()),
                 new RsaKeySecretTypeProvider(Mock.Of<IStringLocalizer<RsaKeySecretTypeProvider>>()),
                 new X509SecretTypeProvider(Mock.Of<IStringLocalizer<X509SecretTypeProvider>>())],
@@ -61,10 +61,110 @@ public class AzureKeyVaultSecretStoreTests
     }
 
     [Fact]
+    public async Task SharedVault_IsolatesApplicationPrefixesInSameTenant()
+    {
+        var first = CreateStore("Default", "My.App");
+        var second = CreateStore("Default", "My_App");
+        await first.SaveSecretAsync("Payment.ApiKey", new TextSecret { Text = "first" });
+
+        Assert.Null(await second.GetSecretAsync<TextSecret>("Payment.ApiKey"));
+        Assert.Empty(await second.GetSecretInfosAsync());
+        await second.RemoveSecretAsync("Payment.ApiKey");
+        _client.Verify(c => c.StartDeleteSecretAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+
+        await second.SaveSecretAsync("Payment.ApiKey", new TextSecret { Text = "second" });
+
+        Assert.Equal("first", (await first.GetSecretAsync<TextSecret>("Payment.ApiKey")).Text);
+        Assert.Equal("second", (await second.GetSecretAsync<TextSecret>("Payment.ApiKey")).Text);
+        Assert.Single(await first.GetSecretInfosAsync());
+        Assert.Single(await second.GetSecretInfosAsync());
+        Assert.Equal(2, _entries.Count);
+        Assert.All(_entries.Keys, name => Assert.Matches("^my-app-default-payment-apikey-[0-9a-f]{24}$", name));
+        Assert.Equal(["My.App", "My_App"], _entries.Values.Select(entry => entry.Properties.Tags["OrchardPrefix"]).Order(StringComparer.Ordinal));
+    }
+
+    [Fact]
+    public async Task Names_HashExactTupleRatherThanNormalizedComposite()
+    {
+        await CreateStore("b-c", "a").SaveSecretAsync("d", new TextSecret { Text = "first" });
+        await CreateStore("c", "a-b").SaveSecretAsync("d", new TextSecret { Text = "second" });
+        await CreateStore("B-C", "a").SaveSecretAsync("d", new TextSecret { Text = "third" });
+        await CreateStore("b-c", "A").SaveSecretAsync("d", new TextSecret { Text = "fourth" });
+
+        Assert.Equal(4, _entries.Count);
+        Assert.All(_entries.Keys, name => Assert.Matches("^a-b-c-d-[0-9a-f]{24}$", name));
+    }
+
+    [Fact]
+    public async Task LongNames_TruncateReadablePortionButRetainFullHashSuffix()
+    {
+        var store = CreateStore("Default", "myapp");
+        await store.SaveSecretAsync(new string('x', 255) + "a", new TextSecret { Text = "first" });
+        await store.SaveSecretAsync(new string('x', 255) + "b", new TextSecret { Text = "second" });
+
+        Assert.Equal(2, _entries.Count);
+        Assert.All(_entries.Keys, name =>
+        {
+            Assert.Equal(127, name.Length);
+            Assert.Matches("^myapp-default-x+-[0-9a-f]{24}$", name);
+        });
+        Assert.Single(_entries.Keys.Select(name => name[..102]).Distinct());
+    }
+
+    [Theory]
+    [InlineData("OrchardPrefix")]
+    [InlineData("OrchardTenant")]
+    [InlineData("OrchardName")]
+    public async Task ConflictingOwnership_CannotBeReadOverwrittenOrDeleted(string tag)
+    {
+        var store = CreateStore("Default", "myapp");
+        await store.SaveSecretAsync("ApiKey", new TextSecret { Text = "original" });
+        var entry = Assert.Single(_entries.Values);
+        entry.Properties.Tags[tag] = "another-owner";
+
+        Assert.Empty(await store.GetSecretInfosAsync());
+        await Assert.ThrowsAsync<InvalidOperationException>(() => store.GetSecretAsync<TextSecret>("ApiKey"));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => store.SaveSecretAsync("ApiKey", new TextSecret { Text = "replacement" }));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => store.RemoveSecretAsync("ApiKey"));
+
+        Assert.Equal("original", entry.Value);
+        _client.Verify(client => client.SetSecretAsync(It.IsAny<KeyVaultSecret>(), It.IsAny<CancellationToken>()), Times.Once);
+        _client.Verify(client => client.StartDeleteSecretAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData(" ")]
+    public void NamePrefix_MustBeNonblank(string prefix)
+    {
+        Assert.ThrowsAny<ArgumentException>(() => CreateStore("Default", prefix));
+    }
+
+    [Fact]
+    public async Task MaximumLengthPrefix_IsPreservedInTagsAndProducesValidName()
+    {
+        var prefix = new string('p', 256);
+
+        await CreateStore("Default", prefix).SaveSecretAsync("ApiKey", new TextSecret { Text = "value" });
+
+        var entry = Assert.Single(_entries.Values);
+        Assert.Equal(prefix, entry.Properties.Tags["OrchardPrefix"]);
+        Assert.Equal(127, entry.Name.Length);
+        Assert.Matches("^p{102}-[0-9a-f]{24}$", entry.Name);
+    }
+
+    [Fact]
+    public void NamePrefix_CannotExceedTagValueLimit()
+    {
+        Assert.Throws<ArgumentException>(() => CreateStore("Default", new string('x', 257)));
+    }
+
+    [Fact]
     public async Task Names_DoNotCollideAfterEncoding()
     {
         var store = CreateStore("tenant");
-        string[] names = ["Payment.ApiKey", "Payment_ApiKey", "Payment:ApiKey", "Payment-ApiKey", "payment-apikey", new string('x', 256)];
+        string[] names = ["Payment.ApiKey", "Payment_ApiKey", "Payment:ApiKey", "Payment-ApiKey", "payment-apikey", "Key with spaces", "Key/\u00e9", new string('x', 256)];
         foreach (var name in names)
         {
             await store.SaveSecretAsync(name, new TextSecret { Text = name });
@@ -114,12 +214,12 @@ public class AzureKeyVaultSecretStoreTests
     public async Task UntaggedOrForeignEntries_AreNotAccessible()
     {
         var store = CreateStore("tenant");
-        _entries["legacy"] = new KeyVaultSecret("legacy", "legacy value");
+        _entries["external"] = new KeyVaultSecret("external", "external value");
         Assert.Empty(await store.GetSecretInfosAsync());
-        Assert.Null(await store.GetSecretAsync<TextSecret>("legacy"));
+        Assert.Null(await store.GetSecretAsync<TextSecret>("external"));
 
         await store.SaveSecretAsync("owned", new TextSecret { Text = "value" });
-        var entry = _entries.Values.Single(e => e.Name != "legacy");
+        var entry = _entries.Values.Single(e => e.Name != "external");
         entry.Properties.Tags["OrchardTenant"] = "foreign";
         Assert.Empty(await store.GetSecretInfosAsync());
         await Assert.ThrowsAsync<InvalidOperationException>(() => store.GetSecretAsync<ISecret>("owned"));

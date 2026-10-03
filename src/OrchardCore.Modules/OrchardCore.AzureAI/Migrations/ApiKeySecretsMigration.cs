@@ -32,10 +32,8 @@ public sealed class ApiKeySecretsMigration : DataMigration
     {
         await MigrateApiKeySecretAsync();
 
-        return 2;
+        return 1;
     }
-
-    public Task<int> UpdateFrom1Async() => CreateAsync();
 
     private async Task MigrateApiKeySecretAsync()
     {

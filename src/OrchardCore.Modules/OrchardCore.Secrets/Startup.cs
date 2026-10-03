@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
@@ -7,6 +8,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Secrets.Deployment;
 using OrchardCore.Secrets.Drivers;
+using OrchardCore.Secrets.Filters;
 using OrchardCore.Secrets.Providers;
 using OrchardCore.Secrets.Recipes;
 using OrchardCore.Secrets.Services;
@@ -23,6 +25,7 @@ public sealed class Startup : StartupBase
 
         services.AddPermissionProvider<SecretsPermissionProvider>();
         services.AddNavigationProvider<AdminMenu>();
+        services.Configure<MvcOptions>(options => options.Filters.Add<SecretExpirationWarningFilter>());
 
         // Register secret types (extensible by other modules)
         services.AddSecretType<TextSecretTypeProvider>();

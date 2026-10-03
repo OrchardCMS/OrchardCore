@@ -73,7 +73,7 @@ public class SecretEncryptionService : ISecretEncryptionService
         ArgumentNullException.ThrowIfNull(info);
         if (encryptedData.Version != 1)
         {
-            throw new CryptographicException("Unsupported secret encryption version. Unauthenticated legacy exports must be re-exported.");
+            throw new CryptographicException("Unsupported secret encryption version.");
         }
 
         var provider = GetProvider(info.Type);
