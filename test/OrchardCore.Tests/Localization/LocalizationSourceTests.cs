@@ -9,6 +9,49 @@ public class LocalizationSourceTests
     [InlineData("Hello")]
     [InlineData("Hello {0}")]
     [InlineData("<strong>Hello</strong>")]
+    public void Create_WithType_KeepsUntranslatedValueAndType(string value)
+    {
+        var source = LocalizationSource.Create(value, typeof(LocalizationSourceTests));
+        var genericSource = LocalizationSource.Create<LocalizationSourceTests>(value);
+
+        Assert.Equal(value, source.Value);
+        Assert.Equal(typeof(LocalizationSourceTests), source.Type);
+        Assert.Equal(source, genericSource);
+        Assert.NotSame(source, genericSource);
+    }
+
+    [Fact]
+    public void Create_WithoutType_HasNoLocalizationContext()
+    {
+        var source = LocalizationSource.Create("Hello");
+
+        Assert.Equal("Hello", source.Value);
+        Assert.Null(source.Type);
+        Assert.Equal(source, LocalizationSource.Create("Hello", type: null));
+    }
+
+    [Fact]
+    public void Create_WithStaticType_KeepsLocalizationContext()
+    {
+        var source = LocalizationSource.Create("Hello", typeof(Math));
+
+        Assert.Equal("Hello", source.Value);
+        Assert.Equal(typeof(Math), source.Type);
+    }
+
+    [Fact]
+    public void Create_WithNullValue_Throws()
+    {
+        Assert.Throws<ArgumentNullException>("value", () => LocalizationSource.Create(null));
+        Assert.Throws<ArgumentNullException>("value", () => LocalizationSource.Create(null, typeof(LocalizationSourceTests)));
+        Assert.Throws<ArgumentNullException>("value", () => LocalizationSource.Create<LocalizationSourceTests>(null));
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("Hello")]
+    [InlineData("Hello {0}")]
+    [InlineData("<strong>Hello</strong>")]
     public void Constructor_WithType_KeepsUntranslatedValueAndType(string value)
     {
         var source = new LocalizationSource(value, typeof(LocalizationSourceTests));

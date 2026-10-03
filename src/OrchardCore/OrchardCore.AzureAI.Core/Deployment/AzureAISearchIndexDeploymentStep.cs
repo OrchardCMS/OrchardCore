@@ -6,8 +6,8 @@ namespace OrchardCore.AzureAI.Deployment;
 
 public class AzureAISearchIndexDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("Search", typeof(AzureAISearchIndexDeploymentStep));
-    private static readonly LocalizationSource s_title = new("Azure AI Search Indexes", typeof(AzureAISearchIndexDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<AzureAISearchIndexDeploymentStep>("Search");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<AzureAISearchIndexDeploymentStep>("Azure AI Search Indexes");
 
     public AzureAISearchIndexDeploymentStep()
     {

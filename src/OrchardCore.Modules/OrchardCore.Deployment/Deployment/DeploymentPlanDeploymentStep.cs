@@ -7,8 +7,8 @@ namespace OrchardCore.Deployment.Deployment;
 /// </summary>
 public class DeploymentPlanDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("Deployment", typeof(DeploymentPlanDeploymentStep));
-    private static readonly LocalizationSource s_title = new("Deployment Plans", typeof(DeploymentPlanDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<DeploymentPlanDeploymentStep>("Deployment");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<DeploymentPlanDeploymentStep>("Deployment Plans");
 
     public DeploymentPlanDeploymentStep()
     {

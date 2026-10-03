@@ -11,5 +11,5 @@ public sealed class RateLimitsPermissions
     /// <summary>
     /// Allows administrators to manage rate-limit policies and limiter settings.
     /// </summary>
-    public static readonly Permission ManageRateLimits = new("ManageRateLimits", new LocalizationSource("Manage Rate Limits", typeof(RateLimitsPermissions)));
+    public static readonly Permission ManageRateLimits = new("ManageRateLimits", LocalizationSource.Create("Manage Rate Limits", typeof(RateLimitsPermissions)));
 }

@@ -5,5 +5,5 @@ namespace OrchardCore.Features;
 
 public static class FeaturesPermissions
 {
-    public static readonly Permission ManageFeatures = new("ManageFeatures", new LocalizationSource("Manage Features", typeof(FeaturesPermissions)));
+    public static readonly Permission ManageFeatures = new("ManageFeatures", LocalizationSource.Create("Manage Features", typeof(FeaturesPermissions)));
 }

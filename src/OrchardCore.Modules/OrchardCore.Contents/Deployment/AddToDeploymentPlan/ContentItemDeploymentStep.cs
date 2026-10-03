@@ -8,7 +8,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan;
 /// </summary>
 public class ContentItemDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("Content Management", typeof(ContentItemDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<ContentItemDeploymentStep>("Content Management");
 
     public ContentItemDeploymentStep()
     {

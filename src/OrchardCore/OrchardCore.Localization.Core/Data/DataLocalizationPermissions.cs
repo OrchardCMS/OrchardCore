@@ -10,21 +10,21 @@ public class DataLocalizationPermissions
     /// Permission to manage all dynamic translations.
     /// </summary>
     public static readonly Permission ManageTranslations =
-        new("ManageTranslations", new LocalizationSource("Manage all dynamic translations", typeof(DataLocalizationPermissions)));
+        new("ManageTranslations", LocalizationSource.Create("Manage all dynamic translations", typeof(DataLocalizationPermissions)));
 
     /// <summary>
     /// Read-only permission to view translations and statistics.
     /// Implied by <see cref="ManageTranslations"/>.
     /// </summary>
     public static readonly Permission ViewDynamicTranslations =
-        new("ViewDynamicTranslations", new LocalizationSource("View dynamic translations and statistics", typeof(DataLocalizationPermissions)), [ManageTranslations]);
+        new("ViewDynamicTranslations", LocalizationSource.Create("View dynamic translations and statistics", typeof(DataLocalizationPermissions)), [ManageTranslations]);
 
     /// <summary>
     /// Legacy permission for managing dynamic localizations.
     /// Kept for backward compatibility; use <see cref="ManageTranslations"/> instead.
     /// </summary>
     public static readonly Permission ManageLocalization =
-        new("ManageLocalization", new LocalizationSource("Manage dynamic localizations", typeof(DataLocalizationPermissions)), [ManageTranslations]);
+        new("ManageLocalization", LocalizationSource.Create("Manage dynamic localizations", typeof(DataLocalizationPermissions)), [ManageTranslations]);
 
     // Declared after ManageTranslations so its ImpliedBy list captures the real instance
     // rather than the default null a forward reference would read from a static field

@@ -8,8 +8,8 @@ namespace OrchardCore.Media.Deployment;
 /// </summary>
 public class MediaDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("Content Management", typeof(MediaDeploymentStep));
-    private static readonly LocalizationSource s_title = new("Media", typeof(MediaDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<MediaDeploymentStep>("Content Management");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<MediaDeploymentStep>("Media");
 
     public MediaDeploymentStep()
     {

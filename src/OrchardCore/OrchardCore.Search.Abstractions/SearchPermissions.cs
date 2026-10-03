@@ -5,5 +5,5 @@ namespace OrchardCore.Search;
 
 public static class SearchPermissions
 {
-    public static readonly Permission ManageSearchSettings = new("ManageSearchSettings", new LocalizationSource("Manage Search Settings", typeof(SearchPermissions)));
+    public static readonly Permission ManageSearchSettings = new("ManageSearchSettings", LocalizationSource.Create("Manage Search Settings", typeof(SearchPermissions)));
 }

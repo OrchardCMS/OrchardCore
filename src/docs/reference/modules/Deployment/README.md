@@ -105,8 +105,8 @@ namespace MyModule.Deployment;
 
 public sealed class MyDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("Content Management", typeof(MyDeploymentStep));
-    private static readonly LocalizationSource s_title = new("Export My Data", typeof(MyDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<MyDeploymentStep>("Content Management");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<MyDeploymentStep>("Export My Data");
 
     public MyDeploymentStep()
     {

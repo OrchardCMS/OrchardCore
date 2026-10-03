@@ -7,8 +7,8 @@ namespace OrchardCore.Deployment.Steps;
 /// </summary>
 public class JsonRecipeDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("Deployment", typeof(JsonRecipeDeploymentStep));
-    private static readonly LocalizationSource s_title = new("JSON Recipe", typeof(JsonRecipeDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<JsonRecipeDeploymentStep>("Deployment");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<JsonRecipeDeploymentStep>("JSON Recipe");
 
     public JsonRecipeDeploymentStep()
     {

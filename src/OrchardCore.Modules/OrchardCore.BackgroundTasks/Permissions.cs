@@ -5,7 +5,7 @@ namespace OrchardCore.BackgroundTasks;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageBackgroundTasks = new("ManageBackgroundTasks", new LocalizationSource("Manage background tasks", typeof(Permissions)));
+    public static readonly Permission ManageBackgroundTasks = new("ManageBackgroundTasks", LocalizationSource.Create("Manage background tasks", typeof(Permissions)));
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

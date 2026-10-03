@@ -8,7 +8,7 @@ namespace OrchardCore.Queries.Deployment;
 /// </summary>
 public class AllQueriesDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("Content Management", typeof(AllQueriesDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<AllQueriesDeploymentStep>("Content Management");
 
     public AllQueriesDeploymentStep()
     {

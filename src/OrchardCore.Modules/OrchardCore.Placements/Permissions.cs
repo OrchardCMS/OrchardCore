@@ -5,7 +5,7 @@ namespace OrchardCore.Placements;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManagePlacements = new("ManagePlacements", new LocalizationSource("Manage placements", typeof(Permissions)));
+    public static readonly Permission ManagePlacements = new("ManagePlacements", LocalizationSource.Create("Manage placements", typeof(Permissions)));
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

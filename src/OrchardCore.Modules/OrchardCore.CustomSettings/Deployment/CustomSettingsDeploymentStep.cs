@@ -5,8 +5,8 @@ namespace OrchardCore.CustomSettings.Deployment;
 
 public class CustomSettingsDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("Settings", typeof(CustomSettingsDeploymentStep));
-    private static readonly LocalizationSource s_title = new("Custom Settings", typeof(CustomSettingsDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<CustomSettingsDeploymentStep>("Settings");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<CustomSettingsDeploymentStep>("Custom Settings");
 
     public CustomSettingsDeploymentStep()
     {

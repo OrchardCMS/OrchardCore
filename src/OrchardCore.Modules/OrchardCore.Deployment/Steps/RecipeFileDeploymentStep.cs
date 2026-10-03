@@ -7,8 +7,8 @@ namespace OrchardCore.Deployment.Steps;
 /// </summary>
 public class RecipeFileDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("Deployment", typeof(RecipeFileDeploymentStep));
-    private static readonly LocalizationSource s_title = new("Recipe File", typeof(RecipeFileDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<RecipeFileDeploymentStep>("Deployment");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<RecipeFileDeploymentStep>("Recipe File");
 
     public RecipeFileDeploymentStep()
     {

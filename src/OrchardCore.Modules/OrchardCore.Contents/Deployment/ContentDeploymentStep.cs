@@ -8,8 +8,8 @@ namespace OrchardCore.Contents.Deployment;
 /// </summary>
 public class ContentDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("Content Management", typeof(ContentDeploymentStep));
-    private static readonly LocalizationSource s_title = new("Content Types", typeof(ContentDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<ContentDeploymentStep>("Content Management");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<ContentDeploymentStep>("Content Types");
 
     public ContentDeploymentStep()
     {

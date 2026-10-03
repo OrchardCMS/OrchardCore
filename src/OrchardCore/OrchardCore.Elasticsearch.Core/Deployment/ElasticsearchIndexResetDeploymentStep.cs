@@ -8,8 +8,8 @@ namespace OrchardCore.Elasticsearch.Core.Deployment;
 /// </summary>
 public sealed class ElasticsearchIndexResetDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("Search", typeof(ElasticsearchIndexResetDeploymentStep));
-    private static readonly LocalizationSource s_title = new("Reset Elasticsearch Indices", typeof(ElasticsearchIndexResetDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<ElasticsearchIndexResetDeploymentStep>("Search");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<ElasticsearchIndexResetDeploymentStep>("Reset Elasticsearch Indices");
 
     public ElasticsearchIndexResetDeploymentStep()
     {

@@ -8,7 +8,7 @@ namespace OrchardCore.Users.Deployment;
 /// </summary>
 public class AllUsersDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("Security", typeof(AllUsersDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<AllUsersDeploymentStep>("Security");
 
     public AllUsersDeploymentStep()
     {

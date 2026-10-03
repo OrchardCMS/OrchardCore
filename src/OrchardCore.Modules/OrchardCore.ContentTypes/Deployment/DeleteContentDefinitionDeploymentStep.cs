@@ -8,7 +8,7 @@ namespace OrchardCore.ContentTypes.Deployment;
 /// </summary>
 public class DeleteContentDefinitionDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("Content Management", typeof(DeleteContentDefinitionDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<DeleteContentDefinitionDeploymentStep>("Content Management");
 
     public DeleteContentDefinitionDeploymentStep()
     {

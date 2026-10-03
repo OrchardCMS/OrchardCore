@@ -8,8 +8,8 @@ namespace OrchardCore.Templates.Deployment;
 /// </summary>
 public class AllAdminTemplatesDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("Development", typeof(AllAdminTemplatesDeploymentStep));
-    private static readonly LocalizationSource s_title = new("All Admin Templates", typeof(AllAdminTemplatesDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<AllAdminTemplatesDeploymentStep>("Development");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<AllAdminTemplatesDeploymentStep>("All Admin Templates");
 
     public AllAdminTemplatesDeploymentStep()
     {

@@ -8,7 +8,7 @@ namespace OrchardCore.Themes.Deployment;
 /// </summary>
 public class ThemesDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("Theming", typeof(ThemesDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<ThemesDeploymentStep>("Theming");
 
     public ThemesDeploymentStep()
     {

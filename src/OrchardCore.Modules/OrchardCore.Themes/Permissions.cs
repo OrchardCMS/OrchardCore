@@ -5,7 +5,7 @@ namespace OrchardCore.Themes;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ApplyTheme = new("ApplyTheme", new LocalizationSource("Apply a Theme", typeof(Permissions)));
+    public static readonly Permission ApplyTheme = new("ApplyTheme", LocalizationSource.Create("Apply a Theme", typeof(Permissions)));
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

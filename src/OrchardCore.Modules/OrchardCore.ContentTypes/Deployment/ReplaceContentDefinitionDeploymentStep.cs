@@ -5,8 +5,8 @@ namespace OrchardCore.ContentTypes.Deployment;
 
 public class ReplaceContentDefinitionDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("Content Management", typeof(ReplaceContentDefinitionDeploymentStep));
-    private static readonly LocalizationSource s_title = new("Replace Content Definitions", typeof(ReplaceContentDefinitionDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<ReplaceContentDefinitionDeploymentStep>("Content Management");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<ReplaceContentDefinitionDeploymentStep>("Replace Content Definitions");
 
     public ReplaceContentDefinitionDeploymentStep()
     {

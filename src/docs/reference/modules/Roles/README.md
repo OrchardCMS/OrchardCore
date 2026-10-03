@@ -90,7 +90,7 @@ public static class MyPermissions
 {
     public static readonly Permission ManageWidgets = new(
         "ManageWidgets",
-        new LocalizationSource("Manage widgets", typeof(MyPermissions)));
+        LocalizationSource.Create("Manage widgets", typeof(MyPermissions)));
 }
 ```
 

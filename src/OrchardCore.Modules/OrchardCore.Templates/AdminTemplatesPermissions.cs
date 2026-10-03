@@ -5,7 +5,7 @@ namespace OrchardCore.Templates;
 
 public sealed class AdminTemplatesPermissions : IPermissionProvider
 {
-    public static readonly Permission ManageAdminTemplates = new("ManageAdminTemplates", new LocalizationSource("Manage admin templates", typeof(AdminTemplatesPermissions)), isSecurityCritical: true);
+    public static readonly Permission ManageAdminTemplates = new("ManageAdminTemplates", LocalizationSource.Create("Manage admin templates", typeof(AdminTemplatesPermissions)), isSecurityCritical: true);
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

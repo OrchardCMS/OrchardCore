@@ -116,7 +116,7 @@ Provides content field display names for translation.
 Provides permission descriptions and categories for translation.
 
 - **Context**: `Permissions` or `Permissions:{groupName}`
-- **Strings**: The categories of the permissions, and the descriptions that are not templates and have no PO translation context. Descriptions created with `new LocalizationSource(description, typeof(DeclaringType))` are translated with PO files and are not listed. See [Declaring permissions](../Roles/README.md#declaring-permissions).
+- **Strings**: The categories of the permissions, and the descriptions that are not templates and have no PO translation context. Descriptions created with `LocalizationSource.Create(description, typeof(DeclaringType))` are translated with PO files and are not listed. See [Declaring permissions](../Roles/README.md#declaring-permissions).
 
 ### Search Provider
 

@@ -5,8 +5,8 @@ namespace OrchardCore.AdminDashboard;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageAdminDashboard = new("ManageAdminDashboard", new LocalizationSource("Manage the Admin Dashboard", typeof(Permissions)));
-    public static readonly Permission AccessAdminDashboard = new("AccessAdminDashboard", new LocalizationSource("Access the Admin Dashboard", typeof(Permissions)), new[] { ManageAdminDashboard });
+    public static readonly Permission ManageAdminDashboard = new("ManageAdminDashboard", LocalizationSource.Create("Manage the Admin Dashboard", typeof(Permissions)));
+    public static readonly Permission AccessAdminDashboard = new("AccessAdminDashboard", LocalizationSource.Create("Access the Admin Dashboard", typeof(Permissions)), new[] { ManageAdminDashboard });
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

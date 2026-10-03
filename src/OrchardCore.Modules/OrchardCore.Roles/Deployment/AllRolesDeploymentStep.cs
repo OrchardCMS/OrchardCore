@@ -8,7 +8,7 @@ namespace OrchardCore.Roles.Deployment;
 /// </summary>
 public class AllRolesDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("Security", typeof(AllRolesDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<AllRolesDeploymentStep>("Security");
 
     public AllRolesDeploymentStep()
     {

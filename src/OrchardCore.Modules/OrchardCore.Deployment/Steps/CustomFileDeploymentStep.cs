@@ -8,8 +8,8 @@ namespace OrchardCore.Deployment.Steps;
 /// </summary>
 public class CustomFileDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("Deployment", typeof(CustomFileDeploymentStep));
-    private static readonly LocalizationSource s_title = new("Custom File", typeof(CustomFileDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<CustomFileDeploymentStep>("Deployment");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<CustomFileDeploymentStep>("Custom File");
 
     public CustomFileDeploymentStep()
     {

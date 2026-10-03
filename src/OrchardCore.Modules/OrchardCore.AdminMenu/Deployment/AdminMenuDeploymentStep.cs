@@ -8,8 +8,8 @@ namespace OrchardCore.AdminMenu.Deployment;
 /// </summary>
 public class AdminMenuDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("Content Management", typeof(AdminMenuDeploymentStep));
-    private static readonly LocalizationSource s_title = new("Admin Menus", typeof(AdminMenuDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<AdminMenuDeploymentStep>("Content Management");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<AdminMenuDeploymentStep>("Admin Menus");
 
     public AdminMenuDeploymentStep()
     {

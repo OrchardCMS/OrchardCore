@@ -134,8 +134,10 @@ When no localizer is available where a string is declared, use `LocalizationSour
 ```csharp
 using OrchardCore.Localization;
 
-var description = new LocalizationSource("Manage widgets", typeof(MyPermissions));
+var description = LocalizationSource.Create("Manage widgets", typeof(MyPermissions));
 ```
+
+Use `LocalizationSource.Create(value, type)` for an explicit source type, or `LocalizationSource.Create<T>(value)` to use `typeof(T)`. The explicit-type overload also supports static classes, which cannot be generic type arguments. Both methods preserve the original value and type without translating or formatting them. Prefer these explicit factory calls over constructor syntax so source-extraction tools can identify the declaration without inferring the type of `new(...)`.
 
 `Value` is the original text, used as the PO `msgid`. `Type` supplies the localizer's context, just as with `IStringLocalizer<MyPermissions>` or `IHtmlLocalizer<MyPermissions>`. For example:
 
@@ -157,14 +159,14 @@ LocalizedHtmlString html = htmlLocalizerFactory.Localize(description);
 
 Both extensions call `factory.Create(source.Type)` and look up `source.Value`. The same source can be rendered as text or HTML; it does not commit to an encoding policy at declaration time. A string localizer returns a `LocalizedString` that Razor HTML encodes when rendered. An HTML localizer returns a `LocalizedHtmlString` that preserves markup in the translation and HTML encodes its format arguments.
 
-Pass format arguments to `Localize`, not to the source constructor, so that the original key is preserved and the translated template is formatted:
+Pass format arguments to `Localize`, not to `LocalizationSource.Create`, so that the original key is preserved and the translated template is formatted:
 
 ```csharp
-var welcome = new LocalizationSource("<strong>Welcome {0}</strong>", typeof(MyMessages));
+var welcome = LocalizationSource.Create<MyMessages>("<strong>Welcome {0}</strong>");
 var translated = htmlLocalizerFactory.Localize(welcome, userName);
 ```
 
-With string localization, no formatting is applied when no arguments are supplied. HTML localization follows `LocalizedHtmlString`'s composite formatting rules when rendered: supply arguments for placeholders and escape literal braces as `{{` and `}}`. A source constructed without a type, for example `new LocalizationSource("Hello")`, has no PO context: the factory extensions return the original value, with any supplied arguments applied. A null source produces a null result.
+With string localization, no formatting is applied when no arguments are supplied. HTML localization follows `LocalizedHtmlString`'s composite formatting rules when rendered: supply arguments for placeholders and escape literal braces as `{{` and `}}`. A source constructed without a type, for example `LocalizationSource.Create("Hello")`, has no PO context: the factory extensions return the original value, with any supplied arguments applied. A null source produces a null result.
 
 !!! warning
     Use HTML localization only for trusted translation markup. It does not encode the translation itself. For plain labels, permission descriptions, attributes, and other text, use string localization and retain the rendering layer's encoding.
@@ -208,7 +210,7 @@ In this example
 using Microsoft.Extensions.Localization;
 using OrchardCore.Localization;
 
-private static readonly LocalizationSource _item = new("{0} item for {1}", typeof(MyMessages));
+private static readonly LocalizationSource _item = LocalizationSource.Create<MyMessages>("{0} item for {1}");
 
 var result = stringLocalizerFactory.Plural(count, _item, "{0} items for {1}", ownerName);
 ```
@@ -220,6 +222,9 @@ For a context-bearing source (`Type` set), the extension resolves `factory.Creat
 ### Extract translations to PO files
 
 In order to generate the .po files, you can use [this tool](https://github.com/OrchardCoreContrib/OrchardCoreContrib.PoExtractor).
+
+!!! note
+    `LocalizationSource.Create(...)` and `LocalizationSource.Create<T>(...)` provide explicit declarations for source-extraction tooling. Support for recognizing these calls depends on the external extractor; Orchard Core does not modify that tool. Runtime PO keys and contexts are unchanged.
 
 The simpler way to use it is to install it with this command:
 

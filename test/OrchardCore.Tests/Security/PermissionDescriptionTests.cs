@@ -39,7 +39,7 @@ public class PermissionDescriptionTests
         // Act
         var permission = new Permission(
             "ManageThings",
-            new LocalizationSource("Manage things", typeof(PermissionDescriptionTests)),
+            LocalizationSource.Create("Manage things", typeof(PermissionDescriptionTests)),
             [impliedBy],
             isSecurityCritical: true);
 
@@ -113,7 +113,7 @@ public class PermissionDescriptionTests
     [Fact]
     public void Localize_NestedSourceType_UsesTypedLocalizerContext()
     {
-        var source = new LocalizationSource("Hello", typeof(Messages));
+        var source = LocalizationSource.Create("Hello", typeof(Messages));
         var localizerFactory = CreateLocalizerFactory(
             "fr",
             new CultureDictionaryRecord("Hello", typeof(Messages).FullName.Replace('+', '.'), ["Bonjour"]));

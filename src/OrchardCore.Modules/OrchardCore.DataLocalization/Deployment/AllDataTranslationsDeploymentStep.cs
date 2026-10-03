@@ -5,7 +5,7 @@ namespace OrchardCore.DataLocalization.Deployment;
 
 public class AllDataTranslationsDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("Internationalization", typeof(AllDataTranslationsDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<AllDataTranslationsDeploymentStep>("Internationalization");
 
     public AllDataTranslationsDeploymentStep()
     {

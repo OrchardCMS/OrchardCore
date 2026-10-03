@@ -11,7 +11,7 @@ public class HtmlLocalizerFactoryPluralExtensionsTests
     [Fact]
     public void Plural_WithNullFactory_Throws()
     {
-        Assert.Throws<ArgumentNullException>("factory", () => ((IHtmlLocalizerFactory)null).Plural(1, new LocalizationSource("item"), "items"));
+        Assert.Throws<ArgumentNullException>("factory", () => ((IHtmlLocalizerFactory)null).Plural(1, LocalizationSource.Create("item"), "items"));
     }
 
     [Fact]
@@ -28,7 +28,7 @@ public class HtmlLocalizerFactoryPluralExtensionsTests
     {
         var factory = new Mock<IHtmlLocalizerFactory>(MockBehavior.Strict);
 
-        Assert.Throws<ArgumentNullException>("plural", () => factory.Object.Plural(1, new LocalizationSource("item"), null));
+        Assert.Throws<ArgumentNullException>("plural", () => factory.Object.Plural(1, LocalizationSource.Create("item"), null));
         factory.VerifyNoOtherCalls();
     }
 
@@ -39,7 +39,7 @@ public class HtmlLocalizerFactoryPluralExtensionsTests
     public void Plural_WithoutContext_SelectsEnglishFormAndPrependsCount(int count, string expected)
     {
         var factory = new Mock<IHtmlLocalizerFactory>(MockBehavior.Strict);
-        var source = new LocalizationSource("{0} item");
+        var source = LocalizationSource.Create("{0} item");
 
         var result = factory.Object.Plural(count, source, "{0} items");
 
@@ -51,7 +51,7 @@ public class HtmlLocalizerFactoryPluralExtensionsTests
     public void Plural_WithoutContextAndArguments_EncodesArgumentsAtRenderTime()
     {
         var factory = new Mock<IHtmlLocalizerFactory>(MockBehavior.Strict);
-        var source = new LocalizationSource("{0} item for {1}");
+        var source = LocalizationSource.Create("{0} item for {1}");
 
         var result = factory.Object.Plural(3, source, "{0} items for {1}", "<Mike>");
 
@@ -63,7 +63,7 @@ public class HtmlLocalizerFactoryPluralExtensionsTests
     [Fact]
     public void Plural_WithContext_UsesSourceTypeAndDeferEncodingToRendering()
     {
-        var source = new LocalizationSource("item", typeof(HtmlLocalizerFactoryPluralExtensionsTests));
+        var source = LocalizationSource.Create("item", typeof(HtmlLocalizerFactoryPluralExtensionsTests));
         var localizer = new Mock<IHtmlLocalizer>(MockBehavior.Strict);
         localizer.Setup(l => l["item", It.IsAny<PluralizationArgument>()])
             .Returns(new LocalizedHtmlString("item", "<strong>2 Bonjour</strong>"));
@@ -82,7 +82,7 @@ public class HtmlLocalizerFactoryPluralExtensionsTests
     [Fact]
     public void Plural_SourceImmutability_DoesNotChangeAfterUse()
     {
-        var source = new LocalizationSource("{0} item", typeof(HtmlLocalizerFactoryPluralExtensionsTests));
+        var source = LocalizationSource.Create("{0} item", typeof(HtmlLocalizerFactoryPluralExtensionsTests));
         var localizer = new Mock<IHtmlLocalizer>(MockBehavior.Strict);
         localizer.Setup(l => l["{0} item", It.IsAny<PluralizationArgument>()]).Returns(new LocalizedHtmlString("{0} item", "2 items"));
         var factory = new Mock<IHtmlLocalizerFactory>(MockBehavior.Strict);
@@ -118,7 +118,7 @@ public class HtmlLocalizerFactoryPluralExtensionsTests
         factory.Setup(f => f.Create(typeof(HtmlLocalizerFactoryPluralExtensionsTests))).Returns(htmlLocalizer);
 
         using var cultureScope = CultureScope.Create("ru");
-        var source = new LocalizationSource("{0} item", typeof(HtmlLocalizerFactoryPluralExtensionsTests));
+        var source = LocalizationSource.Create<HtmlLocalizerFactoryPluralExtensionsTests>("{0} item");
 
         var result = factory.Object.Plural(count, source, "{0} items");
 
@@ -128,7 +128,7 @@ public class HtmlLocalizerFactoryPluralExtensionsTests
     [Fact]
     public void Plural_And_Localize_OnSameSource_ProduceConsistentEncodingSemantics()
     {
-        var source = new LocalizationSource("item", typeof(HtmlLocalizerFactoryPluralExtensionsTests));
+        var source = LocalizationSource.Create("item", typeof(HtmlLocalizerFactoryPluralExtensionsTests));
         var localizer = new Mock<IHtmlLocalizer>(MockBehavior.Strict);
         localizer.Setup(l => l["item"]).Returns(new LocalizedHtmlString("item", "<strong>translated</strong>"));
         localizer.Setup(l => l["item", It.IsAny<PluralizationArgument>()]).Returns(new LocalizedHtmlString("item", "<strong>2 translated</strong>"));

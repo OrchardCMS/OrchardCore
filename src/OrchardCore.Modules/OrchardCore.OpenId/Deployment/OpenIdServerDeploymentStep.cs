@@ -8,7 +8,7 @@ namespace OrchardCore.OpenId.Deployment;
 /// </summary>
 public class OpenIdServerDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("OpenID Connect", typeof(OpenIdServerDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<OpenIdServerDeploymentStep>("OpenID Connect");
 
     public OpenIdServerDeploymentStep()
     {

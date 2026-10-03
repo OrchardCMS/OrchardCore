@@ -8,7 +8,7 @@ namespace OrchardCore.Settings.Deployment;
 /// </summary>
 public class SiteSettingsPropertyDeploymentStep<TModel> : DeploymentStep where TModel : class, new()
 {
-    private static readonly LocalizationSource s_category = new("Configuration", typeof(SiteSettingsPropertyDeploymentStep<TModel>));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create("Configuration", typeof(SiteSettingsPropertyDeploymentStep<TModel>));
 
     public SiteSettingsPropertyDeploymentStep()
     {

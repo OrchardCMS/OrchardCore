@@ -5,8 +5,8 @@ namespace OrchardCore.Tenants;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageTenants = new("ManageTenants", new LocalizationSource("Manage tenants", typeof(Permissions)));
-    public static readonly Permission ManageTenantFeatureProfiles = new("ManageTenantFeatureProfiles", new LocalizationSource("Manage tenant feature profiles", typeof(Permissions)));
+    public static readonly Permission ManageTenants = new("ManageTenants", LocalizationSource.Create("Manage tenants", typeof(Permissions)));
+    public static readonly Permission ManageTenantFeatureProfiles = new("ManageTenantFeatureProfiles", LocalizationSource.Create("Manage tenant feature profiles", typeof(Permissions)));
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

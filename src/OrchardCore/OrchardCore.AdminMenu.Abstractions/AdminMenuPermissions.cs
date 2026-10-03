@@ -5,7 +5,7 @@ namespace OrchardCore.AdminMenu;
 
 public static class AdminMenuPermissions
 {
-    public static readonly Permission ManageAdminMenu = new("ManageAdminMenu", new LocalizationSource("Manage the admin menu", typeof(AdminMenuPermissions)));
+    public static readonly Permission ManageAdminMenu = new("ManageAdminMenu", LocalizationSource.Create("Manage the admin menu", typeof(AdminMenuPermissions)));
 
-    public static readonly Permission ViewAdminMenuAll = new("ViewAdminMenuAll", new LocalizationSource("View Admin Menu - View All", typeof(AdminMenuPermissions)), new[] { ManageAdminMenu });
+    public static readonly Permission ViewAdminMenuAll = new("ViewAdminMenuAll", LocalizationSource.Create("View Admin Menu - View All", typeof(AdminMenuPermissions)), new[] { ManageAdminMenu });
 }

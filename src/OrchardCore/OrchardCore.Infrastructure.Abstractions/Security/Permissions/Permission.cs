@@ -39,7 +39,7 @@ public class Permission
     /// The permission name must be unique across the system.
     /// </remarks>
     public Permission(string name, string description, bool isSecurityCritical = false)
-        : this(name, description is null ? null : new LocalizationSource(description), isSecurityCritical)
+        : this(name, description is null ? null : LocalizationSource.Create(description), isSecurityCritical)
     {
     }
 
@@ -47,7 +47,7 @@ public class Permission
     /// Initializes a new instance of the <see cref="Permission"/> class with a localization source and security flag.
     /// </summary>
     /// <param name="name">The name of the permission.</param>
-    /// <param name="description">The description of the permission. Use <c>new LocalizationSource(description, typeof(DeclaringType))</c> so that the description can be translated.</param>
+    /// <param name="description">The description of the permission. Use <c>LocalizationSource.Create(description, typeof(DeclaringType))</c> so that the description can be translated.</param>
     /// <param name="isSecurityCritical">Indicates whether the permission is security critical.</param>
     /// <remarks>
     /// The permission name must be unique across the system.
@@ -77,7 +77,7 @@ public class Permission
     /// Initializes a new instance of the <see cref="Permission"/> class with a localization source, implying permissions, and security flag.
     /// </summary>
     /// <param name="name">The name of the permission.</param>
-    /// <param name="description">The description of the permission. Use <c>new LocalizationSource(description, typeof(DeclaringType))</c> so that the description can be translated.</param>
+    /// <param name="description">The description of the permission. Use <c>LocalizationSource.Create(description, typeof(DeclaringType))</c> so that the description can be translated.</param>
     /// <param name="impliedBy">The permissions implying this permission.</param>
     /// <param name="isSecurityCritical">Indicates whether the permission is security critical.</param>
     /// <remarks>

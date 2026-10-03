@@ -6,8 +6,8 @@ namespace OrchardCore.Indexing.Core.Deployments;
 
 public sealed class RebuildIndexDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("Indexing", typeof(RebuildIndexDeploymentStep));
-    private static readonly LocalizationSource s_title = new("Rebuild Indexes", typeof(RebuildIndexDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<RebuildIndexDeploymentStep>("Indexing");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<RebuildIndexDeploymentStep>("Rebuild Indexes");
 
     public RebuildIndexDeploymentStep()
     {

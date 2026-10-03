@@ -9,8 +9,8 @@ namespace OrchardCore.Queries.Deployment;
 /// </summary>
 public class QueryBasedContentDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("Content Management", typeof(QueryBasedContentDeploymentStep));
-    private static readonly LocalizationSource s_title = new("Queried Content Items", typeof(QueryBasedContentDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<QueryBasedContentDeploymentStep>("Content Management");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<QueryBasedContentDeploymentStep>("Queried Content Items");
 
     public QueryBasedContentDeploymentStep()
     {

@@ -7,9 +7,9 @@ namespace OrchardCore.Indexing.Core;
 
 public static class IndexingPermissions
 {
-    public static readonly Permission QuerySearchIndex = new("QuerySearchIndex", new LocalizationSource("Query any index", typeof(IndexingPermissions)));
+    public static readonly Permission QuerySearchIndex = new("QuerySearchIndex", LocalizationSource.Create("Query any index", typeof(IndexingPermissions)));
 
-    public static readonly Permission ManageIndexes = new("ManageIndexes", new LocalizationSource("Manage Indexes", typeof(IndexingPermissions)));
+    public static readonly Permission ManageIndexes = new("ManageIndexes", LocalizationSource.Create("Manage Indexes", typeof(IndexingPermissions)));
 
     private static readonly Permission s_indexPermissionTemplate =
         new("QueryIndex_{0}", "Query '{0}' Index", [ManageIndexes, QuerySearchIndex]);

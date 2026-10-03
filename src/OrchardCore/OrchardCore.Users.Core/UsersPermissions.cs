@@ -9,24 +9,24 @@ public static class UsersPermissions
     /// When authorizing request ManageUsers and pass an <see cref="IUser"/>
     /// Do not request a dynamic permission unless you are checking if the user can manage a specific role.
     /// </summary>
-    public static readonly Permission ManageUsers = new("ManageUsers", new LocalizationSource("Manage security settings and all users", typeof(UsersPermissions)), true);
+    public static readonly Permission ManageUsers = new("ManageUsers", LocalizationSource.Create("Manage security settings and all users", typeof(UsersPermissions)), true);
 
     /// <summary>
     /// Allows viewing user profiles.
     /// </summary>
-    public static readonly Permission ViewUsers = new("View Users", new LocalizationSource("View user profiles", typeof(UsersPermissions)), [ManageUsers]);
+    public static readonly Permission ViewUsers = new("View Users", LocalizationSource.Create("View user profiles", typeof(UsersPermissions)), [ManageUsers]);
 
-    public static readonly Permission EditUsers = new("EditUsers", new LocalizationSource("Edit any user", typeof(UsersPermissions)), [ManageUsers], true);
+    public static readonly Permission EditUsers = new("EditUsers", LocalizationSource.Create("Edit any user", typeof(UsersPermissions)), [ManageUsers], true);
 
-    public static readonly Permission DeleteUsers = new("DeleteUsers", new LocalizationSource("Delete any user", typeof(UsersPermissions)), [ManageUsers], true);
+    public static readonly Permission DeleteUsers = new("DeleteUsers", LocalizationSource.Create("Delete any user", typeof(UsersPermissions)), [ManageUsers], true);
 
-    public static readonly Permission ListUsers = new("ListUsers", new LocalizationSource("List all users", typeof(UsersPermissions)), [EditUsers, DeleteUsers]);
+    public static readonly Permission ListUsers = new("ListUsers", LocalizationSource.Create("List all users", typeof(UsersPermissions)), [EditUsers, DeleteUsers]);
 
-    public static readonly Permission AssignRoleToUsers = new("AssignRoleToUsers", new LocalizationSource("Assign any role to users", typeof(UsersPermissions)), true);
+    public static readonly Permission AssignRoleToUsers = new("AssignRoleToUsers", LocalizationSource.Create("Assign any role to users", typeof(UsersPermissions)), true);
 
-    public static readonly Permission DisableTwoFactorAuthenticationForUsers = new("DisableTwoFactorAuthenticationForUsers", new LocalizationSource("Disable two-factor authentication for any user", typeof(UsersPermissions)), [ManageUsers], true);
+    public static readonly Permission DisableTwoFactorAuthenticationForUsers = new("DisableTwoFactorAuthenticationForUsers", LocalizationSource.Create("Disable two-factor authentication for any user", typeof(UsersPermissions)), [ManageUsers], true);
 
-    public static readonly Permission EditOwnUser = new("ManageOwnUserInformation", new LocalizationSource("Edit own user information", typeof(UsersPermissions)), [EditUsers]);
+    public static readonly Permission EditOwnUser = new("ManageOwnUserInformation", LocalizationSource.Create("Edit own user information", typeof(UsersPermissions)), [EditUsers]);
 
     public static Permission CreateEditUsersInRolePermission(string roleName) =>
         CreateDynamicPermission(roleName, new Permission("EditUsersInRole_{0}", "Edit users in {0} role", [EditUsers], true));

@@ -8,8 +8,8 @@ namespace OrchardCore.Elasticsearch.Core.Deployment;
 /// </summary>
 public sealed class ElasticsearchIndexRebuildDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("Search", typeof(ElasticsearchIndexRebuildDeploymentStep));
-    private static readonly LocalizationSource s_title = new("Rebuild Elasticsearch Indices", typeof(ElasticsearchIndexRebuildDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<ElasticsearchIndexRebuildDeploymentStep>("Search");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<ElasticsearchIndexRebuildDeploymentStep>("Rebuild Elasticsearch Indices");
 
     public ElasticsearchIndexRebuildDeploymentStep()
     {

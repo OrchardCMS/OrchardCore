@@ -11,7 +11,7 @@ public sealed class Permissions : IPermissionProvider
         ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.EditContent.Name],
         "Menu");
 
-    public static readonly Permission ManageMenu = new("ManageMenu", new LocalizationSource("Manage menus", typeof(Permissions)), [s_editMenuContent]);
+    public static readonly Permission ManageMenu = new("ManageMenu", LocalizationSource.Create("Manage menus", typeof(Permissions)), [s_editMenuContent]);
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

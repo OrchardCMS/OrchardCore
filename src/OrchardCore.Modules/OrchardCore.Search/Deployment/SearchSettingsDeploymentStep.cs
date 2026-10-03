@@ -8,8 +8,8 @@ namespace OrchardCore.Search.Deployment;
 /// </summary>
 public class SearchSettingsDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("Search", typeof(SearchSettingsDeploymentStep));
-    private static readonly LocalizationSource s_title = new("Search Settings", typeof(SearchSettingsDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<SearchSettingsDeploymentStep>("Search");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<SearchSettingsDeploymentStep>("Search Settings");
 
     public SearchSettingsDeploymentStep()
     {

@@ -11,7 +11,7 @@ namespace OrchardCore.Roles.Services;
 /// </summary>
 /// <remarks>
 /// Descriptions created with a translation context, for example with
-/// <c>new LocalizationSource(description, typeof(DeclaringType))</c>, are translated with PO files and are not provided.
+/// <c>LocalizationSource.Create(description, typeof(DeclaringType))</c>, are translated with PO files and are not provided.
 /// </remarks>
 public class PermissionsLocalizationDataProvider : ILocalizationDataProvider
 {

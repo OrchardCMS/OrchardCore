@@ -5,7 +5,7 @@ namespace OrchardCore.Tenants.Deployment;
 
 public class AllFeatureProfilesDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("Infrastructure", typeof(AllFeatureProfilesDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<AllFeatureProfilesDeploymentStep>("Infrastructure");
 
     public AllFeatureProfilesDeploymentStep()
     {

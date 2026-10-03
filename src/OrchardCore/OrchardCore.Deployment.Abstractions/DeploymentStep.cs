@@ -5,7 +5,7 @@ namespace OrchardCore.Deployment;
 
 public abstract class DeploymentStep
 {
-    private static readonly LocalizationSource s_emptyCategory = new(string.Empty);
+    private static readonly LocalizationSource s_emptyCategory = LocalizationSource.Create(string.Empty);
 
     public string Id { get; set; }
 
@@ -13,7 +13,7 @@ public abstract class DeploymentStep
 
     /// <summary>
     /// The category of the step, used to group the steps of the picker. Set it in the step's parameterless
-    /// constructor with <c>new LocalizationSource("...", typeof(MyDeploymentStep))</c>.
+    /// constructor with <c>LocalizationSource.Create&lt;MyDeploymentStep&gt;("...")</c>.
     /// </summary>
     /// <remarks>
     /// The category is translated at display time using its source type as the context. It is never persisted:
@@ -24,7 +24,7 @@ public abstract class DeploymentStep
 
     /// <summary>
     /// The title of the step, shown as the heading of its screens. Set it in the step's parameterless constructor
-    /// with <c>new LocalizationSource("...", typeof(MyDeploymentStep))</c>, alongside <see cref="Category"/>.
+    /// with <c>LocalizationSource.Create&lt;MyDeploymentStep&gt;("...")</c>, alongside <see cref="Category"/>.
     /// </summary>
     /// <remarks>
     /// The title is translated at display time using its source type as the context. It is never persisted,

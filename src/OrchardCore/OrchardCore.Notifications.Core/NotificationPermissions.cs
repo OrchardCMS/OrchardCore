@@ -5,5 +5,5 @@ namespace OrchardCore.Notifications;
 
 public static class NotificationPermissions
 {
-    public static readonly Permission ManageNotifications = new("ManageNotifications", new LocalizationSource("Manage notifications", typeof(NotificationPermissions)));
+    public static readonly Permission ManageNotifications = new("ManageNotifications", LocalizationSource.Create("Manage notifications", typeof(NotificationPermissions)));
 }

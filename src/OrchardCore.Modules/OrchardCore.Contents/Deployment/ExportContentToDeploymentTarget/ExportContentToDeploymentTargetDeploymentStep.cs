@@ -8,8 +8,8 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget;
 /// </summary>
 public class ExportContentToDeploymentTargetDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("Content Management", typeof(ExportContentToDeploymentTargetDeploymentStep));
-    private static readonly LocalizationSource s_title = new("Export Content To Deployment Target", typeof(ExportContentToDeploymentTargetDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<ExportContentToDeploymentTargetDeploymentStep>("Content Management");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<ExportContentToDeploymentTargetDeploymentStep>("Export Content To Deployment Target");
 
     public ExportContentToDeploymentTargetDeploymentStep()
     {

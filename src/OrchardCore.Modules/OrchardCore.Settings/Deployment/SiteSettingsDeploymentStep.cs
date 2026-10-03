@@ -8,8 +8,8 @@ namespace OrchardCore.Settings.Deployment;
 /// </summary>
 public class SiteSettingsDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("Configuration", typeof(SiteSettingsDeploymentStep));
-    private static readonly LocalizationSource s_title = new("Site Settings", typeof(SiteSettingsDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<SiteSettingsDeploymentStep>("Configuration");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<SiteSettingsDeploymentStep>("Site Settings");
 
     public SiteSettingsDeploymentStep()
     {

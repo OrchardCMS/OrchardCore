@@ -32,7 +32,7 @@ public class PermissionsLocalizationDataProviderTests
     {
         // Arrange
         var provider = CreateProvider(
-            new Permission("ManageThings", new LocalizationSource("Manage things", typeof(PermissionsLocalizationDataProviderTests))),
+            new Permission("ManageThings", LocalizationSource.Create("Manage things", typeof(PermissionsLocalizationDataProviderTests))),
             new Permission("ViewThings", "View things"));
 
         // Act
@@ -46,7 +46,7 @@ public class PermissionsLocalizationDataProviderTests
     public async Task GetDescriptorsAsync_CategoryOfPermissionWithContext_IsProvided()
     {
         // Arrange
-        var permission = new Permission("ManageThings", new LocalizationSource("Manage things", typeof(PermissionsLocalizationDataProviderTests)))
+        var permission = new Permission("ManageThings", LocalizationSource.Create("Manage things", typeof(PermissionsLocalizationDataProviderTests)))
         {
             Category = "Things",
         };

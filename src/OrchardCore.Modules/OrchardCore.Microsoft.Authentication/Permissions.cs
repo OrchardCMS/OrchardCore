@@ -6,7 +6,7 @@ namespace OrchardCore.Microsoft.Authentication;
 public sealed class Permissions : IPermissionProvider
 {
     public static readonly Permission ManageMicrosoftAuthentication
-        = new("ManageMicrosoftAuthentication", new LocalizationSource("Manage Microsoft Authentication settings", typeof(Permissions)));
+        = new("ManageMicrosoftAuthentication", LocalizationSource.Create("Manage Microsoft Authentication settings", typeof(Permissions)));
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

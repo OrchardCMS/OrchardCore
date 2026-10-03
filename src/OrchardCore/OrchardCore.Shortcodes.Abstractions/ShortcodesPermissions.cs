@@ -5,5 +5,5 @@ namespace OrchardCore.Shortcodes;
 
 public static class ShortcodesPermissions
 {
-    public static readonly Permission ManageShortcodeTemplates = new("ManageShortcodeTemplates", new LocalizationSource("Manage shortcode templates", typeof(ShortcodesPermissions)), isSecurityCritical: true);
+    public static readonly Permission ManageShortcodeTemplates = new("ManageShortcodeTemplates", LocalizationSource.Create("Manage shortcode templates", typeof(ShortcodesPermissions)), isSecurityCritical: true);
 }

@@ -11,7 +11,7 @@ public class HtmlLocalizerFactoryExtensionsTests
     [Fact]
     public void Localize_WithNullFactory_Throws()
     {
-        Assert.Throws<ArgumentNullException>("factory", () => ((IHtmlLocalizerFactory)null).Localize(new LocalizationSource("Hello")));
+        Assert.Throws<ArgumentNullException>("factory", () => ((IHtmlLocalizerFactory)null).Localize(LocalizationSource.Create("Hello")));
     }
 
     [Fact]
@@ -30,7 +30,7 @@ public class HtmlLocalizerFactoryExtensionsTests
     public void Localize_WithoutContext_KeepsSourceValue(string value)
     {
         var factory = new Mock<IHtmlLocalizerFactory>(MockBehavior.Strict);
-        var source = new LocalizationSource(value);
+        var source = LocalizationSource.Create(value);
 
         var localized = factory.Object.Localize(source);
 
@@ -44,7 +44,7 @@ public class HtmlLocalizerFactoryExtensionsTests
     {
         var factory = new Mock<IHtmlLocalizerFactory>(MockBehavior.Strict);
 
-        var localized = factory.Object.Localize(new LocalizationSource("<strong>Hello</strong>"));
+        var localized = factory.Object.Localize(LocalizationSource.Create("<strong>Hello</strong>"));
 
         Assert.Equal("<strong>Hello</strong>", Render(localized));
         factory.VerifyNoOtherCalls();
@@ -55,7 +55,7 @@ public class HtmlLocalizerFactoryExtensionsTests
     {
         var factory = new Mock<IHtmlLocalizerFactory>(MockBehavior.Strict);
 
-        var localized = factory.Object.Localize(new LocalizationSource("Hello {0}"));
+        var localized = factory.Object.Localize(LocalizationSource.Create("Hello {0}"));
 
         Assert.Throws<FormatException>(() => Render(localized));
     }
@@ -64,7 +64,7 @@ public class HtmlLocalizerFactoryExtensionsTests
     public void Localize_WithoutContextAndWithArguments_EncodesArgumentsOnly()
     {
         var factory = new Mock<IHtmlLocalizerFactory>(MockBehavior.Strict);
-        var source = new LocalizationSource("<strong>Hello {0}</strong>");
+        var source = LocalizationSource.Create("<strong>Hello {0}</strong>");
 
         var localized = factory.Object.Localize(source, "<Mike>");
 
@@ -76,7 +76,7 @@ public class HtmlLocalizerFactoryExtensionsTests
     [Fact]
     public void Localize_WithContext_UsesSourceType()
     {
-        var source = new LocalizationSource("Hello", typeof(HtmlLocalizerFactoryExtensionsTests));
+        var source = LocalizationSource.Create("Hello", typeof(HtmlLocalizerFactoryExtensionsTests));
         var localizer = new Mock<IHtmlLocalizer>(MockBehavior.Strict);
         localizer.Setup(l => l["Hello"]).Returns(new LocalizedHtmlString("Hello", "<strong>Bonjour</strong>"));
         var factory = new Mock<IHtmlLocalizerFactory>(MockBehavior.Strict);
@@ -94,7 +94,7 @@ public class HtmlLocalizerFactoryExtensionsTests
     [Fact]
     public void Localize_SameSourceWithDifferentFactories_DefersEncodingToRendering()
     {
-        var source = new LocalizationSource("Hello {0}", typeof(HtmlLocalizerFactoryExtensionsTests));
+        var source = LocalizationSource.Create("Hello {0}", typeof(HtmlLocalizerFactoryExtensionsTests));
         object[] arguments = ["<Mike>"];
         var localizer = new Mock<IStringLocalizer>(MockBehavior.Strict);
         localizer.Setup(l => l[source.Value]).Returns(new LocalizedString(source.Value, "<strong>Bonjour {0}</strong>"));

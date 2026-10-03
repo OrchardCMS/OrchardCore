@@ -11,8 +11,8 @@ public class DeploymentStepSerializationTests
     {
         var step = new StubDeploymentStep
         {
-            Category = new LocalizationSource("Content", typeof(StubDeploymentStep)),
-            Title = new LocalizationSource("All Content", typeof(StubDeploymentStep)),
+            Category = LocalizationSource.Create<StubDeploymentStep>("Content"),
+            Title = LocalizationSource.Create<StubDeploymentStep>("All Content"),
         };
 
         var json = JsonSerializer.Serialize(step, JOptions.Base);
@@ -29,8 +29,8 @@ public class DeploymentStepSerializationTests
         // would only be dead data.
         var step = new StubDeploymentStep
         {
-            Category = new LocalizationSource("Content", typeof(StubDeploymentStep)),
-            Title = new LocalizationSource("All Content", typeof(StubDeploymentStep)),
+            Category = LocalizationSource.Create<StubDeploymentStep>("Content"),
+            Title = LocalizationSource.Create<StubDeploymentStep>("All Content"),
         };
 
         var json = JsonSerializer.Serialize(step, JOptions.Base);

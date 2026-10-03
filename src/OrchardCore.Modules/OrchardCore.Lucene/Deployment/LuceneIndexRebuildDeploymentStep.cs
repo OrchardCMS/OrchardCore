@@ -8,8 +8,8 @@ namespace OrchardCore.Lucene.Deployment;
 /// </summary>
 public class LuceneIndexRebuildDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("Search", typeof(LuceneIndexRebuildDeploymentStep));
-    private static readonly LocalizationSource s_title = new("Rebuild Lucene Search Indices", typeof(LuceneIndexRebuildDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<LuceneIndexRebuildDeploymentStep>("Search");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<LuceneIndexRebuildDeploymentStep>("Rebuild Lucene Search Indices");
 
     public LuceneIndexRebuildDeploymentStep()
     {

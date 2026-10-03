@@ -11,12 +11,12 @@ public static class QueryPermissions
     /// <summary>
     /// Allows managing named queries.
     /// </summary>
-    public static readonly Permission ManageQueries = new("ManageQueries", new LocalizationSource("Manage queries", typeof(QueryPermissions)));
+    public static readonly Permission ManageQueries = new("ManageQueries", LocalizationSource.Create("Manage queries", typeof(QueryPermissions)));
 
     /// <summary>
     /// Allows executing all named queries through an API.
     /// </summary>
-    public static readonly Permission ExecuteApiAll = new("ExecuteApiAll", new LocalizationSource("Execute Api - All queries", typeof(QueryPermissions)), [ManageQueries]);
+    public static readonly Permission ExecuteApiAll = new("ExecuteApiAll", LocalizationSource.Create("Execute Api - All queries", typeof(QueryPermissions)), [ManageQueries]);
 
     private static readonly Permission s_executeApi = new("ExecuteApi_{0}", "Execute Api - {0}", [ManageQueries, ExecuteApiAll]);
 

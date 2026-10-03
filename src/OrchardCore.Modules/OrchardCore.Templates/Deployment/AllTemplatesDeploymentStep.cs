@@ -8,8 +8,8 @@ namespace OrchardCore.Templates.Deployment;
 /// </summary>
 public class AllTemplatesDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("Development", typeof(AllTemplatesDeploymentStep));
-    private static readonly LocalizationSource s_title = new("All Templates", typeof(AllTemplatesDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<AllTemplatesDeploymentStep>("Development");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<AllTemplatesDeploymentStep>("All Templates");
 
     public AllTemplatesDeploymentStep()
     {

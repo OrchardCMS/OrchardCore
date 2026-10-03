@@ -5,7 +5,7 @@ namespace OrchardCore.Facebook;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageFacebookApp = new("ManageFacebookApp", new LocalizationSource("View and edit the Facebook app.", typeof(Permissions)));
+    public static readonly Permission ManageFacebookApp = new("ManageFacebookApp", LocalizationSource.Create("View and edit the Facebook app.", typeof(Permissions)));
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

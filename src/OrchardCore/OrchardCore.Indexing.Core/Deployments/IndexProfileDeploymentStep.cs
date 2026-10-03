@@ -6,8 +6,8 @@ namespace OrchardCore.Indexing.Core.Deployments;
 
 public sealed class IndexProfileDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("Indexing", typeof(IndexProfileDeploymentStep));
-    private static readonly LocalizationSource s_title = new("Index Profiles", typeof(IndexProfileDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<IndexProfileDeploymentStep>("Indexing");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<IndexProfileDeploymentStep>("Index Profiles");
 
     public IndexProfileDeploymentStep()
     {

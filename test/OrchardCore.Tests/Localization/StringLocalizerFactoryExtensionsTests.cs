@@ -7,7 +7,7 @@ public class StringLocalizerFactoryExtensionsTests
     [Fact]
     public void Localize_WithNullFactory_Throws()
     {
-        Assert.Throws<ArgumentNullException>("factory", () => ((IStringLocalizerFactory)null).Localize(new LocalizationSource("Hello")));
+        Assert.Throws<ArgumentNullException>("factory", () => ((IStringLocalizerFactory)null).Localize(LocalizationSource.Create("Hello")));
     }
 
     [Fact]
@@ -27,7 +27,7 @@ public class StringLocalizerFactoryExtensionsTests
     public void Localize_WithoutContext_ReturnsSourceValue(string value)
     {
         var factory = new Mock<IStringLocalizerFactory>(MockBehavior.Strict);
-        var source = new LocalizationSource(value);
+        var source = LocalizationSource.Create(value);
 
         var localized = factory.Object.Localize(source);
 
@@ -40,7 +40,7 @@ public class StringLocalizerFactoryExtensionsTests
     public void Localize_WithoutContextAndWithArguments_FormatsAtDisplayTime()
     {
         var factory = new Mock<IStringLocalizerFactory>(MockBehavior.Strict);
-        var source = new LocalizationSource("Hello {0}");
+        var source = LocalizationSource.Create("Hello {0}");
 
         var localized = factory.Object.Localize(source, "Mike");
 
@@ -53,7 +53,7 @@ public class StringLocalizerFactoryExtensionsTests
     [Fact]
     public void Localize_WithContext_UsesSourceType()
     {
-        var source = new LocalizationSource("Hello", typeof(StringLocalizerFactoryExtensionsTests));
+        var source = LocalizationSource.Create("Hello", typeof(StringLocalizerFactoryExtensionsTests));
         var localizer = new Mock<IStringLocalizer>(MockBehavior.Strict);
         localizer.Setup(l => l["Hello"]).Returns(new LocalizedString("Hello", "Bonjour"));
         var factory = new Mock<IStringLocalizerFactory>(MockBehavior.Strict);
@@ -71,7 +71,7 @@ public class StringLocalizerFactoryExtensionsTests
     [Fact]
     public void Localize_WithContextAndArguments_FormatsTranslation()
     {
-        var source = new LocalizationSource("Hello {0}", typeof(StringLocalizerFactoryExtensionsTests));
+        var source = LocalizationSource.Create("Hello {0}", typeof(StringLocalizerFactoryExtensionsTests));
         object[] arguments = ["Mike"];
         var localizer = new Mock<IStringLocalizer>(MockBehavior.Strict);
         localizer.Setup(l => l[source.Value, arguments]).Returns(new LocalizedString(source.Value, "Bonjour Mike"));

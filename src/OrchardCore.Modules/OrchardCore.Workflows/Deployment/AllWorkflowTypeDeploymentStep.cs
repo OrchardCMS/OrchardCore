@@ -5,8 +5,8 @@ namespace OrchardCore.Workflows.Deployment;
 
 public class AllWorkflowTypeDeploymentStep : DeploymentStep
 {
-    private static readonly LocalizationSource s_category = new("Workflows", typeof(AllWorkflowTypeDeploymentStep));
-    private static readonly LocalizationSource s_title = new("All Workflow Types", typeof(AllWorkflowTypeDeploymentStep));
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<AllWorkflowTypeDeploymentStep>("Workflows");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<AllWorkflowTypeDeploymentStep>("All Workflow Types");
 
     public AllWorkflowTypeDeploymentStep()
     {
