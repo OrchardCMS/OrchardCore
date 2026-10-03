@@ -102,7 +102,7 @@ public sealed class AzureSettingsDisplayDriver : SiteDisplayDriver<AzureSmsSetti
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.PhoneNumber), S["The phone number is a required."]);
             }
-            else if (!_phoneFormatValidator.IsValid(model.PhoneNumber))
+            else if (!_phoneFormatValidator.Validate(model.PhoneNumber).Succeeded)
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.PhoneNumber), S["Invalid phone number."]);
             }
