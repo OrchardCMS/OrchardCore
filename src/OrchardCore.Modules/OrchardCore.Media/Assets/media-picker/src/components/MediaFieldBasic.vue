@@ -77,6 +77,7 @@
       :base-path="config.basePath || ''"
       :upload-files-url="config.uploadFilesUrl || ''"
       :signalr-enabled="config.signalrEnabled === true"
+      :disable-thumbnails="config.disableThumbnails ?? false"
       @select="onPickerSelect"
     />
 

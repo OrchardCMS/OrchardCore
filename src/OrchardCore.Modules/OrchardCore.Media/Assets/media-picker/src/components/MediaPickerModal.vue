@@ -73,6 +73,8 @@ const props = defineProps<{
   basePath: string;
   /** Upload endpoint URL */
   uploadFilesUrl: string;
+  /** Disables the thumbnails (grid) view in the library browser (OrchardCore_Media:DisableThumbnails). */
+  disableThumbnails?: boolean;
   /** When true, opens the modal immediately on mount (programmatic use). */
   autoOpen?: boolean;
   /** Called with selected items when confirmed (programmatic use). */
@@ -158,6 +160,7 @@ async function onOpened() {
       allowedExtensions: props.allowedExtensions,
       allowMultiple: allowMultipleSelection.value,
       signalrEnabled: props.signalrEnabled === true,
+      disableThumbnails: props.disableThumbnails ?? false,
       onSelectionChange: (count: number) => {
         selectedCount.value = count;
       },

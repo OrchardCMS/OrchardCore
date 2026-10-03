@@ -66,7 +66,7 @@
                       <option :value="100">100</option>
                     </select>
                   </div>
-                  <div class="settings-popover-row oc-media-popover-row">
+                  <div v-if="!thumbnailsDisabled" class="settings-popover-row oc-media-popover-row">
                     <span class="settings-popover-label oc-media-popover-label">{{ t.ThumbnailSize || 'Thumbnail size' }}</span>
                     <div class="oc-media-btn-group">
                       <button type="button"
@@ -108,7 +108,8 @@
                   <span class="ma-badge tw:ml-1" v-show="selectedFiles.length > 0">{{ selectedFiles.length
                     }}</span>
                 </a>
-                <a :title="gridView ? (t.TableView ?? 'Table view') : (t.GridView ?? 'Grid view')"
+                <a v-if="!thumbnailsDisabled"
+                  :title="gridView ? (t.TableView ?? 'Table view') : (t.GridView ?? 'Grid view')"
                   href="javascript:void(0)" class="ma-btn ma-btn-light tw:no-underline tw:mr-2"
                   @click="gridView = !gridView">
                   <fa-icon :icon="gridView ? 'fa-solid fa-list' : 'fa-solid fa-grip'"></fa-icon>
@@ -287,6 +288,12 @@ const props = defineProps({
     type: String,
     default: "false",
   },
+  // Disables the thumbnails (grid) view: hides the grid/list toggle and always uses the list view.
+  // Driven by the OrchardCore_Media:DisableThumbnails appsettings option.
+  disableThumbnails: {
+    type: String,
+    default: "false",
+  },
   oidcAuthority: {
     type: String,
     default: "",
@@ -444,7 +451,14 @@ async function bootstrapLibrary() {
 
 void bootstrapLibrary();
 
-const { setLocalStorage, gridView, pageSize, largeThumbs } = useLocalStorage();
+const { setLocalStorage, gridView, pageSize, largeThumbs, disableGridView } = useLocalStorage();
+
+// When thumbnails are disabled site-wide, enforce the list view even if a grid preference
+// was persisted (and restored later by setLocalStorage) from a previous session.
+const thumbnailsDisabled = parseBoolean(props.disableThumbnails, false);
+if (thumbnailsDisabled) {
+  disableGridView();
+}
 
 const thumbSize = 480;
 
