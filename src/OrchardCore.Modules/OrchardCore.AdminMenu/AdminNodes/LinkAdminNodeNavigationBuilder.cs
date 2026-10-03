@@ -54,6 +54,7 @@ public class LinkAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
             }
 
             // Add the actual link.
+            itemBuilder.Id(node.UniqueId);
             itemBuilder.MenuName(node.MenuName);
             itemBuilder.Url(nodeLinkUrl);
             itemBuilder.Target(node.Target);
