@@ -3,8 +3,10 @@ using System.Text;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Http.Services;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
@@ -84,20 +86,31 @@ public class HttpRequestTask : TaskActivity<HttpRequestTask>
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly UrlEncoder _urlEncoder;
+    private readonly ILogger _logger;
 
     protected readonly IStringLocalizer S;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="HttpRequestTask"/> class.
+    /// </summary>
+    /// <param name="expressionEvaluator">The workflow expression evaluator.</param>
+    /// <param name="urlEncoder">The URL encoder.</param>
+    /// <param name="httpClientFactory">The HTTP client factory.</param>
+    /// <param name="localizer">The string localizer.</param>
+    /// <param name="logger">The logger.</param>
     public HttpRequestTask(
         IWorkflowExpressionEvaluator expressionEvaluator,
         UrlEncoder urlEncoder,
         IHttpClientFactory httpClientFactory,
-        IStringLocalizer<HttpRequestTask> localizer
+        IStringLocalizer<HttpRequestTask> localizer,
+        ILogger<HttpRequestTask> logger
     )
     {
         _expressionEvaluator = expressionEvaluator;
         _urlEncoder = urlEncoder;
         _httpClientFactory = httpClientFactory;
         S = localizer;
+        _logger = logger;
     }
 
     public override LocalizedString DisplayText => S["Http Request Task"];
@@ -167,7 +180,20 @@ public class HttpRequestTask : TaskActivity<HttpRequestTask>
 
         var httpMethod = HttpMethod;
         var url = await _expressionEvaluator.EvaluateAsync(Url, workflowContext, _urlEncoder);
-        var request = new HttpRequestMessage(new HttpMethod(httpMethod), url);
+
+        if (!HttpRequestTaskHttpClient.TryCreateUri(url, out var destination))
+        {
+            _logger.LogWarning("The HTTP request workflow task did not send a request because its destination URL was invalid.");
+            return Outcome("UnhandledHttpStatus");
+        }
+
+        if (headers.Any(header => string.Equals(header.Key, "Host", StringComparison.OrdinalIgnoreCase)))
+        {
+            _logger.LogWarning("The HTTP request workflow task did not send a request because overriding the Host header is not allowed.");
+            return Outcome("UnhandledHttpStatus");
+        }
+
+        using var request = new HttpRequestMessage(new HttpMethod(httpMethod), destination);
         foreach (var header in headers)
         {
             request.Headers.TryAddWithoutValidation(header.Key, header.Value);
@@ -180,24 +206,37 @@ public class HttpRequestTask : TaskActivity<HttpRequestTask>
             request.Content = new StringContent(body, Encoding.UTF8, contentType);
         }
 
-        var httpClient = _httpClientFactory.CreateClient();
+        var httpClient = _httpClientFactory.CreateClient(HttpRequestTaskHttpClient.Name);
 
-        var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead);
+        HttpResponseMessage response;
 
-        var responseCodes = ParseResponseCodes(HttpResponseCodes);
-
-        var outcome = responseCodes.FirstOrDefault(x => x == (int)response.StatusCode);
-
-        workflowContext.LastResult = new
+        try
         {
-            Body = await response.Content.ReadAsStringAsync(),
-            Headers = response.Headers.ToDictionary(x => x.Key),
-            response.StatusCode,
-            response.ReasonPhrase,
-            response.IsSuccessStatusCode,
-        };
+            response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, workflowContext.CancellationToken);
+        }
+        catch (HttpRequestException exception) when (HttpRequestTaskHttpClient.IsBlockedDestination(exception))
+        {
+            _logger.LogWarning("The HTTP request workflow task did not send a request because host '{Host}' resolved to a prohibited destination.", destination.IdnHost);
+            return Outcome("UnhandledHttpStatus");
+        }
 
-        return Outcome(outcome != 0 ? outcome.ToString() : "UnhandledHttpStatus");
+        using (response)
+        {
+            var responseCodes = ParseResponseCodes(HttpResponseCodes);
+
+            var outcome = responseCodes.FirstOrDefault(x => x == (int)response.StatusCode);
+
+            workflowContext.LastResult = new
+            {
+                Body = await response.Content.ReadAsStringAsync(workflowContext.CancellationToken),
+                Headers = response.Headers.ToDictionary(x => x.Key),
+                response.StatusCode,
+                response.ReasonPhrase,
+                response.IsSuccessStatusCode,
+            };
+
+            return Outcome(outcome != 0 ? outcome.ToString() : "UnhandledHttpStatus");
+        }
     }
 
     private static IEnumerable<KeyValuePair<string, string>> ParseHeaders(string text)
