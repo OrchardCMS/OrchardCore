@@ -33,8 +33,10 @@ public sealed class Migrations : DataMigration
     public async Task<int> CreateAsync()
     {
         await MigrateTwilioAuthTokenAsync();
-        return 1;
+        return 2;
     }
+
+    public Task<int> UpdateFrom1Async() => CreateAsync();
 
     private async Task MigrateTwilioAuthTokenAsync()
     {
@@ -52,17 +54,7 @@ public sealed class Migrations : DataMigration
         try
         {
             var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
-            string decryptedAuthToken;
-
-            try
-            {
-                decryptedAuthToken = protector.Unprotect(settings.AuthToken);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "Could not decrypt Twilio auth token. It may not be encrypted or may be corrupted. Attempting to use as plain text.");
-                decryptedAuthToken = settings.AuthToken;
-            }
+            var decryptedAuthToken = protector.Unprotect(settings.AuthToken);
 
             var secretName = "Twilio.AuthToken";
             var secret = new TextSecret { Text = decryptedAuthToken };
@@ -87,6 +79,7 @@ public sealed class Migrations : DataMigration
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to migrate Twilio auth token to secrets.");
+            throw;
         }
     }
 }

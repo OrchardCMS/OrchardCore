@@ -1,4 +1,3 @@
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Deployment;
@@ -43,6 +42,8 @@ public sealed class SecretsDeploymentSource : DeploymentSourceBase<SecretsDeploy
                 {
                     ["Store"] = info.Store,
                     ["Type"] = info.Type,
+                    ["Description"] = info.Description,
+                    ["ExpiresUtc"] = info.ExpiresUtc,
                 },
             };
 
@@ -51,22 +52,28 @@ public sealed class SecretsDeploymentSource : DeploymentSourceBase<SecretsDeploy
             {
                 try
                 {
-                    var secret = await GetSecretAsync(info.Name, info.Type);
-                    if (secret != null)
-                    {
-                        var encrypted = await _encryptionService.EncryptAsync(secret, step.EncryptionKeyName);
-                        secretEntry["EncryptedKey"] = encrypted.EncryptedKey;
-                        secretEntry["EncryptedData"] = encrypted.EncryptedData;
-                        secretEntry["IV"] = encrypted.IV;
-                    }
+                    var secret = await _secretManager.GetSecretAsync<ISecret>(info.Name, info.Store)
+                        ?? throw new InvalidOperationException($"Secret '{info.Name}' could not be read from '{info.Store}'.");
+                    var encrypted = await _encryptionService.EncryptAsync(secret, step.EncryptionKeyName, info);
+                    secretEntry["Version"] = encrypted.Version;
+                    secretEntry["Tag"] = encrypted.Tag;
+                    secretEntry["EncryptedKey"] = encrypted.EncryptedKey;
+                    secretEntry["EncryptedData"] = encrypted.EncryptedData;
+                    secretEntry["IV"] = encrypted.IV;
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Failed to encrypt secret '{SecretName}'. It will be exported without a value.", info.Name);
+                    _logger.LogError(ex, "Failed to encrypt secret '{SecretName}'.", info.Name);
+                    throw;
                 }
             }
 
-            secrets[info.Name] = secretEntry;
+            if (secrets.ContainsKey(info.Name))
+            {
+                throw new InvalidOperationException($"Secret name '{info.Name}' exists in multiple stores. Resolve the duplicate before exporting.");
+            }
+
+            secrets.Add(info.Name, secretEntry);
         }
 
         var stepJson = new JsonObject
@@ -81,16 +88,5 @@ public sealed class SecretsDeploymentSource : DeploymentSourceBase<SecretsDeploy
         }
 
         result.Steps.Add(stepJson);
-    }
-
-    private async Task<ISecret> GetSecretAsync(string name, string type)
-    {
-        return type switch
-        {
-            nameof(TextSecret) => await _secretManager.GetSecretAsync<TextSecret>(name),
-            nameof(RsaKeySecret) => await _secretManager.GetSecretAsync<RsaKeySecret>(name),
-            nameof(X509Secret) => await _secretManager.GetSecretAsync<X509Secret>(name),
-            _ => null,
-        };
     }
 }

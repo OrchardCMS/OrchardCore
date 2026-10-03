@@ -31,8 +31,10 @@ public sealed class Migrations : DataMigration
     {
         await MigrateMicrosoftAccountSecretAsync();
 
-        return 1;
+        return 2;
     }
+
+    public Task<int> UpdateFrom1Async() => CreateAsync();
 
     private async Task MigrateMicrosoftAccountSecretAsync()
     {
@@ -69,6 +71,7 @@ public sealed class Migrations : DataMigration
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to migrate Microsoft Account app secret. The secret may have been encrypted with a different key.");
+            throw;
         }
     }
 }

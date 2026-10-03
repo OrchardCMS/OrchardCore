@@ -86,8 +86,8 @@ public class DatabaseSecretStore : ISecretStore
             EncryptedData = encryptedData,
             CreatedUtc = existingEntry?.CreatedUtc ?? now,
             UpdatedUtc = now,
-            Description = options?.Description ?? existingEntry?.Description,
-            ExpiresUtc = options?.ExpiresUtc ?? existingEntry?.ExpiresUtc,
+            Description = options == null ? existingEntry?.Description : options.Description,
+            ExpiresUtc = options == null ? existingEntry?.ExpiresUtc : options.ExpiresUtc,
         };
 
         await _documentManager.UpdateAsync(document);
@@ -116,6 +116,7 @@ public class DatabaseSecretStore : ISecretStore
             Name = entry.Name,
             Store = Name,
             Type = entry.Type,
+            Description = entry.Description,
             CreatedUtc = entry.CreatedUtc,
             UpdatedUtc = entry.UpdatedUtc,
             ExpiresUtc = entry.ExpiresUtc,

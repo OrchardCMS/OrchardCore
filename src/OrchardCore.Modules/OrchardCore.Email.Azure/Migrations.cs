@@ -32,8 +32,10 @@ public sealed class Migrations : DataMigration
     public async Task<int> CreateAsync()
     {
         await MigrateConnectionStringAsync();
-        return 1;
+        return 2;
     }
+
+    public Task<int> UpdateFrom1Async() => CreateAsync();
 
     private async Task MigrateConnectionStringAsync()
     {
@@ -51,17 +53,7 @@ public sealed class Migrations : DataMigration
         try
         {
             var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
-            string decryptedConnectionString;
-
-            try
-            {
-                decryptedConnectionString = protector.Unprotect(settings.ConnectionString);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "Could not decrypt Azure Email connection string. It may not be encrypted or may be corrupted. Attempting to use as plain text.");
-                decryptedConnectionString = settings.ConnectionString;
-            }
+            var decryptedConnectionString = protector.Unprotect(settings.ConnectionString);
 
             var secretName = "AzureEmail.ConnectionString";
             var secret = new TextSecret { Text = decryptedConnectionString };
@@ -86,6 +78,7 @@ public sealed class Migrations : DataMigration
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to migrate Azure Email connection string to secrets.");
+            throw;
         }
     }
 }

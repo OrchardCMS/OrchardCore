@@ -32,8 +32,10 @@ public sealed class Migrations : DataMigration
     public async Task<int> CreateAsync()
     {
         await MigrateAppSecretAsync();
-        return 1;
+        return 2;
     }
+
+    public Task<int> UpdateFrom1Async() => CreateAsync();
 
     private async Task MigrateAppSecretAsync()
     {
@@ -51,17 +53,7 @@ public sealed class Migrations : DataMigration
         try
         {
             var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
-            string decryptedAppSecret;
-
-            try
-            {
-                decryptedAppSecret = protector.Unprotect(settings.AppSecret);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "Could not decrypt Facebook app secret. It may not be encrypted or may be corrupted. Attempting to use as plain text.");
-                decryptedAppSecret = settings.AppSecret;
-            }
+            var decryptedAppSecret = protector.Unprotect(settings.AppSecret);
 
             var secretName = "Facebook.AppSecret";
             var secret = new TextSecret { Text = decryptedAppSecret };
@@ -86,6 +78,7 @@ public sealed class Migrations : DataMigration
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to migrate Facebook app secret to secrets.");
+            throw;
         }
     }
 }

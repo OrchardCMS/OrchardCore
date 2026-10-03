@@ -2,7 +2,7 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(Model.IsNew ? T["Create {0}", Model.SecretTypeDisplayName] : T["Edit Secret"])</h1></zone>
 
-<form asp-action="@(Model.IsNew ? "Create" : "Edit")" method="post" class="no-multisubmit">
+<form asp-action="@(Model.IsNew ? "Create" : "Edit")" asp-route-store="@(Model.IsNew ? null : Model.Store)" method="post" class="no-multisubmit">
     <input type="hidden" asp-for="SecretType" />
 
     <div class="mb-3">
@@ -21,7 +21,7 @@
 
     <div class="mb-3">
         <label asp-for="Store" class="form-label">@T["Store"]</label>
-        @if (Model.AvailableStores.Count > 1)
+        @if (Model.IsNew && Model.AvailableStores.Count > 1)
         {
             <select asp-for="Store" asp-items="@(new SelectList(Model.AvailableStores))" class="form-select">
             </select>
@@ -30,6 +30,7 @@
         {
             <input asp-for="Store" class="form-control" readonly />
         }
+        <span asp-validation-for="Store" class="text-danger"></span>
         <span class="hint">@T["The secret store where this secret will be saved."]</span>
     </div>
 

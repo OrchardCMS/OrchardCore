@@ -12,58 +12,71 @@ namespace OrchardCore.Secrets.Services;
 public class SecretEncryptionService : ISecretEncryptionService
 {
     private readonly ISecretManager _secretManager;
+    private readonly IEnumerable<ISecretTypeProvider> _providers;
 
     public SecretEncryptionService(
-        ISecretManager secretManager)
+        ISecretManager secretManager,
+        IEnumerable<ISecretTypeProvider> providers)
     {
         _secretManager = secretManager;
+        _providers = providers;
     }
 
     /// <inheritdoc />
-    public async Task<EncryptedSecretData> EncryptAsync(ISecret secret, string encryptionKeyName)
+    public async Task<EncryptedSecretData> EncryptAsync(ISecret secret, string encryptionKeyName, SecretInfo info)
     {
         ArgumentNullException.ThrowIfNull(secret);
         ArgumentException.ThrowIfNullOrWhiteSpace(encryptionKeyName);
+        ArgumentNullException.ThrowIfNull(info);
 
         // Get the encryption key (can be RsaKeySecret or X509Secret)
         using var rsa = await GetRsaForEncryptionAsync(encryptionKeyName);
 
-        // Serialize the secret to JSON
-        var secretJson = JsonSerializer.Serialize(secret, secret.GetType());
-        var secretBytes = Encoding.UTF8.GetBytes(secretJson);
-
-        // Generate a random AES key and IV
-        using var aes = Aes.Create();
-        aes.KeySize = 256;
-        aes.Mode = CipherMode.CBC;
-        aes.Padding = PaddingMode.PKCS7;
-        aes.GenerateKey();
-        aes.GenerateIV();
-
-        // Encrypt the secret data with AES
-        byte[] encryptedData;
-        using (var encryptor = aes.CreateEncryptor())
+        var provider = GetProvider(info.Type);
+        if (secret.GetType() != provider.SecretType)
         {
-            encryptedData = encryptor.TransformFinalBlock(secretBytes, 0, secretBytes.Length);
+            throw new InvalidOperationException("The secret type does not match the export metadata.");
         }
 
-        // Encrypt the AES key with RSA
-        var encryptedKey = rsa.Encrypt(aes.Key, RSAEncryptionPadding.OaepSHA256);
-
-        return new EncryptedSecretData
+        var secretJson = provider.Serialize(secret);
+        var secretBytes = Encoding.UTF8.GetBytes(secretJson);
+        var aesKey = RandomNumberGenerator.GetBytes(32);
+        var nonce = RandomNumberGenerator.GetBytes(12);
+        var tag = new byte[16];
+        var ciphertext = new byte[secretBytes.Length];
+        try
         {
-            EncryptedKey = Convert.ToBase64String(encryptedKey),
-            EncryptedData = Convert.ToBase64String(encryptedData),
-            IV = Convert.ToBase64String(aes.IV),
-        };
+            using var aes = new AesGcm(aesKey, tag.Length);
+            aes.Encrypt(nonce, secretBytes, ciphertext, tag, GetAssociatedData(info));
+
+            return new EncryptedSecretData
+            {
+                Version = 1,
+                EncryptedKey = Convert.ToBase64String(rsa.Encrypt(aesKey, RSAEncryptionPadding.OaepSHA256)),
+                EncryptedData = Convert.ToBase64String(ciphertext),
+                IV = Convert.ToBase64String(nonce),
+                Tag = Convert.ToBase64String(tag),
+            };
+        }
+        finally
+        {
+            CryptographicOperations.ZeroMemory(aesKey);
+            CryptographicOperations.ZeroMemory(secretBytes);
+        }
     }
 
     /// <inheritdoc />
-    public async Task<ISecret> DecryptAsync(EncryptedSecretData encryptedData, string decryptionKeyName, string secretType)
+    public async Task<ISecret> DecryptAsync(EncryptedSecretData encryptedData, string decryptionKeyName, SecretInfo info)
     {
         ArgumentNullException.ThrowIfNull(encryptedData);
         ArgumentException.ThrowIfNullOrWhiteSpace(decryptionKeyName);
-        ArgumentException.ThrowIfNullOrWhiteSpace(secretType);
+        ArgumentNullException.ThrowIfNull(info);
+        if (encryptedData.Version != 1)
+        {
+            throw new CryptographicException("Unsupported secret encryption version. Unauthenticated legacy exports must be re-exported.");
+        }
+
+        var provider = GetProvider(info.Type);
 
         // Get the decryption key (must have private key)
         using var rsa = await GetRsaForDecryptionAsync(decryptionKeyName);
@@ -72,26 +85,20 @@ public class SecretEncryptionService : ISecretEncryptionService
         var encryptedKey = Convert.FromBase64String(encryptedData.EncryptedKey);
         var aesKey = rsa.Decrypt(encryptedKey, RSAEncryptionPadding.OaepSHA256);
 
-        // Decrypt the secret data with AES
-        using var aes = Aes.Create();
-        aes.KeySize = 256;
-        aes.Mode = CipherMode.CBC;
-        aes.Padding = PaddingMode.PKCS7;
-        aes.Key = aesKey;
-        aes.IV = Convert.FromBase64String(encryptedData.IV);
-
-        byte[] decryptedData;
-        using (var decryptor = aes.CreateDecryptor())
+        var ciphertext = Convert.FromBase64String(encryptedData.EncryptedData);
+        var plaintext = new byte[ciphertext.Length];
+        try
         {
-            var encryptedBytes = Convert.FromBase64String(encryptedData.EncryptedData);
-            decryptedData = decryptor.TransformFinalBlock(encryptedBytes, 0, encryptedBytes.Length);
+            using var aes = new AesGcm(aesKey, 16);
+            aes.Decrypt(Convert.FromBase64String(encryptedData.IV), ciphertext,
+                Convert.FromBase64String(encryptedData.Tag), plaintext, GetAssociatedData(info));
+            return provider.Deserialize(Encoding.UTF8.GetString(plaintext));
         }
-
-        // Deserialize the secret
-        var secretJson = Encoding.UTF8.GetString(decryptedData);
-        var type = GetSecretType(secretType);
-
-        return (ISecret)JsonSerializer.Deserialize(secretJson, type);
+        finally
+        {
+            CryptographicOperations.ZeroMemory(aesKey);
+            CryptographicOperations.ZeroMemory(plaintext);
+        }
     }
 
     private async Task<RSA> GetRsaForEncryptionAsync(string keyName)
@@ -114,13 +121,13 @@ public class SecretEncryptionService : ISecretEncryptionService
         var x509Secret = await _secretManager.GetSecretAsync<X509Secret>(keyName);
         if (x509Secret != null)
         {
-            var cert = x509Secret.GetCertificate();
+            using var cert = x509Secret.GetCertificate();
             if (cert == null)
             {
                 throw new InvalidOperationException($"Certificate for '{keyName}' was not found in the certificate store.");
             }
 
-            var rsa = cert.GetRSAPublicKey();
+            using var rsa = cert.GetRSAPublicKey();
             if (rsa == null)
             {
                 throw new InvalidOperationException($"Certificate '{keyName}' does not have an RSA public key.");
@@ -155,7 +162,7 @@ public class SecretEncryptionService : ISecretEncryptionService
         var x509Secret = await _secretManager.GetSecretAsync<X509Secret>(keyName);
         if (x509Secret != null)
         {
-            var cert = x509Secret.GetCertificate();
+            using var cert = x509Secret.GetCertificate();
             if (cert == null)
             {
                 throw new InvalidOperationException($"Certificate for '{keyName}' was not found in the certificate store.");
@@ -166,7 +173,7 @@ public class SecretEncryptionService : ISecretEncryptionService
                 throw new InvalidOperationException($"Certificate '{keyName}' does not have a private key for decryption.");
             }
 
-            var rsa = cert.GetRSAPrivateKey();
+            using var rsa = cert.GetRSAPrivateKey();
             if (rsa == null)
             {
                 throw new InvalidOperationException($"Certificate '{keyName}' does not have an RSA private key.");
@@ -181,14 +188,18 @@ public class SecretEncryptionService : ISecretEncryptionService
         throw new InvalidOperationException($"Decryption key '{keyName}' was not found. Expected RsaKeySecret or X509Secret.");
     }
 
-    private static Type GetSecretType(string typeName)
-    {
-        return typeName switch
+    private ISecretTypeProvider GetProvider(string typeName) =>
+        _providers.FirstOrDefault(p => p.Name == typeName || p.SecretType.FullName == typeName)
+        ?? throw new InvalidOperationException($"Unknown secret type: {typeName}");
+
+    private static byte[] GetAssociatedData(SecretInfo info) =>
+        JsonSerializer.SerializeToUtf8Bytes(new
         {
-            nameof(TextSecret) => typeof(TextSecret),
-            nameof(RsaKeySecret) => typeof(RsaKeySecret),
-            nameof(X509Secret) => typeof(X509Secret),
-            _ => throw new InvalidOperationException($"Unknown secret type: {typeName}"),
-        };
-    }
+            Version = 1,
+            info.Name,
+            info.Store,
+            info.Type,
+            info.Description,
+            info.ExpiresUtc,
+        });
 }

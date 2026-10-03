@@ -7,6 +7,16 @@ namespace OrchardCore.Secrets.Models;
 public class EncryptedSecretData
 {
     /// <summary>
+    /// Gets or sets the authenticated encryption envelope version.
+    /// </summary>
+    public int Version { get; set; }
+
+    /// <summary>
+    /// Gets or sets the AES-GCM authentication tag (Base64).
+    /// </summary>
+    public string Tag { get; set; }
+
+    /// <summary>
     /// Gets or sets the AES key encrypted with RSA public key (Base64).
     /// </summary>
     public string EncryptedKey { get; set; }
@@ -17,7 +27,7 @@ public class EncryptedSecretData
     public string EncryptedData { get; set; }
 
     /// <summary>
-    /// Gets or sets the AES initialization vector (Base64).
+    /// Gets or sets the AES-GCM nonce (Base64).
     /// </summary>
     public string IV { get; set; }
 }

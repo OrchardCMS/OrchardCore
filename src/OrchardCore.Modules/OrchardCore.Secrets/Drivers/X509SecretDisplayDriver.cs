@@ -3,6 +3,7 @@ using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Secrets.ViewModels;
 
 namespace OrchardCore.Secrets.Drivers;
@@ -59,9 +60,27 @@ public sealed class X509SecretDisplayDriver : DisplayDriver<ISecret, X509Secret>
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        secret.StoreLocation = model.StoreLocation;
-        secret.StoreName = model.StoreName;
-        secret.Thumbprint = model.Thumbprint;
+        var parts = model.SelectedCertificate?.Split('|');
+        if (parts is not { Length: 3 } ||
+            !Enum.TryParse<StoreLocation>(parts[0], out var location) || !Enum.IsDefined(location) ||
+            !Enum.TryParse<StoreName>(parts[1], out var name) || !Enum.IsDefined(name) ||
+            string.IsNullOrWhiteSpace(parts[2]))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.SelectedCertificate), S["Select a valid certificate."]);
+            return Edit(secret, context);
+        }
+
+        var candidate = new X509Secret { StoreLocation = location, StoreName = name, Thumbprint = parts[2] };
+        using var certificate = candidate.GetCertificate();
+        if (certificate == null || certificate.Archived || !certificate.HasPrivateKey)
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.SelectedCertificate), S["The selected certificate with a private key was not found in its store."]);
+            return Edit(secret, context);
+        }
+
+        secret.StoreLocation = candidate.StoreLocation;
+        secret.StoreName = candidate.StoreName;
+        secret.Thumbprint = candidate.Thumbprint;
 
         return Edit(secret, context);
     }

@@ -112,28 +112,36 @@ public sealed class RsaSecretDisplayDriver : DisplayDriver<ISecret, RsaKeySecret
         }
 
         // Validate the keys
-        if (secret.IncludesPrivateKey && !string.IsNullOrEmpty(secret.PrivateKey))
+        if (secret.IncludesPrivateKey && string.IsNullOrEmpty(secret.PrivateKey))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.NewPrivateKey), S["Generate a new key pair to include a private key."]);
+        }
+        else if (secret.IncludesPrivateKey)
         {
             try
             {
                 using var rsa = RSA.Create();
                 rsa.ImportRSAPrivateKey(Convert.FromBase64String(secret.PrivateKey), out _);
             }
-            catch (CryptographicException)
+            catch (Exception ex) when (ex is CryptographicException or FormatException)
             {
                 var fieldName = context.IsNew ? nameof(model.PrivateKey) : nameof(model.NewPrivateKey);
                 context.Updater.ModelState.AddModelError(Prefix, fieldName, S["The private key cannot be decoded."]);
             }
         }
 
-        if (!string.IsNullOrEmpty(secret.PublicKey))
+        if (string.IsNullOrEmpty(secret.PublicKey))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.PublicKey), S["The public key is required."]);
+        }
+        else
         {
             try
             {
                 using var rsa = RSA.Create();
                 rsa.ImportRSAPublicKey(Convert.FromBase64String(secret.PublicKey), out _);
             }
-            catch (CryptographicException)
+            catch (Exception ex) when (ex is CryptographicException or FormatException)
             {
                 var fieldName = context.IsNew ? nameof(model.PublicKey) : nameof(model.NewPublicKey);
                 context.Updater.ModelState.AddModelError(Prefix, fieldName, S["The public key cannot be decoded."]);

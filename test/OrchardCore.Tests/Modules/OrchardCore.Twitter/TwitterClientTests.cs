@@ -1,6 +1,7 @@
 #pragma warning disable CS0618 // Type or member is obsolete
 
 using OrchardCore.Modules;
+using OrchardCore.Secrets;
 using OrchardCore.Twitter.Services;
 using OrchardCore.Twitter.Settings;
 using OrchardCore.Twitter.Signin.Settings;
@@ -44,6 +45,7 @@ public class TwitterClientTests
         _mockHttpMessageHandler = new Mock<TwitterClientMessageHandler>(
             Mock.Of<IClock>(i => i.UtcNow == new DateTime(ticks)),
             Options.Create(settings),
+            Mock.Of<ISecretManager>(),
             _mockDataProtectionProvider);
     }
 

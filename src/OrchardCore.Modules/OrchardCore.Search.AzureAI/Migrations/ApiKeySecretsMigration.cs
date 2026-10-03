@@ -32,8 +32,10 @@ public sealed class ApiKeySecretsMigration : DataMigration
     {
         await MigrateApiKeySecretAsync();
 
-        return 1;
+        return 2;
     }
+
+    public Task<int> UpdateFrom1Async() => CreateAsync();
 
     private async Task MigrateApiKeySecretAsync()
     {
@@ -70,6 +72,7 @@ public sealed class ApiKeySecretsMigration : DataMigration
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to migrate Azure AI Search API key. The key may have been encrypted with a different key.");
+            throw;
         }
     }
 }

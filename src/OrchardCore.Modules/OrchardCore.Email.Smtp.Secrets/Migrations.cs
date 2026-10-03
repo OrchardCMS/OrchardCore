@@ -35,8 +35,10 @@ public sealed class Migrations : DataMigration
     public async Task<int> CreateAsync()
     {
         await MigrateSmtpPasswordAsync();
-        return 1;
+        return 2;
     }
+
+    public Task<int> UpdateFrom1Async() => CreateAsync();
 
     private async Task MigrateSmtpPasswordAsync()
     {
@@ -57,17 +59,7 @@ public sealed class Migrations : DataMigration
         {
             // Decrypt the password
             var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
-            string decryptedPassword;
-
-            try
-            {
-                decryptedPassword = protector.Unprotect(smtpSettings.Password);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "Could not decrypt SMTP password. It may not be encrypted or may be corrupted. Attempting to use as plain text.");
-                decryptedPassword = smtpSettings.Password;
-            }
+            var decryptedPassword = protector.Unprotect(smtpSettings.Password);
 
             // Create the secret
             var secretName = "Smtp.Password";
@@ -92,6 +84,7 @@ public sealed class Migrations : DataMigration
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to migrate SMTP password to secrets.");
+            throw;
         }
     }
 }

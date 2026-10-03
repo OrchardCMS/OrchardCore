@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace OrchardCore.Secrets;
 
 /// <summary>
@@ -15,4 +17,9 @@ public abstract class SecretTypeProvider<TSecret> : ISecretTypeProvider where TS
     public Type SecretType => typeof(TSecret);
 
     public ISecret Create() => new TSecret();
+
+    public virtual string Serialize(ISecret secret) => JsonSerializer.Serialize(secret, SecretType);
+
+    public virtual ISecret Deserialize(string json) =>
+        JsonSerializer.Deserialize<TSecret>(json) ?? throw new JsonException($"The payload for secret type '{Name}' is null.");
 }

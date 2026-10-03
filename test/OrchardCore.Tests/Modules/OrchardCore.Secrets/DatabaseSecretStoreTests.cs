@@ -319,6 +319,52 @@ public class DatabaseSecretStoreTests
     }
 
     [Fact]
+    public async Task SaveSecretAsync_ClearsMetadata_WhenOptionsAreSupplied()
+    {
+        var document = new SecretsDocument
+        {
+            Secrets =
+            {
+                ["secret"] = new SecretEntry
+                {
+                    Name = "secret",
+                    Description = "old description",
+                    ExpiresUtc = DateTime.UtcNow.AddDays(1),
+                },
+            },
+        };
+        _documentManagerMock.Setup(m => m.GetOrCreateMutableAsync()).ReturnsAsync(document);
+        _dataProtectorMock.Setup(p => p.Protect(It.IsAny<byte[]>())).Returns([1]);
+
+        await _store.SaveSecretAsync("secret", new TextSecret { Text = "value" }, new SecretSaveOptions());
+
+        Assert.Null(document.Secrets["secret"].Description);
+        Assert.Null(document.Secrets["secret"].ExpiresUtc);
+    }
+
+    [Fact]
+    public async Task SaveSecretAsync_PreservesMetadata_WhenOptionsAreOmitted()
+    {
+        var expiration = DateTime.UtcNow.AddDays(1);
+        var document = new SecretsDocument
+        {
+            Secrets =
+            {
+                ["secret"] = new SecretEntry { Name = "secret", Description = "description", ExpiresUtc = expiration },
+            },
+        };
+        _documentManagerMock.Setup(m => m.GetOrCreateMutableAsync()).ReturnsAsync(document);
+        _documentManagerMock.Setup(m => m.GetOrCreateImmutableAsync()).ReturnsAsync(document);
+        _dataProtectorMock.Setup(p => p.Protect(It.IsAny<byte[]>())).Returns([1]);
+
+        await _store.SaveSecretAsync("secret", new TextSecret { Text = "value" });
+
+        var info = Assert.Single(await _store.GetSecretInfosAsync());
+        Assert.Equal("description", info.Description);
+        Assert.Equal(expiration, info.ExpiresUtc);
+    }
+
+    [Fact]
     public async Task SaveSecretAsync_ThrowsArgumentNullException_WhenNameIsNull()
     {
         // Arrange

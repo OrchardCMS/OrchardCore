@@ -29,4 +29,14 @@ public interface ISecretTypeProvider
     /// Creates a new instance of the secret.
     /// </summary>
     ISecret Create();
+
+    /// <summary>
+    /// Serializes a secret of this type for external storage and deployment.
+    /// </summary>
+    string Serialize(ISecret secret);
+
+    /// <summary>
+    /// Deserializes a secret of this type from external storage or deployment.
+    /// </summary>
+    ISecret Deserialize(string json);
 }

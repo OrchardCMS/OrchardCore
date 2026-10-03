@@ -39,8 +39,10 @@ public class TwitterSettingsService : ITwitterSettingsService
         {
             aspect.ConsumerKey = settings.ConsumerKey;
             aspect.ConsumerSecret = settings.ConsumerSecret;
+            aspect.ConsumerSecretSecretName = settings.ConsumerSecretSecretName;
             aspect.AccessToken = settings.AccessToken;
             aspect.AccessTokenSecret = settings.AccessTokenSecret;
+            aspect.AccessTokenSecretSecretName = settings.AccessTokenSecretSecretName;
         });
 
         await _siteService.UpdateSiteSettingsAsync(container);
@@ -55,7 +57,7 @@ public class TwitterSettingsService : ITwitterSettingsService
             yield return new ValidationResult(S["ConsumerKey is required"], new string[] { nameof(settings.ConsumerKey) });
         }
 
-        if (string.IsNullOrWhiteSpace(settings.ConsumerSecret))
+        if (string.IsNullOrWhiteSpace(settings.ConsumerSecretSecretName) && string.IsNullOrWhiteSpace(settings.ConsumerSecret))
         {
             yield return new ValidationResult(S["ConsumerSecret is required"], new string[] { nameof(settings.ConsumerSecret) });
         }
@@ -65,7 +67,7 @@ public class TwitterSettingsService : ITwitterSettingsService
             yield return new ValidationResult(S["Access Token is required"], new string[] { nameof(settings.AccessToken) });
         }
 
-        if (string.IsNullOrWhiteSpace(settings.AccessTokenSecret))
+        if (string.IsNullOrWhiteSpace(settings.AccessTokenSecretSecretName) && string.IsNullOrWhiteSpace(settings.AccessTokenSecret))
         {
             yield return new ValidationResult(S["Access Token Secret is required"], new string[] { nameof(settings.AccessTokenSecret) });
         }

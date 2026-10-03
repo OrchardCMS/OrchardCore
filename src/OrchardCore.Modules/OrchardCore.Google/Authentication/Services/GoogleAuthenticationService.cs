@@ -42,6 +42,7 @@ public class GoogleAuthenticationService : IGoogleAuthenticationService
         {
             aspect.ClientID = settings.ClientID;
             aspect.ClientSecret = settings.ClientSecret;
+            aspect.ClientSecretSecretName = settings.ClientSecretSecretName;
             aspect.CallbackPath = settings.CallbackPath;
         });
 
@@ -62,7 +63,7 @@ public class GoogleAuthenticationService : IGoogleAuthenticationService
             }));
         }
 
-        if (string.IsNullOrEmpty(settings.ClientSecret))
+        if (string.IsNullOrWhiteSpace(settings.ClientSecretSecretName) && string.IsNullOrWhiteSpace(settings.ClientSecret))
         {
             results.Add(new ValidationResult(S["The Client Secret is required."], new[]
             {

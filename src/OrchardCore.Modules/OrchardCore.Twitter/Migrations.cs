@@ -31,8 +31,10 @@ public sealed class Migrations : DataMigration
     {
         await MigrateTwitterSecretsAsync();
 
-        return 1;
+        return 2;
     }
+
+    public Task<int> UpdateFrom1Async() => CreateAsync();
 
     private async Task MigrateTwitterSecretsAsync()
     {
@@ -63,6 +65,7 @@ public sealed class Migrations : DataMigration
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to migrate Twitter consumer secret. The secret may have been encrypted with a different key.");
+                throw;
             }
         }
 
@@ -87,6 +90,7 @@ public sealed class Migrations : DataMigration
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to migrate Twitter access token secret. The secret may have been encrypted with a different key.");
+                throw;
             }
         }
 #pragma warning restore CS0618 // Type or member is obsolete

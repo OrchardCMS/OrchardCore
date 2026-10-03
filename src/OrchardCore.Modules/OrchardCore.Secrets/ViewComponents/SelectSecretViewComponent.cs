@@ -8,13 +8,16 @@ namespace OrchardCore.Secrets.ViewComponents;
 public class SelectSecretViewComponent : ViewComponent
 {
     private readonly ISecretManager _secretManager;
+    private readonly IEnumerable<ISecretTypeProvider> _providers;
     internal readonly IStringLocalizer S;
 
     public SelectSecretViewComponent(
         ISecretManager secretManager,
+        IEnumerable<ISecretTypeProvider> providers,
         IStringLocalizer<SelectSecretViewComponent> stringLocalizer)
     {
         _secretManager = secretManager;
+        _providers = providers;
         S = stringLocalizer;
     }
 
@@ -31,7 +34,7 @@ public class SelectSecretViewComponent : ViewComponent
 
         var secrets = secretInfos
             .Where(info => allowedTypes.Count == 0 ||
-                          allowedTypes.Any(t => string.Equals(t, info.Type, StringComparison.OrdinalIgnoreCase)))
+                          allowedTypes.Any(t => MatchesType(t, info.Type)))
             .Select(info => new SelectListItem
             {
                 Text = info.Name,
@@ -53,5 +56,19 @@ public class SelectSecretViewComponent : ViewComponent
         };
 
         return View(model);
+    }
+
+    private bool MatchesType(string requested, string stored)
+    {
+        if (string.Equals(requested, stored, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        return _providers.Any(p =>
+            (string.Equals(requested, p.Name, StringComparison.OrdinalIgnoreCase) ||
+             string.Equals(requested, p.SecretType.FullName, StringComparison.OrdinalIgnoreCase)) &&
+            (string.Equals(stored, p.Name, StringComparison.OrdinalIgnoreCase) ||
+             string.Equals(stored, p.SecretType.FullName, StringComparison.OrdinalIgnoreCase)));
     }
 }

@@ -10,6 +10,8 @@ public class X509SecretViewModel
 
     public string Thumbprint { get; set; }
 
+    public string SelectedCertificate { get; set; }
+
     public bool IsNew { get; set; }
 
     public List<CertificateInfo> AvailableCertificates { get; set; } = [];

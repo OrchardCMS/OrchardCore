@@ -12,15 +12,16 @@ public interface ISecretEncryptionService
     /// </summary>
     /// <param name="secret">The secret to encrypt.</param>
     /// <param name="encryptionKeyName">The name of the RsaKeySecret or X509Secret to use for encryption.</param>
+    /// <param name="info">The secret identity and metadata to authenticate.</param>
     /// <returns>The encrypted secret data.</returns>
-    Task<EncryptedSecretData> EncryptAsync(ISecret secret, string encryptionKeyName);
+    Task<EncryptedSecretData> EncryptAsync(ISecret secret, string encryptionKeyName, SecretInfo info);
 
     /// <summary>
     /// Decrypts secret data using the specified decryption key.
     /// </summary>
     /// <param name="encryptedData">The encrypted secret data.</param>
     /// <param name="decryptionKeyName">The name of the RsaKeySecret or X509Secret to use for decryption.</param>
-    /// <param name="secretType">The type name of the secret to deserialize.</param>
+    /// <param name="info">The secret identity and metadata to authenticate.</param>
     /// <returns>The decrypted secret.</returns>
-    Task<ISecret> DecryptAsync(EncryptedSecretData encryptedData, string decryptionKeyName, string secretType);
+    Task<ISecret> DecryptAsync(EncryptedSecretData encryptedData, string decryptionKeyName, SecretInfo info);
 }

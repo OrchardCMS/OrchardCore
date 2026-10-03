@@ -32,8 +32,10 @@ public sealed class ClientSecretsMigration : DataMigration
     {
         await MigrateClientSecretAsync();
 
-        return 1;
+        return 2;
     }
+
+    public Task<int> UpdateFrom1Async() => CreateAsync();
 
     private async Task MigrateClientSecretAsync()
     {
@@ -70,6 +72,7 @@ public sealed class ClientSecretsMigration : DataMigration
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to migrate OpenID Connect client secret. The secret may have been encrypted with a different key.");
+            throw;
         }
     }
 }

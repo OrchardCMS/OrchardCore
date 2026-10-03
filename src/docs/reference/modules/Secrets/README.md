@@ -227,6 +227,14 @@ To use Azure Key Vault as a secret store, enable the `OrchardCore.Secrets.Azure`
 
 If running in Azure with Managed Identity, you can omit the `TenantId`, `ClientId`, and `ClientSecret` - the module will use `DefaultAzureCredential` which supports managed identities automatically.
 
+Key Vault names are SHA-256 hashes of the exact Orchard tenant name and logical secret name. The store records tenant ownership, the original name, the registered secret type, and description in tags, and only lists entries belonging to the current tenant. `TenantId` in the configuration is the Microsoft Entra tenant ID, not the Orchard tenant name. Renaming an Orchard tenant changes its namespace; plan an explicit secret migration before doing so.
+
+These namespaces prevent accidental cross-tenant access through the store but are not an Azure authorization boundary: code with the vault credentials can bypass them. Use separate vaults or appropriately restricted identities for mutually untrusted tenants. Entries created by older versions of this module or outside Orchard without ownership tags are not automatically adopted. Recreate them through the tenant's secret manager; do not rely on the old character-replacement naming scheme.
+
+Deletion is a normal Key Vault soft delete. It never purges secrets, so purge permission is not required and purge protection remains effective. Azure's retention rules may prevent reusing a deleted name until it is recovered or its retention period ends.
+
+The store is immutable when editing a secret in the admin UI. Edit and delete operations target the displayed store only. Clearing a description or expiration explicitly removes that metadata; programmatic saves without a `SecretSaveOptions` object preserve it.
+
 ## Using Secrets Programmatically
 
 ### Retrieving a Secret
@@ -334,11 +342,12 @@ For scenarios where you need to transfer actual secret values (e.g., tenant migr
 
 1. **Export**: Secrets are encrypted using RSA+AES hybrid encryption
    - A random AES-256 key is generated for each secret
-   - The secret value is encrypted with AES
-   - The AES key is encrypted with RSA public key
+   - The secret value is encrypted with AES-GCM using a random 96-bit nonce and a 128-bit authentication tag
+   - The secret name, store, type, description, and expiration are authenticated as associated data
+   - The AES key is encrypted with RSA-OAEP-SHA256
 2. **Import**: On the target system
    - The AES key is decrypted using RSA private key
-   - The secret value is decrypted using the AES key
+   - The authentication tag and metadata are verified before the secret value is deserialized
    - The decrypted secret is saved to the secrets store
 
 #### Setting Up Encryption Keys
@@ -395,15 +404,23 @@ The exported JSON will contain encrypted secret values:
     "SmtpPassword": {
       "SecretInfo": {
         "Store": "Database",
-        "Type": "TextSecret"
+        "Type": "TextSecret",
+        "Description": null,
+        "ExpiresUtc": null
       },
+      "Version": 1,
       "EncryptedKey": "BASE64_RSA_ENCRYPTED_AES_KEY...",
       "EncryptedData": "BASE64_AES_ENCRYPTED_SECRET...",
-      "IV": "BASE64_AES_IV..."
+      "IV": "BASE64_GCM_NONCE...",
+      "Tag": "BASE64_GCM_TAG..."
     }
   }
 }
 ```
+
+Version 1 envelopes use authenticated encryption. Legacy AES-CBC exports without a version and tag are rejected and must be re-exported. Do not edit names, store names, types, descriptions, or expiration dates in an encrypted recipe: changes invalidate authentication. A failed encrypted export fails the deployment instead of emitting a metadata-only fallback. Duplicate logical names across stores must be resolved before export.
+
+Export and import use registered `ISecretTypeProvider` instances, including custom types. Providers can override `Serialize` and `Deserialize` for their own wire format; the default implementation uses JSON for the provider's concrete CLR type. Register the same provider on the source and destination.
 
 #### Importing Encrypted Secrets
 
@@ -835,6 +852,8 @@ This module addresses several long-standing issues in Orchard Core:
 | [#3259](https://github.com/OrchardCMS/OrchardCore/issues/3259) | Certificate selection in Azure App Service | `X509Secret` can reference certificates from the certificate store |
 
 ## Migration Guide
+
+Credential migrations only replace legacy settings after successful Data Protection decryption and secret persistence. Missing keys, unavailable stores, and other failures are logged and propagated so migrations can be retried after fixing the cause; encrypted payloads are never treated as plaintext. Migration version 2 retries previously skipped version 1 credential migrations when legacy values remain. Preserve the original Data Protection key ring during upgrades. If an older migration already cleared a legacy value after a decryption failure, recover it from a trusted backup before retrying.
 
 ### From appsettings.json Passwords
 

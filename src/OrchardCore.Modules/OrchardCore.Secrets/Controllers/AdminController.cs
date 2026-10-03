@@ -2,7 +2,6 @@ using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
@@ -101,6 +100,7 @@ public sealed class AdminController : Controller
             X509StoreLocation = "CurrentUser",
             X509StoreName = "My",
         };
+        model.Store = model.AvailableStores.FirstOrDefault();
 
         return View(nameof(Edit), model);
     }
@@ -122,8 +122,8 @@ public sealed class AdminController : Controller
         }
 
         // Check if secret already exists
-        var existingSecret = await _secretManager.GetSecretAsync<ISecret>(model.Name);
-        if (existingSecret != null)
+        var infos = await _secretManager.GetSecretInfosAsync();
+        if (infos.Any(info => info.Name.Equals(model.Name, StringComparison.OrdinalIgnoreCase)))
         {
             ModelState.AddModelError(nameof(model.Name), S["A secret with this name already exists."]);
         }
@@ -154,7 +154,7 @@ public sealed class AdminController : Controller
         return View(nameof(Edit), model);
     }
 
-    public async Task<IActionResult> Edit(string name)
+    public async Task<IActionResult> Edit(string name, string store)
     {
         if (!await _authorizationService.AuthorizeAsync(User, SecretsPermissions.ManageSecrets))
         {
@@ -166,8 +166,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        var secretInfos = await _secretManager.GetSecretInfosAsync();
-        var secretInfo = secretInfos.FirstOrDefault(s => s.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        var secretInfo = await FindSecretInfoAsync(name, store);
 
         if (secretInfo == null)
         {
@@ -182,7 +181,11 @@ public sealed class AdminController : Controller
         }
 
         // Get the actual secret to populate form values
-        var secret = await _secretManager.GetSecretAsync<ISecret>(name);
+        var secret = await _secretManager.GetSecretAsync<ISecret>(secretInfo.Name, secretInfo.Store);
+        if (secret == null)
+        {
+            return NotFound();
+        }
 
         var model = new SecretEditViewModel
         {
@@ -192,6 +195,7 @@ public sealed class AdminController : Controller
             SecretType = typeName,
             SecretTypeDisplayName = provider.DisplayName,
             ExpiresUtc = secretInfo.ExpiresUtc,
+            Description = secretInfo.Description,
             AvailableStores = _secretManager.GetStores()
                 .Where(s => !s.IsReadOnly)
                 .Select(s => s.Name)
@@ -206,14 +210,21 @@ public sealed class AdminController : Controller
 
     [HttpPost]
     [ActionName(nameof(Edit))]
-    public async Task<IActionResult> EditPost(SecretEditViewModel model, string name)
+    public async Task<IActionResult> EditPost(SecretEditViewModel model, string name, [FromQuery] string store)
     {
         if (!await _authorizationService.AuthorizeAsync(User, SecretsPermissions.ManageSecrets))
         {
             return Forbid();
         }
 
-        var typeName = model.SecretType;
+        var info = await FindSecretInfoAsync(name, store);
+        if (info == null || !string.Equals(info.Store, model.Store, StringComparison.OrdinalIgnoreCase) ||
+            GetSimpleTypeName(info.Type) != model.SecretType)
+        {
+            return BadRequest();
+        }
+
+        var typeName = GetSimpleTypeName(info.Type);
         var provider = _secretTypeProviders.FirstOrDefault(p => p.Name.Equals(typeName, StringComparison.OrdinalIgnoreCase));
         if (provider == null)
         {
@@ -221,7 +232,11 @@ public sealed class AdminController : Controller
         }
 
         // Get existing secret
-        var existingSecret = await _secretManager.GetSecretAsync<ISecret>(name);
+        var existingSecret = await _secretManager.GetSecretAsync<ISecret>(info.Name, info.Store);
+        if (existingSecret == null)
+        {
+            return NotFound();
+        }
 
         // Validate type-specific requirements
         ValidateSecretModel(model, false);
@@ -240,6 +255,7 @@ public sealed class AdminController : Controller
         }
 
         model.SecretTypeDisplayName = provider.DisplayName;
+        model.IsNew = false;
         model.AvailableStores = _secretManager.GetStores()
             .Where(s => !s.IsReadOnly)
             .Select(s => s.Name)
@@ -249,7 +265,7 @@ public sealed class AdminController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Delete(string name)
+    public async Task<IActionResult> Delete(string name, [FromQuery] string store)
     {
         if (!await _authorizationService.AuthorizeAsync(User, SecretsPermissions.ManageSecrets))
         {
@@ -261,7 +277,13 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        await _secretManager.RemoveSecretAsync(name);
+        var info = await FindSecretInfoAsync(name, store);
+        if (info == null)
+        {
+            return NotFound();
+        }
+
+        await _secretManager.RemoveSecretAsync(info.Name, info.Store);
         await _notifier.SuccessAsync(H["Secret deleted successfully."]);
 
         return RedirectToAction(nameof(Index));
@@ -269,6 +291,11 @@ public sealed class AdminController : Controller
 
     private void ValidateSecretModel(SecretEditViewModel model, bool isNew)
     {
+        if (!_secretManager.GetStores().Any(s => !s.IsReadOnly && s.Name.Equals(model.Store, StringComparison.OrdinalIgnoreCase)))
+        {
+            ModelState.AddModelError(nameof(model.Store), S["Select a writable secret store."]);
+        }
+
         switch (model.SecretType)
         {
             case nameof(TextSecret):
@@ -276,6 +303,7 @@ public sealed class AdminController : Controller
                 {
                     ModelState.AddModelError(nameof(model.TextValue), S["The secret value is required."]);
                 }
+
                 break;
 
             case nameof(X509Secret):
@@ -285,6 +313,15 @@ public sealed class AdminController : Controller
                 }
                 break;
         }
+    }
+
+    private async Task<SecretInfo> FindSecretInfoAsync(string name, string store)
+    {
+        var infos = await _secretManager.GetSecretInfosAsync();
+        var matches = infos.Where(info => info.Name.Equals(name, StringComparison.OrdinalIgnoreCase) &&
+            (string.IsNullOrEmpty(store) || info.Store.Equals(store, StringComparison.OrdinalIgnoreCase))).ToList();
+
+        return matches.Count == 1 ? matches[0] : null;
     }
 
     private static void PopulateModelFromSecret(SecretEditViewModel model, ISecret secret)

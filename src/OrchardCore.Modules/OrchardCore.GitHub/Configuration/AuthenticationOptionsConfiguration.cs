@@ -32,7 +32,7 @@ internal sealed class AuthenticationOptionsConfiguration : IConfigureOptions<Aut
         }
 
         if (string.IsNullOrWhiteSpace(settings.ClientID) ||
-            string.IsNullOrWhiteSpace(settings.ClientSecret))
+            (string.IsNullOrWhiteSpace(settings.ClientSecretSecretName) && string.IsNullOrWhiteSpace(settings.ClientSecret)))
         {
             _logger.LogWarning("The GitHub login provider is enabled but not configured.");
 

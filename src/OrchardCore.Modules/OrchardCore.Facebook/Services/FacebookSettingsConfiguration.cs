@@ -25,6 +25,7 @@ public sealed class FacebookSettingsConfiguration : IConfigureOptions<FacebookSe
         {
             options.AppId = settings.AppId;
             options.AppSecret = settings.AppSecret;
+            options.AppSecretSecretName = settings.AppSecretSecretName;
             options.Version = settings.Version;
             options.FBInit = settings.FBInit;
             options.FBInitParams = settings.FBInitParams;

@@ -32,8 +32,10 @@ public sealed class Migrations : DataMigration
     public async Task<int> CreateAsync()
     {
         await MigrateClientSecretAsync();
-        return 1;
+        return 2;
     }
+
+    public Task<int> UpdateFrom1Async() => CreateAsync();
 
     private async Task MigrateClientSecretAsync()
     {
@@ -51,17 +53,7 @@ public sealed class Migrations : DataMigration
         try
         {
             var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
-            string decryptedClientSecret;
-
-            try
-            {
-                decryptedClientSecret = protector.Unprotect(settings.ClientSecret);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "Could not decrypt GitHub client secret. It may not be encrypted or may be corrupted. Attempting to use as plain text.");
-                decryptedClientSecret = settings.ClientSecret;
-            }
+            var decryptedClientSecret = protector.Unprotect(settings.ClientSecret);
 
             var secretName = "GitHub.ClientSecret";
             var secret = new TextSecret { Text = decryptedClientSecret };
@@ -86,6 +78,7 @@ public sealed class Migrations : DataMigration
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to migrate GitHub client secret to secrets.");
+            throw;
         }
     }
 }

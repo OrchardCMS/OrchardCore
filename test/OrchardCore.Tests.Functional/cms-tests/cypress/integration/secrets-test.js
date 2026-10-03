@@ -4,6 +4,14 @@ import { generateTenantInfo } from 'cypress-orchardcore/dist/utils';
 describe('Secrets Module Tests', function () {
     let tenant;
 
+    function openTextSecretEditor() {
+        cy.visit(`${tenant.prefix}/Admin/Secrets/Index`);
+        cy.get('button.create').click();
+        cy.get('#modalSecretTypes').should('be.visible');
+        cy.get('#modalSecretTypes a[href*="type=TextSecret"]').click();
+        cy.get('#SecretType').should('have.value', 'TextSecret');
+    }
+
     before(() => {
         tenant = generateTenantInfo("SecretsTest");
         cy.newTenant(tenant);
@@ -23,27 +31,26 @@ describe('Secrets Module Tests', function () {
 
     it('Should display empty secrets list initially', function () {
         cy.login(tenant);
-        cy.visit(`${tenant.prefix}/Admin/Secrets`);
+        cy.visit(`${tenant.prefix}/Admin/Secrets/Index`);
         cy.get('.alert-info').should('contain.text', 'Nothing here');
     });
 
     it('Should navigate to create secret page', function () {
         cy.login(tenant);
-        cy.visit(`${tenant.prefix}/Admin/Secrets`);
-        cy.get('a.create').click();
+        openTextSecretEditor();
         cy.url().should('include', '/Admin/Secrets/Create');
-        cy.get('h1').should('contain.text', 'Create Secret');
+        cy.get('h1').should('contain.text', 'Create');
     });
 
     it('Should create a new text secret', function () {
         cy.login(tenant);
-        cy.visit(`${tenant.prefix}/Admin/Secrets/Create`);
+        openTextSecretEditor();
 
         // Fill in the form
         cy.get('#Name').type('TestApiKey');
-        cy.get('#SecretType').select('TextSecret');
-        cy.get('#SecretValue').type('my-secret-api-key-value');
+        cy.get('#TextValue').type('my-secret-api-key-value');
         cy.get('#Description').type('Test API key for integration testing');
+        cy.get('#ExpiresUtc').type('2030-01-01');
 
         // Submit
         cy.get('button.save').click();
@@ -55,7 +62,7 @@ describe('Secrets Module Tests', function () {
 
     it('Should display the created secret in the list', function () {
         cy.login(tenant);
-        cy.visit(`${tenant.prefix}/Admin/Secrets`);
+        cy.visit(`${tenant.prefix}/Admin/Secrets/Index`);
 
         cy.get('.list-group-item').should('contain.text', 'TestApiKey');
         cy.get('.list-group-item').should('contain.text', 'TextSecret');
@@ -64,7 +71,7 @@ describe('Secrets Module Tests', function () {
 
     it('Should navigate to edit secret page', function () {
         cy.login(tenant);
-        cy.visit(`${tenant.prefix}/Admin/Secrets`);
+        cy.visit(`${tenant.prefix}/Admin/Secrets/Index`);
 
         // Click on the secret name to edit
         cy.get('a').contains('TestApiKey').click();
@@ -77,10 +84,11 @@ describe('Secrets Module Tests', function () {
 
     it('Should update a secret value', function () {
         cy.login(tenant);
-        cy.visit(`${tenant.prefix}/Admin/Secrets/Edit/TestApiKey`);
+        cy.visit(`${tenant.prefix}/Admin/Secrets/Edit/TestApiKey?store=Database`);
 
         // Enter new value
-        cy.get('#SecretValue').type('updated-secret-value');
+        cy.get('#TextValue').should('have.value', '').type('updated-secret-value');
+        cy.get('#Store').should('have.attr', 'readonly');
 
         // Submit
         cy.get('button.save').click();
@@ -92,11 +100,10 @@ describe('Secrets Module Tests', function () {
 
     it('Should create a second secret', function () {
         cy.login(tenant);
-        cy.visit(`${tenant.prefix}/Admin/Secrets/Create`);
+        openTextSecretEditor();
 
         cy.get('#Name').type('DatabasePassword');
-        cy.get('#SecretType').select('TextSecret');
-        cy.get('#SecretValue').type('super-secure-password');
+        cy.get('#TextValue').type('super-secure-password');
 
         cy.get('button.save').click();
 
@@ -106,7 +113,7 @@ describe('Secrets Module Tests', function () {
 
     it('Should display multiple secrets in the list', function () {
         cy.login(tenant);
-        cy.visit(`${tenant.prefix}/Admin/Secrets`);
+        cy.visit(`${tenant.prefix}/Admin/Secrets/Index`);
 
         cy.get('.list-group-item').should('have.length.at.least', 3); // Header + 2 secrets
         cy.get('.list-group-item').should('contain.text', 'TestApiKey');
@@ -115,7 +122,7 @@ describe('Secrets Module Tests', function () {
 
     it('Should delete a secret', function () {
         cy.login(tenant);
-        cy.visit(`${tenant.prefix}/Admin/Secrets`);
+        cy.visit(`${tenant.prefix}/Admin/Secrets/Index`);
 
         // Find and click delete for DatabasePassword
         cy.get('.list-group-item')
@@ -136,12 +143,11 @@ describe('Secrets Module Tests', function () {
 
     it('Should prevent creating duplicate secret names', function () {
         cy.login(tenant);
-        cy.visit(`${tenant.prefix}/Admin/Secrets/Create`);
+        openTextSecretEditor();
 
         // Try to create a secret with an existing name
         cy.get('#Name').type('TestApiKey');
-        cy.get('#SecretType').select('TextSecret');
-        cy.get('#SecretValue').type('duplicate-value');
+        cy.get('#TextValue').type('duplicate-value');
 
         cy.get('button.save').click();
 
@@ -151,11 +157,10 @@ describe('Secrets Module Tests', function () {
 
     it('Should require secret name', function () {
         cy.login(tenant);
-        cy.visit(`${tenant.prefix}/Admin/Secrets/Create`);
+        openTextSecretEditor();
 
         // Leave name empty
-        cy.get('#SecretType').select('TextSecret');
-        cy.get('#SecretValue').type('some-value');
+        cy.get('#TextValue').type('some-value');
 
         cy.get('button.save').click();
 
@@ -165,11 +170,24 @@ describe('Secrets Module Tests', function () {
 
     it('Should cancel and return to list', function () {
         cy.login(tenant);
-        cy.visit(`${tenant.prefix}/Admin/Secrets/Create`);
+        openTextSecretEditor();
 
         cy.get('a.cancel').click();
 
         cy.url().should('include', '/Admin/Secrets');
         cy.url().should('not.include', 'Create');
+    });
+
+    it('Should clear description and expiration without changing the value', function () {
+        cy.login(tenant);
+        cy.visit(`${tenant.prefix}/Admin/Secrets/Edit/TestApiKey?store=Database`);
+        cy.get('#Description').should('not.have.value', '').clear();
+        cy.get('#ExpiresUtc').should('not.have.value', '').clear();
+        cy.get('#TextValue').should('have.value', '');
+        cy.get('button.save').click();
+
+        cy.visit(`${tenant.prefix}/Admin/Secrets/Edit/TestApiKey?store=Database`);
+        cy.get('#Description').should('have.value', '');
+        cy.get('#ExpiresUtc').should('have.value', '');
     });
 });

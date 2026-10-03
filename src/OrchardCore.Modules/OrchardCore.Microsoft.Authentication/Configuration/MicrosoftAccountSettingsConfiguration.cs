@@ -26,6 +26,7 @@ public sealed class MicrosoftAccountSettingsConfiguration : IConfigureOptions<Mi
         {
             options.AppId = settings.AppId;
             options.AppSecret = settings.AppSecret;
+            options.AppSecretSecretName = settings.AppSecretSecretName;
             options.CallbackPath = settings.CallbackPath;
             options.SaveTokens = settings.SaveTokens;
         }

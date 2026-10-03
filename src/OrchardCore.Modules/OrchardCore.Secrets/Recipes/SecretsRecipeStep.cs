@@ -72,6 +72,14 @@ public sealed class SecretsRecipeStep : NamedRecipeStepHandler
             var secretInfo = secretEntry["SecretInfo"]?.AsObject();
             var store = secretInfo?["Store"]?.GetValue<string>();
             var type = secretInfo?["Type"]?.GetValue<string>() ?? nameof(TextSecret);
+            var info = new SecretInfo
+            {
+                Name = name,
+                Store = store,
+                Type = type,
+                Description = secretInfo?["Description"]?.GetValue<string>(),
+                ExpiresUtc = secretInfo?["ExpiresUtc"]?.Deserialize<DateTime?>(),
+            };
 
             // Check if this is an encrypted secret
             var encryptedKey = secretEntry["EncryptedKey"]?.GetValue<string>();
@@ -80,19 +88,31 @@ public sealed class SecretsRecipeStep : NamedRecipeStepHandler
 
             ISecret secret = null;
 
-            if (hasEncryptionKey && !string.IsNullOrEmpty(encryptedData))
+            if (hasEncryptionKey || secretEntry.ContainsKey("EncryptedData") || secretEntry.ContainsKey("EncryptedKey") ||
+                secretEntry.ContainsKey("Version") || secretEntry.ContainsKey("Tag") || secretEntry.ContainsKey("IV"))
             {
                 // Decrypt the secret
                 try
                 {
                     var encrypted = new EncryptedSecretData
                     {
+                        Version = secretEntry["Version"]?.GetValue<int>() ?? 0,
+                        Tag = secretEntry["Tag"]?.GetValue<string>(),
                         EncryptedKey = encryptedKey,
                         EncryptedData = encryptedData,
                         IV = iv,
                     };
 
-                    secret = await _encryptionService.DecryptAsync(encrypted, encryptionKeyName, type);
+                    if (!hasEncryptionKey)
+                    {
+                        throw new InvalidOperationException("An encryption key is required for an encrypted secret.");
+                    }
+                    if (string.IsNullOrEmpty(encryptedData))
+                    {
+                        throw new InvalidOperationException("The encrypted secret payload is missing.");
+                    }
+
+                    secret = await _encryptionService.DecryptAsync(encrypted, encryptionKeyName, info);
 
                     if (_logger.IsEnabled(LogLevel.Information))
                     {
@@ -119,7 +139,11 @@ public sealed class SecretsRecipeStep : NamedRecipeStepHandler
                 secret = new TextSecret { Text = secretValue };
             }
 
-            await SaveSecretAsync(name, secret, store);
+            await SaveSecretAsync(name, secret, store, new SecretSaveOptions
+            {
+                Description = info.Description,
+                ExpiresUtc = info.ExpiresUtc,
+            });
         }
     }
 
@@ -174,15 +198,15 @@ public sealed class SecretsRecipeStep : NamedRecipeStepHandler
         return value;
     }
 
-    private async Task SaveSecretAsync(string name, ISecret secret, string store)
+    private async Task SaveSecretAsync(string name, ISecret secret, string store, SecretSaveOptions options = null)
     {
         if (!string.IsNullOrEmpty(store))
         {
-            await _secretManager.SaveSecretAsync(name, secret, store);
+            await _secretManager.SaveSecretAsync(name, secret, store, options);
         }
         else
         {
-            await _secretManager.SaveSecretAsync(name, secret);
+            await _secretManager.SaveSecretAsync(name, secret, options);
         }
 
         if (_logger.IsEnabled(LogLevel.Information))

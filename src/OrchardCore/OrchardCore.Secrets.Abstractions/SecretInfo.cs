@@ -21,6 +21,11 @@ public class SecretInfo
     public string Type { get; set; }
 
     /// <summary>
+    /// Gets or sets the description of the secret.
+    /// </summary>
+    public string Description { get; set; }
+
+    /// <summary>
     /// Gets or sets when the secret was created.
     /// </summary>
     public DateTime? CreatedUtc { get; set; }
