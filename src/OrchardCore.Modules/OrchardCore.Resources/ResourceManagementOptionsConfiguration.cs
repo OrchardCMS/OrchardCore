@@ -472,8 +472,8 @@ public sealed class ResourceManagementOptionsConfiguration
                 "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.2.6/dist/css/bootstrap-select.css"
             )
             .SetCdnIntegrity(
-                "sha384-sQr5Em/mpvLjnu2huY8PDGrpItq+8qR2NHsVB4Kq4Zqb+LrBExUL7pid7pCJf10K",
-                "sha384-mG0OUnrbVYDYdq8PTDcpU2GSTM4bxIPJrOke74gIoPsH3T9qfC+rZe5DzkIuaMQc"
+                "sha384-6LsIeuccw37t/G+JYmUJCqtoGEuvsa1bnGWX/VG/hvzhtqqOHBl8KYD1ZOVnpuBL",
+                "sha384-qnwvlWZ3n+kXXdnt7N/G13DZvEYRsyOeYKaRIH4Nb1Y2GPPQ2PUQW4DEsSt1vswx"
             )
             .SetVersion("1.2.6");
 
@@ -489,8 +489,8 @@ public sealed class ResourceManagementOptionsConfiguration
                 "https://cdn.jsdelivr.net/npm/@crestapps/bootstrap-select@1.2.6/dist/js/bootstrap-select.js"
             )
             .SetCdnIntegrity(
-                "sha384-Bw1T257yCrZ7XkIute3Z7uYC0tE5602dCse3aVwTmy0Pnl7wRPorXO+dHH2m8n3p",
-                "sha384-uxbBuZEWDbdH0t6Lxy2N98Ix+6IzIp0lorXXkc1J4mjbINsZ0ALaNAMiaj+wojmJ"
+                "sha384-8gpw3BTbrKXox8xuy0UgEdkqodMPV6T6ioWoKy22GLG0G6Vl4o/w3hnGmfgJsDAa",
+                "sha384-0Uj49Z/VAMAiWVEeyuN0z3zFOhagfh2Bl5Ho/f90Q74WtNxR93jRGvOLalVWtxYt"
             )
             .SetVersion("1.2.6");
 
