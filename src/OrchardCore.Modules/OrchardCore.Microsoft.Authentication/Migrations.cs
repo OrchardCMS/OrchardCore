@@ -52,7 +52,7 @@ public sealed class Migrations : DataMigration
             var protector = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount);
             var decryptedSecret = protector.Unprotect(settings.AppSecret);
 
-            var secretName = "MicrosoftAccount.AppSecret";
+            var secretName = MicrosoftAuthenticationConstants.SecretNames.AppSecret;
             var secret = new TextSecret { Text = decryptedSecret };
 
             await _secretManager.SaveSecretAsync(secretName, secret);

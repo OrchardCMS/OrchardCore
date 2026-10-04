@@ -113,19 +113,27 @@ For production environments, use Azure Key Vault for hardware-backed security an
 
 ```json
 {
+  "AzureClients": {
+    "SecretClient": {
+      "VaultUri": "https://mycompany-prod.vault.azure.net/",
+      "Credential": {
+        "CredentialSource": "ManagedIdentityCredential",
+        "ManagedIdentityIdKind": "SystemAssigned"
+      }
+    }
+  },
   "OrchardCore": {
     "Secrets": {
       "Azure": {
-        "VaultUri": "https://mycompany-prod.vault.azure.net/",
-        "NamePrefix": "mycompany",
-        "CredentialType": "ManagedIdentity"
+        "AzureClient": "SecretClient",
+        "NamePrefix": "mycompany"
       }
     }
   }
 }
 ```
 
-With Managed Identity, no credentials are needed in configuration—Azure handles authentication automatically.
+Register the named client in the host as shown in [Azure Key Vault Store](#azure-key-vault-store). With Managed Identity, no credential secrets are needed in configuration—Azure handles authentication automatically.
 
 ## Features
 
@@ -191,6 +199,30 @@ The Secrets index page displays all stored secrets with their name, type, store,
 1. Click **Delete** next to the secret you want to remove
 2. Confirm the deletion in the dialog
 
+#### Moving Secrets and Retiring a Store
+
+Use **Move** on an individual entry, or **Manage Stores → Move all active secrets** to transfer every active entry in one source store. Select a different writable destination and confirm. The operation retains logical names, types, descriptions, and expiration dates, verifies the committed destination value and metadata, and then removes only the selected source copy. Values never pass through the management form, response, or an export file. X.509 entries move references only.
+
+Destination collisions are rejected, not overwritten. Bulk transfers are not atomic: review each result, especially failures with a saved destination copy, before retrying or deleting a remaining source. Verification failures retain the source. Normal secret-manager writes and store operations share a tenant lock; configure a distributed lock provider for multiple instances and pause direct store writes, rotation, and provider changes while transferring.
+
+**Manage Stores** displays the active-secret count for the selected tenant/store. Successful moves remove the source using the provider's existing `RemoveSecretAsync` operation. The existing **Delete** action also removes only the selected secret/store and can break consumers if no destination copy exists. No new purge interface or purge action is provided.
+
+Inspect every affected tenant, ensure the active-secret count is zero, and verify destination consumers after restart before disabling an optional provider. If inspection fails, cleanup status is unknown, not empty. The database store cannot be disabled independently of the base Secrets feature. Transfers do not change the default writable store: select the destination explicitly when creating or saving later secrets and recheck the source before retirement.
+
+Key Vault deletion remains recoverable under its soft-delete policy and retains old versions; Orchard does not purge those values. Database removal does not erase backups or transaction logs. External copies, audit history, and provider retention also remain outside this operation. Rotate/revoke credentials when historical copies must no longer work. See the [4.0 store cleanup instructions](../../../releases/4.0.0.md#cleaning-up-a-provider-before-disabling-it).
+
+Programmatic operations return metadata-only per-secret results:
+
+```csharp
+// Resolve ISecretStoreOperations from the current tenant's services.
+var result = await operations.MoveSecretAsync("Payment.ApiKey", "Database", "AzureKeyVault");
+var results = await operations.MoveAllSecretsAsync("Database", "AzureKeyVault");
+// Delete one remaining source copy only after reviewing a partial transfer.
+await secretManager.RemoveSecretAsync("Payment.ApiKey", "Database");
+```
+
+Store `SaveSecretAsync` and `RemoveSecretAsync` implementations must complete only after persistence, not after merely staging a write. Built-in database mutations use a separate tenant scope to commit the secret change before releasing the mutation lock, without committing unrelated caller changes.
+
 ### Secret Expiration
 
 Secrets can have an optional expiration date. This is an **informational** feature designed to help with secret rotation planning:
@@ -220,51 +252,158 @@ The database store is enabled by default when the Secrets module is enabled. It 
 
 ### Azure Key Vault Store
 
-To use Azure Key Vault as a secret store, enable the `OrchardCore.Secrets.Azure` feature and configure it in your `appsettings.json`:
+To use Azure Key Vault as a secret store, enable the `OrchardCore.Secrets.Azure` feature, register a named `SecretClient` in the application host, and select its service key in `OrchardCore:Secrets:Azure:AzureClient`:
 
 ```json
 {
+  "AzureClients": {
+    "SecretClient": {
+      "VaultUri": "https://your-vault.vault.azure.net/",
+      "Credential": {
+        "CredentialSource": "ManagedIdentityCredential",
+        "ManagedIdentityIdKind": "SystemAssigned"
+      },
+      "Options": {
+        "Retry": {
+          "MaxRetries": 3,
+          "Delay": "00:00:00.800",
+          "MaxDelay": "00:01:00",
+          "Mode": "Exponential",
+          "NetworkTimeout": "00:01:40"
+        },
+        "Diagnostics": {
+          "ApplicationId": "my-app",
+          "IsLoggingEnabled": true,
+          "IsTelemetryEnabled": true,
+          "IsDistributedTracingEnabled": true,
+          "IsLoggingContentEnabled": false,
+          "LoggedContentSizeLimit": 4096,
+          "AdditionalLoggedHeaderNames": [],
+          "AdditionalLoggedQueryParameters": []
+        },
+        "DisableChallengeResourceVerification": false
+      }
+    }
+  },
   "OrchardCore": {
     "Secrets": {
       "Azure": {
-        "VaultUri": "https://your-vault.vault.azure.net/",
-        "NamePrefix": "myapp",
-        "CredentialType": "ClientSecret",
-        "TenantId": "your-tenant-id",
-        "ClientId": "your-client-id"
+        "AzureClient": "SecretClient",
+        "NamePrefix": "myapp"
       }
     }
   }
 }
 ```
 
-`CredentialType` must be configured explicitly. The module never selects `DefaultAzureCredential` merely because other credentials are absent. Missing or unsupported selections and missing provider-required settings fail explicitly.
+Register the client before building the host, using the Azure SDK's [configuration and dependency injection support](https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/src/docs/ConfigurationAndDependencyInjection.md):
 
-| CredentialType | Required settings | Usage |
+```csharp
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+
+#pragma warning disable SCME0002 // Azure SDK configuration support is experimental.
+builder.AddKeyedAzureClient<SecretClient, SecretClientSettings>(
+    "SecretClient", "AzureClients:SecretClient");
+#pragma warning restore SCME0002
+```
+
+Here `builder` is an `IHostApplicationBuilder`. The service key (`SecretClient`) is independent of the configuration path (`AzureClients:SecretClient`); `AzureClient` must match the service key exactly. JSON configuration alone does not register a client. The module only resolves an existing keyed registration; it does not construct clients, choose credentials, or fall back to an unkeyed client. Missing or blank names, unregistered clients, and the reserved alias key `OrchardCore.Secrets.Azure` fail explicitly.
+
+`SecretClientSettings` binds the global client configuration, including `VaultUri`, `Credential`, and `Options`. Select an appropriate token credential in the host configuration. Key Vault does not support API-key authentication.
+
+| CredentialSource | Credential settings | Usage |
 | --- | --- | --- |
-| `ManagedIdentity` | None beyond `VaultUri` and `CredentialType`; optional `ClientId` | System-assigned managed identity when `ClientId` is omitted, or a user-assigned identity when it is supplied. |
-| `WorkloadIdentity` | `TenantId`, `ClientId`, `TokenFilePath` | Federated workload identity, such as an Azure Kubernetes Service workload. |
-| `ClientSecret` | `TenantId`, `ClientId`, `ClientSecret` | Application credentials supplied through secure configuration. |
-| `AzureCli` | An authenticated Azure CLI session | Local development using only Azure CLI credentials. |
-| `AzurePowerShell` | An authenticated Azure PowerShell session | Local development using only Azure PowerShell credentials. |
-| `VisualStudio` | An authenticated Visual Studio account | Local development using only Visual Studio credentials. |
-| `DefaultAzureCredential` | Configuration appropriate for the SDK credential chain | Explicit opt-in to SDK credential discovery; not recommended for production. |
+| `ManagedIdentityCredential` | Omit identity settings for system-assigned identity; use `ManagedIdentityIdKind: "ClientId"` and `ManagedIdentityId` for a user-assigned client ID | Azure managed identity. |
+| `WorkloadIdentityCredential` | `TenantId`, `ClientId`, and `TokenFilePath` or the corresponding Azure SDK environment | Federated workload identity, such as an Azure Kubernetes Service workload. |
+| `EnvironmentCredential` | `TenantId`, `ClientId`, and `ClientSecret`, or equivalent Azure SDK environment variables | Application credentials supplied through secure configuration. |
+| `AzureCliCredential` | An authenticated Azure CLI session | Local development using only Azure CLI credentials. |
+| `AzurePowerShellCredential` | An authenticated Azure PowerShell session | Local development using only Azure PowerShell credentials. |
+| `VisualStudioCredential` | An authenticated Visual Studio account | Local development using only Visual Studio credentials. |
 
-For production web applications, use a deterministic provider as recommended in [Azure authentication best practices](https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication/best-practices). Specific providers do not fall back to another identity after authentication fails. The tenant-shell singleton store reuses its credential and `SecretClient` across operations.
+These are common sources; the SDK supports additional sources and explicitly configured chains. See its configuration reference for source-specific properties. `DefaultAzureCredential` is not a `CredentialSource` supported by the SDK's configuration resolver; select the intended source, such as `EnvironmentCredential`, rather than the former module-specific `CredentialType` setting.
 
-For client secret authentication, provide `ClientSecret` through a secure configuration source, for example the `OrchardCore__Secrets__Azure__ClientSecret` environment variable, rather than storing it in `appsettings.json`.
+For production web applications, use a deterministic provider as recommended in [Azure authentication best practices](https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication/best-practices). Specific providers do not fall back to another identity after authentication fails. Host-registered singleton clients are shared across tenant containers; each tenant's store retains its own namespace.
+
+For client secret authentication, provide `Credential:ClientSecret` through a secure configuration source, for example the `AzureClients__SecretClient__Credential__ClientSecret` environment variable, rather than storing it in `appsettings.json`.
+
+`Options` is the SDK's `SecretClientOptions` configuration section, including `DisableChallengeResourceVerification`, nested `Retry` settings, and nested `Diagnostics` settings. Credential-specific settings, such as `AuthorityHost` and `DisableInstanceDiscovery`, belong under `Credential`. Omitted settings retain SDK defaults. Do not enable diagnostics content logging for secrets. The underlying SDK configuration APIs are currently experimental (`SCME0002`); host registration must opt in locally.
+
+The feature registers a lazy keyed singleton alias with key `OrchardCore.Secrets.Azure`, exposed as `AzureKeyVaultSecretStore.SecretClientServiceKey`. Resolving that alias returns the exact host-registered client selected by the tenant's `AzureClient` option, without changing its credentials or options. Other features can select the same host key to share a client, or select a different key to use another vault. To consume this feature's selected client from a tenant service:
+
+```csharp
+public MyService(
+    [FromKeyedServices(AzureKeyVaultSecretStore.SecretClientServiceKey)] SecretClient client)
+{
+    _client = client;
+}
+```
+
+This requires `Microsoft.Extensions.DependencyInjection`, `Azure.Security.KeyVault.Secrets`, and `OrchardCore.Secrets.Azure`. Each tenant resolves its own alias to the shared host client. Programmatic resolution uses `GetRequiredKeyedService<SecretClient>(AzureKeyVaultSecretStore.SecretClientServiceKey)`.
 
 `NamePrefix` defines an application namespace even for single-tenant sites. It defaults to `oc`; use a distinct prefix for each application sharing a vault. Prefixes must be nonblank and no longer than 256 characters.
 
 Key Vault names combine a normalized readable prefix, Orchard tenant name, and logical secret name with a 24-character hexadecimal SHA-256 suffix. For example, `myapp-default-payment-apikey-<hash>` represents `Payment.ApiKey` in the `Default` tenant with prefix `myapp`. The readable portion uses lowercase ASCII letters, digits, and hyphens, and is truncated as needed to keep the entire name within Key Vault's 127-character limit. The 96-bit hash covers the exact, unambiguously encoded `(prefix, tenant name, logical secret name)` tuple, so names differing only by case, punctuation, or truncated characters remain distinct.
 
-The store records the exact prefix, tenant name, original secret name, registered secret type, and description in tags. Reads, updates, and deletes validate ownership metadata; listing includes only entries matching the configured prefix and tenant. `TenantId` is the Microsoft Entra tenant ID, not the Orchard tenant name. Changing `NamePrefix` or renaming an Orchard tenant changes its namespace; plan an explicit secret migration before doing so.
+The store records the exact prefix, tenant name, original secret name, registered secret type, and description in tags. Reads, updates, and deletes validate ownership metadata; listing includes only entries matching the configured prefix and tenant. `Credential:TenantId` is the Microsoft Entra tenant ID, not the Orchard tenant name. Changing `NamePrefix` or renaming an Orchard tenant changes its namespace; plan an explicit secret migration before doing so.
 
 These namespaces prevent accidental cross-tenant access through the store but are not an Azure authorization boundary: code with the vault credentials can bypass them. Use separate vaults or appropriately restricted identities for mutually untrusted tenants. Entries created outside Orchard without ownership tags are not automatically adopted. Create entries through the tenant's secret manager.
 
 Deletion is a normal Key Vault soft delete. It never purges secrets, so purge permission is not required and purge protection remains effective. Azure's retention rules may prevent reusing a deleted name until it is recovered or its retention period ends.
 
 The store is immutable when editing a secret in the admin UI. Edit and delete operations target the displayed store only. Clearing a description or expiration explicitly removes that metadata; programmatic saves without a `SecretSaveOptions` object preserve it.
+
+#### Local development with the Azure Key Vault Emulator
+
+The [James Gould Azure Key Vault Emulator](https://github.com/james-gould/azure-keyvault-emulator) supports the Azure SDK clients used by this store. It is for local development and testing only, not production. Its documented client setup uses `DefaultAzureCredential`, not an API key.
+
+Follow the emulator's [setup instructions](https://github.com/james-gould/azure-keyvault-emulator/blob/master/docs/CONFIG.md) to start it and trust its TLS certificate. Use a version supporting its OAuth endpoints, as documented in the emulator's [authentication and client configuration](https://github.com/james-gould/azure-keyvault-emulator#4-optional-authenticate-with-defaultazurecredential). For Docker, expose container port `4997` on a fixed host port. If persistence is enabled, keep that port unchanged: persisted entries contain the vault URI. For Aspire, enable persistence only with a fixed `Port`.
+
+Enable `OrchardCore.Secrets` and `OrchardCore.Secrets.Azure` for the Orchard tenant, register the named client in the host as shown above, and add the following to `appsettings.Development.json`. The SDK's configuration resolver selects `EnvironmentCredential`, the environment authentication source used by the emulator's documented `DefaultAzureCredential` setup. No emulator-specific mode or custom module is needed:
+
+```json
+{
+  "AzureClients": {
+    "SecretClient": {
+      "VaultUri": "https://localhost:4997",
+      "Credential": {
+        "CredentialSource": "EnvironmentCredential",
+        "DisableInstanceDiscovery": true
+      },
+      "Options": {
+        "DisableChallengeResourceVerification": true
+      }
+    }
+  },
+  "OrchardCore": {
+    "Secrets": {
+      "Azure": {
+        "AzureClient": "SecretClient",
+        "NamePrefix": "localdev"
+      }
+    }
+  }
+}
+```
+
+Replace `4997` with the host port exposed by your emulator. `EnvironmentCredential` needs the emulator's credential environment. If you use Aspire, the emulator's `WithAzureKeyVaultEmulatorCredentials` integration supplies this automatically. For a standalone emulator, set these variables in the process that launches Orchard:
+
+```bash
+export AZURE_TENANT_ID=a0c2a3f5-e1b3-4d6a-9c41-2cdd1f2c7e0f
+export AZURE_CLIENT_ID=a0c2a3f5-e1b3-4d6a-9c41-2cdd1f2c7e0f
+export AZURE_CLIENT_SECRET=emulator-client-secret
+export AZURE_AUTHORITY_HOST=https://localhost:4997
+```
+
+These are the emulator's public placeholder credentials, not real Azure credentials. Its OAuth endpoint accepts them locally; no Azure subscription or CLI login is needed. Never send real production credentials to an emulator. Alternatively, set `TenantId`, `ClientId`, `ClientSecret`, and `AuthorityHost` directly under `Credential`.
+
+`AZURE_AUTHORITY_HOST` must point to the emulator's HTTPS endpoint rather than Microsoft's identity service. Alternatively, set `Credential:AuthorityHost` in the configuration section. The SDK does not infer the identity authority from `VaultUri`.
+
+The emulator's localhost hostname requires `Options:DisableChallengeResourceVerification` to be `true`. Its local identity authority requires `Credential:DisableInstanceDiscovery` to be `true`. TLS certificate validation remains enabled: trust the emulator certificate rather than bypassing validation.
+
+Keep these overrides in development configuration. Leave challenge-resource verification and identity instance discovery enabled for production Azure endpoints; both disabling flags default to `false`. No environment-based behavior or automatic emulator detection changes these settings.
+
+To check the integration, create a text secret in the admin UI with **AzureKeyVault** selected as its store, then edit and delete it. For a programmatic read, use `GetSecretAsync<TextSecret>(name, "AzureKeyVault")` so a database entry cannot mask a failed emulator lookup. If persistence is enabled, restart the emulator on the same port and verify the secret is still readable before deleting it. Create secrets through Orchard rather than directly seeding bare emulator entries: the store requires its tenant, namespace, and type ownership tags.
 
 ## Using Secrets Programmatically
 
@@ -894,6 +1033,8 @@ This module addresses several long-standing issues in Orchard Core:
 ## Migration Guide
 
 Credential migrations only replace existing settings after successful Data Protection decryption and secret persistence. Missing keys, unavailable stores, and other failures are logged and propagated so migrations can be retried after fixing the cause; encrypted payloads are never treated as plaintext. Preserve the original Data Protection key ring during upgrades.
+
+Credentials supplied directly through configuration produce a `LegacySecretConfiguration` warning (event ID `8100`) when their options are initialized. The warning identifies the tenant, integration, and current configuration key, but never includes the value. After moving credentials to secrets and removing the old configuration values, restart the application, activate each tenant, exercise its configured integrations, and check the logs again. Also audit configuration sources directly: options initialize lazily and overridden or unused configuration values may not produce warnings. See the [4.0 upgrade instructions](../../../releases/4.0.0.md#checking-for-remaining-configuration-credentials) for the affected keys, legacy aliases, and verification procedure.
 
 ### From appsettings.json Passwords
 

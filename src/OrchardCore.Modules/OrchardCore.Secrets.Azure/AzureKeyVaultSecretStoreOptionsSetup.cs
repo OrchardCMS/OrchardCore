@@ -17,12 +17,7 @@ public class AzureKeyVaultSecretStoreOptionsSetup : IConfigureOptions<AzureKeyVa
     {
         var section = _shellConfiguration.GetSection("Secrets:Azure");
 
-        options.VaultUri = section["VaultUri"];
+        options.AzureClient = section["AzureClient"] ?? options.AzureClient;
         options.NamePrefix = section["NamePrefix"] ?? options.NamePrefix;
-        options.CredentialType = section.GetValue<AzureKeyVaultCredentialType?>("CredentialType");
-        options.TenantId = section["TenantId"];
-        options.ClientId = section["ClientId"];
-        options.ClientSecret = section["ClientSecret"];
-        options.TokenFilePath = section["TokenFilePath"];
     }
 }

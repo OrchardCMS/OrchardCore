@@ -9,6 +9,7 @@
                 <div class="col">
                 </div>
                 <div class="col-auto">
+                    <a asp-controller="Store" asp-action="Index" class="btn btn-secondary">@T["Manage Stores"]</a>
                     <button type="button" class="btn btn-secondary create" data-bs-toggle="modal" data-bs-target="#modalSecretTypes">@T["Add Secret"]</button>
                 </div>
             </div>
@@ -62,6 +63,7 @@
                         </div>
                         <div class="col-md-3">
                             <a asp-action="Edit" asp-route-name="@secret.Name" asp-route-store="@secret.Store" class="btn btn-sm btn-primary">@T["Edit"]</a>
+                            <a asp-controller="Store" asp-action="Index" asp-route-name="@secret.Name" asp-route-sourceStore="@secret.Store" class="btn btn-sm btn-secondary">@T["Move"]</a>
                             <a asp-action="Delete" asp-route-name="@secret.Name" asp-route-store="@secret.Store" class="btn btn-sm btn-danger" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Delete Secret"]" data-message="@T["Are you sure you want to delete this secret?"]">@T["Delete"]</a>
                         </div>
                     </div>

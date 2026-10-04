@@ -53,7 +53,7 @@ public sealed class ClientSecretsMigration : DataMigration
             var protector = _dataProtectionProvider.CreateProtector(nameof(OpenIdClientConfiguration));
             var decryptedSecret = protector.Unprotect(settings.ClientSecret);
 
-            var secretName = "OpenIdClient.ClientSecret";
+            var secretName = OpenIdConstants.SecretNames.ClientSecret;
             var secret = new TextSecret { Text = decryptedSecret };
 
             await _secretManager.SaveSecretAsync(secretName, secret);

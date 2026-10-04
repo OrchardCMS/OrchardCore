@@ -12,6 +12,7 @@ namespace OrchardCore.Sms;
 public sealed class Migrations : DataMigration
 {
     private const string ProtectorName = TwilioSmsProvider.ProtectorName;
+    private const string AuthTokenSecretName = "Twilio.AuthToken";
 
     private readonly ISiteService _siteService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -54,7 +55,7 @@ public sealed class Migrations : DataMigration
             var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
             var decryptedAuthToken = protector.Unprotect(settings.AuthToken);
 
-            var secretName = "Twilio.AuthToken";
+            var secretName = AuthTokenSecretName;
             var secret = new TextSecret { Text = decryptedAuthToken };
 
             await _secretManager.SaveSecretAsync(secretName, secret, new SecretSaveOptions

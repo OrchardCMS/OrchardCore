@@ -126,6 +126,40 @@ public sealed class SecretsTests : CmsTestBase, IClassFixture<CmsSetupFixture>
     }
 
     [Fact]
+    public async Task StoreManagement_RequiresConfirmationAndDoesNotExposeValues()
+    {
+        var page = await CreateAdminPageAsync();
+        await CreateTextSecretAsync(page, "FirstKey", "first-private-value");
+        await CreateTextSecretAsync(page, "SecondKey", "second-private-value");
+        await page.GetByRole(AriaRole.Link, new PageGetByRoleOptions { Name = "Manage Stores", Exact = true }).ClickAsync();
+        await Assertions.Expect(page.Locator("body")).ToContainTextAsync("Active secrets: 2");
+        await Assertions.Expect(page.Locator("body")).Not.ToContainTextAsync("first-private-value");
+        await Assertions.Expect(page.Locator("body")).Not.ToContainTextAsync("second-private-value");
+        await page.GetByRole(AriaRole.Button, new PageGetByRoleOptions { Name = "Execute", Exact = true }).ClickAsync();
+        await Assertions.Expect(page.Locator("body")).ToContainTextAsync("Confirm the operation");
+        await Assertions.Expect(page.Locator("body")).ToContainTextAsync("Active secrets: 2");
+        await page.GotoAndAssertOkAsync($"{Tenant.Prefix}/Admin/Secrets/Stores/Index?sourceStore=Database");
+        await Assertions.Expect(page.Locator("body")).ToContainTextAsync("Active secrets: 2");
+        await page.GetByRole(AriaRole.Link, new PageGetByRoleOptions { Name = "Back to Secrets" }).ClickAsync();
+        await Assertions.Expect(SecretEntry(page, "FirstKey")).ToHaveCountAsync(1);
+        await Assertions.Expect(SecretEntry(page, "SecondKey")).ToHaveCountAsync(1);
+    }
+
+    [Fact]
+    public async Task MovePage_ContainsOnlyMetadataAndRejectsMissingDestination()
+    {
+        var page = await CreateAdminPageAsync();
+        await CreateTextSecretAsync(page, "MoveKey", "move-private-value");
+        await SecretEntry(page, "MoveKey").GetByRole(AriaRole.Link, new LocatorGetByRoleOptions { Name = "Move", Exact = true }).ClickAsync();
+        await Assertions.Expect(page.Locator("body")).ToContainTextAsync("Move secret: MoveKey");
+        await Assertions.Expect(page.Locator("body")).Not.ToContainTextAsync("move-private-value");
+        await page.Locator("#Confirm").CheckAsync();
+        await page.GetByRole(AriaRole.Button, new PageGetByRoleOptions { Name = "Execute", Exact = true }).ClickAsync();
+        await Assertions.Expect(page.Locator("body")).ToContainTextAsync("Select a different writable destination store");
+        await Assertions.Expect(page.Locator("body")).ToContainTextAsync("Active secrets: 1");
+    }
+
+    [Fact]
     public async Task CreatingDuplicateName_ShowsValidationError()
     {
         var page = await CreateAdminPageAsync();

@@ -12,6 +12,7 @@ namespace OrchardCore.Sms.Azure;
 public sealed class Migrations : DataMigration
 {
     private const string ProtectorName = AzureSmsOptionsConfiguration.ProtectorName;
+    private const string ConnectionStringSecretName = "AzureSms.ConnectionString";
 
     private readonly ISiteService _siteService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -54,7 +55,7 @@ public sealed class Migrations : DataMigration
             var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
             var decryptedConnectionString = protector.Unprotect(settings.ConnectionString);
 
-            var secretName = "AzureSms.ConnectionString";
+            var secretName = ConnectionStringSecretName;
             var secret = new TextSecret { Text = decryptedConnectionString };
 
             await _secretManager.SaveSecretAsync(secretName, secret, new SecretSaveOptions

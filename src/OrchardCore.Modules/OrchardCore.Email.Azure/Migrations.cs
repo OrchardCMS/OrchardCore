@@ -11,6 +11,7 @@ namespace OrchardCore.Email.Azure;
 public sealed class Migrations : DataMigration
 {
     private const string ProtectorName = AzureEmailOptionsConfiguration.ProtectorName;
+    private const string ConnectionStringSecretName = "AzureEmail.ConnectionString";
 
     private readonly ISiteService _siteService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -53,7 +54,7 @@ public sealed class Migrations : DataMigration
             var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
             var decryptedConnectionString = protector.Unprotect(settings.ConnectionString);
 
-            var secretName = "AzureEmail.ConnectionString";
+            var secretName = ConnectionStringSecretName;
             var secret = new TextSecret { Text = decryptedConnectionString };
 
             await _secretManager.SaveSecretAsync(secretName, secret, new SecretSaveOptions

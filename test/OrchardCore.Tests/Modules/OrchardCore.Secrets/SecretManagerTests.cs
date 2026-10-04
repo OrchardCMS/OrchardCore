@@ -1,5 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Moq;
+using OrchardCore.Locking;
+using OrchardCore.Locking.Distributed;
 using OrchardCore.Secrets;
 using OrchardCore.Secrets.Services;
 
@@ -8,10 +10,13 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets;
 public class SecretManagerTests
 {
     private readonly Mock<ILogger<SecretManager>> _loggerMock;
+    private readonly Mock<IDistributedLock> _distributedLock = new();
 
     public SecretManagerTests()
     {
         _loggerMock = new Mock<ILogger<SecretManager>>();
+        _distributedLock.Setup(l => l.TryAcquireLockAsync(It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<TimeSpan?>()))
+            .ReturnsAsync((Mock.Of<ILocker>(), true));
     }
 
     [Fact]
@@ -28,7 +33,7 @@ public class SecretManagerTests
         var store2 = new Mock<ISecretStore>();
         store2.Setup(s => s.Name).Returns("Store2");
 
-        var manager = new SecretManager([store1.Object, store2.Object], _loggerMock.Object);
+        var manager = new SecretManager([store1.Object, store2.Object], _loggerMock.Object, _distributedLock.Object);
 
         // Act
         var result = await manager.GetSecretAsync<TextSecret>("test-secret");
@@ -55,7 +60,7 @@ public class SecretManagerTests
         store2.Setup(s => s.GetSecretAsync<TextSecret>("test-secret"))
             .ReturnsAsync(expectedSecret);
 
-        var manager = new SecretManager([store1.Object, store2.Object], _loggerMock.Object);
+        var manager = new SecretManager([store1.Object, store2.Object], _loggerMock.Object, _distributedLock.Object);
 
         // Act
         var result = await manager.GetSecretAsync<TextSecret>("test-secret");
@@ -74,7 +79,7 @@ public class SecretManagerTests
         store1.Setup(s => s.GetSecretAsync<TextSecret>("test-secret"))
             .ReturnsAsync((TextSecret)null);
 
-        var manager = new SecretManager([store1.Object], _loggerMock.Object);
+        var manager = new SecretManager([store1.Object], _loggerMock.Object, _distributedLock.Object);
 
         // Act
         var result = await manager.GetSecretAsync<TextSecret>("test-secret");
@@ -100,7 +105,7 @@ public class SecretManagerTests
         store2.Setup(s => s.GetSecretAsync<TextSecret>("test-secret"))
             .ReturnsAsync(secret2);
 
-        var manager = new SecretManager([store1.Object, store2.Object], _loggerMock.Object);
+        var manager = new SecretManager([store1.Object, store2.Object], _loggerMock.Object, _distributedLock.Object);
 
         // Act
         var result = await manager.GetSecretAsync<TextSecret>("test-secret", "Store2");
@@ -117,7 +122,7 @@ public class SecretManagerTests
         var store1 = new Mock<ISecretStore>();
         store1.Setup(s => s.Name).Returns("Store1");
 
-        var manager = new SecretManager([store1.Object], _loggerMock.Object);
+        var manager = new SecretManager([store1.Object], _loggerMock.Object, _distributedLock.Object);
 
         // Act
         var result = await manager.GetSecretAsync<TextSecret>("test-secret", "NonExistentStore");
@@ -140,7 +145,7 @@ public class SecretManagerTests
         writableStore.Setup(s => s.Name).Returns("Writable");
         writableStore.Setup(s => s.IsReadOnly).Returns(false);
 
-        var manager = new SecretManager([readOnlyStore.Object, writableStore.Object], _loggerMock.Object);
+        var manager = new SecretManager([readOnlyStore.Object, writableStore.Object], _loggerMock.Object, _distributedLock.Object);
 
         // Act
         await manager.SaveSecretAsync("test-secret", secret);
@@ -160,7 +165,7 @@ public class SecretManagerTests
         readOnlyStore.Setup(s => s.Name).Returns("ReadOnly");
         readOnlyStore.Setup(s => s.IsReadOnly).Returns(true);
 
-        var manager = new SecretManager([readOnlyStore.Object], _loggerMock.Object);
+        var manager = new SecretManager([readOnlyStore.Object], _loggerMock.Object, _distributedLock.Object);
 
         // Act & Assert
         await Assert.ThrowsAsync<InvalidOperationException>(
@@ -181,7 +186,7 @@ public class SecretManagerTests
         store2.Setup(s => s.Name).Returns("Store2");
         store2.Setup(s => s.IsReadOnly).Returns(false);
 
-        var manager = new SecretManager([store1.Object, store2.Object], _loggerMock.Object);
+        var manager = new SecretManager([store1.Object, store2.Object], _loggerMock.Object, _distributedLock.Object);
 
         // Act
         await manager.SaveSecretAsync("test-secret", secret, "Store2");
@@ -201,7 +206,7 @@ public class SecretManagerTests
         readOnlyStore.Setup(s => s.Name).Returns("ReadOnly");
         readOnlyStore.Setup(s => s.IsReadOnly).Returns(true);
 
-        var manager = new SecretManager([readOnlyStore.Object], _loggerMock.Object);
+        var manager = new SecretManager([readOnlyStore.Object], _loggerMock.Object, _distributedLock.Object);
 
         // Act & Assert
         await Assert.ThrowsAsync<InvalidOperationException>(
@@ -224,7 +229,7 @@ public class SecretManagerTests
         writableStore2.Setup(s => s.Name).Returns("Writable2");
         writableStore2.Setup(s => s.IsReadOnly).Returns(false);
 
-        var manager = new SecretManager([readOnlyStore.Object, writableStore1.Object, writableStore2.Object], _loggerMock.Object);
+        var manager = new SecretManager([readOnlyStore.Object, writableStore1.Object, writableStore2.Object], _loggerMock.Object, _distributedLock.Object);
 
         // Act
         await manager.RemoveSecretAsync("test-secret");
@@ -258,7 +263,7 @@ public class SecretManagerTests
         store2.Setup(s => s.Name).Returns("Store2");
         store2.Setup(s => s.GetSecretInfosAsync()).ReturnsAsync(store2Infos);
 
-        var manager = new SecretManager([store1.Object, store2.Object], _loggerMock.Object);
+        var manager = new SecretManager([store1.Object, store2.Object], _loggerMock.Object, _distributedLock.Object);
 
         // Act
         var result = (await manager.GetSecretInfosAsync()).ToList();
@@ -280,7 +285,7 @@ public class SecretManagerTests
         var store2 = new Mock<ISecretStore>();
         store2.Setup(s => s.Name).Returns("Store2");
 
-        var manager = new SecretManager([store1.Object, store2.Object], _loggerMock.Object);
+        var manager = new SecretManager([store1.Object, store2.Object], _loggerMock.Object, _distributedLock.Object);
 
         // Act
         var stores = manager.GetStores().ToList();
@@ -289,4 +294,3 @@ public class SecretManagerTests
         Assert.Equal(2, stores.Count);
     }
 }
-

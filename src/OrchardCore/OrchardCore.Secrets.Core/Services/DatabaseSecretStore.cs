@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Documents;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Json;
 using OrchardCore.Secrets.Models;
 
@@ -65,11 +66,19 @@ public class DatabaseSecretStore : ISecretStore
     }
 
     /// <inheritdoc />
-    public async Task SaveSecretAsync<T>(string name, T secret, SecretSaveOptions options = null) where T : class, ISecret
+    public Task SaveSecretAsync<T>(string name, T secret, SecretSaveOptions options = null) where T : class, ISecret
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
         ArgumentNullException.ThrowIfNull(secret);
 
+        // A separate scope commits only this mutation before a transfer can discard its source.
+        return ShellScope.Current == null
+            ? SaveCoreAsync(name, secret, options)
+            : ShellScope.UsingChildScopeAsync(_ => SaveCoreAsync(name, secret, options), activateShell: false);
+    }
+
+    private async Task SaveCoreAsync<T>(string name, T secret, SecretSaveOptions options) where T : class, ISecret
+    {
         var document = await _documentManager.GetOrCreateMutableAsync();
 
         // Serialize as ISecret to include type discriminator for polymorphic serialization
@@ -94,10 +103,17 @@ public class DatabaseSecretStore : ISecretStore
     }
 
     /// <inheritdoc />
-    public async Task RemoveSecretAsync(string name)
+    public Task RemoveSecretAsync(string name)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
 
+        return ShellScope.Current == null
+            ? RemoveCoreAsync(name)
+            : ShellScope.UsingChildScopeAsync(_ => RemoveCoreAsync(name), activateShell: false);
+    }
+
+    private async Task RemoveCoreAsync(string name)
+    {
         var document = await _documentManager.GetOrCreateMutableAsync();
 
         if (document.Secrets.Remove(name))

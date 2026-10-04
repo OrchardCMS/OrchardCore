@@ -53,7 +53,7 @@ public sealed class Migrations : DataMigration
             var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
             var decryptedClientSecret = protector.Unprotect(settings.ClientSecret);
 
-            var secretName = "GitHub.ClientSecret";
+            var secretName = GitHubConstants.SecretNames.ClientSecret;
             var secret = new TextSecret { Text = decryptedClientSecret };
 
             await _secretManager.SaveSecretAsync(secretName, secret, new SecretSaveOptions

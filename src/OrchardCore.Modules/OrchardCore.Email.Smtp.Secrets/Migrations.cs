@@ -19,6 +19,7 @@ public sealed class Migrations : DataMigration
     private readonly ILogger _logger;
 
     private const string ProtectorName = "SmtpSettingsConfiguration";
+    private const string PasswordSecretName = "Smtp.Password";
 
     public Migrations(
         ISiteService siteService,
@@ -60,7 +61,7 @@ public sealed class Migrations : DataMigration
             var decryptedPassword = protector.Unprotect(smtpSettings.Password);
 
             // Create the secret
-            var secretName = "Smtp.Password";
+            var secretName = PasswordSecretName;
             var secret = new TextSecret { Text = decryptedPassword };
 
             await _secretManager.SaveSecretAsync(secretName, secret, new SecretSaveOptions

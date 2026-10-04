@@ -31,12 +31,18 @@ public interface ISecretStore
     /// <param name="name">The name of the secret.</param>
     /// <param name="secret">The secret to save.</param>
     /// <param name="options">Optional save options including description and expiration.</param>
+    /// <remarks>
+    /// Complete only after the value is durably persisted. Transfers may delete their source after this method succeeds.
+    /// </remarks>
     Task SaveSecretAsync<T>(string name, T secret, SecretSaveOptions options = null) where T : class, ISecret;
 
     /// <summary>
     /// Removes a secret by its name.
     /// </summary>
     /// <param name="name">The name of the secret to remove.</param>
+    /// <remarks>
+    /// Complete only after the removal is persisted. Provider-specific soft-delete retention may still apply.
+    /// </remarks>
     Task RemoveSecretAsync(string name);
 
     /// <summary>

@@ -10,11 +10,16 @@
             "Azure": {
               "type": "object",
               "description": "Azure Key Vault secret store settings. See https://docs.orchardcore.net/en/latest/reference/modules/Secrets/.",
-              "required": ["VaultUri", "CredentialType"],
+              "required": ["AzureClient"],
               "properties": {
-                "VaultUri": {
+                "AzureClient": {
                   "type": "string",
-                  "description": "The Azure Key Vault URI, e.g. 'https://myvault.vault.azure.net/'. Required to use the store."
+                  "minLength": 1,
+                  "pattern": "\\S",
+                  "not": {
+                    "const": "OrchardCore.Secrets.Azure"
+                  },
+                  "description": "The service key of a SecretClient registered by the host, for example 'SecretClient' registered from 'AzureClients:SecretClient'. The feature lazily resolves this shared client; it does not register clients from configuration."
                 },
                 "NamePrefix": {
                   "type": "string",
@@ -22,35 +27,6 @@
                   "minLength": 1,
                   "maxLength": 256,
                   "description": "Application namespace prefix used even for single-tenant sites sharing a vault. The readable name is normalized, but the hash and ownership tags preserve the exact prefix. Changing this prefix requires explicit secret migration."
-                },
-                "CredentialType": {
-                  "type": "string",
-                  "enum": [
-                    "ManagedIdentity",
-                    "WorkloadIdentity",
-                    "ClientSecret",
-                    "AzureCli",
-                    "AzurePowerShell",
-                    "VisualStudio",
-                    "DefaultAzureCredential"
-                  ],
-                  "description": "Required explicit credential provider. Use a deterministic provider in production. DefaultAzureCredential is used only when explicitly selected."
-                },
-                "TenantId": {
-                  "type": "string",
-                  "description": "The Microsoft Entra tenant ID. Required for ClientSecret and WorkloadIdentity authentication."
-                },
-                "ClientId": {
-                  "type": "string",
-                  "description": "Required for ClientSecret and WorkloadIdentity authentication. For ManagedIdentity, selects a user-assigned identity; omit to use the system-assigned identity."
-                },
-                "ClientSecret": {
-                  "type": "string",
-                  "description": "The application client secret. This is a sensitive value: provide it through user secrets, environment variables or a key vault rather than appsettings.json."
-                },
-                "TokenFilePath": {
-                  "type": "string",
-                  "description": "The federated token file path. Required for WorkloadIdentity authentication."
                 }
               }
             }

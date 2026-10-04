@@ -1,9 +1,11 @@
 using Azure;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.AzureAI.Models;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Secrets;
 using OrchardCore.Settings;
 
@@ -17,24 +19,31 @@ public sealed class AzureAISearchDefaultOptionsConfigurations : IConfigureOption
     private readonly ISecretManager _secretManager;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ISiteService _siteService;
+    private readonly ShellSettings _shellSettings;
+    private readonly ILogger _logger;
 
     public AzureAISearchDefaultOptionsConfigurations(
         IShellConfiguration shellConfiguration,
         ISecretManager secretManager,
         IDataProtectionProvider dataProtectionProvider,
-        ISiteService siteService)
+        ISiteService siteService,
+        ShellSettings shellSettings,
+        ILoggerFactory loggerFactory)
     {
         _shellConfiguration = shellConfiguration;
         _secretManager = secretManager;
         _dataProtectionProvider = dataProtectionProvider;
         _siteService = siteService;
+        _shellSettings = shellSettings;
+        _logger = loggerFactory.CreateLogger(SecretConfigurationExtensions.LoggerCategory);
     }
 
     public void Configure(AzureAISearchDefaultOptions options)
     {
         // The 'OrchardCore_AzureAISearch' section is deprecated and will be removed in a future major version, use 'Search:AzureAISearch' instead.
-        var fileOptions = _shellConfiguration.GetSectionCompat("Search:AzureAISearch", "OrchardCore_AzureAISearch")
-            .Get<AzureAISearchDefaultOptions>()
+        var section = _shellConfiguration.GetSectionCompat("Search:AzureAISearch", "OrchardCore_AzureAISearch");
+        section.WarnIfLegacySecretConfigured(_logger, _shellSettings.Name, "Azure AI Search", "Credential:Key");
+        var fileOptions = section.Get<AzureAISearchDefaultOptions>()
             ?? new AzureAISearchDefaultOptions();
 
         // This should be called first determine whether the file configs are set or not.

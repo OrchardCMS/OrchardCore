@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using OrchardCore.Locking.Distributed;
 
 namespace OrchardCore.Secrets.Services;
 
@@ -10,13 +11,16 @@ public class SecretManager : ISecretManager
 {
     private readonly IEnumerable<ISecretStore> _stores;
     private readonly ILogger _logger;
+    private readonly IDistributedLock _distributedLock;
 
     public SecretManager(
         IEnumerable<ISecretStore> stores,
-        ILogger<SecretManager> logger)
+        ILogger<SecretManager> logger,
+        IDistributedLock distributedLock)
     {
         _stores = stores;
         _logger = logger;
+        _distributedLock = distributedLock;
     }
 
     /// <inheritdoc />
@@ -50,6 +54,7 @@ public class SecretManager : ISecretManager
     /// <inheritdoc />
     public async Task SaveSecretAsync<T>(string name, T secret, SecretSaveOptions options = null) where T : class, ISecret
     {
+        await using var locker = await SecretStoreOperations.AcquireMutationLockAsync(_distributedLock);
         var store = GetDefaultWritableStore();
         if (store == null)
         {
@@ -62,6 +67,7 @@ public class SecretManager : ISecretManager
     /// <inheritdoc />
     public async Task SaveSecretAsync<T>(string name, T secret, string storeName, SecretSaveOptions options = null) where T : class, ISecret
     {
+        await using var locker = await SecretStoreOperations.AcquireMutationLockAsync(_distributedLock);
         var store = GetStore(storeName);
         if (store == null)
         {
@@ -79,6 +85,7 @@ public class SecretManager : ISecretManager
     /// <inheritdoc />
     public async Task RemoveSecretAsync(string name)
     {
+        await using var locker = await SecretStoreOperations.AcquireMutationLockAsync(_distributedLock);
         foreach (var store in _stores.Where(s => !s.IsReadOnly))
         {
             await store.RemoveSecretAsync(name);
@@ -88,6 +95,7 @@ public class SecretManager : ISecretManager
     /// <inheritdoc />
     public async Task RemoveSecretAsync(string name, string storeName)
     {
+        await using var locker = await SecretStoreOperations.AcquireMutationLockAsync(_distributedLock);
         var store = GetStore(storeName);
         if (store == null)
         {

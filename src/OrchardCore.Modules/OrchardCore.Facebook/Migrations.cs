@@ -53,7 +53,7 @@ public sealed class Migrations : DataMigration
             var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
             var decryptedAppSecret = protector.Unprotect(settings.AppSecret);
 
-            var secretName = "Facebook.AppSecret";
+            var secretName = FacebookConstants.SecretNames.AppSecret;
             var secret = new TextSecret { Text = decryptedAppSecret };
 
             await _secretManager.SaveSecretAsync(secretName, secret, new SecretSaveOptions

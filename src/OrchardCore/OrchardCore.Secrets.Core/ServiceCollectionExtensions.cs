@@ -16,6 +16,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddSecrets(this IServiceCollection services)
     {
         services.AddSingleton<ISecretManager, SecretManager>();
+        services.AddSingleton<ISecretStoreOperations, SecretStoreOperations>();
         services.AddSingleton<ISecretEncryptionService, SecretEncryptionService>();
 
         return services;

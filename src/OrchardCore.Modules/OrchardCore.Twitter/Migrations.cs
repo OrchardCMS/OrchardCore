@@ -49,7 +49,7 @@ public sealed class Migrations : DataMigration
             try
             {
                 var decryptedSecret = protector.Unprotect(settings.ConsumerSecret);
-                var secretName = "Twitter.ConsumerSecret";
+                var secretName = TwitterConstants.SecretNames.ConsumerSecret;
                 var secret = new TextSecret { Text = decryptedSecret };
 
                 await _secretManager.SaveSecretAsync(secretName, secret);
@@ -74,7 +74,7 @@ public sealed class Migrations : DataMigration
             try
             {
                 var decryptedSecret = protector.Unprotect(settings.AccessTokenSecret);
-                var secretName = "Twitter.AccessTokenSecret";
+                var secretName = TwitterConstants.SecretNames.AccessTokenSecret;
                 var secret = new TextSecret { Text = decryptedSecret };
 
                 await _secretManager.SaveSecretAsync(secretName, secret);

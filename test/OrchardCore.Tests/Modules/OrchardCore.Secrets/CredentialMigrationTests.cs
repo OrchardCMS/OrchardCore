@@ -11,6 +11,22 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets;
 public class CredentialMigrationTests
 {
     [Theory]
+    [InlineData("GitHub.ClientSecret", global::OrchardCore.GitHub.GitHubConstants.SecretNames.ClientSecret)]
+    [InlineData("Facebook.AppSecret", global::OrchardCore.Facebook.FacebookConstants.SecretNames.AppSecret)]
+    [InlineData("Google.ClientSecret", global::OrchardCore.Google.GoogleConstants.SecretNames.ClientSecret)]
+    [InlineData("MicrosoftAccount.AppSecret", global::OrchardCore.Microsoft.Authentication.MicrosoftAuthenticationConstants.SecretNames.AppSecret)]
+    [InlineData("Twitter.ConsumerSecret", global::OrchardCore.Twitter.TwitterConstants.SecretNames.ConsumerSecret)]
+    [InlineData("Twitter.AccessTokenSecret", global::OrchardCore.Twitter.TwitterConstants.SecretNames.AccessTokenSecret)]
+    [InlineData("OpenIdClient.ClientSecret", global::OrchardCore.OpenId.OpenIdConstants.SecretNames.ClientSecret)]
+    [InlineData("OpenId.SigningCertificate", global::OrchardCore.OpenId.OpenIdConstants.SecretNames.SigningCertificate)]
+    [InlineData("OpenId.EncryptionCertificate", global::OrchardCore.OpenId.OpenIdConstants.SecretNames.EncryptionCertificate)]
+    [InlineData("AzureAISearch.ApiKey", global::OrchardCore.AzureAI.AzureAISearchConstants.SecretNames.ApiKey)]
+    public void DefaultSecretNames_PreservePersistedValues(string expected, string actual)
+    {
+        Assert.Equal(expected, actual);
+    }
+
+    [Theory]
     [InlineData("GitHub")]
     [InlineData("Facebook")]
     [InlineData("Google")]

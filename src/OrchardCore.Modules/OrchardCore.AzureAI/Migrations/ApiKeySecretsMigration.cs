@@ -53,7 +53,7 @@ public sealed class ApiKeySecretsMigration : DataMigration
             var protector = _dataProtectionProvider.CreateProtector(AzureAISearchDefaultOptionsConfigurations.ProtectorName);
             var decryptedSecret = protector.Unprotect(settings.ApiKey);
 
-            var secretName = "AzureAISearch.ApiKey";
+            var secretName = AzureAISearchConstants.SecretNames.ApiKey;
             var secret = new TextSecret { Text = decryptedSecret };
 
             await _secretManager.SaveSecretAsync(secretName, secret);

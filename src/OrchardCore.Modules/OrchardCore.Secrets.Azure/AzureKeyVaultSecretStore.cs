@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using Azure;
 using Azure.Security.KeyVault.Secrets;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
@@ -14,6 +15,8 @@ namespace OrchardCore.Secrets.Azure;
 /// </summary>
 public class AzureKeyVaultSecretStore : ISecretStore
 {
+    public const string SecretClientServiceKey = "OrchardCore.Secrets.Azure";
+
     private const string TenantTag = "OrchardTenant";
     private const string PrefixTag = "OrchardPrefix";
     private const string NameTag = "OrchardName";
@@ -32,8 +35,9 @@ public class AzureKeyVaultSecretStore : ISecretStore
         IOptions<AzureKeyVaultSecretStoreOptions> options,
         ShellSettings shellSettings,
         IEnumerable<ISecretTypeProvider> providers,
-        ILogger<AzureKeyVaultSecretStore> logger)
-        : this(CreateClient(options.Value), shellSettings.Name, options.Value.NamePrefix, providers, logger)
+        ILogger<AzureKeyVaultSecretStore> logger,
+        [FromKeyedServices(SecretClientServiceKey)] SecretClient secretClient)
+        : this(secretClient, shellSettings.Name, options.Value.NamePrefix, providers, logger)
     {
     }
 
@@ -111,7 +115,7 @@ public class AzureKeyVaultSecretStore : ISecretStore
         }
         catch (RequestFailedException ex)
         {
-            _logger.LogError(ex, "Failed to save secret '{SecretName}' to Azure Key Vault.", name);
+            _logger.LogError("Failed to save secret '{SecretName}' to Azure Key Vault ({ExceptionType}).", name, ex.GetType().Name);
             throw;
         }
     }
@@ -134,7 +138,7 @@ public class AzureKeyVaultSecretStore : ISecretStore
         }
         catch (RequestFailedException ex)
         {
-            _logger.LogError(ex, "Failed to remove secret '{SecretName}' from Azure Key Vault.", name);
+            _logger.LogError("Failed to remove secret '{SecretName}' from Azure Key Vault ({ExceptionType}).", name, ex.GetType().Name);
             throw;
         }
     }
@@ -168,7 +172,7 @@ public class AzureKeyVaultSecretStore : ISecretStore
         }
         catch (RequestFailedException ex)
         {
-            _logger.LogError(ex, "Failed to list secrets from Azure Key Vault.");
+            _logger.LogError("Failed to list secrets from Azure Key Vault ({ExceptionType}).", ex.GetType().Name);
             throw;
         }
 
@@ -198,7 +202,7 @@ public class AzureKeyVaultSecretStore : ISecretStore
         }
         catch (RequestFailedException ex)
         {
-            _logger.LogError(ex, "Failed to retrieve secret '{SecretName}' from Azure Key Vault.", name);
+            _logger.LogError("Failed to retrieve secret '{SecretName}' from Azure Key Vault ({ExceptionType}).", name, ex.GetType().Name);
             throw;
         }
     }
@@ -235,15 +239,4 @@ public class AzureKeyVaultSecretStore : ISecretStore
 
     private static string GetDescription(SecretProperties properties) =>
         properties != null && properties.Tags.TryGetValue(DescriptionTag, out var description) ? description : null;
-
-    private static SecretClient CreateClient(AzureKeyVaultSecretStoreOptions options)
-    {
-        if (string.IsNullOrWhiteSpace(options.VaultUri))
-        {
-            throw new InvalidOperationException("Azure Key Vault URI is not configured.");
-        }
-
-        var vaultUri = new Uri(options.VaultUri);
-        return new SecretClient(vaultUri, AzureKeyVaultCredentialFactory.Create(options));
-    }
 }

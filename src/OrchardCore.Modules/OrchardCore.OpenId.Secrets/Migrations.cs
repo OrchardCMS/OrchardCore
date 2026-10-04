@@ -35,7 +35,7 @@ public sealed class Migrations : DataMigration
             openIdSettings.SigningCertificateStoreName.HasValue &&
             string.IsNullOrEmpty(openIdSecretSettings.SigningKeySecretName))
         {
-            var secretName = "OpenId.SigningCertificate";
+            var secretName = OpenIdConstants.SecretNames.SigningCertificate;
             var existingSecret = await _secretManager.GetSecretAsync<X509Secret>(secretName);
 
             if (existingSecret == null)
@@ -63,7 +63,7 @@ public sealed class Migrations : DataMigration
             openIdSettings.EncryptionCertificateStoreName.HasValue &&
             string.IsNullOrEmpty(openIdSecretSettings.EncryptionKeySecretName))
         {
-            var secretName = "OpenId.EncryptionCertificate";
+            var secretName = OpenIdConstants.SecretNames.EncryptionCertificate;
             var existingSecret = await _secretManager.GetSecretAsync<X509Secret>(secretName);
 
             if (existingSecret == null)
