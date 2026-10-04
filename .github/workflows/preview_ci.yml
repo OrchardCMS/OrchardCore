@@ -74,6 +74,19 @@ jobs:
       run: |
         dotnet pack -c Release --no-build
         dotnet nuget push './src/**/*.nupkg' -t 600 -k ${{secrets.CLOUDSMITH_API_KEY}} -n -s https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --skip-duplicate
+    - name: Diagnose NuGet push failure
+      # 'dotnet nuget push' discards the body of a failed response, so a bare "400 (Bad Request)" from Cloudsmith
+      # carries no reason. Re-send one package with curl to print the actual error message.
+      if: failure() && steps.check-publish.outputs.should-publish == 'true'
+      env:
+        CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
+      run: |
+        package=$(ls ./src/OrchardCore.Modules/OrchardCore.ContentFields/bin/Release/*.nupkg | head -n 1)
+        echo "Re-sending $package"
+        curl --silent --show-error --include --request PUT \
+          --header "X-NuGet-ApiKey: $CLOUDSMITH_API_KEY" \
+          --form "package=@$package" \
+          https://nuget.cloudsmith.io/orchardcore/preview/v2/package/ || true
     - name: Set up Docker Buildx
       if: steps.check-publish.outputs.should-publish == 'true'
       uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
