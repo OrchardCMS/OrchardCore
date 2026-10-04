@@ -1,20 +1,18 @@
-using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.AzureAI.Deployment;
 
 public class AzureAISearchIndexResetDeploymentStep : DeploymentStep
 {
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<AzureAISearchIndexResetDeploymentStep>("Search");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<AzureAISearchIndexResetDeploymentStep>("Reset Azure AI Search Indices");
+
     public AzureAISearchIndexResetDeploymentStep()
     {
         Name = "AzureAISearchIndexReset";
-    }
-
-    public AzureAISearchIndexResetDeploymentStep(IStringLocalizer<AzureAISearchIndexResetDeploymentStep> S)
-        : this()
-    {
-        Category = S["Search"];
-        Title = S["Reset Azure AI Search Indices"];
+        Category = s_category;
+        Title = s_title;
     }
 
     public bool IncludeAll { get; set; }

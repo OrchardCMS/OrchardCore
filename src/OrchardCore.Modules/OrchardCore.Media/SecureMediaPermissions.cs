@@ -109,7 +109,7 @@ public sealed class SecureMediaPermissions : IPermissionProvider
 
         permission = new Permission(
             string.Format(template.Name, secureFolder),
-            string.Format(template.Description, secureFolder),
+            string.Format(template.Description.Value, secureFolder),
             (template.ImpliedBy ?? Array.Empty<Permission>()).Select(t => CreateDynamicPermission(t, secureFolder))
         );
 

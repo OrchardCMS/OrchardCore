@@ -1,5 +1,5 @@
-using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Microsoft.Authentication.Deployment;
 
@@ -8,14 +8,11 @@ namespace OrchardCore.Microsoft.Authentication.Deployment;
 /// </summary>
 public class AzureADDeploymentStep : DeploymentStep
 {
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<AzureADDeploymentStep>("Microsoft Authentication");
+
     public AzureADDeploymentStep()
     {
         Name = "Microsoft Entra ID";
-    }
-
-    public AzureADDeploymentStep(IStringLocalizer<AzureADDeploymentStep> S)
-        : this()
-    {
-        Category = S["Microsoft Authentication"];
+        Category = s_category;
     }
 }
