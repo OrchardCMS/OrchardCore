@@ -8,7 +8,7 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Feature(
     Name = "Secrets - Azure Key Vault",
-    Id = "OrchardCore.Secrets.Azure",
+    Id = "OrchardCore.Secrets.AzureKeyVault",
     Description = "Provides Azure Key Vault integration for storing and retrieving secrets.",
     Category = "Security",
     Dependencies = ["OrchardCore.Secrets"]

@@ -187,7 +187,7 @@
     <Project Path="src/OrchardCore.Modules/OrchardCore.Roles/OrchardCore.Roles.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Scripting/OrchardCore.Scripting.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Security/OrchardCore.Security.csproj" />
-    <Project Path="src/OrchardCore.Modules/OrchardCore.Secrets.Azure/OrchardCore.Secrets.Azure.csproj" />
+    <Project Path="src/OrchardCore.Modules/OrchardCore.Secrets.AzureKeyVault/OrchardCore.Secrets.AzureKeyVault.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Secrets/OrchardCore.Secrets.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Settings/OrchardCore.Settings.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Setup/OrchardCore.Setup.csproj" />

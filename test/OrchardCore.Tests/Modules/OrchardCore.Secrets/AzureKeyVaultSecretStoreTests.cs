@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Localization;
 using Moq;
 using OrchardCore.Secrets;
-using OrchardCore.Secrets.Azure;
+using OrchardCore.Secrets.AzureKeyVault;
 using OrchardCore.Secrets.Providers;
 using ISecret = OrchardCore.Secrets.ISecret;
 

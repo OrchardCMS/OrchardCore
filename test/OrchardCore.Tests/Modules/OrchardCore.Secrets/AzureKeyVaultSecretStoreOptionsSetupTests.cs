@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using OrchardCore.Environment.Shell.Configuration;
-using OrchardCore.Secrets.Azure;
+using OrchardCore.Secrets.AzureKeyVault;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Secrets;
 
@@ -12,8 +12,8 @@ public class AzureKeyVaultSecretStoreOptionsSetupTests
         var configuration = new ShellConfiguration(new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string>
             {
-                ["Secrets:Azure:AzureClient"] = "SharedVault",
-                ["Secrets:Azure:NamePrefix"] = "my-application",
+                ["Secrets:AzureKeyVault:AzureClient"] = "SharedVault",
+                ["Secrets:AzureKeyVault:NamePrefix"] = "my-application",
             }));
         var options = new AzureKeyVaultSecretStoreOptions();
 
@@ -40,7 +40,7 @@ public class AzureKeyVaultSecretStoreOptionsSetupTests
         var configuration = new ShellConfiguration(new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string>
             {
-                ["Secrets:Azure:NamePrefix"] = " ",
+                ["Secrets:AzureKeyVault:NamePrefix"] = " ",
             }));
         var options = new AzureKeyVaultSecretStoreOptions();
 

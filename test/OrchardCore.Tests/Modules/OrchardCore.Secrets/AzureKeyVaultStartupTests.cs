@@ -11,7 +11,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Secrets;
-using OrchardCore.Secrets.Azure;
+using OrchardCore.Secrets.AzureKeyVault;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Secrets;
 
@@ -23,13 +23,13 @@ public class AzureKeyVaultStartupTests
         var configuration = new ShellConfiguration(new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string>
             {
-                ["Secrets:Azure:AzureClient"] = clientName,
+                ["Secrets:AzureKeyVault:AzureClient"] = clientName,
             }));
         services.AddOptions();
         services.AddLogging();
         services.AddSingleton<IShellConfiguration>(configuration);
         services.AddSingleton(new ShellSettings { Name = tenant });
-        new global::OrchardCore.Secrets.Azure.Startup().ConfigureServices(services);
+        new global::OrchardCore.Secrets.AzureKeyVault.Startup().ConfigureServices(services);
     }
 
     private static HostApplicationBuilder CreateHost()

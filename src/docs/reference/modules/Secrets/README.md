@@ -124,7 +124,7 @@ For production environments, use Azure Key Vault for hardware-backed security an
   },
   "OrchardCore": {
     "Secrets": {
-      "Azure": {
+      "AzureKeyVault": {
         "AzureClient": "SecretClient",
         "NamePrefix": "mycompany"
       }
@@ -252,7 +252,7 @@ The database store is enabled by default when the Secrets module is enabled. It 
 
 ### Azure Key Vault Store
 
-To use Azure Key Vault as a secret store, enable the `OrchardCore.Secrets.Azure` feature, register a named `SecretClient` in the application host, and select its service key in `OrchardCore:Secrets:Azure:AzureClient`:
+To use Azure Key Vault as a secret store, enable the `OrchardCore.Secrets.AzureKeyVault` feature, register a named `SecretClient` in the application host, and select its service key in `OrchardCore:Secrets:AzureKeyVault:AzureClient`:
 
 ```json
 {
@@ -287,7 +287,7 @@ To use Azure Key Vault as a secret store, enable the `OrchardCore.Secrets.Azure`
   },
   "OrchardCore": {
     "Secrets": {
-      "Azure": {
+      "AzureKeyVault": {
         "AzureClient": "SecretClient",
         "NamePrefix": "myapp"
       }
@@ -308,7 +308,7 @@ builder.AddKeyedAzureClient<SecretClient, SecretClientSettings>(
 #pragma warning restore SCME0002
 ```
 
-Here `builder` is an `IHostApplicationBuilder`. The service key (`SecretClient`) is independent of the configuration path (`AzureClients:SecretClient`); `AzureClient` must match the service key exactly. JSON configuration alone does not register a client. The module only resolves an existing keyed registration; it does not construct clients, choose credentials, or fall back to an unkeyed client. Missing or blank names, unregistered clients, and the reserved alias key `OrchardCore.Secrets.Azure` fail explicitly.
+Here `builder` is an `IHostApplicationBuilder`. The service key (`SecretClient`) is independent of the configuration path (`AzureClients:SecretClient`); `AzureClient` must match the service key exactly. JSON configuration alone does not register a client. The module only resolves an existing keyed registration; it does not construct clients, choose credentials, or fall back to an unkeyed client. Missing or blank names, unregistered clients, and the reserved alias key `OrchardCore.Secrets.AzureKeyVault` fail explicitly.
 
 `SecretClientSettings` binds the global client configuration, including `VaultUri`, `Credential`, and `Options`. Select an appropriate token credential in the host configuration. Key Vault does not support API-key authentication.
 
@@ -329,7 +329,7 @@ For client secret authentication, provide `Credential:ClientSecret` through a se
 
 `Options` is the SDK's `SecretClientOptions` configuration section, including `DisableChallengeResourceVerification`, nested `Retry` settings, and nested `Diagnostics` settings. Credential-specific settings, such as `AuthorityHost` and `DisableInstanceDiscovery`, belong under `Credential`. Omitted settings retain SDK defaults. Do not enable diagnostics content logging for secrets. The underlying SDK configuration APIs are currently experimental (`SCME0002`); host registration must opt in locally.
 
-The feature registers a lazy keyed singleton alias with key `OrchardCore.Secrets.Azure`, exposed as `AzureKeyVaultSecretStore.SecretClientServiceKey`. Resolving that alias returns the exact host-registered client selected by the tenant's `AzureClient` option, without changing its credentials or options. Other features can select the same host key to share a client, or select a different key to use another vault. To consume this feature's selected client from a tenant service:
+The feature registers a lazy keyed singleton alias with key `OrchardCore.Secrets.AzureKeyVault`, exposed as `AzureKeyVaultSecretStore.SecretClientServiceKey`. Resolving that alias returns the exact host-registered client selected by the tenant's `AzureClient` option, without changing its credentials or options. Other features can select the same host key to share a client, or select a different key to use another vault. To consume this feature's selected client from a tenant service:
 
 ```csharp
 public MyService(
@@ -339,7 +339,7 @@ public MyService(
 }
 ```
 
-This requires `Microsoft.Extensions.DependencyInjection`, `Azure.Security.KeyVault.Secrets`, and `OrchardCore.Secrets.Azure`. Each tenant resolves its own alias to the shared host client. Programmatic resolution uses `GetRequiredKeyedService<SecretClient>(AzureKeyVaultSecretStore.SecretClientServiceKey)`.
+This requires `Microsoft.Extensions.DependencyInjection`, `Azure.Security.KeyVault.Secrets`, and `OrchardCore.Secrets.AzureKeyVault`. Each tenant resolves its own alias to the shared host client. Programmatic resolution uses `GetRequiredKeyedService<SecretClient>(AzureKeyVaultSecretStore.SecretClientServiceKey)`.
 
 `NamePrefix` defines an application namespace even for single-tenant sites. It defaults to `oc`; use a distinct prefix for each application sharing a vault. Prefixes must be nonblank and no longer than 256 characters.
 
@@ -359,7 +359,7 @@ The [James Gould Azure Key Vault Emulator](https://github.com/james-gould/azure-
 
 Follow the emulator's [setup instructions](https://github.com/james-gould/azure-keyvault-emulator/blob/master/docs/CONFIG.md) to start it and trust its TLS certificate. Use a version supporting its OAuth endpoints, as documented in the emulator's [authentication and client configuration](https://github.com/james-gould/azure-keyvault-emulator#4-optional-authenticate-with-defaultazurecredential). For Docker, expose container port `4997` on a fixed host port. If persistence is enabled, keep that port unchanged: persisted entries contain the vault URI. For Aspire, enable persistence only with a fixed `Port`.
 
-Enable `OrchardCore.Secrets` and `OrchardCore.Secrets.Azure` for the Orchard tenant, register the named client in the host as shown above, and add the following to `appsettings.Development.json`. The SDK's configuration resolver selects `EnvironmentCredential`, the environment authentication source used by the emulator's documented `DefaultAzureCredential` setup. No emulator-specific mode or custom module is needed:
+Enable `OrchardCore.Secrets` and `OrchardCore.Secrets.AzureKeyVault` for the Orchard tenant, register the named client in the host as shown above, and add the following to `appsettings.Development.json`. The SDK's configuration resolver selects `EnvironmentCredential`, the environment authentication source used by the emulator's documented `DefaultAzureCredential` setup. No emulator-specific mode or custom module is needed:
 
 ```json
 {
@@ -377,7 +377,7 @@ Enable `OrchardCore.Secrets` and `OrchardCore.Secrets.Azure` for the Orchard ten
   },
   "OrchardCore": {
     "Secrets": {
-      "Azure": {
+      "AzureKeyVault": {
         "AzureClient": "SecretClient",
         "NamePrefix": "localdev"
       }

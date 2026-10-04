@@ -8,14 +8,14 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 
-namespace OrchardCore.Secrets.Azure;
+namespace OrchardCore.Secrets.AzureKeyVault;
 
 /// <summary>
 /// An Azure Key Vault-backed secret store, namespaced by Orchard tenant.
 /// </summary>
 public class AzureKeyVaultSecretStore : ISecretStore
 {
-    public const string SecretClientServiceKey = "OrchardCore.Secrets.Azure";
+    public const string SecretClientServiceKey = "OrchardCore.Secrets.AzureKeyVault";
 
     private const string TenantTag = "OrchardTenant";
     private const string PrefixTag = "OrchardPrefix";

@@ -1,4 +1,4 @@
-namespace OrchardCore.Secrets.Azure;
+namespace OrchardCore.Secrets.AzureKeyVault;
 
 /// <summary>
 /// Configuration options for Azure Key Vault secret store.
@@ -7,7 +7,7 @@ public class AzureKeyVaultSecretStoreOptions
 {
     /// <summary>
     /// Gets or sets the service key of the host-registered <c>SecretClient</c> to share.
-    /// This must not be the feature's own service key, <c>OrchardCore.Secrets.Azure</c>.
+    /// This must not be the feature's own service key, <c>OrchardCore.Secrets.AzureKeyVault</c>.
     /// </summary>
     public string AzureClient { get; set; }
 

@@ -7,7 +7,7 @@
         "Secrets": {
           "type": "object",
           "properties": {
-            "Azure": {
+            "AzureKeyVault": {
               "type": "object",
               "description": "Azure Key Vault secret store settings. See https://docs.orchardcore.net/en/latest/reference/modules/Secrets/.",
               "required": ["AzureClient"],
@@ -17,7 +17,7 @@
                   "minLength": 1,
                   "pattern": "\\S",
                   "not": {
-                    "const": "OrchardCore.Secrets.Azure"
+                    "const": "OrchardCore.Secrets.AzureKeyVault"
                   },
                   "description": "The service key of a SecretClient registered by the host, for example 'SecretClient' registered from 'AzureClients:SecretClient'. The feature lazily resolves this shared client; it does not register clients from configuration."
                 },
