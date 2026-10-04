@@ -90,6 +90,37 @@ public class MediaPathTests
         }
     }
 
+    public static TheoryData<string> InvalidTenantNames => new()
+    {
+        "",
+        ".",
+        "..",
+        "../..",
+        "../OtherTenant",
+        "Tenant/../..",
+        "/",
+        "/Tenant",
+    };
+
+    [Theory]
+    [MemberData(nameof(InvalidTenantNames))]
+    public void GetMediaPath_TenantNameOutsideTenantsDirectory_Throws(string tenantName)
+    {
+        using var settings = new ShellSettings { Name = tenantName };
+
+        Assert.Throws<ArgumentException>(() => MediaStartup.GetMediaPath(CreateShellOptions(), settings, "Media"));
+    }
+
+    [Fact]
+    public void GetMediaPath_TenantNameEscapingToTheApplicationDirectory_Throws()
+    {
+        // A tenant name that is not validated at creation time must not be able to redirect the tenant
+        // media root to the application's assembly directory.
+        using var settings = new ShellSettings { Name = "../.." };
+
+        Assert.Throws<ArgumentException>(() => MediaStartup.GetMediaPath(CreateShellOptions(), settings, "bin/Release/net10.0"));
+    }
+
     [Theory]
     [InlineData(false)]
     [InlineData(true)]

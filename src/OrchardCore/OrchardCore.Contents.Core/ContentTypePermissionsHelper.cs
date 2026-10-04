@@ -66,7 +66,7 @@ public static class ContentTypePermissionsHelper
 
         return new Permission(
             string.Format(template.Name, typeDefinition.Name),
-            string.Format(template.Description, typeDefinition.DisplayName),
+            string.Format(template.Description.Value, typeDefinition.DisplayName),
             (template.ImpliedBy ?? [])
             .Where(t => t != null)
             .Select(t => CreateDynamicPermission(t, typeDefinition))
@@ -92,7 +92,7 @@ public static class ContentTypePermissionsHelper
 
         permission = new Permission(
             string.Format(template.Name, contentType),
-            string.Format(template.Description, contentType),
+            string.Format(template.Description.Value, contentType),
             (template.ImpliedBy ?? []).Select(t => CreateDynamicPermission(t, contentType))
         );
 
