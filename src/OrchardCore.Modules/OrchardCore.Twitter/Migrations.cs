@@ -37,7 +37,7 @@ public sealed class Migrations : DataMigration
     private async Task MigrateTwitterSecretsAsync()
     {
         var site = await _siteService.LoadSiteSettingsAsync();
-        var settings = site.As<TwitterSettings>();
+        var settings = site.GetOrCreate<TwitterSettings>();
         var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
         var updated = false;
 

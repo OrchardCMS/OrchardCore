@@ -24,6 +24,7 @@ public static class OrchardCoreBuilderExtensions
 
                     // Secrets are consumed protected, as when they are saved from the admin settings, so protect the configured ones.
                     var protector = dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
+#pragma warning disable CS0618 // Protect legacy credentials supplied through configuration.
                     var consumerSecret = configurationSection[nameof(TwitterSettings.ConsumerSecret)];
                     var accessTokenSecret = configurationSection[nameof(TwitterSettings.AccessTokenSecret)];
 
@@ -36,6 +37,7 @@ public static class OrchardCoreBuilderExtensions
                     {
                         settings.AccessTokenSecret = protector.Protect(accessTokenSecret);
                     }
+#pragma warning restore CS0618
                 });
         });
 

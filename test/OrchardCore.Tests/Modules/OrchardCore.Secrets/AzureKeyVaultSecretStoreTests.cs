@@ -17,8 +17,8 @@ public class AzureKeyVaultSecretStoreTests
 
     public AzureKeyVaultSecretStoreTests()
     {
-        _client.Setup(c => c.GetSecretAsync(It.IsAny<string>(), null, It.IsAny<CancellationToken>()))
-            .Returns((string name, string version, CancellationToken cancellationToken) =>
+        _client.Setup(c => c.GetSecretAsync(It.IsAny<string>(), null, null, It.IsAny<CancellationToken>()))
+            .Returns((string name, string version, SecretContentType? outContentType, CancellationToken cancellationToken) =>
                 _entries.TryGetValue(name, out var entry)
                     ? Task.FromResult(Response.FromValue(entry, Mock.Of<Response>()))
                     : Task.FromException<Response<KeyVaultSecret>>(new RequestFailedException(404, "Not found")));
@@ -248,7 +248,7 @@ public class AzureKeyVaultSecretStoreTests
     [Fact]
     public async Task VaultFailure_IsNotReportedAsMissingSecret()
     {
-        _client.Setup(c => c.GetSecretAsync(It.IsAny<string>(), null, It.IsAny<CancellationToken>()))
+        _client.Setup(c => c.GetSecretAsync(It.IsAny<string>(), null, null, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new RequestFailedException(403, "Forbidden"));
         await Assert.ThrowsAsync<RequestFailedException>(() => CreateStore("tenant").GetSecretAsync<ISecret>("secret"));
     }

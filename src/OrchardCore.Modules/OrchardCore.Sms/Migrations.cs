@@ -39,7 +39,7 @@ public sealed class Migrations : DataMigration
     private async Task MigrateTwilioAuthTokenAsync()
     {
         var site = await _siteService.LoadSiteSettingsAsync();
-        var settings = site.As<TwilioSettings>();
+        var settings = site.GetOrCreate<TwilioSettings>();
 
 #pragma warning disable CS0618 // Type or member is obsolete
         // Skip if no auth token is set or if already migrated

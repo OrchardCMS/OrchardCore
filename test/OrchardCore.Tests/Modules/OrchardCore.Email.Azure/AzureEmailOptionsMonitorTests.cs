@@ -60,7 +60,9 @@ public class AzureEmailOptionsMonitorTests
             var azureEmailSettings = site.GetOrCreate<AzureEmailSettings>();
             azureEmailSettings.IsEnabled = true;
             azureEmailSettings.DefaultSender = "admin@example.com";
+#pragma warning disable CS0618 // Verify support for legacy protected credentials.
             azureEmailSettings.ConnectionString = protector.Protect("endpoint=https://example.communication.azure.com/;accesskey=test-key");
+#pragma warning restore CS0618
             site.Put(azureEmailSettings);
 
             var emailSettings = site.GetOrCreate<EmailSettings>();

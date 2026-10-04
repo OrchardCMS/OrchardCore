@@ -40,7 +40,10 @@ public sealed class OpenIdSecretsOptionsConfiguration : IPostConfigureOptions<Op
             {
                 // Insert at the beginning so it takes precedence
                 options.SigningCredentials.Insert(0, new SigningCredentials(signingKey, SecurityAlgorithms.RsaSha256));
-                _logger.LogDebug("OpenID signing key loaded from secret '{SecretName}'.", settings.SigningKeySecretName);
+                if (_logger.IsEnabled(LogLevel.Debug))
+                {
+                    _logger.LogDebug("OpenID signing key loaded from secret '{SecretName}'.", settings.SigningKeySecretName);
+                }
             }
         }
 
@@ -53,7 +56,10 @@ public sealed class OpenIdSecretsOptionsConfiguration : IPostConfigureOptions<Op
                 // Insert at the beginning so it takes precedence
                 options.EncryptionCredentials.Insert(0, new EncryptingCredentials(
                     encryptionKey, SecurityAlgorithms.RsaOAEP, SecurityAlgorithms.Aes256CbcHmacSha512));
-                _logger.LogDebug("OpenID encryption key loaded from secret '{SecretName}'.", settings.EncryptionKeySecretName);
+                if (_logger.IsEnabled(LogLevel.Debug))
+                {
+                    _logger.LogDebug("OpenID encryption key loaded from secret '{SecretName}'.", settings.EncryptionKeySecretName);
+                }
             }
         }
     }
@@ -77,7 +83,7 @@ public sealed class OpenIdSecretsOptionsConfiguration : IPostConfigureOptions<Op
             var x509Secret = await _secretManager.GetSecretAsync<X509Secret>(secretName);
             if (x509Secret != null)
             {
-                return CreateX509SecurityKey(x509Secret, secretName);
+                return CreateX509SecurityKey(x509Secret);
             }
 
             _logger.LogWarning("Secret '{SecretName}' was not found or is not a supported key type (RsaKeySecret or X509Secret).", secretName);
@@ -112,7 +118,7 @@ public sealed class OpenIdSecretsOptionsConfiguration : IPostConfigureOptions<Op
         return new RsaSecurityKey(rsa);
     }
 
-    private X509SecurityKey CreateX509SecurityKey(X509Secret secret, string secretName)
+    private X509SecurityKey CreateX509SecurityKey(X509Secret secret)
     {
         var certificate = secret.GetCertificate();
         if (certificate == null)

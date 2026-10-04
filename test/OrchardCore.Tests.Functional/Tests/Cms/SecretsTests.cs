@@ -206,12 +206,19 @@ public sealed class SecretsTests : CmsTestBase, IClassFixture<CmsSetupFixture>
 
     public override async ValueTask DisposeAsync()
     {
-        if (_page != null)
+        try
         {
-            await _page.CloseAsync();
-        }
+            if (_page != null)
+            {
+                await _page.CloseAsync();
+            }
 
-        Assert.Empty(_consoleErrors);
+            Assert.Empty(_consoleErrors);
+        }
+        finally
+        {
+            await base.DisposeAsync();
+        }
     }
 
     private async Task<IPage> CreateAdminPageAsync()

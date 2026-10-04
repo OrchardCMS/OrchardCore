@@ -38,7 +38,7 @@ public sealed class Migrations : DataMigration
     private async Task MigrateClientSecretAsync()
     {
         var site = await _siteService.LoadSiteSettingsAsync();
-        var settings = site.As<GitHubAuthenticationSettings>();
+        var settings = site.GetOrCreate<GitHubAuthenticationSettings>();
 
 #pragma warning disable CS0618 // Type or member is obsolete
         // Skip if no client secret is set or if already migrated

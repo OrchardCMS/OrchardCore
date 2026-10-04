@@ -43,7 +43,10 @@ public sealed class SmtpSecretsOptionsConfiguration : IPostConfigureOptions<Smtp
             if (secret != null && !string.IsNullOrWhiteSpace(secret.Text))
             {
                 options.Password = secret.Text;
-                _logger.LogDebug("SMTP password loaded from secret '{SecretName}'.", settings.PasswordSecretName);
+                if (_logger.IsEnabled(LogLevel.Debug))
+                {
+                    _logger.LogDebug("SMTP password loaded from secret '{SecretName}'.", settings.PasswordSecretName);
+                }
             }
             else
             {

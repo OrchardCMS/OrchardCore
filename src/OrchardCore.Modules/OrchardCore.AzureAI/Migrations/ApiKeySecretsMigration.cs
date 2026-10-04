@@ -38,7 +38,7 @@ public sealed class ApiKeySecretsMigration : DataMigration
     private async Task MigrateApiKeySecretAsync()
     {
         var site = await _siteService.LoadSiteSettingsAsync();
-        var settings = site.As<AzureAISearchDefaultSettings>();
+        var settings = site.GetOrCreate<AzureAISearchDefaultSettings>();
 
         // Only migrate if there's a legacy secret and no new secret is configured.
 #pragma warning disable CS0618 // Type or member is obsolete

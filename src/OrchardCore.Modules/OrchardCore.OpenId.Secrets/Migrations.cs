@@ -26,7 +26,7 @@ public sealed class Migrations : DataMigration
     {
         var openIdSettings = _siteService.GetSettings<OpenIdServerSettings>();
         var site = await _siteService.LoadSiteSettingsAsync();
-        var openIdSecretSettings = site.As<OpenIdSecretSettings>();
+        var openIdSecretSettings = site.GetOrCreate<OpenIdSecretSettings>();
         var hasChanges = false;
 
         // Migrate signing certificate to X509Secret

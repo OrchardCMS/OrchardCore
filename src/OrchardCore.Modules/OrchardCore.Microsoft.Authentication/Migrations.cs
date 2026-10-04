@@ -37,7 +37,7 @@ public sealed class Migrations : DataMigration
     private async Task MigrateMicrosoftAccountSecretAsync()
     {
         var site = await _siteService.LoadSiteSettingsAsync();
-        var settings = site.As<MicrosoftAccountSettings>();
+        var settings = site.GetOrCreate<MicrosoftAccountSettings>();
 
         // Only migrate if there's a legacy secret and no new secret is configured.
 #pragma warning disable CS0618 // Type or member is obsolete

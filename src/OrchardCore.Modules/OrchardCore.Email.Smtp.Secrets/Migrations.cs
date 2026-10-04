@@ -41,8 +41,8 @@ public sealed class Migrations : DataMigration
     private async Task MigrateSmtpPasswordAsync()
     {
         var site = await _siteService.LoadSiteSettingsAsync();
-        var smtpSettings = site.As<SmtpSettings>();
-        var smtpSecretSettings = site.As<SmtpSecretSettings>();
+        var smtpSettings = site.GetOrCreate<SmtpSettings>();
+        var smtpSecretSettings = site.GetOrCreate<SmtpSecretSettings>();
 
         // Read from obsolete Password property for migration purposes
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -77,7 +77,10 @@ public sealed class Migrations : DataMigration
             site.Put(smtpSettings);
             await _siteService.UpdateSiteSettingsAsync(site);
 
-            _logger.LogInformation("SMTP password migrated to secret '{SecretName}'.", secretName);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("SMTP password migrated to secret '{SecretName}'.", secretName);
+            }
         }
         catch (Exception ex)
         {

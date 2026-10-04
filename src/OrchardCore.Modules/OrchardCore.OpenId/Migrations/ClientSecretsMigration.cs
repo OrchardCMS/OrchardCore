@@ -38,7 +38,7 @@ public sealed class ClientSecretsMigration : DataMigration
     private async Task MigrateClientSecretAsync()
     {
         var site = await _siteService.LoadSiteSettingsAsync();
-        var settings = site.As<OpenIdClientSettings>();
+        var settings = site.GetOrCreate<OpenIdClientSettings>();
 
         // Only migrate if there's a legacy secret and no new secret is configured.
 #pragma warning disable CS0618 // Type or member is obsolete

@@ -38,7 +38,7 @@ public sealed class Migrations : DataMigration
     private async Task MigrateAppSecretAsync()
     {
         var site = await _siteService.LoadSiteSettingsAsync();
-        var settings = site.As<FacebookSettings>();
+        var settings = site.GetOrCreate<FacebookSettings>();
 
 #pragma warning disable CS0618 // Type or member is obsolete
         // Skip if no app secret is set or if already migrated

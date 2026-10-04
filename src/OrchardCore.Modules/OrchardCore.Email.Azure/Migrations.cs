@@ -38,7 +38,7 @@ public sealed class Migrations : DataMigration
     private async Task MigrateConnectionStringAsync()
     {
         var site = await _siteService.LoadSiteSettingsAsync();
-        var settings = site.As<AzureEmailSettings>();
+        var settings = site.GetOrCreate<AzureEmailSettings>();
 
 #pragma warning disable CS0618 // Type or member is obsolete
         // Skip if no connection string is set or if already migrated

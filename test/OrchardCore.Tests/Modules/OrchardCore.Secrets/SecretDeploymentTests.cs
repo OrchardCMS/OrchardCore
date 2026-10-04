@@ -109,8 +109,14 @@ public class SecretDeploymentTests
             IncludesPrivateKey = true,
         });
         manager.Setup(m => m.GetSecretInfosAsync()).ReturnsAsync(
-            [new SecretInfo { Name = "custom", Store = "AzureKeyVault", Type = typeof(CustomSecret).FullName,
-                Description = "description", ExpiresUtc = Expiration }]);
+            [new SecretInfo
+            {
+                Name = "custom",
+                Store = "AzureKeyVault",
+                Type = typeof(CustomSecret).FullName,
+                Description = "description",
+                ExpiresUtc = Expiration,
+            }]);
         manager.Setup(m => m.GetSecretAsync<ISecret>("custom", "AzureKeyVault")).ReturnsAsync(new CustomSecret { Value = "custom value" });
         var encryption = new SecretEncryptionService(manager.Object, [new CustomSecretProvider()]);
         var source = new SecretsDeploymentSource(manager.Object, encryption, NullLogger<SecretsDeploymentSource>.Instance);

@@ -70,7 +70,9 @@ public class TwilioOptionsMonitorTests
                 IsEnabled = true,
                 PhoneNumber = "+15555555555",
                 AccountSID = "account-sid",
+#pragma warning disable CS0618 // Verify support for legacy protected credentials.
                 AuthToken = useSecret ? null : protector.Protect("auth-token"),
+#pragma warning restore CS0618
                 AuthTokenSecretName = useSecret ? "Twilio.AuthToken" : null,
             });
 
