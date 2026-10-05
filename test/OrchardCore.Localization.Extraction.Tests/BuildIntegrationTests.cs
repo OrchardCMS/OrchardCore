@@ -92,7 +92,7 @@ public sealed class BuildIntegrationTests
         using (var archive = ZipFile.OpenRead(Directory.GetFiles(feed, "*.nupkg").Single()))
         {
             Assert.Contains(archive.Entries, entry => entry.FullName == "build/OrchardCore.Localization.Build.targets");
-            Assert.Contains(archive.Entries, entry => entry.FullName == "tools/net10.0/any/OrchardCore.Localization.Tools.dll");
+            Assert.Contains(archive.Entries, entry => entry.FullName == "tools/any/OrchardCore.Localization.Tools.dll");
             Assert.DoesNotContain(archive.Entries, entry => entry.FullName.StartsWith("lib/", StringComparison.Ordinal));
             using var reader = new StreamReader(archive.Entries.Single(entry => entry.FullName.EndsWith(".nuspec", StringComparison.Ordinal)).Open());
             var manifest = XDocument.Parse(await reader.ReadToEndAsync(TestContext.Current.CancellationToken));

@@ -4,7 +4,7 @@
           DependsOnTargets="ResolveReferences;GenerateGlobalUsings"
           Condition="'$(GenerateLocalizationCatalog)' == 'true' and '$(DesignTimeBuild)' != 'true' and '$(IsCrossTargetingBuild)' != 'true' and '$(TargetFramework)' != ''">
     <PropertyGroup>
-      <LocalizationToolPath Condition="'$(LocalizationToolPath)' == ''">$(_LocalizationToolsDirectory)bin/$(Configuration)/net10.0/OrchardCore.Localization.Tools.dll</LocalizationToolPath>
+      <LocalizationToolPath Condition="'$(LocalizationToolPath)' == ''">$(_LocalizationToolsDirectory)bin/$(Configuration)/$(DefaultTargetFramework)/OrchardCore.Localization.Tools.dll</LocalizationToolPath>
       <LocalizationCatalogPath Condition="'$(LocalizationCatalogPath)' == ''">$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(IntermediateOutputPath)', 'Localization', '$(AssemblyName).pot'))</LocalizationCatalogPath>
       <_LocalizationRequestPath>$(LocalizationCatalogPath).request</_LocalizationRequestPath>
       <LocalizationViewPrefix Condition="'$(LocalizationViewPrefix)' == '' and '$(ModuleType)' != ''">$(AssemblyName)</LocalizationViewPrefix>

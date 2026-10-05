@@ -1,12 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>$(DefaultTargetFramework)</TargetFramework>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <IncludeSymbols>false</IncludeSymbols>
     <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
     <DevelopmentDependency>true</DevelopmentDependency>
     <Description>Build-time semantic localization extraction and embedded gettext catalogs for Orchard Core.</Description>
-    <_LocalizationWorkerOutput>$(MSBuildThisFileDirectory)../OrchardCore.Localization.Tools/bin/$(Configuration)/net10.0/</_LocalizationWorkerOutput>
+    <_LocalizationWorkerOutput>$(MSBuildThisFileDirectory)../OrchardCore.Localization.Tools/bin/$(Configuration)/$(DefaultTargetFramework)/</_LocalizationWorkerOutput>
     <_LocalizationPackDependsOn Condition="'$(NoBuild)' != 'true'">Build</_LocalizationPackDependsOn>
   </PropertyGroup>
   <ItemGroup>
@@ -18,7 +18,7 @@
     <Error Condition="!Exists('$(_LocalizationWorkerOutput)OrchardCore.Localization.Tools.dll')" Text="Build the localization worker before packing without a build." />
     <ItemGroup>
       <_LocalizationWorkerFile Include="$(_LocalizationWorkerOutput)**/*" Exclude="$(_LocalizationWorkerOutput)**/*.pdb" />
-      <None Include="@(_LocalizationWorkerFile)" Pack="true" PackagePath="tools/net10.0/any/%(_LocalizationWorkerFile.RecursiveDir)%(_LocalizationWorkerFile.Filename)%(_LocalizationWorkerFile.Extension)" />
+      <None Include="@(_LocalizationWorkerFile)" Pack="true" PackagePath="tools/any/%(_LocalizationWorkerFile.RecursiveDir)%(_LocalizationWorkerFile.Filename)%(_LocalizationWorkerFile.Extension)" />
     </ItemGroup>
   </Target>
 </Project>
