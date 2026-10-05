@@ -210,7 +210,7 @@ The `OrchardCore.Localization.Build` package extracts localizable strings during
 <PackageReference Include="OrchardCore.Localization.Build" PrivateAssets="all" />
 ```
 
-Use the package version matching your Orchard Core version (or a centrally managed package version). The build worker requires .NET 10, including when the consuming project targets .NET Standard 2.0. Its dependencies are build-only and are not copied into the application's publish output.
+Use the package version matching your Orchard Core version (or a centrally managed package version). The build worker targets Orchard Core's `DefaultTargetFramework`, configured in `src/OrchardCore.Build/TargetFrameworks.props`. The corresponding .NET runtime must be installed on the build machine, including when the consuming project targets .NET Standard 2.0. The worker is packaged under `tools/any/` and is resolved independently of the consuming project's target framework. Its dependencies are build-only and are not copied into the application's publish output.
 
 Extraction covers semantic C# localizer calls, Razor views and pages, and literal inputs to the Liquid `t` filter. C# constants, typed localizer contexts, and supported plural calls are preserved. Liquid uses Orchard Core's existing parser and traverses expressions without rendering templates or executing module startup code. Custom Liquid syntax requires a configured parser when using the extraction library directly.
 
