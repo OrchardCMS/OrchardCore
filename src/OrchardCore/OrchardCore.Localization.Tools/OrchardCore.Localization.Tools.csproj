@@ -7,6 +7,6 @@
     <UseAppHost>false</UseAppHost>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../OrchardCore.Localization.Extraction/OrchardCore.Localization.Extraction.csproj" AdditionalProperties="GenerateLocalizationCatalog=false" />
+    <ProjectReference Include="../OrchardCore.Localization.Extraction/OrchardCore.Localization.Extraction.csproj" GlobalPropertiesToRemove="GenerateLocalizationCatalog" />
   </ItemGroup>
 </Project>
