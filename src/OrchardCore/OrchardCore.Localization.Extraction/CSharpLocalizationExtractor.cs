@@ -286,7 +286,7 @@ public sealed class CSharpLocalizationExtractor
                 return null;
             }
 
-            names.Push(current.MetadataName);
+            names.Push(current.Name);
         }
 
         var prefix = named.ContainingNamespace.IsGlobalNamespace ? "" : named.ContainingNamespace.ToDisplayString() + ".";

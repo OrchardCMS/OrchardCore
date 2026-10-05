@@ -49,6 +49,79 @@ public sealed class LocalizationSourceExtractorTests
         Assert.Empty(catalog.Diagnostics);
     }
 
+    [Theory]
+    [InlineData("LocalizationSource.Create<SiteSettingsPropertyDeploymentStep<TModel>>(\"Configuration\")")]
+    [InlineData("LocalizationSource.Create(\"Configuration\", typeof(SiteSettingsPropertyDeploymentStep<TModel>))")]
+    [InlineData("new LocalizationSource(\"Configuration\", typeof(SiteSettingsPropertyDeploymentStep<TModel>))")]
+    [InlineData("new(\"Configuration\", typeof(SiteSettingsPropertyDeploymentStep<TModel>))")]
+    public void Extract_GenericSourceDeclaration_UsesClassNameWithoutArity(string expression)
+    {
+        var catalog = TestWorkspace.ExtractCSharp($$"""
+            using OrchardCore.Localization;
+            namespace OrchardCore.Settings.Deployment;
+            public class SiteSettingsPropertyDeploymentStep<TModel> where TModel : class, new()
+            {
+                private static readonly LocalizationSource s_category = {{expression}};
+            }
+            """, includeSources: true);
+
+        var message = Assert.Single(catalog.Messages);
+        Assert.Equal("OrchardCore.Settings.Deployment.SiteSettingsPropertyDeploymentStep", message.Context);
+        Assert.Equal("Configuration", message.Text);
+        Assert.Empty(catalog.Diagnostics);
+    }
+
+    [Theory]
+    [InlineData("Resources<int>", "Example.Resources")]
+    [InlineData("Resources<>", "Example.Resources")]
+    [InlineData("Resources<int>.Nested", "Example.Resources.Nested")]
+    [InlineData("Resources<int>.GenericNested<string>", "Example.Resources.GenericNested")]
+    public void Extract_GenericTypeOfSource_UsesClassNamesWithoutArity(string resourceType, string expectedContext)
+    {
+        var catalog = TestWorkspace.ExtractCSharp($$"""
+            using OrchardCore.Localization;
+            namespace Example;
+            public class Resources<T>
+            {
+                public class Nested { }
+                public class GenericNested<TNested> { }
+            }
+            public class Owner
+            {
+                public static readonly LocalizationSource Message = LocalizationSource.Create("Message", typeof({{resourceType}}));
+            }
+            """, includeSources: true);
+
+        Assert.Equal(expectedContext, Assert.Single(catalog.Messages).Context);
+        Assert.Empty(catalog.Diagnostics);
+    }
+
+    [Theory]
+    [InlineData("IStringLocalizerFactory", "Microsoft.Extensions.Localization")]
+    [InlineData("IHtmlLocalizerFactory", "Microsoft.AspNetCore.Mvc.Localization")]
+    public void Extract_GenericSourceDeferredPlural_UsesResourceClassName(string factoryType, string factoryNamespace)
+    {
+        var catalog = TestWorkspace.ExtractCSharp($$"""
+            using OrchardCore.Localization;
+            using {{factoryNamespace}};
+            namespace Example;
+            public class Resources<T> { }
+            public class Owner<T>
+            {
+                public static readonly LocalizationSource Item = LocalizationSource.Create<Resources<T>>("One item");
+                public string Get({{factoryType}} factory, int count)
+                    => factory.Plural(count, Item, "Many items").Value;
+            }
+            """, includeSources: true, includePlurals: true);
+
+        var message = Assert.Single(catalog.Messages);
+        Assert.Equal("Example.Resources", message.Context);
+        Assert.Equal("One item", message.Text);
+        Assert.Equal("Many items", message.Plural);
+        Assert.Equal(2, message.References.Count);
+        Assert.Empty(catalog.Diagnostics);
+    }
+
     [Fact]
     public void Extract_LocalizeForwarders_ExtractsDeclarationsWithoutWarnings()
     {

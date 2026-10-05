@@ -95,7 +95,7 @@ internal sealed class LocalizationSourceExtractor
                 continue;
             }
 
-            var context = source.Type is null ? null : CSharpLocalizationExtractor.GetResourceName(source.Type);
+            var context = source.Type is null ? null : CSharpLocalizationExtractor.GetResourceName(source.Type, allowGenericDefinition: true);
             if (context is null)
             {
                 AddDiagnostic("OCLOC002", "The localization source's runtime context cannot be resolved statically. Use a generic Create call or typeof resource type.", node);

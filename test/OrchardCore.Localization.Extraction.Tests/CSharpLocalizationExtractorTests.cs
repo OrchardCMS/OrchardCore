@@ -214,13 +214,13 @@ public sealed class CSharpLocalizationExtractorTests
             }
             """);
         Assert.Equal(3, catalog.Messages.Count);
-        Assert.All(catalog.Messages, message => Assert.Equal("OrchardCore.Apis.GraphQL.Queries.WhereInputObjectGraphType`1", message.Context));
+        Assert.All(catalog.Messages, message => Assert.Equal("OrchardCore.Apis.GraphQL.Queries.WhereInputObjectGraphType", message.Context));
         Assert.Empty(catalog.Diagnostics);
     }
 
     [Theory]
-    [InlineData("Nested", "Example.Owner`1.Nested")]
-    [InlineData("Nested<TNested>", "Example.Owner`1.Nested`1")]
+    [InlineData("Nested", "Example.Owner.Nested")]
+    [InlineData("Nested<TNested>", "Example.Owner.Nested")]
     public void Extract_NestedClassInGenericClass_UsesContainingClass(string declaration, string expectedContext)
     {
         var catalog = TestWorkspace.ExtractCSharp($$"""
