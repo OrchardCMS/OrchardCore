@@ -8,7 +8,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
     <PackageReference Include="Fluid.Core" />
-    <ProjectReference Include="../OrchardCore.DisplayManagement.Liquid/OrchardCore.DisplayManagement.Liquid.csproj" AdditionalProperties="GenerateLocalizationCatalog=false" />
     <Reference Include="Microsoft.CodeAnalysis.Razor.Compiler" HintPath="$(RazorCompilerDirectory)/Microsoft.CodeAnalysis.Razor.Compiler.dll" />
     <Reference Include="Microsoft.AspNetCore.Razor.Utilities.Shared" HintPath="$(RazorCompilerDirectory)/Microsoft.AspNetCore.Razor.Utilities.Shared.dll" />
   </ItemGroup>
