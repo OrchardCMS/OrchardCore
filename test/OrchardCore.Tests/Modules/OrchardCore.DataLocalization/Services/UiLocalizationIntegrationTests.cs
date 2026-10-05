@@ -1,5 +1,8 @@
+using System.Net.Http.Json;
+using System.Text.Json;
 using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
+using OrchardCore.DataLocalization.ViewModels;
 using OrchardCore.Admin;
 using OrchardCore.DataLocalization.Models;
 using OrchardCore.Environment.Shell;
@@ -13,6 +16,30 @@ namespace OrchardCore.DataLocalization.Services.Tests;
 
 public sealed class UiLocalizationIntegrationTests
 {
+    [Fact]
+    public async Task Feature_EnableUiOverrides_EnablesDynamicLocalizationAndCultures()
+    {
+        using var context = new SiteContext();
+        await context.InitializeAsync();
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var features = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
+            var feature = (await features.GetAvailableFeaturesAsync()).Single(value => value.Id == "OrchardCore.DataLocalization.Ui");
+            await features.EnableFeaturesAsync([feature], force: true);
+        });
+        await context.WaitForDeferredTasksAsync(TestContext.Current.CancellationToken);
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var features = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
+            var enabled = await features.GetEnabledFeaturesAsync();
+            Assert.Contains(enabled, feature => feature.Id == "OrchardCore.DataLocalization");
+            Assert.Contains(enabled, feature => feature.Id == "OrchardCore.Localization");
+            Assert.NotEmpty(scope.ServiceProvider.GetServices<ILocalizationDataProvider>());
+            Assert.NotNull(scope.ServiceProvider.GetRequiredService<TranslationsManager>());
+            Assert.NotNull(scope.ServiceProvider.GetRequiredService<IUiTranslationsManager>());
+        });
+    }
+
     [Fact]
     public async Task Runtime_CommittedUpdatesRemovalAndDisabledFeature_InvalidatesAndRestoresPo()
     {
@@ -67,47 +94,44 @@ public sealed class UiLocalizationIntegrationTests
         });
         await context.InitializeAsync();
         await TenantLocalizationTestHelper.EnableLocalizationAsync(context, ["en", "fr"], "OrchardCore.DataLocalization.Ui");
-        const string sourceContext = "OrchardCore.DataLocalization.Views.UiTranslations.Index";
+        const string sourceContext = "OrchardCore.DataLocalization.Views.Admin.Index";
         const string untrusted = "<img src=x onerror=alert(1)>";
         var page = await GetPageAsync(context,
             "Admin/Localization/UI/Index?search=UI%20Translations", "fr");
-        var form = page.QuerySelectorAll("form").Single(element =>
-            element.QuerySelector("input[name=context]")?.GetAttribute("value") == sourceContext);
-        var token = form.QuerySelector("input[name=__RequestVerificationToken]").GetAttribute("value");
-        var fields = new Dictionary<string, string>
-        {
-            ["culture"] = "fr",
-            ["context"] = sourceContext,
-            ["key"] = "UI Translations",
-            ["values"] = untrusted,
-        };
+        var editor = page.QuerySelector("#translation-editor");
+        Assert.Equal("true", editor.GetAttribute("data-ui-localization"));
+        Assert.NotNull(editor.QuerySelector("#auto-save-toggle"));
+        Assert.NotNull(editor.QuerySelector("#missing-only-toggle"));
+        Assert.NotNull(editor.QuerySelector("button.save"));
+        var token = editor.QuerySelector("input[name=__RequestVerificationToken]").GetAttribute("value");
+        var translation = new UiTranslation { Context = sourceContext, Key = "UI Translations", Values = [untrusted] };
+        Assert.Contains(GetEntries(editor), entry => entry.Context == sourceContext && entry.Key == translation.Key);
 
-        using (var rejected = await context.Client.PostAsync("Admin/Localization/UI/Save", new FormUrlEncodedContent(fields), TestContext.Current.CancellationToken))
+        using (var rejected = await SaveAsync(context, "fr", [translation]))
         {
             Assert.Equal(HttpStatusCode.BadRequest, rejected.StatusCode);
         }
 
-        fields["__RequestVerificationToken"] = token;
-        using (var saved = await context.Client.PostAsync("Admin/Localization/UI/Save", new FormUrlEncodedContent(fields), TestContext.Current.CancellationToken))
+        using (var saved = await SaveAsync(context, "fr", [translation], token))
         {
-            Assert.Equal(HttpStatusCode.Redirect, saved.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, saved.StatusCode);
         }
 
         page = await GetPageAsync(context,
             "Admin/Localization/UI/Index?search=UI%20Translations", "fr");
         Assert.Equal(untrusted, page.QuerySelector("h1").TextContent);
         Assert.Null(page.QuerySelector("img[onerror]"));
+        editor = page.QuerySelector("#translation-editor");
+        Assert.Equal(untrusted, GetEntries(editor).Single(entry => entry.Context == sourceContext && entry.Key == translation.Key).Values[0]);
         var export = await context.Client.GetStringAsync("Admin/Localization/UI/Export?culture=fr", TestContext.Current.CancellationToken);
         Assert.Contains("msgctxt \"" + sourceContext + "\"", export, StringComparison.Ordinal);
         Assert.Contains("msgstr \"" + untrusted + "\"", export, StringComparison.Ordinal);
 
-        form = page.QuerySelectorAll("form").Single(element =>
-            element.QuerySelector("input[name=context]")?.GetAttribute("value") == sourceContext);
-        fields["__RequestVerificationToken"] = form.QuerySelector("input[name=__RequestVerificationToken]").GetAttribute("value");
-        fields["remove"] = "true";
-        using (var removed = await context.Client.PostAsync("Admin/Localization/UI/Save", new FormUrlEncodedContent(fields), TestContext.Current.CancellationToken))
+        token = editor.QuerySelector("input[name=__RequestVerificationToken]").GetAttribute("value");
+        translation.Values = [];
+        using (var removed = await SaveAsync(context, "fr", [translation], token))
         {
-            Assert.Equal(HttpStatusCode.Redirect, removed.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, removed.StatusCode);
         }
 
         page = await GetPageAsync(context, "Admin/Localization/UI/Index?search=UI%20Translations", "fr");
@@ -117,7 +141,7 @@ public sealed class UiLocalizationIntegrationTests
         upload.Add(new StringContent(page.QuerySelector("input[name=__RequestVerificationToken]").GetAttribute("value")), "__RequestVerificationToken");
         upload.Add(new ByteArrayContent(Encoding.UTF8.GetBytes(export)), "file", "overrides.po");
         using var imported = await context.Client.PostAsync("Admin/Localization/UI/Import", upload, TestContext.Current.CancellationToken);
-        Assert.Equal(HttpStatusCode.Redirect, imported.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, imported.StatusCode);
         page = await GetPageAsync(context, "Admin/Localization/UI/Index?search=UI%20Translations", "fr");
         Assert.Equal(untrusted, page.QuerySelector("h1").TextContent);
     }
@@ -133,24 +157,18 @@ public sealed class UiLocalizationIntegrationTests
         await context.InitializeAsync();
         await TenantLocalizationTestHelper.EnableLocalizationAsync(context, ["en", "fr"], "OrchardCore.DataLocalization.Ui");
         var page = await GetPageAsync(context, "Admin/Localization/UI/Index", "fr");
-        Assert.Null(page.QuerySelector("input[type=file]"));
-        Assert.All(page.QuerySelectorAll("textarea"), textarea => Assert.True(textarea.HasAttribute("disabled")));
-        var fields = new Dictionary<string, string>
-        {
-            ["culture"] = "fr",
-            ["context"] = "OrchardCore.DataLocalization.UiLocalizationAdminMenu",
-            ["key"] = "UI Translations",
-            ["values"] = "Unauthorized",
-            ["__RequestVerificationToken"] = page.QuerySelector("input[name=__RequestVerificationToken]").GetAttribute("value"),
-        };
-        using var response = await context.Client.PostAsync("Admin/Localization/UI/Save", new FormUrlEncodedContent(fields), TestContext.Current.CancellationToken);
+        Assert.Equal("true", page.QuerySelector("#translation-editor").GetAttribute("data-is-read-only"));
+        var token = page.QuerySelector("input[name=__RequestVerificationToken]").GetAttribute("value");
+        using var response = await SaveAsync(context, "fr", [
+            new UiTranslation { Context = "OrchardCore.DataLocalization.UiLocalizationAdminMenu", Key = "UI Translations", Values = ["Unauthorized"] },
+        ], token);
         AssertAccessDenied(response);
         using var export = await context.Client.GetAsync("Admin/Localization/UI/Export?culture=fr", TestContext.Current.CancellationToken);
         export.EnsureSuccessStatusCode();
 
         using var upload = new MultipartFormDataContent();
         upload.Add(new StringContent("fr"), "culture");
-        upload.Add(new StringContent(fields["__RequestVerificationToken"]), "__RequestVerificationToken");
+        upload.Add(new StringContent(token), "__RequestVerificationToken");
         upload.Add(new ByteArrayContent(Encoding.UTF8.GetBytes("msgid \"Hello\"\nmsgstr \"Unauthorized\"")), "file", "overrides.po");
         using var imported = await context.Client.PostAsync("Admin/Localization/UI/Import", upload, TestContext.Current.CancellationToken);
         AssertAccessDenied(imported);
@@ -167,7 +185,9 @@ public sealed class UiLocalizationIntegrationTests
         await context.InitializeAsync();
         await TenantLocalizationTestHelper.EnableLocalizationAsync(context, ["en", "fr", "ru"], "OrchardCore.DataLocalization.Ui");
         var page = await GetPageAsync(context, "Admin/Localization/UI/Index", "fr");
-        Assert.Equal("fr", Assert.Single(page.QuerySelectorAll("select[name=Culture] option")).GetAttribute("value"));
+        var editor = page.QuerySelector("#translation-editor");
+        var cultures = JsonSerializer.Deserialize<CultureViewModel[]>(editor.GetAttribute("data-cultures"), JsonOptions);
+        Assert.Equal("fr", Assert.Single(cultures).Name);
         Assert.NotNull(page.QuerySelector("input[type=file]"));
 
         using var ownExport = await context.Client.GetAsync("Admin/Localization/UI/Export?culture=fr", TestContext.Current.CancellationToken);
@@ -177,18 +197,80 @@ public sealed class UiLocalizationIntegrationTests
         using var otherIndex = await context.Client.GetAsync("Admin/Localization/UI/Index?culture=ru", TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.BadRequest, otherIndex.StatusCode);
 
-        using var fields = new FormUrlEncodedContent(new Dictionary<string, string>
-        {
-            ["culture"] = "FR",
-            ["context"] = "OrchardCore.DataLocalization.UiLocalizationAdminMenu",
-            ["key"] = "UI Translations",
-            ["values"] = "Authorized French override",
-            ["__RequestVerificationToken"] = page.QuerySelector("input[name=__RequestVerificationToken]").GetAttribute("value"),
-        });
-        using var saved = await context.Client.PostAsync("Admin/Localization/UI/Save", fields, TestContext.Current.CancellationToken);
-        Assert.Equal(HttpStatusCode.Redirect, saved.StatusCode);
+        using var otherStrings = await context.Client.GetAsync("Admin/Localization/UI/GetStrings?culture=ru", TestContext.Current.CancellationToken);
+        AssertAccessDenied(otherStrings);
+        using var saved = await SaveAsync(context, "FR", [
+            new UiTranslation { Context = "OrchardCore.DataLocalization.UiLocalizationAdminMenu", Key = "UI Translations", Values = ["Authorized French override"] },
+        ], page.QuerySelector("input[name=__RequestVerificationToken]").GetAttribute("value"));
+        Assert.Equal(HttpStatusCode.OK, saved.StatusCode);
         var export = await context.Client.GetStringAsync("Admin/Localization/UI/Export?culture=fr", TestContext.Current.CancellationToken);
         Assert.Contains("Authorized French override", export, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task Editor_CultureSwitchAndBatchValidation_PreservesPluralsContextsAndUnchangedOverrides()
+    {
+        using var context = new SiteContext();
+        await context.InitializeAsync();
+        await TenantLocalizationTestHelper.EnableLocalizationAsync(context, ["en", "fr", "ar"], "OrchardCore.DataLocalization.Ui");
+        var page = await GetPageAsync(context, "Admin/Localization/UI/Index", "fr");
+        var editor = page.QuerySelector("#translation-editor");
+        Assert.Contains(GetEntries(editor), entry => entry.Metadata.Length > 0);
+        var token = editor.QuerySelector("input[name=__RequestVerificationToken]").GetAttribute("value");
+        const string menuContext = "OrchardCore.DataLocalization.UiLocalizationAdminMenu";
+        var first = new UiTranslation { Context = menuContext, Key = "UI Translations", Values = ["Keep this"] };
+        using (var saved = await SaveAsync(context, "fr", [first], token))
+        {
+            saved.EnsureSuccessStatusCode();
+        }
+
+        var second = new UiTranslation { Context = "OrchardCore.DataLocalization.Views.Admin.Index", Key = "UI Translations", Values = ["Independent context"] };
+        using (var saved = await SaveAsync(context, "fr", [second], token))
+        {
+            saved.EnsureSuccessStatusCode();
+        }
+
+        using var stringsResponse = await context.Client.GetAsync("Admin/Localization/UI/GetStrings?culture=fr", TestContext.Current.CancellationToken);
+        stringsResponse.EnsureSuccessStatusCode();
+        using var strings = JsonDocument.Parse(await stringsResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        var entries = GetEntries(strings.RootElement.GetProperty("providers").GetRawText());
+        Assert.Equal("Keep this", entries.Single(entry => entry.Context == menuContext && entry.Key == first.Key).Values[0]);
+        Assert.Equal("Independent context", entries.Single(entry => entry.Context == second.Context && entry.Key == second.Key).Values[0]);
+
+        using var arabicResponse = await context.Client.GetAsync("Admin/Localization/UI/GetStrings?culture=ar", TestContext.Current.CancellationToken);
+        arabicResponse.EnsureSuccessStatusCode();
+        using var arabic = JsonDocument.Parse(await arabicResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        var plural = GetEntries(arabic.RootElement.GetProperty("providers").GetRawText()).First(entry => entry.Plural != null);
+        Assert.Equal(6, plural.Values.Length);
+        first.Values = ["Should not be saved"];
+        using var invalid = await SaveAsync(context, "fr", [first, new UiTranslation { Context = "Unknown", Key = "Invalid", Values = ["Invalid"] }], token);
+        Assert.Equal(HttpStatusCode.BadRequest, invalid.StatusCode);
+        var exported = await context.Client.GetStringAsync("Admin/Localization/UI/Export?culture=fr", TestContext.Current.CancellationToken);
+        Assert.Contains("Keep this", exported, StringComparison.Ordinal);
+        Assert.DoesNotContain("Should not be saved", exported, StringComparison.Ordinal);
+    }
+
+    private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
+
+    private static IEnumerable<TranslatableStringViewModel> GetEntries(AngleSharp.Dom.IElement editor)
+        => GetEntries(editor.GetAttribute("data-providers"));
+
+    private static IEnumerable<TranslatableStringViewModel> GetEntries(string json)
+        => JsonSerializer.Deserialize<TranslatableStringGroupViewModel[]>(json, JsonOptions)
+            .SelectMany(group => group.Strings.Concat(group.SubGroups.SelectMany(subGroup => subGroup.Strings)));
+
+    private static async Task<HttpResponseMessage> SaveAsync(SiteContext context, string culture, UiTranslation[] translations, string token = null)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Post, "Admin/Localization/UI/Save")
+        {
+            Content = JsonContent.Create(new UiTranslationUpdateModel { Culture = culture, Translations = translations }),
+        };
+        if (token != null)
+        {
+            request.Headers.Add("RequestVerificationToken", token);
+        }
+
+        return await context.Client.SendAsync(request, TestContext.Current.CancellationToken);
     }
 
     private static void AssertAccessDenied(HttpResponseMessage response)

@@ -140,7 +140,7 @@ public sealed class UiLocalizationTests
         var resources = EmbeddedUiLocalizationCatalog.Discover([typeof(UiTranslationsManager).Assembly]);
 
         Assert.Contains(resources, resource => resource.AssemblyName == "OrchardCore.DataLocalization" &&
-            resource.Key == "UI Translations" && resource.Context.Contains("Views.UiTranslations.Index", StringComparison.Ordinal));
+            resource.Key == "UI Translations" && resource.Context.Contains("Views.Admin.Index", StringComparison.Ordinal));
         Assert.Contains(resources, resource => resource.Key == "Select a PO file no larger than 2 MB." &&
             resource.Context == "OrchardCore.DataLocalization.Controllers.UiTranslationsController");
     }

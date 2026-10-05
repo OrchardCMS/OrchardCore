@@ -6,6 +6,13 @@ using OrchardCore.Modules.Manifest;
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
     Description = "Provides support for data localization.",
+    Category = "Internationalization"
+)]
+
+[assembly: Feature(
+    Id = "OrchardCore.DataLocalization",
+    Name = "Data Localization",
+    Description = "Provides support for data localization.",
     Category = "Internationalization",
     Dependencies = ["OrchardCore.Localization"]
 )]

@@ -24,4 +24,14 @@ public class TranslationEditorViewModel
     /// The grouped translatable strings from all providers.
     /// </summary>
     public IList<TranslatableStringGroupViewModel> Providers { get; set; } = [];
+
+    /// <summary>
+    /// Whether this editor manages catalog-backed UI overrides rather than dynamic data translations.
+    /// </summary>
+    public bool IsUiLocalization { get; set; }
+
+    /// <summary>
+    /// The initial client-side search filter.
+    /// </summary>
+    public string Search { get; set; }
 }

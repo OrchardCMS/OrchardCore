@@ -27,6 +27,7 @@
         "OrchardCore.Contents",
         "OrchardCore.ContentTypes",
         "OrchardCore.DataLocalization",
+        "OrchardCore.DataLocalization.Ui",
 
         "TheAdmin",
         "SafeMode"
@@ -36,6 +37,23 @@
       "name": "themes",
       "admin": "TheAdmin",
       "site": "TheAdmin"
+    },
+    {
+      "name": "ContentDefinition",
+      "ContentTypes": [
+        {
+          "Name": "TranslationTestPage",
+          "DisplayName": "Translation Test Page",
+          "ContentTypePartDefinitionRecords": []
+        }
+      ]
+    },
+    {
+      "name": "settings",
+      "LocalizationSettings": {
+        "DefaultCulture": "en",
+        "SupportedCultures": [ "en", "fr", "ar" ]
+      }
     }
   ]
 }

@@ -11,25 +11,42 @@
         savingError = T["An error occurred while saving."].Value,
         discardConfirm = T["You have unsaved changes. Do you want to discard them?"].Value,
         loadError = T["Failed to load translations."].Value,
+        incompletePlural = T["Supply every required plural form, or restore fallback."].Value,
+        importError = T["Failed to import translations."].Value,
+        imported = T["Translations imported successfully."].Value,
+        importFileRequired = T["Select a PO file no larger than 2 MB."].Value,
     }, JOptions.CamelCase);
 }
 
 <zone Name="Title">
-    <breadcrumb name="DynamicTranslations" title="@T["Dynamic Translations"]" />
+    @if (Model.IsUiLocalization)
+    {
+        <h1>@T["UI Translations"]</h1>
+    }
+    else
+    {
+        <breadcrumb name="DynamicTranslations" title="@T["Dynamic Translations"]" />
+    }
 </zone>
 
 @if (Model.IsReadOnly)
 {
     <div class="alert alert-info" role="alert">
-        @T["You have read-only access to dynamic translations. Contact an administrator to request edit permissions."]
+        @(Model.IsUiLocalization
+            ? T["You have read-only access to UI translations. Contact an administrator to request edit permissions."]
+            : T["You have read-only access to dynamic translations. Contact an administrator to request edit permissions."])
     </div>
 }
 
 <div id="translation-editor"
      data-current-culture="@Model.CurrentCulture"
      data-is-read-only="@Model.IsReadOnly.ToString().ToLowerInvariant()"
-     data-save-url="@Url.Action("Save", "Admin", new { area = "OrchardCore.DataLocalization" })"
-     data-get-strings-url="@Url.Action("GetStrings", "Admin", new { area = "OrchardCore.DataLocalization" })"
+     data-ui-localization="@Model.IsUiLocalization.ToString().ToLowerInvariant()"
+     data-search="@Model.Search"
+     data-save-url="@Url.Action("Save", Model.IsUiLocalization ? "UiTranslations" : "Admin", new { area = "OrchardCore.DataLocalization" })"
+     data-get-strings-url="@Url.Action("GetStrings", Model.IsUiLocalization ? "UiTranslations" : "Admin", new { area = "OrchardCore.DataLocalization" })"
+     data-import-url="@Url.Action("Import", "UiTranslations", new { area = "OrchardCore.DataLocalization" })"
+     data-export-url="@Url.Action("Export", "UiTranslations", new { area = "OrchardCore.DataLocalization" })"
      data-cultures="@culturesJson"
      data-providers="@providersJson"
      data-messages="@messagesJson">
@@ -49,10 +66,10 @@
             </div>
         </div>
         <div class="ocat-wrapper col-xl-3 col-sm-6">
-            <label class="ocat-label" for="filter-select">@T["Category"]</label>
+            <label class="ocat-label" for="filter-select">@(Model.IsUiLocalization ? T["Assembly"] : T["Category"])</label>
             <div class="ocat-end">
                 <select id="filter-select" class="form-select" v-model="categoryFilter">
-                    <option value="">@T["All Categories"]</option>
+                    <option value="">@(Model.IsUiLocalization ? T["All assemblies"] : T["All Categories"])</option>
                     <option v-for="provider in providers" :key="provider.name" :value="provider.name">
                         {{ provider.name }}
                     </option>
@@ -80,6 +97,26 @@
             </div>
         </div>
     </div>
+
+    @if (Model.IsUiLocalization)
+    {
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
+                <p class="hint">@T["Overrides are plain text. HTML is encoded when displayed. Supply every plural form, or restore fallback."]</p>
+                <a class="btn btn-secondary" :href="exportUrl + '?culture=' + encodeURIComponent(loadedCulture)"
+                   :class="{ disabled: isDirty || isLoading || isSaving }" :aria-disabled="isDirty || isLoading || isSaving"
+                   @@click="(isDirty || isLoading || isSaving) && $event.preventDefault()">@T["Export overrides"]</a>
+            </div>
+        </div>
+        <div class="ocat-wrapper" v-if="!isReadOnly">
+            <label for="import-file" class="ocat-label">@T["Import overrides"]</label>
+            <div class="ocat-end">
+                <input id="import-file" type="file" accept=".po" class="form-control" @@change="onImportFileChange" :disabled="isSaving || isLoading" />
+                <span class="hint">@T["UTF-8 PO file, up to 2 MB. The entire file is validated before saving. Empty translations remove overrides."]</span>
+                <button type="button" class="btn btn-secondary" @@click="importTranslations" :disabled="!importFile || isSaving || isLoading">@T["Import"]</button>
+            </div>
+        </div>
+    }
 
     <!-- Status indicator -->
     <div class="mb-3" v-if="isDirty && !isReadOnly">
@@ -119,7 +156,7 @@
                         <td class="col-7">
                             <input type="text" class="form-control"
                                    v-model="str.value"
-                                   :disabled="isReadOnly"
+                                   :disabled="isReadOnly || isLoading"
                                    :placeholder="str.key"
                                    @@input="onTranslationChange(str)" />
                         </td>
@@ -144,13 +181,37 @@
                         <tr v-for="str in getFilteredStrings(subGroup.strings)" :key="str.context + '|' + str.key" :data-text="str.key.toLowerCase()">
                             <td class="col-5">
                                 <code>{{ str.key }}</code>
+                                @if (Model.IsUiLocalization)
+                                {
+                                    <div v-if="str.plural" class="hint">{{ str.plural }}</div>
+                                    <details>
+                                        <summary>@T["Source metadata"]</summary>
+                                        <pre>{{ (str.metadata || []).join('\n') }}</pre>
+                                    </details>
+                                }
                             </td>
                             <td class="col-7">
-                                <input type="text" class="form-control form-control-sm"
-                                       v-model="str.value"
-                                       :disabled="isReadOnly"
-                                       :placeholder="str.key"
-                                       @@input="onTranslationChange(str)" />
+                                @if (Model.IsUiLocalization)
+                                {
+                                    <div v-for="(value, form) in str.values" :key="form" class="ocat-wrapper">
+                                        <label :for="'translation-' + index + '-' + subGroup.name + '-' + str.key + '-' + form" class="ocat-label">@T["Translation"] {{ form }}</label>
+                                        <div class="ocat-end">
+                                            <textarea :id="'translation-' + index + '-' + subGroup.name + '-' + str.key + '-' + form"
+                                                      class="form-control" rows="2" v-model="str.values[form]" :disabled="isReadOnly || isImporting || isLoading"
+                                                      :placeholder="form === 0 ? str.key : str.plural"
+                                                      @@input="onTranslationChange(str)"></textarea>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-secondary" v-if="!isReadOnly && str.values.some(value => value)" :disabled="isImporting || isLoading" @@click="restoreFallback(str)">@T["Restore fallback"]</button>
+                                }
+                                else
+                                {
+                                    <input type="text" class="form-control form-control-sm"
+                                           v-model="str.value"
+                                           :disabled="isReadOnly"
+                                           :placeholder="str.key"
+                                           @@input="onTranslationChange(str)" />
+                                }
                             </td>
                         </tr>
                     </tbody>
@@ -171,7 +232,10 @@
                 <span v-if="isSaving" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
                 @T["Save"]
             </button>
-            <a class="btn btn-secondary" role="button" href="@Url.Action("Statistics", "Admin", new { area = "OrchardCore.DataLocalization" })">@T["Statistics"]</a>
+            @if (!Model.IsUiLocalization)
+            {
+                <a class="btn btn-secondary" role="button" href="@Url.Action("Statistics", "Admin", new { area = "OrchardCore.DataLocalization" })">@T["Statistics"]</a>
+            }
         </div>
     </div>
 </div>

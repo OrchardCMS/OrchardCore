@@ -3,18 +3,13 @@ using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
-using OrchardCore.DataLocalization.Models;
 using OrchardCore.DataLocalization.Services;
 using OrchardCore.DataLocalization.ViewModels;
-using OrchardCore.DisplayManagement;
 using OrchardCore.Localization;
 using OrchardCore.Localization.Data;
 using OrchardCore.Modules;
-using OrchardCore.Navigation;
-using OrchardCore.Settings;
 
 namespace OrchardCore.DataLocalization.Controllers;
 
@@ -26,25 +21,21 @@ public sealed class UiTranslationsController : Controller
     private readonly ILocalizationService _localization;
     private readonly IUiLocalizationCatalog _catalog;
     private readonly IUiTranslationsManager _manager;
-    private readonly ISiteService _site;
-    private readonly IShapeFactory _shapes;
     private readonly IStringLocalizer S;
 
     public UiTranslationsController(IAuthorizationService authorization, ILocalizationService localization,
-        IUiLocalizationCatalog catalog, IUiTranslationsManager manager, ISiteService site, IShapeFactory shapes,
+        IUiLocalizationCatalog catalog, IUiTranslationsManager manager,
         IStringLocalizer<UiTranslationsController> localizer)
     {
         _authorization = authorization;
         _localization = localization;
         _catalog = catalog;
         _manager = manager;
-        _site = site;
-        _shapes = shapes;
         S = localizer;
     }
 
     [HttpGet]
-    public async Task<IActionResult> Index(string culture, string search, string assemblyName, string status, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(string culture, string search)
     {
         if ((await GetAllowedCulturesAsync()).Length == 0)
         {
@@ -56,29 +47,45 @@ public sealed class UiTranslationsController : Controller
             return BadRequest(S["Select an authorized configured culture."].Value);
         }
 
-        return View(await BuildModelAsync(culture, search, assemblyName, status, pagerParameters));
+        return View(await BuildModelAsync(culture, search));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetStrings(string culture)
+    {
+        if (!(await GetAllowedCulturesAsync()).Contains(culture, StringComparer.OrdinalIgnoreCase))
+        {
+            return Forbid();
+        }
+
+        var model = await BuildModelAsync(culture);
+        return Ok(new { culture = model.CurrentCulture, providers = model.Providers });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Save(string culture, string context, string key, string plural, string[] values, bool remove)
+    public async Task<IActionResult> Save([FromBody] UiTranslationUpdateModel model)
     {
-        if (!await CanEditAsync(culture))
+        if (model == null || string.IsNullOrEmpty(model.Culture) || model.Translations == null || !ModelState.IsValid)
+        {
+            return BadRequest(new { message = S["Invalid translation request."].Value });
+        }
+
+        if (!await CanEditAsync(model.Culture))
         {
             return Forbid();
         }
 
         try
         {
-            await _manager.UpdateAsync(culture, [new UiTranslation { Context = context ?? "", Key = key, Plural = plural, Values = remove ? [] : values }]);
+            await _manager.UpdateAsync(model.Culture, model.Translations);
         }
         catch (Exception exception) when (exception is ArgumentException or FormatException)
         {
-            ModelState.AddModelError("", S["Invalid translation: {0}", exception.Message]);
-            return View("Index", await BuildModelAsync(culture, key, null, null, new PagerParameters()));
+            return BadRequest(new { message = S["Invalid translation: {0}", exception.Message].Value });
         }
 
-        return RedirectToAction(nameof(Index), new { culture, search = key });
+        return Ok(new { success = true, message = S["Translations saved successfully."].Value });
     }
 
     [HttpPost]
@@ -104,16 +111,16 @@ public sealed class UiTranslationsController : Controller
             }
             catch (Exception exception) when (exception is ArgumentException or FormatException)
             {
-                ModelState.AddModelError("", S["Invalid PO import: {0}", exception.Message]);
+                return BadRequest(new { message = S["Invalid PO import: {0}", exception.Message].Value });
             }
         }
 
         if (!ModelState.IsValid)
         {
-            return View("Index", await BuildModelAsync(culture, null, null, null, new PagerParameters()));
+            return BadRequest(new { message = S["Select a PO file no larger than 2 MB."].Value });
         }
 
-        return RedirectToAction(nameof(Index), new { culture });
+        return Ok(new { success = true, message = S["Translations imported successfully."].Value });
     }
 
     [HttpGet]
@@ -132,45 +139,56 @@ public sealed class UiTranslationsController : Controller
         return File(Encoding.UTF8.GetBytes(await _manager.ExportAsync(culture)), "text/plain; charset=utf-8", culture + ".overrides.po");
     }
 
-    private async Task<UiTranslationsViewModel> BuildModelAsync(string culture, string search, string assemblyName, string status, PagerParameters pagerParameters)
+    private async Task<TranslationEditorViewModel> BuildModelAsync(string culture, string search = null)
     {
         var cultures = await GetAllowedCulturesAsync();
         culture = cultures.FirstOrDefault(value => string.Equals(value, culture, StringComparison.OrdinalIgnoreCase)) ?? cultures.FirstOrDefault();
         var all = _catalog.GetResources();
         var document = await _manager.GetAsync();
         var overrides = culture == null ? [] : document.Translations.GetValueOrDefault(culture) ?? [];
-        var overriddenKeys = overrides.Select(translation => (translation.Context, translation.Key)).ToHashSet();
         var translatedValues = overrides.ToDictionary(translation => (translation.Context, translation.Key), translation => translation.Values);
-        var resources = all.Where(resource =>
-            (string.IsNullOrEmpty(assemblyName) || resource.AssemblyName == assemblyName) &&
-            (string.IsNullOrWhiteSpace(search) || resource.Key.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                resource.Context.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                resource.Metadata.Any(metadata => metadata.Contains(search, StringComparison.OrdinalIgnoreCase)) ||
-                translatedValues.TryGetValue((resource.Context, resource.Key), out var values) &&
-                    values.Any(value => value.Contains(search, StringComparison.OrdinalIgnoreCase))) &&
-            (status != "overridden" || overriddenKeys.Contains((resource.Context, resource.Key))) &&
-            (status != "untranslated" || !overriddenKeys.Contains((resource.Context, resource.Key))))
-            .ToArray();
-        var pager = new Pager(pagerParameters, (await _site.GetSiteSettingsAsync()).PageSize);
-        var routeData = new RouteData();
-        routeData.Values["culture"] = culture;
-        routeData.Values["search"] = search;
-        routeData.Values["assemblyName"] = assemblyName;
-        routeData.Values["status"] = status;
-        var pagerShape = await _shapes.PagerAsync(pager, resources.Length, routeData);
-        return new UiTranslationsViewModel
+        var allowedCultures = new List<CultureViewModel>();
+        foreach (var name in cultures)
         {
-            Culture = culture,
-            Cultures = cultures,
+            allowedCultures.Add(new CultureViewModel
+            {
+                Name = name,
+                DisplayName = CultureInfo.GetCultureInfo(name).DisplayName,
+                CanEdit = await CanEditAsync(name),
+            });
+        }
+
+        var formCount = culture == null ? 0 : _manager.GetPluralFormCount(culture);
+        // A context/key can be extracted by several assemblies; edit it once and retain all metadata.
+        var resources = all.GroupBy(resource => (resource.Context, resource.Key)).Select(group => new
+        {
+            Resource = group.First(),
+            Metadata = group.SelectMany(resource => resource.Metadata).Distinct().ToArray(),
+        });
+        return new TranslationEditorViewModel
+        {
+            IsUiLocalization = true,
+            CurrentCulture = culture,
+            AllowedCultures = allowedCultures,
+            IsReadOnly = !await CanEditAsync(culture),
             Search = search,
-            AssemblyName = assemblyName,
-            Status = status,
-            Assemblies = all.Select(resource => resource.AssemblyName).Distinct().ToArray(),
-            Resources = resources.Skip(pager.GetStartIndex()).Take(pager.PageSize).ToArray(),
-            Overrides = overrides,
-            PluralFormCount = culture == null ? 0 : _manager.GetPluralFormCount(culture),
-            CanEdit = await CanEditAsync(culture),
-            Pager = pagerShape,
+            Providers = resources.GroupBy(item => item.Resource.AssemblyName).Select(assembly => new TranslatableStringGroupViewModel
+            {
+                Name = assembly.Key,
+                SubGroups = assembly.GroupBy(item => item.Resource.Context).Select(context => new TranslatableStringSubGroupViewModel
+                {
+                    Name = context.Key,
+                    Strings = context.Select(item => new TranslatableStringViewModel
+                    {
+                        Context = item.Resource.Context,
+                        Key = item.Resource.Key,
+                        Plural = item.Resource.Plural,
+                        Metadata = item.Metadata,
+                        Values = translatedValues.TryGetValue((item.Resource.Context, item.Resource.Key), out var values)
+                            ? values : Enumerable.Repeat(string.Empty, item.Resource.Plural == null ? 1 : formCount).ToArray(),
+                    }).ToList(),
+                }).ToList(),
+            }).ToList(),
         };
     }
 
