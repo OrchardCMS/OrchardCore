@@ -8,6 +8,7 @@ This module provides a database-backed localization system for translating dynam
 
 ## Features
 
+- **UI Localization Overrides** (`OrchardCore.DataLocalization.Ui`): Optional database overrides for UI strings discovered from embedded POT catalogs
 - **Translation Editor**: Vue3-based admin UI to edit translations per culture
 - **Statistics Dashboard**: Track translation progress by culture and category
 - **Per-Culture Permissions**: Assign translation rights to specific cultures
@@ -20,6 +21,70 @@ This module provides a database-backed localization system for translating dynam
 3. Select a culture from the dropdown
 4. Edit translations for each category (Permissions, Content Types, etc.)
 5. Use the **Statistics** page to track translation progress
+
+## UI Localization Overrides
+
+Enable **UI Localization Overrides** in addition to Data Localization, and open
+**Settings → Localization → UI Translations**. Application and module assemblies must
+be built with localization extraction enabled. The editor discovers
+`{AssemblyName}.Localization.pot` resources in these assemblies and their references;
+external PO files do not define the editable catalog.
+
+Choose a configured supported culture. Browse all extracted entries, including entries
+without database translations, and filter by assembly, override status, identifier,
+context, override text, or extracted comments, flags and source references. Identifiers and contexts
+are case-sensitive. Entries with the same identifier in different contexts remain independent.
+
+Saving an override replaces the PO translation for that culture and context.
+**Restore fallback** removes it, restoring the standard PO, parent-culture (when enabled),
+and source-string fallback. Existing culture fallback order is preserved: an exact-culture
+PO translation still wins over a parent-culture override. UI overrides are stored separately
+from dynamic data translations and do not change the `d` Liquid filter.
+
+The feature uses the existing localization manager and localizers, so string, HTML, Razor,
+DataAnnotations and Liquid `t` localization share the overrides. Overrides are **plain text**:
+HTML localizers encode translation text and continue encoding format arguments. This does not
+change the existing HTML behavior of trusted deployed PO translations. Composite-format
+translations cannot introduce arguments absent from the extracted source.
+
+Plural entries require all forms selected by Orchard's configured integer plural rule, in
+zero-based rule order. The editor provides the culture-specific number of inputs, not the
+two placeholder forms in the POT file. Partial or empty forms are rejected; remove the
+entire override to restore fallback.
+
+### Permissions and transfer
+
+The feature reuses Data Localization permissions. `ViewDynamicTranslations` grants catalog
+and export access; `ManageTranslations` grants edits/imports for all cultures, and
+`ManageTranslations_{culture}` grants edits/imports for that configured culture.
+Culture-specific translators without the view permission can browse and export only their
+authorized cultures.
+All mutation endpoints require anti-forgery tokens.
+
+**Export overrides** downloads a UTF-8 PO file containing only the selected culture's
+database overrides, preserving contexts and plural identifiers. Import targets the selected
+culture and merges entries, leaving other overrides untouched. A wholly empty `msgstr`
+entry removes its override. All entries are validated before any changes are stored:
+unknown identifiers/contexts, mismatched plural sources, duplicate entries, fuzzy entries,
+malformed fields, invalid format strings and incomplete plural translations reject the
+entire import. Imports are limited to 2 MB.
+
+### Storage, caching and extension points
+
+`UiTranslationsDocument` uses Orchard's tenant-scoped document manager, including immutable
+snapshots, concurrency checks and distributed-cache versioning. The runtime pins a committed
+snapshot for each shell scope and caches overlaid dictionaries by snapshot and fallback
+dictionary identity. Subsequent scopes see committed updates and removals through the
+document manager's normal invalidation mechanism; no application restart is required.
+
+Use `IUiLocalizationCatalog` to discover available identifiers and metadata, and
+`IUiTranslationsManager` to validate, update, import and export translations from automation
+or other admin workflows. These services do not bypass catalog validation. The framework's
+`ITranslationOverrideProvider` hook applies versioned overlays after standard providers
+without modifying shared PO dictionaries or replacing core localizers. Disabling the
+feature leaves the documents stored but stops applying overrides.
+Custom overlays must mark untrusted values in `CultureDictionary.PlainTextTranslations`
+so HTML localizers encode them.
 
 ## Admin UI
 

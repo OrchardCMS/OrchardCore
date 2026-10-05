@@ -9,3 +9,11 @@ using OrchardCore.Modules.Manifest;
     Category = "Internationalization",
     Dependencies = ["OrchardCore.Localization"]
 )]
+
+[assembly: Feature(
+    Id = "OrchardCore.DataLocalization.Ui",
+    Name = "UI Localization Overrides",
+    Description = "Manages database UI translations from embedded localization catalogs.",
+    Category = "Internationalization",
+    Dependencies = ["OrchardCore.DataLocalization"]
+)]
