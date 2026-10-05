@@ -63,7 +63,7 @@ public sealed class Permissions : IPermissionProvider
     public static Permission CreatePermissionForAdminMenu(string name)
         => new(
             string.Format(s_viewAdminMenu.Name, name),
-            string.Format(s_viewAdminMenu.Description, name),
+            string.Format(s_viewAdminMenu.Description.Value, name),
             s_viewAdminMenu.ImpliedBy
         );
 }

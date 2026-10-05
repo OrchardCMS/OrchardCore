@@ -27,7 +27,7 @@ public sealed class CustomUserSettingsPermissions : IPermissionProvider
     public static Permission CreatePermissionForType(ContentTypeDefinition type) =>
         new(
             string.Format(s_manageOwnCustomUserSettings.Name, type.Name),
-            string.Format(s_manageOwnCustomUserSettings.Description, type.DisplayName),
+            string.Format(s_manageOwnCustomUserSettings.Description.Value, type.DisplayName),
             s_manageOwnCustomUserSettings.ImpliedBy
         );
 }
