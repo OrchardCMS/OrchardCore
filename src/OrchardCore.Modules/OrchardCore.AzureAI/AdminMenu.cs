@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using OrchardCore.Indexing.Core;
-using OrchardCore.Navigation;
 using OrchardCore.AzureAI.Drivers;
 using OrchardCore.AzureAI.Models;
+using OrchardCore.Indexing.Core;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.AzureAI;
 
@@ -32,24 +32,6 @@ public sealed class AdminMenu : AdminNavigationProvider
     {
         if (_azureAISearchSettings.CurrentValue.DisableUIConfiguration)
         {
-            return ValueTask.CompletedTask;
-        }
-
-        if (NavigationHelper.UseLegacyFormat())
-        {
-            builder
-               .Add(S["Configuration"], configuration => configuration
-                   .Add(S["Settings"], settings => settings
-                       .Add(S["Azure AI Search"], S["Azure AI Search"].PrefixPosition(), azureAISearch => azureAISearch
-                       .AddClass("azure-ai-search")
-                           .Id("azureaisearch")
-                           .Action("Index", "Admin", s_routeValues)
-                           .Permission(AzureAISearchPermissions.ManageAzureAISearchISettings)
-                           .LocalNav()
-                       )
-                   )
-               );
-
             return ValueTask.CompletedTask;
         }
 

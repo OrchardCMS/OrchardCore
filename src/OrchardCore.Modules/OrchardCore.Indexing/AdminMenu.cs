@@ -16,7 +16,7 @@ public sealed class AdminMenu : AdminNavigationProvider
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
+            .Add(S["Search"], S["Search"].PrefixPosition(), search => search
                 .AddClass("search")
                 .Id("search")
                 .Add(S["Indexes"], S["Indexes"].PrefixPosition(), indexes => indexes
