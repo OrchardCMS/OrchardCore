@@ -95,7 +95,7 @@ public class RecipeExecutor : IRecipeExecutor
                             ExceptionDispatchInfo capturedException = null;
                             try
                             {
-                                await ExecuteStepAsync(recipeStep);
+                                await ExecuteStepAsync(recipeStep, cancellationToken);
 
                                 if (recipeStep.Errors.Count > 0)
                                 {
@@ -157,7 +157,7 @@ public class RecipeExecutor : IRecipeExecutor
         }
     }
 
-    private async Task ExecuteStepAsync(RecipeExecutionContext recipeStep)
+    private async Task ExecuteStepAsync(RecipeExecutionContext recipeStep, CancellationToken cancellationToken)
     {
         var shellScope = recipeStep.RecipeDescriptor.RequireNewScope
             ? await _shellHost.GetScopeAsync(_shellSettings)
@@ -169,7 +169,7 @@ public class RecipeExecutor : IRecipeExecutor
             var scriptingManager = scope.ServiceProvider.GetRequiredService<IScriptingManager>();
 
             // Substitutes the script elements by their actual values.
-            await EvaluateJsonTreeAsync(scriptingManager, recipeStep, recipeStep.Step);
+            await EvaluateJsonTreeAsync(scriptingManager, recipeStep, recipeStep.Step, cancellationToken);
 
             if (_logger.IsEnabled(LogLevel.Information))
             {
@@ -195,7 +195,7 @@ public class RecipeExecutor : IRecipeExecutor
     /// <summary>
     /// Traverse all the nodes of the json document and replaces their value if they are scripted.
     /// </summary>
-    private async Task<JsonNode> EvaluateJsonTreeAsync(IScriptingManager scriptingManager, RecipeExecutionContext context, JsonNode node)
+    private async Task<JsonNode> EvaluateJsonTreeAsync(IScriptingManager scriptingManager, RecipeExecutionContext context, JsonNode node, CancellationToken cancellationToken)
     {
         if (node is null)
         {
@@ -208,7 +208,7 @@ public class RecipeExecutor : IRecipeExecutor
                 var array = node.AsArray();
                 for (var i = 0; i < array.Count; i++)
                 {
-                    var item = await EvaluateJsonTreeAsync(scriptingManager, context, array[i]);
+                    var item = await EvaluateJsonTreeAsync(scriptingManager, context, array[i], cancellationToken);
                     if (item is JsonValue && item != array[i])
                     {
                         array[i] = item;
@@ -221,7 +221,7 @@ public class RecipeExecutor : IRecipeExecutor
                 var properties = node.AsObject();
                 foreach (var property in properties.ToArray())
                 {
-                    var newProperty = await EvaluateJsonTreeAsync(scriptingManager, context, property.Value);
+                    var newProperty = await EvaluateJsonTreeAsync(scriptingManager, context, property.Value, cancellationToken);
                     if (newProperty is JsonValue && newProperty != property.Value)
                     {
                         properties[property.Key] = newProperty;
@@ -251,7 +251,8 @@ public class RecipeExecutor : IRecipeExecutor
                         value,
                         context.RecipeDescriptor.FileProvider,
                         context.RecipeDescriptor.BasePath,
-                        _methodProviders[context.ExecutionId])
+                        _methodProviders[context.ExecutionId],
+                        cancellationToken)
                         ?? string.Empty).ToString();
                 }
 
