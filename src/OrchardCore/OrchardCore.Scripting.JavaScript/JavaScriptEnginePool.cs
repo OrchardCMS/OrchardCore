@@ -82,8 +82,10 @@ internal sealed class JavaScriptEnginePool
         var engine = rental.Engine;
         var snapshot = rental.Snapshot;
 
-        // The service provider of the evaluation that has just ended must not be reachable from an idle
-        // engine, and must not be found by a global that somehow gets built on one. The scope stored it in
+        // The service provider of the evaluation that has just ended must not be found by a global that
+        // somehow gets built on an idle engine, nor be reachable from one through the engine itself. (A
+        // call site that has run warm still remembers the global it last called, and through it that
+        // request's services - see JavaScriptEngineOptions.EnginePoolSize.) The scope stored it in
         // the engine's [[HostDefined]] slot, which a snapshot does not cover, so it is cleared here. That
         // turns a use of a returned engine into an exception on the first registered global it reads (see
         // JavaScriptEngine.CreateGlobal), rather than a delegate quietly built from another request's

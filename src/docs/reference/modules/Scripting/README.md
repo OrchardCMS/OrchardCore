@@ -184,6 +184,12 @@ that site next resolves something else. It is one live object per site per engin
 next time the same script runs, but it is real, and it is the reason the default is a handful of engines
 rather than one per concurrent request.
 
+A registered global is one of those objects. A call such as `uuid()` in a script that has already run on
+the engine remembers the function it called, and that function was built from the services of the request
+that called it — so an idle engine can keep a finished request's services, and the scoped services resolved
+from them, reachable until the same script next runs on it. Detaching the services when the engine is
+returned stops a new global being built from them; it does not reach into a call that already holds one.
+
 Raise it for a tenant that evaluates scripts on many concurrent requests — JavaScript layer rules are the
 usual case, because the rules evaluator holds its scope for the whole request rather than for one
 expression. Lower it, or set it to `0`, for a tenant whose global methods project large object graphs into
