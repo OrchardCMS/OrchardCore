@@ -18,6 +18,7 @@ public sealed class CSharpLocalizationExtractor
     private readonly LocalizationCatalog _catalog;
     private readonly IReadOnlyList<ICSharpLocalizationAdapter> _adapters;
     private readonly INamedTypeSymbol? _skipExtractionAttribute;
+    private readonly LocalizationSourceExtractor _sources;
     private readonly Dictionary<ISymbol, List<IOperation>> _assignments = new(SymbolEqualityComparer.Default);
 
     public CSharpLocalizationExtractor(Compilation compilation, ExtractionOptions options, LocalizationCatalog catalog, IEnumerable<ICSharpLocalizationAdapter>? adapters = null)
@@ -28,10 +29,12 @@ public sealed class CSharpLocalizationExtractor
         _adapters = adapters?.ToArray() ?? [];
         _skipExtractionAttribute = compilation.GetTypeByMetadataName("OrchardCore.Localization.SkipLocalizationExtractionAttribute");
         IndexAssignments();
+        _sources = new LocalizationSourceExtractor(compilation, options, catalog, this);
     }
 
     public void Extract(SyntaxTree tree, string? viewContext = null, CancellationToken cancellationToken = default)
     {
+        _sources.Extract(tree, cancellationToken);
         var model = _compilation.GetSemanticModel(tree);
         foreach (var node in tree.GetRoot(cancellationToken).DescendantNodes())
         {
@@ -69,7 +72,7 @@ public sealed class CSharpLocalizationExtractor
         }
     }
 
-    private bool ShouldSkip(ISymbol? symbol)
+    internal bool ShouldSkip(ISymbol? symbol)
     {
         if (_skipExtractionAttribute is null)
         {
@@ -166,7 +169,7 @@ public sealed class CSharpLocalizationExtractor
         _catalog.Add(context, key, plural, source, GetComment(node));
     }
 
-    private static string? GetConstant(IOperation operation)
+    internal static string? GetConstant(IOperation operation)
     {
         operation = Unwrap(operation);
         return operation.ConstantValue is { HasValue: true, Value: string value } ? value : null;
@@ -263,7 +266,7 @@ public sealed class CSharpLocalizationExtractor
         return contexts.Length == 1 ? contexts[0] : null;
     }
 
-    private static string? GetResourceName(ITypeSymbol type)
+    internal static string? GetResourceName(ITypeSymbol type)
     {
         if (type is not INamedTypeSymbol named || named.IsGenericType)
         {
@@ -323,7 +326,10 @@ public sealed class CSharpLocalizationExtractor
         values.Add(value);
     }
 
-    private static IOperation Unwrap(IOperation operation)
+    internal IOperation? GetAssignedValue(ISymbol symbol)
+        => _assignments.TryGetValue(symbol, out var values) && values.Count == 1 ? values[0] : null;
+
+    internal static IOperation Unwrap(IOperation operation)
     {
         while (operation is IConversionOperation conversion)
         {
@@ -333,7 +339,7 @@ public sealed class CSharpLocalizationExtractor
         return operation;
     }
 
-    private static ISymbol? GetSymbol(IOperation operation)
+    internal static ISymbol? GetSymbol(IOperation operation)
         => Unwrap(operation) switch
         {
             IFieldReferenceOperation field => field.Field,
@@ -361,7 +367,7 @@ public sealed class CSharpLocalizationExtractor
         }
     }
 
-    private static string? GetComment(SyntaxNode node)
+    internal static string? GetComment(SyntaxNode node)
     {
         var text = node.SyntaxTree.GetText();
         var line = text.Lines.GetLineFromPosition(node.SpanStart).LineNumber;

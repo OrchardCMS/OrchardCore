@@ -108,7 +108,7 @@ public sealed class DataAnnotationsLocalizationExtractorTests
         var options = workspace.Options();
         options.Sources.Add(new ExtractionFile(workspace.Write("Model.cs", source), "Model.cs"));
         options.Sources.Add(new ExtractionFile(workspace.Write("GlobalUsings.cs", "global using System;"), "GlobalUsings.cs"));
-        var attributePath = Path.Combine(TestWorkspace.RepositoryRoot, "src", "OrchardCore", "OrchardCore.Localization.Abstractions", "SkipLocalizationExtractionAttribute.cs");
+        var attributePath = Path.Combine(TestWorkspace.RepositoryRoot, "src", "OrchardCore", "OrchardCore.Abstractions", "Localization", "SkipLocalizationExtractionAttribute.cs");
         options.Sources.Add(new ExtractionFile(attributePath, "SkipLocalizationExtractionAttribute.cs"));
         return LocalizationExtractor.Extract(options, TestContext.Current.CancellationToken);
     }

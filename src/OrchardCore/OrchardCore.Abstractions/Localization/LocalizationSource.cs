@@ -31,6 +31,7 @@ public sealed record LocalizationSource
     /// <param name="type">The source type of the localizer, or <see langword="null"/> for a value without a localization context.</param>
     /// <returns>A new untranslated source with the specified value and source type.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="value"/> is <see langword="null"/>.</exception>
+    [SkipLocalizationExtraction]
     public static LocalizationSource Create(string value, Type type = null)
     {
         return new LocalizationSource(value, type);
@@ -43,6 +44,7 @@ public sealed record LocalizationSource
     /// <param name="value">The untranslated value, used as the localization key.</param>
     /// <returns>A new untranslated source with the specified value and source type.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="value"/> is <see langword="null"/>.</exception>
+    [SkipLocalizationExtraction]
     public static LocalizationSource Create<T>(string value)
     {
         return Create(value, typeof(T));

@@ -43,14 +43,23 @@ internal sealed class TestWorkspace : IDisposable
         return options;
     }
 
-    public static LocalizationCatalog ExtractCSharp(string source, bool includePlurals = false, string? viewContext = null)
+    public static LocalizationCatalog ExtractCSharp(string source, bool includePlurals = false, string? viewContext = null, bool includeSources = false)
     {
         using var workspace = new TestWorkspace();
         var options = workspace.Options();
         var tree = CSharpSyntaxTree.ParseText(source, path: Path.Combine(workspace.DirectoryPath, "Messages.cs"));
         var trees = new List<SyntaxTree> { tree, CSharpSyntaxTree.ParseText("global using System;") };
-        var attributePath = Path.Combine(RepositoryRoot, "src", "OrchardCore", "OrchardCore.Localization.Abstractions", "SkipLocalizationExtractionAttribute.cs");
+        var attributePath = Path.Combine(RepositoryRoot, "src", "OrchardCore", "OrchardCore.Abstractions", "Localization", "SkipLocalizationExtractionAttribute.cs");
         trees.Add(CSharpSyntaxTree.ParseText(File.ReadAllText(attributePath), path: attributePath));
+        if (includeSources)
+        {
+            var directory = Path.Combine(RepositoryRoot, "src", "OrchardCore", "OrchardCore.Abstractions", "Localization");
+            foreach (var path in new[] { "LocalizationSource.cs", "Extensions/StringLocalizerFactoryExtensions.cs", "Extensions/HtmlLocalizerFactoryExtensions.cs" })
+            {
+                var fullPath = Path.Combine(directory, path);
+                trees.Add(CSharpSyntaxTree.ParseText(File.ReadAllText(fullPath), path: fullPath));
+            }
+        }
         if (includePlurals)
         {
             var directory = Path.Combine(RepositoryRoot, "src", "OrchardCore", "OrchardCore.Localization.Abstractions");
@@ -59,13 +68,25 @@ internal sealed class TestWorkspace : IDisposable
                 var fullPath = Path.Combine(directory, path);
                 trees.Add(CSharpSyntaxTree.ParseText(File.ReadAllText(fullPath), path: fullPath));
             }
+            if (includeSources)
+            {
+                foreach (var path in new[] { "Extensions/StringLocalizerFactoryPluralExtensions.cs", "Extensions/HtmlLocalizerFactoryPluralExtensions.cs", "Extensions/LocalizationSourcePluralHelper.cs" })
+                {
+                    var fullPath = Path.Combine(directory, path);
+                    trees.Add(CSharpSyntaxTree.ParseText(File.ReadAllText(fullPath), path: fullPath));
+                }
+            }
         }
 
         var compilation = CSharpCompilation.Create("Tests", trees, options.References.Select(path => MetadataReference.CreateFromFile(path)), new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
         var errors = compilation.GetDiagnostics().Where(diagnostic => diagnostic.Severity == DiagnosticSeverity.Error).ToArray();
         Xunit.Assert.Empty(errors);
         var catalog = new LocalizationCatalog();
-        new CSharpLocalizationExtractor(compilation, options, catalog).Extract(tree, viewContext);
+        var extractor = new CSharpLocalizationExtractor(compilation, options, catalog);
+        foreach (var syntaxTree in includeSources ? trees : [tree])
+        {
+            extractor.Extract(syntaxTree, viewContext);
+        }
         return catalog;
     }
 
