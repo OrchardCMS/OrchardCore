@@ -5,6 +5,32 @@ namespace OrchardCore.Localization.Extraction.Tests;
 public sealed class RazorLocalizationExtractorTests
 {
     [Fact]
+    public void Extract_DeferredSourceInRazor_UsesResourceTypeAndMappedLocation()
+    {
+        using var workspace = new TestWorkspace();
+        var options = workspace.Options();
+        options.References.Add(typeof(OrchardCore.Localization.LocalizationSource).Assembly.Location);
+        var resource = workspace.Write("Resources.cs", "namespace Example { public class Resources { } }");
+        var view = workspace.Write("Views/Index.cshtml", """
+            @using OrchardCore.Localization
+            @using Microsoft.Extensions.Localization
+            @inject Microsoft.Extensions.Localization.IStringLocalizerFactory factory
+            <p>@factory.Localize(LocalizationSource.Create<Example.Resources>("Deferred Razor")).Value</p>
+            """);
+        options.Sources.Add(new ExtractionFile(resource, "Resources.cs"));
+        options.RazorFiles.Add(new ExtractionFile(view, "Views/Index.cshtml"));
+
+        var catalog = LocalizationExtractor.Extract(options, TestContext.Current.CancellationToken);
+
+        Assert.Empty(catalog.Diagnostics);
+        var message = Assert.Single(catalog.Messages);
+        Assert.Equal("Example.Resources", message.Context);
+        Assert.Equal("Deferred Razor", message.Text);
+        Assert.Equal("Views/Index.cshtml", Assert.Single(message.References).Path);
+        Assert.Equal(4, message.References[0].Line);
+    }
+
+    [Fact]
     public void Extract_ImportsAndLinkedView_PreservesContextAndSourceMapping()
     {
         using var workspace = new TestWorkspace();
