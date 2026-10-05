@@ -326,6 +326,170 @@ public class JavaScriptEnginePoolTests
         Assert.Equal(4, firstRound.Concat(secondRound).Distinct().Count());
     }
 
+    [Fact]
+    public void AReturnedEngine_NoLongerCarriesTheServicesOfTheScopeThatUsedIt()
+    {
+        // The services of an evaluation travel on the engine, in its HostDefined slot, which a global
+        // snapshot does not cover. An idle engine that still carried them would keep a finished request's
+        // services alive for as long as the engine sits in the pool.
+        var host = new TestHost();
+
+        using var services = host.CreateServiceScope("first");
+        var scope = host.CreateScope(services);
+        var engine = scope.Engine;
+
+        Assert.Same(services.ServiceProvider, engine.Advanced.HostDefined);
+        Assert.Equal("first", host.Evaluate(scope, "return owningScope();"));
+
+        scope.Dispose();
+
+        Assert.Null(engine.Advanced.HostDefined);
+    }
+
+    [Fact]
+    public void AnEngineReachedAfterItsScopeEnded_CannotBuildAGlobalFromAFinishedScope()
+    {
+        // A caller that kept the engine past the end of its scope - by holding on to it, or to a function a
+        // script returned - must fail on the first registered global it reads, rather than quietly build
+        // that global from the services of an evaluation that is over.
+        var host = new TestHost();
+
+        using var services = host.CreateServiceScope("first");
+        var scope = host.CreateScope(services);
+        var engine = scope.Engine;
+
+        scope.Dispose();
+
+        Assert.Throws<InvalidOperationException>(() => engine.Evaluate("owningScope()"));
+        Assert.Equal(0, host.Provider.BuildCount);
+    }
+
+    [Fact]
+    public async Task ACancelledEvaluation_LeavesACleanEngineThatTheNextEvaluationCanUse()
+    {
+        // Cancelling stops the interpreter by throwing out of the middle of the script, so whatever it did
+        // before that point is left on the engine, and the evaluation's token is armed on the engine's
+        // deadline constraint. A reused engine must have shed both.
+        var host = new TestHost();
+
+        var first = host.CreateScope();
+        var engine = first.Engine;
+
+        using (var cancellation = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken))
+        {
+            cancellation.CancelAfter(TimeSpan.FromMilliseconds(50));
+
+            try
+            {
+                await Assert.ThrowsAnyAsync<OperationCanceledException>(
+                    () => host.EvaluateAsync(first, "globalThis.dirty = 1; while (true) { }", cancellation.Token));
+            }
+            finally
+            {
+                first.Dispose();
+            }
+        }
+
+        using var second = host.CreateScope();
+
+        Assert.Same(engine, second.Engine);
+        Assert.Equal("undefined", host.Evaluate(second, "return typeof dirty;"));
+
+        // The cancelled token must not have stayed armed: a loop long enough to reach the constraint's
+        // amortized check several times over runs to completion, synchronously and asynchronously.
+        Assert.Equal(10_000, Convert.ToInt32(host.Evaluate(second, "var n = 0; for (var i = 0; i < 10000; i++) { n++; } return n;")));
+        Assert.Equal(10_000, Convert.ToInt32(await host.EvaluateAsync(second, "let m = 0; for (let i = 0; i < 10000; i++) { m++; } return m;", TestContext.Current.CancellationToken)));
+    }
+
+    [Fact]
+    public async Task AnEvaluationCancelledWhileAwaiting_DoesNotSettleIntoTheNextEvaluation()
+    {
+        // Cancelled while the script waits on a CLR task rather than while it runs: the continuation is still
+        // registered when the scope ends, and the task completes afterwards.
+        var host = new TestHost();
+
+        var first = host.CreateScope();
+
+        using (var cancellation = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken))
+        {
+            cancellation.CancelAfter(TimeSpan.FromMilliseconds(50));
+
+            try
+            {
+                await Assert.ThrowsAnyAsync<OperationCanceledException>(
+                    () => host.EvaluateAsync(first, "return (async () => { globalThis.settled = await pendingAsync(); })();", cancellation.Token));
+            }
+            finally
+            {
+                first.Dispose();
+            }
+        }
+
+        host.Pending.SetResult("late");
+
+        // As in the uncancelled case above, the delay only gives the continuation a chance to arrive; the
+        // assertion holds either way.
+        await Task.Delay(100, TestContext.Current.CancellationToken);
+
+        // Whether the engine was reset and kept or dropped as unresettable is the pool's business; either
+        // way the next evaluation must neither see the late result nor fail.
+        using var second = host.CreateScope();
+
+        Assert.Equal("undefined", host.Evaluate(second, "return typeof settled;"));
+        Assert.Equal(3, Convert.ToInt32(await host.EvaluateAsync(second, "return 1 + 2;", TestContext.Current.CancellationToken)));
+    }
+
+    [Fact]
+    public void ATimedOutEvaluation_LeavesACleanEngineWithAFreshDeadline()
+    {
+        // A site's TimeoutInterval is a deadline armed per evaluation. One that ran out must not leave the
+        // next evaluation on the same engine starting with the time already spent.
+        var host = new TestHost(configureJint: options => options.TimeoutInterval(TimeSpan.FromMilliseconds(100)));
+
+        var first = host.CreateScope();
+        var engine = first.Engine;
+
+        try
+        {
+            Assert.Throws<TimeoutException>(() => host.Evaluate(first, "globalThis.dirty = 1; while (true) { }"));
+        }
+        finally
+        {
+            first.Dispose();
+        }
+
+        using var second = host.CreateScope();
+
+        Assert.Same(engine, second.Engine);
+        Assert.Equal("undefined", host.Evaluate(second, "return typeof dirty;"));
+    }
+
+    [Fact]
+    public void AnUnboundedRecursion_LeavesACleanEngineForTheNextScope()
+    {
+        // The stack guard turns the overflow into a RangeError thrown from deep inside the recursion, so the
+        // engine is unwound from hundreds of frames before it is reset and reused.
+        var host = new TestHost();
+
+        var first = host.CreateScope();
+        var engine = first.Engine;
+
+        try
+        {
+            Assert.Throws<JavaScriptException>(() => host.Evaluate(first, "globalThis.dirty = 1; function f() { return 1 + f(); } return f();"));
+        }
+        finally
+        {
+            first.Dispose();
+        }
+
+        using var second = host.CreateScope();
+
+        Assert.Same(engine, second.Engine);
+        Assert.Equal("undefined,undefined", host.Evaluate(second, "return typeof dirty + ',' + typeof f;"));
+        Assert.Equal(100, Convert.ToInt32(host.Evaluate(second, "function g(n) { return n === 0 ? 0 : 1 + g(n - 1); } return g(100);")));
+    }
+
     private sealed class Holder
     {
         public int Count;
@@ -390,6 +554,9 @@ public class JavaScriptEnginePoolTests
 
         public object Evaluate(IScriptingScope scope, string script)
             => _engine.Evaluate(scope, script);
+
+        public Task<object> EvaluateAsync(IScriptingScope scope, string script, CancellationToken cancellationToken)
+            => _engine.EvaluateAsync(scope, script, cancellationToken);
     }
 
     private sealed class ServiceScopeName
