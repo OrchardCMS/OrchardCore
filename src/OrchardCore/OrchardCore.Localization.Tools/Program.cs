@@ -77,7 +77,7 @@ internal static class Program
         foreach (var diagnostic in diagnostics)
         {
             var location = diagnostic.Source.Path.Length > 0 ? diagnostic.Source.Path + "(" + Math.Max(diagnostic.Source.Line, 1).ToString(CultureInfo.InvariantCulture) + ",1): " : "";
-            Console.WriteLine(location + (diagnostic.IsError ? "error " : "warning ") + diagnostic.Code + ": " + OneLine(diagnostic.Message));
+            Console.WriteLine(location + (diagnostic.IsError ? "error " : "localization warning-level ") + diagnostic.Code + ": " + OneLine(diagnostic.Message));
         }
     }
 

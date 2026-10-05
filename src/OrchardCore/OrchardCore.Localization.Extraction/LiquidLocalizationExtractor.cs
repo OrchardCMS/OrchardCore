@@ -1,8 +1,7 @@
+using System.Text.Encodings.Web;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Values;
-using Microsoft.Extensions.Options;
-using OrchardCore.DisplayManagement.Liquid;
 
 namespace OrchardCore.Localization.Extraction;
 
@@ -13,7 +12,7 @@ public sealed class LiquidLocalizationExtractor
 
     public LiquidLocalizationExtractor(FluidParser? parser = null, IEnumerable<string>? localizationFilters = null)
     {
-        _parser = parser ?? new LiquidViewParser(Options.Create(new LiquidViewOptions()), Options.Create(new FluidParserOptions { AllowFunctions = true }));
+        _parser = parser ?? CreateDefaultParser();
         _filters = new HashSet<string>(localizationFilters ?? ["t"], StringComparer.Ordinal);
     }
 
@@ -28,6 +27,85 @@ public sealed class LiquidLocalizationExtractor
         }
 
         new LocalizationVisitor(options.GetViewContext(file.LogicalPath), source, catalog, _filters, cancellationToken).VisitTemplate(template);
+    }
+
+    private static ExtractionLiquidParser CreateDefaultParser()
+        => new ExtractionLiquidParser();
+
+    private static ValueTask<Completion> IgnoreTagAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
+    {
+        _ = writer;
+        _ = encoder;
+        _ = context;
+        return ValueTask.FromResult(Completion.Normal);
+    }
+
+    private static ValueTask<Completion> IgnoreExpressionTagAsync(Expression expression, TextWriter writer, TextEncoder encoder, TemplateContext context)
+    {
+        _ = expression;
+        _ = writer;
+        _ = encoder;
+        _ = context;
+        return ValueTask.FromResult(Completion.Normal);
+    }
+
+    private static ValueTask<Completion> IgnoreParserTagAsync<T>(T arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
+    {
+        _ = arguments;
+        _ = writer;
+        _ = encoder;
+        _ = context;
+        return ValueTask.FromResult(Completion.Normal);
+    }
+
+    private static ValueTask<Completion> IgnoreParserBlockAsync(IReadOnlyList<FilterArgument> arguments, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
+    {
+        _ = arguments;
+        _ = statements;
+        _ = writer;
+        _ = encoder;
+        _ = context;
+        return ValueTask.FromResult(Completion.Normal);
+    }
+
+    private sealed class ExtractionLiquidParser : FluidParser
+    {
+        public ExtractionLiquidParser()
+            : base(new FluidParserOptions { AllowFunctions = true })
+        {
+            RegisterEmptyTag("render_body", IgnoreTagAsync);
+            RegisterEmptyTag("antiforgerytoken", IgnoreTagAsync);
+            RegisterExpressionTag("layout", IgnoreExpressionTagAsync);
+            RegisterExpressionTag("shape_clear_alternates", IgnoreExpressionTagAsync);
+            RegisterExpressionTag("shape_clear_wrappers", IgnoreExpressionTagAsync);
+            RegisterExpressionTag("shape_clear_classes", IgnoreExpressionTagAsync);
+            RegisterExpressionTag("shape_clear_attributes", IgnoreExpressionTagAsync);
+
+            foreach (var tag in new[]
+            {
+                "render_section", "page_title", "page_title_add_segment", "httpcontext_add_items",
+                "meta", "link", "script", "style", "resources", "helper", "shape", "cache_dependency", "cache_expires_on", "cache_expires_after",
+                "cache_expires_sliding", "shape_add_properties", "shape_remove_property", "shape_remove_item",
+                "shape_pager",
+            })
+            {
+                RegisterParserTag(tag, ArgumentsList, IgnoreParserTagAsync);
+            }
+
+            RegisterParserTag("shape_add_alternates", Primary.And(Primary), IgnoreParserTagAsync);
+            RegisterParserTag("shape_add_wrappers", Primary.And(Primary), IgnoreParserTagAsync);
+            RegisterParserTag("shape_add_classes", Primary.And(Primary), IgnoreParserTagAsync);
+            RegisterParserTag("shape_add_attributes", Primary.And(ArgumentsList), IgnoreParserTagAsync);
+            RegisterParserTag("shape_type", Primary.And(Primary), IgnoreParserTagAsync);
+            RegisterParserTag("shape_display_type", Primary.And(Primary), IgnoreParserTagAsync);
+            RegisterParserTag("shape_position", Primary.And(Primary), IgnoreParserTagAsync);
+            RegisterParserTag("httpcontext_remove_items", Primary, IgnoreParserTagAsync);
+
+            foreach (var tag in new[] { "zone", "form", "cache", "a", "block" })
+            {
+                RegisterParserBlock(tag, ArgumentsList, IgnoreParserBlockAsync);
+            }
+        }
     }
 
     private sealed class LocalizationVisitor : AstVisitor

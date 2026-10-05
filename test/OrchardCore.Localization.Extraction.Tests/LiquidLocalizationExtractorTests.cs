@@ -26,6 +26,17 @@ public sealed class LiquidLocalizationExtractorTests
     }
 
     [Theory]
+    [InlineData("{% resources type: 'Meta' %}")]
+    [InlineData("{% script name: 'test', at: 'Foot' %}")]
+    public void Extract_ResourceTags_DoesNotFailParsing(string source)
+    {
+        using var workspace = new TestWorkspace();
+        var catalog = new LocalizationCatalog();
+        new LiquidLocalizationExtractor().Extract(source, new ExtractionFile("Views/Test.liquid", "Views/Test.liquid"), workspace.Options(), catalog, TestContext.Current.CancellationToken);
+        Assert.Empty(catalog.Diagnostics);
+    }
+
+    [Theory]
     [InlineData("{% layout 'Title' | t %}")]
     [InlineData("{% page_title title: ('Title' | t) %}")]
     [InlineData("{% shape 'Test', title: ('Title' | t) %}")]
