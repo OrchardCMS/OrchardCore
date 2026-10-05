@@ -56,6 +56,68 @@ public sealed class BuildIntegrationTests
     }
 
     [Fact]
+    public async Task Build_CatalogCollection_IsOptionalAndCopiesCachedCatalogs()
+    {
+        using var workspace = new TestWorkspace();
+        var project = CopyFixture(workspace);
+        var output = Path.Combine(workspace.DirectoryPath, "exported templates");
+        var catalog = Path.Combine(workspace.DirectoryPath, "obj/Debug/net10.0/Localization/RazorModule.pot");
+        var exported = Path.Combine(output, "net10.0/RazorModule.pot");
+        var property = "-p:LocalizationCatalogOutputPath=" + output;
+        await BuildAsync(project);
+        Assert.False(Directory.Exists(output));
+
+        Assert.Contains("up to date", await BuildAsync(project, property));
+        Assert.Equal(await File.ReadAllTextAsync(catalog, TestContext.Current.CancellationToken), await File.ReadAllTextAsync(exported, TestContext.Current.CancellationToken));
+        Assert.Single(Directory.GetFiles(output, "*", SearchOption.AllDirectories));
+        var timestamp = File.GetLastWriteTimeUtc(exported);
+        await BuildAsync(project, property);
+        Assert.Equal(timestamp, File.GetLastWriteTimeUtc(exported));
+
+        File.Delete(exported);
+        await BuildAsync(project, property);
+        Assert.True(File.Exists(exported));
+        workspace.Write("Added.cs", "using Microsoft.Extensions.Localization; public class Added { public string Get(IStringLocalizer<Added> words) => words[\"Exported message\"]; }");
+        await BuildAsync(project, property);
+        Assert.Contains("Exported message", await File.ReadAllTextAsync(exported, TestContext.Current.CancellationToken));
+
+        await RequireSuccessAsync("clean", project, "--tl:off", "--nologo", "-v:quiet", property);
+        Assert.True(File.Exists(exported));
+        Directory.Delete(output, true);
+        await BuildAsync(project, property, "-p:GenerateLocalizationCatalog=false");
+        Assert.False(Directory.Exists(output));
+        await RequireSuccessAsync("msbuild", project, "-t:OrchardCoreGenerateLocalizationCatalog", "-p:DesignTimeBuild=true", property, "--nologo", "-v:quiet");
+        Assert.False(Directory.Exists(output));
+
+        await BuildAsync(project, "-p:LocalizationCatalogOutputPath=exported templates", "-p:LocalizationCatalogPath=" + Path.Combine(workspace.DirectoryPath, "custom/template.pot"));
+        Assert.True(File.Exists(exported));
+    }
+
+    [Fact]
+    public async Task Build_CatalogCollection_IncludesReferencedProjects()
+    {
+        using var application = new TestWorkspace();
+        using var module = new TestWorkspace();
+        var project = CopyFixture(application);
+        var reference = CopyFixture(module);
+        var definition = XDocument.Load(project);
+        definition.Root!.Element("PropertyGroup")!.Add(new XElement("AssemblyName", "Application"));
+        definition.Root.Add(new XElement("ItemGroup", new XElement("ProjectReference", new XAttribute("Include", reference))));
+        definition.Save(project);
+        var output = Path.Combine(application.DirectoryPath, "templates");
+        await BuildAsync(project, "-p:LocalizationCatalogOutputPath=" + output);
+
+        foreach (var assemblyName in new[] { "Application", "RazorModule" })
+        {
+            var exported = Path.Combine(output, "net10.0", assemblyName + ".pot");
+            var assembly = Path.Combine(application.DirectoryPath, "bin/Debug/net10.0", assemblyName + ".dll");
+            Assert.Equal(ReadResource(assembly, assemblyName + ".Localization.pot"), await File.ReadAllTextAsync(exported, TestContext.Current.CancellationToken));
+        }
+
+        Assert.Equal(2, Directory.GetFiles(output, "*.pot", SearchOption.AllDirectories).Length);
+    }
+
+    [Fact]
     public async Task Build_CachedWarningsAndStrictMode_ReplaysDiagnosticsAndFailsStrictBuild()
     {
         using var workspace = new TestWorkspace();
@@ -118,13 +180,17 @@ public sealed class BuildIntegrationTests
             </Project>
             """);
         workspace.Write("Consumer/Messages.cs", "using Microsoft.Extensions.Localization; public class Messages { public string Get(IStringLocalizer<Messages> words) => words[\"Packaged message\"]; }");
-        await BuildAsync(consumer);
+        var output = Path.Combine(workspace.DirectoryPath, "templates");
+        await BuildAsync(consumer, "-p:LocalizationCatalogOutputPath=" + output);
         foreach (var framework in new[] { "netstandard2.0", "net10.0" })
         {
             var assembly = Path.Combine(workspace.DirectoryPath, "Consumer/bin/Debug", framework, "Consumer.dll");
             Assert.Contains("Packaged message", ReadResource(assembly, "Consumer.Localization.pot"));
+            var exported = Path.Combine(output, framework, "Consumer.pot");
+            Assert.Equal(ReadResource(assembly, "Consumer.Localization.pot"), await File.ReadAllTextAsync(exported, TestContext.Current.CancellationToken));
             AssertNoToolingReferences(assembly);
         }
+        Assert.Equal(2, Directory.GetFiles(output, "*", SearchOption.AllDirectories).Length);
 
         var publish = Path.Combine(workspace.DirectoryPath, "publish");
         await RequireSuccessAsync("publish", consumer, "--tl:off", "--nologo", "-f", "net10.0", "-c", "Debug", "-o", publish, "-v:quiet");
@@ -154,7 +220,10 @@ public sealed class BuildIntegrationTests
     }
 
     private static Task<string> BuildAsync(string project)
-        => RequireSuccessAsync("build", project, "--tl:off", "--nologo", "-v:minimal");
+        => BuildAsync(project, []);
+
+    private static Task<string> BuildAsync(string project, params string[] properties)
+        => RequireSuccessAsync(["build", project, "--tl:off", "--nologo", "-v:minimal", .. properties]);
 
     private static async Task<string> RequireSuccessAsync(params string[] arguments)
     {

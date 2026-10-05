@@ -223,6 +223,7 @@ The template is generated at `$(IntermediateOutputPath)/Localization/$(AssemblyN
 | `GenerateLocalizationCatalog` | Defaults to `true` when the package is imported; set to `false` to disable extraction. |
 | `LocalizationStrict` | Defaults to `false`; set to `true` to fail on extraction warnings as well as errors. |
 | `LocalizationCatalogPath` | Overrides the generated POT path. Keep custom paths distinct for each target framework. |
+| `LocalizationCatalogOutputPath` | Optional export directory. When set, copies generated POT files into `<directory>/<TargetFramework>/<AssemblyName>.pot`. Relative paths are resolved against each project directory; use an absolute path for a shared solution or application export. |
 | `LocalizationViewPrefix` | Overrides the view context prefix; module and theme builds default to the assembly name. |
 | `LocalizationToolPath` | Overrides the worker DLL path. |
 | `LocalizationDotNetHostPath` | Overrides the `dotnet` host used to run the worker. |
@@ -256,7 +257,7 @@ public LocalizedString Forward(IStringLocalizer localizer, string name)
 Apply the attribute to a class or method to exclude localization calls and extraction diagnostics inside that declaration, including nested declarations and lambdas. A marked partial class is excluded across all its parts. The attribute is not inherited by derived classes or overriding methods. Calls from unmarked application code to marked helper methods are still extracted. Only mark infrastructure that forwards caller-supplied keys; dynamic keys in application code continue to produce diagnostics.
 
 !!! note
-    Embedded POT files are source templates, not translated PO files. They do not change runtime translation lookup. Dynamic keys or unresolved contexts produce diagnostics rather than guessed entries. JavaScript extraction, automatic cross-project catalog collection, and runtime translation overrides are not included.
+    Embedded POT files are source templates, not translated PO files. They do not change runtime translation lookup. Dynamic keys or unresolved contexts produce diagnostics rather than guessed entries. Direct JavaScript extraction and runtime translation overrides are not included. To collect templates across projects during a build, set `LocalizationCatalogOutputPath` as described below.
 
 ### Pluralizing a deferred `LocalizationSource`
 
@@ -275,24 +276,47 @@ The source's `Value` is the singular PO `msgid`, exactly like `Localize`. `count
 
 For a context-bearing source (`Type` set), the extension resolves `factory.Create(source.Type)` and delegates to the existing `IStringLocalizer.Plural`/`IHtmlLocalizer.Plural` extension, so the culture's PO `PluralRule` always decides the translated form, including languages with a dedicated zero form or more than two plural forms. For a context-free source (`Type` null, no PO lookup possible), the extension falls back to the English rule — singular only when `count == 1` — without resolving a factory, matching the existing context-free behavior of `Localize`. A null source returns `null` without resolving a factory, same as `Localize`.
 
-### Extract translations to PO files
+### Export translation templates for localization platforms
 
-In order to generate the .po files, you can use [this tool](https://github.com/OrchardCoreContrib/OrchardCoreContrib.PoExtractor).
+Build-time POT collection is the recommended successor to POExtractor for exporting translation templates to external localization platforms such as Crowdin. Instead of running a separate source-extraction tool, build the solution or application with `LocalizationCatalogOutputPath` set to a dedicated output directory. Each participating project exports its generated template while retaining the embedded POT resource. No global tool installation is required.
+
+For example, from the Orchard Core repository root in PowerShell:
+
+```powershell
+dotnet build OrchardCore.slnx -p:LocalizationCatalogOutputPath="$PWD/artifacts/localization"
+```
+
+To export only an application and the projects built through its project references:
+
+```powershell
+dotnet build src/OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj -p:LocalizationCatalogOutputPath="$PWD/artifacts/localization"
+```
+
+Use an absolute output path so every project copies to the same directory. For other solutions, substitute your solution or application project path. Outside the Orchard Core source tree, add `OrchardCore.Localization.Build` to each project whose strings should be extracted; referencing it only from the application does not enable extraction in other projects. Prebuilt NuGet dependencies are not re-extracted or collected by this mechanism.
+
+Alternatively, make collection opt-in through a shared `Directory.Build.props` at the solution root:
+
+```xml
+<Project>
+  <PropertyGroup Condition="'$(ExportLocalizationCatalogs)' == 'true'">
+    <LocalizationCatalogOutputPath>$(MSBuildThisFileDirectory)artifacts/localization</LocalizationCatalogOutputPath>
+  </PropertyGroup>
+</Project>
+```
+
+Then run `dotnet build -p:ExportLocalizationCatalogs=true`. Without `LocalizationCatalogOutputPath`, builds only generate and embed their usual intermediate catalogs; they do not create an export directory. `GenerateLocalizationCatalog=false` and design-time builds skip collection as well as extraction.
+
+Exported files are named `<output>/<TargetFramework>/<AssemblyName>.pot`, for example `artifacts/localization/net10.0/OrchardCore.Admin.pot`. Framework subdirectories keep parallel multi-target builds from overwriting one another. Projects sharing an assembly name and target framework must use separate export directories or distinct assembly names. Only POT templates are copied, not request files or extraction caches. Cached builds also export templates, recreate missing copies, and leave unchanged copies untouched.
+
+For Crowdin or a similar service:
+
+1. Build into an empty export directory to obtain a current snapshot of the solution or application templates.
+2. Upload the POT files from the desired target-framework directory as source files, preserving `msgctxt`, plural forms, and format placeholders. If you need multiple framework variants, keep their paths distinct on the platform.
+3. Configure the platform to export translated PO files for each culture.
+4. Download the PO files into one of the [PO files locations](#po-files-locations) supported by Orchard Core and deploy them with the application.
 
 !!! note
-    `LocalizationSource.Create(...)` and `LocalizationSource.Create<T>(...)` provide explicit declarations for source-extraction tooling. Support for recognizing these calls depends on the external extractor; Orchard Core does not modify that tool. Runtime PO keys and contexts are unchanged.
-
-The simpler way to use it is to install it with this command:
-
-```bash
-dotnet tool install --global OrchardCoreContrib.PoExtractor
-```
-
-Then, you will be able to run this command to generate the .po files:
-
-``` bash
-extractpo <INTPUT_PATH> <OUTPUT_PATH> [-l|--language {"C#"|"VB"}] [-t|--template {"razor"|"liquid"}]
-```
+    Collection does not upload files, merge framework variants, or delete stale exports. `Clean` removes intermediate catalogs but preserves the exported snapshot. Empty the export directory before producing a fresh snapshot, particularly after removing or renaming projects. POT files remain untranslated templates; runtime translation lookup continues to use PO files.
 
 ## JavaScript Localization
 
