@@ -138,6 +138,124 @@ public sealed class CSharpLocalizationExtractorTests
         Assert.Empty(catalog.Diagnostics);
     }
 
+    [Theory]
+    [InlineData("IStringLocalizer")]
+    [InlineData("IHtmlLocalizer")]
+    public void Extract_AbstractClassUntypedField_UsesContainingClass(string localizerType)
+    {
+        var catalog = TestWorkspace.ExtractCSharp($$"""
+            using Microsoft.Extensions.Localization;
+            using Microsoft.AspNetCore.Mvc.Localization;
+            namespace OrchardCore.Environment.Commands;
+            public abstract class DefaultCommandHandler
+            {
+                protected readonly {{localizerType}} S;
+                protected DefaultCommandHandler({{localizerType}} localizer) => S = localizer;
+                public string Get() => S["Switch was not found"].Value;
+            }
+            """);
+        var entry = Assert.Single(catalog.Messages);
+        Assert.Equal("OrchardCore.Environment.Commands.DefaultCommandHandler", entry.Context);
+        Assert.Equal("Switch was not found", entry.Text);
+        Assert.Empty(catalog.Diagnostics);
+    }
+
+    [Theory]
+    [InlineData("IStringLocalizer")]
+    [InlineData("IHtmlLocalizer")]
+    public void Extract_NestedClassUntypedParameter_UsesContainingClass(string localizerType)
+    {
+        var catalog = TestWorkspace.ExtractCSharp($$"""
+            using Microsoft.Extensions.Localization;
+            using Microsoft.AspNetCore.Mvc.Localization;
+            namespace Example;
+            public class Owner
+            {
+                public class Nested
+                {
+                    public string Get({{localizerType}} words)
+                    {
+                        string Local() => words["Local function"].Value;
+                        Func<string> lambda = () => words["Lambda"].Value;
+                        return Local() + lambda();
+                    }
+                }
+            }
+            """);
+        Assert.Equal(2, catalog.Messages.Count);
+        Assert.All(catalog.Messages, message => Assert.Equal("Example.Owner.Nested", message.Context));
+        Assert.Empty(catalog.Diagnostics);
+    }
+
+    [Theory]
+    [InlineData("IStringLocalizer")]
+    [InlineData("IHtmlLocalizer")]
+    public void Extract_GenericAbstractClassWithInitializerLambdas_UsesContainingClass(string localizerType)
+    {
+        var catalog = TestWorkspace.ExtractCSharp($$"""
+            using System.Collections.Generic;
+            using Microsoft.Extensions.Localization;
+            using Microsoft.AspNetCore.Mvc.Localization;
+            namespace OrchardCore.Apis.GraphQL.Queries;
+            public abstract class WhereInputObjectGraphType : WhereInputObjectGraphType<object>
+            {
+                protected WhereInputObjectGraphType({{localizerType}} localizer) : base(localizer) { }
+            }
+            public abstract class WhereInputObjectGraphType<TSourceType>
+            {
+                protected readonly {{localizerType}} S;
+                protected WhereInputObjectGraphType({{localizerType}} localizer) => S = localizer;
+                public static readonly Dictionary<string, Func<{{localizerType}}, string, string>> EqualityOperators = new()
+                {
+                    { "", (S, description) => S["{0} is equal to", description].Value },
+                    { "_not", (S, description) => S["{0} is not equal to", description].Value },
+                };
+                public string Get() => S["Field message"].Value;
+            }
+            """);
+        Assert.Equal(3, catalog.Messages.Count);
+        Assert.All(catalog.Messages, message => Assert.Equal("OrchardCore.Apis.GraphQL.Queries.WhereInputObjectGraphType`1", message.Context));
+        Assert.Empty(catalog.Diagnostics);
+    }
+
+    [Theory]
+    [InlineData("Nested", "Example.Owner`1.Nested")]
+    [InlineData("Nested<TNested>", "Example.Owner`1.Nested`1")]
+    public void Extract_NestedClassInGenericClass_UsesContainingClass(string declaration, string expectedContext)
+    {
+        var catalog = TestWorkspace.ExtractCSharp($$"""
+            using Microsoft.Extensions.Localization;
+            namespace Example;
+            public class Owner<T>
+            {
+                public class {{declaration}}
+                {
+                    public string Get(IStringLocalizer words) => words["Nested message"];
+                }
+            }
+            """);
+        Assert.Equal(expectedContext, Assert.Single(catalog.Messages).Context);
+        Assert.Empty(catalog.Diagnostics);
+    }
+
+    [Fact]
+    public void Extract_GenericClassWithTypedLocalizer_PreservesResourceContext()
+    {
+        var catalog = TestWorkspace.ExtractCSharp("""
+            using Microsoft.Extensions.Localization;
+            namespace Example;
+            public class Resources { }
+            public class Owner<T>
+            {
+                private readonly IStringLocalizer words;
+                public Owner(IStringLocalizer<Resources> localizer) => words = localizer;
+                public string Get() => words["Resource message"];
+            }
+            """);
+        Assert.Equal("Example.Resources", Assert.Single(catalog.Messages).Context);
+        Assert.Empty(catalog.Diagnostics);
+    }
+
     [Fact]
     public void Extract_HtmlAndViewLocalizers_PreservesHtmlAndViewContext()
     {
@@ -192,7 +310,7 @@ public sealed class CSharpLocalizationExtractorTests
     }
 
     [Fact]
-    public void Extract_DynamicKeyAndAmbiguousContext_ReportsWithoutGuessing()
+    public void Extract_DynamicKeyAndAmbiguousContext_ReportsKeyAndUsesContainingClass()
     {
         var catalog = TestWorkspace.ExtractCSharp("""
             using Microsoft.Extensions.Localization;
@@ -208,9 +326,10 @@ public sealed class CSharpLocalizationExtractorTests
                 }
             }
             """);
-        Assert.Empty(catalog.Messages);
-        Assert.Contains(catalog.Diagnostics, diagnostic => diagnostic.Code == "OCLOC001");
-        Assert.Contains(catalog.Diagnostics, diagnostic => diagnostic.Code == "OCLOC002");
+        var entry = Assert.Single(catalog.Messages);
+        Assert.Equal("Example.Owner", entry.Context);
+        Assert.Equal("Ambiguous", entry.Text);
+        Assert.Equal("OCLOC001", Assert.Single(catalog.Diagnostics).Code);
     }
 
     [Fact]

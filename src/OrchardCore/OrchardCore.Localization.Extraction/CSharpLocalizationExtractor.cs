@@ -67,7 +67,7 @@ public sealed class CSharpLocalizationExtractor
 
             if (call is not null)
             {
-                ExtractCall(call, node, viewContext);
+                ExtractCall(call, node, viewContext, model);
             }
         }
     }
@@ -126,7 +126,7 @@ public sealed class CSharpLocalizationExtractor
         return new LocalizationCall(receiver, key ?? forms!, plural, forms);
     }
 
-    private void ExtractCall(LocalizationCall call, SyntaxNode node, string? viewContext)
+    private void ExtractCall(LocalizationCall call, SyntaxNode node, string? viewContext, SemanticModel model)
     {
         var span = node.GetLocation().GetMappedLineSpan();
         var source = _options.GetSource(span.Path, span.StartLinePosition.Line + 1);
@@ -160,6 +160,11 @@ public sealed class CSharpLocalizationExtractor
         }
 
         var context = ResolveContext(call.Receiver, viewContext, new HashSet<ISymbol>(SymbolEqualityComparer.Default));
+        if (context is null && model.GetEnclosingSymbol(node.SpanStart)?.ContainingType is { } containingType)
+        {
+            context = GetResourceName(containingType, allowGenericDefinition: true);
+        }
+
         if (context is null)
         {
             _catalog.Diagnostics.Add(new ExtractionDiagnostic("OCLOC002", "The localizer's runtime context cannot be resolved statically. Use a typed localizer or an extraction adapter.", source));
@@ -266,9 +271,9 @@ public sealed class CSharpLocalizationExtractor
         return contexts.Length == 1 ? contexts[0] : null;
     }
 
-    internal static string? GetResourceName(ITypeSymbol type)
+    internal static string? GetResourceName(ITypeSymbol type, bool allowGenericDefinition = false)
     {
-        if (type is not INamedTypeSymbol named || named.IsGenericType)
+        if (type is not INamedTypeSymbol named)
         {
             return null;
         }
@@ -276,7 +281,7 @@ public sealed class CSharpLocalizationExtractor
         var names = new Stack<string>();
         for (var current = named; current is not null; current = current.ContainingType)
         {
-            if (current.IsGenericType)
+            if (current.IsGenericType && !allowGenericDefinition)
             {
                 return null;
             }
