@@ -8,6 +8,7 @@ namespace OrchardCore.Localization.PortableObject;
 /// <summary>
 /// Represents <see cref="IPluralStringLocalizer"/> for portable objects.
 /// </summary>
+[SkipLocalizationExtraction]
 public class PortableObjectStringLocalizer : IPluralStringLocalizer
 {
     private static readonly string s_dataAnnotationsDefaultErrorMessagesContext = typeof(DataAnnotationsDefaultErrorMessages).FullName;

@@ -21,6 +21,7 @@ public static class StringLocalizerFactoryPluralExtensions
     /// form of <paramref name="source"/> when no source type is provided.
     /// Returns <see langword="null"/> when <paramref name="source"/> is <see langword="null"/>.
     /// </returns>
+    [SkipLocalizationExtraction]
     public static LocalizedString Plural(this IStringLocalizerFactory factory, int count, LocalizationSource source, string plural, params object[] arguments)
     {
         ArgumentNullException.ThrowIfNull(factory);
