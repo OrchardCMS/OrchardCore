@@ -79,6 +79,8 @@ Three things are worth knowing about how that instance is used:
 
 No execution *budget* is configured by default, so a script such as `while (true) {}` runs until the process is recycled. Sites that let non-administrators author scripts should set at least one of the limits above.
 
+A workflow script stopped by one of these limits, or cancelled, faults the workflow at the activity that was running it, so the workflow does not carry on as though the script had returned a value. A script that throws an error or returns a value of the wrong type still evaluates to the default value of the expression, and the error is logged.
+
 One protection is on by default, because no budget substitutes for it: `Constraints.StackOverflowGuard`. An unbounded recursion — `function f() { return 1 + f(); }`, but equally a getter, a constructor or a `valueOf` that re-enters itself — overflows the native stack, and a native stack overflow is not an exception. It cannot be caught, it is not logged, and the whole process is killed rather than the one request. A budget does not help, because a budget is only reached by a script that survives long enough to spend it, and the overflow arrives in milliseconds: with `MaxStatements(10_000)` and `TimeoutInterval(TimeSpan.FromSeconds(5))` both set, that script still ends the process. With the guard on, it raises an ordinary `RangeError` that the script itself can catch, only the request that ran it fails, and the engine is still usable.
 
 The guard measures the remaining stack at every entry into a script function, which Jint's own benchmarks put at 1.7–2.3% on deeply recursive code and unmeasurable on ordinary calls. An application that has weighed that against its own scripts can turn it off:
