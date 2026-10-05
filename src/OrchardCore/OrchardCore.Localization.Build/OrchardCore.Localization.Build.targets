@@ -67,5 +67,14 @@
       <FileWrites Include="$(LocalizationCatalogPath);$(LocalizationCatalogPath).stamp.json;$(_LocalizationRequestPath)" />
     </ItemGroup>
   </Target>
+  <Target Name="OrchardCoreCollectLocalizationCatalog"
+          AfterTargets="OrchardCoreGenerateLocalizationCatalog"
+          Condition="'$(LocalizationCatalogOutputPath)' != '' and '$(GenerateLocalizationCatalog)' == 'true' and '$(DesignTimeBuild)' != 'true' and '$(IsCrossTargetingBuild)' != 'true' and '$(TargetFramework)' != ''">
+    <PropertyGroup>
+      <_LocalizationCatalogOutputDirectory>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(LocalizationCatalogOutputPath)', '$(TargetFramework)'))</_LocalizationCatalogOutputDirectory>
+    </PropertyGroup>
+    <MakeDir Directories="$(_LocalizationCatalogOutputDirectory)" />
+    <Copy SourceFiles="@(LocalizationCatalog)" DestinationFiles="@(LocalizationCatalog->'$(_LocalizationCatalogOutputDirectory)/%(AssemblyName).pot')" SkipUnchangedFiles="true" />
+  </Target>
   <Target Name="GetLocalizationCatalogs" DependsOnTargets="OrchardCoreGenerateLocalizationCatalog" Returns="@(LocalizationCatalog)" />
 </Project>
