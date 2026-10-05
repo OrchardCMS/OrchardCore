@@ -7,6 +7,7 @@ namespace OrchardCore.Localization.DataAnnotations;
 /// <summary>
 /// Provides a validation for a <see cref="DefaultModelMetadata"/>.
 /// </summary>
+[SkipLocalizationExtraction]
 public class LocalizedValidationMetadataProvider : IValidationMetadataProvider
 {
     private readonly IStringLocalizer _stringLocalizer;

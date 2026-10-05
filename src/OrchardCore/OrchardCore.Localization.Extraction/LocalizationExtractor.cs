@@ -66,9 +66,11 @@ public static class LocalizationExtractor
         }
 
         var extractor = new CSharpLocalizationExtractor(updated, options, catalog);
+        var annotations = new DataAnnotationsLocalizationExtractor(updated, options, catalog);
         foreach (var tree in trees)
         {
             extractor.Extract(tree, cancellationToken: cancellationToken);
+            annotations.Extract(tree, cancellationToken);
         }
 
         foreach (var diagnostic in updated.GetDiagnostics(cancellationToken).Where(diagnostic => diagnostic.Severity == DiagnosticSeverity.Error).Take(100))
