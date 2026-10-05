@@ -260,6 +260,16 @@ dotnet build src/OrchardCore.Modules/OrchardCore.Admin/OrchardCore.Admin.csproj
 
 Pass `-p:GenerateLocalizationCatalog=false` to disable catalog generation for a build and its referenced projects.
 
+Localization implementations and forwarding helpers can opt out with `OrchardCore.Localization.SkipLocalizationExtractionAttribute`, provided by `OrchardCore.Localization.Abstractions`:
+
+```csharp
+[SkipLocalizationExtraction]
+public LocalizedString Forward(IStringLocalizer localizer, string name)
+    => localizer[name];
+```
+
+Apply the attribute to a class or method to exclude localization calls and extraction diagnostics inside that declaration, including nested declarations and lambdas. A marked partial class is excluded across all its parts. The attribute is not inherited by derived classes or overriding methods. Calls from unmarked application code to marked helper methods are still extracted. Only mark infrastructure that forwards caller-supplied keys; dynamic keys in application code continue to produce diagnostics.
+
 !!! note
     Embedded POT files are source templates, not translated PO files. They do not change runtime translation lookup. Dynamic keys or unresolved contexts produce diagnostics rather than guessed entries. JavaScript extraction, automatic cross-project catalog collection, and runtime translation overrides are not included.
 

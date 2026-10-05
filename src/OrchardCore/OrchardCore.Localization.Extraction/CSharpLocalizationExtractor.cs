@@ -17,6 +17,7 @@ public sealed class CSharpLocalizationExtractor
     private readonly ExtractionOptions _options;
     private readonly LocalizationCatalog _catalog;
     private readonly IReadOnlyList<ICSharpLocalizationAdapter> _adapters;
+    private readonly INamedTypeSymbol? _skipExtractionAttribute;
     private readonly Dictionary<ISymbol, List<IOperation>> _assignments = new(SymbolEqualityComparer.Default);
 
     public CSharpLocalizationExtractor(Compilation compilation, ExtractionOptions options, LocalizationCatalog catalog, IEnumerable<ICSharpLocalizationAdapter>? adapters = null)
@@ -25,6 +26,7 @@ public sealed class CSharpLocalizationExtractor
         _options = options;
         _catalog = catalog;
         _adapters = adapters?.ToArray() ?? [];
+        _skipExtractionAttribute = compilation.GetTypeByMetadataName("OrchardCore.Localization.SkipLocalizationExtractionAttribute");
         IndexAssignments();
     }
 
@@ -34,6 +36,11 @@ public sealed class CSharpLocalizationExtractor
         foreach (var node in tree.GetRoot(cancellationToken).DescendantNodes())
         {
             cancellationToken.ThrowIfCancellationRequested();
+            if (node is not (ElementAccessExpressionSyntax or InvocationExpressionSyntax) || ShouldSkip(model.GetEnclosingSymbol(node.SpanStart, cancellationToken)))
+            {
+                continue;
+            }
+
             LocalizationCall? call = null;
             if (node is ElementAccessExpressionSyntax && model.GetOperation(node, cancellationToken) is IPropertyReferenceOperation property && property.Property.IsIndexer && IsLocalizer(property.Property.ContainingType) && property.Instance is not null)
             {
@@ -60,6 +67,24 @@ public sealed class CSharpLocalizationExtractor
                 ExtractCall(call, node, viewContext);
             }
         }
+    }
+
+    private bool ShouldSkip(ISymbol? symbol)
+    {
+        if (_skipExtractionAttribute is null)
+        {
+            return false;
+        }
+
+        for (; symbol is not null; symbol = symbol.ContainingSymbol)
+        {
+            if (symbol.GetAttributes().Any(attribute => SymbolEqualityComparer.Default.Equals(attribute.AttributeClass, _skipExtractionAttribute)))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static LocalizationCall? GetCall(IInvocationOperation invocation)
