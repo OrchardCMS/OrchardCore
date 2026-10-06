@@ -48,7 +48,7 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
 
 ---
 
-### - [ ] 2.1 Versions: model, store and migration
+### - [x] 2.1 Versions: model, store and migration
 
 - **Model** `A/Models/WorkflowTypeVersion.cs` (`sealed`): `long Id`, `string WorkflowTypeId`, `string VersionId` (26 characters, from `IdGenerator`), `int Version` (1, 2, 3…), `DateTime CreatedUtc`, `string CreatedByUserId`, `string CreatedByUserName`, `string Name`, and the snapshot (V1): `IsSingleton`, `LockTimeout`, `LockExpiration`, `DeleteFinishedWorkflows`, `IList<ActivityRecord> Activities`, `IList<Transition> Transitions`. Deep copies (`ActivityRecord.Properties` is a `JsonObject`).
 - **Index** `M/Indexes/WorkflowTypeVersionIndex.cs`: `WorkflowTypeId`, `VersionId`, `Version`, `CreatedUtc`.
@@ -73,6 +73,10 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
   - deleting a type deletes its versions;
   - the migration's deferred work creates version 1 for each existing type, once;
   - export leaves `VersionId` out.
+- **Notes from implementing this step:**
+  - **Fingerprint.** "Changed" compares a JSON fingerprint of the execution settings, activities (including their positions and properties) and transitions with the latest version. Moving an activity and publishing creates a version, like any other edit; saving the same definition again doesn't.
+  - **Migration.** `CreateInitialVersionsAsync` is a `public static` method on `Migrations`, because the test project has no access to internals. It skips types that already have a `VersionId`, so running it again does nothing.
+  - **Tests.** `Versioning/WorkflowTypeVersionStoreTests.cs` runs the real migrations (`CreateAsync`, `UpdateFrom4Async`, `UpdateFrom5Async`) against SQLite, so the new tables and columns are covered too. The SiteContext tests (`WorkflowDesignerControllerTests`, `WorkflowTypeDraftLifecycleTests`) set up tenants through the same migrations. Workflows tests: 77/77.
 
 ### - [ ] 2.2 Engine: pin instances to their version
 

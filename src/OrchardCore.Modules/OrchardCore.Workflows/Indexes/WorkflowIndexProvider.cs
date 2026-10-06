@@ -7,6 +7,12 @@ public class WorkflowIndex : MapIndex
 {
     public long DocumentId { get; set; }
     public string WorkflowTypeId { get; set; }
+
+    /// <summary>
+    /// The <see cref="Workflow.WorkflowTypeVersionId"/> of the instance, if any.
+    /// </summary>
+    public string WorkflowTypeVersionId { get; set; }
+
     public string WorkflowId { get; set; }
     public WorkflowStatus WorkflowStatus { get; set; }
     public DateTime CreatedUtc { get; set; }
@@ -31,6 +37,7 @@ public class WorkflowIndexProvider : IndexProvider<Workflow>
                 new WorkflowIndex
                 {
                     WorkflowTypeId = workflow.WorkflowTypeId,
+                    WorkflowTypeVersionId = workflow.WorkflowTypeVersionId,
                     WorkflowId = workflow.WorkflowId,
                     CreatedUtc = workflow.CreatedUtc,
                     WorkflowStatus = workflow.Status,

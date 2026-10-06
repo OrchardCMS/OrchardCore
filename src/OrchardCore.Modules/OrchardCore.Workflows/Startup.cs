@@ -54,6 +54,7 @@ public sealed class Startup : StartupBase
         services.AddSingleton<ISecurityTokenService, SecurityTokenService>();
         services.AddScoped<IActivityLibrary, ActivityLibrary>();
         services.AddScoped<IWorkflowTypeStore, WorkflowTypeStore>();
+        services.AddScoped<IWorkflowTypeVersionStore, WorkflowTypeVersionStore>();
         services.AddScoped<IWorkflowStore, WorkflowStore>();
         services.AddScoped<IWorkflowManager, WorkflowManager>();
         services.AddScoped<IActivityDisplayManager, ActivityDisplayManager>();
@@ -64,6 +65,7 @@ public sealed class Startup : StartupBase
         services.AddIndexProvider<WorkflowTypeIndexProvider>();
         services.AddIndexProvider<WorkflowIndexProvider>();
         services.AddIndexProvider<WorkflowTypeDraftIndexProvider>();
+        services.AddIndexProvider<WorkflowTypeVersionIndexProvider>();
         services.AddScoped<IWorkflowTypeDraftManager, WorkflowTypeDraftManager>();
         services.AddScoped<WorkflowDesignerModelBuilder>();
         services.AddScoped<IJSLocalizer, WorkflowsDesignerJSLocalizer>();

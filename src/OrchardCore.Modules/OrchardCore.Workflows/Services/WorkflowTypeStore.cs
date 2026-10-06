@@ -9,12 +9,18 @@ namespace OrchardCore.Workflows.Services;
 public class WorkflowTypeStore : IWorkflowTypeStore
 {
     private readonly ISession _session;
+    private readonly IWorkflowTypeVersionStore _versionStore;
     private readonly IEnumerable<IWorkflowTypeEventHandler> _handlers;
     private readonly ILogger _logger;
 
-    public WorkflowTypeStore(ISession session, IEnumerable<IWorkflowTypeEventHandler> handlers, ILogger<WorkflowTypeStore> logger)
+    public WorkflowTypeStore(
+        ISession session,
+        IWorkflowTypeVersionStore versionStore,
+        IEnumerable<IWorkflowTypeEventHandler> handlers,
+        ILogger<WorkflowTypeStore> logger)
     {
         _session = session;
+        _versionStore = versionStore;
         _handlers = handlers;
         _logger = logger;
     }
@@ -51,6 +57,9 @@ public class WorkflowTypeStore : IWorkflowTypeStore
     public async Task SaveAsync(WorkflowType workflowType)
     {
         var isNew = workflowType.Id == 0;
+
+        // Every change to what runs creates a version, so the workflow type is always its latest version.
+        await _versionStore.CreateIfChangedAsync(workflowType);
         await _session.SaveAsync(workflowType);
 
         if (isNew)
@@ -75,7 +84,8 @@ public class WorkflowTypeStore : IWorkflowTypeStore
             _session.Delete(workflow);
         }
 
-        // Then delete the workflow type.
+        // Then delete the workflow type and its versions.
+        await _versionStore.DeleteAsync(workflowType.WorkflowTypeId);
         _session.Delete(workflowType);
         var context = new WorkflowTypeDeletedContext(workflowType);
         await _handlers.InvokeAsync((handler, context) => handler.DeletedAsync(context), context, _logger);

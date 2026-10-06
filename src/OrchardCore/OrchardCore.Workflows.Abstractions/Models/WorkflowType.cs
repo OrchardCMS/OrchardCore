@@ -15,6 +15,12 @@ public class WorkflowType : Entity
     public string WorkflowTypeId { get; set; }
 
     /// <summary>
+    /// The <see cref="WorkflowTypeVersion.VersionId"/> of the version this definition was saved as: the version
+    /// new instances start on. <see cref="Services.IWorkflowTypeStore.SaveAsync"/> sets it.
+    /// </summary>
+    public string VersionId { get; set; }
+
+    /// <summary>
     /// The name of this workflow type.
     /// </summary>
     public string Name { get; set; }

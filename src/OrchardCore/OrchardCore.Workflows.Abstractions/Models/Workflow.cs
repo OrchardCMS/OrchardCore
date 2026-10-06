@@ -17,6 +17,12 @@ public class Workflow
     public string WorkflowTypeId { get; set; }
 
     /// <summary>
+    /// The <see cref="WorkflowTypeVersion.VersionId"/> of the version this instance started on, and resumes on.
+    /// Instances created before workflow types had versions have none, and resume on the current definition.
+    /// </summary>
+    public string WorkflowTypeVersionId { get; set; }
+
+    /// <summary>
     /// The correlation ID can be used to resume workflows that are associated with specific objects, such as content items.
     /// </summary>
     public string CorrelationId { get; set; }
