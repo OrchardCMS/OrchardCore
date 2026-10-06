@@ -23,6 +23,7 @@ using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Recipes;
 using OrchardCore.Workflows.Services;
+using OrchardCore.Workflows.Variables;
 using OrchardCore.Workflows.WorkflowContextProviders;
 
 namespace OrchardCore.Workflows;
@@ -56,6 +57,17 @@ public sealed class Startup : StartupBase
         services.AddScoped<IWorkflowTypeStore, WorkflowTypeStore>();
         services.AddScoped<IWorkflowTypeVersionStore, WorkflowTypeVersionStore>();
         services.Configure<WorkflowVersionOptions>(_shellConfiguration.GetSection("Workflows:Versions"));
+
+        // Variable types; modules can add their own.
+        services.AddScoped<IWorkflowVariableType, StringVariableType>();
+        services.AddScoped<IWorkflowVariableType, NumberVariableType>();
+        services.AddScoped<IWorkflowVariableType, BooleanVariableType>();
+        services.AddScoped<IWorkflowVariableType, DateTimeVariableType>();
+        services.AddScoped<IWorkflowVariableType, ObjectVariableType>();
+        services.AddScoped<IWorkflowVariableType, ArrayVariableType>();
+        services.AddScoped<IWorkflowVariableType, AnyVariableType>();
+        services.AddScoped<IWorkflowVariableTypeProvider, WorkflowVariableTypeProvider>();
+        services.AddScoped<WorkflowVariableValidator>();
         services.AddScoped<IWorkflowStore, WorkflowStore>();
         services.AddScoped<IWorkflowManager, WorkflowManager>();
         services.AddScoped<IActivityDisplayManager, ActivityDisplayManager>();

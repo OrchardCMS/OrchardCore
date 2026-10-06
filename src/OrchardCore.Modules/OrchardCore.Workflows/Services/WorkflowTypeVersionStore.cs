@@ -118,6 +118,7 @@ public sealed class WorkflowTypeVersionStore : IWorkflowTypeVersionStore
             DeleteFinishedWorkflows = workflowType.DeleteFinishedWorkflows,
             Activities = workflowType.Activities.Select(activity => activity.Clone()).ToList(),
             Transitions = workflowType.Transitions.Select(transition => transition.Clone()).ToList(),
+            Variables = workflowType.Variables.Select(variable => variable.Clone()).ToList(),
         };
 
         await _session.SaveAsync(version);
@@ -192,7 +193,8 @@ public sealed class WorkflowTypeVersionStore : IWorkflowTypeVersionStore
         int lockExpiration,
         bool deleteFinishedWorkflows,
         IList<ActivityRecord> activities,
-        IList<Transition> transitions)
+        IList<Transition> transitions,
+        IList<WorkflowVariableDefinition> variables)
         => JsonSerializer.Serialize(
             new
             {
@@ -202,6 +204,7 @@ public sealed class WorkflowTypeVersionStore : IWorkflowTypeVersionStore
                 DeleteFinishedWorkflows = deleteFinishedWorkflows,
                 Activities = activities,
                 Transitions = transitions,
+                Variables = variables,
             },
             _jsonSerializerOptions);
 
@@ -212,7 +215,8 @@ public sealed class WorkflowTypeVersionStore : IWorkflowTypeVersionStore
             workflowType.LockExpiration,
             workflowType.DeleteFinishedWorkflows,
             workflowType.Activities,
-            workflowType.Transitions);
+            workflowType.Transitions,
+            workflowType.Variables);
 
     private string Fingerprint(WorkflowTypeVersion version)
         => Fingerprint(
@@ -221,5 +225,6 @@ public sealed class WorkflowTypeVersionStore : IWorkflowTypeVersionStore
             version.LockExpiration,
             version.DeleteFinishedWorkflows,
             version.Activities,
-            version.Transitions);
+            version.Transitions,
+            version.Variables);
 }

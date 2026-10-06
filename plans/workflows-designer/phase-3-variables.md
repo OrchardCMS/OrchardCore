@@ -43,13 +43,31 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
 
 ---
 
-### - [ ] 3.1 Declarations and types
+### - [x] 3.1 Declarations and types
 
 - `A/Models/WorkflowVariableDefinition.cs`: `Name`, `TypeName`, `JsonNode DefaultValue`, `Description`.
 - `A/Services/IWorkflowVariableType.cs` (`Name`, `DisplayName`, `Editor` = `text`/`number`/`boolean`/`datetime`/`json`, `TryCoerce(object value, out object result)`); built-in types in `M/Variables/`, registered in `M/Startup.cs`; a lookup service `IWorkflowVariableTypeProvider`.
 - `Variables` on `WorkflowType`, `WorkflowTypeVersion`, `WorkflowTypeDraft`, copied everywhere the definition is copied: `CreateDraft`/`ApplyTo`, `ToWorkflowType`, version creation and fingerprint, `RestoreAsync`, `WorkflowTypeDiff` ("Variables" in the changed settings), the recipe update, `Duplicate`.
 - Validation of declarations (`WorkflowVariableValidator`): names are unique (case-insensitive) identifiers, types exist, defaults coerce. Used by the draft manager.
 - **Tests**: each built-in type's coercions; validation rules; a variable change creates a version and shows in the diff; drafts, versions and restores carry the variables.
+- **Notes from implementing this step:**
+  - **Conversions.**
+    - A JSON value (a default) is first read as the CLR value the engine has after a save and reload: a string, a boolean, a `double`, a `Dictionary<string, object>` or a `List<object>`.
+    - `string` accepts everything: numbers and dates in the invariant culture (dates as ISO 8601 `O`), booleans as `true`/`false`, and collections as JSON.
+    - `number` accepts numbers and invariant-culture text.
+    - `boolean` accepts booleans and `true`/`false` text.
+    - `datetime` accepts dates, `DateTimeOffset` and ISO text, always returning UTC; text without an offset is read as UTC.
+    - `object` accepts dictionaries (an `ExpandoObject` from JavaScript is kept), JSON objects and their text, and other objects through their JSON form (for example `HttpRequestTask`'s anonymous response).
+    - `array` returns a `List<object>`. An array such as `string[]` is copied, even though array covariance makes it an `IList<object>`.
+  - **Types.** `IWorkflowVariableTypeProvider` looks types up ignoring case, and a later registration of a name replaces an earlier one, so a module can replace a built-in type.
+  - **Validation.** `WorkflowVariableValidator` (module, scoped) returns one error per invalid variable, with its index. The draft manager uses it in step 3.5.
+  - **Copies.** `Variables` is copied by `CreateDraft`/`ApplyTo`, `ToWorkflowType`, version creation, `RestoreAsync`, the recipe update and `Duplicate`. It's part of the version fingerprint, and `WorkflowTypeDiff` reports it as the changed setting `Variables`.
+  - **Tests.** `Variables/WorkflowVariableTypesTests.cs` and `WorkflowVariableValidatorTests.cs`, plus:
+    - the version store theory gains a `variable` case;
+    - an earlier version keeps its variables;
+    - the diff reports a changed default;
+    - `RestoreAsync` copies a version's variables into the draft.
+    - Workflows tests: 132/132.
 
 ### - [ ] 3.2 Runtime and expressions
 

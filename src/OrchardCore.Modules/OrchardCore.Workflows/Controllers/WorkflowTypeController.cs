@@ -364,6 +364,7 @@ public sealed class WorkflowTypeController : Controller
         workflowType.DeleteFinishedWorkflows = viewModel.DeleteFinishedWorkflows;
         workflowType.Activities = existingWorkflowType.Activities;
         workflowType.Transitions = existingWorkflowType.Transitions;
+        workflowType.Variables = existingWorkflowType.Variables.Select(variable => variable.Clone()).ToList();
 
         await _workflowTypeStore.SaveAsync(workflowType);
 

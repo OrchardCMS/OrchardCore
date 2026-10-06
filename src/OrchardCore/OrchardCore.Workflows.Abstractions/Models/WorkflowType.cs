@@ -59,4 +59,9 @@ public class WorkflowType : Entity
     /// A complete list of the transitions between the activities on this workflow.
     /// </summary>
     public IList<Transition> Transitions { get; set; } = [];
+
+    /// <summary>
+    /// The variables this workflow declares.
+    /// </summary>
+    public IList<WorkflowVariableDefinition> Variables { get; set; } = [];
 }

@@ -43,6 +43,7 @@ public static class WorkflowTypeVersionExtensions
                     Properties = activity.Properties?.DeepClone().AsObject() ?? [],
                 })
                 .ToList(),
+            Variables = version.Variables.Select(variable => variable.Clone()).ToList(),
             Transitions = version.Transitions
                 .Select(transition => new Transition
                 {

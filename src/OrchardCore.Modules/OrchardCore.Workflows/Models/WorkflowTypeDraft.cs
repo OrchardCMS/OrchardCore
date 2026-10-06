@@ -82,6 +82,11 @@ public sealed class WorkflowTypeDraft
     public IList<Transition> Transitions { get; set; } = [];
 
     /// <summary>
+    /// The variables the draft declares.
+    /// </summary>
+    public IList<WorkflowVariableDefinition> Variables { get; set; } = [];
+
+    /// <summary>
     /// The activities removed from the draft, most recent last, so that undoing a removal in the designer can
     /// restore them with their properties. They are never published.
     /// </summary>

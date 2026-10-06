@@ -110,6 +110,32 @@ public sealed class WorkflowTypeDraftManagerTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task RestoreAsync_Version_CopiesItsDefinitionAndVariablesIntoTheDraft()
+    {
+        _workflowType.Variables.Add(new WorkflowVariableDefinition { Name = "kept", TypeName = "string" });
+        var version = new WorkflowTypeVersion
+        {
+            WorkflowTypeId = _workflowType.WorkflowTypeId,
+            VersionId = "version-1",
+            Version = 1,
+            Activities = [new ActivityRecord { ActivityId = "start", Name = nameof(DraftTestEvent), IsStart = true, X = 1, Y = 2 }],
+            Variables = [new WorkflowVariableDefinition { Name = "restored", TypeName = "number", DefaultValue = 5 }],
+        };
+
+        var result = await CreateManager().RestoreAsync(_workflowType.WorkflowTypeId, 0, version);
+
+        Assert.True(result.Succeeded);
+        Assert.Equal("start", Assert.Single(result.Draft.Activities).ActivityId);
+        var variable = Assert.Single(result.Draft.Variables);
+        Assert.Equal("restored", variable.Name);
+        Assert.Equal(5, variable.DefaultValue!.GetValue<int>());
+
+        // A copy: changing the draft doesn't change the version.
+        variable.DefaultValue = 6;
+        Assert.Equal(5, version.Variables[0].DefaultValue!.GetValue<int>());
+    }
+
+    [Fact]
     public async Task GetOrCreateAsync_NoDraft_DeepCopiesLiveType()
     {
         var manager = CreateManager();

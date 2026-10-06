@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using OrchardCore.Workflows.Models;
 
@@ -46,6 +47,11 @@ public static class WorkflowTypeDiff
         AddIfChanged(settings, nameof(WorkflowType.LockTimeout), from.LockTimeout, to.LockTimeout);
         AddIfChanged(settings, nameof(WorkflowType.LockExpiration), from.LockExpiration, to.LockExpiration);
         AddIfChanged(settings, nameof(WorkflowType.DeleteFinishedWorkflows), from.DeleteFinishedWorkflows, to.DeleteFinishedWorkflows);
+
+        if (!JsonNode.DeepEquals(JsonSerializer.SerializeToNode(from.Variables, JOptions.Default), JsonSerializer.SerializeToNode(to.Variables, JOptions.Default)))
+        {
+            settings.Add(nameof(WorkflowType.Variables));
+        }
 
         return new WorkflowTypeChanges
         {

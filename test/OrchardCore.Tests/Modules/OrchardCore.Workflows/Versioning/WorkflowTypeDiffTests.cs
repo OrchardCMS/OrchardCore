@@ -71,6 +71,18 @@ public sealed class WorkflowTypeDiffTests
         Assert.Equal([nameof(WorkflowType.Name), nameof(WorkflowType.DeleteFinishedWorkflows)], changes.ChangedSettings);
     }
 
+    [Fact]
+    public void Compare_VariableDefaultChanged_ListsTheVariables()
+    {
+        var from = CreateWorkflowType();
+        from.Variables.Add(new WorkflowVariableDefinition { Name = "total", TypeName = "number", DefaultValue = 0 });
+        var to = CreateWorkflowType();
+        to.Variables.Add(new WorkflowVariableDefinition { Name = "total", TypeName = "number", DefaultValue = 1 });
+
+        Assert.Equal([nameof(WorkflowType.Variables)], WorkflowTypeDiff.Compare(from, to).ChangedSettings);
+        Assert.False(WorkflowTypeDiff.Compare(from, from).HasChanges);
+    }
+
     private static WorkflowType CreateWorkflowType()
         => new()
         {

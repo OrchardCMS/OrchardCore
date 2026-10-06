@@ -245,6 +245,7 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
             draft.DeleteFinishedWorkflows = version.DeleteFinishedWorkflows;
             draft.Activities = version.Activities.Select(activity => activity.Clone()).ToList();
             draft.Transitions = version.Transitions.Select(transition => transition.Clone()).ToList();
+            draft.Variables = version.Variables.Select(variable => variable.Clone()).ToList();
 
             return Task.FromResult(new ChangeOutcome());
         });

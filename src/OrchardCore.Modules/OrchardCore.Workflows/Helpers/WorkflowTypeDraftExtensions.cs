@@ -24,6 +24,7 @@ internal static class WorkflowTypeDraftExtensions
             DeleteFinishedWorkflows = workflowType.DeleteFinishedWorkflows,
             Activities = workflowType.Activities.Select(Clone).ToList(),
             Transitions = workflowType.Transitions.Select(Clone).ToList(),
+            Variables = workflowType.Variables.Select(variable => variable.Clone()).ToList(),
         };
     }
 
@@ -43,6 +44,7 @@ internal static class WorkflowTypeDraftExtensions
         workflowType.DeleteFinishedWorkflows = draft.DeleteFinishedWorkflows;
         workflowType.Activities = draft.Activities.Select(Clone).ToList();
         workflowType.Transitions = draft.Transitions.Select(Clone).ToList();
+        workflowType.Variables = draft.Variables.Select(variable => variable.Clone()).ToList();
     }
 
     /// <summary>

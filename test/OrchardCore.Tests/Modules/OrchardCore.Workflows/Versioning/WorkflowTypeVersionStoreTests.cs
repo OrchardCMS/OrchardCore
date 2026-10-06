@@ -60,6 +60,7 @@ public sealed class WorkflowTypeVersionStoreTests : IAsyncLifetime
     [InlineData("position")]
     [InlineData("transition")]
     [InlineData("setting")]
+    [InlineData("variable")]
     public async Task SaveAsync_DefinitionChanged_CreatesTheNextVersion(string change)
     {
         var workflowType = await SaveNewAsync();
@@ -81,6 +82,9 @@ public sealed class WorkflowTypeVersionStoreTests : IAsyncLifetime
                 break;
             case "setting":
                 workflowType.DeleteFinishedWorkflows = true;
+                break;
+            case "variable":
+                workflowType.Variables.Add(new WorkflowVariableDefinition { Name = "total", TypeName = "number", DefaultValue = 0 });
                 break;
         }
 
@@ -176,6 +180,30 @@ public sealed class WorkflowTypeVersionStoreTests : IAsyncLifetime
         Assert.Equal("Renamed", definition.Name);
         Assert.Equal(firstVersionId, definition.VersionId);
         Assert.Equal("Hello", definition.Activities[1].Properties["Message"]!.GetValue<string>());
+    }
+
+    [Fact]
+    public async Task GetWorkflowTypeAsync_EarlierVersion_HasItsVariables()
+    {
+        var workflowType = CreateWorkflowType();
+        workflowType.Variables.Add(new WorkflowVariableDefinition { Name = "greeting", TypeName = "string", DefaultValue = "Hello" });
+        var (session, _, types) = CreateStores();
+        await types.SaveAsync(workflowType);
+        await session.SaveChangesAsync(TestContext.Current.CancellationToken);
+        var firstVersionId = workflowType.VersionId;
+
+        (session, _, types) = CreateStores();
+        workflowType = await types.GetAsync("type-1");
+        workflowType.Variables.Clear();
+        await types.SaveAsync(workflowType);
+        await session.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var definition = await CreateStores().Versions.GetWorkflowTypeAsync(workflowType, firstVersionId);
+
+        var variable = Assert.Single(definition.Variables);
+        Assert.Equal("greeting", variable.Name);
+        Assert.Equal("Hello", variable.DefaultValue!.GetValue<string>());
+        Assert.Empty(workflowType.Variables);
     }
 
     [Theory]

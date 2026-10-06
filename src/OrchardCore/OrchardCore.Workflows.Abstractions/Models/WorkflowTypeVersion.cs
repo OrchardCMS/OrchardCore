@@ -5,7 +5,7 @@ namespace OrchardCore.Workflows.Models;
 /// example when a draft is published). Instances run on the version they started on.
 /// </summary>
 /// <remarks>
-/// A version holds what affects execution: the activities, the transitions and the execution settings.
+/// A version holds what affects execution: the activities, the transitions, the variables and the execution settings.
 /// <see cref="WorkflowType.Name"/> and <see cref="WorkflowType.IsEnabled"/> belong to the workflow type only;
 /// changing them doesn't create a version.
 /// </remarks>
@@ -81,4 +81,9 @@ public sealed class WorkflowTypeVersion
     /// The transitions of this version.
     /// </summary>
     public IList<Transition> Transitions { get; set; } = [];
+
+    /// <summary>
+    /// The variables this version declares.
+    /// </summary>
+    public IList<WorkflowVariableDefinition> Variables { get; set; } = [];
 }
