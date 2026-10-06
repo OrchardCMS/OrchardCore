@@ -2,12 +2,13 @@
 
 Upgrade the Orchard Core Workflows module so authoring feels like Elsa Studio (canvas, toolbox, side-panel property editing, autosave, no full-page round trips). The work happens entirely inside Orchard Core, built only from what the repository already ships, and lays the groundwork for Elsa-style engine features later.
 
-This folder contains three files:
+This folder contains these files:
 
 | File | Contents |
 |---|---|
 | `README.md` (this file) | Context, verified findings, decisions, roadmap, testing strategy, and rules for executing the plan |
 | [`phase-1-designer.md`](phase-1-designer.md) | Detailed, step-by-step plan for Phase 1: the new designer |
+| [`phase-2-versioning.md`](phase-2-versioning.md) | Detailed, step-by-step plan for Phase 2: workflow versioning |
 | [`later-phases.md`](later-phases.md) | Phases 2+: the missing engine and UI components to build later, with design sketches |
 
 ## Context
@@ -79,7 +80,7 @@ Update the **Status** column as work lands (`Not started` / `In progress` / `Don
 | Phase | Scope | Depends on | Status |
 |---|---|---|---|
 | **1** | **New designer**: canvas, toolbox, side-panel editors, drafts with autosave and publish, read-only instance viewer, tests. See [`phase-1-designer.md`](phase-1-designer.md). | — | Done (1.0–1.13 and the Definition of done; awaiting review) |
-| 2 | Workflow versioning (drafts → versions, instances pinned to a version, history, revert) | 1 | Not started |
+| 2 | Workflow versioning (drafts → versions, instances pinned to a version, history, revert). See [`phase-2-versioning.md`](phase-2-versioning.md). | 1 | In progress (plan written) |
 | 3 | Typed variables, activity outputs and data binding | 2 | Not started |
 | 4 | Per-input expression syntax (Literal / Liquid / JavaScript / pluggable providers) | 3 (recommended) | Not started |
 | 5 | Execution journal, executed-path highlighting, retry of a faulted activity | 1 | Not started |
