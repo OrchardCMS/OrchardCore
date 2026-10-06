@@ -35,6 +35,20 @@ describe("branches", () => {
         expect(sorted(hiddenActivityIds(ids, transitions, ["a", "b"], ["s"]))).toEqual(["end", "join"]);
     });
 
+    it("hiddenActivityIds_ActivityAlsoReachedFromAnUnconnectedActivity_IsHidden", () => {
+        // Like the "User Registration" sample: "form" is connected to nothing before it, and also leads to "register".
+        const transitions = graph("s>bind", "bind>fork", "fork>email", "fork>captcha", "email>join", "captcha>join", "join>register", "form>assign", "assign>register");
+        const ids = ["s", "bind", "fork", "email", "captcha", "join", "register", "form", "assign"];
+
+        expect(sorted(hiddenActivityIds(ids, transitions, ["fork"], ["s"]))).toEqual(["captcha", "email", "join", "register"]);
+    });
+
+    it("hiddenActivityIds_NoStartActivity_HidesEverythingAfter", () => {
+        const transitions = graph("a>b", "b>c", "a>c");
+
+        expect(sorted(hiddenActivityIds(["a", "b", "c"], transitions, ["b"]))).toEqual(["c"]);
+    });
+
     it("hiddenActivityIds_LoopBackToStart_KeepsTheStartVisible", () => {
         const transitions = graph("s>a", "a>b", "b>s");
 

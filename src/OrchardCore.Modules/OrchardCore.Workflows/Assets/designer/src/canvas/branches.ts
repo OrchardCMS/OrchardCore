@@ -1,9 +1,9 @@
 import type { DesignerTransition } from "../api/types";
 
-// Collapsing an activity hides what comes after it: the activities that can only be reached through it.
-// An activity that is also reached another way (a branch joining back, a loop to an earlier activity)
-// stays visible, so a visible activity never has a connection from a hidden one, and the start
-// activities are never hidden.
+// Collapsing an activity hides what comes after it: every activity reached through it, except those a start
+// activity also reaches without going through it (a branch from the start joining back, a loop to an earlier
+// activity). Activities that no start activity reaches, such as one left unconnected, don't keep anything
+// visible. Start activities are never hidden.
 
 const successorsOf = (transitions: readonly DesignerTransition[]) => {
     const map = new Map<string, string[]>();
@@ -62,14 +62,16 @@ export const hiddenActivityIds = (
         }
     }
 
-    const visible = new Set<string>();
+    // What isn't after a collapsed activity is visible. Of what is, only the activities a start activity
+    // reaches without going through a collapsed one stay visible.
+    const visible = new Set([...ids].filter((id) => !candidates.has(id)));
     const reveal = (seeds: Iterable<string>) => {
-        const added = [...seeds].filter((id) => !visible.has(id));
-        added.forEach((id) => visible.add(id));
-        walk(added, (id) => (collapsed.has(id) ? [] : next(id)), visible);
+        // Its own set: the walk goes on through activities that are already visible.
+        const reached = new Set(seeds);
+        walk(reached, (id) => (collapsed.has(id) ? [] : next(id)), reached);
+        reached.forEach((id) => visible.add(id));
     };
 
-    reveal([...ids].filter((id) => !candidates.has(id)));
     reveal([...startIds].filter((id) => ids.has(id)));
 
     // Collapsed activities that only reach each other (a loop with no way in) would hide each other with
