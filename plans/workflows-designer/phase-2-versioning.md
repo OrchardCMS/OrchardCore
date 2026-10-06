@@ -142,7 +142,7 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
   - **Config.** The designer config has `versions`, `version`, `compare` and `restore` URLs (null in the instance viewer). The pages that use them come in step 2.6.
   - **Tests.** `Versioning/WorkflowTypeDiffTests.cs` (5) and `WorkflowDesignerControllerTests` (6 more: versions with instance counts and the publish result, an earlier version's graph, a version of another type, compare with the draft, restore and its conflict, a pinned instance's version; the forbidden test now covers the new endpoints). Workflows tests: 102/102.
 
-### - [ ] 2.6 Designer UI
+### - [x] 2.6 Designer UI
 
 - Toolbar: the published version ("Version 3"), and a **Versions** button.
 - **Versions dialog**: list with dates, authors, published badge and pinned instance counts; **View** (read-only page), **Compare** (with the published version, or the draft when there is one), **Restore** (confirms when the draft has changes, then reloads the definition).
@@ -151,6 +151,16 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
 - The publish dialog no longer warns that running instances move to the new definition; it says they keep their version.
 - The instance page shows "Version N" (and "not the published version" when it isn't).
 - **Tests** (Vitest): toolbar version, dialog actions, restore confirmation, compare highlighting, publish dialog text, instance version label.
+- **Notes from implementing this step:**
+  - **Pages.** They follow `WorkflowTypeController`'s routes: `Admin/Workflows/Types/Version/{id}?versionId=` and `Admin/Workflows/Types/CompareVersions/{id}?from=&to=` (a version id or `draft`), with breadcrumbs back to the workflow. Both mount the same bundle. The config has a `mode` (`designer`, `instance`, `version`, `compare`), and `main.ts` mounts `compare/CompareApp.vue` for `compare` and `App.vue` otherwise. The config also carries `designerUrl`, `versionPageUrl` and `comparePageUrl`. The designer's JSON URLs gain `versions` and `restore`; the version and compare pages get only the JSON URL they read (so step 2.5's `version` and `compare` URLs moved to those pages' configs).
+  - **Publish.** Running instances alone no longer ask for confirmation (they keep their version); with warnings, the dialog says they keep running on their version (an info alert instead of a warning). The toolbar badge and the toast show the new version number.
+  - **Versions dialog** (`draft/VersionsDialog.vue`). Rows for the draft and every version, with the date, author, a **Published** badge and the number of instances. **View** opens the version page. **Compare** compares a version with the draft when there is one, otherwise with the published version; the draft row compares the published version with the draft. **Restore** is offered for every version but the published one. When there are changes, restoring asks first, then saves pending changes, restores, reloads the definition and shows a toast.
+  - **Compare page.** Two read-only canvases. The left shows removed, changed and moved activities and removed connections; the right shows added, changed and moved ones and added connections. Each change has a colored ring and a badge (`ChangeKind`, `canvas/changes.ts`, passed to `DesignerCanvas` as `changes`). A list of the changes by title is below. Collapsed branches that hide a change are expanded. Each canvas fits its own content rather than sharing the zoom, which looked fine with real workflows.
+  - **Instance page.** "Runs on version N", and "not the published version" when it isn't. Instances created before versions existed show no version.
+  - **Tests.**
+    - Vitest: `__tests__/Versions.spec.ts` (7: toolbar badge, dialog rows and links, restore, cancelled restore, publish result, version page, instance label), `compare/__tests__/CompareApp.spec.ts` (4) and `publishDecision.spec.ts` (running instances alone publish right away). The designer has 174 tests.
+    - .NET: the version and compare pages render with their config, an unknown version is 404, and the designer config has the new URLs. Workflows tests: 104/104.
+    - Checked in the browser: the migration turned an existing workflow into version 1; publishing a move created version 2; the dialog, version page and comparison showed them with no console errors.
 
 ### - [ ] 2.7 Instances list, docs and release notes
 

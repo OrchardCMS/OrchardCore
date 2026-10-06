@@ -8,6 +8,7 @@ import TransitionEdge from "./TransitionEdge.vue";
 import ContextMenu from "./ContextMenu.vue";
 import ConnectDialog from "./ConnectDialog.vue";
 import type { MenuItem } from "./menu";
+import type { CanvasChanges } from "./changes";
 import { GRID_SIZE, NODE_WIDTH, boundsOf, nodeRect, portAnchor, previewPath, rectFromPoints, rectsIntersect, snap, type NodeLayout, type Point, type Rect } from "./geometry";
 import { ZOOM_STEP, canvasToScreen, fitToContent, screenToCanvas, visibleCenter, zoomAt, zoomBy, type Size, type ViewportState } from "./viewport";
 import { startPointerDrag } from "./useDrag";
@@ -24,10 +25,20 @@ const LIFT_LIMIT = 10;
 const NO_ISSUES: DesignIssue[] = [];
 const NO_OUTCOMES: string[] = [];
 
-const props = withDefaults(defineProps<{ store: DesignerStore; readOnly?: boolean; highlightedIds?: string[] }>(), {
-    readOnly: false,
-    highlightedIds: () => [],
-});
+const props = withDefaults(
+    defineProps<{
+        store: DesignerStore;
+        readOnly?: boolean;
+        highlightedIds?: string[];
+        // The differences to show, on the compare page.
+        changes?: CanvasChanges | null;
+    }>(),
+    {
+        readOnly: false,
+        highlightedIds: () => [],
+        changes: null,
+    },
+);
 
 const emit = defineEmits<{
     (event: "edit", activityId: string): void;
@@ -720,6 +731,7 @@ defineExpose({
                     :target-layout="layouts.get(edge.target.id)"
                     :selected="state.selectedTransitionKey === edge.key"
                     :read-only="readOnly"
+                    :change="changes?.edges[edge.key] ?? null"
                     @select="selectTransition(store, edge.key)"
                     @delete="deleteSelected"
                     @open-menu="openEdgeMenu(edge.key, $event)"
@@ -754,6 +766,7 @@ defineExpose({
                 :issues="issuesByActivity.get(node.id) ?? NO_ISSUES"
                 :connected-outcomes="connectedOutcomes.get(node.id) ?? NO_OUTCOMES"
                 :hidden-count="hiddenCounts.get(node.id) ?? null"
+                :change="changes?.nodes[node.id] ?? null"
                 @node-pointerdown="onNodePointerDown(node, $event)"
                 @port-pointerdown="(outcome, event) => onPortPointerDown(node, outcome, event)"
                 @port-activate="(outcome) => openConnectDialog(node, outcome)"

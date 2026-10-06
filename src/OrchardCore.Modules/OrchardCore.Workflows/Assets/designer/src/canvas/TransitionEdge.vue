@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import type { DesignerNode } from "../api/types";
 import { edgeGeometry, nodeRect, portAnchor, type NodeLayout } from "./geometry";
+import type { ChangeKind } from "./changes";
 import { t } from "../i18n";
 
 const props = withDefaults(
@@ -14,8 +15,10 @@ const props = withDefaults(
         targetLayout?: NodeLayout;
         selected?: boolean;
         readOnly?: boolean;
+        // How the transition differs from the compared definition, on the compare page.
+        change?: ChangeKind | null;
     }>(),
-    { sourceLayout: undefined, targetLayout: undefined, selected: false, readOnly: false },
+    { sourceLayout: undefined, targetLayout: undefined, selected: false, readOnly: false, change: null },
 );
 
 const emit = defineEmits<{
@@ -48,7 +51,7 @@ const onPointerDown = (event: PointerEvent) => {
 <template>
     <g
         class="wfd-edge"
-        :class="{ 'is-selected': selected }"
+        :class="[{ 'is-selected': selected }, change ? `is-${change}` : null]"
         :data-cy="`edge-${edgeKey}`"
         :data-edge-key="edgeKey"
         @pointerdown="onPointerDown"

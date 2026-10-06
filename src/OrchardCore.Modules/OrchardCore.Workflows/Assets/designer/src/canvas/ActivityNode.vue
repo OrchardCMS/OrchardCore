@@ -3,6 +3,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue"
 import type { DesignIssue, DesignerNode } from "../api/types";
 import type { NodeLayout } from "./geometry";
 import OutcomePort from "./OutcomePort.vue";
+import type { ChangeKind } from "./changes";
 import { t } from "../i18n";
 
 const props = withDefaults(
@@ -19,6 +20,8 @@ const props = withDefaults(
         connectedOutcomes?: string[];
         // The number of activities hidden after this collapsed activity, or null when it isn't collapsed.
         hiddenCount?: number | null;
+        // How the activity differs from the compared definition, on the compare page.
+        change?: ChangeKind | null;
     }>(),
     {
         selected: false,
@@ -30,6 +33,7 @@ const props = withDefaults(
         issues: () => [],
         connectedOutcomes: () => [],
         hiddenCount: null,
+        change: null,
     },
 );
 
@@ -46,6 +50,15 @@ const emit = defineEmits<{
 const element = ref<HTMLElement | null>(null);
 
 const icon = computed(() => props.node.icon || (props.node.isEvent ? "fa-solid fa-bolt" : "fa-solid fa-gear"));
+
+const changeLabels: Record<ChangeKind, () => string> = {
+    added: () => t("ChangeAdded"),
+    removed: () => t("ChangeRemoved"),
+    changed: () => t("ChangeChanged"),
+    moved: () => t("ChangeMoved"),
+};
+
+const changeLabel = computed(() => (props.change ? changeLabels[props.change]() : ""));
 
 const errorCount = computed(() => props.issues.filter((issue) => issue.severity === "Error").length);
 
@@ -64,6 +77,10 @@ const accessibleName = computed(() => {
 
     if (props.issues.length > 0) {
         parts.push(t("IssueCount", props.issues.length));
+    }
+
+    if (props.change) {
+        parts.push(changeLabel.value);
     }
 
     if (props.hiddenCount !== null) {
@@ -163,6 +180,7 @@ const onKeyDown = (event: KeyboardEvent) => {
             'is-highlighted': highlighted,
             'is-blocking': blocking,
             'is-collapsed': hiddenCount !== null,
+            [`is-${change}`]: !!change,
             'has-errors': errorCount > 0,
         }"
         :style="{ transform: `translate(${node.x}px, ${node.y}px)` }"
@@ -182,6 +200,7 @@ const onKeyDown = (event: KeyboardEvent) => {
         <div class="wfd-node-header">
             <i :class="icon" aria-hidden="true"></i>
             <span class="wfd-node-type text-truncate">{{ node.displayText }}</span>
+            <span v-if="change" class="badge wfd-node-badge wfd-change-badge" :class="`is-${change}`" data-cy="change-badge">{{ changeLabel }}</span>
             <span v-if="node.isStart" class="badge text-bg-success wfd-node-badge" data-cy="start-badge">{{ t("Start") }}</span>
             <span v-if="blocking" class="badge text-bg-info wfd-node-badge" :title="t('BlockingActivityHint')" data-cy="blocking-badge">
                 <i class="fa-solid fa-hourglass-half" aria-hidden="true"></i>

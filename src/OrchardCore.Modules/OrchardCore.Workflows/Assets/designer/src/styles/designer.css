@@ -875,3 +875,108 @@
     bottom: 0.75rem;
     z-index: 20;
 }
+
+/* Comparing two definitions: what changed from the left one to the right one. */
+.wfd.wfd-compare {
+    height: calc(100vh - 11rem);
+    min-height: 32rem;
+}
+
+.wfd-compare-body {
+    display: grid;
+    flex: 1 1 auto;
+    grid-template-columns: 1fr 1fr;
+    min-height: 0;
+}
+
+.wfd-compare-side {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+
+.wfd-compare-side + .wfd-compare-side {
+    border-inline-start: var(--bs-border-width) solid var(--bs-border-color);
+}
+
+.wfd-compare-heading {
+    margin: 0;
+    padding: 0.375rem 0.75rem;
+    border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.wfd-compare-changes {
+    max-height: 9rem;
+    padding: 0.5rem 0.75rem;
+    border-top: var(--bs-border-width) solid var(--bs-border-color);
+    overflow: auto;
+    font-size: 0.875rem;
+}
+
+.wfd-compare-changes dt {
+    font-weight: 600;
+}
+
+.wfd-compare-changes dd {
+    margin-bottom: 0.25rem;
+}
+
+.wfd-change-badge.is-added {
+    border: var(--bs-border-width) solid var(--bs-success-border-subtle);
+    background-color: var(--bs-success-bg-subtle);
+    color: var(--bs-success-text-emphasis);
+}
+
+.wfd-change-badge.is-removed {
+    border: var(--bs-border-width) solid var(--bs-danger-border-subtle);
+    background-color: var(--bs-danger-bg-subtle);
+    color: var(--bs-danger-text-emphasis);
+}
+
+.wfd-change-badge.is-changed {
+    border: var(--bs-border-width) solid var(--bs-warning-border-subtle);
+    background-color: var(--bs-warning-bg-subtle);
+    color: var(--bs-warning-text-emphasis);
+}
+
+.wfd-change-badge.is-moved {
+    border: var(--bs-border-width) solid var(--bs-info-border-subtle);
+    background-color: var(--bs-info-bg-subtle);
+    color: var(--bs-info-text-emphasis);
+}
+
+.wfd-node.is-added {
+    border-color: var(--bs-success);
+    box-shadow: 0 0 0 2px rgba(var(--bs-success-rgb), 0.5), var(--wfd-node-stack, 0 0 transparent);
+}
+
+.wfd-node.is-removed {
+    border-style: dashed;
+    border-color: var(--bs-danger);
+    box-shadow: 0 0 0 2px rgba(var(--bs-danger-rgb), 0.5), var(--wfd-node-stack, 0 0 transparent);
+}
+
+.wfd-node.is-changed {
+    border-color: var(--bs-warning);
+    box-shadow: 0 0 0 2px rgba(var(--bs-warning-rgb), 0.5), var(--wfd-node-stack, 0 0 transparent);
+}
+
+.wfd-node.is-moved {
+    border-style: dashed;
+    border-color: var(--bs-info);
+}
+
+.wfd-edge.is-added .wfd-edge-line {
+    stroke: var(--bs-success);
+    stroke-width: 2.5;
+}
+
+.wfd-edge.is-removed .wfd-edge-line {
+    stroke: var(--bs-danger);
+    stroke-width: 2.5;
+    stroke-dasharray: 6 4;
+}

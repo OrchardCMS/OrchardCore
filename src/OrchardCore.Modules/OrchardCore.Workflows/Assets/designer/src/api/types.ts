@@ -58,6 +58,20 @@ export interface DesignerInstance {
     // TODO: Phase 5 records the executed activities; the viewer then highlights the executed path.
 }
 
+// A version of the workflow type: what an instance started on, or a past publish.
+export interface DesignerVersion {
+    versionId: string;
+    version: number;
+    // The name of the workflow type when the version was created.
+    name: string;
+    createdUtc: string;
+    createdBy?: string | null;
+    // Whether new instances start on this version.
+    isPublished: boolean;
+    // The number of instances that run on it, when listed.
+    instanceCount?: number | null;
+}
+
 export interface DesignerDefinition {
     id: number;
     workflowTypeId: string;
@@ -72,6 +86,39 @@ export interface DesignerDefinition {
     issues: DesignIssue[];
     runningInstanceCount: number;
     instance?: DesignerInstance | null;
+    // The version new instances start on.
+    publishedVersion?: DesignerVersion | null;
+    // The version shown by a version page, or the one the viewed instance runs on.
+    version?: DesignerVersion | null;
+}
+
+export interface DesignerVersions {
+    // The most recent first.
+    versions: DesignerVersion[];
+    draft: { revision: number; modifiedUtc: string; modifiedBy?: string | null } | null;
+}
+
+// What changed from one definition to another (WorkflowTypeChanges.cs).
+export interface WorkflowTypeChanges {
+    addedActivityIds: string[];
+    removedActivityIds: string[];
+    changedActivityIds: string[];
+    movedActivityIds: string[];
+    addedTransitionKeys: string[];
+    removedTransitionKeys: string[];
+    changedSettings: string[];
+    hasChanges: boolean;
+}
+
+export interface DesignerComparison {
+    from: DesignerDefinition;
+    to: DesignerDefinition;
+    changes: WorkflowTypeChanges;
+}
+
+export interface RestoreResult {
+    revision: number;
+    issues: DesignIssue[];
 }
 
 export interface LibraryActivity {
@@ -150,6 +197,8 @@ export type SettingsApplyResult = SettingsApplied | (FormFragment & { valid: fal
 export interface PublishResult {
     issues: DesignIssue[];
     publishedUtc: string;
+    // The version the publish created (or the published one, when nothing that runs changed).
+    version?: DesignerVersion | null;
 }
 
 // RFC 9457 ProblemDetails with the designer extensions.

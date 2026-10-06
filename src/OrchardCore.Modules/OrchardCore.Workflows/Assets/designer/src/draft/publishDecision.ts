@@ -3,7 +3,8 @@ import type { DesignIssue } from "../api/types";
 /**
  * What clicking Publish does, given the draft's issues and running instances:
  * - `blocked`: the draft has errors, which must be fixed first;
- * - `confirm`: the draft has warnings or running instances, so ask before publishing;
+ * - `confirm`: the draft has warnings, so ask before publishing (the dialog also mentions the running
+ *   instances, which keep running on their version);
  * - `publish`: publish right away.
  */
 export type PublishDecision =
@@ -20,9 +21,8 @@ export const decidePublish = (issues: DesignIssue[], runningInstanceCount: numbe
 
     const warnings = issues.filter((issue) => issue.severity === "Warning");
 
-    // Running instances continue on the new definition (there is no version pinning in Phase 1), so the
-    // user is told before publishing.
-    if (warnings.length > 0 || runningInstanceCount > 0) {
+    // Running instances keep running on the version they started on, so they alone don't need confirming.
+    if (warnings.length > 0) {
         return { kind: "confirm", warnings, runningInstanceCount };
     }
 

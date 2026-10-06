@@ -5,8 +5,8 @@ import type { DesignIssue, DesignerNode } from "../api/types";
 import type { PublishDecision } from "./publishDecision";
 import { t } from "../i18n";
 
-// The dialog of a Publish that needs the user: the errors that block it, or the warnings and running
-// instances to acknowledge.
+// The dialog of a Publish that needs the user: the errors that block it, or the warnings to acknowledge (with
+// a note that the running instances keep their version).
 defineProps<{ decision: Exclude<PublishDecision, { kind: "publish" }>; nodes: DesignerNode[] }>();
 
 const emit = defineEmits<{
@@ -30,7 +30,7 @@ const emit = defineEmits<{
             <p>{{ t("PublishWarningsMessage", decision.warnings.length) }}</p>
             <IssuesList :issues="decision.warnings" :nodes="nodes" @select="emit('select-issue', $event)" />
         </template>
-        <p v-if="decision.runningInstanceCount > 0" class="alert alert-warning mt-3 mb-0" data-cy="publish-running-instances">
+        <p v-if="decision.runningInstanceCount > 0" class="alert alert-info mt-3 mb-0" data-cy="publish-running-instances">
             {{ t("RunningInstancesContinue", decision.runningInstanceCount) }}
         </p>
         <template #footer>

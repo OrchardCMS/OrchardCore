@@ -32,7 +32,7 @@ internal static class WorkflowDesignerConfigBuilder
         var route = new { area = Area, workflowTypeId = workflowType.Id };
 
         var urls = instance is null
-            ? new
+            ? new DesignerUrls
             {
                 Definition = url.Action("Definition", DesignerController, route),
                 Library = url.Action("Library", DesignerController, route),
@@ -43,32 +43,64 @@ internal static class WorkflowDesignerConfigBuilder
                 Publish = url.Action("Publish", DesignerController, route),
                 Discard = url.Action("Discard", DesignerController, route),
                 Versions = url.Action("Versions", DesignerController, route),
-                Version = url.Action("Version", DesignerController, route),
-                Compare = url.Action("Compare", DesignerController, route),
                 Restore = url.Action("Restore", DesignerController, route),
             }
-            : new
+            : new DesignerUrls
             {
                 // The viewer only loads the instance; it never changes the workflow type.
                 Definition = url.Action("Instance", DesignerController, new { area = Area, workflowTypeId = workflowType.Id, instanceId = instance.Id }),
-                Library = (string)null,
-                Save = (string)null,
-                AddActivity = (string)null,
-                Editor = (string)null,
-                Settings = (string)null,
-                Publish = (string)null,
-                Discard = (string)null,
-                Versions = (string)null,
-                Version = (string)null,
-                Compare = (string)null,
-                Restore = (string)null,
             };
+
+        return Serialize(url, user, localizers, workflowType, instance is null ? "designer" : "instance", urls, initialActivityId);
+    }
+
+    /// <summary>
+    /// The configuration of the read-only page of a version of <paramref name="workflowType"/>.
+    /// </summary>
+    public static string BuildForVersion(IUrlHelper url, ClaimsPrincipal user, IEnumerable<IJSLocalizer> localizers, WorkflowType workflowType, string versionId)
+    {
+        var urls = new DesignerUrls
+        {
+            Definition = url.Action("Version", DesignerController, new { area = Area, workflowTypeId = workflowType.Id, versionId }),
+        };
+
+        return Serialize(url, user, localizers, workflowType, "version", urls);
+    }
+
+    /// <summary>
+    /// The configuration of the page that compares two definitions of <paramref name="workflowType"/>: version
+    /// ids, or <c>draft</c>.
+    /// </summary>
+    public static string BuildForComparison(IUrlHelper url, ClaimsPrincipal user, IEnumerable<IJSLocalizer> localizers, WorkflowType workflowType, string from, string to)
+    {
+        var urls = new DesignerUrls
+        {
+            Compare = url.Action("Compare", DesignerController, new { area = Area, workflowTypeId = workflowType.Id, from, to }),
+        };
+
+        return Serialize(url, user, localizers, workflowType, "compare", urls);
+    }
+
+    private static string Serialize(
+        IUrlHelper url,
+        ClaimsPrincipal user,
+        IEnumerable<IJSLocalizer> localizers,
+        WorkflowType workflowType,
+        string mode,
+        DesignerUrls urls,
+        string initialActivityId = null)
+    {
+        var route = new { area = Area, workflowTypeId = workflowType.Id };
 
         var config = new
         {
             WorkflowTypeId = workflowType.Id,
-            ReadOnly = instance is not null,
+            Mode = mode,
+            ReadOnly = mode != "designer",
             Urls = urls,
+            DesignerUrl = url.Action("Edit", "WorkflowType", new { area = Area, id = workflowType.Id }),
+            VersionPageUrl = url.Action("Version", "WorkflowType", new { area = Area, id = workflowType.Id }),
+            ComparePageUrl = url.Action("CompareVersions", "WorkflowType", new { area = Area, id = workflowType.Id }),
             InstancesUrl = url.Action("Index", "Workflow", route),
             ExportUrl = url.Action("Export", "WorkflowType", new { area = Area, id = workflowType.Id }),
             ListUrl = url.Action("Index", "WorkflowType", new { area = Area }),
@@ -78,5 +110,31 @@ internal static class WorkflowDesignerConfigBuilder
         };
 
         return JsonSerializer.Serialize(config, JOptions.CamelCase);
+    }
+
+    // The JSON endpoints the app calls; those a mode doesn't use are null.
+    private sealed class DesignerUrls
+    {
+        public string Definition { get; init; }
+
+        public string Library { get; init; }
+
+        public string Save { get; init; }
+
+        public string AddActivity { get; init; }
+
+        public string Editor { get; init; }
+
+        public string Settings { get; init; }
+
+        public string Publish { get; init; }
+
+        public string Discard { get; init; }
+
+        public string Versions { get; init; }
+
+        public string Restore { get; init; }
+
+        public string Compare { get; init; }
     }
 }

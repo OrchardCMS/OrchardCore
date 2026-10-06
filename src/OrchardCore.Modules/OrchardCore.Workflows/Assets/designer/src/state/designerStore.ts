@@ -1,5 +1,5 @@
 import { reactive } from "vue";
-import type { DesignIssue, DesignerDefinition, DesignerInstance, DesignerNode, DesignerTransition, SavePayload, SaveResult, WorkflowSettings } from "../api/types";
+import type { DesignIssue, DesignerDefinition, DesignerInstance, DesignerNode, DesignerTransition, DesignerVersion, SavePayload, SaveResult, WorkflowSettings } from "../api/types";
 import { History, type Command } from "./history";
 import type { Graph } from "./commands";
 
@@ -33,6 +33,14 @@ export interface DesignerState {
      * The workflow instance shown by the read-only instance viewer.
      */
     instance: DesignerInstance | null;
+    /**
+     * The version new instances start on.
+     */
+    publishedVersion: DesignerVersion | null;
+    /**
+     * The version a version page shows, or the one the viewed instance runs on.
+     */
+    version: DesignerVersion | null;
     settings: WorkflowSettings | null;
     nodes: DesignerNode[];
     transitions: DesignerTransition[];
@@ -61,6 +69,8 @@ const createInitialState = (): DesignerState => ({
     currentUserId: null,
     runningInstanceCount: 0,
     instance: null,
+    publishedVersion: null,
+    version: null,
     settings: null,
     nodes: [],
     transitions: [],
@@ -129,6 +139,8 @@ export const createDesignerStore = () => {
                 draftModifiedUtc: definition.draftModifiedUtc ?? null,
                 runningInstanceCount: definition.runningInstanceCount,
                 instance: definition.instance ?? null,
+                publishedVersion: definition.publishedVersion ?? null,
+                version: definition.version ?? null,
                 settings: definition.settings,
                 nodes: definition.nodes,
                 transitions: definition.transitions,
@@ -260,8 +272,9 @@ export const createDesignerStore = () => {
          * Records a successful publish: the draft is gone, so the next change starts a new one from the live
          * type (revision 0), and undo can't restore what the draft's trash held.
          */
-        markPublished(issues: DesignIssue[]) {
+        markPublished(issues: DesignIssue[], version: DesignerVersion | null = null) {
             Object.assign(state, {
+                publishedVersion: version ?? state.publishedVersion,
                 revision: 0,
                 hasDraft: false,
                 draftModifiedBy: null,

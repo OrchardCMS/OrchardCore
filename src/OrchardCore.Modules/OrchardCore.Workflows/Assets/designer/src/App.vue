@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
 import type { DesignerConfig } from "./config";
-import { DesignerApiError, type DesignerApi } from "./api/designerApi";
-import type { DesignIssue, Library } from "./api/types";
+import { DesignerApiError, withQuery, type DesignerApi } from "./api/designerApi";
+import type { DesignIssue, DesignerVersion, Library } from "./api/types";
 import { designerStore, type DesignerStore } from "./state/designerStore";
 import { addNodeCommand } from "./state/commands";
 import DesignerCanvas from "./canvas/DesignerCanvas.vue";
@@ -13,6 +13,8 @@ import SaveStatusIndicator from "./draft/SaveStatusIndicator.vue";
 import ConflictDialog from "./draft/ConflictDialog.vue";
 import PublishDialog from "./draft/PublishDialog.vue";
 import DraftBanner from "./draft/DraftBanner.vue";
+import VersionsDialog from "./draft/VersionsDialog.vue";
+import { formatDateTime } from "./draft/formatDateTime";
 import { decidePublish, type PublishDecision } from "./draft/publishDecision";
 import { createRevisionQueue } from "./services/revisionQueue";
 import { createAutosave } from "./services/autosave";
@@ -40,6 +42,15 @@ const conflictOpen = ref(false);
 const publishDialog = ref<Exclude<PublishDecision, { kind: "publish" }> | null>(null);
 const busy = ref(false);
 const bannerDismissed = ref(false);
+const versionsOpen = ref(false);
+
+// The version page links back to the designer, and to the comparison with the published version.
+const isVersionPage = computed(() => props.config.mode === "version");
+const compareWithPublishedUrl = computed(() =>
+    props.config.comparePageUrl && state.version && state.publishedVersion && !state.version.isPublished
+        ? withQuery(props.config.comparePageUrl, { from: state.version.versionId, to: state.publishedVersion.versionId })
+        : null,
+);
 
 // The toolbox can be collapsed into a rail, to give the canvas more room; hovering the rail opens it over
 // the canvas, and it stays open while an activity is dragged from it.
@@ -241,10 +252,10 @@ const doPublish = async () => {
         await mutate(async (revision) => {
             const result = await props.api.publish(revision);
 
-            props.store.markPublished(result.issues);
+            props.store.markPublished(result.issues, result.version ?? null);
         });
 
-        showToast({ message: t("Published"), variant: "success" });
+        showToast({ message: state.publishedVersion ? t("PublishedVersion", state.publishedVersion.version) : t("Published"), variant: "success" });
         await keepFocus();
     } catch (error) {
         if (error instanceof DesignerApiError && error.status === 400 && error.problem.issues) {
@@ -302,6 +313,42 @@ const onPublishIssueSelected = (issue: DesignIssue) => {
         selectNode(props.store, issue.activityId);
         focusActivity(issue.activityId);
     }
+};
+
+/**
+ * Copies a version into the draft (asking first when the draft has changes), then loads the draft.
+ */
+const restoreVersion = async (version: DesignerVersion) => {
+    if (
+        hasChanges.value &&
+        !(await confirmAction({
+            title: t("RestoreVersionTitle"),
+            message: t("RestoreVersionMessage", version.version),
+            okText: t("Restore"),
+            cancelText: t("Cancel"),
+        }))
+    ) {
+        return;
+    }
+
+    busy.value = true;
+
+    try {
+        if (!(await (panel.value?.settle() ?? true)) || !(await autosave.flush())) {
+            return;
+        }
+
+        await mutate((revision) => props.api.restore(version.versionId, revision));
+        versionsOpen.value = false;
+        await reloadDefinition();
+        showToast({ message: t("VersionRestored", version.version), variant: "success" });
+    } catch (error) {
+        onRequestError(error, t("RestoreFailed"));
+    } finally {
+        busy.value = false;
+    }
+
+    await keepFocus();
 };
 
 const discard = async () => {
@@ -385,6 +432,34 @@ defineExpose({ canvas, panel, addActivity, autosave, publish, discard });
         <header class="wfd-toolbar" data-cy="designer-toolbar">
             <h2 class="wfd-title text-truncate">{{ state.settings?.name }}</h2>
 
+            <span
+                v-if="config.mode !== 'version' && !config.readOnly && state.publishedVersion"
+                class="badge rounded-pill text-bg-light border"
+                :title="t('PublishedVersionHint')"
+                data-cy="published-version"
+            >
+                {{ t("VersionNumber", state.publishedVersion.version) }}
+            </span>
+
+            <template v-if="isVersionPage && state.version">
+                <span class="badge rounded-pill text-bg-light border" data-cy="page-version">{{ t("VersionNumber", state.version.version) }}</span>
+                <span v-if="state.version.isPublished" class="badge text-bg-success" data-cy="page-version-published">{{ t("PublishedBadge") }}</span>
+                <span class="small text-body-secondary">
+                    {{ state.version.createdBy ? t("CreatedOnBy", formatDateTime(state.version.createdUtc), state.version.createdBy) : formatDateTime(state.version.createdUtc) }}
+                </span>
+                <div class="btn-group btn-group-sm ms-auto" role="group" :aria-label="t('MoreActions')">
+                    <a v-if="compareWithPublishedUrl" :href="compareWithPublishedUrl" class="btn btn-outline-secondary" data-cy="page-version-compare">
+                        {{ t("CompareWithPublished") }}
+                    </a>
+                    <a v-if="config.designerUrl" :href="config.designerUrl" class="btn btn-outline-secondary" data-cy="page-version-designer">{{ t("OpenDesigner") }}</a>
+                </div>
+            </template>
+
+            <span v-if="state.instance && state.version" class="small" data-cy="instance-version">
+                {{ t("RunsOnVersion", state.version.version) }}
+                <span v-if="!state.version.isPublished" class="text-body-secondary" data-cy="instance-version-not-published">({{ t("NotThePublishedVersion") }})</span>
+            </span>
+
             <span v-if="config.readOnly && state.instance" class="wfd-legend small text-body-secondary" data-cy="viewer-legend">
                 <span class="badge text-bg-info">
                     <i class="fa-solid fa-hourglass-half" aria-hidden="true"></i>
@@ -422,6 +497,16 @@ defineExpose({ canvas, panel, addActivity, autosave, publish, discard });
                 </div>
 
                 <div class="btn-group btn-group-sm" role="group" :aria-label="t('MoreActions')">
+                    <button
+                        v-if="config.urls.versions"
+                        type="button"
+                        class="btn btn-outline-secondary"
+                        :title="t('VersionsHint')"
+                        data-cy="toolbar-versions"
+                        @click="versionsOpen = true"
+                    >
+                        {{ t("Versions") }}
+                    </button>
                     <a :href="config.instancesUrl" class="btn btn-outline-secondary" data-cy="toolbar-instances">
                         {{ t("Instances") }}
                         <span v-if="state.runningInstanceCount > 0" class="badge text-bg-secondary ms-1" :title="t('RunningInstanceCount', state.runningInstanceCount)">
@@ -536,6 +621,14 @@ defineExpose({ canvas, panel, addActivity, autosave, publish, discard });
             @reload="onReload"
             @overwrite="onOverwrite"
             @close="conflictOpen = false"
+        />
+        <VersionsDialog
+            v-if="versionsOpen"
+            :api="api"
+            :version-page-url="config.versionPageUrl"
+            :compare-page-url="config.comparePageUrl"
+            @close="versionsOpen = false"
+            @restore="restoreVersion"
         />
         <PublishDialog
             v-if="publishDialog"

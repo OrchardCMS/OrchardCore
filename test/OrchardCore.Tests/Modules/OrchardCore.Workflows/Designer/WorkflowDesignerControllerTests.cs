@@ -62,6 +62,9 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         Assert.False(config["readOnly"].GetValue<bool>());
         Assert.Equal($"{tenantPrefix}Admin/Workflows/Types/{id}/Designer/Definition", config["urls"]["definition"].GetValue<string>());
         Assert.Equal($"{tenantPrefix}Admin/Workflows/Types/{id}/Designer/Editor", config["urls"]["editor"].GetValue<string>());
+        Assert.Equal($"{tenantPrefix}Admin/Workflows/Types/{id}/Designer/Versions", config["urls"]["versions"].GetValue<string>());
+        Assert.Equal($"{tenantPrefix}Admin/Workflows/Types/Version/{id}", config["versionPageUrl"].GetValue<string>());
+        Assert.Equal("designer", config["mode"].GetValue<string>());
         Assert.False(string.IsNullOrEmpty(config["translations"]["Undo"].GetValue<string>()));
         Assert.NotNull(document.QuerySelector("input[name='__RequestVerificationToken']"));
         Assert.Contains(document.QuerySelectorAll("script[src]"), x => x.GetAttribute("src").Contains("workflows-designer") && x.GetAttribute("type") == "module");
@@ -643,6 +646,43 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         Assert.Equal(HttpStatusCode.OK, published.StatusCode);
 
         return await ReadJsonAsync(published);
+    }
+
+    [Fact]
+    public async Task VersionPage_EarlierVersion_MountsTheReadOnlyDesigner()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
+        var versionId = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition"))["publishedVersion"]["versionId"].GetValue<string>();
+
+        using var response = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/Version/{id}?versionId={versionId}", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var document = new HtmlParser().ParseDocument(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        var config = JsonNode.Parse(Assert.Single(document.QuerySelectorAll("#workflow-designer")).GetAttribute("data-config"));
+        Assert.Equal("version", config["mode"].GetValue<string>());
+        Assert.True(config["readOnly"].GetValue<bool>());
+        Assert.EndsWith($"Admin/Workflows/Types/{id}/Designer/Version?versionId={versionId}", config["urls"]["definition"].GetValue<string>());
+        Assert.Null(config["urls"]["save"]);
+        Assert.EndsWith($"Admin/Workflows/Types/Edit/{id}", config["designerUrl"].GetValue<string>());
+
+        using var unknown = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/Version/{id}?versionId=unknown", TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.NotFound, unknown.StatusCode);
+    }
+
+    [Fact]
+    public async Task CompareVersionsPage_VersionAndDraft_MountsTheComparison()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
+        var versionId = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition"))["publishedVersion"]["versionId"].GetValue<string>();
+
+        using var response = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/CompareVersions/{id}?from={versionId}&to=draft", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var document = new HtmlParser().ParseDocument(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        var config = JsonNode.Parse(Assert.Single(document.QuerySelectorAll("#workflow-designer")).GetAttribute("data-config"));
+        Assert.Equal("compare", config["mode"].GetValue<string>());
+        Assert.EndsWith($"Admin/Workflows/Types/{id}/Designer/Compare?from={versionId}&to=draft", config["urls"]["compare"].GetValue<string>());
+        Assert.Null(config["urls"]["definition"]);
     }
 
     private Task<(long Id, string WorkflowTypeId)> CreateWorkflowTypeAsync(params ActivityRecord[] activities)

@@ -2,12 +2,15 @@ import { createApiService, type ApiService } from "@bloom/services/api-service";
 import type { DesignerUrls } from "../config";
 import type {
     AddActivityResult,
+    DesignerComparison,
     DesignerDefinition,
+    DesignerVersions,
     EditorApplyResult,
     FormFragment,
     Library,
     ProblemDetails,
     PublishResult,
+    RestoreResult,
     SavePayload,
     SaveResult,
     SettingsApplyResult,
@@ -54,7 +57,7 @@ const toDesignerApiError = (error: unknown): DesignerApiError => {
     return new DesignerApiError(0, undefined, axiosError?.message);
 };
 
-const withQuery = (url: string, query: Record<string, string | number>) => {
+export const withQuery = (url: string, query: Record<string, string | number>) => {
     const separator = url.includes("?") ? "&" : "?";
 
     return url + separator + new URLSearchParams(Object.entries(query).map(([key, value]) => [key, String(value)])).toString();
@@ -91,6 +94,9 @@ export const createDesignerApi = (urls: DesignerUrls, service: ApiService = crea
             call(() => service.post<SettingsApplyResult>(withQuery(urls.settings, { revision }), form, multipart)),
         publish: (revision: number) => call(() => service.post<PublishResult>(urls.publish, { revision })),
         discard: () => call(() => service.post<Record<string, never>>(urls.discard, {})),
+        getVersions: () => call(() => service.get<DesignerVersions>(urls.versions!)),
+        restore: (versionId: string, revision: number) => call(() => service.post<RestoreResult>(urls.restore!, { versionId, revision })),
+        getComparison: () => call(() => service.get<DesignerComparison>(urls.compare!)),
     };
 };
 

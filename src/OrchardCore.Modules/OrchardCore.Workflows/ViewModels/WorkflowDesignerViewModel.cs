@@ -13,6 +13,11 @@ public sealed class WorkflowDesignerViewModel
     public WorkflowType WorkflowType { get; init; }
 
     /// <summary>
+    /// The version shown by the read-only version page, if any.
+    /// </summary>
+    public WorkflowTypeVersion Version { get; init; }
+
+    /// <summary>
     /// The JSON configuration of the designer app, rendered into its <c>data-config</c> attribute.
     /// </summary>
     public string ConfigJson { get; init; }

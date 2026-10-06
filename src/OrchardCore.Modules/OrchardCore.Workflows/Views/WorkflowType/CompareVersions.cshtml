@@ -1,0 +1,14 @@
+@model WorkflowDesignerViewModel
+@using OrchardCore.DisplayManagement.Html
+
+<zone Name="Title">
+    <breadcrumb name="WorkflowTypesCompareVersions" title="@T["Compare versions"]">
+        <breadcrumb-item id="WorkflowTypes" action="Index" controller="WorkflowType" area="OrchardCore.Workflows" permission="@WorkflowsPermissions.ManageWorkflows.Name">@T["Workflows"]</breadcrumb-item>
+        <breadcrumb-item id="WorkflowTypesEdit" action="Edit" controller="WorkflowType" area="OrchardCore.Workflows" route-id="@Model.WorkflowType.Id" permission="@WorkflowsPermissions.ManageWorkflows.Name">@(new HtmlContentString(Model.WorkflowType.Name ?? string.Empty))</breadcrumb-item>
+    </breadcrumb>
+</zone>
+
+<div id="workflow-designer" data-config="@Model.ConfigJson"></div>
+
+<style asp-name="workflows-designer"></style>
+<script asp-name="workflows-designer" at="Foot"></script>

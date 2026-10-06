@@ -14,8 +14,13 @@ describe("decidePublish", () => {
         expect(decidePublish([warning], 0)).toEqual({ kind: "confirm", warnings: [warning], runningInstanceCount: 0 });
     });
 
-    it("decidePublish_RunningInstancesOnly_AsksWithTheirCount", () => {
-        expect(decidePublish([], 2)).toEqual({ kind: "confirm", warnings: [], runningInstanceCount: 2 });
+    it("decidePublish_RunningInstancesOnly_PublishesRightAway", () => {
+        // They keep running on the version they started on.
+        expect(decidePublish([], 2)).toEqual({ kind: "publish" });
+    });
+
+    it("decidePublish_WarningsAndRunningInstances_AsksWithBoth", () => {
+        expect(decidePublish([warning], 2)).toEqual({ kind: "confirm", warnings: [warning], runningInstanceCount: 2 });
     });
 
     it("decidePublish_NoIssuesNorInstances_PublishesRightAway", () => {

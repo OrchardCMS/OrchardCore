@@ -40,6 +40,7 @@ public sealed class WorkflowTypeController : Controller
     private readonly PagerOptions _pagerOptions;
     private readonly ISession _session;
     private readonly IWorkflowTypeStore _workflowTypeStore;
+    private readonly IWorkflowTypeVersionStore _workflowTypeVersionStore;
     private readonly IWorkflowTypeIdGenerator _workflowTypeIdGenerator;
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
@@ -56,6 +57,7 @@ public sealed class WorkflowTypeController : Controller
         IOptions<PagerOptions> pagerOptions,
         ISession session,
         IWorkflowTypeStore workflowTypeStore,
+        IWorkflowTypeVersionStore workflowTypeVersionStore,
         IWorkflowTypeIdGenerator workflowTypeIdGenerator,
         IAuthorizationService authorizationService,
         IShapeFactory shapeFactory,
@@ -69,6 +71,7 @@ public sealed class WorkflowTypeController : Controller
         _pagerOptions = pagerOptions.Value;
         _session = session;
         _workflowTypeStore = workflowTypeStore;
+        _workflowTypeVersionStore = workflowTypeVersionStore;
         _workflowTypeIdGenerator = workflowTypeIdGenerator;
         _authorizationService = authorizationService;
         _notifier = notifier;
@@ -392,6 +395,56 @@ public sealed class WorkflowTypeController : Controller
         {
             WorkflowType = workflowType,
             ConfigJson = WorkflowDesignerConfigBuilder.Build(Url, User, _jsLocalizers, workflowType, initialActivityId: activityId),
+        });
+    }
+
+    /// <summary>
+    /// A version of the workflow type, in the read-only designer.
+    /// </summary>
+    public async Task<IActionResult> Version(long id, string versionId)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows))
+        {
+            return Forbid();
+        }
+
+        var workflowType = await _workflowTypeStore.GetAsync(id);
+        var version = workflowType is null || string.IsNullOrEmpty(versionId) ? null : await _workflowTypeVersionStore.GetAsync(versionId);
+
+        if (version is null || version.WorkflowTypeId != workflowType.WorkflowTypeId)
+        {
+            return NotFound();
+        }
+
+        return View(new WorkflowDesignerViewModel
+        {
+            WorkflowType = workflowType,
+            Version = version,
+            ConfigJson = WorkflowDesignerConfigBuilder.BuildForVersion(Url, User, _jsLocalizers, workflowType, versionId),
+        });
+    }
+
+    /// <summary>
+    /// Two definitions of the workflow type side by side: version ids, or <c>draft</c>.
+    /// </summary>
+    public async Task<IActionResult> CompareVersions(long id, string from, string to)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows))
+        {
+            return Forbid();
+        }
+
+        var workflowType = await _workflowTypeStore.GetAsync(id);
+
+        if (workflowType is null || string.IsNullOrEmpty(from) || string.IsNullOrEmpty(to))
+        {
+            return NotFound();
+        }
+
+        return View(new WorkflowDesignerViewModel
+        {
+            WorkflowType = workflowType,
+            ConfigJson = WorkflowDesignerConfigBuilder.BuildForComparison(Url, User, _jsLocalizers, workflowType, from, to),
         });
     }
 
