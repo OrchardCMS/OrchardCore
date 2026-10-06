@@ -9,7 +9,7 @@ import ContextMenu from "./ContextMenu.vue";
 import ConnectDialog from "./ConnectDialog.vue";
 import type { MenuItem } from "./menu";
 import { GRID_SIZE, NODE_WIDTH, boundsOf, nodeRect, portAnchor, previewPath, rectFromPoints, rectsIntersect, snap, type NodeLayout, type Point, type Rect } from "./geometry";
-import { ZOOM_STEP, canvasToScreen, clampZoom, fitToContent, screenToCanvas, visibleCenter, zoomAt, zoomBy, type Size, type ViewportState } from "./viewport";
+import { ZOOM_STEP, canvasToScreen, fitToContent, screenToCanvas, visibleCenter, zoomAt, zoomBy, type Size, type ViewportState } from "./viewport";
 import { startPointerDrag } from "./useDrag";
 import { clearSelection, connectOutcome, deleteSelection, nudgeSelection, selectAll, selectNode, selectTransition, toggleStart } from "./useConnect";
 import { useCollapsedBranches } from "./useCollapsedBranches";
@@ -21,8 +21,6 @@ import { t } from "../i18n";
 // canvas isn't re-rasterized every frame (see "Spike findings"). Beyond this many activities the extra
 // layers cost more than they save.
 const LIFT_LIMIT = 10;
-// "Zoom to activity" zooms in to at least this level.
-const FOCUS_ZOOM = 1.5;
 const NO_ISSUES: DesignIssue[] = [];
 const NO_OUTCOMES: string[] = [];
 
@@ -176,7 +174,7 @@ const zoomTo = (zoom: number) => {
 };
 
 // Centering on an activity in a collapsed branch shows it first.
-const centerOn = (activityId: string, zoom = viewport.zoom) => {
+const centerOn = (activityId: string) => {
     const node = nodeById.value.get(activityId);
 
     if (!node) {
@@ -187,9 +185,9 @@ const centerOn = (activityId: string, zoom = viewport.zoom) => {
 
     const rect = nodeRect(node, layouts.get(node.id));
     setViewport({
-        zoom,
-        panX: hostSize.width / 2 - (rect.x + rect.width / 2) * zoom,
-        panY: hostSize.height / 2 - (rect.y + rect.height / 2) * zoom,
+        zoom: viewport.zoom,
+        panX: hostSize.width / 2 - (rect.x + rect.width / 2) * viewport.zoom,
+        panY: hostSize.height / 2 - (rect.y + rect.height / 2) * viewport.zoom,
     });
 };
 
@@ -204,13 +202,6 @@ const focusNode = async (activityId: string) => {
     }
 
     nodeElement(activityId)?.focus();
-};
-
-const zoomToActivity = (activityId: string) => {
-    selectNode(props.store, activityId);
-    centerOn(activityId, clampZoom(Math.max(viewport.zoom, FOCUS_ZOOM)));
-    markZooming();
-    void focusNode(activityId);
 };
 
 // A hidden activity is never selected: selecting one (from the Issues tab, an undo...) shows it.
@@ -449,8 +440,8 @@ const onConnectDialogCancel = () => {
     }
 };
 
-// The items that only change the view, which the read-only viewer offers too.
-const viewMenuItems = (node: DesignerNode): MenuItem[] => {
+// Collapsing and expanding only change the view, so the read-only viewer offers them too.
+const branchMenuItems = (node: DesignerNode): MenuItem[] => {
     const items: MenuItem[] = [];
     const hiddenCount = hiddenCounts.value.get(node.id);
 
@@ -463,8 +454,6 @@ const viewMenuItems = (node: DesignerNode): MenuItem[] => {
             items.push({ label: t("CollapseActivities", count), icon: "fa-solid fa-square-minus", dataCy: "menu-collapse", run: () => collapse(node.id) });
         }
     }
-
-    items.push({ label: t("ZoomToActivity"), icon: "fa-solid fa-magnifying-glass-plus", dataCy: "menu-zoom-to", run: () => zoomToActivity(node.id) });
 
     return items;
 };
@@ -479,7 +468,8 @@ const openNodeMenu = (node: DesignerNode, event: MouseEvent | null) => {
         : canvasToScreen(viewport, { x: node.x + (layouts.get(node.id)?.width ?? NODE_WIDTH) - 24, y: node.y + 24 });
 
     if (props.readOnly) {
-        menu.value = { ...position, items: viewMenuItems(node), label: t("ActivityActions", node.title) };
+        const items = branchMenuItems(node);
+        menu.value = items.length > 0 ? { ...position, items, label: t("ActivityActions", node.title) } : null;
 
         return;
     }
@@ -503,7 +493,7 @@ const openNodeMenu = (node: DesignerNode, event: MouseEvent | null) => {
         items.push({ label: t("ConnectOutcomeTo"), icon: "fa-solid fa-link", dataCy: "menu-connect", run: () => openConnectDialog(node) });
     }
 
-    items.push(...viewMenuItems(node));
+    items.push(...branchMenuItems(node));
 
     for (const transition of state.transitions.filter((item) => item.sourceActivityId === node.id)) {
         const target = nodeById.value.get(transition.destinationActivityId);
@@ -680,7 +670,6 @@ defineExpose({
     fit,
     centerOn,
     focusNode,
-    zoomToActivity,
     reveal,
     expandAll,
     focus: () => host.value?.focus({ preventScroll: true }),

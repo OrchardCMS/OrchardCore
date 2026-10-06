@@ -394,10 +394,16 @@ public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsF
         await Assertions.Expect(page.Activities()).ToHaveCountAsync(2);
         await Assertions.Expect(page.Locator("[data-cy=toolbar-discard]")).ToBeDisabledAsync();
 
+        // The count under the collapsed activity expands its branch.
+        await page.Locator("[data-cy=expand-seedednotify]").ClickAsync();
+        await Assertions.Expect(page.Activities()).ToHaveCountAsync(4);
+        await Assertions.Expect(page.Locator("[data-cy=hidden-notice]")).ToHaveCountAsync(0);
+
+        // Collapsing the start activity hides everything after it, until "Show all".
         await page.Activity("seededrequest").Locator(".wfd-node-header").ClickAsync(new() { Button = MouseButton.Right });
-        await page.Locator("[data-cy=menu-zoom-to]").ClickAsync();
-        await Assertions.Expect(page.Locator("[data-cy=zoom-reset]")).ToHaveTextAsync("150%");
-        await Assertions.Expect(page.Activity("seededrequest")).ToHaveClassAsync(s_selected);
+        await page.Locator("[data-cy=menu-collapse]").ClickAsync();
+        await Assertions.Expect(page.Activities()).ToHaveCountAsync(1);
+        await Assertions.Expect(page.Locator("[data-cy=expand-seededrequest]")).ToHaveTextAsync("3");
 
         await page.Locator("[data-cy=expand-all]").ClickAsync();
         await Assertions.Expect(page.Activities()).ToHaveCountAsync(4);

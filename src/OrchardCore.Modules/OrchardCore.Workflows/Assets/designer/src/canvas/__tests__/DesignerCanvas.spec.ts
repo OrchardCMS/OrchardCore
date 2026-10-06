@@ -204,27 +204,27 @@ describe("DesignerCanvas", () => {
         expect(wrapper.findAll(".wfd-node")).toHaveLength(4);
     });
 
-    it("contextMenu_ZoomToActivity_ZoomsInAndSelectsIt", async () => {
-        const { store, wrapper } = setup();
-
-        await wrapper.get("[data-cy=activity-a]").trigger("keydown", { key: "ContextMenu" });
-        await wrapper.get("[data-cy=menu-zoom-to]").trigger("click");
-
-        expect(store.state.viewport.zoom).toBe(1.5);
-        expect(store.state.selectedNodeIds).toEqual(["a"]);
-        expect(document.activeElement?.getAttribute("data-node-id")).toBe("a");
-    });
-
-    it("contextMenu_ReadOnly_OffersOnlyViewActions", async () => {
+    it("contextMenu_ReadOnly_OffersOnlyCollapseAndExpand", async () => {
         const { store, wrapper } = setup(true);
 
         await wrapper.get("[data-cy=activity-fork]").trigger("keydown", { key: "ContextMenu" });
 
-        expect(wrapper.findAll("[data-cy=context-menu] [data-cy^=menu-]").map((item) => item.attributes("data-cy"))).toEqual(["menu-collapse", "menu-zoom-to"]);
+        expect(wrapper.findAll("[data-cy=context-menu] [data-cy^=menu-]").map((item) => item.attributes("data-cy"))).toEqual(["menu-collapse"]);
 
         await wrapper.get("[data-cy=menu-collapse]").trigger("click");
 
         expect(wrapper.findAll(".wfd-node")).toHaveLength(2);
         expect(store.state.nodes).toHaveLength(4);
+
+        await wrapper.get("[data-cy=activity-fork]").trigger("keydown", { key: "ContextMenu" });
+        expect(wrapper.findAll("[data-cy=context-menu] [data-cy^=menu-]").map((item) => item.attributes("data-cy"))).toEqual(["menu-expand"]);
+    });
+
+    it("contextMenu_ReadOnlyActivityWithNothingAfterIt_OpensNoMenu", async () => {
+        const { wrapper } = setup(true);
+
+        await wrapper.get("[data-cy=activity-a]").trigger("keydown", { key: "ContextMenu" });
+
+        expect(wrapper.find("[data-cy=context-menu]").exists()).toBe(false);
     });
 });
