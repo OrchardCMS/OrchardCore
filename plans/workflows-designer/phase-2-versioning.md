@@ -113,11 +113,16 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
   - The step copies the name, settings, activities, transitions and entity properties onto the existing document and discards the draft through `IWorkflowTypeDraftManager` (it used to be deleted by the type's `DeletedAsync` handler).
   - **Test.** `Versioning/WorkflowVersionRecipeTests.cs` (SiteContext): an instance waits on a signal of version 1; a recipe imports a definition without that activity; the type keeps its document id and becomes version 2, and the instance, still pinned to version 1, resumes with the signal and finishes. The existing `WorkflowTypeRecipeStep_ReplacesTypeWithDraft_DeletesDraft` still passes. Workflows tests: 88/88.
 
-### - [ ] 2.4 Retention
+### - [x] 2.4 Retention
 
 - `WorkflowVersionOptions` (`MaxCount`, default 0) bound to `Workflows:Versions` (`M/ConfigurationSchema.json`).
 - After creating a version, delete the oldest versions beyond `MaxCount`, skipping the published one and those referenced by `WorkflowIndex.WorkflowTypeVersionId`.
 - **Tests**: keeps everything by default; prunes beyond the limit; never deletes a pinned version or the published one.
+- **Notes from implementing this step:**
+  - **Rule.** `MaxCount` keeps the N most recent versions (the published one is always among them); each older version is deleted unless a `WorkflowIndex` row references it. Versions kept for instances don't count toward the limit, so with `MaxCount = 2` and an instance on version 1, publishing version 4 keeps versions 4, 3 and 1.
+  - **Where.** `WorkflowTypeVersionStore.CreateIfChangedAsync` prunes right after it creates a version, so nothing changes until the next publish after the limit is set. Unpinned instances (created before versions existed) don't reference a version and keep nothing.
+  - **Configuration.** `WorkflowVersionOptions` (`A/Services`) is bound to `Workflows:Versions` and described in `M/ConfigurationSchema.json`. It's a new section, so it has no legacy name.
+  - **Tests.** `Versioning/WorkflowVersionRetentionTests.cs`: no limit keeps 5 of 5; a limit of 2 keeps versions 4 and 3; a version an instance runs on is kept. Workflows tests: 91/91.
 
 ### - [ ] 2.5 Designer API
 

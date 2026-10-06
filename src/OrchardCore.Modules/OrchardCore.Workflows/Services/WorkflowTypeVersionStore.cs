@@ -24,6 +24,7 @@ public sealed class WorkflowTypeVersionStore : IWorkflowTypeVersionStore
     private readonly IClock _clock;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
+    private readonly WorkflowVersionOptions _options;
     private readonly ILogger _logger;
 
     // Resuming many instances of a workflow type loads the same versions again and again.
@@ -35,6 +36,7 @@ public sealed class WorkflowTypeVersionStore : IWorkflowTypeVersionStore
         IClock clock,
         IHttpContextAccessor httpContextAccessor,
         IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions,
+        IOptions<WorkflowVersionOptions> options,
         ILogger<WorkflowTypeVersionStore> logger)
     {
         _session = session;
@@ -42,6 +44,7 @@ public sealed class WorkflowTypeVersionStore : IWorkflowTypeVersionStore
         _clock = clock;
         _httpContextAccessor = httpContextAccessor;
         _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
+        _options = options.Value;
         _logger = logger;
     }
 
@@ -120,6 +123,8 @@ public sealed class WorkflowTypeVersionStore : IWorkflowTypeVersionStore
         await _session.SaveAsync(version);
         workflowType.VersionId = version.VersionId;
 
+        await PruneAsync(workflowType.WorkflowTypeId);
+
         return version;
     }
 
@@ -157,6 +162,26 @@ public sealed class WorkflowTypeVersionStore : IWorkflowTypeVersionStore
         {
             _versions.Remove(version.VersionId);
             _session.Delete(version);
+        }
+    }
+
+    // Keeps the most recent versions, and the older ones that instances run on.
+    private async Task PruneAsync(string workflowTypeId)
+    {
+        if (_options.MaxCount <= 0)
+        {
+            return;
+        }
+
+        foreach (var version in (await ListAsync(workflowTypeId)).Skip(_options.MaxCount))
+        {
+            var isPinned = await _session.QueryIndex<WorkflowIndex>(index => index.WorkflowTypeVersionId == version.VersionId).CountAsync() > 0;
+
+            if (!isPinned)
+            {
+                _versions.Remove(version.VersionId);
+                _session.Delete(version);
+            }
         }
     }
 

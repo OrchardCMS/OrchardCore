@@ -67,7 +67,7 @@ internal sealed class VersioningTestDatabase : IAsyncDisposable
     /// <summary>
     /// Returns a new session and the stores using it. Each call is a separate unit of work.
     /// </summary>
-    public (ISession Session, WorkflowTypeVersionStore Versions, WorkflowTypeStore Types) CreateStores()
+    public (ISession Session, WorkflowTypeVersionStore Versions, WorkflowTypeStore Types) CreateStores(int maxVersionCount = 0)
     {
         var session = Store.CreateSession();
         _sessions.Add(session);
@@ -81,6 +81,7 @@ internal sealed class VersioningTestDatabase : IAsyncDisposable
             Mock.Of<IClock>(x => x.UtcNow == Now),
             Mock.Of<IHttpContextAccessor>(),
             Options.Create(JsonOptions),
+            Options.Create(new WorkflowVersionOptions { MaxCount = maxVersionCount }),
             NullLogger<WorkflowTypeVersionStore>.Instance);
 
         var types = new WorkflowTypeStore(session, versions, [], NullLogger<WorkflowTypeStore>.Instance);

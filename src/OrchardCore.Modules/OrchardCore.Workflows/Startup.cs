@@ -55,6 +55,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IActivityLibrary, ActivityLibrary>();
         services.AddScoped<IWorkflowTypeStore, WorkflowTypeStore>();
         services.AddScoped<IWorkflowTypeVersionStore, WorkflowTypeVersionStore>();
+        services.Configure<WorkflowVersionOptions>(_shellConfiguration.GetSection("Workflows:Versions"));
         services.AddScoped<IWorkflowStore, WorkflowStore>();
         services.AddScoped<IWorkflowManager, WorkflowManager>();
         services.AddScoped<IActivityDisplayManager, ActivityDisplayManager>();

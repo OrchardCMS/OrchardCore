@@ -19,6 +19,18 @@
                   "minimum": 1
                 }
               }
+            },
+            "Versions": {
+              "type": "object",
+              "description": "Configures the versions of the workflow types. Each publish of a workflow type creates a version, and instances run on the version they started on.",
+              "properties": {
+                "MaxCount": {
+                  "type": "integer",
+                  "description": "The number of most recent versions to keep per workflow type. When a new version is created, the older versions are deleted, except those that workflow instances run on. 0 keeps every version.",
+                  "default": 0,
+                  "minimum": 0
+                }
+              }
             }
           }
         },
