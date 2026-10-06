@@ -197,11 +197,21 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
 
 ## Definition of done (Phase 2)
 
-- [ ] Steps 2.1–2.8 are checked.
-- [ ] The CI-flag build is green; `OrchardCore.Tests`, Vitest and the functional `*Cms*` tests pass.
-- [ ] `yarn lint`, `yarn check` and `yarn build` leave a clean `git status`.
-- [ ] Upgrading a site with existing workflow types and halted instances creates version 1 per type, and the instances still resume.
-- [ ] Docs and release notes are updated.
+- [x] Steps 2.1–2.8 are checked.
+- [x] The CI-flag build is green; `OrchardCore.Tests`, Vitest and the functional `*Cms*` tests pass.
+- [x] `yarn lint`, `yarn check` and `yarn build` leave a clean `git status`.
+- [x] Upgrading a site with existing workflow types and halted instances creates version 1 per type, and the instances still resume.
+- [x] Docs and release notes are updated.
+- **Notes from checking the Definition of done:**
+  - **Build.** The CI-flag build has 0 warnings and 0 errors.
+  - **`OrchardCore.Tests`.** 3,392 tests: 3,389 passed, 2 skipped (Unix-only), and one failure in `ContentQuickNavigationTests`: its `DisposeAsync` couldn't delete its SQLite file (a file lock, as in Phase 1). That class passed on its own (11/11).
+  - **Vitest.** The designer has 174 tests; all pass.
+  - **Functional `*Cms*`.** 158 tests: 135 passed and 6 skipped (Tus Azure and Redis). The 17 `OpenApiTests` failed in their fixture's `InitializeAsync` (the 30-second setup timeout seen in Phase 1) and passed when run on their own (17/17). `WorkflowsDesignerTests`: 18/18, twice.
+  - **Assets.** `yarn lint` has 0 errors (the 2 warnings in `OrchardCore.Cors` were already there). For the designer, `eslint` and `vue-tsc` pass, and `yarn build -n workflows-designer` reproduces the committed output. `git status` only shows the six line-ending files from Phase 1.
+  - **Upgrade.**
+    - `CreateInitialVersionsAsync` is covered by a test.
+    - The local site from Phase 1, which had workflows and instances, was upgraded by migration 6: each workflow became its version 1, and publishing created version 2.
+    - Existing instances aren't pinned, and resume on the current definition (`ResumeWorkflowAsync_Unpinned_RunsTheCurrentDefinition`).
 
 ## Open questions
 
