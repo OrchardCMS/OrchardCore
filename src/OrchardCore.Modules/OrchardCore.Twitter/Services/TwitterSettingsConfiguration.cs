@@ -1,3 +1,5 @@
+#pragma warning disable CS0618 // Type or member is obsolete
+
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Options;
 using OrchardCore.Twitter.Settings;
@@ -23,8 +25,10 @@ public sealed class TwitterSettingsConfiguration : IConfigureOptions<TwitterSett
         {
             options.ConsumerKey = settings.ConsumerKey;
             options.ConsumerSecret = settings.ConsumerSecret;
+            options.ConsumerSecretSecretName = settings.ConsumerSecretSecretName;
             options.AccessToken = settings.AccessToken;
             options.AccessTokenSecret = settings.AccessTokenSecret;
+            options.AccessTokenSecretSecretName = settings.AccessTokenSecretSecretName;
         }
     }
 

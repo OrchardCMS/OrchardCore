@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -22,7 +21,6 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
     public const string GroupId = EmailSettings.GroupId;
 
     private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
-    private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IOptionsMonitor<SmtpOptions> _smtpOptions;
     private readonly IAuthorizationService _authorizationService;
@@ -35,7 +33,6 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
 
     public SmtpSettingsDisplayDriver(
         IOptionsUpdateNotifier optionsUpdateNotifier,
-        IDataProtectionProvider dataProtectionProvider,
         IHttpContextAccessor httpContextAccessor,
         IOptionsMonitor<SmtpOptions> options,
         IAuthorizationService authorizationService,
@@ -43,7 +40,6 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
         IStringLocalizer<SmtpSettingsDisplayDriver> stringLocalizer)
     {
         _optionsUpdateNotifier = optionsUpdateNotifier;
-        _dataProtectionProvider = dataProtectionProvider;
         _httpContextAccessor = httpContextAccessor;
         _smtpOptions = options;
         _authorizationService = authorizationService;
@@ -79,7 +75,6 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
             model.RequireCredentials = settings.RequireCredentials;
             model.UseDefaultCredentials = settings.UseDefaultCredentials;
             model.UserName = settings.UserName;
-            model.Password = settings.Password;
             model.IgnoreInvalidSslCertificate = settings.IgnoreInvalidSslCertificate;
         }).Location("Content:5#SMTP")
         .OnGroup(SettingsGroupId);
@@ -146,20 +141,6 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
             hasChanges |= model.IgnoreInvalidSslCertificate != settings.IgnoreInvalidSslCertificate;
             hasChanges |= model.DeliveryMethod != settings.DeliveryMethod;
             hasChanges |= model.PickupDirectoryLocation != settings.PickupDirectoryLocation;
-
-            // Store the password when there is a new value.
-            if (!string.IsNullOrWhiteSpace(model.Password))
-            {
-                // Encrypt the password.
-                var protector = _dataProtectionProvider.CreateProtector(SmtpOptionsConfiguration.ProtectorName);
-
-                var protectedPassword = protector.Protect(model.Password);
-
-                // Check if the password changed before setting the password.
-                hasChanges |= protectedPassword != settings.Password;
-
-                settings.Password = protectedPassword;
-            }
 
             settings.IsEnabled = true;
             settings.DefaultSender = model.DefaultSender;

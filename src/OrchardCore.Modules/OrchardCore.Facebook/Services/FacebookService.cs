@@ -1,3 +1,5 @@
+#pragma warning disable CS0618 // Type or member is obsolete
+
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Localization;
@@ -46,7 +48,7 @@ public class FacebookService : IFacebookService
             }));
         }
 
-        if (string.IsNullOrEmpty(settings.AppSecret))
+        if (string.IsNullOrWhiteSpace(settings.AppSecretSecretName) && string.IsNullOrWhiteSpace(settings.AppSecret))
         {
             results.Add(new ValidationResult(S["The App Secret is required."], new[]
             {

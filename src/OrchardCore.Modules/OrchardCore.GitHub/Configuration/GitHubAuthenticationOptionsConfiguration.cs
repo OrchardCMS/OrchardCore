@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.GitHub.Settings;
+using OrchardCore.Secrets;
 using OrchardCore.Settings;
 
 namespace OrchardCore.GitHub.Configuration;
@@ -15,15 +16,18 @@ internal sealed class GitHubAuthenticationOptionsConfiguration : IConfigureNamed
 {
     private readonly ISiteService _siteService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly ISecretManager _secretManager;
     private readonly ILogger _logger;
 
     public GitHubAuthenticationOptionsConfiguration(
         ISiteService siteService,
         IDataProtectionProvider dataProtectionProvider,
+        ISecretManager secretManager,
         ILogger<GitHubAuthenticationOptionsConfiguration> logger)
     {
         _siteService = siteService;
         _dataProtectionProvider = dataProtectionProvider;
+        _secretManager = secretManager;
         _logger = logger;
     }
 
@@ -42,8 +46,12 @@ internal sealed class GitHubAuthenticationOptionsConfiguration : IConfigureNamed
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(settings.ClientID) ||
-            string.IsNullOrWhiteSpace(settings.ClientSecret))
+#pragma warning disable CS0618 // Type or member is obsolete
+        var hasSecret = !string.IsNullOrWhiteSpace(settings.ClientSecretSecretName) ||
+                        !string.IsNullOrWhiteSpace(settings.ClientSecret);
+#pragma warning restore CS0618 // Type or member is obsolete
+
+        if (string.IsNullOrWhiteSpace(settings.ClientID) || !hasSecret)
         {
             _logger.LogWarning("The GitHub login provider is enabled but not configured.");
 
@@ -57,15 +65,49 @@ internal sealed class GitHubAuthenticationOptionsConfiguration : IConfigureNamed
 
         options.ClientId = settings.ClientID;
 
-        try
+        // First try to load from secrets
+        if (!string.IsNullOrWhiteSpace(settings.ClientSecretSecretName))
         {
-            options.ClientSecret = _dataProtectionProvider.CreateProtector(GitHubConstants.Features.GitHubAuthentication)
-                .Unprotect(settings.ClientSecret);
+            try
+            {
+                var secret = _secretManager.GetSecretAsync<TextSecret>(settings.ClientSecretSecretName)
+                    .GetAwaiter()
+                    .GetResult();
+
+                if (secret != null && !string.IsNullOrWhiteSpace(secret.Text))
+                {
+                    options.ClientSecret = secret.Text;
+
+                    if (_logger.IsEnabled(LogLevel.Debug))
+                    {
+                        _logger.LogDebug("GitHub client secret loaded from secret '{SecretName}'.", settings.ClientSecretSecretName);
+                    }
+                }
+                else
+                {
+                    _logger.LogWarning("GitHub client secret secret '{SecretName}' was not found or is empty.", settings.ClientSecretSecretName);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to load GitHub client secret from secret '{SecretName}'.", settings.ClientSecretSecretName);
+            }
         }
-        catch (Exception ex)
+        // Fall back to legacy encrypted client secret
+#pragma warning disable CS0618 // Type or member is obsolete
+        else if (!string.IsNullOrWhiteSpace(settings.ClientSecret))
         {
-            _logger.LogError(ex, "The GitHub Consumer Secret could not be decrypted. It may have been encrypted using a different key.");
+            try
+            {
+                options.ClientSecret = _dataProtectionProvider.CreateProtector(GitHubConstants.Features.GitHubAuthentication)
+                    .Unprotect(settings.ClientSecret);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "The GitHub Consumer Secret could not be decrypted. It may have been encrypted using a different key.");
+            }
         }
+#pragma warning restore CS0618 // Type or member is obsolete
 
         if (settings.CallbackPath.HasValue)
         {

@@ -6,4 +6,9 @@ public static class GitHubConstants
     {
         public const string GitHubAuthentication = "OrchardCore.GitHub.Authentication";
     }
+
+    public static class SecretNames
+    {
+        public const string ClientSecret = "GitHub.ClientSecret";
+    }
 }

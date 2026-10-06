@@ -19,6 +19,7 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Search;
+using OrchardCore.AzureAI.Migrations;
 using OrchardCore.Search.AzureAI.Migrations;
 
 namespace OrchardCore.AzureAI;
@@ -40,6 +41,7 @@ public sealed class Startup : StartupBase
         services.AddAzureAISearchServices();
         services.AddSiteDisplayDriver<AzureAISearchDefaultSettingsDisplayDriver>();
         services.AddDataMigration<AzureAISearchIndexSettingsMigrations>();
+        services.AddDataMigration<ApiKeySecretsMigration>();
         services.AddDataMigration<PermissionMigrations>();
     }
 }

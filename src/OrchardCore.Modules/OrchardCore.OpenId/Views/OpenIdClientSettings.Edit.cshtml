@@ -143,11 +143,23 @@
         </div>
     </div>
 
-    <div class="ocat-wrapper collapse" asp-validation-class-for="ClientSecret">
-        <label asp-for="ClientSecret" class="ocat-label">@T["Client Secret"]</label>
+    <div class="ocat-wrapper collapse" asp-validation-class-for="ClientSecretSecretName">
+        <label asp-for="ClientSecretSecretName" class="ocat-label">@T["Client Secret"]</label>
         <div class="ocat-end">
-            <input asp-for="ClientSecret" class="form-control openid-client-secret" type="password" autocomplete="new-password" placeholder="@(Model.HasClientSecret ? T["A client secret is securely stored. Provide a new one to replace it."]: T["Set a client secret for your new account."])" />
-            <span asp-validation-for="ClientSecret"></span>
+            @await Component.InvokeAsync("SelectSecret", new
+            {
+                secretTypes = new[] { "TextSecret" },
+                selectedSecret = Model.ClientSecretSecretName,
+                htmlId = Html.IdFor(m => m.ClientSecretSecretName).ToString(),
+                htmlName = Html.NameFor(m => m.ClientSecretSecretName).ToString(),
+                cssClass = "openid-client-secret",
+                required = false
+            })
+            <span asp-validation-for="ClientSecretSecretName"></span>
+            @if (Model.HasClientSecret && string.IsNullOrWhiteSpace(Model.ClientSecretSecretName))
+            {
+                <p class="alert alert-info mb-2">@T["A legacy client secret is configured. Please create a new secret using the Secrets module and select it below to complete the migration."]</p>
+            }
             <span class="hint">@T["The '{0}' assigned by the identity provider.", "client_secret"]</span>
         </div>
     </div>

@@ -1,3 +1,5 @@
+#pragma warning disable CS0618 // Type or member is obsolete
+
 using System.Text.Json.Nodes;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;

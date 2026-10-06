@@ -144,12 +144,9 @@
                         </div>
                     </div>
 
-                    <div class="ocat-limited-wrapper" asp-validation-class-for="Password">
-                        <label asp-for="Password" class="ocat-label">@T["Password"]</label>
-                        <div class="ocat-limited">
-                            <input asp-for="Password" class="form-control" type="password" autocomplete="off" />
-                            <span asp-validation-for="Password"></span>
-                            <span class="hint">@T["The password for authentication."]</span>
+                    <div class="ocat-wrapper">
+                        <div class="ocat-end-offset">
+                            <p class="alert alert-info">@T["Password is managed via the Secrets module. Enable <strong>OrchardCore.Email.Smtp.Secrets</strong> feature to configure the SMTP password securely."]</p>
                         </div>
                     </div>
                 </div>

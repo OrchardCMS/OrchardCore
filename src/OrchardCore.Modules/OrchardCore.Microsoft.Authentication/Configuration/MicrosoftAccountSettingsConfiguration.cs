@@ -1,3 +1,5 @@
+#pragma warning disable CS0618 // Type or member is obsolete
+
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Options;
 using OrchardCore.Microsoft.Authentication.Services;
@@ -24,6 +26,7 @@ public sealed class MicrosoftAccountSettingsConfiguration : IConfigureOptions<Mi
         {
             options.AppId = settings.AppId;
             options.AppSecret = settings.AppSecret;
+            options.AppSecretSecretName = settings.AppSecretSecretName;
             options.CallbackPath = settings.CallbackPath;
             options.SaveTokens = settings.SaveTokens;
         }

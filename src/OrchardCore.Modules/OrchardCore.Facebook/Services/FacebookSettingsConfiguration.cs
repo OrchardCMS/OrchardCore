@@ -1,3 +1,5 @@
+#pragma warning disable CS0618 // Type or member is obsolete
+
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Options;
 using OrchardCore.Facebook.Settings;
@@ -23,6 +25,7 @@ public sealed class FacebookSettingsConfiguration : IConfigureOptions<FacebookSe
         {
             options.AppId = settings.AppId;
             options.AppSecret = settings.AppSecret;
+            options.AppSecretSecretName = settings.AppSecretSecretName;
             options.Version = settings.Version;
             options.FBInit = settings.FBInit;
             options.FBInitParams = settings.FBInitParams;
