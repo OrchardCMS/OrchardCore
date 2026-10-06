@@ -151,15 +151,10 @@ public class NestedAdminInlineBreadcrumbTests
 
         var workflowLink = $"Admin/Workflows/Types/Edit/{workflowType.Id}";
 
+        // The designer edits the activities in its properties panel; the old activity pages redirect to it.
         await AssertPageAsync(context, workflowLink, showBreadcrumb,
             "breadcrumb-workflow-types-edit", EscapedName,
             ("Workflows", "Admin/Workflows/Types"));
-        await AssertPageAsync(context, $"Admin/Workflows/Types/{workflowType.Id}/Activity/NotifyTask/Add", showBreadcrumb,
-            "breadcrumb-workflows-activity-create", "Add Notify Task",
-            ("Workflows", "Admin/Workflows/Types"), (EscapedName, workflowLink));
-        await AssertPageAsync(context, $"Admin/Workflows/Types/{workflowType.Id}/Activity/{activity.ActivityId}/Edit", showBreadcrumb,
-            "breadcrumb-workflows-activity-edit", "Edit Notify Task",
-            ("Workflows", "Admin/Workflows/Types"), (EscapedName, workflowLink));
         await AssertPageAsync(context, $"Admin/Workflows/Types/{workflowType.Id}/Instances/Index", showBreadcrumb,
             "breadcrumb-workflow-instances", "Instances",
             ("Workflows", "Admin/Workflows/Types"), (EscapedName, workflowLink));
