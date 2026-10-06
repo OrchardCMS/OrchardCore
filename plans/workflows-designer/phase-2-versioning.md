@@ -175,10 +175,25 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - New breaking-change bullets: the constructors that take `IWorkflowTypeVersionStore`, the fault instead of the `NullReferenceException`, and running instances no longer asking for confirmation when publishing.
     - A "Workflow Versions" entry under new features.
 
-### - [ ] 2.8 End-to-end tests
+### - [x] 2.8 End-to-end tests
 
 - Publish version 2 while an instance is halted on the seeded workflow's signal; the instance page shows version 1, and triggering the signal finishes the instance on version 1.
 - The versions dialog lists both versions; compare highlights the change; restoring version 1 creates a draft that matches it.
+- **Notes from implementing this step:**
+  - **Seeded workflows.** The recipe seeds two more workflows, each used by one test.
+    - "Versioned approval": an HTTP request, then an HTTP response that returns `{{ 'approve' | signal_url }}`, then a Signal event, then Notify.
+    - "Versioned history": a Signal event, then Notify.
+  - **Gotcha.** An `HttpRequestEvent` that isn't the start activity doesn't block: its `ExecuteAsync` returns `Done` right away, so an instance runs through it on the first request. The waiting activity is a Signal event, and the response task hands the test the signal's trigger URL.
+  - **`Versions_InstanceWaitingWhileVersionTwoIsPublished_FinishesOnVersionOne`.**
+    1. Starts an instance, which waits on the signal.
+    2. Deletes the signal activity in the designer and publishes version 2.
+    3. Checks that the instances list shows "Version 1", and that the instance page shows version 1's four activities, the blocking signal and "not the published version".
+    4. Triggers the signal URL, and checks that the instance finished.
+  - **`Versions_History_ComparesAndRestoresAnEarlierVersion`.**
+    1. Nudges an activity with the arrow key and publishes version 2.
+    2. Opens the dialog and compares version 1: the activity is marked "moved" on the right, and the "Activities moved" group is listed.
+    3. Restores version 1: the activity is back at its version 1 position in a draft, and version 2 is still published.
+  - **Results.** `WorkflowsDesignerTests` 18/18, twice.
 
 ## Definition of done (Phase 2)
 

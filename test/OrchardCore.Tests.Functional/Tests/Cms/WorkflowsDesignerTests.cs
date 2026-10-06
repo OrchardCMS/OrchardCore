@@ -414,6 +414,86 @@ public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsF
     }
 
     [Fact]
+    public async Task Versions_InstanceWaitingWhileVersionTwoIsPublished_FinishesOnVersionOne()
+    {
+        var (page, consoleErrors) = await OpenAsync();
+        var id = await page.FindWorkflowTypeIdAsync("Versioned approval");
+        await page.OpenDesignerAsync(id);
+        await Assertions.Expect(page.Locator("[data-cy=published-version]")).ToHaveTextAsync("Version 1");
+
+        // An instance starts on version 1, returns the URL of the signal it waits for, and waits.
+        var startUrl = await page.GenerateHttpUrlAsync(id, "versionstart");
+        var started = await page.APIRequest.GetAsync(startUrl);
+        Assert.True(started.Status < 400, $"Expected the workflow to start, got {started.Status}.");
+        var signalUrl = (await started.TextAsync()).Trim();
+        Assert.Contains("trigger", signalUrl, StringComparison.OrdinalIgnoreCase);
+
+        // Version 2 no longer has the activity the instance waits on.
+        await page.Activity("versionwait").Locator(".wfd-node-header").ClickAsync();
+        await page.Keyboard.PressAsync("Delete");
+        await Assertions.Expect(page.Activities()).ToHaveCountAsync(3);
+        await page.PublishAsync();
+        await Assertions.Expect(page.Locator("[data-cy=published-version]")).ToHaveTextAsync("Version 2");
+
+        // The instance still runs on version 1.
+        await page.GotoAndAssertOkAsync($"/Admin/Workflows/Types/{id}/Instances/Index");
+        await Assertions.Expect(page.Locator("[data-cy=instance-version]")).ToHaveTextAsync("Version 1");
+        await page.Locator("a[href*='/Workflow/Details/']").First.ClickAsync();
+        await page.WaitForDesignerAsync();
+        await Assertions.Expect(page.Locator("[data-cy=instance-version]")).ToContainTextAsync("1");
+        await Assertions.Expect(page.Locator("[data-cy=instance-version-not-published]")).ToBeVisibleAsync();
+        await Assertions.Expect(page.Activities()).ToHaveCountAsync(4);
+        await Assertions.Expect(page.Activity("versionwait")).ToHaveClassAsync(new Regex("is-blocking"));
+
+        // The signal still resumes it, and it finishes on version 1.
+        var resumed = await page.APIRequest.GetAsync(signalUrl);
+        Assert.True(resumed.Status < 400, $"Expected the workflow to resume, got {resumed.Status}.");
+
+        await page.GotoAndAssertOkAsync($"/Admin/Workflows/Types/{id}/Instances/Index");
+        await Assertions.Expect(page.Locator(".list-group-item", new() { Has = page.Locator("[data-cy=instance-version]") }).Locator(".badge").First).ToContainTextAsync("Finished");
+
+        Assert.Empty(consoleErrors);
+        await page.CloseAsync();
+    }
+
+    [Fact]
+    public async Task Versions_History_ComparesAndRestoresAnEarlierVersion()
+    {
+        var (page, consoleErrors) = await OpenAsync();
+        var id = await page.FindWorkflowTypeIdAsync("Versioned history");
+        await page.OpenDesignerAsync(id);
+
+        // Version 2 moves the notification one grid cell to the right.
+        await page.Activity("historynotify").Locator(".wfd-node-header").ClickAsync();
+        await page.Keyboard.PressAsync("ArrowRight");
+        await Assertions.Expect(page.Activity("historynotify")).Not.ToHaveAttributeAsync("data-x", "360");
+        await page.PublishAsync();
+        await Assertions.Expect(page.Locator("[data-cy=published-version]")).ToHaveTextAsync("Version 2");
+
+        await page.Locator("[data-cy=toolbar-versions]").ClickAsync();
+        await Assertions.Expect(page.Locator("[data-cy=version-2] [data-cy=version-published]")).ToBeVisibleAsync();
+        await Assertions.Expect(page.Locator("[data-cy=version-1] [data-cy=version-restore]")).ToBeVisibleAsync();
+
+        // Version 1 compared with the published version: the notification moved.
+        await page.Locator("[data-cy=version-1] [data-cy=version-compare]").ClickAsync();
+        await page.WaitForURLAsync("**/CompareVersions/**");
+        await Assertions.Expect(page.Locator("[data-cy=compare-to] [data-cy=activity-historynotify]")).ToHaveClassAsync(new Regex("is-moved"));
+        await Assertions.Expect(page.Locator("[data-cy=compare-group-moved]")).ToBeVisibleAsync();
+
+        // Restoring version 1 puts it in the draft; version 2 stays published until the draft is.
+        await page.OpenDesignerAsync(id);
+        await page.Locator("[data-cy=toolbar-versions]").ClickAsync();
+        await page.Locator("[data-cy=version-1] [data-cy=version-restore]").ClickAsync();
+        await Assertions.Expect(page.Locator("[data-cy=version-1]")).ToHaveCountAsync(0);
+        await Assertions.Expect(page.Activity("historynotify")).ToHaveAttributeAsync("data-x", "360");
+        await Assertions.Expect(page.Locator("[data-cy=toolbar-discard]")).ToBeEnabledAsync();
+        await Assertions.Expect(page.Locator("[data-cy=published-version]")).ToHaveTextAsync("Version 2");
+
+        Assert.Empty(consoleErrors);
+        await page.CloseAsync();
+    }
+
+    [Fact]
     public async Task DesignerEndpoints_UserWithoutManageWorkflows_ReturnForbidden()
     {
         var (page, _) = await OpenAsync();
