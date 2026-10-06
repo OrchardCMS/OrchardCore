@@ -97,6 +97,104 @@ public class JavaScriptEngineTests
             """));
     }
 
+    // A prototype chain is built by the script, so its depth is an input. Up to Jint 4.16.2 a property read,
+    // a write, an 'in' test or a name resolved inside 'with' walked it one native frame per link, and a long
+    // enough chain overflowed the native stack. Constraints.StackOverflowGuard did not cover it, because no
+    // script function is entered along the way, so the process died exactly as for unbounded recursion.
+    // The chain is now walked in a loop, so an ordinary one of any depth simply resolves. It is built with
+    // Object.create() because a '__proto__' literal checks the whole chain for a cycle at every link, which
+    // would make building a chain this long take seconds.
+    private const string DeepPrototypeChain = "var x = { found: 42 }; for (var i = 0; i < 100000; i++) { x = Object.create(x); }";
+
+    [Theory]
+    [InlineData("return x.missing === undefined;")]
+    [InlineData("return x.found === 42;")]
+    [InlineData("return !('missing' in x);")]
+    [InlineData("x.missing = 1; return x.missing === 1;")]
+    [InlineData("with (x) { return found === 42; }")]
+    public void Evaluate_DeepPrototypeChain_ResolvesInsteadOfKillingTheProcess(string script)
+    {
+        var (engine, scope) = CreateScope();
+
+        Assert.True((bool)engine.Evaluate(scope, DeepPrototypeChain + script));
+    }
+
+    [Fact]
+    public void Evaluate_DeepChainOfProxies_RaisesAnErrorTheScriptCanCatch()
+    {
+        var (engine, scope) = CreateScope();
+
+        // A proxy cannot be walked in a loop, because each one may answer differently. Up to Jint 4.16.2 the
+        // forward from one proxy without a trap to the next did not measure the native stack, so this ended
+        // the process even with the guard on. It now measures it, and raises a RangeError in time.
+        Assert.Equal("RangeError", engine.Evaluate(scope, """
+            var p = {};
+            for (var i = 0; i < 100000; i++) { p = new Proxy(p, {}); }
+            try { p.missing; return 'no error'; } catch (e) { return e.constructor.name; }
+            """));
+
+        Assert.Equal(2, Convert.ToInt32(engine.Evaluate(scope, "return 1 + 1;")));
+    }
+
+    // Up to Jint 4.16.2, asking whether a function made by a long '.bind()' chain is a constructor recursed
+    // through every link before any guarded call ran, so 'new' or 'class extends' on it ended the process.
+    // That question is now answered in a loop. Constructing through the chain still descends it, and that
+    // descent is guarded, so it raises a RangeError; 'class extends' stops earlier, with the TypeError for a
+    // superclass without a 'prototype', which a bound function never has.
+    private const string DeepBindChain = "var f = function () { }; for (var i = 0; i < 50000; i++) { f = f.bind(null); }";
+
+    [Theory]
+    [InlineData("new f();", "RangeError")]
+    [InlineData("Reflect.construct(f, []);", "RangeError")]
+    [InlineData("class C extends f { } new C();", "TypeError")]
+    public void Evaluate_DeepBindChain_RaisesAnErrorTheScriptCanCatch(string construct, string error)
+    {
+        var (engine, scope) = CreateScope();
+
+        var result = engine.Evaluate(scope, $$"""
+            {{DeepBindChain}}
+            try { {{construct}} return 'constructed'; } catch (e) { return e.constructor.name; }
+            """);
+
+        Assert.Equal(error, result);
+        Assert.Equal(2, Convert.ToInt32(engine.Evaluate(scope, "return 1 + 1;")));
+    }
+
+    // Up to Jint 4.16.4 these recursions never reached the native stack check the guard relies on, so each
+    // ended the process: 'eval' parsed and ran its argument without measuring the stack, also when it is the
+    // Symbol.hasInstance method 'instanceof' calls, and a failure leaving a ShadowRealm was copied into a
+    // TypeError from inside the catch handling it, one nested exception dispatch per wrapped function. The
+    // last row needs no chain at all: wrapping a function reads its 'name', and that getter wraps it again.
+    [Theory]
+    [InlineData("var s = 'eval(s)'; eval(s);", "RangeError")]
+    [InlineData("var o = {}; Object.defineProperty(o, Symbol.hasInstance, { value: eval }); var s = 's instanceof o'; s instanceof o;", "RangeError")]
+    [InlineData("const sr = new ShadowRealm(); const id = sr.evaluate('x => x'); let f = function () { return 1; }; for (let i = 0; i < 5000; i++) f = id(f); f();", "TypeError")]
+    [InlineData("const sr = new ShadowRealm(); const g = function () {}; Object.defineProperty(g, 'name', { get: sr.evaluate('(function () {})') }); sr.evaluate('f => f')(g);", "TypeError")]
+    public void Evaluate_EvalOrShadowRealmRecursion_RaisesAnErrorTheScriptCanCatch(string script, string error)
+    {
+        var (engine, scope) = CreateScope();
+
+        var result = engine.Evaluate(scope, $$"""
+            try { {{script}} return 'completed'; } catch (e) { return e.constructor.name; }
+            """);
+
+        Assert.Equal(error, result);
+        Assert.Equal(2, Convert.ToInt32(engine.Evaluate(scope, "return 1 + 1;")));
+    }
+
+    [Fact]
+    public void Evaluate_ConcatWithAListFromAMethod_SpreadsItsItems()
+    {
+        // A .NET array or list returned by a method reaches the script as an array, and up to Jint 4.16.4
+        // 'concat' added it as a single element instead of spreading its items.
+        var (engine, scope) = CreateScope(
+            Method("names", () => new List<string> { "b", "c" }),
+            Method("numbers", () => new[] { 2, 3 }));
+
+        Assert.Equal("3: a,b,c", engine.Evaluate(scope, "var r = ['a'].concat(names()); return r.length + ': ' + r.join(',');"));
+        Assert.Equal("3: 1,2,3", engine.Evaluate(scope, "var r = [1].concat(numbers()); return r.length + ': ' + r.join(',');"));
+    }
+
     private static GlobalMethod Method(string name, Func<dynamic> value)
         => new()
         {
