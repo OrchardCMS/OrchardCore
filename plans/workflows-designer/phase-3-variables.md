@@ -93,11 +93,20 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - The test `TemplateOptions` mirror `Startup`.
     - Workflows and Contents tests: 192/192.
 
-### - [ ] 3.3 Activity outputs and bindings
+### - [x] 3.3 Activity outputs and bindings
 
 - `IActivityOutputs`, `ActivityOutputDescriptor`, `WorkflowExecutionContext.SetActivityOutput`; bindings applied in `WorkflowManager.ExecuteWorkflowAsync` after `OnActivityExecutedAsync`, before outcomes are scheduled; a failed coercion faults the workflow.
 - Outputs: `ScriptTask` (Result, any), `LiquidTask` (Result, string), `SetPropertyTask` (Value, any), `HttpRequestTask` (Body, string; StatusCode, number; Response, object), `CreateContentTask`, `RetrieveContentTask` and `UpdateContentTask` (ContentItem, contentItem).
 - **Tests**: a binding writes the variable after execution; no binding changes nothing; a halted activity applies nothing; a failed coercion faults; each activity's outputs.
+- **Notes from implementing this step:**
+  - **When bindings apply.** `ApplyOutputBindings` runs inside the activity's `try`, after its outcomes are known and only when it didn't halt. A value that doesn't convert therefore faults the workflow through the usual path: the activity context is passed to `IWorkflowFaultHandler`. Outputs live in a per-context dictionary and aren't persisted.
+  - **Storage.** `ActivityOutputBindingExtensions` (`A/Helpers`) reads and writes `Properties["OutputBindings"]`, leaving out empty variable names and removing the key when no binding is left.
+  - **Robustness.** `SetActivityOutput` ignores an activity context without a record. Existing tests, and any caller, run activities with `new ActivityContext()`.
+  - **Outputs.** `HttpRequestTask` keeps its anonymous `LastResult` and adds `Body`, `StatusCode` (as an `int`) and `Response` (the same anonymous object, which the `object` type turns into a dictionary). The content tasks set `ContentItem` only when they succeed.
+  - **Tests.**
+    - In `WorkflowManagerTests`: a bound output written as a number, an output without a binding, a wrong type faulting with the variable's name, and a halted activity writing nothing. The test activities are `OutputTask` and `NamedTask`.
+    - `Variables/ActivityOutputsTests.cs`: each activity's declared outputs, the Script and Set Property outputs, and the binding helpers.
+    - Workflows and Contents tests: 206/206.
 
 ### - [ ] 3.4 Set Variable activity
 

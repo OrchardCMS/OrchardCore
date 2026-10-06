@@ -16,6 +16,7 @@ using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Evaluators;
 using OrchardCore.Workflows.Expressions;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.WorkflowContextProviders;
@@ -695,6 +696,77 @@ public class WorkflowManagerTests
         return workflowManager;
     }
 
+    [Fact]
+    public async Task StartWorkflowAsync_BoundOutput_IsWrittenToItsVariable()
+    {
+        var (workflowManager, workflowType) = CreateOutputWorkflow(output: "42", bindings: new() { ["Value"] = "answer" });
+
+        var workflowContext = await workflowManager.StartWorkflowAsync(workflowType);
+
+        Assert.Equal(WorkflowStatus.Finished, workflowContext.Status);
+        Assert.Equal(42d, workflowContext.Properties["answer"]);
+    }
+
+    [Fact]
+    public async Task StartWorkflowAsync_OutputWithoutBinding_ChangesNoVariable()
+    {
+        var (workflowManager, workflowType) = CreateOutputWorkflow(output: "42", bindings: []);
+
+        var workflowContext = await workflowManager.StartWorkflowAsync(workflowType);
+
+        Assert.Equal(WorkflowStatus.Finished, workflowContext.Status);
+        Assert.False(workflowContext.Properties.ContainsKey("answer"));
+    }
+
+    [Fact]
+    public async Task StartWorkflowAsync_BoundOutputOfTheWrongType_FaultsTheWorkflow()
+    {
+        var (workflowManager, workflowType) = CreateOutputWorkflow(output: "many", bindings: new() { ["Value"] = "answer" });
+
+        var workflowContext = await workflowManager.StartWorkflowAsync(workflowType);
+
+        Assert.Equal(WorkflowStatus.Faulted, workflowContext.Status);
+        Assert.Contains("'answer'", workflowContext.Workflow.FaultMessage);
+    }
+
+    [Fact]
+    public async Task StartWorkflowAsync_HaltedActivity_WritesNoBoundOutput()
+    {
+        var (workflowManager, workflowType) = CreateOutputWorkflow(output: "42", bindings: new() { ["Value"] = "answer" }, halt: true);
+
+        var workflowContext = await workflowManager.StartWorkflowAsync(workflowType);
+
+        Assert.Equal(WorkflowStatus.Halted, workflowContext.Status);
+        Assert.False(workflowContext.Properties.ContainsKey("answer"));
+    }
+
+    // A start activity, then an output activity setting "Value" to `output`, which halts when `halt` is set.
+    private static (WorkflowManager Manager, WorkflowType WorkflowType) CreateOutputWorkflow(string output, Dictionary<string, string> bindings, bool halt = false)
+    {
+        var start = new OutputTask(null, halt: false);
+        var outputTask = new OutputTask(output, halt);
+        var properties = new JsonObject();
+        properties.SetOutputBindings(bindings);
+
+        var workflowType = new WorkflowType
+        {
+            Id = 1,
+            WorkflowTypeId = IdGenerator.GenerateId(),
+            Variables = [new WorkflowVariableDefinition { Name = "answer", TypeName = "number" }],
+            Activities =
+            [
+                new() { ActivityId = "start", IsStart = true, Name = "StartTask" },
+                new() { ActivityId = "output", Name = outputTask.Name, Properties = properties },
+            ],
+            Transitions = [new() { SourceActivityId = "start", SourceOutcomeName = "Done", DestinationActivityId = "output" }],
+        };
+
+        var serviceProvider = CreateServiceProvider();
+        var workflowManager = CreateWorkflowManager(serviceProvider, [outputTask, new NamedTask("StartTask", start)], workflowType);
+
+        return (workflowManager, workflowType);
+    }
+
     private sealed class CountingTask : TaskActivity<CountingTask>
     {
         private readonly Action _onExecute;
@@ -738,6 +810,63 @@ public class WorkflowManagerTests
 
             throw new InvalidOperationException("Simulated activity failure");
         }
+    }
+
+    // Sets its "Value" output, then finishes or halts.
+    private sealed class OutputTask : TaskActivity<OutputTask>, IActivityOutputs
+    {
+        private readonly string _output;
+        private readonly bool _halt;
+
+        public OutputTask(string output, bool halt)
+        {
+            _output = output;
+            _halt = halt;
+        }
+
+        public override LocalizedString DisplayText => new(Name, Name);
+
+        public override LocalizedString Category => new("Test", "Test");
+
+        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+            => Outcome(new LocalizedString("Done", "Done"));
+
+        public IEnumerable<ActivityOutputDescriptor> GetOutputs()
+            => [new ActivityOutputDescriptor { Name = "Value", TypeName = "any", DisplayName = new("Value", "Value") }];
+
+        public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        {
+            workflowContext.SetActivityOutput(activityContext, "Value", _output);
+
+            return _halt ? Halt() : Outcome("Done");
+        }
+
+        public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+            => _halt ? Halt() : Outcome("Done");
+    }
+
+    // Another activity under a different name.
+    private sealed class NamedTask : TaskActivity
+    {
+        private readonly IActivity _inner;
+
+        public NamedTask(string name, IActivity inner)
+        {
+            Name = name;
+            _inner = inner;
+        }
+
+        public override string Name { get; }
+
+        public override LocalizedString DisplayText => new(Name, Name);
+
+        public override LocalizedString Category => new("Test", "Test");
+
+        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+            => _inner.GetPossibleOutcomes(workflowContext, activityContext);
+
+        public override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+            => _inner.ExecuteAsync(workflowContext, activityContext);
     }
 
     private sealed class AsyncStringMethodProvider : IGlobalMethodProvider

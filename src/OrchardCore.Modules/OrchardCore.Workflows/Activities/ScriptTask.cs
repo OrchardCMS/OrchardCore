@@ -6,7 +6,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities;
 
-public class ScriptTask : TaskActivity<ScriptTask>
+public class ScriptTask : TaskActivity<ScriptTask>, IActivityOutputs
 {
     private readonly IWorkflowScriptEvaluator _scriptEvaluator;
     protected readonly IStringLocalizer S;
@@ -43,7 +43,11 @@ public class ScriptTask : TaskActivity<ScriptTask>
     {
         var outcomes = new List<string>();
         workflowContext.LastResult = await _scriptEvaluator.EvaluateAsync(Script, workflowContext, new OutcomeMethodProvider(outcomes));
+        workflowContext.SetActivityOutput(activityContext, "Result", workflowContext.LastResult);
 
         return Outcome(outcomes);
     }
+
+    public IEnumerable<ActivityOutputDescriptor> GetOutputs()
+        => [new ActivityOutputDescriptor { Name = "Result", TypeName = "any", DisplayName = S["Result"] }];
 }

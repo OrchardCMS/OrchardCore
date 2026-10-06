@@ -498,6 +498,12 @@ public class WorkflowManager : IWorkflowManager
                     {
                         outcomes = result.Outcomes;
                     }
+
+                    // Once the activity has run, its bound outputs are written to their variables.
+                    if (!result.IsHalted)
+                    {
+                        ApplyOutputBindings(workflowContext, activityContext);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -557,6 +563,28 @@ public class WorkflowManager : IWorkflowManager
             {
                 // Decrement the workflow scope recursion.
                 DecrementRecursion(workflowContext.Workflow);
+            }
+        }
+    }
+
+    // Writes the outputs the activity set to the variables they are bound to. A value that doesn't convert to its
+    // variable's type throws, which faults the workflow.
+    private static void ApplyOutputBindings(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    {
+        var bindings = activityContext.Activity.Properties.GetOutputBindings();
+
+        if (bindings.Count == 0)
+        {
+            return;
+        }
+
+        var outputs = workflowContext.GetActivityOutputs(activityContext.ActivityRecord.ActivityId);
+
+        foreach (var (output, variable) in bindings)
+        {
+            if (outputs.TryGetValue(output, out var value))
+            {
+                workflowContext.Variables.Set(variable, value);
             }
         }
     }

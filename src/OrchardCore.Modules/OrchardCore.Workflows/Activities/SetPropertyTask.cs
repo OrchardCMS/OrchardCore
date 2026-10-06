@@ -5,7 +5,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities;
 
-public class SetPropertyTask : TaskActivity<SetPropertyTask>
+public class SetPropertyTask : TaskActivity<SetPropertyTask>, IActivityOutputs
 {
     private readonly IWorkflowScriptEvaluator _scriptEvaluator;
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
@@ -62,7 +62,11 @@ public class SetPropertyTask : TaskActivity<SetPropertyTask>
         };
 
         workflowContext.Properties[PropertyName] = value;
+        workflowContext.SetActivityOutput(activityContext, "Value", value);
 
         return Outcome("Done");
     }
+
+    public IEnumerable<ActivityOutputDescriptor> GetOutputs()
+        => [new ActivityOutputDescriptor { Name = "Value", TypeName = "any", DisplayName = S["Value"] }];
 }

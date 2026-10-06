@@ -5,7 +5,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities;
 
-public class LiquidTask : TaskActivity<LiquidTask>
+public class LiquidTask : TaskActivity<LiquidTask>, IActivityOutputs
 {
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
     protected readonly IStringLocalizer S;
@@ -34,7 +34,11 @@ public class LiquidTask : TaskActivity<LiquidTask>
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         workflowContext.LastResult = await _expressionEvaluator.EvaluateAsync(Expression, workflowContext, null);
+        workflowContext.SetActivityOutput(activityContext, "Result", workflowContext.LastResult);
 
         return Outcome("Done");
     }
+
+    public IEnumerable<ActivityOutputDescriptor> GetOutputs()
+        => [new ActivityOutputDescriptor { Name = "Result", TypeName = "string", DisplayName = S["Result"] }];
 }

@@ -15,7 +15,7 @@ using YesSql;
 
 namespace OrchardCore.Contents.Workflows.Activities;
 
-public class UpdateContentTask : ContentTask
+public class UpdateContentTask : ContentTask, IActivityOutputs
 {
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
@@ -157,6 +157,7 @@ public class UpdateContentTask : ContentTask
 
             workflowContext.Properties[ContentEventConstants.ContentItemInputKey] = contentItem;
             workflowContext.LastResult = contentItem;
+            workflowContext.SetActivityOutput(activityContext, "ContentItem", contentItem);
 
             return Outcome("Done");
         }
@@ -174,4 +175,7 @@ public class UpdateContentTask : ContentTask
 
         return Outcome("Failed");
     }
+
+    public IEnumerable<ActivityOutputDescriptor> GetOutputs()
+        => [new ActivityOutputDescriptor { Name = "ContentItem", TypeName = "contentItem", DisplayName = S["Content item"] }];
 }

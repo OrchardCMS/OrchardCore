@@ -30,8 +30,41 @@ public sealed class WorkflowExecutionContext : IDisposable
         Variables = new WorkflowVariables(Properties, workflowType?.Variables, variableTypes is null ? null : variableTypes.Get);
     }
 
+    // The outputs the activities set while this context runs, by activity id, then output name.
+    private readonly Dictionary<string, Dictionary<string, object>> _activityOutputs = [];
+
     public Workflow Workflow { get; }
     public WorkflowType WorkflowType { get; }
+
+    /// <summary>
+    /// Sets an output of an activity (see <see cref="Activities.IActivityOutputs"/>). Once the activity has run, the
+    /// engine writes it to the variable it is bound to, if any. An activity context without a record (an activity
+    /// run outside of a workflow) is ignored.
+    /// </summary>
+    public void SetActivityOutput(ActivityContext activityContext, string name, object value)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(name);
+
+        var activityId = activityContext?.ActivityRecord?.ActivityId;
+
+        if (string.IsNullOrEmpty(activityId))
+        {
+            return;
+        }
+
+        if (!_activityOutputs.TryGetValue(activityId, out var outputs))
+        {
+            _activityOutputs[activityId] = outputs = [];
+        }
+
+        outputs[name] = value;
+    }
+
+    /// <summary>
+    /// Returns the outputs an activity set while this context ran.
+    /// </summary>
+    public IReadOnlyDictionary<string, object> GetActivityOutputs(string activityId)
+        => !string.IsNullOrEmpty(activityId) && _activityOutputs.TryGetValue(activityId, out var outputs) ? outputs : new Dictionary<string, object>();
 
     /// <summary>
     /// The variables of the workflow: the declared ones, typed, over <see cref="Properties"/>.

@@ -10,7 +10,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Http.Activities;
 
-public class HttpRequestTask : TaskActivity<HttpRequestTask>
+public class HttpRequestTask : TaskActivity<HttpRequestTask>, IActivityOutputs
 {
     private static readonly string[] s_separator = ["\r\n", "\n", "\r"];
 
@@ -188,14 +188,20 @@ public class HttpRequestTask : TaskActivity<HttpRequestTask>
 
         var outcome = responseCodes.FirstOrDefault(x => x == (int)response.StatusCode);
 
+        var responseBody = await response.Content.ReadAsStringAsync();
+
         workflowContext.LastResult = new
         {
-            Body = await response.Content.ReadAsStringAsync(),
+            Body = responseBody,
             Headers = response.Headers.ToDictionary(x => x.Key),
             response.StatusCode,
             response.ReasonPhrase,
             response.IsSuccessStatusCode,
         };
+
+        workflowContext.SetActivityOutput(activityContext, "Body", responseBody);
+        workflowContext.SetActivityOutput(activityContext, "StatusCode", (int)response.StatusCode);
+        workflowContext.SetActivityOutput(activityContext, "Response", workflowContext.LastResult);
 
         return Outcome(outcome != 0 ? outcome.ToString() : "UnhandledHttpStatus");
     }
@@ -220,4 +226,12 @@ public class HttpRequestTask : TaskActivity<HttpRequestTask>
             from code in text.Split(',', StringSplitOptions.RemoveEmptyEntries)
             select int.Parse(code);
     }
+
+    public IEnumerable<ActivityOutputDescriptor> GetOutputs()
+        =>
+        [
+            new ActivityOutputDescriptor { Name = "Body", TypeName = "string", DisplayName = S["Response body"] },
+            new ActivityOutputDescriptor { Name = "StatusCode", TypeName = "number", DisplayName = S["Status code"] },
+            new ActivityOutputDescriptor { Name = "Response", TypeName = "object", DisplayName = S["Response"] },
+        ];
 }
