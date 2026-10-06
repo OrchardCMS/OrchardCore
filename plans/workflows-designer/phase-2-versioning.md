@@ -124,7 +124,7 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
   - **Configuration.** `WorkflowVersionOptions` (`A/Services`) is bound to `Workflows:Versions` and described in `M/ConfigurationSchema.json`. It's a new section, so it has no legacy name.
   - **Tests.** `Versioning/WorkflowVersionRetentionTests.cs`: no limit keeps 5 of 5; a limit of 2 keeps versions 4 and 3; a version an instance runs on is kept. Workflows tests: 91/91.
 
-### - [ ] 2.5 Designer API
+### - [x] 2.5 Designer API
 
 - `Definition` and the publish result include the published version (`versionId`, `version`, `createdUtc`, `createdBy`).
 - `GET Versions`: the versions of the type, newest first, with the number of instances pinned to each.
@@ -133,6 +133,14 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
 - `POST Restore` (`versionId`, `revision`): writes the version into the draft through the draft manager (conflict-checked like every draft change).
 - `Instance` renders the instance's pinned version and returns its number.
 - **Tests**: each endpoint (SiteContext), the diff rules, restore conflicts, 403 without `ManageWorkflows`.
+- **Notes from implementing this step:**
+  - **Shapes.** Versions are `WorkflowDesignerVersion` (`versionId`, `version`, `name`, `createdUtc`, `createdBy`, `isPublished`, `instanceCount`). `WorkflowDesignerDefinition` gains `publishedVersion` and `version` (the version a version page or an instance shows). `Publish` returns `version`. `Versions` returns `{ versions, draft: { revision, modifiedUtc, modifiedBy } | null }`; `Compare` returns `{ from, to, changes }`; `Restore` returns `{ revision, issues }`, or the usual 409 problem.
+  - **Diff rules** (`WorkflowTypeDiff`, public so the test project can reach it): activities are added, removed, changed (type, start flag or properties) or only moved (a changed activity isn't also reported as moved); transitions are compared by their `{source}:{outcome}:{destination}` keys, so a rewired one is a removed key plus an added one; settings list the changed names among `Name` and the execution settings.
+  - **Names.** A version shown on its own (version page, compare) carries the name it had then; an instance shows the current name.
+  - **Instance counts** load the `WorkflowIndex` rows of the type and group them by version. Instances created before versions existed aren't counted.
+  - **Restore** keeps the draft's name and enabled state (V1), and creates the draft when there's none.
+  - **Config.** The designer config has `versions`, `version`, `compare` and `restore` URLs (null in the instance viewer). The pages that use them come in step 2.6.
+  - **Tests.** `Versioning/WorkflowTypeDiffTests.cs` (5) and `WorkflowDesignerControllerTests` (6 more: versions with instance counts and the publish result, an earlier version's graph, a version of another type, compare with the draft, restore and its conflict, a pinned instance's version; the forbidden test now covers the new endpoints). Workflows tests: 102/102.
 
 ### - [ ] 2.6 Designer UI
 

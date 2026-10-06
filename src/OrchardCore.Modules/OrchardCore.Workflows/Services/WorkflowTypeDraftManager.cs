@@ -228,6 +228,29 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
     }
 
     /// <inheritdoc />
+    public Task<WorkflowTypeDraftResult> RestoreAsync(string workflowTypeId, int expectedRevision, WorkflowTypeVersion version)
+    {
+        ArgumentNullException.ThrowIfNull(version);
+
+        return ChangeAsync(workflowTypeId, expectedRevision, (workflowType, draft) =>
+        {
+            if (version.WorkflowTypeId != workflowType.WorkflowTypeId)
+            {
+                return Task.FromResult(ChangeOutcome.Rejected(WorkflowTypeDraftStatus.NotFound));
+            }
+
+            draft.IsSingleton = version.IsSingleton;
+            draft.LockTimeout = version.LockTimeout;
+            draft.LockExpiration = version.LockExpiration;
+            draft.DeleteFinishedWorkflows = version.DeleteFinishedWorkflows;
+            draft.Activities = version.Activities.Select(activity => activity.Clone()).ToList();
+            draft.Transitions = version.Transitions.Select(transition => transition.Clone()).ToList();
+
+            return Task.FromResult(new ChangeOutcome());
+        });
+    }
+
+    /// <inheritdoc />
     public async Task<WorkflowTypeDraftResult> PublishAsync(string workflowTypeId, int expectedRevision)
     {
         ArgumentException.ThrowIfNullOrEmpty(workflowTypeId);

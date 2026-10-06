@@ -66,6 +66,15 @@ public interface IWorkflowTypeDraftManager
     Task<WorkflowTypeDraftResult> UpdateSettingsAsync(string workflowTypeId, int expectedRevision, WorkflowTypeDraftSettings settings);
 
     /// <summary>
+    /// Replaces the activities, transitions and execution settings of the draft with those of a version, so the
+    /// version can be published again. The name and enabled state of the draft are kept.
+    /// </summary>
+    /// <param name="workflowTypeId">The <see cref="WorkflowType.WorkflowTypeId"/>.</param>
+    /// <param name="expectedRevision">The revision the caller last saw.</param>
+    /// <param name="version">The version to restore, which must belong to the workflow type.</param>
+    Task<WorkflowTypeDraftResult> RestoreAsync(string workflowTypeId, int expectedRevision, WorkflowTypeVersion version);
+
+    /// <summary>
     /// Applies the draft to the live workflow type through <see cref="IWorkflowTypeStore.SaveAsync"/>, then
     /// deletes the draft. A draft with <see cref="WorkflowDesignIssueSeverity.Error"/> issues isn't published.
     /// </summary>

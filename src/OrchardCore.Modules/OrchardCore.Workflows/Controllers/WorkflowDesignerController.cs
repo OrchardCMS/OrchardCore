@@ -37,6 +37,7 @@ public sealed class WorkflowDesignerController : Controller
 
     private readonly IAuthorizationService _authorizationService;
     private readonly IWorkflowTypeStore _workflowTypeStore;
+    private readonly IWorkflowTypeVersionStore _versionStore;
     private readonly IWorkflowStore _workflowStore;
     private readonly IWorkflowTypeDraftManager _draftManager;
     private readonly WorkflowDesignerModelBuilder _modelBuilder;
@@ -51,6 +52,7 @@ public sealed class WorkflowDesignerController : Controller
     public WorkflowDesignerController(
         IAuthorizationService authorizationService,
         IWorkflowTypeStore workflowTypeStore,
+        IWorkflowTypeVersionStore versionStore,
         IWorkflowStore workflowStore,
         IWorkflowTypeDraftManager draftManager,
         WorkflowDesignerModelBuilder modelBuilder,
@@ -63,6 +65,7 @@ public sealed class WorkflowDesignerController : Controller
     {
         _authorizationService = authorizationService;
         _workflowTypeStore = workflowTypeStore;
+        _versionStore = versionStore;
         _workflowStore = workflowStore;
         _draftManager = draftManager;
         _modelBuilder = modelBuilder;
@@ -121,12 +124,13 @@ public sealed class WorkflowDesignerController : Controller
             Transitions = source.Transitions.Select(WorkflowDesignerTransition.From).ToList(),
             Issues = issues,
             RunningInstanceCount = runningInstanceCount,
+            PublishedVersion = await PublishedVersionAsync(workflowType),
         });
     }
 
     /// <summary>
-    /// The graph of the read-only instance viewer: the live workflow type, which the instance runs on (not
-    /// the draft), with the activities the instance waits on.
+    /// The graph of the read-only instance viewer: the version the instance runs on (never the draft), with the
+    /// activities the instance waits on.
     /// </summary>
     [HttpGet]
     public async Task<IActionResult> Instance(long workflowTypeId, long instanceId)
@@ -144,13 +148,18 @@ public sealed class WorkflowDesignerController : Controller
             return this.ApiNotFoundProblem();
         }
 
+        var definition = await _versionStore.GetWorkflowTypeAsync(workflowType, workflow.WorkflowTypeVersionId);
+        var version = string.IsNullOrEmpty(workflow.WorkflowTypeVersionId) ? null : await _versionStore.GetAsync(workflow.WorkflowTypeVersionId);
+
         return Ok(new WorkflowDesignerDefinition
         {
             Id = workflowType.Id,
             WorkflowTypeId = workflowType.WorkflowTypeId,
-            Settings = SettingsOf(workflowType),
-            Nodes = await _modelBuilder.BuildNodesAsync(workflowType),
-            Transitions = workflowType.Transitions.Select(WorkflowDesignerTransition.From).ToList(),
+            Settings = SettingsOf(definition),
+            Nodes = await _modelBuilder.BuildNodesAsync(definition),
+            Transitions = definition.Transitions.Select(WorkflowDesignerTransition.From).ToList(),
+            PublishedVersion = await PublishedVersionAsync(workflowType),
+            Version = WorkflowDesignerVersion.From(version, workflowType),
             Instance = new WorkflowDesignerInstance
             {
                 Id = workflow.Id,
@@ -448,6 +457,140 @@ public sealed class WorkflowDesignerController : Controller
         {
             issues = result.Issues,
             publishedUtc = _clock.UtcNow,
+            version = await PublishedVersionAsync(result.WorkflowType ?? workflowType),
+        });
+    }
+
+    /// <summary>
+    /// The versions of the workflow type, the most recent first, with the number of instances on each, and the
+    /// draft if there is one.
+    /// </summary>
+    [HttpGet]
+    public async Task<IActionResult> Versions(long workflowTypeId)
+    {
+        if (!await CanManageAsync())
+        {
+            return this.ApiForbidProblem();
+        }
+
+        var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
+
+        if (workflowType is null)
+        {
+            return this.ApiNotFoundProblem();
+        }
+
+        var instanceCounts = (await _session.QueryIndex<WorkflowIndex>(index => index.WorkflowTypeId == workflowType.WorkflowTypeId).ListAsync())
+            .Where(index => !string.IsNullOrEmpty(index.WorkflowTypeVersionId))
+            .GroupBy(index => index.WorkflowTypeVersionId)
+            .ToDictionary(group => group.Key, group => group.Count());
+
+        var versions = await _versionStore.ListAsync(workflowType.WorkflowTypeId);
+        var draft = await _draftManager.GetAsync(workflowType.WorkflowTypeId);
+
+        return Ok(new
+        {
+            versions = versions
+                .Select(version => WorkflowDesignerVersion.From(version, workflowType, instanceCounts.GetValueOrDefault(version.VersionId)))
+                .ToList(),
+            draft = draft is null
+                ? null
+                : new
+                {
+                    revision = draft.Revision,
+                    modifiedUtc = draft.ModifiedUtc,
+                    modifiedBy = draft.ModifiedByUserName,
+                },
+        });
+    }
+
+    /// <summary>
+    /// A version of the workflow type, as a read-only definition.
+    /// </summary>
+    [HttpGet]
+    public async Task<IActionResult> Version(long workflowTypeId, string versionId)
+    {
+        if (!await CanManageAsync())
+        {
+            return this.ApiForbidProblem();
+        }
+
+        var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
+        var version = workflowType is null || string.IsNullOrEmpty(versionId) ? null : await _versionStore.GetAsync(versionId);
+
+        if (version is null || version.WorkflowTypeId != workflowType.WorkflowTypeId)
+        {
+            return this.ApiNotFoundProblem();
+        }
+
+        return Ok(await ReadOnlyDefinitionAsync(workflowType, ToDefinition(version, workflowType), version));
+    }
+
+    /// <summary>
+    /// Two definitions of the workflow type and what changed from the first to the second. Each one is a version
+    /// id, or <c>draft</c>.
+    /// </summary>
+    [HttpGet]
+    public async Task<IActionResult> Compare(long workflowTypeId, string from, string to)
+    {
+        if (!await CanManageAsync())
+        {
+            return this.ApiForbidProblem();
+        }
+
+        var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
+
+        if (workflowType is null)
+        {
+            return this.ApiNotFoundProblem();
+        }
+
+        var (fromDefinition, fromVersion) = await ResolveDefinitionAsync(workflowType, from);
+        var (toDefinition, toVersion) = await ResolveDefinitionAsync(workflowType, to);
+
+        if (fromDefinition is null || toDefinition is null)
+        {
+            return this.ApiNotFoundProblem();
+        }
+
+        return Ok(new
+        {
+            from = await ReadOnlyDefinitionAsync(workflowType, fromDefinition, fromVersion),
+            to = await ReadOnlyDefinitionAsync(workflowType, toDefinition, toVersion),
+            changes = WorkflowTypeDiff.Compare(fromDefinition, toDefinition),
+        });
+    }
+
+    /// <summary>
+    /// Copies a version into the draft, so it can be published again as the next version.
+    /// </summary>
+    [HttpPost]
+    public async Task<IActionResult> Restore(long workflowTypeId, [FromBody] WorkflowDesignerRestoreRequest request)
+    {
+        if (!await CanManageAsync())
+        {
+            return this.ApiForbidProblem();
+        }
+
+        var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
+        var version = workflowType is null || string.IsNullOrEmpty(request?.VersionId) ? null : await _versionStore.GetAsync(request.VersionId);
+
+        if (version is null || version.WorkflowTypeId != workflowType.WorkflowTypeId)
+        {
+            return this.ApiNotFoundProblem();
+        }
+
+        var result = await _draftManager.RestoreAsync(workflowType.WorkflowTypeId, request.Revision, version);
+
+        if (!result.Succeeded)
+        {
+            return FailureResult(result);
+        }
+
+        return Ok(new
+        {
+            revision = result.Revision,
+            issues = result.Issues,
         });
     }
 
@@ -480,6 +623,50 @@ public sealed class WorkflowDesignerController : Controller
             LockTimeout = workflowType.LockTimeout,
             LockExpiration = workflowType.LockExpiration,
             DeleteFinishedWorkflows = workflowType.DeleteFinishedWorkflows,
+        };
+
+    private async Task<WorkflowDesignerVersion> PublishedVersionAsync(WorkflowType workflowType)
+        => string.IsNullOrEmpty(workflowType.VersionId)
+            ? null
+            : WorkflowDesignerVersion.From(await _versionStore.GetAsync(workflowType.VersionId), workflowType);
+
+    // A version as a definition, with the name it had then.
+    private static WorkflowType ToDefinition(WorkflowTypeVersion version, WorkflowType workflowType)
+    {
+        var definition = version.ToWorkflowType(workflowType);
+        definition.Name = version.Name;
+
+        return definition;
+    }
+
+    private async Task<(WorkflowType Definition, WorkflowTypeVersion Version)> ResolveDefinitionAsync(WorkflowType workflowType, string id)
+    {
+        if (string.Equals(id, "draft", StringComparison.OrdinalIgnoreCase))
+        {
+            var draft = await _draftManager.GetAsync(workflowType.WorkflowTypeId);
+
+            return (draft?.ToTransientWorkflowType(workflowType), null);
+        }
+
+        var version = string.IsNullOrEmpty(id) ? null : await _versionStore.GetAsync(id);
+
+        return version is null || version.WorkflowTypeId != workflowType.WorkflowTypeId
+            ? (null, null)
+            : (ToDefinition(version, workflowType), version);
+    }
+
+    // A definition that is only shown: a version, or the draft (when version is null).
+    private async Task<WorkflowDesignerDefinition> ReadOnlyDefinitionAsync(WorkflowType workflowType, WorkflowType definition, WorkflowTypeVersion version)
+        => new()
+        {
+            Id = workflowType.Id,
+            WorkflowTypeId = workflowType.WorkflowTypeId,
+            HasDraft = version is null,
+            Settings = SettingsOf(definition),
+            Nodes = await _modelBuilder.BuildNodesAsync(definition),
+            Transitions = definition.Transitions.Select(WorkflowDesignerTransition.From).ToList(),
+            PublishedVersion = await PublishedVersionAsync(workflowType),
+            Version = WorkflowDesignerVersion.From(version, workflowType),
         };
 
     private Task<bool> CanManageAsync()

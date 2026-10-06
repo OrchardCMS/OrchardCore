@@ -35,7 +35,7 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         await WorkflowDesignerSiteFixture.EnableFeaturesAsync(context, "OrchardCore.Workflows");
         var (id, _) = await WorkflowDesignerSiteFixture.CreateWorkflowTypeAsync(context, Activity("notify", "NotifyTask"));
 
-        foreach (var action in new[] { "Definition", "Library", "Editor?activityId=notify", "Settings" })
+        foreach (var action in new[] { "Definition", "Library", "Editor?activityId=notify", "Settings", "Versions", "Version?versionId=x", "Compare?from=draft&to=draft" })
         {
             using var response = await context.Client.GetAsync($"Admin/Workflows/Types/{id}/Designer/{action}", TestContext.Current.CancellationToken);
 
@@ -501,6 +501,150 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         Assert.DoesNotContain(scripts, x => x.Contains("bootstrap") && x.Contains("4."));
     }
 
+    [Fact]
+    public async Task Versions_AfterPublishing_ListsTheVersionsWithTheirInstances()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
+        var firstVersionId = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition"))["publishedVersion"]["versionId"].GetValue<string>();
+        await _fixture.CreatePinnedInstanceAsync(workflowTypeId, firstVersionId, WorkflowStatus.Halted, "notify");
+
+        var published = await PublishWithNotifyAtAsync(id, x: 40);
+
+        Assert.Equal(2, published["version"]["version"].GetValue<int>());
+        Assert.True(published["version"]["isPublished"].GetValue<bool>());
+
+        var json = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Versions");
+        var versions = json["versions"].AsArray();
+
+        Assert.Equal(new[] { 2, 1 }, versions.Select(version => version["version"].GetValue<int>()));
+        Assert.Equal(new[] { true, false }, versions.Select(version => version["isPublished"].GetValue<bool>()));
+        Assert.Equal(new[] { 0, 1 }, versions.Select(version => version["instanceCount"].GetValue<int>()));
+        Assert.Equal(firstVersionId, versions[1]["versionId"].GetValue<string>());
+        Assert.Null(json["draft"]);
+
+        var definition = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition");
+        Assert.Equal(2, definition["publishedVersion"]["version"].GetValue<int>());
+    }
+
+    [Fact]
+    public async Task Version_EarlierVersion_ReturnsItsGraph()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
+        var firstVersionId = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition"))["publishedVersion"]["versionId"].GetValue<string>();
+        await PublishWithNotifyAtAsync(id, x: 40);
+
+        var json = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Version?versionId={firstVersionId}");
+
+        Assert.Equal(0, json["nodes"][0]["x"].GetValue<int>());
+        Assert.Equal(1, json["version"]["version"].GetValue<int>());
+        Assert.Equal(2, json["publishedVersion"]["version"].GetValue<int>());
+        Assert.False(json["hasDraft"].GetValue<bool>());
+
+        using var unknown = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/{id}/Designer/Version?versionId=unknown", TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.NotFound, unknown.StatusCode);
+    }
+
+    [Fact]
+    public async Task Version_OfAnotherWorkflowType_ReturnsNotFoundProblem()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
+        var (otherId, _) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
+        var otherVersionId = (await GetJsonAsync($"Admin/Workflows/Types/{otherId}/Designer/Definition"))["publishedVersion"]["versionId"].GetValue<string>();
+
+        using var response = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/{id}/Designer/Version?versionId={otherVersionId}", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Compare_VersionWithDraft_ReturnsBothGraphsAndTheChanges()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
+        var versionId = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition"))["publishedVersion"]["versionId"].GetValue<string>();
+
+        await SaveNotifyAtAsync(id, x: 40, revision: 0);
+
+        string addedId;
+        using (var added = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/AddActivity", new { revision = 1, name = "NotifyTask", x = 0, y = 200 }))
+        {
+            addedId = (await ReadJsonAsync(added))["node"]["id"].GetValue<string>();
+        }
+
+        var json = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Compare?from={versionId}&to=draft");
+
+        Assert.Equal(1, json["from"]["version"]["version"].GetValue<int>());
+        Assert.True(json["to"]["hasDraft"].GetValue<bool>());
+        Assert.Single(json["from"]["nodes"].AsArray());
+        Assert.Equal(2, json["to"]["nodes"].AsArray().Count);
+
+        var changes = json["changes"];
+        Assert.Equal([addedId], changes["addedActivityIds"].AsArray().Select(x => x.GetValue<string>()));
+        Assert.Equal(["notify"], changes["movedActivityIds"].AsArray().Select(x => x.GetValue<string>()));
+        Assert.Empty(changes["removedActivityIds"].AsArray());
+        Assert.True(changes["hasChanges"].GetValue<bool>());
+    }
+
+    [Fact]
+    public async Task Restore_EarlierVersion_CopiesItIntoTheDraft()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
+        var firstVersionId = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition"))["publishedVersion"]["versionId"].GetValue<string>();
+        await PublishWithNotifyAtAsync(id, x: 40);
+
+        using (var restored = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Restore", new { revision = 0, versionId = firstVersionId }))
+        {
+            Assert.Equal(HttpStatusCode.OK, restored.StatusCode);
+            Assert.Equal(1, (await ReadJsonAsync(restored))["revision"].GetValue<int>());
+        }
+
+        var definition = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition");
+        Assert.True(definition["hasDraft"].GetValue<bool>());
+        Assert.Equal(0, definition["nodes"][0]["x"].GetValue<int>());
+
+        // The draft moved on since revision 0.
+        using var stale = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Restore", new { revision = 0, versionId = firstVersionId });
+        Assert.Equal(HttpStatusCode.Conflict, stale.StatusCode);
+    }
+
+    [Fact]
+    public async Task Instance_PinnedToAnEarlierVersion_ShowsThatVersion()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
+        var firstVersionId = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition"))["publishedVersion"]["versionId"].GetValue<string>();
+        await PublishWithNotifyAtAsync(id, x: 40);
+        var instanceId = await _fixture.CreatePinnedInstanceAsync(workflowTypeId, firstVersionId, WorkflowStatus.Halted, "notify");
+
+        var json = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Instance?instanceId={instanceId}");
+
+        Assert.Equal(0, json["nodes"][0]["x"].GetValue<int>());
+        Assert.Equal(1, json["version"]["version"].GetValue<int>());
+        Assert.Equal(2, json["publishedVersion"]["version"].GetValue<int>());
+    }
+
+    private async Task SaveNotifyAtAsync(long id, int x, int revision)
+    {
+        using var saved = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Save", new
+        {
+            revision,
+            nodes = new[] { new { id = "notify", x, y = 0, isStart = false } },
+            transitions = Array.Empty<object>(),
+            removedActivityIds = Array.Empty<string>(),
+        });
+
+        Assert.Equal(HttpStatusCode.OK, saved.StatusCode);
+    }
+
+    // Moves the "notify" activity in a new draft and publishes it, which creates the next version.
+    private async Task<JsonNode> PublishWithNotifyAtAsync(long id, int x)
+    {
+        await SaveNotifyAtAsync(id, x, revision: 0);
+
+        using var published = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Publish", new { revision = 1 });
+        Assert.Equal(HttpStatusCode.OK, published.StatusCode);
+
+        return await ReadJsonAsync(published);
+    }
+
     private Task<(long Id, string WorkflowTypeId)> CreateWorkflowTypeAsync(params ActivityRecord[] activities)
         => WorkflowDesignerSiteFixture.CreateWorkflowTypeAsync(_fixture.Context, activities);
 
@@ -639,12 +783,16 @@ public sealed class WorkflowDesignerSiteFixture : IAsyncLifetime
         return (workflowType.Id, workflowType.WorkflowTypeId);
     }
 
-    public async Task<long> CreateInstanceAsync(string workflowTypeId, WorkflowStatus status, params string[] blockingActivityIds)
+    public Task<long> CreateInstanceAsync(string workflowTypeId, WorkflowStatus status, params string[] blockingActivityIds)
+        => CreatePinnedInstanceAsync(workflowTypeId, null, status, blockingActivityIds);
+
+    public async Task<long> CreatePinnedInstanceAsync(string workflowTypeId, string versionId, WorkflowStatus status, params string[] blockingActivityIds)
     {
         var workflow = new Workflow
         {
             WorkflowId = Guid.NewGuid().ToString("n"),
             WorkflowTypeId = workflowTypeId,
+            WorkflowTypeVersionId = versionId,
             Status = status,
             CreatedUtc = DateTime.UtcNow,
             BlockingActivities = blockingActivityIds.Select(activityId => new BlockingActivity { ActivityId = activityId, Name = activityId }).ToList(),

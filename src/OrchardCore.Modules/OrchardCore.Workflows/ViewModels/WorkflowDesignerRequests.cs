@@ -69,3 +69,19 @@ public sealed class WorkflowDesignerAddActivityRequest
     /// </summary>
     public int Y { get; set; }
 }
+
+/// <summary>
+/// The body of the designer's restore request: the version to copy into the draft.
+/// </summary>
+public sealed class WorkflowDesignerRestoreRequest
+{
+    /// <summary>
+    /// The draft revision the designer last saw.
+    /// </summary>
+    public int Revision { get; set; }
+
+    /// <summary>
+    /// The <see cref="Models.WorkflowTypeVersion.VersionId"/> of the version to restore.
+    /// </summary>
+    public string VersionId { get; set; }
+}

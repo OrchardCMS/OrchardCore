@@ -71,6 +71,17 @@ public sealed class WorkflowDesignerDefinition
     /// The instance shown by the read-only instance viewer, or <see langword="null"/> in the designer.
     /// </summary>
     public WorkflowDesignerInstance Instance { get; init; }
+
+    /// <summary>
+    /// The version new instances start on, or <see langword="null"/> when the workflow type has none.
+    /// </summary>
+    public WorkflowDesignerVersion PublishedVersion { get; init; }
+
+    /// <summary>
+    /// The version shown: the one a read-only version page shows, or the one the instance of the instance
+    /// viewer runs on. <see langword="null"/> in the designer, and for instances created before versions existed.
+    /// </summary>
+    public WorkflowDesignerVersion Version { get; init; }
 }
 
 /// <summary>

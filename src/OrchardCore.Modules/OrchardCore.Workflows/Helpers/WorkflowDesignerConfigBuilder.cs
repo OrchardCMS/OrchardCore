@@ -42,6 +42,10 @@ internal static class WorkflowDesignerConfigBuilder
                 Settings = url.Action("Settings", DesignerController, route),
                 Publish = url.Action("Publish", DesignerController, route),
                 Discard = url.Action("Discard", DesignerController, route),
+                Versions = url.Action("Versions", DesignerController, route),
+                Version = url.Action("Version", DesignerController, route),
+                Compare = url.Action("Compare", DesignerController, route),
+                Restore = url.Action("Restore", DesignerController, route),
             }
             : new
             {
@@ -54,6 +58,10 @@ internal static class WorkflowDesignerConfigBuilder
                 Settings = (string)null,
                 Publish = (string)null,
                 Discard = (string)null,
+                Versions = (string)null,
+                Version = (string)null,
+                Compare = (string)null,
+                Restore = (string)null,
             };
 
         var config = new
