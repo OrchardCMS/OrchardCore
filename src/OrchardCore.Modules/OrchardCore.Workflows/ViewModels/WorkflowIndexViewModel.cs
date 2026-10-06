@@ -45,6 +45,17 @@ public class WorkflowEntry
     public Workflow Workflow { get; set; }
     public long Id { get; set; }
     public bool IsChecked { get; set; }
+
+    /// <summary>
+    /// The number of the version the instance runs on, or <see langword="null"/> for instances created before
+    /// workflow types had versions.
+    /// </summary>
+    public int? Version { get; set; }
+
+    /// <summary>
+    /// Whether the instance runs on the published version.
+    /// </summary>
+    public bool IsPublishedVersion { get; set; }
 }
 
 public enum WorkflowFilter

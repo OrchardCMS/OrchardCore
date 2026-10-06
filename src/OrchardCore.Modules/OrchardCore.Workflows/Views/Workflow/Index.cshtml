@@ -107,6 +107,10 @@
                                         <span class="badge text-bg-@statusCss">
                                             @T.GetLocalizedStatus(entry.Workflow.Status)
                                         </span>
+                                        @if (entry.Version is not null)
+                                        {
+                                            <span class="badge text-bg-light border" title="@(entry.IsPublishedVersion ? T["Runs on the published version"] : T["Runs on an earlier version"])" data-cy="instance-version">@T["Version {0}", entry.Version]</span>
+                                        }
                                     </div>
                                 </div>
                             </div>

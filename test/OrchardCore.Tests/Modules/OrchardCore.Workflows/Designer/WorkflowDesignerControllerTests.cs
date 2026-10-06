@@ -624,6 +624,25 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         Assert.Equal(2, json["publishedVersion"]["version"].GetValue<int>());
     }
 
+    [Fact]
+    public async Task InstancesList_PinnedAndUnpinnedInstances_ShowsTheVersionOfEach()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
+        var firstVersionId = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition"))["publishedVersion"]["versionId"].GetValue<string>();
+        await PublishWithNotifyAtAsync(id, x: 40);
+        var pinnedId = await _fixture.CreatePinnedInstanceAsync(workflowTypeId, firstVersionId, WorkflowStatus.Halted, "notify");
+        var unpinnedId = await _fixture.CreateInstanceAsync(workflowTypeId, WorkflowStatus.Halted, "notify");
+
+        using var response = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/{id}/Instances/Index", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var document = new HtmlParser().ParseDocument(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        var pinned = document.QuerySelector($"#itemIds-{pinnedId}").Closest("li");
+        var unpinned = document.QuerySelector($"#itemIds-{unpinnedId}").Closest("li");
+        Assert.Equal("Version 1", pinned.QuerySelector("[data-cy=instance-version]").TextContent.Trim());
+        Assert.Null(unpinned.QuerySelector("[data-cy=instance-version]"));
+    }
+
     private async Task SaveNotifyAtAsync(long id, int x, int revision)
     {
         using var saved = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Save", new

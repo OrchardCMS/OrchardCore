@@ -32,6 +32,7 @@ public sealed class WorkflowController : Controller
     private readonly ISession _session;
     private readonly IWorkflowManager _workflowManager;
     private readonly IWorkflowTypeStore _workflowTypeStore;
+    private readonly IWorkflowTypeVersionStore _workflowTypeVersionStore;
     private readonly IWorkflowStore _workflowStore;
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
@@ -47,6 +48,7 @@ public sealed class WorkflowController : Controller
         ISession session,
         IWorkflowManager workflowManager,
         IWorkflowTypeStore workflowTypeStore,
+        IWorkflowTypeVersionStore workflowTypeVersionStore,
         IWorkflowStore workflowStore,
         IAuthorizationService authorizationService,
         IShapeFactory shapeFactory,
@@ -60,6 +62,7 @@ public sealed class WorkflowController : Controller
         _session = session;
         _workflowManager = workflowManager;
         _workflowTypeStore = workflowTypeStore;
+        _workflowTypeVersionStore = workflowTypeVersionStore;
         _workflowStore = workflowStore;
         _authorizationService = authorizationService;
         _notifier = notifier;
@@ -121,10 +124,22 @@ public sealed class WorkflowController : Controller
 
         var workflows = await workflowsQuery.ListAsync();
 
+        // The number of the version each instance runs on.
+        var versionNumbers = (await _workflowTypeVersionStore.ListAsync(workflowType.WorkflowTypeId))
+            .ToDictionary(version => version.VersionId, version => version.Version);
+
         var viewModel = new WorkflowIndexViewModel
         {
             WorkflowType = workflowType,
-            Workflows = workflows.Select(x => new WorkflowEntry { Workflow = x, Id = x.Id }).ToList(),
+            Workflows = workflows
+                .Select(x => new WorkflowEntry
+                {
+                    Workflow = x,
+                    Id = x.Id,
+                    Version = x.WorkflowTypeVersionId is not null && versionNumbers.TryGetValue(x.WorkflowTypeVersionId, out var number) ? number : null,
+                    IsPublishedVersion = x.WorkflowTypeVersionId is not null && x.WorkflowTypeVersionId == workflowType.VersionId,
+                })
+                .ToList(),
             Options = model.Options,
             Pager = pagerShape,
             ReturnUrl = returnUrl,

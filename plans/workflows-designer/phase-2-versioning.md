@@ -162,11 +162,18 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - .NET: the version and compare pages render with their config, an unknown version is 404, and the designer config has the new URLs. Workflows tests: 104/104.
     - Checked in the browser: the migration turned an existing workflow into version 1; publishing a move created version 2; the dialog, version page and comparison showed them with no console errors.
 
-### - [ ] 2.7 Instances list, docs and release notes
+### - [x] 2.7 Instances list, docs and release notes
 
 - The instances list shows each instance's version.
 - Docs: a **Versions** section in `src/docs/reference/modules/Workflows/README.md` (publishing, pinning, restart, history, retention setting, recipes).
 - Release notes: versioning, pinned instances, recipe import change, `WorkflowType.VersionId`, `Workflow.WorkflowTypeVersionId`, `IWorkflowTypeVersionStore`, the new `WorkflowManager` dependency.
+- **Notes from implementing this step:**
+  - **Instances list.** Each instance with a version gets a "Version N" badge after its status, with a tooltip saying whether it's the published version. Instances created before versions existed get none. Test: `InstancesList_PinnedAndUnpinnedInstances_ShowsTheVersionOfEach` (SiteContext). Workflows tests: 105/105.
+  - **Docs.** A **Versions** section in the module README, after the designer sections: what a version holds; that instances keep their version, upgraded instances keep the current definition, and restart uses the published version; the versions dialog (view, compare, restore); recipes and deployments; `MaxCount`; and notes for developers. The designer's publishing bullet and the instance page paragraph now mention versions.
+  - **Release notes.**
+    - The Workflows section no longer says the stored format doesn't change; it lists the two new fields and the upgrade behavior.
+    - New breaking-change bullets: the constructors that take `IWorkflowTypeVersionStore`, the fault instead of the `NullReferenceException`, and running instances no longer asking for confirmation when publishing.
+    - A "Workflow Versions" entry under new features.
 
 ### - [ ] 2.8 End-to-end tests
 

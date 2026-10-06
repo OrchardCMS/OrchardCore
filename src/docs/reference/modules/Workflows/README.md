@@ -51,7 +51,7 @@ While activities are hidden, a notice at the bottom of the canvas shows how many
 The designer saves your changes as you make them, to a **draft** of the workflow. A draft doesn't run: the workflow keeps running its published definition until you publish the draft.
 
 - The toolbar shows whether all changes are saved. When the connection is lost, the designer retries until it can save, and leaving the page asks first while changes aren't saved.
-- **Publish** makes the draft the published definition. Errors must be fixed first. When the workflow has warnings or running instances, the designer asks before publishing. Running instances continue on the new definition.
+- **Publish** makes the draft the published definition, as a new [version](#versions). Errors must be fixed first, and when the workflow has warnings, the designer asks before publishing. Running instances keep running on the version they started on.
 - **Discard draft** deletes the draft and goes back to the published definition.
 - When someone else changes the workflow while you edit it, the designer stops saving and asks what to do. **Reload** loads their version and drops your unsaved changes. **Overwrite** saves your layout and connections over theirs.
 - When someone else last changed the draft, a banner shows who and when.
@@ -85,9 +85,53 @@ In right-to-left languages, the activities pane and the properties panel swap si
 
 ### Workflow Instances
 
-The page of a workflow instance shows its workflow in a read-only designer, with the activities the instance waits on (its **blocking** activities) highlighted. Select an activity to see its details. Right-click an activity to collapse the activities after it; the blocking activities are never hidden. The **State** tab shows the instance's state as JSON.
+The page of a workflow instance shows the version of its workflow that the instance runs on, in a read-only designer, with the activities the instance waits on (its **blocking** activities) highlighted. Select an activity to see its details. Right-click an activity to collapse the activities after it; the blocking activities are never hidden. The **State** tab shows the instance's state as JSON.
 
 ![A workflow instance waiting on a signal](docs/workflow-instance-viewer.png)
+
+## Versions
+
+Each time a workflow is published, its definition is saved as a new **version**, numbered 1, 2, 3 and so on. A version holds what affects how the workflow runs: its activities and their settings, its transitions, and the **Singleton**, lock and **Delete finished workflows** settings. Renaming a workflow, or enabling and disabling it, doesn't create a version.
+
+- **Instances run on their version.** A new instance starts on the published version, and keeps running on it until it finishes, even when newer versions are published. Changing or removing the activities an instance waits on doesn't affect it.
+- **Instances created before versions existed** (on a site upgraded from an earlier release) keep running on the current definition, as they did before. Upgrading turns each existing workflow into its version 1.
+- **Restarting** an instance starts a new one on the published version.
+
+**Versions**, in the designer's toolbar, lists the versions with when and by whom they were published, and how many instances run on each:
+
+- **View** shows a version in a read-only designer.
+- **Compare** shows a version next to the draft (or next to the published version when there is no draft), with the added, removed, changed and moved activities and the added and removed transitions highlighted, and listed below.
+- **Restore** copies a version into the draft, so that it can be published again as the next version. The name and enabled state of the draft are kept.
+
+The list of instances shows the version each instance runs on, and the page of an instance says which version it runs on and whether that is the published version.
+
+### Versions in Recipes and Deployments
+
+A `WorkflowType` recipe step that imports a workflow that already exists updates it: the imported definition becomes its next version, its instances are kept and keep running on their versions, and its draft is discarded. Exports and deployment plans contain the published definition, without the version history.
+
+### Keeping Fewer Versions
+
+Every version is kept by default. To keep only the most recent versions of each workflow, set `MaxCount` in the `OrchardCore:Workflows:Versions` configuration, for example in an `appsettings.json` file:
+
+```json
+{
+  "OrchardCore": {
+    "Workflows": {
+      "Versions": {
+        "MaxCount": 20
+      }
+    }
+  }
+}
+```
+
+When a version is created, the versions older than the most recent `MaxCount` ones are deleted, except those that instances run on. See [Configuration](../Configuration/README.md) for more information on such configuration.
+
+### Versions for Developers
+
+- `IWorkflowTypeStore.SaveAsync` creates the versions: saving a workflow type whose activities, transitions or execution settings changed creates its next `WorkflowTypeVersion` and sets `WorkflowType.VersionId`.
+- `IWorkflowManager.NewWorkflow` stores that version in `Workflow.WorkflowTypeVersionId`, and `ResumeWorkflowAsync` runs it.
+- `IWorkflowTypeVersionStore` lists and loads versions. Its `GetWorkflowTypeAsync(workflowType, versionId)` returns the definition an instance runs; never save the workflow type it returns.
 
 ## Vocabulary
 
