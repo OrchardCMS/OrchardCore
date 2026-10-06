@@ -45,7 +45,7 @@ public class SharedStringLocalizerTests
     }
 
     #region Localizer
-    private class DummyStringLocalizerFactory : IStringLocalizerFactory
+    private sealed class DummyStringLocalizerFactory : IStringLocalizerFactory
     {
         private readonly ConcurrentDictionary<Type, IStringLocalizer> localizers = new();
 
@@ -56,7 +56,7 @@ public class SharedStringLocalizerTests
             => throw new NotSupportedException("Not used in tests.");
     }
 
-    private class DummyStringLocalizer : IStringLocalizer
+    private sealed class DummyStringLocalizer : IStringLocalizer
     {
         private static readonly Dictionary<Type, List<LocalizedString>> _localizationResources = new Dictionary<Type, List<LocalizedString>>
         {
@@ -124,7 +124,7 @@ public class SharedStringLocalizerTests
     #endregion
 
     #region Test Permissions
-    private class MyPermission(string name, DeferredLocalizedString description)
+    private sealed class MyPermission(string name, DeferredLocalizedString description)
     {
         public string Name { get; set; } = name;
 
