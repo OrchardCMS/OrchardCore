@@ -81,7 +81,7 @@ public class PortableObjectStringLocalizerFactoryTests
         public string Hello { get; set; }
     }
 
-    private class DummyResource;
+    private sealed class DummyResource;
 
-    private class AnotherDummyResource;
+    private sealed class AnotherDummyResource;
 }
