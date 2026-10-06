@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -11,6 +13,7 @@ namespace OrchardCore.Localization.PortableObject;
 public class PortableObjectStringLocalizerFactory : IStringLocalizerFactory
 {
     private readonly ILocalizationManager _localizationManager;
+    private readonly ConcurrentDictionary<string, PortableObjectStringLocalizer> _localizerCache = new();
     private readonly bool _fallBackToParentCulture;
     private readonly ILogger _logger;
 
@@ -34,9 +37,15 @@ public class PortableObjectStringLocalizerFactory : IStringLocalizerFactory
     public IStringLocalizer Create(Type resourceSource)
     {
         var resourceFullName = resourceSource.FullName;
+
         resourceFullName = TryFixInnerClassPath(resourceFullName);
 
-        return new PortableObjectStringLocalizer(resourceFullName, _localizationManager, _fallBackToParentCulture, _logger);
+        var typeInfo = resourceSource.GetTypeInfo();
+
+        var assemblyName = new AssemblyName(resourceSource.Assembly.FullName).Name;
+
+        return _localizerCache.GetOrAdd($"B={resourceFullName},L={assemblyName}", _ =>
+            new PortableObjectStringLocalizer(resourceFullName, _localizationManager, _fallBackToParentCulture, _logger));
     }
 
     /// <inheritedoc />
@@ -44,25 +53,28 @@ public class PortableObjectStringLocalizerFactory : IStringLocalizerFactory
     {
         baseName = TryFixInnerClassPath(baseName);
 
-        var index = 0;
-        if (baseName.StartsWith(location, StringComparison.OrdinalIgnoreCase))
+        return _localizerCache.GetOrAdd($"B={baseName},L={location}", _ =>
         {
-            index = location.Length;
-        }
+            var index = 0;
+            if (baseName.StartsWith(location, StringComparison.OrdinalIgnoreCase))
+            {
+                index = location.Length;
+            }
 
-        if (baseName.Length > index && baseName[index] == '.')
-        {
-            index += 1;
-        }
+            if (baseName.Length > index && baseName[index] == '.')
+            {
+                index += 1;
+            }
 
-        if (baseName.Length > index && baseName.IndexOf("Areas.", index, StringComparison.Ordinal) == index)
-        {
-            index += "Areas.".Length;
-        }
+            if (baseName.Length > index && baseName.IndexOf("Areas.", index, StringComparison.Ordinal) == index)
+            {
+                index += "Areas.".Length;
+            }
 
-        var relativeName = baseName[index..];
+            var relativeName = baseName[index..];
 
-        return new PortableObjectStringLocalizer(relativeName, _localizationManager, _fallBackToParentCulture, _logger);
+            return new PortableObjectStringLocalizer(relativeName, _localizationManager, _fallBackToParentCulture, _logger);
+        });
     }
 
     // The context within inner class.
