@@ -111,9 +111,11 @@
         <div class="ocat-wrapper" v-if="!isReadOnly">
             <label for="import-file" class="ocat-label">@T["Import overrides"]</label>
             <div class="ocat-end">
-                <input id="import-file" type="file" accept=".po" class="form-control" @@change="onImportFileChange" :disabled="isSaving || isLoading" />
+                <div class="input-group">
+                    <input id="import-file" type="file" accept=".po" class="form-control" @@change="onImportFileChange" :disabled="isSaving || isLoading" />
+                    <button type="button" class="btn btn-secondary" @@click="importTranslations" :disabled="!importFile || isSaving || isLoading">@T["Import"]</button>
+                </div>
                 <span class="hint">@T["UTF-8 PO file, up to 2 MB. The entire file is validated before saving. Empty translations remove overrides."]</span>
-                <button type="button" class="btn btn-secondary" @@click="importTranslations" :disabled="!importFile || isSaving || isLoading">@T["Import"]</button>
             </div>
         </div>
     }
