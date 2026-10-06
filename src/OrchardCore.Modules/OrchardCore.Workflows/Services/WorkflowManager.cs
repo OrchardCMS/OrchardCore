@@ -20,6 +20,7 @@ public class WorkflowManager : IWorkflowManager
 
     private readonly IActivityLibrary _activityLibrary;
     private readonly IWorkflowTypeStore _workflowTypeStore;
+    private readonly IWorkflowTypeVersionStore _workflowTypeVersionStore;
     private readonly IWorkflowStore _workflowStore;
     private readonly IWorkflowIdGenerator _workflowIdGenerator;
     private readonly Resolver<IEnumerable<IWorkflowValueSerializer>> _workflowValueSerializers;
@@ -38,6 +39,7 @@ public class WorkflowManager : IWorkflowManager
     (
         IActivityLibrary activityLibrary,
         IWorkflowTypeStore workflowTypeRepository,
+        IWorkflowTypeVersionStore workflowTypeVersionStore,
         IWorkflowStore workflowRepository,
         IWorkflowIdGenerator workflowIdGenerator,
         Resolver<IEnumerable<IWorkflowValueSerializer>> workflowValueSerializers,
@@ -51,6 +53,7 @@ public class WorkflowManager : IWorkflowManager
     {
         _activityLibrary = activityLibrary;
         _workflowTypeStore = workflowTypeRepository;
+        _workflowTypeVersionStore = workflowTypeVersionStore;
         _workflowStore = workflowRepository;
         _workflowIdGenerator = workflowIdGenerator;
         _workflowValueSerializers = workflowValueSerializers;
@@ -70,6 +73,9 @@ public class WorkflowManager : IWorkflowManager
         var workflow = new Workflow
         {
             WorkflowTypeId = workflowType.WorkflowTypeId,
+
+            // The instance runs this version until it finishes, even when a new one is published.
+            WorkflowTypeVersionId = workflowType.VersionId,
             Status = WorkflowStatus.Idle,
             State = JObject.FromObject(new WorkflowState
             {
@@ -246,9 +252,28 @@ public class WorkflowManager : IWorkflowManager
 
         ArgumentNullException.ThrowIfNull(awaitingActivity);
 
-        var workflowType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
+        // The instance resumes on the version it started on.
+        var workflowType = await _workflowTypeVersionStore.GetWorkflowTypeAsync(
+            await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId),
+            workflow.WorkflowTypeVersionId);
+
         var activityRecord = workflowType.Activities.SingleOrDefault(x => x.ActivityId == awaitingActivity.ActivityId);
         var workflowContext = await CreateWorkflowExecutionContextAsync(workflowType, workflow, input);
+
+        if (activityRecord is null)
+        {
+            // For example an instance that started before versions existed, waiting on an activity that was removed since.
+            _logger.LogWarning(
+                "The workflow '{WorkflowId}' is waiting on the activity '{ActivityId}', which its definition doesn't have. Putting the workflow in the faulted state.",
+                workflow.WorkflowId,
+                awaitingActivity.ActivityId);
+
+            workflowContext.Status = WorkflowStatus.Faulted;
+            workflow.FaultMessage = $"The activity '{awaitingActivity.ActivityId}' the workflow is waiting on doesn't exist in its definition.";
+            await PersistAsync(workflowContext);
+
+            return workflowContext;
+        }
 
         workflowContext.Status = WorkflowStatus.Resuming;
 

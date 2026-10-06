@@ -8,7 +8,9 @@ namespace OrchardCore.Workflows.Services;
 public interface IWorkflowManager
 {
     /// <summary>
-    /// Creates a new workflow instance for the specified workflow definition.
+    /// Creates a new workflow instance for the specified workflow definition. The instance is pinned to the
+    /// version of the definition (<see cref="WorkflowType.VersionId"/>): it resumes on that version even after a
+    /// new one is published.
     /// </summary>
     Workflow NewWorkflow(WorkflowType workflowType, string correlationId = null);
 
@@ -49,7 +51,8 @@ public interface IWorkflowManager
     Task<WorkflowExecutionContext> StartWorkflowAsync(WorkflowType workflowType, ActivityRecord startActivity = null, IDictionary<string, object> input = null, string correlationId = null);
 
     /// <summary>
-    /// Starts a new workflow using the specified workflow definition.
+    /// Starts a new workflow using the specified workflow definition. Restarting an instance runs the definition
+    /// it is given, usually the current one, not the version the restarted instance ran on.
     /// </summary>
     /// <param name="workflowType">The workflow definition to start.</param>
     /// <param name="input">Optionally specify any inputs to be used by the workflow.</param>
@@ -58,7 +61,9 @@ public interface IWorkflowManager
     Task<WorkflowExecutionContext> RestartWorkflowAsync(WorkflowType workflowType, IDictionary<string, object> input = null, string correlationId = null);
 
     /// <summary>
-    /// Resumes the specified workflow instance at the specified activity.
+    /// Resumes the specified workflow instance at the specified activity, on the version of the definition the
+    /// instance is pinned to (<see cref="Workflow.WorkflowTypeVersionId"/>), or on the current definition for
+    /// instances that aren't pinned.
     /// </summary>
     Task<WorkflowExecutionContext> ResumeWorkflowAsync(Workflow workflow, BlockingActivity awaitingActivity, IDictionary<string, object> input = null);
 

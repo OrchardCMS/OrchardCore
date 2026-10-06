@@ -18,6 +18,7 @@ public sealed class HttpWorkflowController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly IWorkflowManager _workflowManager;
     private readonly IWorkflowTypeStore _workflowTypeStore;
+    private readonly IWorkflowTypeVersionStore _workflowTypeVersionStore;
     private readonly IWorkflowStore _workflowStore;
     private readonly IActivityLibrary _activityLibrary;
     private readonly ISecurityTokenService _securityTokenService;
@@ -29,6 +30,7 @@ public sealed class HttpWorkflowController : Controller
         IAuthorizationService authorizationService,
         IWorkflowManager workflowManager,
         IWorkflowTypeStore workflowTypeStore,
+        IWorkflowTypeVersionStore workflowTypeVersionStore,
         IWorkflowStore workflowStore,
         IActivityLibrary activityLibrary,
         ISecurityTokenService securityTokenService,
@@ -40,6 +42,7 @@ public sealed class HttpWorkflowController : Controller
         _authorizationService = authorizationService;
         _workflowManager = workflowManager;
         _workflowTypeStore = workflowTypeStore;
+        _workflowTypeVersionStore = workflowTypeVersionStore;
         _workflowStore = workflowStore;
         _activityLibrary = activityLibrary;
         _securityTokenService = securityTokenService;
@@ -106,6 +109,12 @@ public sealed class HttpWorkflowController : Controller
         // Get the activity record using the activity ID provided by the token.
         var startActivity = workflowType.Activities.FirstOrDefault(x => x.ActivityId == payload.ActivityId);
 
+        // An activity removed since can still be what instances started on an earlier version wait on.
+        var isCurrentActivity = startActivity is not null;
+        startActivity ??= (await _workflowTypeVersionStore.ListAsync(workflowType.WorkflowTypeId))
+            .SelectMany(version => version.Activities)
+            .FirstOrDefault(x => x.ActivityId == payload.ActivityId);
+
         if (startActivity == null)
         {
             if (_logger.IsEnabled(LogLevel.Warning))
@@ -136,8 +145,8 @@ public sealed class HttpWorkflowController : Controller
             return BadRequest();
         }
 
-        // If the activity is a start activity, start a new workflow.
-        if (startActivity.IsStart)
+        // If the activity is a start activity of the current definition, start a new workflow.
+        if (isCurrentActivity && startActivity.IsStart)
         {
             // If a singleton, try to acquire a lock per workflow type.
             (var locker, var locked) = await _distributedLock.TryAcquireWorkflowTypeLockAsync(workflowType);

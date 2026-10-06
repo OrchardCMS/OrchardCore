@@ -38,6 +38,16 @@ public interface IWorkflowTypeVersionStore
     Task<WorkflowTypeVersion> CreateIfChangedAsync(WorkflowType workflowType);
 
     /// <summary>
+    /// Returns the definition an instance runs: <paramref name="workflowType"/> itself when
+    /// <paramref name="versionId"/> is empty or is its current version, otherwise that version of it (see
+    /// <see cref="Helpers.WorkflowTypeVersionExtensions.ToWorkflowType"/>). A version that doesn't exist falls back
+    /// to <paramref name="workflowType"/>.
+    /// </summary>
+    /// <param name="workflowType">The workflow type.</param>
+    /// <param name="versionId">The <see cref="Workflow.WorkflowTypeVersionId"/> of the instance.</param>
+    Task<WorkflowType> GetWorkflowTypeAsync(WorkflowType workflowType, string versionId);
+
+    /// <summary>
     /// Deletes every version of a workflow type.
     /// </summary>
     /// <param name="workflowTypeId">The <see cref="WorkflowType.WorkflowTypeId"/>.</param>

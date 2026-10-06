@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Json;
 using OrchardCore.Modules;
@@ -23,27 +24,43 @@ public sealed class WorkflowTypeVersionStore : IWorkflowTypeVersionStore
     private readonly IClock _clock;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
+    private readonly ILogger _logger;
+
+    // Resuming many instances of a workflow type loads the same versions again and again.
+    private readonly Dictionary<string, WorkflowTypeVersion> _versions = [];
 
     public WorkflowTypeVersionStore(
         ISession session,
         IIdGenerator idGenerator,
         IClock clock,
         IHttpContextAccessor httpContextAccessor,
-        IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions)
+        IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions,
+        ILogger<WorkflowTypeVersionStore> logger)
     {
         _session = session;
         _idGenerator = idGenerator;
         _clock = clock;
         _httpContextAccessor = httpContextAccessor;
         _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
+        _logger = logger;
     }
 
     /// <inheritdoc />
-    public Task<WorkflowTypeVersion> GetAsync(string versionId)
+    public async Task<WorkflowTypeVersion> GetAsync(string versionId)
     {
         ArgumentException.ThrowIfNullOrEmpty(versionId);
 
-        return _session.Query<WorkflowTypeVersion, WorkflowTypeVersionIndex>(index => index.VersionId == versionId).FirstOrDefaultAsync();
+        if (!_versions.TryGetValue(versionId, out var version))
+        {
+            version = await _session.Query<WorkflowTypeVersion, WorkflowTypeVersionIndex>(index => index.VersionId == versionId).FirstOrDefaultAsync();
+
+            if (version is not null)
+            {
+                _versions[versionId] = version;
+            }
+        }
+
+        return version;
     }
 
     /// <inheritdoc />
@@ -107,12 +124,38 @@ public sealed class WorkflowTypeVersionStore : IWorkflowTypeVersionStore
     }
 
     /// <inheritdoc />
+    public async Task<WorkflowType> GetWorkflowTypeAsync(WorkflowType workflowType, string versionId)
+    {
+        ArgumentNullException.ThrowIfNull(workflowType);
+
+        if (string.IsNullOrEmpty(versionId) || versionId == workflowType.VersionId)
+        {
+            return workflowType;
+        }
+
+        var version = await GetAsync(versionId);
+
+        if (version is null || version.WorkflowTypeId != workflowType.WorkflowTypeId)
+        {
+            _logger.LogWarning(
+                "The version '{VersionId}' of the workflow type '{WorkflowTypeId}' doesn't exist; using the current definition instead.",
+                versionId,
+                workflowType.WorkflowTypeId);
+
+            return workflowType;
+        }
+
+        return version.ToWorkflowType(workflowType);
+    }
+
+    /// <inheritdoc />
     public async Task DeleteAsync(string workflowTypeId)
     {
         ArgumentException.ThrowIfNullOrEmpty(workflowTypeId);
 
         foreach (var version in await ListAsync(workflowTypeId))
         {
+            _versions.Remove(version.VersionId);
             _session.Delete(version);
         }
     }

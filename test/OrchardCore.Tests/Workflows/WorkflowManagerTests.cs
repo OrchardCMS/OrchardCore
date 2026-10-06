@@ -533,6 +533,11 @@ public class WorkflowManagerTests
         var workflowValueSerializers = new Resolver<IEnumerable<IWorkflowValueSerializer>>(serviceProvider);
         var activityLibrary = new Mock<IActivityLibrary>();
         var workflowTypeStore = new Mock<IWorkflowTypeStore>();
+
+        // Instances run the definition they are given: these tests don't publish versions.
+        var workflowTypeVersionStore = new Mock<IWorkflowTypeVersionStore>();
+        workflowTypeVersionStore.Setup(x => x.GetWorkflowTypeAsync(It.IsAny<WorkflowType>(), It.IsAny<string>()))
+            .ReturnsAsync((WorkflowType type, string _) => type);
         var workflowStore = new Mock<IWorkflowStore>();
         var workflowIdGenerator = new Mock<IWorkflowIdGenerator>();
         workflowIdGenerator.Setup(x => x.GenerateUniqueId(It.IsAny<Workflow>())).Returns(IdGenerator.GenerateId());
@@ -550,6 +555,7 @@ public class WorkflowManagerTests
         var workflowManager = new WorkflowManager(
             activityLibrary.Object,
             workflowTypeStore.Object,
+            workflowTypeVersionStore.Object,
             workflowStore.Object,
             workflowIdGenerator.Object,
             workflowValueSerializers,

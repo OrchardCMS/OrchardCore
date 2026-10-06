@@ -78,7 +78,7 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
   - **Migration.** `CreateInitialVersionsAsync` is a `public static` method on `Migrations`, because the test project has no access to internals. It skips types that already have a `VersionId`, so running it again does nothing.
   - **Tests.** `Versioning/WorkflowTypeVersionStoreTests.cs` runs the real migrations (`CreateAsync`, `UpdateFrom4Async`, `UpdateFrom5Async`) against SQLite, so the new tables and columns are covered too. The SiteContext tests (`WorkflowDesignerControllerTests`, `WorkflowTypeDraftLifecycleTests`) set up tenants through the same migrations. Workflows tests: 77/77.
 
-### - [ ] 2.2 Engine: pin instances to their version
+### - [x] 2.2 Engine: pin instances to their version
 
 - `NewWorkflow` stamps `Workflow.WorkflowTypeVersionId = workflowType.VersionId`.
 - `IWorkflowTypeVersionStore.GetWorkflowTypeAsync(WorkflowType head, string versionId)` returns the head when `versionId` is empty or is the head's, otherwise a `WorkflowType` built from the head (`Id`, `WorkflowTypeId`, `Name`, `IsEnabled`) and the version's snapshot. A missing version falls back to the head with a warning. Document that the returned object must never be saved.
@@ -93,6 +93,16 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
   - a missing pinned version falls back to the head;
   - a blocking activity missing from the definition faults the instance instead of throwing;
   - route entries of a halted instance come from its pinned version (SiteContext, in `WorkflowDesignerControllerTests` style).
+- **Notes from implementing this step:**
+  - **Materializing a version.** `WorkflowTypeVersion.ToWorkflowType(head)` (in `A/Helpers/WorkflowTypeVersionExtensions.cs`) builds the transient definition, with deep-cloned activity properties. The version store caches the versions it loads for the scope, since resuming many instances loads the same version repeatedly.
+  - **Missing blocking activity.** `ResumeWorkflowAsync` logs a warning, faults the instance with a message naming the activity, and saves it. Before, it threw a `NullReferenceException`.
+  - **HTTP.** `HttpWorkflowController.Invoke` looks for an activity removed from the current definition in the versions, newest first, and then only resumes instances waiting on it: it never starts a new instance from it. `WorkflowInstanceRouteEntries` also skips instances whose workflow type no longer exists, instead of throwing.
+  - **Existing quirk, unchanged.** `IWorkflowStore.GetAsync(string workflowId)` queries `WorkflowBlockingActivitiesIndex`, so it doesn't find instances that aren't waiting on anything (finished ones). The tests query `WorkflowIndex` instead.
+  - **Tests.**
+    - `Versioning/WorkflowVersionPinningTests.cs` runs the real engine on the real stores (SQLite, through the shared `VersioningTestDatabase`): a new instance is pinned; a pinned instance resumes on version 1 after version 2 replaces its last activity; an unpinned one runs version 2; a missing blocking activity faults the instance.
+    - `WorkflowTypeVersionStoreTests` covers `GetWorkflowTypeAsync`: an earlier version keeps the current identity and name; no, the current or a missing version id returns the workflow type itself.
+    - `Versioning/WorkflowVersionRoutesTests.cs` (SiteContext): the route entries of an instance pinned to version 1 come from version 1; an HTTP request token for an activity removed in version 2 still resumes the version 1 instance.
+    - Workflows tests: 87/87.
 
 ### - [ ] 2.3 Recipes import a new version
 

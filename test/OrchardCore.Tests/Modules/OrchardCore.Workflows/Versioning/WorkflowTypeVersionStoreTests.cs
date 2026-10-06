@@ -1,87 +1,23 @@
 using System.Text.Json.Nodes;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Data.Sqlite;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
-using OrchardCore.Extensions;
-using OrchardCore.Json;
-using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Tests.Stubs;
 using OrchardCore.Workflows.Deployment;
-using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
-using YesSql;
-using YesSql.Provider.Sqlite;
-using YesSql.Serialization;
-using YesSql.Sql;
-using IIdGenerator = OrchardCore.Entities.IIdGenerator;
-using ISession = YesSql.ISession;
 using WorkflowMigrations = OrchardCore.Workflows.Migrations;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Workflows.Versioning;
 
 public sealed class WorkflowTypeVersionStoreTests : IAsyncLifetime
 {
-    private static readonly DateTime s_now = new(2026, 10, 6, 9, 0, 0, DateTimeKind.Utc);
-
-    private readonly List<ISession> _sessions = [];
-    private DocumentJsonSerializerOptions _jsonOptions;
-    private IStore _store;
-    private string _tempFilename;
+    private VersioningTestDatabase _database;
 
     public async ValueTask InitializeAsync()
-    {
-        _tempFilename = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        _store = await StoreFactory.CreateAndInitializeAsync(new Configuration().UseSqLite($"Data Source={_tempFilename};Cache=Shared"));
+        => _database = await VersioningTestDatabase.CreateAsync();
 
-        var derivedOptions = new Mock<IOptions<JsonDerivedTypesOptions>>();
-        derivedOptions.Setup(x => x.Value).Returns(new JsonDerivedTypesOptions());
-        _jsonOptions = new DocumentJsonSerializerOptions();
-        new DocumentJsonSerializerOptionsConfiguration(derivedOptions.Object).Configure(_jsonOptions);
-        _store.Configuration.ContentSerializer = new DefaultContentJsonSerializer(Options.Create(_jsonOptions));
-
-        // The real migrations create the tables; their deferred work needs a shell scope, so it doesn't run here.
-        await using (var session = _store.CreateSession())
-        {
-            var migrations = new WorkflowMigrations { SchemaBuilder = new SchemaBuilder(_store.Configuration, await session.BeginTransactionAsync()) };
-            await migrations.CreateAsync();
-            await migrations.UpdateFrom4Async();
-            await migrations.UpdateFrom5Async();
-            await session.SaveChangesAsync(TestContext.Current.CancellationToken);
-        }
-
-        _store.RegisterIndexes<WorkflowTypeIndexProvider>();
-        _store.RegisterIndexes<WorkflowIndexProvider>();
-        _store.RegisterIndexes<WorkflowTypeVersionIndexProvider>();
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        foreach (var session in _sessions)
-        {
-            await session.DisposeAsync();
-        }
-
-        _store?.Dispose();
-
-        // Pooled connections keep the database file open.
-        SqliteConnection.ClearAllPools();
-
-        if (File.Exists(_tempFilename))
-        {
-            try
-            {
-                File.Delete(_tempFilename);
-            }
-            catch (IOException)
-            {
-                // A temporary file left behind doesn't affect other tests.
-            }
-        }
-    }
+    public ValueTask DisposeAsync()
+        => _database?.DisposeAsync() ?? ValueTask.CompletedTask;
 
     [Fact]
     public async Task SaveAsync_NewWorkflowType_CreatesVersionOneAndSetsVersionId()
@@ -97,7 +33,7 @@ public sealed class WorkflowTypeVersionStoreTests : IAsyncLifetime
         Assert.Equal(workflowType.VersionId, version.VersionId);
         Assert.Equal(26, version.VersionId.Length);
         Assert.Equal("Approval", version.Name);
-        Assert.Equal(s_now, version.CreatedUtc);
+        Assert.Equal(VersioningTestDatabase.Now, version.CreatedUtc);
         Assert.Equal(new[] { "start", "notify" }, version.Activities.Select(activity => activity.ActivityId));
         Assert.Single(version.Transitions);
     }
@@ -197,7 +133,7 @@ public sealed class WorkflowTypeVersionStoreTests : IAsyncLifetime
     public async Task CreateInitialVersionsAsync_TypesWithoutVersions_CreatesVersionOneOnce()
     {
         // Workflow types saved before versions existed.
-        await using (var session = _store.CreateSession())
+        await using (var session = _database.Store.CreateSession())
         {
             await session.SaveAsync(CreateWorkflowType("type-1"), cancellationToken: TestContext.Current.CancellationToken);
             await session.SaveAsync(CreateWorkflowType("type-2"), cancellationToken: TestContext.Current.CancellationToken);
@@ -220,13 +156,49 @@ public sealed class WorkflowTypeVersionStoreTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task GetWorkflowTypeAsync_EarlierVersion_RunsThatVersionWithTheCurrentIdentity()
+    {
+        var workflowType = await SaveNewAsync();
+        var firstVersionId = workflowType.VersionId;
+
+        var (session, _, types) = CreateStores();
+        workflowType = await types.GetAsync("type-1");
+        workflowType.Name = "Renamed";
+        workflowType.Activities[1].Properties["Message"] = "Version 2";
+        await types.SaveAsync(workflowType);
+        await session.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var versions = CreateStores().Versions;
+        var definition = await versions.GetWorkflowTypeAsync(workflowType, firstVersionId);
+
+        Assert.NotSame(workflowType, definition);
+        Assert.Equal(workflowType.Id, definition.Id);
+        Assert.Equal("Renamed", definition.Name);
+        Assert.Equal(firstVersionId, definition.VersionId);
+        Assert.Equal("Hello", definition.Activities[1].Properties["Message"]!.GetValue<string>());
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("current")]
+    [InlineData("missing")]
+    public async Task GetWorkflowTypeAsync_NoEarlierVersion_ReturnsTheWorkflowTypeItself(string versionId)
+    {
+        var workflowType = await SaveNewAsync();
+
+        var definition = await CreateStores().Versions.GetWorkflowTypeAsync(workflowType, versionId == "current" ? workflowType.VersionId : versionId);
+
+        Assert.Same(workflowType, definition);
+    }
+
+    [Fact]
     public void ProcessWorkflowType_Export_LeavesTheVersionIdOut()
     {
         var workflowType = CreateWorkflowType();
         workflowType.VersionId = "version-1";
         var result = new DeploymentPlanResult(new MemoryFileBuilder(), new RecipeDescriptor());
 
-        AllWorkflowTypeDeploymentSource.ProcessWorkflowType(result, [workflowType], _jsonOptions.SerializerOptions);
+        AllWorkflowTypeDeploymentSource.ProcessWorkflowType(result, [workflowType], _database.JsonOptions.SerializerOptions);
 
         var exported = Assert.Single(result.Steps.Single()["data"]!.AsArray())!.AsObject();
         Assert.False(exported.ContainsKey(nameof(WorkflowType.VersionId)));
@@ -244,25 +216,8 @@ public sealed class WorkflowTypeVersionStoreTests : IAsyncLifetime
         return workflowType;
     }
 
-    private (ISession Session, WorkflowTypeVersionStore Versions, WorkflowTypeStore Types) CreateStores()
-    {
-        var session = _store.CreateSession();
-        _sessions.Add(session);
-
-        var idGenerator = new Mock<IIdGenerator>();
-        idGenerator.Setup(x => x.GenerateUniqueId()).Returns(() => IdGenerator.GenerateId());
-
-        var versions = new WorkflowTypeVersionStore(
-            session,
-            idGenerator.Object,
-            Mock.Of<IClock>(x => x.UtcNow == s_now),
-            Mock.Of<IHttpContextAccessor>(),
-            Options.Create(_jsonOptions));
-
-        var types = new WorkflowTypeStore(session, versions, [], NullLogger<WorkflowTypeStore>.Instance);
-
-        return (session, versions, types);
-    }
+    private (YesSql.ISession Session, WorkflowTypeVersionStore Versions, WorkflowTypeStore Types) CreateStores()
+        => _database.CreateStores();
 
     private static WorkflowType CreateWorkflowType(string workflowTypeId = "type-1")
         => new()
