@@ -104,11 +104,14 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - `Versioning/WorkflowVersionRoutesTests.cs` (SiteContext): the route entries of an instance pinned to version 1 come from version 1; an HTTP request token for an activity removed in version 2 still resumes the version 1 instance.
     - Workflows tests: 87/87.
 
-### - [ ] 2.3 Recipes import a new version
+### - [x] 2.3 Recipes import a new version
 
 - `WorkflowTypeStep`: when the type exists, copy the imported definition (name, settings, activities, transitions, entity properties) onto it and save it through `IWorkflowTypeStore.SaveAsync`, which creates the next version; discard its draft. New types are unchanged (regenerated HTTP URLs).
 - **Tests**: re-importing a type keeps its document id and its instances, creates version 2, discards the draft, and an instance pinned to version 1 still resumes on version 1.
 - Release notes: re-importing no longer deletes instances.
+- **Notes from implementing this step:**
+  - The step copies the name, settings, activities, transitions and entity properties onto the existing document and discards the draft through `IWorkflowTypeDraftManager` (it used to be deleted by the type's `DeletedAsync` handler).
+  - **Test.** `Versioning/WorkflowVersionRecipeTests.cs` (SiteContext): an instance waits on a signal of version 1; a recipe imports a definition without that activity; the type keeps its document id and becomes version 2, and the instance, still pinned to version 1, resumes with the signal and finishes. The existing `WorkflowTypeRecipeStep_ReplacesTypeWithDraft_DeletesDraft` still passes. Workflows tests: 88/88.
 
 ### - [ ] 2.4 Retention
 

@@ -17,12 +17,14 @@ namespace OrchardCore.Workflows.Recipes;
 public sealed class WorkflowTypeStep : NamedRecipeStepHandler
 {
     private readonly IWorkflowTypeStore _workflowTypeStore;
+    private readonly IWorkflowTypeDraftManager _workflowTypeDraftManager;
     private readonly ISecurityTokenService _securityTokenService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly LinkGenerator _linkGenerator;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
 
     public WorkflowTypeStep(IWorkflowTypeStore workflowTypeStore,
+        IWorkflowTypeDraftManager workflowTypeDraftManager,
         ISecurityTokenService securityTokenService,
         IHttpContextAccessor httpContextAccessor,
         LinkGenerator linkGenerator,
@@ -30,6 +32,7 @@ public sealed class WorkflowTypeStep : NamedRecipeStepHandler
         : base("WorkflowType")
     {
         _workflowTypeStore = workflowTypeStore;
+        _workflowTypeDraftManager = workflowTypeDraftManager;
         _securityTokenService = securityTokenService;
         _httpContextAccessor = httpContextAccessor;
         _linkGenerator = linkGenerator;
@@ -62,7 +65,21 @@ public sealed class WorkflowTypeStep : NamedRecipeStepHandler
             }
             else
             {
-                await _workflowTypeStore.DeleteAsync(existing);
+                // Importing a workflow type that exists updates it: the import becomes its next version, and its
+                // instances keep running on the versions they started on.
+                existing.Name = workflow.Name;
+                existing.IsEnabled = workflow.IsEnabled;
+                existing.IsSingleton = workflow.IsSingleton;
+                existing.LockTimeout = workflow.LockTimeout;
+                existing.LockExpiration = workflow.LockExpiration;
+                existing.DeleteFinishedWorkflows = workflow.DeleteFinishedWorkflows;
+                existing.Activities = workflow.Activities;
+                existing.Transitions = workflow.Transitions;
+                existing.Properties = workflow.Properties;
+                workflow = existing;
+
+                // The draft was based on the definition the import replaces.
+                await _workflowTypeDraftManager.DiscardAsync(existing.WorkflowTypeId);
             }
 
             await _workflowTypeStore.SaveAsync(workflow);
