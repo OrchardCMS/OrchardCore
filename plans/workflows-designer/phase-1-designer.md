@@ -492,11 +492,19 @@ Files: `src/panel/` — `PropertiesPanel.vue` (resizable and collapsible, with t
 
 ## Definition of done (Phase 1)
 
-- [ ] Steps 1.1–1.13 are checked.
-- [ ] The CI-flag build is green, `OrchardCore.Tests` passes, Vitest passes, and the functional `*Cms*` tests pass, including the new `WorkflowsDesignerTests`.
-- [ ] `yarn lint`, `yarn check` and `yarn build` leave a clean `git status`.
-- [ ] Existing recipes and deployment packages with `WorkflowType` steps import and render unchanged (covered by the seeded fixture).
-- [ ] Docs and release notes are updated.
+- [x] Steps 1.1–1.13 are checked.
+- [x] The CI-flag build is green, `OrchardCore.Tests` passes, Vitest passes, and the functional `*Cms*` tests pass, including the new `WorkflowsDesignerTests`.
+- [x] `yarn lint`, `yarn check` and `yarn build` leave a clean `git status`.
+- [x] Existing recipes and deployment packages with `WorkflowType` steps import and render unchanged (covered by the seeded fixture).
+- [x] Docs and release notes are updated.
+- **Notes from checking the Definition of done:**
+  - **Build.** The CI-flag build has 0 warnings and 0 errors.
+  - **`OrchardCore.Tests`.** The full run (3,354 tests) found one regression from step 1.11: `NestedAdminInlineBreadcrumbTests` asserted breadcrumbs on the retired activity Add/Edit pages, which now redirect to the designer. Those cases were removed. `ContentQuickNavigationTests` failed once on a file lock and passed on its own (11/11).
+  - **Vitest.** The designer has 141 tests and bloom has 15; all pass.
+  - **Functional `*Cms*` tests.** There are 155 tests: 149 pass and 6 are skipped (the Tus Azure and Redis tests need those services). The full run passed `WorkflowsDesignerTests` (15/15), but 62 tests in other classes failed in their fixture's `InitializeAsync`: setting up that many hosts at once timed out after 30 seconds on this machine. Rerunning those classes four at a time passed every test, including the Windows-only `LayersDragTests` failure.
+  - **Assets.** `yarn lint` reports 0 errors (the 2 warnings in `OrchardCore.Cors` were already there), and `yarn check` passes.
+    - On this machine `yarn build` can't start every asset group at once (`spawn UNKNOWN`), so the full build ran in batches of 20 groups with `yarn build -n <groups>`. It's the same build with the same outputs.
+    - It reproduces every committed `wwwroot` file. The only changes it leaves are line endings in six vendor and theme files: two in `OrchardCore.Resources` (`fontawesome-webfont.svg`, `popper.js.flow`) and four TheAgencyTheme logos. A fresh checkout shows those too, so they aren't caused by this work and aren't committed.
 
 ## Review feedback
 
