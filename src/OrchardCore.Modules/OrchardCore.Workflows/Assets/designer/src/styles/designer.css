@@ -616,18 +616,29 @@
     outline-offset: 2px;
 }
 
+/* A collapsed activity looks like a stack: the activities after it are hidden behind it. The rings below
+   keep the stack. */
+.wfd-node.is-collapsed {
+    --wfd-node-stack:
+        4px 4px 0 -1px var(--bs-body-bg),
+        4px 4px 0 0 var(--bs-border-color),
+        8px 8px 0 -1px var(--bs-body-bg),
+        8px 8px 0 0 var(--bs-border-color);
+    box-shadow: var(--wfd-node-stack);
+}
+
 .wfd-node.is-selected {
     border-color: var(--bs-primary);
-    box-shadow: 0 0 0 2px var(--bs-primary);
+    box-shadow: 0 0 0 2px var(--bs-primary), var(--wfd-node-stack, 0 0 transparent);
 }
 
 .wfd-node.is-lifted {
     will-change: transform;
-    box-shadow: var(--bs-box-shadow);
+    box-shadow: var(--bs-box-shadow), var(--wfd-node-stack, 0 0 transparent);
 }
 
 .wfd-node.is-drop-target {
-    box-shadow: 0 0 0 3px var(--bs-success);
+    box-shadow: 0 0 0 3px var(--bs-success), var(--wfd-node-stack, 0 0 transparent);
 }
 
 .wfd-node.is-missing {
@@ -640,19 +651,34 @@
 }
 
 .wfd-node.is-highlighted {
-    box-shadow: 0 0 0 3px var(--bs-warning);
+    box-shadow: 0 0 0 3px var(--bs-warning), var(--wfd-node-stack, 0 0 transparent);
 }
 
 /* The instance shown by the viewer waits on this activity. */
 .wfd-node.is-blocking {
     border-color: var(--bs-info-border-subtle);
-    box-shadow: 0 0 0 3px rgba(var(--bs-info-rgb), 0.6);
+    box-shadow: 0 0 0 3px rgba(var(--bs-info-rgb), 0.6), var(--wfd-node-stack, 0 0 transparent);
 }
 
 .wfd-node.is-blocking.is-selected {
     box-shadow:
         0 0 0 2px var(--bs-primary),
-        0 0 0 5px rgba(var(--bs-info-rgb), 0.6);
+        0 0 0 5px rgba(var(--bs-info-rgb), 0.6), var(--wfd-node-stack, 0 0 transparent);
+}
+
+/* Centered under the activity, away from the outcome ports on its side. */
+.wfd-node-expand {
+    position: absolute;
+    left: 50%;
+    bottom: -0.75rem;
+    transform: translateX(-50%);
+    border: 2px solid var(--bs-body-bg);
+    cursor: pointer;
+}
+
+.wfd-node-expand:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: 1px;
 }
 
 .wfd-node-header {
@@ -802,6 +828,19 @@
     color: var(--bs-secondary-color);
     text-align: center;
     pointer-events: none;
+}
+
+.wfd-hidden-notice {
+    position: absolute;
+    left: 0.75rem;
+    bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-tertiary-bg);
 }
 
 .wfd-zoom-controls {

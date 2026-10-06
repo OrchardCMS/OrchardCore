@@ -91,8 +91,11 @@ export const nudgeSelection = (store: DesignerStore, dx: number, dy: number) => 
     store.execute(moveNodesCommand(store.graph, moves, `nudge:${[...ids].sort().join(",")}`));
 };
 
-export const selectAll = (store: DesignerStore) => {
-    store.state.selectedNodeIds = store.state.nodes.map((node) => node.id);
+/**
+ * Selects every activity, or only those `include` accepts (the canvas leaves out hidden ones).
+ */
+export const selectAll = (store: DesignerStore, include: (id: string) => boolean = () => true) => {
+    store.state.selectedNodeIds = store.state.nodes.map((node) => node.id).filter(include);
     store.state.selectedTransitionKey = null;
 };
 

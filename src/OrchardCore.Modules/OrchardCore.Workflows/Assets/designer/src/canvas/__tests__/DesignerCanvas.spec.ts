@@ -143,4 +143,88 @@ describe("DesignerCanvas", () => {
         expect(store.state.transitions.map(transitionKey)).toEqual(["start:Done:fork", "fork:A:a"]);
         expect(store.state.nodes).toHaveLength(4);
     });
+
+    it("contextMenu_Collapse_HidesActivitiesAfterItUntilExpanded", async () => {
+        const { store, wrapper } = setup();
+
+        await wrapper.get("[data-cy=activity-fork]").trigger("keydown", { key: "ContextMenu" });
+        await wrapper.get("[data-cy=menu-collapse]").trigger("click");
+
+        expect(wrapper.findAll(".wfd-node").map((node) => node.attributes("data-node-id"))).toEqual(["start", "fork"]);
+        expect(wrapper.findAll(".wfd-edge")).toHaveLength(1);
+        expect(wrapper.get("[data-cy=activity-fork]").classes()).toContain("is-collapsed");
+        expect(wrapper.get("[data-cy=expand-fork]").text()).toBe("2");
+        expect(wrapper.find("[data-cy=hidden-notice]").exists()).toBe(true);
+        // Hidden activities stay in the workflow.
+        expect(store.state.nodes).toHaveLength(4);
+        expect(store.state.transitions).toHaveLength(3);
+
+        await wrapper.get("[data-cy=expand-fork]").trigger("click");
+
+        expect(wrapper.findAll(".wfd-node")).toHaveLength(4);
+        expect(wrapper.find("[data-cy=hidden-notice]").exists()).toBe(false);
+    });
+
+    it("collapsed_StoredForTheWorkflowType_IsRestoredOnLoad", async () => {
+        window.localStorage.setItem("orchardcore:workflows-designer:collapsed:type-1", '["fork"]');
+        const { wrapper } = setup();
+
+        expect(wrapper.findAll(".wfd-node")).toHaveLength(2);
+
+        await wrapper.get("[data-cy=expand-all]").trigger("click");
+
+        expect(wrapper.findAll(".wfd-node")).toHaveLength(4);
+        expect(window.localStorage.getItem("orchardcore:workflows-designer:collapsed:type-1")).toBe("[]");
+    });
+
+    it("collapsed_SelectAllAndSelectingAHiddenActivity_OnlyHiddenOneIsShown", async () => {
+        window.localStorage.setItem("orchardcore:workflows-designer:collapsed:type-1", '["fork"]');
+        const { store, wrapper, surface } = setup();
+
+        await surface.trigger("keydown", { key: "a", ctrlKey: true });
+        expect(store.state.selectedNodeIds).toEqual(["start", "fork"]);
+
+        // For example from the Issues tab.
+        store.state.selectedNodeIds = ["a"];
+        await flushPromises();
+
+        expect(wrapper.findAll(".wfd-node")).toHaveLength(4);
+        expect(store.state.selectedNodeIds).toEqual(["a"]);
+    });
+
+    it("collapsed_ConnectingFromIt_ExpandsTheBranch", async () => {
+        window.localStorage.setItem("orchardcore:workflows-designer:collapsed:type-1", '["fork"]');
+        const { store, wrapper } = setup();
+
+        await wrapper.get("[data-cy=port-fork-B]").trigger("keydown", { key: "Enter" });
+        await wrapper.get("[data-cy=connect-dialog-target]").setValue("start");
+        await wrapper.get("[data-cy=connect-dialog] form").trigger("submit");
+
+        expect(store.state.transitions.map(transitionKey)).toContain("fork:B:start");
+        expect(wrapper.findAll(".wfd-node")).toHaveLength(4);
+    });
+
+    it("contextMenu_ZoomToActivity_ZoomsInAndSelectsIt", async () => {
+        const { store, wrapper } = setup();
+
+        await wrapper.get("[data-cy=activity-a]").trigger("keydown", { key: "ContextMenu" });
+        await wrapper.get("[data-cy=menu-zoom-to]").trigger("click");
+
+        expect(store.state.viewport.zoom).toBe(1.5);
+        expect(store.state.selectedNodeIds).toEqual(["a"]);
+        expect(document.activeElement?.getAttribute("data-node-id")).toBe("a");
+    });
+
+    it("contextMenu_ReadOnly_OffersOnlyViewActions", async () => {
+        const { store, wrapper } = setup(true);
+
+        await wrapper.get("[data-cy=activity-fork]").trigger("keydown", { key: "ContextMenu" });
+
+        expect(wrapper.findAll("[data-cy=context-menu] [data-cy^=menu-]").map((item) => item.attributes("data-cy"))).toEqual(["menu-collapse", "menu-zoom-to"]);
+
+        await wrapper.get("[data-cy=menu-collapse]").trigger("click");
+
+        expect(wrapper.findAll(".wfd-node")).toHaveLength(2);
+        expect(store.state.nodes).toHaveLength(4);
+    });
 });

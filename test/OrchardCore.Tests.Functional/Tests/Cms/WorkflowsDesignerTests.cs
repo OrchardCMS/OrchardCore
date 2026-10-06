@@ -375,6 +375,39 @@ public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsF
     }
 
     [Fact]
+    public async Task CollapseActivity_SeededWorkflow_HidesWhatComesAfterItUntilShown()
+    {
+        var (page, consoleErrors) = await OpenAsync();
+        var id = await page.FindWorkflowTypeIdAsync(SeededWorkflow);
+        await page.OpenDesignerAsync(id);
+
+        await page.Activity("seedednotify").Locator(".wfd-node-header").ClickAsync(new() { Button = MouseButton.Right });
+        await page.Locator("[data-cy=menu-collapse]").ClickAsync();
+
+        await Assertions.Expect(page.Activities()).ToHaveCountAsync(2);
+        await Assertions.Expect(page.Edges()).ToHaveCountAsync(1);
+        await Assertions.Expect(page.Locator("[data-cy=expand-seedednotify]")).ToHaveTextAsync("2");
+
+        // The collapsed branch is remembered by the browser; the workflow itself doesn't change.
+        await page.ReloadAsync();
+        await page.WaitForDesignerAsync();
+        await Assertions.Expect(page.Activities()).ToHaveCountAsync(2);
+        await Assertions.Expect(page.Locator("[data-cy=toolbar-discard]")).ToBeDisabledAsync();
+
+        await page.Activity("seededrequest").Locator(".wfd-node-header").ClickAsync(new() { Button = MouseButton.Right });
+        await page.Locator("[data-cy=menu-zoom-to]").ClickAsync();
+        await Assertions.Expect(page.Locator("[data-cy=zoom-reset]")).ToHaveTextAsync("150%");
+        await Assertions.Expect(page.Activity("seededrequest")).ToHaveClassAsync(s_selected);
+
+        await page.Locator("[data-cy=expand-all]").ClickAsync();
+        await Assertions.Expect(page.Activities()).ToHaveCountAsync(4);
+        await Assertions.Expect(page.Locator("[data-cy=hidden-notice]")).ToHaveCountAsync(0);
+
+        Assert.Empty(consoleErrors);
+        await page.CloseAsync();
+    }
+
+    [Fact]
     public async Task DesignerEndpoints_UserWithoutManageWorkflows_ReturnForbidden()
     {
         var (page, _) = await OpenAsync();

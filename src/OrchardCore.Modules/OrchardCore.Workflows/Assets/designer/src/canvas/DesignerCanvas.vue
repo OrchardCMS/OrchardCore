@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, reactive, ref, shallowReactive } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, shallowReactive, watch } from "vue";
 import type { DesignIssue, DesignerNode } from "../api/types";
 import type { DesignerStore } from "../state/designerStore";
 import { moveNodesCommand, transitionKey } from "../state/commands";
@@ -9,9 +9,10 @@ import ContextMenu from "./ContextMenu.vue";
 import ConnectDialog from "./ConnectDialog.vue";
 import type { MenuItem } from "./menu";
 import { GRID_SIZE, NODE_WIDTH, boundsOf, nodeRect, portAnchor, previewPath, rectFromPoints, rectsIntersect, snap, type NodeLayout, type Point, type Rect } from "./geometry";
-import { ZOOM_STEP, canvasToScreen, fitToContent, screenToCanvas, visibleCenter, zoomAt, zoomBy, type Size, type ViewportState } from "./viewport";
+import { ZOOM_STEP, canvasToScreen, clampZoom, fitToContent, screenToCanvas, visibleCenter, zoomAt, zoomBy, type Size, type ViewportState } from "./viewport";
 import { startPointerDrag } from "./useDrag";
 import { clearSelection, connectOutcome, deleteSelection, nudgeSelection, selectAll, selectNode, selectTransition, toggleStart } from "./useConnect";
+import { useCollapsedBranches } from "./useCollapsedBranches";
 import { showToast } from "../ui/toasts";
 import { ACTIVITY_DRAG_TYPE } from "../toolbox/filter";
 import { t } from "../i18n";
@@ -20,6 +21,8 @@ import { t } from "../i18n";
 // canvas isn't re-rasterized every frame (see "Spike findings"). Beyond this many activities the extra
 // layers cost more than they save.
 const LIFT_LIMIT = 10;
+// "Zoom to activity" zooms in to at least this level.
+const FOCUS_ZOOM = 1.5;
 const NO_ISSUES: DesignIssue[] = [];
 const NO_OUTCOMES: string[] = [];
 
@@ -52,6 +55,8 @@ let zoomTimer: ReturnType<typeof setTimeout> | undefined;
 let pointerFocus = false;
 
 const nodeById = computed(() => new Map(state.nodes.map((node) => [node.id, node])));
+const { collapsed, hidden, hiddenCounts, countHiddenBy, collapse, expand, expandAll, reveal } = useCollapsedBranches(props.store);
+const visibleNodes = computed(() => (hidden.value.size === 0 ? state.nodes : state.nodes.filter((node) => !hidden.value.has(node.id))));
 const highlighted = computed(() => new Set(props.highlightedIds));
 
 // The activities the instance shown by the viewer waits on.
@@ -89,7 +94,10 @@ const edges = computed(() =>
             source: nodeById.value.get(transition.sourceActivityId),
             target: nodeById.value.get(transition.destinationActivityId),
         }))
-        .filter((edge): edge is { key: string; outcome: string; source: DesignerNode; target: DesignerNode } => !!edge.source && !!edge.target),
+        .filter(
+            (edge): edge is { key: string; outcome: string; source: DesignerNode; target: DesignerNode } =>
+                !!edge.source && !!edge.target && !hidden.value.has(edge.source.id) && !hidden.value.has(edge.target.id),
+        ),
 );
 
 const isLiftedEdge = (edge: { source: DesignerNode; target: DesignerNode }) => liftedIds.value.has(edge.source.id) || liftedIds.value.has(edge.target.id);
@@ -155,7 +163,7 @@ const markZooming = () => {
     zoomTimer = setTimeout(() => (zooming.value = false), 200);
 };
 
-const contentBounds = () => boundsOf(state.nodes.map((node) => nodeRect(node, layouts.get(node.id))));
+const contentBounds = () => boundsOf(visibleNodes.value.map((node) => nodeRect(node, layouts.get(node.id))));
 
 const fit = () => {
     setViewport(fitToContent(contentBounds(), hostSize));
@@ -167,26 +175,53 @@ const zoomTo = (zoom: number) => {
     markZooming();
 };
 
-const centerOn = (activityId: string) => {
+// Centering on an activity in a collapsed branch shows it first.
+const centerOn = (activityId: string, zoom = viewport.zoom) => {
     const node = nodeById.value.get(activityId);
 
     if (!node) {
         return;
     }
 
+    reveal([activityId]);
+
     const rect = nodeRect(node, layouts.get(node.id));
     setViewport({
-        zoom: viewport.zoom,
-        panX: hostSize.width / 2 - (rect.x + rect.width / 2) * viewport.zoom,
-        panY: hostSize.height / 2 - (rect.y + rect.height / 2) * viewport.zoom,
+        zoom,
+        panX: hostSize.width / 2 - (rect.x + rect.width / 2) * zoom,
+        panY: hostSize.height / 2 - (rect.y + rect.height / 2) * zoom,
     });
 };
 
 const cssEscape = (value: string) => (typeof CSS !== "undefined" && CSS.escape ? CSS.escape(value) : value.replace(/["\\]/g, "\\$&"));
 
-const focusNode = (activityId: string) => {
-    host.value?.querySelector<HTMLElement>(`[data-node-id="${cssEscape(activityId)}"]`)?.focus();
+const nodeElement = (activityId: string) => host.value?.querySelector<HTMLElement>(`[data-node-id="${cssEscape(activityId)}"]`);
+
+// An activity that was just shown is rendered on the next tick.
+const focusNode = async (activityId: string) => {
+    if (!nodeElement(activityId)) {
+        await nextTick();
+    }
+
+    nodeElement(activityId)?.focus();
 };
+
+const zoomToActivity = (activityId: string) => {
+    selectNode(props.store, activityId);
+    centerOn(activityId, clampZoom(Math.max(viewport.zoom, FOCUS_ZOOM)));
+    markZooming();
+    void focusNode(activityId);
+};
+
+// A hidden activity is never selected: selecting one (from the Issues tab, an undo...) shows it.
+watch(
+    () => [...state.selectedNodeIds],
+    (ids) => {
+        if (ids.some((id) => hidden.value.has(id))) {
+            reveal(ids);
+        }
+    },
+);
 
 const nodeIdAt = (clientX: number, clientY: number, excludeId: string) => {
     const element = document.elementFromPoint?.(clientX, clientY)?.closest("[data-node-id]");
@@ -218,6 +253,11 @@ const deleteSelected = () => {
 };
 
 const connect = (sourceId: string, outcome: string, targetId: string) => {
+    // A new connection from a collapsed activity would hide its target; the branch is expanded instead.
+    if (collapsed.value.has(sourceId)) {
+        expand(sourceId);
+    }
+
     const result = connectOutcome(props.store, { sourceActivityId: sourceId, sourceOutcomeName: outcome, destinationActivityId: targetId });
 
     if (result.status === "replaced") {
@@ -263,7 +303,7 @@ const startMarquee = (event: PointerEvent) => {
             const rect = rectFromPoints(origin, toCanvas(moveEvent));
             marquee.value = rect;
 
-            const inside = state.nodes.filter((node) => rectsIntersect(rect, nodeRect(node, layouts.get(node.id)))).map((node) => node.id);
+            const inside = visibleNodes.value.filter((node) => rectsIntersect(rect, nodeRect(node, layouts.get(node.id)))).map((node) => node.id);
             state.selectedNodeIds = [...new Set([...initialSelection, ...inside])];
             state.selectedTransitionKey = null;
         },
@@ -409,11 +449,27 @@ const onConnectDialogCancel = () => {
     }
 };
 
-const openNodeMenu = (node: DesignerNode, event: MouseEvent | null) => {
-    if (props.readOnly) {
-        return;
+// The items that only change the view, which the read-only viewer offers too.
+const viewMenuItems = (node: DesignerNode): MenuItem[] => {
+    const items: MenuItem[] = [];
+    const hiddenCount = hiddenCounts.value.get(node.id);
+
+    if (hiddenCount !== undefined) {
+        items.push({ label: t("ExpandActivities", hiddenCount), icon: "fa-solid fa-square-plus", dataCy: "menu-expand", run: () => expand(node.id) });
+    } else {
+        const count = countHiddenBy(node.id);
+
+        if (count > 0) {
+            items.push({ label: t("CollapseActivities", count), icon: "fa-solid fa-square-minus", dataCy: "menu-collapse", run: () => collapse(node.id) });
+        }
     }
 
+    items.push({ label: t("ZoomToActivity"), icon: "fa-solid fa-magnifying-glass-plus", dataCy: "menu-zoom-to", run: () => zoomToActivity(node.id) });
+
+    return items;
+};
+
+const openNodeMenu = (node: DesignerNode, event: MouseEvent | null) => {
     if (!selectedIds.value.has(node.id)) {
         selectNode(props.store, node.id);
     }
@@ -421,6 +477,12 @@ const openNodeMenu = (node: DesignerNode, event: MouseEvent | null) => {
     const position = event
         ? hostPoint(event)
         : canvasToScreen(viewport, { x: node.x + (layouts.get(node.id)?.width ?? NODE_WIDTH) - 24, y: node.y + 24 });
+
+    if (props.readOnly) {
+        menu.value = { ...position, items: viewMenuItems(node), label: t("ActivityActions", node.title) };
+
+        return;
+    }
 
     const items: MenuItem[] = [];
 
@@ -440,6 +502,8 @@ const openNodeMenu = (node: DesignerNode, event: MouseEvent | null) => {
     if (node.outcomes.length > 0 && state.nodes.length > 1) {
         items.push({ label: t("ConnectOutcomeTo"), icon: "fa-solid fa-link", dataCy: "menu-connect", run: () => openConnectDialog(node) });
     }
+
+    items.push(...viewMenuItems(node));
 
     for (const transition of state.transitions.filter((item) => item.sourceActivityId === node.id)) {
         const target = nodeById.value.get(transition.destinationActivityId);
@@ -482,7 +546,9 @@ const openEdgeMenu = (key: string, event: MouseEvent) => {
 
 const isEditable = (target: EventTarget | null) =>
     target instanceof HTMLElement &&
-    (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName) || !!target.closest(".wfd-connect-dialog, .wfd-context-menu"));
+    (target.isContentEditable ||
+        ["INPUT", "TEXTAREA", "SELECT", "BUTTON"].includes(target.tagName) ||
+        !!target.closest(".wfd-connect-dialog, .wfd-context-menu"));
 
 const onKeyDown = (event: KeyboardEvent) => {
     if (isEditable(event.target)) {
@@ -505,7 +571,7 @@ const onKeyDown = (event: KeyboardEvent) => {
         case "A":
             if (modifier) {
                 event.preventDefault();
-                selectAll(props.store);
+                selectAll(props.store, (id) => !hidden.value.has(id));
             }
             break;
         case "Escape":
@@ -614,6 +680,9 @@ defineExpose({
     fit,
     centerOn,
     focusNode,
+    zoomToActivity,
+    reveal,
+    expandAll,
     focus: () => host.value?.focus({ preventScroll: true }),
     zoomIn: () => zoomTo(viewport.zoom * ZOOM_STEP),
     zoomOut: () => zoomTo(viewport.zoom / ZOOM_STEP),
@@ -684,7 +753,7 @@ defineExpose({
             </svg>
 
             <ActivityNode
-                v-for="node in state.nodes"
+                v-for="node in visibleNodes"
                 :key="node.id"
                 :node="node"
                 :selected="selectedIds.has(node.id)"
@@ -695,6 +764,7 @@ defineExpose({
                 :blocking="blockingIds.has(node.id)"
                 :issues="issuesByActivity.get(node.id) ?? NO_ISSUES"
                 :connected-outcomes="connectedOutcomes.get(node.id) ?? NO_OUTCOMES"
+                :hidden-count="hiddenCounts.get(node.id) ?? null"
                 @node-pointerdown="onNodePointerDown(node, $event)"
                 @port-pointerdown="(outcome, event) => onPortPointerDown(node, outcome, event)"
                 @port-activate="(outcome) => openConnectDialog(node, outcome)"
@@ -702,6 +772,7 @@ defineExpose({
                 @open-menu="(event) => openNodeMenu(node, event)"
                 @edit="emit('edit', node.id)"
                 @focus="onNodeFocus(node)"
+                @expand="expand(node.id)"
             />
 
             <div v-if="marquee" class="wfd-marquee" :style="marqueeStyle" data-cy="marquee"></div>
@@ -709,6 +780,12 @@ defineExpose({
 
         <div v-if="state.loaded && state.nodes.length === 0" class="wfd-empty" data-cy="canvas-empty">
             {{ readOnly ? t("EmptyWorkflowReadOnly") : t("EmptyWorkflow") }}
+        </div>
+
+        <div v-if="hidden.size > 0" class="wfd-hidden-notice small shadow-sm" role="status" data-cy="hidden-notice" @pointerdown.stop>
+            <i class="fa-solid fa-eye-slash" aria-hidden="true"></i>
+            <span>{{ t("HiddenActivities", hidden.size) }}</span>
+            <button type="button" class="btn btn-link btn-sm p-0" data-cy="expand-all" @click="expandAll">{{ t("ShowAll") }}</button>
         </div>
 
         <div class="wfd-zoom-controls btn-group btn-group-sm shadow-sm" role="group" :aria-label="t('Zoom')" @pointerdown.stop>

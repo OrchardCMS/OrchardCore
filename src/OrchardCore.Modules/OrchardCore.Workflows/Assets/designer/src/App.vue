@@ -356,6 +356,8 @@ onMounted(async () => {
     // The viewer shows the whole workflow, which is in a smaller frame than the designer.
     if (props.config.readOnly && !loadError.value) {
         await nextTick();
+        // The activities the instance waits on are never left in a collapsed branch.
+        canvas.value?.reveal(state.instance?.blockingActivityIds ?? []);
         canvas.value?.fit();
     }
 

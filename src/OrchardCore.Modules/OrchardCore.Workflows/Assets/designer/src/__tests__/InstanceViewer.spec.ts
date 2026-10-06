@@ -60,6 +60,16 @@ describe("instance viewer", () => {
         wrapper.unmount();
     });
 
+    it("mount_BlockingActivityInACollapsedBranch_ExpandsIt", async () => {
+        // The blocking activity is behind both collapsed activities (fork is nested in the start's branch).
+        window.localStorage.setItem("orchardcore:workflows-designer:collapsed:type-1", '["start","fork"]');
+        const { wrapper } = await setup();
+
+        expect(wrapper.find("[data-cy=activity-a]").exists()).toBe(true);
+        expect(window.localStorage.getItem("orchardcore:workflows-designer:collapsed:type-1")).toBe("[]");
+        wrapper.unmount();
+    });
+
     it("select_Activity_ShowsAReadOnlySummary", async () => {
         const { api, store, wrapper } = await setup();
 

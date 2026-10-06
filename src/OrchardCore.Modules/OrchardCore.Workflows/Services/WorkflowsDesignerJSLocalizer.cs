@@ -173,6 +173,12 @@ public sealed class WorkflowsDesignerJSLocalizer : IJSLocalizer
             { "ZoomOut", S["Zoom out"].Value },
             { "ResetZoom", S["Reset zoom to 100%"].Value },
             { "FitToContent", S["Fit to content"].Value },
+            { "ZoomToActivity", S["Zoom to activity"].Value },
+            { "CollapseActivities", S["Collapse the activities after it ({0})"].Value },
+            { "ExpandActivities", S["Show the hidden activities after it ({0})"].Value },
+            { "HiddenActivitiesAfter", S["{0} hidden activity(ies) after it"].Value },
+            { "HiddenActivities", S["{0} activity(ies) hidden"].Value },
+            { "ShowAll", S["Show all"].Value },
         };
     }
 }

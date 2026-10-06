@@ -17,8 +17,20 @@ const props = withDefaults(
         blocking?: boolean;
         issues?: DesignIssue[];
         connectedOutcomes?: string[];
+        // The number of activities hidden after this collapsed activity, or null when it isn't collapsed.
+        hiddenCount?: number | null;
     }>(),
-    { selected: false, lifted: false, dropTarget: false, highlighted: false, readOnly: false, blocking: false, issues: () => [], connectedOutcomes: () => [] },
+    {
+        selected: false,
+        lifted: false,
+        dropTarget: false,
+        highlighted: false,
+        readOnly: false,
+        blocking: false,
+        issues: () => [],
+        connectedOutcomes: () => [],
+        hiddenCount: null,
+    },
 );
 
 const emit = defineEmits<{
@@ -28,6 +40,7 @@ const emit = defineEmits<{
     (event: "measure", layout: NodeLayout): void;
     (event: "open-menu", mouseEvent: MouseEvent | null): void;
     (event: "edit"): void;
+    (event: "expand"): void;
 }>();
 
 const element = ref<HTMLElement | null>(null);
@@ -51,6 +64,10 @@ const accessibleName = computed(() => {
 
     if (props.issues.length > 0) {
         parts.push(t("IssueCount", props.issues.length));
+    }
+
+    if (props.hiddenCount !== null) {
+        parts.push(t("HiddenActivitiesAfter", props.hiddenCount));
     }
 
     return parts.join(", ");
@@ -145,6 +162,7 @@ const onKeyDown = (event: KeyboardEvent) => {
             'is-drop-target': dropTarget,
             'is-highlighted': highlighted,
             'is-blocking': blocking,
+            'is-collapsed': hiddenCount !== null,
             'has-errors': errorCount > 0,
         }"
         :style="{ transform: `translate(${node.x}px, ${node.y}px)` }"
@@ -195,5 +213,19 @@ const onKeyDown = (event: KeyboardEvent) => {
                 />
             </div>
         </div>
+        <button
+            v-if="hiddenCount !== null"
+            type="button"
+            class="wfd-node-expand badge rounded-pill text-bg-primary"
+            :title="t('ExpandActivities', hiddenCount)"
+            :aria-label="t('ExpandActivities', hiddenCount)"
+            :data-cy="`expand-${node.id}`"
+            @pointerdown.stop
+            @dblclick.stop
+            @click.stop="emit('expand')"
+        >
+            <i class="fa-solid fa-plus" aria-hidden="true"></i>
+            {{ hiddenCount }}
+        </button>
     </div>
 </template>

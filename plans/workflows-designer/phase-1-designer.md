@@ -518,7 +518,7 @@ Requested by the maintainer while reviewing the running designer after step 1.11
 - [x] **R3. Collapsible toolbox.** The activities toolbox can also be collapsed to a rail, to give the canvas more room. Hovering the rail opens it over the canvas; it stays open while an activity is dragged from it and closes after the drop.
   - Adding an activity while the panel is collapsed doesn't expand it; editing one (Enter, double-click) does.
 - **Collapsed state.** Both collapsed states are remembered per browser (`localStorage`), like the panel width. Nothing is stored with the workflow (D7).
-- [ ] **F1. Collapse a branch and zoom to an activity (after Phase 1).** To be done once steps 1.12–1.13 and the Definition of done are complete:
+- [x] **F1. Collapse a branch and zoom to an activity (after Phase 1).** To be done once steps 1.12–1.13 and the Definition of done are complete:
   - Collapsing an activity (for example the third one) hides the activities that come after it.
   - The collapsed activity shows an indicator with the number of hidden activities, and a control to expand them again.
   - "Zoom to activity" centers and zooms the canvas on one activity, so the user can focus on part of a large workflow.
@@ -526,6 +526,18 @@ Requested by the maintainer while reviewing the running designer after step 1.11
   - To settle when implementing:
     - which activities count as "after" (all activities reachable from it, or only those that aren't reachable some other way);
     - how hidden activities behave with selection, search, issues and autosave (they stay in the graph and are saved as usual).
+  - **Settled while implementing:**
+    - **What counts as "after".** Collapsing an activity hides the activities that can **only** be reached through it. An activity that is also reached another way (a branch joining back, a loop to an earlier activity) stays visible, so a visible activity never has a connection coming from a hidden one, and start activities are never hidden. When several activities are collapsed, an activity is hidden when every way to it goes through one of them. Collapsed activities that only reach each other (a loop with no way in) keep the first one visible, so there is always something to expand.
+    - **The canvas.** A collapsed activity looks like a stack and shows a pill with the number of activities it hides (nested collapsed ones included); clicking it expands the branch. A notice at the bottom of the canvas shows how many activities are hidden, with **Show all**. The actions of an activity (right-click, Shift+F10, Menu key) offer **Collapse the activities after it (n)** when that hides something, **Show the hidden activities after it (n)**, and **Zoom to activity**, which selects the activity, centers it and zooms in to at least 150%.
+    - **Selection.** Collapsing deselects the activities and the connection it hides. A hidden activity is never selected: selecting one (from the Issues tab, an undo, an old activity URL) expands the collapsed activities hiding it. Ctrl+A and the marquee only select visible activities. Connecting an outcome of a collapsed activity expands it first, so the new target doesn't disappear.
+    - **Saving.** Hidden activities stay in the graph and are saved, published and validated as usual. Collapsing never creates a draft.
+    - **Viewer.** The read-only instance viewer offers the same view actions (collapse, expand, zoom) and shares the per-type state. On load it expands whatever hides a blocking activity.
+    - **Storage.** The collapsed activity ids are stored per browser under `orchardcore:workflows-designer:collapsed:{workflowTypeId}`. Ids of deleted activities are ignored and dropped on the next change.
+  - **Code.** `canvas/branches.ts` (what is hidden, pure functions), `canvas/useCollapsedBranches.ts` (state and storage), `DesignerCanvas.vue` and `ActivityNode.vue`.
+  - **Tests.**
+    - Vitest: `branches.spec.ts` (chains, joins, loops, nested and orphan cases), `useCollapsedBranches.spec.ts` (deselection, storage, reveal) and `DesignerCanvas.spec.ts` (menu, pill, notice, select all, reveal on selection, connecting from a collapsed activity, zoom, read-only menu). `InstanceViewer.spec.ts` checks blocking activities are revealed. The designer now has 162 tests.
+    - Playwright: `CollapseActivity_SeededWorkflow_HidesWhatComesAfterItUntilShown` collapses a branch, checks it is remembered after a reload without creating a draft, zooms to an activity, and shows everything again. 16/16 twice.
+  - Documented in the Workflow Designer section of the module docs ("Focusing on Part of a Workflow") and in the release notes.
 
 ## Open questions
 

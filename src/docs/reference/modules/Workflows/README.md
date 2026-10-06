@@ -40,6 +40,15 @@ The designer has three areas:
 
 The activities pane and the properties panel can be collapsed to a narrow rail, to give the canvas more room. Hover a rail to open its pane over the canvas, or click it to expand the pane again. The properties rail shows the three tabs, so you can go straight to one of them. The width of the properties panel and whether each pane is collapsed are remembered in your browser.
 
+### Focusing on Part of a Workflow
+
+In a large workflow, you can hide the activities you aren't working on. The actions of an activity (right-click it, or press Shift+F10 or the Menu key) offer:
+
+- **Collapse the activities after it**, which hides the activities that can only be reached through it. An activity that can also be reached another way stays visible, and start activities are never hidden. The collapsed activity looks like a stack and shows how many activities it hides: click that number to show them again.
+- **Zoom to activity**, which centers the canvas on the activity and zooms in on it.
+
+While activities are hidden, a notice at the bottom of the canvas shows how many, with **Show all**. Hidden activities are still part of the workflow: they are saved, published and executed as usual. Selecting one, for example from the **Issues** tab, shows it again. The collapsed activities of each workflow are remembered in your browser.
+
 ### Drafts and Publishing
 
 The designer saves your changes as you make them, to a **draft** of the workflow. A draft doesn't run: the workflow keeps running its published definition until you publish the draft.
@@ -79,7 +88,7 @@ In right-to-left languages, the activities pane and the properties panel swap si
 
 ### Workflow Instances
 
-The page of a workflow instance shows its workflow in a read-only designer, with the activities the instance waits on (its **blocking** activities) highlighted. Select an activity to see its details. The **State** tab shows the instance's state as JSON.
+The page of a workflow instance shows its workflow in a read-only designer, with the activities the instance waits on (its **blocking** activities) highlighted. Select an activity to see its details. Right-click an activity to collapse the activities after it or to zoom to it; the blocking activities are never hidden. The **State** tab shows the instance's state as JSON.
 
 ![A workflow instance waiting on a signal](docs/workflow-instance-viewer.png)
 
