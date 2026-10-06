@@ -29,7 +29,7 @@ Activity tab of a Script task, below its editor:
 
 | # | Decision | Why |
 |---|---|---|
-| T1 | A **variable is a workflow property**: declared variable `x` is `Properties["x"]`. Reading it through `Variables` returns it coerced to its type; writing it through `Variables` (Set Variable, output bindings, `setVariable()`) coerces it, and a value that can't be coerced faults the workflow with a message naming the variable. Writing `Properties` directly still works and isn't checked. | Existing workflows and activities that use `Properties` keep working, and a variable is visible to them. |
+| T1 | A **variable is a workflow property**: declared variable `x` is `Properties["x"]`. Reading it through `Variables` returns it coerced to its type; writing it through `Variables` (Set Variable, output bindings, `setVariable()`) coerces it, and a value that can't be coerced faults the workflow with a message naming the variable (from JavaScript it's a script error: logged, and the variable is unchanged). Writing `Properties` directly still works and isn't checked. | Existing workflows and activities that use `Properties` keep working, and a variable is visible to them. |
 | T2 | **Declarations are versioned**: `IList<WorkflowVariableDefinition> Variables` on `WorkflowType`, `WorkflowTypeVersion` and the draft; part of the version fingerprint and of the compare changes. Defaults are applied when an instance's context is created and the variable has no value yet. | A variable's type and default affect how an instance runs. |
 | T3 | **Types are services** (`IWorkflowVariableType`: name, display name, editor kind, coercion). Built in: `string`, `number` (`double`), `boolean`, `datetime` (UTC `DateTime`), `object` and `array` (JSON), and `any` (no coercion). `contentItem` is registered by OrchardCore.Contents, whose `ContentItemSerializer` persists it. | Modules can add types; persistence keeps using `IWorkflowValueSerializer`. |
 | T4 | **No `user` type in this phase**: there is no workflow value serializer for users. | It needs a serializer first; recorded in the backlog. |
@@ -69,13 +69,29 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - `RestoreAsync` copies a version's variables into the draft.
     - Workflows tests: 132/132.
 
-### - [ ] 3.2 Runtime and expressions
+### - [x] 3.2 Runtime and expressions
 
 - `WorkflowVariables` (`A/Models/`), `WorkflowExecutionContext.Variables`: typed get/set over `Properties` (T1), `WorkflowVariableException` on a failed coercion.
 - `WorkflowManager`: builds `Variables` from the definition it runs and the registered types, and applies missing defaults when it creates an execution context.
 - JavaScript `variable()`/`setVariable()` in `WorkflowMethodsProvider`; Liquid `Workflow.Variables` in `M/Startup.cs`.
 - `contentItem` type in OrchardCore.Contents.
 - **Tests**: defaults on start; coercion on write and read (numbers that come back as `int` after a save); a failed coercion; JS and Liquid access; a workflow that only uses `Properties` is unchanged; a content item survives a save and reload.
+- **Notes from implementing this step:**
+  - **Names and lookup.** Variable names are looked up ignoring case and stored under their declared name. An undeclared name reads and writes `Properties` as it is.
+  - **Reading.** A stored value that doesn't convert (written through `Properties`) is returned as it is, rather than failing the read.
+  - **Unregistered types.** A variable whose type isn't registered (its feature disabled) keeps its values as they are.
+  - **Defaults.** `WorkflowManager.CreateWorkflowExecutionContextAsync` calls `Variables.ApplyDefaults()`, which sets only the declared variables that have no value yet. This covers starting, restarting and resuming, so a variable added in the version an instance runs on still gets its default. A value set to `null` is a value, and isn't replaced.
+  - **A failed conversion from JavaScript is a script error, not a fault.** `JavaScriptWorkflowScriptEvaluator` already catches every script error, logs it and returns `null`, so `setVariable("count", "many")` leaves the variable unchanged and the workflow goes on. Changing that would change how every script error behaves, so it isn't part of this phase. The Set Variable activity and output bindings (steps 3.3 and 3.4) don't go through the evaluator, and fault the workflow.
+  - **API changes.**
+    - `WorkflowManager` takes `IWorkflowVariableTypeProvider`.
+    - `WorkflowExecutionContext` has an optional last constructor parameter for it; without one, declared variables aren't converted.
+    - `LiquidWorkflowExpressionEvaluator.ToFluidValue` gains an overload for `WorkflowVariables`.
+  - **Content items.** `ContentItemVariableType` (`OrchardCore.Contents/Workflows/Variables/`) accepts `ContentItem` and `IContent`. A test round-trips one through `ContentItemSerializer` as `PersistAsync` and a reload do.
+  - **Tests.**
+    - `Variables/WorkflowVariablesTests.cs` (9).
+    - In `WorkflowManagerTests`: defaults read and written from JavaScript (3 cases), a script setting a wrong value, and Liquid `Workflow.Variables` with conversion on read.
+    - The test `TemplateOptions` mirror `Startup`.
+    - Workflows and Contents tests: 192/192.
 
 ### - [ ] 3.3 Activity outputs and bindings
 

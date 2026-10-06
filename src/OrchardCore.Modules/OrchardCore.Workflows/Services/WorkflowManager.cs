@@ -21,6 +21,7 @@ public class WorkflowManager : IWorkflowManager
     private readonly IActivityLibrary _activityLibrary;
     private readonly IWorkflowTypeStore _workflowTypeStore;
     private readonly IWorkflowTypeVersionStore _workflowTypeVersionStore;
+    private readonly IWorkflowVariableTypeProvider _variableTypeProvider;
     private readonly IWorkflowStore _workflowStore;
     private readonly IWorkflowIdGenerator _workflowIdGenerator;
     private readonly Resolver<IEnumerable<IWorkflowValueSerializer>> _workflowValueSerializers;
@@ -40,6 +41,7 @@ public class WorkflowManager : IWorkflowManager
         IActivityLibrary activityLibrary,
         IWorkflowTypeStore workflowTypeRepository,
         IWorkflowTypeVersionStore workflowTypeVersionStore,
+        IWorkflowVariableTypeProvider variableTypeProvider,
         IWorkflowStore workflowRepository,
         IWorkflowIdGenerator workflowIdGenerator,
         Resolver<IEnumerable<IWorkflowValueSerializer>> workflowValueSerializers,
@@ -54,6 +56,7 @@ public class WorkflowManager : IWorkflowManager
         _activityLibrary = activityLibrary;
         _workflowTypeStore = workflowTypeRepository;
         _workflowTypeVersionStore = workflowTypeVersionStore;
+        _variableTypeProvider = variableTypeProvider;
         _workflowStore = workflowRepository;
         _workflowIdGenerator = workflowIdGenerator;
         _workflowValueSerializers = workflowValueSerializers;
@@ -114,7 +117,12 @@ public class WorkflowManager : IWorkflowManager
         var lastResult = await DeserializeAsync(state.LastResult);
         var executedActivities = state.ExecutedActivities;
 
-        return new WorkflowExecutionContext(workflowType, workflow, mergedInput, output, properties, executedActivities, lastResult, activityQuery);
+        var workflowContext = new WorkflowExecutionContext(workflowType, workflow, mergedInput, output, properties, executedActivities, lastResult, activityQuery, _variableTypeProvider);
+
+        // Declared variables that have no value yet start with their default value.
+        workflowContext.Variables.ApplyDefaults();
+
+        return workflowContext;
     }
 
     public Task<ActivityContext> CreateActivityExecutionContextAsync(ActivityRecord activityRecord, JsonObject properties)

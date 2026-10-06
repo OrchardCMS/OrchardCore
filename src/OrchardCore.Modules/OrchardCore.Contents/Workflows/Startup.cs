@@ -3,6 +3,7 @@ using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Contents.Workflows.Activities;
 using OrchardCore.Contents.Workflows.Drivers;
 using OrchardCore.Contents.Workflows.Handlers;
+using OrchardCore.Contents.Workflows.Variables;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Services;
@@ -29,6 +30,7 @@ public sealed class Startup : StartupBase
         services.AddActivity<UpdateContentTask, UpdateContentTaskDisplayDriver>();
 
         services.AddScoped<IWorkflowValueSerializer, ContentItemSerializer>();
+        services.AddScoped<IWorkflowVariableType, ContentItemVariableType>();
     }
 }
 

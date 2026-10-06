@@ -4,7 +4,7 @@ namespace OrchardCore.Workflows.Models;
 
 /// <summary>
 /// A variable declared by a workflow type. At run time, the variable is the workflow property of the same name,
-/// read and written with its type through <c>WorkflowExecutionContext.Variables</c>.
+/// read and written with its type through <see cref="WorkflowExecutionContext.Variables"/>.
 /// </summary>
 public sealed class WorkflowVariableDefinition
 {

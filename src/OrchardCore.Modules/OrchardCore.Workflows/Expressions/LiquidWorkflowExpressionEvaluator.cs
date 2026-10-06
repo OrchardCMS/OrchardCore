@@ -129,6 +129,16 @@ public class LiquidWorkflowExpressionEvaluator : IWorkflowExpressionEvaluator
         }
     }
 
+    public static Task<FluidValue> ToFluidValue(WorkflowVariables variables, string key, TemplateContext context)
+    {
+        if (!variables.TryGetValue(key, out var value))
+        {
+            return Task.FromResult<FluidValue>(NilValue.Instance);
+        }
+
+        return Task.FromResult(FluidValue.Create(value, context.Options));
+    }
+
     public static Task<FluidValue> ToFluidValue(IDictionary<string, object> dictionary, string key, TemplateContext context)
     {
         if (!dictionary.TryGetValue(key, out var value))

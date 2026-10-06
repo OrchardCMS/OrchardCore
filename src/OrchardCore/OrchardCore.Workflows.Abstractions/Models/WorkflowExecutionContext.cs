@@ -1,3 +1,5 @@
+using OrchardCore.Workflows.Services;
+
 namespace OrchardCore.Workflows.Models;
 
 public sealed class WorkflowExecutionContext : IDisposable
@@ -13,7 +15,8 @@ public sealed class WorkflowExecutionContext : IDisposable
         IDictionary<string, object> properties,
         IList<ExecutedActivity> executedActivities,
         object lastResult,
-        IEnumerable<ActivityContext> activities
+        IEnumerable<ActivityContext> activities,
+        IWorkflowVariableTypeProvider variableTypes = null
     )
     {
         Input = input ?? new Dictionary<string, object>();
@@ -24,10 +27,16 @@ public sealed class WorkflowExecutionContext : IDisposable
         WorkflowType = workflowType;
         Workflow = workflow;
         Activities = activities.ToDictionary(x => x.ActivityRecord.ActivityId);
+        Variables = new WorkflowVariables(Properties, workflowType?.Variables, variableTypes is null ? null : variableTypes.Get);
     }
 
     public Workflow Workflow { get; }
     public WorkflowType WorkflowType { get; }
+
+    /// <summary>
+    /// The variables of the workflow: the declared ones, typed, over <see cref="Properties"/>.
+    /// </summary>
+    public WorkflowVariables Variables { get; }
     public IDictionary<string, ActivityContext> Activities { get; }
 
     public string WorkflowId

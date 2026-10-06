@@ -10,6 +10,7 @@ using OrchardCore.Modules;
 using OrchardCore.Liquid;
 using OrchardCore.Scripting;
 using OrchardCore.Scripting.JavaScript;
+using OrchardCore.Tests.Modules.OrchardCore.Workflows.Variables;
 using OrchardCore.Tests.Workflows.Activities;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
@@ -371,6 +372,109 @@ public class WorkflowManagerTests
         Assert.True(result);
     }
 
+    [Theory]
+    [InlineData("variable(\"count\") + 1", 42d)]
+    [InlineData("setVariable(\"count\", \"10\"); variable(\"count\") * 2", 20d)]
+    [InlineData("setVariable(\"other\", \"x\"); property(\"other\") + property(\"count\")", "x41")]
+    public async Task StartWorkflowAsync_DeclaredVariables_StartWithTheirDefaultsAndScriptsUseThem(string script, object expected)
+    {
+        var serviceProvider = CreateServiceProvider();
+        var scriptEvaluator = CreateWorkflowScriptEvaluator(serviceProvider);
+        var setOutputTask = new SetOutputTask(scriptEvaluator, new Mock<IWorkflowExpressionEvaluator>().Object, new Mock<IStringLocalizer<SetOutputTask>>().Object);
+        var workflowType = new WorkflowType
+        {
+            Id = 1,
+            WorkflowTypeId = IdGenerator.GenerateId(),
+            Variables = [new WorkflowVariableDefinition { Name = "count", TypeName = "number", DefaultValue = 41 }],
+            Activities =
+            [
+                new()
+                {
+                    ActivityId = "1",
+                    IsStart = true,
+                    Name = setOutputTask.Name,
+                    Properties = JObject.FromObject(new { Value = new WorkflowExpression<object>(script), OutputName = "Result" }),
+                },
+            ],
+        };
+
+        var workflowManager = CreateWorkflowManager(serviceProvider, [setOutputTask], workflowType);
+
+        var workflowContext = await workflowManager.StartWorkflowAsync(workflowType);
+
+        Assert.Equal(WorkflowStatus.Finished, workflowContext.Status);
+        Assert.Equal(expected, workflowContext.Output["Result"]);
+    }
+
+    [Fact]
+    public async Task StartWorkflowAsync_ScriptSetsAValueOfTheWrongType_LeavesTheVariableUnchanged()
+    {
+        var serviceProvider = CreateServiceProvider();
+        var scriptEvaluator = CreateWorkflowScriptEvaluator(serviceProvider);
+        var setOutputTask = new SetOutputTask(scriptEvaluator, new Mock<IWorkflowExpressionEvaluator>().Object, new Mock<IStringLocalizer<SetOutputTask>>().Object);
+        var workflowType = new WorkflowType
+        {
+            Id = 1,
+            WorkflowTypeId = IdGenerator.GenerateId(),
+            Variables = [new WorkflowVariableDefinition { Name = "count", TypeName = "number" }],
+            Activities =
+            [
+                new()
+                {
+                    ActivityId = "1",
+                    IsStart = true,
+                    Name = setOutputTask.Name,
+                    Properties = JObject.FromObject(new { Value = new WorkflowExpression<object>("setVariable(\"count\", \"many\")"), OutputName = "Result" }),
+                },
+            ],
+        };
+
+        var workflowManager = CreateWorkflowManager(serviceProvider, [setOutputTask], workflowType);
+
+        var workflowContext = await workflowManager.StartWorkflowAsync(workflowType);
+
+        // Like any script error, it is logged and the script returns nothing.
+        Assert.Equal(WorkflowStatus.Finished, workflowContext.Status);
+        Assert.False(workflowContext.Properties.ContainsKey("count"));
+        Assert.Null(workflowContext.Output["Result"]);
+    }
+
+    [Fact]
+    public async Task LiquidWorkflowExpressionEvaluator_DeclaredVariable_ReadsItsTypedValue()
+    {
+        using var serviceProvider = CreateLiquidWorkflowServiceProvider();
+        var evaluator = CreateLiquidWorkflowExpressionEvaluator(serviceProvider);
+        using var workflowContext = new WorkflowExecutionContext(
+            new WorkflowType
+            {
+                Variables =
+                [
+                    new WorkflowVariableDefinition { Name = "greeting", TypeName = "string", DefaultValue = "Hello" },
+                    new WorkflowVariableDefinition { Name = "count", TypeName = "number" },
+                ],
+            },
+            new Workflow { WorkflowId = IdGenerator.GenerateId() },
+            null,
+            null,
+            null,
+            null,
+            null,
+            [],
+            TestVariableTypes.CreateProvider());
+
+        workflowContext.Variables.ApplyDefaults();
+
+        // Stored as text through the properties, read as a number through the variables.
+        workflowContext.Properties["count"] = "41";
+
+        var result = await evaluator.EvaluateAsync(
+            new WorkflowExpression<string>("{{ Workflow.Variables.greeting }} {{ Workflow.Variables.count | plus: 1 }} {{ Workflow.Variables.missing }}"),
+            workflowContext,
+            null);
+
+        Assert.Equal("Hello 42 ", result);
+    }
+
     [Fact]
     public async Task WorkflowScriptEvaluator_Default_EvaluateAsyncScopedGlobalMethods()
     {
@@ -493,6 +597,7 @@ public class WorkflowManagerTests
             options.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Input", (obj, context) => new LiquidPropertyAccessor((LiquidTemplateContext)context, (name, context) => LiquidWorkflowExpressionEvaluator.ToFluidValue(obj.Input, name, context)));
             options.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Output", (obj, context) => new LiquidPropertyAccessor((LiquidTemplateContext)context, (name, context) => LiquidWorkflowExpressionEvaluator.ToFluidValue(obj.Output, name, context)));
             options.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Properties", (obj, context) => new LiquidPropertyAccessor((LiquidTemplateContext)context, (name, context) => LiquidWorkflowExpressionEvaluator.ToFluidValue(obj.Properties, name, context)));
+            options.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Variables", (obj, context) => new LiquidPropertyAccessor((LiquidTemplateContext)context, (name, context) => LiquidWorkflowExpressionEvaluator.ToFluidValue(obj.Variables, name, context)));
         });
 
         return services.BuildServiceProvider();
@@ -556,6 +661,7 @@ public class WorkflowManagerTests
             activityLibrary.Object,
             workflowTypeStore.Object,
             workflowTypeVersionStore.Object,
+            TestVariableTypes.CreateProvider(),
             workflowStore.Object,
             workflowIdGenerator.Object,
             workflowValueSerializers,
