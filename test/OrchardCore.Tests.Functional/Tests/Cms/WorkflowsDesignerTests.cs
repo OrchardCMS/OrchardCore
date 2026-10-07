@@ -6,7 +6,8 @@ namespace OrchardCore.Tests.Functional.Tests.Cms;
 
 // The OrchardCore.Workflows designer: the toolbox, canvas and properties panel, drafts and publishing, and the
 // read-only instance viewer. The recipe seeds the "Seeded approval" workflow (HTTP request → Notify → Signal →
-// Notify), the workflows of the version, variable, expression, journal, real-time, composition and branching tests, a WorkflowViewer role that
+// Notify), the workflows of the version, variable, expression, journal, real-time, composition, branching, available data and
+// script error tests, a WorkflowViewer role that
 // can open the admin but can't manage workflows, and a WorkflowEditor role that can. The recipe also enables the
 // real-time feature. Other tests that change a workflow create their own.
 public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsFixture>, IClassFixture<WorkflowsDesignerTestsFixture>
@@ -717,6 +718,95 @@ public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsF
 
         Assert.Empty(consoleErrors);
         await page.CloseAsync();
+    }
+
+    [Fact]
+    public async Task AvailableData_LogAfterAContentEvent_ListsTheDataAndInsertsAField()
+    {
+        var (page, consoleErrors) = await OpenAsync();
+        var id = await page.FindWorkflowTypeIdAsync("Available data");
+        await page.OpenDesignerAsync(id);
+
+        // The event picks its content types in a list that shows them as tags.
+        await page.EditActivityAsync("datapublished");
+        var picker = page.ActivityForm().Locator(".bootstrap-select");
+        await picker.Locator(".dropdown-toggle").ClickAsync();
+        await picker.Locator("[role=option]", new() { HasText = "Article" }).ClickAsync();
+        await page.Keyboard.PressAsync("Escape");
+        await Assertions.Expect(picker.Locator(".bs-selected-item")).ToHaveCountAsync(1);
+        await page.WaitForSavedAsync();
+
+        // The Log task after Retrieve Content lists the event's values, with their fields, and the last result.
+        await page.EditActivityAsync("datalog");
+        var text = page.ActivityForm().Locator("input[name='LogTask.Text']");
+        await text.FillAsync("Type: ");
+        await page.Locator("[data-cy=panel-view-data]").ClickAsync();
+
+        var data = page.Locator("[data-cy=available-data]");
+        await Assertions.Expect(data.Locator("[data-cy='available-datapublished-Input:ContentItem'] [data-cy=available-javascript]").First).ToContainTextAsync("input(\"ContentItem\")");
+        var lastResult = data.Locator("[data-cy='available-workflow-LastResult']");
+        await Assertions.Expect(lastResult.Locator(".wfd-available-head").First).ToContainTextAsync("Content item");
+        await Assertions.Expect(lastResult).ToContainTextAsync("The content item the activity retrieved.");
+        await Assertions.Expect(data.Locator("[data-cy=available-group-global]")).ToBeVisibleAsync();
+
+        // A field is inserted where the cursor was, and the settings come back.
+        await data.Locator("[data-cy='available-datapublished-Input:ContentEvent'] > details > summary").ClickAsync();
+        await data.Locator("[data-cy='available-datapublished-Input:ContentEvent.ContentType'] [data-cy=available-liquid]").ClickAsync();
+        await Assertions.Expect(page.Locator("[data-cy=panel-view-settings]")).ToHaveAttributeAsync("aria-selected", "true");
+        await Assertions.Expect(text).ToHaveValueAsync("Type: {{ Workflow.Input.ContentEvent.ContentType }}");
+        await page.WaitForSavedAsync();
+
+        // The content types were saved with the draft.
+        await page.ReloadAsync();
+        await page.WaitForDesignerAsync();
+        await page.EditActivityAsync("datapublished");
+        await Assertions.Expect(page.ActivityForm().Locator(".bootstrap-select .bs-selected-item")).ToHaveTextAsync("Article");
+
+        Assert.Empty(consoleErrors);
+        await page.CloseAsync();
+    }
+
+    [Fact]
+    public async Task ScriptErrors_ScriptFails_TheInstanceShowsItOrFaultsWithTheSetting()
+    {
+        var (page, consoleErrors) = await OpenAsync();
+        var id = await page.FindWorkflowTypeIdAsync("Script errors");
+        await page.OpenDesignerAsync(id);
+        var url = await page.GenerateHttpUrlAsync(id, "errstart");
+
+        // By default, the script goes on with its fallback value, and the instance shows the error.
+        await page.APIRequest.GetAsync(url);
+        await OpenInstanceAsync(page, id, "Finished");
+        await Assertions.Expect(page.Activity("errscript")).ToHaveClassAsync(new Regex("has-script-errors"));
+        await Assertions.Expect(page.Activity("errscript").Locator("[data-cy=script-error-badge]")).ToHaveAttributeAsync("title", new Regex("Total"));
+        await Assertions.Expect(page.Activity("errdone")).ToHaveClassAsync(new Regex("is-executed"));
+        await Assertions.Expect(page.Locator("[data-cy=script-error-legend]")).ToBeVisibleAsync();
+        await page.Locator("[data-cy=panel-tab-journal]").ClickAsync();
+        await Assertions.Expect(page.Locator("[data-cy=journal-record-2] [data-cy=journal-script-error]")).ToBeVisibleAsync();
+
+        // With the setting, the instance faults at the script.
+        await page.OpenDesignerAsync(id);
+        await page.Locator("[data-cy=panel-tab-workflow]").ClickAsync();
+        await page.Locator("[data-cy=panel-settings-form]").GetByLabel("Fault the workflow on script errors", new() { Exact = true }).CheckAsync();
+        await page.WaitForSavedAsync();
+        await page.PublishAsync();
+
+        await page.APIRequest.GetAsync(url);
+        await OpenInstanceAsync(page, id, "Faulted");
+        await Assertions.Expect(page.Activity("errscript")).ToHaveClassAsync(new Regex("is-faulted"));
+        await Assertions.Expect(page.Activity("errdone")).Not.ToHaveClassAsync(new Regex("is-executed"));
+
+        Assert.Empty(consoleErrors);
+        await page.CloseAsync();
+    }
+
+    // Opens the page of the instance of a workflow that has the status.
+    private static async Task OpenInstanceAsync(IPage page, long workflowTypeId, string status)
+    {
+        await page.GotoAndAssertOkAsync($"/Admin/Workflows/Types/{workflowTypeId}/Instances/Index");
+        await page.Locator(".list-group-item", new() { Has = page.Locator("a[href*='/Workflow/Details/']"), HasText = status })
+            .Locator("a[href*='/Workflow/Details/']").First.ClickAsync();
+        await page.WaitForDesignerAsync();
     }
 
     [Fact]

@@ -157,7 +157,13 @@ public sealed class OrchardTestServer : IAsyncDisposable
             && record.Message.Contains("The OpenID client settings are invalid"))
         // The Transient failure activity of the WorkflowsSample test module faults its instance on purpose.
         || (record.Category == "OrchardCore.Workflows.Services.WorkflowManager"
-            && record.Exception is WorkflowsSample.TransientFailureException);
+            && record.Exception is WorkflowsSample.TransientFailureException)
+        // The script of the Script errors workflow fails on purpose.
+        || (record.Category == "OrchardCore.Workflows.Evaluators.JavaScriptWorkflowScriptEvaluator"
+            && record.Message.Contains("input('Order').Total"))
+        || (record.Category == "OrchardCore.Workflows.Services.WorkflowManager"
+            && record.Exception is OrchardCore.Workflows.Models.WorkflowScriptException
+            && record.Exception.Message.Contains("reading 'Total'"));
 
     public async ValueTask DisposeAsync()
     {

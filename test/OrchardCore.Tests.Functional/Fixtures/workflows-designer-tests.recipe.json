@@ -25,6 +25,7 @@
         "OrchardCore.Users",
 
         "OrchardCore.Contents",
+        "OrchardCore.ContentTypes",
         "OrchardCore.Workflows",
         "OrchardCore.Workflows.Http",
         "OrchardCore.Workflows.Timers",
@@ -55,6 +56,30 @@
           "Permissions": [ "AccessAdminPanel", "ManageWorkflows" ]
         }
       ]
+    },
+    {
+      "name": "ContentDefinition",
+      "ContentTypes": [
+        {
+          "Name": "Article",
+          "DisplayName": "Article",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Creatable": true,
+              "Listable": true,
+              "Draftable": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Article",
+              "Name": "Article",
+              "Settings": {}
+            }
+          ]
+        }
+      ],
+      "ContentParts": []
     },
     {
       "name": "WorkflowType",
@@ -737,6 +762,123 @@
               "SourceActivityId": "historystart",
               "SourceOutcomeName": "Done",
               "DestinationActivityId": "historynotify"
+            }
+          ]
+        },
+        {
+          "WorkflowTypeId": "wfdavailabledata",
+          "Name": "Available data",
+          "IsEnabled": true,
+          "IsSingleton": false,
+          "DeleteFinishedWorkflows": false,
+          "Activities": [
+            {
+              "ActivityId": "datapublished",
+              "Name": "ContentPublishedEvent",
+              "X": 40,
+              "Y": 40,
+              "IsStart": true,
+              "Properties": {
+                "ContentTypeFilter": []
+              }
+            },
+            {
+              "ActivityId": "dataretrieve",
+              "Name": "RetrieveContentTask",
+              "X": 360,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "Content": {
+                  "Expression": "input('ContentItem')"
+                }
+              }
+            },
+            {
+              "ActivityId": "datalog",
+              "Name": "LogTask",
+              "X": 680,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "LogLevel": "Information",
+                "Text": {
+                  "Expression": ""
+                }
+              }
+            }
+          ],
+          "Transitions": [
+            {
+              "SourceActivityId": "datapublished",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "dataretrieve"
+            },
+            {
+              "SourceActivityId": "dataretrieve",
+              "SourceOutcomeName": "Retrieved",
+              "DestinationActivityId": "datalog"
+            }
+          ]
+        },
+        {
+          "WorkflowTypeId": "wfdscripterrors",
+          "Name": "Script errors",
+          "IsEnabled": true,
+          "IsSingleton": false,
+          "DeleteFinishedWorkflows": false,
+          "Activities": [
+            {
+              "ActivityId": "errstart",
+              "Name": "HttpRequestEvent",
+              "X": 40,
+              "Y": 40,
+              "IsStart": true,
+              "Properties": {
+                "HttpMethod": "GET",
+                "ValidateAntiforgeryToken": false
+              }
+            },
+            {
+              "ActivityId": "errscript",
+              "Name": "ScriptTask",
+              "X": 360,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "AvailableOutcomes": [
+                  "Done"
+                ],
+                "Script": {
+                  "Expression": "setOutcome('Done'); var total = input('Order').Total;"
+                }
+              }
+            },
+            {
+              "ActivityId": "errdone",
+              "Name": "SetPropertyTask",
+              "X": 680,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "PropertyName": "Done",
+                "Value": {
+                  "Expression": "yes",
+                  "Syntax": "Literal"
+                }
+              }
+            }
+          ],
+          "Transitions": [
+            {
+              "SourceActivityId": "errstart",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "errscript"
+            },
+            {
+              "SourceActivityId": "errscript",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "errdone"
             }
           ]
         }

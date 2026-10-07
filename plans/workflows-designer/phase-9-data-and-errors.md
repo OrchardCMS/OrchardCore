@@ -261,10 +261,24 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - `Definition_ActivitiesThatProvideValues_ListThem` checks `Site` with its `SiteName`, `uuid()`, the HTTP functions, `Content`, and the outputs of Execute Workflow as the fields of its last result.
     - Workflow tests 288/288; CI-flag build clean.
 
-### - [ ] 9.10 End-to-end test
+### - [x] 9.10 End-to-end test
 
 - The available data of an activity after a content event lists its content item, and clicking an expression inserts it into the editor.
 - A script error shows a warning on the instance page; with the setting, the instance is faulted at that activity.
+- **Notes from implementing this step:**
+  - **Seeded workflows** (`workflows-designer-tests.recipe.json`).
+    - **Available data**: Content Published → Retrieve Content → Log.
+    - **Script errors**: HTTP request → a Script that reads `input('Order').Total` and fails → Set Property.
+    - The recipe also enables `OrchardCore.ContentTypes` and adds an **Article** type, so the content type picker has an option.
+  - **`AvailableData_LogAfterAContentEvent_ListsTheDataAndInsertsAField`.**
+    - Picks Article in the event's picker (a tag, saved, still there after a reload).
+    - On the Log task: the event's `input("ContentItem")`, the last result typed as a content item from Retrieve Content, and the **Global** group.
+    - Clicking the Liquid of `ContentEvent.ContentType` inserts it after the typed text, and the settings come back.
+  - **`ScriptErrors_ScriptFails_TheInstanceShowsItOrFaultsWithTheSetting`.**
+    - By default, the instance finishes; the Script is `has-script-errors` with "Total" in its badge, and the legend and the journal's **Script error** badge show.
+    - With **Fault the workflow on script errors** checked and published, the next instance faults at the Script, and Set Property doesn't run.
+  - **Logged errors.** `OrchardTestServer` ignores the errors this workflow logs on purpose (the evaluator's error for `input('Order').Total`, and the `WorkflowScriptException` fault), as it does for the transient failure activity.
+  - **Tests.** The designer functional class passes 27/27.
 
 ## Definition of done (Phase 9)
 
