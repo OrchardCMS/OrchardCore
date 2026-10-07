@@ -177,23 +177,26 @@ The default is `8`, and `0` turns reuse off and builds a new engine for every ev
 
 This is **not** a concurrency limit. An evaluation that starts while every pooled engine is in use builds
 its own and lets it go afterwards, exactly as every evaluation did before pooling existed, so the value can
-never make an evaluation wait or fail. What it bounds is *retained state*: a reused engine remembers the
-last object each member access and each call in the scripts it has run resolved against, so it can hold one
-such object — a request's `HttpContext`, a workflow execution context — per site in those scripts, until
-that site next resolves something else. It is one live object per site per engine, and it is corrected the
-next time the same script runs, but it is real, and it is the reason the default is a handful of engines
-rather than one per concurrent request.
+never make an evaluation wait or fail. What it bounds is how many engines can hold *retained state*.
 
-A registered global is one of those objects. A call such as `uuid()` in a script that has already run on
-the engine remembers the function it called, and that function was built from the services of the request
-that called it — so an idle engine can keep a finished request's services, and the scoped services resolved
-from them, reachable until the same script next runs on it. Detaching the services when the engine is
-returned stops a new global being built from them; it does not reach into a call that already holds one.
+A reused engine remembers the last object each member access and each call in the scripts it has run
+resolved against, which is part of what makes the next run of the same script fast. So a pooled engine can
+hold one such object per site in those scripts — a request's `HttpContext`, a workflow execution context, or
+the services of a finished request: a call such as `uuid()` remembers the function it called, and that
+function was built from the services of the request that called it. Detaching the services when the engine
+is returned stops a new global being built from them; it does not reach into a call that already holds one.
 
-Raise it for a tenant that evaluates scripts on many concurrent requests — JavaScript layer rules are the
-usual case, because the rules evaluator holds its scope for the whole request rather than for one
-expression. Lower it, or set it to `0`, for a tenant whose global methods project large object graphs into
-script and would rather not have them outlive the request.
+The pool therefore lets go of that remembered state once it is a minute old: when the engine is returned
+after that, or, if the engine is sitting unused in the pool by then, from a background check that runs only
+while some idle engine still holds such state. A finished request's services, and the scoped services
+resolved from them, are reachable from a pooled engine for at most about two minutes. The cost is that the
+next run of each script on that engine is as slow as a first run, minus building the engine — at most once
+a minute per engine, which is why it is not done every time an engine is returned.
+
+Raise the pool size for a tenant that evaluates scripts on many concurrent requests — JavaScript layer rules
+are the usual case, because the rules evaluator holds its scope for the whole request rather than for one
+expression. Set it to `0` for a tenant whose global methods project large object graphs into script and must
+not have them outlive the request at all.
 
 ### Methods
 
