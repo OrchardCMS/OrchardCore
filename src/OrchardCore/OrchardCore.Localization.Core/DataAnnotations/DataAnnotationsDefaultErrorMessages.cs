@@ -7,7 +7,7 @@ internal sealed class DataAnnotationsDefaultErrorMessages
 {
     public static LocalizationSource AssociatedMetadataTypeTypeDescriptorMetadataTypeContainsUnknownProperties => LocalizationSource.Create<DataAnnotationsDefaultErrorMessages>("The associated metadata type for type '{0}' contains the following unknown properties or fields: {1}. Please make sure that the names of these members match the names of the properties on the main type.");
 
-    public static LocalizationSource AttributeStoreUnknownProperty => LocalizationSource.Create<DataAnnotationsDefaultErrorMessages>("The type '{0}' does not contain a public static property named '{1}'.");
+    public static LocalizationSource AttributeStoreUnknownProperty => LocalizationSource.Create<DataAnnotationsDefaultErrorMessages>("The type '{0}' does not contain a public property named '{1}'.");
 
     public static LocalizationSource CommonPropertyNotFound => LocalizationSource.Create<DataAnnotationsDefaultErrorMessages>("The property {0}.{1} could not be found.");
 
@@ -19,15 +19,15 @@ internal sealed class DataAnnotationsDefaultErrorMessages
 
     public static LocalizationSource CustomValidationAttributeMethodMustReturnValidationResult => LocalizationSource.Create<DataAnnotationsDefaultErrorMessages>("The CustomValidationAttribute method '{0}' in type '{1}' must return System.ComponentModel.DataAnnotations.ValidationResult.  Use System.ComponentModel.DataAnnotations.ValidationResult.Success to represent success.");
 
-    public static LocalizationSource CustomValidationAttributeMethodNotFound => LocalizationSource.Create<DataAnnotationsDefaultErrorMessages>("The CustomValidationAttribute method '{0}' does not exist in type '{1}' or is not public static and static.");
+    public static LocalizationSource CustomValidationAttributeMethodNotFound => LocalizationSource.Create<DataAnnotationsDefaultErrorMessages>("The CustomValidationAttribute method '{0}' does not exist in type '{1}' or is not public and static.");
 
     public static LocalizationSource CustomValidationAttributeMethodRequired => LocalizationSource.Create<DataAnnotationsDefaultErrorMessages>("The CustomValidationAttribute.Method was not specified.");
 
-    public static LocalizationSource CustomValidationAttributeMethodSignature => LocalizationSource.Create<DataAnnotationsDefaultErrorMessages>("The CustomValidationAttribute method '{0}' in type '{1}' must match the expected signature: public static static ValidationResult {0}(object value, ValidationContext context). The value can be strongly typed. The ValidationContext parameter is optional.");
+    public static LocalizationSource CustomValidationAttributeMethodSignature => LocalizationSource.Create<DataAnnotationsDefaultErrorMessages>("The CustomValidationAttribute method '{0}' in type '{1}' must match the expected signature: public static ValidationResult {0}(object value, ValidationContext context). The value can be strongly typed. The ValidationContext parameter is optional.");
 
     public static LocalizationSource CustomValidationAttributeTypeConversionFailed => LocalizationSource.Create<DataAnnotationsDefaultErrorMessages>("Could not convert the value of type '{0}' to '{1}' as expected by method {2}.{3}.");
 
-    public static LocalizationSource CustomValidationAttributeTypeMustBePublic => LocalizationSource.Create<DataAnnotationsDefaultErrorMessages>("The custom validation type '{0}' must be public static.");
+    public static LocalizationSource CustomValidationAttributeTypeMustBePublic => LocalizationSource.Create<DataAnnotationsDefaultErrorMessages>("The custom validation type '{0}' must be public.");
 
     public static LocalizationSource CustomValidationAttributeValidationError => LocalizationSource.Create<DataAnnotationsDefaultErrorMessages>("{0} is not valid.");
 
@@ -45,7 +45,7 @@ internal sealed class DataAnnotationsDefaultErrorMessages
 
     public static LocalizationSource FileExtensionsAttributeInvalid => LocalizationSource.Create<DataAnnotationsDefaultErrorMessages>("The {0} field only accepts files with the following extensions: {1}.");
 
-    public static LocalizationSource LocalizableStringLocalizationFailed => LocalizationSource.Create<DataAnnotationsDefaultErrorMessages>("Cannot retrieve property '{0}' because localization failed.  Type '{1}' is not public static or does not contain a public static static string property with the name '{2}'.");
+    public static LocalizationSource LocalizableStringLocalizationFailed => LocalizationSource.Create<DataAnnotationsDefaultErrorMessages>("Cannot retrieve property '{0}' because localization failed.  Type '{1}' is not public or does not contain a public static string property with the name '{2}'.");
 
     public static LocalizationSource MaxLengthAttributeInvalidMaxLength => LocalizationSource.Create<DataAnnotationsDefaultErrorMessages>("MaxLengthAttribute must have a Length value that is greater than zero. Use MaxLength() without parameters to indicate that the string or array can have the maximum allowable length.");
 
