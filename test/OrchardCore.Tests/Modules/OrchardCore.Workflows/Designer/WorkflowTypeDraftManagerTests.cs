@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Extensions;
 using OrchardCore.Json;
 using OrchardCore.Modules;
+using OrchardCore.Tests.Modules.OrchardCore.Workflows.Expressions;
 using OrchardCore.Workflows;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
@@ -481,7 +482,7 @@ public sealed class WorkflowTypeDraftManagerTests : IAsyncLifetime
     [Fact]
     public async Task ValidateAsync_SetVariableOfAnUndeclaredVariable_ReturnsUndeclaredVariableWarning()
     {
-        Register(() => new SetVariableTask(Mock.Of<IWorkflowScriptEvaluator>(), Mock.Of<IWorkflowExpressionEvaluator>(), new PassThroughStringLocalizer<SetVariableTask>()));
+        Register(() => new SetVariableTask(TestExpressions.CreateManager(), new PassThroughStringLocalizer<SetVariableTask>()));
         var record = _workflowType.Activities.Single(x => x.ActivityId == "a");
         record.Name = nameof(SetVariableTask);
         record.Properties = new JsonObject { ["VariableName"] = "missing" };

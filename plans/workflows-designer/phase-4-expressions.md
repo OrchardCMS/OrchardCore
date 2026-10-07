@@ -63,10 +63,19 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - `Expressions/WorkflowExpressionProvidersTests.cs` (11): the providers, the manager, the JSON shape and `Resolve`.
     - Workflows tests: 200/200.
 
-### - [ ] 4.2 Activities evaluate per-input syntaxes
+### - [x] 4.2 Activities evaluate per-input syntaxes
 
 - The eight activities evaluate through `IWorkflowExpressionManager`, resolving the legacy pair when the expression has no syntax (E4). A helper resolves the legacy pair.
 - **Tests**: for each activity, legacy JavaScript and Liquid properties evaluate as before; the new shape with each syntax, including Literal.
+- **Notes from implementing this step:**
+  - **Constructors.** The eight activities take `IWorkflowExpressionManager` instead of `IWorkflowScriptEvaluator` and `IWorkflowExpressionEvaluator`. Their legacy properties (`LiquidCondition`, `LiquidValue`, `LiquidEnumerable`, `LiquidFrom`/`To`/`Step` and `Syntax`) are documented as legacy and only read when an expression has no syntax.
+  - **Correlate** used a single `Value` with either syntax, so its legacy pair is `Value` itself.
+  - **For Each.** A Liquid list (legacy or new) is still evaluated as an object and read as a list, a JSON array or comma-separated text, as before. A JavaScript list that evaluates to `null` is now an empty list instead of a `NullReferenceException`.
+  - **For Loop.** A legacy bound keeps its exact behavior: a Liquid text is parsed with `double.Parse`, and a JavaScript bound that is a number isn't run as a script. A bound with a syntax is evaluated by its provider.
+  - **Tests.**
+    - The legacy Liquid tests in `WorkflowManagerTests` (Set Output, Set Property, If/Else, While Loop, For Loop, For Each) pass unchanged, through `TestExpressions.CreateManager` over the same evaluators.
+    - `Expressions/ExpressionActivitiesTests.cs` (13) covers the new shape (Literal for every activity, Liquid for If/Else and For Each), the precedence of a syntax over the legacy pair, legacy JavaScript, and legacy Liquid for Correlate.
+    - Workflows tests: 215/215.
 
 ### - [ ] 4.3 Expression editor
 

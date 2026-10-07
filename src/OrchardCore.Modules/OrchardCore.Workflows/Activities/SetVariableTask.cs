@@ -11,18 +11,15 @@ namespace OrchardCore.Workflows.Activities;
 /// </summary>
 public class SetVariableTask : TaskActivity<SetVariableTask>
 {
-    private readonly IWorkflowScriptEvaluator _scriptEvaluator;
-    private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+    private readonly IWorkflowExpressionManager _expressionManager;
 
     protected readonly IStringLocalizer S;
 
     public SetVariableTask(
-        IWorkflowScriptEvaluator scriptEvaluator,
-        IWorkflowExpressionEvaluator expressionEvaluator,
+        IWorkflowExpressionManager expressionManager,
         IStringLocalizer<SetVariableTask> localizer)
     {
-        _scriptEvaluator = scriptEvaluator;
-        _expressionEvaluator = expressionEvaluator;
+        _expressionManager = expressionManager;
         S = localizer;
     }
 
@@ -40,7 +37,7 @@ public class SetVariableTask : TaskActivity<SetVariableTask>
     }
 
     /// <summary>
-    /// The JavaScript expression of the value, used when <see cref="Syntax"/> is JavaScript.
+    /// The value.
     /// </summary>
     public WorkflowExpression<object> Value
     {
@@ -49,7 +46,8 @@ public class SetVariableTask : TaskActivity<SetVariableTask>
     }
 
     /// <summary>
-    /// The Liquid expression of the value, used when <see cref="Syntax"/> is Liquid.
+    /// Legacy: the Liquid liquidvalue of an activity saved before a syntax could be chosen for each expression, used when
+    /// <see cref="Value"/> has no syntax and <see cref="Syntax"/> is Liquid.
     /// </summary>
     public WorkflowExpression<object> LiquidValue
     {
@@ -58,7 +56,8 @@ public class SetVariableTask : TaskActivity<SetVariableTask>
     }
 
     /// <summary>
-    /// The syntax of the value.
+    /// Legacy: which expression an activity saved before a syntax could be chosen for each expression evaluates.
+    /// It's only used when <see cref="Value"/> has no <see cref="WorkflowExpression{T}.Syntax"/>.
     /// </summary>
     public WorkflowScriptSyntax Syntax
     {
@@ -71,12 +70,7 @@ public class SetVariableTask : TaskActivity<SetVariableTask>
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var value = Syntax switch
-        {
-            WorkflowScriptSyntax.Liquid => await _expressionEvaluator.EvaluateAsync(LiquidValue, workflowContext, null),
-            WorkflowScriptSyntax.JavaScript => await _scriptEvaluator.EvaluateAsync(Value, workflowContext),
-            _ => throw new NotSupportedException($"The syntax {Syntax} isn't supported for {nameof(SetVariableTask)}."),
-        };
+        var value = await _expressionManager.EvaluateAsync(WorkflowExpressionSyntaxes.Resolve(Value, LiquidValue.Expression, Syntax), workflowContext);
 
         // Throws when the value doesn't convert to the variable's type, which faults the workflow.
         workflowContext.Variables.Set(VariableName, value);

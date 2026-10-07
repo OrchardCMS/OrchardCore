@@ -1,4 +1,5 @@
 using OrchardCore.Scripting;
+using OrchardCore.Tests.Modules.OrchardCore.Workflows.Expressions;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
@@ -67,7 +68,7 @@ public sealed class SetVariableTaskTests
             .ReturnsAsync(value);
 
     private SetVariableTask CreateTask(string variableName, WorkflowScriptSyntax syntax)
-        => new(_scriptEvaluator.Object, _expressionEvaluator.Object, new PassThroughStringLocalizer<SetVariableTask>())
+        => new(TestExpressions.CreateManager(_scriptEvaluator.Object, _expressionEvaluator.Object), new PassThroughStringLocalizer<SetVariableTask>())
         {
             VariableName = variableName,
             Syntax = syntax,

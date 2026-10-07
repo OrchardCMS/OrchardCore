@@ -7,17 +7,14 @@ namespace OrchardCore.Workflows.Activities;
 
 public class ForLoopTask : TaskActivity<ForLoopTask>
 {
-    private readonly IWorkflowScriptEvaluator _scriptEvaluator;
-    private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+    private readonly IWorkflowExpressionManager _expressionManager;
     protected readonly IStringLocalizer S;
 
     public ForLoopTask(
-        IWorkflowScriptEvaluator scriptEvaluator,
-        IWorkflowExpressionEvaluator expressionEvaluator,
+        IWorkflowExpressionManager expressionManager,
         IStringLocalizer<ForLoopTask> localizer)
     {
-        _scriptEvaluator = scriptEvaluator;
-        _expressionEvaluator = expressionEvaluator;
+        _expressionManager = expressionManager;
         S = localizer;
     }
 
@@ -34,6 +31,10 @@ public class ForLoopTask : TaskActivity<ForLoopTask>
         set => SetProperty(value);
     }
 
+    /// <summary>
+    /// Legacy: the Liquid liquidfrom of an activity saved before a syntax could be chosen for each expression, used when
+    /// <see cref="From"/> has no syntax and <see cref="Syntax"/> is Liquid.
+    /// </summary>
     public WorkflowExpression<string> LiquidFrom
     {
         get => GetProperty(() => new WorkflowExpression<string>("0"));
@@ -49,6 +50,10 @@ public class ForLoopTask : TaskActivity<ForLoopTask>
         set => SetProperty(value);
     }
 
+    /// <summary>
+    /// Legacy: the Liquid liquidto of an activity saved before a syntax could be chosen for each expression, used when
+    /// <see cref="To"/> has no syntax and <see cref="Syntax"/> is Liquid.
+    /// </summary>
     public WorkflowExpression<string> LiquidTo
     {
         get => GetProperty(() => new WorkflowExpression<string>("10"));
@@ -64,12 +69,20 @@ public class ForLoopTask : TaskActivity<ForLoopTask>
         set => SetProperty(value);
     }
 
+    /// <summary>
+    /// Legacy: the Liquid liquidstep of an activity saved before a syntax could be chosen for each expression, used when
+    /// <see cref="Step"/> has no syntax and <see cref="Syntax"/> is Liquid.
+    /// </summary>
     public WorkflowExpression<string> LiquidStep
     {
         get => GetProperty(() => new WorkflowExpression<string>("1"));
         set => SetProperty(value);
     }
 
+    /// <summary>
+    /// Legacy: which expression an activity saved before a syntax could be chosen for each expression evaluates.
+    /// It's only used when <see cref="From"/>, <see cref="To"/> or <see cref="Step"/> has no <see cref="WorkflowExpression{T}.Syntax"/>.
+    /// </summary>
     public WorkflowScriptSyntax Syntax
     {
         get => GetProperty(() => WorkflowScriptSyntax.JavaScript);
@@ -124,36 +137,30 @@ public class ForLoopTask : TaskActivity<ForLoopTask>
         }
     }
 
-    private async Task<double> EvaluateFromAsync(WorkflowExecutionContext workflowContext)
-    {
-        return Syntax switch
-        {
-            WorkflowScriptSyntax.Liquid => double.Parse(await _expressionEvaluator.EvaluateAsync(LiquidFrom, workflowContext, null)),
-            WorkflowScriptSyntax.JavaScript when double.TryParse(From.Expression, out var from) => from,
-            WorkflowScriptSyntax.JavaScript => await _scriptEvaluator.EvaluateAsync(From, workflowContext),
-            _ => throw new NotSupportedException($"The syntax {Syntax} isn't supported for ForLoopTask.")
-        };
-    }
+    private Task<double> EvaluateFromAsync(WorkflowExecutionContext workflowContext)
+        => EvaluateNumberAsync(From, LiquidFrom, workflowContext);
 
-    private async Task<double> EvaluateToAsync(WorkflowExecutionContext workflowContext)
-    {
-        return Syntax switch
-        {
-            WorkflowScriptSyntax.Liquid => double.Parse(await _expressionEvaluator.EvaluateAsync(LiquidTo, workflowContext, null)),
-            WorkflowScriptSyntax.JavaScript when double.TryParse(To.Expression, out var to) => to,
-            WorkflowScriptSyntax.JavaScript => await _scriptEvaluator.EvaluateAsync(To, workflowContext),
-            _ => throw new NotSupportedException($"The syntax {Syntax} isn't supported for ForLoopTask.")
-        };
-    }
+    private Task<double> EvaluateToAsync(WorkflowExecutionContext workflowContext)
+        => EvaluateNumberAsync(To, LiquidTo, workflowContext);
 
-    private async Task<double> EvaluateStepAsync(WorkflowExecutionContext workflowContext)
+    private Task<double> EvaluateStepAsync(WorkflowExecutionContext workflowContext)
+        => EvaluateNumberAsync(Step, LiquidStep, workflowContext);
+
+    private async Task<double> EvaluateNumberAsync(WorkflowExpression<double> expression, WorkflowExpression<string> legacyLiquid, WorkflowExecutionContext workflowContext)
     {
-        return Syntax switch
+        if (!string.IsNullOrEmpty(expression.Syntax))
         {
-            WorkflowScriptSyntax.Liquid => double.Parse(await _expressionEvaluator.EvaluateAsync(LiquidStep, workflowContext, null)),
-            WorkflowScriptSyntax.JavaScript when double.TryParse(Step.Expression, out var step) => step,
-            WorkflowScriptSyntax.JavaScript => await _scriptEvaluator.EvaluateAsync(Step, workflowContext),
-            _ => throw new NotSupportedException($"The syntax {Syntax} isn't supported for ForLoopTask.")
-        };
+            return await _expressionManager.EvaluateAsync(expression, workflowContext);
+        }
+
+        // An activity saved before a syntax could be chosen for each expression.
+        if (Syntax == WorkflowScriptSyntax.Liquid)
+        {
+            return double.Parse(await _expressionManager.EvaluateAsync(new WorkflowExpression<string>(legacyLiquid.Expression, WorkflowExpressionSyntaxes.Liquid), workflowContext));
+        }
+
+        return double.TryParse(expression.Expression, out var number)
+            ? number
+            : await _expressionManager.EvaluateAsync(expression, workflowContext, WorkflowExpressionSyntaxes.JavaScript);
     }
 }

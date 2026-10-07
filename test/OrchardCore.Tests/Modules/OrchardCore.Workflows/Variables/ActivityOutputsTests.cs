@@ -4,6 +4,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Workflows.Activities;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Scripting;
+using OrchardCore.Tests.Modules.OrchardCore.Workflows.Expressions;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Http.Activities;
@@ -19,7 +20,7 @@ public sealed class ActivityOutputsTests
     {
         { new ScriptTask(Mock.Of<IWorkflowScriptEvaluator>(), new PassThroughStringLocalizer<ScriptTask>()), "Result:any" },
         { new LiquidTask(Mock.Of<IWorkflowExpressionEvaluator>(), new PassThroughStringLocalizer<LiquidTask>()), "Result:string" },
-        { new SetPropertyTask(Mock.Of<IWorkflowScriptEvaluator>(), Mock.Of<IWorkflowExpressionEvaluator>(), new PassThroughStringLocalizer<SetPropertyTask>()), "Value:any" },
+        { new SetPropertyTask(TestExpressions.CreateManager(), new PassThroughStringLocalizer<SetPropertyTask>()), "Value:any" },
         {
             new HttpRequestTask(Mock.Of<IWorkflowExpressionEvaluator>(), UrlEncoder.Default, Mock.Of<IHttpClientFactory>(), new PassThroughStringLocalizer<HttpRequestTask>()),
             "Body:string,StatusCode:number,Response:object"
@@ -63,7 +64,7 @@ public sealed class ActivityOutputsTests
         var evaluator = new Mock<IWorkflowScriptEvaluator>();
         evaluator.Setup(x => x.EvaluateAsync(It.IsAny<WorkflowExpression<object>>(), It.IsAny<WorkflowExecutionContext>(), It.IsAny<IGlobalMethodProvider[]>()))
             .ReturnsAsync("value");
-        var task = new SetPropertyTask(evaluator.Object, Mock.Of<IWorkflowExpressionEvaluator>(), new PassThroughStringLocalizer<SetPropertyTask>())
+        var task = new SetPropertyTask(TestExpressions.CreateManager(evaluator.Object), new PassThroughStringLocalizer<SetPropertyTask>())
         {
             PropertyName = "name",
             Syntax = WorkflowScriptSyntax.JavaScript,

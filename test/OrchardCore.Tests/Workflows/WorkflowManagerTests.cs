@@ -5,11 +5,12 @@ using Fluid.Values;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Json;
+using OrchardCore.Liquid;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
-using OrchardCore.Liquid;
 using OrchardCore.Scripting;
 using OrchardCore.Scripting.JavaScript;
+using OrchardCore.Tests.Modules.OrchardCore.Workflows.Expressions;
 using OrchardCore.Tests.Modules.OrchardCore.Workflows.Variables;
 using OrchardCore.Tests.Workflows.Activities;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -37,7 +38,7 @@ public class WorkflowManagerTests
         var addTask = new AddTask(scriptEvaluator, localizer.Object);
         var writeLineTask = new WriteLineTask(scriptEvaluator, localizer.Object, output);
         var expressionEvaluator = new Mock<IWorkflowExpressionEvaluator>().Object;
-        var setOutputTask = new SetOutputTask(scriptEvaluator, expressionEvaluator, new Mock<IStringLocalizer<SetOutputTask>>().Object);
+        var setOutputTask = new SetOutputTask(TestExpressions.CreateManager(scriptEvaluator, expressionEvaluator), new Mock<IStringLocalizer<SetOutputTask>>().Object);
         var workflowType = new WorkflowType
         {
             Id = 1,
@@ -100,7 +101,7 @@ public class WorkflowManagerTests
             .Setup(x => x.EvaluateAsync(It.IsAny<WorkflowExpression<object>>(), workflowContext, null))
             .ReturnsAsync("Hello world");
 
-        var activity = new SetOutputTask(scriptEvaluator, expressionEvaluator.Object, new Mock<IStringLocalizer<SetOutputTask>>().Object)
+        var activity = new SetOutputTask(TestExpressions.CreateManager(scriptEvaluator, expressionEvaluator.Object), new Mock<IStringLocalizer<SetOutputTask>>().Object)
         {
             OutputName = "Message",
             Syntax = WorkflowScriptSyntax.Liquid,
@@ -137,7 +138,7 @@ public class WorkflowManagerTests
             .Setup(x => x.EvaluateAsync(It.IsAny<WorkflowExpression<object>>(), workflowContext, null))
             .ReturnsAsync("Saved value");
 
-        var activity = new SetPropertyTask(scriptEvaluator, expressionEvaluator.Object, new Mock<IStringLocalizer<SetPropertyTask>>().Object)
+        var activity = new SetPropertyTask(TestExpressions.CreateManager(scriptEvaluator, expressionEvaluator.Object), new Mock<IStringLocalizer<SetPropertyTask>>().Object)
         {
             PropertyName = "Message",
             Syntax = WorkflowScriptSyntax.Liquid,
@@ -173,7 +174,7 @@ public class WorkflowManagerTests
             .Setup(x => x.EvaluateAsync(It.IsAny<WorkflowExpression<bool>>(), workflowContext, null))
             .ReturnsAsync(true);
 
-        var activity = new IfElseTask(scriptEvaluator, expressionEvaluator.Object, new Mock<IStringLocalizer<IfElseTask>>().Object)
+        var activity = new IfElseTask(TestExpressions.CreateManager(scriptEvaluator, expressionEvaluator.Object), new Mock<IStringLocalizer<IfElseTask>>().Object)
         {
             Syntax = WorkflowScriptSyntax.Liquid,
             LiquidCondition = new WorkflowExpression<bool>("{{ Workflow.Properties.ShouldRun }}"),
@@ -208,7 +209,7 @@ public class WorkflowManagerTests
             .Setup(x => x.EvaluateAsync(It.IsAny<WorkflowExpression<bool>>(), workflowContext, null))
             .ReturnsAsync(true);
 
-        var activity = new WhileLoopTask(scriptEvaluator, expressionEvaluator.Object, new Mock<IStringLocalizer<WhileLoopTask>>().Object)
+        var activity = new WhileLoopTask(TestExpressions.CreateManager(scriptEvaluator, expressionEvaluator.Object), new Mock<IStringLocalizer<WhileLoopTask>>().Object)
         {
             Syntax = WorkflowScriptSyntax.Liquid,
             LiquidCondition = new WorkflowExpression<bool>("{{ Workflow.Properties.ShouldLoop }}"),
@@ -245,7 +246,7 @@ public class WorkflowManagerTests
             .ReturnsAsync("3")
             .ReturnsAsync("1");
 
-        var activity = new ForLoopTask(scriptEvaluator, expressionEvaluator.Object, new Mock<IStringLocalizer<ForLoopTask>>().Object)
+        var activity = new ForLoopTask(TestExpressions.CreateManager(scriptEvaluator, expressionEvaluator.Object), new Mock<IStringLocalizer<ForLoopTask>>().Object)
         {
             Syntax = WorkflowScriptSyntax.Liquid,
             LiquidFrom = new WorkflowExpression<string>("{{ Workflow.Properties.From }}"),
@@ -280,7 +281,7 @@ public class WorkflowManagerTests
             .Setup(x => x.EvaluateAsync(It.IsAny<WorkflowExpression<object>>(), workflowContext, null))
             .ReturnsAsync(new[] { "a", "b" });
 
-        var activity = new ForEachTask(scriptEvaluator, expressionEvaluator.Object, new Mock<IStringLocalizer<ForEachTask>>().Object)
+        var activity = new ForEachTask(TestExpressions.CreateManager(scriptEvaluator, expressionEvaluator.Object), new Mock<IStringLocalizer<ForEachTask>>().Object)
         {
             Syntax = WorkflowScriptSyntax.Liquid,
             LiquidEnumerable = new WorkflowExpression<object>("{{ Workflow.Properties.Items | json }}"),
@@ -381,7 +382,7 @@ public class WorkflowManagerTests
     {
         var serviceProvider = CreateServiceProvider();
         var scriptEvaluator = CreateWorkflowScriptEvaluator(serviceProvider);
-        var setOutputTask = new SetOutputTask(scriptEvaluator, new Mock<IWorkflowExpressionEvaluator>().Object, new Mock<IStringLocalizer<SetOutputTask>>().Object);
+        var setOutputTask = new SetOutputTask(TestExpressions.CreateManager(scriptEvaluator, new Mock<IWorkflowExpressionEvaluator>().Object), new Mock<IStringLocalizer<SetOutputTask>>().Object);
         var workflowType = new WorkflowType
         {
             Id = 1,
@@ -412,7 +413,7 @@ public class WorkflowManagerTests
     {
         var serviceProvider = CreateServiceProvider();
         var scriptEvaluator = CreateWorkflowScriptEvaluator(serviceProvider);
-        var setOutputTask = new SetOutputTask(scriptEvaluator, new Mock<IWorkflowExpressionEvaluator>().Object, new Mock<IStringLocalizer<SetOutputTask>>().Object);
+        var setOutputTask = new SetOutputTask(TestExpressions.CreateManager(scriptEvaluator, new Mock<IWorkflowExpressionEvaluator>().Object), new Mock<IStringLocalizer<SetOutputTask>>().Object);
         var workflowType = new WorkflowType
         {
             Id = 1,

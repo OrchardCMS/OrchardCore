@@ -9,17 +9,14 @@ namespace OrchardCore.Workflows.Activities;
 
 public class ForEachTask : TaskActivity<ForEachTask>
 {
-    private readonly IWorkflowScriptEvaluator _scriptEvaluator;
-    private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+    private readonly IWorkflowExpressionManager _expressionManager;
     protected readonly IStringLocalizer S;
 
     public ForEachTask(
-        IWorkflowScriptEvaluator scriptEvaluator,
-        IWorkflowExpressionEvaluator expressionEvaluator,
+        IWorkflowExpressionManager expressionManager,
         IStringLocalizer<ForEachTask> localizer)
     {
-        _scriptEvaluator = scriptEvaluator;
-        _expressionEvaluator = expressionEvaluator;
+        _expressionManager = expressionManager;
         S = localizer;
     }
 
@@ -36,12 +33,20 @@ public class ForEachTask : TaskActivity<ForEachTask>
         set => SetProperty(value);
     }
 
+    /// <summary>
+    /// Legacy: the Liquid liquidenumerable of an activity saved before a syntax could be chosen for each expression, used when
+    /// <see cref="Enumerable"/> has no syntax and <see cref="Syntax"/> is Liquid.
+    /// </summary>
     public WorkflowExpression<object> LiquidEnumerable
     {
         get => GetProperty(() => new WorkflowExpression<object>());
         set => SetProperty(value);
     }
 
+    /// <summary>
+    /// Legacy: which expression an activity saved before a syntax could be chosen for each expression evaluates.
+    /// It's only used when <see cref="Enumerable"/> has no <see cref="WorkflowExpression{T}.Syntax"/>.
+    /// </summary>
     public WorkflowScriptSyntax Syntax
     {
         get => GetProperty(() => WorkflowScriptSyntax.JavaScript);
@@ -80,12 +85,7 @@ public class ForEachTask : TaskActivity<ForEachTask>
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var items = Syntax switch
-        {
-            WorkflowScriptSyntax.Liquid => await EvaluateLiquidEnumerableAsync(workflowContext),
-            WorkflowScriptSyntax.JavaScript => (await _scriptEvaluator.EvaluateAsync(Enumerable, workflowContext)).ToList(),
-            _ => throw new NotSupportedException($"The syntax {Syntax} isn't supported for ForEachTask.")
-        };
+        var items = await EvaluateItemsAsync(workflowContext);
 
         var count = items.Count;
 
@@ -108,10 +108,21 @@ public class ForEachTask : TaskActivity<ForEachTask>
         }
     }
 
-    private async Task<List<object>> EvaluateLiquidEnumerableAsync(WorkflowExecutionContext workflowContext)
+    private async Task<List<object>> EvaluateItemsAsync(WorkflowExecutionContext workflowContext)
     {
-        var result = await _expressionEvaluator.EvaluateAsync(LiquidEnumerable, workflowContext, null);
+        var expression = WorkflowExpressionSyntaxes.Resolve(Enumerable, LiquidEnumerable.Expression, Syntax);
 
+        // A Liquid template renders its list as JSON or comma-separated text.
+        if (string.Equals(expression.Syntax, WorkflowExpressionSyntaxes.Liquid, StringComparison.OrdinalIgnoreCase))
+        {
+            return ToList(await _expressionManager.EvaluateAsync(new WorkflowExpression<object>(expression.Expression, expression.Syntax), workflowContext));
+        }
+
+        return (await _expressionManager.EvaluateAsync(expression, workflowContext))?.ToList() ?? [];
+    }
+
+    private static List<object> ToList(object result)
+    {
         if (result == null)
         {
             return [];

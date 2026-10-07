@@ -7,17 +7,14 @@ namespace OrchardCore.Workflows.Activities;
 
 public class SetOutputTask : TaskActivity<SetOutputTask>
 {
-    private readonly IWorkflowScriptEvaluator _scriptEvaluator;
-    private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+    private readonly IWorkflowExpressionManager _expressionManager;
     protected readonly IStringLocalizer S;
 
     public SetOutputTask(
-        IWorkflowScriptEvaluator scriptEvaluator,
-        IWorkflowExpressionEvaluator expressionEvaluator,
+        IWorkflowExpressionManager expressionManager,
         IStringLocalizer<SetOutputTask> localizer)
     {
-        _scriptEvaluator = scriptEvaluator;
-        _expressionEvaluator = expressionEvaluator;
+        _expressionManager = expressionManager;
         S = localizer;
     }
 
@@ -31,18 +28,29 @@ public class SetOutputTask : TaskActivity<SetOutputTask>
         set => SetProperty(value);
     }
 
+    /// <summary>
+    /// The value.
+    /// </summary>
     public WorkflowExpression<object> Value
     {
         get => GetProperty(() => new WorkflowExpression<object>());
         set => SetProperty(value);
     }
 
+    /// <summary>
+    /// Legacy: the Liquid liquidvalue of an activity saved before a syntax could be chosen for each expression, used when
+    /// <see cref="Value"/> has no syntax and <see cref="Syntax"/> is Liquid.
+    /// </summary>
     public WorkflowExpression<object> LiquidValue
     {
         get => GetProperty(() => new WorkflowExpression<object>());
         set => SetProperty(value);
     }
 
+    /// <summary>
+    /// Legacy: which expression an activity saved before a syntax could be chosen for each expression evaluates.
+    /// It's only used when <see cref="Value"/> has no <see cref="WorkflowExpression{T}.Syntax"/>.
+    /// </summary>
     public WorkflowScriptSyntax Syntax
     {
         get => GetProperty(() => WorkflowScriptSyntax.JavaScript);
@@ -54,12 +62,7 @@ public class SetOutputTask : TaskActivity<SetOutputTask>
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var value = Syntax switch
-        {
-            WorkflowScriptSyntax.Liquid => await _expressionEvaluator.EvaluateAsync(LiquidValue, workflowContext, null),
-            WorkflowScriptSyntax.JavaScript => await _scriptEvaluator.EvaluateAsync(Value, workflowContext),
-            _ => throw new NotSupportedException($"The syntax {Syntax} isn't supported for SetOutputTask.")
-        };
+        var value = await _expressionManager.EvaluateAsync(WorkflowExpressionSyntaxes.Resolve(Value, LiquidValue.Expression, Syntax), workflowContext);
 
         workflowContext.Output[OutputName] = value;
 
