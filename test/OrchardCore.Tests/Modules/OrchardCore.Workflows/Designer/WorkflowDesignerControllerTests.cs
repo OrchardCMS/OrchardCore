@@ -567,6 +567,33 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
     }
 
     [Fact]
+    public async Task Definition_ActivitiesThatProvideValues_ListThem()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(
+            Activity("published", "ContentPublishedEvent", isStart: true),
+            Activity("signal", "SignalEvent"),
+            Activity("loop", "ForEachTask", properties: new JsonObject { ["LoopVariableName"] = "item" }),
+            Activity("set", "SetPropertyTask", properties: new JsonObject { ["PropertyName"] = "Owner" }),
+            Activity("notify", "NotifyTask"));
+
+        var nodes = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition"))["nodes"].AsArray()
+            .ToDictionary(node => node["id"].GetValue<string>());
+
+        string ValuesOf(string activityId)
+            => string.Join(", ", nodes[activityId]["providedValues"].AsArray()
+                .Select(value => $"{value["source"].GetValue<string>()}.{value["name"].GetValue<string>()}:{value["typeName"].GetValue<string>()}"));
+
+        Assert.Equal("Input.ContentItem:contentItem, Input.ContentEvent:object", ValuesOf("published"));
+        Assert.Equal("Input.Signal:string", ValuesOf("signal"));
+
+        // The names of the values some activities set come from their settings.
+        Assert.Equal("Properties.item:any", ValuesOf("loop"));
+        Assert.Equal("Properties.Owner:any", ValuesOf("set"));
+        Assert.Equal(string.Empty, ValuesOf("notify"));
+        Assert.Equal("The content item of the event.", nodes["published"]["providedValues"][0]["description"].GetValue<string>());
+    }
+
+    [Fact]
     public async Task Variables_ValidDeclarations_SavesThemIntoTheDraft()
     {
         var (id, _) = await CreateWorkflowTypeAsync(

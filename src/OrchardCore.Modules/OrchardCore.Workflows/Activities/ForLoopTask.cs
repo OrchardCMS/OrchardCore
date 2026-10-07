@@ -5,7 +5,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities;
 
-public class ForLoopTask : TaskActivity<ForLoopTask>
+public class ForLoopTask : TaskActivity<ForLoopTask>, IActivityProvidedValues
 {
     private readonly IWorkflowExpressionManager _expressionManager;
     protected readonly IStringLocalizer S;
@@ -163,4 +163,7 @@ public class ForLoopTask : TaskActivity<ForLoopTask>
             ? number
             : await _expressionManager.EvaluateAsync(expression, workflowContext, WorkflowExpressionSyntaxes.JavaScript);
     }
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => string.IsNullOrEmpty(LoopVariableName) ? [] : [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = LoopVariableName, TypeName = "number", Description = S["The current index of the loop."] }];
 }

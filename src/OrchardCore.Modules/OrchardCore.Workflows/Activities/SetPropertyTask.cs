@@ -5,7 +5,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities;
 
-public class SetPropertyTask : TaskActivity<SetPropertyTask>, IActivityOutputs
+public class SetPropertyTask : TaskActivity<SetPropertyTask>, IActivityOutputs, IActivityProvidedValues
 {
     private readonly IWorkflowExpressionManager _expressionManager;
     protected readonly IStringLocalizer S;
@@ -72,4 +72,7 @@ public class SetPropertyTask : TaskActivity<SetPropertyTask>, IActivityOutputs
 
     public IEnumerable<ActivityOutputDescriptor> GetOutputs()
         => [new ActivityOutputDescriptor { Name = "Value", TypeName = "any", DisplayName = S["Value"] }];
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => string.IsNullOrEmpty(PropertyName) ? [] : [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = PropertyName, TypeName = "any", Description = S["The value this activity sets."] }];
 }

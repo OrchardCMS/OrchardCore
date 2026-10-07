@@ -6,7 +6,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Users.Workflows.Activities;
 
-public abstract class UserEvent : UserActivity, IEvent
+public abstract class UserEvent : UserActivity, IEvent, IActivityProvidedValues
 {
     public UserEvent(IUserService userService, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer localizer) : base(userService, scriptEvaluator, localizer)
     {
@@ -21,4 +21,7 @@ public abstract class UserEvent : UserActivity, IEvent
     {
         return Outcome("Done");
     }
+
+    public virtual IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => [new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = "User", TypeName = "any", Description = S["The user of the event."] }];
 }

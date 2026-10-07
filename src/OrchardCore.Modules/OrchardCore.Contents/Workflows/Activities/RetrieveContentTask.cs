@@ -8,7 +8,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Contents.Workflows.Activities;
 
-public class RetrieveContentTask : ContentTask, IActivityOutputs
+public class RetrieveContentTask : ContentTask, IActivityOutputs, IActivityProvidedValues
 {
     public RetrieveContentTask(
         IContentManager contentManager,
@@ -49,4 +49,7 @@ public class RetrieveContentTask : ContentTask, IActivityOutputs
 
     public IEnumerable<ActivityOutputDescriptor> GetOutputs()
         => [new ActivityOutputDescriptor { Name = "ContentItem", TypeName = "contentItem", DisplayName = S["Content item"] }];
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = ContentEventConstants.ContentItemInputKey, TypeName = "contentItem", Description = S["The content item the activity retrieved."] }];
 }

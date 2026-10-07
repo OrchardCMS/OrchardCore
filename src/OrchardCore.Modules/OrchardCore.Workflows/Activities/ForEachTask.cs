@@ -7,7 +7,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities;
 
-public class ForEachTask : TaskActivity<ForEachTask>
+public class ForEachTask : TaskActivity<ForEachTask>, IActivityProvidedValues
 {
     private readonly IWorkflowExpressionManager _expressionManager;
     protected readonly IStringLocalizer S;
@@ -150,4 +150,7 @@ public class ForEachTask : TaskActivity<ForEachTask>
             .Cast<object>()
             .ToList();
     }
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => string.IsNullOrEmpty(LoopVariableName) ? [] : [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = LoopVariableName, TypeName = "any", Description = S["The current item of the loop."] }];
 }

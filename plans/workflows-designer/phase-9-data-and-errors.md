@@ -52,10 +52,31 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
   - **Designer.** Each node of the definition carries `providedValues` (`WorkflowDesignerProvidedValue`: source, name, type name, description). The client type is `ProvidedValue`.
   - **Tests.** `ActivityProvidedValuesTests` (2): the merge and its order, and an activity without declarations. Workflows tests: 283/283.
 
-### - [ ] 9.2 Built-in declarations
+### - [x] 9.2 Built-in declarations
 
 - The events and tasks of the built-in modules declare their values (see the inventory in the notes).
 - **Tests**: the declarations of a few activities, including one whose name comes from a setting.
+- **Notes from implementing this step:**
+  - **Inventory.** An inventory of the built-in activities found which values the events start or resume a workflow with, and which values the tasks write. The declarations follow it.
+  - **Events (Input).**
+    - Content events: `ContentItem` (content item) and `ContentEvent` (object).
+    - User events: `User`. The login event declares `UserName`, `Roles`, `Provider` and `ExternalClaims` instead; the logout event `UserName` and `Roles`.
+    - User Task: `UserAction`, `ContentItem` and `ContentEvent`.
+    - Signal: `Signal`. Catch Workflow Fault: `ErrorInfo`.
+  - **Tasks (Properties).**
+    - Create, Update and Retrieve Content: `ContentItem`.
+    - Register User: `EmailConfirmationUrl`. Validate User: `UserName`, when it sets the user name.
+    - For Each and For Loop: their loop variable. Set Property: its property.
+  - **Tasks (Output and Input).**
+    - Set Output: its output. HTTP Request event: `FormLocation`, when it has a form location key.
+    - Get Users By Role: its output, when the name isn't computed by Liquid.
+    - Notify Content Owner: `Input["Owner"]`.
+  - **Not declared.**
+    - Set Variable, since variables are listed anyway.
+    - Started By Workflow, whose inputs are input variables.
+    - Twitter's `TwitterResponse`; its module can declare it.
+  - **Base classes.** The base content and user events declare their values with a virtual `GetProvidedValues`, which the login and logout events override.
+  - **Tests.** The definition endpoint lists the values of a content event, a signal, a loop and a Set Property activity (whose names come from their settings), and none for Notify. Workflows tests: 284/284.
 
 ### - [ ] 9.3 Available data in the designer
 

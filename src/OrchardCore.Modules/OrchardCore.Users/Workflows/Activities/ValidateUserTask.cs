@@ -8,7 +8,7 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Users.Workflows.Activities;
 
-public class ValidateUserTask : TaskActivity<ValidateUserTask>
+public class ValidateUserTask : TaskActivity<ValidateUserTask>, IActivityProvidedValues
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly string _roleClaimType;
@@ -75,4 +75,7 @@ public class ValidateUserTask : TaskActivity<ValidateUserTask>
 
         return Outcome(OrchardCoreConstants.Roles.Anonymous);
     }
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => SetUserName ? [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = "UserName", TypeName = "string", Description = S["The name of the signed-in user."] }] : [];
 }

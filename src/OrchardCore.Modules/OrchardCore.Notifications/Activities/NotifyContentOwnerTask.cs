@@ -5,13 +5,14 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Users;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
+using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using YesSql;
 
 namespace OrchardCore.Notifications.Activities;
 
-public class NotifyContentOwnerTask : NotifyUserTaskActivity<NotifyContentOwnerTask>
+public class NotifyContentOwnerTask : NotifyUserTaskActivity<NotifyContentOwnerTask>, IActivityProvidedValues
 {
     private readonly ISession _session;
 
@@ -56,4 +57,7 @@ public class NotifyContentOwnerTask : NotifyUserTaskActivity<NotifyContentOwnerT
 
         return [];
     }
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => [new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = "Owner", TypeName = "any", Description = S["The owner of the content item, a user."] }];
 }

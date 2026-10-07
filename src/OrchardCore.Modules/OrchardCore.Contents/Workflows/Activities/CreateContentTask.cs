@@ -12,7 +12,7 @@ using YesSql;
 
 namespace OrchardCore.Contents.Workflows.Activities;
 
-public class CreateContentTask : ContentTask, IActivityOutputs
+public class CreateContentTask : ContentTask, IActivityOutputs, IActivityProvidedValues
 {
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
     private readonly JavaScriptEncoder _javaScriptEncoder;
@@ -133,4 +133,7 @@ public class CreateContentTask : ContentTask, IActivityOutputs
 
     public IEnumerable<ActivityOutputDescriptor> GetOutputs()
         => [new ActivityOutputDescriptor { Name = "ContentItem", TypeName = "contentItem", DisplayName = S["Content item"] }];
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = ContentEventConstants.ContentItemInputKey, TypeName = "contentItem", Description = S["The content item the activity created."] }];
 }
