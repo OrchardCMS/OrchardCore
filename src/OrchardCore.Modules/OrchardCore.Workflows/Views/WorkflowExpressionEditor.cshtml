@@ -1,0 +1,73 @@
+@using OrchardCore.Workflows.Services
+@using OrchardCore.Workflows.ViewModels
+@model WorkflowExpressionEditorViewModel
+@inject IWorkflowExpressionManager ExpressionManager
+
+@{
+    var allowed = Model.Syntaxes ?? [];
+    var providers = ExpressionManager.List()
+        .Where(provider => allowed.Count == 0 || allowed.Contains(provider.Name, StringComparer.OrdinalIgnoreCase))
+        .ToList();
+    var syntax = string.IsNullOrEmpty(Model.Value?.Syntax) ? Model.DefaultSyntax : Model.Value.Syntax;
+    var selected = providers.FirstOrDefault(provider => string.Equals(provider.Name, syntax, StringComparison.OrdinalIgnoreCase));
+    var expressionName = $"{Model.Name}.Expression";
+    var syntaxName = $"{Model.Name}.Syntax";
+    var expressionId = $"{Model.Id}_Expression";
+    var syntaxId = $"{Model.Id}_Syntax";
+    var errors = new[] { expressionName, syntaxName }
+        .SelectMany(name => ViewContext.ViewData.ModelState[name]?.Errors.Select(error => error.ErrorMessage) ?? [])
+        .ToList();
+    var placeholder = selected is not null && Model.Examples is not null && Model.Examples.TryGetValue(selected.Name, out var example) ? example : null;
+}
+
+<div class="ocat-wrapper@(errors.Count > 0 ? " has-validation-error" : "")" data-workflow-expression>
+    <label for="@expressionId" class="ocat-label@(Model.Required ? " ocat-label-required" : "")">@Model.Label</label>
+    <div class="ocat-end">
+        @if (Model.Multiline)
+        {
+            <select id="@syntaxId" name="@syntaxName" class="form-select form-select-sm w-auto mb-1" aria-label="@T["Syntax of {0}", Model.Label]" data-expression-syntax>
+                @foreach (var provider in providers)
+                {
+                    <option value="@provider.Name" selected="@(provider == selected)" data-language="@provider.EditorLanguage">@provider.DisplayName</option>
+                }
+                @if (selected is null && !string.IsNullOrEmpty(syntax))
+                {
+                    <option value="@syntax" selected data-language="plaintext">@syntax</option>
+                }
+            </select>
+            <div class="form-control workflow-expression-code" style="min-height: 8rem;" data-expression-monaco></div>
+            <textarea id="@expressionId" name="@expressionName" hidden data-expression-value>@Model.Value?.Expression</textarea>
+        }
+        else
+        {
+            <div class="input-group">
+                <select id="@syntaxId" name="@syntaxName" class="form-select flex-grow-0 w-auto" aria-label="@T["Syntax of {0}", Model.Label]" data-expression-syntax>
+                    @foreach (var provider in providers)
+                    {
+                        <option value="@provider.Name" selected="@(provider == selected)" data-language="@provider.EditorLanguage" data-placeholder="@(Model.Examples is not null && Model.Examples.TryGetValue(provider.Name, out var providerExample) ? providerExample : null)">@provider.DisplayName</option>
+                    }
+                    @if (selected is null && !string.IsNullOrEmpty(syntax))
+                    {
+                        <option value="@syntax" selected data-language="plaintext">@syntax</option>
+                    }
+                </select>
+                <input type="text" id="@expressionId" name="@expressionName" value="@Model.Value?.Expression" class="form-control code" placeholder="@placeholder" spellcheck="false" autocomplete="off" data-expression-value />
+            </div>
+        }
+        @foreach (var error in errors)
+        {
+            <span class="field-validation-error" data-valmsg-for="@expressionName">@error</span>
+        }
+        @if (!string.IsNullOrEmpty(Model.Hint))
+        {
+            <span class="hint">@Model.Hint</span>
+        }
+    </div>
+</div>
+
+@if (Model.Multiline)
+{
+    <style asp-name="monaco"></style>
+    <script asp-name="monaco" at="Foot"></script>
+}
+<script asp-name="workflow-expression-editor" at="Foot" type="module"></script>

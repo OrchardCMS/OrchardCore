@@ -37,5 +37,5 @@ public sealed class LiquidExpressionProvider : IWorkflowExpressionProvider
     public IReadOnlyList<string> Validate(string expression, Type valueType)
         => string.IsNullOrWhiteSpace(expression) || _templateManager.Validate(expression, out var errors)
             ? []
-            : [S["The Liquid template isn't valid: {0}", string.Join(" ", errors)]];
+            : [S["The Liquid template isn't valid: {0}", string.Join(" ", errors ?? [])]];
 }

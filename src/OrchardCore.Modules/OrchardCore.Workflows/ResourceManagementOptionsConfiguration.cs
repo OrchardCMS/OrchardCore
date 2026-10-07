@@ -82,6 +82,15 @@ public sealed class ResourceManagementOptionsConfiguration
             .SetVersion("1.0.0");
 
         s_manifest
+            .DefineScript("workflow-expression-editor")
+            .SetUrl(
+                "~/OrchardCore.Workflows/Scripts/Workflows/expression-editor/workflow-expression-editor.min.js",
+                "~/OrchardCore.Workflows/Scripts/Workflows/expression-editor/workflow-expression-editor.js"
+            )
+            .SetAttribute("type", "module")
+            .SetVersion("1.0.0");
+
+        s_manifest
             .DefineScript("workflow-monaco-text-editor")
             .SetDependencies("monaco")
             .SetUrl(

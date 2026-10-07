@@ -77,11 +77,33 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - `Expressions/ExpressionActivitiesTests.cs` (13) covers the new shape (Literal for every activity, Liquid for If/Else and For Each), the precedence of a syntax over the legacy pair, legacy JavaScript, and legacy Liquid for Correlate.
     - Workflows tests: 215/215.
 
-### - [ ] 4.3 Expression editor
+### - [x] 4.3 Expression editor
 
 - `WorkflowExpressionEditorViewModel` and the `WorkflowExpressionEditor` shape (`M/Views/WorkflowExpressionEditor.cshtml`), with the `workflow-expression-editor` script (`M/Assets/Scripts/workflow-expression-editor.ts`): syntax select, one-line input or Monaco, the Monaco language follows the syntax, values kept in form fields, disposed on `oc:editor-unmounting`.
 - A driver helper that reads an editor's fields and validates them (allowed syntax, provider validation).
 - **Tests**: the helper (allowed syntaxes, Liquid validation, unknown syntax).
+- **Notes from implementing this step:**
+  - **Input.** `WorkflowExpressionInput` (`Expression`, `Syntax`) is what an activity's view model holds for an expression; the editor posts `{Name}.Expression` and `{Name}.Syntax`.
+  - **Shape.** `WorkflowExpressionEditor` takes a `WorkflowExpressionEditorViewModel`:
+    - `Name` and `Id` (from `Html.NameFor`/`IdFor`), `Label`, `Hint` and `Value`;
+    - `DefaultSyntax`, the allowed `Syntaxes` (all by default), and `Examples` by syntax (the placeholder of a one-line input);
+    - `Multiline` and `Required`.
+  - **Rendering.**
+    - The syntax options are the registered providers, in the manager's order; a stored syntax that isn't registered stays selected.
+    - Errors are read from the model state under `{Name}.Expression` and `{Name}.Syntax`.
+    - A multi-line editor also requests the `monaco` resources.
+    - The shape is a template, so themes can override it.
+  - **Script** (`workflow-expression-editor`, a module resource).
+    - It changes the placeholder with the syntax.
+    - For a multi-line editor, it waits for `window.__orchardCoreMonacoReady`, because the `monaco` resource may load after it. It then creates a Monaco editor that writes to the hidden textarea, reports a change when it loses focus, switches language with the syntax, and is disposed on `oc:editor-unmounting`.
+  - **Validation.** `WorkflowExpressionInputValidator.Validate<T>()` (scoped) reads an input into a `WorkflowExpression<T>` with the registered name of its syntax. It adds errors for:
+    - an unknown syntax, or one the input doesn't allow (on `.Syntax`);
+    - a missing required expression, or what the provider finds wrong (on `.Expression`). The provider only checks the text when the syntax is allowed.
+  - **Robustness.** The Liquid provider handles a template manager that returns no error list.
+  - **Tests.**
+    - `Expressions/WorkflowExpressionInputValidatorTests.cs` (5).
+    - Workflows expression tests: 16/16.
+    - `vue-tsc`, `eslint` and the asset build pass for the script.
 
 ### - [ ] 4.4 Migrate the activity editors
 

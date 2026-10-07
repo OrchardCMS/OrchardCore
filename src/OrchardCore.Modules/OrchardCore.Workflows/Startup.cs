@@ -93,6 +93,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IWorkflowExpressionProvider, LiquidExpressionProvider>();
         services.AddScoped<IWorkflowExpressionProvider, JavaScriptExpressionProvider>();
         services.AddScoped<IWorkflowExpressionManager, WorkflowExpressionManager>();
+        services.AddScoped<WorkflowExpressionInputValidator>();
 
         services.AddScoped<IWorkflowFaultHandler, DefaultWorkflowFaultHandler>();
         services.AddActivity<WorkflowFaultEvent, WorkflowFaultEventDisplayDriver>(activity => activity.Icon = "fa-solid fa-bug");
