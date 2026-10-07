@@ -432,6 +432,99 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
     }
 
     [Fact]
+    public async Task Editor_ExecuteWorkflowTask_ShowsTheInputsOfTheWorkflowAndStoresItsOutputs()
+    {
+        var (_, childId) = await CreateWorkflowTypeAsync(Activity("start", "StartedByWorkflowEvent", isStart: true));
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            var store = scope.ServiceProvider.GetRequiredService<IWorkflowTypeStore>();
+            var child = await store.GetAsync(childId);
+            child.Name = "Doubler";
+            child.IsActivity = true;
+            child.Variables =
+            [
+                new WorkflowVariableDefinition { Name = "amount", TypeName = "number", IsInput = true },
+                new WorkflowVariableDefinition { Name = "doubled", TypeName = "number", IsOutput = true, Description = "Twice the amount" },
+            ];
+            await store.SaveAsync(child);
+        });
+
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("exec", "ExecuteWorkflowTask"));
+
+        using (var editor = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId=exec", TestContext.Current.CancellationToken))
+        {
+            var content = new HtmlParser().ParseDocument((await ReadJsonAsync(editor))["content"].GetValue<string>());
+
+            // The workflows usable as an activity are listed, and no inputs show until one is selected.
+            Assert.Contains(content.QuerySelectorAll("select[data-wfd-reload] option"), option => option.GetAttribute("value") == childId && option.TextContent == "Doubler");
+            Assert.Null(content.QuerySelector("input[name='ExecuteWorkflowTask.Inputs[0].Name']"));
+        }
+
+        using (var saved = await PostFormAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId=exec&revision=0", new Dictionary<string, string>
+        {
+            ["ExecuteWorkflowTask.WorkflowTypeId"] = childId,
+            ["ExecuteWorkflowTask.WaitForCompletion"] = "true",
+        }))
+        {
+            var json = await ReadJsonAsync(saved);
+            Assert.True(json["valid"].GetValue<bool>());
+
+            var output = Assert.Single(json["node"]["outputs"].AsArray());
+            Assert.Equal("doubled", output["name"].GetValue<string>());
+            Assert.Equal("Twice the amount", output["displayName"].GetValue<string>());
+        }
+
+        using (var editor = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId=exec", TestContext.Current.CancellationToken))
+        {
+            var content = new HtmlParser().ParseDocument((await ReadJsonAsync(editor))["content"].GetValue<string>());
+
+            Assert.Equal("amount", content.QuerySelector("input[name='ExecuteWorkflowTask.Inputs[0].Name']")?.GetAttribute("value"));
+            Assert.NotNull(content.QuerySelector("[name='ExecuteWorkflowTask.Inputs[0].Value.Expression']"));
+        }
+
+        using (var inputs = await PostFormAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId=exec&revision=1", new Dictionary<string, string>
+        {
+            ["ExecuteWorkflowTask.WorkflowTypeId"] = childId,
+            ["ExecuteWorkflowTask.WaitForCompletion"] = "false",
+            ["ExecuteWorkflowTask.Inputs[0].Name"] = "amount",
+            ["ExecuteWorkflowTask.Inputs[0].Value.Expression"] = "21",
+            ["ExecuteWorkflowTask.Inputs[0].Value.Syntax"] = "Literal",
+            ["ExecuteWorkflowTask.Inputs[1].Name"] = "unknown",
+            ["ExecuteWorkflowTask.Inputs[1].Value.Expression"] = "1",
+        }))
+        {
+            Assert.True((await ReadJsonAsync(inputs))["valid"].GetValue<bool>());
+        }
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            var draft = await scope.ServiceProvider.GetRequiredService<IWorkflowTypeDraftManager>().GetAsync(workflowTypeId);
+            var properties = Assert.Single(draft.Activities).Properties;
+
+            Assert.Equal(childId, properties["WorkflowTypeId"].GetValue<string>());
+            Assert.False(properties["WaitForCompletion"].GetValue<bool>());
+            Assert.Equal("21", properties["Inputs"]["amount"]["Expression"].GetValue<string>());
+            Assert.Null(properties["Inputs"]["unknown"]);
+        });
+    }
+
+    [Fact]
+    public async Task Editor_ExecuteWorkflowTaskWithoutAWorkflow_IsInvalid()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("exec", "ExecuteWorkflowTask"));
+
+        using var response = await PostFormAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId=exec&revision=0", new Dictionary<string, string>
+        {
+            ["ExecuteWorkflowTask.WorkflowTypeId"] = string.Empty,
+        });
+
+        var json = await ReadJsonAsync(response);
+        Assert.False(json["valid"].GetValue<bool>());
+        Assert.Contains("usable as an activity", new HtmlParser().ParseDocument(json["content"].GetValue<string>()).QuerySelector(".field-validation-error")?.TextContent);
+    }
+
+    [Fact]
     public async Task Variables_ValidDeclarations_SavesThemIntoTheDraft()
     {
         var (id, _) = await CreateWorkflowTypeAsync(

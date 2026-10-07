@@ -1,0 +1,51 @@
+@model ExecuteWorkflowTaskViewModel
+
+<div class="ocat-wrapper" asp-validation-class-for="WorkflowTypeId">
+    <label asp-for="WorkflowTypeId" class="ocat-label ocat-label-required">@T["Workflow"]</label>
+    <div class="ocat-end">
+        @* The inputs follow the selected workflow: the designer loads the form again once the change is applied. *@
+        <select asp-for="WorkflowTypeId" class="form-select" data-wfd-reload>
+            <option value="">@T["Select a workflow"]</option>
+            @foreach (var workflow in Model.Workflows)
+            {
+                <option value="@workflow.WorkflowTypeId">@workflow.Name</option>
+            }
+        </select>
+        <span asp-validation-for="WorkflowTypeId"></span>
+        <span class="hint">@T["The workflow to run. The workflows listed are those usable as an activity, set in their settings."]</span>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.WorkflowTypeId) && Model.Inputs.Count == 0)
+{
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <span class="hint" data-cy="execute-workflow-no-inputs">@T["This workflow has no input variables."]</span>
+        </div>
+    </div>
+}
+
+@for (var i = 0; i < Model.Inputs.Count; i++)
+{
+    var index = i;
+    var input = Model.Inputs[index];
+    var hint = string.IsNullOrEmpty(input.Description) ? T["The value of the {0} input ({1}).", input.Name, input.TypeName].Value : input.Description;
+    var inputEditor = await Factory.CreateWorkflowExpressionEditorAsync(Html, m => m.Inputs[index].Value, editor =>
+    {
+        editor.Label = input.Name;
+        editor.Hint = hint;
+    });
+
+    <input type="hidden" asp-for="Inputs[index].Name" />
+    @await DisplayAsync(inputEditor)
+}
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input asp-for="WaitForCompletion" type="checkbox" class="form-check-input" />
+            <label asp-for="WaitForCompletion" class="form-check-label">@T["Wait for the workflow to finish"]</label>
+        </div>
+        <span class="hint">@T["Check to continue once the workflow finished, with its outputs, even when it waits on events. Leave unchecked to continue as soon as it started."]</span>
+    </div>
+</div>

@@ -90,11 +90,33 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - the stored outputs are the task's outputs, and the draft manager reports the two warnings.
     - Workflows tests: 261/261.
 
-### - [ ] 7.3 Editor
+### - [x] 7.3 Editor
 
 - The task's driver, view model and views: the workflow select (workflows usable as activities), an expression editor per input, the wait checkbox, and the stored output descriptors.
 - The designer loads an editor form again once a change of a field marked `data-wfd-reload` is applied, so the inputs follow the selected workflow.
 - **Tests**: controller (the inputs follow the selected workflow; saving stores the outputs).
+- **Notes from implementing this step:**
+  - **Registration.** `ExecuteWorkflowTask` is registered with `ExecuteWorkflowTaskDisplayDriver`, in Primitives, with the `fa-diagram-project` icon.
+  - **Editor.**
+    - The workflow select lists the workflows usable as an activity, by name, and keeps the selected one even when it no longer is.
+    - Below it, an expression editor per input variable of the selected workflow, labeled with its name and hinted with its description or type.
+    - Then the **Wait for the workflow to finish** checkbox.
+  - **Saving.**
+    - A workflow that doesn't exist or isn't usable as an activity is a validation error.
+    - The inputs are matched to the selected workflow's input variables by name: inputs of another workflow are dropped, and those with the same name are kept.
+    - Each input is validated in its syntax, like the other expression editors.
+    - The workflow's output variables are stored as the task's outputs, so they can be bound.
+  - **Following the workflow.**
+    - `ServerFormHost` loads a form again once a change of a field marked `data-wfd-reload` is applied.
+    - The workflow select has it, so selecting a workflow shows its inputs. Other fields don't reload the form.
+  - **Design view.** It shows "Execute {workflow name}" (from the stored workflow), and whether the task doesn't wait.
+  - **Tests.**
+    - Controller (2):
+      - the editor lists the workflows and their inputs;
+      - saving stores the workflow, the wait setting, the inputs it knows and the outputs, and the node gets the outputs;
+      - a task without a workflow is invalid.
+    - Vitest: a field marked `data-wfd-reload` reloads the form once applied, and others don't.
+    - Workflows tests: 263/263. Vitest: 233/233.
 
 ### - [ ] 7.4 Activity presets
 

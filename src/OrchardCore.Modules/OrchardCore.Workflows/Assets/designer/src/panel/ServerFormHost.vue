@@ -39,6 +39,10 @@ let pending: Promise<boolean> | null = null;
 let syncing = false;
 let loadToken = 0;
 
+// A field marked with data-wfd-reload changes the form itself (for example the workflow an Execute Workflow task
+// runs, whose inputs it shows): the form is loaded again once the change is applied.
+let reloadWhenApplied = false;
+
 const clearContent = () => {
     if (content.value && content.value.childNodes.length > 0) {
         dispatchEditorUnmounting(content.value);
@@ -57,6 +61,7 @@ const reload = async () => {
     const token = ++loadToken;
 
     clearTimeout(timer);
+    reloadWhenApplied = false;
     loading.value = true;
     loadFailed.value = false;
     invalid.value = false;
@@ -108,6 +113,11 @@ const doApply = async () => {
         dirty.value = false;
         emit("applied", result);
 
+        if (reloadWhenApplied) {
+            reloadWhenApplied = false;
+            await reload();
+        }
+
         return true;
     } catch (error) {
         emit("error", error);
@@ -139,7 +149,11 @@ const apply = (): Promise<boolean> => {
 };
 
 // "change" fires when a field is committed (blur, select, checkbox), including from the rich editors.
-const onChange = () => {
+const onChange = (event: Event) => {
+    if (event.target instanceof Element && event.target.closest("[data-wfd-reload]")) {
+        reloadWhenApplied = true;
+    }
+
     dirty.value = true;
     clearTimeout(timer);
     timer = setTimeout(() => void apply(), props.autoApplyDelay);

@@ -49,6 +49,28 @@ describe("ServerFormHost", () => {
         expect(wrapper.emitted("applied")).toHaveLength(1);
     });
 
+    it("change_FieldThatReloads_LoadsTheFormAgainOnceApplied", async () => {
+        const { wrapper, load, submit } = mountHost({
+            load: () => Promise.resolve(fragment('<select name="Task.WorkflowTypeId" data-wfd-reload><option value="a">A</option><option value="b">B</option></select><input name="Task.Note" />')),
+        });
+        await flushPromises();
+
+        // Other fields don't reload the form.
+        await wrapper.get("input[name='Task.Note']").trigger("change");
+        vi.advanceTimersByTime(600);
+        await flushPromises();
+
+        expect(submit).toHaveBeenCalledTimes(1);
+        expect(load).toHaveBeenCalledTimes(1);
+
+        await wrapper.get("select").setValue("b");
+        vi.advanceTimersByTime(600);
+        await flushPromises();
+
+        expect(submit).toHaveBeenCalledTimes(2);
+        expect(load).toHaveBeenCalledTimes(2);
+    });
+
     it("input_WithoutChange_DoesNotApplyUntilAsked", async () => {
         const { wrapper, submit } = mountHost();
         await flushPromises();
