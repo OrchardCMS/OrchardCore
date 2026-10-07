@@ -263,6 +263,15 @@ public sealed class WorkflowDesignerModelBuilder
                     .ToList()
                 : [],
             OutputBindings = record.Properties.GetOutputBindings(),
+            ProvidedValues = activity.GetProvidedValues(_workflowOptions)
+                .Select(value => new WorkflowDesignerProvidedValue
+                {
+                    Source = value.Source.ToString(),
+                    Name = value.Name,
+                    TypeName = value.TypeName,
+                    Description = string.IsNullOrEmpty(value.Description?.Value) ? null : value.Description.Value,
+                })
+                .ToList(),
         };
     }
 

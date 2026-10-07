@@ -178,6 +178,11 @@ public sealed class WorkflowDesignerNode
     /// The variable each output is bound to, by output name.
     /// </summary>
     public IReadOnlyDictionary<string, string> OutputBindings { get; init; } = new Dictionary<string, string>();
+
+    /// <summary>
+    /// The values the activity provides to the activities after it (see <see cref="Activities.IActivityProvidedValues"/>).
+    /// </summary>
+    public IReadOnlyList<WorkflowDesignerProvidedValue> ProvidedValues { get; init; } = [];
 }
 
 /// <summary>
@@ -199,6 +204,32 @@ public sealed class WorkflowDesignerOutput
     /// The name shown in the designer.
     /// </summary>
     public string DisplayName { get; init; }
+}
+
+/// <summary>
+/// A value an activity provides, as shown by the designer.
+/// </summary>
+public sealed class WorkflowDesignerProvidedValue
+{
+    /// <summary>
+    /// <c>Input</c>, <c>Output</c> or <c>Properties</c>.
+    /// </summary>
+    public string Source { get; init; }
+
+    /// <summary>
+    /// The key of the value in its source.
+    /// </summary>
+    public string Name { get; init; }
+
+    /// <summary>
+    /// The variable type name of the value.
+    /// </summary>
+    public string TypeName { get; init; }
+
+    /// <summary>
+    /// What the value is.
+    /// </summary>
+    public string Description { get; init; }
 }
 
 /// <summary>

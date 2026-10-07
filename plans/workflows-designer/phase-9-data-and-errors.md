@@ -39,11 +39,18 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
 
 ---
 
-### - [ ] 9.1 Provided values
+### - [x] 9.1 Provided values
 
 - `A/`: `IActivityProvidedValues`, `ActivityProvidedValue` and `WorkflowValueSource`; `ActivityRegistration.ProvidedValues` and `Provides(...)`.
 - The designer's nodes carry the values their activity provides (its own declaration and its registration's).
 - **Tests**: the model builder merges both; the definition endpoint returns them.
+- **Notes from implementing this step:**
+  - **API (`A/`).**
+    - `IActivityProvidedValues.GetProvidedValues()` returns `ActivityProvidedValue`s: a source (`WorkflowValueSource.Input`, `Output` or `Properties`), a name, a variable type name (`any` by default) and a description.
+    - `ActivityRegistration.ProvidedValues` and the fluent `Provides(source, name, typeName, description)` declare values when a module registers an activity, without changing its code.
+  - **Merging.** `IActivity.GetProvidedValues(WorkflowOptions)` merges both. The registration's come first, and the activity's own replace those of the same source and name.
+  - **Designer.** Each node of the definition carries `providedValues` (`WorkflowDesignerProvidedValue`: source, name, type name, description). The client type is `ProvidedValue`.
+  - **Tests.** `ActivityProvidedValuesTests` (2): the merge and its order, and an activity without declarations. Workflows tests: 283/283.
 
 ### - [ ] 9.2 Built-in declarations
 

@@ -46,6 +46,14 @@ export interface VariableError {
     message: string;
 }
 
+// A value an activity provides to the activities after it (WorkflowDesignerProvidedValue).
+export interface ProvidedValue {
+    source: "Input" | "Output" | "Properties";
+    name: string;
+    typeName: string;
+    description?: string | null;
+}
+
 // An output an activity declares (WorkflowDesignerOutput).
 export interface ActivityOutput {
     name: string;
@@ -71,6 +79,8 @@ export interface DesignerNode {
     // The outputs the activity declares, and the variable each one is bound to, by output name.
     outputs?: ActivityOutput[];
     outputBindings?: Record<string, string>;
+    // The values the activity provides to the activities after it.
+    providedValues?: ProvidedValue[];
 }
 
 export interface DesignerTransition {
