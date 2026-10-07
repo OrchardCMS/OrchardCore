@@ -644,6 +644,63 @@
           ]
         },
         {
+          "WorkflowTypeId": "wfdimplicitbranches",
+          "Name": "Implicit branches",
+          "IsEnabled": true,
+          "IsSingleton": false,
+          "DeleteFinishedWorkflows": false,
+          "BranchingMode": "All",
+          "Activities": [
+            {
+              "ActivityId": "branchstart",
+              "Name": "HttpRequestEvent",
+              "X": 40,
+              "Y": 40,
+              "IsStart": true,
+              "Properties": {
+                "HttpMethod": "GET",
+                "ValidateAntiforgeryToken": false
+              }
+            },
+            {
+              "ActivityId": "brancha",
+              "Name": "NotifyTask",
+              "X": 360,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "Message": {
+                  "Expression": "First branch"
+                }
+              }
+            },
+            {
+              "ActivityId": "branchb",
+              "Name": "NotifyTask",
+              "X": 360,
+              "Y": 240,
+              "IsStart": false,
+              "Properties": {
+                "Message": {
+                  "Expression": "Second branch"
+                }
+              }
+            }
+          ],
+          "Transitions": [
+            {
+              "SourceActivityId": "branchstart",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "brancha"
+            },
+            {
+              "SourceActivityId": "branchstart",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "branchb"
+            }
+          ]
+        },
+        {
           "WorkflowTypeId": "wfdversionedhistory",
           "Name": "Versioned history",
           "IsEnabled": true,

@@ -66,9 +66,16 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - Its **Modeling a State Machine** subsection has the pattern from the evaluation, with the Script task's **Available Outcomes** and a `WaitAny` Join.
   - **Release notes.** A **Workflow Branching** section. There's no breaking change.
 
-### - [ ] 8.4 End-to-end test
+### - [x] 8.4 End-to-end test
 
 - A seeded workflow in `All` mode connects one outcome to two activities; both run (the instance page shows both executed), and connecting the outcome to a third activity in the designer keeps the other transitions.
+- **Notes from implementing this step:**
+  - **Recipe.** "Implicit branches" (`"BranchingMode": "All"`): an HTTP request whose `Done` outcome connects to two Notify tasks.
+  - **`Branching_FollowingEveryTransition_RunsEachBranch`.**
+    - Calling the request starts an instance, and its page shows both Notify tasks executed.
+    - In the designer, connecting the outcome to a third activity keeps the two other transitions.
+  - **Drop point.** Dropping the third activity at (700, 420) of the canvas made Playwright scroll the canvas without end, so it's dropped at (520, 330), within the area the other tests use.
+  - `WorkflowsDesignerTests`: 25/25.
 
 ## Definition of done (Phase 8)
 

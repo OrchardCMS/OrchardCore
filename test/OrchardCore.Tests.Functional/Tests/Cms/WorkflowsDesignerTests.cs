@@ -6,7 +6,7 @@ namespace OrchardCore.Tests.Functional.Tests.Cms;
 
 // The OrchardCore.Workflows designer: the toolbox, canvas and properties panel, drafts and publishing, and the
 // read-only instance viewer. The recipe seeds the "Seeded approval" workflow (HTTP request → Notify → Signal →
-// Notify), the workflows of the version, variable, expression, journal, real-time and composition tests, a WorkflowViewer role that
+// Notify), the workflows of the version, variable, expression, journal, real-time, composition and branching tests, a WorkflowViewer role that
 // can open the admin but can't manage workflows, and a WorkflowEditor role that can. The recipe also enables the
 // real-time feature. Other tests that change a workflow create their own.
 public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsFixture>, IClassFixture<WorkflowsDesignerTestsFixture>
@@ -687,6 +687,33 @@ public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsF
 
         // Its output can be bound before the task is edited.
         await Assertions.Expect(page.Locator("[data-cy=output-doubled]")).ToBeVisibleAsync();
+
+        Assert.Empty(consoleErrors);
+        await page.CloseAsync();
+    }
+
+    [Fact]
+    public async Task Branching_FollowingEveryTransition_RunsEachBranch()
+    {
+        var (page, consoleErrors) = await OpenAsync();
+        var id = await page.FindWorkflowTypeIdAsync("Implicit branches");
+
+        await page.APIRequest.GetAsync(await page.GenerateHttpUrlAsync(id, "branchstart"));
+
+        // The outcome's two transitions both ran.
+        await page.GotoAndAssertOkAsync($"/Admin/Workflows/Types/{id}/Instances/Index");
+        await page.Locator("a[href*='/Workflow/Details/']").First.ClickAsync();
+        await page.WaitForDesignerAsync();
+        await Assertions.Expect(page.Activity("brancha")).ToHaveClassAsync(new Regex("is-executed"));
+        await Assertions.Expect(page.Activity("branchb")).ToHaveClassAsync(new Regex("is-executed"));
+
+        // In the designer, connecting the outcome again adds a transition and keeps the others.
+        await page.OpenDesignerAsync(id);
+        var third = await page.AddActivityAsync("NotifyTask", "Notify", 520, 330);
+        await page.ConnectAsync("branchstart", "Done", third);
+
+        await Assertions.Expect(page.Edge("branchstart", "Done", "brancha")).ToHaveCountAsync(1);
+        await Assertions.Expect(page.Edge("branchstart", "Done", "branchb")).ToHaveCountAsync(1);
 
         Assert.Empty(consoleErrors);
         await page.CloseAsync();
