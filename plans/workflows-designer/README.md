@@ -12,6 +12,7 @@ This folder contains these files:
 | [`phase-3-variables.md`](phase-3-variables.md) | Detailed, step-by-step plan for Phase 3: typed variables and data binding |
 | [`phase-4-expressions.md`](phase-4-expressions.md) | Detailed, step-by-step plan for Phase 4: per-input expression syntax |
 | [`phase-5-journal.md`](phase-5-journal.md) | Detailed, step-by-step plan for Phase 5: execution journal and recovery |
+| [`phase-6-realtime.md`](phase-6-realtime.md) | Detailed, step-by-step plan for Phase 6: real time with `OrchardCore.SignalR` |
 | [`later-phases.md`](later-phases.md) | Phases 2+: the missing engine and UI components to build later, with design sketches |
 
 ## Context
@@ -87,7 +88,7 @@ Update the **Status** column as work lands (`Not started` / `In progress` / `Don
 | 3 | Typed variables, activity outputs and data binding. See [`phase-3-variables.md`](phase-3-variables.md). | 2 | Done (3.1–3.8 and the Definition of done; awaiting review) |
 | 4 | Per-input expression syntax (Literal / Liquid / JavaScript / pluggable providers). See [`phase-4-expressions.md`](phase-4-expressions.md). | 3 (recommended) | Done (4.1–4.6 and the Definition of done; awaiting review) |
 | 5 | Execution journal, executed-path highlighting, retry of a faulted activity. See [`phase-5-journal.md`](phase-5-journal.md). | 1 | Done (5.1–5.6 and the Definition of done; awaiting review) |
-| 6 | Real time with `OrchardCore.SignalR`: live instance view, presence, draft change notifications | 1, 5 | Not started |
+| 6 | Real time with `OrchardCore.SignalR`: live instance view, presence, draft change notifications. See [`phase-6-realtime.md`](phase-6-realtime.md). | 1, 5 | In progress (plan written) |
 | 7 | Workflows as activities; dynamic activity providers | 2, 3 | Not started |
 | 8 | Evaluate: multiple transitions per outcome or implicit fork, composition/containers, state machines | 1–5 | Not started |
 
