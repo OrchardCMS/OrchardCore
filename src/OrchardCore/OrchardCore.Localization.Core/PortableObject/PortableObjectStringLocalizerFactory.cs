@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -40,9 +39,7 @@ public class PortableObjectStringLocalizerFactory : IStringLocalizerFactory
 
         resourceFullName = TryFixInnerClassPath(resourceFullName);
 
-        var typeInfo = resourceSource.GetTypeInfo();
-
-        var assemblyName = new AssemblyName(resourceSource.Assembly.FullName).Name;
+        var assemblyName = resourceSource.Assembly.GetName().Name;
 
         return _localizerCache.GetOrAdd($"B={resourceFullName},L={assemblyName}", _ =>
             new PortableObjectStringLocalizer(resourceFullName, _localizationManager, _fallBackToParentCulture, _logger));
@@ -81,12 +78,7 @@ public class PortableObjectStringLocalizerFactory : IStringLocalizerFactory
     private static string TryFixInnerClassPath(string context)
     {
         const char innerClassSeparator = '+';
-        var path = context;
-        if (context.Contains(innerClassSeparator))
-        {
-            path = context.Replace(innerClassSeparator, '.');
-        }
 
-        return path;
+        return context.Replace(innerClassSeparator, '.');
     }
 }
