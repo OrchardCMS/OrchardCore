@@ -14,6 +14,7 @@ import { ZOOM_STEP, canvasToScreen, fitToContent, screenToCanvas, visibleCenter,
 import { startPointerDrag } from "./useDrag";
 import { clearSelection, connectOutcome, deleteSelection, nudgeSelection, selectAll, selectNode, selectTransition, toggleStart } from "./useConnect";
 import { useCollapsedBranches } from "./useCollapsedBranches";
+import { scriptErrorsByActivity } from "./scriptErrors";
 import { showToast } from "../ui/toasts";
 import { ACTIVITY_DRAG_TYPE } from "../toolbox/filter";
 import { t } from "../i18n";
@@ -24,6 +25,7 @@ import { t } from "../i18n";
 const LIFT_LIMIT = 10;
 const NO_ISSUES: DesignIssue[] = [];
 const NO_OUTCOMES: string[] = [];
+const NO_ERRORS: string[] = [];
 
 const props = withDefaults(
     defineProps<{
@@ -76,6 +78,7 @@ const blockingIds = computed(() => new Set(state.instance?.blockingActivityIds ?
 const executedCounts = computed(() => state.instance?.executedActivityCounts ?? {});
 const executedTransitions = computed(() => state.instance?.executedTransitionCounts ?? {});
 const faultedId = computed(() => state.instance?.faultedActivityId ?? null);
+const scriptErrors = computed(() => scriptErrorsByActivity(state.instance));
 const selectedIds = computed(() => new Set(state.selectedNodeIds));
 
 const issuesByActivity = computed(() => {
@@ -775,6 +778,7 @@ defineExpose({
                 :change="changes?.nodes[node.id] ?? null"
                 :executed-count="executedCounts[node.id] ?? 0"
                 :faulted="faultedId === node.id"
+                :script-errors="scriptErrors.get(node.id) ?? NO_ERRORS"
                 @node-pointerdown="onNodePointerDown(node, $event)"
                 @port-pointerdown="(outcome, event) => onPortPointerDown(node, outcome, event)"
                 @port-activate="(outcome) => openConnectDialog(node, outcome)"

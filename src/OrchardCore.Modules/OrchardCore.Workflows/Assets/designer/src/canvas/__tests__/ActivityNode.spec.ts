@@ -18,6 +18,20 @@ describe("ActivityNode", () => {
         expect(faulted.find("[data-cy=executed-badge]").exists()).toBe(false);
     });
 
+    it("render_ScriptErrors_ShowsAWarningUnlessTheActivityFaulted", () => {
+        const withErrors = mount(ActivityNode, { props: { node: createNode("n1"), executedCount: 1, scriptErrors: ["x is not defined", "y is not defined"] } });
+        const faulted = mount(ActivityNode, { props: { node: createNode("n2"), executedCount: 1, faulted: true, scriptErrors: ["x is not defined"] } });
+
+        const root = withErrors.get("[data-cy=activity-n1]");
+        expect(root.classes()).toContain("has-script-errors");
+        expect(root.attributes("aria-label")).toContain("ScriptErrorActivity");
+        expect(withErrors.get("[data-cy=script-error-badge]").attributes("title")).toBe("ScriptErrorActivity\nx is not defined\ny is not defined");
+
+        expect(faulted.get("[data-cy=activity-n2]").classes()).not.toContain("has-script-errors");
+        expect(faulted.find("[data-cy=script-error-badge]").exists()).toBe(false);
+        expect(mount(ActivityNode, { props: { node: createNode("n3") } }).find("[data-cy=script-error-badge]").exists()).toBe(false);
+    });
+
     it("render_Node_ShowsHeaderBodyPortsAndPosition", () => {
         const node = createNode("n1", { x: 120, y: 40 }, ["Yes", "No"]);
 

@@ -28,6 +28,7 @@ import { confirmAction } from "./ui/confirm";
 import { usePeek } from "./ui/usePeek";
 import { readPreference, writePreference } from "./ui/preferences";
 import { selectNode } from "./canvas/useConnect";
+import { scriptErrorsByActivity } from "./canvas/scriptErrors";
 import { DEFAULT_NODE_HEIGHT, NODE_WIDTH, snap, type Point } from "./canvas/geometry";
 import { t } from "./i18n";
 
@@ -48,6 +49,9 @@ const publishDialog = ref<Exclude<PublishDecision, { kind: "publish" }> | null>(
 const busy = ref(false);
 const bannerDismissed = ref(false);
 const versionsOpen = ref(false);
+
+// Whether an activity of the instance shown by the viewer ran a script that failed.
+const hasScriptErrors = computed(() => scriptErrorsByActivity(state.instance).size > 0);
 
 // The version page links back to the designer, and to the comparison with the published version.
 const isVersionPage = computed(() => props.config.mode === "version");
@@ -545,7 +549,7 @@ defineExpose({ canvas, panel, addActivity, autosave, publish, discard });
                 </div>
             </template>
 
-            <span v-if="state.instance && state.version" class="small" data-cy="instance-version">
+            <span v-if="state.instance && state.version" class="small text-nowrap" data-cy="instance-version">
                 {{ t("RunsOnVersion", state.version.version) }}
                 <span v-if="!state.version.isPublished" class="text-body-secondary" data-cy="instance-version-not-published">({{ t("NotThePublishedVersion") }})</span>
             </span>
@@ -558,6 +562,12 @@ defineExpose({ canvas, panel, addActivity, autosave, publish, discard });
                 {{ t("BlockingLegend") }}
                 <span class="wfd-legend-executed" aria-hidden="true"></span>
                 {{ t("ExecutedLegend") }}
+                <template v-if="hasScriptErrors">
+                    <span class="badge text-bg-warning" data-cy="script-error-legend">
+                        <i class="fa-solid fa-bug" aria-hidden="true"></i>
+                    </span>
+                    {{ t("ScriptErrorLegend") }}
+                </template>
             </span>
 
             <template v-if="!config.readOnly && !loading && !loadError">

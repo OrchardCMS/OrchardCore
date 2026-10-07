@@ -25,6 +25,8 @@ const props = withDefaults(
         // How many times the instance shown by the viewer ran this activity, and whether it faulted the instance.
         executedCount?: number;
         faulted?: boolean;
+        // The errors of the scripts the activity ran for the instance shown by the viewer, without faulting it.
+        scriptErrors?: string[];
     }>(),
     {
         selected: false,
@@ -39,6 +41,7 @@ const props = withDefaults(
         change: null,
         executedCount: 0,
         faulted: false,
+        scriptErrors: () => [],
     },
 );
 
@@ -69,6 +72,11 @@ const errorCount = computed(() => props.issues.filter((issue) => issue.severity 
 
 const issueTitle = computed(() => props.issues.map((issue) => issue.message).join("\n"));
 
+// A faulted activity shows its fault instead.
+const hasScriptErrors = computed(() => !props.faulted && props.scriptErrors.length > 0);
+
+const scriptErrorTitle = computed(() => [t("ScriptErrorActivity"), ...props.scriptErrors].join("\n"));
+
 const accessibleName = computed(() => {
     const parts = [props.node.title, props.node.displayText];
 
@@ -84,6 +92,10 @@ const accessibleName = computed(() => {
         parts.push(t("FaultedActivity"));
     } else if (props.executedCount > 0) {
         parts.push(t("ExecutedTimes", props.executedCount));
+    }
+
+    if (hasScriptErrors.value) {
+        parts.push(t("ScriptErrorActivity"));
     }
 
     if (props.issues.length > 0) {
@@ -192,6 +204,7 @@ const onKeyDown = (event: KeyboardEvent) => {
             'is-blocking': blocking,
             'is-executed': executedCount > 0,
             'is-faulted': faulted,
+            'has-script-errors': hasScriptErrors,
             'is-collapsed': hiddenCount !== null,
             [`is-${change}`]: !!change,
             'has-errors': errorCount > 0,
@@ -220,6 +233,9 @@ const onKeyDown = (event: KeyboardEvent) => {
             </span>
             <span v-else-if="executedCount > 1" class="badge text-bg-success wfd-node-badge" :title="t('ExecutedTimes', executedCount)" data-cy="executed-badge">
                 ×{{ executedCount }}
+            </span>
+            <span v-if="hasScriptErrors" class="badge text-bg-warning wfd-node-badge" :title="scriptErrorTitle" data-cy="script-error-badge">
+                <i class="fa-solid fa-bug" aria-hidden="true"></i>
             </span>
             <span v-if="blocking" class="badge text-bg-info wfd-node-badge" :title="t('BlockingActivityHint')" data-cy="blocking-badge">
                 <i class="fa-solid fa-hourglass-half" aria-hidden="true"></i>

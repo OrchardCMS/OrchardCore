@@ -40,6 +40,19 @@ describe("JournalTab", () => {
         expect(second.get("[data-cy=journal-error]").text()).toBe("Boom");
     });
 
+    it("render_CompletedWithError_ShowsAScriptError", () => {
+        const wrapper = setup([record(1, "a", "Completed", { error: "x is not defined" }), record(2, "b", "Faulted", { error: "Boom" })]);
+
+        const scriptError = wrapper.get("[data-cy=journal-record-1]");
+        expect(scriptError.get("button").classes()).toContain("is-script-error");
+        expect(scriptError.get("[data-cy=journal-status]").classes()).toContain("text-bg-success");
+        expect(scriptError.get("[data-cy=journal-script-error]").text()).toBe("JournalScriptError");
+        expect(scriptError.get("[data-cy=journal-error]").text()).toBe("x is not defined");
+
+        // A fault isn't a script error.
+        expect(wrapper.get("[data-cy=journal-record-2]").find("[data-cy=journal-script-error]").exists()).toBe(false);
+    });
+
     it("select_Record_EmitsItsActivity", async () => {
         const wrapper = setup([record(1, "fork", "Completed")]);
 

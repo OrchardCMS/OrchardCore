@@ -35,11 +35,13 @@
     min-height: 24rem;
 }
 
+/* The legend wraps when the toolbar is narrow. */
 .wfd-legend {
     display: inline-flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 0.375rem;
-    white-space: nowrap;
+    gap: 0.25rem 0.375rem;
+    min-width: 0;
 }
 
 /* Directional icons outside the canvas point the other way in RTL. */
@@ -607,6 +609,10 @@
     word-break: break-word;
 }
 
+.wfd-journal-record.is-script-error .wfd-journal-error {
+    color: var(--bs-warning-text-emphasis);
+}
+
 .wfd-retry {
     margin-top: 0.75rem;
     padding-top: 0.75rem;
@@ -1023,6 +1029,16 @@
 
 .wfd-node.is-faulted .wfd-node-header {
     border-inline-start-color: var(--bs-danger);
+}
+
+/* An activity whose scripts failed, and used their fallback values, for the instance shown. */
+.wfd-node.has-script-errors {
+    border-color: var(--bs-warning);
+    box-shadow: 0 0 0 3px rgba(var(--bs-warning-rgb), 0.45), var(--wfd-node-stack, 0 0 transparent);
+}
+
+.wfd-node.has-script-errors .wfd-node-header {
+    border-inline-start-color: var(--bs-warning);
 }
 
 .wfd-node.is-blocking .wfd-node-header {

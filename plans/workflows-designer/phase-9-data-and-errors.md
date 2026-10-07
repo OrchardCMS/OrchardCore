@@ -164,10 +164,27 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - Vitest covers `memberExpressionsOf`, the fields in `availableData` and `upstreamValues`, and the fields list in the panel (252 tests).
     - Workflows tests: 287/287.
 
-### - [ ] 9.6 Script errors in the designer
+### - [x] 9.6 Script errors in the designer
 
 - The instance page marks the activities whose journal records have errors with a warning badge and the message; the legend explains it.
 - **Tests** (Vitest): the warning badge.
+- **Notes from implementing this step:**
+  - **Errors by activity.**
+    - `canvas/scriptErrors.ts` (`scriptErrorsByActivity`) reads them from the instance's journal: the records that completed or halted with an error, each message once per activity.
+    - A faulted record is the fault, shown as before.
+  - **Canvas.**
+    - `ActivityNode` takes `scriptErrors`. Unless the activity faulted, it gets an amber outline (`has-script-errors`) and a warning badge with a bug icon.
+    - The badge's title is "a script failed and used its fallback value" followed by the messages; the node's accessible name says it too.
+  - **Journal and legend.**
+    - A record with a script error shows a "Script error" badge next to its status, and its message in the warning color.
+    - The viewer's legend explains the badge when the instance has script errors.
+    - The legend now wraps on a narrow toolbar, and "Runs on version n" stays on one line.
+  - **Verified in the preview.**
+    - Content Created → Log → Script Task (`var total = input('Order').Total;`), then a new Coming Soon item.
+    - The instance finished; the Script Task is amber with "Cannot read properties of null (reading 'Total')", and so is its journal record.
+    - The Log task wrote "Created a ComingSoon", which confirms the Liquid fields of 9.5 at run time.
+  - **Tests.**
+    - Vitest (256): `scriptErrorsByActivity`; the node badge, which a fault hides; the journal's script error badge.
 
 ### - [ ] 9.7 Docs and release notes
 

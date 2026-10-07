@@ -25,6 +25,9 @@ const statusClass = (record: JournalRecord) =>
 const statusLabel = (record: JournalRecord) =>
     record.status === "Faulted" ? t("JournalFaulted") : record.status === "Halted" ? t("JournalHalted") : t("JournalCompleted");
 
+// A record that completed or halted with an error ran a script that failed.
+const isScriptError = (record: JournalRecord) => record.status !== "Faulted" && !!record.error;
+
 const duration = (record: JournalRecord) => t("DurationMilliseconds", Math.round(record.durationMilliseconds));
 </script>
 
@@ -34,12 +37,16 @@ const duration = (record: JournalRecord) => t("DurationMilliseconds", Math.round
         <p v-if="records.length === 0" class="wfd-panel-message" data-cy="journal-empty">{{ t("NoJournal") }}</p>
         <ol v-else class="wfd-journal-list list-unstyled">
             <li v-for="record in records" :key="record.sequence" :data-cy="`journal-record-${record.sequence}`">
-                <button type="button" class="wfd-journal-record" :class="{ 'is-faulted': record.status === 'Faulted' }" @click="emit('select', record.activityId)">
+                <button type="button" class="wfd-journal-record" :class="{ 'is-faulted': record.status === 'Faulted', 'is-script-error': isScriptError(record) }" @click="emit('select', record.activityId)">
                     <span class="wfd-journal-sequence">#{{ record.sequence }}</span>
                     <span class="wfd-journal-main">
                         <span class="wfd-journal-title">{{ titleOf(record) }}</span>
                         <span class="wfd-journal-details">
                             <span class="badge" :class="statusClass(record)" data-cy="journal-status">{{ statusLabel(record) }}</span>
+                            <span v-if="isScriptError(record)" class="badge text-bg-warning" data-cy="journal-script-error">
+                                <i class="fa-solid fa-bug" aria-hidden="true"></i>
+                                {{ t("JournalScriptError") }}
+                            </span>
                             <span v-if="record.isResume" class="badge text-bg-secondary">{{ t("JournalResumed") }}</span>
                             <span v-if="record.outcomes.length > 0" data-cy="journal-outcomes">{{ record.outcomes.join(", ") }}</span>
                             <time :datetime="record.startedUtc" :title="formatDateTime(record.startedUtc)">{{ duration(record) }}</time>
