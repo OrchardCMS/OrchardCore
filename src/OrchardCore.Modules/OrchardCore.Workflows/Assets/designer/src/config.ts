@@ -50,6 +50,10 @@ export interface DesignerConfig {
      * which the old activity edit URLs redirect with).
      */
     initialActivityId?: string | null;
+    /**
+     * The URL of the workflows hub, when the OrchardCore.Workflows.SignalR feature is enabled.
+     */
+    hubUrl?: string | null;
     translations: Record<string, string>;
 }
 

@@ -77,10 +77,26 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - The designer page with the feature: the hub URL, the `signalr` script and the hub's policy. Without it, there is no `hubUrl`.
     - Workflows tests: 245/245.
 
-### - [ ] 6.3 Designer and viewer clients
+### - [x] 6.3 Designer and viewer clients
 
 - A `realtime` service in the designer (connection, subscriptions, reconnect), presence avatars in the toolbar, the change notice with **Reload**, and the viewer's reload on `InstanceChanged`.
 - **Tests** (Vitest, with a fake connection): subscribe and resubscribe, presence, notices only for others' changes, the viewer's reload.
+- **Notes from implementing this step:**
+  - **Connection.** `realtime/realtime.ts` (`startRealtime`) builds the connection with the page's `window.signalR` client and automatic reconnects. It then subscribes to the workflow type (designer) or the instance (viewer).
+    - It resolves to null without a client or when the connection fails, so the designer works as before.
+    - A reconnection subscribes again and forgets who was there; the others announce themselves again.
+  - **Presence.**
+    - The others are kept by connection, from `PresenceJoined` (answered with `AnnouncePresence`), `PresenceHere` and `PresenceLeft`.
+    - `PresenceList.vue` shows one avatar with initials per user in the toolbar, with the name as its title.
+  - **Others' changes.** `RemoteChangeNotice.vue` shows who changed, published or discarded the draft, with **Reload** and a close button. The designer ignores:
+    - the changes of the signed-in user, which come back too (another tab of theirs is caught by the revision checks, as before);
+    - `DraftChanged` messages for a revision it already has.
+  - **Viewer.** The instance page loads the definition again on `InstanceChanged`, and keeps the activities the instance waits on visible.
+  - **Configuration.** `hubUrl` in the designer configuration. Without it, nothing connects.
+  - **Tests.**
+    - `realtime.spec.ts` (4), with a fake connection: subscribing, presence, reconnecting, forwarding the messages, and the cases without real time.
+    - `Realtime.spec.ts` (3): the designer's avatars and notice, which ignores the user's own changes, and reloads; the viewer's reload; no connection without `hubUrl`.
+    - Vitest: 230/230. `vue-tsc` and eslint pass, and `yarn build` output is committed.
 
 ### - [ ] 6.4 Docs and release notes
 

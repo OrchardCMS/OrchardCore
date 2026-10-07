@@ -12,6 +12,7 @@ import type {
     VariableType,
     WorkflowSettings,
 } from "../api/types";
+import type { Presence, WorkflowTypeChangedMessage } from "../realtime/realtime";
 import { History, type Command } from "./history";
 import type { Graph } from "./commands";
 
@@ -72,6 +73,11 @@ export interface DesignerState {
     changeVersion: number;
     canUndo: boolean;
     canRedo: boolean;
+    /**
+     * The others who have the workflow open, and the last change someone else made to it (real time).
+     */
+    presence: Presence[];
+    remoteChange: WorkflowTypeChangedMessage | null;
 }
 
 const createInitialState = (): DesignerState => ({
@@ -101,6 +107,8 @@ const createInitialState = (): DesignerState => ({
     changeVersion: 0,
     canUndo: false,
     canRedo: false,
+    presence: [],
+    remoteChange: null,
 });
 
 /**
@@ -169,6 +177,7 @@ export const createDesignerStore = () => {
                 selectedNodeIds: [],
                 selectedTransitionKey: null,
                 saveStatus: "saved" satisfies SaveStatus,
+                remoteChange: null,
             });
 
             serverActivityIds = new Set(definition.nodes.map((node) => node.id));

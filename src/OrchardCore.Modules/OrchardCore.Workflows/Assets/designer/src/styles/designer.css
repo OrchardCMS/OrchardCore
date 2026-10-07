@@ -1154,3 +1154,29 @@
     stroke-width: 2.5;
     stroke-dasharray: 6 4;
 }
+
+/* Real time: who else has the workflow open, and others' changes. */
+.wfd-presence {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.wfd-presence-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    background-color: var(--bs-primary-bg-subtle);
+    color: var(--bs-primary-text-emphasis);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.wfd-remote-change {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}

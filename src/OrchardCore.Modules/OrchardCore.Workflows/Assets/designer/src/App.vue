@@ -14,6 +14,9 @@ import SaveStatusIndicator from "./draft/SaveStatusIndicator.vue";
 import ConflictDialog from "./draft/ConflictDialog.vue";
 import PublishDialog from "./draft/PublishDialog.vue";
 import DraftBanner from "./draft/DraftBanner.vue";
+import PresenceList from "./realtime/PresenceList.vue";
+import RemoteChangeNotice from "./realtime/RemoteChangeNotice.vue";
+import { startRealtime, type RealtimeSession, type WorkflowTypeChangedMessage } from "./realtime/realtime";
 import VersionsDialog from "./draft/VersionsDialog.vue";
 import { formatDateTime } from "./draft/formatDateTime";
 import { decidePublish, type PublishDecision } from "./draft/publishDecision";
@@ -383,6 +386,61 @@ const discard = async () => {
 // Stops the variable completions of the script editors.
 let stopCompletions: (() => void) | null = null;
 
+// Live updates, when the OrchardCore.Workflows.SignalR feature is enabled.
+let realtime: RealtimeSession | null = null;
+let unmounted = false;
+
+const onWorkflowTypeChanged = (change: WorkflowTypeChangedMessage) => {
+    // The signed-in user's own changes come back too; another tab of theirs is caught by the revision checks.
+    if (change.userId && change.userId === (props.config.currentUserId ?? null)) {
+        return;
+    }
+
+    if (change.kind === "DraftChanged" && change.revision <= state.revision) {
+        return;
+    }
+
+    state.remoteChange = change;
+};
+
+const onInstanceChanged = async () => {
+    try {
+        props.store.loadDefinition(await props.api.getDefinition());
+        await nextTick();
+        canvas.value?.reveal(state.instance?.blockingActivityIds ?? []);
+    } catch {
+        // The next change tries again.
+    }
+};
+
+const startLiveUpdates = async () => {
+    if (!props.config.hubUrl || (props.config.mode && props.config.mode !== "designer" && props.config.mode !== "instance")) {
+        return;
+    }
+
+    const session = await startRealtime({
+        url: props.config.hubUrl,
+        workflowTypeId: props.config.readOnly ? null : state.workflowTypeId,
+        workflowId: props.config.readOnly ? (state.instance?.workflowId ?? null) : null,
+        onWorkflowTypeChanged,
+        onInstanceChanged,
+        onPresenceChanged: (presence) => {
+            state.presence = presence;
+        },
+    });
+
+    if (unmounted) {
+        await session?.stop();
+    } else {
+        realtime = session;
+    }
+};
+
+const onRemoteReload = async () => {
+    state.remoteChange = null;
+    await onReload();
+};
+
 onMounted(async () => {
     document.addEventListener("keydown", onKeyDown);
     window.addEventListener("beforeunload", onBeforeUnload);
@@ -421,6 +479,10 @@ onMounted(async () => {
         canvas.value?.centerOn(initialActivityId);
         await panel.value?.open(initialActivityId);
     }
+
+    if (!loadError.value) {
+        void startLiveUpdates();
+    }
 });
 
 // The instance ran again: show what it did now.
@@ -443,6 +505,8 @@ onBeforeUnmount(() => {
     window.removeEventListener("beforeunload", onBeforeUnload);
     autosave.stop();
     stopCompletions?.();
+    unmounted = true;
+    void realtime?.stop();
 });
 
 defineExpose({ canvas, panel, addActivity, autosave, publish, discard });
@@ -493,6 +557,7 @@ defineExpose({ canvas, panel, addActivity, autosave, publish, discard });
 
             <template v-if="!config.readOnly && !loading && !loadError">
                 <SaveStatusIndicator :status="state.saveStatus" @retry="autosave.save()" @resolve="conflictOpen = true" />
+                <PresenceList :presence="state.presence" />
 
                 <div class="btn-group btn-group-sm" role="group" :aria-label="t('History')">
                     <button
@@ -551,6 +616,7 @@ defineExpose({ canvas, panel, addActivity, autosave, publish, discard });
             </template>
         </header>
 
+        <RemoteChangeNotice v-if="state.remoteChange && !config.readOnly" :change="state.remoteChange" @reload="onRemoteReload" @dismiss="state.remoteChange = null" />
         <DraftBanner v-if="showBanner" :modified-by="state.draftModifiedBy" :modified-utc="state.draftModifiedUtc" @dismiss="bannerDismissed = true" />
 
         <div class="wfd-body">
