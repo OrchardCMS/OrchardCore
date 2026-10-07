@@ -12,6 +12,7 @@ public sealed class LocalizationMessage
     public IList<SourceReference> References { get; } = new List<SourceReference>();
     public ISet<string> Comments { get; } = new SortedSet<string>(StringComparer.Ordinal);
     public ISet<string> Flags { get; } = new SortedSet<string>(StringComparer.Ordinal);
+    public IDictionary<int, ISet<string>> FormatArguments { get; } = new SortedDictionary<int, ISet<string>>();
 }
 
 public sealed class LocalizationCatalog
@@ -21,7 +22,7 @@ public sealed class LocalizationCatalog
     public IReadOnlyCollection<LocalizationMessage> Messages => _messages.Values;
     public IList<ExtractionDiagnostic> Diagnostics { get; } = new List<ExtractionDiagnostic>();
 
-    public void Add(string context, string text, string? plural, SourceReference source, string? comment = null)
+    public void Add(string context, string text, string? plural, SourceReference source, string? comment = null, IReadOnlyList<string?>? formatArguments = null)
     {
         if (text.Length == 0)
         {
@@ -52,6 +53,25 @@ public sealed class LocalizationCatalog
         if (!string.IsNullOrWhiteSpace(comment))
         {
             existing.Comments.Add(comment);
+        }
+
+        if (formatArguments is not null)
+        {
+            for (var index = 0; index < formatArguments.Count; index++)
+            {
+                if (string.IsNullOrWhiteSpace(formatArguments[index]))
+                {
+                    continue;
+                }
+
+                if (!existing.FormatArguments.TryGetValue(index, out var descriptions))
+                {
+                    descriptions = new SortedSet<string>(StringComparer.Ordinal);
+                    existing.FormatArguments.Add(index, descriptions);
+                }
+
+                descriptions.Add(formatArguments[index]!);
+            }
         }
     }
 }

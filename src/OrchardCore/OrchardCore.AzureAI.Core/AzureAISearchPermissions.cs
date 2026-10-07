@@ -5,5 +5,5 @@ namespace OrchardCore.AzureAI;
 
 public static class AzureAISearchPermissions
 {
-    public static readonly Permission ManageAzureAISearchISettings = new("ManageAzureAISearchISettings", LocalizationSource.Create("Manage Azure AI Search Settings", typeof(AzureAISearchPermissions)));
+    public static readonly Permission ManageAzureAISearchSettings = new("ManageAzureAISearchSettings", LocalizationSource.Create("Manage Azure AI Search Settings", typeof(AzureAISearchPermissions)));
 }

@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.Operations;
 
 namespace OrchardCore.Localization.Extraction;
 
-public sealed record LocalizationCall(IOperation Receiver, IOperation Key, IOperation? Plural = null, IOperation? PluralForms = null);
+public sealed record LocalizationCall(IOperation Receiver, IOperation Key, IOperation? Plural = null, IOperation? PluralForms = null, IReadOnlyList<string?>? FormatArguments = null);
 
 public interface ICSharpLocalizationAdapter
 {
@@ -50,7 +50,7 @@ public sealed class CSharpLocalizationExtractor
                 var key = property.Arguments.FirstOrDefault(argument => argument.Parameter?.Ordinal == 0);
                 if (key is not null)
                 {
-                    call = new LocalizationCall(property.Instance, key.Value);
+                    call = new LocalizationCall(property.Instance, key.Value, FormatArguments: GetFormatArguments(property.Arguments));
                 }
             }
             else if (node is InvocationExpressionSyntax && model.GetOperation(node, cancellationToken) is IInvocationOperation invocation)
@@ -123,7 +123,35 @@ public sealed class CSharpLocalizationExtractor
         }
 
         var plural = method.Name == "Plural" ? invocation.Arguments.FirstOrDefault(argument => argument.Parameter?.Name == "plural")?.Value : null;
-        return new LocalizationCall(receiver, key ?? forms!, plural, forms);
+        return new LocalizationCall(receiver, key ?? forms!, plural, forms, GetFormatArguments(invocation.Arguments, method.Name == "Plural"));
+    }
+
+    private static IReadOnlyList<string?> GetFormatArguments(IEnumerable<IArgumentOperation> arguments, bool plural = false)
+    {
+        var descriptions = new List<string?>();
+        if (plural)
+        {
+            descriptions.Add("count");
+        }
+
+        foreach (var argument in arguments.Where(argument => argument.Parameter?.Name == "arguments"))
+        {
+            var value = Unwrap(argument.Value);
+            if (value is IArrayCreationOperation { Initializer: not null } array)
+            {
+                descriptions.AddRange(array.Initializer.ElementValues.Select(element => Unwrap(element).Syntax.ToString()));
+            }
+            else if (value is ICollectionExpressionOperation collection)
+            {
+                descriptions.AddRange(collection.Elements.Select(element => Unwrap(element).Syntax.ToString()));
+            }
+            else if (value.Type is not IArrayTypeSymbol)
+            {
+                descriptions.Add(value.Syntax.ToString());
+            }
+        }
+
+        return descriptions;
     }
 
     private void ExtractCall(LocalizationCall call, SyntaxNode node, string? viewContext, SemanticModel model)
@@ -171,7 +199,7 @@ public sealed class CSharpLocalizationExtractor
             return;
         }
 
-        _catalog.Add(context, key, plural, source, GetComment(node));
+        _catalog.Add(context, key, plural, source, GetComment(node), call.FormatArguments);
     }
 
     internal static string? GetConstant(IOperation operation)

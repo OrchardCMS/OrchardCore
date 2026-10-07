@@ -78,6 +78,8 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
     {
         ArgumentNullException.ThrowIfNull(name);
 
+        arguments ??= Array.Empty<object>();
+
         // Check if a plural form is called, which is when the only argument is of type PluralizationArgument.
         if (arguments.Length == 1 && arguments[0] is PluralizationArgument pluralArgument)
         {

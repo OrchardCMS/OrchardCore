@@ -202,6 +202,23 @@ In this example
 !!! warning
     You should not hardcode a number in the singular or plural forms because different languages have different rules about when each form is used.
 
+### Pluralizing a deferred `LocalizationSource`
+
+`IStringLocalizerFactory` and `IHtmlLocalizerFactory` also expose a `Plural` extension for a `LocalizationSource` declared without an available localizer, for example a static field evaluated before a tenant or culture is known. It requires `OrchardCore.Localization.Abstractions` and lives in the same namespaces as the plural helpers above (`Microsoft.Extensions.Localization` / `Microsoft.AspNetCore.Mvc.Localization`):
+
+```csharp
+using Microsoft.Extensions.Localization;
+using OrchardCore.Localization;
+
+private static readonly LocalizationSource _item = LocalizationSource.Create<MyMessages>("{0} item for {1}");
+
+var result = stringLocalizerFactory.Plural(count, _item, "{0} items for {1}", ownerName);
+```
+
+The source's `Value` is the singular PO `msgid`, exactly like `Localize`. `count` is always inserted automatically as the first format argument (`{0}`); any additional arguments you pass, such as `ownerName`, follow it (`{1}`, `{2}`, ...). The HTML factory extension has the same signature and semantics, deferring HTML encoding of the arguments to render time, like `Localize`.
+
+For a context-bearing source (`Type` set), the extension resolves `factory.Create(source.Type)` and delegates to the existing `IStringLocalizer.Plural`/`IHtmlLocalizer.Plural` extension, so the culture's PO `PluralRule` always decides the translated form, including languages with a dedicated zero form or more than two plural forms. For a context-free source (`Type` null, no PO lookup possible), the extension falls back to the English rule — singular only when `count == 1` — without resolving a factory, matching the existing context-free behavior of `Localize`. A null source returns `null` without resolving a factory, same as `Localize`.
+
 ### Build-time embedded translation templates
 
 The `OrchardCore.Localization.Build` package extracts localizable strings during a normal build and embeds a gettext template (`.pot`) in the assembly. Add it to each project whose strings should be extracted:
@@ -258,23 +275,6 @@ Apply the attribute to a class or method to exclude localization calls and extra
 
 !!! note
     Embedded POT files are source templates, not translated PO files. They do not change runtime translation lookup. Dynamic keys or unresolved contexts produce diagnostics rather than guessed entries. Direct JavaScript extraction and runtime translation overrides are not included. To collect templates across projects during a build, set `LocalizationCatalogOutputPath` as described below.
-
-### Pluralizing a deferred `LocalizationSource`
-
-`IStringLocalizerFactory` and `IHtmlLocalizerFactory` also expose a `Plural` extension for a `LocalizationSource` declared without an available localizer, for example a static field evaluated before a tenant or culture is known. It requires `OrchardCore.Localization.Abstractions` and lives in the same namespaces as the plural helpers above (`Microsoft.Extensions.Localization` / `Microsoft.AspNetCore.Mvc.Localization`):
-
-```csharp
-using Microsoft.Extensions.Localization;
-using OrchardCore.Localization;
-
-private static readonly LocalizationSource _item = LocalizationSource.Create<MyMessages>("{0} item for {1}");
-
-var result = stringLocalizerFactory.Plural(count, _item, "{0} items for {1}", ownerName);
-```
-
-The source's `Value` is the singular PO `msgid`, exactly like `Localize`. `count` is always inserted automatically as the first format argument (`{0}`); any additional arguments you pass, such as `ownerName`, follow it (`{1}`, `{2}`, ...). The HTML factory extension has the same signature and semantics, deferring HTML encoding of the arguments to render time, like `Localize`.
-
-For a context-bearing source (`Type` set), the extension resolves `factory.Create(source.Type)` and delegates to the existing `IStringLocalizer.Plural`/`IHtmlLocalizer.Plural` extension, so the culture's PO `PluralRule` always decides the translated form, including languages with a dedicated zero form or more than two plural forms. For a context-free source (`Type` null, no PO lookup possible), the extension falls back to the English rule — singular only when `count == 1` — without resolving a factory, matching the existing context-free behavior of `Localize`. A null source returns `null` without resolving a factory, same as `Localize`.
 
 ### Export translation templates for localization platforms
 
