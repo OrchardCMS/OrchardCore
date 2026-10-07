@@ -4,6 +4,13 @@ namespace OrchardCore.Scripting.JavaScript;
 
 public class JavaScriptScope : IScriptingScope
 {
+    /// <summary>
+    /// What a scope created without services records in the engine's [[HostDefined]] slot. An empty slot
+    /// means no scope was created for the engine at all, so a scope that has no services cannot leave the
+    /// slot empty and has to say so with a value of its own.
+    /// </summary>
+    internal static readonly object NoServices = new();
+
     public JavaScriptScope(Engine engine, IServiceProvider serviceProvider, IEnumerable<GlobalMethod> methods)
         : this(engine, serviceProvider, methods, lazyGlobals: null, ownsEngine: false)
     {
@@ -32,7 +39,7 @@ public class JavaScriptScope : IScriptingScope
         // state being destroyed to make one work.
         if (ownsEngine || engine.Advanced.HostDefined is null)
         {
-            engine.Advanced.HostDefined = serviceProvider;
+            engine.Advanced.HostDefined = serviceProvider ?? NoServices;
         }
 
         foreach (var method in methods)
