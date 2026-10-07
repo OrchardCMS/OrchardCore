@@ -2,31 +2,35 @@
 
 Phase 1 (the designer) changes only the UI. This file lists the engine and UI components Orchard Core Workflows is missing, compared with Elsa Studio and Elsa Workflows, so they can be built later. Each phase has a design sketch, a compatibility plan and its tests. Before starting a phase, turn its sketch into a detailed step list in a new `phase-N-*.md`, in the same format as [`phase-1-designer.md`](phase-1-designer.md).
 
+**Status.** Each phase below is detailed in its own file, which records what was built and why it differs from the sketch; the [roadmap](README.md#roadmap) tracks them. Phases 2–6 are done, Phase 7's steps are done (its Definition of done is running), and Phase 8 is next. The backlog isn't scheduled.
+
 Paths: `M/` = `src/OrchardCore.Modules/OrchardCore.Workflows/`, `A/` = `src/OrchardCore/OrchardCore.Workflows.Abstractions/`.
 
 ## Missing components at a glance
 
-| Component | Today | Needed for | Phase | Effort |
-|---|---|---|---|---|
-| Workflow versions (draft / published / history), instances pinned to a version | None; instances resume on the current definition | Safe edits, revert, workflows as activities | 2 | Medium |
-| Typed workflow variables | Untyped `Properties` dictionary | Data binding, validation, designer IntelliSense | 3 | Medium |
-| Activity output descriptors and output-to-variable binding | Activities write `Properties` / `LastResult` ad hoc | Typed data flow between activities | 3 | Medium |
-| Per-input expression syntax (Literal / Liquid / JavaScript / custom) | Per activity, through paired properties plus `WorkflowScriptSyntax` | Consistent editors, custom providers | 4 | Medium |
-| Execution journal (per-activity start, end, outcome, error) | `ExecutedActivities` is never recorded | Executed-path view, debugging, Log tab | 5 | Medium |
-| Retry a faulted activity in place | Only "Restart" (a new instance with the old input) | Operations and recovery | 5 | Medium |
-| Real-time designer and instance updates | None | Live instance view, presence, conflict notices | 6 | Small–Medium |
-| Workflow as an activity (sub-workflow with inputs and outputs) | None | Reuse | 7 | Medium |
-| Dynamic activity providers (catalog from configuration or a database) | Only types registered with `AddActivity` | Integrations, low-code catalogs | 7 | Medium |
-| Multiple transitions per outcome / implicit fork | Engine follows only the first transition | Simpler branching | 8 | Medium–Hard |
-| Composition (containers, nested sequences and flowcharts) | Flat graph only | Large workflows | 8 | Hard (new execution model) |
-| State-machine modeling | None | Approvals and lifecycles | 8 | Hard |
-| Audit trail for workflow type changes | None | Governance | Backlog | Small |
-| List of instances across all types, more status filters | Per type only; filters All, Finished, Faulted | Operations | Backlog | Small |
-| Workflow testing from the designer ("Run with input…") | None | Authoring speed | Backlog (after 5) | Small–Medium |
+| Component | Today (before the plan) | Needed for | Phase | Effort | Status |
+|---|---|---|---|---|---|
+| Workflow versions (draft / published / history), instances pinned to a version | None; instances resume on the current definition | Safe edits, revert, workflows as activities | 2 | Medium | Done |
+| Typed workflow variables | Untyped `Properties` dictionary | Data binding, validation, designer IntelliSense | 3 | Medium | Done |
+| Activity output descriptors and output-to-variable binding | Activities write `Properties` / `LastResult` ad hoc | Typed data flow between activities | 3 | Medium | Done |
+| Per-input expression syntax (Literal / Liquid / JavaScript / custom) | Per activity, through paired properties plus `WorkflowScriptSyntax` | Consistent editors, custom providers | 4 | Medium | Done |
+| Execution journal (per-activity start, end, outcome, error) | `ExecutedActivities` is never recorded | Executed-path view, debugging, Log tab | 5 | Medium | Done |
+| Retry a faulted activity in place | Only "Restart" (a new instance with the old input) | Operations and recovery | 5 | Medium | Done |
+| Real-time designer and instance updates | None | Live instance view, presence, conflict notices | 6 | Small–Medium | Done |
+| Workflow as an activity (sub-workflow with inputs and outputs) | None | Reuse | 7 | Medium | Built (7.1–7.3, 7.6) |
+| Dynamic activity providers (catalog from configuration or a database) | Only types registered with `AddActivity` | Integrations, low-code catalogs | 7 | Medium | Built as activity presets (7.4) |
+| Multiple transitions per outcome / implicit fork | Engine follows only the first transition | Simpler branching | 8 | Medium–Hard | Next |
+| Composition (containers, nested sequences and flowcharts) | Flat graph only | Large workflows | 8 | Hard (new execution model) | To evaluate (8) |
+| State-machine modeling | None | Approvals and lifecycles | 8 | Hard | To evaluate (8) |
+| Audit trail for workflow type changes | None | Governance | Backlog | Small | Not scheduled |
+| List of instances across all types, more status filters | Per type only; filters All, Finished, Faulted | Operations | Backlog | Small | Not scheduled |
+| Workflow testing from the designer ("Run with input…") | None | Authoring speed | Backlog (after 5) | Small–Medium | Not scheduled |
 
 ---
 
 ## Phase 2 — Workflow versioning
+
+**Detailed plan:** [`phase-2-versioning.md`](phase-2-versioning.md). **Status:** done.
 
 **Goal:** separate drafts from published versions. Each instance stays pinned to the version it started on, and there's a history with compare and revert. Phase 1's `WorkflowTypeDraft` becomes "the draft version".
 
@@ -53,6 +57,8 @@ Paths: `M/` = `src/OrchardCore.Modules/OrchardCore.Workflows/`, `A/` = `src/Orch
 - End to end: publish v2 while an instance is halted on a `UserTaskEvent`; resuming follows v1.
 
 ## Phase 3 — Typed variables and data binding
+
+**Detailed plan:** [`phase-3-variables.md`](phase-3-variables.md). **Status:** done.
 
 **Goal:** declared, typed variables at workflow scope. Activities have typed outputs that can be bound to variables, and expressions can read the variables. This mirrors Elsa's variables and output binding without changing the flat execution model.
 
@@ -82,6 +88,8 @@ Paths: `M/` = `src/OrchardCore.Modules/OrchardCore.Workflows/`, `A/` = `src/Orch
 
 ## Phase 4 — Per-input expression syntax
 
+**Detailed plan:** [`phase-4-expressions.md`](phase-4-expressions.md). **Status:** done.
+
 **Goal:** any expression-capable input can be Literal, Liquid or JavaScript, chosen per input (plus custom providers). This replaces the paired-property pattern (`Condition` / `LiquidCondition` plus `WorkflowScriptSyntax`).
 
 **Design sketch**
@@ -93,6 +101,8 @@ Paths: `M/` = `src/OrchardCore.Modules/OrchardCore.Workflows/`, `A/` = `src/Orch
 **Tests**: each provider; legacy stored activities evaluate the same (snapshot tests built from today's `WorkflowManagerTests` scenarios); a custom provider registered in a test module appears in the editor (end to end).
 
 ## Phase 5 — Execution journal and recovery
+
+**Detailed plan:** [`phase-5-journal.md`](phase-5-journal.md). **Status:** done.
 
 **Goal:** record what ran, show it, and recover from faults without starting a new instance. This also enables the commented-out "Log" tab (`M/Views/Workflow/Details.cshtml:23,90`).
 
@@ -110,6 +120,8 @@ Paths: `M/` = `src/OrchardCore.Modules/OrchardCore.Workflows/`, `A/` = `src/Orch
 **Tests**: the journal records the order, outcomes and faults of a branching workflow (unit); the cap is enforced; retry continues after fixing the faulting activity's input (unit plus end to end in the viewer); trimming removes journal records.
 
 ## Phase 6 — Real time with `OrchardCore.SignalR`
+
+**Detailed plan:** [`phase-6-realtime.md`](phase-6-realtime.md). **Status:** done.
 
 **Goal:** live updates in the designer and the instance viewer, built on `src/OrchardCore.Modules/OrchardCore.SignalR`. Autosave stays on REST.
 
@@ -129,6 +141,8 @@ Paths: `M/` = `src/OrchardCore.Modules/OrchardCore.Workflows/`, `A/` = `src/Orch
 
 ## Phase 7 — Workflows as activities; dynamic activity providers
 
+**Detailed plan:** [`phase-7-composition.md`](phase-7-composition.md). **Status:** steps done; Definition of done running. The dynamic activity providers were built as activity presets (decision C6).
+
 **Workflow as an activity**
 - A type opts in with "Usable as activity" (a setting on the published version) and declares its inputs and outputs, reusing the Phase 3 variable definitions with input and output direction.
 - The engine adds an `ExecuteWorkflowTask` activity, generated for each opted-in type through the dynamic provider below. It starts a child instance pinned to a version (Phase 2), maps the inputs, and either waits for completion (it's blocking, resumed by a `WorkflowCompleted` signal from the child) or fires and forgets.
@@ -143,6 +157,8 @@ Paths: `M/` = `src/OrchardCore.Modules/OrchardCore.Workflows/`, `A/` = `src/Orch
 **Tests**: a child workflow runs and returns outputs to the parent; the parent waits and resumes; recursion is guarded; a provider-defined activity appears in the toolbox, edits and executes.
 
 ## Phase 8 — Evaluate: branching model, composition, state machines
+
+**Detailed plan:** not written yet (next). **Status:** not started.
 
 Spike and decide; these change the execution model. Pursue them only when there's real demand.
 

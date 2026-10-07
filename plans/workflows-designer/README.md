@@ -14,7 +14,7 @@ This folder contains these files:
 | [`phase-5-journal.md`](phase-5-journal.md) | Detailed, step-by-step plan for Phase 5: execution journal and recovery |
 | [`phase-6-realtime.md`](phase-6-realtime.md) | Detailed, step-by-step plan for Phase 6: real time with `OrchardCore.SignalR` |
 | [`phase-7-composition.md`](phase-7-composition.md) | Detailed, step-by-step plan for Phase 7: workflows as activities and activity presets |
-| [`later-phases.md`](later-phases.md) | Phases 2+: the missing engine and UI components to build later, with design sketches |
+| [`later-phases.md`](later-phases.md) | The missing engine and UI components, with the original design sketches of phases 2–8 and the backlog. Each phase is detailed, and tracked, in its `phase-N-*.md` file |
 
 ## Context
 
@@ -80,7 +80,9 @@ All paths are relative to `src/OrchardCore.Modules/OrchardCore.Workflows/` (`M/`
 
 ## Roadmap
 
-Update the **Status** column as work lands (`Not started` / `In progress` / `Done (commit)`).
+Update the **Status** column as work lands (`Not started` / `In progress` / `Done (commit)`). Each phase file ticks its steps and its Definition of done, with notes, in the commit that does them.
+
+The work is pushed to the draft pull request [OrchardCMS/OrchardCore#19996](https://github.com/OrchardCMS/OrchardCore/pull/19996) (branch `ma/workflows-designer`), one commit per step.
 
 | Phase | Scope | Depends on | Status |
 |---|---|---|---|
@@ -90,8 +92,8 @@ Update the **Status** column as work lands (`Not started` / `In progress` / `Don
 | 4 | Per-input expression syntax (Literal / Liquid / JavaScript / pluggable providers). See [`phase-4-expressions.md`](phase-4-expressions.md). | 3 (recommended) | Done (4.1–4.6 and the Definition of done; awaiting review) |
 | 5 | Execution journal, executed-path highlighting, retry of a faulted activity. See [`phase-5-journal.md`](phase-5-journal.md). | 1 | Done (5.1–5.6 and the Definition of done; awaiting review) |
 | 6 | Real time with `OrchardCore.SignalR`: live instance view, presence, draft change notifications. See [`phase-6-realtime.md`](phase-6-realtime.md). | 1, 5 | Done (6.1–6.5 and the Definition of done; awaiting review) |
-| 7 | Workflows as activities; dynamic activity providers (as activity presets). See [`phase-7-composition.md`](phase-7-composition.md). | 2, 3 | In progress (plan written) |
-| 8 | Evaluate: multiple transitions per outcome or implicit fork, composition/containers, state machines | 1–5 | Not started |
+| 7 | Workflows as activities; dynamic activity providers (as activity presets). See [`phase-7-composition.md`](phase-7-composition.md). | 2, 3 | In progress (7.1–7.6 done; Definition of done running) |
+| 8 | Evaluate: multiple transitions per outcome or implicit fork, composition/containers, state machines | 1–5 | Not started (next) |
 
 ## Testing strategy (applies to every phase)
 
@@ -154,5 +156,5 @@ Note: `AGENTS.md` and `.agents/skills/orchardcore-unit-test/SKILL.md` show `dotn
 2. Use the skills in `.agents/skills/` where they apply: `orchardcore-workflow-activity`, `orchardcore-asset-manager`, `orchardcore-unit-test`, `orchardcore-tester`, `orchardcore-docs-writer`, `orchardcore-admin-edit-views`, `localization`.
 3. Work one step at a time, in order. Each step ends with a green build (CI flags), passing tests for what the step touched, committed `yarn build` output when assets changed, and **one commit** describing the step. Tick the step's checkbox in `phase-1-designer.md` in the same commit.
 4. Don't change persisted formats or engine behavior in Phase 1 (decisions D7 and D8). If a step seems to require it, stop and record the question under **Open questions** in the phase file.
-5. Never push, open pull requests or merge without explicit approval from the maintainer.
-6. Stop at the end of Phase 1 for review before starting Phase 2.
+5. Push each committed step to the draft pull request (the maintainer approved it on 2026-10-07). Never merge, and don't open other pull requests without approval.
+6. Phase 1 was reviewed before Phase 2 started. The maintainer then asked for the remaining phases to be done and verified without stopping between them.
