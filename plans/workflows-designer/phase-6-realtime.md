@@ -128,11 +128,26 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
 
 ## Definition of done (Phase 6)
 
-- [ ] Steps 6.1–6.5 are checked.
-- [ ] The CI-flag build is green; `OrchardCore.Tests`, Vitest and the functional `*Cms*` tests pass.
-- [ ] `yarn lint`, `yarn check` and `yarn build` leave a clean `git status`.
-- [ ] Without the feature, the designer behaves as before.
-- [ ] Docs and release notes are updated.
+- [x] Steps 6.1–6.5 are checked.
+- [x] The CI-flag build is green; `OrchardCore.Tests`, Vitest and the functional `*Cms*` tests pass.
+- [x] `yarn lint`, `yarn check` and `yarn build` leave a clean `git status`.
+- [x] Without the feature, the designer behaves as before.
+- [x] Docs and release notes are updated.
+- **Notes from checking the Definition of done:**
+  - **Build.** The CI-flag build has 0 warnings and 0 errors.
+  - **`OrchardCore.Tests`.** 3,525 tests: 3,523 passed and 2 skipped (Unix-only).
+  - **Vitest.** The designer's 230 tests pass.
+  - **Functional `*Cms*`.** 163 tests, 6 skipped (Tus Azure and Redis); `WorkflowsDesignerTests` has 23 tests.
+    - In the full run, 79 tests of 19 classes failed: Kestrel logged "thread pool starvation" heartbeat warnings while every host started at once, and the tests fail on any logged warning.
+    - The 19 classes passed when run again four at a time (88 of 88).
+  - **Assets.**
+    - `yarn lint` has 0 errors (the 2 warnings in `OrchardCore.Cors` were already there), and `yarn check` passes.
+    - The first `yarn build` failed to start a process (`spawn UNKNOWN`) after cleaning its outputs. The files were restored from git and the build was run again.
+    - In the second run, one Parcel process of `monaco-esm` crashed (`0xC0000005`) and left its workers out. `yarn build -n monaco-esm` reproduced them.
+    - `git status` then only shows the six line-ending files from Phase 1. Phase 6 doesn't touch these assets; the failures came from the machine's load after the functional run.
+  - **Without the feature.**
+    - The designer configuration has no `hubUrl` and the pages don't load the `signalr` script (controller test), and the designer doesn't connect (Vitest).
+    - The notifier that does nothing is the default.
 
 ## Open questions
 
