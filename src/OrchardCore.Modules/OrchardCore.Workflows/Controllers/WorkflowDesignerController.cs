@@ -28,6 +28,9 @@ public sealed class WorkflowDesignerController : Controller
     private const string FragmentViewName = "Fragment";
     private const string SettingsPartialName = "WorkflowDesignerSettings";
 
+    // The number of journal records the instance viewer shows.
+    private const int JournalRecordCount = 500;
+
     private static readonly WorkflowStatus[] s_runningStatuses =
     [
         WorkflowStatus.Idle,
@@ -49,6 +52,7 @@ public sealed class WorkflowDesignerController : Controller
     private readonly ISession _session;
     private readonly IClock _clock;
     private readonly IWorkflowVariableTypeProvider _variableTypes;
+    private readonly IWorkflowExecutionJournal _journal;
     private readonly WorkflowVariableValidator _variableValidator;
 
     internal readonly IStringLocalizer S;
@@ -67,6 +71,7 @@ public sealed class WorkflowDesignerController : Controller
         IClock clock,
         IWorkflowVariableTypeProvider variableTypes,
         WorkflowVariableValidator variableValidator,
+        IWorkflowExecutionJournal journal,
         IStringLocalizer<WorkflowDesignerController> stringLocalizer)
     {
         _authorizationService = authorizationService;
@@ -81,6 +86,7 @@ public sealed class WorkflowDesignerController : Controller
         _session = session;
         _clock = clock;
         _variableTypes = variableTypes;
+        _journal = journal;
         _variableValidator = variableValidator;
         S = stringLocalizer;
     }
@@ -160,6 +166,7 @@ public sealed class WorkflowDesignerController : Controller
 
         var definition = await _versionStore.GetWorkflowTypeAsync(workflowType, workflow.WorkflowTypeVersionId);
         var version = string.IsNullOrEmpty(workflow.WorkflowTypeVersionId) ? null : await _versionStore.GetAsync(workflow.WorkflowTypeVersionId);
+        var journal = await _journal.ListAsync(workflow.WorkflowId, JournalRecordCount);
 
         return Ok(new WorkflowDesignerDefinition
         {
@@ -179,9 +186,15 @@ public sealed class WorkflowDesignerController : Controller
                 Status = workflow.Status.ToString(),
                 BlockingActivityIds = workflow.BlockingActivities.Select(activity => activity.ActivityId).Distinct().ToList(),
                 VariableValues = VariableValuesOf(workflow, definition.Variables),
-
-                // TODO: Phase 5 records the executed activities (ExecutedActivities); return them here so the
-                // viewer highlights the executed path.
+                FaultMessage = workflow.FaultMessage,
+                FaultedActivityId = workflow.Status == WorkflowStatus.Faulted
+                    ? journal.LastOrDefault(record => record.Status == WorkflowExecutionRecordStatus.Faulted)?.ActivityId
+                    : null,
+                Journal = journal.Select(WorkflowDesignerJournalRecord.From).ToList(),
+                ExecutedActivityCounts = journal
+                    .GroupBy(record => record.ActivityId)
+                    .ToDictionary(group => group.Key, group => group.Count()),
+                ExecutedTransitionCounts = ExecutedTransitionCounts(journal, definition),
             },
         });
     }
@@ -836,6 +849,28 @@ public sealed class WorkflowDesignerController : Controller
             PublishedVersion = await PublishedVersionAsync(workflowType),
             Version = WorkflowDesignerVersion.From(version, workflowType),
         };
+
+    // The transitions the journal's outcomes took, as the engine follows them: the first transition of each outcome.
+    private static Dictionary<string, int> ExecutedTransitionCounts(IReadOnlyList<WorkflowExecutionRecord> journal, WorkflowType definition)
+    {
+        var counts = new Dictionary<string, int>();
+
+        foreach (var record in journal)
+        {
+            foreach (var outcome in record.Outcomes ?? [])
+            {
+                var transition = definition.Transitions.FirstOrDefault(x => x.SourceActivityId == record.ActivityId && x.SourceOutcomeName == outcome);
+
+                if (transition is not null)
+                {
+                    var key = WorkflowDesignIssue.GetTransitionKey(transition);
+                    counts[key] = counts.GetValueOrDefault(key) + 1;
+                }
+            }
+        }
+
+        return counts;
+    }
 
     private List<WorkflowDesignerVariableType> VariableTypes()
         => _variableTypes.List()

@@ -97,10 +97,29 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - The test instances are created with `IWorkflowManager.NewWorkflow`, so their state holds their activities, as real instances' does.
     - Workflows tests: 238/238.
 
-### - [ ] 5.4 Instance viewer
+### - [x] 5.4 Instance viewer
 
 - The `Instance` endpoint returns `journal`, `executedActivityCounts`, `executedTransitionCounts` and `faultedActivityId`; the designer's read-only canvas highlights the executed path with counts and the faulted activity; a **Journal** tab; **Retry from here** in the activity summary of a faulted instance.
 - **Tests**: endpoint (a branching instance's counts); Vitest for the highlighting, the tab and the retry action.
+- **Notes from implementing this step:**
+  - **Endpoint.** `Instance` adds to the instance:
+    - `faultMessage`;
+    - `faultedActivityId`, the last faulted record of a faulted instance;
+    - `journal`, the most recent 500 records (`WorkflowDesignerJournalRecord`);
+    - `executedActivityCounts`, and `executedTransitionCounts` by transition key, following the first transition of each outcome as the engine does.
+  - **Durations.** Orchard Core writes dates to the second (`DateTimeJsonConverter`), so `WorkflowExecutionRecord.DurationMilliseconds` stores the duration on its own.
+  - **Canvas.**
+    - Executed activities have a green edge and, when they ran more than once, a `×n` badge.
+    - The faulted activity has a red ring and badge.
+    - Taken transitions are green, with `×n` on their label when taken more than once.
+    - The legend explains the colors.
+  - **Journal tab** (`panel/JournalTab.vue`, viewer of an instance only). It lists each record's sequence, title, status, `Resumed`, outcomes, duration and error. Selecting a record selects and centers its activity.
+  - **Retry.** With `urls.retry` (the user can execute workflows), the activity summary of a faulted instance shows the fault message on the faulted activity and **Retry from here** on every activity. After a confirmation, it posts `Retry`, reloads the instance and shows the new status.
+  - **Strings.** 18 new strings; `Retry` was already defined.
+  - **Tests.**
+    - Controller: `Instance_Journal_ReturnsTheRecordsTheExecutedPathAndTheFault`.
+    - Vitest: `JournalTab.spec.ts` (3), the node and edge highlighting, and the viewer's highlighting, Journal tab and retry flow, and no retry without the permission. 223/223.
+    - Workflows tests: 239/239.
 
 ### - [ ] 5.5 Docs and release notes
 

@@ -406,6 +406,78 @@
     font-size: 0.8125rem;
 }
 
+/* Journal tab and retry. */
+.wfd-journal-list {
+    margin: 0;
+    padding: 0.5rem 0;
+}
+
+.wfd-journal-record {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    border: 0;
+    background: none;
+    color: var(--bs-body-color);
+    font-size: 0.8125rem;
+    text-align: start;
+}
+
+.wfd-journal-record:hover,
+.wfd-journal-record:focus-visible {
+    background-color: var(--bs-tertiary-bg);
+}
+
+.wfd-journal-sequence {
+    flex: 0 0 auto;
+    min-width: 2rem;
+    color: var(--bs-secondary-color);
+}
+
+.wfd-journal-main {
+    display: grid;
+    gap: 0.125rem;
+    min-width: 0;
+}
+
+.wfd-journal-title {
+    font-weight: 600;
+}
+
+.wfd-journal-details {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.375rem;
+    color: var(--bs-secondary-color);
+}
+
+.wfd-journal-error,
+.wfd-retry-error {
+    color: var(--bs-danger-text-emphasis);
+    word-break: break-word;
+}
+
+.wfd-retry {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: var(--bs-border-width) solid var(--bs-border-color);
+}
+
+.wfd-retry-error {
+    margin-bottom: 0.5rem;
+    font-size: 0.8125rem;
+}
+
+.wfd-legend-executed {
+    display: inline-block;
+    width: 1.25rem;
+    height: 0;
+    margin-inline-start: 0.5rem;
+    border-top: 3px solid var(--bs-success);
+}
+
 .wfd-summary-list {
     display: grid;
     grid-template-columns: auto 1fr;
@@ -624,6 +696,11 @@
     stroke-width: 2;
 }
 
+.wfd-edge.is-executed .wfd-edge-line {
+    stroke: var(--bs-success);
+    stroke-width: 2.5;
+}
+
 .wfd-edge.is-selected .wfd-edge-line {
     stroke: var(--bs-primary);
     stroke-width: 2.5;
@@ -780,6 +857,24 @@
 .wfd-node.is-start .wfd-node-header {
     background-color: var(--bs-success-bg-subtle);
     color: var(--bs-success-text-emphasis);
+}
+
+/* What the viewed instance ran: executed activities and transitions, and the activity that faulted it. */
+.wfd-node.is-executed {
+    border-color: var(--bs-success-border-subtle);
+}
+
+.wfd-node.is-executed .wfd-node-header {
+    border-inline-start: 3px solid var(--bs-success);
+}
+
+.wfd-node.is-faulted {
+    border-color: var(--bs-danger);
+    box-shadow: 0 0 0 3px rgba(var(--bs-danger-rgb), 0.45), var(--wfd-node-stack, 0 0 transparent);
+}
+
+.wfd-node.is-faulted .wfd-node-header {
+    border-inline-start-color: var(--bs-danger);
 }
 
 .wfd-node.is-blocking .wfd-node-header {

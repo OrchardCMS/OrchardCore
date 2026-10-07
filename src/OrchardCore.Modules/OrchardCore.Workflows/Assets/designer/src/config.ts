@@ -16,6 +16,8 @@ export interface DesignerUrls {
     compare?: string | null;
     variables?: string | null;
     outputBindings?: string | null;
+    // Set on the instance viewer when the user can retry a faulted instance.
+    retry?: string | null;
 }
 
 /**

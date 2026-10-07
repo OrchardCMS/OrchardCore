@@ -758,6 +758,7 @@ public class WorkflowManagerTests
         Assert.All(saved, record => Assert.Equal(WorkflowExecutionRecordStatus.Completed, record.Status));
         Assert.All(saved, record => Assert.Equal(["Done"], record.Outcomes));
         Assert.Equal("OutputTask", saved[1].ActivityName);
+        Assert.All(saved, record => Assert.True(record.DurationMilliseconds >= 0));
         Assert.Equal(workflowContext.Workflow.WorkflowId, saved[0].WorkflowId);
 
         // The state keeps the executed activities, oldest first, and the last sequence number.

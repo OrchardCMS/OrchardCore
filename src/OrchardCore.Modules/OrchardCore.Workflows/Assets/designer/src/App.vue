@@ -2,7 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
 import type { DesignerConfig } from "./config";
 import { DesignerApiError, withQuery, type DesignerApi } from "./api/designerApi";
-import type { DesignIssue, DesignerVersion, Library } from "./api/types";
+import type { DesignIssue, DesignerVersion, Library, RetryResult } from "./api/types";
 import { designerStore, type DesignerStore } from "./state/designerStore";
 import { addNodeCommand } from "./state/commands";
 import DesignerCanvas from "./canvas/DesignerCanvas.vue";
@@ -423,6 +423,21 @@ onMounted(async () => {
     }
 });
 
+// The instance ran again: show what it did now.
+const onRetried = async (result: RetryResult) => {
+    try {
+        props.store.loadDefinition(await props.api.getDefinition());
+    } catch {
+        loadError.value = t("LoadFailed");
+
+        return;
+    }
+
+    await nextTick();
+    canvas.value?.reveal(state.instance?.blockingActivityIds ?? []);
+    showToast({ message: t("Retried", result.status), variant: result.status === "Faulted" ? "warning" : "success" });
+};
+
 onBeforeUnmount(() => {
     document.removeEventListener("keydown", onKeyDown);
     window.removeEventListener("beforeunload", onBeforeUnload);
@@ -472,6 +487,8 @@ defineExpose({ canvas, panel, addActivity, autosave, publish, discard });
                     {{ t("Blocking") }}
                 </span>
                 {{ t("BlockingLegend") }}
+                <span class="wfd-legend-executed" aria-hidden="true"></span>
+                {{ t("ExecutedLegend") }}
             </span>
 
             <template v-if="!config.readOnly && !loading && !loadError">
@@ -615,7 +632,9 @@ defineExpose({ canvas, panel, addActivity, autosave, publish, discard });
                 :api="api"
                 :read-only="config.readOnly"
                 :mutate="mutate"
+                :can-retry="!!config.urls.retry"
                 @focus-activity="focusActivity"
+                @retried="onRetried"
                 @return-focus="returnFocus"
                 @conflict="autosave.reportConflict"
             />

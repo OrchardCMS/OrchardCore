@@ -17,6 +17,13 @@ const mountEdge = (props: Record<string, unknown> = {}) =>
     });
 
 describe("TransitionEdge", () => {
+    it("render_TakenTransition_IsHighlightedWithItsCount", () => {
+        expect(mountEdge({ executedCount: 1 }).get(".wfd-edge").classes()).toContain("is-executed");
+        expect(mountEdge({ executedCount: 1 }).get(".wfd-edge-label").text()).toBe("Done label");
+        expect(mountEdge({ executedCount: 3 }).get(".wfd-edge-label").text()).toBe("Done label ×3");
+        expect(mountEdge().get(".wfd-edge").classes()).not.toContain("is-executed");
+    });
+
     it("render_Edge_DrawsBezierFromPortToTargetSideWithLabel", () => {
         const wrapper = mountEdge();
 

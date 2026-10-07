@@ -207,6 +207,7 @@ public sealed class WorkflowExecutionContext : IDisposable
             Outcomes = outcomeList,
             StartedUtc = startedUtc,
             CompletedUtc = completedUtc,
+            DurationMilliseconds = Math.Max(0, (completedUtc - startedUtc).TotalMilliseconds),
             Error = error,
         });
 

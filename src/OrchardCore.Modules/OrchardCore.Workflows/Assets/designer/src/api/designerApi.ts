@@ -12,6 +12,7 @@ import type {
     ProblemDetails,
     PublishResult,
     RestoreResult,
+    RetryResult,
     SavePayload,
     SaveResult,
     SettingsApplyResult,
@@ -102,6 +103,7 @@ export const createDesignerApi = (urls: DesignerUrls, service: ApiService = crea
         getComparison: () => call(() => service.get<DesignerComparison>(urls.compare!)),
         saveVariables: (revision: number, variables: VariableDefinition[]) =>
             call(() => service.post<VariablesResult>(urls.variables!, { revision, variables })),
+        retry: (instanceId: number, activityId: string) => call(() => service.post<RetryResult>(urls.retry!, { instanceId, activityId })),
         saveOutputBindings: (activityId: string, revision: number, bindings: Record<string, string>) =>
             call(() => service.post<OutputBindingsResult>(urls.outputBindings!, { activityId, revision, bindings })),
     };

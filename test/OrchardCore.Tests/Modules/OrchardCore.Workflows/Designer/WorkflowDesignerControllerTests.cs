@@ -748,6 +748,50 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
     }
 
     [Fact]
+    public async Task Instance_Journal_ReturnsTheRecordsTheExecutedPathAndTheFault()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(
+            [Activity("start", "HttpRequestEvent", isStart: true), Activity("fork", "ForkTask"), Activity("a", "NotifyTask"), Activity("b", "NotifyTask")],
+            [Transition("start", "Done", "fork"), Transition("fork", "A", "a"), Transition("fork", "B", "b")]);
+        var workflow = await _fixture.CreateFaultedInstanceAsync(workflowTypeId);
+
+        await _fixture.Context.UsingTenantScopeAsync(scope => scope.ServiceProvider.GetRequiredService<IWorkflowExecutionJournal>().SaveAsync(workflow.WorkflowId,
+        [
+            Record(workflow, 1, "start", WorkflowExecutionRecordStatus.Completed, "Done"),
+            Record(workflow, 2, "fork", WorkflowExecutionRecordStatus.Completed, "A", "B"),
+            Record(workflow, 3, "a", WorkflowExecutionRecordStatus.Completed, "Done"),
+            Record(workflow, 4, "b", WorkflowExecutionRecordStatus.Faulted),
+        ]));
+
+        var instance = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Instance?instanceId={workflow.Id}"))["instance"];
+
+        Assert.Equal("b", instance["faultedActivityId"].GetValue<string>());
+        Assert.Equal("Broken", instance["faultMessage"].GetValue<string>());
+        Assert.Equal([1, 2, 3, 4], instance["journal"].AsArray().Select(record => record["sequence"].GetValue<int>()));
+        Assert.Equal("Faulted", instance["journal"][3]["status"].GetValue<string>());
+        Assert.Equal(1500, instance["journal"][0]["durationMilliseconds"].GetValue<double>());
+        Assert.Equal(1, instance["executedActivityCounts"]["fork"].GetValue<int>());
+        var transitions = instance["executedTransitionCounts"].AsObject().ToDictionary(x => x.Key, x => x.Value.GetValue<int>());
+        Assert.Equal(new Dictionary<string, int> { ["start:Done:fork"] = 1, ["fork:A:a"] = 1, ["fork:B:b"] = 1 }, transitions);
+    }
+
+    private static WorkflowExecutionRecord Record(Workflow workflow, int sequence, string activityId, WorkflowExecutionRecordStatus status, params string[] outcomes)
+        => new()
+        {
+            WorkflowId = workflow.WorkflowId,
+            WorkflowTypeId = workflow.WorkflowTypeId,
+            Sequence = sequence,
+            ActivityId = activityId,
+            ActivityName = "Activity",
+            Status = status,
+            Outcomes = outcomes,
+            StartedUtc = new DateTime(2026, 10, 7, 12, 0, 0, DateTimeKind.Utc),
+            CompletedUtc = new DateTime(2026, 10, 7, 12, 0, 1, 500, DateTimeKind.Utc),
+            DurationMilliseconds = 1500,
+            Error = status == WorkflowExecutionRecordStatus.Faulted ? "Broken" : null,
+        };
+
+    [Fact]
     public async Task Instance_OfAnotherWorkflowType_ReturnsNotFoundProblem()
     {
         var (id, _) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));

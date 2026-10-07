@@ -84,6 +84,21 @@ export interface WorkflowSettings {
     deleteFinishedWorkflows: boolean;
 }
 
+// A record of an instance's journal (WorkflowDesignerJournalRecord).
+export interface JournalRecord {
+    sequence: number;
+    activityId: string;
+    activityName: string;
+    activityTitle?: string | null;
+    isResume: boolean;
+    status: "Completed" | "Halted" | "Faulted" | string;
+    outcomes: string[];
+    startedUtc: string;
+    completedUtc: string;
+    durationMilliseconds: number;
+    error?: string | null;
+}
+
 // The workflow instance shown by the read-only instance viewer.
 export interface DesignerInstance {
     id: number;
@@ -93,7 +108,19 @@ export interface DesignerInstance {
     blockingActivityIds: string[];
     // The stored values of the declared variables that have one, by name.
     variableValues?: Record<string, unknown>;
-    // TODO: Phase 5 records the executed activities; the viewer then highlights the executed path.
+    faultMessage?: string | null;
+    // The activity whose execution faulted the instance.
+    faultedActivityId?: string | null;
+    // The most recent journal records, oldest first.
+    journal?: JournalRecord[];
+    // How many times each activity ran, and each transition (by transition key) was taken.
+    executedActivityCounts?: Record<string, number>;
+    executedTransitionCounts?: Record<string, number>;
+}
+
+export interface RetryResult {
+    status: string;
+    faultMessage?: string | null;
 }
 
 // A version of the workflow type: what an instance started on, or a past publish.

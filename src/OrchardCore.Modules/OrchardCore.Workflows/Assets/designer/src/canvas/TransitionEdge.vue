@@ -17,8 +17,10 @@ const props = withDefaults(
         readOnly?: boolean;
         // How the transition differs from the compared definition, on the compare page.
         change?: ChangeKind | null;
+        // How many times the instance shown by the viewer took this transition.
+        executedCount?: number;
     }>(),
-    { sourceLayout: undefined, targetLayout: undefined, selected: false, readOnly: false, change: null },
+    { sourceLayout: undefined, targetLayout: undefined, selected: false, readOnly: false, change: null, executedCount: 0 },
 );
 
 const emit = defineEmits<{
@@ -29,7 +31,10 @@ const emit = defineEmits<{
 
 const outcomeIndex = computed(() => Math.max(0, props.source.outcomes.findIndex((outcome) => outcome.name === props.outcome)));
 
-const label = computed(() => props.source.outcomes.find((outcome) => outcome.name === props.outcome)?.displayName ?? props.outcome);
+const outcomeLabel = computed(() => props.source.outcomes.find((outcome) => outcome.name === props.outcome)?.displayName ?? props.outcome);
+
+// A transition taken more than once shows how many times.
+const label = computed(() => (props.executedCount > 1 ? `${outcomeLabel.value} ×${props.executedCount}` : outcomeLabel.value));
 
 // Reading the node coordinates here (not in the canvas) means only the edges of a moved node re-render.
 const geometry = computed(() =>
@@ -51,7 +56,7 @@ const onPointerDown = (event: PointerEvent) => {
 <template>
     <g
         class="wfd-edge"
-        :class="[{ 'is-selected': selected }, change ? `is-${change}` : null]"
+        :class="[{ 'is-selected': selected, 'is-executed': executedCount > 0 }, change ? `is-${change}` : null]"
         :data-cy="`edge-${edgeKey}`"
         :data-edge-key="edgeKey"
         @pointerdown="onPointerDown"

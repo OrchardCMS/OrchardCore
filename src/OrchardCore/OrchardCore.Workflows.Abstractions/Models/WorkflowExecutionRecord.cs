@@ -72,6 +72,12 @@ public sealed class WorkflowExecutionRecord
     public DateTime CompletedUtc { get; set; }
 
     /// <summary>
+    /// How long the execution took, in milliseconds. Dates are stored to the second, so the duration is stored on
+    /// its own.
+    /// </summary>
+    public double DurationMilliseconds { get; set; }
+
+    /// <summary>
     /// The error message, when the execution faulted.
     /// </summary>
     public string Error { get; set; }

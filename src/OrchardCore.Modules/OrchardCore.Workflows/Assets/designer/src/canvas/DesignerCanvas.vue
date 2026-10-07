@@ -71,6 +71,11 @@ const highlighted = computed(() => new Set(props.highlightedIds));
 // The activities the instance shown by the viewer waits on.
 // TODO: Phase 5 records the executed activities; highlight the executed path here then.
 const blockingIds = computed(() => new Set(state.instance?.blockingActivityIds ?? []));
+
+// What the instance shown by the viewer ran, from its journal.
+const executedCounts = computed(() => state.instance?.executedActivityCounts ?? {});
+const executedTransitions = computed(() => state.instance?.executedTransitionCounts ?? {});
+const faultedId = computed(() => state.instance?.faultedActivityId ?? null);
 const selectedIds = computed(() => new Set(state.selectedNodeIds));
 
 const issuesByActivity = computed(() => {
@@ -732,6 +737,7 @@ defineExpose({
                     :selected="state.selectedTransitionKey === edge.key"
                     :read-only="readOnly"
                     :change="changes?.edges[edge.key] ?? null"
+                    :executed-count="executedTransitions[edge.key] ?? 0"
                     @select="selectTransition(store, edge.key)"
                     @delete="deleteSelected"
                     @open-menu="openEdgeMenu(edge.key, $event)"
@@ -767,6 +773,8 @@ defineExpose({
                 :connected-outcomes="connectedOutcomes.get(node.id) ?? NO_OUTCOMES"
                 :hidden-count="hiddenCounts.get(node.id) ?? null"
                 :change="changes?.nodes[node.id] ?? null"
+                :executed-count="executedCounts[node.id] ?? 0"
+                :faulted="faultedId === node.id"
                 @node-pointerdown="onNodePointerDown(node, $event)"
                 @port-pointerdown="(outcome, event) => onPortPointerDown(node, outcome, event)"
                 @port-activate="(outcome) => openConnectDialog(node, outcome)"

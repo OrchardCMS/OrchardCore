@@ -2,13 +2,14 @@
 import { computed, nextTick, onMounted, ref, useId, watch } from "vue";
 import type { DesignerApi } from "../api/designerApi";
 import { DesignerApiError } from "../api/designerApi";
-import type { DesignIssue, EditorApplied, SettingsApplied } from "../api/types";
+import type { DesignIssue, EditorApplied, RetryResult, SettingsApplied } from "../api/types";
 import type { DesignerStore } from "../state/designerStore";
 import { selectNode } from "../canvas/useConnect";
 import ServerFormHost from "./ServerFormHost.vue";
 import IssuesList from "./IssuesList.vue";
 import OutputBindings from "./OutputBindings.vue";
 import VariablesTab from "./VariablesTab.vue";
+import JournalTab from "./JournalTab.vue";
 import type { FormApplyResult } from "./types";
 import type { RevisionTask } from "../services/revisionQueue";
 import { showToast } from "../ui/toasts";
@@ -17,7 +18,7 @@ import { usePeek } from "../ui/usePeek";
 import { readPreference, writePreference } from "../ui/preferences";
 import { t } from "../i18n";
 
-type Tab = "activity" | "variables" | "workflow" | "issues";
+type Tab = "activity" | "variables" | "journal" | "workflow" | "issues";
 
 const MIN_WIDTH = 288;
 const MAX_WIDTH = 720;
@@ -27,6 +28,7 @@ const COLLAPSED_KEY = "panel-collapsed";
 const TAB_ICONS: Record<Tab, string> = {
     activity: "fa-solid fa-sliders",
     variables: "fa-solid fa-square-root-variable",
+    journal: "fa-solid fa-list-check",
     workflow: "fa-solid fa-gear",
     issues: "fa-solid fa-triangle-exclamation",
 };
@@ -40,10 +42,15 @@ const props = withDefaults(
          * Runs a request that changes the draft, in the designer's revision queue.
          */
         mutate?: <T>(task: RevisionTask<T>) => Promise<T>;
+        /**
+         * Whether the viewer offers to retry a faulted instance.
+         */
+        canRetry?: boolean;
     }>(),
     {
         readOnly: false,
         mutate: undefined,
+        canRetry: false,
     },
 );
 
@@ -53,6 +60,7 @@ const emit = defineEmits<{
     (event: "focus-activity", activityId: string): void;
     (event: "return-focus", activityId: string): void;
     (event: "conflict", error: DesignerApiError): void;
+    (event: "retried", result: RetryResult): void;
 }>();
 
 const state = props.store.state;
@@ -68,14 +76,22 @@ const tabList = ref<HTMLElement | null>(null);
 const panel = ref<HTMLElement | null>(null);
 const ids = `wfd-panel-${useId()}`;
 
-const tabs = computed<Tab[]>(() => (props.readOnly ? ["activity", "variables"] : ["activity", "variables", "workflow", "issues"]));
+const tabs = computed<Tab[]>(() => {
+    if (!props.readOnly) {
+        return ["activity", "variables", "workflow", "issues"];
+    }
+
+    // The viewer of an instance shows its journal.
+    return state.instance ? ["activity", "variables", "journal"] : ["activity", "variables"];
+});
 
 // Collapsed, the panel is a rail of its tabs; hovering it opens the panel over the canvas (a "peek").
 const peek = usePeek((element) => !!element && !!panel.value?.contains(element));
 const peeking = computed(() => collapsed.value && peek.open.value);
 
 // Direct t("…") calls, so the translations spec sees every key.
-const tabLabel = (item: Tab) => ({ activity: t("ActivityTab"), variables: t("VariablesTab"), workflow: t("WorkflowTab"), issues: t("IssuesTab") })[item];
+const tabLabel = (item: Tab) =>
+    ({ activity: t("ActivityTab"), variables: t("VariablesTab"), journal: t("JournalTab"), workflow: t("WorkflowTab"), issues: t("IssuesTab") })[item];
 
 const tabHint = (item: Tab) => {
     if (item === "activity") {
@@ -84,6 +100,10 @@ const tabHint = (item: Tab) => {
 
     if (item === "variables") {
         return props.readOnly ? t("VariablesTabHintReadOnly") : t("VariablesTabHint");
+    }
+
+    if (item === "journal") {
+        return t("JournalTabHint");
     }
 
     return item === "workflow" ? t("WorkflowTabHint") : t("IssuesTabHint");
@@ -328,6 +348,49 @@ const onSettingsApplied = (result: FormApplyResult & { valid: true }) => {
     state.settings = applied.settings;
 };
 
+const onJournalSelected = (activityId: string) => {
+    if (props.store.getNode(activityId)) {
+        selectNode(props.store, activityId);
+        emit("focus-activity", activityId);
+    }
+};
+
+const retrying = ref(false);
+const isFaultedInstance = computed(() => props.canRetry && state.instance?.status === "Faulted");
+
+/**
+ * Runs the faulted instance again from the activity shown, after a confirmation.
+ */
+const retry = async () => {
+    const node = editingNode.value;
+    const instance = state.instance;
+
+    if (!node || !instance) {
+        return;
+    }
+
+    const confirmed = await confirmAction({
+        title: t("RetryTitle"),
+        message: t("RetryMessage", node.title),
+        okText: t("Retry"),
+        cancelText: t("Cancel"),
+    });
+
+    if (!confirmed) {
+        return;
+    }
+
+    retrying.value = true;
+
+    try {
+        emit("retried", await props.api.retry(instance.id, node.id));
+    } catch {
+        showToast({ message: t("RetryFailed"), variant: "danger" });
+    } finally {
+        retrying.value = false;
+    }
+};
+
 const onIssueSelected = (issue: DesignIssue) => {
     if (issue.activityId) {
         selectNode(props.store, issue.activityId);
@@ -522,6 +585,16 @@ defineExpose({ open, settle, selectTab, expand, discardChanges, refresh, hasPend
                         <p v-if="editingNode.isMissing" class="text-warning small">{{ t("MissingActivity") }}</p>
                         <div class="wfd-node-body" v-html="editingNode.designHtml"></div>
                         <OutputBindings :node="editingNode" :store="store" :api="api" read-only />
+                        <div v-if="isFaultedInstance" class="wfd-retry" data-cy="retry">
+                            <p v-if="state.instance?.faultedActivityId === editingNode.id && state.instance.faultMessage" class="wfd-retry-error" data-cy="fault-message">
+                                <i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>
+                                {{ state.instance.faultMessage }}
+                            </p>
+                            <button type="button" class="btn btn-sm btn-outline-primary" :disabled="retrying" data-cy="retry-button" @click="retry">
+                                <i class="fa-solid fa-rotate-right" aria-hidden="true"></i>
+                                {{ t("RetryFromHere") }}
+                            </button>
+                        </div>
                     </div>
                     <p v-else-if="editingNode.isMissing" class="wfd-panel-message text-warning" data-cy="panel-missing">{{ t("MissingActivityCannotBeEdited") }}</p>
                     <template v-else>
@@ -546,6 +619,8 @@ defineExpose({ open, settle, selectTab, expand, discardChanges, refresh, hasPend
                 </template>
 
                 <VariablesTab v-else-if="tab === 'variables'" :store="store" :api="api" :read-only="readOnly" :mutate="mutate" @error="onError" />
+
+                <JournalTab v-else-if="tab === 'journal'" :store="store" @select="onJournalSelected" />
 
                 <template v-else-if="tab === 'workflow'">
                     <p class="wfd-panel-intro">{{ t("WorkflowTabHint") }}</p>

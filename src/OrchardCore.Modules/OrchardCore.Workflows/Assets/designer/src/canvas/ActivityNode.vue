@@ -22,6 +22,9 @@ const props = withDefaults(
         hiddenCount?: number | null;
         // How the activity differs from the compared definition, on the compare page.
         change?: ChangeKind | null;
+        // How many times the instance shown by the viewer ran this activity, and whether it faulted the instance.
+        executedCount?: number;
+        faulted?: boolean;
     }>(),
     {
         selected: false,
@@ -34,6 +37,8 @@ const props = withDefaults(
         connectedOutcomes: () => [],
         hiddenCount: null,
         change: null,
+        executedCount: 0,
+        faulted: false,
     },
 );
 
@@ -73,6 +78,12 @@ const accessibleName = computed(() => {
 
     if (props.blocking) {
         parts.push(t("BlockingActivity"));
+    }
+
+    if (props.faulted) {
+        parts.push(t("FaultedActivity"));
+    } else if (props.executedCount > 0) {
+        parts.push(t("ExecutedTimes", props.executedCount));
     }
 
     if (props.issues.length > 0) {
@@ -179,6 +190,8 @@ const onKeyDown = (event: KeyboardEvent) => {
             'is-drop-target': dropTarget,
             'is-highlighted': highlighted,
             'is-blocking': blocking,
+            'is-executed': executedCount > 0,
+            'is-faulted': faulted,
             'is-collapsed': hiddenCount !== null,
             [`is-${change}`]: !!change,
             'has-errors': errorCount > 0,
@@ -202,6 +215,12 @@ const onKeyDown = (event: KeyboardEvent) => {
             <span class="wfd-node-type text-truncate">{{ node.displayText }}</span>
             <span v-if="change" class="badge wfd-node-badge wfd-change-badge" :class="`is-${change}`" data-cy="change-badge">{{ changeLabel }}</span>
             <span v-if="node.isStart" class="badge text-bg-success wfd-node-badge" data-cy="start-badge">{{ t("Start") }}</span>
+            <span v-if="faulted" class="badge text-bg-danger wfd-node-badge" :title="t('FaultedActivity')" data-cy="faulted-badge">
+                <i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>
+            </span>
+            <span v-else-if="executedCount > 1" class="badge text-bg-success wfd-node-badge" :title="t('ExecutedTimes', executedCount)" data-cy="executed-badge">
+                ×{{ executedCount }}
+            </span>
             <span v-if="blocking" class="badge text-bg-info wfd-node-badge" :title="t('BlockingActivityHint')" data-cy="blocking-badge">
                 <i class="fa-solid fa-hourglass-half" aria-hidden="true"></i>
                 {{ t("Blocking") }}

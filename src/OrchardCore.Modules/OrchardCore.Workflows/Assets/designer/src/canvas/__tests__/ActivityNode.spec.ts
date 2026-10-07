@@ -4,6 +4,20 @@ import ActivityNode from "../ActivityNode.vue";
 import { createNode } from "./fixtures";
 
 describe("ActivityNode", () => {
+    it("render_ExecutedOrFaulted_ShowsTheCountOrTheFault", () => {
+        const executedOnce = mount(ActivityNode, { props: { node: createNode("n1"), executedCount: 1 } });
+        const executedTwice = mount(ActivityNode, { props: { node: createNode("n2"), executedCount: 2 } });
+        const faulted = mount(ActivityNode, { props: { node: createNode("n3"), executedCount: 1, faulted: true } });
+
+        expect(executedOnce.get("[data-cy=activity-n1]").classes()).toContain("is-executed");
+        expect(executedOnce.find("[data-cy=executed-badge]").exists()).toBe(false);
+        expect(executedTwice.get("[data-cy=executed-badge]").text()).toBe("×2");
+        expect(executedTwice.get("[data-cy=activity-n2]").attributes("aria-label")).toContain("ExecutedTimes");
+        expect(faulted.get("[data-cy=activity-n3]").classes()).toContain("is-faulted");
+        expect(faulted.find("[data-cy=faulted-badge]").exists()).toBe(true);
+        expect(faulted.find("[data-cy=executed-badge]").exists()).toBe(false);
+    });
+
     it("render_Node_ShowsHeaderBodyPortsAndPosition", () => {
         const node = createNode("n1", { x: 120, y: 40 }, ["Yes", "No"]);
 
