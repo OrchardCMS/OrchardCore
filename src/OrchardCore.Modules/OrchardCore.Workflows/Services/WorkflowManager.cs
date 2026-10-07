@@ -23,6 +23,7 @@ public class WorkflowManager : IWorkflowManager
     private readonly IWorkflowTypeVersionStore _workflowTypeVersionStore;
     private readonly IWorkflowVariableTypeProvider _variableTypeProvider;
     private readonly IWorkflowStore _workflowStore;
+    private readonly IWorkflowExecutionJournal _journal;
     private readonly IWorkflowIdGenerator _workflowIdGenerator;
     private readonly Resolver<IEnumerable<IWorkflowValueSerializer>> _workflowValueSerializers;
     private readonly IWorkflowFaultHandler _workflowFaultHandler;
@@ -43,6 +44,7 @@ public class WorkflowManager : IWorkflowManager
         IWorkflowTypeVersionStore workflowTypeVersionStore,
         IWorkflowVariableTypeProvider variableTypeProvider,
         IWorkflowStore workflowRepository,
+        IWorkflowExecutionJournal journal,
         IWorkflowIdGenerator workflowIdGenerator,
         Resolver<IEnumerable<IWorkflowValueSerializer>> workflowValueSerializers,
         IWorkflowFaultHandler workflowFaultHandler,
@@ -58,6 +60,7 @@ public class WorkflowManager : IWorkflowManager
         _workflowTypeVersionStore = workflowTypeVersionStore;
         _variableTypeProvider = variableTypeProvider;
         _workflowStore = workflowRepository;
+        _journal = journal;
         _workflowIdGenerator = workflowIdGenerator;
         _workflowValueSerializers = workflowValueSerializers;
         _workflowFaultHandler = workflowFaultHandler;
@@ -117,7 +120,10 @@ public class WorkflowManager : IWorkflowManager
         var lastResult = await DeserializeAsync(state.LastResult);
         var executedActivities = state.ExecutedActivities;
 
-        var workflowContext = new WorkflowExecutionContext(workflowType, workflow, mergedInput, output, properties, executedActivities, lastResult, activityQuery, _variableTypeProvider);
+        var workflowContext = new WorkflowExecutionContext(workflowType, workflow, mergedInput, output, properties, executedActivities, lastResult, activityQuery, _variableTypeProvider)
+        {
+            ExecutionSequence = state.ExecutionSequence,
+        };
 
         // Declared variables that have no value yet start with their default value.
         workflowContext.Variables.ApplyDefaults();
@@ -454,6 +460,8 @@ public class WorkflowManager : IWorkflowManager
                 }
 
                 var outcomes = Enumerable.Empty<string>();
+                var startedUtc = _clock.UtcNow;
+                var resumed = isResuming;
 
                 try
                 {
@@ -490,6 +498,7 @@ public class WorkflowManager : IWorkflowManager
                         {
                             // Block on this activity.
                             blocking.Add(activity);
+                            workflowContext.RecordExecution(activityContext, WorkflowExecutionRecordStatus.Halted, [], startedUtc, _clock.UtcNow, resumed);
 
                             continue;
                         }
@@ -504,9 +513,19 @@ public class WorkflowManager : IWorkflowManager
                     {
                         ApplyOutputBindings(workflowContext, activityContext);
                     }
+
+                    workflowContext.RecordExecution(
+                        activityContext,
+                        result.IsHalted ? WorkflowExecutionRecordStatus.Halted : WorkflowExecutionRecordStatus.Completed,
+                        result.IsHalted ? [] : outcomes,
+                        startedUtc,
+                        _clock.UtcNow,
+                        resumed);
                 }
                 catch (Exception ex)
                 {
+                    workflowContext.RecordExecution(activityContext, WorkflowExecutionRecordStatus.Faulted, [], startedUtc, _clock.UtcNow, resumed, ex.Message);
+
                     _logger.LogError(ex, "An unhandled error occurred while executing an activity. Workflow ID: '{WorkflowTypeId}'. Activity: '{ActivityId}', '{ActivityName}'. Putting the workflow in the faulted state.", workflowType.Id, activityContext.ActivityRecord.ActivityId, activityContext.ActivityRecord.Name);
                     workflowContext.Fault(ex, activityContext);
 
@@ -611,11 +630,20 @@ public class WorkflowManager : IWorkflowManager
         state.Output = await SerializeAsync(workflowContext.Output);
         state.Properties = await SerializeAsync(workflowContext.Properties);
         state.LastResult = await SerializeAsync(workflowContext.LastResult);
-        state.ExecutedActivities = workflowContext.ExecutedActivities.ToList();
+        // Oldest first, so the stack built from it on the next run has the most recent entry on top.
+        state.ExecutedActivities = workflowContext.ExecutedActivities.Reverse().ToList();
+        state.ExecutionSequence = workflowContext.ExecutionSequence;
         state.ActivityStates = workflowContext.Activities.ToDictionary(x => x.Key, x => x.Value.Activity.Properties);
 
         workflowContext.Workflow.State = JObject.FromObject(state, _jsonSerializerOptions);
         await _workflowStore.SaveAsync(workflowContext.Workflow);
+
+        if (_journal.IsEnabled && workflowContext.JournalRecords.Count > 0)
+        {
+            await _journal.SaveAsync(workflowContext.Workflow.WorkflowId, workflowContext.JournalRecords.ToList());
+        }
+
+        workflowContext.JournalRecords.Clear();
     }
 
     /// <summary>

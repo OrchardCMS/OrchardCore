@@ -58,10 +58,25 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - The SQLite test database initializes the collection and runs the new migration.
     - Workflows tests: 229/229.
 
-### - [ ] 5.2 Recording executions
+### - [x] 5.2 Recording executions
 
 - `WorkflowExecutionContext` buffers journal entries and fills `ExecutedActivities` (J4); `WorkflowManager` adds an entry per executed or resumed activity (completed with its outcomes, halted, faulted with the error) and saves them in `PersistAsync` when the journal is enabled.
 - **Tests**: a branching workflow records the order and outcomes; a halted then resumed workflow continues the sequence; a fault records the error; a disabled journal records nothing; `ExecutedActivities` is filled.
+- **Notes from implementing this step:**
+  - **Context.**
+    - `WorkflowExecutionContext.RecordExecution(activityContext, status, outcomes, startedUtc, completedUtc, isResume, error)` adds a record to `JournalRecords`, numbered from `ExecutionSequence`, with the activity's title.
+    - It also pushes one `ExecutedActivity` per outcome (or one without an outcome) and keeps the most recent `MaxExecutedActivities` (100).
+    - `WorkflowState.ExecutionSequence` keeps the last number between runs.
+  - **Engine.** `ExecuteWorkflowAsync` records each activity:
+    - halted (waiting on an event) without outcomes, and completed with its outcomes, after its output bindings;
+    - faulted with the exception's message, before the fault handler runs;
+    - an event resumed by the instance with `IsResume`.
+  - **Saving.** `PersistAsync` saves the records through `IWorkflowExecutionJournal` when it is enabled, then clears them. An instance deleted when it finishes saves no journal.
+  - **Order fix.** `ExecutedActivities` was saved from its stack top first, so every save and reload reversed it. That was harmless while it was never filled. It's now saved oldest first.
+  - **API change.** `WorkflowManager` takes an `IWorkflowExecutionJournal` (release notes).
+  - **Tests.**
+    - In `WorkflowManagerTests` (5): the records and the saved state of a finished run; a halt then a resume continuing the sequence; a fault's error; a disabled journal; the cap on executed activities.
+    - Workflows tests: 234/234.
 
 ### - [ ] 5.3 Retry a faulted activity
 

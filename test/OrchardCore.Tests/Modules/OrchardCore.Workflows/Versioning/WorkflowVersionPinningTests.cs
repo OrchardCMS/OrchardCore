@@ -150,6 +150,7 @@ public sealed class WorkflowVersionPinningTests : IAsyncLifetime
             versions,
             Variables.TestVariableTypes.CreateProvider(),
             Mock.Of<IWorkflowStore>(),
+            Mock.Of<IWorkflowExecutionJournal>(),
             workflowIdGenerator.Object,
             new Resolver<IEnumerable<IWorkflowValueSerializer>>(serviceProvider),
             Mock.Of<IWorkflowFaultHandler>(),

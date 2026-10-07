@@ -1,9 +1,15 @@
+using OrchardCore.Entities;
 using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Models;
 
 public sealed class WorkflowExecutionContext : IDisposable
 {
+    /// <summary>
+    /// The number of entries <see cref="ExecutedActivities"/> keeps.
+    /// </summary>
+    public const int MaxExecutedActivities = 100;
+
     private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
     public WorkflowExecutionContext
@@ -138,6 +144,86 @@ public sealed class WorkflowExecutionContext : IDisposable
             // Workflow is aborted.
             Workflow.Status = WorkflowStatus.Aborted;
             Workflow.FaultMessage = reason;
+        }
+    }
+
+    /// <summary>
+    /// The journal records of the activities this context executed. They are saved with the instance.
+    /// </summary>
+    public IList<WorkflowExecutionRecord> JournalRecords { get; } = new List<WorkflowExecutionRecord>();
+
+    /// <summary>
+    /// The sequence number of the instance's last journal record.
+    /// </summary>
+    public int ExecutionSequence { get; set; }
+
+    /// <summary>
+    /// Records an execution of an activity: in <see cref="JournalRecords"/>, and in
+    /// <see cref="ExecutedActivities"/> (one entry per outcome, the most recent <see cref="MaxExecutedActivities"/>).
+    /// </summary>
+    /// <param name="activityContext">The activity.</param>
+    /// <param name="status">How the execution ended.</param>
+    /// <param name="outcomes">The outcomes the activity produced.</param>
+    /// <param name="startedUtc">When the execution started.</param>
+    /// <param name="completedUtc">When it ended.</param>
+    /// <param name="isResume">Whether the activity was resumed rather than executed.</param>
+    /// <param name="error">The error message of a faulted execution.</param>
+    public void RecordExecution(
+        ActivityContext activityContext,
+        WorkflowExecutionRecordStatus status,
+        IEnumerable<string> outcomes,
+        DateTime startedUtc,
+        DateTime completedUtc,
+        bool isResume = false,
+        string error = null)
+    {
+        ArgumentNullException.ThrowIfNull(activityContext);
+
+        var record = activityContext.ActivityRecord;
+
+        if (record is null)
+        {
+            return;
+        }
+
+        var outcomeList = outcomes?.ToList() ?? [];
+        string title = null;
+
+        if (activityContext.Activity is not null && activityContext.Activity.TryGet<ActivityMetadata>(out var metadata))
+        {
+            title = metadata.Title;
+        }
+
+        JournalRecords.Add(new WorkflowExecutionRecord
+        {
+            WorkflowId = Workflow.WorkflowId,
+            WorkflowTypeId = Workflow.WorkflowTypeId,
+            Sequence = ++ExecutionSequence,
+            ActivityId = record.ActivityId,
+            ActivityName = record.Name,
+            ActivityTitle = string.IsNullOrEmpty(title) ? null : title,
+            IsResume = isResume,
+            Status = status,
+            Outcomes = outcomeList,
+            StartedUtc = startedUtc,
+            CompletedUtc = completedUtc,
+            Error = error,
+        });
+
+        if (outcomeList.Count == 0)
+        {
+            ExecutedActivities.Push(new ExecutedActivity { ActivityId = record.ActivityId });
+        }
+
+        foreach (var outcome in outcomeList)
+        {
+            ExecutedActivities.Push(new ExecutedActivity { ActivityId = record.ActivityId, Outcome = outcome });
+        }
+
+        if (ExecutedActivities.Count > MaxExecutedActivities)
+        {
+            // A stack enumerates from its top, the most recent entry.
+            ExecutedActivities = new Stack<ExecutedActivity>(ExecutedActivities.Take(MaxExecutedActivities).Reverse());
         }
     }
 

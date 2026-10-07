@@ -634,7 +634,8 @@ public class WorkflowManagerTests
         IServiceProvider serviceProvider,
         IEnumerable<IActivity> activities,
         WorkflowType workflowType,
-        Action<Mock<IWorkflowFaultHandler>, WorkflowManager> configureWorkflowFaultHandler = null
+        Action<Mock<IWorkflowFaultHandler>, WorkflowManager> configureWorkflowFaultHandler = null,
+        IWorkflowExecutionJournal journal = null
     )
     {
         var workflowValueSerializers = new Resolver<IEnumerable<IWorkflowValueSerializer>>(serviceProvider);
@@ -665,6 +666,7 @@ public class WorkflowManagerTests
             workflowTypeVersionStore.Object,
             TestVariableTypes.CreateProvider(),
             workflowStore.Object,
+            journal ?? Mock.Of<IWorkflowExecutionJournal>(),
             workflowIdGenerator.Object,
             workflowValueSerializers,
             workflowFaultHandler.Object,
@@ -685,6 +687,7 @@ public class WorkflowManagerTests
         }
 
         workflowTypeStore.Setup(x => x.GetAsync(workflowType.Id)).Returns(Task.FromResult(workflowType));
+        workflowTypeStore.Setup(x => x.GetAsync(workflowType.WorkflowTypeId)).Returns(Task.FromResult(workflowType));
         workflowTypeStore.Setup(x => x.GetByStartActivityAsync(It.IsAny<string>()))
             .ReturnsAsync((string activityName) => workflowType.Activities.Any(x => x.IsStart && x.Name == activityName) ? [workflowType] : []);
         workflowStore.Setup(x => x.ListByActivityNameAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
@@ -741,8 +744,114 @@ public class WorkflowManagerTests
         Assert.False(workflowContext.Properties.ContainsKey("answer"));
     }
 
+    [Fact]
+    public async Task StartWorkflowAsync_Journal_RecordsEachActivityWithItsOutcomes()
+    {
+        var (journal, saved) = CreateJournal();
+        var (workflowManager, workflowType) = CreateOutputWorkflow(output: "42", bindings: [], journal: journal);
+
+        var workflowContext = await workflowManager.StartWorkflowAsync(workflowType);
+
+        Assert.Equal(WorkflowStatus.Finished, workflowContext.Status);
+        Assert.Equal([1, 2], saved.Select(record => record.Sequence));
+        Assert.Equal(["start", "output"], saved.Select(record => record.ActivityId));
+        Assert.All(saved, record => Assert.Equal(WorkflowExecutionRecordStatus.Completed, record.Status));
+        Assert.All(saved, record => Assert.Equal(["Done"], record.Outcomes));
+        Assert.Equal("OutputTask", saved[1].ActivityName);
+        Assert.Equal(workflowContext.Workflow.WorkflowId, saved[0].WorkflowId);
+
+        // The state keeps the executed activities, oldest first, and the last sequence number.
+        var state = workflowContext.Workflow.State.ToObject<WorkflowState>();
+        Assert.Equal(["start", "output"], state.ExecutedActivities.Select(executed => executed.ActivityId));
+        Assert.Equal(2, state.ExecutionSequence);
+    }
+
+    [Fact]
+    public async Task ResumeWorkflowAsync_HaltedInstance_ContinuesTheJournalSequence()
+    {
+        var (journal, saved) = CreateJournal();
+        var (workflowManager, workflowType) = CreateOutputWorkflow(output: "42", bindings: [], halt: true, journal: journal);
+
+        var started = await workflowManager.StartWorkflowAsync(workflowType);
+
+        Assert.Equal(WorkflowStatus.Halted, started.Status);
+        Assert.Equal([WorkflowExecutionRecordStatus.Completed, WorkflowExecutionRecordStatus.Halted], saved.Select(record => record.Status));
+        Assert.Empty(saved[1].Outcomes);
+
+        var workflow = started.Workflow;
+        var resumed = await workflowManager.ResumeWorkflowAsync(workflow, workflow.BlockingActivities.Single());
+
+        var record = saved.Last();
+        Assert.Equal(WorkflowStatus.Halted, resumed.Status);
+        Assert.Equal(3, record.Sequence);
+        Assert.True(record.IsResume);
+        Assert.Equal("output", record.ActivityId);
+    }
+
+    [Fact]
+    public async Task StartWorkflowAsync_FaultingActivity_RecordsTheError()
+    {
+        var (journal, saved) = CreateJournal();
+        var throwingTask = new ThrowingTask(() => { });
+        var workflowType = new WorkflowType
+        {
+            Id = 1,
+            WorkflowTypeId = IdGenerator.GenerateId(),
+            Activities = [new() { ActivityId = "throw", IsStart = true, Name = throwingTask.Name }],
+            Transitions = [],
+        };
+        var workflowManager = CreateWorkflowManager(CreateServiceProvider(), [throwingTask], workflowType, journal: journal);
+
+        var workflowContext = await workflowManager.StartWorkflowAsync(workflowType);
+
+        var record = Assert.Single(saved);
+        Assert.Equal(WorkflowStatus.Faulted, workflowContext.Status);
+        Assert.Equal(WorkflowExecutionRecordStatus.Faulted, record.Status);
+        Assert.Equal("Simulated activity failure", record.Error);
+    }
+
+    [Fact]
+    public async Task StartWorkflowAsync_JournalDisabled_SavesNoRecordButKeepsTheExecutedActivities()
+    {
+        var (journal, saved) = CreateJournal(enabled: false);
+        var (workflowManager, workflowType) = CreateOutputWorkflow(output: "42", bindings: [], journal: journal);
+
+        var workflowContext = await workflowManager.StartWorkflowAsync(workflowType);
+
+        Assert.Empty(saved);
+        Assert.Equal(2, workflowContext.Workflow.State.ToObject<WorkflowState>().ExecutedActivities.Count);
+    }
+
+    [Fact]
+    public void RecordExecution_ManyActivities_KeepsTheMostRecentExecutedActivities()
+    {
+        var activity = new ActivityContext { ActivityRecord = new ActivityRecord { ActivityId = "loop", Name = "Loop" } };
+        using var workflowContext = new WorkflowExecutionContext(new WorkflowType(), new Workflow { WorkflowId = "workflow" }, null, null, null, null, null, []);
+
+        for (var i = 0; i < WorkflowExecutionContext.MaxExecutedActivities + 5; i++)
+        {
+            workflowContext.RecordExecution(activity, WorkflowExecutionRecordStatus.Completed, [i.ToString(CultureInfo.InvariantCulture)], DateTime.UtcNow, DateTime.UtcNow);
+        }
+
+        Assert.Equal(WorkflowExecutionContext.MaxExecutedActivities, workflowContext.ExecutedActivities.Count);
+        Assert.Equal("104", workflowContext.ExecutedActivities.Peek().Outcome);
+        Assert.Equal(WorkflowExecutionContext.MaxExecutedActivities + 5, workflowContext.JournalRecords.Count);
+    }
+
+    private static (IWorkflowExecutionJournal Journal, List<WorkflowExecutionRecord> Saved) CreateJournal(bool enabled = true)
+    {
+        var saved = new List<WorkflowExecutionRecord>();
+        var journal = new Mock<IWorkflowExecutionJournal>();
+        journal.SetupGet(x => x.IsEnabled).Returns(enabled);
+        journal.Setup(x => x.SaveAsync(It.IsAny<string>(), It.IsAny<IEnumerable<WorkflowExecutionRecord>>()))
+            .Callback((string _, IEnumerable<WorkflowExecutionRecord> records) => saved.AddRange(records))
+            .Returns(Task.CompletedTask);
+
+        return (journal.Object, saved);
+    }
+
     // A start activity, then an output activity setting "Value" to `output`, which halts when `halt` is set.
-    private static (WorkflowManager Manager, WorkflowType WorkflowType) CreateOutputWorkflow(string output, Dictionary<string, string> bindings, bool halt = false)
+    private static (WorkflowManager Manager, WorkflowType WorkflowType) CreateOutputWorkflow(string output, Dictionary<string, string> bindings, bool halt = false, IWorkflowExecutionJournal journal = null)
     {
         var start = new OutputTask(null, halt: false);
         var outputTask = new OutputTask(output, halt);
@@ -763,7 +872,7 @@ public class WorkflowManagerTests
         };
 
         var serviceProvider = CreateServiceProvider();
-        var workflowManager = CreateWorkflowManager(serviceProvider, [outputTask, new NamedTask("StartTask", start)], workflowType);
+        var workflowManager = CreateWorkflowManager(serviceProvider, [outputTask, new NamedTask("StartTask", start)], workflowType, journal: journal);
 
         return (workflowManager, workflowType);
     }
