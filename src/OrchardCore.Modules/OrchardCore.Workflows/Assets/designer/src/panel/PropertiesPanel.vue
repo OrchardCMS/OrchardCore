@@ -10,6 +10,8 @@ import IssuesList from "./IssuesList.vue";
 import OutputBindings from "./OutputBindings.vue";
 import VariablesTab from "./VariablesTab.vue";
 import JournalTab from "./JournalTab.vue";
+import AvailableData from "../available/AvailableData.vue";
+import { insertAtCursor } from "../available/insertion";
 import type { FormApplyResult } from "./types";
 import type { RevisionTask } from "../services/revisionQueue";
 import { showToast } from "../ui/toasts";
@@ -114,6 +116,35 @@ let focusOnLoad = false;
 
 const selectedId = computed(() => (state.selectedNodeIds.length === 1 ? state.selectedNodeIds[0] : null));
 const editingNode = computed(() => (editingId.value ? props.store.getNode(editingId.value) : undefined));
+
+// The field of the activity's editor that had the focus last, where an available value is inserted.
+let lastField: Element | null = null;
+
+const onFormFocus = (event: FocusEvent) => {
+    if (event.target instanceof Element && event.target.closest(".wfd-form-content")) {
+        lastField = event.target;
+    }
+};
+
+watch(editingId, () => {
+    lastField = null;
+});
+
+/**
+ * Inserts an expression where the cursor was in the activity's editor, or copies it.
+ */
+const onInsert = async (text: string) => {
+    if (await insertAtCursor(lastField, text)) {
+        return;
+    }
+
+    try {
+        await navigator.clipboard.writeText(text);
+        showToast({ message: t("ExpressionCopied", text), variant: "success" });
+    } catch {
+        showToast({ message: t("ExpressionCopyFailed"), variant: "warning" });
+    }
+};
 const errorCount = computed(() => state.issues.filter((issue) => issue.severity === "Error").length);
 const isBlocking = computed(() => !!editingNode.value && !!state.instance?.blockingActivityIds.includes(editingNode.value.id));
 
@@ -613,8 +644,10 @@ defineExpose({ open, settle, selectTab, expand, discardChanges, refresh, hasPend
                             @loaded="onActivityLoaded"
                             @applied="onActivityApplied"
                             @error="onError"
+                            @focusin="onFormFocus"
                         />
                         <OutputBindings :node="editingNode" :store="store" :api="api" :mutate="mutate" @error="onError" />
+                        <AvailableData :node="editingNode" :store="store" @insert="onInsert" />
                     </template>
                 </template>
 

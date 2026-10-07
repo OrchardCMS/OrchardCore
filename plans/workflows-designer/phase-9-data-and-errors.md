@@ -78,12 +78,37 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
   - **Base classes.** The base content and user events declare their values with a virtual `GetProvidedValues`, which the login and logout events override.
   - **Tests.** The definition endpoint lists the values of a content event, a signal, a loop and a Set Property activity (whose names come from their settings), and none for Notify. Workflows tests: 284/284.
 
-### - [ ] 9.3 Available data in the designer
+### - [x] 9.3 Available data in the designer
 
 - `AvailableData.vue` in the Activity tab: variables, values of the activities on a path to the edited one, and the workflow's last result and correlation id, each with its JavaScript and Liquid expressions.
 - Insert at the cursor of the last focused field of the activity's editor, or copy.
 - The Monaco completions suggest the available values (`input('…')`, `property('…')`, `Workflow.Input.…`, `Workflow.Properties.…`, `Workflow.Output.…`).
 - **Tests** (Vitest): the upstream values, insertion in an input, a text area and Monaco, copying, and the completions.
+- **Notes from implementing this step:**
+  - **Logic** (`available/availableData.ts`).
+    - `upstreamNodeIds` walks the transitions back from the activity: the activities on a path to it, nearest first.
+    - `availableData` lists the variables, the values of those activities, and the workflow's last result and correlation id. A Properties value named like a declared variable is only listed as the variable.
+  - **Expressions.**
+    - Variables: `variable("x")`. Input: `input("x")`. Properties: `property("x")`.
+    - Output: `workflow().Output["x"]`, since the script function `output(name, value)` only writes.
+    - Last result: `lastResult()`. Correlation id: `correlationId()`.
+    - In Liquid, `{{ Workflow.Input.x }}`, with brackets for a name that isn't an identifier.
+  - **Panel** (`available/AvailableData.vue`). It sits under the Outputs section of the Activity tab, and can be collapsed (remembered).
+    - Each value shows its type, its source, its description, and a JavaScript and a Liquid expression.
+    - The buttons don't take the focus, so the editor keeps its cursor.
+  - **Insertion** (`available/insertion.ts`). The panel remembers the editor field that had the focus last, and inserts at its cursor:
+    - Monaco: the editor whose container has the field, from `monaco.editor.getEditors()`;
+    - CodeMirror: `replaceSelection`;
+    - inputs and text areas: `setRangeText`.
+    - It then dispatches `change`, so the form applies. Without a field, the expression is copied, with a toast.
+  - **Completions.** `CompletionSource.values` adds the values of the activities on a path to the selected activity to the JavaScript and Liquid completions, with the activity's name in the detail.
+  - **Checked in the app.** The list rendered on User Registration's Script task. Clicking `correlationId()` inserted it at the Monaco cursor, and I undid it.
+  - **Tests** (Vitest):
+    - `availableData.spec.ts` (4): the path order, the groups, the expressions and the completion values.
+    - `insertion.spec.ts` (5): input, text area, CodeMirror, Monaco, and fields that don't take text.
+    - `AvailableDataPanel.spec.ts` (3): the list, the insert event, and collapsing.
+    - A completions test.
+    - Vitest: 249/249.
 
 ### - [ ] 9.4 Script errors in the engine
 

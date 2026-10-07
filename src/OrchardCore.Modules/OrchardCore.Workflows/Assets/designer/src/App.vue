@@ -9,6 +9,7 @@ import DesignerCanvas from "./canvas/DesignerCanvas.vue";
 import ActivityToolbox from "./toolbox/ActivityToolbox.vue";
 import PropertiesPanel from "./panel/PropertiesPanel.vue";
 import { startVariableCompletions } from "./variables/variableCompletions";
+import { upstreamValues } from "./available/availableData";
 import ToastHost from "./ui/ToastHost.vue";
 import SaveStatusIndicator from "./draft/SaveStatusIndicator.vue";
 import ConflictDialog from "./draft/ConflictDialog.vue";
@@ -448,7 +449,11 @@ onMounted(async () => {
 
     if (!props.config.readOnly) {
         void loadLibrary();
-        stopCompletions = startVariableCompletions(() => ({ variables: state.variables, types: state.variableTypes }));
+        stopCompletions = startVariableCompletions(() => ({
+            variables: state.variables,
+            types: state.variableTypes,
+            values: upstreamValues(state.nodes, state.transitions, state.variables, state.selectedNodeIds.length === 1 ? state.selectedNodeIds[0] : null),
+        }));
     }
 
     try {

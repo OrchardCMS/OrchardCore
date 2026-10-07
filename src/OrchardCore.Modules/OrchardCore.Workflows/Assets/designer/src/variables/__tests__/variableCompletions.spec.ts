@@ -34,6 +34,33 @@ describe("variableCompletions", () => {
         delete window.__orchardCoreMonacoReady;
     });
 
+    it("items_AvailableValues_AreSuggestedInJavaScriptAndLiquid", () => {
+        loadTranslations({ VariableCompletionDetail: "{0} variable", ValueCompletionDetail: "{0}, from {1}" });
+        const { monaco } = createMonaco();
+        const withValues = {
+            ...source,
+            values: [
+                {
+                    key: "Input:Owner",
+                    name: "Owner",
+                    source: "Input" as const,
+                    typeName: "any",
+                    description: "The owner.",
+                    javaScript: 'input("Owner")',
+                    liquid: "{{ Workflow.Input.Owner }}",
+                    activityTitle: "Notify Owner",
+                },
+            ],
+        };
+
+        const javaScript = javaScriptItems(monaco, withValues, model("in"), { lineNumber: 1, column: 3 });
+        const liquid = liquidItems(monaco, withValues, model("{{ Wor"), { lineNumber: 1, column: 7 });
+
+        expect(javaScript[0]).toMatchObject({ label: 'input("Owner")', insertText: 'input("Owner")', documentation: "The owner." });
+        expect(javaScript[0].detail).toContain("Notify Owner");
+        expect(liquid[0]).toMatchObject({ label: "Workflow.Input.Owner", insertText: "Workflow.Input.Owner" });
+    });
+
     it("javaScriptItems_TypedPrefix_ReplacesItWithVariableAndSetVariableCalls", () => {
         const { monaco } = createMonaco();
 

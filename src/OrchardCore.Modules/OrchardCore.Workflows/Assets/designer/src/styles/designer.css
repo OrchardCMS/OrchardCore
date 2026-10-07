@@ -417,6 +417,84 @@
     font-size: 0.8125rem;
 }
 
+/* Data available to the edited activity. */
+.wfd-available {
+    margin: 0 0.75rem 0.75rem;
+    padding-top: 0.75rem;
+    border-top: var(--bs-border-width) solid var(--bs-border-color);
+}
+
+.wfd-available-toggle {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+}
+
+.wfd-available-group {
+    margin: 0.5rem 0 0.25rem;
+    color: var(--bs-secondary-color);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.wfd-available-list {
+    margin: 0;
+}
+
+.wfd-available-value {
+    margin-bottom: 0.5rem;
+    font-size: 0.8125rem;
+}
+
+.wfd-available-name .text-secondary {
+    margin-inline-start: 0.25rem;
+}
+
+.wfd-available-description {
+    color: var(--bs-secondary-color);
+}
+
+.wfd-available-expressions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-top: 0.25rem;
+}
+
+.wfd-snippet {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    max-width: 100%;
+    padding: 0.125rem 0.375rem;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius-sm);
+    background-color: var(--bs-tertiary-bg);
+    color: inherit;
+    font-size: 0.75rem;
+    text-align: start;
+}
+
+.wfd-snippet:hover,
+.wfd-snippet:focus-visible {
+    border-color: var(--bs-primary);
+}
+
+.wfd-snippet code {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.wfd-snippet-syntax {
+    color: var(--bs-secondary-color);
+    font-size: 0.6875rem;
+    font-weight: 600;
+}
+
 /* Journal tab and retry. */
 .wfd-journal-list {
     margin: 0;

@@ -1,4 +1,5 @@
 import type { VariableDefinition, VariableType } from "../api/types";
+import type { AvailableValue } from "../available/availableData";
 import { typeDisplayName } from "./variableValues";
 import { t } from "../i18n";
 
@@ -48,6 +49,8 @@ export interface MonacoLike {
 export interface CompletionSource {
     variables: VariableDefinition[];
     types: VariableType[];
+    // The values the activities on a path to the edited activity provide.
+    values?: (AvailableValue & { activityTitle?: string })[];
 }
 
 declare global {
@@ -72,6 +75,12 @@ const typedRange = (model: CompletionModel, position: CompletionPosition, patter
 
 const detailOf = (source: CompletionSource, variable: VariableDefinition) => t("VariableCompletionDetail", typeDisplayName(source.types, variable.typeName));
 
+const valueDetailOf = (source: CompletionSource, value: AvailableValue & { activityTitle?: string }) =>
+    t("ValueCompletionDetail", typeDisplayName(source.types, value.typeName), value.activityTitle ?? "");
+
+// The expression of a value without the Liquid braces: Workflow.Input.Owner.
+const liquidPath = (value: AvailableValue) => value.liquid.replace(/^\{\{\s*/, "").replace(/\s*\}\}$/, "");
+
 /**
  * The JavaScript completions: `variable("name")` and `setVariable("name", …)` for each declared variable.
  */
@@ -79,7 +88,16 @@ export const javaScriptItems = (monaco: MonacoLike, source: CompletionSource, mo
     const range = typedRange(model, position, /[\w$]*$/);
     const { Function } = monaco.languages.CompletionItemKind;
 
-    return source.variables.flatMap((variable) => {
+    const values = (source.values ?? []).map((value) => ({
+        label: value.javaScript,
+        kind: Function,
+        detail: valueDetailOf(source, value),
+        documentation: value.description || undefined,
+        insertText: value.javaScript,
+        range,
+    }));
+
+    return values.concat(source.variables.flatMap((variable) => {
         const name = JSON.stringify(variable.name);
         const documentation = variable.description || undefined;
 
@@ -96,7 +114,7 @@ export const javaScriptItems = (monaco: MonacoLike, source: CompletionSource, mo
                 range,
             },
         ];
-    });
+    }));
 };
 
 /**
@@ -105,14 +123,23 @@ export const javaScriptItems = (monaco: MonacoLike, source: CompletionSource, mo
 export const liquidItems = (monaco: MonacoLike, source: CompletionSource, model: CompletionModel, position: CompletionPosition): CompletionItem[] => {
     const range = typedRange(model, position, /[\w.]*$/);
 
-    return source.variables.map((variable) => ({
+    const values = (source.values ?? []).map((value) => ({
+        label: liquidPath(value),
+        kind: monaco.languages.CompletionItemKind.Variable,
+        detail: valueDetailOf(source, value),
+        documentation: value.description || undefined,
+        insertText: liquidPath(value),
+        range,
+    }));
+
+    return values.concat(source.variables.map((variable) => ({
         label: `Workflow.Variables.${variable.name}`,
         kind: monaco.languages.CompletionItemKind.Variable,
         detail: detailOf(source, variable),
         documentation: variable.description || undefined,
         insertText: `Workflow.Variables.${variable.name}`,
         range,
-    }));
+    })));
 };
 
 /**
