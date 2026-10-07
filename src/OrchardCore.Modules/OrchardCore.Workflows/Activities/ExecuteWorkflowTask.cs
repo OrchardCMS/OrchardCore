@@ -93,7 +93,20 @@ public class ExecuteWorkflowTask : TaskActivity<ExecuteWorkflowTask>, IActivityO
         });
 
     public IEnumerable<ActivityProvidedValue> GetProvidedValues()
-        => [ActivityProvidedValue.LastResult("object", S["The outputs of the workflow it ran, by name, or its fault message when it failed."])];
+        =>
+        [
+            ActivityProvidedValue.LastResult(
+                "object",
+                S["The outputs of the workflow it ran, by name, or its fault message when it failed."],
+                Outputs
+                    .Select(output => new ActivityProvidedValueMember
+                    {
+                        Name = output.Name,
+                        TypeName = string.IsNullOrEmpty(output.TypeName) ? "any" : output.TypeName,
+                        Description = new LocalizedString(output.Name, output.Description ?? string.Empty),
+                    })
+                    .ToList()),
+        ];
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {

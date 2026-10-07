@@ -278,6 +278,7 @@ public sealed class WorkflowDesignerModelBuilder
                             Description = string.IsNullOrEmpty(member.Description?.Value) ? null : member.Description.Value,
                         })
                         .ToList(),
+                    AvailableToItself = value.AvailableToItself,
                 })
                 .ToList(),
         };

@@ -110,6 +110,7 @@ public sealed class Startup : StartupBase
         services.AddActivity<NotifyTask, NotifyTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-bell");
         services.AddActivity<SetPropertyTask, SetPropertyTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-pen-to-square");
         services.AddActivity<ExecuteWorkflowTask, ExecuteWorkflowTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-diagram-project");
+        services.AddScoped<IWorkflowGlobalValueProvider, DefaultWorkflowGlobalValueProvider>();
         services.AddActivity<SetVariableTask, SetVariableTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-square-root-variable");
         services.AddActivity<SetOutputTask, SetOutputTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-right-from-bracket");
         services.AddActivity<CorrelateTask, CorrelateTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-link");

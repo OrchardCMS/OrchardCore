@@ -579,7 +579,8 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
             Activity("set", "SetPropertyTask", properties: new JsonObject { ["PropertyName"] = "Owner" }),
             Activity("notify", "NotifyTask"),
             Activity("liquid", "LiquidTask"),
-            Activity("http", "HttpRequestTask"));
+            Activity("http", "HttpRequestTask"),
+            Activity("child", "ExecuteWorkflowTask", properties: new JsonObject { ["Outputs"] = new JsonArray(new JsonObject { ["Name"] = "greeting", ["TypeName"] = "string" }) }));
 
         var nodes = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition"))["nodes"].AsArray()
             .ToDictionary(node => node["id"].GetValue<string>());
@@ -605,10 +606,24 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         Assert.Equal("Name, ContentType, ContentItemId, ContentItemVersionId, IsStart", FieldsOf("published", 1));
         Assert.Empty(nodes["signal"]["providedValues"][0]["members"].AsArray());
 
+        // The global values and functions, from the Workflows module, its HTTP feature and the Contents module.
+        var globals = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition"))["globalValues"].AsArray();
+        var site = globals.Single(value => value["name"].GetValue<string>() == "Site");
+        Assert.Equal("Value", site["kind"].GetValue<string>());
+        Assert.Equal("Site", site["liquidPath"].GetValue<string>());
+        Assert.Contains(site["members"].AsArray(), member => member["name"].GetValue<string>() == "SiteName");
+        Assert.Contains(globals, value => value["name"].GetValue<string>() == "uuid()" && value["kind"].GetValue<string>() == "Function" && value["javaScript"].GetValue<string>() == "uuid()");
+        Assert.Contains(globals, value => value["name"].GetValue<string>() == "queryString(\"name\")");
+        Assert.Contains(globals, value => value["name"].GetValue<string>() == "Content");
+
         // Activities declare their last result, with its type and fields.
         Assert.Equal("LastResult.LastResult:string", ValuesOf("liquid"));
         Assert.Equal("LastResult.LastResult:object", ValuesOf("http"));
         Assert.Equal("Body, Headers, StatusCode, ReasonPhrase, IsSuccessStatusCode", FieldsOf("http", 0));
+
+        // The last result of Execute Workflow has the outputs of the workflow it runs.
+        Assert.Equal("LastResult.LastResult:object", ValuesOf("child"));
+        Assert.Equal("greeting", FieldsOf("child", 0));
 
         // Liquid can read the fields of the content event and of a fault.
         await _fixture.Context.UsingTenantScopeAsync(scope =>

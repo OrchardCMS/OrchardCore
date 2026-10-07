@@ -83,6 +83,11 @@ public sealed class WorkflowDesignerDefinition
     public IReadOnlyList<WorkflowDesignerVariableType> VariableTypes { get; init; } = [];
 
     /// <summary>
+    /// The global values and functions every expression can use.
+    /// </summary>
+    public IReadOnlyList<WorkflowDesignerGlobalValue> GlobalValues { get; init; } = [];
+
+    /// <summary>
     /// The version new instances start on, or <see langword="null"/> when the workflow type has none.
     /// </summary>
     public WorkflowDesignerVersion PublishedVersion { get; init; }
@@ -233,6 +238,52 @@ public sealed class WorkflowDesignerProvidedValue
 
     /// <summary>
     /// The fields of the value; their <see cref="Source"/> is <see langword="null"/>.
+    /// </summary>
+    public IReadOnlyList<WorkflowDesignerProvidedValue> Members { get; init; } = [];
+
+    /// <summary>
+    /// Whether the expressions of the activity that provides the value can read it too.
+    /// </summary>
+    public bool AvailableToItself { get; init; }
+}
+
+/// <summary>
+/// A global value or function, as listed by the designer (<see cref="Services.WorkflowGlobalValue"/>).
+/// </summary>
+public sealed class WorkflowDesignerGlobalValue
+{
+    /// <summary>
+    /// <c>Value</c> or <c>Function</c>.
+    /// </summary>
+    public string Kind { get; init; }
+
+    /// <summary>
+    /// The name shown in the designer.
+    /// </summary>
+    public string Name { get; init; }
+
+    /// <summary>
+    /// The variable type name of the value, or of what the function returns.
+    /// </summary>
+    public string TypeName { get; init; }
+
+    /// <summary>
+    /// What it is.
+    /// </summary>
+    public string Description { get; init; }
+
+    /// <summary>
+    /// The Liquid path that reads the value, or <see langword="null"/>.
+    /// </summary>
+    public string LiquidPath { get; init; }
+
+    /// <summary>
+    /// The JavaScript that reads the value or calls the function, or <see langword="null"/>.
+    /// </summary>
+    public string JavaScript { get; init; }
+
+    /// <summary>
+    /// The fields of the value; their <see cref="WorkflowDesignerProvidedValue.Source"/> is <see langword="null"/>.
     /// </summary>
     public IReadOnlyList<WorkflowDesignerProvidedValue> Members { get; init; } = [];
 }

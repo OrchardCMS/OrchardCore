@@ -9,6 +9,7 @@ const labels = {
     lastResultFrom: (activity: string, description: string) => `${activity}: ${description}`,
     correlationId: "Correlation id",
     correlationIdDescription: "",
+    inputDescription: "Passed in.",
 };
 
 const link = (source: string, destination: string, outcome = "Done"): DesignerTransition => ({
@@ -126,6 +127,56 @@ describe("availableData", () => {
         // An activity that doesn't declare it, or none: any value.
         expect(lastResult([retrieve("a", "contentItem"), createNode("c")])).toMatchObject({ typeName: "any", description: "What the activity before returned." });
         expect(lastResult([])).toMatchObject({ typeName: "any", description: "What the activity before returned." });
+    });
+
+    it("availableData_ActivitySetsValuesBeforeItsExpressions_ListsThemForItself", () => {
+        const register = createNode("register", {
+            title: "Register",
+            providedValues: [
+                { source: "Properties", name: "EmailConfirmationUrl", typeName: "string", availableToItself: true },
+                { source: "Properties", name: "UserName", typeName: "string" },
+            ],
+        });
+
+        expect(availableData([register], [], [], "register", labels).self.map((value) => [value.key, value.liquid])).toEqual([
+            ["Properties:EmailConfirmationUrl", "{{ Workflow.Properties.EmailConfirmationUrl }}"],
+        ]);
+        expect(upstreamValues([register], [], [], "register").map((value) => [value.key, value.activityTitle])).toEqual([["Properties:EmailConfirmationUrl", "Register"]]);
+
+        // The activities after it see them all.
+        expect(availableData([register, createNode("next")], [link("register", "next")], [], "next", labels).self).toEqual([]);
+    });
+
+    it("availableData_InputVariables_AreListedAsTheWorkflowsInputs", () => {
+        const data = availableData([createNode("a")], [], [{ name: "name", typeName: "string", isInput: true }, { name: "greeting", typeName: "string", isOutput: true }, ...variables], "a", labels);
+
+        expect(data.inputs).toEqual([
+            { key: "Input:name", name: "name", source: "Input", typeName: "string", description: "Passed in.", javaScript: 'input("name")', liquid: "{{ Workflow.Input.name }}" },
+        ]);
+    });
+
+    it("availableData_GlobalValuesAndFunctions_AreListedWithTheirExpressions", () => {
+        const data = availableData([createNode("a")], [], [], "a", labels, [
+            {
+                kind: "Value",
+                name: "Site",
+                typeName: "object",
+                liquidPath: "Site",
+                members: [{ name: "SiteName", typeName: "string" }],
+            },
+            { kind: "Value", name: "User", typeName: "object", liquidPath: "User", members: [{ name: "Identity.Name", typeName: "string" }] },
+            { kind: "Function", name: "uuid()", typeName: "string", javaScript: "uuid()", description: "A new id." },
+        ]);
+
+        // A Liquid value has no JavaScript, and its fields can be paths.
+        expect(data.global.map((value) => [value.key, value.javaScript, value.liquid, value.members?.map((member) => member.liquid)])).toEqual([
+            ["Value:Site", null, "{{ Site }}", ["{{ Site.SiteName }}"]],
+            ["Value:User", null, "{{ User }}", ["{{ User.Identity.Name }}"]],
+        ]);
+
+        // A function has no Liquid.
+        expect(data.functions).toMatchObject([{ key: "Function:uuid()", name: "uuid()", javaScript: "uuid()", liquid: null, typeName: "string", description: "A new id." }]);
+        expect(availableData([createNode("a")], [], [], "a", labels).global).toEqual([]);
     });
 
     it("memberExpressionsOf_Field_ReadsItFromTheValue", () => {

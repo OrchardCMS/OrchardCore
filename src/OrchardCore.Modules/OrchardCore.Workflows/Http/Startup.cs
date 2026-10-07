@@ -38,6 +38,7 @@ public sealed class Startup : StartupBase
         services.AddSingleton<IWorkflowTypeRouteEntries, WorkflowTypeRouteEntries>();
         services.AddSingleton<IWorkflowInstanceRouteEntries, WorkflowInstanceRouteEntries>();
         services.AddSingleton<IGlobalMethodProvider, HttpMethodsProvider>();
+        services.AddScoped<IWorkflowGlobalValueProvider, HttpWorkflowGlobalValueProvider>();
         services.AddScoped<IWorkflowExecutionContextHandler, SignalWorkflowExecutionContextHandler>();
 
         services.AddActivity<HttpRequestEvent, HttpRequestEventDisplayDriver>(activity => activity.Icon = "fa-solid fa-globe");

@@ -183,5 +183,5 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>, IActivityProvide
     }
 
     public IEnumerable<ActivityProvidedValue> GetProvidedValues()
-        => [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = "EmailConfirmationUrl", TypeName = "string", Description = S["The URL that confirms the email of the registered user."] }];
+        => [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = "EmailConfirmationUrl", TypeName = "string", Description = S["The URL that confirms the email of the registered user."], AvailableToItself = true }];
 }

@@ -21,7 +21,15 @@ const setup = () => {
             },
         ],
     });
-    store.loadDefinition({ ...definition, variables: [{ name: "total", typeName: "number" }], variableTypes: [{ name: "number", displayName: "Number", editor: "number" }] });
+    store.loadDefinition({
+        ...definition,
+        variables: [{ name: "total", typeName: "number" }],
+        variableTypes: [{ name: "number", displayName: "Number", editor: "number" }],
+        globalValues: [
+            { kind: "Value", name: "Site", typeName: "object", liquidPath: "Site", members: [{ name: "SiteName", typeName: "string" }] },
+            { kind: "Function", name: "uuid()", typeName: "string", javaScript: "uuid()" },
+        ],
+    });
 
     return { store, wrapper: mount(AvailableData, { props: { node: store.getNode("a")!, store } }) };
 };
@@ -30,7 +38,7 @@ describe("AvailableData", () => {
     it("render_ActivityAfterAnEvent_ListsItsDataWithTheirExpressions", () => {
         const { wrapper } = setup();
 
-        expect(wrapper.findAll(".wfd-available-group").map((group) => group.text())).toEqual(["VariablesTab", 'AvailableFrom', "AvailableWorkflow"]);
+        expect(wrapper.findAll(".wfd-available-group").map((group) => group.text())).toEqual(["VariablesTab", "AvailableFrom", "AvailableWorkflow", "AvailableGlobal", "AvailableFunctions"]);
 
         const contentItem = wrapper.get("[data-cy='available-start-Input:ContentItem']");
         expect(contentItem.text()).toContain("ContentItem");
@@ -62,6 +70,20 @@ describe("AvailableData", () => {
         await contentType.get("[data-cy=available-liquid]").trigger("click");
 
         expect(wrapper.emitted("insert")).toEqual([["{{ Workflow.Input.ContentItem.ContentType }}"]]);
+    });
+
+    it("render_GlobalValuesAndFunctions_ShowTheExpressionsTheyHave", () => {
+        const { wrapper } = setup();
+
+        const site = wrapper.get("[data-cy='available-global-Value:Site']");
+        expect(site.find("[data-cy=available-javascript]").exists()).toBe(false);
+        expect(site.get("[data-cy=available-liquid]").text()).toContain("{{ Site }}");
+        expect(site.get("[data-cy='available-global-Value:Site.SiteName'] [data-cy=available-liquid]").text()).toContain("{{ Site.SiteName }}");
+
+        const uuid = wrapper.get("[data-cy='available-functions-Function:uuid()']");
+        expect(uuid.get("[data-cy=available-javascript]").text()).toContain("uuid()");
+        expect(uuid.find("[data-cy=available-liquid]").exists()).toBe(false);
+        expect(wrapper.get("[data-cy=available-filters] a").attributes("href")).toContain("/Liquid/");
     });
 
     it("render_ValueWithoutFields_HasNoFieldsList", () => {

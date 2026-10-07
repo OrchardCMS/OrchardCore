@@ -79,7 +79,7 @@ const valueDetailOf = (source: CompletionSource, value: AvailableValue & { activ
     t("ValueCompletionDetail", typeDisplayName(source.types, value.typeName), value.activityTitle ?? "");
 
 // The expression of a value without the Liquid braces: Workflow.Input.Owner.
-const liquidPath = (value: AvailableValue) => value.liquid.replace(/^\{\{\s*/, "").replace(/\s*\}\}$/, "");
+const liquidPath = (liquid: string) => liquid.replace(/^\{\{\s*/, "").replace(/\s*\}\}$/, "");
 
 /**
  * The JavaScript completions: `variable("name")` and `setVariable("name", …)` for each declared variable.
@@ -88,14 +88,12 @@ export const javaScriptItems = (monaco: MonacoLike, source: CompletionSource, mo
     const range = typedRange(model, position, /[\w$]*$/);
     const { Function } = monaco.languages.CompletionItemKind;
 
-    const values = (source.values ?? []).map((value) => ({
-        label: value.javaScript,
-        kind: Function,
-        detail: valueDetailOf(source, value),
-        documentation: value.description || undefined,
-        insertText: value.javaScript,
-        range,
-    }));
+    // The Liquid-only values have no JavaScript expression.
+    const values = (source.values ?? []).flatMap((value) =>
+        value.javaScript === null
+            ? []
+            : [{ label: value.javaScript, kind: Function, detail: valueDetailOf(source, value), documentation: value.description || undefined, insertText: value.javaScript, range }],
+    );
 
     return values.concat(source.variables.flatMap((variable) => {
         const name = JSON.stringify(variable.name);
@@ -123,14 +121,21 @@ export const javaScriptItems = (monaco: MonacoLike, source: CompletionSource, mo
 export const liquidItems = (monaco: MonacoLike, source: CompletionSource, model: CompletionModel, position: CompletionPosition): CompletionItem[] => {
     const range = typedRange(model, position, /[\w.]*$/);
 
-    const values = (source.values ?? []).map((value) => ({
-        label: liquidPath(value),
-        kind: monaco.languages.CompletionItemKind.Variable,
-        detail: valueDetailOf(source, value),
-        documentation: value.description || undefined,
-        insertText: liquidPath(value),
-        range,
-    }));
+    // The functions scripts call have no Liquid expression.
+    const values = (source.values ?? []).flatMap((value) =>
+        value.liquid === null
+            ? []
+            : [
+                  {
+                      label: liquidPath(value.liquid),
+                      kind: monaco.languages.CompletionItemKind.Variable,
+                      detail: valueDetailOf(source, value),
+                      documentation: value.description || undefined,
+                      insertText: liquidPath(value.liquid),
+                      range,
+                  },
+              ],
+    );
 
     return values.concat(source.variables.map((variable) => ({
         label: `Workflow.Variables.${variable.name}`,

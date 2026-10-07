@@ -462,9 +462,15 @@ Many activities have settings that are **expressions**, evaluated each time the 
 The **Activity** tab of the designer's properties panel has two views: the **Settings** of the selected activity, and its **Available data**, which lists what its expressions can read:
 
 - **Variables.** The workflow's [variables](#variables).
+- **This activity.** The values that the selected activity sets before it evaluates its own expressions, such as the `EmailConfirmationUrl` that **Register User Task** sets before it renders its email.
 - **From an activity.** The values that the activities which can run before this one provide: the input of an event (the content item of a content event, for example), and the properties and outputs that tasks set. Only the activities on a path to the selected one are listed, nearest first.
 - **Fields.** A value that has fields, such as a content item or a user, lists them under **Fields**, each with its own expressions.
 - **Workflow.** The [last result](#last-result), and the correlation id of the instance.
+- **Inputs.** The inputs the workflow starts with: its variables marked as **Input**, which the workflow that runs it as an activity passes, read with `input("name")` or `{{ Workflow.Input.name }}` as well as through the variable.
+- **Global.** The Liquid values that every template can read, with their fields: `Site` (`{{ Site.SiteName }}`, `{{ Site.BaseUrl }}`, …), `User` (`{{ User.Identity.Name }}`), `Request`, `Culture` and `Environment`, and `Content` with the Contents feature. `User` and `Request` have no value when the workflow doesn't run in a request, for example after a timer.
+- **Functions.** The functions that scripts can call: `setProperty()`, `setVariable()`, `output()`, `setCorrelationId()`, `workflowId()`, `uuid()`, `log()`, `base64()` and `html()`, and the HTTP functions, such as `queryString()` and `requestForm()`, with the HTTP workflows feature.
+
+Liquid filters, such as `raw`, `json` or `date`, aren't listed: the view links to the [Liquid documentation](../Liquid/README.md).
 
 Each value shows its JavaScript and Liquid expressions, for example `input("ContentEvent").ContentType` and `{{ Workflow.Input.ContentEvent.ContentType }}`. Click one to insert it where the cursor was in the settings, which then come back into view. When no field of the settings had the cursor, the expression is copied instead. The script editors also suggest these values as you type.
 
@@ -504,7 +510,7 @@ The last result (`lastResult()`, `{{ Workflow.LastResult }}`) is the value that 
 | Email, SMS, Meta Conversions API Event | The result of sending: `Succeeded` and `Errors`. |
 | Notify User, Notify Content Owner, … | How many notifications were sent. |
 | For Each, For Loop | The current item, or the current index. |
-| Execute Workflow | The outputs of the workflow it ran, by name, or its fault message when it failed. |
+| Execute Workflow | The outputs of the workflow it ran, by name (its fields, for example `lastResult().greeting`), or its fault message when it failed. |
 | Validate User | The names of the user's roles, when the user is in one of the roles. |
 | Create Tenant | The settings of the tenant, or the validation errors when it failed. |
 | Timer Event | The text `TimerEvent`. |
@@ -542,11 +548,35 @@ public sealed class AssignCustomerTask : TaskActivity<AssignCustomerTask>, IActi
 - **Last result.** `ActivityProvidedValue.LastResult(typeName, description, members)` declares what the activity sets as the last result, for example `ActivityProvidedValue.LastResult("contentItem", S["The content item."], WorkflowValueMembers.ContentItem(S))`.
 - **Types.** `TypeName` is the name of a [variable type](#variables-for-developers), or `any`.
 - **Fields.** `Members` lists the fields of the value. `WorkflowValueMembers` has the fields of a content item, a content event, a user, a workflow fault, a `Result` and an HTTP response. The Liquid expressions of the fields only work for types registered with `TemplateOptions.MemberAccessStrategy`.
+- **Its own expressions.** `AvailableToItself = true` lists the value for the activity itself too, when it sets the value before it evaluates its own expressions.
 - **Registration.** A module can declare the values of an activity, its own or another module's, when it registers it. The values that the activity declares itself replace the declared values with the same source and name.
 
 ```csharp
 services.AddActivity<MyTask, MyTaskDisplayDriver>(activity => activity
     .Provides(WorkflowValueSource.Input, "Customer", "object", "The customer of the order.", [new ActivityProvidedValueMember { Name = "Email", TypeName = "string" }]));
+```
+
+A module that adds a Liquid value to `TemplateOptions.Scope`, or a JavaScript method with `IGlobalMethodProvider`, lists it in the **Global** or **Functions** group with an `IWorkflowGlobalValueProvider`. A field name can be a path, such as `Identity.Name`.
+
+```csharp
+public sealed class StoreWorkflowGlobalValueProvider : IWorkflowGlobalValueProvider
+{
+    // ...
+
+    public IEnumerable<WorkflowGlobalValue> GetGlobalValues()
+        =>
+        [
+            WorkflowGlobalValue.Liquid("Store", "object", S["The settings of the store."],
+            [
+                new ActivityProvidedValueMember { Name = "Currency", TypeName = "string", Description = S["The currency of the prices."] },
+            ]),
+            WorkflowGlobalValue.Function("formatPrice(amount)", "string", S["Formats an amount in the store's currency."]),
+        ];
+}
+```
+
+```csharp
+services.AddScoped<IWorkflowGlobalValueProvider, StoreWorkflowGlobalValueProvider>();
 ```
 
 ### Choosing the Syntax of an Expression

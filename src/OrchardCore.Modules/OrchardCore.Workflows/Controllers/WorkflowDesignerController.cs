@@ -54,6 +54,7 @@ public sealed class WorkflowDesignerController : Controller
     private readonly IWorkflowVariableTypeProvider _variableTypes;
     private readonly IWorkflowExecutionJournal _journal;
     private readonly WorkflowVariableValidator _variableValidator;
+    private readonly IEnumerable<IWorkflowGlobalValueProvider> _globalValueProviders;
 
     internal readonly IStringLocalizer S;
 
@@ -72,6 +73,7 @@ public sealed class WorkflowDesignerController : Controller
         IWorkflowVariableTypeProvider variableTypes,
         WorkflowVariableValidator variableValidator,
         IWorkflowExecutionJournal journal,
+        IEnumerable<IWorkflowGlobalValueProvider> globalValueProviders,
         IStringLocalizer<WorkflowDesignerController> stringLocalizer)
     {
         _authorizationService = authorizationService;
@@ -88,6 +90,7 @@ public sealed class WorkflowDesignerController : Controller
         _variableTypes = variableTypes;
         _journal = journal;
         _variableValidator = variableValidator;
+        _globalValueProviders = globalValueProviders;
         S = stringLocalizer;
     }
 
@@ -138,6 +141,7 @@ public sealed class WorkflowDesignerController : Controller
             Transitions = source.Transitions.Select(WorkflowDesignerTransition.From).ToList(),
             Variables = [.. source.Variables ?? []],
             VariableTypes = VariableTypes(),
+            GlobalValues = GlobalValues(),
             Issues = issues,
             RunningInstanceCount = runningInstanceCount,
             PublishedVersion = await PublishedVersionAsync(workflowType),
@@ -177,6 +181,7 @@ public sealed class WorkflowDesignerController : Controller
             Transitions = definition.Transitions.Select(WorkflowDesignerTransition.From).ToList(),
             Variables = [.. definition.Variables ?? []],
             VariableTypes = VariableTypes(),
+            GlobalValues = GlobalValues(),
             PublishedVersion = await PublishedVersionAsync(workflowType),
             Version = WorkflowDesignerVersion.From(version, workflowType),
             Instance = new WorkflowDesignerInstance
@@ -871,6 +876,7 @@ public sealed class WorkflowDesignerController : Controller
             Transitions = definition.Transitions.Select(WorkflowDesignerTransition.From).ToList(),
             Variables = [.. definition.Variables ?? []],
             VariableTypes = VariableTypes(),
+            GlobalValues = GlobalValues(),
             PublishedVersion = await PublishedVersionAsync(workflowType),
             Version = WorkflowDesignerVersion.From(version, workflowType),
         };
@@ -896,6 +902,30 @@ public sealed class WorkflowDesignerController : Controller
 
         return counts;
     }
+
+    private List<WorkflowDesignerGlobalValue> GlobalValues()
+        => _globalValueProviders
+            .SelectMany(provider => provider.GetGlobalValues())
+            .OrderBy(value => value.Kind)
+            .ThenBy(value => value.Name, StringComparer.OrdinalIgnoreCase)
+            .Select(value => new WorkflowDesignerGlobalValue
+            {
+                Kind = value.Kind.ToString(),
+                Name = value.Name,
+                TypeName = value.TypeName,
+                Description = string.IsNullOrEmpty(value.Description?.Value) ? null : value.Description.Value,
+                LiquidPath = value.LiquidPath,
+                JavaScript = value.JavaScript,
+                Members = (value.Members ?? [])
+                    .Select(member => new WorkflowDesignerProvidedValue
+                    {
+                        Name = member.Name,
+                        TypeName = member.TypeName,
+                        Description = string.IsNullOrEmpty(member.Description?.Value) ? null : member.Description.Value,
+                    })
+                    .ToList(),
+            })
+            .ToList();
 
     private List<WorkflowDesignerVariableType> VariableTypes()
         => _variableTypes.List()

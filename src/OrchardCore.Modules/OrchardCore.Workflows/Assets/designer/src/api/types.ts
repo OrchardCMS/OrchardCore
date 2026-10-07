@@ -53,6 +53,18 @@ export interface ProvidedValueMember {
     description?: string | null;
 }
 
+// A value or function every expression can use (WorkflowDesignerGlobalValue): a Liquid value has a Liquid path,
+// a function a JavaScript call.
+export interface GlobalValue {
+    kind: "Value" | "Function";
+    name: string;
+    typeName: string;
+    description?: string | null;
+    liquidPath?: string | null;
+    javaScript?: string | null;
+    members?: ProvidedValueMember[];
+}
+
 // A value an activity provides to the activities after it (WorkflowDesignerProvidedValue).
 export interface ProvidedValue {
     // LastResult: what the activity sets as the last result, which the activities right after it read.
@@ -62,6 +74,8 @@ export interface ProvidedValue {
     description?: string | null;
     // The fields scripts and Liquid templates read, for example the ContentType of a content item.
     members?: ProvidedValueMember[];
+    // Whether the expressions of the activity that provides the value can read it too.
+    availableToItself?: boolean;
 }
 
 // An output an activity declares (WorkflowDesignerOutput).
@@ -180,6 +194,7 @@ export interface DesignerDefinition {
     runningInstanceCount: number;
     variables?: VariableDefinition[];
     variableTypes?: VariableType[];
+    globalValues?: GlobalValue[];
     instance?: DesignerInstance | null;
     // The version new instances start on.
     publishedVersion?: DesignerVersion | null;

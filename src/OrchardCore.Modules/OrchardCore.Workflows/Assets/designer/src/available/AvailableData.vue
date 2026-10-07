@@ -16,18 +16,30 @@ const emit = defineEmits<{ (event: "insert", text: string): void }>();
 const state = props.store.state;
 
 const groups = computed(() => {
-    const data = availableData(state.nodes, state.transitions, state.variables, props.node.id, {
-        lastResult: t("LastResult"),
-        lastResultDescription: t("LastResultHint"),
-        lastResultFrom: (activity, description) => t("LastResultFrom", activity, description),
-        correlationId: t("CorrelationId"),
-        correlationIdDescription: t("CorrelationIdHint"),
-    });
+    const data = availableData(
+        state.nodes,
+        state.transitions,
+        state.variables,
+        props.node.id,
+        {
+            lastResult: t("LastResult"),
+            lastResultDescription: t("LastResultHint"),
+            lastResultFrom: (activity, description) => t("LastResultFrom", activity, description),
+            correlationId: t("CorrelationId"),
+            correlationIdDescription: t("CorrelationIdHint"),
+            inputDescription: t("InputHint"),
+        },
+        state.globalValues,
+    );
 
     return [
         { key: "variables", title: t("VariablesTab"), values: data.variables, empty: t("NoVariables") },
+        ...(data.self.length > 0 ? [{ key: "self", title: t("AvailableThisActivity"), values: data.self, empty: "" }] : []),
         ...data.activities.map((activity) => ({ key: activity.activityId, title: t("AvailableFrom", activity.title), values: activity.values, empty: "" })),
         { key: "workflow", title: t("AvailableWorkflow"), values: data.workflow, empty: "" },
+        ...(data.inputs.length > 0 ? [{ key: "inputs", title: t("AvailableInputs"), values: data.inputs, empty: "" }] : []),
+        ...(data.global.length > 0 ? [{ key: "global", title: t("AvailableGlobal"), values: data.global, empty: "" }] : []),
+        ...(data.functions.length > 0 ? [{ key: "functions", title: t("AvailableFunctions"), values: data.functions, empty: "" }] : []),
     ];
 });
 
@@ -61,5 +73,10 @@ const detailOf = (value: AvailableValue) => {
                 />
             </ul>
         </template>
+
+        <p class="wfd-section-hint" data-cy="available-filters">
+            {{ t("AvailableFilters") }}
+            <a href="https://docs.orchardcore.net/en/latest/reference/modules/Liquid/" target="_blank" rel="noopener noreferrer">{{ t("LiquidDocumentation") }}</a>
+        </p>
     </section>
 </template>

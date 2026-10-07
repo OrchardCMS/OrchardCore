@@ -223,14 +223,52 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
   - **Verified in the preview.** The picker on Content Created (search, select all, Button and Form as tags, saved); the views; after a Script task, the last result reads "Script Task: The value the script returns."; the dashed hints in the Workflow tab.
   - **Tests.** Vitest 258 (last result, views, insertion from the data view); `Definition_ActivitiesThatProvideValues_ListThem` covers Liquid's and HTTP Request's last results and the response fields; workflow tests 288/288; CI-flag build clean.
 
-### - [ ] 9.9 End-to-end test
+### - [x] 9.9 Global values, functions, and the activity's own values (from review)
+
+- **Global.** The Liquid values every template reads (`{{ Site.SiteName }}`, `User`, `Request`, `Culture`, `Environment`, `Content`), with their fields, listed by `IWorkflowGlobalValueProvider`s.
+- **Functions.** The functions scripts call (`uuid()`, `log()`, `setProperty()`, `queryString()`, …), each with a call to insert.
+- **This activity.** The values an activity sets before it evaluates its own expressions, such as the `EmailConfirmationUrl` of Register User Task (`ActivityProvidedValue.AvailableToItself`).
+- **Inputs and outputs of other workflows.** An **Inputs** group lists the inputs the workflow starts with (its input variables), and the last result of Execute Workflow has the outputs of the workflow it runs as fields.
+- **Picker.** The content type picker uses the markup of the bootstrap-select examples.
+- **Tests**: the global values in the definition; Vitest for the groups and the Liquid-only and script-only values.
+- **Notes from implementing this step:**
+  - **Why.**
+    - The User Registration sample's Register User Task uses `{{ Site.SiteName }}` and `{{ Workflow.Properties.EmailConfirmationUrl | raw }}`, and neither was listed.
+    - `Site` is a global Liquid value. `EmailConfirmationUrl` is set by the task itself before it renders its email, so only the activities after it listed it.
+  - **Inventory.**
+    - The workflow Liquid evaluator builds its context on `TemplateOptions.Scope`, so it sees the core globals: `Site` (Settings), `User`, `Request`, `Culture`, `Environment`, `HttpContext`, `TrackingConsent`, and `Content` with the Contents feature.
+    - Scripts get the `IGlobalMethodProvider` methods (`uuid`, `base64`, `html`, `log`, the HTTP methods) and the workflow methods.
+  - **API.**
+    - `IWorkflowGlobalValueProvider` returns `WorkflowGlobalValue`s: a kind (`Value` or `Function`), a name, a type, a description, a Liquid path or a JavaScript call, and fields. `WorkflowGlobalValue.Liquid` and `WorkflowGlobalValue.Function` build them.
+    - `DefaultWorkflowGlobalValueProvider` (Workflows) lists `Site`, `User`, `Request`, `Culture` and `Environment` with their fields, and the core and workflow functions. `HttpWorkflowGlobalValueProvider` lists the HTTP functions; `ContentWorkflowGlobalValueProvider` (Contents) lists `Content`.
+    - The definition carries `globalValues`, sorted by kind and name.
+  - **This activity.**
+    - `ActivityProvidedValue.AvailableToItself`, set on Register User Task's `EmailConfirmationUrl` and Notify Content Owner's `Owner`, which both set the value before they evaluate their messages.
+    - The designer lists them in a **This activity** group, and the completions of the activity's own editors include them.
+  - **Client.**
+    - **Global** and **Functions** groups after **Workflow**. A Liquid value has no JavaScript button, a function no Liquid one: `AvailableValue.javaScript` and `liquid` can be null, and the completions skip what's missing.
+    - A field name can be a path (`User.Identity.Name`).
+    - A line under the list links to the Liquid documentation for filters such as `raw`.
+  - **Inputs and outputs of other workflows** (from review: "inherited" values).
+    - The **Inputs** group, before **Global**, lists the variables marked as inputs as `input("name")` and `{{ Workflow.Input.name }}`, "Passed by the workflow that runs this one, or by what starts it" unless the variable has a description.
+    - `ExecuteWorkflowTask` declares its last result with the outputs it stores (`Outputs`) as fields: `lastResult().greeting` after running **Sample: format a greeting**.
+  - **Picker.** As in the bootstrap-select examples: `class="selectpicker"`, a `placeholder` instead of `title`, no `form-select`, one field and one caret.
+  - **Verified in the preview.**
+    - Register User Task (User Registration) lists **This activity**: `EmailConfirmationUrl`, and **Global**: `Site` with `{{ Site.SiteName }}`, then **Functions**.
+    - The Content Created picker is a single field.
+  - **Tests.**
+    - Vitest 262: the inputs, the global and function values, the Liquid-only and script-only buttons, the filters link, and the activity's own values.
+    - `Definition_ActivitiesThatProvideValues_ListThem` checks `Site` with its `SiteName`, `uuid()`, the HTTP functions, `Content`, and the outputs of Execute Workflow as the fields of its last result.
+    - Workflow tests 288/288; CI-flag build clean.
+
+### - [ ] 9.10 End-to-end test
 
 - The available data of an activity after a content event lists its content item, and clicking an expression inserts it into the editor.
 - A script error shows a warning on the instance page; with the setting, the instance is faulted at that activity.
 
 ## Definition of done (Phase 9)
 
-- [ ] Steps 9.1–9.9 are checked.
+- [ ] Steps 9.1–9.10 are checked.
 - [ ] The CI-flag build is green; `OrchardCore.Tests`, Vitest and the functional `*Cms*` tests pass.
 - [ ] `yarn lint`, `yarn check` and `yarn build` leave a clean `git status`.
 - [ ] Workflows run as before when the new setting is off.

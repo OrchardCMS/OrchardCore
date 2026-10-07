@@ -63,6 +63,6 @@ public class NotifyContentOwnerTask : NotifyUserTaskActivity<NotifyContentOwnerT
         =>
         [
             .. base.GetProvidedValues(),
-            new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = "Owner", TypeName = "any", Description = S["The owner of the content item, a user."], Members = WorkflowValueMembers.User(S) },
+            new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = "Owner", TypeName = "any", Description = S["The owner of the content item, a user."], Members = WorkflowValueMembers.User(S), AvailableToItself = true },
         ];
 }

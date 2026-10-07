@@ -16,6 +16,7 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddActivity<ContentCreatedEvent, ContentCreatedEventDisplayDriver>();
+        services.AddScoped<IWorkflowGlobalValueProvider, ContentWorkflowGlobalValueProvider>();
         services.AddActivity<ContentDeletedEvent, ContentDeletedEventDisplayDriver>();
         services.AddActivity<ContentPublishedEvent, ContentPublishedEventDisplayDriver>();
         services.AddActivity<ContentUnpublishedEvent, ContentUnpublishedEventDisplayDriver>();

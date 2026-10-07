@@ -6,6 +6,7 @@ import type {
     DesignerNode,
     DesignerTransition,
     DesignerVersion,
+    GlobalValue,
     SavePayload,
     SaveResult,
     VariableDefinition,
@@ -60,6 +61,8 @@ export interface DesignerState {
      */
     variables: VariableDefinition[];
     variableTypes: VariableType[];
+    // The global values and functions every expression can use.
+    globalValues: GlobalValue[];
     nodes: DesignerNode[];
     transitions: DesignerTransition[];
     issues: DesignIssue[];
@@ -97,6 +100,7 @@ const createInitialState = (): DesignerState => ({
     settings: null,
     variables: [],
     variableTypes: [],
+    globalValues: [],
     nodes: [],
     transitions: [],
     issues: [],
@@ -171,6 +175,7 @@ export const createDesignerStore = () => {
                 settings: definition.settings,
                 variables: definition.variables ?? [],
                 variableTypes: definition.variableTypes ?? [],
+                globalValues: definition.globalValues ?? [],
                 nodes: definition.nodes,
                 transitions: definition.transitions,
                 issues: definition.issues,

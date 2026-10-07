@@ -48,6 +48,12 @@ public sealed class ActivityProvidedValue
     public IReadOnlyList<ActivityProvidedValueMember> Members { get; init; } = [];
 
     /// <summary>
+    /// Whether the activity sets the value before it evaluates its own expressions, so they can read it too, for
+    /// example the confirmation URL that Register User sets before it renders its email.
+    /// </summary>
+    public bool AvailableToItself { get; init; }
+
+    /// <summary>
     /// Declares the value the activity sets as the workflow's last result.
     /// </summary>
     /// <param name="typeName">The <see cref="Services.IWorkflowVariableType.Name"/> of the value, or <c>any</c>.</param>
