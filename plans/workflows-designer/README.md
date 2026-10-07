@@ -85,6 +85,16 @@ Update the **Status** column as work lands (`Not started` / `In progress` / `Don
 
 The work is pushed to the draft pull request [OrchardCMS/OrchardCore#19996](https://github.com/OrchardCMS/OrchardCore/pull/19996) (branch `ma/workflows-designer`), one commit per step.
 
+**Status (2026-10-07):** phases 1–8 are done and await review.
+- **Merge.** The branch was brought up to date with `main` (merge `45fb919d29`).
+    - The SMS task editor kept `main`'s new From Phone Number field inside the branch's editor wrapper.
+    - `main`'s new execution-limit test creates `IfElseTask` with the expression manager it takes since Phase 4.
+- **Verification of the merged result:**
+    - The CI-flag build has 0 warnings and 0 errors.
+    - `OrchardCore.Tests`: 3,656 tests, 3,651 passed and 2 skipped. The 3 `ContentQuickNavigationTests` cases failed when their cleanup hit a Windows file lock; the class passed 11 of 11 when run again.
+    - Vitest: 236 of 236. The functional `*Cms*` tests: 165 of 165.
+    - `yarn lint`, `yarn check` and `yarn build` leave a clean `git status`.
+
 | Phase | Scope | Depends on | Status |
 |---|---|---|---|
 | **1** | **New designer**: canvas, toolbox, side-panel editors, drafts with autosave and publish, read-only instance viewer, tests. See [`phase-1-designer.md`](phase-1-designer.md). | — | Done (1.0–1.13 and the Definition of done; awaiting review) |
