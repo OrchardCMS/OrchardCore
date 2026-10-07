@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { mount } from "@vue/test-utils";
 import AvailableData from "../AvailableData.vue";
 import { createDesignerStore } from "../../state/designerStore";
@@ -27,10 +27,6 @@ const setup = () => {
 };
 
 describe("AvailableData", () => {
-    afterEach(() => {
-        localStorage.clear();
-    });
-
     it("render_ActivityAfterAnEvent_ListsItsDataWithTheirExpressions", () => {
         const { wrapper } = setup();
 
@@ -72,14 +68,5 @@ describe("AvailableData", () => {
         const { wrapper } = setup();
 
         expect(wrapper.find("[data-cy='available-variables-Variable:total'] [data-cy=available-members]").exists()).toBe(false);
-    });
-
-    it("toggle_Section_HidesTheListAndRemembersIt", async () => {
-        const { wrapper } = setup();
-
-        await wrapper.get("[data-cy=available-data-toggle]").trigger("click");
-
-        expect(wrapper.get("[data-cy=available-data-toggle]").attributes("aria-expanded")).toBe("false");
-        expect(setup().wrapper.get("[data-cy=available-data-toggle]").attributes("aria-expanded")).toBe("false");
     });
 });

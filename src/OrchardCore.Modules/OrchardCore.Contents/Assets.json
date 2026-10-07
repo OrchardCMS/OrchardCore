@@ -78,6 +78,13 @@
   },
   {
     "action": "parcel",
+    "name": "content-type-picker",
+    "source": "Assets/ts/content-type-picker.ts",
+    "dest": "wwwroot/Scripts/content-type-picker/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
     "name": "content-task-editor",
     "source": "Assets/ts/content-task-editor.ts",
     "dest": "wwwroot/Scripts/content-task-editor/",

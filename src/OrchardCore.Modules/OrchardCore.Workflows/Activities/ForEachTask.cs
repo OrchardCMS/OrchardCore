@@ -152,5 +152,11 @@ public class ForEachTask : TaskActivity<ForEachTask>, IActivityProvidedValues
     }
 
     public IEnumerable<ActivityProvidedValue> GetProvidedValues()
-        => string.IsNullOrEmpty(LoopVariableName) ? [] : [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = LoopVariableName, TypeName = "any", Description = S["The current item of the loop."] }];
+    {
+        var lastResult = ActivityProvidedValue.LastResult("any", S["The current item of the loop."]);
+
+        return string.IsNullOrEmpty(LoopVariableName)
+            ? [lastResult]
+            : [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = LoopVariableName, TypeName = "any", Description = S["The current item of the loop."] }, lastResult];
+    }
 }

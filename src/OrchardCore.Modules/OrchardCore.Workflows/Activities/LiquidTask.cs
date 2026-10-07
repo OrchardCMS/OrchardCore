@@ -5,7 +5,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities;
 
-public class LiquidTask : TaskActivity<LiquidTask>, IActivityOutputs
+public class LiquidTask : TaskActivity<LiquidTask>, IActivityOutputs, IActivityProvidedValues
 {
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
     protected readonly IStringLocalizer S;
@@ -30,6 +30,9 @@ public class LiquidTask : TaskActivity<LiquidTask>, IActivityOutputs
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         => Outcome(S["Done"]);
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => [ActivityProvidedValue.LastResult("string", S["The rendered template."])];
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {

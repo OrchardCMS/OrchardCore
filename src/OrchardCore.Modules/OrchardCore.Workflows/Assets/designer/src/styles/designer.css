@@ -419,19 +419,44 @@
     font-size: 0.8125rem;
 }
 
-/* Data available to the edited activity. */
-.wfd-available {
-    margin: 0 0.75rem 0.75rem;
-    padding-top: 0.75rem;
-    border-top: var(--bs-border-width) solid var(--bs-border-color);
+/* The views of the Activity tab: the activity's settings, or the data it can use. */
+.wfd-activity-views {
+    display: flex;
+    gap: 0.25rem;
+    margin: 0.5rem 0.75rem 0;
+    padding: 0.1875rem;
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-tertiary-bg);
 }
 
-.wfd-available-toggle {
-    padding: 0;
+.wfd-activity-view {
+    display: inline-flex;
+    flex: 1 1 0;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.5rem;
     border: 0;
+    border-radius: var(--bs-border-radius-sm);
     background: none;
-    color: inherit;
-    font: inherit;
+    color: var(--bs-secondary-color);
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.wfd-activity-view:hover {
+    color: var(--bs-emphasis-color);
+}
+
+.wfd-activity-view.active {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-emphasis-color);
+    box-shadow: var(--bs-box-shadow-sm);
+}
+
+/* Data available to the edited activity. */
+.wfd-available {
+    margin: 0.75rem;
 }
 
 .wfd-available-group {

@@ -10,7 +10,7 @@ namespace OrchardCore.Workflows.Activities;
 /// Runs another workflow, one that is usable as an activity (<see cref="WorkflowType.IsActivity"/>), with its input
 /// variables set from expressions, and gets the values of its output variables back as the task's outputs.
 /// </summary>
-public class ExecuteWorkflowTask : TaskActivity<ExecuteWorkflowTask>, IActivityOutputs
+public class ExecuteWorkflowTask : TaskActivity<ExecuteWorkflowTask>, IActivityOutputs, IActivityProvidedValues
 {
     private readonly IWorkflowTypeStore _workflowTypeStore;
     private readonly IWorkflowExpressionManager _expressionManager;
@@ -91,6 +91,9 @@ public class ExecuteWorkflowTask : TaskActivity<ExecuteWorkflowTask>, IActivityO
             TypeName = string.IsNullOrEmpty(output.TypeName) ? "any" : output.TypeName,
             DisplayName = new LocalizedString(output.Name, string.IsNullOrEmpty(output.Description) ? output.Name : output.Description),
         });
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => [ActivityProvidedValue.LastResult("object", S["The outputs of the workflow it ran, by name, or its fault message when it failed."])];
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {

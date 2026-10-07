@@ -6,7 +6,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities;
 
-public class ScriptTask : TaskActivity<ScriptTask>, IActivityOutputs
+public class ScriptTask : TaskActivity<ScriptTask>, IActivityOutputs, IActivityProvidedValues
 {
     private readonly IWorkflowScriptEvaluator _scriptEvaluator;
     protected readonly IStringLocalizer S;
@@ -38,6 +38,9 @@ public class ScriptTask : TaskActivity<ScriptTask>, IActivityOutputs
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         => Outcome(AvailableOutcomes.Select(x => S[x]).ToArray());
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => [ActivityProvidedValue.LastResult("any", S["The value the script returns."])];
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {

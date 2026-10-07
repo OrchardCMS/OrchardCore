@@ -112,9 +112,47 @@ export const upstreamNodeIds = (transitions: DesignerTransition[], nodeId: strin
 export interface AvailableLabels {
     lastResult: string;
     lastResultDescription: string;
+    // "Retrieve Owner: The content item the activity retrieved."
+    lastResultFrom: (activity: string, description: string) => string;
     correlationId: string;
     correlationIdDescription: string;
 }
+
+const sameFields = (members: ProvidedValueMember[][]) => new Set(members.map((list) => list.map((member) => member.name).join("\n"))).size === 1;
+
+/**
+ * The last result an activity reads: what the activity that ran just before set. When every activity with a
+ * transition to it declares its last result, it has their type, and their fields when they all have the same.
+ */
+const lastResultOf = (byId: Map<string, DesignerNode>, transitions: DesignerTransition[], nodeId: string, labels: AvailableLabels): AvailableValue => {
+    const lastResult: AvailableValue = {
+        key: "LastResult",
+        name: labels.lastResult,
+        source: "LastResult",
+        typeName: "any",
+        description: labels.lastResultDescription,
+        ...expressionsOf("LastResult", ""),
+    };
+
+    const sources = [...new Set(transitions.filter((transition) => transition.destinationActivityId === nodeId).map((transition) => transition.sourceActivityId))]
+        .map((id) => byId.get(id))
+        .filter((node): node is DesignerNode => !!node);
+    const declared = sources.map((node) => ({ node, value: node.providedValues?.find((value) => value.source === "LastResult") }));
+
+    if (declared.length === 0 || declared.some((item) => !item.value)) {
+        return lastResult;
+    }
+
+    const values = declared.map((item) => item.value!);
+    const sameType = new Set(values.map((value) => value.typeName)).size === 1;
+    const value: AvailableValue = {
+        ...lastResult,
+        typeName: sameType ? values[0].typeName : "any",
+        description: [...new Set(declared.map((item) => labels.lastResultFrom(item.node.title, item.value!.description ?? "")))].join(" "),
+    };
+
+    return { ...value, members: sameType && sameFields(values.map((item) => item.members ?? [])) ? membersOf(value, values[0].members) : [] };
+};
 
 /**
  * The data available to an activity.
@@ -136,8 +174,9 @@ export const availableData = (
             activityId: node.id,
             title: node.title,
             values: (node.providedValues ?? [])
-                // A variable is also a property; it's listed with the variables.
-                .filter((value) => !(value.source === "Properties" && variableNames.has(value.name.toLowerCase())))
+                // The last result is listed with the workflow's values, and a variable, which is also a property,
+                // with the variables.
+                .filter((value) => value.source !== "LastResult" && !(value.source === "Properties" && variableNames.has(value.name.toLowerCase())))
                 .map((value) => {
                     const available: AvailableValue = {
                         key: `${value.source}:${value.name}`,
@@ -164,14 +203,7 @@ export const availableData = (
         })),
         activities,
         workflow: [
-            {
-                key: "LastResult",
-                name: labels.lastResult,
-                source: "LastResult",
-                typeName: "any",
-                description: labels.lastResultDescription,
-                ...expressionsOf("LastResult", ""),
-            },
+            lastResultOf(byId, transitions, nodeId, labels),
             {
                 key: "CorrelationId",
                 name: labels.correlationId,
@@ -192,7 +224,13 @@ export const upstreamValues = (nodes: DesignerNode[], transitions: DesignerTrans
         return [];
     }
 
-    const data = availableData(nodes, transitions, variables, nodeId, { lastResult: "", lastResultDescription: "", correlationId: "", correlationIdDescription: "" });
+    const data = availableData(nodes, transitions, variables, nodeId, {
+        lastResult: "",
+        lastResultDescription: "",
+        lastResultFrom: () => "",
+        correlationId: "",
+        correlationIdDescription: "",
+    });
     const seen = new Set<string>();
 
     return data.activities

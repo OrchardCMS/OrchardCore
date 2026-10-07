@@ -36,8 +36,8 @@
                     <div class="form-check">
                         <input asp-for="IsEnabled" type="checkbox" class="form-check-input">
                         <label class="form-check-label" asp-for="IsEnabled">@T["Enabled"]</label>
+                        <span class="hint dashed">@T["Uncheck to prevent workflows of this type from being executed."]</span>
                     </div>
-                    <span class="hint">@T["Uncheck to prevent workflows of this type from being executed."]</span>
                 </div>
             </div>
 
@@ -46,8 +46,8 @@
                     <div class="form-check">
                         <input asp-for="IsSingleton" type="checkbox" class="form-check-input">
                         <label class="form-check-label" asp-for="IsSingleton">@T["Single instance"]</label>
+                        <span class="hint dashed">@T["Check to ensure only one workflow of this type can execute at a time. Leave unchecked to allow any number of workflows to execute at the same time."]</span>
                     </div>
-                    <span class="hint">@T["Check to ensure only one workflow of this type can execute at a time. Leave unchecked to allow any number of workflows to execute at the same time."]</span>
                 </div>
             </div>
 
@@ -56,8 +56,8 @@
                     <div class="form-check">
                         <input asp-for="DeleteFinishedWorkflows" type="checkbox" class="form-check-input">
                         <label class="form-check-label" asp-for="DeleteFinishedWorkflows">@T["Delete successfully completed workflows"]</label>
+                        <span class="hint dashed">@T["Check to automatically delete workflows that have completed successfully. Leave unchecked to maintain a history of executed workflows."]</span>
                     </div>
-                    <span class="hint">@T["Check to automatically delete workflows that have completed successfully. Leave unchecked to maintain a history of executed workflows."]</span>
                 </div>
             </div>
 
@@ -66,8 +66,8 @@
                     <div class="form-check">
                         <input asp-for="IsActivity" type="checkbox" class="form-check-input">
                         <label class="form-check-label" asp-for="IsActivity">@T["Usable as an activity"]</label>
+                        <span class="hint dashed">@T["Check to let other workflows run this one with the Execute Workflow task. Its variables marked as inputs and outputs are what they pass and get back."]</span>
                     </div>
-                    <span class="hint">@T["Check to let other workflows run this one with the Execute Workflow task. Its variables marked as inputs and outputs are what they pass and get back."]</span>
                 </div>
             </div>
 
@@ -87,8 +87,8 @@
                     <div class="form-check">
                         <input asp-for="FaultOnScriptErrors" type="checkbox" class="form-check-input">
                         <label class="form-check-label" asp-for="FaultOnScriptErrors">@T["Fault the workflow on script errors"]</label>
+                        <span class="hint dashed">@T["Check to fault an instance at the activity whose script failed, so it can be retried. Leave unchecked to go on with what the script fell back to; the error shows on the instance's page."]</span>
                     </div>
-                    <span class="hint">@T["Check to fault an instance at the activity whose script failed, so it can be retried. Leave unchecked to go on with what the script fell back to; the error shows on the instance's page."]</span>
                 </div>
             </div>
 

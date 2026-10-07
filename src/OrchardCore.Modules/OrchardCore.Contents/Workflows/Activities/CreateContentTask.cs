@@ -136,5 +136,9 @@ public class CreateContentTask : ContentTask, IActivityOutputs, IActivityProvide
         => [new ActivityOutputDescriptor { Name = "ContentItem", TypeName = "contentItem", DisplayName = S["Content item"] }];
 
     public IEnumerable<ActivityProvidedValue> GetProvidedValues()
-        => [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = ContentEventConstants.ContentItemInputKey, TypeName = "contentItem", Description = S["The content item the activity created."], Members = WorkflowValueMembers.ContentItem(S) }];
+        =>
+        [
+            new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = ContentEventConstants.ContentItemInputKey, TypeName = "contentItem", Description = S["The content item the activity created."], Members = WorkflowValueMembers.ContentItem(S) },
+            ActivityProvidedValue.LastResult("contentItem", S["The content item the activity created, or the validation result when it failed."], WorkflowValueMembers.ContentItem(S)),
+        ];
 }

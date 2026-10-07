@@ -5,12 +5,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Http.Activities;
 
-public class HttpRequestTask : TaskActivity<HttpRequestTask>, IActivityOutputs
+public class HttpRequestTask : TaskActivity<HttpRequestTask>, IActivityOutputs, IActivityProvidedValues
 {
     private static readonly string[] s_separator = ["\r\n", "\n", "\r"];
 
@@ -159,6 +160,9 @@ public class HttpRequestTask : TaskActivity<HttpRequestTask>, IActivityOutputs
 
         return outcomes;
     }
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => [ActivityProvidedValue.LastResult("object", S["The response: its body, headers and status."], WorkflowValueMembers.HttpResponse(S))];
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {

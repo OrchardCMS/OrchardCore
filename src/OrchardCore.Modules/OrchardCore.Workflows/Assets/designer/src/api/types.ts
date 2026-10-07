@@ -55,7 +55,8 @@ export interface ProvidedValueMember {
 
 // A value an activity provides to the activities after it (WorkflowDesignerProvidedValue).
 export interface ProvidedValue {
-    source: "Input" | "Output" | "Properties";
+    // LastResult: what the activity sets as the last result, which the activities right after it read.
+    source: "Input" | "Output" | "Properties" | "LastResult";
     name: string;
     typeName: string;
     description?: string | null;

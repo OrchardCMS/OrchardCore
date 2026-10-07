@@ -71,6 +71,29 @@ public static class WorkflowValueMembers
             Member("ExecutedActivityCount", "number", S["How many activities the instance ran."]),
         ];
 
+    /// <summary>
+    /// The fields of a <c>Result</c>, which services such as the email and SMS services return.
+    /// </summary>
+    public static IReadOnlyList<ActivityProvidedValueMember> Result(IStringLocalizer S)
+        =>
+        [
+            Member("Succeeded", "boolean", S["Whether it succeeded."]),
+            Member("Errors", "array", S["The errors, when it failed."]),
+        ];
+
+    /// <summary>
+    /// The fields of the response to an HTTP request.
+    /// </summary>
+    public static IReadOnlyList<ActivityProvidedValueMember> HttpResponse(IStringLocalizer S)
+        =>
+        [
+            Member("Body", "string", S["The body of the response."]),
+            Member("Headers", "object", S["The headers of the response, by name."]),
+            Member("StatusCode", "number", S["The status code, for example 200."]),
+            Member("ReasonPhrase", "string", S["The reason phrase, for example OK."]),
+            Member("IsSuccessStatusCode", "boolean", S["Whether the status code is 2xx."]),
+        ];
+
     private static ActivityProvidedValueMember Member(string name, string typeName, LocalizedString description)
         => new() { Name = name, TypeName = typeName, Description = description };
 }

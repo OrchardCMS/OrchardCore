@@ -3,7 +3,13 @@ import { availableData, expressionsOf, memberExpressionsOf, upstreamNodeIds, ups
 import { createNode } from "../../canvas/__tests__/fixtures";
 import type { DesignerTransition } from "../../api/types";
 
-const labels = { lastResult: "Last result", lastResultDescription: "", correlationId: "Correlation id", correlationIdDescription: "" };
+const labels = {
+    lastResult: "Last result",
+    lastResultDescription: "What the activity before returned.",
+    lastResultFrom: (activity: string, description: string) => `${activity}: ${description}`,
+    correlationId: "Correlation id",
+    correlationIdDescription: "",
+};
 
 const link = (source: string, destination: string, outcome = "Done"): DesignerTransition => ({
     sourceActivityId: source,
@@ -95,6 +101,31 @@ describe("availableData", () => {
         ]);
 
         expect(data.workflow.map((value) => value.javaScript)).toEqual(["lastResult()", "correlationId()"]);
+    });
+
+    it("availableData_ActivitiesBeforeDeclareTheLastResult_GiveItsTypeAndFields", () => {
+        const retrieve = (id: string, typeName: string, members: { name: string; typeName: string }[] = []) =>
+            createNode(id, { title: `Retrieve ${id}`, providedValues: [{ source: "LastResult", name: "LastResult", typeName, description: "The content item.", members }] });
+        const field = [{ name: "ContentType", typeName: "string" }];
+        const lastResult = (sources: ReturnType<typeof createNode>[], target = createNode("target")) =>
+            availableData([...sources, target], sources.map((source) => link(source.id, "target")), [], "target", labels).workflow[0];
+
+        // One activity leads to it: its last result, with its fields; the last result isn't listed with its values.
+        const one = lastResult([retrieve("a", "contentItem", field)]);
+        expect(one).toMatchObject({ typeName: "contentItem", description: "Retrieve a: The content item.", javaScript: "lastResult()" });
+        expect(one.members).toMatchObject([{ name: "ContentType", javaScript: "lastResult().ContentType", liquid: "{{ Workflow.LastResult.ContentType }}" }]);
+        expect(availableData([retrieve("a", "contentItem"), createNode("target")], [link("a", "target")], [], "target", labels).activities).toEqual([]);
+
+        // Several agree on the type; they don't on the fields, or on the type.
+        expect(lastResult([retrieve("a", "contentItem", field), retrieve("b", "contentItem")])).toMatchObject({ typeName: "contentItem", members: [] });
+        expect(lastResult([retrieve("a", "contentItem"), retrieve("b", "string")])).toMatchObject({
+            typeName: "any",
+            description: "Retrieve a: The content item. Retrieve b: The content item.",
+        });
+
+        // An activity that doesn't declare it, or none: any value.
+        expect(lastResult([retrieve("a", "contentItem"), createNode("c")])).toMatchObject({ typeName: "any", description: "What the activity before returned." });
+        expect(lastResult([])).toMatchObject({ typeName: "any", description: "What the activity before returned." });
     });
 
     it("memberExpressionsOf_Field_ReadsItFromTheValue", () => {

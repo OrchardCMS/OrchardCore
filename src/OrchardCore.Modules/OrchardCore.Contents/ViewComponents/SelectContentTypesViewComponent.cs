@@ -14,7 +14,11 @@ public class SelectContentTypesViewComponent : ViewComponent
         _contentDefinitionManager = contentDefinitionManager;
     }
 
-    public async Task<IViewComponentResult> InvokeAsync(IEnumerable<string> selectedContentTypes, string htmlName, string stereotype)
+    /// <summary>
+    /// Renders the content types to select, as checkboxes or, when <paramref name="displayMode"/> is
+    /// <c>Picker</c>, as a searchable list that shows the selected content types as tags.
+    /// </summary>
+    public async Task<IViewComponentResult> InvokeAsync(IEnumerable<string> selectedContentTypes, string htmlName, string stereotype, string displayMode)
     {
         var contentTypes = await ContentTypeSelection.BuildAsync(_contentDefinitionManager, selectedContentTypes ?? []);
 
@@ -31,6 +35,6 @@ public class SelectContentTypesViewComponent : ViewComponent
             ContentTypeSelections = contentTypes,
         };
 
-        return View(model);
+        return displayMode == "Picker" ? View("Picker", model) : View(model);
     }
 }

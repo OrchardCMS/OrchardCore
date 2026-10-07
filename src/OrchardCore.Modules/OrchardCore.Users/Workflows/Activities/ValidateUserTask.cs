@@ -77,5 +77,11 @@ public class ValidateUserTask : TaskActivity<ValidateUserTask>, IActivityProvide
     }
 
     public IEnumerable<ActivityProvidedValue> GetProvidedValues()
-        => SetUserName ? [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = "UserName", TypeName = "string", Description = S["The name of the signed-in user."] }] : [];
+    {
+        var lastResult = ActivityProvidedValue.LastResult("array", S["The names of the user's roles, when the user is in one of the roles."]);
+
+        return SetUserName
+            ? [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = "UserName", TypeName = "string", Description = S["The name of the signed-in user."] }, lastResult]
+            : [lastResult];
+    }
 }

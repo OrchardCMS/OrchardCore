@@ -34,8 +34,8 @@
         <div class="form-check">
             <input type="checkbox" asp-for="ValidateAntiforgeryToken" class="form-check-input" />
             <label asp-for="ValidateAntiforgeryToken" class="form-check-label">@T["Validate Antiforgery Token"]</label>
+            <span class="hint dashed">@T["Uncheck this option if the request comes from a service that invokes this URL as a webhook. If this URL is requested from a form, then keep this option checked to ensure the form values have not been tampered with."]</span>
         </div>
-        <span class="hint">@T["Uncheck this option if the request comes from a service that invokes this URL as a webhook. If this URL is requested from a form, then keep this option checked to ensure the form values have not been tampered with."]</span>
     </div>
 </div>
 

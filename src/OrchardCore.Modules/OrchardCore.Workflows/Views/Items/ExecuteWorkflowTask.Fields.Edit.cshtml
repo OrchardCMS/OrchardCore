@@ -45,7 +45,7 @@
         <div class="form-check">
             <input asp-for="WaitForCompletion" type="checkbox" class="form-check-input" />
             <label asp-for="WaitForCompletion" class="form-check-label">@T["Wait for the workflow to finish"]</label>
+            <span class="hint dashed">@T["Check to continue once the workflow finished, with its outputs, even when it waits on events. Leave unchecked to continue as soon as it started."]</span>
         </div>
-        <span class="hint">@T["Check to continue once the workflow finished, with its outputs, even when it waits on events. Leave unchecked to continue as soon as it started."]</span>
     </div>
 </div>

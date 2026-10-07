@@ -11,7 +11,7 @@ import OutputBindings from "./OutputBindings.vue";
 import VariablesTab from "./VariablesTab.vue";
 import JournalTab from "./JournalTab.vue";
 import AvailableData from "../available/AvailableData.vue";
-import { insertAtCursor } from "../available/insertion";
+import { canInsertAt, insertAtCursor } from "../available/insertion";
 import type { FormApplyResult } from "./types";
 import type { RevisionTask } from "../services/revisionQueue";
 import { showToast } from "../ui/toasts";
@@ -21,6 +21,11 @@ import { readPreference, writePreference } from "../ui/preferences";
 import { t } from "../i18n";
 
 type Tab = "activity" | "variables" | "journal" | "workflow" | "issues";
+
+// The views of the Activity tab: the activity's settings, or the data its expressions can read.
+type ActivityView = "settings" | "data";
+
+const ACTIVITY_VIEWS: ActivityView[] = ["settings", "data"];
 
 const MIN_WIDTH = 288;
 const MAX_WIDTH = 720;
@@ -67,6 +72,8 @@ const emit = defineEmits<{
 
 const state = props.store.state;
 const tab = ref<Tab>("activity");
+const activityView = ref<ActivityView>("settings");
+const activityViews = ref<HTMLElement | null>(null);
 // Read before the first render, so a collapsed panel doesn't open and close on load.
 const collapsed = ref(readPreference(COLLAPSED_KEY) === "true");
 const width = ref(384);
@@ -128,14 +135,35 @@ const onFormFocus = (event: FocusEvent) => {
 
 watch(editingId, () => {
     lastField = null;
+    activityView.value = "settings";
 });
 
+// Direct t("…") calls, so the translations spec sees every key.
+const activityViewLabel = (view: ActivityView) => (view === "settings" ? t("ActivitySettings") : t("AvailableData"));
+
+// The views follow the ARIA tabs pattern, like the panel's tabs.
+const onActivityViewKeyDown = async (event: KeyboardEvent) => {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) {
+        return;
+    }
+
+    event.preventDefault();
+    activityView.value = event.key === "Home" ? "settings" : event.key === "End" ? "data" : activityView.value === "settings" ? "data" : "settings";
+    await nextTick();
+    activityViews.value?.querySelector<HTMLElement>(`[data-cy=panel-view-${activityView.value}]`)?.focus();
+};
+
 /**
- * Inserts an expression where the cursor was in the activity's editor, or copies it.
+ * Inserts an expression where the cursor was in the activity's settings, which come back into view, or copies it.
  */
 const onInsert = async (text: string) => {
-    if (await insertAtCursor(lastField, text)) {
-        return;
+    if (canInsertAt(lastField)) {
+        activityView.value = "settings";
+        await nextTick();
+
+        if (await insertAtCursor(lastField, text)) {
+            return;
+        }
     }
 
     try {
@@ -259,6 +287,7 @@ const open = async (activityId: string, options: { focus?: boolean; expand?: boo
     const loaded = tab.value === "activity" && editingId.value === activityId;
 
     tab.value = "activity";
+    activityView.value = "settings";
     focusOnLoad = !!options.focus;
     selectNode(props.store, activityId);
     await nextTick();
@@ -634,20 +663,44 @@ defineExpose({ open, settle, selectTab, expand, discardChanges, refresh, hasPend
                             {{ editingNode.title }}
                             <small class="text-secondary">{{ editingNode.displayText }}</small>
                         </h3>
-                        <ServerFormHost
-                            ref="activityHost"
-                            :form-key="editingNode.id"
-                            :load="loadActivity"
-                            :submit="submitActivity"
-                            :label="t('ActivityTab')"
-                            data-cy="panel-activity-form"
-                            @loaded="onActivityLoaded"
-                            @applied="onActivityApplied"
-                            @error="onError"
-                            @focusin="onFormFocus"
-                        />
-                        <OutputBindings :node="editingNode" :store="store" :api="api" :mutate="mutate" @error="onError" />
-                        <AvailableData :node="editingNode" :store="store" @insert="onInsert" />
+                        <div ref="activityViews" class="wfd-activity-views" role="tablist" :aria-label="t('ActivityTab')" @keydown="onActivityViewKeyDown">
+                            <button
+                                v-for="view in ACTIVITY_VIEWS"
+                                :id="`${ids}-view-${view}`"
+                                :key="view"
+                                type="button"
+                                role="tab"
+                                class="wfd-activity-view"
+                                :class="{ active: activityView === view }"
+                                :aria-selected="activityView === view"
+                                :aria-controls="`${ids}-view-${view}-panel`"
+                                :tabindex="activityView === view ? 0 : -1"
+                                :data-cy="`panel-view-${view}`"
+                                @click="activityView = view"
+                            >
+                                <i class="fa-solid" :class="view === 'settings' ? 'fa-sliders' : 'fa-database'" aria-hidden="true"></i>
+                                {{ activityViewLabel(view) }}
+                            </button>
+                        </div>
+                        <!-- Hidden rather than removed, so the editor keeps its changes and its cursor. -->
+                        <div v-show="activityView === 'settings'" :id="`${ids}-view-settings-panel`" role="tabpanel" :aria-labelledby="`${ids}-view-settings`">
+                            <ServerFormHost
+                                ref="activityHost"
+                                :form-key="editingNode.id"
+                                :load="loadActivity"
+                                :submit="submitActivity"
+                                :label="t('ActivityTab')"
+                                data-cy="panel-activity-form"
+                                @loaded="onActivityLoaded"
+                                @applied="onActivityApplied"
+                                @error="onError"
+                                @focusin="onFormFocus"
+                            />
+                            <OutputBindings :node="editingNode" :store="store" :api="api" :mutate="mutate" @error="onError" />
+                        </div>
+                        <div v-show="activityView === 'data'" :id="`${ids}-view-data-panel`" role="tabpanel" :aria-labelledby="`${ids}-view-data`">
+                            <AvailableData :node="editingNode" :store="store" @insert="onInsert" />
+                        </div>
                     </template>
                 </template>
 

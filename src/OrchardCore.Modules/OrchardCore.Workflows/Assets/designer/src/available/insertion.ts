@@ -44,6 +44,23 @@ const insertInMonaco = async (target: Element, text: string) => {
 };
 
 /**
+ * Whether text can be inserted in the field `target` belongs to: a code editor, or a text field that can be edited.
+ */
+export const canInsertAt = (target: Element | null | undefined): target is Element => {
+    if (!target || !target.isConnected) {
+        return false;
+    }
+
+    if (target.closest(".monaco-editor, .CodeMirror")) {
+        return true;
+    }
+
+    const isTextField = target instanceof HTMLTextAreaElement || (target instanceof HTMLInputElement && TEXT_INPUT_TYPES.has(target.type));
+
+    return isTextField && !target.readOnly && !target.disabled;
+};
+
+/**
  * Inserts `text` at the cursor of the field `target` belongs to. Resolves to false when it isn't a field the
  * text can be inserted in.
  */

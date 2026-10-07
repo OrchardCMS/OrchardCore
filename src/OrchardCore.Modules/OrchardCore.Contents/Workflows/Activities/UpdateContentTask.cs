@@ -180,5 +180,9 @@ public class UpdateContentTask : ContentTask, IActivityOutputs, IActivityProvide
         => [new ActivityOutputDescriptor { Name = "ContentItem", TypeName = "contentItem", DisplayName = S["Content item"] }];
 
     public IEnumerable<ActivityProvidedValue> GetProvidedValues()
-        => [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = ContentEventConstants.ContentItemInputKey, TypeName = "contentItem", Description = S["The content item the activity updated."], Members = WorkflowValueMembers.ContentItem(S) }];
+        =>
+        [
+            new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = ContentEventConstants.ContentItemInputKey, TypeName = "contentItem", Description = S["The content item the activity updated."], Members = WorkflowValueMembers.ContentItem(S) },
+            ActivityProvidedValue.LastResult("contentItem", S["The content item the activity updated, or the validation result when it failed."], WorkflowValueMembers.ContentItem(S)),
+        ];
 }

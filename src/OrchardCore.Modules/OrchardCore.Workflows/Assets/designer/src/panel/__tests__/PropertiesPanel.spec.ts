@@ -48,7 +48,7 @@ describe("PropertiesPanel", () => {
 
         expect(wrapper.findAll("#wfd-variables option").map((option) => option.attributes("value"))).toEqual(["greeting"]);
         expect(wrapper.get("[data-cy=activity-outputs]").text()).toContain("Result");
-        expect(wrapper.findAll("[role=tab]").map((tab) => tab.attributes("data-cy"))).toEqual([
+        expect(wrapper.findAll(".wfd-panel-tabs [role=tab]").map((tab) => tab.attributes("data-cy"))).toEqual([
             "panel-tab-activity",
             "panel-tab-variables",
             "panel-tab-workflow",
@@ -59,6 +59,47 @@ describe("PropertiesPanel", () => {
         await flushPromises();
 
         expect(wrapper.get("[data-cy=variables-tab] [data-cy=variable-name]").element).toHaveProperty("value", "greeting");
+    });
+
+    it("activityViews_Switch_ShowTheSettingsOrTheAvailableData", async () => {
+        const { store, wrapper } = setup(() => Promise.resolve({ valid: true }));
+        selectNode(store, "a");
+        await flushPromises();
+
+        const settings = wrapper.get("[data-cy=panel-activity-form]");
+        const data = wrapper.get("[data-cy=available-data]");
+        expect(wrapper.get("[data-cy=panel-view-settings]").attributes("aria-selected")).toBe("true");
+        expect(settings.isVisible()).toBe(true);
+        expect(data.isVisible()).toBe(false);
+
+        await wrapper.get("[data-cy=panel-view-data]").trigger("click");
+
+        expect(wrapper.get("[data-cy=panel-view-data]").attributes("aria-selected")).toBe("true");
+        expect(settings.isVisible()).toBe(false);
+        expect(data.isVisible()).toBe(true);
+
+        // Another activity opens on its settings.
+        selectNode(store, "b");
+        await flushPromises();
+
+        expect(wrapper.get("[data-cy=panel-view-settings]").attributes("aria-selected")).toBe("true");
+    });
+
+    it("activityViews_InsertWithAFieldFocused_InsertsInItAndShowsTheSettings", async () => {
+        const { store, wrapper } = setup(() => Promise.resolve({ valid: true }));
+        selectNode(store, "a");
+        await flushPromises();
+
+        const input = wrapper.get("input[name='Task.Value']");
+        (input.element as HTMLInputElement).setSelectionRange(1, 1);
+        await input.trigger("focusin");
+        await wrapper.get("[data-cy=panel-view-data]").trigger("click");
+
+        await wrapper.get("[data-cy='available-workflow-LastResult'] [data-cy=available-javascript]").trigger("click");
+        await flushPromises();
+
+        expect((input.element as HTMLInputElement).value).toBe("alastResult()");
+        expect(wrapper.get("[data-cy=panel-view-settings]").attributes("aria-selected")).toBe("true");
     });
 
     it("selection_SingleActivity_LoadsItsEditor", async () => {

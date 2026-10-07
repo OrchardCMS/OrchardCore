@@ -52,5 +52,9 @@ public class RetrieveContentTask : ContentTask, IActivityOutputs, IActivityProvi
         => [new ActivityOutputDescriptor { Name = "ContentItem", TypeName = "contentItem", DisplayName = S["Content item"] }];
 
     public IEnumerable<ActivityProvidedValue> GetProvidedValues()
-        => [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = ContentEventConstants.ContentItemInputKey, TypeName = "contentItem", Description = S["The content item the activity retrieved."], Members = WorkflowValueMembers.ContentItem(S) }];
+        =>
+        [
+            new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = ContentEventConstants.ContentItemInputKey, TypeName = "contentItem", Description = S["The content item the activity retrieved."], Members = WorkflowValueMembers.ContentItem(S) },
+            ActivityProvidedValue.LastResult("contentItem", S["The content item the activity retrieved."], WorkflowValueMembers.ContentItem(S)),
+        ];
 }

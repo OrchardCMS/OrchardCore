@@ -577,7 +577,9 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
             Activity("signal", "SignalEvent"),
             Activity("loop", "ForEachTask", properties: new JsonObject { ["LoopVariableName"] = "item" }),
             Activity("set", "SetPropertyTask", properties: new JsonObject { ["PropertyName"] = "Owner" }),
-            Activity("notify", "NotifyTask"));
+            Activity("notify", "NotifyTask"),
+            Activity("liquid", "LiquidTask"),
+            Activity("http", "HttpRequestTask"));
 
         var nodes = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition"))["nodes"].AsArray()
             .ToDictionary(node => node["id"].GetValue<string>());
@@ -590,7 +592,7 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         Assert.Equal("Input.Signal:string", ValuesOf("signal"));
 
         // The names of the values some activities set come from their settings.
-        Assert.Equal("Properties.item:any", ValuesOf("loop"));
+        Assert.Equal("Properties.item:any, LastResult.LastResult:any", ValuesOf("loop"));
         Assert.Equal("Properties.Owner:any", ValuesOf("set"));
         Assert.Equal(string.Empty, ValuesOf("notify"));
         Assert.Equal("The content item of the event.", nodes["published"]["providedValues"][0]["description"].GetValue<string>());
@@ -602,6 +604,11 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         Assert.StartsWith("ContentItemId, ContentItemVersionId, ContentType, DisplayText", FieldsOf("published", 0));
         Assert.Equal("Name, ContentType, ContentItemId, ContentItemVersionId, IsStart", FieldsOf("published", 1));
         Assert.Empty(nodes["signal"]["providedValues"][0]["members"].AsArray());
+
+        // Activities declare their last result, with its type and fields.
+        Assert.Equal("LastResult.LastResult:string", ValuesOf("liquid"));
+        Assert.Equal("LastResult.LastResult:object", ValuesOf("http"));
+        Assert.Equal("Body, Headers, StatusCode, ReasonPhrase, IsSuccessStatusCode", FieldsOf("http", 0));
 
         // Liquid can read the fields of the content event and of a fault.
         await _fixture.Context.UsingTenantScopeAsync(scope =>

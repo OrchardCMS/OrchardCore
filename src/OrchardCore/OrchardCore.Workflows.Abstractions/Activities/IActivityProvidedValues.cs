@@ -46,6 +46,22 @@ public sealed class ActivityProvidedValue
     /// content item.
     /// </summary>
     public IReadOnlyList<ActivityProvidedValueMember> Members { get; init; } = [];
+
+    /// <summary>
+    /// Declares the value the activity sets as the workflow's last result.
+    /// </summary>
+    /// <param name="typeName">The <see cref="Services.IWorkflowVariableType.Name"/> of the value, or <c>any</c>.</param>
+    /// <param name="description">What the value is, shown in the designer.</param>
+    /// <param name="members">The fields of the value.</param>
+    public static ActivityProvidedValue LastResult(string typeName, LocalizedString description, IReadOnlyList<ActivityProvidedValueMember> members = null)
+        => new()
+        {
+            Source = WorkflowValueSource.LastResult,
+            Name = nameof(LastResult),
+            TypeName = typeName,
+            Description = description,
+            Members = members ?? [],
+        };
 }
 
 /// <summary>
@@ -90,4 +106,10 @@ public enum WorkflowValueSource
     /// The workflow's properties (<c>property('name')</c>, <c>{{ Workflow.Properties.name }}</c>).
     /// </summary>
     Properties,
+
+    /// <summary>
+    /// The last result (<c>lastResult()</c>, <c>{{ Workflow.LastResult }}</c>), which the activities that run right
+    /// after this one read. See <see cref="ActivityProvidedValue.LastResult"/>.
+    /// </summary>
+    LastResult,
 }

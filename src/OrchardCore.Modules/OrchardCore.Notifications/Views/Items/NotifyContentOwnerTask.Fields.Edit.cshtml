@@ -40,8 +40,8 @@
             <div class="form-check">
                 <input asp-for="IsHtmlPreferred" type="checkbox" class="form-check-input" />
                 <label class="form-check-label" asp-for="IsHtmlPreferred">@T["Use HTML Body when possible"]</label>
+                <span class="hint dashed">@T["When checked, the notification provider will use the HTML body if it supports HTML."]</span>
             </div>
-            <span class="hint">@T["When checked, the notification provider will use the HTML body if it supports HTML."]</span>
         </div>
     </div>
 </div>

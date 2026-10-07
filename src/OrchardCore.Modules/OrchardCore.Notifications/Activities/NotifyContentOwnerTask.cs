@@ -13,7 +13,7 @@ using YesSql;
 
 namespace OrchardCore.Notifications.Activities;
 
-public class NotifyContentOwnerTask : NotifyUserTaskActivity<NotifyContentOwnerTask>, IActivityProvidedValues
+public class NotifyContentOwnerTask : NotifyUserTaskActivity<NotifyContentOwnerTask>
 {
     private readonly ISession _session;
 
@@ -59,6 +59,10 @@ public class NotifyContentOwnerTask : NotifyUserTaskActivity<NotifyContentOwnerT
         return [];
     }
 
-    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
-        => [new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = "Owner", TypeName = "any", Description = S["The owner of the content item, a user."], Members = WorkflowValueMembers.User(S) }];
+    public override IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        =>
+        [
+            .. base.GetProvidedValues(),
+            new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = "Owner", TypeName = "any", Description = S["The owner of the content item, a user."], Members = WorkflowValueMembers.User(S) },
+        ];
 }

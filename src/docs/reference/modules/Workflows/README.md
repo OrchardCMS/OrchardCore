@@ -459,14 +459,14 @@ Many activities have settings that are **expressions**, evaluated each time the 
 
 ### Available Data
 
-The **Available data** section, under the editor of the selected activity, lists what its expressions can read:
+The **Activity** tab of the designer's properties panel has two views: the **Settings** of the selected activity, and its **Available data**, which lists what its expressions can read:
 
 - **Variables.** The workflow's [variables](#variables).
 - **From an activity.** The values that the activities which can run before this one provide: the input of an event (the content item of a content event, for example), and the properties and outputs that tasks set. Only the activities on a path to the selected one are listed, nearest first.
 - **Fields.** A value that has fields, such as a content item or a user, lists them under **Fields**, each with its own expressions.
-- **Workflow.** The result of the last activity, and the correlation id of the instance.
+- **Workflow.** The [last result](#last-result), and the correlation id of the instance.
 
-Each value shows its JavaScript and Liquid expressions, for example `input("ContentEvent").ContentType` and `{{ Workflow.Input.ContentEvent.ContentType }}`. Click one to insert it where the cursor was in the activity's editor. When no field of the editor had the cursor, the expression is copied instead. The script editors also suggest these values as you type.
+Each value shows its JavaScript and Liquid expressions, for example `input("ContentEvent").ContentType` and `{{ Workflow.Input.ContentEvent.ContentType }}`. Click one to insert it where the cursor was in the settings, which then come back into view. When no field of the settings had the cursor, the expression is copied instead. The script editors also suggest these values as you type.
 
 The built-in activities provide the following values:
 
@@ -487,7 +487,29 @@ The built-in activities provide the following values:
 | Catch Workflow Fault Event | Input `WorkflowFault`: `WorkflowName`, `WorkflowId`, `ActivityId`, `ActivityDisplayName`, `ActivityTypeName`, `ErrorMessage`, `FaultMessage`, `ExceptionDetails` and `ExecutedActivityCount`. |
 | For Each, For Loop | The property of their loop variable. |
 | Set Property, Set Output | The property or output they set. |
+
 The [outputs](#reading-and-writing-variables) of activities are listed with the variables they are stored in. An activity whose values depend on how it runs, such as a Script that sets properties, doesn't list them.
+
+### Last Result
+
+The last result (`lastResult()`, `{{ Workflow.LastResult }}`) is the value that the activity which ran just before returned, so its type depends on that activity. When every activity with a connection to the selected one declares its last result, the **Available data** view shows its type and what it is, and its fields when they all have the same; otherwise it's **Any**.
+
+| Activity | Last result |
+|---|---|
+| Create Content, Update Content | The content item, or the validation result (`Succeeded`, `Errors`) when it failed. |
+| Retrieve Content | The content item. |
+| Script | The value the script returns. |
+| Liquid | The rendered template, as text. |
+| HTTP Request | The response: `Body`, `Headers`, `StatusCode`, `ReasonPhrase` and `IsSuccessStatusCode`. |
+| Email, SMS, Meta Conversions API Event | The result of sending: `Succeeded` and `Errors`. |
+| Notify User, Notify Content Owner, … | How many notifications were sent. |
+| For Each, For Loop | The current item, or the current index. |
+| Execute Workflow | The outputs of the workflow it ran, by name, or its fault message when it failed. |
+| Validate User | The names of the user's roles, when the user is in one of the roles. |
+| Create Tenant | The settings of the tenant, or the validation errors when it failed. |
+| Timer Event | The text `TimerEvent`. |
+
+Other activities leave the last result as it was.
 
 ### Available Data for Developers
 
@@ -517,8 +539,9 @@ public sealed class AssignCustomerTask : TaskActivity<AssignCustomerTask>, IActi
 ```
 
 - **Sources.** `Input` (`input("name")`, `{{ Workflow.Input.name }}`), `Output` (`workflow().Output["name"]`, `{{ Workflow.Output.name }}`) or `Properties` (`property("name")`, `{{ Workflow.Properties.name }}`).
+- **Last result.** `ActivityProvidedValue.LastResult(typeName, description, members)` declares what the activity sets as the last result, for example `ActivityProvidedValue.LastResult("contentItem", S["The content item."], WorkflowValueMembers.ContentItem(S))`.
 - **Types.** `TypeName` is the name of a [variable type](#variables-for-developers), or `any`.
-- **Fields.** `Members` lists the fields of the value. `WorkflowValueMembers` has the fields of a content item, a content event, a user and a workflow fault. The Liquid expressions of the fields only work for types registered with `TemplateOptions.MemberAccessStrategy`.
+- **Fields.** `Members` lists the fields of the value. `WorkflowValueMembers` has the fields of a content item, a content event, a user, a workflow fault, a `Result` and an HTTP response. The Liquid expressions of the fields only work for types registered with `TemplateOptions.MemberAccessStrategy`.
 - **Registration.** A module can declare the values of an activity, its own or another module's, when it registers it. The values that the activity declares itself replace the declared values with the same source and name.
 
 ```csharp

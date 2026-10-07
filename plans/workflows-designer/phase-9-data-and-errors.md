@@ -198,14 +198,39 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
   - **API.** `ActivityRegistration.Provides` takes an optional `members` argument, so a registration can declare fields too; tested in `ActivityProvidedValuesTests`.
   - **Tests.** CI-flag build clean; workflow tests 288/288.
 
-### - [ ] 9.8 End-to-end test
+### - [x] 9.8 Last result types, a content type picker, and settings and data views (from review)
+
+- **Last result.** Activities declare what they set as the last result (`WorkflowValueSource.LastResult`, `ActivityProvidedValue.LastResult`), so the Available data view shows its type, what it is and its fields, from the activities connected to the selected one.
+- **Content types.** The content events pick their content types in the `bootstrap-select` picker (`@crestapps/bootstrap-select`), searchable, with the selected types as tags, instead of checkboxes.
+- **Views.** The Activity tab shows the activity's **Settings** or its **Available data**, one at a time, so the panel is less busy.
+- **Hints.** The hints of checkboxes are `hint dashed`, inside the `form-check` after the label.
+- **Tests**: the last result in the definition and in `availableData`; the views of the panel; Vitest and xUnit.
+- **Notes from implementing this step:**
+  - **Last result.**
+    - `WorkflowValueSource.LastResult` and `ActivityProvidedValue.LastResult(typeName, description, members)` declare it. `WorkflowValueMembers` gains `Result` (`Succeeded`, `Errors`) and `HttpResponse`.
+    - Every activity that sets it declares it: Create, Update and Retrieve Content (content item, with its fields), Script, Liquid, HTTP Request (the response, with its fields), Email, SMS and Meta Conversions (`Result`), the notification tasks (a count), For Each and For Loop, Execute Workflow, Validate User, Create Tenant and the Timer event. `NotifyUserTaskActivity` declares it for every notification task, and Notify Content Owner adds its owner.
+    - The designer takes it from the activities with a transition to the selected one: their type when they agree, their fields when they have the same, and "Retrieve Owner: The content item the activity retrieved." Otherwise it's **Any**, "Its type depends on that activity". The last result isn't listed with the activity's own values.
+  - **Content type picker.**
+    - The `SelectContentTypes` view component has a `displayMode` parameter; `Picker` renders `Picker.cshtml`, a multi-select with `data-show-selected-tags`, `data-live-search`, `data-actions-box` and checkbox indicators, "Any content type" when none is selected.
+    - `content-type-picker.ts` (Contents) initializes the pickers with `observeAndInit`, including those the designer injects, and destroys them on `oc:editor-unmounting`. The plugin fires `change` itself, so the designer applies the selection.
+    - The seven content event editors use it; the other pages keep their checkboxes.
+    - `@T["No content type matches {0}", "{0}"]`: without the argument, the localizer's formatting threw and the editor couldn't load. The select has no `form-select` class, which the plugin copies to its wrapper (a second border and caret).
+  - **Settings and data views.**
+    - A segmented tab list (`panel-view-settings`, `panel-view-data`) at the top of the Activity tab. The settings are hidden rather than removed, so the editor keeps its changes and cursor.
+    - Clicking an expression inserts it where the cursor was in the settings and shows them again (`canInsertAt`), or copies it. Another activity opens on its settings. The Available data section lost its collapse toggle.
+  - **Hints.** 21 checkbox hints of the Workflows views and the activity editors moved inside their `form-check` as `hint dashed`, and the Update Content task's became dashed.
+  - **Docs.** Available Data (the views), a Last Result section with a table, the developer API, the `displayMode` of `SelectContentTypes`, and the release notes.
+  - **Verified in the preview.** The picker on Content Created (search, select all, Button and Form as tags, saved); the views; after a Script task, the last result reads "Script Task: The value the script returns."; the dashed hints in the Workflow tab.
+  - **Tests.** Vitest 258 (last result, views, insertion from the data view); `Definition_ActivitiesThatProvideValues_ListThem` covers Liquid's and HTTP Request's last results and the response fields; workflow tests 288/288; CI-flag build clean.
+
+### - [ ] 9.9 End-to-end test
 
 - The available data of an activity after a content event lists its content item, and clicking an expression inserts it into the editor.
 - A script error shows a warning on the instance page; with the setting, the instance is faulted at that activity.
 
 ## Definition of done (Phase 9)
 
-- [ ] Steps 9.1–9.8 are checked.
+- [ ] Steps 9.1–9.9 are checked.
 - [ ] The CI-flag build is green; `OrchardCore.Tests`, Vitest and the functional `*Cms*` tests pass.
 - [ ] `yarn lint`, `yarn check` and `yarn build` leave a clean `git status`.
 - [ ] Workflows run as before when the new setting is off.
