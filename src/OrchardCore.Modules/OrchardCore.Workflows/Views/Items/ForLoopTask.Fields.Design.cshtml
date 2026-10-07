@@ -2,12 +2,8 @@
 @model ActivityViewModel<ForLoopTask>
 
 @{
-    var fromExpression = Model.Activity.Syntax == WorkflowScriptSyntax.Liquid
-        ? Model.Activity.LiquidFrom?.Expression
-        : Model.Activity.From?.Expression;
-    var toExpression = Model.Activity.Syntax == WorkflowScriptSyntax.Liquid
-        ? Model.Activity.LiquidTo?.Expression
-        : Model.Activity.To?.Expression;
+    var fromExpression = WorkflowExpressionSyntaxes.Resolve(Model.Activity.From, Model.Activity.LiquidFrom?.Expression, Model.Activity.Syntax).Expression;
+    var toExpression = WorkflowExpressionSyntaxes.Resolve(Model.Activity.To, Model.Activity.LiquidTo?.Expression, Model.Activity.Syntax).Expression;
 }
 
 <header>

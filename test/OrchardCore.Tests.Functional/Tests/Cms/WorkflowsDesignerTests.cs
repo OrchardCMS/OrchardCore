@@ -261,8 +261,8 @@ public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsF
         var ifElseId = await page.AddActivityAsync("IfElseTask", "If Else", 200, 80);
 
         await page.EditActivityAsync(ifElseId);
-        await page.ActivityForm().Locator("select[name='IfElseTask.Syntax']").SelectOptionAsync("Liquid");
-        var condition = page.ActivityForm().Locator("[name='IfElseTask.LiquidConditionExpression']");
+        await page.ActivityForm().Locator("select[name='IfElseTask.Condition.Syntax']").SelectOptionAsync("Liquid");
+        var condition = page.ActivityForm().Locator("[name='IfElseTask.Condition.Expression']");
         await condition.FillAsync("{{ true ");
         await condition.PressAsync("Tab");
 

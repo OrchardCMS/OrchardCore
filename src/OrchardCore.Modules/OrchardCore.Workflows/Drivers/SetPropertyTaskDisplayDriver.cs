@@ -1,35 +1,32 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Liquid;
-using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Display;
 using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.ViewModels;
 
 namespace OrchardCore.Workflows.Drivers;
 
 public sealed class SetPropertyTaskDisplayDriver : ActivityDisplayDriver<SetPropertyTask, SetPropertyTaskViewModel>
 {
-    private readonly ILiquidTemplateManager _templateManager;
+    private readonly WorkflowExpressionInputValidator _expressionValidator;
 
-    private readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public SetPropertyTaskDisplayDriver(
-        ILiquidTemplateManager templateManager,
+        WorkflowExpressionInputValidator expressionValidator,
         IStringLocalizer<SetPropertyTaskDisplayDriver> stringLocalizer)
     {
-        _templateManager = templateManager;
+        _expressionValidator = expressionValidator;
         S = stringLocalizer;
     }
 
-    protected override void EditActivity(SetPropertyTask source, SetPropertyTaskViewModel model)
+    protected override void EditActivity(SetPropertyTask activity, SetPropertyTaskViewModel model)
     {
-        model.PropertyName = source.PropertyName;
-        model.Value = source.Value.Expression;
-        model.LiquidValue = source.LiquidValue.Expression;
-        model.Syntax = source.Syntax;
+        model.PropertyName = activity.PropertyName;
+        model.Value = WorkflowExpressionInput.From(WorkflowExpressionSyntaxes.Resolve(activity.Value, activity.LiquidValue.Expression, activity.Syntax));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(SetPropertyTask activity, UpdateEditorContext context)
@@ -39,28 +36,11 @@ public sealed class SetPropertyTaskDisplayDriver : ActivityDisplayDriver<SetProp
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
         activity.PropertyName = model.PropertyName?.Trim();
-        activity.Value = new WorkflowExpression<object>(model.Value);
-        activity.LiquidValue = new WorkflowExpression<object>(model.LiquidValue);
-        activity.Syntax = model.Syntax;
+        activity.Value = _expressionValidator.Validate<object>(model.Value, context.Updater.ModelState, Prefix, nameof(model.Value), new() { Label = S["Value"], Required = true });
 
-        if (model.Syntax == WorkflowScriptSyntax.Liquid)
-        {
-            if (string.IsNullOrWhiteSpace(model.LiquidValue))
-            {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.LiquidValue), S["Value is required field."]);
-            }
-            else if (!_templateManager.Validate(model.LiquidValue, out var errors))
-            {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.LiquidValue), S["Value doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
-            }
-        }
-        else if (model.Syntax == WorkflowScriptSyntax.JavaScript)
-        {
-            if (string.IsNullOrWhiteSpace(model.Value))
-            {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Value), S["Value is required field."]);
-            }
-        }
+        // The expressions carry their syntax now, so the properties of the former syntax setting go.
+        activity.Properties.Remove(nameof(SetPropertyTask.LiquidValue));
+        activity.Properties.Remove(nameof(SetPropertyTask.Syntax));
 
         return Edit(activity, context);
     }

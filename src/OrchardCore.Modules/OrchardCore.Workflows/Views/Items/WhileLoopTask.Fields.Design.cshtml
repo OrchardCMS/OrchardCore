@@ -2,9 +2,7 @@
 @model ActivityViewModel<WhileLoopTask>
 
 @{
-    var expression = Model.Activity.Syntax == WorkflowScriptSyntax.Liquid
-        ? Model.Activity.LiquidCondition?.Expression
-        : Model.Activity.Condition?.Expression;
+    var expression = WorkflowExpressionSyntaxes.Resolve(Model.Activity.Condition, Model.Activity.LiquidCondition?.Expression, Model.Activity.Syntax).Expression;
 }
 
 <header>

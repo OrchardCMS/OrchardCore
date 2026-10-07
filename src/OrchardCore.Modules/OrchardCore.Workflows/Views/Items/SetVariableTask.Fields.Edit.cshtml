@@ -1,15 +1,8 @@
-@using System.Text.Json
 @using OrchardCore.Workflows.Models
-@using OrchardCore.Workflows.ViewModels
 @model SetVariableTaskViewModel
 
-@{
-    var javaScriptGroupIds = new[] { $"{Html.IdFor(m => m.Value)}_group" };
-    var liquidGroupIds = new[] { $"{Html.IdFor(m => m.LiquidValue)}_group" };
-}
-
 <div class="ocat-wrapper" asp-validation-class-for="VariableName">
-    <label asp-for="VariableName" class="ocat-label">@T["Variable"]</label>
+    <label asp-for="VariableName" class="ocat-label ocat-label-required">@T["Variable"]</label>
     <div class="ocat-end">
         @* The designer lists the declared variables in this datalist. *@
         <input asp-for="VariableName" class="form-control" list="wfd-variables" autocomplete="off" autofocus="autofocus" />
@@ -18,33 +11,13 @@
     </div>
 </div>
 
-<div class="ocat-wrapper" asp-validation-class-for="Syntax">
-    <label asp-for="Syntax" class="ocat-label">@T["Syntax"]</label>
-    <div class="ocat-end">
-        <select asp-for="Syntax" class="form-select" data-syntax-toggle data-javascript-group-ids="@JsonSerializer.Serialize(javaScriptGroupIds)" data-liquid-group-ids="@JsonSerializer.Serialize(liquidGroupIds)">
-            <option value="@nameof(WorkflowScriptSyntax.JavaScript)">@T["JavaScript"]</option>
-            <option value="@nameof(WorkflowScriptSyntax.Liquid)">@T["Liquid"]</option>
-        </select>
-        <span asp-validation-for="Syntax"></span>
-    </div>
-</div>
-
-<div id="@(Html.IdFor(m => m.Value))_group" class="ocat-wrapper @(Model.Syntax == WorkflowScriptSyntax.JavaScript ? "" : "d-none")" asp-validation-class-for="Value">
-    <label asp-for="Value" class="ocat-label">@T["Value"]</label>
-    <div class="ocat-end">
-        <input type="text" asp-for="Value" class="form-control code" />
-        <span asp-validation-for="Value"></span>
-        <span class="hint">@T["The JavaScript value to store in the variable."]</span>
-    </div>
-</div>
-
-<div id="@(Html.IdFor(m => m.LiquidValue))_group" class="ocat-wrapper @(Model.Syntax == WorkflowScriptSyntax.Liquid ? "" : "d-none")" asp-validation-class-for="LiquidValue">
-    <label asp-for="LiquidValue" class="ocat-label">@T["Value"]</label>
-    <div class="ocat-end">
-        <input type="text" asp-for="LiquidValue" class="form-control code" />
-        <span asp-validation-for="LiquidValue"></span>
-        <span class="hint">@T["The Liquid value to store in the variable."]</span>
-    </div>
-</div>
-
-<script asp-name="workflow-syntax-toggle" at="Foot" type="module"></script>
+@{
+    var valueEditor = await Factory.CreateWorkflowExpressionEditorAsync(Html, m => m.Value, editor =>
+    {
+        editor.Label = T["Value"].Value;
+        editor.Hint = T["The value to store in the variable."].Value;
+        editor.Required = true;
+        editor.Multiline = true;
+    });
+}
+@await DisplayAsync(valueEditor)

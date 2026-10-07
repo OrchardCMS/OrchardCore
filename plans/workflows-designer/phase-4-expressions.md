@@ -105,10 +105,24 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - Workflows expression tests: 16/16.
     - `vue-tsc`, `eslint` and the asset build pass for the script.
 
-### - [ ] 4.4 Migrate the activity editors
+### - [x] 4.4 Migrate the activity editors
 
 - The drivers, view models and views of the eight activities use the expression editor. Opening a legacy activity shows its legacy expression with its syntax; saving writes the new shape and removes the legacy keys.
 - **Tests**: controller tests (a legacy If/Else opens with its Liquid condition; saving writes `Condition.Syntax` and removes `LiquidCondition` and `Syntax`; an invalid Liquid value shows its error; a disallowed syntax is rejected).
+- **Notes from implementing this step:**
+  - **Views.** Each view creates its editors with `Factory.CreateWorkflowExpressionEditorAsync(Html, m => m.Condition, editor => …)` (`M/Helpers/WorkflowExpressionEditorExtensions.cs`), which fills the name, id and value from the model, and renders them with `DisplayAsync`.
+    - Conditions, lists and loop bounds are one-line inputs, with an example for each syntax.
+    - The values of Set Output, Set Property, Set Variable and Correlate are multi-line (Monaco).
+  - **View models.** The expressions are `WorkflowExpressionInput` properties: `Condition`, `Enumerable`, `From`/`To`/`Step` and `Value`. The `…Expression`, `Liquid…` and `Syntax` properties are removed (release notes).
+  - **Drivers.**
+    - `EditActivity` shows the expression the activity evaluates (`WorkflowExpressionSyntaxes.Resolve`).
+    - `UpdateAsync` validates each input with `WorkflowExpressionInputValidator` and removes the legacy properties from the activity, so a saved activity has the new shape only.
+    - Correlate's value is optional, as before; the other expressions are required.
+  - **Design views** show the expression the activity evaluates.
+  - **Correlate** no longer has its own CodeMirror script: `Assets/Scripts/correlate-task.ts` and its built files are removed. No Orchard Core view uses the `workflow-syntax-toggle` resource any more; it stays registered.
+  - **Tests.**
+    - `WorkflowDesignerControllerTests`: a legacy If/Else opens with its Liquid condition and the three syntaxes, and saving it with Literal stores the new shape without the legacy keys. A For Loop rejects a Literal that isn't a number and an unknown syntax. The If/Else and Set Variable editor tests post the new field names.
+    - The `IfElse_InvalidLiquid` end-to-end test uses the new fields. `WorkflowsDesignerTests` 19/19; Workflows tests 222/222.
 
 ### - [ ] 4.5 Docs and release notes
 

@@ -1,33 +1,31 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Liquid;
-using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Display;
 using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.ViewModels;
 
 namespace OrchardCore.Workflows.Drivers;
 
 public sealed class WhileLoopTaskDisplayDriver : ActivityDisplayDriver<WhileLoopTask, WhileLoopTaskViewModel>
 {
-    private readonly ILiquidTemplateManager _templateManager;
-    private readonly IStringLocalizer S;
+    private readonly WorkflowExpressionInputValidator _expressionValidator;
+
+    internal readonly IStringLocalizer S;
 
     public WhileLoopTaskDisplayDriver(
-        ILiquidTemplateManager templateManager,
+        WorkflowExpressionInputValidator expressionValidator,
         IStringLocalizer<WhileLoopTaskDisplayDriver> stringLocalizer)
     {
-        _templateManager = templateManager;
+        _expressionValidator = expressionValidator;
         S = stringLocalizer;
     }
 
-    protected override void EditActivity(WhileLoopTask source, WhileLoopTaskViewModel model)
+    protected override void EditActivity(WhileLoopTask activity, WhileLoopTaskViewModel model)
     {
-        model.ConditionExpression = source.Condition.Expression;
-        model.LiquidConditionExpression = source.LiquidCondition.Expression;
-        model.Syntax = source.Syntax;
+        model.Condition = WorkflowExpressionInput.From(WorkflowExpressionSyntaxes.Resolve(activity.Condition, activity.LiquidCondition.Expression, activity.Syntax));
     }
 
     public override async Task<IDisplayResult> UpdateAsync(WhileLoopTask activity, UpdateEditorContext context)
@@ -36,28 +34,11 @@ public sealed class WhileLoopTaskDisplayDriver : ActivityDisplayDriver<WhileLoop
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        activity.Condition = new WorkflowExpression<bool>(model.ConditionExpression?.Trim());
-        activity.LiquidCondition = new WorkflowExpression<bool>(model.LiquidConditionExpression);
-        activity.Syntax = model.Syntax;
+        activity.Condition = _expressionValidator.Validate<bool>(model.Condition, context.Updater.ModelState, Prefix, nameof(model.Condition), new() { Label = S["Condition"], Required = true });
 
-        if (model.Syntax == WorkflowScriptSyntax.Liquid)
-        {
-            if (string.IsNullOrWhiteSpace(model.LiquidConditionExpression))
-            {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.LiquidConditionExpression), S["Condition is required field."]);
-            }
-            else if (!_templateManager.Validate(model.LiquidConditionExpression, out var errors))
-            {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.LiquidConditionExpression), S["Condition doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
-            }
-        }
-        else if (model.Syntax == WorkflowScriptSyntax.JavaScript)
-        {
-            if (string.IsNullOrWhiteSpace(model.ConditionExpression))
-            {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.ConditionExpression), S["Condition is required field."]);
-            }
-        }
+        // The expressions carry their syntax now, so the properties of the former syntax setting go.
+        activity.Properties.Remove(nameof(WhileLoopTask.LiquidCondition));
+        activity.Properties.Remove(nameof(WhileLoopTask.Syntax));
 
         return Edit(activity, context);
     }

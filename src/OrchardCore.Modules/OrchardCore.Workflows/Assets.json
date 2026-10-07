@@ -66,7 +66,6 @@
     "action": "parcel",
     "name": "task-editors",
     "source": [
-      "Assets/Scripts/correlate-task.ts",
       "Assets/Scripts/http-request-task.ts",
       "Assets/Scripts/http-response-task.ts",
       "Assets/Scripts/liquid-task.ts"

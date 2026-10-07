@@ -2,9 +2,7 @@
 @model ActivityViewModel<SetVariableTask>
 
 @{
-    var expression = Model.Activity.Syntax == WorkflowScriptSyntax.Liquid
-        ? Model.Activity.LiquidValue?.Expression
-        : Model.Activity.Value?.Expression;
+    var expression = WorkflowExpressionSyntaxes.Resolve(Model.Activity.Value, Model.Activity.LiquidValue?.Expression, Model.Activity.Syntax).Expression;
 }
 
 <header>

@@ -276,9 +276,8 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         using var response = await PostFormAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId=if&revision=0", new Dictionary<string, string>
         {
             ["IActivity.ActivityMetadata.Title"] = string.Empty,
-            ["IfElseTask.Syntax"] = "Liquid",
-            ["IfElseTask.ConditionExpression"] = string.Empty,
-            ["IfElseTask.LiquidConditionExpression"] = "{{ true ",
+            ["IfElseTask.Condition.Syntax"] = "Liquid",
+            ["IfElseTask.Condition.Expression"] = "{{ true ",
         });
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -288,12 +287,78 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         var document = new HtmlParser().ParseDocument(json["content"].GetValue<string>());
         var error = Assert.Single(document.QuerySelectorAll(".field-validation-error"));
         Assert.Contains("Liquid", error.TextContent);
-        Assert.Equal("Liquid", document.QuerySelector("select[name='IfElseTask.Syntax'] option[selected]")?.GetAttribute("value"));
+        Assert.Equal("Liquid", document.QuerySelector("select[name='IfElseTask.Condition.Syntax'] option[selected]")?.GetAttribute("value"));
 
         await _fixture.Context.UsingTenantScopeAsync(async scope =>
         {
             Assert.Null(await scope.ServiceProvider.GetRequiredService<IWorkflowTypeDraftManager>().GetAsync(workflowTypeId));
         });
+    }
+
+    [Fact]
+    public async Task Editor_LegacyIfElse_OpensItsLiquidConditionAndSavesTheExpressionWithItsSyntax()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("if", "IfElseTask", properties: new JsonObject
+        {
+            ["Condition"] = new JsonObject { ["Expression"] = "1 < 2" },
+            ["LiquidCondition"] = new JsonObject { ["Expression"] = "{{ true }}" },
+            ["Syntax"] = "Liquid",
+        }));
+
+        using (var editor = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId=if", TestContext.Current.CancellationToken))
+        {
+            var json = await ReadJsonAsync(editor);
+            var content = new HtmlParser().ParseDocument(json["content"].GetValue<string>());
+            var syntax = content.QuerySelector("select[name='IfElseTask.Condition.Syntax']");
+
+            Assert.Equal(["Literal", "Liquid", "JavaScript"], syntax.QuerySelectorAll("option").Select(option => option.GetAttribute("value")));
+            Assert.Equal("Liquid", syntax.QuerySelector("option[selected]")?.GetAttribute("value"));
+            Assert.Equal("{{ true }}", content.QuerySelector("input[name='IfElseTask.Condition.Expression']")?.GetAttribute("value"));
+            Assert.Contains("workflow-expression-editor", json["scripts"].GetValue<string>());
+        }
+
+        using var saved = await PostFormAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId=if&revision=0", new Dictionary<string, string>
+        {
+            ["IfElseTask.Condition.Syntax"] = "Literal",
+            ["IfElseTask.Condition.Expression"] = "true",
+        });
+
+        Assert.True((await ReadJsonAsync(saved))["valid"].GetValue<bool>());
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            var draft = await scope.ServiceProvider.GetRequiredService<IWorkflowTypeDraftManager>().GetAsync(workflowTypeId);
+            var properties = Assert.Single(draft.Activities).Properties;
+
+            Assert.Equal("true", properties["Condition"]["Expression"].GetValue<string>());
+            Assert.Equal("Literal", properties["Condition"]["Syntax"].GetValue<string>());
+            Assert.False(properties.ContainsKey("LiquidCondition"));
+            Assert.False(properties.ContainsKey("Syntax"));
+        });
+    }
+
+    [Fact]
+    public async Task EditorPost_LiteralThatDoesNotConvertOrUnknownSyntax_ReturnsTheErrors()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("loop", "ForLoopTask"));
+
+        using var response = await PostFormAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId=loop&revision=0", new Dictionary<string, string>
+        {
+            ["ForLoopTask.From.Syntax"] = "Literal",
+            ["ForLoopTask.From.Expression"] = "one",
+            ["ForLoopTask.To.Syntax"] = "Python",
+            ["ForLoopTask.To.Expression"] = "10",
+            ["ForLoopTask.Step.Syntax"] = "JavaScript",
+            ["ForLoopTask.Step.Expression"] = "1",
+            ["ForLoopTask.LoopVariableName"] = "i",
+        });
+
+        var json = await ReadJsonAsync(response);
+        var errors = new HtmlParser().ParseDocument(json["content"].GetValue<string>()).QuerySelectorAll(".field-validation-error").Select(error => error.TextContent).ToList();
+
+        Assert.False(json["valid"].GetValue<bool>());
+        Assert.Contains(errors, error => error.Contains("'one'", StringComparison.Ordinal));
+        Assert.Contains(errors, error => error.Contains("Python", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -312,8 +377,8 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         using (var invalid = await PostFormAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId=set&revision=0", new Dictionary<string, string>
         {
             ["SetVariableTask.VariableName"] = "greeting",
-            ["SetVariableTask.Syntax"] = "Liquid",
-            ["SetVariableTask.LiquidValue"] = "{{ 'Hello' ",
+            ["SetVariableTask.Value.Syntax"] = "Liquid",
+            ["SetVariableTask.Value.Expression"] = "{{ 'Hello' ",
         }))
         {
             var json = await ReadJsonAsync(invalid);
@@ -324,8 +389,8 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         using var valid = await PostFormAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId=set&revision=0", new Dictionary<string, string>
         {
             ["SetVariableTask.VariableName"] = " greeting ",
-            ["SetVariableTask.Syntax"] = "Liquid",
-            ["SetVariableTask.LiquidValue"] = "{{ 'Hello' }}",
+            ["SetVariableTask.Value.Syntax"] = "Liquid",
+            ["SetVariableTask.Value.Expression"] = "{{ 'Hello' }}",
         });
 
         Assert.True((await ReadJsonAsync(valid))["valid"].GetValue<bool>());
