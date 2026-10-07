@@ -24,6 +24,17 @@ public sealed class ActivityProvidedValuesTests
     }
 
     [Fact]
+    public void Provides_Members_DeclaresTheFieldsOfTheValue()
+    {
+        var registration = new ActivityRegistration(typeof(ProvidingTask))
+            .Provides(WorkflowValueSource.Input, "Customer", "object", "The customer.", [new ActivityProvidedValueMember { Name = "Email", TypeName = "string" }])
+            .Provides(WorkflowValueSource.Input, "Order");
+
+        Assert.Equal(["Email"], registration.ProvidedValues[0].Members.Select(member => member.Name));
+        Assert.Empty(registration.ProvidedValues[1].Members);
+    }
+
+    [Fact]
     public void GetProvidedValues_ActivityWithoutDeclarations_ReturnsNone()
     {
         Assert.Empty(new ProvidingTask(declare: false).GetProvidedValues(new WorkflowOptions()));

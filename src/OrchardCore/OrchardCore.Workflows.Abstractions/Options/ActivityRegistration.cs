@@ -50,7 +50,13 @@ public class ActivityRegistration
     /// <param name="name">The key of the value in its source.</param>
     /// <param name="typeName">The variable type name of the value, or <c>any</c>.</param>
     /// <param name="description">What the value is, shown in the designer.</param>
-    public ActivityRegistration Provides(WorkflowValueSource source, string name, string typeName = "any", string description = null)
+    /// <param name="members">The fields of the value, for example <c>WorkflowValueMembers.User(S)</c>.</param>
+    public ActivityRegistration Provides(
+        WorkflowValueSource source,
+        string name,
+        string typeName = "any",
+        string description = null,
+        IEnumerable<ActivityProvidedValueMember> members = null)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
 
@@ -60,6 +66,7 @@ public class ActivityRegistration
             Name = name,
             TypeName = string.IsNullOrEmpty(typeName) ? "any" : typeName,
             Description = new LocalizedString(name, description ?? string.Empty),
+            Members = members?.ToList() ?? [],
         });
 
         return this;

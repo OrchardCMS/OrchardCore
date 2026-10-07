@@ -92,7 +92,7 @@ The page of a workflow instance shows the version of its workflow that the insta
 
 ## Versions
 
-Each time a workflow is published, its definition is saved as a new **version**, numbered 1, 2, 3 and so on. A version holds what affects how the workflow runs: its activities and their settings, its transitions, and the **Singleton**, lock and **Delete finished workflows** settings. Renaming a workflow, or enabling and disabling it, doesn't create a version.
+Each time a workflow is published, its definition is saved as a new **version**, numbered 1, 2, 3 and so on. A version holds what affects how the workflow runs: its activities and their settings, its transitions, its variables, and the **Singleton**, lock, **Delete finished workflows**, **Outcomes with several transitions** and **Fault the workflow on script errors** settings. Renaming a workflow, or enabling and disabling it, doesn't create a version.
 
 - **Instances run on their version.** A new instance starts on the published version, and keeps running on it until it finishes, even when newer versions are published. Changing or removing the activities an instance waits on doesn't affect it.
 - **Instances created before versions existed** (on a site upgraded from an earlier release) keep running on the current definition, as they did before. Upgrading turns each existing workflow into its version 1.
@@ -136,16 +136,28 @@ When a version is created, the versions older than the most recent `MaxCount` on
 
 ## Execution Journal
 
-Workflow instances record each activity they run in a **journal**: the activity, how it ended (completed, waiting on an event, or faulted), its outcomes, when it started and how long it took, and the error of a fault. The journal is saved with the instance, in its own collection, and is deleted with the instance (when it is deleted, trimmed, or when its workflow is deleted).
+Workflow instances record each activity they run in a **journal**: the activity, how it ended (completed, waiting on an event, or faulted), its outcomes, when it started and how long it took, and the error of a fault or of a [script that failed](#script-errors). The journal is saved with the instance, in its own collection, and is deleted with the instance (when it is deleted, trimmed, or when its workflow is deleted).
 
 The page of a workflow instance uses the journal:
 
 - **Executed path.** The activities the instance ran and the connections it followed are highlighted, with the number of times when it's more than one (in a loop, for example). The activity that faulted the instance is marked.
 - **Journal tab.** The properties panel lists the records in order, with their status, outcomes, duration and error. Select a record to go to its activity.
+- **Script errors.** An activity whose scripts failed is outlined in amber, with a badge that lists the errors.
 
 ### Retrying a Faulted Instance
 
 When an activity fails, for example because a service it calls is down, the instance is **faulted** and stops. After fixing the cause, select an activity of the faulted instance, usually the one that faulted, and choose **Retry from here**. The instance runs again from that activity, with the state it had (its properties, variables and activity states), on the version it runs on. Retrying requires the **Execute workflows** permission.
+
+### Script Errors
+
+When a JavaScript expression fails, for example because it reads a field of a value that is missing (`input("Order").Total` when there is no `Order`), the error is logged and the expression returns its default value (nothing, `false` or `0`), so the activity goes on with that value. The journal records the error on the activity's record:
+
+- **Canvas.** On the page of the instance, the activity is outlined in amber, with a warning badge that lists the errors. The legend explains the badge.
+- **Journal tab.** The record shows a **Script error** badge, and the error.
+
+To stop at such an error instead, check **Fault the workflow on script errors** in the workflow's settings. The instance then faults at the activity whose script failed, like with any other error: the activity is marked as faulted, the workflows that start with a **Catch Workflow Fault Event** run, and the instance can be [retried](#retrying-a-faulted-instance) after the script is fixed. The setting is off by default, and is part of the workflow's [versions](#versions).
+
+An expression that is stopped, because it runs too long or the request is canceled, always faults the instance.
 
 ### Journal Settings
 
@@ -176,6 +188,7 @@ The journal doesn't record the input or output of the activities.
 - `IWorkflowExecutionJournal` lists, saves and deletes the `WorkflowExecutionRecord` documents of an instance.
 - `WorkflowExecutionContext.ExecutedActivities` holds the most recent 100 activities and outcomes the instance ran, and is saved with its state (`WorkflowState.ExecutedActivities`, oldest first).
 - `IWorkflowManager.RetryActivityAsync(workflow, activityId)` runs a faulted instance again from an activity.
+- `WorkflowExecutionContext.ReportScriptError(message)` reports an error that an expression recovered from; the JavaScript evaluator reports the errors of its expressions. The engine records them on the activity's record, or faults the instance with a `WorkflowScriptException` when `WorkflowType.FaultOnScriptErrors` is set.
 
 ## Branching
 
@@ -444,6 +457,75 @@ When the appropriate event is triggered (which could happen seconds, days, weeks
 
 Many activities have settings that are **expressions**, evaluated each time the activity runs. Liquid-enabled fields allow you to enter Liquid markup, enabling access to system-wide variables and filters as well as variables from the **workflow execution context**.
 
+### Available Data
+
+The **Available data** section, under the editor of the selected activity, lists what its expressions can read:
+
+- **Variables.** The workflow's [variables](#variables).
+- **From an activity.** The values that the activities which can run before this one provide: the input of an event (the content item of a content event, for example), and the properties and outputs that tasks set. Only the activities on a path to the selected one are listed, nearest first.
+- **Fields.** A value that has fields, such as a content item or a user, lists them under **Fields**, each with its own expressions.
+- **Workflow.** The result of the last activity, and the correlation id of the instance.
+
+Each value shows its JavaScript and Liquid expressions, for example `input("ContentEvent").ContentType` and `{{ Workflow.Input.ContentEvent.ContentType }}`. Click one to insert it where the cursor was in the activity's editor. When no field of the editor had the cursor, the expression is copied instead. The script editors also suggest these values as you type.
+
+The built-in activities provide the following values:
+
+| Activity | Values |
+|---|---|
+| Content events (Content Created, Published, Updated, …) | Input `ContentItem`, and `ContentEvent`: `Name` (of the event), `ContentType`, `ContentItemId`, `ContentItemVersionId` and `IsStart`. |
+| Create Content, Retrieve Content, Update Content | Property `ContentItem`. |
+| User Task Event | Input `UserAction`, `ContentItem` and `ContentEvent`. |
+| User events (User Created, Enabled, Updated, …) | Input `User`: `UserId`, `UserName`, `Email`, `EmailConfirmed`, `IsEnabled` and `RoleNames`. |
+| User Logged In Event | Input `UserName`, `Roles`, `Provider` and `ExternalClaims`. |
+| User Logged Out Event | Input `UserName` and `Roles`. |
+| Validate User Task | Property `UserName`, when it sets the user name. |
+| Register User Task | Property `EmailConfirmationUrl`. |
+| Notify Content Owner | Input `Owner`, a user. |
+| Get Users by Role Task | The output it is configured with, unless its name is a Liquid template. |
+| Signal Event | Input `Signal`. |
+| Http Request Event | Output `FormLocation`, when it saves the form location. |
+| Catch Workflow Fault Event | Input `WorkflowFault`: `WorkflowName`, `WorkflowId`, `ActivityId`, `ActivityDisplayName`, `ActivityTypeName`, `ErrorMessage`, `FaultMessage`, `ExceptionDetails` and `ExecutedActivityCount`. |
+| For Each, For Loop | The property of their loop variable. |
+| Set Property, Set Output | The property or output they set. |
+The [outputs](#reading-and-writing-variables) of activities are listed with the variables they are stored in. An activity whose values depend on how it runs, such as a Script that sets properties, doesn't list them.
+
+### Available Data for Developers
+
+An activity lists the values it provides by implementing `IActivityProvidedValues`. `GetProvidedValues()` can use the activity's properties, for example to provide the property that it sets:
+
+```csharp
+public sealed class AssignCustomerTask : TaskActivity<AssignCustomerTask>, IActivityProvidedValues
+{
+    // ...
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        =>
+        [
+            new ActivityProvidedValue
+            {
+                Source = WorkflowValueSource.Properties,
+                Name = "Customer",
+                TypeName = "object",
+                Description = S["The customer of the order."],
+                Members =
+                [
+                    new ActivityProvidedValueMember { Name = "Email", TypeName = "string", Description = S["The email address."] },
+                ],
+            },
+        ];
+}
+```
+
+- **Sources.** `Input` (`input("name")`, `{{ Workflow.Input.name }}`), `Output` (`workflow().Output["name"]`, `{{ Workflow.Output.name }}`) or `Properties` (`property("name")`, `{{ Workflow.Properties.name }}`).
+- **Types.** `TypeName` is the name of a [variable type](#variables-for-developers), or `any`.
+- **Fields.** `Members` lists the fields of the value. `WorkflowValueMembers` has the fields of a content item, a content event, a user and a workflow fault. The Liquid expressions of the fields only work for types registered with `TemplateOptions.MemberAccessStrategy`.
+- **Registration.** A module can declare the values of an activity, its own or another module's, when it registers it. The values that the activity declares itself replace the declared values with the same source and name.
+
+```csharp
+services.AddActivity<MyTask, MyTaskDisplayDriver>(activity => activity
+    .Provides(WorkflowValueSource.Input, "Customer", "object", "The customer of the order.", [new ActivityProvidedValueMember { Name = "Email", TypeName = "string" }]));
+```
+
 ### Choosing the Syntax of an Expression
 
 The expressions of the **Correlate**, **For Each**, **For Loop**, **If / Else**, **Set Output**, **Set Property**, **Set Variable** and **While Loop** activities each have their own syntax, chosen next to the expression:
@@ -542,6 +624,8 @@ For example, if you have a workflow that starts with the **Content Created Event
 {{ Workflow.Input.ContentItem | display_text }}
 {{ Workflow.Input.ContentItem.DisplayText }}
 ```
+
+The event itself is in `Workflow.Input.ContentEvent`, for example `{{ Workflow.Input.ContentEvent.ContentType }}` or `{{ Workflow.Input.ContentEvent.Name }}`. The designer lists these values in the [available data](#available-data) of the activities that follow the event.
 
 For more examples of supported content item filters, see the documentation on [Liquid](../Liquid/README.md).
 

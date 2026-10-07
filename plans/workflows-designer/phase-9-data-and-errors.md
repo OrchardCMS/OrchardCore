@@ -186,7 +186,17 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
   - **Tests.**
     - Vitest (256): `scriptErrorsByActivity`; the node badge, which a fault hides; the journal's script error badge.
 
-### - [ ] 9.7 Docs and release notes
+### - [x] 9.7 Docs and release notes
+- **Notes from implementing this step:**
+  - **Workflows docs.**
+    - **Available Data** (under Scripts and Expressions) describes the section, inserting or copying an expression, the fields, and a table of what the built-in activities provide. Outputs are listed with the variables they're stored in.
+    - **Available Data for Developers** covers `IActivityProvidedValues` with a sample, the sources and their expressions, `Members` and `WorkflowValueMembers`, the Liquid member access the fields need, and `ActivityRegistration.Provides`.
+    - **Script Errors** (under Execution Journal) explains the default value, the amber node and the journal badge, the **Fault the workflow on script errors** setting, and that stopped expressions always fault. The journal's developer list gains `ReportScriptError`.
+    - **Liquid Expressions and ContentItem Events** shows `{{ Workflow.Input.ContentEvent.ContentType }}`.
+    - **Versions** now lists everything a version holds, including variables, branching and the new setting.
+  - **Release notes.** `4.0.0.md` has **Workflow Available Data** and **Workflow Script Errors** sections.
+  - **API.** `ActivityRegistration.Provides` takes an optional `members` argument, so a registration can declare fields too; tested in `ActivityProvidedValuesTests`.
+  - **Tests.** CI-flag build clean; workflow tests 288/288.
 
 ### - [ ] 9.8 End-to-end test
 
