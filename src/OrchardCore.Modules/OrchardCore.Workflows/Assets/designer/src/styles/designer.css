@@ -4,7 +4,8 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 11rem);
+    /* The page header above, and a small gap below. */
+    height: calc(100vh - 9.875rem);
     min-height: 32rem;
     border: var(--bs-border-width) solid var(--bs-border-color);
     border-radius: var(--bs-border-radius);
@@ -242,6 +243,7 @@
 
 .wfd-panel-tabs {
     flex: 1 1 auto;
+    gap: 0.25rem;
     border-bottom: 0;
     padding-top: 0.25rem;
     padding-inline-start: 0.25rem;
