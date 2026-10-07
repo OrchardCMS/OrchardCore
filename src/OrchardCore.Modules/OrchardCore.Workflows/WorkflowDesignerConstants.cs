@@ -36,5 +36,15 @@ public static class WorkflowDesignerConstants
         /// An activity can't be reached from any start activity.
         /// </summary>
         public const string UnreachableActivity = nameof(UnreachableActivity);
+
+        /// <summary>
+        /// A Set Variable activity or an output binding names a variable the workflow doesn't declare.
+        /// </summary>
+        public const string UndeclaredVariable = nameof(UndeclaredVariable);
+
+        /// <summary>
+        /// An output is bound to a variable whose type its values may not convert to.
+        /// </summary>
+        public const string OutputTypeMismatch = nameof(OutputTypeMismatch);
     }
 }

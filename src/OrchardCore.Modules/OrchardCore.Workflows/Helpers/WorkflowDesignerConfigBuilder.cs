@@ -44,6 +44,8 @@ internal static class WorkflowDesignerConfigBuilder
                 Discard = url.Action("Discard", DesignerController, route),
                 Versions = url.Action("Versions", DesignerController, route),
                 Restore = url.Action("Restore", DesignerController, route),
+                Variables = url.Action("Variables", DesignerController, route),
+                OutputBindings = url.Action("OutputBindings", DesignerController, route),
             }
             : new DesignerUrls
             {
@@ -136,5 +138,9 @@ internal static class WorkflowDesignerConfigBuilder
         public string Restore { get; init; }
 
         public string Compare { get; init; }
+
+        public string Variables { get; init; }
+
+        public string OutputBindings { get; init; }
     }
 }

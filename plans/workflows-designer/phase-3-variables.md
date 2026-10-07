@@ -121,12 +121,27 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - `WorkflowDesignerControllerTests.EditorPost_SetVariableTask_SavesTheVariableAndValidatesLiquid`: the datalist hook, invalid Liquid, and a trimmed name saved in the draft.
     - Workflows tests: 165/165.
 
-### - [ ] 3.5 Designer API
+### - [x] 3.5 Designer API
 
 - The definition carries `variables`, the available `variableTypes`, and for each node its `outputs` and `outputBindings`.
 - `POST Variables` (`revision`, `variables`) and `POST OutputBindings` (`activityId`, `revision`, `bindings`), through new draft manager methods with the usual conflict handling; invalid declarations return 400 with a message per variable.
 - Validation issues: a Set Variable or binding naming an undeclared variable (warning); a binding whose output type can't be assigned to the variable's type (warning).
 - **Tests**: endpoints, conflicts, validation, issues, 403.
+- **Notes from implementing this step:**
+  - **Responses.** `Definition`, `Instance`, `Version` and `Compare` carry `variables` and `variableTypes` (`name`, `displayName`, `editor`). Each node has `outputs` (`name`, `typeName`, `displayName`) and `outputBindings`. The instance has `variableValues`: the stored JSON of each declared variable that has a value, read from the instance's `State.Properties`.
+  - **Endpoints.**
+    - `Variables` trims the names, validates them with `WorkflowVariableValidator`, and returns 400 ProblemDetails with `variableErrors` (`index`, `name`, `message`) when a declaration is invalid. Otherwise it replaces the draft's variables and returns `revision`, `variables` and `issues`.
+    - `OutputBindings` replaces one activity's bindings and returns `revision`, the rebuilt `node` and `issues`. An unknown activity returns 404.
+    - Both URLs are in the designer configuration (`urls.variables`, `urls.outputBindings`).
+  - **Issues.**
+    - `UndeclaredVariable` (warning) is raised for a Set Variable activity whose name isn't declared, and for a binding to an undeclared variable.
+    - `OutputTypeMismatch` (warning) is raised when the output's type differs from the variable's. Bindings are assignable when either side is `any`, or when the variable is a `string`.
+    - Names are compared ignoring case.
+  - **API changes.** `IWorkflowTypeDraftManager` gains `UpdateVariablesAsync` and `UpdateOutputBindingsAsync`. `WorkflowDesignerController` takes `IWorkflowVariableTypeProvider` and `WorkflowVariableValidator`.
+  - **Tests.**
+    - Controller (5): variables saved, conflict and issues; invalid declarations; bindings and their issues; instance variable values; forbidden posts, sent through the fixture's client with a restricted `PermissionsContext` header so they pass the antiforgery check.
+    - Draft manager (10): variables, bindings, not found, and the issue rules as a theory.
+    - Workflows tests: 188/188.
 
 ### - [ ] 3.6 Designer UI
 

@@ -3,12 +3,13 @@ using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Modules;
+using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Models;
+using static OrchardCore.Workflows.WorkflowDesignerConstants;
 using YesSql;
 using ISession = YesSql.ISession;
-using static OrchardCore.Workflows.WorkflowDesignerConstants;
 
 namespace OrchardCore.Workflows.Services;
 
@@ -228,6 +229,48 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
     }
 
     /// <inheritdoc />
+    public Task<WorkflowTypeDraftResult> UpdateVariablesAsync(string workflowTypeId, int expectedRevision, IList<WorkflowVariableDefinition> variables)
+    {
+        ArgumentNullException.ThrowIfNull(variables);
+
+        return ChangeAsync(workflowTypeId, expectedRevision, (workflowType, draft) =>
+        {
+            draft.Variables = variables
+                .Select(variable =>
+                {
+                    var copy = variable.Clone();
+                    copy.Name = copy.Name?.Trim();
+
+                    return copy;
+                })
+                .ToList();
+
+            return Task.FromResult(new ChangeOutcome());
+        });
+    }
+
+    /// <inheritdoc />
+    public Task<WorkflowTypeDraftResult> UpdateOutputBindingsAsync(string workflowTypeId, int expectedRevision, string activityId, IDictionary<string, string> bindings)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(activityId);
+
+        return ChangeAsync(workflowTypeId, expectedRevision, (workflowType, draft) =>
+        {
+            var record = draft.Activities.FirstOrDefault(activity => activity.ActivityId == activityId);
+
+            if (record is null)
+            {
+                return Task.FromResult(ChangeOutcome.Rejected(WorkflowTypeDraftStatus.NotFound));
+            }
+
+            record.Properties ??= [];
+            record.Properties.SetOutputBindings(bindings);
+
+            return Task.FromResult(new ChangeOutcome { Activity = record });
+        });
+    }
+
+    /// <inheritdoc />
     public Task<WorkflowTypeDraftResult> RestoreAsync(string workflowTypeId, int expectedRevision, WorkflowTypeVersion version)
     {
         ArgumentNullException.ThrowIfNull(version);
@@ -314,7 +357,7 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
     {
         ArgumentNullException.ThrowIfNull(draft);
 
-        return Task.FromResult<IReadOnlyList<WorkflowDesignIssue>>(Validate(draft.Activities, draft.Transitions));
+        return Task.FromResult<IReadOnlyList<WorkflowDesignIssue>>(Validate(draft.Activities, draft.Transitions, draft.Variables));
     }
 
     /// <inheritdoc />
@@ -322,12 +365,14 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
     {
         ArgumentNullException.ThrowIfNull(workflowType);
 
-        return Task.FromResult<IReadOnlyList<WorkflowDesignIssue>>(Validate(workflowType.Activities, workflowType.Transitions));
+        return Task.FromResult<IReadOnlyList<WorkflowDesignIssue>>(Validate(workflowType.Activities, workflowType.Transitions, workflowType.Variables));
     }
 
-    private List<WorkflowDesignIssue> Validate(IList<ActivityRecord> activities, IList<Transition> transitions)
+    private List<WorkflowDesignIssue> Validate(IList<ActivityRecord> activities, IList<Transition> transitions, IList<WorkflowVariableDefinition> variables)
     {
         var issues = new List<WorkflowDesignIssue>();
+
+        ValidateVariableReferences(activities, variables, issues);
         var activityIds = new HashSet<string>(activities.Select(activity => activity.ActivityId), StringComparer.Ordinal);
 
         if (activities.Count > 0 && !activities.Any(activity => activity.IsStart))
@@ -429,6 +474,74 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
 
         return issues;
     }
+
+    // Set Variable activities and output bindings that name an undeclared variable, and bindings whose output values
+    // may not convert to their variable's type.
+    private void ValidateVariableReferences(IList<ActivityRecord> activities, IList<WorkflowVariableDefinition> variables, List<WorkflowDesignIssue> issues)
+    {
+        var declared = (variables ?? [])
+            .Where(variable => !string.IsNullOrEmpty(variable?.Name))
+            .GroupBy(variable => variable.Name, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(group => group.Key, group => group.First(), StringComparer.OrdinalIgnoreCase);
+
+        foreach (var activity in activities)
+        {
+            if (activity.Name == nameof(SetVariableTask) &&
+                activity.Properties?[nameof(SetVariableTask.VariableName)] is JsonValue nameValue &&
+                nameValue.TryGetValue<string>(out var variableName) &&
+                !string.IsNullOrWhiteSpace(variableName) &&
+                !declared.ContainsKey(variableName))
+            {
+                issues.Add(new WorkflowDesignIssue
+                {
+                    Severity = WorkflowDesignIssueSeverity.Warning,
+                    Code = IssueCodes.UndeclaredVariable,
+                    Message = S["'{0}' isn't a declared variable: the value is stored as a workflow property, without a type.", variableName],
+                    ActivityId = activity.ActivityId,
+                });
+            }
+
+            var bindings = activity.Properties.GetOutputBindings();
+
+            if (bindings.Count == 0)
+            {
+                continue;
+            }
+
+            var outputs = (_activityLibrary.GetActivityByName(activity.Name) as IActivityOutputs)?.GetOutputs().ToDictionary(output => output.Name) ?? [];
+
+            foreach (var (outputName, boundVariable) in bindings)
+            {
+                if (!declared.TryGetValue(boundVariable, out var variable))
+                {
+                    issues.Add(new WorkflowDesignIssue
+                    {
+                        Severity = WorkflowDesignIssueSeverity.Warning,
+                        Code = IssueCodes.UndeclaredVariable,
+                        Message = S["The output '{0}' is bound to '{1}', which isn't a declared variable.", outputName, boundVariable],
+                        ActivityId = activity.ActivityId,
+                    });
+                }
+                else if (outputs.TryGetValue(outputName, out var output) && !IsAssignable(output.TypeName, variable.TypeName))
+                {
+                    issues.Add(new WorkflowDesignIssue
+                    {
+                        Severity = WorkflowDesignIssueSeverity.Warning,
+                        Code = IssueCodes.OutputTypeMismatch,
+                        Message = S["The output '{0}' ({1}) is bound to '{2}' ({3}): its values may not convert, which faults the workflow.", outputName, output.TypeName, variable.Name, variable.TypeName],
+                        ActivityId = activity.ActivityId,
+                    });
+                }
+            }
+        }
+    }
+
+    // Any value converts to text, and nothing is known of 'any' outputs.
+    private static bool IsAssignable(string outputType, string variableType)
+        => string.Equals(outputType, variableType, StringComparison.OrdinalIgnoreCase) ||
+           string.Equals(outputType, "any", StringComparison.OrdinalIgnoreCase) ||
+           string.Equals(variableType, "any", StringComparison.OrdinalIgnoreCase) ||
+           string.Equals(variableType, "string", StringComparison.OrdinalIgnoreCase);
 
     private async Task<WorkflowTypeDraftResult> ChangeAsync(
         string workflowTypeId,

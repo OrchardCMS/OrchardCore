@@ -6,6 +6,7 @@ using OrchardCore.Modules;
 using OrchardCore.Workflows;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
@@ -443,6 +444,95 @@ public sealed class WorkflowTypeDraftManagerTests : IAsyncLifetime
         Assert.Equal("orphan", issue.ActivityId);
     }
 
+    [Fact]
+    public async Task UpdateVariablesAsync_Variables_ReplacesTheDraftVariablesWithTrimmedCopies()
+    {
+        var variables = new List<WorkflowVariableDefinition> { new() { Name = " count ", TypeName = "number", DefaultValue = 1 } };
+
+        var result = await CreateManager().UpdateVariablesAsync(_workflowType.WorkflowTypeId, 0, variables);
+
+        Assert.True(result.Succeeded);
+        Assert.Equal(1, result.Revision);
+        var variable = Assert.Single(result.Draft.Variables);
+        Assert.Equal("count", variable.Name);
+        Assert.NotSame(variables[0], variable);
+        Assert.Empty(_workflowType.Variables);
+    }
+
+    [Fact]
+    public async Task UpdateOutputBindingsAsync_KnownActivity_StoresTheBindingsInItsProperties()
+    {
+        var result = await CreateManager().UpdateOutputBindingsAsync(_workflowType.WorkflowTypeId, 0, "a", new Dictionary<string, string> { ["Count"] = "count" });
+
+        Assert.True(result.Succeeded);
+        Assert.Equal("a", result.Activity.ActivityId);
+        Assert.Equal("count", result.Draft.Activities.Single(x => x.ActivityId == "a").Properties.GetOutputBindings()["Count"]);
+        Assert.Empty(_workflowType.Activities.Single(x => x.ActivityId == "a").Properties.GetOutputBindings());
+    }
+
+    [Fact]
+    public async Task UpdateOutputBindingsAsync_UnknownActivityId_ReturnsNotFound()
+    {
+        var result = await CreateManager().UpdateOutputBindingsAsync(_workflowType.WorkflowTypeId, 0, "missing", new Dictionary<string, string>());
+
+        Assert.Equal(WorkflowTypeDraftStatus.NotFound, result.Status);
+    }
+
+    [Fact]
+    public async Task ValidateAsync_SetVariableOfAnUndeclaredVariable_ReturnsUndeclaredVariableWarning()
+    {
+        Register(() => new SetVariableTask(Mock.Of<IWorkflowScriptEvaluator>(), Mock.Of<IWorkflowExpressionEvaluator>(), new PassThroughStringLocalizer<SetVariableTask>()));
+        var record = _workflowType.Activities.Single(x => x.ActivityId == "a");
+        record.Name = nameof(SetVariableTask);
+        record.Properties = new JsonObject { ["VariableName"] = "missing" };
+
+        var issue = Assert.Single(await CreateManager().ValidateAsync(_workflowType));
+
+        Assert.Equal(WorkflowDesignerConstants.IssueCodes.UndeclaredVariable, issue.Code);
+        Assert.Equal(WorkflowDesignIssueSeverity.Warning, issue.Severity);
+        Assert.Equal("a", issue.ActivityId);
+
+        // Names are case-insensitive.
+        _workflowType.Variables.Add(new WorkflowVariableDefinition { Name = "Missing", TypeName = "string" });
+
+        Assert.Empty(await CreateManager().ValidateAsync(_workflowType));
+    }
+
+    [Fact]
+    public async Task ValidateAsync_OutputBoundToAnUndeclaredVariable_ReturnsUndeclaredVariableWarning()
+    {
+        Register(() => new OutputTestTask());
+        var record = _workflowType.Activities.Single(x => x.ActivityId == "a");
+        record.Name = nameof(OutputTestTask);
+        record.Properties.SetOutputBindings(new Dictionary<string, string> { ["Count"] = "missing" });
+
+        var issue = Assert.Single(await CreateManager().ValidateAsync(_workflowType));
+
+        Assert.Equal(WorkflowDesignerConstants.IssueCodes.UndeclaredVariable, issue.Code);
+        Assert.Equal("a", issue.ActivityId);
+    }
+
+    [Theory]
+    [InlineData("Count", "number", null)]
+    [InlineData("Count", "string", null)]
+    [InlineData("Count", "any", null)]
+    [InlineData("Anything", "boolean", null)]
+    [InlineData("Count", "boolean", WorkflowDesignerConstants.IssueCodes.OutputTypeMismatch)]
+    [InlineData("Text", "number", WorkflowDesignerConstants.IssueCodes.OutputTypeMismatch)]
+    public async Task ValidateAsync_OutputBinding_ReportsTypesThatMayNotConvert(string output, string variableType, string expectedCode)
+    {
+        Register(() => new OutputTestTask());
+        var record = _workflowType.Activities.Single(x => x.ActivityId == "a");
+        record.Name = nameof(OutputTestTask);
+        record.Properties.SetOutputBindings(new Dictionary<string, string> { [output] = "target" });
+        _workflowType.Variables.Add(new WorkflowVariableDefinition { Name = "target", TypeName = variableType });
+
+        var issues = await CreateManager().ValidateAsync(_workflowType);
+
+        string[] expected = expectedCode is null ? [] : [expectedCode];
+        Assert.Equal(expected, issues.Select(x => x.Code));
+    }
+
     private WorkflowTypeDraftManager CreateManager(string userName = "admin")
     {
         var session = _store.CreateSession();
@@ -531,6 +621,24 @@ public sealed class WorkflowTypeDraftManagerTests : IAsyncLifetime
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
             => Outcome(new LocalizedString("Done", "Done"));
+    }
+
+    private sealed class OutputTestTask : TaskActivity<OutputTestTask>, IActivityOutputs
+    {
+        public override LocalizedString DisplayText => new(nameof(OutputTestTask), "Output test task");
+
+        public override LocalizedString Category => new("Test", "Test");
+
+        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+            => Outcome(new LocalizedString("Done", "Done"));
+
+        public IEnumerable<ActivityOutputDescriptor> GetOutputs()
+            =>
+            [
+                new ActivityOutputDescriptor { Name = "Count", TypeName = "number" },
+                new ActivityOutputDescriptor { Name = "Text", TypeName = "string" },
+                new ActivityOutputDescriptor { Name = "Anything" },
+            ];
     }
 
     private sealed class PassThroughStringLocalizer<T> : IStringLocalizer<T>

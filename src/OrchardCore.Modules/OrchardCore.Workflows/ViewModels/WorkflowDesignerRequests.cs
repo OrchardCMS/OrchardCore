@@ -85,3 +85,40 @@ public sealed class WorkflowDesignerRestoreRequest
     /// </summary>
     public string VersionId { get; set; }
 }
+
+/// <summary>
+/// The body of the designer's variables request: every variable of the draft.
+/// </summary>
+public sealed class WorkflowDesignerVariablesRequest
+{
+    /// <summary>
+    /// The draft revision the designer last saw.
+    /// </summary>
+    public int Revision { get; set; }
+
+    /// <summary>
+    /// The variables, which replace those of the draft.
+    /// </summary>
+    public IList<WorkflowVariableDefinition> Variables { get; set; } = [];
+}
+
+/// <summary>
+/// The body of the designer's output bindings request: the bindings of one activity.
+/// </summary>
+public sealed class WorkflowDesignerOutputBindingsRequest
+{
+    /// <summary>
+    /// The draft revision the designer last saw.
+    /// </summary>
+    public int Revision { get; set; }
+
+    /// <summary>
+    /// The <see cref="ActivityRecord.ActivityId"/>.
+    /// </summary>
+    public string ActivityId { get; set; }
+
+    /// <summary>
+    /// The variable each output is bound to, by output name; these replace the activity's bindings.
+    /// </summary>
+    public IDictionary<string, string> Bindings { get; set; } = new Dictionary<string, string>();
+}

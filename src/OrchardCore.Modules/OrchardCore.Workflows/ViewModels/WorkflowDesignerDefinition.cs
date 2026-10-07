@@ -73,6 +73,16 @@ public sealed class WorkflowDesignerDefinition
     public WorkflowDesignerInstance Instance { get; init; }
 
     /// <summary>
+    /// The variables the definition declares.
+    /// </summary>
+    public IReadOnlyList<WorkflowVariableDefinition> Variables { get; init; } = [];
+
+    /// <summary>
+    /// The variable types available for declarations.
+    /// </summary>
+    public IReadOnlyList<WorkflowDesignerVariableType> VariableTypes { get; init; } = [];
+
+    /// <summary>
     /// The version new instances start on, or <see langword="null"/> when the workflow type has none.
     /// </summary>
     public WorkflowDesignerVersion PublishedVersion { get; init; }
@@ -158,6 +168,58 @@ public sealed class WorkflowDesignerNode
     /// The outcomes the activity can produce, given its current properties.
     /// </summary>
     public IReadOnlyList<WorkflowDesignerOutcome> Outcomes { get; init; } = [];
+
+    /// <summary>
+    /// The outputs the activity declares (see <see cref="Activities.IActivityOutputs"/>).
+    /// </summary>
+    public IReadOnlyList<WorkflowDesignerOutput> Outputs { get; init; } = [];
+
+    /// <summary>
+    /// The variable each output is bound to, by output name.
+    /// </summary>
+    public IReadOnlyDictionary<string, string> OutputBindings { get; init; } = new Dictionary<string, string>();
+}
+
+/// <summary>
+/// An output of an activity, as shown by the designer.
+/// </summary>
+public sealed class WorkflowDesignerOutput
+{
+    /// <summary>
+    /// The name of the output.
+    /// </summary>
+    public string Name { get; init; }
+
+    /// <summary>
+    /// The variable type of its values.
+    /// </summary>
+    public string TypeName { get; init; }
+
+    /// <summary>
+    /// The name shown in the designer.
+    /// </summary>
+    public string DisplayName { get; init; }
+}
+
+/// <summary>
+/// A variable type, as offered by the designer.
+/// </summary>
+public sealed class WorkflowDesignerVariableType
+{
+    /// <summary>
+    /// The <see cref="Services.IWorkflowVariableType.Name"/>.
+    /// </summary>
+    public string Name { get; init; }
+
+    /// <summary>
+    /// The name shown in the designer.
+    /// </summary>
+    public string DisplayName { get; init; }
+
+    /// <summary>
+    /// How a default value of this type is edited.
+    /// </summary>
+    public string Editor { get; init; }
 }
 
 /// <summary>

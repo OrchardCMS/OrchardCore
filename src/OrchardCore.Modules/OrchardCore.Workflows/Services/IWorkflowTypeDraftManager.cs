@@ -66,6 +66,24 @@ public interface IWorkflowTypeDraftManager
     Task<WorkflowTypeDraftResult> UpdateSettingsAsync(string workflowTypeId, int expectedRevision, WorkflowTypeDraftSettings settings);
 
     /// <summary>
+    /// Replaces the variables of the draft. Callers validate the declarations first (see
+    /// <see cref="Variables.WorkflowVariableValidator"/>).
+    /// </summary>
+    /// <param name="workflowTypeId">The <see cref="WorkflowType.WorkflowTypeId"/>.</param>
+    /// <param name="expectedRevision">The revision the caller last saw.</param>
+    /// <param name="variables">The variables.</param>
+    Task<WorkflowTypeDraftResult> UpdateVariablesAsync(string workflowTypeId, int expectedRevision, IList<WorkflowVariableDefinition> variables);
+
+    /// <summary>
+    /// Replaces the output bindings of an activity of the draft.
+    /// </summary>
+    /// <param name="workflowTypeId">The <see cref="WorkflowType.WorkflowTypeId"/>.</param>
+    /// <param name="expectedRevision">The revision the caller last saw.</param>
+    /// <param name="activityId">The <see cref="ActivityRecord.ActivityId"/>.</param>
+    /// <param name="bindings">The variable each output is bound to, by output name.</param>
+    Task<WorkflowTypeDraftResult> UpdateOutputBindingsAsync(string workflowTypeId, int expectedRevision, string activityId, IDictionary<string, string> bindings);
+
+    /// <summary>
     /// Replaces the activities, transitions and execution settings of the draft with those of a version, so the
     /// version can be published again. The name and enabled state of the draft are kept.
     /// </summary>

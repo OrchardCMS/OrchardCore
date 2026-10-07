@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.ViewModels;
@@ -26,4 +27,9 @@ public sealed class WorkflowDesignerInstance
     /// The activities the instance waits on.
     /// </summary>
     public IReadOnlyList<string> BlockingActivityIds { get; init; } = [];
+
+    /// <summary>
+    /// The stored values of the declared variables, by name.
+    /// </summary>
+    public IReadOnlyDictionary<string, JsonNode> VariableValues { get; init; } = new Dictionary<string, JsonNode>();
 }

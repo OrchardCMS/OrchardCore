@@ -185,6 +185,17 @@ public sealed class WorkflowDesignerModelBuilder
                     DisplayName = outcome.DisplayName?.Value ?? outcome.Name,
                 })
                 .ToList(),
+            Outputs = activity is IActivityOutputs activityOutputs
+                ? activityOutputs.GetOutputs()
+                    .Select(output => new WorkflowDesignerOutput
+                    {
+                        Name = output.Name,
+                        TypeName = output.TypeName,
+                        DisplayName = output.DisplayName?.Value ?? output.Name,
+                    })
+                    .ToList()
+                : [],
+            OutputBindings = record.Properties.GetOutputBindings(),
         };
     }
 

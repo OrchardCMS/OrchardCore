@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,7 @@ using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
+using OrchardCore.Workflows.Variables;
 using OrchardCore.Workflows.ViewModels;
 using YesSql;
 using YesSql.Services;
@@ -46,6 +48,8 @@ public sealed class WorkflowDesignerController : Controller
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly ISession _session;
     private readonly IClock _clock;
+    private readonly IWorkflowVariableTypeProvider _variableTypes;
+    private readonly WorkflowVariableValidator _variableValidator;
 
     internal readonly IStringLocalizer S;
 
@@ -61,6 +65,8 @@ public sealed class WorkflowDesignerController : Controller
         IUpdateModelAccessor updateModelAccessor,
         ISession session,
         IClock clock,
+        IWorkflowVariableTypeProvider variableTypes,
+        WorkflowVariableValidator variableValidator,
         IStringLocalizer<WorkflowDesignerController> stringLocalizer)
     {
         _authorizationService = authorizationService;
@@ -74,6 +80,8 @@ public sealed class WorkflowDesignerController : Controller
         _updateModelAccessor = updateModelAccessor;
         _session = session;
         _clock = clock;
+        _variableTypes = variableTypes;
+        _variableValidator = variableValidator;
         S = stringLocalizer;
     }
 
@@ -122,6 +130,8 @@ public sealed class WorkflowDesignerController : Controller
             Settings = SettingsOf(source),
             Nodes = await _modelBuilder.BuildNodesAsync(source),
             Transitions = source.Transitions.Select(WorkflowDesignerTransition.From).ToList(),
+            Variables = [.. source.Variables ?? []],
+            VariableTypes = VariableTypes(),
             Issues = issues,
             RunningInstanceCount = runningInstanceCount,
             PublishedVersion = await PublishedVersionAsync(workflowType),
@@ -158,6 +168,8 @@ public sealed class WorkflowDesignerController : Controller
             Settings = SettingsOf(definition),
             Nodes = await _modelBuilder.BuildNodesAsync(definition),
             Transitions = definition.Transitions.Select(WorkflowDesignerTransition.From).ToList(),
+            Variables = [.. definition.Variables ?? []],
+            VariableTypes = VariableTypes(),
             PublishedVersion = await PublishedVersionAsync(workflowType),
             Version = WorkflowDesignerVersion.From(version, workflowType),
             Instance = new WorkflowDesignerInstance
@@ -166,6 +178,7 @@ public sealed class WorkflowDesignerController : Controller
                 WorkflowId = workflow.WorkflowId,
                 Status = workflow.Status.ToString(),
                 BlockingActivityIds = workflow.BlockingActivities.Select(activity => activity.ActivityId).Distinct().ToList(),
+                VariableValues = VariableValuesOf(workflow, definition.Variables),
 
                 // TODO: Phase 5 records the executed activities (ExecutedActivities); return them here so the
                 // viewer highlights the executed path.
@@ -335,6 +348,107 @@ public sealed class WorkflowDesignerController : Controller
             revision = result.Revision,
             node = await _modelBuilder.BuildNodeAsync(result.Draft.ToTransientWorkflowType(workflowType), activityId),
             removedTransitions = result.RemovedTransitions.Select(WorkflowDesignerTransition.From).ToList(),
+            issues = result.Issues,
+        });
+    }
+
+    /// <summary>
+    /// Replaces the variables of the draft. Invalid declarations are rejected with their
+    /// <c>variableErrors</c>.
+    /// </summary>
+    [HttpPost]
+    public async Task<IActionResult> Variables(long workflowTypeId, [FromBody] WorkflowDesignerVariablesRequest request)
+    {
+        if (!await CanManageAsync())
+        {
+            return this.ApiForbidProblem();
+        }
+
+        if (request?.Variables is null || request.Variables.Any(variable => variable is null))
+        {
+            return this.ApiBadRequestProblem();
+        }
+
+        var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
+
+        if (workflowType is null)
+        {
+            return this.ApiNotFoundProblem();
+        }
+
+        foreach (var variable in request.Variables)
+        {
+            variable.Name = variable.Name?.Trim();
+        }
+
+        var errors = _variableValidator.Validate(request.Variables);
+
+        if (errors.Count > 0)
+        {
+            var problem = ProblemDetailsFactory.CreateProblemDetails(
+                HttpContext,
+                StatusCodes.Status400BadRequest,
+                S["The variables can't be saved."],
+                detail: S["Fix the errors listed in the variable errors first."]);
+
+            problem.Extensions["variableErrors"] = errors;
+
+            return new ObjectResult(problem)
+            {
+                StatusCode = StatusCodes.Status400BadRequest,
+                ContentTypes = { "application/problem+json" },
+            };
+        }
+
+        var result = await _draftManager.UpdateVariablesAsync(workflowType.WorkflowTypeId, request.Revision, request.Variables);
+
+        if (!result.Succeeded)
+        {
+            return FailureResult(result);
+        }
+
+        return Ok(new
+        {
+            revision = result.Revision,
+            variables = result.Draft.Variables,
+            issues = result.Issues,
+        });
+    }
+
+    /// <summary>
+    /// Replaces the output bindings of an activity of the draft.
+    /// </summary>
+    [HttpPost]
+    public async Task<IActionResult> OutputBindings(long workflowTypeId, [FromBody] WorkflowDesignerOutputBindingsRequest request)
+    {
+        if (!await CanManageAsync())
+        {
+            return this.ApiForbidProblem();
+        }
+
+        if (string.IsNullOrEmpty(request?.ActivityId))
+        {
+            return this.ApiBadRequestProblem();
+        }
+
+        var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
+
+        if (workflowType is null)
+        {
+            return this.ApiNotFoundProblem();
+        }
+
+        var result = await _draftManager.UpdateOutputBindingsAsync(workflowType.WorkflowTypeId, request.Revision, request.ActivityId, request.Bindings ?? new Dictionary<string, string>());
+
+        if (!result.Succeeded)
+        {
+            return FailureResult(result);
+        }
+
+        return Ok(new
+        {
+            revision = result.Revision,
+            node = await _modelBuilder.BuildNodeAsync(result.Draft.ToTransientWorkflowType(workflowType), request.ActivityId),
             issues = result.Issues,
         });
     }
@@ -665,9 +779,52 @@ public sealed class WorkflowDesignerController : Controller
             Settings = SettingsOf(definition),
             Nodes = await _modelBuilder.BuildNodesAsync(definition),
             Transitions = definition.Transitions.Select(WorkflowDesignerTransition.From).ToList(),
+            Variables = [.. definition.Variables ?? []],
+            VariableTypes = VariableTypes(),
             PublishedVersion = await PublishedVersionAsync(workflowType),
             Version = WorkflowDesignerVersion.From(version, workflowType),
         };
+
+    private List<WorkflowDesignerVariableType> VariableTypes()
+        => _variableTypes.List()
+            .Select(type => new WorkflowDesignerVariableType
+            {
+                Name = type.Name,
+                DisplayName = type.DisplayName?.Value ?? type.Name,
+                Editor = type.Editor,
+            })
+            .ToList();
+
+    // The stored values of the declared variables. Values live in the workflow properties, which the state stores
+    // as JSON.
+    private static Dictionary<string, JsonNode> VariableValuesOf(Workflow workflow, IList<WorkflowVariableDefinition> variables)
+    {
+        var values = new Dictionary<string, JsonNode>(StringComparer.OrdinalIgnoreCase);
+
+        if (variables is null || variables.Count == 0 || workflow.State is null)
+        {
+            return values;
+        }
+
+        var properties = workflow.State
+            .FirstOrDefault(property => string.Equals(property.Key, nameof(WorkflowState.Properties), StringComparison.OrdinalIgnoreCase))
+            .Value as JsonObject;
+
+        if (properties is null)
+        {
+            return values;
+        }
+
+        foreach (var variable in variables)
+        {
+            if (!string.IsNullOrEmpty(variable?.Name) && properties.TryGetPropertyValue(variable.Name, out var value))
+            {
+                values[variable.Name] = value?.DeepClone();
+            }
+        }
+
+        return values;
+    }
 
     private Task<bool> CanManageAsync()
         => _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows);
