@@ -79,11 +79,23 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
 
 ## Definition of done (Phase 8)
 
-- [ ] Steps 8.1–8.4 are checked.
-- [ ] The CI-flag build is green; `OrchardCore.Tests`, Vitest and the functional `*Cms*` tests pass.
-- [ ] `yarn lint`, `yarn check` and `yarn build` leave a clean `git status`.
-- [ ] Workflows in `FirstOnly` mode behave as before.
-- [ ] Docs and release notes are updated.
+- [x] Steps 8.1–8.4 are checked.
+- [x] The CI-flag build is green; `OrchardCore.Tests`, Vitest and the functional `*Cms*` tests pass.
+- [x] `yarn lint`, `yarn check` and `yarn build` leave a clean `git status`.
+- [x] Workflows in `FirstOnly` mode behave as before.
+- [x] Docs and release notes are updated.
+- **Notes from checking the Definition of done:**
+  - **Build.** The CI-flag build has 0 warnings and 0 errors.
+  - **`OrchardCore.Tests`.** 3,549 tests: 3,547 passed and 2 skipped (Unix-only).
+  - **Vitest.** The designer's 236 tests pass.
+  - **Functional `*Cms*`.** 165 of 165 pass in a single run. `WorkflowsDesignerTests` has 25 tests.
+  - **Assets.**
+    - `yarn lint` has 0 errors (the 2 warnings in `OrchardCore.Cors` were already there), and `yarn check` passes.
+    - The first `yarn build` stalled for over 15 minutes on the Parcel build of `monaco-esm`'s workers, which Phase 8 doesn't touch. It was stopped and its files were restored from git.
+    - Run again, `yarn build` reproduces the committed output, and `git status` only shows the six line-ending files from Phase 1.
+  - **`FirstOnly`.**
+    - It's the default, and stored workflows don't have the setting, so they use it.
+    - The engine test of `FirstOnly` follows one transition, the duplicate-outcome warning and the replace-on-connect behavior are unchanged (their tests pass as before), and the other workflow tests pass unchanged.
 
 ## Evaluation
 
