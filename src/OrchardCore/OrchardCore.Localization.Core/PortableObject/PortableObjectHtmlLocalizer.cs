@@ -38,9 +38,9 @@ public class PortableObjectHtmlLocalizer : HtmlLocalizer
 
             // Otherwise an already formatted string containing curly braces will be wrongly reformatted.
 
-            if (_localizer is IPluralStringLocalizer pluralLocalizer && arguments.Any(argument => argument is PluralizationArgument or MsgctxtArgument))
+            if (_localizer is IPluralStringLocalizer pluralLocalizer && arguments.Length == 1 && arguments[0] is PluralizationArgument)
             {
-                // Get an unformatted string and all non-localization arguments.
+                // Get an unformatted string and all non plural arguments (1st one is the plural count).
                 var (translation, argumentsWithCount) = pluralLocalizer.GetTranslation(name, arguments);
 
                 // Formatting will use non plural arguments if any.

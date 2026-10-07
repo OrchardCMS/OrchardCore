@@ -127,7 +127,9 @@ msgid "Hello"
 msgstr "Bonjour"
 ```
 
-When messages belong to a shared resource class, or their context should be independent of the consuming service, resolve the localizer from `IStringLocalizerFactory` using that resource type:
+### Using multiple or custom contexts
+
+A service can use multiple translation contexts by injecting `IStringLocalizerFactory` from `Microsoft.Extensions.Localization` and creating a separate localizer for each context. When messages belong to a shared resource class, resolve the localizer using that resource type:
 
 ```csharp
 public MyService(IStringLocalizerFactory factory)
@@ -136,13 +138,36 @@ public MyService(IStringLocalizerFactory factory)
 }
 ```
 
-You can also override the context for an individual lookup with `MsgctxtArgument`:
+The context is the full name of `SharedMessages`, rather than the name of the consuming service.
+
+For a context that is independent of any class name, use `Create(string baseName, string location)`. With the PO localizer, pass the desired `msgctxt` as `baseName` and an empty `location` to preserve that context:
 
 ```csharp
-S["Hello", new MsgctxtArgument("MySharedContext")];
+private readonly IStringLocalizer S;
+private readonly IStringLocalizer _sharedLocalizer;
+
+public MyService(IStringLocalizerFactory factory)
+{
+    S = factory.Create(typeof(MyService));
+    _sharedLocalizer = factory.Create("MySharedContext", string.Empty);
+}
+
+public void DoSomething()
+{
+    Console.WriteLine(S["Hello"]);
+    Console.WriteLine(_sharedLocalizer["Hello"]);
+}
 ```
 
-The argument is excluded from formatting parameters. Without a context override, the localizer uses its configured context as usual.
+Here, `S` uses `MyNamespace.MyService` as above, while `_sharedLocalizer` uses the following PO entry for the same message:
+
+```po
+msgctxt "MySharedContext"
+msgid "Hello"
+msgstr "Salut"
+```
+
+Choose the localizer for the context you need at each lookup. Formatting and pluralization work as usual on each localizer.
 
 ### Deferring localization with `LocalizationSource`
 

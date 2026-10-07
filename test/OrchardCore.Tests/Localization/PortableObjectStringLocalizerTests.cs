@@ -107,7 +107,6 @@ public class PortableObjectStringLocalizerTests
         SetupDictionary("cs", new[] {
             new CultureDictionaryRecord("ball", "míč", "míče", "míčů"),
             new CultureDictionaryRecord("ball", "small", ["míček", "míčky", "míčků"]),
-            new CultureDictionaryRecord("car", "custom", ["auto"]),
         });
 
         var localizer = new PortableObjectStringLocalizer("small", _localizationManager.Object, true, _logger.Object);
@@ -116,70 +115,6 @@ public class PortableObjectStringLocalizerTests
             var translation = localizer["ball"];
 
             Assert.Equal("míček", translation);
-        }
-    }
-
-    [Fact]
-    public void LocalizerReturnsTranslationWithContextArgument_Default_Succeeds()
-    {
-        SetupDictionary("cs", new[] {
-            new CultureDictionaryRecord("car", "custom", ["auto"]),
-        });
-
-        var localizer = new PortableObjectStringLocalizer("service", _localizationManager.Object, true, _logger.Object);
-        using (CultureScope.Create("cs"))
-        {
-            var translation = localizer["car", new MsgctxtArgument("custom")];
-
-            Assert.Equal("auto", translation);
-        }
-    }
-
-    [Fact]
-    public void LocalizerFormatsTranslationWithContextArgument_Default_Succeeds()
-    {
-        SetupDictionary("cs", new[] {
-            new CultureDictionaryRecord("Hello {0}", "custom", ["Ahoj {0}"]),
-        });
-
-        var localizer = new PortableObjectStringLocalizer("service", _localizationManager.Object, true, _logger.Object);
-        using (CultureScope.Create("cs"))
-        {
-            var translation = localizer["Hello {0}", new MsgctxtArgument("custom"), "Mike"];
-
-            Assert.Equal("Ahoj Mike", translation);
-        }
-    }
-
-    [Fact]
-    public void LocalizerReturnsUnformattedTranslationWithContextArgument_Default_Succeeds()
-    {
-        SetupDictionary("cs", new[] {
-            new CultureDictionaryRecord("Hello {0}", "custom", ["Ahoj {0}"]),
-        });
-
-        var localizer = new PortableObjectStringLocalizer("service", _localizationManager.Object, true, _logger.Object);
-        using (CultureScope.Create("cs"))
-        {
-            var translation = localizer["Hello {0}", new MsgctxtArgument("custom")];
-
-            Assert.Equal("Ahoj {0}", translation);
-        }
-    }
-
-    [Fact]
-    public void LocalizerReturnsPluralTranslationWithContextArgument_Default_Succeeds()
-    {
-        SetupDictionary("cs", new[] {
-            new CultureDictionaryRecord("{0} car", "custom", ["{0} auto", "{0} auta", "{0} aut"]),
-        });
-
-        var localizer = new PortableObjectStringLocalizer("service", _localizationManager.Object, true, _logger.Object);
-        using (CultureScope.Create("cs"))
-        {
-            var translation = localizer.Plural(2, "{0} car", "{0} cars", new MsgctxtArgument("custom"));
-
-            Assert.Equal("2 auta", translation);
         }
     }
 
