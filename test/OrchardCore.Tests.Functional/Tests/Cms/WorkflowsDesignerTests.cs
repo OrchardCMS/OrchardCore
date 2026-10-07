@@ -6,8 +6,8 @@ namespace OrchardCore.Tests.Functional.Tests.Cms;
 
 // The OrchardCore.Workflows designer: the toolbox, canvas and properties panel, drafts and publishing, and the
 // read-only instance viewer. The recipe seeds the "Seeded approval" workflow (HTTP request → Notify → Signal →
-// Notify) and a WorkflowViewer role that can open the admin but can't manage workflows. Tests that change a
-// workflow create their own.
+// Notify), the workflows of the version and variable tests, and a WorkflowViewer role that can open the admin but
+// can't manage workflows. Other tests that change a workflow create their own.
 public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsFixture>, IClassFixture<WorkflowsDesignerTestsFixture>
 {
     private const string SeededWorkflow = "Seeded approval";
@@ -488,6 +488,42 @@ public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsF
         await Assertions.Expect(page.Activity("historynotify")).ToHaveAttributeAsync("data-x", "360");
         await Assertions.Expect(page.Locator("[data-cy=toolbar-discard]")).ToBeEnabledAsync();
         await Assertions.Expect(page.Locator("[data-cy=published-version]")).ToHaveTextAsync("Version 2");
+
+        Assert.Empty(consoleErrors);
+        await page.CloseAsync();
+    }
+
+    [Fact]
+    public async Task Variables_ScriptResultBoundToAVariable_TheResponseReadsIt()
+    {
+        var (page, consoleErrors) = await OpenAsync();
+        var id = await page.FindWorkflowTypeIdAsync("Variables greeting");
+        await page.OpenDesignerAsync(id);
+
+        // Declare the variable.
+        await page.Locator("[data-cy=panel-tab-variables]").ClickAsync();
+        await page.Locator("[data-cy=variable-add]").ClickAsync();
+        var name = page.Locator("[data-cy=variable] [data-cy=variable-name]").Last;
+        await Assertions.Expect(name).ToBeFocusedAsync();
+        await Assertions.Expect(page.Locator("[data-cy=variable] [data-cy=variable-type]").Last).ToHaveValueAsync("string");
+        await name.FillAsync("greeting");
+        await name.PressAsync("Tab");
+        await page.WaitForSavedAsync();
+        await Assertions.Expect(page.Locator("#wfd-variables option[value='greeting']")).ToHaveCountAsync(1);
+
+        // Store the script's result in it.
+        await page.Locator("[data-cy=panel-tab-activity]").ClickAsync();
+        await page.EditActivityAsync("greetscript");
+        var result = page.Locator("[data-cy=activity-outputs] [data-cy=output-Result] [data-cy=output-binding]");
+        await result.SelectOptionAsync("greeting");
+        await Assertions.Expect(result).ToHaveValueAsync("greeting");
+        await page.PublishAsync();
+
+        // The response reads the variable that the binding wrote.
+        var url = await page.GenerateHttpUrlAsync(id, "greetstart");
+        var response = await page.APIRequest.GetAsync(url);
+        Assert.Equal(200, response.Status);
+        Assert.Equal("hello 42", (await response.TextAsync()).Trim());
 
         Assert.Empty(consoleErrors);
         await page.CloseAsync();

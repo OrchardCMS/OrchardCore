@@ -183,9 +183,15 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - A **Workflow Variables** feature section.
     - A **Variables** breaking-change bullet: the `WorkflowManager` and `WorkflowExecutionContext` constructors, and the driver rename.
 
-### - [ ] 3.8 End-to-end test
+### - [x] 3.8 End-to-end test
 
 - Seeded workflow: HTTP request → Script (`'hello ' + 21 * 2`) → HTTP response (`{{ Workflow.Variables.greeting }}`). The test declares `greeting` in the Variables tab, binds the script's Result to it, publishes, and calls the request URL: the response is `hello 42`.
+- **Notes from implementing this step:**
+  - **Seed.** The recipe seeds "Variables greeting" (`wfdvariablesgreeting`). `WorkflowsDesignerTests.Variables_ScriptResultBoundToAVariable_TheResponseReadsIt` adds the variable (focused, Text by default), checks the datalist, binds the Script's Result, publishes and calls the URL.
+  - **Bug found.** A new variable took the first type of the list, which was "Content item" because OrchardCore.Contents registered its type first. The binding then faulted the workflow, and the logged error failed the other tests of the class too.
+    - `WorkflowVariableTypeProvider.List()` now orders the types: Text, Number, Yes or no, Date and time, Object, List, then the others by name, and Any last. A unit test covers the order.
+    - A new variable is Text when the site has it; covered in Vitest.
+  - **Results.** `WorkflowsDesignerTests` 19/19; Workflows unit tests 189/189; Vitest 216/216.
 
 ## Definition of done (Phase 3)
 

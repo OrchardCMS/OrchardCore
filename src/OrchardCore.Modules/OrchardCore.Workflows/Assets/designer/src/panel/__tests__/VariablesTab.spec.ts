@@ -68,6 +68,7 @@ describe("VariablesTab", () => {
         const row = rowsOf(wrapper)[2];
 
         expect(document.activeElement).toBe(row.get("[data-cy=variable-name]").element);
+        expect((row.get("[data-cy=variable-type]").element as HTMLSelectElement).value).toBe("string");
 
         await rowsOf(wrapper)[0].get("[data-cy=variable-description]").trigger("change");
         await flushPromises();

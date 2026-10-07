@@ -168,7 +168,9 @@ const save = async () => {
 };
 
 const add = async () => {
-    const row: Row = { key: nextKey++, name: "", typeName: state.variableTypes[0]?.name ?? "string", defaultText: "", description: "", error: null };
+    // Text, unless the site doesn't have it.
+    const typeName = state.variableTypes.find((type) => type.name === "string")?.name ?? state.variableTypes[0]?.name ?? "string";
+    const row: Row = { key: nextKey++, name: "", typeName, defaultText: "", description: "", error: null };
 
     rows.value.push(row);
     touch();

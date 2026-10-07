@@ -1,5 +1,6 @@
 using System.Dynamic;
 using System.Text.Json.Nodes;
+using OrchardCore.Contents.Workflows.Variables;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.Variables;
 
@@ -125,6 +126,14 @@ public sealed class WorkflowVariableTypesTests
 
         Assert.Same(value, Coerce(s_any, value));
         Assert.Equal("x", Coerce(s_any, JsonValue.Create("x")));
+    }
+
+    [Fact]
+    public void List_TypesRegisteredInAnyOrder_ListsTheBuiltInTypesFirstAndAnyLast()
+    {
+        var provider = new WorkflowVariableTypeProvider([s_any, new ContentItemVariableType(new PassThroughStringLocalizer<ContentItemVariableType>()), s_array, s_boolean, s_string, s_number]);
+
+        Assert.Equal(["string", "number", "boolean", "array", "contentItem", "any"], provider.List().Select(type => type.Name));
     }
 
     private static object Coerce(IWorkflowVariableType type, object value)
