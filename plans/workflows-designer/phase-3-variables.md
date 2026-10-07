@@ -108,10 +108,18 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - `Variables/ActivityOutputsTests.cs`: each activity's declared outputs, the Script and Set Property outputs, and the binding helpers.
     - Workflows and Contents tests: 206/206.
 
-### - [ ] 3.4 Set Variable activity
+### - [x] 3.4 Set Variable activity
 
 - `SetVariableTask` (Primitives): `VariableName`, a JavaScript or Liquid value (same syntax toggle as Set Property), outcome Done; writes through `Variables` (T1). Driver, view model, views, icon.
 - **Tests**: sets a declared variable with coercion; an undeclared name stores the raw value; Liquid and JavaScript values; the editor validates the Liquid.
+- **Notes from implementing this step:**
+  - **Renamed driver.** The Set Property activity's driver was named `SetVariableTaskDisplayDriver`; it is now `SetPropertyTaskDisplayDriver` (release notes), and `SetVariableTaskDisplayDriver` is the new activity's.
+  - **Activity.** Its icon is `fa-square-root-variable`. Its name field uses `list="wfd-variables"`; the designer fills that datalist in step 3.6.
+  - **Values.** A value that doesn't convert throws `WorkflowVariableException` from the activity, which faults the workflow. The JavaScript value itself goes through the evaluator, so a script error gives `null`, as in Set Property.
+  - **Tests.**
+    - `Variables/SetVariableTaskTests.cs` (4).
+    - `WorkflowDesignerControllerTests.EditorPost_SetVariableTask_SavesTheVariableAndValidatesLiquid`: the datalist hook, invalid Liquid, and a trimmed name saved in the draft.
+    - Workflows tests: 165/165.
 
 ### - [ ] 3.5 Designer API
 

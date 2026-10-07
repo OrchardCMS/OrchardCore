@@ -10,35 +10,35 @@ using OrchardCore.Workflows.ViewModels;
 
 namespace OrchardCore.Workflows.Drivers;
 
-public sealed class SetVariableTaskDisplayDriver : ActivityDisplayDriver<SetVariableTask, SetVariableTaskViewModel>
+public sealed class SetPropertyTaskDisplayDriver : ActivityDisplayDriver<SetPropertyTask, SetPropertyTaskViewModel>
 {
     private readonly ILiquidTemplateManager _templateManager;
 
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
-    public SetVariableTaskDisplayDriver(
+    public SetPropertyTaskDisplayDriver(
         ILiquidTemplateManager templateManager,
-        IStringLocalizer<SetVariableTaskDisplayDriver> stringLocalizer)
+        IStringLocalizer<SetPropertyTaskDisplayDriver> stringLocalizer)
     {
         _templateManager = templateManager;
         S = stringLocalizer;
     }
 
-    protected override void EditActivity(SetVariableTask source, SetVariableTaskViewModel model)
+    protected override void EditActivity(SetPropertyTask source, SetPropertyTaskViewModel model)
     {
-        model.VariableName = source.VariableName;
+        model.PropertyName = source.PropertyName;
         model.Value = source.Value.Expression;
         model.LiquidValue = source.LiquidValue.Expression;
         model.Syntax = source.Syntax;
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(SetVariableTask activity, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(SetPropertyTask activity, UpdateEditorContext context)
     {
-        var model = new SetVariableTaskViewModel();
+        var model = new SetPropertyTaskViewModel();
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        activity.VariableName = model.VariableName?.Trim();
+        activity.PropertyName = model.PropertyName?.Trim();
         activity.Value = new WorkflowExpression<object>(model.Value);
         activity.LiquidValue = new WorkflowExpression<object>(model.LiquidValue);
         activity.Syntax = model.Syntax;
@@ -54,9 +54,12 @@ public sealed class SetVariableTaskDisplayDriver : ActivityDisplayDriver<SetVari
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.LiquidValue), S["Value doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
             }
         }
-        else if (model.Syntax == WorkflowScriptSyntax.JavaScript && string.IsNullOrWhiteSpace(model.Value))
+        else if (model.Syntax == WorkflowScriptSyntax.JavaScript)
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Value), S["Value is required field."]);
+            if (string.IsNullOrWhiteSpace(model.Value))
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Value), S["Value is required field."]);
+            }
         }
 
         return Edit(activity, context);

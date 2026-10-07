@@ -92,7 +92,8 @@ public sealed class Startup : StartupBase
         services.AddActivity<WorkflowFaultEvent, WorkflowFaultEventDisplayDriver>(activity => activity.Icon = "fa-solid fa-bug");
         services.AddActivity<Activity, ActivityMetadataDisplayDriver>();
         services.AddActivity<NotifyTask, NotifyTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-bell");
-        services.AddActivity<SetPropertyTask, SetVariableTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-pen-to-square");
+        services.AddActivity<SetPropertyTask, SetPropertyTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-pen-to-square");
+        services.AddActivity<SetVariableTask, SetVariableTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-square-root-variable");
         services.AddActivity<SetOutputTask, SetOutputTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-right-from-bracket");
         services.AddActivity<CorrelateTask, CorrelateTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-link");
         services.AddActivity<ForkTask, ForkTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-code-fork");

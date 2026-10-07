@@ -269,6 +269,48 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
     }
 
     [Fact]
+    public async Task EditorPost_SetVariableTask_SavesTheVariableAndValidatesLiquid()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("set", "SetVariableTask"));
+
+        using (var editor = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId=set", TestContext.Current.CancellationToken))
+        {
+            var content = new HtmlParser().ParseDocument((await ReadJsonAsync(editor))["content"].GetValue<string>());
+
+            // The designer fills this datalist with the declared variables.
+            Assert.Equal("wfd-variables", content.QuerySelector("input[name='SetVariableTask.VariableName']")?.GetAttribute("list"));
+        }
+
+        using (var invalid = await PostFormAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId=set&revision=0", new Dictionary<string, string>
+        {
+            ["SetVariableTask.VariableName"] = "greeting",
+            ["SetVariableTask.Syntax"] = "Liquid",
+            ["SetVariableTask.LiquidValue"] = "{{ 'Hello' ",
+        }))
+        {
+            var json = await ReadJsonAsync(invalid);
+            Assert.False(json["valid"].GetValue<bool>());
+            Assert.Contains("Liquid", new HtmlParser().ParseDocument(json["content"].GetValue<string>()).QuerySelector(".field-validation-error")?.TextContent);
+        }
+
+        using var valid = await PostFormAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId=set&revision=0", new Dictionary<string, string>
+        {
+            ["SetVariableTask.VariableName"] = " greeting ",
+            ["SetVariableTask.Syntax"] = "Liquid",
+            ["SetVariableTask.LiquidValue"] = "{{ 'Hello' }}",
+        });
+
+        Assert.True((await ReadJsonAsync(valid))["valid"].GetValue<bool>());
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            var draft = await scope.ServiceProvider.GetRequiredService<IWorkflowTypeDraftManager>().GetAsync(workflowTypeId);
+            var properties = Assert.Single(draft.Activities).Properties;
+            Assert.Equal("greeting", properties["VariableName"].GetValue<string>());
+        });
+    }
+
+    [Fact]
     public async Task EditorPost_ForkBranchesChanged_UpdatesOutcomesAndRemovesTransitions()
     {
         var (id, _) = await CreateWorkflowTypeAsync(
