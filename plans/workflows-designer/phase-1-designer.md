@@ -550,7 +550,7 @@ Record questions here while executing. Decide them with the maintainer before wo
 
 ## Spike findings
 
-Recorded on 2026-10-02 against `df4ae1a93a`. The throwaway code (a scratch `[Admin]` controller and fragment view in the Workflows module, a standalone canvas page and a jsPlumb comparison page) was not committed. **Both assumptions hold: decision D2 (in-house canvas) and D3 (injected server-rendered editors) stand**, with the constraints below.
+Recorded on 2026-10-02 against `39aee6786f`. The throwaway code (a scratch `[Admin]` controller and fragment view in the Workflows module, a standalone canvas page and a jsPlumb comparison page) was not committed. **Both assumptions hold: decision D2 (in-house canvas) and D3 (injected server-rendered editors) stand**, with the constraints below.
 
 ### Injected editors
 

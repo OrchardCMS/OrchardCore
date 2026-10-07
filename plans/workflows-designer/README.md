@@ -87,7 +87,7 @@ Update the **Status** column as work lands (`Not started` / `In progress` / `Don
 The work is pushed to the draft pull request [OrchardCMS/OrchardCore#19996](https://github.com/OrchardCMS/OrchardCore/pull/19996) (branch `ma/workflows-designer`), one commit per step.
 
 **Status (2026-10-07):** phases 1–8 are done and await review. Phase 9, from the review, is in progress.
-- **Merge.** The branch was brought up to date with `main` (merge `45fb919d29`).
+- **Merge.** The branch was brought up to date with `main` (merge `e3a17d4ee4`).
     - The SMS task editor kept `main`'s new From Phone Number field inside the branch's editor wrapper.
     - `main`'s new execution-limit test creates `IfElseTask` with the expression manager it takes since Phase 4.
 - **Verification of the merged result:**
