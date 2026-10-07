@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.Users.Services;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
@@ -23,5 +24,5 @@ public abstract class UserEvent : UserActivity, IEvent, IActivityProvidedValues
     }
 
     public virtual IEnumerable<ActivityProvidedValue> GetProvidedValues()
-        => [new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = "User", TypeName = "any", Description = S["The user of the event."] }];
+        => [new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = "User", TypeName = "any", Description = S["The user of the event."], Members = WorkflowValueMembers.User(S) }];
 }

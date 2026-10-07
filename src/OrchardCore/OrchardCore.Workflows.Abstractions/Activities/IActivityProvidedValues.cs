@@ -40,6 +40,33 @@ public sealed class ActivityProvidedValue
     /// What the value is, shown in the designer.
     /// </summary>
     public LocalizedString Description { get; init; }
+
+    /// <summary>
+    /// The fields of the value that scripts and Liquid templates read, for example the <c>ContentType</c> of a
+    /// content item.
+    /// </summary>
+    public IReadOnlyList<ActivityProvidedValueMember> Members { get; init; } = [];
+}
+
+/// <summary>
+/// A field of a value an activity provides (<see cref="ActivityProvidedValue.Members"/>).
+/// </summary>
+public sealed class ActivityProvidedValueMember
+{
+    /// <summary>
+    /// The name of the field.
+    /// </summary>
+    public string Name { get; init; }
+
+    /// <summary>
+    /// The <see cref="Services.IWorkflowVariableType.Name"/> of the field, or <c>any</c>.
+    /// </summary>
+    public string TypeName { get; init; } = "any";
+
+    /// <summary>
+    /// What the field is, shown in the designer.
+    /// </summary>
+    public LocalizedString Description { get; init; }
 }
 
 /// <summary>

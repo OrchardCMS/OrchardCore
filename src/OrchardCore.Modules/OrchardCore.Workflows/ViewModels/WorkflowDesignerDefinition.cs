@@ -230,6 +230,11 @@ public sealed class WorkflowDesignerProvidedValue
     /// What the value is.
     /// </summary>
     public string Description { get; init; }
+
+    /// <summary>
+    /// The fields of the value; their <see cref="Source"/> is <see langword="null"/>.
+    /// </summary>
+    public IReadOnlyList<WorkflowDesignerProvidedValue> Members { get; init; } = [];
 }
 
 /// <summary>

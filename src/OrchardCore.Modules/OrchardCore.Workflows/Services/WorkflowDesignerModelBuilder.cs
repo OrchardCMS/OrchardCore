@@ -270,6 +270,14 @@ public sealed class WorkflowDesignerModelBuilder
                     Name = value.Name,
                     TypeName = value.TypeName,
                     Description = string.IsNullOrEmpty(value.Description?.Value) ? null : value.Description.Value,
+                    Members = (value.Members ?? [])
+                        .Select(member => new WorkflowDesignerProvidedValue
+                        {
+                            Name = member.Name,
+                            TypeName = member.TypeName,
+                            Description = string.IsNullOrEmpty(member.Description?.Value) ? null : member.Description.Value,
+                        })
+                        .ToList(),
                 })
                 .ToList(),
         };

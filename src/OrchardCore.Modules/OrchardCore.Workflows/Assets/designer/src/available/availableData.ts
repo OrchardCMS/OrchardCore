@@ -1,4 +1,4 @@
-import type { DesignerNode, DesignerTransition, VariableDefinition } from "../api/types";
+import type { DesignerNode, DesignerTransition, ProvidedValueMember, VariableDefinition } from "../api/types";
 
 // The data an activity can use: the workflow's variables, the values the activities on a path to it provide
 // (ProvidedValue, declared by the activities), and a few values of the workflow itself. Each one comes with the
@@ -15,6 +15,8 @@ export interface AvailableValue {
     description?: string | null;
     javaScript: string;
     liquid: string;
+    // The fields of the value, with their own expressions.
+    members?: AvailableValue[];
 }
 
 export interface AvailableActivityGroup {
@@ -58,6 +60,27 @@ export const expressionsOf = (source: AvailableSource, name: string): { javaScri
             return { javaScript: "correlationId()", liquid: "{{ Workflow.CorrelationId }}" };
     }
 };
+
+/**
+ * The expressions that read a field of a value: input("ContentEvent").ContentType and
+ * {{ Workflow.Input.ContentEvent.ContentType }}.
+ */
+export const memberExpressionsOf = (value: { javaScript: string; liquid: string }, name: string) => {
+    const access = IDENTIFIER.test(name) ? `.${name}` : `[${JSON.stringify(name)}]`;
+    const path = value.liquid.replace(/^\{\{\s*/, "").replace(/\s*\}\}$/, "");
+
+    return { javaScript: `${value.javaScript}${access}`, liquid: `{{ ${path}${access} }}` };
+};
+
+const membersOf = (parent: AvailableValue, members: ProvidedValueMember[] | undefined): AvailableValue[] =>
+    (members ?? []).map((member) => ({
+        key: `${parent.key}.${member.name}`,
+        name: member.name,
+        source: parent.source,
+        typeName: member.typeName,
+        description: member.description,
+        ...memberExpressionsOf(parent, member.name),
+    }));
 
 /**
  * The activities that can run before an activity: those with a path to it, nearest first.
@@ -115,14 +138,18 @@ export const availableData = (
             values: (node.providedValues ?? [])
                 // A variable is also a property; it's listed with the variables.
                 .filter((value) => !(value.source === "Properties" && variableNames.has(value.name.toLowerCase())))
-                .map((value) => ({
-                    key: `${value.source}:${value.name}`,
-                    name: value.name,
-                    source: value.source,
-                    typeName: value.typeName,
-                    description: value.description,
-                    ...expressionsOf(value.source, value.name),
-                })),
+                .map((value) => {
+                    const available: AvailableValue = {
+                        key: `${value.source}:${value.name}`,
+                        name: value.name,
+                        source: value.source,
+                        typeName: value.typeName,
+                        description: value.description,
+                        ...expressionsOf(value.source, value.name),
+                    };
+
+                    return { ...available, members: membersOf(available, value.members) };
+                }),
         }))
         .filter((group) => group.values.length > 0);
 
@@ -169,6 +196,6 @@ export const upstreamValues = (nodes: DesignerNode[], transitions: DesignerTrans
     const seen = new Set<string>();
 
     return data.activities
-        .flatMap((group) => group.values.map((value) => ({ ...value, activityTitle: group.title })))
+        .flatMap((group) => group.values.flatMap((value) => [value, ...(value.members ?? [])].map((item) => ({ ...item, activityTitle: group.title }))))
         .filter((value) => (seen.has(value.key) ? false : (seen.add(value.key), true)));
 };

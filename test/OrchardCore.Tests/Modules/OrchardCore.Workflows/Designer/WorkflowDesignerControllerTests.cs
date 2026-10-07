@@ -1,8 +1,11 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using AngleSharp.Html.Parser;
+using Fluid;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.ContentManagement.Workflows;
 using OrchardCore.Documents;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Security;
@@ -591,6 +594,25 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         Assert.Equal("Properties.Owner:any", ValuesOf("set"));
         Assert.Equal(string.Empty, ValuesOf("notify"));
         Assert.Equal("The content item of the event.", nodes["published"]["providedValues"][0]["description"].GetValue<string>());
+
+        // The content item and the event list their fields.
+        string FieldsOf(string activityId, int index)
+            => string.Join(", ", nodes[activityId]["providedValues"][index]["members"].AsArray().Select(member => member["name"].GetValue<string>()));
+
+        Assert.StartsWith("ContentItemId, ContentItemVersionId, ContentType, DisplayText", FieldsOf("published", 0));
+        Assert.Equal("Name, ContentType, ContentItemId, ContentItemVersionId, IsStart", FieldsOf("published", 1));
+        Assert.Empty(nodes["signal"]["providedValues"][0]["members"].AsArray());
+
+        // Liquid can read the fields of the content event and of a fault.
+        await _fixture.Context.UsingTenantScopeAsync(scope =>
+        {
+            var strategy = scope.ServiceProvider.GetRequiredService<IOptions<TemplateOptions>>().Value.MemberAccessStrategy;
+
+            Assert.NotNull(strategy.GetAccessor(typeof(ContentEventContext), nameof(ContentEventContext.ContentType)));
+            Assert.NotNull(strategy.GetAccessor(typeof(WorkflowFaultModel), nameof(WorkflowFaultModel.ErrorMessage)));
+
+            return Task.CompletedTask;
+        });
     }
 
     [Fact]

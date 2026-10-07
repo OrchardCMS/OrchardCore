@@ -6,6 +6,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Workflows;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using YesSql;
@@ -135,5 +136,5 @@ public class CreateContentTask : ContentTask, IActivityOutputs, IActivityProvide
         => [new ActivityOutputDescriptor { Name = "ContentItem", TypeName = "contentItem", DisplayName = S["Content item"] }];
 
     public IEnumerable<ActivityProvidedValue> GetProvidedValues()
-        => [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = ContentEventConstants.ContentItemInputKey, TypeName = "contentItem", Description = S["The content item the activity created."] }];
+        => [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = ContentEventConstants.ContentItemInputKey, TypeName = "contentItem", Description = S["The content item the activity created."], Members = WorkflowValueMembers.ContentItem(S) }];
 }

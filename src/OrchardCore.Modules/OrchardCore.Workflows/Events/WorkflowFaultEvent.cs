@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
@@ -70,5 +71,5 @@ return result;";
     }
 
     public IEnumerable<ActivityProvidedValue> GetProvidedValues()
-        => [new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = WorkflowFaultModel.WorkflowFaultInputKey, TypeName = "object", Description = S["The fault: WorkflowId, WorkflowName, ActivityId, ActivityDisplayName, ActivityTypeName, ErrorMessage, ExceptionDetails, FaultMessage and ExecutedActivityCount."] }];
+        => [new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = WorkflowFaultModel.WorkflowFaultInputKey, TypeName = "object", Description = S["The fault the workflow caught."], Members = WorkflowValueMembers.WorkflowFault(S) }];
 }

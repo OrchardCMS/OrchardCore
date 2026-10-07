@@ -131,21 +131,54 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - The setting's diff, new version, publish and settings form.
     - Workflows tests: 287/287.
 
-### - [ ] 9.5 Script errors in the designer
+### - [x] 9.5 Fields of the values, and an easier list (from review)
+
+- A provided value can list its **fields** (`ActivityProvidedValue.Members`): the content item and content event of the content events and tasks, the user of the user events and of Notify Content Owner, and the fault of Catch Workflow Fault. Each field has its own JavaScript and Liquid expressions (`input("ContentEvent").ContentType`, `{{ Workflow.Input.ContentEvent.ContentType }}`).
+- `ContentEventContext` and `WorkflowFaultModel` are registered for Liquid, so the expressions of their fields work.
+- The list is easier to read: bold value names, bold **JS** and **Liquid** labels, expressions that wrap after a dot instead of being cut, a copy icon, and the fields in a collapsible group under their value, each field in a box of its own.
+- **Tests**: the fields in the definition; the Liquid registrations; Vitest for the fields' expressions and the list.
+- **Notes from implementing this step:**
+  - **Fields.**
+    - `ActivityProvidedValue.Members` lists `ActivityProvidedValueMember`s: a name, a type and a description.
+    - `WorkflowValueMembers` holds the shared lists:
+      - `ContentItem` (11 fields);
+      - `ContentEvent` (`ContentEventContext`: Name, ContentType, ContentItemId, ContentItemVersionId, IsStart);
+      - `User` (the fields the Users module exposes to Liquid);
+      - `WorkflowFault`.
+    - The content events and tasks, User Task, the user events, Notify Content Owner and Catch Workflow Fault use them. The designer definition carries them as `members`.
+  - **Liquid.** `ContentEventContext` (Contents) and `WorkflowFaultModel` (Workflows) are registered for member access; `{{ Workflow.Input.ContentEvent.ContentType }}` returned nothing before. `User` already had its accessor.
+  - **Client.**
+    - `AvailableValueItem.vue` renders a value and, recursively, its fields in a `<details>` ("Fields (n)").
+    - A field's expressions append `.Name` (or `["name"]`) to its value's: `input("ContentEvent").ContentType`.
+    - The completions list the fields too.
+  - **From review.**
+    - Bold names, and bold **JS**/**Liquid** labels in a three-column snippet row.
+    - Code that wraps, with a `<wbr>` after each dot, so lines break between members rather than inside a name.
+    - The `fa-copy` icon, and a bordered box for each value and for each field in it.
+    - The button title is "Insert or copy …": a click inserts at the cursor, or copies when no field was focused.
+  - **Verified in the preview.**
+    - Content Created Event → Log Task lists ContentItem (Fields (11)) and ContentEvent (Fields (5)).
+    - Typing in the Log text, then clicking the ContentType Liquid field, gives `Created a {{ Workflow.Input.ContentEvent.ContentType }}`.
+  - **Tests.**
+    - `Definition_ActivitiesThatProvideValues_ListThem` checks the fields and the Liquid accessors.
+    - Vitest covers `memberExpressionsOf`, the fields in `availableData` and `upstreamValues`, and the fields list in the panel (252 tests).
+    - Workflows tests: 287/287.
+
+### - [ ] 9.6 Script errors in the designer
 
 - The instance page marks the activities whose journal records have errors with a warning badge and the message; the legend explains it.
 - **Tests** (Vitest): the warning badge.
 
-### - [ ] 9.6 Docs and release notes
+### - [ ] 9.7 Docs and release notes
 
-### - [ ] 9.7 End-to-end test
+### - [ ] 9.8 End-to-end test
 
 - The available data of an activity after a content event lists its content item, and clicking an expression inserts it into the editor.
 - A script error shows a warning on the instance page; with the setting, the instance is faulted at that activity.
 
 ## Definition of done (Phase 9)
 
-- [ ] Steps 9.1–9.7 are checked.
+- [ ] Steps 9.1–9.8 are checked.
 - [ ] The CI-flag build is green; `OrchardCore.Tests`, Vitest and the functional `*Cms*` tests pass.
 - [ ] `yarn lint`, `yarn check` and `yarn build` leave a clean `git status`.
 - [ ] Workflows run as before when the new setting is off.

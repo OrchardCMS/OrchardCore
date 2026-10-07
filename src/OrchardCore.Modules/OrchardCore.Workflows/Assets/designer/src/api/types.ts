@@ -46,12 +46,21 @@ export interface VariableError {
     message: string;
 }
 
+// A field of a value an activity provides.
+export interface ProvidedValueMember {
+    name: string;
+    typeName: string;
+    description?: string | null;
+}
+
 // A value an activity provides to the activities after it (WorkflowDesignerProvidedValue).
 export interface ProvidedValue {
     source: "Input" | "Output" | "Properties";
     name: string;
     typeName: string;
     description?: string | null;
+    // The fields scripts and Liquid templates read, for example the ContentType of a content item.
+    members?: ProvidedValueMember[];
 }
 
 // An output an activity declares (WorkflowDesignerOutput).

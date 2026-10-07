@@ -433,10 +433,11 @@
 }
 
 .wfd-available-group {
-    margin: 0.5rem 0 0.25rem;
+    margin: 0.75rem 0 0.375rem;
     color: var(--bs-secondary-color);
     font-size: 0.75rem;
     font-weight: 600;
+    letter-spacing: 0.02em;
     text-transform: uppercase;
 }
 
@@ -445,31 +446,49 @@
 }
 
 .wfd-available-value {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.625rem;
+    padding: 0.5rem;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-body-bg);
     font-size: 0.8125rem;
 }
 
-.wfd-available-name .text-secondary {
-    margin-inline-start: 0.25rem;
+.wfd-available-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.5rem;
+}
+
+.wfd-available-name {
+    color: var(--bs-emphasis-color);
+    font-weight: 700;
+}
+
+.wfd-available-type {
+    color: var(--bs-secondary-color);
+    font-size: 0.75rem;
 }
 
 .wfd-available-description {
+    margin-top: 0.125rem;
     color: var(--bs-secondary-color);
 }
 
 .wfd-available-expressions {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
     gap: 0.25rem;
-    margin-top: 0.25rem;
+    margin-top: 0.375rem;
 }
 
 .wfd-snippet {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.375rem;
-    max-width: 100%;
-    padding: 0.125rem 0.375rem;
+    display: grid;
+    grid-template-columns: 3.25rem minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.25rem 0.5rem;
     border: var(--bs-border-width) solid var(--bs-border-color);
     border-radius: var(--bs-border-radius-sm);
     background-color: var(--bs-tertiary-bg);
@@ -481,18 +500,58 @@
 .wfd-snippet:hover,
 .wfd-snippet:focus-visible {
     border-color: var(--bs-primary);
+    background-color: var(--bs-primary-bg-subtle);
 }
 
 .wfd-snippet code {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    color: var(--bs-emphasis-color);
+    overflow-wrap: anywhere;
+    white-space: normal;
 }
 
 .wfd-snippet-syntax {
+    color: var(--bs-emphasis-color);
+    font-weight: 700;
+}
+
+.wfd-snippet-icon {
+    align-self: center;
     color: var(--bs-secondary-color);
-    font-size: 0.6875rem;
-    font-weight: 600;
+}
+
+.wfd-snippet:hover .wfd-snippet-icon,
+.wfd-snippet:focus-visible .wfd-snippet-icon {
+    color: var(--bs-primary);
+}
+
+.wfd-available-members {
+    margin-top: 0.375rem;
+}
+
+.wfd-available-members > summary {
+    color: var(--bs-link-color);
+    font-size: 0.75rem;
+    cursor: pointer;
+}
+
+.wfd-available-members > ul {
+    margin: 0.375rem 0 0;
+}
+
+/* Each field is a box of its own in the box of its value. */
+.wfd-available-members .wfd-available-value {
+    margin-bottom: 0.375rem;
+    padding: 0.375rem 0.5rem;
+    border-color: var(--bs-border-color-translucent);
+    background-color: var(--bs-tertiary-bg);
+}
+
+.wfd-available-members .wfd-available-value:last-child {
+    margin-bottom: 0;
+}
+
+.wfd-available-members .wfd-snippet {
+    background-color: var(--bs-body-bg);
 }
 
 /* Journal tab and retry. */
