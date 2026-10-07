@@ -59,10 +59,36 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - Vitest: checking **Input** saves it, and the read-only badges.
     - Workflows tests: 252/252. Vitest: 232/232.
 
-### - [ ] 7.2 Execute Workflow task
+### - [x] 7.2 Execute Workflow task
 
 - `ExecuteWorkflowTask` (C2–C5), the **Started By Workflow** event, `IWorkflowManager.StartChildWorkflowAsync`, the resume of a waiting parent when its child finishes, and the validation warnings (no workflow selected, a workflow that runs itself).
 - **Tests**: a child that finishes returns its outputs; a child that halts makes the parent wait, and its end resumes the parent; a faulted child gives `Failed`; fire and forget; the recursion guard.
+- **Notes from implementing this step:**
+  - **Starting a child.** `IWorkflowManager.StartChildWorkflowAsync(workflowType, parentContext, parentActivityId, input)`:
+    - starts the child on its **Started By Workflow** event (`StartedByWorkflowEvent`, a new event without an editor, in Primitives), else on its first start activity;
+    - records the parent on the child, and sets the child's input variables from the input values (7.1);
+    - fails with an exception once workflows run each other `WorkflowManager.MaxChildWorkflowDepth` (16) levels deep in a run.
+    - `StartWorkflowAsync` and the child start share `StartWorkflowCoreAsync`.
+  - **Resuming the parent.**
+    - When a child finishes or faults in a later run (a resume or a retry), the engine resumes its parent's activity, if the parent waits on it, with a `ChildWorkflowResult` input (status, outputs, fault message).
+    - A parent that runs in the same scope reads the result itself, as the engine's recursion counters show.
+    - The parent's lock is taken when it's atomic.
+  - **Execute Workflow task** (`ExecuteWorkflowTask`):
+    - Properties: `WorkflowTypeId`, `Inputs` (an expression per input variable, JavaScript when no syntax is set), `WaitForCompletion` (default on), `Outputs` (stored output descriptors, its `IActivityOutputs`), and `ChildWorkflowId` while it waits.
+    - It faults when the workflow doesn't exist, isn't usable as an activity, or is disabled.
+    - A child that finishes gives `Done`, with the child's output variables as the task's outputs and as `LastResult`. A faulted child gives `Failed`, with its fault message as `LastResult`. A child that halts makes the task halt until the child ends. Without waiting, the task takes `Done` at once.
+    - The task resolves `IWorkflowManager` when it runs, since the manager creates the activities.
+    - The result input is removed once read, so it isn't kept in the instance.
+    - It's registered with its editor in 7.3.
+  - **Validation.** Two design warnings: `MissingWorkflowToExecute` (no workflow selected) and `RecursiveWorkflowExecution` (the task runs the workflow it belongs to).
+  - **Tests** (`Composition/ExecuteWorkflowTaskTests`, over in-memory stores with the site's JSON options):
+    - a child that finishes returns its outputs to a bound variable, and records its parent;
+    - a child that waits makes the parent wait, and its end resumes the parent;
+    - a faulted child, now or later, gives `Failed`;
+    - without waiting, the parent goes on and the child's end doesn't resume it;
+    - a workflow that runs itself stops at the depth limit, and one not usable as an activity faults the parent;
+    - the stored outputs are the task's outputs, and the draft manager reports the two warnings.
+    - Workflows tests: 261/261.
 
 ### - [ ] 7.3 Editor
 

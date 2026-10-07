@@ -46,5 +46,15 @@ public static class WorkflowDesignerConstants
         /// An output is bound to a variable whose type its values may not convert to.
         /// </summary>
         public const string OutputTypeMismatch = nameof(OutputTypeMismatch);
+
+        /// <summary>
+        /// An Execute Workflow task doesn't say which workflow to run.
+        /// </summary>
+        public const string MissingWorkflowToExecute = nameof(MissingWorkflowToExecute);
+
+        /// <summary>
+        /// An Execute Workflow task runs the workflow it belongs to.
+        /// </summary>
+        public const string RecursiveWorkflowExecution = nameof(RecursiveWorkflowExecution);
     }
 }

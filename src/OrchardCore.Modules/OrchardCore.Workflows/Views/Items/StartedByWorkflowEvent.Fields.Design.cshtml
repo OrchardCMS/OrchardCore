@@ -1,0 +1,6 @@
+@using OrchardCore.Workflows.Events
+@model ActivityViewModel<StartedByWorkflowEvent>
+
+<header>
+    <h4><i class="fa-solid fa-right-to-bracket" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Started By Workflow"])</h4>
+</header>

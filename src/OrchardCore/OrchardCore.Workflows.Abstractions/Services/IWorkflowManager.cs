@@ -51,6 +51,22 @@ public interface IWorkflowManager
     Task<WorkflowExecutionContext> StartWorkflowAsync(WorkflowType workflowType, ActivityRecord startActivity = null, IDictionary<string, object> input = null, string correlationId = null);
 
     /// <summary>
+    /// Starts an instance of a workflow as the child of an activity of another instance, for example the Execute
+    /// Workflow task. The child starts on its <c>StartedByWorkflowEvent</c> start activity, else on its first start
+    /// activity, and records its parent (<see cref="Workflow.ParentWorkflowId"/>). When the child finishes or faults
+    /// in a later run, while the parent's activity waits on it, the parent's activity is resumed with a
+    /// <see cref="ChildWorkflowResult"/> input.
+    /// </summary>
+    /// <param name="workflowType">The workflow to start.</param>
+    /// <param name="parentContext">The context of the parent instance.</param>
+    /// <param name="parentActivityId">The activity of the parent that starts the child.</param>
+    /// <param name="input">The input values of the child, which set its input variables.</param>
+    /// <returns>The context of the child's first run.</returns>
+    /// <exception cref="InvalidOperationException">The workflow has no start activity, or workflows already run each
+    /// other too many levels deep in this run.</exception>
+    Task<WorkflowExecutionContext> StartChildWorkflowAsync(WorkflowType workflowType, WorkflowExecutionContext parentContext, string parentActivityId, IDictionary<string, object> input = null);
+
+    /// <summary>
     /// Starts a new workflow using the specified workflow definition. Restarting an instance runs the definition
     /// it is given, usually the current one, not the version the restarted instance ran on.
     /// </summary>

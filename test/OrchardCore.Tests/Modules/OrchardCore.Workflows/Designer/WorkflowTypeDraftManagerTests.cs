@@ -438,6 +438,33 @@ public sealed class WorkflowTypeDraftManagerTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task ValidateAsync_ExecuteWorkflowTasks_WarnWithoutAWorkflowOrWhenRunningTheirOwn()
+    {
+        _workflowType.Activities.Single(x => x.ActivityId == "a").Name = "ExecuteWorkflowTask";
+        var own = _workflowType.Activities.Single(x => x.ActivityId == "b");
+        own.Name = "ExecuteWorkflowTask";
+        own.Properties = new JsonObject { ["WorkflowTypeId"] = _workflowType.WorkflowTypeId };
+
+        // The activity type isn't registered in these tests, which is reported too.
+        var issues = (await CreateManager().ValidateAsync(_workflowType))
+            .Where(issue => issue.Code != WorkflowDesignerConstants.IssueCodes.MissingActivity);
+
+        Assert.Collection(
+            issues,
+            issue =>
+            {
+                Assert.Equal(WorkflowDesignerConstants.IssueCodes.MissingWorkflowToExecute, issue.Code);
+                Assert.Equal("a", issue.ActivityId);
+            },
+            issue =>
+            {
+                Assert.Equal(WorkflowDesignerConstants.IssueCodes.RecursiveWorkflowExecution, issue.Code);
+                Assert.Equal(WorkflowDesignIssueSeverity.Warning, issue.Severity);
+                Assert.Equal("b", issue.ActivityId);
+            });
+    }
+
+    [Fact]
     public async Task ValidateAsync_TransitionToMissingActivity_ReturnsInvalidTransitionError()
     {
         _workflowType.Transitions.Add(new Transition { SourceActivityId = "a", SourceOutcomeName = "Done", DestinationActivityId = "missing" });

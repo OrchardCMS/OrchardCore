@@ -103,6 +103,7 @@ public sealed class Startup : StartupBase
 
         services.AddScoped<IWorkflowFaultHandler, DefaultWorkflowFaultHandler>();
         services.AddActivity<WorkflowFaultEvent, WorkflowFaultEventDisplayDriver>(activity => activity.Icon = "fa-solid fa-bug");
+        services.AddActivity<StartedByWorkflowEvent, StartedByWorkflowEventDisplayDriver>(activity => activity.Icon = "fa-solid fa-right-to-bracket");
         services.AddActivity<Activity, ActivityMetadataDisplayDriver>();
         services.AddActivity<NotifyTask, NotifyTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-bell");
         services.AddActivity<SetPropertyTask, SetPropertyTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-pen-to-square");

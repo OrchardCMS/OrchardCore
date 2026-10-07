@@ -7,6 +7,7 @@ using OrchardCore.Json;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Events;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 
@@ -17,6 +18,11 @@ public class WorkflowManager : IWorkflowManager
     // The maximum recursion depth is used to limit the number of Workflow (of any type) that a given
     // Workflow execution can trigger (directly or transitively) without reaching a blocking activity.
     private const int MaxRecursionDepth = 100;
+
+    /// <summary>
+    /// How many levels deep workflows can run workflows in a run (<see cref="StartChildWorkflowAsync"/>).
+    /// </summary>
+    public const int MaxChildWorkflowDepth = 16;
 
     private readonly IActivityLibrary _activityLibrary;
     private readonly IWorkflowTypeStore _workflowTypeStore;
@@ -37,6 +43,7 @@ public class WorkflowManager : IWorkflowManager
 
     private readonly Dictionary<string, int> _recursions = [];
     private int _currentRecursionDepth;
+    private int _childWorkflowDepth;
 
     public WorkflowManager
     (
@@ -331,6 +338,8 @@ public class WorkflowManager : IWorkflowManager
             await PersistAsync(workflowContext);
         }
 
+        await ResumeParentAsync(workflowContext);
+
         return workflowContext;
     }
 
@@ -378,6 +387,8 @@ public class WorkflowManager : IWorkflowManager
         {
             await PersistAsync(workflowContext);
         }
+
+        await ResumeParentAsync(workflowContext);
 
         return workflowContext;
     }
@@ -440,8 +451,51 @@ public class WorkflowManager : IWorkflowManager
         startActivity ??= workflowType.Activities?.FirstOrDefault(x => x.IsStart)
             ?? throw new InvalidOperationException($"Workflow with ID {workflowType.Id} does not have a start activity.");
 
+        return await StartWorkflowCoreAsync(workflowType, startActivity, input, correlationId, initialize: null);
+    }
+
+    /// <inheritdoc />
+    public async Task<WorkflowExecutionContext> StartChildWorkflowAsync(WorkflowType workflowType, WorkflowExecutionContext parentContext, string parentActivityId, IDictionary<string, object> input = null)
+    {
+        ArgumentNullException.ThrowIfNull(workflowType);
+        ArgumentNullException.ThrowIfNull(parentContext);
+        ArgumentException.ThrowIfNullOrEmpty(parentActivityId);
+
+        if (_childWorkflowDepth >= MaxChildWorkflowDepth)
+        {
+            throw new InvalidOperationException($"Workflows can run other workflows {MaxChildWorkflowDepth} levels deep at most.");
+        }
+
+        var startActivity = workflowType.Activities?.FirstOrDefault(x => x.IsStart && x.Name == nameof(StartedByWorkflowEvent))
+            ?? workflowType.Activities?.FirstOrDefault(x => x.IsStart)
+            ?? throw new InvalidOperationException($"The workflow '{workflowType.Name}' doesn't have a start activity.");
+
+        _childWorkflowDepth++;
+
+        try
+        {
+            return await StartWorkflowCoreAsync(workflowType, startActivity, input, correlationId: null, workflow =>
+            {
+                workflow.ParentWorkflowId = parentContext.WorkflowId;
+                workflow.ParentActivityId = parentActivityId;
+            });
+        }
+        finally
+        {
+            _childWorkflowDepth--;
+        }
+    }
+
+    private async Task<WorkflowExecutionContext> StartWorkflowCoreAsync(
+        WorkflowType workflowType,
+        ActivityRecord startActivity,
+        IDictionary<string, object> input,
+        string correlationId,
+        Action<Workflow> initialize)
+    {
         // Create a new workflow instance.
         var workflow = NewWorkflow(workflowType, correlationId);
+        initialize?.Invoke(workflow);
 
         // Create a workflow context.
         var workflowContext = await CreateWorkflowExecutionContextAsync(workflowType, workflow, input);
@@ -638,6 +692,48 @@ public class WorkflowManager : IWorkflowManager
                 DecrementRecursion(workflowContext.Workflow);
             }
         }
+    }
+
+    // A child instance (StartChildWorkflowAsync) that finished or faulted in a later run than the one that started it
+    // resumes its parent's activity, when the parent waits on it.
+    private async Task ResumeParentAsync(WorkflowExecutionContext childContext)
+    {
+        var child = childContext.Workflow;
+
+        if (string.IsNullOrEmpty(child.ParentWorkflowId) || childContext.Status is not (WorkflowStatus.Finished or WorkflowStatus.Faulted))
+        {
+            return;
+        }
+
+        // The parent runs in this scope: its activity reads the result itself.
+        if (_recursions.TryGetValue(child.ParentWorkflowId, out var count) && count > 0)
+        {
+            return;
+        }
+
+        var parent = await _workflowStore.GetAsync(child.ParentWorkflowId);
+        var blockingActivity = parent?.BlockingActivities.FirstOrDefault(x => x.ActivityId == child.ParentActivityId);
+
+        if (blockingActivity is null)
+        {
+            return;
+        }
+
+        (var locker, var locked) = await _distributedLock.TryAcquireWorkflowLockAsync(parent);
+
+        if (!locked)
+        {
+            _logger.LogWarning("The workflow '{WorkflowId}' wasn't resumed when its child '{ChildWorkflowId}' ended: another process holds its lock.", parent.WorkflowId, child.WorkflowId);
+
+            return;
+        }
+
+        await using var acquiredLock = locker;
+
+        await ResumeWorkflowAsync(parent, blockingActivity, new Dictionary<string, object>
+        {
+            [ChildWorkflowResult.InputKey] = ChildWorkflowResult.From(childContext),
+        });
     }
 
     // The input variables take the input values of the same name.

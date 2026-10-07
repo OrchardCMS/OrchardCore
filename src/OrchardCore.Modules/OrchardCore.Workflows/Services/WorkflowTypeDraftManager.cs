@@ -369,7 +369,7 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
     {
         ArgumentNullException.ThrowIfNull(draft);
 
-        return Task.FromResult<IReadOnlyList<WorkflowDesignIssue>>(Validate(draft.Activities, draft.Transitions, draft.Variables));
+        return Task.FromResult<IReadOnlyList<WorkflowDesignIssue>>(Validate(draft.WorkflowTypeId, draft.Activities, draft.Transitions, draft.Variables));
     }
 
     /// <inheritdoc />
@@ -377,10 +377,10 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
     {
         ArgumentNullException.ThrowIfNull(workflowType);
 
-        return Task.FromResult<IReadOnlyList<WorkflowDesignIssue>>(Validate(workflowType.Activities, workflowType.Transitions, workflowType.Variables));
+        return Task.FromResult<IReadOnlyList<WorkflowDesignIssue>>(Validate(workflowType.WorkflowTypeId, workflowType.Activities, workflowType.Transitions, workflowType.Variables));
     }
 
-    private List<WorkflowDesignIssue> Validate(IList<ActivityRecord> activities, IList<Transition> transitions, IList<WorkflowVariableDefinition> variables)
+    private List<WorkflowDesignIssue> Validate(string workflowTypeId, IList<ActivityRecord> activities, IList<Transition> transitions, IList<WorkflowVariableDefinition> variables)
     {
         var issues = new List<WorkflowDesignIssue>();
 
@@ -410,6 +410,8 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
                 });
             }
         }
+
+        ValidateWorkflowExecutions(workflowTypeId, activities, issues);
 
         var validTransitions = new List<Transition>();
 
@@ -485,6 +487,36 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
         }
 
         return issues;
+    }
+
+    // Execute Workflow tasks that don't say which workflow to run, or that run the workflow they belong to.
+    private void ValidateWorkflowExecutions(string workflowTypeId, IList<ActivityRecord> activities, List<WorkflowDesignIssue> issues)
+    {
+        foreach (var activity in activities.Where(activity => activity.Name == nameof(ExecuteWorkflowTask)))
+        {
+            var target = activity.Properties?[nameof(ExecuteWorkflowTask.WorkflowTypeId)] is JsonValue value && value.TryGetValue<string>(out var id) ? id : null;
+
+            if (string.IsNullOrEmpty(target))
+            {
+                issues.Add(new WorkflowDesignIssue
+                {
+                    Severity = WorkflowDesignIssueSeverity.Warning,
+                    Code = IssueCodes.MissingWorkflowToExecute,
+                    Message = S["Select the workflow this activity runs."],
+                    ActivityId = activity.ActivityId,
+                });
+            }
+            else if (target == workflowTypeId)
+            {
+                issues.Add(new WorkflowDesignIssue
+                {
+                    Severity = WorkflowDesignIssueSeverity.Warning,
+                    Code = IssueCodes.RecursiveWorkflowExecution,
+                    Message = S["This activity runs the workflow it belongs to. Make sure the workflow stops running itself: workflows can run each other {0} levels deep at most.", WorkflowManager.MaxChildWorkflowDepth],
+                    ActivityId = activity.ActivityId,
+                });
+            }
+        }
     }
 
     // Set Variable activities and output bindings that name an undeclared variable, and bindings whose output values
