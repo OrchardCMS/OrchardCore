@@ -6,8 +6,9 @@ namespace OrchardCore.Tests.Functional.Tests.Cms;
 
 // The OrchardCore.Workflows designer: the toolbox, canvas and properties panel, drafts and publishing, and the
 // read-only instance viewer. The recipe seeds the "Seeded approval" workflow (HTTP request → Notify → Signal →
-// Notify), the workflows of the version and variable tests, and a WorkflowViewer role that can open the admin but
-// can't manage workflows. Other tests that change a workflow create their own.
+// Notify), the workflows of the version, variable, expression, journal and real-time tests, a WorkflowViewer role that
+// can open the admin but can't manage workflows, and a WorkflowEditor role that can. The recipe also enables the
+// real-time feature. Other tests that change a workflow create their own.
 public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsFixture>, IClassFixture<WorkflowsDesignerTestsFixture>
 {
     private const string SeededWorkflow = "Seeded approval";
@@ -596,6 +597,69 @@ public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsF
         await Assertions.Expect(page.Activity("faultdone")).ToHaveClassAsync(new Regex("is-executed"));
         await Assertions.Expect(page.Activity("faultcall")).Not.ToHaveClassAsync(new Regex("is-faulted"));
         await Assertions.Expect(page.Locator("[data-cy=retry]")).ToHaveCountAsync(0);
+
+        Assert.Empty(consoleErrors);
+        await page.CloseAsync();
+    }
+
+    [Fact]
+    public async Task RealTime_TwoUsers_SeeEachOtherAndTheOthersChanges()
+    {
+        var (first, firstErrors) = await OpenAsync();
+        var id = await first.CreateWorkflowTypeAsync("Live editing");
+        await UserHelper.CreateUserAsync(first, string.Empty, "workfloweditor", "workfloweditor@orchard.com", TestUtils.DefaultConfig.Password, "WorkflowEditor");
+        await first.OpenDesignerAsync(id);
+
+        var second = await Fixture.CreatePageAsync();
+        await second.SetViewportSizeAsync(1600, 1000);
+        await UserHelper.LoginAsAsync(second, string.Empty, "workfloweditor", TestUtils.DefaultConfig.Password);
+
+        // Logging in visits pages this site doesn't have (the logout and home pages), so errors count from here.
+        var secondErrors = second.CollectConsoleErrors();
+        await second.OpenDesignerAsync(id);
+
+        // Each page shows the other user.
+        await Assertions.Expect(first.Locator("[data-cy=presence-avatar]")).ToHaveAttributeAsync("title", "workfloweditor");
+        await Assertions.Expect(second.Locator("[data-cy=presence-avatar]")).ToHaveAttributeAsync("title", TestUtils.DefaultConfig.Username);
+
+        // A change in one page offers the other to reload.
+        await first.AddActivityAsync("NotifyTask", "Notify", 200, 120);
+        await first.WaitForSavedAsync();
+        await Assertions.Expect(second.Locator("[data-cy=remote-change]")).ToContainTextAsync(TestUtils.DefaultConfig.Username);
+        await second.Locator("[data-cy=remote-change-reload]").ClickAsync();
+        await Assertions.Expect(second.Activities()).ToHaveCountAsync(1);
+        await Assertions.Expect(second.Locator("[data-cy=remote-change]")).ToHaveCountAsync(0);
+
+        // Leaving tells the others.
+        await second.CloseAsync();
+        await Assertions.Expect(first.Locator("[data-cy=presence-avatar]")).ToHaveCountAsync(0);
+
+        Assert.Empty(firstErrors);
+        Assert.Empty(secondErrors);
+        await first.CloseAsync();
+    }
+
+    [Fact]
+    public async Task RealTime_InstancePage_FollowsTheInstanceAsItRuns()
+    {
+        var (page, consoleErrors) = await OpenAsync();
+        var id = await page.FindWorkflowTypeIdAsync("Live approval");
+
+        // An instance starts and waits for its signal.
+        var startUrl = await page.GenerateHttpUrlAsync(id, "livestart");
+        var signalUrl = (await (await page.APIRequest.GetAsync(startUrl)).TextAsync()).Trim();
+
+        await page.GotoAndAssertOkAsync($"/Admin/Workflows/Types/{id}/Instances/Index");
+        await page.Locator("a[href*='/Workflow/Details/']").First.ClickAsync();
+        await page.WaitForDesignerAsync();
+        await Assertions.Expect(page.Activity("livewait")).ToHaveClassAsync(new Regex("is-blocking"));
+        await Assertions.Expect(page.Activity("livedone")).Not.ToHaveClassAsync(new Regex("is-executed"));
+
+        // The signal resumes it, and the open page follows without being reloaded.
+        await page.APIRequest.GetAsync(signalUrl);
+
+        await Assertions.Expect(page.Activity("livedone")).ToHaveClassAsync(new Regex("is-executed"));
+        await Assertions.Expect(page.Activity("livewait")).Not.ToHaveClassAsync(new Regex("is-blocking"));
 
         Assert.Empty(consoleErrors);
         await page.CloseAsync();

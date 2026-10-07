@@ -29,6 +29,8 @@
         "OrchardCore.Workflows.Http",
         "OrchardCore.Workflows.Timers",
         "WorkflowsSample",
+        "OrchardCore.SignalR",
+        "OrchardCore.Workflows.SignalR",
 
         "TheAdmin",
         "SafeMode"
@@ -46,6 +48,11 @@
           "Name": "WorkflowViewer",
           "Description": "Can open the admin, but can't manage workflows.",
           "Permissions": [ "AccessAdminPanel" ]
+        },
+        {
+          "Name": "WorkflowEditor",
+          "Description": "Can manage workflows.",
+          "Permissions": [ "AccessAdminPanel", "ManageWorkflows" ]
         }
       ]
     },
@@ -423,6 +430,83 @@
               "SourceActivityId": "faultcall",
               "SourceOutcomeName": "Done",
               "DestinationActivityId": "faultdone"
+            }
+          ]
+        },
+        {
+          "WorkflowTypeId": "wfdliveapproval",
+          "Name": "Live approval",
+          "IsEnabled": true,
+          "IsSingleton": false,
+          "DeleteFinishedWorkflows": false,
+          "Activities": [
+            {
+              "ActivityId": "livestart",
+              "Name": "HttpRequestEvent",
+              "X": 40,
+              "Y": 40,
+              "IsStart": true,
+              "Properties": {
+                "HttpMethod": "GET",
+                "ValidateAntiforgeryToken": false
+              }
+            },
+            {
+              "ActivityId": "liverespond",
+              "Name": "HttpResponseTask",
+              "X": 360,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "Content": {
+                  "Expression": "{{ 'approve' | signal_url }}"
+                },
+                "HttpStatusCode": 200,
+                "ContentType": {
+                  "Expression": "text/plain"
+                }
+              }
+            },
+            {
+              "ActivityId": "livewait",
+              "Name": "SignalEvent",
+              "X": 360,
+              "Y": 240,
+              "IsStart": false,
+              "Properties": {
+                "SignalName": {
+                  "Expression": "approve"
+                }
+              }
+            },
+            {
+              "ActivityId": "livedone",
+              "Name": "NotifyTask",
+              "X": 680,
+              "Y": 240,
+              "IsStart": false,
+              "Properties": {
+                "Message": {
+                  "Expression": "Approved."
+                }
+              }
+            }
+          ],
+          "Transitions": [
+            {
+              "SourceActivityId": "livestart",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "liverespond"
+            },
+            {
+              "SourceActivityId": "liverespond",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "livewait"
+            },
+            {
+              "SourceActivityId": "livewait",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "livedone"
             }
           ]
         },

@@ -110,9 +110,21 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - `IWorkflowDesignerNotifier` for developers.
   - **Release notes.** A **Workflow Real-Time Updates** section, and the new constructor parameter of `WorkflowManager` and `WorkflowTypeDraftManager` under the breaking changes.
 
-### - [ ] 6.5 End-to-end test
+### - [x] 6.5 End-to-end test
 
 - With the feature enabled: two pages on the same workflow; a change in one shows the notice in the other, and both show each other's presence. An instance page shows the instance finishing when its signal is triggered.
+- **Notes from implementing this step:**
+  - **Recipe.** The test recipe now does three more things:
+    - enables `OrchardCore.SignalR` and `OrchardCore.Workflows.SignalR`;
+    - adds a `WorkflowEditor` role that can manage workflows;
+    - seeds "Live approval": an HTTP request responds with the URL of a signal, waits for it, then notifies.
+  - **`RealTime_TwoUsers_SeeEachOtherAndTheOthersChanges`.** The admin and a `WorkflowEditor` user open the same new workflow, in two browser contexts.
+    - Each page shows the other user's avatar.
+    - An activity added in the first page shows the notice, with the admin's name, in the second. **Reload** there shows the activity and removes the notice.
+    - Closing the second page removes its avatar from the first.
+  - **`RealTime_InstancePage_FollowsTheInstanceAsItRuns`.** An instance started by its HTTP request waits on its signal, and its page is opened. Triggering the signal marks the last activity executed and the signal no longer blocking, without reloading the page.
+  - **Login pages.** `UserHelper.LoginAsAsync` visits the logout and home pages, which this site doesn't have (404), so the second page collects console errors after logging in.
+  - `WorkflowsDesignerTests`: 23/23.
 
 ## Definition of done (Phase 6)
 
