@@ -36,11 +36,32 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
 
 ---
 
-### - [ ] 4.1 Syntax and providers
+### - [x] 4.1 Syntax and providers
 
 - `WorkflowExpression<T>.Syntax`; `WorkflowExpressionSyntaxes` constants (`Literal`, `Liquid`, `JavaScript`).
 - `A/Services/IWorkflowExpressionProvider.cs`, `A/Services/IWorkflowExpressionManager.cs`; `M/Expressions/` providers and manager, registered in `M/Startup.cs`.
 - **Tests**: each provider (Literal conversions, Liquid and JavaScript delegate to their evaluators), the manager (lookup ignoring case, default syntax, unknown syntax), JSON round trip with and without a syntax.
+- **Notes from implementing this step:**
+  - **Storage.** `Syntax` is left out of the stored JSON when it is null (`JOptions.Default` skips nulls), so activities stored before this phase, and their version fingerprints, don't change.
+  - **Providers.**
+    - Each provider has `EditorLanguage` (the Monaco language of the multi-line editor).
+    - `Validate(text, valueType)` returns its errors:
+      - Literal checks that the text converts to the type.
+      - Liquid parses the template with `ILiquidTemplateManager`.
+      - JavaScript checks nothing, since script errors are logged when the script runs.
+    - `WorkflowExpressionEvaluationContext` carries the Liquid encoder and the extra JavaScript method providers.
+  - **Literal.**
+    - Converts text as is (including to `object`), booleans and numbers in the invariant culture, lists from a JSON array or comma-separated values, and anything else from JSON.
+    - An empty text is the type's default.
+    - A text that doesn't convert throws `FormatException`, which faults the workflow.
+  - **Manager.**
+    - The last registration of a name wins.
+    - `List()` returns Literal, Liquid and JavaScript first, then the others by name.
+    - `EvaluateAsync` uses the expression's syntax, or `defaultSyntax`. A syntax that isn't registered throws `NotSupportedException`.
+  - **Legacy pairs.** `WorkflowExpressionSyntaxes.Resolve(expression, legacyLiquid, legacySyntax)` returns the expression to evaluate: the expression itself when it has a syntax, otherwise the legacy JavaScript or Liquid text with that syntax. Step 4.2 uses it.
+  - **Tests.**
+    - `Expressions/WorkflowExpressionProvidersTests.cs` (11): the providers, the manager, the JSON shape and `Resolve`.
+    - Workflows tests: 200/200.
 
 ### - [ ] 4.2 Activities evaluate per-input syntaxes
 

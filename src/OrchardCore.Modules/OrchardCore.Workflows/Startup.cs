@@ -88,6 +88,12 @@ public sealed class Startup : StartupBase
         services.AddScoped<IWorkflowExpressionEvaluator, LiquidWorkflowExpressionEvaluator>();
         services.AddScoped<IWorkflowScriptEvaluator, JavaScriptWorkflowScriptEvaluator>();
 
+        // Expression syntaxes; modules can add their own.
+        services.AddScoped<IWorkflowExpressionProvider, LiteralExpressionProvider>();
+        services.AddScoped<IWorkflowExpressionProvider, LiquidExpressionProvider>();
+        services.AddScoped<IWorkflowExpressionProvider, JavaScriptExpressionProvider>();
+        services.AddScoped<IWorkflowExpressionManager, WorkflowExpressionManager>();
+
         services.AddScoped<IWorkflowFaultHandler, DefaultWorkflowFaultHandler>();
         services.AddActivity<WorkflowFaultEvent, WorkflowFaultEventDisplayDriver>(activity => activity.Icon = "fa-solid fa-bug");
         services.AddActivity<Activity, ActivityMetadataDisplayDriver>();
