@@ -2,6 +2,7 @@ using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Localization;
+using OrchardCore.Workflows.RealTime;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
@@ -111,6 +112,7 @@ internal static class WorkflowDesignerConfigBuilder
             ListUrl = url.Action("Index", "WorkflowType", new { area = Area }),
             CurrentUserId = user.FindFirstValue(ClaimTypes.NameIdentifier),
             InitialActivityId = string.IsNullOrEmpty(initialActivityId) ? null : initialActivityId,
+            HubUrl = WorkflowsRealTime.IsEnabled(url.ActionContext.HttpContext.RequestServices) ? url.Content("~" + WorkflowsRealTime.HubPath) : null,
             Translations = localizers.GetMergedLocalizations(WorkflowsDesignerJSLocalizer.Group),
         };
 

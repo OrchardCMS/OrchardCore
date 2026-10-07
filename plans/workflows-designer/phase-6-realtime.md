@@ -51,11 +51,31 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - A started instance is notified with its status.
     - Workflows tests: 238/238.
 
-### - [ ] 6.2 Hub and feature
+### - [x] 6.2 Hub and feature
 
 - Feature `OrchardCore.Workflows.SignalR`: `WorkflowsHub` (subscribe and unsubscribe, presence relay), the policy, the route, and `SignalRWorkflowDesignerNotifier`, which sends the events to the groups after the scope's changes are committed.
 - The designer and viewer configurations carry `hubUrl` when the feature is on; their pages load the `signalr` resource.
 - **Tests**: the policy and the subscribe checks; the notifier sends to the right groups after the commit; the configuration has `hubUrl` only with the feature.
+- **Notes from implementing this step:**
+  - **Feature.** `OrchardCore.Workflows.SignalR` ("Workflows Real Time") depends on `OrchardCore.Workflows` and `OrchardCore.SignalR`. Its startup (`RealTime/RealTimeStartup.cs`) does three things:
+    - replaces the notifier with `SignalRWorkflowDesignerNotifier`;
+    - adds the `WorkflowsHub` policy (the API and cookie schemes, an authenticated user, `ManageWorkflows`), as `OrchardCore.Media` does for its hub;
+    - maps the hub at `/hubs/workflows`.
+  - **Hub.** `WorkflowsHub` has these methods:
+    - `SubscribeWorkflowType` and `SubscribeInstance` check `ManageWorkflows` again, and join the `workflow-type:{id}` or `workflow:{id}` group.
+    - Joining a type's group sends `PresenceJoined` to the others. They answer the newcomer with `AnnouncePresence`, which sends `PresenceHere` only to that connection.
+    - `UnsubscribeWorkflowType`, and a disconnection, send `PresenceLeft` to the groups the connection is in.
+    - The connection's subscriptions are kept in `Context.Items`, so the server keeps no list and works on several nodes.
+  - **Notifier.**
+    - `SignalRWorkflowDesignerNotifier` sends `WorkflowTypeChanged` (kind, revision, version, user) and `InstanceChanged` (status, deleted) to the groups.
+    - It sends from a deferred task of the shell scope, so it runs once the changes are committed.
+  - **Pages.**
+    - `WorkflowsRealTime.IsEnabled` checks for the feature's notifier. SignalR's `IHubContext<>` resolves for any hub once `OrchardCore.SignalR` is on, so it can't tell.
+    - When the feature is on, the designer configuration has `hubUrl` (with the tenant's prefix), and the designer and instance pages load the `signalr` script.
+  - **Tests.**
+    - `WorkflowsHubTests` (6): the subscriptions and their permission check, the presence messages, and the groups the notifier sends to.
+    - The designer page with the feature: the hub URL, the `signalr` script and the hub's policy. Without it, there is no `hubUrl`.
+    - Workflows tests: 245/245.
 
 ### - [ ] 6.3 Designer and viewer clients
 

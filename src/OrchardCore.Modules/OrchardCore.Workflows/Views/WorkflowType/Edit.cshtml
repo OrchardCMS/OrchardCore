@@ -13,4 +13,8 @@
 <div id="workflow-designer" data-config="@Model.ConfigJson"></div>
 
 <style asp-name="workflows-designer"></style>
+@if (OrchardCore.Workflows.RealTime.WorkflowsRealTime.IsEnabled(Context.RequestServices))
+{
+    <script asp-name="signalr" at="Foot"></script>
+}
 <script asp-name="workflows-designer" at="Foot"></script>

@@ -1,9 +1,11 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using AngleSharp.Html.Parser;
+using Microsoft.AspNetCore.Authorization;
 using OrchardCore.Admin;
 using OrchardCore.Documents;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Security;
 using OrchardCore.Tests.Apis.Context;
 using OrchardCore.Workflows.Http.Models;
 using OrchardCore.Workflows.Models;
@@ -85,6 +87,7 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         var host = Assert.Single(document.QuerySelectorAll("#workflow-designer"));
         var config = JsonNode.Parse(host.GetAttribute("data-config"));
         var tenantPrefix = $"/{_fixture.Context.TenantName}/";
+        Assert.Null(config["hubUrl"]);
 
         Assert.Equal(id, config["workflowTypeId"].GetValue<long>());
         Assert.False(config["readOnly"].GetValue<bool>());
@@ -111,6 +114,31 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         Assert.Equal(HttpStatusCode.OK, saved.StatusCode);
         var definition = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition");
         Assert.Equal(config["currentUserId"]?.GetValue<string>(), definition["draftModifiedByUserId"]?.GetValue<string>());
+    }
+
+    [Fact]
+    public async Task Edit_RealTimeFeature_ConfiguresTheHubAndLoadsSignalR()
+    {
+        using var context = new SiteContext();
+        await context.InitializeAsync();
+        await WorkflowDesignerSiteFixture.EnableFeaturesAsync(context, "OrchardCore.Workflows", "OrchardCore.Workflows.SignalR");
+        var (id, _) = await WorkflowDesignerSiteFixture.CreateWorkflowTypeAsync(context, Activity("notify", "NotifyTask"));
+
+        using var response = await context.Client.GetAsync($"Admin/Workflows/Types/Edit/{id}", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var document = new HtmlParser().ParseDocument(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+        var config = JsonNode.Parse(Assert.Single(document.QuerySelectorAll("#workflow-designer")).GetAttribute("data-config"));
+        Assert.Equal($"/{context.TenantName}/hubs/workflows", config["hubUrl"].GetValue<string>());
+        Assert.Contains(document.QuerySelectorAll("script[src]"), script => script.GetAttribute("src").Contains("signalr", StringComparison.OrdinalIgnoreCase));
+
+        // The hub requires the permission to manage workflows.
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var policy = await scope.ServiceProvider.GetRequiredService<IAuthorizationPolicyProvider>().GetPolicyAsync("WorkflowsHub");
+
+            Assert.Contains(policy.Requirements, requirement => requirement is PermissionRequirement { Permission.Name: "ManageWorkflows" });
+        });
     }
 
     [Fact]
