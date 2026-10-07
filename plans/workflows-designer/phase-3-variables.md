@@ -169,10 +169,19 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - Vitest: `variableValues` (24), `variableCompletions` (5), `VariablesTab` (8), `OutputBindings` (6), and a panel test for the datalist, the tabs and the outputs. The tab order tests now include the Variables tab. 216/216.
     - Checked in the review app: declare a variable, save, reload, bind a Script result, and see the completions in the script editor; no console or server errors.
 
-### - [ ] 3.7 Docs and release notes
+### - [x] 3.7 Docs and release notes
 
 - A **Variables** section in `src/docs/reference/modules/Workflows/README.md` (declaring, types, defaults, reading and writing from JavaScript and Liquid, Set Variable, outputs and bindings, the relationship with `Properties`), and the Set Variable activity in the activities list.
 - Release notes: the new feature and the API additions.
+- **Notes from implementing this step:**
+  - **Workflows README.**
+    - **Variables** (after Versions) has a table of the types: name, values, default editor. It covers defaults, names and conversion; reading and writing (JavaScript, Liquid, Set Variable, outputs) with a table of the activities' outputs; the issues; Variables and Properties; and Variables for Developers (`WorkflowExecutionContext.Variables`, `IActivityOutputs`, `IWorkflowVariableType`).
+    - The designer tour lists the Variables tab and the Outputs section, and the instance page mentions the variable values.
+    - The JavaScript and Liquid tables gain `variable`, `setVariable` and `Workflow.Variables`.
+    - The activities list gains Set Variable, and the vocabulary gains Variables.
+  - **Release notes** (`4.0.0.md`).
+    - A **Workflow Variables** feature section.
+    - A **Variables** breaking-change bullet: the `WorkflowManager` and `WorkflowExecutionContext` constructors, and the driver rename.
 
 ### - [ ] 3.8 End-to-end test
 

@@ -33,12 +33,13 @@ The designer has three areas:
     - Drag from an outcome's port to another activity to connect them. An outcome has at most one transition, so connecting it again replaces its previous transition.
     - Start activities show a **Start** badge, and activities with problems show their number of issues.
     - Right-click an activity, a transition or the canvas for more actions, such as making an event the start activity.
-- **The properties panel** (on the right) has three tabs:
-    - **Activity**: the editor of the selected activity. Double-click an activity, or select it and press Enter, to edit it.
+- **The properties panel** (on the right) has four tabs:
+    - **Activity**: the editor of the selected activity. Double-click an activity, or select it and press Enter, to edit it. Below the editor, **Outputs** stores the values the activity produces in [variables](#variables).
+    - **Variables**: the [variables](#variables) of the workflow, with their types and default values.
     - **Workflow**: the settings of the workflow: its name, whether it is enabled, whether it is a singleton, its lock settings, and whether finished instances are deleted.
     - **Issues**: the problems found in the workflow, errors first. Select one to go to its activity.
 
-The activities pane and the properties panel can be collapsed to a narrow rail, to give the canvas more room. Hover a rail to open its pane over the canvas, or click it to expand the pane again. The properties rail shows the three tabs, so you can go straight to one of them. The width of the properties panel and whether each pane is collapsed are remembered in your browser.
+The activities pane and the properties panel can be collapsed to a narrow rail, to give the canvas more room. Hover a rail to open its pane over the canvas, or click it to expand the pane again. The properties rail shows the tabs, so you can go straight to one of them. The width of the properties panel and whether each pane is collapsed are remembered in your browser.
 
 ### Focusing on Part of a Workflow
 
@@ -85,7 +86,7 @@ In right-to-left languages, the activities pane and the properties panel swap si
 
 ### Workflow Instances
 
-The page of a workflow instance shows the version of its workflow that the instance runs on, in a read-only designer, with the activities the instance waits on (its **blocking** activities) highlighted. Select an activity to see its details. Right-click an activity to collapse the activities after it; the blocking activities are never hidden. The **State** tab shows the instance's state as JSON.
+The page of a workflow instance shows the version of its workflow that the instance runs on, in a read-only designer, with the activities the instance waits on (its **blocking** activities) highlighted. Select an activity to see its details. The **Variables** tab of the properties panel shows the values of the instance's variables. Right-click an activity to collapse the activities after it; the blocking activities are never hidden. The **State** tab shows the instance's state as JSON.
 
 ![A workflow instance waiting on a signal](docs/workflow-instance-viewer.png)
 
@@ -132,6 +133,58 @@ When a version is created, the versions older than the most recent `MaxCount` on
 - `IWorkflowTypeStore.SaveAsync` creates the versions: saving a workflow type whose activities, transitions or execution settings changed creates its next `WorkflowTypeVersion` and sets `WorkflowType.VersionId`.
 - `IWorkflowManager.NewWorkflow` stores that version in `Workflow.WorkflowTypeVersionId`, and `ResumeWorkflowAsync` runs it.
 - `IWorkflowTypeVersionStore` lists and loads versions. Its `GetWorkflowTypeAsync(workflowType, versionId)` returns the definition an instance runs; never save the workflow type it returns.
+
+## Variables
+
+A workflow can declare **variables**: named values that every activity of an instance can read and write, each with a type and an optional default value. Variables are declared in the **Variables** tab of the designer's properties panel, and are part of the workflow's [versions](#versions).
+
+| Type | Name | Values | Default value |
+|---|---|---|---|
+| Text | `string` | Text. Numbers, dates (ISO 8601), booleans (`true`/`false`) and objects (JSON) convert to text. | Text |
+| Number | `number` | A number (`double`). Numbers and text in the invariant culture convert to it. | A number |
+| Yes or no | `boolean` | `true` or `false`, from booleans and the texts `true` and `false`. | Yes, no or none |
+| Date and time | `datetime` | A UTC date and time, from dates and ISO 8601 text; text without an offset is UTC. | A date and time |
+| Object | `object` | A dictionary, from objects, JSON objects and their text. | JSON |
+| List | `array` | A list, from lists, JSON arrays and their text. | JSON |
+| Any | `any` | Any value, as it is. | JSON |
+| Content item | `contentItem` | A content item, when the `OrchardCore.Contents` feature is enabled. | None |
+
+- **Defaults.** A variable gets its default value when an instance starts, or when it resumes on a version that declares a variable it doesn't have yet. A variable without a default has no value until it's set.
+- **Names.** Names are identifiers (a letter or `_`, then letters, digits or `_`), unique ignoring case. Variables are found ignoring case.
+- **Values.** Setting a variable converts the value to its type. When the value doesn't convert, the workflow faults, with a message naming the variable.
+
+### Reading and Writing Variables
+
+- **JavaScript.** `variable("name")` returns the value of a variable, and `setVariable("name", value)` sets it. In the designer's script editors, typing `variable` or `setVariable` suggests the declared variables. A value that doesn't convert is a script error: it's logged, and the variable doesn't change.
+- **Liquid.** `{{ Workflow.Variables.name }}` returns the value of a variable.
+- **Set Variable activity.** It sets a variable to the result of a JavaScript or Liquid expression. Its name field suggests the declared variables.
+- **Activity outputs.** Some activities produce values, their **outputs**. The **Outputs** section under the activity's editor stores each output in a variable. The value is converted to the variable's type after the activity runs (not when it waits on an event or faults), and the workflow faults when it doesn't convert.
+
+| Activity | Outputs |
+|---|---|
+| Script | `Result` (any): the value the script returns. |
+| Liquid | `Result` (text): the rendered template. |
+| Set Property | `Value` (any): the value it sets. |
+| HTTP Request | `Body` (text), `StatusCode` (number) and `Response` (object): the response. |
+| Create Content, Retrieve Content, Update Content | `ContentItem` (content item): the content item, when the activity succeeds. |
+
+The **Issues** tab warns about a Set Variable activity or an output that names a variable the workflow doesn't declare, and about an output whose values may not convert to its variable's type (for example a number output stored in a yes or no variable). Any value converts to text, and nothing is checked for `any`.
+
+### Variables and Properties
+
+A variable is a workflow property with a type: the variable `greeting` is stored as `Properties["greeting"]`. Activities and scripts that use properties (`property("greeting")`, `{{ Workflow.Properties.greeting }}`, Set Property) see variables, and the existing workflows that use properties keep working. Writing a variable as a property doesn't convert the value. Setting an undeclared name with Set Variable or `setVariable()` stores the value as a property, as it is.
+
+The page of a workflow instance lists its variables, with the values the instance has, in the **Variables** tab.
+
+### Variables for Developers
+
+- `WorkflowExecutionContext.Variables` reads and writes the declared variables with their types; a value that doesn't convert throws `WorkflowVariableException`.
+- An activity declares outputs by implementing `IActivityOutputs`, and sets them while it runs with `workflowContext.SetActivityOutput(activityContext, "Result", value)`. The bindings are stored in the activity's `Properties["OutputBindings"]` (see `ActivityOutputBindingExtensions`).
+- A module adds a variable type by registering an `IWorkflowVariableType`: its name, display name, how the designer edits its default (`text`, `number`, `boolean`, `datetime`, `json` or `none`), and how values convert to it. Its values are persisted with the instance like other workflow properties, so it needs an `IWorkflowValueSerializer` if they don't serialize to JSON and back. A type registered with an existing name replaces it.
+
+```csharp
+services.AddScoped<IWorkflowVariableType, MyVariableType>();
+```
 
 ## Vocabulary
 
@@ -220,6 +273,10 @@ When a workflow executes, each activity can set property values to the workflow 
 Each activity can set and access these properties, allowing a workflow to compute and retrieve information that can then be processed by other activities further down the chain.  
 This is analogous to a function setting local variables.
 
+### Variables
+
+Variables are typed workflow properties that a workflow declares, with default values. See [Variables](#variables).
+
 ## Workflow Execution
 
 When a workflow executes, the **Workflow Manager** creates a **Workflow Instance** and a **Workflow Execution Context**.  
@@ -254,6 +311,8 @@ The following JavaScript functions are available by default to any activity that
 | `output`           | Sets an output parameter with the specified name. Workflow output can be collected by the invoker of the workflow.                                                                                                                                                                               | `output(name: string, value: any): void`                                                 |
 | `property`         | Returns the property value with the specified name. Properties are a dictionary that workflow activities can read and write information from and to.                                                                                                                                             | `property(name: string): any`                                                            |
 | `setProperty`      | Stores the specified data in workflow properties.                                                                                                                                                                                                                                                | `setProperty(name: string,data:any):void`                                                |
+| `variable`         | Returns the value of the [variable](#variables) with the specified name, converted to its type.                                                                                                                                                                                                 | `variable(name: string): any`                                                            |
+| `setVariable`      | Sets the [variable](#variables) with the specified name, converting the value to its type.                                                                                                                                                                                                      | `setVariable(name: string, value: any): void`                                            |
 | `executeQuery`     | Returns the result of the query, see [more](../Queries/README.md#scripting).                                                                                                                                                                                                                     | `executeQuery(name: String, parameters: Dictionary<string,object>): IEnumerable<object>` |
 | `log`              | Output logs according to the specified log level. Allowed log levels : `'Trace','Debug','Information','Warning','Error','Critical','None'`                                                                                                                                                       | `log(level: string, text: string, param: object): void`                                  |
 | `lastResult`       | Returns the value that the previous activity provided, if any.                                                                                                                                                                                                                                   | `lastResult(): any`                                                                      |
@@ -285,6 +344,7 @@ The following Liquid tags, properties and filters are available by default to an
 | `Workflow.Input`         | Property | Returns the Input dictionary.                                                                                             | `{{ Workflow.Input["ContentItem"] }}` |
 | `Workflow.Output`        | Property | Returns the Output dictionary.                                                                                            | `{{ Workflow.Output["SomeResult"] }}` |
 | `Workflow.Properties`    | Property | Returns the Properties dictionary.                                                                                        | `{{ Workflow.Properties["Foo"] }}`    |
+| `Workflow.Variables`     | Property | Returns the [variables](#variables), converted to their types.                                                            | `{{ Workflow.Variables.greeting }}`   |
 | `signal_url`             | Filter   | Returns the workflow trigger URL. You can use the `input("Signal")` JavaScript method to check which signal is triggered. | `{{ 'Approved' \| signal_url }}`      |
 
 Instead of using the indexer syntax on the three workflow dictionaries `Input`, `Output` and `Properties`, you can also use dot notation, e.g.:
@@ -325,6 +385,7 @@ The following activities are available with any default Orchard installation:
 | Script                        | Task  | Execute script and continue execution based on the returned outcome.                |
 | Set Output                    | Task  | Evaluate a JavaScript or Liquid expression and store the result into the workflow's output. |
 | Set Property                  | Task  | Evaluate a JavaScript or Liquid expression and store the result into workflow properties. |
+| Set Variable                  | Task  | Evaluate a JavaScript or Liquid expression and store the result into a [workflow variable](#variables). |
 | While Loop                    | Task  | Iterate while a JavaScript or Liquid condition is true.                             |
 | **HTTP Workflow Activities**  | *     | *                                                                                   | * |
 | HTTP Redirect                 | Task  | Redirect the user agent to the specified URL (301/302).                             |
