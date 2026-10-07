@@ -13,6 +13,7 @@ This folder contains these files:
 | [`phase-4-expressions.md`](phase-4-expressions.md) | Detailed, step-by-step plan for Phase 4: per-input expression syntax |
 | [`phase-5-journal.md`](phase-5-journal.md) | Detailed, step-by-step plan for Phase 5: execution journal and recovery |
 | [`phase-6-realtime.md`](phase-6-realtime.md) | Detailed, step-by-step plan for Phase 6: real time with `OrchardCore.SignalR` |
+| [`phase-7-composition.md`](phase-7-composition.md) | Detailed, step-by-step plan for Phase 7: workflows as activities and activity presets |
 | [`later-phases.md`](later-phases.md) | Phases 2+: the missing engine and UI components to build later, with design sketches |
 
 ## Context
@@ -89,7 +90,7 @@ Update the **Status** column as work lands (`Not started` / `In progress` / `Don
 | 4 | Per-input expression syntax (Literal / Liquid / JavaScript / pluggable providers). See [`phase-4-expressions.md`](phase-4-expressions.md). | 3 (recommended) | Done (4.1–4.6 and the Definition of done; awaiting review) |
 | 5 | Execution journal, executed-path highlighting, retry of a faulted activity. See [`phase-5-journal.md`](phase-5-journal.md). | 1 | Done (5.1–5.6 and the Definition of done; awaiting review) |
 | 6 | Real time with `OrchardCore.SignalR`: live instance view, presence, draft change notifications. See [`phase-6-realtime.md`](phase-6-realtime.md). | 1, 5 | Done (6.1–6.5 and the Definition of done; awaiting review) |
-| 7 | Workflows as activities; dynamic activity providers | 2, 3 | Not started |
+| 7 | Workflows as activities; dynamic activity providers (as activity presets). See [`phase-7-composition.md`](phase-7-composition.md). | 2, 3 | In progress (plan written) |
 | 8 | Evaluate: multiple transitions per outcome or implicit fork, composition/containers, state machines | 1–5 | Not started |
 
 ## Testing strategy (applies to every phase)
