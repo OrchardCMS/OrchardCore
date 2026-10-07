@@ -127,6 +127,23 @@ msgid "Hello"
 msgstr "Bonjour"
 ```
 
+When messages belong to a shared resource class, or their context should be independent of the consuming service, resolve the localizer from `IStringLocalizerFactory` using that resource type:
+
+```csharp
+public MyService(IStringLocalizerFactory factory)
+{
+    S = factory.Create(typeof(SharedMessages));
+}
+```
+
+You can also override the context for an individual lookup with `MsgctxtArgument`:
+
+```csharp
+S["Hello", new MsgctxtArgument("MySharedContext")];
+```
+
+The argument is excluded from formatting parameters. Without a context override, the localizer uses its configured context as usual.
+
 ### Deferring localization with `LocalizationSource`
 
 When no localizer is available where a string is declared, use `LocalizationSource` from `OrchardCore.Abstractions` to keep the untranslated value and the source type of its localizer:

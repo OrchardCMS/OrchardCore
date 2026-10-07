@@ -56,7 +56,9 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
         get
         {
             var (translation, argumentsWithCount) = GetTranslation(name, arguments);
-            var formatted = string.Format(translation.Value, argumentsWithCount);
+            var formatted = argumentsWithCount.Length > 0
+                ? string.Format(translation.Value, argumentsWithCount)
+                : translation.Value;
 
             return new LocalizedString(name, formatted, translation.ResourceNotFound);
         }
@@ -80,15 +82,16 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
         // Check if a plural form is called, which is when the only argument is of type PluralizationArgument.
         if (arguments.Length == 1 && arguments[0] is PluralizationArgument pluralArgument)
         {
-            var translation = GetTranslation(name, _context, CultureInfo.CurrentUICulture, pluralArgument.Count);
+            var hasContext = TryGetContext(pluralArgument.Arguments, out var context, out var formatArguments);
+            var translation = GetTranslation(name, hasContext ? context : _context, CultureInfo.CurrentUICulture, pluralArgument.Count);
 
             object[] argumentsWithCount;
 
-            if (pluralArgument.Arguments.Length > 0)
+            if (formatArguments.Length > 0)
             {
-                argumentsWithCount = new object[pluralArgument.Arguments.Length + 1];
+                argumentsWithCount = new object[formatArguments.Length + 1];
                 argumentsWithCount[0] = pluralArgument.Count;
-                Array.Copy(pluralArgument.Arguments, 0, argumentsWithCount, 1, pluralArgument.Arguments.Length);
+                Array.Copy(formatArguments, 0, argumentsWithCount, 1, formatArguments.Length);
             }
             else
             {
@@ -101,9 +104,35 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
         }
         else
         {
-            var translation = this[name];
-            return (new LocalizedString(name, translation, translation.ResourceNotFound), arguments);
+            var hasContext = TryGetContext(arguments, out var context, out var formatArguments);
+            var translation = hasContext
+                ? GetTranslation(name, context, CultureInfo.CurrentUICulture, null)
+                : this[name];
+
+            return (new LocalizedString(name, translation ?? name, translation == null), formatArguments);
         }
+    }
+
+    private static bool TryGetContext(object[] arguments, out string context, out object[] formatArguments)
+    {
+        var hasContext = false;
+        context = null;
+
+        foreach (var argument in arguments)
+        {
+            if (argument is MsgctxtArgument msgctxtArgument)
+            {
+                context = msgctxtArgument.Context;
+                hasContext = true;
+                break;
+            }
+        }
+
+        formatArguments = hasContext
+            ? arguments.Where(argument => argument is not MsgctxtArgument).ToArray()
+            : arguments;
+
+        return hasContext;
     }
 
     private IEnumerable<LocalizedString> GetAllStrings(CultureInfo culture)
