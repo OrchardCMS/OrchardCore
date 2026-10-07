@@ -395,6 +395,7 @@ public class WorkflowManager : IWorkflowManager
         // Create a workflow context.
         var workflowContext = await CreateWorkflowExecutionContextAsync(workflowType, workflow, input);
         workflowContext.Status = WorkflowStatus.Starting;
+        ApplyInputs(workflowContext, input);
 
         // Signal every activity that the workflow is about to start.
         // This should be called prior OnInputReceivedAsync.
@@ -445,6 +446,7 @@ public class WorkflowManager : IWorkflowManager
         // Create a workflow context.
         var workflowContext = await CreateWorkflowExecutionContextAsync(workflowType, workflow, input);
         workflowContext.Status = WorkflowStatus.Starting;
+        ApplyInputs(workflowContext, input);
 
         // Signal every activity about available input.
         await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnInputReceivedAsync(workflowContext, input));
@@ -635,6 +637,15 @@ public class WorkflowManager : IWorkflowManager
                 // Decrement the workflow scope recursion.
                 DecrementRecursion(workflowContext.Workflow);
             }
+        }
+    }
+
+    // The input variables take the input values of the same name.
+    private void ApplyInputs(WorkflowExecutionContext workflowContext, IDictionary<string, object> input)
+    {
+        foreach (var name in workflowContext.Variables.ApplyInputs(input))
+        {
+            _logger.LogWarning("The input '{Name}' of the workflow '{WorkflowId}' doesn't convert to the type of its variable, which keeps its default value.", name, workflowContext.Workflow.WorkflowId);
         }
     }
 

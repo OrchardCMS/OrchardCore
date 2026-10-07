@@ -73,6 +73,11 @@ public sealed class WorkflowTypeVersion
     public bool DeleteFinishedWorkflows { get; set; }
 
     /// <summary>
+    /// The value of <see cref="WorkflowType.IsActivity"/> in this version.
+    /// </summary>
+    public bool IsActivity { get; set; }
+
+    /// <summary>
     /// The activities of this version.
     /// </summary>
     public IList<ActivityRecord> Activities { get; set; } = [];

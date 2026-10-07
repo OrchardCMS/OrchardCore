@@ -47,6 +47,7 @@ public static class WorkflowTypeDiff
         AddIfChanged(settings, nameof(WorkflowType.LockTimeout), from.LockTimeout, to.LockTimeout);
         AddIfChanged(settings, nameof(WorkflowType.LockExpiration), from.LockExpiration, to.LockExpiration);
         AddIfChanged(settings, nameof(WorkflowType.DeleteFinishedWorkflows), from.DeleteFinishedWorkflows, to.DeleteFinishedWorkflows);
+        AddIfChanged(settings, nameof(WorkflowType.IsActivity), from.IsActivity, to.IsActivity);
 
         if (!JsonNode.DeepEquals(JsonSerializer.SerializeToNode(from.Variables, JOptions.Default), JsonSerializer.SerializeToNode(to.Variables, JOptions.Default)))
         {

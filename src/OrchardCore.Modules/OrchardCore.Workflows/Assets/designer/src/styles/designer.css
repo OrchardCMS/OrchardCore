@@ -353,6 +353,15 @@
     align-items: center;
 }
 
+.wfd-variable-flags {
+    font-size: 0.8125rem;
+}
+
+.wfd-variable-flag {
+    margin-inline-start: 0.25rem;
+    font-weight: normal;
+}
+
 .wfd-variables-actions {
     padding: 0 0.75rem 0.75rem;
 }

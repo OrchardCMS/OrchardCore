@@ -714,6 +714,28 @@ public class WorkflowManagerTests
     }
 
     [Fact]
+    public async Task StartWorkflowAsync_Input_SetsTheInputVariablesOfTheSameName()
+    {
+        var (workflowManager, workflowType) = CreateOutputWorkflow(output: "42", bindings: []);
+        workflowType.Variables.Add(new WorkflowVariableDefinition { Name = "amount", TypeName = "number", IsInput = true, DefaultValue = 1 });
+        workflowType.Variables.Add(new WorkflowVariableDefinition { Name = "count", TypeName = "number", IsInput = true, DefaultValue = 1 });
+
+        var workflowContext = await workflowManager.StartWorkflowAsync(workflowType, input: new Dictionary<string, object>
+        {
+            ["amount"] = "7",
+            ["count"] = "many",
+            ["answer"] = "3",
+        });
+
+        Assert.Equal(WorkflowStatus.Finished, workflowContext.Status);
+        Assert.Equal(7d, workflowContext.Variables["amount"]);
+
+        // A value that doesn't convert leaves the default, and a variable that isn't an input isn't set.
+        Assert.Equal(1d, workflowContext.Variables["count"]);
+        Assert.False(workflowContext.Properties.ContainsKey("answer"));
+    }
+
+    [Fact]
     public async Task StartWorkflowAsync_OutputWithoutBinding_ChangesNoVariable()
     {
         var (workflowManager, workflowType) = CreateOutputWorkflow(output: "42", bindings: []);

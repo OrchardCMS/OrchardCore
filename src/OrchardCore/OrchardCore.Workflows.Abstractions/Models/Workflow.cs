@@ -28,6 +28,16 @@ public class Workflow
     public string CorrelationId { get; set; }
 
     /// <summary>
+    /// The <see cref="WorkflowId"/> of the workflow instance that runs this one as an activity, if any.
+    /// </summary>
+    public string ParentWorkflowId { get; set; }
+
+    /// <summary>
+    /// The activity of the parent instance (<see cref="ParentWorkflowId"/>) that runs this one.
+    /// </summary>
+    public string ParentActivityId { get; set; }
+
+    /// <summary>
     /// Serialized state of the workflow.
     /// </summary>
     public JsonObject State { get; set; } = [];

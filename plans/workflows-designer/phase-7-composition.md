@@ -32,11 +32,32 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
 
 ---
 
-### - [ ] 7.1 Workflow inputs and outputs
+### - [x] 7.1 Workflow inputs and outputs
 
 - `WorkflowVariableDefinition.IsInput` and `IsOutput`; `WorkflowType.IsActivity` ("Usable as an activity"), in the draft settings, the settings form, versions and the diff; `Workflow.ParentWorkflowId` and `ParentActivityId`, on the document (the parent is found by its id; listing the children of an instance is left for later).
 - Starting an instance with inputs sets its input variables; the Variables tab marks inputs and outputs.
 - **Tests**: copies (draft, version, diff); input values set the variables; the settings form.
+- **Notes from implementing this step:**
+  - **Variables.**
+    - `WorkflowVariableDefinition.IsInput` and `IsOutput`, copied by `Clone`.
+    - `WorkflowVariables.ApplyInputs` sets the input variables from the values of the same name (ignoring case), converted to their types, and returns the names of those that don't convert.
+    - `GetOutputs` returns the output variables that have a value.
+  - **Engine.**
+    - `StartWorkflowAsync` and `RestartWorkflowAsync` apply the input values to the input variables after their defaults.
+    - A value that doesn't convert is logged as a warning, and the variable keeps its default value.
+  - **Setting.** `IsActivity` ("Usable as an activity") follows `DeleteFinishedWorkflows` through every copy:
+    - the draft and its settings;
+    - the designer's settings form, the properties and duplicate pages (a copy keeps the setting);
+    - versions, their fingerprint (so changing it makes a new version), the diff, and the recipe step.
+  - **Instances.** `Workflow.ParentWorkflowId` and `ParentActivityId` are stored on the document, without index columns: the parent is found by its id.
+  - **Variables tab.**
+    - Each variable has **Input** and **Output** checkboxes; they're only sent when checked.
+    - The read-only table marks inputs and outputs with badges.
+  - **Tests.**
+    - `ApplyInputs` and `GetOutputs`, `Clone`, and starting an instance with inputs.
+    - The diff, a new version when the setting changes, publishing the setting from the draft, and the designer's settings form.
+    - Vitest: checking **Input** saves it, and the read-only badges.
+    - Workflows tests: 252/252. Vitest: 232/232.
 
 ### - [ ] 7.2 Execute Workflow task
 

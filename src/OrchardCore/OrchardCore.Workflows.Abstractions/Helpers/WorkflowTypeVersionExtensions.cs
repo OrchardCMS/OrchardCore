@@ -32,6 +32,7 @@ public static class WorkflowTypeVersionExtensions
             LockTimeout = version.LockTimeout,
             LockExpiration = version.LockExpiration,
             DeleteFinishedWorkflows = version.DeleteFinishedWorkflows,
+            IsActivity = version.IsActivity,
             Activities = version.Activities
                 .Select(activity => new ActivityRecord
                 {

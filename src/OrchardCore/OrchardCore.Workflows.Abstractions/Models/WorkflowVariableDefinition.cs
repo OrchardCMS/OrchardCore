@@ -30,6 +30,17 @@ public sealed class WorkflowVariableDefinition
     public string Description { get; set; }
 
     /// <summary>
+    /// Whether the variable is an input: a workflow that runs this one as an activity sets it, and so does a caller
+    /// that starts the workflow with an input of that name.
+    /// </summary>
+    public bool IsInput { get; set; }
+
+    /// <summary>
+    /// Whether the variable is an output: a workflow that runs this one as an activity gets its value back.
+    /// </summary>
+    public bool IsOutput { get; set; }
+
+    /// <summary>
     /// Returns a deep copy of this definition.
     /// </summary>
     public WorkflowVariableDefinition Clone()
@@ -39,5 +50,7 @@ public sealed class WorkflowVariableDefinition
             TypeName = TypeName,
             DefaultValue = DefaultValue?.DeepClone(),
             Description = Description,
+            IsInput = IsInput,
+            IsOutput = IsOutput,
         };
 }

@@ -72,6 +72,17 @@ public sealed class WorkflowTypeDiffTests
     }
 
     [Fact]
+    public void Compare_UsableAsActivityChanged_ListsIt()
+    {
+        var to = CreateWorkflowType();
+        to.IsActivity = true;
+
+        var changes = WorkflowTypeDiff.Compare(CreateWorkflowType(), to);
+
+        Assert.Equal([nameof(WorkflowType.IsActivity)], changes.ChangedSettings);
+    }
+
+    [Fact]
     public void Compare_VariableDefaultChanged_ListsTheVariables()
     {
         var from = CreateWorkflowType();

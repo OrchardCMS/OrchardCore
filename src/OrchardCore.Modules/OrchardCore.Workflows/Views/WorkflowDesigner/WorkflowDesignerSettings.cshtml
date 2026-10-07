@@ -39,6 +39,16 @@
     </div>
 </div>
 
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input asp-for="IsActivity" type="checkbox" class="form-check-input" />
+            <label class="form-check-label" asp-for="IsActivity">@T["Usable as an activity"]</label>
+        </div>
+        <span class="hint">@T["Check to let other workflows run this one with the Execute Workflow task. Its variables marked as inputs and outputs are what they pass and get back."]</span>
+    </div>
+</div>
+
 <div class="ocat-limited-wrapper" asp-validation-class-for="LockTimeout">
     <label asp-for="LockTimeout" class="ocat-label">@T["Lock timeout (ms)"]</label>
     <div class="ocat-limited">

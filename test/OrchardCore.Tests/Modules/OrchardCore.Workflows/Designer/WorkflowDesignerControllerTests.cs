@@ -728,6 +728,32 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
     }
 
     [Fact]
+    public async Task Settings_UsableAsAnActivity_IsShownAndStoredInTheDraft()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));
+
+        var form = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Settings");
+        Assert.Contains("name=\"IsActivity\"", form["content"].GetValue<string>());
+
+        using var response = await PostFormAsync($"Admin/Workflows/Types/{id}/Designer/Settings?revision=0", new Dictionary<string, string>
+        {
+            ["Name"] = "Approval",
+            ["IsEnabled"] = "true",
+            ["IsActivity"] = "true",
+        });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.True((await ReadJsonAsync(response))["settings"]["isActivity"].GetValue<bool>());
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            var draft = await scope.ServiceProvider.GetRequiredService<IWorkflowTypeDraftManager>().GetAsync(workflowTypeId);
+
+            Assert.True(draft.IsActivity);
+        });
+    }
+
+    [Fact]
     public async Task Save_WithoutAntiforgeryToken_IsRejected()
     {
         var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));

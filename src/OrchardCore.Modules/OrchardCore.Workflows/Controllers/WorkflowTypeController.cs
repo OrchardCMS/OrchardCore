@@ -258,6 +258,7 @@ public sealed class WorkflowTypeController : Controller
                 LockTimeout = workflowType.LockTimeout,
                 LockExpiration = workflowType.LockExpiration,
                 DeleteFinishedWorkflows = workflowType.DeleteFinishedWorkflows,
+                IsActivity = workflowType.IsActivity,
                 ReturnUrl = returnUrl,
             });
         }
@@ -300,6 +301,7 @@ public sealed class WorkflowTypeController : Controller
         workflowType.LockTimeout = viewModel.LockTimeout;
         workflowType.LockExpiration = viewModel.LockExpiration;
         workflowType.DeleteFinishedWorkflows = viewModel.DeleteFinishedWorkflows;
+        workflowType.IsActivity = viewModel.IsActivity;
 
         await _workflowTypeStore.SaveAsync(workflowType);
 
@@ -335,6 +337,7 @@ public sealed class WorkflowTypeController : Controller
             LockExpiration = workflowType.LockExpiration,
             Name = "Copy-" + workflowType.Name,
             IsEnabled = workflowType.IsEnabled,
+            IsActivity = workflowType.IsActivity,
             ReturnUrl = returnUrl,
         });
     }
@@ -362,6 +365,7 @@ public sealed class WorkflowTypeController : Controller
         workflowType.LockTimeout = viewModel.LockTimeout;
         workflowType.LockExpiration = viewModel.LockExpiration;
         workflowType.DeleteFinishedWorkflows = viewModel.DeleteFinishedWorkflows;
+        workflowType.IsActivity = viewModel.IsActivity;
         workflowType.Activities = existingWorkflowType.Activities;
         workflowType.Transitions = existingWorkflowType.Transitions;
         workflowType.Variables = existingWorkflowType.Variables.Select(variable => variable.Clone()).ToList();

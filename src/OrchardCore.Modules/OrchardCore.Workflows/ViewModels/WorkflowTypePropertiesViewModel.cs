@@ -14,5 +14,7 @@ public class WorkflowTypePropertiesViewModel
     public int LockTimeout { get; set; }
     public int LockExpiration { get; set; }
     public bool DeleteFinishedWorkflows { get; set; }
+
+    public bool IsActivity { get; set; }
     public string ReturnUrl { get; set; }
 }

@@ -226,6 +226,7 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
             draft.LockTimeout = settings.LockTimeout;
             draft.LockExpiration = settings.LockExpiration;
             draft.DeleteFinishedWorkflows = settings.DeleteFinishedWorkflows;
+            draft.IsActivity = settings.IsActivity;
 
             return Task.FromResult(new ChangeOutcome());
         });
@@ -289,6 +290,7 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
             draft.LockTimeout = version.LockTimeout;
             draft.LockExpiration = version.LockExpiration;
             draft.DeleteFinishedWorkflows = version.DeleteFinishedWorkflows;
+            draft.IsActivity = version.IsActivity;
             draft.Activities = version.Activities.Select(activity => activity.Clone()).ToList();
             draft.Transitions = version.Transitions.Select(transition => transition.Clone()).ToList();
             draft.Variables = version.Variables.Select(variable => variable.Clone()).ToList();

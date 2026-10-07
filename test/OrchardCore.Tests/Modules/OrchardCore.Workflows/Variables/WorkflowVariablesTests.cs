@@ -129,6 +129,54 @@ public sealed class WorkflowVariablesTests
         Assert.Same(contentItem, variables.Get("article"));
     }
 
+    [Fact]
+    public void ApplyInputs_InputValues_SetTheInputVariablesOnly()
+    {
+        var variables = Create(
+            new WorkflowVariableDefinition { Name = "amount", TypeName = "number", IsInput = true },
+            new WorkflowVariableDefinition { Name = "approved", TypeName = "boolean", IsInput = true },
+            new WorkflowVariableDefinition { Name = "reason", TypeName = "string" });
+
+        var failed = variables.ApplyInputs(new Dictionary<string, object>
+        {
+            ["AMOUNT"] = "12.5",
+            ["approved"] = "maybe",
+            ["reason"] = "Not an input",
+        });
+
+        Assert.Equal(12.5d, _properties["amount"]);
+        Assert.Equal(["approved"], failed);
+        Assert.False(_properties.ContainsKey("approved"));
+        Assert.False(_properties.ContainsKey("reason"));
+        Assert.Empty(variables.ApplyInputs(null));
+    }
+
+    [Fact]
+    public void GetOutputs_OutputVariables_ReturnsThoseWithAValue()
+    {
+        var variables = Create(
+            new WorkflowVariableDefinition { Name = "approved", TypeName = "boolean", IsOutput = true },
+            new WorkflowVariableDefinition { Name = "comment", TypeName = "string", IsOutput = true },
+            new WorkflowVariableDefinition { Name = "internal", TypeName = "string" });
+        variables.Set("approved", "true");
+        variables.Set("internal", "Not an output");
+
+        var outputs = variables.GetOutputs();
+
+        var output = Assert.Single(outputs);
+        Assert.Equal("approved", output.Key);
+        Assert.Equal(true, output.Value);
+    }
+
+    [Fact]
+    public void Clone_InputAndOutput_AreCopied()
+    {
+        var clone = new WorkflowVariableDefinition { Name = "amount", TypeName = "number", IsInput = true, IsOutput = true }.Clone();
+
+        Assert.True(clone.IsInput);
+        Assert.True(clone.IsOutput);
+    }
+
     private WorkflowVariables Create(params WorkflowVariableDefinition[] definitions)
     {
         var provider = TestVariableTypes.CreateProvider();

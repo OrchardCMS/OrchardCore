@@ -51,6 +51,11 @@ public class WorkflowType : Entity
     public bool DeleteFinishedWorkflows { get; set; }
 
     /// <summary>
+    /// Whether other workflows can run this one as an activity (Execute Workflow), with its input and output variables.
+    /// </summary>
+    public bool IsActivity { get; set; }
+
+    /// <summary>
     /// A complete list of all activities that are part of this workflow.
     /// </summary>
     public IList<ActivityRecord> Activities { get; set; } = [];

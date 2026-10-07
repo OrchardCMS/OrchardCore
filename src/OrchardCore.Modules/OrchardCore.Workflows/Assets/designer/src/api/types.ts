@@ -26,6 +26,10 @@ export interface VariableDefinition {
     // Any JSON value, or null for no default.
     defaultValue?: unknown;
     description?: string | null;
+    // Set by a workflow that runs this one as an activity, or by the input of the same name.
+    isInput?: boolean;
+    // Returned to a workflow that runs this one as an activity.
+    isOutput?: boolean;
 }
 
 // A variable type the designer offers (WorkflowDesignerVariableType).

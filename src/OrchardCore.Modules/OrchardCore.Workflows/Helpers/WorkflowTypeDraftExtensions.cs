@@ -22,6 +22,7 @@ internal static class WorkflowTypeDraftExtensions
             LockTimeout = workflowType.LockTimeout,
             LockExpiration = workflowType.LockExpiration,
             DeleteFinishedWorkflows = workflowType.DeleteFinishedWorkflows,
+            IsActivity = workflowType.IsActivity,
             Activities = workflowType.Activities.Select(Clone).ToList(),
             Transitions = workflowType.Transitions.Select(Clone).ToList(),
             Variables = workflowType.Variables.Select(variable => variable.Clone()).ToList(),
@@ -42,6 +43,7 @@ internal static class WorkflowTypeDraftExtensions
         workflowType.LockTimeout = draft.LockTimeout;
         workflowType.LockExpiration = draft.LockExpiration;
         workflowType.DeleteFinishedWorkflows = draft.DeleteFinishedWorkflows;
+        workflowType.IsActivity = draft.IsActivity;
         workflowType.Activities = draft.Activities.Select(Clone).ToList();
         workflowType.Transitions = draft.Transitions.Select(Clone).ToList();
         workflowType.Variables = draft.Variables.Select(variable => variable.Clone()).ToList();

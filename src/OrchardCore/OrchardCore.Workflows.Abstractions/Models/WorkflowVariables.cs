@@ -135,6 +135,60 @@ public sealed class WorkflowVariables
     /// <summary>
     /// Sets the declared variables that have no value yet to their default value.
     /// </summary>
+    /// <summary>
+    /// Sets the input variables (<see cref="WorkflowVariableDefinition.IsInput"/>) from the values of the same name
+    /// in <paramref name="input"/>, converted to their types. Returns the names of the values that don't convert,
+    /// which are left out.
+    /// </summary>
+    public IReadOnlyList<string> ApplyInputs(IDictionary<string, object> input)
+    {
+        if (input is null || input.Count == 0)
+        {
+            return [];
+        }
+
+        var failed = new List<string>();
+
+        foreach (var definition in _definitions.Values.Where(definition => definition.IsInput))
+        {
+            var value = input.FirstOrDefault(entry => string.Equals(entry.Key, definition.Name, StringComparison.OrdinalIgnoreCase));
+
+            if (value.Key is null)
+            {
+                continue;
+            }
+
+            try
+            {
+                Set(definition.Name, value.Value);
+            }
+            catch (WorkflowVariableException)
+            {
+                failed.Add(definition.Name);
+            }
+        }
+
+        return failed;
+    }
+
+    /// <summary>
+    /// Returns the values of the output variables (<see cref="WorkflowVariableDefinition.IsOutput"/>) that have one.
+    /// </summary>
+    public IDictionary<string, object> GetOutputs()
+    {
+        var outputs = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var definition in _definitions.Values.Where(definition => definition.IsOutput))
+        {
+            if (TryGetValue(definition.Name, out var value))
+            {
+                outputs[definition.Name] = value;
+            }
+        }
+
+        return outputs;
+    }
+
     public void ApplyDefaults()
     {
         foreach (var definition in _definitions.Values)

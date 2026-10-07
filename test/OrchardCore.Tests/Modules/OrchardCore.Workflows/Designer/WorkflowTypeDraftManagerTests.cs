@@ -298,6 +298,7 @@ public sealed class WorkflowTypeDraftManagerTests : IAsyncLifetime
             LockTimeout = 5,
             LockExpiration = 6,
             DeleteFinishedWorkflows = true,
+            IsActivity = true,
         };
 
         var updated = await CreateManager().UpdateSettingsAsync(_workflowType.WorkflowTypeId, 0, settings);
@@ -312,6 +313,7 @@ public sealed class WorkflowTypeDraftManagerTests : IAsyncLifetime
         Assert.Equal(5, _workflowType.LockTimeout);
         Assert.Equal(6, _workflowType.LockExpiration);
         Assert.True(_workflowType.DeleteFinishedWorkflows);
+        Assert.True(_workflowType.IsActivity);
     }
 
     [Fact]

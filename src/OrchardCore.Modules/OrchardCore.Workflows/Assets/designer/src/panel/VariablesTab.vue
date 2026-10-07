@@ -15,6 +15,8 @@ interface Row {
     typeName: string;
     defaultText: string;
     description: string;
+    isInput: boolean;
+    isOutput: boolean;
     error: string | null;
 }
 
@@ -58,6 +60,8 @@ const toRow = (variable: VariableDefinition): Row => ({
     typeName: variable.typeName,
     defaultText: formatDefault(variable.defaultValue, editorOf(state.variableTypes, variable.typeName)),
     description: variable.description ?? "",
+    isInput: variable.isInput ?? false,
+    isOutput: variable.isOutput ?? false,
     error: null,
 });
 
@@ -126,6 +130,9 @@ const save = async () => {
             typeName: row.typeName,
             defaultValue: parsed.value,
             description: row.description.trim() || null,
+            // Left out when unset.
+            isInput: row.isInput || undefined,
+            isOutput: row.isOutput || undefined,
         });
     }
 
@@ -170,7 +177,7 @@ const save = async () => {
 const add = async () => {
     // Text, unless the site doesn't have it.
     const typeName = state.variableTypes.find((type) => type.name === "string")?.name ?? state.variableTypes[0]?.name ?? "string";
-    const row: Row = { key: nextKey++, name: "", typeName, defaultText: "", description: "", error: null };
+    const row: Row = { key: nextKey++, name: "", typeName, defaultText: "", description: "", isInput: false, isOutput: false, error: null };
 
     rows.value.push(row);
     touch();
@@ -229,6 +236,8 @@ const defaultOf = (variable: VariableDefinition) => formatDefault(variable.defau
                     <tr v-for="variable in state.variables" :key="variable.name" :data-cy="`variable-row-${variable.name}`">
                         <td>
                             <code>{{ variable.name }}</code>
+                            <span v-if="variable.isInput" class="badge text-bg-light wfd-variable-flag" data-cy="variable-input">{{ t("VariableInput") }}</span>
+                            <span v-if="variable.isOutput" class="badge text-bg-light wfd-variable-flag" data-cy="variable-output">{{ t("VariableOutput") }}</span>
                             <div v-if="variable.description" class="small text-secondary">{{ variable.description }}</div>
                         </td>
                         <td>{{ typeDisplayName(state.variableTypes, variable.typeName) }}</td>
@@ -327,6 +336,31 @@ const defaultOf = (variable: VariableDefinition) => formatDefault(variable.defau
                         @input="touch"
                         @change="save"
                     />
+
+                    <div class="wfd-variable-flags">
+                        <div class="form-check form-check-inline" :title="t('VariableInputHint')">
+                            <input
+                                :id="`${ids}-input-${row.key}`"
+                                v-model="row.isInput"
+                                type="checkbox"
+                                class="form-check-input"
+                                data-cy="variable-is-input"
+                                @change="onDefaultChange"
+                            />
+                            <label class="form-check-label" :for="`${ids}-input-${row.key}`">{{ t("VariableInput") }}</label>
+                        </div>
+                        <div class="form-check form-check-inline" :title="t('VariableOutputHint')">
+                            <input
+                                :id="`${ids}-output-${row.key}`"
+                                v-model="row.isOutput"
+                                type="checkbox"
+                                class="form-check-input"
+                                data-cy="variable-is-output"
+                                @change="onDefaultChange"
+                            />
+                            <label class="form-check-label" :for="`${ids}-output-${row.key}`">{{ t("VariableOutput") }}</label>
+                        </div>
+                    </div>
 
                     <div v-if="row.error" :id="`${ids}-error-${row.key}`" class="invalid-feedback d-block" role="alert" data-cy="variable-error">{{ row.error }}</div>
                 </li>

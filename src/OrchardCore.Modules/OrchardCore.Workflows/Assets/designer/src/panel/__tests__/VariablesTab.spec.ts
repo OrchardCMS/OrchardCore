@@ -133,6 +133,32 @@ describe("VariablesTab", () => {
         expect(wrapper.emitted("error")).toEqual([[conflict]]);
     });
 
+    it("edit_InputChecked_SavesTheVariableAsAnInput", async () => {
+        const { saveVariables, wrapper } = setup();
+
+        await rowsOf(wrapper)[1].get("[data-cy=variable-is-input]").setValue(true);
+        await flushPromises();
+
+        expect(saveVariables).toHaveBeenLastCalledWith(3, [
+            { name: "greeting", typeName: "string", defaultValue: "Hello", description: "Shown to the user" },
+            { name: "attempts", typeName: "number", defaultValue: 0, description: null, isInput: true },
+        ]);
+    });
+
+    it("readOnly_InputsAndOutputs_AreMarked", async () => {
+        const { store, wrapper } = setup({ readOnly: true });
+
+        store.state.variables = [
+            { ...store.state.variables[0], isInput: true },
+            { ...store.state.variables[1], isOutput: true },
+        ];
+        await flushPromises();
+
+        expect(wrapper.get("[data-cy=variable-row-greeting]").find("[data-cy=variable-input]").exists()).toBe(true);
+        expect(wrapper.get("[data-cy=variable-row-greeting]").find("[data-cy=variable-output]").exists()).toBe(false);
+        expect(wrapper.get("[data-cy=variable-row-attempts]").find("[data-cy=variable-output]").exists()).toBe(true);
+    });
+
     it("readOnly_Instance_ShowsTheStoredValues", () => {
         const { wrapper } = setup({ readOnly: true, values: { greeting: "hi there" } });
 
