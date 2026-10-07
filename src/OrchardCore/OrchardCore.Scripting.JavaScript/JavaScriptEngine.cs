@@ -20,7 +20,9 @@ namespace OrchardCore.Scripting.JavaScript;
 /// later evaluation starts from the same global surface a brand-new engine would have given it. Reuse also
 /// keeps the engine's warm-up caches, which is where most of the saving comes from: the parsed form of a
 /// script is already shared through <see cref="IMemoryCache"/>, but the interpreter state Jint builds while
-/// running it is per engine and used to be thrown away after a single evaluation.
+/// running it is per engine and used to be thrown away after a single evaluation. That state remembers the
+/// objects its call sites last saw, including a finished request's services, so the pool discards it once it
+/// is a minute old and lets each script build it again on its next run.
 /// </para>
 /// <para>
 /// <b>Reuse is confined to one tenant.</b> This service is registered per tenant, so the pool is too, and an
@@ -75,11 +77,14 @@ public sealed class JavaScriptEngine : IScriptingEngine
         _jintOptions.ExperimentalFeatures |= ExperimentalFeature.TaskInterop;
         _lazyGlobals = RegisterLazyGlobals(_jintOptions, globalMethodProviders);
 
-        var poolSize = engineOptions?.Value?.EnginePoolSize ?? JavaScriptEngineOptions.DefaultEnginePoolSize;
+        var engineOptionsValue = engineOptions?.Value;
+        var poolSize = engineOptionsValue?.EnginePoolSize ?? JavaScriptEngineOptions.DefaultEnginePoolSize;
 
         // This instance is resolved once per tenant, so the pool it holds is per tenant as well. Engines
         // must never be shared across tenants and this is the only thing that keeps them from being.
-        _pool = poolSize > 0 ? new JavaScriptEnginePool(_jintOptions, poolSize) : null;
+        _pool = poolSize > 0
+            ? new JavaScriptEnginePool(_jintOptions, poolSize, engineOptionsValue?.TimeProvider ?? TimeProvider.System)
+            : null;
     }
 
     public string Prefix => "js";

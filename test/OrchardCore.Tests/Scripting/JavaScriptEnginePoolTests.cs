@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Jint;
 using Jint.Runtime;
 using OrchardCore.Scripting;
@@ -490,6 +491,143 @@ public class JavaScriptEnginePoolTests
         Assert.Equal(100, Convert.ToInt32(host.Evaluate(second, "function g(n) { return n === 0 ? 0 : 1 + g(n - 1); } return g(100);")));
     }
 
+    [Fact]
+    public void AnIdleEngine_LetsGoOfAFinishedRequestsServices_OnceItsInterpreterStateExpires()
+    {
+        var time = new ManualTimeProvider();
+        var host = new TestHost(timeProvider: time);
+
+        var services = RunTwiceOnOneEngine(host, out var engine);
+
+        // The control: the engine is idle in the pool, its global surface reset and its HostDefined slot
+        // cleared, and yet the call site that ran warm still reaches the finished request's services.
+        CollectGarbage();
+        Assert.True(services.IsAlive);
+        Assert.True(time.HasScheduledTimer);
+
+        // Nothing is evaluated after this; only the sweep can release them.
+        time.Advance(JavaScriptEnginePool.InterpreterCacheLifetime);
+        time.RunDueTimers();
+
+        CollectGarbage();
+        Assert.False(services.IsAlive);
+
+        // A tenant that has stopped evaluating scripts has no timer running for it.
+        Assert.False(time.HasScheduledTimer);
+
+        // The engine is still pooled and still works, and builds its registered globals from the next scope.
+        using var nextServices = host.CreateServiceScope("next");
+        using var next = host.CreateScope(nextServices);
+
+        Assert.Same(engine, next.Engine);
+        Assert.Equal("next", host.Evaluate(next, "return owningScope();"));
+    }
+
+    [Fact]
+    public void AnEngineInUseWhenItsInterpreterStateExpires_IsLeftAloneUntilItIsReturned()
+    {
+        var time = new ManualTimeProvider();
+        var host = new TestHost(timeProvider: time);
+
+        var services = RunTwiceOnOneEngine(host, out var engine);
+
+        using var holdingServices = host.CreateServiceScope("holding");
+        var holding = host.CreateScope(holdingServices);
+
+        Assert.Same(engine, holding.Engine);
+
+        // The sweep runs while the engine is rented. Had it discarded the engine's state underneath the
+        // scope, the finished request's services would be collectable now.
+        time.Advance(JavaScriptEnginePool.InterpreterCacheLifetime);
+        time.RunDueTimers();
+
+        CollectGarbage();
+        Assert.True(services.IsAlive);
+
+        // Returning an engine whose state has expired discards it there, so an engine that is always busy
+        // when a sweep looks does not keep a finished request's objects either.
+        holding.Dispose();
+
+        CollectGarbage();
+        Assert.False(services.IsAlive);
+        Assert.False(time.HasScheduledTimer);
+    }
+
+    [Fact]
+    public async Task ConcurrentScopes_AreNotDisturbedBySweeps()
+    {
+        var time = new ManualTimeProvider();
+        var host = new TestHost(poolSize: 4, timeProvider: time);
+
+        using var stop = new CancellationTokenSource();
+
+        // Every engine is always past its lifetime, so each return discards and every sweep that finds an
+        // idle engine takes it out of its slot and discards it too.
+        var sweeper = Task.Run(() =>
+        {
+            while (!stop.IsCancellationRequested)
+            {
+                time.Advance(JavaScriptEnginePool.InterpreterCacheLifetime);
+                time.RunAllTimers();
+            }
+        }, TestContext.Current.CancellationToken);
+
+        try
+        {
+            await Task.WhenAll(Enumerable.Range(0, 8).Select(worker => Task.Run(() =>
+            {
+                for (var iteration = 0; iteration < 40; iteration++)
+                {
+                    var name = $"{worker}-{iteration}";
+
+                    using var services = host.CreateServiceScope(name);
+                    using var scope = host.CreateScope(services);
+
+                    Assert.Equal(name, host.Evaluate(scope, "function read() { return owningScope(); } read(); return read();"));
+                }
+            }, TestContext.Current.CancellationToken)));
+        }
+        finally
+        {
+            await stop.CancelAsync();
+            await sweeper;
+        }
+    }
+
+    /// <summary>
+    /// Runs the same script on the same engine for two requests, so that its call site is warm, and returns
+    /// a weak reference to the second request's service provider. Not inlined, so that nothing on the
+    /// caller's stack keeps the provider alive.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static WeakReference RunTwiceOnOneEngine(TestHost host, out Engine engine)
+    {
+        engine = null;
+        IServiceProvider lastServices = null;
+
+        foreach (var name in new[] { "first", "second" })
+        {
+            using var services = host.CreateServiceScope(name);
+            using var scope = host.CreateScope(services);
+
+            engine ??= scope.Engine;
+
+            Assert.Same(engine, scope.Engine);
+            Assert.Equal(name, host.Evaluate(scope, "return owningScope();"));
+
+            lastServices = services.ServiceProvider;
+        }
+
+        return new WeakReference(lastServices);
+    }
+
+    private static void CollectGarbage()
+    {
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+    }
+
     private sealed class Holder
     {
         public int Count;
@@ -505,7 +643,7 @@ public class JavaScriptEnginePoolTests
         private readonly IScriptingEngine _engine;
         private readonly GlobalMethod[] _methods;
 
-        public TestHost(int? poolSize = null, Action<Jint.Options> configureJint = null)
+        public TestHost(int? poolSize = null, Action<Jint.Options> configureJint = null, TimeProvider timeProvider = null)
         {
             Provider = new OwningScopeMethodProvider(this);
 
@@ -524,6 +662,11 @@ public class JavaScriptEnginePoolTests
             if (configureJint != null)
             {
                 services.Configure(configureJint);
+            }
+
+            if (timeProvider != null)
+            {
+                services.Configure<JavaScriptEngineOptions>(options => options.TimeProvider = timeProvider);
             }
 
             _rootServices = services.BuildServiceProvider();
@@ -557,6 +700,129 @@ public class JavaScriptEnginePoolTests
 
         public Task<object> EvaluateAsync(IScriptingScope scope, string script, CancellationToken cancellationToken)
             => _engine.EvaluateAsync(scope, script, cancellationToken);
+    }
+
+    /// <summary>
+    /// A clock that only moves when the test moves it, and timers that only fire when the test runs them.
+    /// </summary>
+    private sealed class ManualTimeProvider : TimeProvider
+    {
+        private readonly List<ManualTimer> _timers = [];
+        private long _now;
+
+        public override long TimestampFrequency => TimeSpan.TicksPerSecond;
+
+        public override long GetTimestamp() => Interlocked.Read(ref _now);
+
+        public override DateTimeOffset GetUtcNow() => new(Interlocked.Read(ref _now), TimeSpan.Zero);
+
+        public void Advance(TimeSpan by) => Interlocked.Add(ref _now, by.Ticks);
+
+        public bool HasScheduledTimer => Timers().Any(timer => timer.DueAt.HasValue);
+
+        public override ITimer CreateTimer(TimerCallback callback, object state, TimeSpan dueTime, TimeSpan period)
+        {
+            var timer = new ManualTimer(this, callback, state);
+            timer.Change(dueTime, period);
+
+            lock (_timers)
+            {
+                _timers.Add(timer);
+            }
+
+            return timer;
+        }
+
+        /// <summary>
+        /// Runs the timers that are due, as the system clock would have by now.
+        /// </summary>
+        public void RunDueTimers()
+        {
+            foreach (var timer in Timers())
+            {
+                timer.RunIfDue(GetTimestamp());
+            }
+        }
+
+        /// <summary>
+        /// Runs every timer whether it is scheduled or not, which a sweep has to tolerate at any moment.
+        /// </summary>
+        public void RunAllTimers()
+        {
+            foreach (var timer in Timers())
+            {
+                timer.Run();
+            }
+        }
+
+        private ManualTimer[] Timers()
+        {
+            lock (_timers)
+            {
+                return [.. _timers];
+            }
+        }
+
+        private sealed class ManualTimer(ManualTimeProvider time, TimerCallback callback, object state) : ITimer
+        {
+            private readonly Lock _lock = new();
+            private long? _dueAt;
+
+            public long? DueAt
+            {
+                get
+                {
+                    lock (_lock)
+                    {
+                        return _dueAt;
+                    }
+                }
+            }
+
+            public bool Change(TimeSpan dueTime, TimeSpan period)
+            {
+                lock (_lock)
+                {
+                    _dueAt = dueTime == Timeout.InfiniteTimeSpan ? null : time.GetTimestamp() + dueTime.Ticks;
+                }
+
+                return true;
+            }
+
+            public void RunIfDue(long now)
+            {
+                lock (_lock)
+                {
+                    if (_dueAt is not { } dueAt || dueAt > now)
+                    {
+                        return;
+                    }
+
+                    _dueAt = null;
+                }
+
+                callback(state);
+            }
+
+            public void Run()
+            {
+                lock (_lock)
+                {
+                    _dueAt = null;
+                }
+
+                callback(state);
+            }
+
+            public void Dispose() => Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+
+            public ValueTask DisposeAsync()
+            {
+                Dispose();
+
+                return ValueTask.CompletedTask;
+            }
+        }
     }
 
     private sealed class ServiceScopeName

@@ -23,15 +23,22 @@ public class JavaScriptEngineOptions
     /// <para>
     /// What it bounds is retained state. A reused engine remembers the last object each script member access
     /// and each call resolved against, so a pooled engine can hold one such object — a request's
-    /// <c>HttpContext</c>, a workflow execution context — per site in the scripts it has run, until that
-    /// site next resolves something else. The function a registered global resolves to is such an object,
-    /// and it holds the services of the request it was built for, so an idle engine can keep a finished
-    /// request's services reachable until the same script runs on it again. The default keeps that bounded to a handful of engines per tenant
-    /// while comfortably covering the number of evaluations a site normally has in flight at once, since
-    /// scripts are short and usually evaluated synchronously. Raise it for a tenant that evaluates scripts
-    /// on many concurrent requests, and lower it — or set it to <c>0</c> — for one whose scripts project
-    /// large object graphs into script and would rather not have them outlive the request.
+    /// <c>HttpContext</c>, a workflow execution context, or the services of the request a registered global
+    /// was built for — per site in the scripts it has run. The pool discards that state once it is a minute
+    /// old, when the engine is next returned or, if it is idle by then, by a background sweep, so a finished
+    /// request's objects stay reachable for at most about two minutes; the cost is that each script runs once
+    /// more as if on a new engine, minus building the engine. The default keeps the engines that can hold
+    /// such state to a handful per tenant while comfortably covering the number of evaluations a site
+    /// normally has in flight at once, since scripts are short and usually evaluated synchronously. Raise it
+    /// for a tenant that evaluates scripts on many concurrent requests, and set it to <c>0</c> for one whose
+    /// scripts project large object graphs into script and must not have them outlive the request at all.
     /// </para>
     /// </remarks>
     public int EnginePoolSize { get; set; } = DefaultEnginePoolSize;
+
+    /// <summary>
+    /// The clock the pool reads to decide when an engine's interpreter state is old enough to discard, and
+    /// schedules its sweep on. Settable so that tests can move time forward.
+    /// </summary>
+    internal TimeProvider TimeProvider { get; set; } = TimeProvider.System;
 }
