@@ -92,7 +92,7 @@ The work is pushed to the draft pull request [OrchardCMS/OrchardCore#19996](http
 | 4 | Per-input expression syntax (Literal / Liquid / JavaScript / pluggable providers). See [`phase-4-expressions.md`](phase-4-expressions.md). | 3 (recommended) | Done (4.1–4.6 and the Definition of done; awaiting review) |
 | 5 | Execution journal, executed-path highlighting, retry of a faulted activity. See [`phase-5-journal.md`](phase-5-journal.md). | 1 | Done (5.1–5.6 and the Definition of done; awaiting review) |
 | 6 | Real time with `OrchardCore.SignalR`: live instance view, presence, draft change notifications. See [`phase-6-realtime.md`](phase-6-realtime.md). | 1, 5 | Done (6.1–6.5 and the Definition of done; awaiting review) |
-| 7 | Workflows as activities; dynamic activity providers (as activity presets). See [`phase-7-composition.md`](phase-7-composition.md). | 2, 3 | In progress (7.1–7.6 done; Definition of done running) |
+| 7 | Workflows as activities; dynamic activity providers (as activity presets). See [`phase-7-composition.md`](phase-7-composition.md). | 2, 3 | Done (7.1–7.6 and the Definition of done; awaiting review) |
 | 8 | Evaluate: multiple transitions per outcome or implicit fork, composition/containers, state machines | 1–5 | Not started (next) |
 
 ## Testing strategy (applies to every phase)

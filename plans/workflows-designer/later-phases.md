@@ -2,7 +2,7 @@
 
 Phase 1 (the designer) changes only the UI. This file lists the engine and UI components Orchard Core Workflows is missing, compared with Elsa Studio and Elsa Workflows, so they can be built later. Each phase has a design sketch, a compatibility plan and its tests. Before starting a phase, turn its sketch into a detailed step list in a new `phase-N-*.md`, in the same format as [`phase-1-designer.md`](phase-1-designer.md).
 
-**Status.** Each phase below is detailed in its own file, which records what was built and why it differs from the sketch; the [roadmap](README.md#roadmap) tracks them. Phases 2–6 are done, Phase 7's steps are done (its Definition of done is running), and Phase 8 is next. The backlog isn't scheduled.
+**Status.** Each phase below is detailed in its own file, which records what was built and why it differs from the sketch; the [roadmap](README.md#roadmap) tracks them. Phases 2–7 are done, and Phase 8 is next. The backlog isn't scheduled.
 
 Paths: `M/` = `src/OrchardCore.Modules/OrchardCore.Workflows/`, `A/` = `src/OrchardCore/OrchardCore.Workflows.Abstractions/`.
 
@@ -17,8 +17,8 @@ Paths: `M/` = `src/OrchardCore.Modules/OrchardCore.Workflows/`, `A/` = `src/Orch
 | Execution journal (per-activity start, end, outcome, error) | `ExecutedActivities` is never recorded | Executed-path view, debugging, Log tab | 5 | Medium | Done |
 | Retry a faulted activity in place | Only "Restart" (a new instance with the old input) | Operations and recovery | 5 | Medium | Done |
 | Real-time designer and instance updates | None | Live instance view, presence, conflict notices | 6 | Small–Medium | Done |
-| Workflow as an activity (sub-workflow with inputs and outputs) | None | Reuse | 7 | Medium | Built (7.1–7.3, 7.6) |
-| Dynamic activity providers (catalog from configuration or a database) | Only types registered with `AddActivity` | Integrations, low-code catalogs | 7 | Medium | Built as activity presets (7.4) |
+| Workflow as an activity (sub-workflow with inputs and outputs) | None | Reuse | 7 | Medium | Done |
+| Dynamic activity providers (catalog from configuration or a database) | Only types registered with `AddActivity` | Integrations, low-code catalogs | 7 | Medium | Done, as activity presets |
 | Multiple transitions per outcome / implicit fork | Engine follows only the first transition | Simpler branching | 8 | Medium–Hard | Next |
 | Composition (containers, nested sequences and flowcharts) | Flat graph only | Large workflows | 8 | Hard (new execution model) | To evaluate (8) |
 | State-machine modeling | None | Approvals and lifecycles | 8 | Hard | To evaluate (8) |
@@ -141,7 +141,7 @@ Paths: `M/` = `src/OrchardCore.Modules/OrchardCore.Workflows/`, `A/` = `src/Orch
 
 ## Phase 7 — Workflows as activities; dynamic activity providers
 
-**Detailed plan:** [`phase-7-composition.md`](phase-7-composition.md). **Status:** steps done; Definition of done running. The dynamic activity providers were built as activity presets (decision C6).
+**Detailed plan:** [`phase-7-composition.md`](phase-7-composition.md). **Status:** done. The dynamic activity providers were built as activity presets (decision C6).
 
 **Workflow as an activity**
 - A type opts in with "Usable as activity" (a setting on the published version) and declares its inputs and outputs, reusing the Phase 3 variable definitions with input and output direction.
