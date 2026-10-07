@@ -17,6 +17,7 @@ namespace OrchardCore.Workflows.Expressions;
 public class LiquidWorkflowExpressionEvaluator : IWorkflowExpressionEvaluator
 {
     private readonly LiquidViewParser _liquidViewParser;
+    private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly IEnumerable<IWorkflowExecutionContextHandler> _workflowContextHandlers;
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger _logger;
@@ -24,6 +25,7 @@ public class LiquidWorkflowExpressionEvaluator : IWorkflowExpressionEvaluator
 
     public LiquidWorkflowExpressionEvaluator(
         LiquidViewParser liquidViewParser,
+        ILiquidTemplateManager liquidTemplateManager,
         IEnumerable<IWorkflowExecutionContextHandler> workflowContextHandlers,
         IServiceProvider serviceProvider,
         ILogger<LiquidWorkflowExpressionEvaluator> logger,
@@ -31,6 +33,7 @@ public class LiquidWorkflowExpressionEvaluator : IWorkflowExpressionEvaluator
     )
     {
         _liquidViewParser = liquidViewParser;
+        _liquidTemplateManager = liquidTemplateManager;
         _workflowContextHandlers = workflowContextHandlers;
         _serviceProvider = serviceProvider;
         _logger = logger;
@@ -42,6 +45,17 @@ public class LiquidWorkflowExpressionEvaluator : IWorkflowExpressionEvaluator
         if (string.IsNullOrWhiteSpace(expression.Expression))
         {
             return default;
+        }
+
+        if (typeof(T) == typeof(string))
+        {
+            var renderedResult = await _liquidTemplateManager.RenderStringAsync(
+                expression.Expression,
+                encoder ?? NullEncoder.Default,
+                model: null,
+                properties: [new KeyValuePair<string, FluidValue>("Workflow", new ObjectValue(workflowContext))]);
+
+            return ConvertValue<T>(renderedResult, renderedResult);
         }
 
         var templateContext = new LiquidTemplateContext(_serviceProvider, _templateOptions);

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Text.Encodings.Web;
 using System.Text.Json.Nodes;
 using Fluid;
 using Fluid.Values;
@@ -372,6 +373,42 @@ public class WorkflowManagerTests
     }
 
     [Fact]
+    public async Task LiquidWorkflowExpressionEvaluator_StringExpression_UsesLiquidTemplateManager()
+    {
+        using var serviceProvider = CreateLiquidWorkflowServiceProvider();
+        var templateManager = new Mock<ILiquidTemplateManager>();
+        IEnumerable<KeyValuePair<string, FluidValue>> properties = null;
+        templateManager
+            .Setup(manager => manager.RenderStringAsync(
+                It.IsAny<string>(),
+                It.IsAny<TextEncoder>(),
+                It.IsAny<object>(),
+                It.IsAny<IEnumerable<KeyValuePair<string, FluidValue>>>()))
+            .Callback<string, TextEncoder, object, IEnumerable<KeyValuePair<string, FluidValue>>>((_, _, _, value) => properties = value)
+            .ReturnsAsync("Localized name");
+        var evaluator = CreateLiquidWorkflowExpressionEvaluator(serviceProvider, templateManager.Object);
+        using var workflowContext = new WorkflowExecutionContext(
+            new WorkflowType(),
+            new Workflow { WorkflowId = IdGenerator.GenerateId() },
+            null,
+            null,
+            null,
+            null,
+            null,
+            []);
+
+        var result = await evaluator.EvaluateAsync(
+            new WorkflowExpression<string>("{{ \"Name\" | t }}"),
+            workflowContext,
+            null);
+
+        Assert.Equal("Localized name", result);
+        var property = Assert.Single(properties);
+        Assert.Equal("Workflow", property.Key);
+        Assert.Same(workflowContext, property.Value.ToObjectValue());
+    }
+
+    [Fact]
     public async Task WorkflowScriptEvaluator_Default_EvaluateAsyncScopedGlobalMethods()
     {
         var serviceProvider = CreateServiceProvider();
@@ -542,11 +579,12 @@ public class WorkflowManagerTests
         return services.BuildServiceProvider();
     }
 
-    private static LiquidWorkflowExpressionEvaluator CreateLiquidWorkflowExpressionEvaluator(ServiceProvider serviceProvider)
+    private static LiquidWorkflowExpressionEvaluator CreateLiquidWorkflowExpressionEvaluator(ServiceProvider serviceProvider, ILiquidTemplateManager liquidTemplateManager = null)
         => new(
             new LiquidViewParser(
                 serviceProvider.GetRequiredService<IOptions<LiquidViewOptions>>(),
                 serviceProvider.GetRequiredService<IOptions<FluidParserOptions>>()),
+            liquidTemplateManager ?? Mock.Of<ILiquidTemplateManager>(),
             [],
             serviceProvider,
             new Mock<ILogger<LiquidWorkflowExpressionEvaluator>>().Object,
