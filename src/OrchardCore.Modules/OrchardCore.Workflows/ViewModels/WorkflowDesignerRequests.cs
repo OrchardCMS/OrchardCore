@@ -60,6 +60,11 @@ public sealed class WorkflowDesignerAddActivityRequest
     public string Name { get; set; }
 
     /// <summary>
+    /// The <see cref="Models.ActivityPreset.Id"/> of the preset to add, instead of <see cref="Name"/>.
+    /// </summary>
+    public string Preset { get; set; }
+
+    /// <summary>
     /// The left coordinate, in canvas pixels at 100% zoom.
     /// </summary>
     public int X { get; set; }

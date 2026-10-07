@@ -407,6 +407,22 @@ public sealed class WorkflowTypeDraftManagerTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task AddActivityAsync_Properties_AreSetOverTheDefaults()
+    {
+        var result = await CreateManager().AddActivityAsync(
+            _workflowType.WorkflowTypeId,
+            0,
+            nameof(ForkTask),
+            10,
+            10,
+            new JsonObject { ["Forks"] = new JsonArray("X"), ["Extra"] = "value" });
+
+        Assert.True(result.Succeeded);
+        Assert.Equal(["X"], result.Activity.Properties["Forks"].AsArray().Select(fork => fork.GetValue<string>()));
+        Assert.Equal("value", result.Activity.Properties["Extra"].GetValue<string>());
+    }
+
+    [Fact]
     public async Task ValidateAsync_ValidWorkflow_ReturnsNoIssues()
     {
         var issues = await CreateManager().ValidateAsync(_workflowType);

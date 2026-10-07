@@ -118,10 +118,31 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - Vitest: a field marked `data-wfd-reload` reloads the form once applied, and others don't.
     - Workflows tests: 263/263. Vitest: 233/233.
 
-### - [ ] 7.4 Activity presets
+### - [x] 7.4 Activity presets
 
 - `IActivityPresetProvider` and `ActivityPreset`; the activities pane lists presets; `AddActivity` takes a preset; the workflows usable as activities are presets.
 - **Tests**: the library lists presets; adding one creates the activity with its properties; Vitest for the pane.
+- **Notes from implementing this step:**
+  - **API.**
+    - `ActivityPreset`: id, activity name, display text, category, description, icon, and properties.
+    - `IActivityPresetProvider.GetPresetsAsync()`, with the `ListPresetsAsync` and `FindPresetAsync` extensions.
+  - **Workflows as presets.**
+    - `WorkflowActivityPresetProvider` lists the enabled workflows usable as an activity as presets of the Execute Workflow task, in a **Workflows** category, with ids `workflow:{WorkflowTypeId}`.
+    - Their properties hold the workflow and its outputs, so the outputs can be bound as soon as the task is added.
+  - **Library.**
+    - The presets of available activities are listed after the activities of their category, or in a category of their own, sorted by name.
+    - Their descriptor has the activity's name, the preset's id (`preset`), a thumbnail built from the name and description, and the preset's icon or the activity's.
+  - **Adding.**
+    - `AddActivity` takes a `preset` instead of a `name`; an unknown preset is a bad request.
+    - `IWorkflowTypeDraftManager.AddActivityAsync` takes optional properties, set over the activity's defaults.
+  - **Client.**
+    - A toolbox card's key (`toolboxKey` in `api/presets.ts`) is the activity name, or `preset:{id}`. It's what the card emits, drags and passes to `addActivity`, which posts the preset or the name.
+    - The `Library` test that indexed activities by name now leaves the presets out, since they share their activity's name.
+  - **Tests.**
+    - Controller: the library lists a workflow as a preset, and adding it creates an Execute Workflow task with its output; an unknown preset is a bad request.
+    - Draft manager: properties set over the defaults.
+    - Vitest: a preset card emits and drags its key; `addActivity` posts a name or a preset.
+    - Workflows tests: 265/265. Vitest: 235/235.
 
 ### - [ ] 7.5 Docs and release notes
 

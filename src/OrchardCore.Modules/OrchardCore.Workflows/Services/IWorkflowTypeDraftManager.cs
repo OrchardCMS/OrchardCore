@@ -45,7 +45,8 @@ public interface IWorkflowTypeDraftManager
     /// <param name="activityName">The name of the activity type.</param>
     /// <param name="x">The left coordinate.</param>
     /// <param name="y">The top coordinate.</param>
-    Task<WorkflowTypeDraftResult> AddActivityAsync(string workflowTypeId, int expectedRevision, string activityName, int x, int y);
+    /// <param name="properties">Properties set over the activity's default properties, for example those of a preset.</param>
+    Task<WorkflowTypeDraftResult> AddActivityAsync(string workflowTypeId, int expectedRevision, string activityName, int x, int y, JsonObject properties = null);
 
     /// <summary>
     /// Replaces the properties of an activity of the draft, and removes the transitions of the outcomes the

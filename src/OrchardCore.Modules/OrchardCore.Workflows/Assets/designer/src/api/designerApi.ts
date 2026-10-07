@@ -1,4 +1,5 @@
 import { createApiService, type ApiService } from "@bloom/services/api-service";
+import { PRESET_KEY_PREFIX } from "./presets";
 import type { DesignerUrls } from "../config";
 import type {
     AddActivityResult,
@@ -88,8 +89,16 @@ export const createDesignerApi = (urls: DesignerUrls, service: ApiService = crea
         getDefinition: () => call(() => service.get<DesignerDefinition>(urls.definition)),
         getLibrary: () => call(() => service.get<Library>(urls.library)),
         save: (payload: SavePayload) => call(() => service.post<SaveResult>(urls.save, payload)),
+        /**
+         * Adds an activity by its name, or a preset by its toolbox key (see toolboxKey).
+         */
         addActivity: (revision: number, name: string, x: number, y: number) =>
-            call(() => service.post<AddActivityResult>(urls.addActivity, { revision, name, x, y })),
+            call(() =>
+                service.post<AddActivityResult>(
+                    urls.addActivity,
+                    name.startsWith(PRESET_KEY_PREFIX) ? { revision, preset: name.slice(PRESET_KEY_PREFIX.length), x, y } : { revision, name, x, y },
+                ),
+            ),
         getEditor: (activityId: string) => call(() => service.get<FormFragment>(withQuery(urls.editor, { activityId }))),
         postEditor: (activityId: string, revision: number, form: FormData) =>
             call(() => service.post<EditorApplyResult>(withQuery(urls.editor, { activityId, revision }), form, multipart)),

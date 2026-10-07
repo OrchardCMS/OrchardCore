@@ -33,6 +33,18 @@ describe("designerApi", () => {
         expect(error.problem.modifiedBy).toBe("alice");
     });
 
+    it("addActivity_NameOrPresetKey_PostsTheActivityOrThePreset", async () => {
+        const service = createService();
+        service.post.mockResolvedValue({ data: { revision: 1, node: {}, issues: [] } });
+        const api = createDesignerApi(urls, service);
+
+        await api.addActivity(0, "NotifyTask", 10, 20);
+        await api.addActivity(1, "preset:workflow:approval", 30, 40);
+
+        expect(service.post.mock.calls[0][1]).toEqual({ revision: 0, name: "NotifyTask", x: 10, y: 20 });
+        expect(service.post.mock.calls[1][1]).toEqual({ revision: 1, preset: "workflow:approval", x: 30, y: 40 });
+    });
+
     it("getDefinition_NetworkFailure_ThrowsNetworkError", async () => {
         const service = createService();
         service.get.mockRejectedValue({ message: "Network Error" });

@@ -146,7 +146,7 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
     }
 
     /// <inheritdoc />
-    public Task<WorkflowTypeDraftResult> AddActivityAsync(string workflowTypeId, int expectedRevision, string activityName, int x, int y)
+    public Task<WorkflowTypeDraftResult> AddActivityAsync(string workflowTypeId, int expectedRevision, string activityName, int x, int y, JsonObject properties = null)
     {
         ArgumentException.ThrowIfNullOrEmpty(activityName);
 
@@ -169,6 +169,11 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
                 // A workflow can't run without a start activity, so the first event becomes the start activity.
                 IsStart = activity.IsEvent() && !draft.Activities.Any(existing => existing.IsStart),
             };
+
+            foreach (var (name, value) in properties ?? [])
+            {
+                record.Properties[name] = value?.DeepClone();
+            }
 
             record.ActivityId = _activityIdGenerator.GenerateUniqueId(record);
             draft.Activities.Add(record);

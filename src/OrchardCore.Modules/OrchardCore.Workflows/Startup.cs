@@ -61,6 +61,7 @@ public sealed class Startup : StartupBase
         services.Configure<WorkflowJournalOptions>(_shellConfiguration.GetSection("Workflows:Journal"));
         services.AddScoped<IWorkflowExecutionJournal, WorkflowExecutionJournal>();
         services.AddScoped<IWorkflowDesignerNotifier, NullWorkflowDesignerNotifier>();
+        services.AddScoped<IActivityPresetProvider, WorkflowActivityPresetProvider>();
         services.AddScoped<IWorkflowHandler, WorkflowJournalHandler>();
         services.AddIndexProvider<WorkflowExecutionRecordIndexProvider>();
         services.Configure<StoreCollectionOptions>(options => options.Collections.Add(WorkflowExecutionRecord.Collection));

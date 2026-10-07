@@ -38,6 +38,11 @@ public sealed class WorkflowDesignerActivityDescriptor
     public string Name { get; init; }
 
     /// <summary>
+    /// The <see cref="Models.ActivityPreset.Id"/> of a preset of the activity, or <see langword="null"/>.
+    /// </summary>
+    public string Preset { get; init; }
+
+    /// <summary>
     /// The localized display text.
     /// </summary>
     public string DisplayText { get; init; }

@@ -206,6 +206,8 @@ export interface RestoreResult {
 
 export interface LibraryActivity {
     name: string;
+    // The id of a preset of the activity (ActivityPreset), which adds it with preset properties.
+    preset?: string | null;
     displayText: string;
     category: string;
     isEvent: boolean;

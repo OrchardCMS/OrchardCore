@@ -60,6 +60,40 @@ describe("ActivityToolbox", () => {
         expect(card.find("i").classes()).toEqual(expect.arrayContaining(["fa-solid", "fa-bell"]));
     });
 
+    it("card_Preset_EmitsAndCarriesItsKey", async () => {
+        const withPreset = {
+            categories: [
+                ...library.categories,
+                {
+                    name: "Workflows",
+                    activities: [
+                        {
+                            name: "ExecuteWorkflowTask",
+                            preset: "workflow:approval",
+                            displayText: "Approval",
+                            category: "Workflows",
+                            isEvent: false,
+                            hasEditor: true,
+                            thumbnailHtml: "<h4>Approval</h4>",
+                        },
+                    ],
+                },
+            ],
+        };
+        const wrapper = mount(ActivityToolbox, { props: { library: withPreset, loading: false, error: null } });
+        const card = wrapper.get("[data-cy='toolbox-activity-preset:workflow:approval']");
+
+        await card.trigger("click");
+        expect(wrapper.emitted("add")).toEqual([["preset:workflow:approval"]]);
+
+        const setData = vi.fn();
+        const event = new Event("dragstart", { bubbles: true });
+        Object.assign(event, { dataTransfer: { setData, effectAllowed: "" } });
+        card.element.dispatchEvent(event);
+
+        expect(setData).toHaveBeenCalledWith(ACTIVITY_DRAG_TYPE, "preset:workflow:approval");
+    });
+
     it("render_LoadingAndError_ShowsStatus", () => {
         expect(mount(ActivityToolbox, { props: { library: null, loading: true, error: null } }).find(".spinner-border").exists()).toBe(true);
         expect(mount(ActivityToolbox, { props: { library: null, loading: false, error: "Boom" } }).get("[role=alert]").text()).toBe("Boom");

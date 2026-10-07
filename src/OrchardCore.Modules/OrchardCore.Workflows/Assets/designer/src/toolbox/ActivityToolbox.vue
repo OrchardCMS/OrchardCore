@@ -2,6 +2,7 @@
 import { computed, reactive, ref } from "vue";
 import type { Library, LibraryActivity } from "../api/types";
 import { ACTIVITY_DRAG_TYPE, filterLibrary, type ActivityKind } from "./filter";
+import { toolboxKey } from "../api/presets";
 import { t } from "../i18n";
 
 const props = defineProps<{ library: Library | null; loading: boolean; error: string | null }>();
@@ -26,7 +27,7 @@ const toggle = (name: string) => {
 };
 
 const onDragStart = (activity: LibraryActivity, event: DragEvent) => {
-    event.dataTransfer?.setData(ACTIVITY_DRAG_TYPE, activity.name);
+    event.dataTransfer?.setData(ACTIVITY_DRAG_TYPE, toolboxKey(activity));
     event.dataTransfer?.setData("text/plain", activity.displayText);
 
     if (event.dataTransfer) {
@@ -90,7 +91,7 @@ const kinds: { value: ActivityKind; label: string }[] = [
                 </button>
             </h3>
             <ul v-show="isExpanded(category.name)" class="wfd-toolbox-list">
-                <li v-for="activity in category.activities" :key="activity.name">
+                <li v-for="activity in category.activities" :key="toolboxKey(activity)">
                     <button
                         type="button"
                         class="wfd-toolbox-card"
@@ -98,9 +99,9 @@ const kinds: { value: ActivityKind; label: string }[] = [
                         draggable="true"
                         :title="t('AddActivity', activity.displayText)"
                         :aria-label="t('AddActivity', activity.displayText)"
-                        :data-cy="`toolbox-activity-${activity.name}`"
+                        :data-cy="`toolbox-activity-${toolboxKey(activity)}`"
                         @dragstart="onDragStart(activity, $event)"
-                        @click="emit('add', activity.name)"
+                        @click="emit('add', toolboxKey(activity))"
                     >
                         <i class="wfd-toolbox-icon fa-fw" :class="activity.icon || (activity.isEvent ? 'fa-solid fa-bolt' : 'fa-solid fa-gear')" aria-hidden="true"></i>
                         <span class="wfd-toolbox-thumb" v-html="activity.thumbnailHtml"></span>

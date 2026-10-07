@@ -175,7 +175,7 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         var (id, _) = await CreateWorkflowTypeAsync();
 
         var library = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Library");
-        var activities = library["categories"].AsArray().SelectMany(x => x["activities"].AsArray()).ToDictionary(x => x["name"].GetValue<string>());
+        var activities = library["categories"].AsArray().SelectMany(x => x["activities"].AsArray()).Where(x => x["preset"] is null).ToDictionary(x => x["name"].GetValue<string>());
 
         // Set on the registration of a built-in Workflows activity.
         Assert.Equal("fa-solid fa-bell", activities["NotifyTask"]["icon"].GetValue<string>());
@@ -522,6 +522,48 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         var json = await ReadJsonAsync(response);
         Assert.False(json["valid"].GetValue<bool>());
         Assert.Contains("usable as an activity", new HtmlParser().ParseDocument(json["content"].GetValue<string>()).QuerySelector(".field-validation-error")?.TextContent);
+    }
+
+    [Fact]
+    public async Task Library_WorkflowUsableAsAnActivity_IsAPresetThatAddsAnExecuteWorkflowTask()
+    {
+        var (_, childId) = await CreateWorkflowTypeAsync(Activity("start", "StartedByWorkflowEvent", isStart: true));
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            var store = scope.ServiceProvider.GetRequiredService<IWorkflowTypeStore>();
+            var child = await store.GetAsync(childId);
+            child.Name = "Preset child";
+            child.IsActivity = true;
+            child.Variables = [new WorkflowVariableDefinition { Name = "approved", TypeName = "boolean", IsOutput = true }];
+            await store.SaveAsync(child);
+        });
+
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));
+
+        var library = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Library");
+        var preset = library["categories"].AsArray()
+            .SelectMany(category => category["activities"].AsArray())
+            .Single(activity => activity["preset"]?.GetValue<string>() == $"workflow:{childId}");
+
+        Assert.Equal("ExecuteWorkflowTask", preset["name"].GetValue<string>());
+        Assert.Equal("Preset child", preset["displayText"].GetValue<string>());
+        Assert.Equal("Workflows", preset["category"].GetValue<string>());
+        Assert.Contains("Preset child", preset["thumbnailHtml"].GetValue<string>());
+
+        using (var added = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/AddActivity", new { revision = 0, preset = $"workflow:{childId}", x = 10, y = 10 }))
+        {
+            Assert.Equal(HttpStatusCode.OK, added.StatusCode);
+
+            // The task runs the workflow, and its output can be bound before the task is edited.
+            var node = (await ReadJsonAsync(added))["node"];
+            Assert.Equal("ExecuteWorkflowTask", node["name"].GetValue<string>());
+            Assert.Equal("approved", Assert.Single(node["outputs"].AsArray())["name"].GetValue<string>());
+        }
+
+        using var unknown = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/AddActivity", new { revision = 1, preset = "workflow:missing", x = 0, y = 0 });
+
+        Assert.Equal(HttpStatusCode.BadRequest, unknown.StatusCode);
     }
 
     [Fact]

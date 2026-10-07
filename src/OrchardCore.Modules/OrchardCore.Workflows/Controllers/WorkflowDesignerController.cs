@@ -315,7 +315,7 @@ public sealed class WorkflowDesignerController : Controller
             return this.ApiForbidProblem();
         }
 
-        if (string.IsNullOrEmpty(request?.Name))
+        if (string.IsNullOrEmpty(request?.Name) && string.IsNullOrEmpty(request?.Preset))
         {
             return this.ApiBadRequestProblem();
         }
@@ -327,7 +327,23 @@ public sealed class WorkflowDesignerController : Controller
             return this.ApiNotFoundProblem();
         }
 
-        var result = await _draftManager.AddActivityAsync(workflowType.WorkflowTypeId, request.Revision, request.Name, request.X, request.Y);
+        var activityName = request.Name;
+        JsonObject properties = null;
+
+        if (!string.IsNullOrEmpty(request.Preset))
+        {
+            var preset = await _modelBuilder.FindPresetAsync(request.Preset);
+
+            if (preset is null)
+            {
+                return this.ApiBadRequestProblem();
+            }
+
+            activityName = preset.ActivityName;
+            properties = preset.Properties;
+        }
+
+        var result = await _draftManager.AddActivityAsync(workflowType.WorkflowTypeId, request.Revision, activityName, request.X, request.Y, properties);
 
         if (!result.Succeeded)
         {

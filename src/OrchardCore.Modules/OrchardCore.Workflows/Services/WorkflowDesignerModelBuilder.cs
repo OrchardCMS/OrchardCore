@@ -35,6 +35,7 @@ public sealed class WorkflowDesignerModelBuilder
     private readonly ITempDataProvider _tempDataProvider;
     private readonly HtmlEncoder _htmlEncoder;
     private readonly WorkflowOptions _workflowOptions;
+    private readonly IEnumerable<IActivityPresetProvider> _presetProviders;
 
     public WorkflowDesignerModelBuilder(
         IWorkflowManager workflowManager,
@@ -46,7 +47,8 @@ public sealed class WorkflowDesignerModelBuilder
         IHttpContextAccessor httpContextAccessor,
         ITempDataProvider tempDataProvider,
         HtmlEncoder htmlEncoder,
-        IOptions<WorkflowOptions> workflowOptions)
+        IOptions<WorkflowOptions> workflowOptions,
+        IEnumerable<IActivityPresetProvider> presetProviders)
     {
         _workflowManager = workflowManager;
         _activityLibrary = activityLibrary;
@@ -58,6 +60,17 @@ public sealed class WorkflowDesignerModelBuilder
         _tempDataProvider = tempDataProvider;
         _htmlEncoder = htmlEncoder;
         _workflowOptions = workflowOptions.Value;
+        _presetProviders = presetProviders;
+    }
+
+    /// <summary>
+    /// Returns the preset of an identifier whose activity is available, or <see langword="null"/>.
+    /// </summary>
+    public async Task<ActivityPreset> FindPresetAsync(string id)
+    {
+        var preset = await _presetProviders.FindPresetAsync(id);
+
+        return preset is not null && _activityLibrary.GetActivityByName(preset.ActivityName) is not null ? preset : null;
     }
 
     /// <summary>
@@ -143,7 +156,61 @@ public sealed class WorkflowDesignerModelBuilder
             }
         }
 
+        await AddPresetsAsync(categories, activities);
+
         return new WorkflowDesignerLibrary { Categories = categories };
+    }
+
+    // The presets are listed after the activities of their category, or in a category of their own.
+    private async Task AddPresetsAsync(List<WorkflowDesignerCategory> categories, List<IActivity> activities)
+    {
+        var descriptors = new List<WorkflowDesignerActivityDescriptor>();
+
+        foreach (var preset in await _presetProviders.ListPresetsAsync())
+        {
+            var activity = activities.FirstOrDefault(activity => activity.Name == preset.ActivityName);
+
+            if (activity is null || string.IsNullOrEmpty(preset.Id))
+            {
+                continue;
+            }
+
+            var icon = string.IsNullOrEmpty(preset.Icon) ? WorkflowDesignerIcons.Resolve(activity, _workflowOptions) : preset.Icon;
+
+            descriptors.Add(new WorkflowDesignerActivityDescriptor
+            {
+                Name = activity.Name,
+                Preset = preset.Id,
+                DisplayText = preset.DisplayText,
+                Category = string.IsNullOrEmpty(preset.Category) ? activity.Category.Value : preset.Category,
+                IsEvent = activity.IsEvent(),
+                HasEditor = activity.HasEditor,
+                ThumbnailHtml = PresetThumbnail(preset, icon),
+                Icon = icon,
+            });
+        }
+
+        foreach (var group in descriptors.GroupBy(descriptor => descriptor.Category))
+        {
+            var presets = group.OrderBy(descriptor => descriptor.DisplayText, StringComparer.CurrentCultureIgnoreCase);
+            var index = categories.FindIndex(category => category.Name == group.Key);
+
+            if (index < 0)
+            {
+                categories.Add(new WorkflowDesignerCategory { Name = group.Key, Activities = presets.ToList() });
+            }
+            else
+            {
+                categories[index] = new WorkflowDesignerCategory { Name = group.Key, Activities = categories[index].Activities.Concat(presets).ToList() };
+            }
+        }
+    }
+
+    private string PresetThumbnail(ActivityPreset preset, string icon)
+    {
+        var html = $"<h4 class=\"card-title\"><i class=\"{_htmlEncoder.Encode(icon ?? string.Empty)}\" aria-hidden=\"true\"></i>{_htmlEncoder.Encode(preset.DisplayText ?? string.Empty)}</h4>";
+
+        return string.IsNullOrEmpty(preset.Description) ? html : $"{html}<p>{_htmlEncoder.Encode(preset.Description)}</p>";
     }
 
     private async Task<WorkflowExecutionContext> CreateWorkflowContextAsync(WorkflowType workflowType)
