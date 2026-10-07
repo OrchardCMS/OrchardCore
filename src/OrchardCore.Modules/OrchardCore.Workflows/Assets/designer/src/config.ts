@@ -14,6 +14,8 @@ export interface DesignerUrls {
     versions?: string | null;
     restore?: string | null;
     compare?: string | null;
+    variables?: string | null;
+    outputBindings?: string | null;
 }
 
 /**

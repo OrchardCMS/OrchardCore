@@ -38,6 +38,29 @@ describe("PropertiesPanel", () => {
         document.body.innerHTML = "";
     });
 
+    it("variables_Declared_FillTheDatalistTheVariablesTabAndTheOutputs", async () => {
+        const { store, wrapper } = setup(() => Promise.resolve({ valid: true }));
+        store.state.variables = [{ name: "greeting", typeName: "string" }];
+        store.getNode("a")!.outputs = [{ name: "Result", typeName: "any", displayName: "Result" }];
+
+        selectNode(store, "a");
+        await flushPromises();
+
+        expect(wrapper.findAll("#wfd-variables option").map((option) => option.attributes("value"))).toEqual(["greeting"]);
+        expect(wrapper.get("[data-cy=activity-outputs]").text()).toContain("Result");
+        expect(wrapper.findAll("[role=tab]").map((tab) => tab.attributes("data-cy"))).toEqual([
+            "panel-tab-activity",
+            "panel-tab-variables",
+            "panel-tab-workflow",
+            "panel-tab-issues",
+        ]);
+
+        await wrapper.get("[data-cy=panel-tab-variables]").trigger("click");
+        await flushPromises();
+
+        expect(wrapper.get("[data-cy=variables-tab] [data-cy=variable-name]").element).toHaveProperty("value", "greeting");
+    });
+
     it("selection_SingleActivity_LoadsItsEditor", async () => {
         const { store, api, wrapper } = setup(() => Promise.resolve({ valid: true }));
 
@@ -205,10 +228,10 @@ describe("PropertiesPanel", () => {
         await activityTab.trigger("keydown", { key: "ArrowRight" });
         await flushPromises();
 
-        expect(wrapper.get("[data-cy=panel-tab-workflow]").attributes("aria-selected")).toBe("true");
-        expect(document.activeElement).toBe(wrapper.get("[data-cy=panel-tab-workflow]").element);
+        expect(wrapper.get("[data-cy=panel-tab-variables]").attributes("aria-selected")).toBe("true");
+        expect(document.activeElement).toBe(wrapper.get("[data-cy=panel-tab-variables]").element);
 
-        await wrapper.get("[data-cy=panel-tab-workflow]").trigger("keydown", { key: "End" });
+        await wrapper.get("[data-cy=panel-tab-variables]").trigger("keydown", { key: "End" });
         await flushPromises();
         expect(document.activeElement).toBe(wrapper.get("[data-cy=panel-tab-issues]").element);
 
@@ -248,6 +271,7 @@ describe("PropertiesPanel", () => {
         expect(wrapper.get("[data-cy=panel-sheet]").isVisible()).toBe(false);
         expect(wrapper.findAll("[data-cy^=panel-rail-]").map((button) => button.attributes("data-cy"))).toEqual([
             "panel-rail-activity",
+            "panel-rail-variables",
             "panel-rail-workflow",
             "panel-rail-issues",
         ]);

@@ -143,13 +143,31 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - Draft manager (10): variables, bindings, not found, and the issue rules as a theory.
     - Workflows tests: 188/188.
 
-### - [ ] 3.6 Designer UI
+### - [x] 3.6 Designer UI
 
 - **Variables tab** (between Activity and Workflow): a table of name, type, default (type-aware input) and description; add, edit, delete; saved on blur or change through the revision queue; errors shown per row. Read-only in the viewer, which shows the instance's values too.
 - **Outputs section** under the activity editor: one row per output with a variable picker (a type mismatch is flagged).
 - A `<datalist>` of the variable names for the Set Variable editor's name field.
 - **Monaco**: completions for `variable("…")`/`setVariable("…", )` in the JavaScript editors and `Workflow.Variables.…` in Liquid, registered while the designer is open.
 - **Tests** (Vitest): the tab's add/edit/delete and errors, bindings, the datalist, the completion items.
+- **Notes from implementing this step:**
+  - **Variables tab** (`panel/VariablesTab.vue`).
+    - The panel is narrow, so each variable is a small card rather than a table row: name, type and delete on the first line, then the default value and the description.
+    - The default value's input depends on the type's editor: text, number, `datetime-local`, a select (no default, true or false), JSON in a textarea, or a note for types without defaults.
+    - Every change saves the whole list through the revision queue. A new row that is still empty isn't sent. A default that doesn't parse shows an error without saving, and the server's `variableErrors` are shown on their rows.
+    - A save that completes doesn't overwrite what was typed in the meantime.
+    - Read-only, the viewer shows a table: the instance's values, or the defaults on a version page.
+  - **Outputs** (`panel/OutputBindings.vue`).
+    - Each output has a select of the declared variables. A binding to an undeclared name stays selected, and is flagged.
+    - The same rule as the server's `OutputTypeMismatch` flags outputs that may not convert.
+    - A change saves the activity's bindings and replaces its node.
+    - Read-only pages list the bindings.
+  - **Completions** (`variables/variableCompletions.ts`). Monaco is loaded by the `monaco` resource only once a script editor needs it, and is exposed as `window.__orchardCoreMonacoReady`. The designer waits for that promise to appear, then registers JavaScript and Liquid providers that read the current declarations, and disposes them when it unmounts. Liquid editors in the workflow activities are CodeMirror, so only Monaco Liquid editors get completions.
+  - **Datalist.** `#wfd-variables` is rendered by the properties panel.
+  - **Strings.** 26 new strings in `WorkflowsDesignerJSLocalizer`.
+  - **Tests.**
+    - Vitest: `variableValues` (24), `variableCompletions` (5), `VariablesTab` (8), `OutputBindings` (6), and a panel test for the datalist, the tabs and the outputs. The tab order tests now include the Variables tab. 216/216.
+    - Checked in the review app: declare a variable, save, reload, bind a Script result, and see the completions in the script editor; no console or server errors.
 
 ### - [ ] 3.7 Docs and release notes
 

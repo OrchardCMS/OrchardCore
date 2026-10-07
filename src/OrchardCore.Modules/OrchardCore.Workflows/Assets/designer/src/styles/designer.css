@@ -327,6 +327,85 @@
     font-size: 0.8125rem;
 }
 
+/* Variables tab. */
+.wfd-variable-list {
+    margin: 0;
+    padding: 0.75rem 0.75rem 0;
+}
+
+.wfd-variable {
+    display: grid;
+    gap: 0.375rem;
+    margin-bottom: 0.75rem;
+    padding: 0.5rem;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+}
+
+.wfd-variable.is-invalid {
+    border-color: var(--bs-form-invalid-border-color);
+}
+
+.wfd-variable-head {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr) auto;
+    gap: 0.375rem;
+    align-items: center;
+}
+
+.wfd-variables-actions {
+    padding: 0 0.75rem 0.75rem;
+}
+
+.wfd-variable-table {
+    margin: 0.75rem;
+    width: calc(100% - 1.5rem);
+    font-size: 0.8125rem;
+}
+
+.wfd-variable-value code {
+    word-break: break-all;
+}
+
+/* Outputs of the edited activity. */
+.wfd-outputs {
+    margin: 0 0.75rem 0.75rem;
+    padding-top: 0.75rem;
+    border-top: var(--bs-border-width) solid var(--bs-border-color);
+}
+
+.wfd-panel-summary .wfd-outputs {
+    margin-inline: 0;
+}
+
+.wfd-section-title {
+    margin-bottom: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.wfd-section-hint {
+    margin-bottom: 0.5rem;
+    color: var(--bs-secondary-color);
+    font-size: 0.8125rem;
+}
+
+.wfd-output {
+    margin-bottom: 0.5rem;
+}
+
+.wfd-output-label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 0.8125rem;
+}
+
+.wfd-output-problem {
+    margin: 0.25rem 0 0;
+    color: var(--bs-warning-text-emphasis);
+    font-size: 0.8125rem;
+}
+
 .wfd-summary-list {
     display: grid;
     grid-template-columns: auto 1fr;

@@ -1,5 +1,17 @@
 import { reactive } from "vue";
-import type { DesignIssue, DesignerDefinition, DesignerInstance, DesignerNode, DesignerTransition, DesignerVersion, SavePayload, SaveResult, WorkflowSettings } from "../api/types";
+import type {
+    DesignIssue,
+    DesignerDefinition,
+    DesignerInstance,
+    DesignerNode,
+    DesignerTransition,
+    DesignerVersion,
+    SavePayload,
+    SaveResult,
+    VariableDefinition,
+    VariableType,
+    WorkflowSettings,
+} from "../api/types";
 import { History, type Command } from "./history";
 import type { Graph } from "./commands";
 
@@ -42,6 +54,11 @@ export interface DesignerState {
      */
     version: DesignerVersion | null;
     settings: WorkflowSettings | null;
+    /**
+     * The declared variables, and the types a declaration can use.
+     */
+    variables: VariableDefinition[];
+    variableTypes: VariableType[];
     nodes: DesignerNode[];
     transitions: DesignerTransition[];
     issues: DesignIssue[];
@@ -72,6 +89,8 @@ const createInitialState = (): DesignerState => ({
     publishedVersion: null,
     version: null,
     settings: null,
+    variables: [],
+    variableTypes: [],
     nodes: [],
     transitions: [],
     issues: [],
@@ -142,6 +161,8 @@ export const createDesignerStore = () => {
                 publishedVersion: definition.publishedVersion ?? null,
                 version: definition.version ?? null,
                 settings: definition.settings,
+                variables: definition.variables ?? [],
+                variableTypes: definition.variableTypes ?? [],
                 nodes: definition.nodes,
                 transitions: definition.transitions,
                 issues: definition.issues,

@@ -8,12 +8,15 @@ import type {
     EditorApplyResult,
     FormFragment,
     Library,
+    OutputBindingsResult,
     ProblemDetails,
     PublishResult,
     RestoreResult,
     SavePayload,
     SaveResult,
     SettingsApplyResult,
+    VariableDefinition,
+    VariablesResult,
 } from "./types";
 
 /**
@@ -97,6 +100,10 @@ export const createDesignerApi = (urls: DesignerUrls, service: ApiService = crea
         getVersions: () => call(() => service.get<DesignerVersions>(urls.versions!)),
         restore: (versionId: string, revision: number) => call(() => service.post<RestoreResult>(urls.restore!, { versionId, revision })),
         getComparison: () => call(() => service.get<DesignerComparison>(urls.compare!)),
+        saveVariables: (revision: number, variables: VariableDefinition[]) =>
+            call(() => service.post<VariablesResult>(urls.variables!, { revision, variables })),
+        saveOutputBindings: (activityId: string, revision: number, bindings: Record<string, string>) =>
+            call(() => service.post<OutputBindingsResult>(urls.outputBindings!, { activityId, revision, bindings })),
     };
 };
 

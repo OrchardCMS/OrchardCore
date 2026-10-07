@@ -8,6 +8,7 @@ import { addNodeCommand } from "./state/commands";
 import DesignerCanvas from "./canvas/DesignerCanvas.vue";
 import ActivityToolbox from "./toolbox/ActivityToolbox.vue";
 import PropertiesPanel from "./panel/PropertiesPanel.vue";
+import { startVariableCompletions } from "./variables/variableCompletions";
 import ToastHost from "./ui/ToastHost.vue";
 import SaveStatusIndicator from "./draft/SaveStatusIndicator.vue";
 import ConflictDialog from "./draft/ConflictDialog.vue";
@@ -379,6 +380,9 @@ const discard = async () => {
     }
 };
 
+// Stops the variable completions of the script editors.
+let stopCompletions: (() => void) | null = null;
+
 onMounted(async () => {
     document.addEventListener("keydown", onKeyDown);
     window.addEventListener("beforeunload", onBeforeUnload);
@@ -386,6 +390,7 @@ onMounted(async () => {
 
     if (!props.config.readOnly) {
         void loadLibrary();
+        stopCompletions = startVariableCompletions(() => ({ variables: state.variables, types: state.variableTypes }));
     }
 
     try {
@@ -422,6 +427,7 @@ onBeforeUnmount(() => {
     document.removeEventListener("keydown", onKeyDown);
     window.removeEventListener("beforeunload", onBeforeUnload);
     autosave.stop();
+    stopCompletions?.();
 });
 
 defineExpose({ canvas, panel, addActivity, autosave, publish, discard });

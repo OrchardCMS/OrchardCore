@@ -16,6 +16,39 @@ export interface Outcome {
     displayName: string;
 }
 
+// How the default value of a variable type is edited; 'none' has no default.
+export type VariableEditor = "text" | "number" | "boolean" | "datetime" | "json" | "none";
+
+// A declared workflow variable (WorkflowVariableDefinition.cs).
+export interface VariableDefinition {
+    name: string;
+    typeName: string;
+    // Any JSON value, or null for no default.
+    defaultValue?: unknown;
+    description?: string | null;
+}
+
+// A variable type the designer offers (WorkflowDesignerVariableType).
+export interface VariableType {
+    name: string;
+    displayName: string;
+    editor: VariableEditor | string;
+}
+
+// What is wrong with a declaration, by its position in the posted list.
+export interface VariableError {
+    index: number;
+    name?: string | null;
+    message: string;
+}
+
+// An output an activity declares (WorkflowDesignerOutput).
+export interface ActivityOutput {
+    name: string;
+    typeName: string;
+    displayName: string;
+}
+
 export interface DesignerNode {
     id: string;
     name: string;
@@ -31,6 +64,9 @@ export interface DesignerNode {
     designHtml: string;
     outcomes: Outcome[];
     icon?: string | null;
+    // The outputs the activity declares, and the variable each one is bound to, by output name.
+    outputs?: ActivityOutput[];
+    outputBindings?: Record<string, string>;
 }
 
 export interface DesignerTransition {
@@ -55,6 +91,8 @@ export interface DesignerInstance {
     status: string;
     // The activities the instance waits on.
     blockingActivityIds: string[];
+    // The stored values of the declared variables that have one, by name.
+    variableValues?: Record<string, unknown>;
     // TODO: Phase 5 records the executed activities; the viewer then highlights the executed path.
 }
 
@@ -85,6 +123,8 @@ export interface DesignerDefinition {
     transitions: DesignerTransition[];
     issues: DesignIssue[];
     runningInstanceCount: number;
+    variables?: VariableDefinition[];
+    variableTypes?: VariableType[];
     instance?: DesignerInstance | null;
     // The version new instances start on.
     publishedVersion?: DesignerVersion | null;
@@ -114,6 +154,18 @@ export interface DesignerComparison {
     from: DesignerDefinition;
     to: DesignerDefinition;
     changes: WorkflowTypeChanges;
+}
+
+export interface VariablesResult {
+    revision: number;
+    variables: VariableDefinition[];
+    issues: DesignIssue[];
+}
+
+export interface OutputBindingsResult {
+    revision: number;
+    node: DesignerNode;
+    issues: DesignIssue[];
 }
 
 export interface RestoreResult {
@@ -210,4 +262,6 @@ export interface ProblemDetails {
     modifiedBy?: string | null;
     modifiedUtc?: string | null;
     issues?: DesignIssue[];
+    // Invalid variable declarations (the Variables endpoint).
+    variableErrors?: VariableError[];
 }

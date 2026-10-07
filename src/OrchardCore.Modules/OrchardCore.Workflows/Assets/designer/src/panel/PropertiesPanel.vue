@@ -7,6 +7,8 @@ import type { DesignerStore } from "../state/designerStore";
 import { selectNode } from "../canvas/useConnect";
 import ServerFormHost from "./ServerFormHost.vue";
 import IssuesList from "./IssuesList.vue";
+import OutputBindings from "./OutputBindings.vue";
+import VariablesTab from "./VariablesTab.vue";
 import type { FormApplyResult } from "./types";
 import type { RevisionTask } from "../services/revisionQueue";
 import { showToast } from "../ui/toasts";
@@ -15,7 +17,7 @@ import { usePeek } from "../ui/usePeek";
 import { readPreference, writePreference } from "../ui/preferences";
 import { t } from "../i18n";
 
-type Tab = "activity" | "workflow" | "issues";
+type Tab = "activity" | "variables" | "workflow" | "issues";
 
 const MIN_WIDTH = 288;
 const MAX_WIDTH = 720;
@@ -24,6 +26,7 @@ const COLLAPSED_KEY = "panel-collapsed";
 
 const TAB_ICONS: Record<Tab, string> = {
     activity: "fa-solid fa-sliders",
+    variables: "fa-solid fa-square-root-variable",
     workflow: "fa-solid fa-gear",
     issues: "fa-solid fa-triangle-exclamation",
 };
@@ -65,18 +68,22 @@ const tabList = ref<HTMLElement | null>(null);
 const panel = ref<HTMLElement | null>(null);
 const ids = `wfd-panel-${useId()}`;
 
-const tabs = computed<Tab[]>(() => (props.readOnly ? ["activity"] : ["activity", "workflow", "issues"]));
+const tabs = computed<Tab[]>(() => (props.readOnly ? ["activity", "variables"] : ["activity", "variables", "workflow", "issues"]));
 
 // Collapsed, the panel is a rail of its tabs; hovering it opens the panel over the canvas (a "peek").
 const peek = usePeek((element) => !!element && !!panel.value?.contains(element));
 const peeking = computed(() => collapsed.value && peek.open.value);
 
 // Direct t("…") calls, so the translations spec sees every key.
-const tabLabel = (item: Tab) => ({ activity: t("ActivityTab"), workflow: t("WorkflowTab"), issues: t("IssuesTab") })[item];
+const tabLabel = (item: Tab) => ({ activity: t("ActivityTab"), variables: t("VariablesTab"), workflow: t("WorkflowTab"), issues: t("IssuesTab") })[item];
 
 const tabHint = (item: Tab) => {
     if (item === "activity") {
         return props.readOnly ? t("ActivityTabHintReadOnly") : t("ActivityTabHint");
+    }
+
+    if (item === "variables") {
+        return props.readOnly ? t("VariablesTabHintReadOnly") : t("VariablesTabHint");
     }
 
     return item === "workflow" ? t("WorkflowTabHint") : t("IssuesTabHint");
@@ -425,6 +432,11 @@ defineExpose({ open, settle, selectTab, expand, discardChanges, refresh, hasPend
             </button>
         </div>
 
+        <!-- The Set Variable editor's name field suggests the declared variables. -->
+        <datalist id="wfd-variables" data-cy="variables-datalist">
+            <option v-for="variable in state.variables" :key="variable.name" :value="variable.name"></option>
+        </datalist>
+
         <div v-show="!collapsed || peeking" class="wfd-panel-sheet" :style="peeking ? { width: `${width}px` } : undefined" data-cy="panel-sheet">
             <div
                 v-if="!collapsed"
@@ -509,6 +521,7 @@ defineExpose({ open, settle, selectTab, expand, discardChanges, refresh, hasPend
                         </dl>
                         <p v-if="editingNode.isMissing" class="text-warning small">{{ t("MissingActivity") }}</p>
                         <div class="wfd-node-body" v-html="editingNode.designHtml"></div>
+                        <OutputBindings :node="editingNode" :store="store" :api="api" read-only />
                     </div>
                     <p v-else-if="editingNode.isMissing" class="wfd-panel-message text-warning" data-cy="panel-missing">{{ t("MissingActivityCannotBeEdited") }}</p>
                     <template v-else>
@@ -528,8 +541,11 @@ defineExpose({ open, settle, selectTab, expand, discardChanges, refresh, hasPend
                             @applied="onActivityApplied"
                             @error="onError"
                         />
+                        <OutputBindings :node="editingNode" :store="store" :api="api" :mutate="mutate" @error="onError" />
                     </template>
                 </template>
+
+                <VariablesTab v-else-if="tab === 'variables'" :store="store" :api="api" :read-only="readOnly" :mutate="mutate" @error="onError" />
 
                 <template v-else-if="tab === 'workflow'">
                     <p class="wfd-panel-intro">{{ t("WorkflowTabHint") }}</p>
