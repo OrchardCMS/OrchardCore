@@ -220,7 +220,13 @@ public static class LiquidTemplateContextExtensions
         }
     }
     
-    internal static async ValueTask EnterScopeAsync(this LiquidTemplateContext context, ViewContext viewContext, object model)
+    /// <summary>
+    /// Enters a Liquid view scope and initializes the view localizer.
+    /// </summary>
+    /// <param name="context">The Liquid template context.</param>
+    /// <param name="viewContext">The view context to use.</param>
+    /// <param name="model">The model to expose to the template.</param>
+    public static async ValueTask EnterScopeAsync(this LiquidTemplateContext context, ViewContext viewContext, object model)
     {
         await context.InitializeAsync(viewContext);
 
