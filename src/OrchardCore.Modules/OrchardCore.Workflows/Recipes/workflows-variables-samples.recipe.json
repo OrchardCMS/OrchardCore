@@ -1,0 +1,353 @@
+{
+  "name": "workflows-variables-samples",
+  "displayName": "Workflow Variables Samples",
+  "description": "Sample workflows that show workflow variables: defaults, setting them in JavaScript and Liquid, binding an activity's output, and the inputs and outputs of a workflow run as an activity.",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0",
+  "issetuprecipe": false,
+  "categories": [
+    "default"
+  ],
+  "tags": [],
+  "steps": [
+    {
+      "name": "feature",
+      "enable": [
+        "OrchardCore.Workflows",
+        "OrchardCore.Workflows.Http"
+      ]
+    },
+    {
+      "name": "WorkflowType",
+      "data": [
+        {
+          "WorkflowTypeId": "sampleordertotal",
+          "Name": "Sample: order total",
+          "IsEnabled": true,
+          "IsSingleton": false,
+          "DeleteFinishedWorkflows": false,
+          "Variables": [
+            {
+              "Name": "customer",
+              "TypeName": "string",
+              "DefaultValue": "Guest",
+              "Description": "Who orders. Set from the customer value of the query string."
+            },
+            {
+              "Name": "quantity",
+              "TypeName": "number",
+              "DefaultValue": 1,
+              "Description": "How many items. Set from the quantity value of the query string."
+            },
+            {
+              "Name": "unitPrice",
+              "TypeName": "number",
+              "DefaultValue": 9.5,
+              "Description": "The price of one item."
+            },
+            {
+              "Name": "total",
+              "TypeName": "number",
+              "Description": "quantity × unitPrice, set by 'Compute the total'."
+            },
+            {
+              "Name": "discount",
+              "TypeName": "number",
+              "DefaultValue": 0,
+              "Description": "Bound to the Result output of 'Choose a discount'."
+            },
+            {
+              "Name": "message",
+              "TypeName": "string",
+              "Description": "The reply, composed in Liquid."
+            }
+          ],
+          "Activities": [
+            {
+              "ActivityId": "orderrequested",
+              "Name": "HttpRequestEvent",
+              "X": 40,
+              "Y": 40,
+              "IsStart": true,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Order requested"
+                },
+                "HttpMethod": "GET",
+                "ValidateAntiforgeryToken": false
+              }
+            },
+            {
+              "ActivityId": "readquery",
+              "Name": "ScriptTask",
+              "X": 40,
+              "Y": 220,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Read the query string"
+                },
+                "AvailableOutcomes": [
+                  "Done"
+                ],
+                "Script": {
+                  "Expression": "// Variables keep their default value unless something sets them.\nif (queryString('customer')) {\n    setVariable('customer', queryString('customer'));\n}\n\n// The text '3' is converted to the number 3, since quantity is a number.\nif (queryString('quantity')) {\n    setVariable('quantity', queryString('quantity'));\n}\n\nsetOutcome('Done');"
+                }
+              }
+            },
+            {
+              "ActivityId": "computetotal",
+              "Name": "SetVariableTask",
+              "X": 380,
+              "Y": 220,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Compute the total"
+                },
+                "VariableName": "total",
+                "Value": {
+                  "Expression": "variable('quantity') * variable('unitPrice')",
+                  "Syntax": "JavaScript"
+                }
+              }
+            },
+            {
+              "ActivityId": "choosediscount",
+              "Name": "ScriptTask",
+              "X": 720,
+              "Y": 220,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Choose a discount"
+                },
+                "AvailableOutcomes": [
+                  "Done"
+                ],
+                "Script": {
+                  "Expression": "// The last value of the script is its Result output, which is bound to the discount variable.\nsetOutcome('Done');\nvariable('total') >= 20 ? 0.1 : 0;"
+                },
+                "OutputBindings": {
+                  "Result": "discount"
+                }
+              }
+            },
+            {
+              "ActivityId": "composemessage",
+              "Name": "SetVariableTask",
+              "X": 720,
+              "Y": 400,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Compose the reply"
+                },
+                "VariableName": "message",
+                "Value": {
+                  "Expression": "{{ Workflow.Variables.customer }} ordered {{ Workflow.Variables.quantity }} item(s) for {{ Workflow.Variables.total }}, with a {{ Workflow.Variables.discount | times: 100 | round }}% discount.",
+                  "Syntax": "Liquid"
+                }
+              }
+            },
+            {
+              "ActivityId": "reply",
+              "Name": "HttpResponseTask",
+              "X": 380,
+              "Y": 400,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Reply"
+                },
+                "Content": {
+                  "Expression": "{{ Workflow.Variables.message }}"
+                },
+                "HttpStatusCode": 200,
+                "ContentType": {
+                  "Expression": "text/plain"
+                }
+              }
+            }
+          ],
+          "Transitions": [
+            {
+              "SourceActivityId": "orderrequested",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "readquery"
+            },
+            {
+              "SourceActivityId": "readquery",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "computetotal"
+            },
+            {
+              "SourceActivityId": "computetotal",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "choosediscount"
+            },
+            {
+              "SourceActivityId": "choosediscount",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "composemessage"
+            },
+            {
+              "SourceActivityId": "composemessage",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "reply"
+            }
+          ]
+        },
+        {
+          "WorkflowTypeId": "samplegreetingformat",
+          "Name": "Sample: format a greeting",
+          "IsEnabled": true,
+          "IsSingleton": false,
+          "IsActivity": true,
+          "DeleteFinishedWorkflows": false,
+          "Variables": [
+            {
+              "Name": "name",
+              "TypeName": "string",
+              "DefaultValue": "world",
+              "Description": "Input: who to greet.",
+              "IsInput": true
+            },
+            {
+              "Name": "greeting",
+              "TypeName": "string",
+              "Description": "Output: the greeting.",
+              "IsOutput": true
+            }
+          ],
+          "Activities": [
+            {
+              "ActivityId": "greetingstart",
+              "Name": "StartedByWorkflowEvent",
+              "X": 40,
+              "Y": 40,
+              "IsStart": true,
+              "Properties": {}
+            },
+            {
+              "ActivityId": "greetingformat",
+              "Name": "SetVariableTask",
+              "X": 380,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Format the greeting"
+                },
+                "VariableName": "greeting",
+                "Value": {
+                  "Expression": "Hello, {{ Workflow.Variables.name }}!",
+                  "Syntax": "Liquid"
+                }
+              }
+            }
+          ],
+          "Transitions": [
+            {
+              "SourceActivityId": "greetingstart",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "greetingformat"
+            }
+          ]
+        },
+        {
+          "WorkflowTypeId": "samplegreetingrequest",
+          "Name": "Sample: greet through another workflow",
+          "IsEnabled": true,
+          "IsSingleton": false,
+          "DeleteFinishedWorkflows": false,
+          "Variables": [
+            {
+              "Name": "reply",
+              "TypeName": "string",
+              "Description": "Bound to the greeting output of 'Format the greeting'."
+            }
+          ],
+          "Activities": [
+            {
+              "ActivityId": "greetrequested",
+              "Name": "HttpRequestEvent",
+              "X": 40,
+              "Y": 40,
+              "IsStart": true,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Greeting requested"
+                },
+                "HttpMethod": "GET",
+                "ValidateAntiforgeryToken": false
+              }
+            },
+            {
+              "ActivityId": "greetrun",
+              "Name": "ExecuteWorkflowTask",
+              "X": 380,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Format the greeting"
+                },
+                "WorkflowTypeId": "samplegreetingformat",
+                "WaitForCompletion": true,
+                "Inputs": {
+                  "name": {
+                    "Expression": "queryString('name') || 'world'",
+                    "Syntax": "JavaScript"
+                  }
+                },
+                "Outputs": [
+                  {
+                    "Name": "greeting",
+                    "TypeName": "string",
+                    "Description": "Output: the greeting."
+                  }
+                ],
+                "OutputBindings": {
+                  "greeting": "reply"
+                }
+              }
+            },
+            {
+              "ActivityId": "greetreply",
+              "Name": "HttpResponseTask",
+              "X": 720,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Reply"
+                },
+                "Content": {
+                  "Expression": "{{ Workflow.Variables.reply }}"
+                },
+                "HttpStatusCode": 200,
+                "ContentType": {
+                  "Expression": "text/plain"
+                }
+              }
+            }
+          ],
+          "Transitions": [
+            {
+              "SourceActivityId": "greetrequested",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "greetrun"
+            },
+            {
+              "SourceActivityId": "greetrun",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "greetreply"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -94,6 +94,14 @@ The work is pushed to the draft pull request [OrchardCMS/OrchardCore#19996](http
     - `OrchardCore.Tests`: 3,656 tests, 3,651 passed and 2 skipped. The 3 `ContentQuickNavigationTests` cases failed when their cleanup hit a Windows file lock; the class passed 11 of 11 when run again.
     - Vitest: 236 of 236. The functional `*Cms*` tests: 165 of 165.
     - `yarn lint`, `yarn check` and `yarn build` leave a clean `git status`.
+- **Follow-ups from review:**
+    - The gap below the designer is halved (18px), and the properties panel's tabs are 4px apart.
+    - A **Workflow Variables Samples** recipe in `OrchardCore.Workflows/Recipes` adds three sample workflows:
+        - "order total": defaults, Script, Set Variable in JavaScript and Liquid, and an output binding;
+        - "format a greeting", usable as an activity;
+        - "greet through another workflow", which runs it with an input and gets its output back.
+    - The Variables docs explain that variables belong to the workflow (each instance has its own values), describe the samples, and say when a module should add a variable type.
+    - `WorkflowVariablesSamplesRecipeTests` runs the recipe and calls the samples.
 
 | Phase | Scope | Depends on | Status |
 |---|---|---|---|

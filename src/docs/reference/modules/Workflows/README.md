@@ -265,6 +265,8 @@ For developers, `IWorkflowDesignerNotifier` is told about the changes of workflo
 
 A workflow can declare **variables**: named values that every activity of an instance can read and write, each with a type and an optional default value. Variables are declared in the **Variables** tab of the designer's properties panel, and are part of the workflow's [versions](#versions).
 
+Variables belong to the workflow, not to an activity: an activity sets a variable, and the activities that run after it read the new value. Each instance has its own values, so two instances that run at the same time don't share them. The [samples](#samples) show them at work.
+
 | Type | Name | Values | Default value |
 |---|---|---|---|
 | Text | `string` | Text. Numbers, dates (ISO 8601), booleans (`true`/`false`) and objects (JSON) convert to text. | Text |
@@ -298,6 +300,22 @@ A workflow can declare **variables**: named values that every activity of an ins
 
 The **Issues** tab warns about a Set Variable activity or an output that names a variable the workflow doesn't declare, and about an output whose values may not convert to its variable's type (for example a number output stored in a yes or no variable). Any value converts to text, and nothing is checked for `any`.
 
+### Samples
+
+The **Workflow Variables Samples** recipe adds three sample workflows. Run it from **Configuration** → **Recipes**; it also enables the **Workflows** and **HTTP Workflows Activities** features. Each sample starts with an HTTP request: open that activity's editor to generate its URL, then open the URL in a browser.
+
+- **Sample: order total.** Its variables have defaults, and its activities set them one after the other:
+    1. **Read the query string** (Script) sets `customer` and `quantity` with `setVariable()`. The text `3` becomes the number `3`, since `quantity` is a number.
+    2. **Compute the total** (Set Variable, JavaScript) sets `total` to `variable('quantity') * variable('unitPrice')`.
+    3. **Choose a discount** (Script) returns the discount, and its **Result** output is stored in the `discount` variable.
+    4. **Compose the reply** (Set Variable, Liquid) builds `message` from the other variables, and **Reply** returns it.
+
+    With `&customer=Ann&quantity=3` at the end of its URL, it replies "Ann ordered 3 item(s) for 28.5, with a 10% discount."; without them, the defaults apply: "Guest ordered 1 item(s) for 9.5, with a 0% discount."
+- **Sample: format a greeting.** It's usable as an activity: its `name` variable is an input, and its `greeting` variable an output.
+- **Sample: greet through another workflow.** An Execute Workflow task runs **Sample: format a greeting**, with `queryString('name') || 'world'` as its `name` input, and stores its `greeting` output in the `reply` variable. With `&name=Ann`, it replies "Hello, Ann!".
+
+The **Variables** tab of an instance's page shows the values its variables have.
+
 ### Variables and Properties
 
 A variable is a workflow property with a type: the variable `greeting` is stored as `Properties["greeting"]`. Activities and scripts that use properties (`property("greeting")`, `{{ Workflow.Properties.greeting }}`, Set Property) see variables, and the existing workflows that use properties keep working. Writing a variable as a property doesn't convert the value. Setting an undeclared name with Set Variable or `setVariable()` stores the value as a property, as it is.
@@ -309,6 +327,7 @@ The page of a workflow instance lists its variables, with the values the instanc
 - `WorkflowExecutionContext.Variables` reads and writes the declared variables with their types; a value that doesn't convert throws `WorkflowVariableException`.
 - An activity declares outputs by implementing `IActivityOutputs`, and sets them while it runs with `workflowContext.SetActivityOutput(activityContext, "Result", value)`. The bindings are stored in the activity's `Properties["OutputBindings"]` (see `ActivityOutputBindingExtensions`).
 - A module adds a variable type by registering an `IWorkflowVariableType`: its name, display name, how the designer edits its default (`text`, `number`, `boolean`, `datetime`, `json` or `none`), and how values convert to it. Its values are persisted with the instance like other workflow properties, so it needs an `IWorkflowValueSerializer` if they don't serialize to JSON and back. A type registered with an existing name replaces it.
+- The built-in types cover most values. A type of its own is worth it for a value that needs its own conversion, editor or storage. For example, `contentItem` stores the id of the content item, and loads the item again when the instance resumes, so instances don't keep a copy of the item that goes stale.
 
 ```csharp
 services.AddScoped<IWorkflowVariableType, MyVariableType>();
