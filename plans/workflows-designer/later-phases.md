@@ -2,7 +2,7 @@
 
 Phase 1 (the designer) changes only the UI. This file lists the engine and UI components Orchard Core Workflows is missing, compared with Elsa Studio and Elsa Workflows, so they can be built later. Each phase has a design sketch, a compatibility plan and its tests. Before starting a phase, turn its sketch into a detailed step list in a new `phase-N-*.md`, in the same format as [`phase-1-designer.md`](phase-1-designer.md).
 
-**Status.** Each phase below is detailed in its own file, which records what was built and why it differs from the sketch; the [roadmap](README.md#roadmap) tracks them. Phases 2–7 are done, and Phase 8 is next. The backlog isn't scheduled.
+**Status.** Each phase below is detailed in its own file, which records what was built and why it differs from the sketch; the [roadmap](README.md#roadmap) tracks them. Phases 2–7 are done, and Phase 8 is in progress. The backlog isn't scheduled.
 
 Paths: `M/` = `src/OrchardCore.Modules/OrchardCore.Workflows/`, `A/` = `src/OrchardCore/OrchardCore.Workflows.Abstractions/`.
 
@@ -19,7 +19,7 @@ Paths: `M/` = `src/OrchardCore.Modules/OrchardCore.Workflows/`, `A/` = `src/Orch
 | Real-time designer and instance updates | None | Live instance view, presence, conflict notices | 6 | Small–Medium | Done |
 | Workflow as an activity (sub-workflow with inputs and outputs) | None | Reuse | 7 | Medium | Done |
 | Dynamic activity providers (catalog from configuration or a database) | Only types registered with `AddActivity` | Integrations, low-code catalogs | 7 | Medium | Done, as activity presets |
-| Multiple transitions per outcome / implicit fork | Engine follows only the first transition | Simpler branching | 8 | Medium–Hard | Next |
+| Multiple transitions per outcome / implicit fork | Engine follows only the first transition | Simpler branching | 8 | Medium–Hard | In progress (8.1) |
 | Composition (containers, nested sequences and flowcharts) | Flat graph only | Large workflows | 8 | Hard (new execution model) | To evaluate (8) |
 | State-machine modeling | None | Approvals and lifecycles | 8 | Hard | To evaluate (8) |
 | Audit trail for workflow type changes | None | Governance | Backlog | Small | Not scheduled |
@@ -158,7 +158,7 @@ Paths: `M/` = `src/OrchardCore.Modules/OrchardCore.Workflows/`, `A/` = `src/Orch
 
 ## Phase 8 — Evaluate: branching model, composition, state machines
 
-**Detailed plan:** not written yet (next). **Status:** not started.
+**Detailed plan:** [`phase-8-evaluation.md`](phase-8-evaluation.md). **Status:** in progress.
 
 Spike and decide; these change the execution model. Pursue them only when there's real demand.
 
