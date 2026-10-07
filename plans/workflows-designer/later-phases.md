@@ -19,9 +19,9 @@ Paths: `M/` = `src/OrchardCore.Modules/OrchardCore.Workflows/`, `A/` = `src/Orch
 | Real-time designer and instance updates | None | Live instance view, presence, conflict notices | 6 | Small–Medium | Done |
 | Workflow as an activity (sub-workflow with inputs and outputs) | None | Reuse | 7 | Medium | Done |
 | Dynamic activity providers (catalog from configuration or a database) | Only types registered with `AddActivity` | Integrations, low-code catalogs | 7 | Medium | Done, as activity presets |
-| Multiple transitions per outcome / implicit fork | Engine follows only the first transition | Simpler branching | 8 | Medium–Hard | In progress (8.1) |
-| Composition (containers, nested sequences and flowcharts) | Flat graph only | Large workflows | 8 | Hard (new execution model) | To evaluate (8) |
-| State-machine modeling | None | Approvals and lifecycles | 8 | Hard | To evaluate (8) |
+| Multiple transitions per outcome / implicit fork | Engine follows only the first transition | Simpler branching | 8 | Medium–Hard | Done, as an opt-in branching mode (8.1) |
+| Composition (containers, nested sequences and flowcharts) | Flat graph only | Large workflows | 8 | Hard (new execution model) | Evaluated; not built (see phase 8) |
+| State-machine modeling | None | Approvals and lifecycles | 8 | Hard | Evaluated; documented as a pattern (see phase 8) |
 | Audit trail for workflow type changes | None | Governance | Backlog | Small | Not scheduled |
 | List of instances across all types, more status filters | Per type only; filters All, Finished, Faulted | Operations | Backlog | Small | Not scheduled |
 | Workflow testing from the designer ("Run with input…") | None | Authoring speed | Backlog (after 5) | Small–Medium | Not scheduled |
