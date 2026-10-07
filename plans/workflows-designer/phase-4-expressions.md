@@ -137,9 +137,19 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - A **Workflow Expression Syntaxes** feature section.
     - An **Expression syntaxes** breaking-change bullet (the constructors, the view models, the stored shape), and a **Syntax toggle** bullet: the unused `workflow-syntax-toggle` resource and the removed Correlate script.
 
-### - [ ] 4.6 End-to-end test
+### - [x] 4.6 End-to-end test
 
 - A test module (`test/OrchardCore.Tests.Modules/WorkflowsSample`) registers a custom syntax. The test opens an If/Else, sees the custom syntax in its select, and runs a seeded HTTP workflow whose Set Variable uses a Literal value and whose response uses a Liquid one.
+- **Notes from implementing this step:**
+  - **Test module.** `WorkflowsSample` registers an "Upper case" syntax (`UpperCaseExpressionProvider`: the text in upper case). It is referenced by the functional test project, loaded by `OrchardTestServer`, enabled by the recipe, and added to `OrchardCore.slnx`.
+  - **Seed.** "Expression syntaxes" (`wfdexpressionsyntaxes`): an HTTP request, then a Set Variable stored the legacy way (Liquid `{{ 'legacy' }}`), then a response with `{{ Workflow.Variables.name }}`.
+  - **Test.** `ExpressionSyntax_LegacyLiquidValueChangedToACustomSyntax_TheResponseUsesIt`:
+    - the legacy activity responds `legacy`;
+    - its editor shows Liquid selected, the four syntaxes and a Monaco editor;
+    - the test selects "Upper case", types `world` in Monaco, publishes, and the response is `WORLD`.
+    It covers the legacy shape, the editor, a module's syntax, Monaco and the runtime together, which is more than the If/Else check the plan described.
+  - **Helper fix.** With one more seeded workflow, the workflow list's first page no longer held every workflow the tests look for. `FindWorkflowTypeIdAsync` now searches the list by name.
+  - **Results.** `WorkflowsDesignerTests` 20/20.
 
 ## Definition of done (Phase 4)
 

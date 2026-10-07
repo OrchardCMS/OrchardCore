@@ -28,6 +28,7 @@
         "OrchardCore.Workflows",
         "OrchardCore.Workflows.Http",
         "OrchardCore.Workflows.Timers",
+        "WorkflowsSample",
 
         "TheAdmin",
         "SafeMode"
@@ -294,6 +295,80 @@
               "SourceActivityId": "greetscript",
               "SourceOutcomeName": "Done",
               "DestinationActivityId": "greetrespond"
+            }
+          ]
+        },
+        {
+          "WorkflowTypeId": "wfdexpressionsyntaxes",
+          "Name": "Expression syntaxes",
+          "IsEnabled": true,
+          "IsSingleton": false,
+          "DeleteFinishedWorkflows": false,
+          "Variables": [
+            {
+              "Name": "name",
+              "TypeName": "string"
+            }
+          ],
+          "Activities": [
+            {
+              "ActivityId": "syntaxstart",
+              "Name": "HttpRequestEvent",
+              "X": 40,
+              "Y": 40,
+              "IsStart": true,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Name requested"
+                },
+                "HttpMethod": "GET",
+                "ValidateAntiforgeryToken": false
+              }
+            },
+            {
+              "ActivityId": "syntaxset",
+              "Name": "SetVariableTask",
+              "X": 360,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "VariableName": "name",
+                "Value": {
+                  "Expression": "'from script'"
+                },
+                "LiquidValue": {
+                  "Expression": "{{ 'legacy' }}"
+                },
+                "Syntax": "Liquid"
+              }
+            },
+            {
+              "ActivityId": "syntaxrespond",
+              "Name": "HttpResponseTask",
+              "X": 680,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "Content": {
+                  "Expression": "{{ Workflow.Variables.name }}"
+                },
+                "HttpStatusCode": 200,
+                "ContentType": {
+                  "Expression": "text/plain"
+                }
+              }
+            }
+          ],
+          "Transitions": [
+            {
+              "SourceActivityId": "syntaxstart",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "syntaxset"
+            },
+            {
+              "SourceActivityId": "syntaxset",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "syntaxrespond"
             }
           ]
         },

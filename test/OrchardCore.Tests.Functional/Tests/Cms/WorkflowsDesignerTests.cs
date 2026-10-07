@@ -530,6 +530,40 @@ public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsF
     }
 
     [Fact]
+    public async Task ExpressionSyntax_LegacyLiquidValueChangedToACustomSyntax_TheResponseUsesIt()
+    {
+        var (page, consoleErrors) = await OpenAsync();
+        var id = await page.FindWorkflowTypeIdAsync("Expression syntaxes");
+        await page.OpenDesignerAsync(id);
+
+        // The legacy activity runs its Liquid value, and the editor shows it that way.
+        var url = await page.GenerateHttpUrlAsync(id, "syntaxstart");
+        Assert.Equal("legacy", (await (await page.APIRequest.GetAsync(url)).TextAsync()).Trim());
+
+        await page.EditActivityAsync("syntaxset");
+        var value = page.ActivityForm().Locator("[data-workflow-expression]").Last;
+        var syntax = value.Locator("select[name='SetVariableTask.Value.Syntax']");
+        await Assertions.Expect(syntax).ToHaveValueAsync("Liquid");
+        await Assertions.Expect(syntax.Locator("option")).ToHaveTextAsync(["Literal", "Liquid", "JavaScript", "Upper case"]);
+        await Assertions.Expect(value.Locator(".monaco-editor")).ToBeVisibleAsync();
+        await Assertions.Expect(value.Locator("textarea[name='SetVariableTask.Value.Expression']")).ToHaveValueAsync("{{ 'legacy' }}");
+
+        // The module's syntax, with a value typed in the code editor.
+        await syntax.SelectOptionAsync("UpperCase");
+        await value.Locator(".monaco-editor").ClickAsync();
+        await page.Keyboard.PressAsync("Control+A");
+        await page.Keyboard.TypeAsync("world");
+        await page.Locator("[data-cy=panel-activity-title]").ClickAsync();
+        await Assertions.Expect(value.Locator("textarea[name='SetVariableTask.Value.Expression']")).ToHaveValueAsync("world");
+        await page.PublishAsync();
+
+        Assert.Equal("WORLD", (await (await page.APIRequest.GetAsync(url)).TextAsync()).Trim());
+
+        Assert.Empty(consoleErrors);
+        await page.CloseAsync();
+    }
+
+    [Fact]
     public async Task DesignerEndpoints_UserWithoutManageWorkflows_ReturnForbidden()
     {
         var (page, _) = await OpenAsync();

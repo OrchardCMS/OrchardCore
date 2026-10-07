@@ -118,7 +118,7 @@ public sealed class OrchardTestServer : IAsyncDisposable
 
     private sealed class TestThemeModuleNamesProvider : IModuleNamesProvider
     {
-        public IEnumerable<string> GetModuleNames() => ["AdminThemeSample"];
+        public IEnumerable<string> GetModuleNames() => ["AdminThemeSample", "WorkflowsSample"];
     }
 
     public void AssertNoLoggedIssues()

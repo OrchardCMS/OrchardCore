@@ -46,7 +46,8 @@ public static class WorkflowDesignerHelper
     /// </summary>
     public static async Task<long> FindWorkflowTypeIdAsync(this IPage page, string name)
     {
-        await page.GotoAndAssertOkAsync("/Admin/Workflows/Types");
+        // Searching by name, since the workflow types the tests create push the seeded ones off the first page.
+        await page.GotoAndAssertOkAsync("/Admin/Workflows/Types?options.Search=" + Uri.EscapeDataString(name));
         var href = await page.Locator("a[href*='/Admin/Workflows/Types/Edit/']", new() { HasTextString = name }).First.GetAttributeAsync("href");
 
         return ParseWorkflowTypeId(href);
