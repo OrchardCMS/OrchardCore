@@ -2,7 +2,7 @@
 
 Phase 1 (the designer) changes only the UI. This file lists the engine and UI components Orchard Core Workflows is missing, compared with Elsa Studio and Elsa Workflows, so they can be built later. Each phase has a design sketch, a compatibility plan and its tests. Before starting a phase, turn its sketch into a detailed step list in a new `phase-N-*.md`, in the same format as [`phase-1-designer.md`](phase-1-designer.md).
 
-**Status.** Each phase below is detailed in its own file, which records what was built and why it differs from the sketch; the [roadmap](README.md#roadmap) tracks them. Phases 2–7 are done, and Phase 8 is in progress. The backlog isn't scheduled.
+**Status.** Each phase below is detailed in its own file, which records what was built and why it differs from the sketch; the [roadmap](README.md#roadmap) tracks them. Phases 2–7 are done, and Phase 8's steps are done (its Definition of done is running). The backlog isn't scheduled.
 
 Paths: `M/` = `src/OrchardCore.Modules/OrchardCore.Workflows/`, `A/` = `src/OrchardCore/OrchardCore.Workflows.Abstractions/`.
 
@@ -158,7 +158,7 @@ Paths: `M/` = `src/OrchardCore.Modules/OrchardCore.Workflows/`, `A/` = `src/Orch
 
 ## Phase 8 — Evaluate: branching model, composition, state machines
 
-**Detailed plan:** [`phase-8-evaluation.md`](phase-8-evaluation.md). **Status:** in progress.
+**Detailed plan:** [`phase-8-evaluation.md`](phase-8-evaluation.md). **Status:** steps done; Definition of done running. The branching mode was built; composition and state machines were evaluated and not built (see its Evaluation).
 
 Spike and decide; these change the execution model. Pursue them only when there's real demand.
 
