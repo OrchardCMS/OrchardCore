@@ -233,6 +233,7 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
             draft.DeleteFinishedWorkflows = settings.DeleteFinishedWorkflows;
             draft.IsActivity = settings.IsActivity;
             draft.BranchingMode = settings.BranchingMode;
+            draft.FaultOnScriptErrors = settings.FaultOnScriptErrors;
 
             return Task.FromResult(new ChangeOutcome());
         });
@@ -298,6 +299,7 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
             draft.DeleteFinishedWorkflows = version.DeleteFinishedWorkflows;
             draft.IsActivity = version.IsActivity;
             draft.BranchingMode = version.BranchingMode;
+            draft.FaultOnScriptErrors = version.FaultOnScriptErrors;
             draft.Activities = version.Activities.Select(activity => activity.Clone()).ToList();
             draft.Transitions = version.Transitions.Select(transition => transition.Clone()).ToList();
             draft.Variables = version.Variables.Select(variable => variable.Clone()).ToList();

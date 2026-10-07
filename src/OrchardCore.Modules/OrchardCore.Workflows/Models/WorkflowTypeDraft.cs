@@ -82,6 +82,11 @@ public sealed class WorkflowTypeDraft
     public WorkflowBranchingMode BranchingMode { get; set; }
 
     /// <summary>
+    /// The draft value of <see cref="WorkflowType.FaultOnScriptErrors"/>.
+    /// </summary>
+    public bool FaultOnScriptErrors { get; set; }
+
+    /// <summary>
     /// The draft activities.
     /// </summary>
     public IList<ActivityRecord> Activities { get; set; } = [];

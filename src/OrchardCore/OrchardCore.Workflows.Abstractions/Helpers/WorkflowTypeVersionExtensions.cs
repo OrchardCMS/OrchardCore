@@ -34,6 +34,7 @@ public static class WorkflowTypeVersionExtensions
             DeleteFinishedWorkflows = version.DeleteFinishedWorkflows,
             IsActivity = version.IsActivity,
             BranchingMode = version.BranchingMode,
+            FaultOnScriptErrors = version.FaultOnScriptErrors,
             Activities = version.Activities
                 .Select(activity => new ActivityRecord
                 {

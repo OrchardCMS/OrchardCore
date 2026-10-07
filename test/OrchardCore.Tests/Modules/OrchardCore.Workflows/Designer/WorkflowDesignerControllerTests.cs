@@ -897,6 +897,7 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         var form = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Settings");
         Assert.Contains("name=\"IsActivity\"", form["content"].GetValue<string>());
         Assert.Contains("name=\"BranchingMode\"", form["content"].GetValue<string>());
+        Assert.Contains("name=\"FaultOnScriptErrors\"", form["content"].GetValue<string>());
 
         using var response = await PostFormAsync($"Admin/Workflows/Types/{id}/Designer/Settings?revision=0", new Dictionary<string, string>
         {
@@ -904,6 +905,7 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
             ["IsEnabled"] = "true",
             ["IsActivity"] = "true",
             ["BranchingMode"] = "All",
+            ["FaultOnScriptErrors"] = "true",
         });
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -917,6 +919,7 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
 
             Assert.True(draft.IsActivity);
             Assert.Equal(WorkflowBranchingMode.All, draft.BranchingMode);
+            Assert.True(draft.FaultOnScriptErrors);
         });
     }
 

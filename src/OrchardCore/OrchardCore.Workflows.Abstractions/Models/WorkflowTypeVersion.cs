@@ -83,6 +83,11 @@ public sealed class WorkflowTypeVersion
     public WorkflowBranchingMode BranchingMode { get; set; }
 
     /// <summary>
+    /// The value of <see cref="WorkflowType.FaultOnScriptErrors"/> in this version.
+    /// </summary>
+    public bool FaultOnScriptErrors { get; set; }
+
+    /// <summary>
     /// The activities of this version.
     /// </summary>
     public IList<ActivityRecord> Activities { get; set; } = [];

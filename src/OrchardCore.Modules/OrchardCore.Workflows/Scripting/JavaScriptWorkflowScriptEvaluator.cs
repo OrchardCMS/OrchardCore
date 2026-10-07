@@ -47,6 +47,9 @@ public class JavaScriptWorkflowScriptEvaluator : IWorkflowScriptEvaluator
         catch (Exception ex) when (!IsStoppedEvaluation(ex))
         {
             _logger.LogError(ex, "An error occurred while evaluating the expression: {Expression}", expression.Expression);
+
+            // The run goes on with the default value; the error shows on the activity that evaluated the script.
+            workflowContext?.ReportScriptError(ex.Message);
         }
 
         return default;

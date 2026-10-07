@@ -110,11 +110,26 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - A completions test.
     - Vitest: 249/249.
 
-### - [ ] 9.4 Script errors in the engine
+### - [x] 9.4 Script errors in the engine
 
 - `WorkflowExecutionContext.ReportScriptError`; the JavaScript evaluator reports the errors it falls back from; the engine records them on the activity's journal record, and faults the instance when the workflow faults on script errors.
 - `WorkflowType.FaultOnScriptErrors`, in the draft settings, the settings forms, versions, the diff and recipes.
 - **Tests**: an error is recorded on the activity that ran the script; with the setting, the instance faults there; the copies of the setting.
+- **Notes from implementing this step:**
+  - **Reporting.**
+    - `WorkflowExecutionContext.ReportScriptError` collects the errors in `ScriptErrors`.
+    - `JavaScriptWorkflowScriptEvaluator` reports the errors it falls back from, as before after logging them.
+    - The stopped evaluations (execution limits, cancellation) still fault the instance, as `main` made them.
+  - **Engine.**
+    - `ExecuteWorkflowAsync` notes how many errors there were before each activity runs. The errors that activity reported become its journal record's `Error`, on a `Completed` or `Halted` record.
+    - When the workflow type faults on script errors, it throws a `WorkflowScriptException` with them, so the instance faults at that activity with a red node, the fault handler and Retry.
+  - **Setting.**
+    - `WorkflowType.FaultOnScriptErrors` ("Fault the workflow on script errors", off by default) follows `BranchingMode` through every copy: the draft and its settings, the three settings forms, versions and their fingerprint, the diff and the recipe step.
+    - The client's settings type has `faultOnScriptErrors`.
+  - **Tests.**
+    - A script that sets its outcome and throws: off, the instance finishes and the script's record is `Completed` with the error; on, the instance is faulted and the record is `Faulted`.
+    - The setting's diff, new version, publish and settings form.
+    - Workflows tests: 287/287.
 
 ### - [ ] 9.5 Script errors in the designer
 

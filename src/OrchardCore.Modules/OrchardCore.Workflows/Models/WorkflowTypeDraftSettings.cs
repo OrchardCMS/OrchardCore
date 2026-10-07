@@ -44,4 +44,9 @@ public sealed class WorkflowTypeDraftSettings
     /// See <see cref="WorkflowType.BranchingMode"/>.
     /// </summary>
     public WorkflowBranchingMode BranchingMode { get; set; }
+
+    /// <summary>
+    /// See <see cref="WorkflowType.FaultOnScriptErrors"/>.
+    /// </summary>
+    public bool FaultOnScriptErrors { get; set; }
 }

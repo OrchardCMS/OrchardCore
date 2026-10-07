@@ -75,6 +75,7 @@ public sealed class WorkflowTypeStep : NamedRecipeStepHandler
                 existing.DeleteFinishedWorkflows = workflow.DeleteFinishedWorkflows;
                 existing.IsActivity = workflow.IsActivity;
                 existing.BranchingMode = workflow.BranchingMode;
+                existing.FaultOnScriptErrors = workflow.FaultOnScriptErrors;
                 existing.Activities = workflow.Activities;
                 existing.Transitions = workflow.Transitions;
                 existing.Variables = workflow.Variables;

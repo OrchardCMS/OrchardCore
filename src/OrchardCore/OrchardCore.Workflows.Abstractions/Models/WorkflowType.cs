@@ -61,6 +61,11 @@ public class WorkflowType : Entity
     public WorkflowBranchingMode BranchingMode { get; set; }
 
     /// <summary>
+    /// Whether a script error faults the instance at the activity that ran the script. Otherwise, the run goes on with what the script fell back to, and the error is recorded in the journal.
+    /// </summary>
+    public bool FaultOnScriptErrors { get; set; }
+
+    /// <summary>
     /// A complete list of all activities that are part of this workflow.
     /// </summary>
     public IList<ActivityRecord> Activities { get; set; } = [];

@@ -61,6 +61,16 @@
     </div>
 </div>
 
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input asp-for="FaultOnScriptErrors" type="checkbox" class="form-check-input" />
+            <label class="form-check-label" asp-for="FaultOnScriptErrors">@T["Fault the workflow on script errors"]</label>
+        </div>
+        <span class="hint">@T["Check to fault an instance at the activity whose script failed, so it can be retried. Leave unchecked to go on with what the script fell back to; the error shows on the instance's page."]</span>
+    </div>
+</div>
+
 <div class="ocat-limited-wrapper" asp-validation-class-for="LockTimeout">
     <label asp-for="LockTimeout" class="ocat-label">@T["Lock timeout (ms)"]</label>
     <div class="ocat-limited">

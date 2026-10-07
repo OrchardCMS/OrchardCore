@@ -962,6 +962,42 @@ public class WorkflowManagerTests
         Assert.Equal(expected, saved.Select(record => record.ActivityId));
     }
 
+    [Theory]
+    [InlineData(false, WorkflowStatus.Finished, WorkflowExecutionRecordStatus.Completed)]
+    [InlineData(true, WorkflowStatus.Faulted, WorkflowExecutionRecordStatus.Faulted)]
+    public async Task StartWorkflowAsync_ScriptError_IsRecordedOnItsActivityOrFaultsTheInstance(bool faultOnScriptErrors, WorkflowStatus status, WorkflowExecutionRecordStatus recordStatus)
+    {
+        var (journal, saved) = CreateJournal();
+        var serviceProvider = CreateServiceProvider();
+        var scriptTask = new ScriptTask(CreateWorkflowScriptEvaluator(serviceProvider), new PassThroughStringLocalizer<ScriptTask>());
+        var workflowType = new WorkflowType
+        {
+            Id = 1,
+            WorkflowTypeId = IdGenerator.GenerateId(),
+            FaultOnScriptErrors = faultOnScriptErrors,
+            Activities =
+            [
+                new()
+                {
+                    ActivityId = "script",
+                    IsStart = true,
+                    Name = scriptTask.Name,
+                    Properties = JObject.FromObject(new { AvailableOutcomes = new[] { "Done" }, Script = new WorkflowExpression<object>("setOutcome('Done'); throw new Error('Boom');") }),
+                },
+            ],
+            Transitions = [],
+        };
+        var workflowManager = CreateWorkflowManager(serviceProvider, [scriptTask], workflowType, journal: journal);
+
+        var workflowContext = await workflowManager.StartWorkflowAsync(workflowType);
+
+        Assert.Equal(status, workflowContext.Status);
+        var record = Assert.Single(saved);
+        Assert.Equal("script", record.ActivityId);
+        Assert.Equal(recordStatus, record.Status);
+        Assert.Contains("Boom", record.Error);
+    }
+
     [Fact]
     public async Task RetryActivityAsync_FaultedInstance_RunsAgainFromTheActivity()
     {

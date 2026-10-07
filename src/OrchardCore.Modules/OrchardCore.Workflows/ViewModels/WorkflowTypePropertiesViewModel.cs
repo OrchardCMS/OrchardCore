@@ -19,5 +19,7 @@ public class WorkflowTypePropertiesViewModel
     public bool IsActivity { get; set; }
 
     public WorkflowBranchingMode BranchingMode { get; set; }
+
+    public bool FaultOnScriptErrors { get; set; }
     public string ReturnUrl { get; set; }
 }

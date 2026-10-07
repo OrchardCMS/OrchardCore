@@ -566,6 +566,7 @@ public sealed class WorkflowDesignerController : Controller
                 DeleteFinishedWorkflows = source.DeleteFinishedWorkflows,
                 IsActivity = source.IsActivity,
                 BranchingMode = source.BranchingMode,
+                FaultOnScriptErrors = source.FaultOnScriptErrors,
             },
             WorkflowTypeId = workflowType.Id,
         });
@@ -610,6 +611,7 @@ public sealed class WorkflowDesignerController : Controller
             DeleteFinishedWorkflows = model.DeleteFinishedWorkflows,
             IsActivity = model.IsActivity,
             BranchingMode = model.BranchingMode,
+            FaultOnScriptErrors = model.FaultOnScriptErrors,
         };
 
         var result = await _draftManager.UpdateSettingsAsync(workflowType.WorkflowTypeId, revision, settings);
@@ -824,6 +826,7 @@ public sealed class WorkflowDesignerController : Controller
             DeleteFinishedWorkflows = workflowType.DeleteFinishedWorkflows,
             IsActivity = workflowType.IsActivity,
             BranchingMode = workflowType.BranchingMode,
+            FaultOnScriptErrors = workflowType.FaultOnScriptErrors,
         };
 
     private async Task<WorkflowDesignerVersion> PublishedVersionAsync(WorkflowType workflowType)

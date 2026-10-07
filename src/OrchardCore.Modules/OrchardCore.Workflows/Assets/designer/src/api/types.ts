@@ -99,6 +99,7 @@ export interface WorkflowSettings {
     isActivity?: boolean;
     // How an outcome with several transitions is followed (WorkflowBranchingMode).
     branchingMode?: "FirstOnly" | "All";
+    faultOnScriptErrors?: boolean;
 }
 
 // A record of an instance's journal (WorkflowDesignerJournalRecord).

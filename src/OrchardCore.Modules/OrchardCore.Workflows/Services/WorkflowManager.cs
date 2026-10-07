@@ -570,6 +570,7 @@ public class WorkflowManager : IWorkflowManager
                 var outcomes = Enumerable.Empty<string>();
                 var startedUtc = _clock.UtcNow;
                 var resumed = isResuming;
+                var scriptErrorCount = workflowContext.ScriptErrors.Count;
 
                 try
                 {
@@ -604,9 +605,16 @@ public class WorkflowManager : IWorkflowManager
                         }
                         else
                         {
+                            var haltedScriptError = ScriptErrorsSince(workflowContext, scriptErrorCount);
+
+                            if (haltedScriptError is not null && workflowType.FaultOnScriptErrors)
+                            {
+                                throw new WorkflowScriptException(haltedScriptError);
+                            }
+
                             // Block on this activity.
                             blocking.Add(activity);
-                            workflowContext.RecordExecution(activityContext, WorkflowExecutionRecordStatus.Halted, [], startedUtc, _clock.UtcNow, resumed);
+                            workflowContext.RecordExecution(activityContext, WorkflowExecutionRecordStatus.Halted, [], startedUtc, _clock.UtcNow, resumed, haltedScriptError);
 
                             continue;
                         }
@@ -614,6 +622,15 @@ public class WorkflowManager : IWorkflowManager
                     else
                     {
                         outcomes = result.Outcomes;
+                    }
+
+                    // A script of the activity failed: the run goes on with what the script fell back to, unless the
+                    // workflow faults on script errors.
+                    var scriptError = ScriptErrorsSince(workflowContext, scriptErrorCount);
+
+                    if (scriptError is not null && workflowType.FaultOnScriptErrors)
+                    {
+                        throw new WorkflowScriptException(scriptError);
                     }
 
                     // Once the activity has run, its bound outputs are written to their variables.
@@ -628,7 +645,8 @@ public class WorkflowManager : IWorkflowManager
                         result.IsHalted ? [] : outcomes,
                         startedUtc,
                         _clock.UtcNow,
-                        resumed);
+                        resumed,
+                        scriptError);
                 }
                 catch (Exception ex)
                 {
@@ -741,6 +759,10 @@ public class WorkflowManager : IWorkflowManager
             [ChildWorkflowResult.InputKey] = ChildWorkflowResult.From(childContext),
         });
     }
+
+    // The errors of the scripts the running activity evaluated, or null.
+    private static string ScriptErrorsSince(WorkflowExecutionContext workflowContext, int count)
+        => workflowContext.ScriptErrors.Count > count ? string.Join(" ", workflowContext.ScriptErrors.Skip(count)) : null;
 
     // The input variables take the input values of the same name.
     private void ApplyInputs(WorkflowExecutionContext workflowContext, IDictionary<string, object> input)

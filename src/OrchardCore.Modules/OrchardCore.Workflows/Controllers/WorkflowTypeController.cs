@@ -260,6 +260,7 @@ public sealed class WorkflowTypeController : Controller
                 DeleteFinishedWorkflows = workflowType.DeleteFinishedWorkflows,
                 IsActivity = workflowType.IsActivity,
                 BranchingMode = workflowType.BranchingMode,
+                FaultOnScriptErrors = workflowType.FaultOnScriptErrors,
                 ReturnUrl = returnUrl,
             });
         }
@@ -304,6 +305,7 @@ public sealed class WorkflowTypeController : Controller
         workflowType.DeleteFinishedWorkflows = viewModel.DeleteFinishedWorkflows;
         workflowType.IsActivity = viewModel.IsActivity;
         workflowType.BranchingMode = viewModel.BranchingMode;
+        workflowType.FaultOnScriptErrors = viewModel.FaultOnScriptErrors;
 
         await _workflowTypeStore.SaveAsync(workflowType);
 
@@ -341,6 +343,7 @@ public sealed class WorkflowTypeController : Controller
             IsEnabled = workflowType.IsEnabled,
             IsActivity = workflowType.IsActivity,
             BranchingMode = workflowType.BranchingMode,
+            FaultOnScriptErrors = workflowType.FaultOnScriptErrors,
             ReturnUrl = returnUrl,
         });
     }
@@ -370,6 +373,7 @@ public sealed class WorkflowTypeController : Controller
         workflowType.DeleteFinishedWorkflows = viewModel.DeleteFinishedWorkflows;
         workflowType.IsActivity = viewModel.IsActivity;
         workflowType.BranchingMode = viewModel.BranchingMode;
+        workflowType.FaultOnScriptErrors = viewModel.FaultOnScriptErrors;
         workflowType.Activities = existingWorkflowType.Activities;
         workflowType.Transitions = existingWorkflowType.Transitions;
         workflowType.Variables = existingWorkflowType.Variables.Select(variable => variable.Clone()).ToList();

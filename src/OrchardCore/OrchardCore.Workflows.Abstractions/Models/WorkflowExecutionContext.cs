@@ -39,6 +39,26 @@ public sealed class WorkflowExecutionContext : IDisposable
     // The outputs the activities set while this context runs, by activity id, then output name.
     private readonly Dictionary<string, Dictionary<string, object>> _activityOutputs = [];
 
+    private readonly List<string> _scriptErrors = [];
+
+    /// <summary>
+    /// The errors of the scripts that ran in this context (see <see cref="ReportScriptError"/>).
+    /// </summary>
+    public IReadOnlyList<string> ScriptErrors => _scriptErrors;
+
+    /// <summary>
+    /// Reports the error of a script the running activity evaluated, which the evaluator fell back from. The engine
+    /// records it with the activity in the journal, and faults the instance when its workflow type faults on script
+    /// errors (<see cref="WorkflowType.FaultOnScriptErrors"/>).
+    /// </summary>
+    public void ReportScriptError(string message)
+    {
+        if (!string.IsNullOrWhiteSpace(message))
+        {
+            _scriptErrors.Add(message.Trim());
+        }
+    }
+
     public Workflow Workflow { get; }
     public WorkflowType WorkflowType { get; }
 
