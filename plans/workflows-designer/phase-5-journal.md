@@ -121,10 +121,21 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - Vitest: `JournalTab.spec.ts` (3), the node and edge highlighting, and the viewer's highlighting, Journal tab and retry flow, and no retry without the permission. 223/223.
     - Workflows tests: 239/239.
 
-### - [ ] 5.5 Docs and release notes
+### - [x] 5.5 Docs and release notes
 
 - `src/docs/reference/modules/Workflows/README.md`: the journal, its settings, the executed path, retrying.
 - Release notes.
+- **Notes from implementing this step:**
+  - **Workflows README.** A new **Execution Journal** section (after Versions):
+    - what's recorded and when it's deleted, and the executed path and Journal tab of the instance page;
+    - **Retrying a Faulted Instance**, which requires Execute workflows;
+    - **Journal Settings**, with an `appsettings.json` example and a table;
+    - **Journal for Developers**.
+    The Workflow Instances paragraph links to it.
+  - **Release notes.** A **Workflow Execution Journal** feature section, and a **Journal** breaking-change bullet:
+    - the constructors of `WorkflowManager`, `WorkflowTypeStore` and `WorkflowTrimmingService`;
+    - `IWorkflowManager.RetryActivityAsync`;
+    - `WorkflowState.ExecutedActivities` being filled.
 
 ### - [ ] 5.6 End-to-end test
 

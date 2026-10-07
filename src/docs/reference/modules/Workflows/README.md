@@ -86,7 +86,7 @@ In right-to-left languages, the activities pane and the properties panel swap si
 
 ### Workflow Instances
 
-The page of a workflow instance shows the version of its workflow that the instance runs on, in a read-only designer, with the activities the instance waits on (its **blocking** activities) highlighted. Select an activity to see its details. The **Variables** tab of the properties panel shows the values of the instance's variables. Right-click an activity to collapse the activities after it; the blocking activities are never hidden. The **State** tab shows the instance's state as JSON.
+The page of a workflow instance shows the version of its workflow that the instance runs on, in a read-only designer, with the activities the instance waits on (its **blocking** activities) highlighted. Select an activity to see its details. The **Variables** tab of the properties panel shows the values of the instance's variables, and the activities and connections the instance ran are highlighted (see [Execution Journal](#execution-journal)). Right-click an activity to collapse the activities after it; the blocking activities are never hidden. The **State** tab shows the instance's state as JSON.
 
 ![A workflow instance waiting on a signal](docs/workflow-instance-viewer.png)
 
@@ -133,6 +133,49 @@ When a version is created, the versions older than the most recent `MaxCount` on
 - `IWorkflowTypeStore.SaveAsync` creates the versions: saving a workflow type whose activities, transitions or execution settings changed creates its next `WorkflowTypeVersion` and sets `WorkflowType.VersionId`.
 - `IWorkflowManager.NewWorkflow` stores that version in `Workflow.WorkflowTypeVersionId`, and `ResumeWorkflowAsync` runs it.
 - `IWorkflowTypeVersionStore` lists and loads versions. Its `GetWorkflowTypeAsync(workflowType, versionId)` returns the definition an instance runs; never save the workflow type it returns.
+
+## Execution Journal
+
+Workflow instances record each activity they run in a **journal**: the activity, how it ended (completed, waiting on an event, or faulted), its outcomes, when it started and how long it took, and the error of a fault. The journal is saved with the instance, in its own collection, and is deleted with the instance (when it is deleted, trimmed, or when its workflow is deleted).
+
+The page of a workflow instance uses the journal:
+
+- **Executed path.** The activities the instance ran and the connections it followed are highlighted, with the number of times when it's more than one (in a loop, for example). The activity that faulted the instance is marked.
+- **Journal tab.** The properties panel lists the records in order, with their status, outcomes, duration and error. Select a record to go to its activity.
+
+### Retrying a Faulted Instance
+
+When an activity fails, for example because a service it calls is down, the instance is **faulted** and stops. After fixing the cause, select an activity of the faulted instance, usually the one that faulted, and choose **Retry from here**. The instance runs again from that activity, with the state it had (its properties, variables and activity states), on the version it runs on. Retrying requires the **Execute workflows** permission.
+
+### Journal Settings
+
+The journal is configured in the `OrchardCore:Workflows:Journal` section, for example in an `appsettings.json` file:
+
+```json
+{
+  "OrchardCore": {
+    "Workflows": {
+      "Journal": {
+        "Enabled": true,
+        "MaxRecordsPerInstance": 1000
+      }
+    }
+  }
+}
+```
+
+| Setting | Description | Default |
+|---|---|---|
+| `Enabled` | Whether the activities instances run are recorded. | `true` |
+| `MaxRecordsPerInstance` | The number of most recent records kept per instance; 0 keeps every record. | `1000` |
+
+The journal doesn't record the input or output of the activities.
+
+### Journal for Developers
+
+- `IWorkflowExecutionJournal` lists, saves and deletes the `WorkflowExecutionRecord` documents of an instance.
+- `WorkflowExecutionContext.ExecutedActivities` holds the most recent 100 activities and outcomes the instance ran, and is saved with its state (`WorkflowState.ExecutedActivities`, oldest first).
+- `IWorkflowManager.RetryActivityAsync(workflow, activityId)` runs a faulted instance again from an activity.
 
 ## Variables
 
