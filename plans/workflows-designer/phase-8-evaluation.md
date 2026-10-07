@@ -54,10 +54,17 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
   - **Join.** `JoinTask` collects the transitions that lead into it, so a Join after implicit branches behaves as after a Fork.
   - **Tracker.** The table of `later-phases.md` records the branching mode as done, and composition and state machines as evaluated.
 
-### - [ ] 8.3 Docs and release notes
+### - [x] 8.3 Docs and release notes
 
 - `src/docs/reference/modules/Workflows/README.md`: the branching mode, and the state-machine pattern.
 - Release notes.
+- **Notes from implementing this step:**
+  - **Reference.** A **Branching** section in the Workflows module's page explains:
+    - Fork and Join, and the **Outcomes with several transitions** setting;
+    - what following every transition does in the designer and the engine;
+    - that the default keeps the old behavior.
+    - Its **Modeling a State Machine** subsection has the pattern from the evaluation, with the Script task's **Available Outcomes** and a `WaitAny` Join.
+  - **Release notes.** A **Workflow Branching** section. There's no breaking change.
 
 ### - [ ] 8.4 End-to-end test
 

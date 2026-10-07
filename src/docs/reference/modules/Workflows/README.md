@@ -177,6 +177,28 @@ The journal doesn't record the input or output of the activities.
 - `WorkflowExecutionContext.ExecutedActivities` holds the most recent 100 activities and outcomes the instance ran, and is saved with its state (`WorkflowState.ExecutedActivities`, oldest first).
 - `IWorkflowManager.RetryActivityAsync(workflow, activityId)` runs a faulted instance again from an activity.
 
+## Branching
+
+An outcome usually has one transition. To run several branches, use a **Fork** activity, whose outcomes each start a branch, and a **Join** activity to wait for them.
+
+A workflow can also follow every transition of an outcome. In its settings, set **Outcomes with several transitions** to **Follow every transition**:
+
+- In the designer, connecting an outcome adds a transition instead of replacing the existing one.
+- The engine runs the transitions in the order they were added, in the same run, like the branches of a Fork. A branch that waits on an event makes the instance wait while the other branches go on, and a Join after the branches waits for them as after a Fork.
+
+With the default, **Follow the first transition only**, the other transitions of an outcome are ignored, and the designer warns about them. The setting is part of the workflow's [versions](#versions); workflows saved before it existed use the default.
+
+### Modeling a State Machine
+
+Approvals and other lifecycles can be modeled as a state machine with a variable and a loop:
+
+1. Declare a `state` [variable](#variables) of type Text, and set it to the first state, for example `Draft`, with a **Set Variable** activity.
+2. Add a **Script** task whose **Available Outcomes** are the states (`Draft, Review, Published`...), with the script `setOutcome(variable('state'));`.
+3. From each state's outcome, wait for the events that leave the state: a **Signal**, a content or user event, or a timer. When several events can fire, use a **Fork** into the events and a **Join** whose mode is `WaitAny`. Then set `state` to the next state, and connect back to the Script task.
+4. Leave the final state's outcome unconnected, so the workflow finishes.
+
+The [execution journal](#execution-journal) of an instance shows the states it went through, and the work of each state can be a workflow of its own, run with [Execute Workflow](#workflows-as-activities).
+
 ## Workflows as Activities
 
 A workflow can run another workflow as one of its activities, pass it values, and get values back:
