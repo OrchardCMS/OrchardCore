@@ -153,11 +153,18 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
 
 ## Definition of done (Phase 4)
 
-- [ ] Steps 4.1–4.6 are checked.
-- [ ] The CI-flag build is green; `OrchardCore.Tests`, Vitest and the functional `*Cms*` tests pass.
-- [ ] `yarn lint`, `yarn check` and `yarn build` leave a clean `git status`.
-- [ ] Workflows stored before this phase run as before.
-- [ ] Docs and release notes are updated.
+- [x] Steps 4.1–4.6 are checked.
+- [x] The CI-flag build is green; `OrchardCore.Tests`, Vitest and the functional `*Cms*` tests pass.
+- [x] `yarn lint`, `yarn check` and `yarn build` leave a clean `git status`.
+- [x] Workflows stored before this phase run as before.
+- [x] Docs and release notes are updated.
+- **Notes from checking the Definition of done:**
+  - **Build.** The CI-flag build has 0 warnings and 0 errors.
+  - **`OrchardCore.Tests`.** 3,499 tests: 3,497 passed and 2 skipped (Unix-only).
+  - **Vitest.** The designer's 216 tests pass.
+  - **Functional `*Cms*`.** 160 tests: 154 passed and 6 skipped (Tus Azure and Redis), in a single run. `WorkflowsDesignerTests` has 20 tests.
+  - **Stored workflows.** The legacy Liquid tests of `WorkflowManagerTests` pass unchanged. The seeded workflows of the functional tests are stored the former way, and run as before. A legacy If/Else and Set Variable open with their legacy expressions.
+  - **Assets.** `yarn lint` has 0 errors (the 2 warnings in `OrchardCore.Cors` were already there), `yarn check` passes, and `yarn build` reproduces the committed output. `git status` only shows the six line-ending files from Phase 1.
 
 ## Open questions
 

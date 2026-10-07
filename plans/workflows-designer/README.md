@@ -84,7 +84,7 @@ Update the **Status** column as work lands (`Not started` / `In progress` / `Don
 | **1** | **New designer**: canvas, toolbox, side-panel editors, drafts with autosave and publish, read-only instance viewer, tests. See [`phase-1-designer.md`](phase-1-designer.md). | — | Done (1.0–1.13 and the Definition of done; awaiting review) |
 | 2 | Workflow versioning (drafts → versions, instances pinned to a version, history, revert). See [`phase-2-versioning.md`](phase-2-versioning.md). | 1 | Done (2.1–2.8 and the Definition of done; awaiting review) |
 | 3 | Typed variables, activity outputs and data binding. See [`phase-3-variables.md`](phase-3-variables.md). | 2 | Done (3.1–3.8 and the Definition of done; awaiting review) |
-| 4 | Per-input expression syntax (Literal / Liquid / JavaScript / pluggable providers). See [`phase-4-expressions.md`](phase-4-expressions.md). | 3 (recommended) | In progress (plan written) |
+| 4 | Per-input expression syntax (Literal / Liquid / JavaScript / pluggable providers). See [`phase-4-expressions.md`](phase-4-expressions.md). | 3 (recommended) | Done (4.1–4.6 and the Definition of done; awaiting review) |
 | 5 | Execution journal, executed-path highlighting, retry of a faulted activity | 1 | Not started |
 | 6 | Real time with `OrchardCore.SignalR`: live instance view, presence, draft change notifications | 1, 5 | Not started |
 | 7 | Workflows as activities; dynamic activity providers | 2, 3 | Not started |
