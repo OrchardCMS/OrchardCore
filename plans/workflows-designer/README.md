@@ -15,6 +15,7 @@ This folder contains these files:
 | [`phase-6-realtime.md`](phase-6-realtime.md) | Detailed, step-by-step plan for Phase 6: real time with `OrchardCore.SignalR` |
 | [`phase-7-composition.md`](phase-7-composition.md) | Detailed, step-by-step plan for Phase 7: workflows as activities and activity presets |
 | [`phase-8-evaluation.md`](phase-8-evaluation.md) | Detailed, step-by-step plan for Phase 8: the branching mode, and the evaluation of composition and state machines |
+| [`phase-9-data-and-errors.md`](phase-9-data-and-errors.md) | Detailed, step-by-step plan for Phase 9: the data available to an activity, and script errors |
 | [`later-phases.md`](later-phases.md) | The missing engine and UI components, with the original design sketches of phases 2–8 and the backlog. Each phase is detailed, and tracked, in its `phase-N-*.md` file |
 
 ## Context
@@ -85,7 +86,7 @@ Update the **Status** column as work lands (`Not started` / `In progress` / `Don
 
 The work is pushed to the draft pull request [OrchardCMS/OrchardCore#19996](https://github.com/OrchardCMS/OrchardCore/pull/19996) (branch `ma/workflows-designer`), one commit per step.
 
-**Status (2026-10-07):** phases 1–8 are done and await review.
+**Status (2026-10-07):** phases 1–8 are done and await review. Phase 9, from the review, is in progress.
 - **Merge.** The branch was brought up to date with `main` (merge `45fb919d29`).
     - The SMS task editor kept `main`'s new From Phone Number field inside the branch's editor wrapper.
     - `main`'s new execution-limit test creates `IfElseTask` with the expression manager it takes since Phase 4.
@@ -113,6 +114,7 @@ The work is pushed to the draft pull request [OrchardCMS/OrchardCore#19996](http
 | 6 | Real time with `OrchardCore.SignalR`: live instance view, presence, draft change notifications. See [`phase-6-realtime.md`](phase-6-realtime.md). | 1, 5 | Done (6.1–6.5 and the Definition of done; awaiting review) |
 | 7 | Workflows as activities; dynamic activity providers (as activity presets). See [`phase-7-composition.md`](phase-7-composition.md). | 2, 3 | Done (7.1–7.6 and the Definition of done; awaiting review) |
 | 8 | Evaluate: multiple transitions per outcome or implicit fork, composition/containers, state machines. See [`phase-8-evaluation.md`](phase-8-evaluation.md). | 1–5 | Done (8.1–8.4 and the Definition of done; awaiting review) |
+| 9 | From the review: the data available to an activity (declared by the activities, listed and inserted in the designer, suggested by the editors), and script errors shown on the instance page or faulting the instance. See [`phase-9-data-and-errors.md`](phase-9-data-and-errors.md). | 3, 4, 5 | In progress (plan written) |
 
 ## Testing strategy (applies to every phase)
 
