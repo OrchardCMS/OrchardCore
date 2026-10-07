@@ -154,7 +154,10 @@ public sealed class OrchardTestServer : IAsyncDisposable
         // product regression (OpenIdClientConfiguration's background settings-validity
         // check runs independently of page navigation timing).
         || (record.Category == "OrchardCore.OpenId.Configuration.OpenIdClientConfiguration"
-            && record.Message.Contains("The OpenID client settings are invalid"));
+            && record.Message.Contains("The OpenID client settings are invalid"))
+        // The Transient failure activity of the WorkflowsSample test module faults its instance on purpose.
+        || (record.Category == "OrchardCore.Workflows.Services.WorkflowManager"
+            && record.Exception is WorkflowsSample.TransientFailureException);
 
     public async ValueTask DisposeAsync()
     {

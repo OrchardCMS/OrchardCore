@@ -137,9 +137,20 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - `IWorkflowManager.RetryActivityAsync`;
     - `WorkflowState.ExecutedActivities` being filled.
 
-### - [ ] 5.6 End-to-end test
+### - [x] 5.6 End-to-end test
 
 - A seeded workflow faults on its first run (a Script that throws unless a property is set). The test opens the faulted instance, sees the executed path and the faulted activity in the journal, retries after the condition is fixed, and the instance finishes.
+- **Notes from implementing this step:**
+  - **Why not a Script.** A script error doesn't fault a workflow: the JavaScript evaluator logs it and returns `null` (see Phase 3, 3.2).
+  - **Transient failure.** The `WorkflowsSample` test module adds a **Transient failure** activity (`TransientFailureTask`). It throws `TransientFailureException` the first time it runs in an instance, and remembers that in its activity state, which is saved with the faulted instance. A retry then succeeds, like a call to a service that was briefly down.
+    - The module now builds with the Razor SDK, for the activity's Design and Thumbnail views.
+    - The functional host ignores the error the engine logs for this exception, which would otherwise fail the test (`CmsTestBase` fails on any logged error).
+  - **Seed.** "Transient failure" (`wfdtransientfailure`): an HTTP request, then the activity, then a Set Property with a Literal value.
+  - **Test.** `Journal_FaultedInstance_ShowsWhatRanAndIsRetried`:
+    - calls the URL, which faults the instance;
+    - checks the instance page: the request and its connection are executed, the activity is faulted, the Set Property didn't run, and the Journal tab shows the error;
+    - selects the record, retries from the activity, confirms, and sees "Finished", the Set Property executed and no retry left.
+  - **Results.** `WorkflowsDesignerTests` 21/21.
 
 ## Definition of done (Phase 5)
 

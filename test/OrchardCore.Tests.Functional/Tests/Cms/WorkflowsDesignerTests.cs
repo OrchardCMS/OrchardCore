@@ -564,6 +564,44 @@ public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsF
     }
 
     [Fact]
+    public async Task Journal_FaultedInstance_ShowsWhatRanAndIsRetried()
+    {
+        var (page, consoleErrors) = await OpenAsync();
+        var id = await page.FindWorkflowTypeIdAsync("Transient failure");
+
+        // The first run faults on the transient failure.
+        var url = await page.GenerateHttpUrlAsync(id, "faultstart");
+        await page.APIRequest.GetAsync(url);
+
+        // The instance page shows what ran, and where it faulted.
+        await page.GotoAndAssertOkAsync($"/Admin/Workflows/Types/{id}/Instances/Index");
+        await page.Locator("a[href*='/Workflow/Details/']").First.ClickAsync();
+        await page.WaitForDesignerAsync();
+        await Assertions.Expect(page.Activity("faultstart")).ToHaveClassAsync(new Regex("is-executed"));
+        await Assertions.Expect(page.Activity("faultcall")).ToHaveClassAsync(new Regex("is-faulted"));
+        await Assertions.Expect(page.Activity("faultdone")).Not.ToHaveClassAsync(new Regex("is-executed"));
+        await Assertions.Expect(page.Edge("faultstart", "Done", "faultcall")).ToHaveClassAsync(new Regex("is-executed"));
+
+        await page.Locator("[data-cy=panel-tab-journal]").ClickAsync();
+        await Assertions.Expect(page.Locator("[data-cy=journal-record-2] [data-cy=journal-error]")).ToContainTextAsync("briefly unavailable");
+
+        // Retrying from the faulted activity runs it again, and the instance finishes.
+        await page.Locator("[data-cy=journal-record-2] button").ClickAsync();
+        await page.Locator("[data-cy=panel-tab-activity]").ClickAsync();
+        await Assertions.Expect(page.Locator("[data-cy=fault-message]")).ToContainTextAsync("briefly unavailable");
+        await page.Locator("[data-cy=retry-button]").ClickAsync();
+        await page.Locator("#modalOkButton").ClickAsync();
+
+        await Assertions.Expect(page.Locator("[data-cy=toast]")).ToContainTextAsync("Finished");
+        await Assertions.Expect(page.Activity("faultdone")).ToHaveClassAsync(new Regex("is-executed"));
+        await Assertions.Expect(page.Activity("faultcall")).Not.ToHaveClassAsync(new Regex("is-faulted"));
+        await Assertions.Expect(page.Locator("[data-cy=retry]")).ToHaveCountAsync(0);
+
+        Assert.Empty(consoleErrors);
+        await page.CloseAsync();
+    }
+
+    [Fact]
     public async Task DesignerEndpoints_UserWithoutManageWorkflows_ReturnForbidden()
     {
         var (page, _) = await OpenAsync();
