@@ -243,16 +243,14 @@ public sealed class Migrations : DataMigration
     }
 
     // Every other index on ContentItemIndex leads with DocumentId, so a query by ContentItemId (IContentManager.GetAsync, for one
-    // item or a batch) can't seek and scans an index instead. DocumentId, ContentType and DisplayText are included so that queries
-    // joining through this index, such as a search by an item's display text, don't need a lookup for each row.
+    // item or a batch) can't seek and scans an index instead. DocumentId is the join to Document; Published and Latest are what a
+    // read by ID filters on.
     private Task CreateContentItemIdIndexAsync()
         => SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
             .CreateIndex("IDX_ContentItemIndex_ContentItemId",
                 "ContentItemId",
-                "Published",
-                "Latest",
                 "DocumentId",
-                "ContentType",
-                "DisplayText")
+                "Published",
+                "Latest")
         );
 }

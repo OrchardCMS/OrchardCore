@@ -45,7 +45,7 @@ public class ContentItemIndexMigrationsTests : IAsyncLifetime
         var version = await RunAsync(migrations => migrations.CreateAsync());
 
         Assert.Equal(7, version);
-        Assert.Equal(["ContentItemId", "Published", "Latest", "DocumentId", "ContentType", "DisplayText"], await GetIndexColumnsAsync());
+        Assert.Equal(["ContentItemId", "DocumentId", "Published", "Latest"], await GetIndexColumnsAsync());
     }
 
     [Fact]
