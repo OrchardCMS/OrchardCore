@@ -98,10 +98,17 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - `Realtime.spec.ts` (3): the designer's avatars and notice, which ignores the user's own changes, and reloads; the viewer's reload; no connection without `hubUrl`.
     - Vitest: 230/230. `vue-tsc` and eslint pass, and `yarn build` output is committed.
 
-### - [ ] 6.4 Docs and release notes
+### - [x] 6.4 Docs and release notes
 
 - `src/docs/reference/modules/Workflows/README.md`: the feature, what it shows, multi-node.
 - Release notes.
+- **Notes from implementing this step:**
+  - **Reference.** A **Real-Time Updates** section in the Workflows module's page covers these topics:
+    - the feature and what it shows;
+    - that others' changes are offered with **Reload**, and unsaved changes stay until then;
+    - the hub, its permission, and why it works on several nodes;
+    - `IWorkflowDesignerNotifier` for developers.
+  - **Release notes.** A **Workflow Real-Time Updates** section, and the new constructor parameter of `WorkflowManager` and `WorkflowTypeDraftManager` under the breaking changes.
 
 ### - [ ] 6.5 End-to-end test
 

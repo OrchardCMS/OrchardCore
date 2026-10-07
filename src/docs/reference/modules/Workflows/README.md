@@ -177,6 +177,18 @@ The journal doesn't record the input or output of the activities.
 - `WorkflowExecutionContext.ExecutedActivities` holds the most recent 100 activities and outcomes the instance ran, and is saved with its state (`WorkflowState.ExecutedActivities`, oldest first).
 - `IWorkflowManager.RetryActivityAsync(workflow, activityId)` runs a faulted instance again from an activity.
 
+## Real-Time Updates
+
+With the **Workflows Real Time** feature (`OrchardCore.Workflows.SignalR`, which enables [SignalR](../SignalR/README.md)), the designer and the instance pages update live:
+
+- **Who else is here.** The designer's toolbar shows the initials of the other users who have the workflow open.
+- **Others' changes.** When someone else changes the draft, publishes it or discards it, the designer shows a notice with **Reload**. Your unsaved changes stay until you reload. The changes you make in another tab are detected when you save, as before.
+- **Running instances.** The page of an instance follows it: when the instance runs again (resumed by an event, or retried), the executed path, the journal and the activities it waits on update.
+
+The pages connect to the `/hubs/workflows` hub of the tenant, which requires the **Manage workflows** permission. Clients subscribe to a workflow type or an instance; the server keeps no list of who is connected, so it works on several nodes with the Redis or Azure SignalR backplanes. Without the feature, the pages work as before.
+
+For developers, `IWorkflowDesignerNotifier` is told about the changes of workflow types (by the draft manager) and instances (each time the engine saves one). The default implementation does nothing; the feature's implementation sends the changes once the request's changes are committed.
+
 ## Variables
 
 A workflow can declare **variables**: named values that every activity of an instance can read and write, each with a type and an optional default value. Variables are declared in the **Variables** tab of the designer's properties panel, and are part of the workflow's [versions](#versions).
