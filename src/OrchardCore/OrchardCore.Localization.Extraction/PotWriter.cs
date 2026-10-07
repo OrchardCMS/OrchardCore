@@ -26,6 +26,31 @@ public static class PotWriter
                 }
             }
 
+            var argumentCount = Math.Max(GetArgumentCount(message.Text), message.Plural is null ? 0 : GetArgumentCount(message.Plural));
+            if (argumentCount > 0)
+            {
+                output.Append("#. Format arguments: ");
+                for (var index = 0; index < argumentCount; index++)
+                {
+                    if (index > 0)
+                    {
+                        output.Append("; ");
+                    }
+
+                    output.Append('{').Append(index.ToString(CultureInfo.InvariantCulture)).Append('}');
+                    if (message.FormatArguments.TryGetValue(index, out var descriptions) && descriptions.Count > 0)
+                    {
+                        output.Append(": ").AppendJoin(", ", descriptions.Select(description => description.Replace('\r', ' ').Replace('\n', ' ').Trim()));
+                    }
+                    else if (index == 0 && message.Plural is not null)
+                    {
+                        output.Append(": count");
+                    }
+                }
+
+                output.Append('\n');
+            }
+
             foreach (var reference in message.References.OrderBy(reference => reference.Path, StringComparer.Ordinal).ThenBy(reference => reference.Line))
             {
                 var path = reference.Path.Any(char.IsWhiteSpace) ? "\u2068" + reference.Path + "\u2069" : reference.Path;
@@ -39,7 +64,7 @@ public static class PotWriter
             }
 
             var flags = new SortedSet<string>(message.Flags, StringComparer.Ordinal);
-            if (HasFormat(message.Text) || message.Plural is not null && HasFormat(message.Plural))
+            if (argumentCount > 0)
             {
                 flags.Add("csharp-format");
             }
@@ -105,15 +130,15 @@ public static class PotWriter
             .Replace("\n", "\\n", StringComparison.Ordinal)
             .Replace("\t", "\\t", StringComparison.Ordinal);
 
-    private static bool HasFormat(string value)
+    private static int GetArgumentCount(string value)
     {
         try
         {
-            return CompositeFormat.Parse(value).MinimumArgumentCount > 0;
+            return CompositeFormat.Parse(value).MinimumArgumentCount;
         }
         catch (FormatException)
         {
-            return false;
+            return 0;
         }
     }
 }
