@@ -58,7 +58,7 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         });
         var (id, _) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
 
-        foreach (var action in new[] { "Variables", "OutputBindings" })
+        foreach (var action in new[] { "Variables", "OutputBindings", "Retry" })
         {
             using var request = new HttpRequestMessage(HttpMethod.Post, $"Admin/Workflows/Types/{id}/Designer/{action}")
             {
@@ -761,6 +761,59 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
     }
 
     [Fact]
+    public async Task Retry_FaultedInstance_RunsItAgainFromTheActivity()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(
+            Activity("start", "HttpRequestEvent", isStart: true),
+            Activity("set", "SetPropertyTask", properties: new JsonObject
+            {
+                ["PropertyName"] = "Fixed",
+                ["Value"] = new JsonObject { ["Expression"] = "yes", ["Syntax"] = "Literal" },
+            }));
+        var workflow = await _fixture.CreateFaultedInstanceAsync(workflowTypeId);
+
+        using (var response = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Retry", new { instanceId = workflow.Id, activityId = "set" }))
+        {
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var json = await ReadJsonAsync(response);
+            Assert.Equal("Finished", json["status"].GetValue<string>());
+            Assert.Null(json["faultMessage"]);
+        }
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            var saved = await scope.ServiceProvider.GetRequiredService<IWorkflowStore>().GetAsync(workflow.Id);
+            var record = Assert.Single(await scope.ServiceProvider.GetRequiredService<IWorkflowExecutionJournal>().ListAsync(workflow.WorkflowId));
+
+            Assert.Equal(WorkflowStatus.Finished, saved.Status);
+            Assert.Equal("set", record.ActivityId);
+            Assert.Equal(WorkflowExecutionRecordStatus.Completed, record.Status);
+        });
+
+        // A finished instance can't be retried.
+        using var again = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Retry", new { instanceId = workflow.Id, activityId = "set" });
+
+        Assert.Equal(HttpStatusCode.BadRequest, again.StatusCode);
+    }
+
+    [Fact]
+    public async Task Retry_UnknownActivityOrInstanceOfAnotherType_ReturnsAnError()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));
+        var (otherId, _) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));
+        var workflow = await _fixture.CreateFaultedInstanceAsync(workflowTypeId);
+
+        using (var unknown = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Retry", new { instanceId = workflow.Id, activityId = "missing" }))
+        {
+            Assert.Equal(HttpStatusCode.BadRequest, unknown.StatusCode);
+        }
+
+        using var other = await PostJsonAsync($"Admin/Workflows/Types/{otherId}/Designer/Retry", new { instanceId = workflow.Id, activityId = "start" });
+
+        Assert.Equal(HttpStatusCode.NotFound, other.StatusCode);
+    }
+
+    [Fact]
     public async Task Details_Instance_MountsTheReadOnlyDesigner()
     {
         var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));
@@ -773,6 +826,7 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         var config = JsonNode.Parse(Assert.Single(document.QuerySelectorAll("#workflow-designer")).GetAttribute("data-config"));
         Assert.True(config["readOnly"].GetValue<bool>());
         Assert.EndsWith($"Admin/Workflows/Types/{id}/Designer/Instance?instanceId={instanceId}", config["urls"]["definition"].GetValue<string>());
+        Assert.EndsWith($"Admin/Workflows/Types/{id}/Designer/Retry", config["urls"]["retry"].GetValue<string>());
         Assert.Null(config["urls"]["save"]);
 
         // The State tab is kept, and the jsPlumb viewer and the stale Bootstrap 4 script are gone.
@@ -1119,6 +1173,25 @@ public sealed class WorkflowDesignerSiteFixture : IAsyncLifetime
         await context.UsingTenantScopeAsync(scope => scope.ServiceProvider.GetRequiredService<IWorkflowTypeStore>().SaveAsync(workflowType));
 
         return (workflowType.Id, workflowType.WorkflowTypeId);
+    }
+
+    // A faulted instance of the workflow type, created as the engine does, so its state holds its activities.
+    public async Task<Workflow> CreateFaultedInstanceAsync(string workflowTypeId)
+    {
+        Workflow workflow = null;
+
+        await Context.UsingTenantScopeAsync(async scope =>
+        {
+            var workflowType = await scope.ServiceProvider.GetRequiredService<IWorkflowTypeStore>().GetAsync(workflowTypeId);
+
+            workflow = scope.ServiceProvider.GetRequiredService<IWorkflowManager>().NewWorkflow(workflowType);
+            workflow.Status = WorkflowStatus.Faulted;
+            workflow.FaultMessage = "Broken";
+
+            await scope.ServiceProvider.GetRequiredService<IWorkflowStore>().SaveAsync(workflow);
+        });
+
+        return workflow;
     }
 
     public Task<long> CreateInstanceAsync(string workflowTypeId, WorkflowStatus status, params string[] blockingActivityIds)

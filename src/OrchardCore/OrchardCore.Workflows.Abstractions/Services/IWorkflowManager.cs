@@ -68,6 +68,17 @@ public interface IWorkflowManager
     Task<WorkflowExecutionContext> ResumeWorkflowAsync(Workflow workflow, BlockingActivity awaitingActivity, IDictionary<string, object> input = null);
 
     /// <summary>
+    /// Runs a faulted workflow instance again from an activity of the definition it runs on, with its current
+    /// state, for example after fixing what made the activity fail. The instance's lock is held while it runs.
+    /// </summary>
+    /// <param name="workflow">The faulted instance.</param>
+    /// <param name="activityId">The <see cref="ActivityRecord.ActivityId"/> to run from.</param>
+    /// <returns>The context of the run, or <see langword="null"/> when the instance's lock couldn't be acquired.</returns>
+    /// <exception cref="InvalidOperationException">The instance isn't faulted, or its workflow type doesn't exist.</exception>
+    /// <exception cref="ArgumentException">The definition doesn't have the activity.</exception>
+    Task<WorkflowExecutionContext> RetryActivityAsync(Workflow workflow, string activityId);
+
+    /// <summary>
     /// Executes the specified workflow starting at the specified activity.
     /// </summary>
     Task<IEnumerable<ActivityRecord>> ExecuteWorkflowAsync(WorkflowExecutionContext workflowExecutionContext, ActivityRecord activity);

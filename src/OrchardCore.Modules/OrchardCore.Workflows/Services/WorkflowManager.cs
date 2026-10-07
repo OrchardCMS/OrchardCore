@@ -330,6 +330,53 @@ public class WorkflowManager : IWorkflowManager
         return workflowContext;
     }
 
+    /// <inheritdoc />
+    public async Task<WorkflowExecutionContext> RetryActivityAsync(Workflow workflow, string activityId)
+    {
+        ArgumentNullException.ThrowIfNull(workflow);
+        ArgumentException.ThrowIfNullOrEmpty(activityId);
+
+        if (workflow.Status != WorkflowStatus.Faulted)
+        {
+            throw new InvalidOperationException($"The workflow '{workflow.WorkflowId}' isn't faulted, so it can't be retried.");
+        }
+
+        var currentType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId)
+            ?? throw new InvalidOperationException($"The workflow type '{workflow.WorkflowTypeId}' of the workflow '{workflow.WorkflowId}' doesn't exist.");
+
+        // The instance runs again on the version it started on.
+        var workflowType = await _workflowTypeVersionStore.GetWorkflowTypeAsync(currentType, workflow.WorkflowTypeVersionId);
+        var activity = workflowType.Activities.SingleOrDefault(x => x.ActivityId == activityId)
+            ?? throw new ArgumentException($"The definition of the workflow '{workflow.WorkflowId}' doesn't have the activity '{activityId}'.", nameof(activityId));
+
+        (var locker, var locked) = await _distributedLock.TryAcquireWorkflowLockAsync(workflow);
+
+        if (!locked)
+        {
+            _logger.LogWarning("The workflow '{WorkflowId}' wasn't retried: another process holds its lock.", workflow.WorkflowId);
+
+            return null;
+        }
+
+        await using var acquiredLock = locker;
+
+        var workflowContext = await CreateWorkflowExecutionContextAsync(workflowType, workflow);
+        workflow.FaultMessage = null;
+
+        await ExecuteWorkflowAsync(workflowContext, activity);
+
+        if (workflowContext.Status == WorkflowStatus.Finished && workflowType.DeleteFinishedWorkflows)
+        {
+            await _workflowStore.DeleteAsync(workflow);
+        }
+        else
+        {
+            await PersistAsync(workflowContext);
+        }
+
+        return workflowContext;
+    }
+
     public async Task<WorkflowExecutionContext> RestartWorkflowAsync(WorkflowType workflowType, IDictionary<string, object> input = null, string correlationId = null)
     {
         ArgumentNullException.ThrowIfNull(workflowType);

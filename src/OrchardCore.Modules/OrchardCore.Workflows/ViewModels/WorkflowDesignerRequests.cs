@@ -87,6 +87,22 @@ public sealed class WorkflowDesignerRestoreRequest
 }
 
 /// <summary>
+/// The body of the instance viewer's retry request.
+/// </summary>
+public sealed class WorkflowDesignerRetryRequest
+{
+    /// <summary>
+    /// The document id of the faulted instance.
+    /// </summary>
+    public long InstanceId { get; set; }
+
+    /// <summary>
+    /// The <see cref="ActivityRecord.ActivityId"/> to run the instance from.
+    /// </summary>
+    public string ActivityId { get; set; }
+}
+
+/// <summary>
 /// The body of the designer's variables request: every variable of the draft.
 /// </summary>
 public sealed class WorkflowDesignerVariablesRequest

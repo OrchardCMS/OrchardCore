@@ -78,11 +78,24 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - In `WorkflowManagerTests` (5): the records and the saved state of a finished run; a halt then a resume continuing the sequence; a fault's error; a disabled journal; the cap on executed activities.
     - Workflows tests: 234/234.
 
-### - [ ] 5.3 Retry a faulted activity
+### - [x] 5.3 Retry a faulted activity
 
 - `IWorkflowManager.RetryActivityAsync(workflow, activityId)`: only for a faulted instance and an activity of its definition; clears the fault, runs from that activity with the instance's state, saves; under the instance lock.
 - `POST Designer/Retry` (`instanceId`, `activityId`), requiring `ExecuteWorkflows`.
 - **Tests**: retry continues after the input of the faulting activity is fixed; a non-faulted instance or an unknown activity is rejected; 403 without the permission.
+- **Notes from implementing this step:**
+  - **Engine.** `RetryActivityAsync` reads the definition the instance runs on (its version), then:
+    - throws `InvalidOperationException` for an instance that isn't faulted or whose workflow type is gone, and `ArgumentException` for an activity the definition doesn't have;
+    - takes the instance's lock when it is atomic, and returns `null` when the lock is held;
+    - clears `FaultMessage`, runs from the activity with the instance's state (properties, variables and activity states), and saves the instance (or deletes it, when it finishes and its type deletes finished instances).
+    The journal goes on numbering.
+  - **Endpoint.** `Retry` requires `ExecuteWorkflows`. It answers 404 for an instance of another type, 400 for one that isn't faulted or an unknown activity, 409 when the lock is held, and otherwise the new `status` and `faultMessage`.
+  - **Configuration.** The instance page passes `canRetry` (the user's `ExecuteWorkflows` permission) to the viewer's configuration, which then has the `retry` URL.
+  - **Tests.**
+    - In `WorkflowManagerTests` (2): retrying after a transient failure finishes the instance and continues the journal (with a `FlakyTask`); a finished instance and an unknown activity are rejected.
+    - In `WorkflowDesignerControllerTests` (2, plus checks in 2 others): retrying a faulted instance finishes it, saves it and records the activity; a finished instance, an unknown activity and an instance of another type are rejected; the endpoint is forbidden without the permission; the instance page's configuration has the URL.
+    - The test instances are created with `IWorkflowManager.NewWorkflow`, so their state holds their activities, as real instances' does.
+    - Workflows tests: 238/238.
 
 ### - [ ] 5.4 Instance viewer
 

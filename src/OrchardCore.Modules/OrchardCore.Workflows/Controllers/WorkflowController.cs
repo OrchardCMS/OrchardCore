@@ -196,7 +196,13 @@ public sealed class WorkflowController : Controller
             Workflow = workflow,
             WorkflowType = workflowType,
             WorkflowJson = JConvert.SerializeObject(workflow, JOptions.CamelCaseIndented),
-            DesignerConfigJson = WorkflowDesignerConfigBuilder.Build(Url, User, _jsLocalizers, workflowType, workflow),
+            DesignerConfigJson = WorkflowDesignerConfigBuilder.Build(
+                Url,
+                User,
+                _jsLocalizers,
+                workflowType,
+                workflow,
+                canRetry: await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ExecuteWorkflows)),
         };
 
         return View(viewModel);

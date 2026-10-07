@@ -186,6 +186,58 @@ public sealed class WorkflowDesignerController : Controller
         });
     }
 
+    /// <summary>
+    /// Runs a faulted instance again from one of its activities. It requires the permission to execute workflows.
+    /// </summary>
+    [HttpPost]
+    public async Task<IActionResult> Retry(long workflowTypeId, [FromBody] WorkflowDesignerRetryRequest request)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ExecuteWorkflows))
+        {
+            return this.ApiForbidProblem();
+        }
+
+        if (string.IsNullOrEmpty(request?.ActivityId))
+        {
+            return this.ApiBadRequestProblem();
+        }
+
+        var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
+        var workflow = workflowType is null ? null : await _workflowStore.GetAsync(request.InstanceId);
+
+        if (workflow is null || workflow.WorkflowTypeId != workflowType.WorkflowTypeId)
+        {
+            return this.ApiNotFoundProblem();
+        }
+
+        if (workflow.Status != WorkflowStatus.Faulted)
+        {
+            return ProblemResult(StatusCodes.Status400BadRequest, S["Only a faulted instance can be retried."]);
+        }
+
+        WorkflowExecutionContext workflowContext;
+
+        try
+        {
+            workflowContext = await _workflowManager.RetryActivityAsync(workflow, request.ActivityId);
+        }
+        catch (ArgumentException)
+        {
+            return ProblemResult(StatusCodes.Status400BadRequest, S["The instance's definition doesn't have this activity."]);
+        }
+
+        if (workflowContext is null)
+        {
+            return ProblemResult(StatusCodes.Status409Conflict, S["The instance is running. Try again in a moment."]);
+        }
+
+        return Ok(new
+        {
+            status = workflowContext.Status.ToString(),
+            faultMessage = workflowContext.Workflow.FaultMessage,
+        });
+    }
+
     [HttpGet]
     public async Task<IActionResult> Library(long workflowTypeId)
     {
@@ -860,6 +912,17 @@ public sealed class WorkflowDesignerController : Controller
         result.ContentType = "application/json; charset=utf-8";
 
         return result;
+    }
+
+    private ObjectResult ProblemResult(int status, string title)
+    {
+        var problem = ProblemDetailsFactory.CreateProblemDetails(HttpContext, status, title);
+
+        return new ObjectResult(problem)
+        {
+            StatusCode = status,
+            ContentTypes = { "application/problem+json" },
+        };
     }
 
     private ObjectResult FailureResult(WorkflowTypeDraftResult result)

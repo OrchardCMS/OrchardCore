@@ -19,7 +19,8 @@ internal static class WorkflowDesignerConfigBuilder
     /// <summary>
     /// The configuration of the designer of <paramref name="workflowType"/>, or, when
     /// <paramref name="instance"/> is set, of the read-only viewer of that instance.
-    /// <paramref name="initialActivityId"/> is the activity the designer selects and opens when it loads.
+    /// <paramref name="initialActivityId"/> is the activity the designer selects and opens when it loads, and
+    /// <paramref name="canRetry"/> whether the viewer offers to retry a faulted instance.
     /// </summary>
     public static string Build(
         IUrlHelper url,
@@ -27,7 +28,8 @@ internal static class WorkflowDesignerConfigBuilder
         IEnumerable<IJSLocalizer> localizers,
         WorkflowType workflowType,
         Workflow instance = null,
-        string initialActivityId = null)
+        string initialActivityId = null,
+        bool canRetry = false)
     {
         var route = new { area = Area, workflowTypeId = workflowType.Id };
 
@@ -49,8 +51,9 @@ internal static class WorkflowDesignerConfigBuilder
             }
             : new DesignerUrls
             {
-                // The viewer only loads the instance; it never changes the workflow type.
+                // The viewer only loads the instance and retries it; it never changes the workflow type.
                 Definition = url.Action("Instance", DesignerController, new { area = Area, workflowTypeId = workflowType.Id, instanceId = instance.Id }),
+                Retry = canRetry ? url.Action("Retry", DesignerController, route) : null,
             };
 
         return Serialize(url, user, localizers, workflowType, instance is null ? "designer" : "instance", urls, initialActivityId);
@@ -142,5 +145,7 @@ internal static class WorkflowDesignerConfigBuilder
         public string Variables { get; init; }
 
         public string OutputBindings { get; init; }
+
+        public string Retry { get; init; }
     }
 }

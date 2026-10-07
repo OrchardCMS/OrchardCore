@@ -838,6 +838,51 @@ public class WorkflowManagerTests
         Assert.Equal(WorkflowExecutionContext.MaxExecutedActivities + 5, workflowContext.JournalRecords.Count);
     }
 
+    [Fact]
+    public async Task RetryActivityAsync_FaultedInstance_RunsAgainFromTheActivity()
+    {
+        var (journal, saved) = CreateJournal();
+        var fail = true;
+        var flaky = new FlakyTask(() => fail);
+        var workflowType = new WorkflowType
+        {
+            Id = 1,
+            WorkflowTypeId = IdGenerator.GenerateId(),
+            Activities =
+            [
+                new() { ActivityId = "start", IsStart = true, Name = "StartTask" },
+                new() { ActivityId = "flaky", Name = flaky.Name },
+            ],
+            Transitions = [new() { SourceActivityId = "start", SourceOutcomeName = "Done", DestinationActivityId = "flaky" }],
+        };
+        var workflowManager = CreateWorkflowManager(CreateServiceProvider(), [flaky, new NamedTask("StartTask", new OutputTask(null, halt: false))], workflowType, journal: journal);
+
+        var faulted = await workflowManager.StartWorkflowAsync(workflowType);
+
+        Assert.Equal(WorkflowStatus.Faulted, faulted.Status);
+
+        fail = false;
+        var retried = await workflowManager.RetryActivityAsync(faulted.Workflow, "flaky");
+
+        Assert.Equal(WorkflowStatus.Finished, retried.Status);
+        Assert.Null(retried.Workflow.FaultMessage);
+        Assert.Equal([WorkflowExecutionRecordStatus.Completed, WorkflowExecutionRecordStatus.Faulted, WorkflowExecutionRecordStatus.Completed], saved.Select(record => record.Status));
+        Assert.Equal([1, 2, 3], saved.Select(record => record.Sequence));
+    }
+
+    [Fact]
+    public async Task RetryActivityAsync_InstanceNotFaultedOrUnknownActivity_Throws()
+    {
+        var (workflowManager, workflowType) = CreateOutputWorkflow(output: "42", bindings: []);
+        var finished = await workflowManager.StartWorkflowAsync(workflowType);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => workflowManager.RetryActivityAsync(finished.Workflow, "output"));
+
+        finished.Workflow.Status = WorkflowStatus.Faulted;
+
+        await Assert.ThrowsAsync<ArgumentException>(() => workflowManager.RetryActivityAsync(finished.Workflow, "missing"));
+    }
+
     private static (IWorkflowExecutionJournal Journal, List<WorkflowExecutionRecord> Saved) CreateJournal(bool enabled = true)
     {
         var saved = new List<WorkflowExecutionRecord>();
@@ -920,6 +965,27 @@ public class WorkflowManagerTests
 
             throw new InvalidOperationException("Simulated activity failure");
         }
+    }
+
+    // Fails while `fail` returns true.
+    private sealed class FlakyTask : TaskActivity<FlakyTask>
+    {
+        private readonly Func<bool> _fail;
+
+        public FlakyTask(Func<bool> fail)
+        {
+            _fail = fail;
+        }
+
+        public override LocalizedString DisplayText => new(Name, Name);
+
+        public override LocalizedString Category => new("Test", "Test");
+
+        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+            => Outcome(new LocalizedString("Done", "Done"));
+
+        public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+            => _fail() ? throw new InvalidOperationException("Not ready yet") : Outcome("Done");
     }
 
     // Sets its "Value" output, then finishes or halts.
