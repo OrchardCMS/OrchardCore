@@ -295,10 +295,42 @@ When the appropriate event is triggered (which could happen seconds, days, weeks
 
 ## Scripts and Expressions
 
-Many activities have settings that can contain either **JavaScript** or **Liquid** syntax.  
-For example, activities such as **Correlate**, **For Each**, **For Loop**, **If / Else**, **Set Output**, **Set Property**, and **While Loop** provide a syntax selector in their editors.  
-Liquid-enabled fields allow you to enter Liquid markup, enabling access to system-wide variables and filters as well as variables from the **workflow execution context**.
+Many activities have settings that are **expressions**, evaluated each time the activity runs. Liquid-enabled fields allow you to enter Liquid markup, enabling access to system-wide variables and filters as well as variables from the **workflow execution context**.
 
+### Choosing the Syntax of an Expression
+
+The expressions of the **Correlate**, **For Each**, **For Loop**, **If / Else**, **Set Output**, **Set Property**, **Set Variable** and **While Loop** activities each have their own syntax, chosen next to the expression:
+
+| Syntax | The expression is | Example (If / Else) |
+|---|---|---|
+| Literal | The value itself, converted to the expected type: text as is, `true` or `false`, numbers in the invariant culture, JSON for objects, and a JSON array or comma-separated values for lists. A value that doesn't convert is an error in the editor. | `true` |
+| Liquid | A Liquid template. | `{{ Workflow.Properties.Count > 0 }}` |
+| JavaScript | A JavaScript expression. | `input("Count") > 0` |
+
+Values that span several lines (Set Output, Set Property, Set Variable and Correlate) are edited in a code editor whose language follows the syntax. Modules can add syntaxes, which then appear in the same lists.
+
+Activities saved before syntaxes could be chosen for each expression had one syntax setting for the whole activity, with a JavaScript and a Liquid property for each expression. They keep running as before. Opening one in the designer shows each expression with that syntax, and saving it stores the new shape: the expression with its `Syntax`, without the former properties.
+
+```json
+"Condition": {
+  "Expression": "{{ Workflow.Properties.Count > 0 }}",
+  "Syntax": "Liquid"
+}
+```
+
+### Adding a Syntax
+
+A module adds a syntax by registering an `IWorkflowExpressionProvider`: its name (stored in `WorkflowExpression<T>.Syntax`), its display name, the language of the code editor (a Monaco language such as `plaintext`, `liquid` or `javascript`), how it evaluates an expression to the expected type, and how it validates the text of an expression in the editor. A provider registered with the name of an existing one replaces it.
+
+```csharp
+services.AddScoped<IWorkflowExpressionProvider, MyExpressionProvider>();
+```
+
+`IWorkflowExpressionManager` lists the syntaxes and evaluates an expression with the provider of its syntax. An activity evaluates its expressions with it:
+
+```csharp
+var condition = await _expressionManager.EvaluateAsync(Condition, workflowContext, defaultSyntax: WorkflowExpressionSyntaxes.JavaScript);
+```
 ### JavaScript Functions
 
 The following JavaScript functions are available by default to any activity that supports script expressions:
@@ -464,6 +496,39 @@ The designer shows an icon for each activity, on the canvas and in the activitie
 ```csharp
 services.AddActivity<NotifyTask, NotifyTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-bell");
 ```
+
+### Expression Editors in Custom Activities
+
+A custom activity edits an expression with the `WorkflowExpressionEditor` shape, which shows the syntax select and the expression, and posts both:
+
+1. In the activity's view model, the input is a `WorkflowExpressionInput`.
+2. In the driver, `EditActivity` fills it with `WorkflowExpressionInput.From(activity.Condition)`, and `UpdateAsync` reads it back with `WorkflowExpressionInputValidator.Validate<T>()`. It adds the errors to the model state: a missing required expression, an unknown or disallowed syntax, and what the syntax's provider finds wrong.
+3. In the editor view, `Factory.CreateWorkflowExpressionEditorAsync()` creates the shape, which `DisplayAsync` renders.
+
+```cshtml
+@{
+    var conditionEditor = await Factory.CreateWorkflowExpressionEditorAsync(Html, m => m.Condition, editor =>
+    {
+        editor.Label = T["Condition"].Value;
+        editor.Required = true;
+        // Only these syntaxes; every registered one by default.
+        editor.Syntaxes = [WorkflowExpressionSyntaxes.Liquid, WorkflowExpressionSyntaxes.JavaScript];
+        editor.Examples[WorkflowExpressionSyntaxes.JavaScript] = "input(\"Count\") > 0";
+    });
+}
+@await DisplayAsync(conditionEditor)
+```
+
+```csharp
+activity.Condition = _expressionValidator.Validate<bool>(model.Condition, context.Updater.ModelState, Prefix, nameof(model.Condition), new()
+{
+    Label = S["Condition"],
+    Required = true,
+    Syntaxes = [WorkflowExpressionSyntaxes.Liquid, WorkflowExpressionSyntaxes.JavaScript],
+});
+```
+
+Set `Multiline` for values that span several lines: they are edited in a code editor whose language follows the syntax.
 
 ### Activity Editors in the Designer
 

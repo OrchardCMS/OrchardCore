@@ -124,10 +124,18 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - `WorkflowDesignerControllerTests`: a legacy If/Else opens with its Liquid condition and the three syntaxes, and saving it with Literal stores the new shape without the legacy keys. A For Loop rejects a Literal that isn't a number and an unknown syntax. The If/Else and Set Variable editor tests post the new field names.
     - The `IfElse_InvalidLiquid` end-to-end test uses the new fields. `WorkflowsDesignerTests` 19/19; Workflows tests 222/222.
 
-### - [ ] 4.5 Docs and release notes
+### - [x] 4.5 Docs and release notes
 
 - `src/docs/reference/modules/Workflows/README.md`: an **Expressions** section (the syntaxes, choosing one per input, Literal conversions, adding a provider, using the editor shape in a custom activity).
 - Release notes: the feature, the constructor changes, the new stored shape.
+- **Notes from implementing this step:**
+  - **Workflows README.**
+    - "Scripts and Expressions" opens with **Choosing the Syntax of an Expression**: the three syntaxes with an If/Else example each, the Literal conversions, the multi-line code editor, the legacy shape and the stored JSON.
+    - **Adding a Syntax** covers `IWorkflowExpressionProvider` and `IWorkflowExpressionManager`.
+    - Under Developing Custom Activities, **Expression Editors in Custom Activities** shows the view model input, the driver (`WorkflowExpressionInput.From`, `WorkflowExpressionInputValidator`) and the view (`Factory.CreateWorkflowExpressionEditorAsync`).
+  - **Release notes.**
+    - A **Workflow Expression Syntaxes** feature section.
+    - An **Expression syntaxes** breaking-change bullet (the constructors, the view models, the stored shape), and a **Syntax toggle** bullet: the unused `workflow-syntax-toggle` resource and the removed Correlate script.
 
 ### - [ ] 4.6 End-to-end test
 
