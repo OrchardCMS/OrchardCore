@@ -177,6 +177,56 @@ The journal doesn't record the input or output of the activities.
 - `WorkflowExecutionContext.ExecutedActivities` holds the most recent 100 activities and outcomes the instance ran, and is saved with its state (`WorkflowState.ExecutedActivities`, oldest first).
 - `IWorkflowManager.RetryActivityAsync(workflow, activityId)` runs a faulted instance again from an activity.
 
+## Workflows as Activities
+
+A workflow can run another workflow as one of its activities, pass it values, and get values back:
+
+1. In the settings of the workflow to run, check **Usable as an activity**.
+2. In its **Variables** tab, mark the variables it takes as **Input**, and those it returns as **Output**.
+3. Make its start activity a **Started By Workflow** event. A workflow without one starts on its first start activity.
+
+The workflows usable as an activity are listed in the **Workflows** category of the activities pane. Each one adds an **Execute Workflow** task that runs it. The task can also be added from the **Primitives** category, and its workflow selected in its editor. The task has these settings:
+
+- **Workflow.** The workflow to run. Its input variables show up below once it's selected.
+- **Inputs.** An expression per input variable, in any [syntax](#choosing-the-syntax-of-an-expression). The value is converted to the variable's type; a value that doesn't convert is logged, and the variable keeps its default value.
+- **Wait for the workflow to finish.**
+    - When checked, the task continues with its **Done** outcome once the workflow finished, and its outputs are the workflow's output variables. They can be [bound](#reading-and-writing-variables) to the variables of the calling workflow. When the workflow waits on an event, the calling workflow waits too, and continues when the workflow finishes. When the workflow faults, the task takes its **Failed** outcome.
+    - When unchecked, the task takes its **Done** outcome as soon as the workflow started.
+
+The task's outputs are stored when it's edited (or added from the activities pane). Edit the task again after changing the outputs of the workflow it runs.
+
+The workflow runs on its published version, as a new instance that records the instance and the activity that started it (`ParentWorkflowId` and `ParentActivityId`). Workflows can run each other 16 levels deep in a run; a task that runs the workflow it belongs to shows a warning in the designer.
+
+Code can start a workflow as the child of an activity with `IWorkflowManager.StartChildWorkflowAsync`. When the child ends in a later run, the activity that started it is resumed with a `ChildWorkflowResult` input.
+
+### Activity Presets
+
+Entries of the activities pane can add an existing activity with preset properties: the workflows usable as an activity are presets of the Execute Workflow task. Modules can add presets with an `IActivityPresetProvider`, from code, configuration or data, like a catalog of HTTP calls:
+
+```csharp
+public sealed class WeatherPresetProvider : IActivityPresetProvider
+{
+    public Task<IEnumerable<ActivityPreset>> GetPresetsAsync()
+        => Task.FromResult<IEnumerable<ActivityPreset>>(
+        [
+            new ActivityPreset
+            {
+                Id = "weather:forecast",
+                ActivityName = "HttpRequestTask",
+                DisplayText = "Weather forecast",
+                Category = "Weather",
+                Properties = new JsonObject
+                {
+                    ["Url"] = new JsonObject { ["Expression"] = "https://weather.example.com/forecast" },
+                    ["HttpMethod"] = "GET",
+                },
+            },
+        ]);
+}
+```
+
+Register it with `services.AddScoped<IActivityPresetProvider, WeatherPresetProvider>()`. A preset sets the properties of the activity it adds over the activity's defaults; the stored workflow refers to the registered activity, so it keeps working when the preset changes or goes away.
+
 ## Real-Time Updates
 
 With the **Workflows Real Time** feature (`OrchardCore.Workflows.SignalR`, which enables [SignalR](../SignalR/README.md)), the designer and the instance pages update live:
@@ -207,6 +257,7 @@ A workflow can declare **variables**: named values that every activity of an ins
 - **Defaults.** A variable gets its default value when an instance starts, or when it resumes on a version that declares a variable it doesn't have yet. A variable without a default has no value until it's set.
 - **Names.** Names are identifiers (a letter or `_`, then letters, digits or `_`), unique ignoring case. Variables are found ignoring case.
 - **Values.** Setting a variable converts the value to its type. When the value doesn't convert, the workflow faults, with a message naming the variable.
+- **Inputs and outputs.** A variable marked as **Input** is set from the input value of the same name the workflow starts with, converted to its type. One marked as **Output** is returned to the workflow that runs this one as an activity. See [Workflows as Activities](#workflows-as-activities).
 
 ### Reading and Writing Variables
 

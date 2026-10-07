@@ -144,7 +144,15 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - Vitest: a preset card emits and drags its key; `addActivity` posts a name or a preset.
     - Workflows tests: 265/265. Vitest: 235/235.
 
-### - [ ] 7.5 Docs and release notes
+### - [x] 7.5 Docs and release notes
+- **Notes from implementing this step:**
+  - **Reference.** A **Workflows as Activities** section in the Workflows module's page covers:
+    - the steps to make a workflow usable as an activity, and the task's settings: inputs, waiting, the **Done** and **Failed** outcomes;
+    - that the stored outputs are refreshed by editing the task;
+    - the published version, the parent recorded on the child, the depth limit, and `StartChildWorkflowAsync`.
+    - Its **Activity Presets** subsection shows an `IActivityPresetProvider` adding an HTTP call, and how presets relate to stored workflows.
+    - The Variables section explains inputs and outputs.
+  - **Release notes.** A **Workflows as Activities** section, and the new members of `IWorkflowManager` and `IWorkflowTypeDraftManager` under the breaking changes.
 
 ### - [ ] 7.6 End-to-end test
 
