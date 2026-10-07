@@ -195,11 +195,18 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
 
 ## Definition of done (Phase 3)
 
-- [ ] Steps 3.1–3.8 are checked.
-- [ ] The CI-flag build is green; `OrchardCore.Tests`, Vitest and the functional `*Cms*` tests pass.
-- [ ] `yarn lint`, `yarn check` and `yarn build` leave a clean `git status`.
-- [ ] Workflows without variables behave as before.
-- [ ] Docs and release notes are updated.
+- [x] Steps 3.1–3.8 are checked.
+- [x] The CI-flag build is green; `OrchardCore.Tests`, Vitest and the functional `*Cms*` tests pass.
+- [x] `yarn lint`, `yarn check` and `yarn build` leave a clean `git status`.
+- [x] Workflows without variables behave as before.
+- [x] Docs and release notes are updated.
+- **Notes from checking the Definition of done:**
+  - **Build.** The CI-flag build has 0 warnings and 0 errors.
+  - **`OrchardCore.Tests`.** 3,469 tests: 3,467 passed and 2 skipped (Unix-only).
+  - **Vitest.** The designer has 216 tests; all pass.
+  - **Functional `*Cms*`.** 159 tests: 153 passed and 6 skipped (Tus Azure and Redis), in a single run; no class needed a rerun. `WorkflowsDesignerTests` has 19 tests.
+  - **Workflows without variables.** The existing engine, designer and versioning tests pass unchanged, and the seeded workflows of the functional tests, which declare no variables, run as before.
+  - **Assets.** `yarn lint` has 0 errors (the 2 warnings in `OrchardCore.Cors` were already there), `yarn check` passes, and `yarn build` reproduces the committed output. `git status` only shows the six line-ending files from Phase 1.
 
 ## Open questions
 
