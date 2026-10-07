@@ -37,11 +37,26 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
 
 ---
 
-### - [ ] 5.1 Journal records and store
+### - [x] 5.1 Journal records and store
 
 - `A/Models/WorkflowExecutionRecord.cs`, `WorkflowExecutionRecordStatus`; `A/Services/IWorkflowExecutionJournal.cs` (`SaveAsync(entries)`, `ListAsync(workflowId, count)`, `DeleteAsync(workflowIds)`); `M/Indexes/WorkflowExecutionRecordIndex.cs`; `M/Services/WorkflowExecutionJournal.cs` with the cap (J3); options `WorkflowJournalOptions`; migration creating the index table in the `WorkflowJournal` collection.
 - Deleting instances deletes their journal (J5).
 - **Tests**: save and list in order, the cap, delete; a deleted instance (store, trimming, type deletion) loses its records.
+- **Notes from implementing this step:**
+  - **Collection.** `WorkflowExecutionRecord.Collection` (`WorkflowJournal`) is registered in `StoreCollectionOptions`, as AuditTrail does, so the shell initializes it. `UpdateFrom6Async` creates `WorkflowExecutionRecordIndex` (`WorkflowId`, `Sequence`) in it.
+  - **Journal.**
+    - `SaveAsync(workflowId, records)` saves records with the sequence numbers they have (step 5.2 numbers them). It then deletes the oldest records beyond `MaxRecordsPerInstance`.
+    - `ListAsync(workflowId, count)` returns the most recent records, oldest first.
+    - `DeleteAsync(workflowIds)` deletes by batches of 100 instances.
+    - `IsEnabled` reflects `Enabled`.
+  - **Settings.** `WorkflowJournalOptions` is bound to `Workflows:Journal` and described in `ConfigurationSchema.json`.
+  - **Deletions.**
+    - `WorkflowJournalHandler` (a workflow handler) handles `IWorkflowStore.DeleteAsync`.
+    - `WorkflowTrimmingService` and `WorkflowTypeStore.DeleteAsync` delete instances through the session, so they delete the journal themselves; both take an `IWorkflowExecutionJournal` (release notes).
+  - **Tests.**
+    - `Journal/WorkflowExecutionJournalTests.cs` (7): save and list, the most recent records, the cap, delete, workflow type deletion, trimming, and the handler.
+    - The SQLite test database initializes the collection and runs the new migration.
+    - Workflows tests: 229/229.
 
 ### - [ ] 5.2 Recording executions
 

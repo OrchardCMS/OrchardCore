@@ -6,6 +6,7 @@ using OrchardCore.Extensions;
 using OrchardCore.Json;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Indexes;
+using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using YesSql;
 using YesSql.Provider.Sqlite;
@@ -46,6 +47,7 @@ internal sealed class VersioningTestDatabase : IAsyncDisposable
         database.JsonOptions = new DocumentJsonSerializerOptions();
         new DocumentJsonSerializerOptionsConfiguration(derivedOptions.Object).Configure(database.JsonOptions);
         database.Store.Configuration.ContentSerializer = new DefaultContentJsonSerializer(Options.Create(database.JsonOptions));
+        await database.Store.InitializeCollectionAsync(WorkflowExecutionRecord.Collection);
 
         // The deferred work of the migrations needs a shell scope, so it doesn't run here.
         await using (var session = database.Store.CreateSession())
@@ -54,12 +56,14 @@ internal sealed class VersioningTestDatabase : IAsyncDisposable
             await migrations.CreateAsync();
             await migrations.UpdateFrom4Async();
             await migrations.UpdateFrom5Async();
+            await migrations.UpdateFrom6Async();
             await session.SaveChangesAsync();
         }
 
         database.Store.RegisterIndexes<WorkflowTypeIndexProvider>();
         database.Store.RegisterIndexes<WorkflowIndexProvider>();
         database.Store.RegisterIndexes<WorkflowTypeVersionIndexProvider>();
+        database.Store.RegisterIndexes<WorkflowExecutionRecordIndexProvider>();
 
         return database;
     }
@@ -84,10 +88,16 @@ internal sealed class VersioningTestDatabase : IAsyncDisposable
             Options.Create(new WorkflowVersionOptions { MaxCount = maxVersionCount }),
             NullLogger<WorkflowTypeVersionStore>.Instance);
 
-        var types = new WorkflowTypeStore(session, versions, [], NullLogger<WorkflowTypeStore>.Instance);
+        var types = new WorkflowTypeStore(session, versions, CreateJournal(session), [], NullLogger<WorkflowTypeStore>.Instance);
 
         return (session, versions, types);
     }
+
+    /// <summary>
+    /// Returns the journal over a session.
+    /// </summary>
+    public static WorkflowExecutionJournal CreateJournal(ISession session, int maxRecordsPerInstance = 1000)
+        => new(session, Options.Create(new WorkflowJournalOptions { MaxRecordsPerInstance = maxRecordsPerInstance }));
 
     public async ValueTask DisposeAsync()
     {

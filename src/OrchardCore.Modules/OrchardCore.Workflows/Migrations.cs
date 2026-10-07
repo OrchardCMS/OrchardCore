@@ -145,6 +145,23 @@ public sealed class Migrations : DataMigration
         return 6;
     }
 
+    public async Task<int> UpdateFrom6Async()
+    {
+        await SchemaBuilder.CreateMapIndexTableAsync<WorkflowExecutionRecordIndex>(table => table
+            .Column<string>(nameof(WorkflowExecutionRecordIndex.WorkflowId), column => column.WithLength(26))
+            .Column<int>(nameof(WorkflowExecutionRecordIndex.Sequence)),
+            collection: WorkflowExecutionRecord.Collection);
+
+        await SchemaBuilder.AlterIndexTableAsync<WorkflowExecutionRecordIndex>(table => table
+            .CreateIndex("IDX_WorkflowExecutionRecordIndex_DocumentId",
+                "DocumentId",
+                nameof(WorkflowExecutionRecordIndex.WorkflowId),
+                nameof(WorkflowExecutionRecordIndex.Sequence)),
+            collection: WorkflowExecutionRecord.Collection);
+
+        return 7;
+    }
+
     /// <summary>
     /// Creates the first version of the workflow types that have none, without raising the workflow type
     /// handlers. Returns the number of workflow types it versioned.

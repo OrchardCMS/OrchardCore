@@ -10,17 +10,20 @@ public class WorkflowTypeStore : IWorkflowTypeStore
 {
     private readonly ISession _session;
     private readonly IWorkflowTypeVersionStore _versionStore;
+    private readonly IWorkflowExecutionJournal _journal;
     private readonly IEnumerable<IWorkflowTypeEventHandler> _handlers;
     private readonly ILogger _logger;
 
     public WorkflowTypeStore(
         ISession session,
         IWorkflowTypeVersionStore versionStore,
+        IWorkflowExecutionJournal journal,
         IEnumerable<IWorkflowTypeEventHandler> handlers,
         ILogger<WorkflowTypeStore> logger)
     {
         _session = session;
         _versionStore = versionStore;
+        _journal = journal;
         _handlers = handlers;
         _logger = logger;
     }
@@ -83,6 +86,8 @@ public class WorkflowTypeStore : IWorkflowTypeStore
         {
             _session.Delete(workflow);
         }
+
+        await _journal.DeleteAsync(workflows.Select(workflow => workflow.WorkflowId));
 
         // Then delete the workflow type and its versions.
         await _versionStore.DeleteAsync(workflowType.WorkflowTypeId);

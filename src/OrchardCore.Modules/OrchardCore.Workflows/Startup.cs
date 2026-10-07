@@ -58,6 +58,11 @@ public sealed class Startup : StartupBase
         services.AddScoped<IWorkflowTypeStore, WorkflowTypeStore>();
         services.AddScoped<IWorkflowTypeVersionStore, WorkflowTypeVersionStore>();
         services.Configure<WorkflowVersionOptions>(_shellConfiguration.GetSection("Workflows:Versions"));
+        services.Configure<WorkflowJournalOptions>(_shellConfiguration.GetSection("Workflows:Journal"));
+        services.AddScoped<IWorkflowExecutionJournal, WorkflowExecutionJournal>();
+        services.AddScoped<IWorkflowHandler, WorkflowJournalHandler>();
+        services.AddIndexProvider<WorkflowExecutionRecordIndexProvider>();
+        services.Configure<StoreCollectionOptions>(options => options.Collections.Add(WorkflowExecutionRecord.Collection));
 
         // Variable types; modules can add their own.
         services.AddScoped<IWorkflowVariableType, StringVariableType>();
