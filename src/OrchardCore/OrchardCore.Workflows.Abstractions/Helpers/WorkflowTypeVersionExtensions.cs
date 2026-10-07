@@ -33,6 +33,7 @@ public static class WorkflowTypeVersionExtensions
             LockExpiration = version.LockExpiration,
             DeleteFinishedWorkflows = version.DeleteFinishedWorkflows,
             IsActivity = version.IsActivity,
+            BranchingMode = version.BranchingMode,
             Activities = version.Activities
                 .Select(activity => new ActivityRecord
                 {

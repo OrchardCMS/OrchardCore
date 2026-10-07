@@ -650,12 +650,18 @@ public class WorkflowManager : IWorkflowManager
 
                 foreach (var outcome in outcomes)
                 {
-                    // Look for next activity in the graph.
-                    var transition = workflowType.Transitions.FirstOrDefault(x => x.SourceActivityId == activity.ActivityId && x.SourceOutcomeName == outcome);
+                    // Look for the next activities in the graph: the first transition of the outcome, or all of them.
+                    var transitions = workflowType.Transitions.Where(x => x.SourceActivityId == activity.ActivityId && x.SourceOutcomeName == outcome).ToList();
 
-                    if (transition != null)
+                    if (workflowType.BranchingMode == WorkflowBranchingMode.FirstOnly && transitions.Count > 1)
                     {
-                        var destinationActivity = workflowContext.WorkflowType.Activities.SingleOrDefault(x => x.ActivityId == transition.DestinationActivityId);
+                        transitions.RemoveRange(1, transitions.Count - 1);
+                    }
+
+                    // The last one pushed runs first, so the transitions run in the order they were added.
+                    for (var i = transitions.Count - 1; i >= 0; i--)
+                    {
+                        var destinationActivity = workflowContext.WorkflowType.Activities.SingleOrDefault(x => x.ActivityId == transitions[i].DestinationActivityId);
 
                         // Check that the activity doesn't point to itself.
                         if (destinationActivity != activity)

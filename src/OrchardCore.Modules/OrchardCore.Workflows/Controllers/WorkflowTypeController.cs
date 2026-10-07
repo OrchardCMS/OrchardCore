@@ -259,6 +259,7 @@ public sealed class WorkflowTypeController : Controller
                 LockExpiration = workflowType.LockExpiration,
                 DeleteFinishedWorkflows = workflowType.DeleteFinishedWorkflows,
                 IsActivity = workflowType.IsActivity,
+                BranchingMode = workflowType.BranchingMode,
                 ReturnUrl = returnUrl,
             });
         }
@@ -302,6 +303,7 @@ public sealed class WorkflowTypeController : Controller
         workflowType.LockExpiration = viewModel.LockExpiration;
         workflowType.DeleteFinishedWorkflows = viewModel.DeleteFinishedWorkflows;
         workflowType.IsActivity = viewModel.IsActivity;
+        workflowType.BranchingMode = viewModel.BranchingMode;
 
         await _workflowTypeStore.SaveAsync(workflowType);
 
@@ -338,6 +340,7 @@ public sealed class WorkflowTypeController : Controller
             Name = "Copy-" + workflowType.Name,
             IsEnabled = workflowType.IsEnabled,
             IsActivity = workflowType.IsActivity,
+            BranchingMode = workflowType.BranchingMode,
             ReturnUrl = returnUrl,
         });
     }
@@ -366,6 +369,7 @@ public sealed class WorkflowTypeController : Controller
         workflowType.LockExpiration = viewModel.LockExpiration;
         workflowType.DeleteFinishedWorkflows = viewModel.DeleteFinishedWorkflows;
         workflowType.IsActivity = viewModel.IsActivity;
+        workflowType.BranchingMode = viewModel.BranchingMode;
         workflowType.Activities = existingWorkflowType.Activities;
         workflowType.Transitions = existingWorkflowType.Transitions;
         workflowType.Variables = existingWorkflowType.Variables.Select(variable => variable.Clone()).ToList();

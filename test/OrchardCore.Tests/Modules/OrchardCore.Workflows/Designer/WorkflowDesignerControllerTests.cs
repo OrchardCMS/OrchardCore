@@ -863,28 +863,33 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
     }
 
     [Fact]
-    public async Task Settings_UsableAsAnActivity_IsShownAndStoredInTheDraft()
+    public async Task Settings_UsableAsAnActivityAndBranchingMode_AreShownAndStoredInTheDraft()
     {
         var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));
 
         var form = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Settings");
         Assert.Contains("name=\"IsActivity\"", form["content"].GetValue<string>());
+        Assert.Contains("name=\"BranchingMode\"", form["content"].GetValue<string>());
 
         using var response = await PostFormAsync($"Admin/Workflows/Types/{id}/Designer/Settings?revision=0", new Dictionary<string, string>
         {
             ["Name"] = "Approval",
             ["IsEnabled"] = "true",
             ["IsActivity"] = "true",
+            ["BranchingMode"] = "All",
         });
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.True((await ReadJsonAsync(response))["settings"]["isActivity"].GetValue<bool>());
+        var settings = (await ReadJsonAsync(response))["settings"];
+        Assert.True(settings["isActivity"].GetValue<bool>());
+        Assert.Equal("All", settings["branchingMode"].GetValue<string>());
 
         await _fixture.Context.UsingTenantScopeAsync(async scope =>
         {
             var draft = await scope.ServiceProvider.GetRequiredService<IWorkflowTypeDraftManager>().GetAsync(workflowTypeId);
 
             Assert.True(draft.IsActivity);
+            Assert.Equal(WorkflowBranchingMode.All, draft.BranchingMode);
         });
     }
 

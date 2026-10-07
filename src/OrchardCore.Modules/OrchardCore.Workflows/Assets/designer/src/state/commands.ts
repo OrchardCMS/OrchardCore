@@ -158,19 +158,26 @@ export const moveNodesCommand = (graph: Graph, moves: NodeMove[], coalesceKey?: 
 };
 
 /**
- * Adds a transition. An outcome has at most one transition (the engine only follows the first one), so an
- * existing transition of the same outcome is replaced; reverting restores it.
+ * Adds a transition. Unless `keepOthers` is set (the workflow follows every transition of an outcome), an outcome
+ * has one transition at most, since the engine only follows the first one: an existing transition of the same
+ * outcome is replaced, and reverting restores it.
  */
-export const connectCommand = (graph: Graph, transition: DesignerTransition): Command & { replaced: () => DesignerTransition | undefined } => {
+export const connectCommand = (
+    graph: Graph,
+    transition: DesignerTransition,
+    keepOthers = false,
+): Command & { replaced: () => DesignerTransition | undefined } => {
     let replaced: { index: number; transition: DesignerTransition } | undefined;
 
     return {
         label: "connect",
         replaced: () => replaced?.transition,
         apply() {
-            const index = graph.transitions.findIndex(
-                (existing) => existing.sourceActivityId === transition.sourceActivityId && existing.sourceOutcomeName === transition.sourceOutcomeName,
-            );
+            const index = keepOthers
+                ? -1
+                : graph.transitions.findIndex(
+                      (existing) => existing.sourceActivityId === transition.sourceActivityId && existing.sourceOutcomeName === transition.sourceOutcomeName,
+                  );
 
             replaced = index >= 0 ? { index, transition: graph.transitions[index] } : undefined;
 

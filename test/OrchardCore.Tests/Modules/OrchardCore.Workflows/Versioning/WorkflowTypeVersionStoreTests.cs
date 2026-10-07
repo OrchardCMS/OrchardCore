@@ -61,6 +61,7 @@ public sealed class WorkflowTypeVersionStoreTests : IAsyncLifetime
     [InlineData("transition")]
     [InlineData("setting")]
     [InlineData("usable as an activity")]
+    [InlineData("branching mode")]
     [InlineData("variable")]
     public async Task SaveAsync_DefinitionChanged_CreatesTheNextVersion(string change)
     {
@@ -86,6 +87,9 @@ public sealed class WorkflowTypeVersionStoreTests : IAsyncLifetime
                 break;
             case "usable as an activity":
                 workflowType.IsActivity = true;
+                break;
+            case "branching mode":
+                workflowType.BranchingMode = WorkflowBranchingMode.All;
                 break;
             case "variable":
                 workflowType.Variables.Add(new WorkflowVariableDefinition { Name = "total", TypeName = "number", DefaultValue = 0 });

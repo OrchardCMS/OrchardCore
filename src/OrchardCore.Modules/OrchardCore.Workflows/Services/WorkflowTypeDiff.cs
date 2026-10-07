@@ -48,6 +48,7 @@ public static class WorkflowTypeDiff
         AddIfChanged(settings, nameof(WorkflowType.LockExpiration), from.LockExpiration, to.LockExpiration);
         AddIfChanged(settings, nameof(WorkflowType.DeleteFinishedWorkflows), from.DeleteFinishedWorkflows, to.DeleteFinishedWorkflows);
         AddIfChanged(settings, nameof(WorkflowType.IsActivity), from.IsActivity, to.IsActivity);
+        AddIfChanged(settings, nameof(WorkflowType.BranchingMode), from.BranchingMode, to.BranchingMode);
 
         if (!JsonNode.DeepEquals(JsonSerializer.SerializeToNode(from.Variables, JOptions.Default), JsonSerializer.SerializeToNode(to.Variables, JOptions.Default)))
         {

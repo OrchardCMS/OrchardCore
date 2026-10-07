@@ -565,6 +565,7 @@ public sealed class WorkflowDesignerController : Controller
                 LockExpiration = source.LockExpiration,
                 DeleteFinishedWorkflows = source.DeleteFinishedWorkflows,
                 IsActivity = source.IsActivity,
+                BranchingMode = source.BranchingMode,
             },
             WorkflowTypeId = workflowType.Id,
         });
@@ -608,6 +609,7 @@ public sealed class WorkflowDesignerController : Controller
             LockExpiration = model.LockExpiration,
             DeleteFinishedWorkflows = model.DeleteFinishedWorkflows,
             IsActivity = model.IsActivity,
+            BranchingMode = model.BranchingMode,
         };
 
         var result = await _draftManager.UpdateSettingsAsync(workflowType.WorkflowTypeId, revision, settings);
@@ -821,6 +823,7 @@ public sealed class WorkflowDesignerController : Controller
             LockExpiration = workflowType.LockExpiration,
             DeleteFinishedWorkflows = workflowType.DeleteFinishedWorkflows,
             IsActivity = workflowType.IsActivity,
+            BranchingMode = workflowType.BranchingMode,
         };
 
     private async Task<WorkflowDesignerVersion> PublishedVersionAsync(WorkflowType workflowType)

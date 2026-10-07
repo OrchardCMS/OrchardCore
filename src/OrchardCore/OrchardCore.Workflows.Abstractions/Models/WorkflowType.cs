@@ -56,6 +56,11 @@ public class WorkflowType : Entity
     public bool IsActivity { get; set; }
 
     /// <summary>
+    /// How the engine follows an outcome that has several transitions: only the first one (the default), or all of them.
+    /// </summary>
+    public WorkflowBranchingMode BranchingMode { get; set; }
+
+    /// <summary>
     /// A complete list of all activities that are part of this workflow.
     /// </summary>
     public IList<ActivityRecord> Activities { get; set; } = [];

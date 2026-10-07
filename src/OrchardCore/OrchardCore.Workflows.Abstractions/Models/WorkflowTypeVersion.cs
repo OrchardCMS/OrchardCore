@@ -78,6 +78,11 @@ public sealed class WorkflowTypeVersion
     public bool IsActivity { get; set; }
 
     /// <summary>
+    /// The value of <see cref="WorkflowType.BranchingMode"/> in this version.
+    /// </summary>
+    public WorkflowBranchingMode BranchingMode { get; set; }
+
+    /// <summary>
     /// The activities of this version.
     /// </summary>
     public IList<ActivityRecord> Activities { get; set; } = [];

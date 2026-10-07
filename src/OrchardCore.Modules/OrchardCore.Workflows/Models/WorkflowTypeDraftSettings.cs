@@ -39,4 +39,9 @@ public sealed class WorkflowTypeDraftSettings
     /// See <see cref="WorkflowType.IsActivity"/>.
     /// </summary>
     public bool IsActivity { get; set; }
+
+    /// <summary>
+    /// See <see cref="WorkflowType.BranchingMode"/>.
+    /// </summary>
+    public WorkflowBranchingMode BranchingMode { get; set; }
 }

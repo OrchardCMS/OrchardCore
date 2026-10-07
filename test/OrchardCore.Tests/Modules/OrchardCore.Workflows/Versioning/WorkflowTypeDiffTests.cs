@@ -72,14 +72,15 @@ public sealed class WorkflowTypeDiffTests
     }
 
     [Fact]
-    public void Compare_UsableAsActivityChanged_ListsIt()
+    public void Compare_UsableAsActivityAndBranchingModeChanged_ListsThem()
     {
         var to = CreateWorkflowType();
         to.IsActivity = true;
+        to.BranchingMode = WorkflowBranchingMode.All;
 
         var changes = WorkflowTypeDiff.Compare(CreateWorkflowType(), to);
 
-        Assert.Equal([nameof(WorkflowType.IsActivity)], changes.ChangedSettings);
+        Assert.Equal([nameof(WorkflowType.IsActivity), nameof(WorkflowType.BranchingMode)], changes.ChangedSettings);
     }
 
     [Fact]

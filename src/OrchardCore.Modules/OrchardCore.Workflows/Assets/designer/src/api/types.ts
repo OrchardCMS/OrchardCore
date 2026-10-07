@@ -86,6 +86,9 @@ export interface WorkflowSettings {
     lockTimeout: number;
     lockExpiration: number;
     deleteFinishedWorkflows: boolean;
+    isActivity?: boolean;
+    // How an outcome with several transitions is followed (WorkflowBranchingMode).
+    branchingMode?: "FirstOnly" | "All";
 }
 
 // A record of an instance's journal (WorkflowDesignerJournalRecord).

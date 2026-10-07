@@ -19,11 +19,28 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
 
 ---
 
-### - [ ] 8.1 Branching mode
+### - [x] 8.1 Branching mode
 
 - `WorkflowType.BranchingMode` (`WorkflowBranchingMode`: `FirstOnly`, `All`, stored as text), in the draft settings, the settings forms, versions, the diff and recipes. The engine follows every transition of an outcome with `All`. The validation's duplicate-outcome warning only applies to `FirstOnly`.
 - The designer: with `All`, connecting an outcome adds a connection instead of replacing the existing one.
 - **Tests**: the engine with both modes (two activities connected to one outcome); the validation; the settings; Vitest for connecting.
+- **Notes from implementing this step:**
+  - **Setting.**
+    - `WorkflowBranchingMode` (`FirstOnly`, the default, and `All`) is serialized as text, so recipes can say `"BranchingMode": "All"` and the designer gets `"All"`.
+    - `WorkflowType.BranchingMode` follows `IsActivity` through every copy: the draft, the settings forms (designer, properties, duplicate), versions, their fingerprint, the diff and the recipe step.
+    - The forms show it as **Outcomes with several transitions**: **Follow the first transition only** or **Follow every transition**.
+  - **Engine.**
+    - `ExecuteWorkflowAsync` takes the transitions of each outcome: the first one in `FirstOnly`, all of them in `All`.
+    - It pushes them in reverse, so they run in the order they were added.
+    - A transition to a missing activity still fails as before, which a test of the recursion counters relies on.
+  - **Validation.** The `DuplicateOutcomeTransition` warning only applies to `FirstOnly`.
+  - **Designer.** `connectCommand` takes `keepOthers`: in `All` mode, `connectOutcome` adds a transition instead of replacing the outcome's transition. Undo removes only the new one.
+  - **Tests.**
+    - The engine follows one or both transitions by mode, in order.
+    - No warning in `All` mode.
+    - The setting is published from the draft, is listed by the diff, creates a new version, and is shown and stored by the designer's settings form.
+    - Vitest: connecting in `All` mode adds an edge, and undo removes only it.
+    - Workflows tests: 269/269. Vitest: 236/236.
 
 ### - [ ] 8.2 Evaluation of composition and state machines
 

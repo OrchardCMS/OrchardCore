@@ -28,7 +28,8 @@ public static class WorkflowDesignerConstants
         public const string InvalidTransition = nameof(InvalidTransition);
 
         /// <summary>
-        /// An outcome has more than one outgoing transition; the engine only follows the first one.
+        /// An outcome has more than one outgoing transition, and the engine only follows the first one
+        /// (<see cref="WorkflowBranchingMode.FirstOnly"/>).
         /// </summary>
         public const string DuplicateOutcomeTransition = nameof(DuplicateOutcomeTransition);
 

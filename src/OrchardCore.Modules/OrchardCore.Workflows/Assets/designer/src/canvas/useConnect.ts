@@ -19,8 +19,9 @@ export type ConnectResult =
     | { status: "rejected" };
 
 /**
- * Connects an outcome to an activity. An outcome has one transition at most, so an existing transition
- * of the outcome is replaced. Self-loops and unknown activities or outcomes are rejected.
+ * Connects an outcome to an activity. Unless the workflow follows every transition of an outcome (its branching
+ * mode), an outcome has one transition at most, so an existing transition of the outcome is replaced. Self-loops
+ * and unknown activities or outcomes are rejected.
  */
 export const connectOutcome = (store: DesignerStore, transition: DesignerTransition): ConnectResult => {
     if (!canConnect(store.graph, transition)) {
@@ -31,7 +32,7 @@ export const connectOutcome = (store: DesignerStore, transition: DesignerTransit
         return { status: "unchanged" };
     }
 
-    const command = connectCommand(store.graph, transition);
+    const command = connectCommand(store.graph, transition, store.state.settings?.branchingMode === "All");
     store.execute(command);
 
     const replaced = command.replaced();

@@ -22,6 +22,19 @@ describe("canvas actions", () => {
         expect(store.state.transitions.map(transitionKey)).toContain("fork:A:b");
     });
 
+    it("connectOutcome_FollowingEveryTransition_AddsAnotherEdge", () => {
+        const store = setup();
+        store.state.settings = { ...store.state.settings!, branchingMode: "All" };
+
+        expect(connectOutcome(store, { sourceActivityId: "fork", sourceOutcomeName: "A", destinationActivityId: "b" })).toEqual({ status: "connected" });
+        expect(store.state.transitions.filter((transition) => transition.sourceActivityId === "fork" && transition.sourceOutcomeName === "A")).toHaveLength(2);
+
+        // Undoing removes only the new edge.
+        store.undo();
+        expect(store.state.transitions.map(transitionKey)).not.toContain("fork:A:b");
+        expect(store.state.transitions.map(transitionKey)).toContain("fork:A:a");
+    });
+
     it("connectOutcome_NewOutcome_AddsEdge", () => {
         const store = setup();
 

@@ -117,6 +117,7 @@ public sealed class WorkflowTypeVersionStore : IWorkflowTypeVersionStore
             LockExpiration = workflowType.LockExpiration,
             DeleteFinishedWorkflows = workflowType.DeleteFinishedWorkflows,
             IsActivity = workflowType.IsActivity,
+            BranchingMode = workflowType.BranchingMode,
             Activities = workflowType.Activities.Select(activity => activity.Clone()).ToList(),
             Transitions = workflowType.Transitions.Select(transition => transition.Clone()).ToList(),
             Variables = workflowType.Variables.Select(variable => variable.Clone()).ToList(),
@@ -194,6 +195,7 @@ public sealed class WorkflowTypeVersionStore : IWorkflowTypeVersionStore
         int lockExpiration,
         bool deleteFinishedWorkflows,
         bool isActivity,
+        WorkflowBranchingMode branchingMode,
         IList<ActivityRecord> activities,
         IList<Transition> transitions,
         IList<WorkflowVariableDefinition> variables)
@@ -205,6 +207,7 @@ public sealed class WorkflowTypeVersionStore : IWorkflowTypeVersionStore
                 LockExpiration = lockExpiration,
                 DeleteFinishedWorkflows = deleteFinishedWorkflows,
                 IsActivity = isActivity,
+                BranchingMode = branchingMode,
                 Activities = activities,
                 Transitions = transitions,
                 Variables = variables,
@@ -218,6 +221,7 @@ public sealed class WorkflowTypeVersionStore : IWorkflowTypeVersionStore
             workflowType.LockExpiration,
             workflowType.DeleteFinishedWorkflows,
             workflowType.IsActivity,
+            workflowType.BranchingMode,
             workflowType.Activities,
             workflowType.Transitions,
             workflowType.Variables);
@@ -229,6 +233,7 @@ public sealed class WorkflowTypeVersionStore : IWorkflowTypeVersionStore
             version.LockExpiration,
             version.DeleteFinishedWorkflows,
             version.IsActivity,
+            version.BranchingMode,
             version.Activities,
             version.Transitions,
             version.Variables);

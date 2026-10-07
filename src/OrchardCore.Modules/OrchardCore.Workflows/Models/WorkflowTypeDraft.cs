@@ -77,6 +77,11 @@ public sealed class WorkflowTypeDraft
     public bool IsActivity { get; set; }
 
     /// <summary>
+    /// The draft value of <see cref="WorkflowType.BranchingMode"/>.
+    /// </summary>
+    public WorkflowBranchingMode BranchingMode { get; set; }
+
+    /// <summary>
     /// The draft activities.
     /// </summary>
     public IList<ActivityRecord> Activities { get; set; } = [];

@@ -1,3 +1,4 @@
+@using OrchardCore.Workflows.Models
 @model WorkflowTypePropertiesViewModel
 
 <div class="ocat-wrapper" asp-validation-class-for="Name">
@@ -46,6 +47,17 @@
             <label class="form-check-label" asp-for="IsActivity">@T["Usable as an activity"]</label>
         </div>
         <span class="hint">@T["Check to let other workflows run this one with the Execute Workflow task. Its variables marked as inputs and outputs are what they pass and get back."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <label asp-for="BranchingMode" class="ocat-label">@T["Outcomes with several transitions"]</label>
+    <div class="ocat-end">
+        <select asp-for="BranchingMode" class="form-select">
+            <option value="@WorkflowBranchingMode.FirstOnly">@T["Follow the first transition only"]</option>
+            <option value="@WorkflowBranchingMode.All">@T["Follow every transition"]</option>
+        </select>
+        <span class="hint">@T["Follow every transition to run several branches from one outcome without a Fork activity. With the first transition only, the other transitions of an outcome are ignored."]</span>
     </div>
 </div>
 

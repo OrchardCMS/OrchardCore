@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.ViewModels;
 
@@ -16,5 +17,7 @@ public class WorkflowTypePropertiesViewModel
     public bool DeleteFinishedWorkflows { get; set; }
 
     public bool IsActivity { get; set; }
+
+    public WorkflowBranchingMode BranchingMode { get; set; }
     public string ReturnUrl { get; set; }
 }

@@ -299,6 +299,7 @@ public sealed class WorkflowTypeDraftManagerTests : IAsyncLifetime
             LockExpiration = 6,
             DeleteFinishedWorkflows = true,
             IsActivity = true,
+            BranchingMode = WorkflowBranchingMode.All,
         };
 
         var updated = await CreateManager().UpdateSettingsAsync(_workflowType.WorkflowTypeId, 0, settings);
@@ -314,6 +315,7 @@ public sealed class WorkflowTypeDraftManagerTests : IAsyncLifetime
         Assert.Equal(6, _workflowType.LockExpiration);
         Assert.True(_workflowType.DeleteFinishedWorkflows);
         Assert.True(_workflowType.IsActivity);
+        Assert.Equal(WorkflowBranchingMode.All, _workflowType.BranchingMode);
     }
 
     [Fact]
@@ -503,6 +505,15 @@ public sealed class WorkflowTypeDraftManagerTests : IAsyncLifetime
         Assert.Equal(WorkflowDesignIssueSeverity.Warning, issue.Severity);
         Assert.Equal("fork", issue.ActivityId);
         Assert.Equal("fork:A:b", issue.TransitionKey);
+    }
+
+    [Fact]
+    public async Task ValidateAsync_OutcomeWithTwoTransitionsFollowingAll_ReturnsNoIssues()
+    {
+        _workflowType.BranchingMode = WorkflowBranchingMode.All;
+        _workflowType.Transitions.Add(new Transition { SourceActivityId = "fork", SourceOutcomeName = "A", DestinationActivityId = "b" });
+
+        Assert.Empty(await CreateManager().ValidateAsync(_workflowType));
     }
 
     [Fact]

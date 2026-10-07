@@ -885,6 +885,39 @@ public class WorkflowManagerTests
             change.Status == WorkflowStatus.Finished)), Times.Once);
     }
 
+    [Theory]
+    [InlineData(WorkflowBranchingMode.FirstOnly, new[] { "start", "a" })]
+    [InlineData(WorkflowBranchingMode.All, new[] { "start", "a", "b" })]
+    public async Task StartWorkflowAsync_OutcomeWithTwoTransitions_FollowsThemByBranchingMode(WorkflowBranchingMode branchingMode, string[] expected)
+    {
+        var (journal, saved) = CreateJournal();
+        var counting = new CountingTask(() => { });
+        var workflowType = new WorkflowType
+        {
+            Id = 1,
+            WorkflowTypeId = IdGenerator.GenerateId(),
+            BranchingMode = branchingMode,
+            Activities =
+            [
+                new() { ActivityId = "start", IsStart = true, Name = "StartTask" },
+                new() { ActivityId = "a", Name = counting.Name },
+                new() { ActivityId = "b", Name = counting.Name },
+            ],
+            Transitions =
+            [
+                new() { SourceActivityId = "start", SourceOutcomeName = "Done", DestinationActivityId = "a" },
+                new() { SourceActivityId = "start", SourceOutcomeName = "Done", DestinationActivityId = "b" },
+            ],
+        };
+        var workflowManager = CreateWorkflowManager(CreateServiceProvider(), [counting, new NamedTask("StartTask", new OutputTask(null, halt: false))], workflowType, journal: journal);
+
+        var workflowContext = await workflowManager.StartWorkflowAsync(workflowType);
+
+        // In the All mode, the transitions run in the order they were added.
+        Assert.Equal(WorkflowStatus.Finished, workflowContext.Status);
+        Assert.Equal(expected, saved.Select(record => record.ActivityId));
+    }
+
     [Fact]
     public async Task RetryActivityAsync_FaultedInstance_RunsAgainFromTheActivity()
     {

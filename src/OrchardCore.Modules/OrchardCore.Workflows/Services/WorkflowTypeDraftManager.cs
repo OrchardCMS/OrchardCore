@@ -232,6 +232,7 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
             draft.LockExpiration = settings.LockExpiration;
             draft.DeleteFinishedWorkflows = settings.DeleteFinishedWorkflows;
             draft.IsActivity = settings.IsActivity;
+            draft.BranchingMode = settings.BranchingMode;
 
             return Task.FromResult(new ChangeOutcome());
         });
@@ -296,6 +297,7 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
             draft.LockExpiration = version.LockExpiration;
             draft.DeleteFinishedWorkflows = version.DeleteFinishedWorkflows;
             draft.IsActivity = version.IsActivity;
+            draft.BranchingMode = version.BranchingMode;
             draft.Activities = version.Activities.Select(activity => activity.Clone()).ToList();
             draft.Transitions = version.Transitions.Select(transition => transition.Clone()).ToList();
             draft.Variables = version.Variables.Select(variable => variable.Clone()).ToList();
@@ -374,7 +376,7 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
     {
         ArgumentNullException.ThrowIfNull(draft);
 
-        return Task.FromResult<IReadOnlyList<WorkflowDesignIssue>>(Validate(draft.WorkflowTypeId, draft.Activities, draft.Transitions, draft.Variables));
+        return Task.FromResult<IReadOnlyList<WorkflowDesignIssue>>(Validate(draft.WorkflowTypeId, draft.BranchingMode, draft.Activities, draft.Transitions, draft.Variables));
     }
 
     /// <inheritdoc />
@@ -382,10 +384,15 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
     {
         ArgumentNullException.ThrowIfNull(workflowType);
 
-        return Task.FromResult<IReadOnlyList<WorkflowDesignIssue>>(Validate(workflowType.WorkflowTypeId, workflowType.Activities, workflowType.Transitions, workflowType.Variables));
+        return Task.FromResult<IReadOnlyList<WorkflowDesignIssue>>(Validate(workflowType.WorkflowTypeId, workflowType.BranchingMode, workflowType.Activities, workflowType.Transitions, workflowType.Variables));
     }
 
-    private List<WorkflowDesignIssue> Validate(string workflowTypeId, IList<ActivityRecord> activities, IList<Transition> transitions, IList<WorkflowVariableDefinition> variables)
+    private List<WorkflowDesignIssue> Validate(
+        string workflowTypeId,
+        WorkflowBranchingMode branchingMode,
+        IList<ActivityRecord> activities,
+        IList<Transition> transitions,
+        IList<WorkflowVariableDefinition> variables)
     {
         var issues = new List<WorkflowDesignIssue>();
 
@@ -440,9 +447,10 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
             validTransitions.Add(transition);
         }
 
+        // Every transition of an outcome is followed in the All mode.
         var duplicates = validTransitions
             .GroupBy(transition => (transition.SourceActivityId, transition.SourceOutcomeName))
-            .Where(group => group.Count() > 1);
+            .Where(group => branchingMode == WorkflowBranchingMode.FirstOnly && group.Count() > 1);
 
         foreach (var group in duplicates)
         {
