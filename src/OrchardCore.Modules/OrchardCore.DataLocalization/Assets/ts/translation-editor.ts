@@ -11,6 +11,7 @@ interface TranslationString {
     plural?: string | null;
     values?: string[];
     metadata?: string[];
+    formatArguments?: string[];
     changed?: boolean;
 }
 
@@ -48,6 +49,7 @@ interface EditorInstance {
     currentCulture: string;
     loadedCulture: string;
     providers: TranslationProvider[];
+    pluralFormExamples: number[];
     isReadOnly: boolean;
     saveUrl?: string;
     getStringsUrl?: string;
@@ -94,6 +96,7 @@ const readResponse = async (response: Response, fallbackMessage: string) => {
 if (editorEl) {
     const cultures = getDatasetJson<Culture[]>(editorEl, "cultures") ?? [];
     const providers = getDatasetJson<TranslationProvider[]>(editorEl, "providers") ?? [];
+    const pluralFormExamples = getDatasetJson<number[]>(editorEl, "pluralFormExamples") ?? [];
     const messages = getDatasetJson<TranslationMessages>(editorEl, "messages") ?? ({} as TranslationMessages);
 
     const getAntiForgeryToken = () => {
@@ -110,6 +113,7 @@ if (editorEl) {
                 currentCulture: editorEl.dataset.currentCulture || "",
                 loadedCulture: editorEl.dataset.currentCulture || "",
                 providers,
+                pluralFormExamples,
                 isReadOnly: editorEl.dataset.isReadOnly === "true",
                 saveUrl: editorEl.dataset.saveUrl,
                 getStringsUrl: editorEl.dataset.getStringsUrl,
@@ -319,6 +323,7 @@ if (editorEl) {
                     );
                     const data = await readResponse(response, messages.loadError);
                     this.providers = data.providers;
+                    this.pluralFormExamples = data.pluralFormExamples ?? [];
                     this.loadedCulture = this.currentCulture = data.culture;
                     this.isDirty = false;
                     this.editRevision = 0;

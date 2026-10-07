@@ -252,13 +252,18 @@ public sealed class DataLocalizationTests : CmsTestBase<DataLocalizationTestsFix
             """
             () => {
                 const providers = JSON.parse(document.querySelector('#translation-editor').dataset.providers);
-                const entry = providers.flatMap(p => p.subGroups.flatMap(g => g.strings)).find(s => s.plural);
+                const entry = providers.flatMap(p => p.subGroups.flatMap(g => g.strings)).find(s => s.plural && s.formatArguments?.length);
                 return [entry.context, entry.key];
             }
             """);
         await editor.Locator("#search-box").FillAsync(source[1]);
         var plural = UiRow(page, source[0], source[1]);
         await Assertions.Expect(plural.Locator("textarea")).ToHaveCountAsync(6);
+        await Assertions.Expect(plural.GetByText("Available placeholders:")).ToBeVisibleAsync();
+        await Assertions.Expect(plural.Locator("label.ocat-label")).ToHaveTextAsync([
+            "Translation for count 0", "Translation for count 1", "Translation for count 2",
+            "Translation for count 3", "Translation for count 11", "Translation for count 100",
+        ]);
         await editor.Locator("#auto-save-toggle").CheckAsync();
         var saves = 0;
         page.Request += CountSaves;

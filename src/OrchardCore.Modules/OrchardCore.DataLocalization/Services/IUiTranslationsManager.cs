@@ -12,6 +12,10 @@ public interface IUiTranslationsManager
     /// <param name="culture">The configured culture.</param>
     int GetPluralFormCount(string culture);
 
+    /// <summary>Gets an example count for each plural form in runtime index order.</summary>
+    /// <param name="culture">The configured culture.</param>
+    int[] GetPluralFormExamples(string culture);
+
     /// <summary>Validates a batch against embedded resources and saves it atomically. Empty arrays remove overrides.</summary>
     /// <param name="culture">The configured culture.</param>
     /// <param name="translations">The updates, identified by context and key.</param>

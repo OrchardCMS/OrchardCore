@@ -31,6 +31,11 @@ public class TranslationEditorViewModel
     public bool IsUiLocalization { get; set; }
 
     /// <summary>
+    /// Example counts for each plural form of the selected UI culture.
+    /// </summary>
+    public int[] PluralFormExamples { get; set; }
+
+    /// <summary>
     /// The initial client-side search filter.
     /// </summary>
     public string Search { get; set; }

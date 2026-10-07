@@ -109,6 +109,7 @@ public sealed class UiLocalizationTests
             "Content-Type: text/plain; charset=UTF-8\n"
 
             #. Translator comment
+            #. Format arguments: {0}: count
             #: Views/Example.cshtml:12
             #, csharp-format
             msgctxt "Views.Example"
@@ -129,7 +130,8 @@ public sealed class UiLocalizationTests
         Assert.Equal("Views.Example", resources[0].Context);
         Assert.Equal("{0} items", resources[0].Plural);
         Assert.Equal(["", ""], resources[0].Values);
-        Assert.Equal(3, resources[0].Metadata.Count);
+        Assert.Contains("#. Format arguments: {0}: count", resources[0].Metadata);
+        Assert.Equal(4, resources[0].Metadata.Count);
         Assert.Equal("Module", resources[0].AssemblyName);
         Assert.Equal("Hello world", resources[1].Key);
     }
@@ -154,6 +156,17 @@ public sealed class UiLocalizationTests
     {
         var (manager, _) = CreateManager();
         Assert.Equal(count, manager.GetPluralFormCount(culture));
+    }
+
+    [Theory]
+    [InlineData("fr", new[] { 1, 2 })]
+    [InlineData("ja", new[] { 1 })]
+    [InlineData("ru", new[] { 1, 2, 0 })]
+    [InlineData("ar", new[] { 0, 1, 2, 3, 11, 100 })]
+    public void GetPluralFormExamples_ConfiguredRuntimeRules_ReturnsRepresentativeCounts(string culture, int[] expected)
+    {
+        var (manager, _) = CreateManager();
+        Assert.Equal(expected, manager.GetPluralFormExamples(culture));
     }
 
     [Fact]

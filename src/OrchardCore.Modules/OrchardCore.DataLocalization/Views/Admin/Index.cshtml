@@ -4,6 +4,7 @@
 @{
     var culturesJson = JConvert.SerializeObject(Model.AllowedCultures, JOptions.CamelCase);
     var providersJson = JConvert.SerializeObject(Model.Providers, JOptions.CamelCase);
+    var pluralFormExamplesJson = JConvert.SerializeObject(Model.PluralFormExamples, JOptions.CamelCase);
     var messagesJson = JConvert.SerializeObject(new
     {
         saved = T["Translations saved successfully."].Value,
@@ -49,6 +50,7 @@
      data-export-url="@Url.Action("Export", "UiTranslations", new { area = "OrchardCore.DataLocalization" })"
      data-cultures="@culturesJson"
      data-providers="@providersJson"
+     data-plural-form-examples="@pluralFormExamplesJson"
      data-messages="@messagesJson">
 
     @Html.AntiForgeryToken()
@@ -186,6 +188,7 @@
                                 @if (Model.IsUiLocalization)
                                 {
                                     <div v-if="str.plural" class="hint">{{ str.plural }}</div>
+                                    <div v-for="argument in str.formatArguments" :key="argument" class="hint">@T["Available placeholders:"] <code>{{ argument }}</code></div>
                                     <details>
                                         <summary>@T["Source metadata"]</summary>
                                         <pre>{{ (str.metadata || []).join('\n') }}</pre>
@@ -196,7 +199,10 @@
                                 @if (Model.IsUiLocalization)
                                 {
                                     <div v-for="(value, form) in str.values" :key="form" class="ocat-wrapper">
-                                        <label :for="'translation-' + index + '-' + subGroup.name + '-' + str.key + '-' + form" class="ocat-label">@T["Translation"] {{ form }}</label>
+                                        <label :for="'translation-' + index + '-' + subGroup.name + '-' + str.key + '-' + form" class="ocat-label">
+                                            <span v-if="str.plural">@T["Translation for count"] {{ pluralFormExamples[form] }}</span>
+                                            <span v-else>@T["Translation"]</span>
+                                        </label>
                                         <div class="ocat-end">
                                             <textarea :id="'translation-' + index + '-' + subGroup.name + '-' + str.key + '-' + form"
                                                       class="form-control" rows="2" v-model="str.values[form]" :disabled="isReadOnly || isImporting || isLoading"

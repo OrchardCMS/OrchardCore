@@ -59,7 +59,7 @@ public sealed class UiTranslationsController : Controller
         }
 
         var model = await BuildModelAsync(culture);
-        return Ok(new { culture = model.CurrentCulture, providers = model.Providers });
+        return Ok(new { culture = model.CurrentCulture, providers = model.Providers, pluralFormExamples = model.PluralFormExamples });
     }
 
     [HttpPost]
@@ -171,6 +171,7 @@ public sealed class UiTranslationsController : Controller
             CurrentCulture = culture,
             AllowedCultures = allowedCultures,
             IsReadOnly = !await CanEditAsync(culture),
+            PluralFormExamples = culture == null ? [] : _manager.GetPluralFormExamples(culture),
             Search = search,
             Providers = resources.GroupBy(item => item.Resource.AssemblyName).Select(assembly => new TranslatableStringGroupViewModel
             {
@@ -184,6 +185,9 @@ public sealed class UiTranslationsController : Controller
                         Key = item.Resource.Key,
                         Plural = item.Resource.Plural,
                         Metadata = item.Metadata,
+                        FormatArguments = item.Metadata
+                            .Where(metadata => metadata.StartsWith("#. Format arguments: ", StringComparison.Ordinal))
+                            .Select(metadata => metadata["#. Format arguments: ".Length..]).ToArray(),
                         Values = translatedValues.TryGetValue((item.Resource.Context, item.Resource.Key), out var values)
                             ? values : Enumerable.Repeat(string.Empty, item.Resource.Plural == null ? 1 : formCount).ToArray(),
                     }).ToList(),

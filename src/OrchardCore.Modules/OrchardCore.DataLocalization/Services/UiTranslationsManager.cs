@@ -36,6 +36,27 @@ public sealed class UiTranslationsManager : IUiTranslationsManager
 
     /// <inheritdoc />
     public int GetPluralFormCount(string culture)
+        => Enumerable.Range(0, 1001).Max(GetPluralRule(culture).Invoke) + 1;
+
+    /// <inheritdoc />
+    public int[] GetPluralFormExamples(string culture)
+    {
+        var rule = GetPluralRule(culture);
+        var examples = new int[GetPluralFormCount(culture)];
+        Array.Fill(examples, -1);
+        foreach (var count in new[] { 1, 2, 0 }.Concat(Enumerable.Range(3, 998)))
+        {
+            var form = rule(count);
+            if (examples[form] == -1)
+            {
+                examples[form] = count;
+            }
+        }
+
+        return examples;
+    }
+
+    private PluralizationRuleDelegate GetPluralRule(string culture)
     {
         PluralizationRuleDelegate rule = count => count == 1 ? 0 : 1;
         foreach (var provider in _pluralRules)
@@ -47,8 +68,7 @@ public sealed class UiTranslationsManager : IUiTranslationsManager
             }
         }
 
-        // Orchard's integer rules use exact counts and modulo 10/100; this covers every category.
-        return Enumerable.Range(0, 1001).Max(rule.Invoke) + 1;
+        return rule;
     }
 
     /// <inheritdoc />

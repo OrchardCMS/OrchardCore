@@ -35,4 +35,9 @@ public class TranslatableStringViewModel
     /// Extracted UI catalog comments, flags and source references.
     /// </summary>
     public string[] Metadata { get; set; }
+
+    /// <summary>
+    /// Format placeholders and their argument descriptions from the UI catalog.
+    /// </summary>
+    public string[] FormatArguments { get; set; }
 }
