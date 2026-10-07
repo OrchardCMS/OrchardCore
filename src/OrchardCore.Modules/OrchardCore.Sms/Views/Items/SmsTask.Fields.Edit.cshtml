@@ -12,6 +12,15 @@
         </div>
     </div>
 
+    <div class="ocat-wrapper" asp-validation-class-for="FromPhoneNumber">
+        <label asp-for="FromPhoneNumber" class="ocat-label">@T["Optionally, From Phone Number"]</label>
+        <div class="ocat-end">
+            <input type="text" asp-for="FromPhoneNumber" class="form-control" />
+            <span asp-validation-for="FromPhoneNumber"></span>
+            <span class="hint">@T["Optionally, set the send from phone number must include a country code. For example, +1 for United States. With Liquid support."]</span>
+        </div>
+    </div>
+
     <div class="ocat-wrapper" id="body">
         <label asp-for="Body" class="ocat-label">@T["Body"]</label>
         <div class="ocat-end">

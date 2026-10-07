@@ -1,18 +1,15 @@
-using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Microsoft.Authentication.Deployment;
 
 public sealed class MicrosoftAccountDeploymentStep : DeploymentStep
 {
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<MicrosoftAccountDeploymentStep>("Microsoft Authentication");
+
     public MicrosoftAccountDeploymentStep()
     {
         Name = "MicrosoftAccount";
-    }
-
-    public MicrosoftAccountDeploymentStep(IStringLocalizer<MicrosoftAccountDeploymentStep> S)
-        : this()
-    {
-        Category = S["Microsoft Authentication"];
+        Category = s_category;
     }
 }

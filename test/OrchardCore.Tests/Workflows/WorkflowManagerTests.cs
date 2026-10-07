@@ -576,6 +576,50 @@ public class WorkflowManagerTests
         Assert.Equal(2, faultTriggerCount);
     }
 
+    [Fact]
+    public async Task StartWorkflowAsync_ScriptStoppedByAnExecutionLimit_FaultsTheWorkflow()
+    {
+        var serviceProvider = CreateServiceProvider();
+        var jintOptions = new Jint.Options();
+        Jint.ConstraintsOptionsExtensions.MaxStatements(jintOptions, 1_000);
+        var scriptEvaluator = CreateWorkflowScriptEvaluator(serviceProvider, jintOptions);
+        var localizer = new Mock<IStringLocalizer<WriteLineTask>>();
+
+        var stringBuilder = new StringBuilder();
+        var output = new StringWriter(stringBuilder);
+        var ifElseTask = new IfElseTask(TestExpressions.CreateManager(scriptEvaluator), new Mock<IStringLocalizer<IfElseTask>>().Object);
+        var writeLineTask = new WriteLineTask(scriptEvaluator, localizer.Object, output);
+        var workflowType = new WorkflowType
+        {
+            Id = 1,
+            WorkflowTypeId = IdGenerator.GenerateId(),
+            Activities =
+            [
+                new()
+                {
+                    ActivityId = "1",
+                    IsStart = true,
+                    Name = ifElseTask.Name,
+                    Properties = JObject.FromObject(new { Condition = new WorkflowExpression<bool>("while (true) {} true") }),
+                },
+                new() { ActivityId = "2", Name = writeLineTask.Name, Properties = JObject.FromObject(new { Text = new WorkflowExpression<string>("'took the false branch'") }) },
+            ],
+            Transitions =
+            [
+                new() { SourceActivityId = "1", SourceOutcomeName = "False", DestinationActivityId = "2" },
+            ],
+        };
+
+        var workflowManager = CreateWorkflowManager(serviceProvider, [ifElseTask, writeLineTask], workflowType);
+
+        var workflowExecutionContext = await workflowManager.StartWorkflowAsync(workflowType);
+
+        // The condition never finished, so neither outcome was decided: the workflow has to stop as faulted
+        // rather than take the False branch as though the script had answered false.
+        Assert.Equal(WorkflowStatus.Faulted, workflowExecutionContext.Status);
+        Assert.Empty(stringBuilder.ToString());
+    }
+
     private static ServiceProvider CreateServiceProvider()
     {
         var services = new ServiceCollection();
@@ -615,11 +659,11 @@ public class WorkflowManagerTests
             new Mock<ILogger<LiquidWorkflowExpressionEvaluator>>().Object,
             serviceProvider.GetRequiredService<IOptions<TemplateOptions>>());
 
-    private static JavaScriptWorkflowScriptEvaluator CreateWorkflowScriptEvaluator(IServiceProvider serviceProvider)
+    private static JavaScriptWorkflowScriptEvaluator CreateWorkflowScriptEvaluator(IServiceProvider serviceProvider, Jint.Options jintOptions = null)
     {
         var memoryCache = new MemoryCache(new MemoryCacheOptions());
         var globalMethodProviders = Array.Empty<IGlobalMethodProvider>();
-        var javaScriptEngine = new JavaScriptEngine(memoryCache, Options.Create(new Jint.Options()), globalMethodProviders);
+        var javaScriptEngine = new JavaScriptEngine(memoryCache, Options.Create(jintOptions ?? new Jint.Options()), globalMethodProviders);
         var workflowContextHandlers = new Resolver<IEnumerable<IWorkflowExecutionContextHandler>>(serviceProvider);
         var scriptingManager = new DefaultScriptingManager(new[] { javaScriptEngine }, globalMethodProviders);
 
