@@ -1,6 +1,13 @@
+@using OrchardCore.Workflows.Models
 @model ActivityViewModel<WhileLoopTask>
+
+@{
+    var expression = Model.Activity.Syntax == WorkflowScriptSyntax.Liquid
+        ? Model.Activity.LiquidCondition?.Expression
+        : Model.Activity.Condition?.Expression;
+}
 
 <header>
     <h4><i class="fa-solid fa-circle-notch" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["While Loop"])</h4>
 </header>
-<span>@T["Loop while <em>{0}</em> is true", Model.Activity.Condition]</span>
+<span>@T["Loop while <em>{0}</em> is true", expression]</span>

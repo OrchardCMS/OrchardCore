@@ -10,7 +10,7 @@ Then, go to the definition of a Content Type and edit the Autoroute Part:
 
 - Enter a Pattern using a Liquid expression that will represent the generated slug.
 
-For example, for a content with a `TitlePart` that will use it to generate the slug :
+For example, for content with a `TitlePart` that will use it to generate the slug:
 
 ```liquid
 {{ ContentItem | display_text | slugify }}
@@ -62,7 +62,7 @@ The `AutoroutePart` supports routing of content items which are children of a pa
 
 A _container_ content item is a parent content item, which _contains_ child content items.
 
-For example :
+For example:
 
 - A content item with a `BagPart` attached is a _container or parent_ content item.
 
@@ -72,13 +72,13 @@ For example :
 
 A _contained_ content item refers to a content item which is _contained_ inside a _container_ content item.
 
-For example :
+For example:
 
 - Content items _contained_ inside a `BagPart` are considered _contained or child_ content items.
 
 - `Terms` of a `Taxonomy` are _contained_ by the `Taxonomy`.
 
-_Contained_ content items are stored as part of the json inside the _container_ document.
+_Contained_ content items are stored as part of the JSON inside the _container_ document.
 
 ### Supported Containers
 
@@ -99,19 +99,19 @@ Optionally, add the `AutoroutePart` to the content type definition of the _conta
 
 #### Path Generation
 
-By default when the `AutoroutePart` is added to a _container_ content item and `Route Contained Items` is enabled the generated route will be made up of the _container_ segment, then the `ContentItemId` of the _contained_ content item, and if present, the `DisplayText`.
+By default, when the `AutoroutePart` is added to a _container_ content item and `Route Contained Items` is enabled, the generated route will be made up of the _container_ segment, then the `ContentItemId` of the _contained_ content item, and if present, the `DisplayText`.
 
-For example :
+For example:
 `https://www.mysite.com/categories/47twnxzx9hs5k3dyn9j1mc5rny-travel`
 
 To configure a friendly slug for the child content items add the `AutoroutePart` to the content type definition for those content types.
 
 You are then able to use the `Liquid` pattern to generate a friendly slug.
 
-For example :
+For example:
 `https://www.mysite.com/categories/travel`
 
-Routing is, by default, relative to the parent, and there is no `Liquid` filter for the parent as there is with the `ListPart`
+Routing is, by default, relative to the parent, and there is no `Liquid` filter for the parent as there is with the `ListPart`.
 
 #### AutoroutePart Settings
 
@@ -127,9 +127,9 @@ Enable this on a `contained` content type definition, i.e. the child, to allow t
 
 ##### Allow Absolute Path
 
-Enabled `AllowAbsolutePath` to allow a user to set a path as absolute.
+Enable `AllowAbsolutePath` to allow a user to set a path as absolute.
 
-By default _container_ routing will build a url relative to the _containers_ route.
+By default, _container_ routing will build a URL relative to the _container_ route.
 
 ##### Allow Disabled
 
@@ -141,7 +141,7 @@ Use this option when you have a _container_ with two `BagParts` and routing shou
 
 ##### Disabled
 
-Content editors can select to disabled route generation for a particular _contained_ content item.
+Content editors can select to disable route generation for a particular _contained_ content item.
 
 ##### Route Contained Items
 

@@ -1,17 +1,11 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Html.Models;
 
 namespace OrchardCore.Html.ViewModels;
 
-public class HtmlBodyPartViewModel
+public class HtmlBodyPartViewModel : HtmlViewModelBase
 {
-    public string Html { get; set; }
-
-    [BindNever]
-    public ContentItem ContentItem { get; set; }
-
     [BindNever]
     public HtmlBodyPart HtmlBodyPart { get; set; }
 

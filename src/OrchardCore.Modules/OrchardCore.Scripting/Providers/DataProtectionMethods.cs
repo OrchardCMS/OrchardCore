@@ -5,7 +5,7 @@ namespace OrchardCore.Scripting.Providers;
 
 internal sealed class DataProtectionMethods : IGlobalMethodProvider
 {
-    private static readonly GlobalMethod[] _methods =
+    private static readonly GlobalMethod[] s_methods =
     [
         new ()
         {
@@ -48,6 +48,6 @@ internal sealed class DataProtectionMethods : IGlobalMethodProvider
 
     public IEnumerable<GlobalMethod> GetMethods()
     {
-        return _methods;
+        return s_methods;
     }
 }

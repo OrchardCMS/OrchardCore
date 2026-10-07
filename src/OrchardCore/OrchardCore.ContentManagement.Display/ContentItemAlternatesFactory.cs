@@ -8,8 +8,8 @@ namespace OrchardCore.ContentManagement.Display;
 /// </summary>
 internal static class ContentItemAlternatesFactory
 {
-    private static readonly ConcurrentDictionary<DisplayAlternatesCacheKey, string[]> _displayCache = new();
-    private static readonly ConcurrentDictionary<EditorAlternatesCacheKey, string[]> _editorCache = new();
+    private static readonly ConcurrentDictionary<DisplayAlternatesCacheKey, string[]> s_displayCache = new();
+    private static readonly ConcurrentDictionary<EditorAlternatesCacheKey, string[]> s_editorCache = new();
 
     /// <summary>
     /// Gets or creates cached alternates for a ContentItem display shape.
@@ -28,7 +28,7 @@ internal static class ContentItemAlternatesFactory
             actualShapeType,
             contentType);
 
-        return _displayCache.GetOrAdd(key, BuildDisplayAlternates);
+        return s_displayCache.GetOrAdd(key, BuildDisplayAlternates);
     }
 
     /// <summary>
@@ -46,7 +46,7 @@ internal static class ContentItemAlternatesFactory
             actualShapeType,
             contentType);
 
-        return _editorCache.GetOrAdd(key, BuildEditorAlternates);
+        return s_editorCache.GetOrAdd(key, BuildEditorAlternates);
     }
 
     private static string[] BuildDisplayAlternates(DisplayAlternatesCacheKey key)

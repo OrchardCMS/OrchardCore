@@ -7,7 +7,7 @@ namespace OrchardCore.Tests.DisplayManagement;
 public class ZoneOnDemandTests
 {
     [Fact]
-    public void ZoneOnDemandIsEqualToNull()
+    public void ZoneOnDemandIsEqualToNull_Default_Succeeds()
     {
         var zoneOnDemand = CreateZoneOnDemand("SomeZone");
 
@@ -18,7 +18,7 @@ public class ZoneOnDemandTests
     }
 
     [Fact]
-    public void DynamicZoneOnDemandIsEqualToNull()
+    public void DynamicZoneOnDemandIsEqualToNull_Default_Succeeds()
     {
         dynamic zoneOnDemand = CreateZoneOnDemand("SomeZone");
 
@@ -29,7 +29,7 @@ public class ZoneOnDemandTests
     }
 
     [Fact]
-    public void ZoneOnDemandAsBaseTypeIsNotEqualToNull()
+    public void ZoneOnDemandAsBaseTypeIsNotEqualToNull_Default_Succeeds()
     {
         var zoneOnDemand = CreateZoneOnDemand("SomeZone");
 
@@ -43,7 +43,7 @@ public class ZoneOnDemandTests
     }
 
     [Fact]
-    public void ZoneOnDemandIsNotEqualToItself()
+    public void ZoneOnDemandIsNotEqualToItself_Default_Succeeds()
     {
         var zoneOnDemand1 = CreateZoneOnDemand("SomeZone");
         var zoneOnDemand2 = zoneOnDemand1;
@@ -53,7 +53,7 @@ public class ZoneOnDemandTests
     }
 
     [Fact]
-    public void DynamicZoneOnDemandIsNotEqualToItself()
+    public void DynamicZoneOnDemandIsNotEqualToItself_Default_Succeeds()
     {
         dynamic zoneOnDemand1 = CreateZoneOnDemand("SomeZone");
         dynamic zoneOnDemand2 = zoneOnDemand1;
@@ -63,7 +63,7 @@ public class ZoneOnDemandTests
     }
 
     [Fact]
-    public void ZoneOnDemandAsBaseTypeIsEqualToItself()
+    public void ZoneOnDemandAsBaseTypeIsEqualToItself_Default_Succeeds()
     {
         var zoneOnDemand = CreateZoneOnDemand("SomeZone");
 
@@ -78,13 +78,13 @@ public class ZoneOnDemandTests
     }
 
     [Fact]
-    public void ZoneHoldingPropertiesMissingIndexThrows()
+    public void ZoneHoldingPropertiesMissingIndexThrows_Default_Succeeds()
     {
         Assert.Throws<KeyNotFoundException>(() => { _ = CreateZoneHolding().Properties["SomeZone"]; });
     }
 
     [Fact]
-    public void DynamicZoneHoldingMissingIndexIsNull()
+    public void DynamicZoneHoldingMissingIndexIsNull_Default_Succeeds()
     {
         dynamic zoneHolding = CreateZoneHolding();
         var zone = zoneHolding["SomeZone"];
@@ -94,7 +94,7 @@ public class ZoneOnDemandTests
     }
 
     [Fact]
-    public void DynamicZoneHoldingMissingPropertyAddsAnEmptyZoneOnDemand()
+    public void DynamicZoneHoldingMissingPropertyAddsAnEmptyZoneOnDemand_Default_Succeeds()
     {
         dynamic zoneHolding = CreateZoneHolding();
         var someZone = zoneHolding.SomeZone;
@@ -116,7 +116,7 @@ public class ZoneOnDemandTests
     }
 
     [Fact]
-    public void DynamicZonesMissingPropertyReturnsATemporaryZoneOnDemand()
+    public void DynamicZonesMissingPropertyReturnsATemporaryZoneOnDemand_Default_Succeeds()
     {
         dynamic zoneHolding = CreateZoneHolding();
         var zoneOnDemand = zoneHolding.Zones.SomeZone;
@@ -134,7 +134,7 @@ public class ZoneOnDemandTests
     }
 
     [Fact]
-    public async Task AddingAnItemToAZoneOnDemandAddsAZoneShapeToItsParent()
+    public async Task AddingAnItemToAZoneOnDemandAddsAZoneShapeToItsParent_Default_Succeeds()
     {
         dynamic zoneHolding = CreateZoneHolding();
         var zoneOnDemand = zoneHolding.Zones.SomeZone;
@@ -155,7 +155,7 @@ public class ZoneOnDemandTests
     }
 
     [Fact]
-    public void DynamicZoneOnDemandShouldBeRecursive()
+    public void DynamicZoneOnDemand_Default_BeRecursive()
     {
         dynamic zoneOnDemand = CreateZoneOnDemand("SomeZone");
 
@@ -165,21 +165,21 @@ public class ZoneOnDemandTests
     }
 
     [Fact]
-    public void CallingToStringOnZoneOnDemandShouldReturnEmpty()
+    public void CallingToStringOnZoneOnDemand_Default_ReturnsEmpty()
     {
         var zoneOnDemand = CreateZoneOnDemand("SomeZone");
         Assert.Equal("", zoneOnDemand.ToString());
     }
 
     [Fact]
-    public void CallingToStringOnDynamicZoneOnDemandShouldReturnEmpty()
+    public void CallingToStringOnDynamicZoneOnDemand_Default_ReturnsEmpty()
     {
         dynamic zoneOnDemand = CreateZoneOnDemand("SomeZone");
         Assert.Equal("", zoneOnDemand.Foo.Bar.ToString());
     }
 
     [Fact]
-    public void ConvertingZoneOnDemandToStringShouldReturnNullString()
+    public void ConvertingZoneOnDemandToString_Default_ReturnsNullString()
     {
         dynamic zoneOnDemand = CreateZoneOnDemand("SomeZone");
         Assert.True((string)zoneOnDemand == null);

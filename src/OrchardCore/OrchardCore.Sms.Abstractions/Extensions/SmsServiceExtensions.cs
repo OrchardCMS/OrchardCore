@@ -13,8 +13,9 @@ public static class SmsServiceExtensions
     /// <param name="smsService">The <see cref="ISmsService"/>.</param>
     /// <param name="to">The phone number to send the message to.</param>
     /// <param name="body">The body of the message to send.</param>
-    /// <returns></returns>
-    public static Task<Result> SendAsync(this ISmsService smsService, string to, string body)
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A <see cref="Result"/> describing whether the SMS was sent successfully.</returns>
+    public static Task<Result> SendAsync(this ISmsService smsService, string to, string body, CancellationToken cancellationToken = default)
     {
         var message = new SmsMessage
         {
@@ -22,6 +23,6 @@ public static class SmsServiceExtensions
             Body = body,
         };
 
-        return smsService.SendAsync(message);
+        return smsService.SendAsync(message, cancellationToken);
     }
 }

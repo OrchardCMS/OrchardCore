@@ -38,57 +38,55 @@
 <zone name="Footer">
     <div class="modal fade" id="modalAuditTrailIndexOptionsFilterSyntax" tabindex="-1" role="dialog"
          aria-labelledby="audittrail-filters-syntax-title" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="audittrail-filters-syntax-title">@T["Available Filters"]</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="row">
-                        <div class="col-12 card-columns">
-                            @await DisplayAsync(syntaxThumbnail)
-                        </div>
+                    <div class="mb-3">
+                        @await DisplayAsync(syntaxThumbnail)
                     </div>
                     <div class="card mb-3">
                         <div class="card-body">
                             <h4>@T["Filter syntax"]</h4>
                             <ul class="fa-ul">
-                                <li>
+                                <li class="mb-1">
                                     <span class="fa-li"><i class="fa-solid fa-sm fa-check text-primary" aria-hidden="true"></i></span>
-                                    <span class="hint">@T["Default"]</span>
+                                    <strong>@T["Default"]</strong>
                                     <span class="hint dashed">@T["may be entered with or without the term name"]</span>
                                 </li>
-                                <li>
+                                <li class="mb-1">
                                     <span class="fa-li"><i class="fa-solid fa-sm fa-minus text-primary" aria-hidden="true"></i></span>
-                                    <span class="hint">@T["Single"]</span>
+                                    <strong>@T["Single"]</strong>
                                     <span class="hint dashed">@T["A single value can be entered"]</span>
                                 </li>
                                 <li>
                                     <span class="fa-li"><i class="fa-solid fa-sm fa-bars text-primary" aria-hidden="true"></i></span>
-                                    <span class="hint">@T["Multiple"]</span>
+                                    <strong>@T["Multiple"]</strong>
                                     <span class="hint dashed">@T["Logical operators and groups are supported"]</span>
-                                    <ul class="list-unstyled">
+                                    <ul class="list-unstyled mt-2 ms-1">
                                         @*NB The operators and examples are not localizable.*@
-                                        <li>
-                                            <span class="hint">OR</span>
+                                        <li class="mb-1">
+                                            <code class="fw-bold">OR</code>
                                             <span class="hint dashed">@T["The default operator when whitespace is found, e.g. {0}", "text:foo bar -> text:foo OR bar"]</span>
                                         </li>
-                                        <li>
-                                            <span class="hint">AND</span>
+                                        <li class="mb-1">
+                                            <code class="fw-bold">AND</code>
                                             <span class="hint dashed">@T["Combines, e.g. {0}", "text:foo AND bar"]</span>
                                         </li>
-                                        <li>
-                                            <span class="hint">NOT</span>
+                                        <li class="mb-1">
+                                            <code class="fw-bold">NOT</code>
                                             <span class="hint dashed">@T["Negates, e.g. {0}", "text:foo NOT bar"]</span>
                                         </li>
-                                        <li>
-                                            <span class="hint">( ... )</span>
-                                            <span class="hint">@T["Groups operators, e.g. {0}", "text:((foo OR bar) NOT baz)"]</span>
+                                        <li class="mb-1">
+                                            <code class="fw-bold">( ... )</code>
+                                            <span class="hint dashed">@T["Groups operators, e.g. {0}", "text:((foo OR bar) NOT baz)"]</span>
                                         </li>
                                         <li>
-                                            <span class="hint">" ... "</span>
-                                            <span class="hint">@T["Escape operators, e.g. {0}", "text:\"foo bar\""]</span>
+                                            <code class="fw-bold">" ... "</code>
+                                            <span class="hint dashed">@T["Escape operators, e.g. {0}", "text:\"foo bar\""]</span>
                                         </li>
                                     </ul>
                                 </li>

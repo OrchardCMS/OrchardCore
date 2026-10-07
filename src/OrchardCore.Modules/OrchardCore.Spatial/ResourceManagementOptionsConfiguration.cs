@@ -5,20 +5,20 @@ namespace OrchardCore.Spatial;
 
 public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
 {
-    private static readonly ResourceManifest _manifest;
+    private static readonly ResourceManifest s_manifest;
 
     static ResourceManagementOptionsConfiguration()
     {
-        _manifest = new ResourceManifest();
+        s_manifest = new ResourceManifest();
 
-        _manifest
+        s_manifest
             .DefineScript("leaflet")
             .SetUrl("~/OrchardCore.Spatial/Scripts/leaflet/leaflet.js", "~/OrchardCore.Spatial/Scripts/leaflet/leaflet-src.js")
             .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js", "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet-src.js")
             .SetCdnIntegrity("sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH", "sha384-4aETf8z71hiSsoK0xYsa5JtiJHfL3h7uMAsZ2QYOLvcySDL/cEDfdLt0SaBypTQZ")
             .SetVersion("1.9.4");
 
-        _manifest
+        s_manifest
             .DefineStyle("leaflet")
             .SetUrl("~/OrchardCore.Spatial/Styles/leaflet.min.css", "~/OrchardCore.Spatial/Styles/leaflet.css")
             .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css", "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css")
@@ -28,6 +28,6 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
 
     public void Configure(ResourceManagementOptions options)
     {
-        options.ResourceManifests.Add(_manifest);
+        options.ResourceManifests.Add(s_manifest);
     }
 }

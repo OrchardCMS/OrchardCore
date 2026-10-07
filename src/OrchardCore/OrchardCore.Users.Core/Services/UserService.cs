@@ -19,11 +19,12 @@ public sealed class UserService : IUserService
     private readonly SignInManager<IUser> _signInManager;
     private readonly UserManager<IUser> _userManager;
     private readonly IdentityOptions _identityOptions;
+    private readonly IOptionsMonitor<RegistrationOptions> _registrationOptions;
     private readonly IEnumerable<IPasswordRecoveryFormEvents> _passwordRecoveryFormEvents;
     private readonly IEnumerable<IRegistrationFormEvents> _registrationFormEvents;
-    private readonly RegistrationOptions _registrationOptions;
     private readonly ISiteService _siteService;
     private readonly IEnumerable<IUserEventHandler> _handlers;
+    private readonly PasswordTimingNormalizationService _timingNormalization;
     private readonly ILogger _logger;
 
     internal readonly IStringLocalizer S;
@@ -34,20 +35,22 @@ public sealed class UserService : IUserService
         IOptions<IdentityOptions> identityOptions,
         IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents,
         IEnumerable<IRegistrationFormEvents> registrationFormEvents,
-        IOptions<RegistrationOptions> registrationOptions,
+        IOptionsMonitor<RegistrationOptions> registrationOptions,
         ISiteService siteService,
         IEnumerable<IUserEventHandler> handlers,
+        PasswordTimingNormalizationService timingNormalization,
         ILogger<UserService> logger,
         IStringLocalizer<UserService> stringLocalizer)
     {
         _signInManager = signInManager;
         _userManager = userManager;
         _identityOptions = identityOptions.Value;
+        _registrationOptions = registrationOptions;
         _passwordRecoveryFormEvents = passwordRecoveryFormEvents;
         _registrationFormEvents = registrationFormEvents;
-        _registrationOptions = registrationOptions.Value;
         _siteService = siteService;
         _handlers = handlers;
+        _timingNormalization = timingNormalization;
         _logger = logger;
         S = stringLocalizer;
     }
@@ -77,6 +80,11 @@ public sealed class UserService : IUserService
         var user = await GetUserAsync(usernameOrEmail);
         if (user == null)
         {
+            // Perform a dummy hash verification so the response time is
+            // indistinguishable from a real password check, preventing
+            // username enumeration via timing analysis.
+            _timingNormalization.NormalizeResponseTime();
+
             reportError(string.Empty, S["The specified username/password couple is invalid."]);
             return null;
         }
@@ -104,7 +112,7 @@ public sealed class UserService : IUserService
             return null;
         }
 
-        if (!(user as User).IsEnabled)
+        if (user is User u && !u.IsEnabled)
         {
             reportError(string.Empty, S["The specified user is not allowed to sign in."]);
 
@@ -346,14 +354,16 @@ public sealed class UserService : IUserService
 
     public async Task<IUser> RegisterAsync(RegisterUserForm model, Action<string, string> reportError)
     {
+        var registrationOptions = _registrationOptions.CurrentValue;
+
         await _registrationFormEvents.InvokeAsync((e, report) => e.RegistrationValidationAsync((key, message) => report(key, message)), reportError, _logger);
 
         var user = await CreateUserAsync(new User
         {
             UserName = model.UserName,
             Email = model.Email,
-            EmailConfirmed = !_registrationOptions.UsersMustValidateEmail,
-            IsEnabled = !_registrationOptions.UsersAreModerated,
+            EmailConfirmed = !registrationOptions.UsersMustValidateEmail,
+            IsEnabled = !registrationOptions.UsersAreModerated,
         }, model.Password, reportError);
 
         if (user == null)

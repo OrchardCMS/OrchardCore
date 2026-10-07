@@ -11,6 +11,7 @@ using OrchardCore.Deployment.Remote.Services;
 using OrchardCore.Deployment.Remote.ViewModels;
 using OrchardCore.Deployment.Services;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.FileStorage;
 using OrchardCore.Recipes.Models;
 
 namespace OrchardCore.Deployment.Remote.Controllers;
@@ -22,6 +23,8 @@ public sealed class ImportRemoteInstanceController : Controller
     private readonly INotifier _notifier;
     private readonly ILogger _logger;
     private readonly IDataProtector _dataProtector;
+    private readonly FileCreationService _fileCreationService;
+    private readonly ITempDirectoryProvider _tempDirectoryProvider;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -30,12 +33,16 @@ public sealed class ImportRemoteInstanceController : Controller
         IDataProtectionProvider dataProtectionProvider,
         RemoteClientService remoteClientService,
         IDeploymentManager deploymentManager,
+        FileCreationService fileCreationService,
+        ITempDirectoryProvider tempDirectoryProvider,
         INotifier notifier,
         IHtmlLocalizer<ImportRemoteInstanceController> htmlLocalizer,
         IStringLocalizer<ImportRemoteInstanceController> stringLocalizer,
         ILogger<ImportRemoteInstanceController> logger)
     {
         _deploymentManager = deploymentManager;
+        _fileCreationService = fileCreationService;
+        _tempDirectoryProvider = tempDirectoryProvider;
         _notifier = notifier;
         _logger = logger;
         _remoteClientService = remoteClientService;
@@ -69,16 +76,27 @@ public sealed class ImportRemoteInstanceController : Controller
         }
 
         // Create a temporary filename to save the archive
-        var tempArchiveName = PathExtensions.GetTempFileName() + ".zip";
+        var tempArchiveName = _tempDirectoryProvider.GetTempFileName(".zip");
 
         // Create a temporary folder to extract the archive to
-        var tempArchiveFolder = PathExtensions.GetTempFileName();
+        var tempArchiveFolder = _tempDirectoryProvider.GetTempFileName();
 
         try
         {
-            using (var fs = System.IO.File.Create(tempArchiveName))
+            await using var uploadedStream = model.Content.OpenReadStream();
+            await using var fileCreatingResult = await _fileCreationService.CreateAsync(
+                new FileCreatingContext(model.Content.FileName, model.Content.Length, model.Content.ContentType),
+                uploadedStream,
+                HttpContext.RequestAborted);
+
+            if (!fileCreatingResult.Succeeded)
             {
-                await model.Content.CopyToAsync(fs);
+                return StatusCode((int)HttpStatusCode.BadRequest, fileCreatingResult.ErrorMessage ?? $"The uploaded file '{model.Content.FileName}' was rejected.");
+            }
+
+            await using (var fs = System.IO.File.Create(tempArchiveName))
+            {
+                await fileCreatingResult.Stream.CopyToAsync(fs, HttpContext.RequestAborted);
             }
 
             ZipFile.ExtractToDirectory(tempArchiveName, tempArchiveFolder);

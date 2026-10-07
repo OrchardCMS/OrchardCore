@@ -17,17 +17,14 @@ public class SlugifyMediaNameNormalizerService : IMediaNameNormalizerService
         _options = options.Value;
     }
 
-    public string NormalizeFolderName(string folderName)
-    {
-        return _options.Transliterate
-            ? _slugService.SlugifyAndTransliterate(folderName)
-            : _slugService.Slugify(folderName);
-    }
+    public string NormalizeFolderName(string folderName) =>
+        Slugify(folderName);
 
-    public string NormalizeFileName(string fileName)
-    {
-        return _options.Transliterate
-            ? _slugService.SlugifyAndTransliterate(Path.GetFileNameWithoutExtension(fileName))
-            : _slugService.Slugify(Path.GetFileNameWithoutExtension(fileName)) + Path.GetExtension(fileName);
-    }
+    public string NormalizeFileName(string fileName) =>
+        Slugify(Path.GetFileNameWithoutExtension(fileName)) + Path.GetExtension(fileName);
+
+    private string Slugify(string name) =>
+        _options.Transliterate
+            ? _slugService.SlugifyAndTransliterate(name)
+            : _slugService.Slugify(name);
 }

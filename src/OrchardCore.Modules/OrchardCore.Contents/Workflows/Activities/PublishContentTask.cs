@@ -24,9 +24,7 @@ public class PublishContentTask : ContentTask
     public override LocalizedString Category => S["Content"];
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Published"], S["Noop"]);
-    }
+        => Outcome(S["Published"], S["Noop"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -35,7 +33,7 @@ public class PublishContentTask : ContentTask
 
         if (!content.HasDraft())
         {
-            return Outcomes("Noop");
+            return Outcome("Noop");
         }
 
         var contentItem = await ContentManager.GetAsync(content.ContentItem.ContentItemId, VersionOptions.DraftRequired);
@@ -57,6 +55,6 @@ public class PublishContentTask : ContentTask
 
         await ContentManager.PublishAsync(contentItem);
 
-        return Outcomes("Published");
+        return Outcome("Published");
     }
 }

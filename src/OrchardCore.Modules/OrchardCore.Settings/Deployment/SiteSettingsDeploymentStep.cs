@@ -1,5 +1,5 @@
-using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Settings.Deployment;
 
@@ -8,15 +8,14 @@ namespace OrchardCore.Settings.Deployment;
 /// </summary>
 public class SiteSettingsDeploymentStep : DeploymentStep
 {
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<SiteSettingsDeploymentStep>("Configuration");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<SiteSettingsDeploymentStep>("Site Settings");
+
     public SiteSettingsDeploymentStep()
     {
         Name = nameof(SiteSettings);
-    }
-
-    public SiteSettingsDeploymentStep(IStringLocalizer<SiteSettingsDeploymentStep> S)
-        : this()
-    {
-        Category = S["Configuration"];
+        Category = s_category;
+        Title = s_title;
     }
 
     public string[] Settings { get; set; }

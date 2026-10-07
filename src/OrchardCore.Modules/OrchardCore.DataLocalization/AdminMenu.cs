@@ -10,7 +10,7 @@ namespace OrchardCore.DataLocalization;
 /// </summary>
 public sealed class AdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.DataLocalization" },
         { "controller", "Admin" },
@@ -36,7 +36,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                                 .AddClass("translations")
                                 .Id("translations")
                                 .Permission(DataLocalizationPermissions.ViewDynamicTranslations)
-                                .Action(_routeValues["action"].ToString(), _routeValues["controller"].ToString(), _routeValues)
+                                .Action(s_routeValues["action"].ToString(), s_routeValues["controller"].ToString(), s_routeValues)
                                 .LocalNav()
                             )
                         )
@@ -53,7 +53,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                         .AddClass("dynamic-translations")
                         .Id("dynamicTranslations")
                         .Permission(DataLocalizationPermissions.ViewDynamicTranslations)
-                        .Action(_routeValues["action"].ToString(), _routeValues["controller"].ToString(), _routeValues)
+                        .Action(s_routeValues["action"].ToString(), s_routeValues["controller"].ToString(), s_routeValues)
                         .LocalNav()
                     )
                 )

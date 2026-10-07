@@ -38,9 +38,7 @@ public class ValidateUserTask : TaskActivity<ValidateUserTask>
     public override LocalizedString DisplayText => S["Validate User Task"];
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Anonymous"], S["Authenticated"], S["InRole"]);
-    }
+        => Outcome(S["Anonymous"], S["Authenticated"], S["InRole"]);
 
     public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -66,14 +64,15 @@ public class ValidateUserTask : TaskActivity<ValidateUserTask>
                     if (userRoleNames.Contains(role))
                     {
                         workflowContext.LastResult = userRoleNames;
-                        return Outcomes("InRole");
+
+                        return Outcome("InRole");
                     }
                 }
             }
 
-            return Outcomes(OrchardCoreConstants.Roles.Authenticated);
+            return Outcome(OrchardCoreConstants.Roles.Authenticated);
         }
 
-        return Outcomes(OrchardCoreConstants.Roles.Anonymous);
+        return Outcome(OrchardCoreConstants.Roles.Anonymous);
     }
 }

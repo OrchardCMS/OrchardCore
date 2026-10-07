@@ -10,7 +10,7 @@ You will build a custom theme which uses `TheAdmin` as a base theme.
 
 ## What you will need
 
-- An existing Orchard Core website that has already been setup.
+- An existing Orchard Core website that has already been set up.
 
 ## Creating an Orchard Core Theme
 

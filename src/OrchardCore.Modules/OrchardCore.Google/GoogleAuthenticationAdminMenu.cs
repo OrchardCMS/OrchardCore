@@ -6,7 +6,7 @@ namespace OrchardCore.Google;
 
 public sealed class GoogleAuthenticationAdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", GoogleConstants.Features.GoogleAuthentication },
@@ -29,7 +29,7 @@ public sealed class GoogleAuthenticationAdminMenu : AdminNavigationProvider
                     .Add(S["Google"], S["Google"].PrefixPosition(), google => google
                         .AddClass("google")
                         .Id("google")
-                        .Action("Index", "Admin", _routeValues)
+                        .Action("Index", "Admin", s_routeValues)
                         .Permission(Permissions.ManageGoogleAuthentication)
                         .LocalNav()
                     )
@@ -46,7 +46,7 @@ public sealed class GoogleAuthenticationAdminMenu : AdminNavigationProvider
                         .Add(S["Google"], S["Google"].PrefixPosition(), google => google
                             .AddClass("google")
                             .Id("google")
-                            .Action("Index", "Admin", _routeValues)
+                            .Action("Index", "Admin", s_routeValues)
                             .Permission(Permissions.ManageGoogleAuthentication)
                             .LocalNav()
                         )

@@ -14,7 +14,7 @@ public class TranslationsManagerTests
     }
 
     [Fact]
-    public async Task GetTranslationsDocument()
+    public async Task GetTranslationsDocument_Default_Succeeds()
     {
         // Arrange & Act
         var translationsDocument = await _translationsManager.Object.GetTranslationsDocumentAsync();
@@ -33,7 +33,7 @@ public class TranslationsManagerTests
     }
 
     [Fact]
-    public async Task GetTranslationsDocument_GroupByContext()
+    public async Task GetTranslationsDocument_GroupByContext_Succeeds()
     {
         // Arrange & Act
         var translationsDocument = await _translationsManager.Object.GetTranslationsDocumentAsync();

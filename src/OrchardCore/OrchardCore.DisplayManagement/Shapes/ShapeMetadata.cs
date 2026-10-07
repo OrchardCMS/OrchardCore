@@ -76,9 +76,9 @@ public class ShapeMetadata
 
     public string Differentiator { get; set; }
 
-    public AlternatesCollection Wrappers { get; set; } = [];
+    public AlternatesCollection Wrappers { get; set; } = new();
 
-    public AlternatesCollection Alternates { get; set; } = [];
+    public AlternatesCollection Alternates { get; set; } = new();
 
     public bool IsCached => UseMainCacheContext
         ? _mainCacheContext.Context is not null

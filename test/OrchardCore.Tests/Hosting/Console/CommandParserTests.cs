@@ -5,7 +5,7 @@ namespace OrchardCore.Tests.Hosting.Console;
 public class CommandParserTests
 {
     [Fact]
-    public void ParserUnderstandsSimpleArguments()
+    public void ParserUnderstandsSimpleArguments_Default_Succeeds()
     {
         // a b cdef
         // => a
@@ -20,7 +20,7 @@ public class CommandParserTests
     }
 
     [Fact]
-    public void ParserIgnoresExtraSpaces()
+    public void ParserIgnoresExtraSpaces_Default_Succeeds()
     {
         //  a    b    cdef
         // => a
@@ -35,7 +35,7 @@ public class CommandParserTests
     }
 
     [Fact]
-    public void ParserGroupsQuotedArguments()
+    public void ParserGroupsQuotedArguments_Default_Succeeds()
     {
         // feature enable "a b cdef"
         // => feature
@@ -50,7 +50,7 @@ public class CommandParserTests
     }
 
     [Fact]
-    public void ParserUnderstandsQuotesInsideArgument()
+    public void ParserUnderstandsQuotesInsideArgument_Default_Succeeds()
     {
         // feature enable /foo:"a b cdef"
         // => feature
@@ -65,7 +65,7 @@ public class CommandParserTests
     }
 
     [Fact]
-    public void ParserBackslashEscapesQuote()
+    public void ParserBackslashEscapesQuote_Default_Succeeds()
     {
         // feature enable \"a b cdef\"
         // => feature
@@ -84,7 +84,7 @@ public class CommandParserTests
     }
 
     [Fact]
-    public void ParserBackslashDoesnotEscapeBackslash()
+    public void ParserBackslashDoesnotEscapeBackslash_Default_Succeeds()
     {
         // feature enable \\a
         // => feature
@@ -99,7 +99,7 @@ public class CommandParserTests
     }
 
     [Fact]
-    public void ParserBackslashDoesnotEscapeOtherCharacters()
+    public void ParserBackslashDoesnotEscapeOtherCharacters_Default_Succeeds()
     {
         // feature enable \a
         // => feature
@@ -114,7 +114,7 @@ public class CommandParserTests
     }
 
     [Fact]
-    public void ParserUnderstandsTrailingBackslash()
+    public void ParserUnderstandsTrailingBackslash_Default_Succeeds()
     {
         // feature enable \
         // => feature
@@ -129,7 +129,7 @@ public class CommandParserTests
     }
 
     [Fact]
-    public void ParserUnderstandsTrailingBackslash2()
+    public void ParserUnderstandsTrailingBackslash2_Default_Succeeds()
     {
         // feature enable b\
         // => feature
@@ -144,7 +144,7 @@ public class CommandParserTests
     }
 
     [Fact]
-    public void ParserUnderstandsEmptyArgument()
+    public void ParserUnderstandsEmptyArgument_Default_Succeeds()
     {
         // feature enable ""
         // => feature
@@ -159,7 +159,7 @@ public class CommandParserTests
     }
 
     [Fact]
-    public void ParserUnderstandsTrailingQuote()
+    public void ParserUnderstandsTrailingQuote_Default_Succeeds()
     {
         // feature enable "
         // => feature
@@ -174,7 +174,7 @@ public class CommandParserTests
     }
 
     [Fact]
-    public void ParserUnderstandsEmptyArgument2()
+    public void ParserUnderstandsEmptyArgument2_Default_Succeeds()
     {
         // "
         // => <empty arg>
@@ -184,7 +184,7 @@ public class CommandParserTests
         Assert.Equal("", result[0]);
     }
     [Fact]
-    public void ParserUnderstandsEmptyArgument3()
+    public void ParserUnderstandsEmptyArgument3_Default_Succeeds()
     {
         // ""
         // => <empty arg>

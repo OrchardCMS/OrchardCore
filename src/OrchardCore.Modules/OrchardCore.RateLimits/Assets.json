@@ -1,0 +1,16 @@
+[
+  {
+    "action": "parcel",
+    "name": "rate-limits-index",
+    "source": "Assets/ts/rate-limits-index.ts",
+    "dest": "wwwroot/Scripts/rate-limits-index/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "rate-limit-policy-fields",
+    "source": "Assets/ts/rate-limit-policy-fields.ts",
+    "dest": "wwwroot/Scripts/rate-limit-policy-fields/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

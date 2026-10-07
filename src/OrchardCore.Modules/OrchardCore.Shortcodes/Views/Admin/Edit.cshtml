@@ -1,4 +1,5 @@
 @model ShortcodeTemplateViewModel
+@using System.Text.Json
 @inject IDisplayManager<ShortcodeDescriptor> ShortcodeDescriptorDisplayManager
 @inject IShortcodeDescriptorManager ShortcodeDescriptorManager
 
@@ -12,6 +13,8 @@
 
     var jCategories = JConvert.SerializeObject(categories);
     var jSelectedCategories = JConvert.SerializeObject(Model.Categories);
+    var translations = Orchard.GetJSLocalizations("shortcodes-categories-editor");
+    var translationsJson = Json.Serialize(translations).ToString();
 }
 
 <style asp-name="codemirror"></style>
@@ -31,11 +34,15 @@
 
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
-<style asp-name="vue-multiselect" version="2"></style>
+<style asp-name="vue-multiselect" at="Foot"></style>
 <style asp-src="~/OrchardCore.Shortcodes/Styles/shortcodes.min.css" debug-src="~/OrchardCore.Shortcodes/Styles/shortcodes.css" asp-name="shortcodes"></style>
-<script asp-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.min.js" debug-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.js" at="Foot" depends-on="vuejs:2, vue-multiselect:2"></script>
+<script asp-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.min.js" debug-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.js" at="Foot" depends-on="vuejs, vue-multiselect"></script>
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Shortcode"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="ShortcodesEdit" title="@T["Edit Shortcode"]">
+        <breadcrumb-item id="Shortcodes" action="Index" controller="Admin" area="OrchardCore.Shortcodes" permission="@ShortcodesPermissions.ManageShortcodeTemplates.Name">@T["Shortcodes"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <div asp-validation-summary="All"></div>
 <form asp-action="Edit" method="post" class="no-multisubmit">
@@ -44,55 +51,45 @@
 
     <div class="row">
         <div class="col-12 col-md-6">
-            <div class="mb-3" asp-validation-class-for="Name">
-                <label asp-for="Name" class="form-label">@T["Name"]</label>
+            <div class="ocat-wrapper" asp-validation-class-for="Name">
+                <label asp-for="Name" class="ocat-label">@T["Name"]</label>
+                <div class="ocat-end">
                 <input asp-for="Name" class="form-control" autofocus />
                 <span asp-validation-for="Name"></span>
                 <span class="hint">@T["The name of the shortcode."]</span>
+                </div>
             </div>
-            <div class="mb-3" asp-validation-class-for="Hint">
-                <label asp-for="Hint" class="form-label">@T["Hint"]</label>
+            <div class="ocat-wrapper" asp-validation-class-for="Hint">
+                <label asp-for="Hint" class="ocat-label">@T["Hint"]</label>
+                <div class="ocat-end">
                 <input asp-for="Hint" class="form-control" />
                 <span class="hint">@T["The hint for the shortcode."]</span>
+                </div>
             </div>
 
-            <div class="mb-3" asp-validation-class-for="Usage">
-                <label asp-for="Usage" class="form-label">@T["Usage"]</label>
+            <div class="ocat-wrapper" asp-validation-class-for="Usage">
+                <label asp-for="Usage" class="ocat-label">@T["Usage"]</label>
+                <div class="ocat-end">
                 <textarea asp-for="Usage" rows="10" class="form-control"></textarea>
                 <span class="hint">@T["Example usage of the shortcode."]</span>
+                </div>
             </div>
 
             @* Do not move app from here, it is specific to categories, and causes conflicts with codemirror due to dom rewrites. *@
-            <div class="mb-3" asp-validation-class-for="SelectedCategories" id="shortcodeCategories" data-categories="@jCategories" data-selected-categories="@jSelectedCategories">
-                <label asp-for="SelectedCategories" class="form-label">@T["Categories"]</label>
-                <input class="form-control" asp-for="SelectedCategories" type="hidden" v-bind:value="getSelectedCategories()" />
-                <vue-multiselect v-model="value"
-                                 placeholder="@T["Type to search"]"
-                                 select-label="@T["Select"]"
-                                 deselect-label="@T["Remove"]"
-                                 :options="options"
-                                 :multiple="true"
-                                 :show-labels="false"
-                                 :close-on-select="false"
-                                 :clear-on-select="false"
-                                 :taggable="true"
-                                 tag-position="bottom"
-                                 tag-placeholder="@T["Press enter to add a category"]"
-                                 @@tag="addCategory">
-                    <template slot="noResult">
-                        @T["No categories found"]
-                    </template>
-                    <template slot="noOptions">
-                        @T["No categories found"]
-                    </template>
-                </vue-multiselect>
+            <div class="ocat-wrapper" asp-validation-class-for="SelectedCategories" id="shortcodeCategories" data-categories="@jCategories" data-selected-categories="@jSelectedCategories" data-translations="@translationsJson" data-hidden-input-id="@Html.IdFor(x => x.SelectedCategories)" data-hidden-input-name="@Html.NameFor(x => x.SelectedCategories)">
+                <label asp-for="SelectedCategories" class="ocat-label">@T["Categories"]</label>
+                <div class="ocat-end">
+                <div class="shortcode-categories-mount"></div>
                 <span class="hint">@T["The categories for this shortcode."]</span>
+                </div>
             </div>
 
-            <div class="mb-3" asp-validation-class-for="DefaultValue">
-                <label asp-for="DefaultValue" class="form-label">@T["Default Shortcode Value"]</label>
+            <div class="ocat-wrapper" asp-validation-class-for="DefaultValue">
+                <label asp-for="DefaultValue" class="ocat-label">@T["Default Shortcode Value"]</label>
+                <div class="ocat-end">
                 <input asp-for="DefaultValue" class="form-control" />
                 <span class="hint">@T["The default value of the shortcode when selected. Defaults to [name]."]</span>
+                </div>
             </div>
         </div>
         <div class="col-12 col-md-6 d-flex align-items-center justify-content-center">
@@ -112,36 +109,31 @@
             </div>
         </div>
         <div class="col-12">
-            <div class="mb-3" asp-validation-class-for="Content">
-                <label asp-for="Content" class="form-label">@T["Content"]</label>
+            <div class="ocat-wrapper" asp-validation-class-for="Content">
+                <label asp-for="Content" class="ocat-label">@T["Content"]</label>
+                <div class="ocat-end">
                 <textarea asp-for="Content" rows="10" class="form-control"></textarea>
                 <span asp-validation-for="Content"></span>
                 <span class="hint">@T["The Liquid template."]</span>
+                </div>
             </div>
         </div>
     </div>
-    <div class="mb-3">
-        <div class="btn-group">
-            <button type="submit" name="submit" class="btn btn-primary save">@T["Save"]</button>
-            <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="visually-hidden">@T["Toggle Dropdown"]</span>
-            </button>
-            <div class="dropdown-menu">
-                <button class="dropdown-item save-continue" name="submit" type="submit" value="SaveAndContinue">@T["and continue"]</button>
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <div class="btn-group">
+                <button type="submit" name="submit" class="btn btn-primary save">@T["Save"]</button>
+                <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="visually-hidden">@T["Toggle Dropdown"]</span>
+                </button>
+                <div class="dropdown-menu">
+                    <button class="dropdown-item save-continue" name="submit" type="submit" value="SaveAndContinue">@T["and continue"]</button>
+                </div>
             </div>
-        </div>
 
-        <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
+            <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
+        </div>
     </div>
 </form>
 
-<script at="Foot">
-    initializeShortcodesTemplateEditor(
-        document.getElementById('shortcodeCategories'),
-        document.getElementById('@Html.IdFor(x => x.Content)'),
-        document.getElementById('@Html.IdFor(x => x.Usage)'),
-        document.getElementById('shortcodePreview'),
-        document.getElementById('@Html.IdFor(x => x.Name)'),
-        document.getElementById('@Html.IdFor(x => x.Hint)')
-    );
-</script>
+<script asp-src="~/OrchardCore.Shortcodes/Scripts/shortcode-template-editor/shortcode-template-editor.min.js" debug-src="~/OrchardCore.Shortcodes/Scripts/shortcode-template-editor/shortcode-template-editor.js" at="Foot" type="module"></script>

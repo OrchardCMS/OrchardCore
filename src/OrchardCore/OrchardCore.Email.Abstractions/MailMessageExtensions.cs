@@ -2,7 +2,7 @@ namespace OrchardCore.Email;
 
 public static class MailMessageExtensions
 {
-    private static readonly char[] _emailsSeparator = [',', ';'];
+    private static readonly char[] s_emailsSeparator = [',', ';'];
 
     public static MailMessageRecipients GetRecipients(this MailMessage message)
     {
@@ -25,6 +25,6 @@ public static class MailMessageExtensions
         : GetRecipients(message.ReplyTo);
 
     private static string[] GetRecipients(string recipients)
-        => recipients?.Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+        => recipients?.Split(s_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
         ?? [];
 }

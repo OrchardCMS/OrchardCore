@@ -11,6 +11,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.RateLimits;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
@@ -28,10 +29,11 @@ public sealed class AccountController : AccountBaseController
     private readonly ILogger _logger;
     private readonly ISiteService _siteService;
     private readonly IEnumerable<ILoginFormEvent> _loginFormEvents;
-    private readonly RegistrationOptions _registrationOptions;
+    private readonly IEnumerable<ILogoutFormEvent> _logoutFormEvents;
     private readonly IDisplayManager<LoginForm> _loginFormDisplayManager;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly INotifier _notifier;
+    private readonly PasswordTimingNormalizationService _timingNormalization;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -45,10 +47,11 @@ public sealed class AccountController : AccountBaseController
         IHtmlLocalizer<AccountController> htmlLocalizer,
         IStringLocalizer<AccountController> stringLocalizer,
         IEnumerable<ILoginFormEvent> loginFormEvents,
-        IOptions<RegistrationOptions> registrationOptions,
+        IEnumerable<ILogoutFormEvent> logoutFormEvents,
         INotifier notifier,
         IDisplayManager<LoginForm> loginFormDisplayManager,
-        IUpdateModelAccessor updateModelAccessor)
+        IUpdateModelAccessor updateModelAccessor,
+        PasswordTimingNormalizationService timingNormalization)
     {
         _signInManager = signInManager;
         _userManager = userManager;
@@ -56,10 +59,11 @@ public sealed class AccountController : AccountBaseController
         _logger = logger;
         _siteService = siteService;
         _loginFormEvents = loginFormEvents;
-        _registrationOptions = registrationOptions.Value;
+        _logoutFormEvents = logoutFormEvents;
         _notifier = notifier;
         _loginFormDisplayManager = loginFormDisplayManager;
         _updateModelAccessor = updateModelAccessor;
+        _timingNormalization = timingNormalization;
 
         H = htmlLocalizer;
         S = stringLocalizer;
@@ -86,7 +90,13 @@ public sealed class AccountController : AccountBaseController
             }
         }
 
-        var formShape = await _loginFormDisplayManager.BuildEditorAsync(_updateModelAccessor.ModelUpdater, false);
+        var loginSettings = await _siteService.GetSettingsAsync<LoginSettings>();
+        var model = new LoginForm
+        {
+            RememberMe = loginSettings.UsePersistentAuthenticationCookie,
+        };
+
+        var formShape = await _loginFormDisplayManager.BuildEditorAsync(model, _updateModelAccessor.ModelUpdater, false);
 
         CopyTempDataErrorsToModelState();
 
@@ -98,6 +108,7 @@ public sealed class AccountController : AccountBaseController
     [HttpPost]
     [AllowAnonymous]
     [ActionName(nameof(Login))]
+    [RateLimitGroup(UserRateLimiterPolicyNames.PasswordAuthentication)]
     public async Task<IActionResult> LoginPOST(string returnUrl = null)
     {
         var loginSettings = await _siteService.GetSettingsAsync<LoginSettings>();
@@ -126,6 +137,9 @@ public sealed class AccountController : AccountBaseController
             if (user != null)
             {
                 var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: true);
+                var rememberMe = loginSettings.AllowRememberMe
+                    ? model.RememberMe
+                    : loginSettings.UsePersistentAuthenticationCookie;
 
                 if (result.Succeeded)
                 {
@@ -139,7 +153,7 @@ public sealed class AccountController : AccountBaseController
                         }
                     }
 
-                    result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: true);
+                    result = await _signInManager.PasswordSignInAsync(user, model.Password, rememberMe, lockoutOnFailure: true);
 
                     if (result.Succeeded)
                     {
@@ -160,7 +174,7 @@ public sealed class AccountController : AccountBaseController
                         new
                         {
                             returnUrl,
-                            model.RememberMe,
+                            rememberMe,
                         });
                 }
 
@@ -171,6 +185,13 @@ public sealed class AccountController : AccountBaseController
 
                     return View();
                 }
+            }
+            else
+            {
+                // Perform a dummy hash verification so the response time is
+                // indistinguishable from a real password check, preventing
+                // username enumeration attack via timing analysis.
+                _timingNormalization.NormalizeResponseTime();
             }
 
             ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
@@ -194,9 +215,22 @@ public sealed class AccountController : AccountBaseController
     [HttpPost]
     public async Task<IActionResult> LogOff(string returnUrl = null)
     {
+        // Resolve the authenticated user before signing out, while the principal is still available.
+        var user = await _userService.GetAuthenticatedUserAsync(User);
+
+        if (user != null)
+        {
+            await _logoutFormEvents.InvokeAsync((e, user) => e.LoggingOutAsync(user), user, _logger);
+        }
+
         await _signInManager.SignOutAsync();
 
         _logger.LogInformation(4, "User logged out.");
+
+        if (user != null)
+        {
+            await _logoutFormEvents.InvokeAsync((e, user) => e.LoggedOutAsync(user), user, _logger);
+        }
 
         return RedirectToLocal(returnUrl);
     }

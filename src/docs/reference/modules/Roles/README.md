@@ -49,11 +49,11 @@ A sample of a roles configuration step:
 }
 ```
 
-As of version 3.0, the `Roles` recipe includes the ability to define specific permission behaviors, giving you greater control over how permissions are managed within a role. The following behaviors are available:
+The `Roles` recipe step supports specific permission behaviors so you can control how permissions are managed within a role. The following behaviors are available:
 
 - **Replace**: This behavior removes all existing permissions associated with the role and replaces them with the new permissions from the `Permissions` collection. This is the default behavior.
 - **Add**: This behavior adds the new permission(s) from the `Permissions` collection to the role, but only if they do not already exist. Existing permissions are left unchanged.
-- **Remove**: This behavior removes the specified permission(s) from the role’s existing permissions based on the `Permissions` collection.
+- **Remove**: This behavior removes the specified permission(s) from the role's existing permissions based on the `Permissions` collection.
 
 ### Example: Adding a New Permission to a Role
 
@@ -75,6 +75,28 @@ For instance, to add the "CanChat" permission to the `Subscriber` role, use the 
     ]
 }
 ```
+
+## Declaring permissions
+
+A module declares its permissions in an `IPermissionProvider`. Create the description with `LocalizationSource`, and pass the type that declares the permission as the translation context:
+
+```csharp
+using OrchardCore.Localization;
+using OrchardCore.Security.Permissions;
+
+namespace MyModule;
+
+public static class MyPermissions
+{
+    public static readonly Permission ManageWidgets = new(
+        "ManageWidgets",
+        LocalizationSource.Create("Manage widgets", typeof(MyPermissions)));
+}
+```
+
+The roles editor and the admin menu and menu item permission pickers translate the description with the full name of that type as the context, for example `MyModule.MyPermissions`, so a PO file entry for the description uses `msgctxt "MyModule.MyPermissions"`. These descriptions are translated only with PO files. They are not listed in Data Localization. The source remains untranslated; use `IStringLocalizerFactory.Localize(permission.Description)` at display time, or `permission.Description.Value` when the original text is needed.
+
+A description passed as a plain `string` is still supported, for example `new Permission("ManageWidgets", "Manage widgets")`. The constructor wraps it in a `LocalizationSource` without a type. It is not translated with PO files, but it can be translated with Data Localization in the roles editor. Built-in templates, for example `"Edit {0}"`, use this context-free path because the format arguments are applied before the description is shown; the permissions built from them, for example "Edit Article", are also translated with Data Localization. Permission categories are translated with Data Localization too.
 
 ## Video
 

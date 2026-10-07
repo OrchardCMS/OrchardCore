@@ -3,7 +3,7 @@
 This module provides a database-backed localization system for translating dynamic content that cannot be handled by static PO files, such as:
 
 - Content Type and Content Field display names
-- Permission names and descriptions
+- Permission descriptions that are not translated with PO files, and permission categories
 - Any custom dynamic strings via `ILocalizationDataProvider`
 
 ## Features
@@ -92,6 +92,8 @@ The module includes these built-in `ILocalizationDataProvider` implementations:
 
 Provides admin menu display names for translation.
 
+Admin menu providers, including content-type admin menu nodes, require both `OrchardCore.DataLocalization` and `OrchardCore.AdminMenu`. Content type and content field display names remain available for translation when `OrchardCore.Contents` and `OrchardCore.DataLocalization` are enabled, even if `OrchardCore.AdminMenu` is disabled.
+
 - **Context**: `Admin Menus` or `Admin Menus:{menuName}`
 - **Strings**: Display names of all admin menu / sub menu items
 
@@ -106,15 +108,15 @@ Provides content type display names for translation.
 
 Provides content field display names for translation.
 
-- **Context**: `Content Fields`
+- **Context**: `Content Fields:{fieldName}`
 - **Strings**: Display names of all content fields
 
 ### Permissions Provider
 
-Provides permission descriptions for translation.
+Provides permission descriptions and categories for translation.
 
-- **Context**: `Permissions`
-- **Strings**: Descriptions of all non-template permissions
+- **Context**: `Permissions` or `Permissions:{groupName}`
+- **Strings**: The categories of the permissions, and the descriptions that are not templates and have no PO translation context. Descriptions created with `LocalizationSource.Create(description, typeof(DeclaringType))` are translated with PO files and are not listed. See [Declaring permissions](../Roles/README.md#declaring-permissions).
 
 ### Search Provider
 
@@ -308,38 +310,4 @@ To display translated dynamic strings in Razor views, inject `IDataLocalizer`:
 
 ## Liquid filters
 
-### `d`
-
-Localizes a dynamic data string using the current culture.
-
-### Parameters
-
-| Property | Example                                | Description   |
-|----------|----------------------------------------|---------------|
-| Context  | The context that the string belongs to | Content Types |
-
-Input
-
-```liquid
-{{ "Blog" | d: "Content Types" }}
-```
-
-Output
-
-For `fr`, `it`, `es` cultures, it will return:
-
-```text
-Blog
-```
-
-For `ar` culture, it will return:
-
-```text
-مدونة
-```
-
-For unsupported cultures or missing translations, it will return:
-
-```text
-Blog.Content Types
-```
+For more information on using data locaization filters in Liquid templates, see the [Liquid Localization filters documentation](../Liquid/README.md#localization-filters).

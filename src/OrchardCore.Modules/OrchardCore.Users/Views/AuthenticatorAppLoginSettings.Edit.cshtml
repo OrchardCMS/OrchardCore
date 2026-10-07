@@ -1,13 +1,19 @@
 @model OrchardCore.Users.Models.AuthenticatorAppLoginSettings
 
 <fieldset>
-    <legend>@T["Authenticator App Settings"]</legend>
-    <div class="mb-3" asp-validation-class-for="UseEmailAsAuthenticatorDisplayName">
-        <div class="form-check">
-            <input type="checkbox" class="form-check-input" asp-for="UseEmailAsAuthenticatorDisplayName" />
-            <span asp-validation-for="UseEmailAsAuthenticatorDisplayName"></span>
-            <label class="form-check-label" asp-for="UseEmailAsAuthenticatorDisplayName">@T["Show email address in the app"]</label>
-            <span class="hint dashed">@T["When selected, the users will see their email address in the authenticator app. Otherwise, the username will be displayed."]</span>
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <legend>@T["Authenticator App Settings"]</legend>
+        </div>
+    </div>
+    <div class="ocat-wrapper" asp-validation-class-for="UseEmailAsAuthenticatorDisplayName">
+        <div class="ocat-end-offset">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" asp-for="UseEmailAsAuthenticatorDisplayName" />
+                <span asp-validation-for="UseEmailAsAuthenticatorDisplayName"></span>
+                <label class="form-check-label" asp-for="UseEmailAsAuthenticatorDisplayName">@T["Show email address in the app"]</label>
+                <span class="hint dashed">@T["When selected, the users will see their email address in the authenticator app. Otherwise, the username will be displayed."]</span>
+            </div>
         </div>
     </div>
 

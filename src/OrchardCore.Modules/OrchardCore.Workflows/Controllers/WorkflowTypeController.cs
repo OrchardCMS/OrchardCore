@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.Deployment;
 using OrchardCore.Deployment.Core.Services;
+using OrchardCore.FileStorage;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -48,6 +49,7 @@ public sealed class WorkflowTypeController : Controller
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IShapeFactory _shapeFactory;
     private readonly JsonSerializerOptions _documentJsonSerializerOptions;
+    private readonly ITempDirectoryProvider _tempDirectoryProvider;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -67,6 +69,7 @@ public sealed class WorkflowTypeController : Controller
         IStringLocalizer<WorkflowTypeController> stringLocalizer,
         IHtmlLocalizer<WorkflowTypeController> htmlLocalizer,
         IUpdateModelAccessor updateModelAccessor,
+        ITempDirectoryProvider tempDirectoryProvider,
         IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions)
     {
         _pagerOptions = pagerOptions.Value;
@@ -80,6 +83,7 @@ public sealed class WorkflowTypeController : Controller
         _notifier = notifier;
         _updateModelAccessor = updateModelAccessor;
         _shapeFactory = shapeFactory;
+        _tempDirectoryProvider = tempDirectoryProvider;
         S = stringLocalizer;
         H = htmlLocalizer;
         _documentJsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
@@ -93,7 +97,7 @@ public sealed class WorkflowTypeController : Controller
             return Forbid();
         }
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
 
         options ??= new WorkflowTypeIndexOptions();
 
@@ -192,6 +196,8 @@ public sealed class WorkflowTypeController : Controller
                     return await ExportWorkflows(itemIds.ToArray());
 
                 case WorkflowTypeBulkAction.Delete:
+                    var deletedWorkflowTypeNames = new List<string>();
+
                     foreach (var entry in checkedEntries)
                     {
                         var workflowType = await _workflowTypeStore.GetAsync(entry.Id);
@@ -199,9 +205,15 @@ public sealed class WorkflowTypeController : Controller
                         if (workflowType != null)
                         {
                             await _workflowTypeStore.DeleteAsync(workflowType);
-                            await _notifier.SuccessAsync(H["Workflow {0} has been deleted.", workflowType.Name]);
+                            deletedWorkflowTypeNames.Add(workflowType.Name);
                         }
                     }
+
+                    if (deletedWorkflowTypeNames.Count > 0)
+                    {
+                        await _notifier.SuccessAsync(H.Plural(deletedWorkflowTypeNames.Count, "The workflow \"{1}\" has been deleted.", "The following workflows have been deleted: {1}.", string.Join(", ", deletedWorkflowTypeNames)));
+                    }
+
                     break;
 
                 default:
@@ -501,6 +513,11 @@ public sealed class WorkflowTypeController : Controller
         await _workflowTypeStore.SaveAsync(workflowType);
         await _notifier.SuccessAsync(H["Workflow has been saved."]);
 
+        if (workflowType.IsMissingStartActivity())
+        {
+            await _notifier.WarningAsync(H["This workflow has no startup task, so it will never run. Select an event and mark it as the startup task."]);
+        }
+
         return RedirectToAction(nameof(Edit), new
         {
             id = model.Id,
@@ -565,7 +582,7 @@ public sealed class WorkflowTypeController : Controller
 
     private async Task<IActionResult> ExportWorkflows(params long[] itemIds)
     {
-        using var fileBuilder = new TemporaryFileBuilder();
+        using var fileBuilder = new TemporaryFileBuilder(_tempDirectoryProvider.GetRootDirectory());
         var archiveFileName = fileBuilder.Folder + ".zip";
         var recipeDescriptor = new RecipeDescriptor();
         var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor);

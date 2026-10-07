@@ -9,13 +9,17 @@
 
 @if (!exportContentToDeploymentTargetPlans.Any())
 {
-    <p class="alert alert-warning">@T["No export content to deployment target plans found. Create a deployment plan and add a Export content to deployment target step to it."]</p>
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <p class="alert alert-warning">@T["No export content to deployment target plans found. Create a deployment plan and add a Export content to deployment target step to it."]</p>
+        </div>
+    </div>
 }
 else
 {
-    <div class="row">
-        <div class="mb-3 col-sm-6">
-            <label asp-for="ExportContentToDeploymentTargetPlanId" class="form-label">@T["Deployment Plan"]</label>
+    <div class="ocat-limited-wrapper">
+        <label asp-for="ExportContentToDeploymentTargetPlanId" class="ocat-label">@T["Deployment Plan"]</label>
+        <div class="ocat-limited">
             <select asp-for="ExportContentToDeploymentTargetPlanId" class="form-select">
                 @foreach (var exportContentToDeploymentTargetPlan in exportContentToDeploymentTargetPlans)
                 {

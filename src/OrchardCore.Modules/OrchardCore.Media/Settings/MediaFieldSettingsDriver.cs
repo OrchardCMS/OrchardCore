@@ -6,6 +6,7 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Media.Fields;
+using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
 using OrchardCore.Mvc.ModelBinding;
 
@@ -42,31 +43,41 @@ public sealed class MediaFieldSettingsDriver : ContentPartFieldDefinitionDisplay
             model.AllowAllDefaultMediaTypes = settings.AllowedExtensions == null || settings.AllowedExtensions.Length == 0;
 
             var items = new List<MediaTypeViewModel>();
-            foreach (var extension in _mediaOptions.AllowedFileExtensions)
-            {
-                if (_contentTypeProvider.TryGetContentType(extension, out var contentType))
-                {
-                    var item = new MediaTypeViewModel()
-                    {
-                        Extension = extension,
-                        ContentType = contentType,
-                        IsSelected = settings.AllowedExtensions != null && settings.AllowedExtensions.Contains(extension),
-                    };
+            AddMediaTypes(_mediaOptions.AllowedFileExtensions, settings, items);
+            AddMediaTypes(_mediaOptions.RestrictedFileExtensions, settings, items);
 
-                    var index = contentType.IndexOf('/');
-
-                    if (index > -1)
-                    {
-                        item.Type = contentType[..index];
-                    }
-
-                    items.Add(item);
-                }
-            }
             model.MediaTypes = items
-            .OrderBy(vm => vm.ContentType)
-            .ToArray();
+                .OrderBy(vm => vm.ContentType)
+                .ToArray();
         }).Location("Content");
+    }
+
+    private void AddMediaTypes(
+        IEnumerable<string> extensions,
+        MediaFieldSettings settings,
+        List<MediaTypeViewModel> items)
+    {
+        foreach (var extension in extensions)
+        {
+            if (_contentTypeProvider.TryGetContentType(extension, out var contentType))
+            {
+                var item = new MediaTypeViewModel()
+                {
+                    Extension = extension,
+                    ContentType = contentType,
+                    IsSelected = settings.AllowedExtensions != null && settings.AllowedExtensions.Contains(extension),
+                };
+
+                var index = contentType.IndexOf('/');
+
+                if (index > -1)
+                {
+                    item.Type = contentType[..index];
+                }
+
+                items.Add(item);
+            }
+        }
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
@@ -84,7 +95,9 @@ public sealed class MediaFieldSettingsDriver : ContentPartFieldDefinitionDisplay
 
         if (!model.AllowAllDefaultMediaTypes)
         {
-            var selectedExtensions = model.MediaTypes.Where(vm => vm.IsSelected && _mediaOptions.AllowedFileExtensions.Contains(vm.Extension))
+            var selectedExtensions = model.MediaTypes.Where(vm =>
+                    vm.IsSelected &&
+                    _mediaOptions.IsFileExtensionAllowed(vm.Extension, hasAdditionalPermission: true))
                 .Select(x => x.Extension)
                 .ToArray();
 

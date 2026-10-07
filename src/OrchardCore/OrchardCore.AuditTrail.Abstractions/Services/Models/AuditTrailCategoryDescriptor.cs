@@ -18,13 +18,13 @@ public class AuditTrailCategoryDescriptor
     public Func<IServiceProvider, LocalizedString> LocalizedName { get; }
     public IReadOnlyDictionary<string, AuditTrailEventDescriptor> Events { get; }
 
-    private static readonly IReadOnlyDictionary<string, AuditTrailEventDescriptor> _empty =
+    private static readonly IReadOnlyDictionary<string, AuditTrailEventDescriptor> s_empty =
         new Dictionary<string, AuditTrailEventDescriptor>();
 
     public static AuditTrailCategoryDescriptor Default(string name) =>
         new(
             name,
             (sp) => new LocalizedString(name, name),
-            _empty
+            s_empty
         );
 }

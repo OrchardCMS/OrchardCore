@@ -1,3 +1,4 @@
+using OrchardCore.Localization;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Users;
 
@@ -5,10 +6,10 @@ namespace OrchardCore.Demo;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission DemoAPIAccess = new("DemoAPIAccess", "Access to Demo API ");
-    public static readonly Permission ManageOwnUserProfile = new("ManageOwnUserProfile", "Manage own user profile", new Permission[] { UsersPermissions.ManageUsers });
+    public static readonly Permission DemoAPIAccess = new("DemoAPIAccess", LocalizationSource.Create<Permissions>("Access to Demo API "));
+    public static readonly Permission ManageOwnUserProfile = new("ManageOwnUserProfile", LocalizationSource.Create<Permissions>("Manage own user profile"), new Permission[] { UsersPermissions.ManageUsers });
 
-    private static readonly IEnumerable<Permission> _allPermissions =
+    private static readonly IEnumerable<Permission> s_allPermissions =
     [
         DemoAPIAccess,
         ManageOwnUserProfile,
@@ -20,7 +21,7 @@ public sealed class Permissions : IPermissionProvider
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
+        => Task.FromResult(s_allPermissions);
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
     [

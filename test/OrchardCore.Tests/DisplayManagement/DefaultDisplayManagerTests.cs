@@ -6,6 +6,8 @@ using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Localization;
 using OrchardCore.Tests.Stubs;
+using Microsoft.Extensions.Options;
+using Moq;
 
 namespace OrchardCore.Tests.DisplayManagement;
 
@@ -14,6 +16,7 @@ public class DefaultDisplayManagerTests
     private readonly ShapeTable _defaultShapeTable;
     private readonly TestShapeBindingsDictionary _additionalBindings;
     private readonly IServiceProvider _serviceProvider;
+    private readonly ShapeRenderingOptions _shapeRenderingOptions = new();
 
     public DefaultDisplayManagerTests()
     {
@@ -38,9 +41,11 @@ public class DefaultDisplayManagerTests
         serviceCollection.AddTransient(typeof(IStringLocalizer<>), typeof(StringLocalizer<>));
 
         serviceCollection.AddLogging();
+        serviceCollection.AddOptions();
 
         serviceCollection.AddSingleton(_defaultShapeTable);
         serviceCollection.AddSingleton(_additionalBindings);
+        serviceCollection.AddSingleton(Mock.Of<IOptionsMonitor<ShapeRenderingOptions>>(x => x.CurrentValue == _shapeRenderingOptions));
         serviceCollection.AddWebEncoders();
 
         _serviceProvider = serviceCollection.BuildServiceProvider();
@@ -85,7 +90,7 @@ public class DefaultDisplayManagerTests
     }
 
     [Fact]
-    public async Task RenderSimpleShape()
+    public async Task RenderSimpleShape_Default_Succeeds()
     {
         var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
 
@@ -108,7 +113,7 @@ public class DefaultDisplayManagerTests
     }
 
     [Fact]
-    public async Task RenderIShapeBindingResolverProvidedShapes()
+    public async Task RenderIShapeBindingResolverProvidedShapes_Default_Succeeds()
     {
         var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
 
@@ -130,7 +135,7 @@ public class DefaultDisplayManagerTests
     }
 
     [Fact]
-    public async Task RenderPreCalculatedShape()
+    public async Task RenderPreCalculatedShape_Default_Succeeds()
     {
         var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
 
@@ -158,7 +163,7 @@ public class DefaultDisplayManagerTests
     }
 
     [Fact]
-    public async Task IShapeBindingResolverProvidedShapesDoesNotOverrideShapeDescriptor()
+    public async Task IShapeBindingResolverProvidedShapesDoesNotOverrideShapeDescriptor_Default_Succeeds()
     {
         var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
 
@@ -199,7 +204,7 @@ public class DefaultDisplayManagerTests
     }
 
     [Fact]
-    public async Task RenderFallbackShape()
+    public async Task RenderFallbackShape_Default_Succeeds()
     {
         var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
 
@@ -222,7 +227,7 @@ public class DefaultDisplayManagerTests
     }
 
     [Fact]
-    public async Task AddAlternatesOnDisplaying()
+    public async Task AddAlternatesOnDisplaying_Default_Succeeds()
     {
         var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
 
@@ -257,7 +262,7 @@ public class DefaultDisplayManagerTests
     }
 
     [Fact]
-    public async Task AddAlternatesOnProcessing()
+    public async Task AddAlternatesOnProcessing_Default_Succeeds()
     {
         var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
 
@@ -292,7 +297,7 @@ public class DefaultDisplayManagerTests
     }
 
     [Fact]
-    public async Task RenderAlternateShapeExplicitly()
+    public async Task RenderAlternateShapeExplicitly_Default_Succeeds()
     {
         var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
 
@@ -320,7 +325,7 @@ public class DefaultDisplayManagerTests
     }
 
     [Fact]
-    public async Task RenderAlternateShapeByMostRecentlyAddedMatchingAlternate()
+    public async Task RenderAlternateShapeByMostRecentlyAddedMatchingAlternate_Default_Succeeds()
     {
         var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
 
@@ -353,7 +358,113 @@ public class DefaultDisplayManagerTests
     }
 
     [Fact]
-    public async Task ShapeDescriptorDisplayingAndDisplayedAreCalled()
+    public async Task RenderShapeTemplateComments_Enabled_Succeeds()
+    {
+        _shapeRenderingOptions.WriteShapeDebugInformation = true;
+
+        try
+        {
+            var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
+
+            var shape = new Shape();
+            shape.Metadata.Type = "Foo";
+
+            var descriptor = new ShapeDescriptor
+            {
+                ShapeType = "Foo",
+            };
+            descriptor.Bindings["Foo"] = new ShapeBinding
+            {
+                BindingName = "Foo",
+                BindingSource = "Views/Foo.cshtml",
+                BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hi there!")),
+            };
+            AddShapeDescriptor(descriptor);
+
+            var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));
+
+            Assert.Equal("<!--shape-start type:Foo bindings:Foo => Views/Foo.cshtml (razor) -->Hi there!<!--shape-end type:Foo -->", result.ToString());
+            Assert.Equal("Hi there!", shape.Metadata.ChildContent.ToString());
+        }
+        finally
+        {
+            _shapeRenderingOptions.WriteShapeDebugInformation = false;
+        }
+    }
+
+    [Fact]
+    public async Task RenderAlternateShapeTemplateCommentsUseSelectedBinding_Enabled_Succeeds()
+    {
+        _shapeRenderingOptions.WriteShapeDebugInformation = true;
+
+        try
+        {
+            var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
+
+            var shape = new Shape();
+            shape.Metadata.Type = "Foo";
+            shape.Metadata.Alternates.Add("Foo__Alternate");
+
+            var descriptor = new ShapeDescriptor
+            {
+                ShapeType = "Foo",
+            };
+            descriptor.Bindings["Foo"] = new ShapeBinding
+            {
+                BindingName = "Foo",
+                BindingSource = "Views/Foo.cshtml",
+                BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Default")),
+            };
+            descriptor.Bindings["Foo__Alternate"] = new ShapeBinding
+            {
+                BindingName = "Foo__Alternate",
+                BindingSource = "Views/Foo-Alternate.cshtml",
+                BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Alternate")),
+            };
+            AddShapeDescriptor(descriptor);
+
+            var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));
+
+            Assert.Equal("<!--shape-start type:Foo bindings:Foo__Alternate => Views/Foo-Alternate.cshtml (razor) -->Alternate<!--shape-end type:Foo -->", result.ToString());
+        }
+        finally
+        {
+            _shapeRenderingOptions.WriteShapeDebugInformation = false;
+        }
+    }
+
+    [Fact]
+    public async Task RenderLiquidShapeTemplateComments_Enabled_Succeeds()
+    {
+        _shapeRenderingOptions.WriteShapeDebugInformation = true;
+
+        try
+        {
+            var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
+
+            var shape = new Shape();
+            shape.Metadata.Type = "Foo";
+
+            _additionalBindings["Foo"] = new ShapeBinding
+            {
+                BindingName = "Foo",
+                BindingSource = "Templates/Foo.liquid",
+                BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Liquid")),
+            };
+
+            var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));
+
+            Assert.Equal("<!--shape-start type:Foo bindings:Foo => Templates/Foo.liquid (liquid) -->Liquid<!--shape-end type:Foo -->", result.ToString());
+        }
+        finally
+        {
+            _additionalBindings.Clear();
+            _shapeRenderingOptions.WriteShapeDebugInformation = false;
+        }
+    }
+
+    [Fact]
+    public async Task ShapeDescriptorDisplayingAndDisplayedAreCalled_Default_Succeeds()
     {
         var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
 
@@ -380,7 +491,7 @@ public class DefaultDisplayManagerTests
     }
 
     [Fact]
-    public async Task DisplayingEventFiresEarlyEnoughToAddAlternateShapeBindingNames()
+    public async Task DisplayingEventFiresEarlyEnoughToAddAlternateShapeBindingNames_Default_Succeeds()
     {
         var htmlDisplay = _serviceProvider.GetService<IHtmlDisplay>();
 
@@ -413,7 +524,7 @@ public class DefaultDisplayManagerTests
     }
 
     [Fact]
-    public async Task ShapeTypeAndBindingNamesAreNotCaseSensitive()
+    public async Task ShapeTypeAndBindingNamesAreNotCaseSensitive_Default_Succeeds()
     {
         var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
 
@@ -433,7 +544,7 @@ public class DefaultDisplayManagerTests
     }
 
     [Fact]
-    public async Task IShapeDisplayEventsCalledInCorrectOrder()
+    public async Task IShapeDisplayEventsCalledInCorrectOrder_Default_Succeeds()
     {
         var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
         var testEvents = _serviceProvider.GetService<IShapeDisplayEvents>() as TestDisplayEvents;
@@ -465,7 +576,7 @@ public class DefaultDisplayManagerTests
     }
 
     [Fact]
-    public async Task ShapeMorphingChangesTypeAndUsesNewBinding()
+    public async Task ShapeMorphingChangesTypeAndUsesNewBinding_Default_Succeeds()
     {
         var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
 
@@ -509,7 +620,7 @@ public class DefaultDisplayManagerTests
     }
 
     [Fact]
-    public async Task ShapeMorphingWithAlternatePreservesOriginalMetadata()
+    public async Task ShapeMorphingWithAlternatePreservesOriginalMetadata_Default_Succeeds()
     {
         var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
 
@@ -566,7 +677,7 @@ public class DefaultDisplayManagerTests
     }
 
     [Fact]
-    public async Task ShapeMorphingWithConditionalLogic()
+    public async Task ShapeMorphingWithConditionalLogic_Default_Succeeds()
     {
         var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
 
@@ -624,7 +735,7 @@ public class DefaultDisplayManagerTests
     }
 
     [Fact]
-    public async Task ShapeMorphingWithAlternateBinding()
+    public async Task ShapeMorphingWithAlternateBinding_Default_Succeeds()
     {
         var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
 
@@ -674,7 +785,7 @@ public class DefaultDisplayManagerTests
     }
 
     [Fact]
-    public async Task ShapeMorphingChain()
+    public async Task ShapeMorphingChain_Default_Succeeds()
     {
         var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
 
@@ -753,7 +864,7 @@ public class DefaultDisplayManagerTests
     }
 
     [Fact]
-    public async Task ShapeMorphingWithDisplayEvents()
+    public async Task ShapeMorphingWithDisplayEvents_Default_Succeeds()
     {
         var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
         var testEvents = _serviceProvider.GetService<IShapeDisplayEvents>() as TestDisplayEvents;
@@ -810,7 +921,7 @@ public class DefaultDisplayManagerTests
     }
 
     [Fact]
-    public async Task ShapeMorphingFailsWhenTargetShapeNotFound()
+    public async Task ShapeMorphingFails_TargetShapeNotFound_Succeeds()
     {
         var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
 

@@ -7,6 +7,7 @@ public sealed class Permissions : IPermissionProvider
     private readonly IEnumerable<Permission> _allPermissions =
     [
         RolesPermissions.ManageRoles,
+        RolesPermissions.ViewRoles
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()

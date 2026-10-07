@@ -6,10 +6,12 @@
 }
 
 <zone Name="Title">
-    <h1>@RenderTitleSegments(T["Dynamic Translation Statistics"])</h1>
+    <breadcrumb name="DynamicTranslationsStatistics" title="@T["Statistics"]">
+        <breadcrumb-item id="DynamicTranslations" action="Index" controller="Admin" area="OrchardCore.DataLocalization" permission="@DataLocalizationPermissions.ViewDynamicTranslations.Name">@T["Dynamic Translations"]</breadcrumb-item>
+    </breadcrumb>
 </zone>
 
-<div id="translation-statistics">
+<div id="translation-statistics" data-stats="@statisticsJson" data-editor-base-url="@Url.Action("Index", "Admin", new { area = "OrchardCore.DataLocalization" })">
     <!-- Overall Progress -->
     <fieldset class="mb-3">
         <legend>@T["Overall Progress"]</legend>
@@ -74,14 +76,17 @@
 
     <!-- Progress by Category -->
     <fieldset class="mb-3">
-        <legend>
-            @T["Progress by Category"]
-            <select class="form-select form-select-sm d-inline-block ms-2" style="width: auto;" v-model="selectedCulture">
-                <option v-for="culture in stats.byCulture" :key="culture.culture" :value="culture.culture">
-                    {{ culture.displayName }}
-                </option>
-            </select>
-        </legend>
+        <legend>@T["Progress by Category"]</legend>
+        <div class="ocat-wrapper">
+            <label class="ocat-label" for="selected-culture">@T["Culture"]</label>
+            <div class="ocat-end">
+                <select id="selected-culture" class="form-select form-select-sm w-auto" v-model="selectedCulture">
+                    <option v-for="culture in stats.byCulture" :key="culture.culture" :value="culture.culture">
+                        {{ culture.displayName }}
+                    </option>
+                </select>
+            </div>
+        </div>
         <table class="table">
             <thead>
                 <tr>
@@ -121,61 +126,12 @@
     </fieldset>
 
     <!-- Action buttons -->
-    <div class="mb-3">
-        <a class="btn btn-primary" role="button" href="@Url.Action("Index", "Admin", new { area = "OrchardCore.DataLocalization" })">@T["Edit Translations"]</a>
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <a class="btn btn-primary" role="button" href="@Url.Action("Index", "Admin", new { area = "OrchardCore.DataLocalization" })">@T["Edit Translations"]</a>
+        </div>
     </div>
 </div>
 
 <script asp-name="vuejs" at="Foot"></script>
-<script at="Foot">
-document.addEventListener('DOMContentLoaded', function () {
-    const statsEl = document.getElementById('translation-statistics');
-    if (!statsEl) return;
-
-    // Data passed from server
-    const serverData = @Html.Raw(statisticsJson);
-
-    const { createApp } = Vue;
-
-    const app = createApp({
-        data() {
-            return {
-                stats: serverData,
-                selectedCulture: '',
-                editorBaseUrl: '@Url.Action("Index", "Admin", new { area = "OrchardCore.DataLocalization" })'
-            };
-        },
-        computed: {
-            selectedCultureCategories() {
-                if (!this.selectedCulture || !this.stats.byCategory) {
-                    return [];
-                }
-                return this.stats.byCategory[this.selectedCulture] || [];
-            }
-        },
-        methods: {
-            getProgressClass(percentage) {
-                if (percentage >= 75) return 'bg-success';
-                if (percentage >= 25) return 'bg-warning';
-                return 'bg-danger';
-            },
-            getBadgeClass(percentage) {
-                if (percentage >= 75) return 'text-bg-success';
-                if (percentage >= 25) return 'text-bg-warning';
-                return 'text-bg-danger';
-            },
-            getEditorUrl(culture) {
-                return `${this.editorBaseUrl}?culture=${encodeURIComponent(culture)}`;
-            }
-        },
-        mounted() {
-            // Default to first culture
-            if (this.stats.byCulture && this.stats.byCulture.length > 0) {
-                this.selectedCulture = this.stats.byCulture[0].culture;
-            }
-        }
-    });
-
-    app.mount('#translation-statistics');
-});
-</script>
+<script asp-src="~/OrchardCore.DataLocalization/Scripts/translation-statistics/translation-statistics.min.js" debug-src="~/OrchardCore.DataLocalization/Scripts/translation-statistics/translation-statistics.js" depends-on="vuejs" at="Foot" type="module"></script>

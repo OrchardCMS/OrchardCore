@@ -9,6 +9,7 @@ using OrchardCore.Security.Drivers;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Security.Services;
 using OrchardCore.Security.Settings;
+using OrchardCore.Settings.Deployment;
 
 namespace OrchardCore.Security;
 
@@ -39,5 +40,16 @@ public sealed class Startup : StartupBase
                 .AddPermissionsPolicy(securityOptions.PermissionsPolicy)
                 .AddReferrerPolicy(securityOptions.ReferrerPolicy);
         });
+    }
+}
+
+[RequireFeatures("OrchardCore.Deployment")]
+public sealed class SecurityDeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddSiteSettingsPropertyDeploymentStep<SecuritySettings, SecurityDeploymentStartup>(
+            S => S["Security settings"],
+            S => S["Exports the Security settings."]);
     }
 }

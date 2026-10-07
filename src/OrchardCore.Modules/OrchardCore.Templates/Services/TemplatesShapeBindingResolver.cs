@@ -69,7 +69,7 @@ public class TemplatesShapeBindingResolver : IShapeBindingResolver
         return new ShapeBinding()
         {
             BindingName = shapeType,
-            BindingSource = shapeType,
+            BindingSource = $"Templates/{shapeType}.liquid",
             BindingAsync = displayContext => _liquidTemplateManager.RenderHtmlContentAsync(template.Content, _htmlEncoder, displayContext.Value),
         };
     }

@@ -11,7 +11,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId;
 public class ApplicationControllerTests
 {
     [Fact]
-    public async Task UsersShouldNotBeAbleToCreateIfNotAllowed()
+    public async Task Users_Default_NotBeAbleToCreateIfNotAllowed()
     {
         var controller = new ApplicationController(
             Mock.Of<IShapeFactory>(),
@@ -29,7 +29,7 @@ public class ApplicationControllerTests
     }
 
     [Fact]
-    public async Task UsersShouldBeAbleToCreateApplicationIfAllowed()
+    public async Task Users_Default_BeAbleToCreateApplicationIfAllowed()
     {
         var mockOpenIdScopeManager = new Mock<IOpenIdScopeManager>();
         var mockData = Array.Empty<object>();
@@ -59,7 +59,7 @@ public class ApplicationControllerTests
     [InlineData(OpenIddictConstants.ClientTypes.Public, "", true, false, true)]
     [InlineData(OpenIddictConstants.ClientTypes.Confidential, "ClientSecret", true, false, true)]
     [InlineData(OpenIddictConstants.ClientTypes.Confidential, "", true, false, false)]
-    public async Task ConfidentialClientNeedsSecret(string clientType, string clientSecret, bool allowAuthFlow, bool allowPasswordFlow, bool expectValidModel)
+    public async Task ConfidentialClientNeedsSecret_Default_Succeeds(string clientType, string clientSecret, bool allowAuthFlow, bool allowPasswordFlow, bool expectValidModel)
     {
         var controller = new ApplicationController(
             Mock.Of<IShapeFactory>(),
@@ -99,7 +99,7 @@ public class ApplicationControllerTests
     [InlineData("nonUrlString", false)]
     [InlineData("http://localhost http://localhost:8080 nonUrlString", false)]
     [InlineData("http://localhost http://localhost:8080", true)]
-    public async Task RedirectUrisAreValid(string uris, bool expectValidModel)
+    public async Task RedirectUrisAreValid_Default_Succeeds(string uris, bool expectValidModel)
     {
         // Arrange
         var controller = new ApplicationController(

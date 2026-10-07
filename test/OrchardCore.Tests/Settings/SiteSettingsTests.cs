@@ -6,7 +6,7 @@ namespace OrchardCore.Tests.Settings;
 public class SiteSettingsTests
 {
     [Fact]
-    public void TryGetReturnsCachedSettingsWithoutAllocatingNewInstances()
+    public void TryGetReturnsCachedSettingsWithoutAllocatingNewInstances_Default_Succeeds()
     {
         var site = new SiteSettings();
         site.Put(new TestSettings { Name = "alpha" });
@@ -19,7 +19,7 @@ public class SiteSettingsTests
     }
 
     [Fact]
-    public void TryGetReturnsNullWhenSettingsAreMissing()
+    public void TryGetReturnsNull_SettingsAreMissing_Succeeds()
     {
         var site = new SiteSettings();
 
@@ -28,7 +28,7 @@ public class SiteSettingsTests
     }
 
     [Fact]
-    public void RemoveDeletesStoredProperties()
+    public void RemoveDeletesStoredProperties_Default_Succeeds()
     {
         var site = new SiteSettings();
         site.Put(new TestSettings { Name = "alpha" });

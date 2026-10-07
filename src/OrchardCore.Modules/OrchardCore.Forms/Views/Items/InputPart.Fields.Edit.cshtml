@@ -1,12 +1,11 @@
-@using OrchardCore
 @using OrchardCore.Forms.ViewModels
 @model InputPartEditViewModel
 @{
     var wrapperId = Html.IdFor(m => m);
 }
-<div class="@Orchard.GetWrapperClasses()" id="@wrapperId">
-    <label asp-for="Type" class="@Orchard.GetLabelClasses()">@T["Type"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper input-part-editor" id="@wrapperId">
+    <label asp-for="Type" class="ocat-label">@T["Type"]</label>
+    <div class="ocat-end">
         <select asp-for="Type" class="form-select content-preview-select field-type-select-menu">
             <option value="text">@T["Text"]</option>
             <option value="number">@T["Number"]</option>
@@ -34,49 +33,20 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses("show-for-input")">
-    <label asp-for="Placeholder" class="@Orchard.GetLabelClasses()">@T["Placeholder Text"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper show-for-input">
+    <label asp-for="Placeholder" class="ocat-label">@T["Placeholder Text"]</label>
+    <div class="ocat-end">
         <input asp-for="Placeholder" type="text" class="form-control content-preview-text" />
         <span class="hint">@T["The text to display when the field has no value."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="DefaultValue" class="@Orchard.GetLabelClasses()">@T["Default Value"]</label>
-    <div class="@Orchard.GetEndClasses()">
+<div class="ocat-wrapper">
+    <label asp-for="DefaultValue" class="ocat-label">@T["Default Value"]</label>
+    <div class="ocat-end">
         <input asp-for="DefaultValue" type="text" class="form-control content-preview-text" />
         <span class="hint">@T["The default value for this field."]</span>
     </div>
 </div>
 
-<script at="Foot">
-    var initializeFieldType = (wrapper) => {
-        var selectMenus = wrapper.getElementsByClassName('field-type-select-menu');
-        for (let i = 0; i < selectMenus.length; i++) {
-            var selectMenu = selectMenus[i];
-            var widgetWrapper = selectMenu.closest('.widget-editor-body');
-            selectMenu.addEventListener('change', function (e) {
-                var visibleForInputContainers = (widgetWrapper || wrapper).getElementsByClassName('show-for-input');
-                if (visibleForInputContainers.length == 0) {
-                    return;
-                }
-                var value = e.target.value;
-                for (let i = 0; i < visibleForInputContainers.length; i++) {
-                    if (value == 'reset' || value == 'submit' || value == 'hidden') {
-                        visibleForInputContainers[i].classList.add('d-none');
-                    } else {
-                        visibleForInputContainers[i].classList.remove('d-none');
-                    }
-                }
-            });
-        }
-    };
-    var wrapper = document.getElementById('@wrapperId')
-    if (wrapper != null) {
-        initializeFieldType(wrapper);
-    }
-    document.addEventListener('DOMContentLoaded', function () {
-        initializeFieldType(document);
-    });
-</script>
+<script asp-src="~/OrchardCore.Forms/Scripts/input-part/input-part.min.js" debug-src="~/OrchardCore.Forms/Scripts/input-part/input-part.js" at="Foot" type="module"></script>

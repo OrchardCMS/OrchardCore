@@ -1,0 +1,11 @@
+@model OrchardCore.Settings.ViewModels.DebugSettingsViewModel
+
+<div class="ocat-wrapper" asp-validation-class-for="WriteShapeDebugInformation">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input asp-for="WriteShapeDebugInformation" class="form-check-input" type="checkbox" />
+            <label asp-for="WriteShapeDebugInformation" class="form-check-label">@T["Write shape debug information"]</label>
+        </div>
+        <span class="hint">@T["Wrap rendered shapes in HTML comments to help identify the template or binding that produced each fragment."]</span>
+    </div>
+</div>

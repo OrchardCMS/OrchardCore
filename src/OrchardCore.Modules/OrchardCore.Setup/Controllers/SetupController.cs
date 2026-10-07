@@ -24,7 +24,7 @@ public sealed class SetupController : Controller
     private readonly IShellHost _shellHost;
     private readonly IdentityOptions _identityOptions;
     private readonly IEmailAddressValidator _emailAddressValidator;
-    private readonly IEnumerable<DatabaseProvider> _databaseProviders;
+    private readonly Dictionary<string, DatabaseProvider> _databaseProviderLookup;
     private readonly ILogger _logger;
 
     internal readonly IStringLocalizer S;
@@ -46,14 +46,18 @@ public sealed class SetupController : Controller
         _shellHost = shellHost;
         _identityOptions = identityOptions.Value;
         _emailAddressValidator = emailAddressValidator;
-        _databaseProviders = databaseProviders;
+        _databaseProviderLookup = databaseProviders.ToDictionary(provider => provider.Value, StringComparer.OrdinalIgnoreCase);
         _logger = logger;
         S = localizer;
     }
 
     public async Task<ActionResult> Index(string token)
     {
-        var recipes = await _setupService.GetSetupRecipesAsync();
+        // Recipes tagged "hidden" (e.g. tool-only setup recipes) stay resolvable by name for
+        // programmatic setup but must not appear in the interactive setup picker.
+        var recipes = (await _setupService.GetSetupRecipesAsync())
+            .Where(recipe => recipe.Tags == null || !recipe.Tags.Contains("hidden", StringComparer.InvariantCultureIgnoreCase))
+            .ToArray();
         var defaultRecipe = recipes.FirstOrDefault(x => x.Tags.Contains("default")) ?? recipes.FirstOrDefault();
 
         if (!await ShouldProceedWithTokenAsync(token))
@@ -63,25 +67,17 @@ public sealed class SetupController : Controller
 
         var model = new SetupViewModel
         {
-            DatabaseProviders = _databaseProviders,
+            DatabaseProviders = _databaseProviderLookup.Values,
             Recipes = recipes,
             RecipeName = defaultRecipe?.Name,
+            SiteTimeZone = _clock.GetSystemTimeZone().TimeZoneId,
             Secret = token,
         };
 
         CopyShellSettingsValues(model);
 
-        if (!string.IsNullOrEmpty(_shellSettings["TablePrefix"]))
-        {
-            model.DatabaseConfigurationPreset = true;
-            model.TablePrefix = _shellSettings["TablePrefix"];
-        }
-
-        if (!string.IsNullOrEmpty(_shellSettings["Schema"]))
-        {
-            model.DatabaseConfigurationPreset = true;
-            model.Schema = _shellSettings["Schema"];
-        }
+        model.TablePrefix = _shellSettings["TablePrefix"];
+        model.Schema = _shellSettings["Schema"];
 
         return View(model);
     }
@@ -94,8 +90,14 @@ public sealed class SetupController : Controller
             return StatusCode(404);
         }
 
-        model.DatabaseProviders = _databaseProviders;
-        model.Recipes = await _setupService.GetSetupRecipesAsync();
+        model.DatabaseProviders = _databaseProviderLookup.Values;
+
+        // Resolve the selected recipe against the full setup-recipe list (so a preset/programmatic
+        // recipe still validates), but only surface non-hidden recipes in the picker.
+        var recipes = await _setupService.GetSetupRecipesAsync();
+        model.Recipes = recipes
+            .Where(recipe => recipe.Tags == null || !recipe.Tags.Contains("hidden", StringComparer.InvariantCultureIgnoreCase))
+            .ToArray();
 
         if (string.IsNullOrEmpty(model.Password))
         {
@@ -110,13 +112,13 @@ public sealed class SetupController : Controller
         RecipeDescriptor selectedRecipe = null;
         if (!string.IsNullOrEmpty(_shellSettings["RecipeName"]))
         {
-            selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == _shellSettings["RecipeName"]);
+            selectedRecipe = recipes.FirstOrDefault(x => x.Name == _shellSettings["RecipeName"]);
             if (selectedRecipe == null)
             {
                 ModelState.AddModelError(nameof(model.RecipeName), S["Invalid recipe."]);
             }
         }
-        else if (string.IsNullOrEmpty(model.RecipeName) || (selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == model.RecipeName)) == null)
+        else if (string.IsNullOrEmpty(model.RecipeName) || (selectedRecipe = recipes.FirstOrDefault(x => x.Name == model.RecipeName)) == null)
         {
             ModelState.AddModelError(nameof(model.RecipeName), S["Invalid recipe."]);
         }
@@ -154,23 +156,43 @@ public sealed class SetupController : Controller
             },
         };
 
-        if (!string.IsNullOrEmpty(_shellSettings["ConnectionString"]))
+        var presetDatabaseProvider = GetPresetDatabaseProvider();
+
+        if (presetDatabaseProvider is not null)
+        {
+            model.DatabaseProviderPreset = true;
+            setupContext.Properties[SetupConstants.DatabaseProvider] = presetDatabaseProvider.Value;
+        }
+        else
+        {
+            setupContext.Properties[SetupConstants.DatabaseProvider] = model.DatabaseProvider;
+        }
+
+        if (HasPresetDatabaseConfiguration())
         {
             model.DatabaseConfigurationPreset = true;
-            setupContext.Properties[SetupConstants.DatabaseProvider] = _shellSettings["DatabaseProvider"];
             setupContext.Properties[SetupConstants.DatabaseConnectionString] = _shellSettings["ConnectionString"];
             setupContext.Properties[SetupConstants.DatabaseTablePrefix] = _shellSettings["TablePrefix"];
             setupContext.Properties[SetupConstants.DatabaseSchema] = _shellSettings["Schema"];
         }
         else
         {
-            setupContext.Properties[SetupConstants.DatabaseProvider] = model.DatabaseProvider;
             setupContext.Properties[SetupConstants.DatabaseConnectionString] = model.ConnectionString;
             setupContext.Properties[SetupConstants.DatabaseTablePrefix] = model.TablePrefix;
             setupContext.Properties[SetupConstants.DatabaseSchema] = model.Schema;
         }
 
-        var executionId = await _setupService.SetupAsync(setupContext);
+        try
+        {
+            await _setupService.SetupAsync(setupContext);
+        }
+        catch (Exception ex) when (!ex.IsFatal())
+        {
+            _logger.LogError(ex, "An error occurred while setting up the tenant '{TenantName}'.", _shellSettings.Name);
+            ModelState.AddModelError(string.Empty, S["An error occurred while running the setup. Try again in a few minutes, and if the issue persists, consult the app's operator."]);
+            CopyShellSettingsValues(model);
+            return View(model);
+        }
 
         // Check if any Setup component failed (e.g., database connection validation)
         if (setupContext.Errors.Count > 0)
@@ -180,6 +202,7 @@ public sealed class SetupController : Controller
                 ModelState.AddModelError(error.Key, error.Value);
             }
 
+            CopyShellSettingsValues(model);
             return View(model);
         }
 
@@ -188,7 +211,21 @@ public sealed class SetupController : Controller
 
     private void CopyShellSettingsValues(SetupViewModel model)
     {
-        if (!string.IsNullOrEmpty(_shellSettings["ConnectionString"]))
+        model.DatabaseProviderPreset = false;
+        model.DatabaseConfigurationPreset = false;
+
+        var presetDatabaseProvider = GetPresetDatabaseProvider();
+        if (presetDatabaseProvider is not null)
+        {
+            model.DatabaseProviderPreset = true;
+            model.DatabaseProvider = presetDatabaseProvider.Value;
+        }
+        else
+        {
+            model.DatabaseProvider = model.DatabaseProviders.FirstOrDefault(p => p.IsDefault)?.Value;
+        }
+
+        if (HasPresetDatabaseConfiguration())
         {
             model.DatabaseConfigurationPreset = true;
             model.ConnectionString = _shellSettings["ConnectionString"];
@@ -199,16 +236,30 @@ public sealed class SetupController : Controller
             model.RecipeNamePreset = true;
             model.RecipeName = _shellSettings["RecipeName"];
         }
+    }
 
-        if (!string.IsNullOrEmpty(_shellSettings["DatabaseProvider"]))
+    private bool HasPresetDatabaseConfiguration()
+    {
+        var presetDatabaseProvider = GetPresetDatabaseProvider();
+        if (presetDatabaseProvider is null)
         {
-            model.DatabaseConfigurationPreset = true;
-            model.DatabaseProvider = _shellSettings["DatabaseProvider"];
+            return false;
         }
-        else
+
+        var provider = presetDatabaseProvider;
+        return !provider.HasConnectionString || !string.IsNullOrWhiteSpace(_shellSettings["ConnectionString"]);
+    }
+
+    private DatabaseProvider GetPresetDatabaseProvider()
+    {
+        var databaseProvider = _shellSettings["DatabaseProvider"];
+        if (string.IsNullOrEmpty(databaseProvider) ||
+            !_databaseProviderLookup.TryGetValue(databaseProvider, out var provider))
         {
-            model.DatabaseProvider = model.DatabaseProviders.FirstOrDefault(p => p.IsDefault)?.Value;
+            return null;
         }
+
+        return provider;
     }
 
     private async Task<bool> ShouldProceedWithTokenAsync(string token)

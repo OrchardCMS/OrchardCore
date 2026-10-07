@@ -21,7 +21,7 @@ public sealed class MvcTests : IClassFixture<MvcSetupFixture>, IAsyncLifetime
     }
 
     [Fact]
-    public async Task ShouldDisplayHelloWorld()
+    public async Task Display_HelloWorld_Succeeds()
     {
         var page = await _fixture.CreatePageAsync();
         await page.GotoAndAssertOkAsync("/");

@@ -22,7 +22,7 @@ public class LocalizationManagerTests : IDisposable
     }
 
     [Fact]
-    public void GetDictionaryReturnsDictionaryWithPluralRuleAndCultureIfNoTranslationsExists()
+    public void GetDictionaryReturnsDictionaryWithPluralRuleAndCultureIfNoTranslationsExists_Default_Succeeds()
     {
         _translationProvider.Setup(o => o.LoadTranslations(
             It.Is<string>(culture => culture == "cs"),
@@ -38,7 +38,7 @@ public class LocalizationManagerTests : IDisposable
     }
 
     [Fact]
-    public void GetDictionaryReturnsDictionaryWithTranslationsFromProvider()
+    public void GetDictionaryReturnsDictionaryWithTranslationsFromProvider_Default_Succeeds()
     {
         var dictionaryRecord = new CultureDictionaryRecord("ball", "míč", "míče", "míčů");
         _translationProvider
@@ -56,7 +56,7 @@ public class LocalizationManagerTests : IDisposable
     }
 
     [Fact]
-    public void GetDictionarySelectsPluralRuleFromProviderWithHigherPriority()
+    public void GetDictionarySelectsPluralRuleFromProviderWithHigherPriority_Default_Succeeds()
     {
         PluralizationRuleDelegate csPluralRuleOverride = n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 0);
 
@@ -79,7 +79,7 @@ public class LocalizationManagerTests : IDisposable
     [Theory]
     [InlineData("en", "Hello en !")]
     [InlineData("zh-CN", "你好！")]
-    public async Task TestLocalizationRule(string culture, string expected)
+    public async Task LocalizationRule_Default_Succeeds(string culture, string expected)
     {
         var context = new SiteContext();
         await context.InitializeAsync();

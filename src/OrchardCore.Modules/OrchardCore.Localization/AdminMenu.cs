@@ -10,7 +10,7 @@ namespace OrchardCore.Localization;
 /// </summary>
 public sealed class AdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", LocalizationSettingsDisplayDriver.GroupId },
@@ -41,7 +41,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                            .Add(S["Cultures"], S["Cultures"].PrefixPosition(), cultures => cultures
                                .AddClass("cultures")
                                .Id("cultures")
-                               .Action("Index", "Admin", _routeValues)
+                               .Action("Index", "Admin", s_routeValues)
                                .Permission(LocalizationPermissions.ManageCultures)
                                .LocalNav()
                            )
@@ -60,7 +60,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                     .Add(S["Cultures"], S["Cultures"].PrefixPosition(), cultures => cultures
                         .AddClass("cultures")
                         .Id("cultures")
-                        .Action("Index", "Admin", _routeValues)
+                        .Action("Index", "Admin", s_routeValues)
                         .Permission(LocalizationPermissions.ManageCultures)
                         .LocalNav()
                     )

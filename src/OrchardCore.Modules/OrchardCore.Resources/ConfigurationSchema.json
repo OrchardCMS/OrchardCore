@@ -1,0 +1,47 @@
+{
+  "type": "object",
+  "properties": {
+    "OrchardCore": {
+      "type": "object",
+      "properties": {
+        "Resources": {
+          "type": "object",
+          "description": "Configures how the resource manager serves scripts and stylesheets. Note that the Settings module, which is always enabled, overrides these values with the resource settings of the site general settings. The values can also be defined per tenant under 'OrchardCore:{TenantName}:Resources'. See https://docs.orchardcore.net/en/latest/reference/modules/Resources/.",
+          "properties": {
+            "ResourceDebugMode": {
+              "type": "string",
+              "description": "Whether scripts and stylesheets are served from the local server in their non-minified (debug) version, which also disables the 'CdnBaseUrl' prepending. 'FromConfiguration' enables the debug mode in all the environments except Production.",
+              "enum": [
+                "FromConfiguration",
+                "Enabled",
+                "Disabled"
+              ],
+              "default": "FromConfiguration"
+            },
+            "UseCdn": {
+              "type": "boolean",
+              "description": "Whether scripts and stylesheets that define a CDN URL, such as jQuery, are served from their CDN.",
+              "default": false
+            },
+            "CdnBaseUrl": {
+              "type": "string",
+              "description": "An absolute URL prepended to the URL of the local resources, e.g. 'https://cdn.example.com'. Not used in debug mode."
+            },
+            "AppendVersion": {
+              "type": "boolean",
+              "description": "Whether a version hash is appended to the URL of the local scripts and stylesheets for cache busting.",
+              "default": true
+            }
+          }
+        },
+        "OrchardCore_Resources": {
+          "type": "object",
+          "deprecated": true,
+          "deprecationMessage": "The 'OrchardCore_Resources' section is deprecated. Use 'OrchardCore:Resources' instead.",
+          "description": "Deprecated. Use 'OrchardCore:Resources' instead.",
+          "doNotSuggest": true
+        }
+      }
+    }
+  }
+}

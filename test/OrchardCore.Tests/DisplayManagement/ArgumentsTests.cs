@@ -5,7 +5,7 @@ namespace OrchardCore.Tests.DisplayManagement;
 public partial class ArgumentsTests
 {
     [Fact]
-    public void From_WithAnonymousObject_ReturnsNamedEnumerable()
+    public void From_AnonymousObject_ReturnsNamedEnumerable()
     {
         // Arrange
         var obj = new { Name = "Test", Value = 42 };
@@ -21,7 +21,7 @@ public partial class ArgumentsTests
     }
 
     [Fact]
-    public void From_WithNamedEnumerable_UsesOptimizedPath()
+    public void From_NamedEnumerable_UsesOptimizedPath()
     {
         // Arrange
         var obj = new TestNamedEnumerableProvider { Name = "Test", Value = 42 };
@@ -38,7 +38,7 @@ public partial class ArgumentsTests
     }
 
     [Fact]
-    public void From_WithDictionary_ReturnsNamedEnumerable()
+    public void From_Dictionary_ReturnsNamedEnumerable()
     {
         // Arrange
         var dict = new Dictionary<string, object>
@@ -58,7 +58,7 @@ public partial class ArgumentsTests
     }
 
     [Fact]
-    public void From_WithArraysAndNames_ReturnsNamedEnumerable()
+    public void From_ArraysAndNames_ReturnsNamedEnumerable()
     {
         // Arrange
         var values = new object[] { "Test", 42 };
@@ -75,7 +75,7 @@ public partial class ArgumentsTests
     }
 
     [Fact]
-    public void SourceGenerated_SimpleModel_ShouldUseGeneratedProvider()
+    public void SourceGenerated_SimpleModel_UsesGeneratedProvider()
     {
         // Arrange
         var model = new TestSourceGeneratedModel
@@ -100,7 +100,7 @@ public partial class ArgumentsTests
     }
 
     [Fact]
-    public void SourceGenerated_ComplexModel_ShouldIncludeAllProperties()
+    public void SourceGenerated_ComplexModel_IncludeAllProperties()
     {
         // Arrange
         var model = new TestComplexSourceGeneratedModel

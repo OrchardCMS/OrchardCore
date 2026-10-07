@@ -6,7 +6,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types;
 
 public sealed class DynamicContentFieldsIndexAliasProvider : IIndexAliasProvider, IContentDefinitionEventHandler
 {
-    private static readonly string _cacheKey = nameof(DynamicContentFieldsIndexAliasProvider);
+    private static readonly string s_cacheKey = nameof(DynamicContentFieldsIndexAliasProvider);
 
     private readonly IEnumerable<IContentFieldProvider> _contentFieldProviders;
     private readonly IContentDefinitionManager _contentDefinitionManager;
@@ -24,7 +24,7 @@ public sealed class DynamicContentFieldsIndexAliasProvider : IIndexAliasProvider
 
     public async ValueTask<IEnumerable<IndexAlias>> GetAliasesAsync()
     {
-        return await _memoryCache.GetOrCreateAsync(_cacheKey, async _ => await GetAliasesInternalAsync());
+        return await _memoryCache.GetOrCreateAsync(s_cacheKey, async _ => await GetAliasesInternalAsync());
     }
 
     private async ValueTask<IEnumerable<IndexAlias>> GetAliasesInternalAsync()
@@ -85,7 +85,7 @@ public sealed class DynamicContentFieldsIndexAliasProvider : IIndexAliasProvider
     }
 
     private void InvalidateInternal()
-        => _memoryCache.Remove(_cacheKey);
+        => _memoryCache.Remove(s_cacheKey);
 
     public void ContentFieldAttached(ContentFieldAttachedContext context)
         => InvalidateInternal();

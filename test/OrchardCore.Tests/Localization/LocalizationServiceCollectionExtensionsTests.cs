@@ -5,7 +5,7 @@ namespace OrchardCore.Localization.Tests;
 public class LocalizationServiceCollectionExtensionsTests
 {
     [Fact]
-    public void AddDataLocaliztion_RegisterRequiredServices()
+    public void AddDataLocaliztion_RegisterRequiredServices_Succeeds()
     {
         // Arrange
         var services = new ServiceCollection();
@@ -31,7 +31,7 @@ public class LocalizationServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddOrchardCore_RegistersNullDataLocalizer()
+    public void AddOrchardCore_RegistersNullDataLocalizer_Succeeds()
     {
         // Arrange
         var services = new ServiceCollection();
@@ -56,7 +56,7 @@ public class LocalizationServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddDataLocalization_ReplacesNullDataLocalizer()
+    public void AddDataLocalization_ReplacesNullDataLocalizer_Succeeds()
     {
         // Arrange
         var services = new ServiceCollection();

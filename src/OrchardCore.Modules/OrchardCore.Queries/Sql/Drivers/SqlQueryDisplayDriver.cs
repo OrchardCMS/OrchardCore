@@ -35,43 +35,44 @@ public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
         }
 
         return Combine(
-            Dynamic("SqlQuery_SummaryAdmin", model =>
+            Dynamic("SqlQuery_SummaryAdmin", static (model, query) =>
             {
                 model.Query = query;
-            }).Location("Content:5"),
-            Dynamic("SqlQuery_Buttons_SummaryAdmin", model =>
+            }, query).Location("Content:5"),
+            Dynamic("SqlQuery_Buttons_SummaryAdmin", static (model, query) =>
             {
                 model.Query = query;
-            }).Location("Actions:2")
+            }, query).Location("Actions:2")
         );
     }
 
-    public override IDisplayResult Edit(Query query, BuildEditorContext context)
+    public override async Task<IDisplayResult> EditAsync(Query query, BuildEditorContext context)
     {
         if (query.Source != SqlQuerySource.SourceName)
         {
             return null;
         }
 
-        return Initialize<SqlQueryViewModel>("SqlQuery_Edit", async model =>
+        var template = string.Empty;
+        if (query.TryGet<SqlQueryMetadata>(out var metadata))
+        {
+            template = metadata.Template;
+        }
+
+        // Extract query from the query string if we come from the main query editor.
+        // Create model object here, to make sure that TryUpdateModelAsync work on a specific object type, not over a proxied one
+        var viewModel = new SqlQueryViewModel();
+        if (string.IsNullOrEmpty(template))
+        {
+            await context.Updater.TryUpdateModelAsync(viewModel, string.Empty, m => m.Query);
+            template = viewModel.Query;
+        }
+
+        return Initialize<SqlQueryViewModel>("SqlQuery_Edit", model =>
         {
             model.ReturnDocuments = query.ReturnContentItems;
-            var template = string.Empty;
-
-            if (query.TryGet<SqlQueryMetadata>(out var metadata))
-            {
-                template = metadata.Template;
-            }
-
             model.Query = template;
             model.HasLiquidOutputExpressions = _outputExpressionDetector.ContainsOutputStatement(model.Query);
-
-            // Extract query from the query string if we come from the main query editor.
-            if (string.IsNullOrEmpty(template))
-            {
-                await context.Updater.TryUpdateModelAsync(model, string.Empty, m => m.Query);
-                model.HasLiquidOutputExpressions = _outputExpressionDetector.ContainsOutputStatement(model.Query);
-            }
         }).Location("Content:5");
     }
 
@@ -91,6 +92,13 @@ public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Query), S["The query field is required"]);
         }
+        else if (!ContainsLiquidSyntax(viewModel.Query))
+        {
+            foreach (var message in SqlParser.Validate(viewModel.Query))
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Query), message);
+            }
+        }
 
         viewModel.HasLiquidOutputExpressions = _outputExpressionDetector.ContainsOutputStatement(viewModel.Query);
 
@@ -109,6 +117,10 @@ public sealed class SqlQueryDisplayDriver : DisplayDriver<Query>
             Template = viewModel.Query,
         });
 
-        return Edit(query, context);
+        return await EditAsync(query, context);
     }
+
+    private static bool ContainsLiquidSyntax(string query) =>
+        query.Contains("{{", StringComparison.Ordinal) ||
+        query.Contains("{%", StringComparison.Ordinal);
 }

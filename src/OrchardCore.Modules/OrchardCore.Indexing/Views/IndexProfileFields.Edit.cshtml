@@ -1,25 +1,26 @@
-@using OrchardCore
 @using OrchardCore.Indexing.ViewModels
 
 @model EditIndexProfileViewModel
 
-<div class="mb-3" asp-validation-class-for="IndexName">
-    <label asp-for="IndexName" class="form-label">@T["Index Name"]</label>
+<div class="ocat-wrapper @(Model.IsNew ? "index-profile-technical-name-generator" : "")" asp-validation-class-for="IndexName" data-display-id="@Html.IdFor(m => m.IndexName)" data-name-id="@Html.IdFor(m => m.Name)">
+    <label asp-for="IndexName" class="ocat-label">@T["Index Name"]</label>
+    <div class="ocat-end">
     <input asp-for="IndexName" class="form-control" asp-is-disabled="!Model.IsNew" />
     <span asp-validation-for="IndexName" class="text-danger"></span>
+    </div>
 </div>
 
-<div class="mb-3">
-    <label asp-for="Name" class="form-label">@T["Name"]</label>
+<div class="ocat-wrapper">
+    <label asp-for="Name" class="ocat-label">@T["Name"]</label>
+    <div class="ocat-end">
     <input asp-for="Name" class="form-control" />
     <span asp-validation-for="Name" class="text-danger"></span>
     <span class="hint">@T["A unique name for the index."]</span>
+    </div>
 </div>
 
 @if (Model.IsNew)
 {
     <script asp-src="~/OrchardCore.Indexing/Scripts/technical-name-generator.min.js" debug-src="~/OrchardCore.Indexing/Scripts/technical-name-generator.js" asp-name="technical-name-generator" at="Foot"></script>
-    <script at="Foot" depends-on="technical-name-generator">
-        TechnicalNameGenerator.initialize('@Html.IdFor(m => m.IndexName)', '@Html.IdFor(m => m.Name)');
-    </script>
+    <script asp-src="~/OrchardCore.Indexing/Scripts/index-profile-fields/index-profile-fields.min.js" debug-src="~/OrchardCore.Indexing/Scripts/index-profile-fields/index-profile-fields.js" at="Foot" depends-on="technical-name-generator" type="module"></script>
 }

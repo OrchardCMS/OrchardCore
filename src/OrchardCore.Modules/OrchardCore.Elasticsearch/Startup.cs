@@ -55,7 +55,10 @@ public sealed class Startup : StartupBase
 
         services.Configure<ElasticsearchOptions>(options =>
         {
-            var configuration = _shellConfiguration.GetSection(ElasticsearchConnectionOptionsConfigurations.ConfigSectionName);
+            // The 'OrchardCore_Elasticsearch' section is deprecated and will be removed in a future major version, use 'Search:Elasticsearch' instead.
+            var configuration = _shellConfiguration.GetSectionCompat(
+                ElasticsearchConnectionOptionsConfigurations.SectionName,
+                ElasticsearchConnectionOptionsConfigurations.ConfigSectionName);
 
             options.AddIndexPrefix(configuration);
             options.AddTokenFilters(configuration);
@@ -72,7 +75,6 @@ public sealed class Startup : StartupBase
         services.AddDisplayDriver<IndexProfile, ElasticsearchIndexProfileDisplayDriver>();
 
         services.AddIndexProfileHandler<ElasticsearchIndexProfileHandler>();
-        services.AddDataMigration<PermissionMigrations>();
     }
 }
 
@@ -100,6 +102,10 @@ public sealed class ContentsStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDataMigration<IndexingMigrations>();
+
+        // Register after IndexingMigrations so its deferred task, which rewrites obsolete per-index role
+        // permissions to the new dynamic permissions, runs after the index profiles have been created.
+        services.AddDataMigration<PermissionMigrations>();
 
         services
             .AddIndexProfileHandler<ElasticsearchContentIndexProfileHandler>()

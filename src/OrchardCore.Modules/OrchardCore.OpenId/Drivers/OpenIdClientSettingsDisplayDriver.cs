@@ -19,7 +19,7 @@ namespace OrchardCore.OpenId.Drivers;
 
 public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenIdClientSettings>
 {
-    private static readonly char[] _separator = [' ', ','];
+    private static readonly char[] s_separator = [' ', ','];
 
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IAuthorizationService _authorizationService;
@@ -116,7 +116,7 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
         model.Scopes ??= string.Empty;
 
         settings.DisplayName = model.DisplayName;
-        settings.Scopes = model.Scopes.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
+        settings.Scopes = model.Scopes.Split(s_separator, StringSplitOptions.RemoveEmptyEntries);
         settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
         settings.CallbackPath = model.CallbackPath;
         settings.ClientId = model.ClientId;

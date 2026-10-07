@@ -6,7 +6,7 @@ namespace OrchardCore.GitHub;
 
 public sealed class AdminMenuGitHubLogin : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", GitHubConstants.Features.GitHubAuthentication },
@@ -29,7 +29,7 @@ public sealed class AdminMenuGitHubLogin : AdminNavigationProvider
                     .Add(S["GitHub"], S["GitHub"].PrefixPosition(), settings => settings
                         .AddClass("github")
                         .Id("github")
-                        .Action("Index", "Admin", _routeValues)
+                        .Action("Index", "Admin", s_routeValues)
                         .Permission(Permissions.ManageGitHubAuthentication)
                         .LocalNav()
                     )
@@ -46,7 +46,7 @@ public sealed class AdminMenuGitHubLogin : AdminNavigationProvider
                         .Add(S["GitHub"], S["GitHub"].PrefixPosition(), settings => settings
                             .AddClass("github")
                             .Id("github")
-                            .Action("Index", "Admin", _routeValues)
+                            .Action("Index", "Admin", s_routeValues)
                             .Permission(Permissions.ManageGitHubAuthentication)
                             .LocalNav()
                         )

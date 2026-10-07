@@ -34,11 +34,13 @@ public sealed class Startup : StartupBase
     {
         services.AddNavigationProvider<AdminMenu>();
         services.AddPermissionProvider<Permissions>();
+        services.AddScoped<TenantDatabasePatternResolver>();
         services.AddScoped<ITenantValidator, TenantValidator>();
         services.AddShapeTableProvider<TenantShapeTableProvider>();
         services.AddSetup();
 
-        services.Configure<TenantsOptions>(_shellConfiguration.GetSection("OrchardCore_Tenants"));
+        // The 'OrchardCore_Tenants' section is deprecated and will be removed in a future major version, use 'Tenants' instead.
+        services.Configure<TenantsOptions>(_shellConfiguration.GetSectionCompat("Tenants", "OrchardCore_Tenants"));
     }
 }
 
@@ -49,9 +51,6 @@ public sealed class FileProviderStartup : StartupBase
     /// The path in the tenant's App_Data folder containing the files.
     /// </summary>
     private const string AssetsPath = "wwwroot";
-
-    // Run after other middlewares.
-    public override int Order => 10;
 
     public override void ConfigureServices(IServiceCollection services)
     {

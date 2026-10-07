@@ -50,5 +50,41 @@
     "source": "Assets/Scripts/crossbrowserclipboardcopy.js",
     "dest": "wwwroot/Scripts/",
     "tags": ["workflows", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "workflow-syntax-toggle-js",
+    "source": "Assets/Scripts/workflow-syntax-toggle.ts",
+    "dest": "wwwroot/Scripts/Workflows/syntax-toggle/",
+    "tags": ["workflows", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "workflow-monaco-text-editor-js",
+    "source": "Assets/Scripts/workflow-monaco-text-editor.ts",
+    "dest": "wwwroot/Scripts/Workflows/monaco-text-editor/",
+    "tags": ["workflows", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "workflow-index-editors",
+    "source": [
+      "Assets/Scripts/workflow-index.ts",
+      "Assets/Scripts/workflow-type-index.ts"
+    ],
+    "dest": "wwwroot/Scripts/workflow-index-editors/",
+    "tags": ["workflows", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "task-editors",
+    "source": [
+      "Assets/Scripts/correlate-task.ts",
+      "Assets/Scripts/http-request-task.ts",
+      "Assets/Scripts/http-response-task.ts",
+      "Assets/Scripts/liquid-task.ts"
+    ],
+    "dest": "wwwroot/Scripts/task-editors/",
+    "tags": ["workflows", "js"]
   }
 ]

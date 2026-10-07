@@ -5,6 +5,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Modules;
+using OrchardCore.RateLimits;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
@@ -51,6 +52,7 @@ public sealed class RegistrationController : Controller
     [HttpPost]
     [AllowAnonymous]
     [ActionName(nameof(Register))]
+    [RateLimitGroup(UserRateLimiterPolicyNames.UserRegistration)]
     public async Task<IActionResult> RegisterPOST(string returnUrl = null)
     {
         var model = new RegisterUserForm();

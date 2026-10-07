@@ -17,10 +17,10 @@ namespace OrchardCore.Benchmarks;
 [MemoryDiagnoser]
 public class RuleBenchmark
 {
-    private static readonly IScriptingEngine _engine;
-    private static readonly IScriptingScope _scope;
-    private static readonly IRuleService _ruleService;
-    private static readonly Rule _rule;
+    private static readonly IScriptingEngine s_engine;
+    private static readonly IScriptingScope s_scope;
+    private static readonly IRuleService s_ruleService;
+    private static readonly Rule s_rule;
 
     static RuleBenchmark()
     {
@@ -42,11 +42,11 @@ public class RuleBenchmark
 
         var scriptingManager = serviceProvider.GetRequiredService<IScriptingManager>();
 
-        _engine = scriptingManager.GetScriptingEngine("js");
-        _scope = _engine.CreateScope(scriptingManager.GlobalMethodProviders.SelectMany(x => x.GetMethods()), serviceProvider, null, null);
+        s_engine = scriptingManager.GetScriptingEngine("js");
+        s_scope = s_engine.CreateScope(scriptingManager.GlobalMethodProviders.SelectMany(x => x.GetMethods()), serviceProvider, null, null);
 
-        _ruleService = serviceProvider.GetRequiredService<IRuleService>();
-        _rule = new Rule
+        s_ruleService = serviceProvider.GetRequiredService<IRuleService>();
+        s_rule = new Rule
         {
             Conditions =
             [
@@ -60,9 +60,9 @@ public class RuleBenchmark
 
     [Benchmark(Baseline = true)]
 #pragma warning disable CA1822 // Mark members as static
-    public void EvaluateIsHomepageWithJavascript() => _engine.Evaluate(_scope, "isHomepage()");
+    public void EvaluateIsHomepageWithJavascript() => s_engine.Evaluate(s_scope, "isHomepage()");
 
     [Benchmark]
-    public async Task EvaluateIsHomepageWithRule() => await _ruleService.EvaluateAsync(_rule);
+    public async Task EvaluateIsHomepageWithRule() => await s_ruleService.EvaluateAsync(s_rule);
 #pragma warning restore CA1822 // Mark members as static
 }

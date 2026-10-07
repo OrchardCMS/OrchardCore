@@ -10,24 +10,12 @@
 
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
-<div class="mb-3 row">
-    <div class="col-large col-12 col-sm-12 col-md-12 col-lg-12 col-xl-9">
-        <label asp-for="Pattern" class="form-label">@T["Pattern"]</label>
+<div class="ocat-limited-wrapper">
+    <label asp-for="Pattern" class="ocat-label">@T["Pattern"]</label>
+    <div class="ocat-limited">
         <textarea asp-for="Pattern" rows="5" class="form-control"></textarea>
         <span class="hint">@T["The pattern used to render the custom preview url of this content type."]</span>
     </div>
 </div>
 
-<script at="Foot" depends-on="jquery">
-    //<![CDATA[
-    $(function () {
-        editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Pattern)'), {
-            autoRefresh: true,
-            lineNumbers: true,
-            styleActiveLine: true,
-            matchBrackets: true,
-            mode: { name: "liquid" },
-        });
-    });
-    //]]>
-</script>
+<script asp-src="~/OrchardCore.ContentPreview/Scripts/preview-part-settings/preview-part-settings.min.js" debug-src="~/OrchardCore.ContentPreview/Scripts/preview-part-settings/preview-part-settings.js" at="Foot" type="module"></script>

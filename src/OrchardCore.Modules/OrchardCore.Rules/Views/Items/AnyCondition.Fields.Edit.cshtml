@@ -1,9 +1,15 @@
 @model AnyConditionViewModel
 
-<h5>@T["Any"]</h5>
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <h5>@T["Any"]</h5>
+    </div>
+</div>
 
-<div class="mb-3" asp-validation-class-for="DisplayText">
-    <label asp-for="DisplayText" class="form-label">@T["Name"]</label>
-    <input asp-for="DisplayText" class="form-control" type="text" />
-    <span asp-validation-for="DisplayText"></span>
+<div class="ocat-wrapper" asp-validation-class-for="DisplayText">
+    <label asp-for="DisplayText" class="ocat-label">@T["Name"]</label>
+    <div class="ocat-end">
+        <input asp-for="DisplayText" class="form-control" type="text" />
+        <span asp-validation-for="DisplayText"></span>
+    </div>
 </div>

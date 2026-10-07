@@ -17,17 +17,17 @@
 
 <script asp-name="nouislider" at="Foot"></script>
 
-<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Value)_FieldWrapper">
-    <label asp-for="Value" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@localizedFieldName</label>
-    <div class="@Orchard.GetEndClasses()">
-        <div class="@Orchard.GetLimitedWidthWrapperClasses()">
-            <div class="@Orchard.GetLimitedWidthClasses()">
+<div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty)) numeric-field-slider" id="@Html.IdFor(x => x.Value)_FieldWrapper" data-min="@min" data-max="@max" data-step="@step" data-direction="@Orchard.CultureDir()" data-value="@Model.Value" data-js-decimal-separator="@javascriptDecimalSeparator" data-server-decimal-separator="@serverDecimalSeparator">
+    <label asp-for="Value" class="ocat-label @(settings.Required ? "ocat-label-required" : "")">@localizedFieldName</label>
+    <div class="ocat-end">
+        <div class="ocat-limited-wrapper">
+            <div class="ocat-limited">
                 <div class="input-group mb-2">
                     @if (settings.Minimum.HasValue)
                     {
                         <span class="input-group-text">@min</span>
                     }
-                    <input asp-for="Value" class="form-control content-preview-select" placeholder="@settings.Placeholder" />
+                    <input asp-for="Value" class="form-control content-preview-select numeric-field-slider-value" placeholder="@settings.Placeholder" />
                     @if (settings.Maximum.HasValue)
                     {
                         <span class="input-group-text">@max</span>
@@ -41,7 +41,7 @@
                 <span class="ms-1 me-3">@min</span>
             }
 
-            <div id="@(id)-nouislider" class="w-100 w-lg-75 w-xl-50 mx-3"></div>
+            <div id="@(id)-nouislider" class="w-100 w-lg-75 w-xl-50 mx-3 numeric-field-slider-track"></div>
             @if (settings.Maximum.HasValue)
             {
                 <span class="ms-3 me-1">@max</span>
@@ -49,45 +49,9 @@
         </div>
         @if (!string.IsNullOrEmpty(settings.Hint))
         {
-            <span class="hint">@settings.Hint</span>
+            @await DisplayAsync(await New.Hint_Admin(Hint: settings.Hint))
         }
     </div>
 </div>
 
-<script at="Foot">
-
-    var slider = document.getElementById('@(id)-nouislider');
-    var serverDecimalSeparator = $("<textarea/>").html('@serverDecimalSeparator').val()
-
-    noUiSlider.create(slider, {
-        start: [@min],
-        step: @step,
-        direction: '@Orchard.CultureDir()',
-        connect: true,
-        range: {
-            'min': @min,
-            'max': @max
-                }
-    });
-
-    slider.noUiSlider.set("@Model.Value");
-
-    slider.noUiSlider.on('change', function () {
-        let value = slider.noUiSlider.get();
-        @if (javascriptDecimalSeparator != serverDecimalSeparator)
-        {
-            <text>value = value.replace('@(javascriptDecimalSeparator)', serverDecimalSeparator); </text>
-        }
-        $('#@(id)').val(value);
-    });
-
-    $('#@(id)').on('keyup', function () {
-        let value = this.value;
-    @if (javascriptDecimalSeparator != serverDecimalSeparator)
-    {
-        <text>value = value.replace(serverDecimalSeparator, '@(javascriptDecimalSeparator)'); </text>
-    }
-        slider.noUiSlider.set(Number(value) || 0);
-    });
-
-</script>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/numeric-field-slider/numeric-field-slider.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/numeric-field-slider/numeric-field-slider.js" depends-on="nouislider" at="Foot" type="module"></script>

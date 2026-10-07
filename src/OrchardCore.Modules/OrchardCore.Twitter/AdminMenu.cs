@@ -6,7 +6,7 @@ namespace OrchardCore.Twitter;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", TwitterConstants.Features.Twitter },
@@ -28,7 +28,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                 .Add(S["Settings"], settings => settings
                     .Add(S["X (Twitter)"], S["X (Twitter)"].PrefixPosition(), twitter => twitter
                         .AddClass("twitter").Id("twitter")
-                        .Action("Index", "Admin", _routeValues)
+                        .Action("Index", "Admin", s_routeValues)
                         .Permission(Permissions.ManageTwitter)
                         .LocalNav()
                     )
@@ -43,7 +43,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                 .Add(S["Integrations"], S["Integrations"].PrefixPosition(), integrations => integrations
                     .Add(S["X (Twitter)"], S["X (Twitter)"].PrefixPosition(), twitter => twitter
                         .AddClass("twitter").Id("twitter")
-                        .Action("Index", "Admin", _routeValues)
+                        .Action("Index", "Admin", s_routeValues)
                         .Permission(Permissions.ManageTwitter)
                         .LocalNav()
                     )

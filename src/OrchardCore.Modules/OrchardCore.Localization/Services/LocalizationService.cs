@@ -9,10 +9,17 @@ namespace OrchardCore.Localization.Services;
 /// </summary>
 public class LocalizationService : ILocalizationService
 {
-    private static readonly string _defaultCulture = CultureInfo.InstalledUICulture.Name;
-    private static readonly string[] _supportedCultures = [CultureInfo.InstalledUICulture.Name];
+    // CultureInfo.InstalledUICulture.Name is empty when the OS/runtime has no configured
+    // UI culture (e.g. invariant globalization mode, or a POSIX "C"/"C.UTF-8" locale, common
+    // on Linux CI runners and containers) - falling back to "en" keeps GetSupportedCulturesAsync
+    // from ever returning an empty culture name, which callers (e.g.
+    // CultureInfo.GetCultureInfo(cultureName)) treat as invalid input and throw on.
+    private static readonly string s_defaultCulture = string.IsNullOrEmpty(CultureInfo.InstalledUICulture.Name)
+        ? "en"
+        : CultureInfo.InstalledUICulture.Name;
+    private static readonly string[] s_supportedCultures = [s_defaultCulture];
 
-    private static readonly CultureInfo[] _cultureAliases =
+    private static readonly CultureInfo[] s_cultureAliases =
     [
         CultureInfo.GetCultureInfo("zh-CN"),
         CultureInfo.GetCultureInfo("zh-TW")
@@ -39,7 +46,7 @@ public class LocalizationService : ILocalizationService
     {
         await InitializeLocalizationSettingsAsync();
 
-        return _localizationSettings.DefaultCulture ?? _defaultCulture;
+        return _localizationSettings.DefaultCulture ?? s_defaultCulture;
     }
 
     /// <inheritdocs />
@@ -48,7 +55,7 @@ public class LocalizationService : ILocalizationService
         await InitializeLocalizationSettingsAsync();
 
         return _localizationSettings.SupportedCultures == null || _localizationSettings.SupportedCultures.Length == 0
-            ? _supportedCultures
+            ? s_supportedCultures
             : _localizationSettings.SupportedCultures
             ;
     }
@@ -57,7 +64,7 @@ public class LocalizationService : ILocalizationService
     public IEnumerable<CultureInfo> GetAllCulturesAndAliases()
     {
         var cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
-            .Union(_cultureAliases)
+            .Union(s_cultureAliases)
             .OrderBy(c => c.Name);
 
         return cultures;

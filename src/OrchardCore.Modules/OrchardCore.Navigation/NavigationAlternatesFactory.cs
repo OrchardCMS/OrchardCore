@@ -5,21 +5,21 @@ namespace OrchardCore.Navigation;
 
 internal static class NavigationAlternatesFactory
 {
-    private static readonly ConcurrentDictionary<string, string[]> _navigationCache = new(StringComparer.Ordinal);
-    private static readonly ConcurrentDictionary<NavigationItemAlternatesCacheKey, string[]> _navigationItemCache = new();
-    private static readonly ConcurrentDictionary<NavigationItemAlternatesCacheKey, string[]> _navigationItemLinkCache = new();
+    private static readonly ConcurrentDictionary<string, string[]> s_navigationCache = new(StringComparer.Ordinal);
+    private static readonly ConcurrentDictionary<NavigationItemAlternatesCacheKey, string[]> s_navigationItemCache = new();
+    private static readonly ConcurrentDictionary<NavigationItemAlternatesCacheKey, string[]> s_navigationItemLinkCache = new();
 
     public static string[] GetNavigationAlternates(string menuName)
     {
         menuName ??= string.Empty;
-        return _navigationCache.GetOrAdd(menuName, static m => ["Navigation__" + m.EncodeAlternateElement()]);
+        return s_navigationCache.GetOrAdd(menuName, static m => ["Navigation__" + m.EncodeAlternateElement()]);
     }
 
     public static string[] GetNavigationItemAlternates(string menuName, int level)
     {
         var key = new NavigationItemAlternatesCacheKey(menuName ?? string.Empty, level);
 
-        return _navigationItemCache.GetOrAdd(key, static k =>
+        return s_navigationItemCache.GetOrAdd(key, static k =>
         {
             var encodedMenuName = k.MenuName.EncodeAlternateElement();
 
@@ -36,7 +36,7 @@ internal static class NavigationAlternatesFactory
     {
         var key = new NavigationItemAlternatesCacheKey(menuName ?? string.Empty, level);
 
-        return _navigationItemLinkCache.GetOrAdd(key, static k =>
+        return s_navigationItemLinkCache.GetOrAdd(key, static k =>
         {
             var encodedMenuName = k.MenuName.EncodeAlternateElement();
 

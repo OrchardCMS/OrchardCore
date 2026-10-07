@@ -8,7 +8,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Liquid;
 public class DataProtectionFilterTests
 {
     [Fact]
-    public async Task EncryptFilterShouldReturnNonEmptyBase64String()
+    public async Task EncryptFilter_Default_ReturnsNonEmptyBase64String()
     {
         var context = new SiteContext();
         await context.InitializeAsync();
@@ -24,7 +24,7 @@ public class DataProtectionFilterTests
     }
 
     [Fact]
-    public async Task DecryptFilterShouldReturnOriginalValueAfterEncrypt()
+    public async Task DecryptFilter_Default_ReturnsOriginalValueAfterEncrypt()
     {
         var context = new SiteContext();
         await context.InitializeAsync();
@@ -39,7 +39,7 @@ public class DataProtectionFilterTests
     }
 
     [Fact]
-    public async Task DecryptFilterShouldReturnEmptyForEmptyInput()
+    public async Task DecryptFilter_Default_ReturnsEmptyForEmptyInput()
     {
         var context = new SiteContext();
         await context.InitializeAsync();
@@ -54,7 +54,7 @@ public class DataProtectionFilterTests
     }
 
     [Fact]
-    public async Task DecryptFilterShouldReturnNilForInvalidCiphertext()
+    public async Task DecryptFilter_Default_ReturnsNilForInvalidCiphertext()
     {
         var context = new SiteContext();
         await context.InitializeAsync();

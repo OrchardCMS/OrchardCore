@@ -31,19 +31,17 @@ public class ValidateAntiforgeryTokenTask : TaskActivity<ValidateAntiforgeryToke
     public override bool HasEditor => false;
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"], S["Valid"], S["Invalid"]);
-    }
+        => Outcome(S["Done"], S["Valid"], S["Invalid"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         if (await _antiforgery.IsRequestValidAsync(_httpContextAccessor.HttpContext))
         {
-            return Outcomes("Done", "Valid");
+            return Outcome("Done", "Valid");
         }
         else
         {
-            return Outcomes("Done", "Invalid");
+            return Outcome("Done", "Invalid");
         }
     }
 }

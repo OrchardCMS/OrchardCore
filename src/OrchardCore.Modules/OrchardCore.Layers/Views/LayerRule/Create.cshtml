@@ -1,6 +1,11 @@
 @model LayerRuleCreateViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Create Rule"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="LayersRuleCreate" title="@T["Create Rule"]">
+        <breadcrumb-item id="Layers" action="Index" controller="Admin" area="OrchardCore.Layers" permission="@Permissions.ManageLayers.Name">@T["Widgets and Layers"]</breadcrumb-item>
+        <breadcrumb-item id="Layer" action="Edit" controller="Admin" area="OrchardCore.Layers" route-name="@Model.Name" permission="@Permissions.ManageLayers.Name">@T["Edit Layer - {0}", Model.Name]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Create" method="post" class="no-multisubmit">
@@ -10,8 +15,10 @@
     <input type="hidden" asp-for="Name" />
     <input type="hidden" asp-for="ConditionGroupId" />
 
-    <div class="mb-3 mt-3">
-        <button class="btn btn-primary create" type="submit">@T["Create"]</button>
-        <a class="btn btn-secondary cancel" role="button" asp-route-action="Edit" asp-route-controller="Admin" asp-route-name="@Model.Name">@T["Cancel"]</a>
+    <div class="ocat-wrapper mt-3">
+        <div class="ocat-end-offset">
+            <button class="btn btn-primary create" type="submit">@T["Create"]</button>
+            <a class="btn btn-secondary cancel" role="button" asp-route-action="Edit" asp-route-controller="Admin" asp-route-name="@Model.Name">@T["Cancel"]</a>
+        </div>
     </div>
 </form>

@@ -6,7 +6,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement;
 public class DefaultContentManagerTests
 {
     [Fact]
-    public async Task GetAsync_WithMultipleContentItemIds_ShouldReturnItemsInSameOrderAsInput()
+    public async Task GetAsync_MultipleContentItemIds_ReturnsItemsInSameOrderAsInput()
     {
         using var context = new BlogContext();
         await context.InitializeAsync();
@@ -56,7 +56,7 @@ public class DefaultContentManagerTests
     }
 
     [Fact]
-    public async Task GetAsync_WithDuplicateIds_ShouldReturnUniqueItemsInCorrectOrder()
+    public async Task GetAsync_DuplicateIds_ReturnsUniqueItemsInCorrectOrder()
     {
         using var context = new BlogContext();
         await context.InitializeAsync();
@@ -84,7 +84,7 @@ public class DefaultContentManagerTests
     }
 
     [Fact]
-    public async Task GetAsync_WithPartiallyExistingIds_ShouldReturnFoundItemsInCorrectOrder()
+    public async Task GetAsync_PartiallyExistingIds_ReturnsFoundItemsInCorrectOrder()
     {
         using var context = new BlogContext();
         await context.InitializeAsync();
@@ -111,7 +111,7 @@ public class DefaultContentManagerTests
     }
 
     [Fact]
-    public async Task GetAsync_WithEmptyInput_ShouldReturnEmptyResult()
+    public async Task GetAsync_EmptyInput_ReturnsEmptyResult()
     {
         using var context = new BlogContext();
         await context.InitializeAsync();
@@ -127,7 +127,7 @@ public class DefaultContentManagerTests
     }
 
     [Fact]
-    public async Task GetAsync_WithNullInput_ShouldReturnEmptyResult()
+    public async Task GetAsync_NullInput_ReturnsEmptyResult()
     {
         using var context = new BlogContext();
         await context.InitializeAsync();
@@ -143,7 +143,7 @@ public class DefaultContentManagerTests
     }
 
     [Fact]
-    public async Task GetAsync_WithVersionOptions_ShouldMaintainOrderRegardlessOfVersionRequested()
+    public async Task GetAsync_VersionOptions_MaintainOrderRegardlessOfVersionRequested()
     {
         using var context = new BlogContext();
         await context.InitializeAsync();
@@ -178,7 +178,7 @@ public class DefaultContentManagerTests
     }
 
     [Fact]
-    public async Task GetAsync_WithLargeSetOfIds_ShouldMaintainOrderAtScale()
+    public async Task GetAsync_LargeSetOfIds_MaintainOrderAtScale()
     {
         using var context = new BlogContext();
         await context.InitializeAsync();

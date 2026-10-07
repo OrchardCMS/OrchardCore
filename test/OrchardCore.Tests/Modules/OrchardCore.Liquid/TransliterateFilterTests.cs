@@ -13,7 +13,7 @@ public class TransliterateFilterTests
     [InlineData("aeneid", "aeneid")]
     [InlineData("Ελληνικά", "Ellinika")]
     [InlineData("джинсы_клеш", "dzhinsy_klesh")]
-    public async Task TransliterateFilterShouldReturnTransliteratedString(string text, string expected)
+    public async Task TransliterateFilter_Default_ReturnsTransliteratedString(string text, string expected)
     {
         // Arrange
         var context = new SiteContext();

@@ -17,7 +17,7 @@ public class AttachedMediaFieldContentHandler : ContentHandlerBase
 
     public override async Task RemovedAsync(RemoveContentContext context)
     {
-        if (context.NoActiveVersionLeft)
+        if (context.NoActiveVersionLeft && context.Reason == RemoveContentReason.Deletion)
         {
             await _attachedMediaFieldFileService.DeleteContentItemFolderAsync(context.ContentItem);
         }

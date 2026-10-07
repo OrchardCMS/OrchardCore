@@ -16,7 +16,7 @@ public sealed class SitemapController : Controller
     private const int WarningLength = 47_185_920;
     private const int ErrorLength = 52_428_800;
 
-    private static readonly ConcurrentDictionary<string, Lazy<Task<Stream>>> _workers = new(StringComparer.OrdinalIgnoreCase);
+    private static readonly ConcurrentDictionary<string, Lazy<Task<Stream>>> s_workers = new(StringComparer.OrdinalIgnoreCase);
 
     private readonly ISitemapManager _sitemapManager;
     private readonly ISiteService _siteService;
@@ -55,7 +55,7 @@ public sealed class SitemapController : Controller
         {
             // When multiple requests occur for the same sitemap it 
             // may still be building, so we wait for it to complete.
-            if (_workers.TryGetValue(_tenantName + sitemap.Path, out var writeTask))
+            if (s_workers.TryGetValue(_tenantName + sitemap.Path, out var writeTask))
             {
                 await writeTask.Value;
             }
@@ -66,7 +66,7 @@ public sealed class SitemapController : Controller
         }
         else
         {
-            var work = await _workers.GetOrAdd(_tenantName + sitemap.Path, x => new Lazy<Task<Stream>>(async () =>
+            var work = await s_workers.GetOrAdd(_tenantName + sitemap.Path, x => new Lazy<Task<Stream>>(async () =>
             {
                 try
                 {
@@ -105,7 +105,7 @@ public sealed class SitemapController : Controller
                 }
                 finally
                 {
-                    _workers.TryRemove(_tenantName + sitemap.Path, out var writeCacheTask);
+                    s_workers.TryRemove(_tenantName + sitemap.Path, out var writeCacheTask);
                 }
             }, LazyThreadSafetyMode.ExecutionAndPublication)).Value;
 

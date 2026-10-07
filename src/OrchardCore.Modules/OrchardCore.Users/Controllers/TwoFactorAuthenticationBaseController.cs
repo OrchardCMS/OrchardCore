@@ -16,8 +16,8 @@ namespace OrchardCore.Users.Controllers;
 
 public abstract class TwoFactorAuthenticationBaseController : AccountBaseController
 {
-    private static readonly string _twoFactorAuthenticationControllerName = typeof(TwoFactorAuthenticationController).ControllerName();
-    private static readonly string _accountControllerName = typeof(AccountController).ControllerName();
+    private static readonly string s_twoFactorAuthenticationControllerName = typeof(TwoFactorAuthenticationController).ControllerName();
+    private static readonly string s_accountControllerName = typeof(AccountController).ControllerName();
 
     protected readonly UserManager<IUser> UserManager;
     protected readonly IDistributedCache DistributedCache;
@@ -142,7 +142,7 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
 
             await Notifier.WarningAsync(H["New recovery codes were generated."]);
 
-            return RedirectToAction(nameof(TwoFactorAuthenticationController.ShowRecoveryCodes), _twoFactorAuthenticationControllerName);
+            return RedirectToAction(nameof(TwoFactorAuthenticationController.ShowRecoveryCodes), s_twoFactorAuthenticationControllerName);
         }
 
         return RedirectToTwoFactorIndex();
@@ -156,10 +156,10 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
     }
 
     protected IActionResult RedirectToTwoFactorIndex()
-        => RedirectToAction(nameof(TwoFactorAuthenticationController.Index), _twoFactorAuthenticationControllerName);
+        => RedirectToAction(nameof(TwoFactorAuthenticationController.Index), s_twoFactorAuthenticationControllerName);
 
     protected IActionResult RedirectToAccountLogin()
-        => RedirectToAction(nameof(AccountController.Login), _accountControllerName);
+        => RedirectToAction(nameof(AccountController.Login), s_accountControllerName);
 
     protected IActionResult UserNotFound()
         => NotFound("Unable to load user.");

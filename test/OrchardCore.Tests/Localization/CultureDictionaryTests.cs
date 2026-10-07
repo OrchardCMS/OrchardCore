@@ -5,7 +5,7 @@ namespace OrchardCore.Tests.Localization;
 public class CultureDictionaryTests
 {
     [Fact]
-    public void MergeAddsRecordToEmptyDictionary()
+    public void MergeAddsRecordToEmptyDictionary_Default_Succeeds()
     {
         var dictionary = new CultureDictionary("cs", PluralizationRule.Czech);
         var record = new CultureDictionaryRecord("ball", "míč", "míče", "míčů");
@@ -16,7 +16,7 @@ public class CultureDictionaryTests
     }
 
     [Fact]
-    public void MergeOverwritesTranslationsForSameKeys()
+    public void MergeOverwritesTranslationsForSameKeys_Default_Succeeds()
     {
         var dictionary = new CultureDictionary("cs", PluralizationRule.Czech);
         var record = new CultureDictionaryRecord("ball", "míč", "míče", "míčů");
@@ -29,7 +29,7 @@ public class CultureDictionaryTests
     }
 
     [Fact]
-    public void IndexerReturnNullIfKeyDoesntExist()
+    public void IndexerReturnNullIfKeyDoesntExist_Default_Succeeds()
     {
         var dictionary = new CultureDictionary("cs", PluralizationRule.Czech);
         var key = new CultureDictionaryRecordKey { MessageId = "ball" };
@@ -39,7 +39,7 @@ public class CultureDictionaryTests
     }
 
     [Fact]
-    public void IndexerThrowsPluralFormNotFoundExceptionIfSpecifiedPluralFormDoesntExist()
+    public void IndexerThrowsPluralFormNotFoundExceptionIfSpecifiedPluralFormDoesntExist_Default_Succeeds()
     {
         // Arrange
         var dictionary = new CultureDictionary("cs", PluralizationRule.Czech);
@@ -55,7 +55,7 @@ public class CultureDictionaryTests
     }
 
     [Fact]
-    public void EnumerateCultureDictionary()
+    public void EnumerateCultureDictionary_Default_Succeeds()
     {
         // Arrange
         var dictionary = new CultureDictionary("ar", PluralizationRule.Arabic);

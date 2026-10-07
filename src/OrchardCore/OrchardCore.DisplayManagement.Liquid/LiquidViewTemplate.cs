@@ -185,10 +185,18 @@ public static class LiquidViewTemplateExtensions
 
 public static class LiquidTemplateContextExtensions
 {
-    internal static async ValueTask EnterScopeAsync(this LiquidTemplateContext context, ViewContext viewContext, object model)
+    public static async ValueTask InitializeAsync(this LiquidTemplateContext context, ViewContext viewContext)
     {
         if (!context.IsInitialized)
         {
+            // Try to create fallback view context if none exists. This only works if an HTTP context is available.
+            if (viewContext == null &&
+                context.Services.GetRequiredService<IHttpContextAccessor>().HttpContext is { } httpContext &&
+                await httpContext.GetActionContextAsync() is { } actionContext)
+            {
+                viewContext = LiquidViewTemplateExtensions.GetViewContext(actionContext);
+            }
+            
             var localClock = context.Services.GetRequiredService<ILocalClock>();
 
             // Configure Fluid with the time zone to represent local date and times
@@ -210,6 +218,11 @@ public static class LiquidTemplateContextExtensions
 
             context.IsInitialized = true;
         }
+    }
+    
+    internal static async ValueTask EnterScopeAsync(this LiquidTemplateContext context, ViewContext viewContext, object model)
+    {
+        await context.InitializeAsync(viewContext);
 
         context.EnterChildScope();
 

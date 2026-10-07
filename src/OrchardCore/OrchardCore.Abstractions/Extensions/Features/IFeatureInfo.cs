@@ -9,6 +9,8 @@ public interface IFeatureInfo
     string Description { get; }
     bool DefaultTenantOnly { get; }
     IExtensionInfo Extension { get; }
+    string[] Before { get; }
+    string[] After { get; }
     string[] Dependencies { get; }
     bool IsAlwaysEnabled { get; }
     bool EnabledByDependencyOnly { get; }

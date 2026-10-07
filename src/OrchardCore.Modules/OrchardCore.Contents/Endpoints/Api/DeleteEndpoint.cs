@@ -14,13 +14,14 @@ public static class DeleteEndpoint
     public static IEndpointRouteBuilder AddDeleteContentEndpoint(this IEndpointRouteBuilder builder)
     {
         builder.MapDelete("api/content/{contentItemId}", HandleAsync)
+            .WithName("ApiDeleteContentItem")
             .AllowAnonymous()
             .DisableAntiforgery();
 
         return builder;
     }
 
-    [Authorize(AuthenticationSchemes = "Api")]
+    [Authorize(AuthenticationSchemes = OrchardCoreConstants.AuthenticationSchemes.Api)]
     private static async Task<IResult> HandleAsync(
         string contentItemId,
         IContentManager contentManager,
@@ -30,7 +31,7 @@ public static class DeleteEndpoint
     {
         if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.AccessContentApi))
         {
-            return httpContext.ChallengeOrForbid("Api");
+            return httpContext.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
 
         var contentItem = await contentManager.GetAsync(contentItemId);
@@ -42,7 +43,7 @@ public static class DeleteEndpoint
 
         if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.DeleteContent, contentItem))
         {
-            return httpContext.ChallengeOrForbid("Api");
+            return httpContext.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
         }
 
         await contentManager.RemoveAsync(contentItem);

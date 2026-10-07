@@ -11,7 +11,7 @@ Note that Orchard has to be certified as a non-containerized app. Containerized 
 To begin, set up the basics on the [Certified Technology Portal](https://connect.redhat.com/account/dashboard). If you need access to it, please let us know. Then, these are the steps:
 
 1. Create an Azure RHEL (latest major version) Azure VM. You can find this by searching for "Red Hat Enterprise Linux" in the Marketplace, and then setting up the official image provided by Red Hat. Be sure to keep HTTP and HTTPS ports open. (While you don't need an Azure VM, doing it this way makes things simpler than a local virtualized setup, for example.)
-2. Connect with [MobaXterm](https://mobaxterm.mobatek.net/) or your terminal of choice, using the VM’s public IP, “azureuser” as the user, and the private key PEM file Azure lets you download when creating the VM.
+2. Connect with [MobaXterm](https://mobaxterm.mobatek.net/) or your terminal of choice, using the VM's public IP, “azureuser” as the user, and the private key PEM file Azure lets you download when creating the VM.
 3. Open up port 80:
 
     ```console

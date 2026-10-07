@@ -39,13 +39,14 @@ public class UserTaskEvent : EventActivity
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        return Actions.Select(x => Outcome(S[x]));
+        return Actions.SelectMany(a => Outcome(S[a]));
     }
 
     public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         var action = GetProvidedAction(workflowContext);
-        return Outcomes(action);
+
+        return Outcome(action);
     }
 
     private static string GetProvidedAction(WorkflowExecutionContext workflowContext)

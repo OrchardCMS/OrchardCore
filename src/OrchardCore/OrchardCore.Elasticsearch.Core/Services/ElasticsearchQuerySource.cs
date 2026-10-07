@@ -113,8 +113,9 @@ public sealed class ElasticsearchQuerySource : IQuerySource
 
             foreach (var document in docs.TopDocs)
             {
-                results.Add(new JsonObject(document.Value.Select(x =>
-                    KeyValuePair.Create(x.Key, (JsonNode)JsonValue.Create(x.Value)))));
+                results.Add(new JsonObject(document.Value
+                    .Where(x => x.Value is not null)
+                    .Select(x => KeyValuePair.Create(x.Key, x.Value.DeepClone()))));
             }
 
             elasticQueryResults.Items = results;

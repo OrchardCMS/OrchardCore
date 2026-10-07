@@ -5,14 +5,14 @@ namespace OrchardCore.Sms.Azure.Services;
 
 public sealed class AzureSmsProviderOptionsConfigurations : IConfigureOptions<SmsProviderOptions>
 {
-    private readonly AzureSmsOptions _azureOptions;
+    private readonly IOptionsMonitor<AzureSmsOptions> _azureOptions;
     private readonly DefaultAzureSmsOptions _defaultAzureOptions;
 
     public AzureSmsProviderOptionsConfigurations(
-        IOptions<AzureSmsOptions> azureOptions,
+        IOptionsMonitor<AzureSmsOptions> azureOptions,
         IOptions<DefaultAzureSmsOptions> defaultAzureOptions)
     {
-        _azureOptions = azureOptions.Value;
+        _azureOptions = azureOptions;
         _defaultAzureOptions = defaultAzureOptions.Value;
     }
 
@@ -31,7 +31,7 @@ public sealed class AzureSmsProviderOptionsConfigurations : IConfigureOptions<Sm
     {
         var typeOptions = new SmsProviderTypeOptions(typeof(AzureSmsProvider))
         {
-            IsEnabled = _azureOptions.IsEnabled,
+            IsEnabled = _azureOptions.CurrentValue.IsEnabled,
         };
 
         options.TryAddProvider(AzureSmsProvider.TechnicalName, typeOptions);

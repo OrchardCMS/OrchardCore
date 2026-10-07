@@ -8,11 +8,16 @@ namespace OrchardCore.Workflows.Activities;
 public class SetOutputTask : TaskActivity<SetOutputTask>
 {
     private readonly IWorkflowScriptEvaluator _scriptEvaluator;
+    private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
     protected readonly IStringLocalizer S;
 
-    public SetOutputTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<SetOutputTask> localizer)
+    public SetOutputTask(
+        IWorkflowScriptEvaluator scriptEvaluator,
+        IWorkflowExpressionEvaluator expressionEvaluator,
+        IStringLocalizer<SetOutputTask> localizer)
     {
         _scriptEvaluator = scriptEvaluator;
+        _expressionEvaluator = expressionEvaluator;
         S = localizer;
     }
 
@@ -32,16 +37,32 @@ public class SetOutputTask : TaskActivity<SetOutputTask>
         set => SetProperty(value);
     }
 
-    public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    public WorkflowExpression<object> LiquidValue
     {
-        return Outcomes(S["Done"]);
+        get => GetProperty(() => new WorkflowExpression<object>());
+        set => SetProperty(value);
     }
+
+    public WorkflowScriptSyntax Syntax
+    {
+        get => GetProperty(() => WorkflowScriptSyntax.JavaScript);
+        set => SetProperty(value);
+    }
+
+    public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        => Outcome(S["Done"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var value = await _scriptEvaluator.EvaluateAsync(Value, workflowContext);
+        var value = Syntax switch
+        {
+            WorkflowScriptSyntax.Liquid => await _expressionEvaluator.EvaluateAsync(LiquidValue, workflowContext, null),
+            WorkflowScriptSyntax.JavaScript => await _scriptEvaluator.EvaluateAsync(Value, workflowContext),
+            _ => throw new NotSupportedException($"The syntax {Syntax} isn't supported for SetOutputTask.")
+        };
+
         workflowContext.Output[OutputName] = value;
 
-        return Outcomes("Done");
+        return Outcome("Done");
     }
 }

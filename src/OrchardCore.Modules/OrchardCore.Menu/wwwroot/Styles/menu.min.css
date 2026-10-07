@@ -1,1 +1,1 @@
-#menu{padding-left:0;list-style:none}#menu li{cursor:move;border:none;padding:0;list-style:none}
+#menu{padding-left:0;list-style:none}#menu li{cursor:move;user-select:none;border:none;padding:0;list-style:none;transition:margin-left .1s ease-out}#menu .sortable-ghost:not(.sortable-fallback){opacity:0}.menu-item-pending-shift{transform:var(--pending-shift);transition:transform .1s ease-out}.menu-item-pending-parent>.menu-item-title{outline:2px solid var(--bs-primary,#0d6efd);outline-offset:2px}

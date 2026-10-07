@@ -9,7 +9,7 @@ namespace OrchardCore.Shells.Azure.Configuration;
 
 public class BlobShellsConfigurationSources : IShellsConfigurationSources
 {
-    private static readonly string _appSettings =
+    private static readonly string s_appSettings =
         Path.GetFileNameWithoutExtension(OrchardCoreConstants.Configuration.ApplicationSettingsFileName);
 
     private readonly IShellsFileStore _shellsFileStore;
@@ -28,7 +28,7 @@ public class BlobShellsConfigurationSources : IShellsConfigurationSources
         _shellsFileStore = shellsFileStore;
         _environment = hostingEnvironment.EnvironmentName;
         _blobOptions = blobOptions;
-        _fileSystemAppSettings = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, _appSettings);
+        _fileSystemAppSettings = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, s_appSettings);
     }
 
     public async Task AddSourcesAsync(IConfigurationBuilder builder)
@@ -49,7 +49,7 @@ public class BlobShellsConfigurationSources : IShellsConfigurationSources
             builder.AddTenantJsonStream(stream);
         }
 
-        var environmentAppSettingsFileName = $"{_appSettings}.{_environment}.json";
+        var environmentAppSettingsFileName = $"{s_appSettings}.{_environment}.json";
         var environmentAppSettingsFileInfo = await _shellsFileStore.GetFileInfoAsync(environmentAppSettingsFileName);
         if (environmentAppSettingsFileInfo == null && _blobOptions.MigrateFromFiles)
         {

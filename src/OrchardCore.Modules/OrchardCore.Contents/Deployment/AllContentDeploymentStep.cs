@@ -1,5 +1,5 @@
-using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Contents.Deployment;
 
@@ -8,15 +8,14 @@ namespace OrchardCore.Contents.Deployment;
 /// </summary>
 public class AllContentDeploymentStep : DeploymentStep
 {
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<AllContentDeploymentStep>("Content Management");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<AllContentDeploymentStep>("All Content");
+
     public AllContentDeploymentStep()
     {
         Name = "AllContent";
-    }
-
-    public AllContentDeploymentStep(IStringLocalizer<AllContentDeploymentStep> S)
-        : this()
-    {
-        Category = S["Content Management"];
+        Category = s_category;
+        Title = s_title;
     }
 
     public bool ExportAsSetupRecipe { get; set; }

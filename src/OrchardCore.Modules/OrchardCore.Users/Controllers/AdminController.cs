@@ -107,7 +107,7 @@ public sealed class AdminController : Controller
         // Populate route values to maintain previous route data when generating page links.
         options.RouteValues.TryAdd("q", options.FilterResult.ToString());
 
-        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+        var pager = new Pager(pagerParameters, _pagerOptions);
 
         var count = await users.CountAsync();
 
@@ -483,11 +483,14 @@ public sealed class AdminController : Controller
         {
             await _session.CancelAsync();
 
-            await _notifier.ErrorAsync(H["Could not delete the user."]);
-
-            foreach (var error in result.Errors)
+            var errorDescriptions = result.Errors.Select(error => error.Description).ToArray();
+            if (errorDescriptions.Length > 0)
             {
-                await _notifier.ErrorAsync(H[error.Description]);
+                await _notifier.ErrorAsync(H.Plural(errorDescriptions.Length, "Could not delete the user. {1}", "Could not delete the user. Errors: {1}", string.Join(", ", errorDescriptions)));
+            }
+            else
+            {
+                await _notifier.ErrorAsync(H["Could not delete the user."]);
             }
         }
 

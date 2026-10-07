@@ -8,7 +8,7 @@ public sealed class BlogTests : CmsTestBase<BlogFixture>, IClassFixture<BlogFixt
     public BlogTests(BlogFixture fixture) : base(fixture) { }
 
     [Fact]
-    public async Task DisplaysTheHomePageOfTheBlogRecipe()
+    public async Task DisplaysTheHomePageOfTheBlogRecipe_Default_Succeeds()
     {
         var page = await Fixture.CreatePageAsync();
         await page.GotoAndAssertOkAsync("/");
@@ -17,7 +17,7 @@ public sealed class BlogTests : CmsTestBase<BlogFixture>, IClassFixture<BlogFixt
     }
 
     [Fact]
-    public async Task BlogAdminLoginShouldWork()
+    public async Task BlogAdminLogin_Default_Works()
     {
         var page = await Fixture.CreatePageAsync();
         await page.LoginAsync();

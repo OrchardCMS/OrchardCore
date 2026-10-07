@@ -10,7 +10,7 @@ public class ShapePositionOrderingTests
     /// registering shapes in arbitrary order).
     /// </summary>
     [Fact]
-    public async Task Items_ShouldOrderByPosition_RegardlessOfInsertionOrder()
+    public async Task Items_RegardlessOfInsertionOrder_OrderByPosition()
     {
         // Arrange - Add shapes in reverse order to prove insertion order doesn't matter.
         var zone = new Shape();
@@ -37,7 +37,7 @@ public class ShapePositionOrderingTests
     /// determines the final order, not the project/registration order.
     /// </summary>
     [Fact]
-    public async Task Items_ShouldOrderByPosition_NotByProjectRegistrationOrder()
+    public async Task Items_NotByProjectRegistrationOrder_OrderByPosition()
     {
         // Arrange
         var zone = new Shape();
@@ -68,7 +68,7 @@ public class ShapePositionOrderingTests
     /// are sorted purely by their position value.
     /// </summary>
     [Fact]
-    public async Task Items_ShouldOrderMultipleModuleShapes_ByPositionOnly()
+    public async Task Items_ByPositionOnly_OrderMultipleModuleShapes()
     {
         // Arrange - Simulate 5 different modules adding shapes in arbitrary order.
         var zone = new Shape();
@@ -102,7 +102,7 @@ public class ShapePositionOrderingTests
     /// and "after" comes after all numbered positions.
     /// </summary>
     [Fact]
-    public async Task Items_BeforeShouldBeFirst_AfterShouldBeLast()
+    public async Task Items_AfterBeLast_BeforeBeFirst()
     {
         // Arrange
         var zone = new Shape();
@@ -127,7 +127,7 @@ public class ShapePositionOrderingTests
     /// Proves the full ordering: before &lt; 0 &lt; 1 &lt; 2 &lt; ... &lt; after.
     /// </summary>
     [Fact]
-    public async Task Items_ShouldOrderCorrectly_BeforeNumbersAfter()
+    public async Task Items_BeforeNumbersAfter_OrderCorrectly()
     {
         // Arrange
         var zone = new Shape();
@@ -165,7 +165,7 @@ public class ShapePositionOrderingTests
     /// Proves that a shape with no position (empty string) is treated as position "0".
     /// </summary>
     [Fact]
-    public async Task Items_EmptyPosition_ShouldBeTreatedAsZero()
+    public async Task Items_EmptyPosition_IsTreatedAsZero()
     {
         // Arrange
         var zone = new Shape();
@@ -191,7 +191,7 @@ public class ShapePositionOrderingTests
     /// 12.5 should come after 12.4, and both after 11.
     /// </summary>
     [Fact]
-    public async Task Items_DotNotation_ShouldOrderCorrectly()
+    public async Task Items_DotNotation_OrderCorrectly()
     {
         // Arrange
         var zone = new Shape();
@@ -219,7 +219,7 @@ public class ShapePositionOrderingTests
     /// Proves that sub-positions work: 1 &lt; 1.1 &lt; 1.2 &lt; 1.10 &lt; 2.
     /// </summary>
     [Fact]
-    public async Task Items_SubPositions_ShouldOrderNumerically()
+    public async Task Items_SubPositions_OrderNumerically()
     {
         // Arrange
         var zone = new Shape();
@@ -254,7 +254,7 @@ public class ShapePositionOrderingTests
     /// Proves the complete ordering model works end-to-end.
     /// </summary>
     [Fact]
-    public async Task Items_CompleteOrdering_ShouldWorkEndToEnd()
+    public async Task Items_CompleteOrdering_WorksEndToEnd()
     {
         // Arrange
         var zone = new Shape();
@@ -300,7 +300,7 @@ public class ShapePositionOrderingTests
     /// but the position itself is the primary sort key.
     /// </summary>
     [Fact]
-    public async Task Items_SamePosition_ShouldMaintainStableOrder()
+    public async Task Items_SamePosition_MaintainStableOrder()
     {
         // Arrange
         var zone = new Shape();
@@ -330,7 +330,7 @@ public class ShapePositionOrderingTests
     /// Proves that deeply nested dot notation (e.g., 1.2.3) is supported.
     /// </summary>
     [Fact]
-    public async Task Items_DeepDotNotation_ShouldOrderCorrectly()
+    public async Task Items_DeepDotNotation_OrderCorrectly()
     {
         // Arrange
         var zone = new Shape();

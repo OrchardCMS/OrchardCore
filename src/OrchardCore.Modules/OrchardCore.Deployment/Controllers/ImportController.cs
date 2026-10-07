@@ -11,6 +11,7 @@ using OrchardCore.Admin;
 using OrchardCore.Deployment.Services;
 using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.FileStorage;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Recipes.Models;
 
@@ -23,6 +24,8 @@ public sealed class ImportController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
     private readonly ILogger _logger;
+    private readonly FileCreationService _fileCreationService;
+    private readonly ITempDirectoryProvider _tempDirectoryProvider;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -30,6 +33,8 @@ public sealed class ImportController : Controller
     public ImportController(
         IDeploymentManager deploymentManager,
         IAuthorizationService authorizationService,
+        FileCreationService fileCreationService,
+        ITempDirectoryProvider tempDirectoryProvider,
         INotifier notifier,
         ILogger<ImportController> logger,
         IHtmlLocalizer<ImportController> htmlLocalizer,
@@ -38,6 +43,8 @@ public sealed class ImportController : Controller
     {
         _deploymentManager = deploymentManager;
         _authorizationService = authorizationService;
+        _fileCreationService = fileCreationService;
+        _tempDirectoryProvider = tempDirectoryProvider;
         _notifier = notifier;
         _logger = logger;
         H = htmlLocalizer;
@@ -64,14 +71,27 @@ public sealed class ImportController : Controller
 
         if (importedPackage != null)
         {
-            var tempArchiveName = PathExtensions.GetTempFileName() + Path.GetExtension(importedPackage.FileName);
-            var tempArchiveFolder = PathExtensions.GetTempFileName();
+            var tempArchiveName = _tempDirectoryProvider.GetTempFileName(Path.GetExtension(importedPackage.FileName));
+            var tempArchiveFolder = _tempDirectoryProvider.GetTempFileName();
 
             try
             {
-                using (var stream = new FileStream(tempArchiveName, FileMode.Create))
+                await using var uploadedStream = importedPackage.OpenReadStream();
+                await using var fileCreatingResult = await _fileCreationService.CreateAsync(
+                    new FileCreatingContext(importedPackage.FileName, importedPackage.Length, importedPackage.ContentType),
+                    uploadedStream,
+                    HttpContext.RequestAborted);
+
+                if (!fileCreatingResult.Succeeded)
                 {
-                    await importedPackage.CopyToAsync(stream);
+                    await _notifier.ErrorAsync(H[fileCreatingResult.ErrorMessage ?? $"The uploaded file '{importedPackage.FileName}' was rejected."]);
+
+                    return RedirectToAction(nameof(Index));
+                }
+
+                await using (var stream = new FileStream(tempArchiveName, FileMode.Create))
+                {
+                    await fileCreatingResult.Stream.CopyToAsync(stream, HttpContext.RequestAborted);
                 }
 
                 if (importedPackage.FileName.EndsWith(".zip"))
@@ -152,11 +172,10 @@ public sealed class ImportController : Controller
 
         if (ModelState.IsValid)
         {
-            var tempArchiveFolder = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            var tempArchiveFolder = _tempDirectoryProvider.CreateTempSubdirectory();
 
             try
             {
-                Directory.CreateDirectory(tempArchiveFolder);
                 System.IO.File.WriteAllText(Path.Combine(tempArchiveFolder, "Recipe.json"), model.Json);
 
                 await _deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
@@ -184,6 +203,6 @@ public sealed class ImportController : Controller
             }
         }
 
-        return View(model);
+        return RedirectToAction(nameof(Json));
     }
 }

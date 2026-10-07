@@ -1,63 +1,81 @@
 @using OrchardCore.Facebook.ViewModels
 @model FacebookSettingsViewModel
 
-<p class="alert alert-warning" role="alert">
-    @T["The website might be restarted upon saving the settings, potentially leading to temporary unresponsiveness during the process."]
-    <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Facebook/#core-components" target="_blank">@T["See documentation"]</a>
-</p>
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <p class="alert alert-warning" role="alert">
+            @T["The website might be restarted upon saving the settings, potentially leading to temporary unresponsiveness during the process."]
+            <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Facebook/#core-components" target="_blank">@T["See documentation"]</a>
+        </p>
+    </div>
+</div>
 
 @if (Model.HasDecryptionError)
 {
-    <p class="alert alert-danger">@T["An error occurred while decrypting a setting. Please apply and save."]</p>
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <p class="alert alert-danger">@T["An error occurred while decrypting a setting. Please apply and save."]</p>
+        </div>
+    </div>
 }
 
-<h3>@T["Meta Integration"]</h3>
-
-<div class="mb-3" asp-validation-class-for="AppId">
-    <label asp-for="AppId" class="form-label">@T["Application Identifier"]</label>
-    <input asp-for="AppId" class="form-control" autocomplete="off" />
-    <span asp-validation-for="AppId"></span>
-    <span class="hint">@T["The Application ID found on the Meta developer portal parameters."]</span>
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <h3>@T["Meta Integration"]</h3>
+    </div>
 </div>
 
-<div class="mb-3" asp-validation-class-for="AppSecret">
-    <label asp-for="AppSecret" class="form-label">@T["Secret Key"]</label>
-    <input asp-for="AppSecret" class="form-control" type="password" value="@Model.AppSecret" autocomplete="off" />
-    <span asp-validation-for="AppSecret"></span>
-    <span class="hint">@T["The Application secret key found on the Meta developer portal parameters."]</span>
+<div class="ocat-wrapper" asp-validation-class-for="AppId">
+    <label asp-for="AppId" class="ocat-label">@T["Application Identifier"]</label>
+    <div class="ocat-end">
+        <input asp-for="AppId" class="form-control" autocomplete="off" />
+        <span asp-validation-for="AppId"></span>
+        <span class="hint">@T["The Application ID found on the Meta developer portal parameters."]</span>
+    </div>
 </div>
 
-<div class="row">
-    <div class="col-lg-6 col-xl-3">
-        <label asp-for="Version" class="form-label">@T["Javascript SDK Version"]</label>
+<div class="ocat-wrapper" asp-validation-class-for="AppSecret">
+    <label asp-for="AppSecret" class="ocat-label">@T["Secret Key"]</label>
+    <div class="ocat-end">
+        <input asp-for="AppSecret" class="form-control" type="password" value="@Model.AppSecret" autocomplete="off" />
+        <span asp-validation-for="AppSecret"></span>
+        <span class="hint">@T["The Application secret key found on the Meta developer portal parameters."]</span>
     </div>
-    <div class="col-lg-6 col-xl-9">
-        <label asp-for="SdkJs" class="form-label">@T["Javascript Sdk js"]</label>
-    </div>
-    <div class="mb-3 col-lg-6 col-xl-3" asp-validation-class-for="Version">
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="Version">
+    <label asp-for="Version" class="ocat-label">@T["Javascript SDK Version"]</label>
+    <div class="ocat-limited">
         <input asp-for="Version" class="form-control" value="@Model.Version" />
         <span asp-validation-for="Version"></span>
         <span class="hint">@T["Determines which versions of the Graph API and any API dialogs or plugins are invoked. Default is v3.2"]</span>
     </div>
+</div>
 
-    <div class="mb-3 col-lg-6 col-xl-3" asp-validation-class-for="SdkJs">
+<div class="ocat-limited-wrapper" asp-validation-class-for="SdkJs">
+    <label asp-for="SdkJs" class="ocat-label">@T["Javascript Sdk js"]</label>
+    <div class="ocat-limited">
         <input asp-for="SdkJs" class="form-control" value="@Model.SdkJs" />
         <span asp-validation-for="SdkJs"></span>
         <span class="hint">@T["Determines which sdk js file to load. Default is sdk.js but you can change it as needed. Eg. to render the chat plugin use sdk/xfbml.customerchat.js and <a target=\"_blank\" href=\"https://developers.facebook.com/docs/messenger-platform/discovery/customer-chat-plugin#steps\">follow instructions</a>"]</span>
     </div>
+</div>
 
-    <div class="mb-3 my-2 col-lg-6 col-xl-3" asp-validation-class-for="FBInit">
+<div class="ocat-wrapper" asp-validation-class-for="FBInit">
+    <div class="ocat-end-offset">
         <div class="form-check">
             <input class="form-check-input" asp-for="FBInit" type="checkbox" checked="@Model.FBInit" />
-            <label class="form-check-label">@T["Init on every page"]</label>
+            <label class="form-check-label" asp-for="FBInit">@T["Init on every page"]</label>
         </div>
         <span asp-validation-for="FBInit"></span>
     </div>
 </div>
 
-<div class="mb-3" asp-validation-class-for="FBInitParams">
-    <label asp-for="FBInitParams" class="form-label">@T["Parameters for the FB.init() call"]</label>
-    <textarea asp-for="FBInitParams" class="form-control" rows="5"></textarea>
-    <span asp-validation-for="FBInitParams"></span>
-    <span class="hint">@T["AppId and Version are filled automatically. Check the <a target=\"_blank\" href=\"https://developers.facebook.com/docs/javascript/reference/FB.init/v3.2\">reference doc for the <code>FB.init</code></a> function for more info"]</span>
+<div class="ocat-wrapper" asp-validation-class-for="FBInitParams">
+    <label asp-for="FBInitParams" class="ocat-label">@T["Parameters for the FB.init() call"]</label>
+    <div class="ocat-end">
+        <textarea asp-for="FBInitParams" class="form-control" rows="5"></textarea>
+        <span asp-validation-for="FBInitParams"></span>
+        <span class="hint">@T["AppId and Version are filled automatically. Check the <a target=\"_blank\" href=\"https://developers.facebook.com/docs/javascript/reference/FB.init/v3.2\">reference doc for the <code>FB.init</code></a> function for more info"]</span>
+    </div>
 </div>

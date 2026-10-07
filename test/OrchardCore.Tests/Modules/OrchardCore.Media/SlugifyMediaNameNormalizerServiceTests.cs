@@ -13,7 +13,7 @@ public class SlugifyMediaNameNormalizerServiceTests
     private readonly SlugService _slugService = new();
 
     [Fact]
-    public void ShouldNormalizeFolderNameWithTransliterationEnabledByDefault()
+    public void Normalize_FolderNameWithTransliterationEnabledByDefault_Succeeds()
     {
         var options = new MediaSlugifyOptions();
         var service = new SlugifyMediaNameNormalizerService(_slugService, Options.Create(options));
@@ -24,7 +24,7 @@ public class SlugifyMediaNameNormalizerServiceTests
     }
 
     [Fact]
-    public void ShouldNormalizeFileNameWithoutTransliterationWhenDisabled()
+    public void Normalize_Disabled_Succeeds()
     {
         var options = new MediaSlugifyOptions
         {
@@ -38,7 +38,7 @@ public class SlugifyMediaNameNormalizerServiceTests
     }
 
     [Fact]
-    public void ShouldDefaultTransliterationToTrueWhenConfigurationIsMissing()
+    public void Default_ConfigurationIsMissing_Succeeds()
     {
         var options = new MediaSlugifyOptions
         {
@@ -53,12 +53,45 @@ public class SlugifyMediaNameNormalizerServiceTests
         Assert.True(options.Transliterate);
     }
 
+    [Theory]
+    [InlineData("OrchardCore:OrchardCore_Media_Slugify:Transliterate", "false", false)]
+    [InlineData("OrchardCore:OrchardCore.Media.Slugify:Transliterate", "false", false)]
+    public void Read_TransliterationFromLegacyConfiguration_Succeeds(string key, string value, bool expected)
+    {
+        var shellConfiguration = CreateShellConfiguration(
+        [
+            new KeyValuePair<string, string>(key, value),
+        ]);
+        var options = new MediaSlugifyOptions();
+        var configuration = new MediaSlugifyOptionsConfiguration(shellConfiguration);
+
+        configuration.Configure(options);
+
+        Assert.Equal(expected, options.Transliterate);
+    }
+
     [Fact]
-    public void ShouldReadTransliterationFromConfiguration()
+    public void Read_TransliterationFromBothConfigurations_SectionWins()
     {
         var shellConfiguration = CreateShellConfiguration(
         [
             new KeyValuePair<string, string>("OrchardCore:OrchardCore_Media_Slugify:Transliterate", "false"),
+            new KeyValuePair<string, string>("OrchardCore:Media:Slugify:Transliterate", "true"),
+        ]);
+        var options = new MediaSlugifyOptions { Transliterate = false };
+        var configuration = new MediaSlugifyOptionsConfiguration(shellConfiguration);
+
+        configuration.Configure(options);
+
+        Assert.True(options.Transliterate);
+    }
+
+    [Fact]
+    public void Read_TransliterationFromConfiguration_Succeeds()
+    {
+        var shellConfiguration = CreateShellConfiguration(
+        [
+            new KeyValuePair<string, string>("OrchardCore:Media:Slugify:Transliterate", "false"),
         ]);
         var options = new MediaSlugifyOptions();
         var configuration = new MediaSlugifyOptionsConfiguration(shellConfiguration);

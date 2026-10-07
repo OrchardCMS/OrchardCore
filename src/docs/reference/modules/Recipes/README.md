@@ -63,7 +63,7 @@ These helpers allow dynamic expressions inside recipe values using a special syn
 | `localization` | `"value": "[localization:WelcomeTitle]"`                                            | Retrieves localized strings by key.                                                                                    |
 | `uuid`         | `"Id": "[js:uuid()]"`                                                               | Generates a new unique identifier (UUID/GUID).                                                                         |
 | `base64`       | `"data": "[js:base64('ew0KICAgICJ0eXBlIjogIkNvbnRlbnRJdGVtL0Jsb2dQb3N0Ig0KfQ==')]"` | Decodes the specified string from Base64 encoding. Use https://www.base64-image.de/ to convert your files to base64.   |
-| `html`         | `"html": "[js:html('&lt;p&gt;Hello &amp; welcome&lt;/p&gt;')]"`                     | Decodes the specified string from HTML encoding..                                                                      |
+| `html`         | `"html": "[js:html('&lt;p&gt;Hello &amp; welcome&lt;/p&gt;')]"`                     | Decodes the specified string from HTML encoding.                                                                       |
 | `gzip`         | `"data": "[js:gzip('data')]"`                                                       | Decodes the specified string from gzip/base64 encoding. Use http://www.txtwizard.net/compression to gzip your strings. |
 
 ---
@@ -173,7 +173,7 @@ Creates or configures Lucene search indexes.
   },
   {
     // Create the search settings.
-    "name": "Settings",
+    "name": "settings",
     "LuceneSettings": {
       "SearchIndex": "Search",
       "DefaultSearchFields": [
@@ -424,6 +424,27 @@ As `executionid` use a custom identifier to distinguish these recipe executions 
 
 ---
 
+### `command`
+
+Runs one or more of the built-in commands. This is useful during setup or import, for example to create a user.
+
+```json
+{
+  "name": "command",
+  "Commands": [
+    "createUser /UserName:admin /Password:Password1! /Email:admin@example.com /Roles:Administrator"
+  ]
+}
+```
+
+Each entry in `Commands` is a single command: the command name followed by any `/Switch:value` arguments.
+
+The command most useful in recipes is `createUser`, which provisions a user during setup or import. See the [Users documentation](../Users/README.md#commands) for its switches.
+
+Other commands, such as `help commands` (lists every available command) and `recipes harvest` (lists the available recipes), write their result to the log and are meant for interactive or diagnostic use rather than for imports. Run `help commands` to see the full list of commands registered by the enabled features.
+
+---
+
 ## Recipe Migrations
 
 **Recipe migrations** allow you to perform updates using Orchard Core recipe files. These migrations are especially useful for updating metadata such as content types, workflows, settings, or any other component that can be updated via a recipe.
@@ -457,7 +478,7 @@ Recipe files must be stored in a `Migrations` folder within your project, and th
 
 ### Example: Media Asset Migration
 
-Let's say we want to deploy media assets as part of a module. Here’s how we’d structure this:
+Let's say we want to deploy media assets as part of a module. Here's how we'd structure this:
 
 #### Migration Class
 

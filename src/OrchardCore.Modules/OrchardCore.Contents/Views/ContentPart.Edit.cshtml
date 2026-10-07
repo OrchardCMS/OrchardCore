@@ -1,23 +1,31 @@
+@model OrchardCore.ContentManagement.Display.ViewModels.ContentPartShapeViewModel
+@using OrchardCore.ContentManagement
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentManagement.Metadata.Settings
-@using OrchardCore.ContentManagement
 @using OrchardCore.ContentTypes
-@using OrchardCore
 @using OrchardCore.Localization.Data
+@using OrchardCore.Mvc.Utilities
 
 @inject IDataLocalizer D
 
 @{
+    var shapes = Model.Items;
+
+    if (shapes.Count == 0)
+    {
+        return;
+    }
+
     ContentPart contentPart = Model.ContentPart;
     ContentTypePartDefinition typePartDefinition = Model.ContentTypePartDefinition;
     var description = typePartDefinition.Description();
 }
 
-<div class="@Orchard.GetPartWrapperClasses(typePartDefinition)">
+<div class="@($"ocat-wrapper content-part-wrapper content-part-wrapper-{typePartDefinition.PartDefinition.Name.HtmlClassify()}" + (typePartDefinition.IsNamedPart() ? $" content-part-wrapper-{typePartDefinition.Name.HtmlClassify()}" : string.Empty))">
 
     @if (typePartDefinition.IsNamedPart())
     {
-        <div class="@Orchard.GetLabelClasses()">
+        <div class="ocat-label">
             @D[typePartDefinition.DisplayName(), DataLocalizationContext.ContentType]
 
             @if (!string.IsNullOrEmpty(description))
@@ -26,16 +34,16 @@
             }
         </div>
 
-        <div class="@Orchard.GetEndClasses()">
-            @foreach (var shape in Model)
+        <div class="ocat-end">
+            @foreach (var shape in shapes)
             {
                 @await DisplayAsync(shape)
             }
         </div>
     }
     else
-    {   
-        foreach (var shape in Model)
+    {
+        foreach (var shape in shapes)
         {
             @await DisplayAsync(shape)
         }

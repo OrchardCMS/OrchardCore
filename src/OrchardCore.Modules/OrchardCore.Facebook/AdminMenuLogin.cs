@@ -6,7 +6,7 @@ namespace OrchardCore.Facebook;
 
 public sealed class AdminMenuLogin : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
+    private static readonly RouteValueDictionary s_routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", FacebookConstants.Features.Login },
@@ -29,7 +29,7 @@ public sealed class AdminMenuLogin : AdminNavigationProvider
                         .Add(S["Meta"], S["Meta"].PrefixPosition(), meta => meta
                             .AddClass("facebook")
                             .Id("facebook")
-                            .Action("Index", "Admin", _routeValues)
+                            .Action("Index", "Admin", s_routeValues)
                             .Permission(Permissions.ManageFacebookApp)
                             .LocalNav()
                         )
@@ -46,7 +46,7 @@ public sealed class AdminMenuLogin : AdminNavigationProvider
                         .Add(S["Meta"], S["Meta"].PrefixPosition(), meta => meta
                             .AddClass("facebook")
                             .Id("facebook")
-                            .Action("Index", "Admin", _routeValues)
+                            .Action("Index", "Admin", s_routeValues)
                             .Permission(Permissions.ManageFacebookApp)
                             .LocalNav()
                         )

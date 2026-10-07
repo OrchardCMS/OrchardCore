@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
+using OrchardCore.Contents;
 using OrchardCore.ContentTypes.Shapes;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -15,15 +17,18 @@ public sealed class AdminController : Controller
     private readonly IContentManager _contentManager;
     private readonly IShapeFactory _shapeFactory;
     private readonly IUpdateModelAccessor _updateModelAccessor;
+    private readonly IAuthorizationService _authorizationService;
 
     public AdminController(
         IContentManager contentManager,
         IShapeFactory shapeFactory,
-        IUpdateModelAccessor updateModelAccessor)
+        IUpdateModelAccessor updateModelAccessor,
+        IAuthorizationService authorizationService)
     {
         _contentManager = contentManager;
         _shapeFactory = shapeFactory;
         _updateModelAccessor = updateModelAccessor;
+        _authorizationService = authorizationService;
     }
 
     public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string contentItemsName, string zonesName, string zone, string targetId, string parentContentType, string partName)
@@ -34,6 +39,11 @@ public sealed class AdminController : Controller
         }
 
         var contentItem = await _contentManager.NewAsync(id);
+
+        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
+        {
+            return Forbid();
+        }
 
         contentItem.Weld(new WidgetMetadata());
 

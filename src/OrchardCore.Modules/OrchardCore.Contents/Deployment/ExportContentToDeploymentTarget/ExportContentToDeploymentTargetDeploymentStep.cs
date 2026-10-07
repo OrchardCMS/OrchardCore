@@ -1,5 +1,5 @@
-using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget;
 
@@ -8,14 +8,13 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget;
 /// </summary>
 public class ExportContentToDeploymentTargetDeploymentStep : DeploymentStep
 {
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<ExportContentToDeploymentTargetDeploymentStep>("Content Management");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<ExportContentToDeploymentTargetDeploymentStep>("Export Content To Deployment Target");
+
     public ExportContentToDeploymentTargetDeploymentStep()
     {
         Name = nameof(ExportContentToDeploymentTargetDeploymentStep);
-    }
-
-    public ExportContentToDeploymentTargetDeploymentStep(IStringLocalizer<ExportContentToDeploymentTargetDeploymentStep> S)
-        : this()
-    {
-        Category = S["Content Management"];
+        Category = s_category;
+        Title = s_title;
     }
 }

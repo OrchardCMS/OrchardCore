@@ -123,6 +123,13 @@ public static class StringExtensions
             return string.Empty;
         }
 
+        // Decoding must happen before the tags are stripped to strip out all tags from the final result. This prevents
+        // XSS by way of encoded HTML (e.g. "&lt;img src=x onerror=alert(1)&gt;").
+        if (htmlDecode)
+        {
+            html = WebUtility.HtmlDecode(html);
+        }
+
         var result = new char[html.Length];
 
         var cursor = 0;
@@ -149,11 +156,6 @@ public static class StringExtensions
 
         var stringResult = new string(result, 0, cursor);
 
-        if (htmlDecode)
-        {
-            stringResult = WebUtility.HtmlDecode(stringResult);
-        }
-
         return stringResult;
     }
 
@@ -169,7 +171,7 @@ public static class StringExtensions
                          .Replace("\r\r", string.Format(replacement, "\r\n"));
     }
 
-    private static readonly char[] _validSegmentChars = "/?#[]@\"^{}|`<>\t\r\n\f ".ToCharArray();
+    private static readonly char[] s_validSegmentChars = "/?#[]@\"^{}|`<>\t\r\n\f ".ToCharArray();
 
     public static bool IsValidUrlSegment(this string segment)
     {
@@ -184,7 +186,7 @@ public static class StringExtensions
         //
         // rough blacklist regex == m/^[^/?#[]@"^{}|\s`<>]+$/ (leaving off % to keep the regex simple)
 
-        return !segment.Any(_validSegmentChars);
+        return !segment.Any(s_validSegmentChars);
     }
 
     /// <summary>
@@ -410,18 +412,18 @@ public static class StringExtensions
         return source.Remove(place, find.Length).Insert(place, replace);
     }
 
-    private static ImmutableDictionary<string, string> _underscorePascalCaseIndex = ImmutableDictionary<string, string>.Empty;
-    private static ImmutableDictionary<string, string> _dashPascalCaseIndex = ImmutableDictionary<string, string>.Empty;
+    private static ImmutableDictionary<string, string> s_underscorePascalCaseIndex = ImmutableDictionary<string, string>.Empty;
+    private static ImmutableDictionary<string, string> s_dashPascalCaseIndex = ImmutableDictionary<string, string>.Empty;
 
     /// <summary>
     /// Converts a liquid attribute to pascal case.
     /// </summary>
     public static string ToPascalCaseUnderscore(this string attribute)
     {
-        if (!_underscorePascalCaseIndex.TryGetValue(attribute, out var result))
+        if (!s_underscorePascalCaseIndex.TryGetValue(attribute, out var result))
         {
             result = ToPascalCase(attribute, '_');
-            _underscorePascalCaseIndex = _underscorePascalCaseIndex.SetItem(attribute, result);
+            s_underscorePascalCaseIndex = s_underscorePascalCaseIndex.SetItem(attribute, result);
         }
 
         return result;
@@ -432,10 +434,10 @@ public static class StringExtensions
     /// </summary>
     public static string ToPascalCaseDash(this string attribute)
     {
-        if (!_dashPascalCaseIndex.TryGetValue(attribute, out var result))
+        if (!s_dashPascalCaseIndex.TryGetValue(attribute, out var result))
         {
             result = ToPascalCase(attribute, '-');
-            _dashPascalCaseIndex = _dashPascalCaseIndex.SetItem(attribute, result);
+            s_dashPascalCaseIndex = s_dashPascalCaseIndex.SetItem(attribute, result);
         }
 
         return result;

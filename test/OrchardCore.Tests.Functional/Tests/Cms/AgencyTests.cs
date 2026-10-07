@@ -8,7 +8,7 @@ public sealed class AgencyTests : CmsTestBase<AgencyFixture>, IClassFixture<Agen
     public AgencyTests(AgencyFixture fixture) : base(fixture) { }
 
     [Fact]
-    public async Task DisplaysTheHomePageOfTheAgencyTheme()
+    public async Task DisplaysTheHomePageOfTheAgencyTheme_Default_Succeeds()
     {
         var page = await Fixture.CreatePageAsync();
         await page.GotoAndAssertOkAsync("/");
@@ -17,7 +17,7 @@ public sealed class AgencyTests : CmsTestBase<AgencyFixture>, IClassFixture<Agen
     }
 
     [Fact]
-    public async Task AgencyAdminLoginShouldWork()
+    public async Task AgencyAdminLogin_Default_Works()
     {
         var page = await Fixture.CreatePageAsync();
         await page.LoginAsync();

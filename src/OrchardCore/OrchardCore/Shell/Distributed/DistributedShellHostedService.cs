@@ -21,9 +21,9 @@ internal sealed class DistributedShellHostedService : BackgroundService
     private const string ReleaseIdKeySuffix = "_RELEASE_ID";
     private const string ReloadIdKeySuffix = "_RELOAD_ID";
 
-    private static readonly TimeSpan _minIdleTime = TimeSpan.FromSeconds(1);
-    private static readonly TimeSpan _maxRetryTime = TimeSpan.FromMinutes(1);
-    private static readonly TimeSpan _maxBusyTime = TimeSpan.FromSeconds(2);
+    private static readonly TimeSpan s_minIdleTime = TimeSpan.FromSeconds(1);
+    private static readonly TimeSpan s_maxRetryTime = TimeSpan.FromMinutes(1);
+    private static readonly TimeSpan s_maxBusyTime = TimeSpan.FromSeconds(2);
 
     private readonly IShellHost _shellHost;
     private readonly IShellContextFactory _shellContextFactory;
@@ -79,7 +79,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
         });
 
         // Init the idle time.
-        var idleTime = _minIdleTime;
+        var idleTime = s_minIdleTime;
 
         // Init the second counter used to sync the default tenant while it is 'Uninitialized'.
         var defaultTenantSyncingSeconds = 0;
@@ -154,7 +154,7 @@ internal sealed class DistributedShellHostedService : BackgroundService
                 }
 
                 // Reset the idle time.
-                idleTime = _minIdleTime;
+                idleTime = s_minIdleTime;
 
                 // Check if at least one tenant has changed.
                 if (shellChangedId is null || _shellChangedId == shellChangedId)
@@ -778,15 +778,15 @@ internal sealed class DistributedShellHostedService : BackgroundService
     /// </summary>
     private TimeSpan NextIdleTimeBeforeRetry(TimeSpan idleTime, Exception ex)
     {
-        if (idleTime < _maxRetryTime)
+        if (idleTime < s_maxRetryTime)
         {
             // Log an error on each retry, but only before reaching the 'MaxRetryTime', to not fill out the log.
             _logger.LogError(ex, "Unable to read the distributed cache before checking if a tenant has changed.");
 
             idleTime *= 2;
-            if (idleTime > _maxRetryTime)
+            if (idleTime > s_maxRetryTime)
             {
-                idleTime = _maxRetryTime;
+                idleTime = s_maxRetryTime;
             }
         }
 
@@ -798,9 +798,9 @@ internal sealed class DistributedShellHostedService : BackgroundService
     /// </summary>
     private async Task<bool> TryWaitAfterBusyTime(CancellationToken stoppingToken)
     {
-        if (DateTime.UtcNow - _busyStartTime > _maxBusyTime)
+        if (DateTime.UtcNow - _busyStartTime > s_maxBusyTime)
         {
-            if (!await TryWaitAsync(_minIdleTime, stoppingToken))
+            if (!await TryWaitAsync(s_minIdleTime, stoppingToken))
             {
                 return false;
             }

@@ -8,8 +8,8 @@ public interface IConditionOperatorFactory
 
 public class ConditionOperatorFactory<TConditionOperator> : IConditionOperatorFactory where TConditionOperator : ConditionOperator, new()
 {
-    private static readonly string _typeName = typeof(TConditionOperator).Name;
-    public string Name => _typeName;
+    private static readonly string s_typeName = typeof(TConditionOperator).Name;
+    public string Name => s_typeName;
 
     public ConditionOperator Create()
         => new TConditionOperator();

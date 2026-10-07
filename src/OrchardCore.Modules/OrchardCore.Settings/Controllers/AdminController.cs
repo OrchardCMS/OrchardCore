@@ -7,6 +7,8 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Localization;
 using OrchardCore.Settings.ViewModels;
@@ -15,6 +17,8 @@ namespace OrchardCore.Settings.Controllers;
 
 public sealed class AdminController : Controller
 {
+    private const string ActionsZone = "Actions";
+
     private readonly IDisplayManager<ISite> _siteSettingsDisplayManager;
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly ISiteService _siteService;
@@ -55,10 +59,22 @@ public sealed class AdminController : Controller
 
         var site = await _siteService.GetSiteSettingsAsync();
 
+        var shape = await _siteSettingsDisplayManager.BuildEditorAsync(
+            site,
+            _updateModelAccessor.ModelUpdater,
+            false,
+            groupId);
+
+        // The save button is rendered for every settings group, so require editor content outside the shared actions zone.
+        if (!shape.HasItemsInAnyZone(ActionsZone))
+        {
+            return NotFound();
+        }
+
         var viewModel = new AdminIndexViewModel
         {
             GroupId = groupId,
-            Shape = await _siteSettingsDisplayManager.BuildEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId, string.Empty),
+            Shape = shape,
         };
 
         return View(viewModel);
@@ -75,10 +91,18 @@ public sealed class AdminController : Controller
 
         var site = await _siteService.LoadSiteSettingsAsync();
 
+        var shape = await _siteSettingsDisplayManager.UpdateEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId, string.Empty);
+
+        // The save button is rendered for every settings group, so require editor content outside the shared actions zone.
+        if (!shape.HasItemsInAnyZone(ActionsZone))
+        {
+            return NotFound();
+        }
+
         var viewModel = new AdminIndexViewModel
         {
             GroupId = groupId,
-            Shape = await _siteSettingsDisplayManager.UpdateEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId, string.Empty),
+            Shape = shape,
         };
 
         if (ModelState.IsValid)

@@ -1,3 +1,4 @@
+using Jint.Runtime;
 using OrchardCore.Layers.Services;
 using OrchardCore.Localization;
 using OrchardCore.Rules;
@@ -11,7 +12,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Rules;
 public class RuleTests
 {
     [Fact]
-    public async Task ShouldEvaluateRuleFalseWhenNoConditions()
+    public async Task Evaluate_NoConditions_Succeeds()
     {
         var rule = new Rule();
 
@@ -29,7 +30,7 @@ public class RuleTests
     [InlineData("/notthehomepage", true, false)]
     [InlineData("/", false, false)]
     [InlineData("/notthehomepage", false, true)]
-    public async Task ShouldEvaluateHomepage(string path, bool isHomepage, bool expected)
+    public async Task Evaluate_Homepage_Succeeds(string path, bool isHomepage, bool expected)
     {
         var rule = new Rule
         {
@@ -62,7 +63,7 @@ public class RuleTests
     [Theory]
     [InlineData(true, true)]
     [InlineData(false, false)]
-    public async Task ShouldEvaluateBoolean(bool boolean, bool expected)
+    public async Task Evaluate_Boolean_Succeeds(bool boolean, bool expected)
     {
         var rule = new Rule
         {
@@ -86,7 +87,7 @@ public class RuleTests
     [InlineData(false, true, true)]
     [InlineData(true, true, true)]
     [InlineData(false, false, false)]
-    public async Task ShouldEvaluateAny(bool first, bool second, bool expected)
+    public async Task Evaluate_Any_Succeeds(bool first, bool second, bool expected)
     {
         var rule = new Rule
         {
@@ -117,7 +118,7 @@ public class RuleTests
     [Theory]
     [InlineData("/foo", "/foo", true)]
     [InlineData("/bar", "/foo", false)]
-    public async Task ShouldEvaluateUrlEquals(string path, string requestPath, bool expected)
+    public async Task Evaluate_UrlEquals_Succeeds(string path, string requestPath, bool expected)
     {
         var rule = new Rule
         {
@@ -151,7 +152,7 @@ public class RuleTests
     [Theory]
     [InlineData("isHomepage()", "/", true)]
     [InlineData("isHomepage()", "/foo", false)]
-    public async Task ShouldEvaluateJavascriptCondition(string script, string requestPath, bool expected)
+    public async Task Evaluate_JavascriptCondition_Succeeds(string script, string requestPath, bool expected)
     {
         var rule = new Rule
         {
@@ -185,7 +186,7 @@ public class RuleTests
     }
 
     [Fact]
-    public async Task ShouldEvaluateJavascriptConditionWithAsyncGlobalMethod()
+    public async Task Evaluate_JavascriptConditionWithAsyncGlobalMethod_Succeeds()
     {
         var rule = new Rule
         {
@@ -193,7 +194,7 @@ public class RuleTests
             [
                 new JavascriptCondition
                 {
-                    Script = "isAllowedAsync()",
+                    Script = "isAsyncAllowedAsync()",
                 }
             ],
         };
@@ -210,6 +211,84 @@ public class RuleTests
         var ruleService = serviceProvider.GetRequiredService<IRuleService>();
 
         Assert.True(await ruleService.EvaluateAsync(rule));
+    }
+
+    [Fact]
+    public async Task Evaluate_JavascriptConditionsDeclaringTheSameName_EachSucceed()
+    {
+        // The rules of two or more layers, written independently and each validated on its own in the editor,
+        // are evaluated one after the other by the same services during a request.
+        var ruleService = CreateJavascriptRuleService("/");
+
+        Assert.True(await ruleService.EvaluateAsync(CreateJavascriptRule("const isHome = isHomepage(); isHome")));
+        Assert.True(await ruleService.EvaluateAsync(CreateJavascriptRule("const isHome = isHomepage(); let other = 1; class Helper {} isHome")));
+        Assert.True(await ruleService.EvaluateAsync(CreateJavascriptRule("let other = 2; class Helper {} isHomepage()")));
+    }
+
+    [Fact]
+    public async Task Evaluate_JavascriptCondition_DoesNotSeeTheGlobalsOfAnEarlierCondition()
+    {
+        var ruleService = CreateJavascriptRuleService("/");
+
+        Assert.True(await ruleService.EvaluateAsync(CreateJavascriptRule("var seen = true; globalThis.count = 1; function helper() { return true; } helper()")));
+        Assert.True(await ruleService.EvaluateAsync(CreateJavascriptRule("typeof seen === 'undefined' && typeof count === 'undefined' && typeof helper === 'undefined'")));
+    }
+
+    [Fact]
+    public async Task Evaluate_JavascriptConditionThatThrows_DoesNotAffectTheNextCondition()
+    {
+        var ruleService = CreateJavascriptRuleService("/");
+
+        await Assert.ThrowsAnyAsync<JavaScriptException>(async () => await ruleService.EvaluateAsync(CreateJavascriptRule("const value = 1; var leaked = true; throw new Error('failed');")));
+
+        Assert.True(await ruleService.EvaluateAsync(CreateJavascriptRule("const value = 2; value === 2 && typeof leaked === 'undefined'")));
+    }
+
+    [Fact]
+    public async Task Evaluate_SeveralJavascriptConditionsWithAsyncGlobalMethod_Succeed()
+    {
+        var services = CreateRuleServiceCollection()
+            .AddRuleCondition<JavascriptCondition, JavascriptConditionEvaluator>()
+            .AddSingleton<IGlobalMethodProvider, AsyncBooleanMethodProvider>()
+            .AddMemoryCache()
+            .AddScripting()
+            .AddJavaScriptEngine();
+
+        var ruleService = services.BuildServiceProvider().GetRequiredService<IRuleService>();
+
+        Assert.True(await ruleService.EvaluateAsync(CreateJavascriptRule("const allowed = isAsyncAllowedAsync(); allowed")));
+        Assert.True(await ruleService.EvaluateAsync(CreateJavascriptRule("const allowed = isAsyncAllowedAsync(); allowed")));
+    }
+
+    private static Rule CreateJavascriptRule(string script)
+        => new()
+        {
+            Conditions =
+            [
+                new JavascriptCondition
+                {
+                    Script = script,
+                }
+            ],
+        };
+
+    private static IRuleService CreateJavascriptRuleService(string requestPath)
+    {
+        var services = CreateRuleServiceCollection()
+            .AddRuleCondition<JavascriptCondition, JavascriptConditionEvaluator>()
+            .AddSingleton<IGlobalMethodProvider, DefaultLayersMethodProvider>()
+            .AddMemoryCache()
+            .AddScripting()
+            .AddJavaScriptEngine();
+
+        var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+        var context = new DefaultHttpContext();
+        context.Request.Path = new PathString(requestPath);
+        mockHttpContextAccessor.Setup(_ => _.HttpContext).Returns(context);
+
+        services.AddSingleton<IHttpContextAccessor>(mockHttpContextAccessor.Object);
+
+        return services.BuildServiceProvider().GetRequiredService<IRuleService>();
     }
 
     public static ServiceCollection CreateRuleServiceCollection()
@@ -237,7 +316,7 @@ public class RuleTests
         {
             yield return new GlobalMethod
             {
-                Name = "isAllowedAsync",
+                Name = "isAsyncAllowed",
                 Method = serviceProvider => (Func<bool>)(() => false),
                 AsyncMethod = serviceProvider => (Func<Task<bool>>)(async () =>
                 {

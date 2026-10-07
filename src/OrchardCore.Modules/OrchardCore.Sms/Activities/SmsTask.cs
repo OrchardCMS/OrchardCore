@@ -33,6 +33,12 @@ public class SmsTask : TaskActivity<SmsTask>
         set => SetProperty(value);
     }
 
+    public WorkflowExpression<string> FromNumber
+    {
+        get => GetProperty(() => new WorkflowExpression<string>());
+        set => SetProperty(value);
+    }
+
     public WorkflowExpression<string> Body
     {
         get => GetProperty(() => new WorkflowExpression<string>());
@@ -40,23 +46,26 @@ public class SmsTask : TaskActivity<SmsTask>
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"], S["Failed"]);
-    }
+        => Outcome(S["Done"], S["Failed"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var result = await _smsService.SendAsync(
-            await _expressionEvaluator.EvaluateAsync(PhoneNumber, workflowContext, null),
-            await _expressionEvaluator.EvaluateAsync(Body, workflowContext, null));
+        var message = new SmsMessage
+        {
+            To = await _expressionEvaluator.EvaluateAsync(PhoneNumber, workflowContext, null),
+            From = await _expressionEvaluator.EvaluateAsync(FromNumber, workflowContext, null),
+            Body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext, null),
+        };
+
+        var result = await _smsService.SendAsync(message, workflowContext.CancellationToken);
 
         workflowContext.LastResult = result;
 
         if (result.Succeeded)
         {
-            return Outcomes("Done");
+            return Outcome("Done");
         }
 
-        return Outcomes("Failed");
+        return Outcome("Failed");
     }
 }

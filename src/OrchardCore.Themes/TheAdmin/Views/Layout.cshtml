@@ -1,10 +1,9 @@
 @using OrchardCore.DisplayManagement
 @using OrchardCore.DisplayManagement.ModelBinding
-@using OrchardCore.Environment.Shell
 @using OrchardCore.Themes.Services
-@using OrchardCore.Users.Models
 
 @inject ThemeTogglerService ThemeTogglerService
+@inject IOptions<AdminOptions> AdminOptions
 @inject IDisplayManager<Navbar> DisplayManager
 @inject IUpdateModelAccessor UpdateModelAccessor
 @{
@@ -15,7 +14,7 @@
     var navbar = await DisplayAsync(await DisplayManager.BuildDisplayAsync(UpdateModelAccessor.ModelUpdater, "DetailAdmin"));
 }
 <!DOCTYPE html>
-<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-bs-theme="@await ThemeTogglerService.CurrentTheme()" data-tenant="@ThemeTogglerService.CurrentTenant">
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-bs-theme="@await ThemeTogglerService.CurrentTheme()" data-tenant="@ThemeTogglerService.CurrentTenant" data-admin-prefix="@Url.Content("~/" + AdminOptions.Value.AdminUrlPrefix)">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <meta charset="utf-8">
@@ -51,6 +50,10 @@
                 <div class="d-flex w-100 justify-content-between align-items-center">
                     <div class="brand-wrapper">
                         <div class="d-flex w-100 justify-content-between align-items-center">
+                            <button type="button" class="ta-sidebar-toggler" aria-controls="ta-left-sidebar" aria-expanded="false" aria-label="@T["Show / hide menu"]">
+                                <i class="fa-solid fa-bars" aria-hidden="true"></i>
+                            </button>
+
                             @brandingHtml
 
                             @if (adminSettings.DisplayTitlesInTopbar)
@@ -66,7 +69,9 @@
             </div>
         </nav>
 
-        <div id="ta-left-sidebar" class="d-flex flex-column justify-content-between align-items-stretch">
+        <div class="ta-sidebar-backdrop"></div>
+
+        <div id="ta-left-sidebar" class="d-flex flex-column align-items-stretch">
             @await RenderSectionAsync("Navigation", required: false)
             <div class="footer">
                 <button type="button" class="leftbar-compactor" title="@T["Collapse / expand menu"]">
@@ -75,7 +80,7 @@
             </div>
         </div>
 
-        <div class="ta-content">
+        <div class="ta-content" style="--oc-notify-offset-top: var(--oc-top-nav-height);">
             @await RenderSectionAsync("Header", required: false)
             @await RenderSectionAsync("Messages", required: false)
             @await RenderSectionAsync("Breadcrumbs", required: false)

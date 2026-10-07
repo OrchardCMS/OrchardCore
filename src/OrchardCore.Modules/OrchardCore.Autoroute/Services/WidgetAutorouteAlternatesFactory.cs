@@ -9,7 +9,7 @@ namespace OrchardCore.Autoroute.Services;
 /// </summary>
 internal static class WidgetAutorouteAlternatesFactory
 {
-    private static readonly ConcurrentDictionary<WidgetAutorouteAlternatesCacheKey, string[]> _cache = new();
+    private static readonly ConcurrentDictionary<WidgetAutorouteAlternatesCacheKey, string[]> s_cache = new();
 
     /// <summary>
     /// Gets or creates cached alternates for a Widget shape with Autoroute configuration.
@@ -17,7 +17,7 @@ internal static class WidgetAutorouteAlternatesFactory
     public static string[] GetAlternates(string path, string displayType)
     {
         var key = new WidgetAutorouteAlternatesCacheKey(path, displayType);
-        return _cache.GetOrAdd(key, BuildAlternates);
+        return s_cache.GetOrAdd(key, BuildAlternates);
     }
 
     private static string[] BuildAlternates(WidgetAutorouteAlternatesCacheKey key)

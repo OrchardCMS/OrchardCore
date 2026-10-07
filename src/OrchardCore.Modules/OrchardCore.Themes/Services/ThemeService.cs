@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
@@ -13,12 +14,14 @@ public class ThemeService : IThemeService
     private readonly INotifier _notifier;
     private readonly ISiteThemeService _siteThemeService;
     protected readonly IHtmlLocalizer H;
+    protected readonly IStringLocalizer S;
 
     public ThemeService(
         IExtensionManager extensionManager,
         IShellFeaturesManager shellFeaturesManager,
         ISiteThemeService siteThemeService,
         IHtmlLocalizer<ThemeService> htmlLocalizer,
+        IStringLocalizer<ThemeService> stringLocalizer,
         INotifier notifier)
     {
         _extensionManager = extensionManager;
@@ -27,6 +30,7 @@ public class ThemeService : IThemeService
 
         _notifier = notifier;
         H = htmlLocalizer;
+        S = stringLocalizer;
     }
 
     public async Task DisableThemeFeaturesAsync(string themeName)
@@ -36,7 +40,7 @@ public class ThemeService : IThemeService
         {
             if (themes.Contains(themeName))
             {
-                throw new InvalidOperationException(H["The theme \"{0}\" is already in the stack of themes that need features disabled.", themeName].ToString());
+                throw new InvalidOperationException(S["The theme \"{0}\" is already in the stack of themes that need features disabled.", themeName]);
             }
 
             var theme = _extensionManager.GetExtension(themeName);
@@ -73,7 +77,7 @@ public class ThemeService : IThemeService
         {
             if (themes.Contains(themeName))
             {
-                throw new InvalidOperationException(H["The theme \"{0}\" is already in the stack of themes that need features enabled.", themeName].ToString());
+                throw new InvalidOperationException(S["The theme \"{0}\" is already in the stack of themes that need features enabled.", themeName]);
             }
 
             themes.Push(themeName);
@@ -113,10 +117,10 @@ public class ThemeService : IThemeService
             .GetFeatures()
             .Where(x => featureIds.Contains(x.Id));
 
-        var enabledFeatures = await _shellFeaturesManager.EnableFeaturesAsync(featuresToEnable, force);
-        foreach (var enabledFeature in enabledFeatures)
+        var enabledFeatures = (await _shellFeaturesManager.EnableFeaturesAsync(featuresToEnable, force)).ToArray();
+        if (enabledFeatures.Length > 0)
         {
-            await _notifier.SuccessAsync(H["{0} was enabled.", enabledFeature.Name]);
+            await _notifier.SuccessAsync(H.Plural(enabledFeatures.Length, "The feature {1} was enabled.", "The following features were enabled: {1}.", string.Join(", ", enabledFeatures.Select(f => f.Name ?? f.Id))));
         }
     }
 
@@ -140,10 +144,10 @@ public class ThemeService : IThemeService
             .GetFeatures()
             .Where(x => featureIds.Contains(x.Id));
 
-        var features = await _shellFeaturesManager.DisableFeaturesAsync(featuresToDisable, force);
-        foreach (var feature in features)
+        var features = (await _shellFeaturesManager.DisableFeaturesAsync(featuresToDisable, force)).ToArray();
+        if (features.Length > 0)
         {
-            await _notifier.SuccessAsync(H["{0} was disabled.", feature.Name]);
+            await _notifier.SuccessAsync(H.Plural(features.Length, "The feature {1} was disabled.", "The following features were disabled: {1}.", string.Join(", ", features.Select(f => f.Name ?? f.Id))));
         }
     }
 }

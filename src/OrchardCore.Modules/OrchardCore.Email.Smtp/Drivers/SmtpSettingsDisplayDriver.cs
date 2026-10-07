@@ -6,10 +6,11 @@ using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Email.Services;
 using OrchardCore.Email.Smtp.Services;
 using OrchardCore.Email.Smtp.ViewModels;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Options;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
 
@@ -20,10 +21,10 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
     [Obsolete("This property should no longer be used. Instead use EmailSettings.GroupId")]
     public const string GroupId = EmailSettings.GroupId;
 
-    private readonly IShellReleaseManager _shellReleaseManager;
+    private readonly IOptionsUpdateNotifier _optionsUpdateNotifier;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly SmtpOptions _smtpOptions;
+    private readonly IOptionsMonitor<SmtpOptions> _smtpOptions;
     private readonly IAuthorizationService _authorizationService;
     private readonly IEmailAddressValidator _emailValidator;
 
@@ -33,18 +34,18 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
         => EmailSettings.GroupId;
 
     public SmtpSettingsDisplayDriver(
-        IShellReleaseManager shellReleaseManager,
+        IOptionsUpdateNotifier optionsUpdateNotifier,
         IDataProtectionProvider dataProtectionProvider,
         IHttpContextAccessor httpContextAccessor,
-        IOptions<SmtpOptions> options,
+        IOptionsMonitor<SmtpOptions> options,
         IAuthorizationService authorizationService,
         IEmailAddressValidator emailAddressValidator,
         IStringLocalizer<SmtpSettingsDisplayDriver> stringLocalizer)
     {
-        _shellReleaseManager = shellReleaseManager;
+        _optionsUpdateNotifier = optionsUpdateNotifier;
         _dataProtectionProvider = dataProtectionProvider;
         _httpContextAccessor = httpContextAccessor;
-        _smtpOptions = options.Value;
+        _smtpOptions = options;
         _authorizationService = authorizationService;
         _emailValidator = emailAddressValidator;
         S = stringLocalizer;
@@ -57,14 +58,18 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
             return null;
         }
 
+        var smtpOptions = _smtpOptions.CurrentValue;
+
         return Initialize<SmtpSettingsViewModel>("SmtpSettings_Edit", model =>
         {
             // For backward compatibility with instances before the SMTP provider was factored out of
             // OrchardCore.Email, if IsEnabled is null, we check to see if there's already valid configuration.
-            model.IsEnabled = settings.IsEnabled ?? _smtpOptions.ConfigurationExists();
+            model.IsEnabled = settings.IsEnabled ?? smtpOptions.ConfigurationExists();
             model.DefaultSender = settings.DefaultSender;
             model.DeliveryMethod = settings.DeliveryMethod;
-            model.PickupDirectoryLocation = settings.PickupDirectoryLocation;
+            model.PickupDirectoryLocation = string.IsNullOrWhiteSpace(settings.PickupDirectoryLocation)
+                ? SmtpPickupDirectoryResolver.DefaultPickupDirectoryLocation
+                : settings.PickupDirectoryLocation;
             model.Host = settings.Host;
             model.Port = settings.Port;
             model.ProxyHost = settings.ProxyHost;
@@ -123,9 +128,9 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.Host), S["The {0} field is required.", "Host name"]);
             }
             else if (model.DeliveryMethod == SmtpDeliveryMethod.SpecifiedPickupDirectory
-                && string.IsNullOrWhiteSpace(model.PickupDirectoryLocation))
+                && !SmtpPickupDirectoryResolver.IsValidPickupDirectoryLocation(model.PickupDirectoryLocation))
             {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.PickupDirectoryLocation), S["The {0} field is required.", "Pickup directory location"]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.PickupDirectoryLocation), S["The pickup directory location is invalid."]);
             }
 
             hasChanges |= model.DefaultSender != settings.DefaultSender;
@@ -169,7 +174,9 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
             settings.ProxyPort = model.ProxyPort;
             settings.IgnoreInvalidSslCertificate = model.IgnoreInvalidSslCertificate;
             settings.DeliveryMethod = model.DeliveryMethod;
-            settings.PickupDirectoryLocation = model.PickupDirectoryLocation;
+            settings.PickupDirectoryLocation = string.IsNullOrWhiteSpace(model.PickupDirectoryLocation)
+                ? SmtpPickupDirectoryResolver.DefaultPickupDirectoryLocation
+                : model.PickupDirectoryLocation;
         }
 
         if (context.Updater.ModelState.IsValid)
@@ -185,7 +192,10 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
 
             if (hasChanges)
             {
-                _shellReleaseManager.RequestRelease();
+                _optionsUpdateNotifier
+                    .RequestUpdate<SmtpOptions>()
+                    .RequestUpdate<EmailProviderOptions>()
+                    .RequestUpdate<EmailOptions>();
             }
         }
 

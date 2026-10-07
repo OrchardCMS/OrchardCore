@@ -2,12 +2,18 @@
 @model SmsAuthenticatorLoginSettings
 
 <fieldset>
-    <legend>@T["SMS Authenticator Settings"]</legend>
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <legend>@T["SMS Authenticator Settings"]</legend>
+        </div>
+    </div>
 
-    <div class="mb-3" asp-validation-class-for="Body">
-        <span asp-validation-for="Body"></span>
-        <label class="form-check-label" asp-for="Body">@T["Message Body"]</label>
-        <textarea class="form-control" asp-for="Body"></textarea>
-        <span class="hint">@T["The body to the message for sending the verification code. Liquid syntax is supported."]</span>
+    <div class="ocat-wrapper" asp-validation-class-for="Body">
+        <label class="ocat-label" asp-for="Body">@T["Message Body"]</label>
+        <div class="ocat-end">
+            <textarea class="form-control" asp-for="Body"></textarea>
+            <span asp-validation-for="Body"></span>
+            <span class="hint">@T["The body to the message for sending the verification code. Liquid syntax is supported."]</span>
+        </div>
     </div>
 </fieldset>

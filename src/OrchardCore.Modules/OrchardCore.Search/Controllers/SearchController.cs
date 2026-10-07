@@ -60,6 +60,7 @@ public sealed class SearchController : Controller
         _logger = logger;
     }
 
+    [HttpGet]
     [Route("search/{index?}")]
     public async Task<IActionResult> Search(string index, string terms, PagerSlimParameters pagerParameters)
     {
@@ -229,7 +230,7 @@ public sealed class SearchController : Controller
 
         pager.After = null;
 
-        if (containedItems.Count() == pager.PageSize + 1)
+        if (containedItems.Count == pager.PageSize + 1)
         {
             pager.After = (size - 1).ToString();
         }

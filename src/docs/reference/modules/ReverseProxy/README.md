@@ -2,6 +2,31 @@
 
 Enables configuration of hosting scenarios with a reverse proxy, like which HTTP headers to forward.
 
+## Recipe Configuration
+
+Reverse proxy settings can be configured using the `Settings` recipe step:
+
+```json
+{
+  "steps": [
+    {
+      "name": "settings",
+      "ReverseProxySettings": {
+        "ForwardedHeaders": "All",
+        "KnownNetworks": [],
+        "KnownProxies": []
+      }
+    }
+  ]
+}
+```
+
+| Property           | Type            | Description                                                                                                    |
+|--------------------|-----------------|----------------------------------------------------------------------------------------------------------------|
+| `ForwardedHeaders` | String          | The forwarded headers to process. Values: `None`, `XForwardedFor`, `XForwardedHost`, `XForwardedProto`, `All`. |
+| `KnownNetworks`    | Array of String | The list of known network addresses.                                                                           |
+| `KnownProxies`     | Array of String | The list of known proxy IP addresses.                                                                          |
+
 ## Reverse Proxy Settings Configuration
 
 ### Admin Configuration
@@ -32,10 +57,12 @@ Add the following section to your `appsettings.json`:
 
 ```json
 {
-  "OrchardCore_ReverseProxy": {
-    "ForwardedHeaders": "XForwardedFor, XForwardedHost, XForwardedProto",
-    "KnownNetworks": ["192.168.1.0/24"],
-    "KnownProxies": ["192.168.1.200", "192.168.1.201"]
+  "OrchardCore": {
+    "ReverseProxy": {
+      "ForwardedHeaders": "XForwardedFor, XForwardedHost, XForwardedProto",
+      "KnownNetworks": ["192.168.1.0/24"],
+      "KnownProxies": ["192.168.1.200", "192.168.1.201"]
+    }
   }
 }
 ```
@@ -68,7 +95,7 @@ When `ConfigureReverseProxySettings()` is called, settings from the configuratio
 
 **Scenario 2: Configuration File Override**
 - `ConfigureReverseProxySettings()` is called
-- `OrchardCore_ReverseProxy` section exists in appsettings.json
+- `OrchardCore:ReverseProxy` section exists in appsettings.json
 - Configuration file values override admin UI values
 - Admin UI shows a warning about the override
 
