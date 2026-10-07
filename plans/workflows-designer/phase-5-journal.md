@@ -154,10 +154,16 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
 
 ## Definition of done (Phase 5)
 
-- [ ] Steps 5.1–5.6 are checked.
-- [ ] The CI-flag build is green; `OrchardCore.Tests`, Vitest and the functional `*Cms*` tests pass.
-- [ ] `yarn lint`, `yarn check` and `yarn build` leave a clean `git status`.
-- [ ] Docs and release notes are updated.
+- [x] Steps 5.1–5.6 are checked.
+- [x] The CI-flag build is green; `OrchardCore.Tests`, Vitest and the functional `*Cms*` tests pass.
+- [x] `yarn lint`, `yarn check` and `yarn build` leave a clean `git status`.
+- [x] Docs and release notes are updated.
+- **Notes from checking the Definition of done:**
+  - **Build.** The CI-flag build has 0 warnings and 0 errors.
+  - **`OrchardCore.Tests`.** 3,516 tests: 3,514 passed and 2 skipped (Unix-only).
+  - **Vitest.** The designer's 223 tests pass.
+  - **Functional `*Cms*`.** 161 tests: 154 passed and 6 skipped (Tus Azure and Redis). `MediaTusUploadTests.ShouldPauseAndResumeMultipleSimultaneousUploads` timed out in the full run, and its class passed when run again (3 of 3). `WorkflowsDesignerTests` has 21 tests.
+  - **Assets.** `yarn lint` has 0 errors (the 2 warnings in `OrchardCore.Cors` were already there), `yarn check` passes, and `yarn build` reproduces the committed output. `git status` only shows the six line-ending files from Phase 1.
 
 ## Open questions
 
