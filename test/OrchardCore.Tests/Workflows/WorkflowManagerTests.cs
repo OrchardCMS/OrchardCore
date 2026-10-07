@@ -635,7 +635,8 @@ public class WorkflowManagerTests
         IEnumerable<IActivity> activities,
         WorkflowType workflowType,
         Action<Mock<IWorkflowFaultHandler>, WorkflowManager> configureWorkflowFaultHandler = null,
-        IWorkflowExecutionJournal journal = null
+        IWorkflowExecutionJournal journal = null,
+        IWorkflowDesignerNotifier notifier = null
     )
     {
         var workflowValueSerializers = new Resolver<IEnumerable<IWorkflowValueSerializer>>(serviceProvider);
@@ -667,6 +668,7 @@ public class WorkflowManagerTests
             TestVariableTypes.CreateProvider(),
             workflowStore.Object,
             journal ?? Mock.Of<IWorkflowExecutionJournal>(),
+            notifier ?? Mock.Of<IWorkflowDesignerNotifier>(),
             workflowIdGenerator.Object,
             workflowValueSerializers,
             workflowFaultHandler.Object,
@@ -837,6 +839,28 @@ public class WorkflowManagerTests
         Assert.Equal(WorkflowExecutionContext.MaxExecutedActivities, workflowContext.ExecutedActivities.Count);
         Assert.Equal("104", workflowContext.ExecutedActivities.Peek().Outcome);
         Assert.Equal(WorkflowExecutionContext.MaxExecutedActivities + 5, workflowContext.JournalRecords.Count);
+    }
+
+    [Fact]
+    public async Task StartWorkflowAsync_SavedInstance_IsNotified()
+    {
+        var notifier = new Mock<IWorkflowDesignerNotifier>();
+        var start = new OutputTask(null, halt: false);
+        var workflowType = new WorkflowType
+        {
+            Id = 1,
+            WorkflowTypeId = IdGenerator.GenerateId(),
+            Activities = [new() { ActivityId = "start", IsStart = true, Name = "StartTask" }],
+            Transitions = [],
+        };
+        var workflowManager = CreateWorkflowManager(CreateServiceProvider(), [new NamedTask("StartTask", start)], workflowType, notifier: notifier.Object);
+
+        var workflowContext = await workflowManager.StartWorkflowAsync(workflowType);
+
+        notifier.Verify(x => x.InstanceChangedAsync(It.Is<WorkflowInstanceChange>(change =>
+            change.WorkflowId == workflowContext.Workflow.WorkflowId &&
+            change.WorkflowTypeId == workflowType.WorkflowTypeId &&
+            change.Status == WorkflowStatus.Finished)), Times.Once);
     }
 
     [Fact]

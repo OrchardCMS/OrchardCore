@@ -25,6 +25,7 @@ public sealed class WorkflowTypeDraftManagerTests : IAsyncLifetime
 
     private readonly Mock<IWorkflowTypeStore> _workflowTypeStore = new();
     private readonly Mock<IActivityLibrary> _activityLibrary = new();
+    private readonly Mock<IWorkflowDesignerNotifier> _notifier = new();
     private readonly Dictionary<string, Func<IActivity>> _activities = [];
     private readonly List<ISession> _sessions = [];
     private IStore _store;
@@ -330,6 +331,32 @@ public sealed class WorkflowTypeDraftManagerTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task Changes_SavePublishAndDiscard_AreNotified()
+    {
+        var saved = await CreateManager().SaveGraphAsync(_workflowType.WorkflowTypeId, 0, GraphOf(_workflowType, ("a", 500, 50)));
+
+        _notifier.Verify(x => x.WorkflowTypeChangedAsync(It.Is<WorkflowTypeChange>(change =>
+            change.Kind == WorkflowTypeChangeKind.DraftChanged &&
+            change.WorkflowTypeId == _workflowType.WorkflowTypeId &&
+            change.Revision == saved.Revision &&
+            change.UserId == "admin-id" &&
+            change.UserName == "admin")), Times.Once);
+
+        await CreateManager().PublishAsync(_workflowType.WorkflowTypeId, saved.Revision);
+        await _sessions[^1].SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        _notifier.Verify(x => x.WorkflowTypeChangedAsync(It.Is<WorkflowTypeChange>(change => change.Kind == WorkflowTypeChangeKind.Published)), Times.Once);
+
+        // Discarding when there's no draft notifies nothing.
+        await CreateManager().DiscardAsync(_workflowType.WorkflowTypeId);
+        await _sessions[^1].SaveChangesAsync(TestContext.Current.CancellationToken);
+        await CreateManager().SaveGraphAsync(_workflowType.WorkflowTypeId, 0, GraphOf(_workflowType, ("a", 10, 10)));
+        await CreateManager().DiscardAsync(_workflowType.WorkflowTypeId);
+
+        _notifier.Verify(x => x.WorkflowTypeChangedAsync(It.Is<WorkflowTypeChange>(change => change.Kind == WorkflowTypeChangeKind.DraftDiscarded)), Times.Once);
+    }
+
+    [Fact]
     public async Task PublishAsync_StaleRevision_ReturnsConflictAndKeepsLiveType()
     {
         await CreateManager().SaveGraphAsync(_workflowType.WorkflowTypeId, 0, GraphOf(_workflowType, ("a", 500, 50)));
@@ -571,6 +598,7 @@ public sealed class WorkflowTypeDraftManagerTests : IAsyncLifetime
             activityIdGenerator.Object,
             Mock.Of<IHttpContextAccessor>(x => x.HttpContext == httpContext),
             Mock.Of<IClock>(x => x.UtcNow == s_now),
+            _notifier.Object,
             new PassThroughStringLocalizer<WorkflowTypeDraftManager>());
     }
 

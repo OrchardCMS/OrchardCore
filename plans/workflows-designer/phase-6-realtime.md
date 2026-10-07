@@ -30,10 +30,26 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
 
 ---
 
-### - [ ] 6.1 Notifier and events
+### - [x] 6.1 Notifier and events
 
 - `A/Services/IWorkflowDesignerNotifier.cs` (`WorkflowTypeChangedAsync` with the kinds `DraftChanged`, `Published` and `DraftDiscarded`, and `InstanceChangedAsync`), a no-op default in `M/`, called by the draft manager and by `WorkflowManager` when it saves or deletes an instance.
 - **Tests**: the draft manager and the manager call the notifier with the right data.
+- **Notes from implementing this step:**
+  - **Notifier.** `IWorkflowDesignerNotifier` has two methods:
+    - `WorkflowTypeChangedAsync(WorkflowTypeChange)`: the kind (`DraftChanged`, `Published` or `DraftDiscarded`), the type, the draft's revision, the published version, and who made the change.
+    - `InstanceChangedAsync(WorkflowInstanceChange)`: the instance, its type, its status, and whether it was deleted.
+    - `NullWorkflowDesignerNotifier` is registered by default and does nothing.
+  - **Draft manager.**
+    - Every successful change of the draft notifies `DraftChanged` with its new revision.
+    - Publishing notifies `Published` with the new version.
+    - Discarding notifies `DraftDiscarded`, only when there was a draft.
+    - The user comes from the request's claims.
+  - **Engine.** `WorkflowManager` notifies after each save of an instance (`PersistAsync`). An instance deleted when it finishes notifies with `IsDeleted`.
+  - **API change.** `WorkflowManager` and `WorkflowTypeDraftManager` take an `IWorkflowDesignerNotifier` (release notes in 6.4).
+  - **Tests.**
+    - The draft manager notifies a save (with the user), a publish and a discard, and nothing for a discard without a draft.
+    - A started instance is notified with its status.
+    - Workflows tests: 238/238.
 
 ### - [ ] 6.2 Hub and feature
 

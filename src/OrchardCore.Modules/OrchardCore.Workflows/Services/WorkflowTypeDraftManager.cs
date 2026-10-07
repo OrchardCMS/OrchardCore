@@ -26,6 +26,7 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
     private readonly IActivityIdGenerator _activityIdGenerator;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IClock _clock;
+    private readonly IWorkflowDesignerNotifier _notifier;
 
     internal readonly IStringLocalizer S;
 
@@ -37,6 +38,7 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
         IActivityIdGenerator activityIdGenerator,
         IHttpContextAccessor httpContextAccessor,
         IClock clock,
+        IWorkflowDesignerNotifier notifier,
         IStringLocalizer<WorkflowTypeDraftManager> stringLocalizer)
     {
         _session = session;
@@ -46,6 +48,7 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
         _activityIdGenerator = activityIdGenerator;
         _httpContextAccessor = httpContextAccessor;
         _clock = clock;
+        _notifier = notifier;
         S = stringLocalizer;
     }
 
@@ -330,6 +333,8 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
         await _workflowTypeStore.SaveAsync(workflowType);
         _session.Delete(draft);
 
+        await NotifyAsync(WorkflowTypeChangeKind.Published, workflowTypeId, 0, workflowType.VersionId);
+
         return new WorkflowTypeDraftResult
         {
             Status = WorkflowTypeDraftStatus.Succeeded,
@@ -349,6 +354,11 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
         foreach (var draft in drafts)
         {
             _session.Delete(draft);
+        }
+
+        if (drafts.Any())
+        {
+            await NotifyAsync(WorkflowTypeChangeKind.DraftDiscarded, workflowTypeId, 0);
         }
     }
 
@@ -605,6 +615,8 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
             return new WorkflowTypeDraftResult { Status = WorkflowTypeDraftStatus.Conflict, Revision = draft.Revision - 1 };
         }
 
+        await NotifyAsync(WorkflowTypeChangeKind.DraftChanged, workflowTypeId, draft.Revision);
+
         return new WorkflowTypeDraftResult
         {
             Status = WorkflowTypeDraftStatus.Succeeded,
@@ -626,6 +638,21 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
         var outcomes = await activityContext.Activity.GetPossibleOutcomesAsync(workflowContext, activityContext);
 
         return outcomes.Select(outcome => outcome.Name).ToHashSet(StringComparer.Ordinal);
+    }
+
+    private Task NotifyAsync(WorkflowTypeChangeKind kind, string workflowTypeId, int revision, string versionId = null)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
+
+        return _notifier.WorkflowTypeChangedAsync(new WorkflowTypeChange
+        {
+            Kind = kind,
+            WorkflowTypeId = workflowTypeId,
+            Revision = revision,
+            VersionId = versionId,
+            UserId = user?.FindFirstValue(ClaimTypes.NameIdentifier),
+            UserName = user?.Identity?.Name,
+        });
     }
 
     private static WorkflowTypeDraftResult Conflict(WorkflowTypeDraft draft)

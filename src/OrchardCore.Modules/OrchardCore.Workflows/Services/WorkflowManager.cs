@@ -24,6 +24,7 @@ public class WorkflowManager : IWorkflowManager
     private readonly IWorkflowVariableTypeProvider _variableTypeProvider;
     private readonly IWorkflowStore _workflowStore;
     private readonly IWorkflowExecutionJournal _journal;
+    private readonly IWorkflowDesignerNotifier _notifier;
     private readonly IWorkflowIdGenerator _workflowIdGenerator;
     private readonly Resolver<IEnumerable<IWorkflowValueSerializer>> _workflowValueSerializers;
     private readonly IWorkflowFaultHandler _workflowFaultHandler;
@@ -45,6 +46,7 @@ public class WorkflowManager : IWorkflowManager
         IWorkflowVariableTypeProvider variableTypeProvider,
         IWorkflowStore workflowRepository,
         IWorkflowExecutionJournal journal,
+        IWorkflowDesignerNotifier notifier,
         IWorkflowIdGenerator workflowIdGenerator,
         Resolver<IEnumerable<IWorkflowValueSerializer>> workflowValueSerializers,
         IWorkflowFaultHandler workflowFaultHandler,
@@ -61,6 +63,7 @@ public class WorkflowManager : IWorkflowManager
         _variableTypeProvider = variableTypeProvider;
         _workflowStore = workflowRepository;
         _journal = journal;
+        _notifier = notifier;
         _workflowIdGenerator = workflowIdGenerator;
         _workflowValueSerializers = workflowValueSerializers;
         _workflowFaultHandler = workflowFaultHandler;
@@ -321,6 +324,7 @@ public class WorkflowManager : IWorkflowManager
         if (workflowContext.Status == WorkflowStatus.Finished && workflowType.DeleteFinishedWorkflows)
         {
             await _workflowStore.DeleteAsync(workflowContext.Workflow);
+            await NotifyInstanceChangedAsync(workflowContext, isDeleted: true);
         }
         else
         {
@@ -368,6 +372,7 @@ public class WorkflowManager : IWorkflowManager
         if (workflowContext.Status == WorkflowStatus.Finished && workflowType.DeleteFinishedWorkflows)
         {
             await _workflowStore.DeleteAsync(workflow);
+            await NotifyInstanceChangedAsync(workflowContext, isDeleted: true);
         }
         else
         {
@@ -691,7 +696,18 @@ public class WorkflowManager : IWorkflowManager
         }
 
         workflowContext.JournalRecords.Clear();
+
+        await NotifyInstanceChangedAsync(workflowContext, isDeleted: false);
     }
+
+    private Task NotifyInstanceChangedAsync(WorkflowExecutionContext workflowContext, bool isDeleted)
+        => _notifier.InstanceChangedAsync(new WorkflowInstanceChange
+        {
+            WorkflowId = workflowContext.Workflow.WorkflowId,
+            WorkflowTypeId = workflowContext.Workflow.WorkflowTypeId,
+            Status = workflowContext.Status,
+            IsDeleted = isDeleted,
+        });
 
     /// <summary>
     /// Executes a specific action on all the activities of a workflow.
