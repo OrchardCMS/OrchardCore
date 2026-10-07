@@ -6,7 +6,7 @@ namespace OrchardCore.Tests.Functional.Tests.Cms;
 
 // The OrchardCore.Workflows designer: the toolbox, canvas and properties panel, drafts and publishing, and the
 // read-only instance viewer. The recipe seeds the "Seeded approval" workflow (HTTP request → Notify → Signal →
-// Notify), the workflows of the version, variable, expression, journal and real-time tests, a WorkflowViewer role that
+// Notify), the workflows of the version, variable, expression, journal, real-time and composition tests, a WorkflowViewer role that
 // can open the admin but can't manage workflows, and a WorkflowEditor role that can. The recipe also enables the
 // real-time feature. Other tests that change a workflow create their own.
 public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsFixture>, IClassFixture<WorkflowsDesignerTestsFixture>
@@ -660,6 +660,33 @@ public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsF
 
         await Assertions.Expect(page.Activity("livedone")).ToHaveClassAsync(new Regex("is-executed"));
         await Assertions.Expect(page.Activity("livewait")).Not.ToHaveClassAsync(new Regex("is-blocking"));
+
+        Assert.Empty(consoleErrors);
+        await page.CloseAsync();
+    }
+
+    [Fact]
+    public async Task Composition_ParentRunsTheChildWithAnInput_AndTheChildIsAPreset()
+    {
+        var (page, consoleErrors) = await OpenAsync();
+
+        // The seeded parent runs the seeded Doubler with 21, and responds with its output.
+        var parentId = await page.FindWorkflowTypeIdAsync("Composed doubling");
+        var response = await page.APIRequest.GetAsync(await page.GenerateHttpUrlAsync(parentId, "composestart"));
+
+        Assert.Equal("42", (await response.TextAsync()).Trim());
+
+        // The Doubler is in the activities pane, and adds an Execute Workflow task that runs it.
+        var id = await page.CreateWorkflowTypeAsync("Runs the doubler");
+        await page.OpenDesignerAsync(id);
+        var activityId = await page.AddActivityAsync("preset:workflow:wfdchilddoubler", "Doubler", 300, 150);
+        await page.EditActivityAsync(activityId);
+
+        await Assertions.Expect(page.ActivityForm().Locator("select[name='ExecuteWorkflowTask.WorkflowTypeId']")).ToHaveValueAsync("wfdchilddoubler");
+        await Assertions.Expect(page.ActivityForm().Locator("input[name='ExecuteWorkflowTask.Inputs[0].Name']")).ToHaveValueAsync("amount");
+
+        // Its output can be bound before the task is edited.
+        await Assertions.Expect(page.Locator("[data-cy=output-doubled]")).ToBeVisibleAsync();
 
         Assert.Empty(consoleErrors);
         await page.CloseAsync();

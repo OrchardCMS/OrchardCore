@@ -511,6 +511,139 @@
           ]
         },
         {
+          "WorkflowTypeId": "wfdchilddoubler",
+          "Name": "Doubler",
+          "IsEnabled": true,
+          "IsSingleton": false,
+          "IsActivity": true,
+          "DeleteFinishedWorkflows": false,
+          "Variables": [
+            {
+              "Name": "amount",
+              "TypeName": "number",
+              "IsInput": true
+            },
+            {
+              "Name": "doubled",
+              "TypeName": "number",
+              "Description": "Twice the amount",
+              "IsOutput": true
+            }
+          ],
+          "Activities": [
+            {
+              "ActivityId": "doublerstart",
+              "Name": "StartedByWorkflowEvent",
+              "X": 40,
+              "Y": 40,
+              "IsStart": true,
+              "Properties": {}
+            },
+            {
+              "ActivityId": "doublerset",
+              "Name": "SetVariableTask",
+              "X": 360,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "VariableName": "doubled",
+                "Value": {
+                  "Expression": "variable('amount') * 2",
+                  "Syntax": "JavaScript"
+                }
+              }
+            }
+          ],
+          "Transitions": [
+            {
+              "SourceActivityId": "doublerstart",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "doublerset"
+            }
+          ]
+        },
+        {
+          "WorkflowTypeId": "wfdcomposeddoubling",
+          "Name": "Composed doubling",
+          "IsEnabled": true,
+          "IsSingleton": false,
+          "DeleteFinishedWorkflows": false,
+          "Variables": [
+            {
+              "Name": "result",
+              "TypeName": "number"
+            }
+          ],
+          "Activities": [
+            {
+              "ActivityId": "composestart",
+              "Name": "HttpRequestEvent",
+              "X": 40,
+              "Y": 40,
+              "IsStart": true,
+              "Properties": {
+                "HttpMethod": "GET",
+                "ValidateAntiforgeryToken": false
+              }
+            },
+            {
+              "ActivityId": "composeexec",
+              "Name": "ExecuteWorkflowTask",
+              "X": 360,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "WorkflowTypeId": "wfdchilddoubler",
+                "WaitForCompletion": true,
+                "Inputs": {
+                  "amount": {
+                    "Expression": "21",
+                    "Syntax": "Literal"
+                  }
+                },
+                "Outputs": [
+                  {
+                    "Name": "doubled",
+                    "TypeName": "number",
+                    "Description": "Twice the amount"
+                  }
+                ],
+                "OutputBindings": {
+                  "doubled": "result"
+                }
+              }
+            },
+            {
+              "ActivityId": "composerespond",
+              "Name": "HttpResponseTask",
+              "X": 680,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "Content": {
+                  "Expression": "{{ Workflow.Variables.result }}"
+                },
+                "HttpStatusCode": 200,
+                "ContentType": {
+                  "Expression": "text/plain"
+                }
+              }
+            }
+          ],
+          "Transitions": [
+            {
+              "SourceActivityId": "composestart",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "composeexec"
+            },
+            {
+              "SourceActivityId": "composeexec",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "composerespond"
+            }
+          ]
+        },
+        {
           "WorkflowTypeId": "wfdversionedhistory",
           "Name": "Versioned history",
           "IsEnabled": true,

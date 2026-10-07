@@ -154,9 +154,17 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - The Variables section explains inputs and outputs.
   - **Release notes.** A **Workflows as Activities** section, and the new members of `IWorkflowManager` and `IWorkflowTypeDraftManager` under the breaking changes.
 
-### - [ ] 7.6 End-to-end test
+### - [x] 7.6 End-to-end test
 
 - A seeded parent workflow runs a seeded child with an input, and responds with the child's output; the child appears as a preset in the activities pane.
+- **Notes from implementing this step:**
+  - **Recipe.** It seeds two workflows:
+    - "Doubler", usable as an activity: an `amount` number input and a `doubled` number output, a **Started By Workflow** event, then Set Variable `doubled` to `variable('amount') * 2` in JavaScript.
+    - "Composed doubling": an HTTP request, an Execute Workflow task running the Doubler with `amount` = `21` (Literal) and `doubled` bound to `result`, then an HTTP response with `{{ Workflow.Variables.result }}`.
+  - **`Composition_ParentRunsTheChildWithAnInput_AndTheChildIsAPreset`.**
+    - Calling the parent's HTTP request responds with `42`.
+    - In a new workflow, the Doubler preset is dragged from the activities pane. Its editor has the Doubler selected and its `amount` input, and its `doubled` output is ready to bind.
+  - `WorkflowsDesignerTests`: 24/24.
 
 ## Definition of done (Phase 7)
 
