@@ -2,7 +2,7 @@
 
 Phase 1 (the designer) changes only the UI. This file lists the engine and UI components Orchard Core Workflows is missing, compared with Elsa Studio and Elsa Workflows, so they can be built later. Each phase has a design sketch, a compatibility plan and its tests. Before starting a phase, turn its sketch into a detailed step list in a new `phase-N-*.md`, in the same format as [`phase-1-designer.md`](phase-1-designer.md).
 
-**Status.** Each phase below is detailed in its own file, which records what was built and why it differs from the sketch; the [roadmap](README.md#roadmap) tracks them. Phases 2–8 are done. The backlog isn't scheduled.
+**Status.** Each phase below is detailed in its own file, which records what was built and why it differs from the sketch; the [roadmap](README.md#roadmap) tracks them. Phases 2–9 are done; Phase 10 is in progress. The backlog isn't scheduled.
 
 Paths: `M/` = `src/OrchardCore.Modules/OrchardCore.Workflows/`, `A/` = `src/OrchardCore/OrchardCore.Workflows.Abstractions/`.
 
@@ -23,8 +23,12 @@ Paths: `M/` = `src/OrchardCore.Modules/OrchardCore.Workflows/`, `A/` = `src/Orch
 | Composition (containers, nested sequences and flowcharts) | Flat graph only | Large workflows | 8 | Hard (new execution model) | Evaluated; not built (see phase 8) |
 | State-machine modeling | None | Approvals and lifecycles | 8 | Hard | Evaluated; documented as a pattern (see phase 8) |
 | Audit trail for workflow type changes | None | Governance | Backlog | Small | Not scheduled |
-| List of instances across all types, more status filters | Per type only; filters All, Finished, Faulted | Operations | Backlog | Small | Not scheduled |
-| Workflow testing from the designer ("Run with input…") | None | Authoring speed | Backlog (after 5) | Small–Medium | Not scheduled |
+| List of instances across all types, more status filters, bulk actions | Per type only; filters All, Finished, Faulted | Operations | 10 (10.8) | Small | Not started |
+| Workflow testing from the designer ("Run with input…") | None | Authoring speed | 10 (10.6) | Small–Medium | Not started |
+| Each activity's data in the journal (evaluated expressions, outputs, changed variables, last result) | Status, outcomes, duration and error only | Debugging | 10 (10.1–10.4) | Medium | In progress |
+| Retry policies per activity, and what a failure does | Manual retry of a faulted instance | Transient failures | 10 (10.5) | Medium | Not started |
+| One running instance per correlation id | Single instance per workflow only | Approvals per content item | 10 (10.7) | Small–Medium | Not started |
+| Links between parent and child instances | None | Debugging composed workflows | 10 (10.9) | Small | Not started |
 
 ---
 
@@ -170,7 +174,5 @@ Spike and decide; these change the execution model. Pursue them only when there'
 ## Backlog (small, can go into any phase)
 
 - Audit trail events for creating, publishing, deleting and reverting workflow types (`OrchardCore.AuditTrail` provider).
-- A global instance list across all types, with Halted, Executing and Aborted filters (`M/Controllers/WorkflowController.cs` only lists per type today).
-- "Run with input…" from the designer, for workflows started by an HTTP or manual event (after Phase 5, so the result can be shown).
 - An auto-layout command ("Tidy up") using a simple layered layout implemented in-house (there's no layout library in the repository).
 - Copy and paste of activities between workflow types (clipboard with JSON records; new ids assigned on paste).

@@ -16,6 +16,7 @@ This folder contains these files:
 | [`phase-7-composition.md`](phase-7-composition.md) | Detailed, step-by-step plan for Phase 7: workflows as activities and activity presets |
 | [`phase-8-evaluation.md`](phase-8-evaluation.md) | Detailed, step-by-step plan for Phase 8: the branching mode, and the evaluation of composition and state machines |
 | [`phase-9-data-and-errors.md`](phase-9-data-and-errors.md) | Detailed, step-by-step plan for Phase 9: the data available to an activity, and script errors |
+| [`phase-10-operations.md`](phase-10-operations.md) | Plan for Phase 10: inspecting, testing and operating workflows (the six items worth adding after comparing with Elsa 3.8) |
 | [`later-phases.md`](later-phases.md) | The missing engine and UI components, with the original design sketches of phases 2–8 and the backlog. Each phase is detailed, and tracked, in its `phase-N-*.md` file |
 
 ## Context
@@ -86,7 +87,7 @@ Update the **Status** column as work lands (`Not started` / `In progress` / `Don
 
 The work is pushed to the draft pull request [OrchardCMS/OrchardCore#19996](https://github.com/OrchardCMS/OrchardCore/pull/19996) (branch `ma/workflows-designer`), one commit per step.
 
-**Status (2026-10-07):** phases 1–9 are done and await review. Phase 9 came from the review: the data available to an activity, and script errors.
+**Status (2026-10-08):** phases 1–9 are done and await review. Phase 9 came from the review: the data available to an activity, and script errors. Phase 10 is in progress: after comparing with Elsa 3.8, six items are worth adding (each activity's data in the journal, retry policies, running from the designer, one instance per correlation id, instances across workflows, parent and child instances); item 1 comes first.
 - **Branch history.** The commit messages no longer carry a `Co-Authored-By` trailer; the code is unchanged, and the branch was force-pushed. `main` is merged up to `d6bb7b4ff8`.
 - **Merge.** The branch was brought up to date with `main` (merge `e3a17d4ee4`).
     - The SMS task editor kept `main`'s new From Phone Number field inside the branch's editor wrapper.
@@ -126,6 +127,7 @@ The work is pushed to the draft pull request [OrchardCMS/OrchardCore#19996](http
 | 7 | Workflows as activities; dynamic activity providers (as activity presets). See [`phase-7-composition.md`](phase-7-composition.md). | 2, 3 | Done (7.1–7.6 and the Definition of done; awaiting review) |
 | 8 | Evaluate: multiple transitions per outcome or implicit fork, composition/containers, state machines. See [`phase-8-evaluation.md`](phase-8-evaluation.md). | 1–5 | Done (8.1–8.4 and the Definition of done; awaiting review) |
 | 9 | From the review: the data available to an activity (declared by the activities, listed and inserted in the designer, suggested by the editors), and script errors shown on the instance page or faulting the instance. See [`phase-9-data-and-errors.md`](phase-9-data-and-errors.md). | 3, 4, 5 | Done (9.1–9.10 and the Definition of done; awaiting review) |
+| 10 | Inspecting, testing and operating workflows: each activity's data in the journal, retry policies, run from the designer, one instance per correlation id, instances across workflows, parent and child instances. See [`phase-10-operations.md`](phase-10-operations.md). | 5, 7 | In progress (10.1) |
 
 ## Testing strategy (applies to every phase)
 
