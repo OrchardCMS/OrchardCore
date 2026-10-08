@@ -23,7 +23,6 @@ vi.mock("@bloom/media/api/file-data-service", () => {
         hasMore: false,
       }),
       getMediaItems: vi.fn().mockResolvedValue([]),
-      listAllItems: vi.fn().mockResolvedValue(assetsStoreData),
       moveMedia: vi.fn().mockResolvedValue(undefined),
       moveMediaList: vi.fn().mockResolvedValue(undefined),
       deleteMedia: vi.fn().mockResolvedValue(undefined),
