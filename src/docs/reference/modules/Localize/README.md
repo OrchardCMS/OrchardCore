@@ -276,6 +276,7 @@ Apply the attribute to a class or method to exclude localization calls and extra
 !!! note
     Embedded POT files are source templates, not translated PO files. They do not change runtime translation lookup. Dynamic keys or unresolved contexts produce diagnostics rather than guessed entries. Direct JavaScript extraction and runtime translation overrides are not included. To collect templates across projects during a build, set `LocalizationCatalogOutputPath` as described below.
 
+### Export translation templates for localization platforms
 
 Build-time POT collection is the recommended successor to POExtractor for exporting translation templates to external localization platforms such as Crowdin. Instead of running a separate source-extraction tool, build the solution or application with `LocalizationCatalogOutputPath` set to a dedicated output directory. Each participating project exports its generated template while retaining the embedded POT resource. No global tool installation is required.
 
