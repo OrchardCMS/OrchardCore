@@ -263,6 +263,7 @@ public sealed class WorkflowDesignerModelBuilder
                         Name = output.Name,
                         TypeName = output.TypeName,
                         DisplayName = output.DisplayName?.Value ?? output.Name,
+                        Description = string.IsNullOrEmpty(output.Description?.Value) ? null : output.Description.Value,
                     })
                     .ToList()
                 : [],

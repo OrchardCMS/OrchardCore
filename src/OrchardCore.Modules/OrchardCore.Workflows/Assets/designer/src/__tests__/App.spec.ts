@@ -7,6 +7,8 @@ import { loadTranslations } from "../i18n";
 import type { DesignerApi } from "../api/designerApi";
 import type { DesignerConfig } from "../config";
 import { createDefinition } from "../canvas/__tests__/fixtures";
+import { selectNode } from "../canvas/useConnect";
+import { useToasts } from "../ui/toasts";
 
 const config: DesignerConfig = {
     workflowTypeId: 7,
@@ -107,6 +109,32 @@ describe("App", () => {
 
         await wrapper.get("[data-cy=toolbox-expand]").trigger("click");
         expect(toolbox.classes()).not.toContain("is-collapsed");
+        wrapper.unmount();
+    });
+
+    it("activityPanel_DeleteClicked_DeletesTheActivityClosesThePanelAndCanBeUndone", async () => {
+        const api = {
+            getDefinition: vi.fn().mockResolvedValue(createDefinition()),
+            getLibrary: vi.fn().mockResolvedValue({ categories: [] }),
+            getEditor: vi.fn().mockResolvedValue({ valid: true, content: '<input name="NotifyTask.Message" />', scripts: "", styles: "" }),
+        } as unknown as DesignerApi;
+        const store = createDesignerStore();
+        const wrapper = mount(App, { props: { config, api, store }, attachTo: document.body });
+        await flushPromises();
+        selectNode(store, "a");
+        await flushPromises();
+
+        await wrapper.get("[data-cy=activity-panel-delete]").trigger("click");
+        await flushPromises();
+
+        expect(store.getNode("a")).toBeUndefined();
+        expect(store.state.selectedNodeIds).toEqual([]);
+        expect(wrapper.get("[data-cy=activity-panel]").isVisible()).toBe(false);
+
+        // The toast undoes it, as after the Delete key.
+        const toast = useToasts().find((item) => item.message === "DeletedActivity");
+        toast!.action!.run();
+        expect(store.getNode("a")).toBeDefined();
         wrapper.unmount();
     });
 

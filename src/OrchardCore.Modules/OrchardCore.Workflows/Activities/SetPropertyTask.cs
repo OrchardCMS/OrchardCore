@@ -71,7 +71,7 @@ public class SetPropertyTask : TaskActivity<SetPropertyTask>, IActivityOutputs, 
     }
 
     public IEnumerable<ActivityOutputDescriptor> GetOutputs()
-        => [new ActivityOutputDescriptor { Name = "Value", TypeName = "any", DisplayName = S["Value"] }];
+        => [new ActivityOutputDescriptor { Name = "Value", TypeName = "any", DisplayName = S["Value"], Description = S["The value the task sets the property to."] }];
 
     public IEnumerable<ActivityProvidedValue> GetProvidedValues()
         => string.IsNullOrEmpty(PropertyName) ? [] : [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = PropertyName, TypeName = "any", Description = S["The value this activity sets."] }];

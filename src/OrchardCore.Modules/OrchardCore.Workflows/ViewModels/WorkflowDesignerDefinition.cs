@@ -209,6 +209,11 @@ public sealed class WorkflowDesignerOutput
     /// The name shown in the designer.
     /// </summary>
     public string DisplayName { get; init; }
+
+    /// <summary>
+    /// What the output is, or <see langword="null"/>.
+    /// </summary>
+    public string Description { get; init; }
 }
 
 /// <summary>

@@ -35,4 +35,9 @@ public sealed class ActivityOutputDescriptor
     /// The name shown in the designer.
     /// </summary>
     public LocalizedString DisplayName { get; init; }
+
+    /// <summary>
+    /// What the output is, shown under its name in the designer, or <see langword="null"/>.
+    /// </summary>
+    public LocalizedString Description { get; init; }
 }

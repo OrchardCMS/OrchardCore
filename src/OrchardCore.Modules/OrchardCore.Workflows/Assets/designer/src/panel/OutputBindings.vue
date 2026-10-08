@@ -38,12 +38,17 @@ const mutate = <T,>(task: RevisionTask<T>) => (props.mutate ? props.mutate(task)
 
 const typeName = (name: string) => typeDisplayName(state.variableTypes, name);
 
-// The declared variables, and the bound name when no variable has exactly that name, so it stays selected.
+// The declared variables an output can be stored in: those of a type its values convert to first, then the others,
+// whose type is shown. The bound name stays selected when no variable has exactly that name.
 const options = (output: ActivityOutput) => {
     const bound = bindings.value[output.name];
-    const variables = state.variables.map((variable) => ({ name: variable.name, label: `${variable.name} (${typeName(variable.typeName)})` }));
+    const compatible = state.variables.filter((variable) => isAssignable(output.typeName, variable.typeName)).map((variable) => variable.name);
+    const others = state.variables
+        .filter((variable) => !isAssignable(output.typeName, variable.typeName))
+        .map((variable) => ({ name: variable.name, label: `${variable.name} (${typeName(variable.typeName)})` }));
+    const missing = bound && !state.variables.some((variable) => variable.name === bound) ? [bound] : [];
 
-    return bound && !variables.some((variable) => variable.name === bound) ? [...variables, { name: bound, label: bound }] : variables;
+    return { compatible: [...compatible, ...missing], others };
 };
 
 /**
@@ -90,34 +95,48 @@ const bind = async (output: ActivityOutput, variableName: string) => {
 </script>
 
 <template>
-    <section v-if="outputs.length > 0" class="wfd-outputs" :aria-labelledby="`${ids}-title`" data-cy="activity-outputs">
-        <h4 :id="`${ids}-title`" class="wfd-section-title">{{ t("Outputs") }}</h4>
+    <!-- Each output of the activity can be stored in a variable of the workflow, which later activities read. -->
+    <section v-if="outputs.length > 0" class="wfd-outputs" :aria-label="t('Outputs')" data-cy="activity-outputs">
         <p class="wfd-section-hint">{{ readOnly ? t("OutputsHintReadOnly") : state.variables.length > 0 ? t("OutputsHint") : t("NoVariablesToBind") }}</p>
 
         <div v-for="output in outputs" :key="output.name" class="wfd-output" :data-cy="`output-${output.name}`">
-            <component :is="readOnly ? 'span' : 'label'" :for="readOnly ? undefined : `${ids}-${output.name}`" class="wfd-output-label">
-                {{ output.displayName }}
-                <span class="text-secondary">({{ typeName(output.typeName) }})</span>
-            </component>
-            <span v-if="readOnly" class="wfd-output-binding" data-cy="output-binding">
-                <code v-if="bindings[output.name]">{{ bindings[output.name] }}</code>
-                <span v-else class="text-secondary">{{ t("NotBound") }}</span>
-            </span>
-            <select
-                v-else
-                :id="`${ids}-${output.name}`"
-                class="form-select form-select-sm"
-                :value="bindings[output.name] ?? ''"
-                data-cy="output-binding"
-                @change="bind(output, ($event.target as HTMLSelectElement).value)"
-            >
-                <option value="">{{ t("NotBound") }}</option>
-                <option v-for="option in options(output)" :key="option.name" :value="option.name">{{ option.label }}</option>
-            </select>
-            <p v-if="problemOf(output)" class="wfd-output-problem" data-cy="output-problem">
-                <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
-                {{ problemOf(output) }}
-            </p>
+            <div class="wfd-output-source">
+                <div class="wfd-output-head">
+                    <span :id="`${ids}-${output.name}-name`" class="wfd-output-name">{{ output.displayName }}</span>
+                    <span class="badge wfd-output-type" data-cy="output-type">{{ typeName(output.typeName) }}</span>
+                </div>
+                <p v-if="output.description" class="wfd-output-description">{{ output.description }}</p>
+            </div>
+
+            <i class="fa-solid fa-arrow-right wfd-mirror-rtl wfd-output-arrow" aria-hidden="true"></i>
+
+            <div class="wfd-output-target">
+                <span v-if="readOnly" class="wfd-output-binding" data-cy="output-binding">
+                    <code v-if="bindings[output.name]">{{ bindings[output.name] }}</code>
+                    <span v-else class="text-secondary">{{ t("NotBound") }}</span>
+                </span>
+                <div v-else class="input-group input-group-sm">
+                    <label class="input-group-text" :for="`${ids}-${output.name}`">{{ t("StoreIn") }}</label>
+                    <select
+                        :id="`${ids}-${output.name}`"
+                        class="form-select"
+                        :value="bindings[output.name] ?? ''"
+                        :aria-describedby="`${ids}-${output.name}-name`"
+                        data-cy="output-binding"
+                        @change="bind(output, ($event.target as HTMLSelectElement).value)"
+                    >
+                        <option value="">{{ t("DontStore") }}</option>
+                        <option v-for="name in options(output).compatible" :key="name" :value="name">{{ name }}</option>
+                        <optgroup v-if="options(output).others.length > 0" :label="t('OtherVariableTypes')">
+                            <option v-for="option in options(output).others" :key="option.name" :value="option.name">{{ option.label }}</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <p v-if="problemOf(output)" class="wfd-output-problem" data-cy="output-problem">
+                    <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+                    {{ problemOf(output) }}
+                </p>
+            </div>
         </div>
     </section>
 </template>

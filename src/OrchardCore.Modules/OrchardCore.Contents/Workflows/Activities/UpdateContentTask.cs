@@ -177,7 +177,7 @@ public class UpdateContentTask : ContentTask, IActivityOutputs, IActivityProvide
     }
 
     public IEnumerable<ActivityOutputDescriptor> GetOutputs()
-        => [new ActivityOutputDescriptor { Name = "ContentItem", TypeName = "contentItem", DisplayName = S["Content item"] }];
+        => [new ActivityOutputDescriptor { Name = "ContentItem", TypeName = "contentItem", DisplayName = S["Content item"], Description = S["The content item the task updated."] }];
 
     public IEnumerable<ActivityProvidedValue> GetProvidedValues()
         =>

@@ -542,14 +542,59 @@
     font-size: 0.8125rem;
 }
 
+/* An output, an arrow, and the variable that stores it; they stack in a narrow panel. */
 .wfd-output {
-    margin-bottom: 0.5rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 0.25rem 0.75rem;
+    align-items: start;
+    padding: 0.5rem 0;
+    border-bottom: var(--bs-border-width) solid var(--bs-border-color-translucent);
+    font-size: 0.8125rem;
 }
 
-.wfd-output-label {
-    display: block;
-    margin-bottom: 0.25rem;
-    font-size: 0.8125rem;
+.wfd-output:last-child {
+    border-bottom: 0;
+}
+
+.wfd-output-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0.5rem;
+    min-height: calc(1.5em + 0.5rem + 2 * var(--bs-border-width));
+}
+
+.wfd-output-name {
+    color: var(--bs-emphasis-color);
+    font-weight: 600;
+}
+
+.wfd-output-type {
+    background-color: var(--bs-secondary-bg);
+    color: var(--bs-secondary-color);
+    font-weight: 400;
+}
+
+.wfd-output-description {
+    margin: 0;
+    color: var(--bs-secondary-color);
+}
+
+.wfd-output-arrow {
+    align-self: start;
+    margin-top: 0.5rem;
+    color: var(--bs-secondary-color);
+}
+
+@container (max-width: 34rem) {
+    .wfd-output {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .wfd-output-arrow {
+        display: none;
+    }
 }
 
 .wfd-output-problem {

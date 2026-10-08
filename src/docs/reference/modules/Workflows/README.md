@@ -41,10 +41,10 @@ The designer has four areas. What concerns the whole workflow is on the right, a
     - **Issues**: the problems found in the workflow, errors first. Select one to go to its activity.
 - **The activity panel** (at the bottom of the canvas) opens when you select an activity, and closes when you click away from it, on the canvas, or press **Close**. Double-click an activity, or select it and press Enter, to move to its first field. It has up to three tabs:
     - **Settings**: the editor of the activity.
-    - **Outputs**: for an activity that produces values, the [variables](#variables) that store them.
+    - **Outputs**: for an activity that produces values, each value with its type, and the [variable](#variables) to **Store in**, which the activities after it read. The variables of a type the value may not convert to are listed apart.
     - **Available data**: what the activity's expressions can read (see [Available Data](#available-data)).
 
-The activity panel opens over the bottom of the canvas, without moving the workflow. Drag its top edge to resize it. **Pin** it to keep it open below the canvas, which then gets shorter, whether an activity is selected or not.
+The activity panel opens over the bottom of the canvas, without moving the workflow. Drag its top edge to resize it. Its **Delete** button deletes the activity, which the toast that follows can undo, as the Delete key does. **Pin** it to keep it open below the canvas, which then gets shorter, whether an activity is selected or not.
 
 The activities pane and the workflow panel can be collapsed to a narrow rail, to give the canvas more room. Hover a rail to open its pane over the canvas, or click it to expand the pane again. The workflow panel's rail shows its tabs, so you can go straight to one of them. The width of the workflow panel, the height of the activity panel, whether it is pinned and whether each pane is collapsed are remembered in your browser.
 
@@ -345,7 +345,7 @@ The page of a workflow instance lists its variables, with the values the instanc
 ### Variables for Developers
 
 - `WorkflowExecutionContext.Variables` reads and writes the declared variables with their types; a value that doesn't convert throws `WorkflowVariableException`.
-- An activity declares outputs by implementing `IActivityOutputs`, and sets them while it runs with `workflowContext.SetActivityOutput(activityContext, "Result", value)`. The bindings are stored in the activity's `Properties["OutputBindings"]` (see `ActivityOutputBindingExtensions`).
+- An activity declares outputs by implementing `IActivityOutputs`, each with a `Name`, a `TypeName`, a `DisplayName` and an optional `Description`, and sets them while it runs with `workflowContext.SetActivityOutput(activityContext, "Result", value)`. The bindings are stored in the activity's `Properties["OutputBindings"]` (see `ActivityOutputBindingExtensions`).
 - A module adds a variable type by registering an `IWorkflowVariableType`: its name, display name, how the designer edits its default (`text`, `number`, `boolean`, `datetime`, `json` or `none`), and how values convert to it. Its values are persisted with the instance like other workflow properties, so it needs an `IWorkflowValueSerializer` if they don't serialize to JSON and back. A type registered with an existing name replaces it.
 - The built-in types cover most values. A type of its own is worth it for a value that needs its own conversion, editor or storage. For example, `contentItem` stores the id of the content item, and loads the item again when the instance resumes, so instances don't keep a copy of the item that goes stale.
 

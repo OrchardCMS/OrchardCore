@@ -262,6 +262,14 @@ const deleteSelected = () => {
     }
 };
 
+/**
+ * Deletes an activity, as the Delete key does on the selection, with a toast that can undo it.
+ */
+const deleteActivity = (activityId: string) => {
+    selectNode(props.store, activityId);
+    deleteSelected();
+};
+
 const connect = (sourceId: string, outcome: string, targetId: string) => {
     // A new connection from a collapsed activity would hide its target; the branch is expanded instead.
     if (collapsed.value.has(sourceId)) {
@@ -689,6 +697,7 @@ defineExpose({
     fit,
     centerOn,
     focusNode,
+    deleteActivity,
     reveal,
     expandAll,
     focus: () => host.value?.focus({ preventScroll: true }),

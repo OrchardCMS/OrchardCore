@@ -89,7 +89,8 @@ public class ExecuteWorkflowTask : TaskActivity<ExecuteWorkflowTask>, IActivityO
         {
             Name = output.Name,
             TypeName = string.IsNullOrEmpty(output.TypeName) ? "any" : output.TypeName,
-            DisplayName = new LocalizedString(output.Name, string.IsNullOrEmpty(output.Description) ? output.Name : output.Description),
+            DisplayName = new LocalizedString(output.Name, output.Name),
+            Description = string.IsNullOrEmpty(output.Description) ? null : new LocalizedString(output.Name, output.Description),
         });
 
     public IEnumerable<ActivityProvidedValue> GetProvidedValues()

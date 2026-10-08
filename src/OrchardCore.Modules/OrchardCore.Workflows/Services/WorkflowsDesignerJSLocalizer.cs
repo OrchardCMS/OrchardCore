@@ -114,10 +114,13 @@ public sealed class WorkflowsDesignerJSLocalizer : IJSLocalizer
             { "InvalidDefaultValue", S["Enter a valid {0} value."].Value },
             { "VariableCompletionDetail", S["{0} variable"].Value },
             { "Outputs", S["Outputs"].Value },
-            { "OutputsHint", S["Store the values this activity produces in workflow variables."].Value },
+            { "OutputsHint", S["Store each value this activity produces in a variable of the workflow, so the activities after it can read it."].Value },
             { "OutputsHintReadOnly", S["The workflow variables that store the values this activity produces."].Value },
             { "NoVariablesToBind", S["Add variables in the Variables tab to store the values this activity produces."].Value },
             { "NotBound", S["Not stored"].Value },
+            { "StoreIn", S["Store in"].Value },
+            { "DontStore", S["Don't store"].Value },
+            { "OtherVariableTypes", S["Variables of another type, which the value may not convert to"].Value },
             { "BoundVariableMissing", S["{0} isn't a declared variable."].Value },
             { "OutputTypeMismatch", S["A {0} value may not convert to {1} ({2}); the workflow then faults."].Value },
             { "IssuesTab", S["Issues"].Value },
@@ -145,6 +148,7 @@ public sealed class WorkflowsDesignerJSLocalizer : IJSLocalizer
             { "PinActivityPanel", S["Keep the activity panel open below the canvas"].Value },
             { "UnpinActivityPanel", S["Open the activity panel over the canvas only while an activity is selected"].Value },
             { "CloseActivityPanel", S["Close the activity panel"].Value },
+            { "DeleteActivity", S["Delete the activity"].Value },
             { "ResizeActivityPanel", S["Resize the activity panel"].Value },
 
             // Draft: autosave, publish and discard.

@@ -534,7 +534,10 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
 
             var output = Assert.Single(json["node"]["outputs"].AsArray());
             Assert.Equal("doubled", output["name"].GetValue<string>());
-            Assert.Equal("Twice the amount", output["displayName"].GetValue<string>());
+
+            // The output is named as the variable it comes from, which describes it.
+            Assert.Equal("doubled", output["displayName"].GetValue<string>());
+            Assert.Equal("Twice the amount", output["description"].GetValue<string>());
         }
 
         using (var editor = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId=exec", TestContext.Current.CancellationToken))

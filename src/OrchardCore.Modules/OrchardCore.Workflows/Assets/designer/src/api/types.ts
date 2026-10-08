@@ -83,6 +83,8 @@ export interface ActivityOutput {
     name: string;
     typeName: string;
     displayName: string;
+    // What the output is, shown under its name.
+    description?: string | null;
 }
 
 export interface DesignerNode {

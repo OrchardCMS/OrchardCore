@@ -59,6 +59,7 @@ const mutate = <T,>(task: RevisionTask<T>) => (props.mutate ? props.mutate(task)
 const emit = defineEmits<{
     (event: "return-focus", activityId: string): void;
     (event: "closed"): void;
+    (event: "delete", activityId: string): void;
     (event: "conflict", error: DesignerApiError): void;
     (event: "retried", result: RetryResult): void;
 }>();
@@ -218,6 +219,17 @@ const close = async () => {
     if (await settle()) {
         clearSelection(props.store);
         emit("closed");
+    }
+};
+
+/**
+ * Deletes the activity shown, which closes the panel; the canvas offers to undo it. Its unapplied changes are dropped
+ * rather than posted for an activity that no longer exists.
+ */
+const deleteActivity = () => {
+    if (editingId.value) {
+        activityHost.value?.discard();
+        emit("delete", editingId.value);
     }
 };
 
@@ -504,6 +516,17 @@ defineExpose({ open, settle, close, discardChanges, refresh, hasPendingChanges, 
             </ul>
 
             <div class="wfd-activity-panel-actions">
+                <button
+                    v-if="editingNode && !readOnly"
+                    type="button"
+                    class="btn btn-sm btn-link link-danger"
+                    :title="t('DeleteActivity')"
+                    :aria-label="t('DeleteActivity')"
+                    data-cy="activity-panel-delete"
+                    @click="deleteActivity"
+                >
+                    <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                </button>
                 <button
                     type="button"
                     class="btn btn-sm btn-link"

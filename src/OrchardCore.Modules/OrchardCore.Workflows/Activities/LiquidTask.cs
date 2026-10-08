@@ -43,5 +43,5 @@ public class LiquidTask : TaskActivity<LiquidTask>, IActivityOutputs, IActivityP
     }
 
     public IEnumerable<ActivityOutputDescriptor> GetOutputs()
-        => [new ActivityOutputDescriptor { Name = "Result", TypeName = "string", DisplayName = S["Result"] }];
+        => [new ActivityOutputDescriptor { Name = "Result", TypeName = "string", DisplayName = S["Result"], Description = S["The text the template renders."] }];
 }

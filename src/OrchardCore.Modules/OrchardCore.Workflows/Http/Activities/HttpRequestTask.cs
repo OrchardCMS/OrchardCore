@@ -234,8 +234,8 @@ public class HttpRequestTask : TaskActivity<HttpRequestTask>, IActivityOutputs, 
     public IEnumerable<ActivityOutputDescriptor> GetOutputs()
         =>
         [
-            new ActivityOutputDescriptor { Name = "Body", TypeName = "string", DisplayName = S["Response body"] },
-            new ActivityOutputDescriptor { Name = "StatusCode", TypeName = "number", DisplayName = S["Status code"] },
-            new ActivityOutputDescriptor { Name = "Response", TypeName = "object", DisplayName = S["Response"] },
+            new ActivityOutputDescriptor { Name = "Body", TypeName = "string", DisplayName = S["Response body"], Description = S["The body of the response, as text."] },
+            new ActivityOutputDescriptor { Name = "StatusCode", TypeName = "number", DisplayName = S["Status code"], Description = S["The HTTP status code of the response, such as 200."] },
+            new ActivityOutputDescriptor { Name = "Response", TypeName = "object", DisplayName = S["Response"], Description = S["The response: its status code, headers and body."] },
         ];
 }

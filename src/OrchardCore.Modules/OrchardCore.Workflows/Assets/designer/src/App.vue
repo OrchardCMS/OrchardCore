@@ -732,6 +732,7 @@ defineExpose({ canvas, panel, activityPanel, addActivity, autosave, publish, dis
                     @retried="onRetried"
                     @return-focus="returnFocus"
                     @closed="canvas?.focus()"
+                    @delete="canvas?.deleteActivity($event)"
                     @conflict="autosave.reportConflict"
                 />
             </div>

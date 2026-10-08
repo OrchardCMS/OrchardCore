@@ -208,7 +208,8 @@ public sealed class ExecuteWorkflowTaskTests
 
         Assert.Equal("doubled", output.Name);
         Assert.Equal("number", output.TypeName);
-        Assert.Equal("Twice the amount", output.DisplayName.Value);
+        Assert.Equal("doubled", output.DisplayName.Value);
+        Assert.Equal("Twice the amount", output.Description.Value);
     }
 
     // start → double (→ wait) (→ fail): "amount" in, "doubled" out.

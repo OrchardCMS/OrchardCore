@@ -52,5 +52,5 @@ public class ScriptTask : TaskActivity<ScriptTask>, IActivityOutputs, IActivityP
     }
 
     public IEnumerable<ActivityOutputDescriptor> GetOutputs()
-        => [new ActivityOutputDescriptor { Name = "Result", TypeName = "any", DisplayName = S["Result"] }];
+        => [new ActivityOutputDescriptor { Name = "Result", TypeName = "any", DisplayName = S["Result"], Description = S["The value the script returns: its last statement."] }];
 }

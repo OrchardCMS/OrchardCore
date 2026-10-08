@@ -121,6 +121,32 @@ describe("ActivityPanel", () => {
         expect(wrapper.emitted("closed")).toHaveLength(1);
     });
 
+    it("delete_Clicked_DropsTheUnappliedChangesAndAsksToDeleteTheActivity", async () => {
+        const { store, api, wrapper } = setup();
+        selectNode(store, "a");
+        await flushPromises();
+        await edit(wrapper);
+
+        await wrapper.get("[data-cy=activity-panel-delete]").trigger("click");
+        await flushPromises();
+
+        expect(wrapper.emitted("delete")).toEqual([["a"]]);
+        // The changes aren't posted for an activity that is being deleted.
+        clearSelection(store);
+        await flushPromises();
+        expect(api.postEditor).not.toHaveBeenCalled();
+    });
+
+    it("delete_ReadOnly_IsNotOffered", async () => {
+        const store = createDesignerStore();
+        store.loadDefinition(createDefinition());
+        const wrapper = mount(ActivityPanel, { props: { store, api: {} as DesignerApi, readOnly: true }, attachTo: document.body });
+        selectNode(store, "a");
+        await flushPromises();
+
+        expect(wrapper.find("[data-cy=activity-panel-delete]").exists()).toBe(false);
+    });
+
     it("tabs_ActivityWithOutputs_ShowTheSettingsTheOutputsAndTheAvailableData", async () => {
         const { store, wrapper } = setup();
         store.state.variables = [{ name: "greeting", typeName: "string" }];
