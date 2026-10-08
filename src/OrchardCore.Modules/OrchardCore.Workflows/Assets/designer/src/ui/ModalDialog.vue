@@ -7,7 +7,8 @@ import { t } from "../i18n";
 // the focus inside while open and gives it back when closed.
 defineOptions({ inheritAttrs: false });
 
-defineProps<{ title: string }>();
+// The size is Bootstrap's: 'lg' or 'xl' for a dialog with a table, the default width otherwise.
+defineProps<{ title: string; size?: "lg" | "xl" }>();
 
 const emit = defineEmits<{ (event: "close"): void }>();
 
@@ -56,7 +57,7 @@ onBeforeUnmount(() => previousFocus?.focus());
         <div class="wfd-modal-host" v-bind="$attrs">
             <div class="modal-backdrop fade show"></div>
             <div ref="dialog" class="modal fade show d-block" tabindex="-1" role="dialog" aria-modal="true" :aria-labelledby="titleId" @keydown="onKeyDown">
-                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" :class="size ? `modal-${size}` : null">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h2 :id="titleId" class="modal-title h5">{{ title }}</h2>

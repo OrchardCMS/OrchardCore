@@ -44,7 +44,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <ModalDialog :title="t('Versions')" data-cy="versions-dialog" @close="emit('close')">
+    <ModalDialog :title="t('Versions')" size="lg" data-cy="versions-dialog" @close="emit('close')">
         <p class="text-body-secondary">{{ t("VersionsIntro") }}</p>
 
         <p v-if="loading" class="mb-0">
