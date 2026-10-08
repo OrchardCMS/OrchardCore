@@ -101,7 +101,7 @@ public static class WorkflowDesignerHelper
     }
 
     /// <summary>
-    /// Opens the editor of an activity in the properties panel (double-click), and waits for it to load.
+    /// Opens the editor of an activity in the activity panel (double-click), and waits for it to load.
     /// </summary>
     public static async Task EditActivityAsync(this IPage page, string activityId)
     {

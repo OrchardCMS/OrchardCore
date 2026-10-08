@@ -514,8 +514,8 @@ public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsF
         await Assertions.Expect(page.Locator("#wfd-variables option[value='greeting']")).ToHaveCountAsync(1);
 
         // Store the script's result in it.
-        await page.Locator("[data-cy=panel-tab-activity]").ClickAsync();
         await page.EditActivityAsync("greetscript");
+        await page.Locator("[data-cy=activity-tab-outputs]").ClickAsync();
         var result = page.Locator("[data-cy=activity-outputs] [data-cy=output-Result] [data-cy=output-binding]");
         await result.SelectOptionAsync("greeting");
         await Assertions.Expect(result).ToHaveValueAsync("greeting");
@@ -588,8 +588,8 @@ public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsF
         await Assertions.Expect(page.Locator("[data-cy=journal-record-2] [data-cy=journal-error]")).ToContainTextAsync("briefly unavailable");
 
         // Retrying from the faulted activity runs it again, and the instance finishes.
+        // Selecting the record opens its activity below the canvas.
         await page.Locator("[data-cy=journal-record-2] button").ClickAsync();
-        await page.Locator("[data-cy=panel-tab-activity]").ClickAsync();
         await Assertions.Expect(page.Locator("[data-cy=fault-message]")).ToContainTextAsync("briefly unavailable");
         await page.Locator("[data-cy=retry-button]").ClickAsync();
         await page.Locator("#modalOkButton").ClickAsync();
@@ -687,6 +687,7 @@ public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsF
         await Assertions.Expect(page.ActivityForm().Locator("input[name='ExecuteWorkflowTask.Inputs[0].Name']")).ToHaveValueAsync("amount");
 
         // Its output can be bound before the task is edited.
+        await page.Locator("[data-cy=activity-tab-outputs]").ClickAsync();
         await Assertions.Expect(page.Locator("[data-cy=output-doubled]")).ToBeVisibleAsync();
 
         Assert.Empty(consoleErrors);
@@ -740,7 +741,7 @@ public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsF
         await page.EditActivityAsync("datalog");
         var text = page.ActivityForm().Locator("input[name='LogTask.Text']");
         await text.FillAsync("Type: ");
-        await page.Locator("[data-cy=panel-view-data]").ClickAsync();
+        await page.Locator("[data-cy=activity-tab-data]").ClickAsync();
 
         var data = page.Locator("[data-cy=available-data]");
         await Assertions.Expect(data.Locator("[data-cy='available-datapublished-Input:ContentItem'] [data-cy=available-javascript]").First).ToContainTextAsync("input(\"ContentItem\")");
@@ -752,7 +753,7 @@ public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsF
         // A field is inserted where the cursor was, and the settings come back.
         await data.Locator("[data-cy='available-datapublished-Input:ContentEvent'] > details > summary").ClickAsync();
         await data.Locator("[data-cy='available-datapublished-Input:ContentEvent.ContentType'] [data-cy=available-liquid]").ClickAsync();
-        await Assertions.Expect(page.Locator("[data-cy=panel-view-settings]")).ToHaveAttributeAsync("aria-selected", "true");
+        await Assertions.Expect(page.Locator("[data-cy=activity-tab-settings]")).ToHaveAttributeAsync("aria-selected", "true");
         await Assertions.Expect(text).ToHaveValueAsync("Type: {{ Workflow.Input.ContentEvent.ContentType }}");
         await page.WaitForSavedAsync();
 

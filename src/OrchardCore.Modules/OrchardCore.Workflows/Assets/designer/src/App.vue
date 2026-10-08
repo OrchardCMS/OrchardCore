@@ -7,7 +7,8 @@ import { designerStore, type DesignerStore } from "./state/designerStore";
 import { addNodeCommand } from "./state/commands";
 import DesignerCanvas from "./canvas/DesignerCanvas.vue";
 import ActivityToolbox from "./toolbox/ActivityToolbox.vue";
-import PropertiesPanel from "./panel/PropertiesPanel.vue";
+import WorkflowPanel from "./panel/WorkflowPanel.vue";
+import ActivityPanel from "./panel/ActivityPanel.vue";
 import { startVariableCompletions } from "./variables/variableCompletions";
 import { upstreamValues } from "./available/availableData";
 import ToastHost from "./ui/ToastHost.vue";
@@ -43,7 +44,9 @@ const library = ref<Library | null>(null);
 const libraryLoading = ref(false);
 const libraryError = ref<string | null>(null);
 const canvas = ref<InstanceType<typeof DesignerCanvas> | null>(null);
-const panel = ref<InstanceType<typeof PropertiesPanel> | null>(null);
+// The workflow's panel (variables, settings, issues), and the selected activity's panel below the canvas.
+const panel = ref<InstanceType<typeof WorkflowPanel> | null>(null);
+const activityPanel = ref<InstanceType<typeof ActivityPanel> | null>(null);
 const conflictOpen = ref(false);
 const publishDialog = ref<Exclude<PublishDecision, { kind: "publish" }> | null>(null);
 const busy = ref(false);
@@ -80,6 +83,11 @@ const closeToolboxPeek = () => {
     toolbox.value?.querySelector<HTMLElement>("[data-cy=toolbox-rail-activities]")?.focus();
 };
 
+/**
+ * Applies the pending changes of both panels' forms; resolves to false when the user wants to keep editing.
+ */
+const settleForms = async () => (await (activityPanel.value?.settle() ?? true)) && (await (panel.value?.settle() ?? true));
+
 // Every request that changes the draft goes through this queue, so each one has the current revision.
 const queue = createRevisionQueue(props.store);
 const mutate = queue.run;
@@ -99,7 +107,7 @@ const autosave = createAutosave({
         if (reloadAfterSave) {
             reloadAfterSave = false;
             void (async () => {
-                await panel.value?.settle();
+                await settleForms();
                 await reloadDefinition();
             })();
         }
@@ -112,10 +120,10 @@ const showBanner = computed(
     () => !bannerDismissed.value && state.hasDraft && !!state.draftModifiedByUserId && state.draftModifiedByUserId !== (props.config.currentUserId ?? null),
 );
 
-// Editing an activity (Enter or double-click on it) moves the focus to its first field; Escape in the
+// Editing an activity (Enter or double-click on it) moves the focus to its first field; Escape in its
 // panel brings it back.
 const editActivity = (activityId: string) => {
-    void panel.value?.open(activityId, { focus: true });
+    void activityPanel.value?.open(activityId, { focus: true });
 };
 
 const returnFocus = (activityId: string) => {
@@ -155,10 +163,11 @@ const reloadDefinition = () =>
         const definition = await props.api.getDefinition();
 
         panel.value?.discardChanges();
+        activityPanel.value?.discardChanges();
         props.store.loadDefinition(definition);
         autosave.reset();
         bannerDismissed.value = false;
-        await panel.value?.refresh();
+        await Promise.all([panel.value?.refresh(), activityPanel.value?.refresh()]);
     });
 
 const onReload = async () => {
@@ -201,7 +210,7 @@ const onKeyDown = (event: KeyboardEvent) => {
 
 // Leaving while a change isn't saved asks first (the browser shows its own message).
 const onBeforeUnload = (event: BeforeUnloadEvent) => {
-    if (!props.config.readOnly && (autosave.hasUnsavedChanges() || panel.value?.hasPendingChanges())) {
+    if (!props.config.readOnly && (autosave.hasUnsavedChanges() || panel.value?.hasPendingChanges() || activityPanel.value?.hasPendingChanges())) {
         event.preventDefault();
         event.returnValue = "";
     }
@@ -235,8 +244,7 @@ const addActivity = async (activityName: string, position: Point) => {
         canvas.value?.focusNode(result.node.id);
 
         if (result.node.hasEditor) {
-            // A collapsed panel stays collapsed; its Activity tab shows the new activity.
-            void panel.value?.open(result.node.id, { expand: false });
+            void activityPanel.value?.open(result.node.id);
         }
     } catch (error) {
         onRequestError(error, t("AddActivityFailed"));
@@ -291,7 +299,7 @@ const publish = async () => {
     busy.value = true;
 
     try {
-        if (!(await (panel.value?.settle() ?? true))) {
+        if (!(await settleForms())) {
             return;
         }
 
@@ -343,7 +351,7 @@ const restoreVersion = async (version: DesignerVersion) => {
     busy.value = true;
 
     try {
-        if (!(await (panel.value?.settle() ?? true)) || !(await autosave.flush())) {
+        if (!(await settleForms()) || !(await autosave.flush())) {
             return;
         }
 
@@ -486,7 +494,7 @@ onMounted(async () => {
     if (!props.config.readOnly && initialActivityId && props.store.getNode(initialActivityId)) {
         await nextTick();
         canvas.value?.centerOn(initialActivityId);
-        await panel.value?.open(initialActivityId);
+        await activityPanel.value?.open(initialActivityId);
     }
 
     if (!loadError.value) {
@@ -518,7 +526,7 @@ onBeforeUnmount(() => {
     void realtime?.stop();
 });
 
-defineExpose({ canvas, panel, addActivity, autosave, publish, discard });
+defineExpose({ canvas, panel, activityPanel, addActivity, autosave, publish, discard });
 </script>
 
 <template>
@@ -697,26 +705,40 @@ defineExpose({ canvas, panel, addActivity, autosave, publish, discard });
                 </div>
             </aside>
 
-            <section class="wfd-canvas-host" :aria-label="t('Canvas')" :aria-busy="loading" data-cy="designer-canvas">
-                <div v-if="loading" class="wfd-message">
-                    <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-                    {{ t("Loading") }}
-                </div>
-                <div v-else-if="loadError" class="wfd-message text-danger" role="alert">{{ loadError }}</div>
-                <DesignerCanvas v-else ref="canvas" :store="store" :read-only="config.readOnly" @edit="editActivity" @drop-activity="onDropActivity" />
-            </section>
+            <!-- The canvas, with the selected activity's panel over it, or below it when pinned. -->
+            <div class="wfd-main" :style="{ '--wfd-covered-height': `${activityPanel?.coveredHeight ?? 0}px` }">
+                <section class="wfd-canvas-host" :aria-label="t('Canvas')" :aria-busy="loading" data-cy="designer-canvas">
+                    <div v-if="loading" class="wfd-message">
+                        <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                        {{ t("Loading") }}
+                    </div>
+                    <div v-else-if="loadError" class="wfd-message text-danger" role="alert">{{ loadError }}</div>
+                    <DesignerCanvas v-else ref="canvas" :store="store" :read-only="config.readOnly" @edit="editActivity" @drop-activity="onDropActivity" />
+                </section>
 
-            <PropertiesPanel
+                <ActivityPanel
+                    v-if="!loading && !loadError"
+                    ref="activityPanel"
+                    :store="store"
+                    :api="api"
+                    :read-only="config.readOnly"
+                    :mutate="mutate"
+                    :can-retry="!!config.urls.retry"
+                    @retried="onRetried"
+                    @return-focus="returnFocus"
+                    @closed="canvas?.focus()"
+                    @conflict="autosave.reportConflict"
+                />
+            </div>
+
+            <WorkflowPanel
                 v-if="!loading && !loadError"
                 ref="panel"
                 :store="store"
                 :api="api"
                 :read-only="config.readOnly"
                 :mutate="mutate"
-                :can-retry="!!config.urls.retry"
                 @focus-activity="focusActivity"
-                @retried="onRetried"
-                @return-focus="returnFocus"
                 @conflict="autosave.reportConflict"
             />
         </div>

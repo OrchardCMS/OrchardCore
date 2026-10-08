@@ -38,7 +38,6 @@ public sealed class WorkflowsDesignerJSLocalizer : IJSLocalizer
             { "UndoShortcut", S["Undo (Ctrl+Z)"].Value },
             { "RedoShortcut", S["Redo (Ctrl+Y)"].Value },
             { "Toolbox", S["Toolbox"].Value },
-            { "Properties", S["Properties"].Value },
             { "Close", S["Close"].Value },
             { "Cancel", S["Cancel"].Value },
 
@@ -54,7 +53,7 @@ public sealed class WorkflowsDesignerJSLocalizer : IJSLocalizer
             { "AddActivity", S["Add {0}"].Value },
             { "AddActivityFailed", S["The activity couldn't be added. Reload the page and try again."].Value },
 
-            // Properties panel.
+            // Workflow and activity panels.
             { "ActivityTab", S["Activity"].Value },
             { "ActivityTabHint", S["Edit the selected activity. Changes are saved as you make them."].Value },
             { "ActivityTabHintReadOnly", S["The details of the selected activity."].Value },
@@ -141,6 +140,11 @@ public sealed class WorkflowsDesignerJSLocalizer : IJSLocalizer
             { "CollapsePanel", S["Collapse the panel"].Value },
             { "ExpandPanel", S["Expand the panel"].Value },
             { "ResizePanel", S["Resize the panel"].Value },
+            { "ActivityDetails", S["Details"].Value },
+            { "PinActivityPanel", S["Keep the activity panel open below the canvas"].Value },
+            { "UnpinActivityPanel", S["Open the activity panel over the canvas only while an activity is selected"].Value },
+            { "CloseActivityPanel", S["Close the activity panel"].Value },
+            { "ResizeActivityPanel", S["Resize the activity panel"].Value },
 
             // Draft: autosave, publish and discard.
             { "Saved", S["All changes saved"].Value },

@@ -173,11 +173,139 @@
     font-size: 0.5625rem;
 }
 
+/* The canvas, with the selected activity's panel at its bottom. */
+.wfd-main {
+    position: relative;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+
 .wfd-canvas-host {
     position: relative;
     flex: 1 1 auto;
     min-width: 0;
+    min-height: 0;
     overflow: hidden;
+}
+
+/* The selected activity's panel opens over the bottom of the canvas; pinned, it stays below the canvas. */
+.wfd-activity-panel {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 9;
+    display: flex;
+    flex-direction: column;
+    height: 30%;
+    min-height: 8rem;
+    max-height: calc(100% - 6rem);
+    border-top: var(--bs-border-width) solid var(--bs-border-color);
+    background-color: var(--bs-body-bg);
+    box-shadow: 0 -0.5rem 1rem rgba(0, 0, 0, 0.12);
+}
+
+.wfd-activity-panel.is-pinned {
+    position: relative;
+    z-index: auto;
+    flex: 0 0 auto;
+    box-shadow: none;
+}
+
+.wfd-activity-panel-resizer {
+    position: absolute;
+    top: -3px;
+    right: 0;
+    left: 0;
+    z-index: 2;
+    height: 6px;
+    cursor: row-resize;
+}
+
+.wfd-activity-panel-resizer:hover,
+.wfd-activity-panel-resizer:focus-visible {
+    outline: none;
+    background-color: rgba(var(--bs-primary-rgb), 0.35);
+}
+
+.wfd-activity-panel-header {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.75rem;
+    min-width: 0;
+    border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+}
+
+.wfd-panel-title.wfd-activity-panel-title {
+    flex: 0 1 auto;
+    align-items: center;
+    align-self: center;
+    min-width: 0;
+    max-width: 40%;
+    padding: 0.375rem 0 0.375rem 0.75rem;
+    white-space: nowrap;
+}
+
+.wfd-activity-panel-title small {
+    margin-inline-start: 0;
+}
+
+.wfd-activity-panel .wfd-panel-tabs {
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+    padding-inline-start: 0;
+}
+
+.wfd-activity-panel .wfd-panel-tabs .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    white-space: nowrap;
+}
+
+.wfd-activity-panel-actions {
+    display: flex;
+    flex: 0 0 auto;
+    align-self: center;
+    margin-inline-start: auto;
+    padding-inline-end: 0.25rem;
+}
+
+.wfd-activity-panel-actions .btn.active {
+    color: var(--bs-primary);
+}
+
+.wfd-activity-panel-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+}
+
+/* The panel is as wide as the canvas, which the toolbox and the workflow's panel narrow: its header drops the
+   activity type, then the tabs' labels (their icons and tooltips remain). */
+.wfd-activity-panel {
+    container-type: inline-size;
+}
+
+@container (max-width: 48rem) {
+    .wfd-activity-panel-title small {
+        display: none;
+    }
+}
+
+@container (max-width: 34rem) {
+    .wfd-activity-tab-label {
+        display: none;
+    }
+}
+
+.wfd-activity-panel .wfd-outputs {
+    margin: 0.75rem;
+    padding-top: 0;
+    border-top: 0;
 }
 
 .wfd-panel {
@@ -387,10 +515,6 @@
     border-top: var(--bs-border-width) solid var(--bs-border-color);
 }
 
-.wfd-panel-summary .wfd-outputs {
-    margin-inline: 0;
-}
-
 .wfd-section-title {
     margin-bottom: 0.25rem;
     font-size: 0.875rem;
@@ -417,41 +541,6 @@
     margin: 0.25rem 0 0;
     color: var(--bs-warning-text-emphasis);
     font-size: 0.8125rem;
-}
-
-/* The views of the Activity tab: the activity's settings, or the data it can use. */
-.wfd-activity-views {
-    display: flex;
-    gap: 0.25rem;
-    margin: 0.5rem 0.75rem 0;
-    padding: 0.1875rem;
-    border-radius: var(--bs-border-radius);
-    background-color: var(--bs-tertiary-bg);
-}
-
-.wfd-activity-view {
-    display: inline-flex;
-    flex: 1 1 0;
-    align-items: center;
-    justify-content: center;
-    gap: 0.375rem;
-    padding: 0.25rem 0.5rem;
-    border: 0;
-    border-radius: var(--bs-border-radius-sm);
-    background: none;
-    color: var(--bs-secondary-color);
-    font-size: 0.8125rem;
-    font-weight: 600;
-}
-
-.wfd-activity-view:hover {
-    color: var(--bs-emphasis-color);
-}
-
-.wfd-activity-view.active {
-    background-color: var(--bs-body-bg);
-    color: var(--bs-emphasis-color);
-    box-shadow: var(--bs-box-shadow-sm);
 }
 
 /* Data available to the edited activity. */
@@ -1193,10 +1282,11 @@
     pointer-events: none;
 }
 
+/* The notice and the zoom controls stay above the activity's panel when it opens over the canvas. */
 .wfd-hidden-notice {
     position: absolute;
     left: 0.75rem;
-    bottom: 0.75rem;
+    bottom: calc(0.75rem + var(--wfd-covered-height, 0px));
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -1209,7 +1299,7 @@
 .wfd-zoom-controls {
     position: absolute;
     right: 0.75rem;
-    bottom: 0.75rem;
+    bottom: calc(0.75rem + var(--wfd-covered-height, 0px));
 }
 
 .wfd-zoom-level {

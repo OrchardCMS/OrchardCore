@@ -26,20 +26,25 @@ Workflow definitions are edited in the workflow designer: open **Workflows** in 
 
 ![The workflow designer](docs/workflow-designer.png)
 
-The designer has three areas:
+The designer has four areas. What concerns the whole workflow is on the right, and what concerns the selected activity is below the canvas:
 
 - **Activities** (on the left) lists the activities you can add, grouped by category. Search them by name or category, or show only events or tasks. Drag an activity onto the canvas, or click it to add it in the middle of the view.
 - **The canvas** (in the middle) shows the activities and the transitions between them. Each activity shows its type, its settings, and one port per outcome.
     - Drag from an outcome's port to another activity to connect them. An outcome has at most one transition, so connecting it again replaces its previous transition.
     - Start activities show a **Start** badge, and activities with problems show their number of issues.
     - Right-click an activity, a transition or the canvas for more actions, such as making an event the start activity.
-- **The properties panel** (on the right) has four tabs:
-    - **Activity**: the editor of the selected activity. Double-click an activity, or select it and press Enter, to edit it. Below the editor, **Outputs** stores the values the activity produces in [variables](#variables).
+- **The workflow panel** (on the right) has three tabs:
     - **Variables**: the [variables](#variables) of the workflow, with their types and default values.
     - **Workflow**: the settings of the workflow: its name, whether it is enabled, whether it is a singleton, its lock settings, and whether finished instances are deleted.
     - **Issues**: the problems found in the workflow, errors first. Select one to go to its activity.
+- **The activity panel** (at the bottom of the canvas) opens when you select an activity, and closes when you click away from it, on the canvas, or press **Close**. Double-click an activity, or select it and press Enter, to move to its first field. It has up to three tabs:
+    - **Settings**: the editor of the activity.
+    - **Outputs**: for an activity that produces values, the [variables](#variables) that store them.
+    - **Available data**: what the activity's expressions can read (see [Available Data](#available-data)).
 
-The activities pane and the properties panel can be collapsed to a narrow rail, to give the canvas more room. Hover a rail to open its pane over the canvas, or click it to expand the pane again. The properties rail shows the tabs, so you can go straight to one of them. The width of the properties panel and whether each pane is collapsed are remembered in your browser.
+The activity panel opens over the bottom of the canvas, without moving the workflow. Drag its top edge to resize it. **Pin** it to keep it open below the canvas, which then gets shorter, whether an activity is selected or not.
+
+The activities pane and the workflow panel can be collapsed to a narrow rail, to give the canvas more room. Hover a rail to open its pane over the canvas, or click it to expand the pane again. The workflow panel's rail shows its tabs, so you can go straight to one of them. The width of the workflow panel, the height of the activity panel, whether it is pinned and whether each pane is collapsed are remembered in your browser.
 
 ### Focusing on Part of a Workflow
 
@@ -68,7 +73,7 @@ The changes made in an activity editor are applied when you leave a field, and w
 | Ctrl+Z, Ctrl+Y (or Ctrl+Shift+Z) | Undo, redo a change on the canvas |
 | Tab | Move between activities; the focused activity is selected |
 | Enter | Edit the selected activity |
-| Escape, in the properties panel | Go back to the activity on the canvas |
+| Escape, in the activity panel | Go back to the activity on the canvas |
 | Arrow keys | Move the selected activities by one grid cell, or by one pixel with Shift |
 | Delete, Backspace | Delete the selection; the toast that follows can undo it |
 | Ctrl+A | Select all the activities |
@@ -82,11 +87,11 @@ Undo covers the changes made on the canvas: adding, moving, connecting and delet
 
 ### Right-to-Left Languages
 
-In right-to-left languages, the activities pane and the properties panel swap sides, but the canvas isn't mirrored: a workflow looks the same to every user, whatever their language.
+In right-to-left languages, the activities pane and the workflow panel swap sides, but the canvas isn't mirrored: a workflow looks the same to every user, whatever their language.
 
 ### Workflow Instances
 
-The page of a workflow instance shows the version of its workflow that the instance runs on, in a read-only designer, with the activities the instance waits on (its **blocking** activities) highlighted. Select an activity to see its details. The **Variables** tab of the properties panel shows the values of the instance's variables, and the activities and connections the instance ran are highlighted (see [Execution Journal](#execution-journal)). Right-click an activity to collapse the activities after it; the blocking activities are never hidden. The **State** tab shows the instance's state as JSON.
+The page of a workflow instance shows the version of its workflow that the instance runs on, in a read-only designer, with the activities the instance waits on (its **blocking** activities) highlighted. Select an activity to see its details and outputs in the activity panel. The **Variables** tab of the workflow panel shows the values of the instance's variables, and the activities and connections the instance ran are highlighted (see [Execution Journal](#execution-journal)). Right-click an activity to collapse the activities after it; the blocking activities are never hidden. The **State** tab shows the instance's state as JSON.
 
 ![A workflow instance waiting on a signal](docs/workflow-instance-viewer.png)
 
@@ -141,7 +146,7 @@ Workflow instances record each activity they run in a **journal**: the activity,
 The page of a workflow instance uses the journal:
 
 - **Executed path.** The activities the instance ran and the connections it followed are highlighted, with the number of times when it's more than one (in a loop, for example). The activity that faulted the instance is marked.
-- **Journal tab.** The properties panel lists the records in order, with their status, outcomes, duration and error. Select a record to go to its activity.
+- **Journal tab.** The workflow panel lists the records in order, with their status, outcomes, duration and error. Select a record to go to its activity.
 - **Script errors.** An activity whose scripts failed is outlined in amber, with a badge that lists the errors.
 
 ### Retrying a Faulted Instance
@@ -276,7 +281,7 @@ For developers, `IWorkflowDesignerNotifier` is told about the changes of workflo
 
 ## Variables
 
-A workflow can declare **variables**: named values that every activity of an instance can read and write, each with a type and an optional default value. Variables are declared in the **Variables** tab of the designer's properties panel, and are part of the workflow's [versions](#versions).
+A workflow can declare **variables**: named values that every activity of an instance can read and write, each with a type and an optional default value. Variables are declared in the **Variables** tab of the designer's workflow panel, and are part of the workflow's [versions](#versions).
 
 Variables belong to the workflow, not to an activity: an activity sets a variable, and the activities that run after it read the new value. Each instance has its own values, so two instances that run at the same time don't share them. The [samples](#samples) show them at work.
 
@@ -301,7 +306,7 @@ Variables belong to the workflow, not to an activity: an activity sets a variabl
 - **JavaScript.** `variable("name")` returns the value of a variable, and `setVariable("name", value)` sets it. In the designer's script editors, typing `variable` or `setVariable` suggests the declared variables. A value that doesn't convert is a script error: it's logged, and the variable doesn't change.
 - **Liquid.** `{{ Workflow.Variables.name }}` returns the value of a variable.
 - **Set Variable activity.** It sets a variable to the result of a JavaScript or Liquid expression. Its name field suggests the declared variables.
-- **Activity outputs.** Some activities produce values, their **outputs**. The **Outputs** section under the activity's editor stores each output in a variable. The value is converted to the variable's type after the activity runs (not when it waits on an event or faults), and the workflow faults when it doesn't convert.
+- **Activity outputs.** Some activities produce values, their **outputs**. The **Outputs** tab of the activity panel stores each output in a variable. The value is converted to the variable's type after the activity runs (not when it waits on an event or faults), and the workflow faults when it doesn't convert.
 
 | Activity | Outputs |
 |---|---|
@@ -381,7 +386,7 @@ The editor that allows you to create and manage a workflow definition visually. 
 
 ### Activity Editor
 
-Most activities expose settings that can be configured in the activity editor, on the **Activity** tab of the designer's properties panel.
+Most activities expose settings that can be configured in the activity editor, on the **Settings** tab of the designer's activity panel.
 To configure an activity, double-click it on the canvas, or select it and press Enter.
 
 ### Activities Pane
@@ -459,7 +464,7 @@ Many activities have settings that are **expressions**, evaluated each time the 
 
 ### Available Data
 
-The **Activity** tab of the designer's properties panel has two views: the **Settings** of the selected activity, and its **Available data**, which lists what its expressions can read:
+The **Available data** tab of the designer's activity panel, next to the activity's **Settings**, lists what the selected activity's expressions can read:
 
 - **Variables.** The workflow's [variables](#variables).
 - **This activity.** The values that the selected activity sets before it evaluates its own expressions, such as the `EmailConfirmationUrl` that **Register User Task** sets before it renders its email.
@@ -498,7 +503,7 @@ The [outputs](#reading-and-writing-variables) of activities are listed with the 
 
 ### Last Result
 
-The last result (`lastResult()`, `{{ Workflow.LastResult }}`) is the value that the activity which ran just before returned, so its type depends on that activity. When every activity with a connection to the selected one declares its last result, the **Available data** view shows its type and what it is, and its fields when they all have the same; otherwise it's **Any**.
+The last result (`lastResult()`, `{{ Workflow.LastResult }}`) is the value that the activity which ran just before returned, so its type depends on that activity. When every activity with a connection to the selected one declares its last result, the **Available data** tab shows its type and what it is, and its fields when they all have the same; otherwise it's **Any**.
 
 | Activity | Last result |
 |---|---|
@@ -816,7 +821,7 @@ Set `Multiline` for values that span several lines: they are edited in a code ed
 
 ### Activity Editors in the Designer
 
-The designer loads an activity's editor (the `{Name}_Fields_Edit` shape) into its properties panel without reloading the page. It posts the editor as a form when a field changes, and replaces it when another activity is selected. Editors made of plain form fields need nothing more. An editor that has a script must be safe to inject:
+The designer loads an activity's editor (the `{Name}_Fields_Edit` shape) into its activity panel without reloading the page. It posts the editor as a form when a field changes, and replaces it when another activity is selected. Editors made of plain form fields need nothing more. An editor that has a script must be safe to inject:
 
 - **Register the script as a resource** (`<script asp-name="…" at="Foot">` or `asp-src`), so the designer loads it with the editor. A script that is already on the page isn't loaded again, so it must also initialize the editors that are added to the page later. In the Orchard Core repository, `observeAndInit(selector, init)` from `@orchardcore/bloom/helpers/observeAndInit` does this: it runs `init` once for every matching element, including the ones added later.
 - **Scope the script to its editor**, for example with a `data-task-editor="my-task"` wrapper element, and read element ids from `data-` attributes rather than hard-coding them.
