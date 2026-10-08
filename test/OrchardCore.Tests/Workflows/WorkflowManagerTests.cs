@@ -514,6 +514,62 @@ public class WorkflowManagerTests
         Assert.Empty(stringBuilder.ToString());
     }
 
+    [Fact]
+    public async Task StartWorkflowAsync_WorkflowCancelledWhileAScriptRuns_FaultsTheWorkflow()
+    {
+        var services = new ServiceCollection();
+        services.AddScoped(typeof(Resolver<>));
+        services.AddScoped(provider => new Mock<IShapeFactory>().Object);
+        services.AddScoped(provider => new Mock<IViewLocalizer>().Object);
+        services.AddScoped<IWorkflowExecutionContextHandler, DefaultWorkflowExecutionContextHandler>();
+        services.AddScoped<IWorkflowExecutionContextHandler, CancelWorkflowMethodHandler>();
+        var serviceProvider = services.BuildServiceProvider();
+
+        // The constraint AddJavaScriptEngine() registers, through which a running script observes the token.
+        var jintOptions = new Jint.Options();
+        Jint.OptionsExtensions.Constraint(jintOptions, static () => new Jint.Constraints.OperationDeadlineConstraint());
+        var scriptEvaluator = CreateWorkflowScriptEvaluator(serviceProvider, jintOptions);
+
+        var stringBuilder = new StringBuilder();
+        var ifElseTask = new IfElseTask(scriptEvaluator, new Mock<IWorkflowExpressionEvaluator>().Object, new Mock<IStringLocalizer<IfElseTask>>().Object);
+        var writeLineTask = new WriteLineTask(scriptEvaluator, new Mock<IStringLocalizer<WriteLineTask>>().Object, new StringWriter(stringBuilder));
+        var workflowType = new WorkflowType
+        {
+            Id = 1,
+            WorkflowTypeId = IdGenerator.GenerateId(),
+            Activities =
+            [
+                new()
+                {
+                    ActivityId = "1",
+                    IsStart = true,
+                    Name = ifElseTask.Name,
+                    Properties = JObject.FromObject(new { Condition = new WorkflowExpression<bool>("cancelWorkflow(); for (let i = 0; i < 10000000; i++) {} true") }),
+                },
+                new() { ActivityId = "2", Name = writeLineTask.Name, Properties = JObject.FromObject(new { Text = new WorkflowExpression<string>("'took the true branch'") }) },
+            ],
+            Transitions =
+            [
+                new() { SourceActivityId = "1", SourceOutcomeName = "True", DestinationActivityId = "2" },
+            ],
+        };
+
+        Exception fault = null;
+        var workflowManager = CreateWorkflowManager(serviceProvider, [ifElseTask, writeLineTask], workflowType, (workflowFaultHandler, manager) =>
+            workflowFaultHandler
+                .Setup(x => x.OnWorkflowFaultAsync(It.IsAny<IWorkflowManager>(), It.IsAny<WorkflowExecutionContext>(), It.IsAny<ActivityContext>(), It.IsAny<Exception>()))
+                .Callback<IWorkflowManager, WorkflowExecutionContext, ActivityContext, Exception>((_, _, _, exception) => fault = exception)
+                .Returns(Task.CompletedTask));
+
+        var workflowExecutionContext = await workflowManager.StartWorkflowAsync(workflowType);
+
+        // The workflow is cancelled while its condition is still running. The script is stopped rather than
+        // finishing the loop and answering, and the stopped evaluation faults the workflow at that activity.
+        Assert.Equal(WorkflowStatus.Faulted, workflowExecutionContext.Status);
+        Assert.IsAssignableFrom<OperationCanceledException>(fault);
+        Assert.Empty(stringBuilder.ToString());
+    }
+
     private static ServiceProvider CreateServiceProvider()
     {
         var services = new ServiceCollection();
@@ -685,6 +741,37 @@ public class WorkflowManagerTests
                     await Task.Yield();
                     return "async";
                 }),
+            };
+        }
+    }
+
+    private sealed class CancelWorkflowMethodHandler : WorkflowExecutionContextHandlerBase
+    {
+        public override Task EvaluatingScriptAsync(WorkflowExecutionScriptContext context)
+        {
+            var workflowContext = context.WorkflowContext;
+
+            context.ScopedMethodProviders.Add(new CancelWorkflowMethodProvider(() => workflowContext.Cancel("cancelled by the test")));
+
+            return Task.CompletedTask;
+        }
+    }
+
+    private sealed class CancelWorkflowMethodProvider : IGlobalMethodProvider
+    {
+        private readonly Action _cancel;
+
+        public CancelWorkflowMethodProvider(Action cancel)
+        {
+            _cancel = cancel;
+        }
+
+        public IEnumerable<GlobalMethod> GetMethods()
+        {
+            yield return new GlobalMethod
+            {
+                Name = "cancelWorkflow",
+                Method = serviceProvider => _cancel,
             };
         }
     }
