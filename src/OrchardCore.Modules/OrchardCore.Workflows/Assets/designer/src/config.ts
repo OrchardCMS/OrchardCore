@@ -18,6 +18,8 @@ export interface DesignerUrls {
     outputBindings?: string | null;
     // Set on the instance viewer when the user can retry a faulted instance.
     retry?: string | null;
+    // Set on the instance viewer: the data of a journal record, with a sequence query string parameter.
+    journalData?: string | null;
 }
 
 /**

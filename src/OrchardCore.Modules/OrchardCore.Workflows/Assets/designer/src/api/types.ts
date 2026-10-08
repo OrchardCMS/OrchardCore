@@ -141,6 +141,29 @@ export interface JournalRecord {
     completedUtc: string;
     durationMilliseconds: number;
     error?: string | null;
+    // Whether the record has the data of the execution, which the viewer loads when it's opened.
+    hasData?: boolean;
+}
+
+// An expression an activity evaluated, and its result (WorkflowExpressionEvaluation).
+export interface JournalEvaluation {
+    // The activity property, such as "Condition" or "Inputs.amount", when it's known.
+    property?: string | null;
+    syntax?: string | null;
+    expression: string;
+    // The result, as JSON text.
+    result: string;
+}
+
+// What an activity evaluated, set and changed in one execution (WorkflowExecutionData). Values are JSON text.
+export interface JournalData {
+    evaluations: JournalEvaluation[];
+    outputs: Record<string, string>;
+    variables: Record<string, string>;
+    properties: Record<string, string>;
+    lastResult?: string | null;
+    // Whether values were cut or left out to keep the record small.
+    isTruncated: boolean;
 }
 
 // The workflow instance shown by the read-only instance viewer.

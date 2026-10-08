@@ -603,6 +603,125 @@
     font-size: 0.8125rem;
 }
 
+/* The runs of an activity by the instance shown, with what each evaluated, set and changed. */
+.wfd-runs {
+    margin: 0.5rem 0.75rem;
+}
+
+.wfd-run {
+    border-bottom: var(--bs-border-width) solid var(--bs-border-color-translucent);
+}
+
+.wfd-run:last-child {
+    border-bottom: 0;
+}
+
+.wfd-run-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.375rem 0.5rem;
+    width: 100%;
+    padding: 0.375rem 0.25rem;
+    border: 0;
+    border-radius: var(--bs-border-radius-sm);
+    background: none;
+    color: var(--bs-body-color);
+    font-size: 0.8125rem;
+    text-align: start;
+}
+
+.wfd-run-head:hover {
+    background-color: var(--bs-tertiary-bg);
+}
+
+.wfd-run-head.is-focused {
+    background-color: rgba(var(--bs-primary-rgb), 0.08);
+}
+
+.wfd-run-chevron {
+    color: var(--bs-secondary-color);
+    font-size: 0.6875rem;
+    transition: transform 0.15s;
+}
+
+.wfd-run-head[aria-expanded="true"] .wfd-run-chevron {
+    transform: rotate(90deg);
+}
+
+.wfd-run-data {
+    padding: 0.25rem 0.25rem 0.75rem 1.5rem;
+    font-size: 0.8125rem;
+}
+
+.wfd-run-section {
+    margin: 0.5rem 0 0.25rem;
+    color: var(--bs-secondary-color);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.wfd-run-evaluation {
+    margin-bottom: 0.5rem;
+}
+
+.wfd-run-evaluation-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.125rem;
+}
+
+.wfd-run-name {
+    color: var(--bs-emphasis-color);
+    font-family: var(--bs-font-monospace);
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.wfd-run-code {
+    max-height: 12rem;
+    margin: 0;
+    padding: 0.25rem 0.5rem;
+    overflow: auto;
+    border-radius: var(--bs-border-radius-sm);
+    background-color: var(--bs-tertiary-bg);
+    font-size: 0.75rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.wfd-run-result {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+}
+
+.wfd-run-result > i {
+    margin-top: 0.375rem;
+    color: var(--bs-secondary-color);
+}
+
+.wfd-run-result > pre {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.wfd-run-values {
+    display: grid;
+    grid-template-columns: minmax(6rem, max-content) minmax(0, 1fr);
+    gap: 0.25rem 0.75rem;
+    margin: 0;
+}
+
+.wfd-run-values dd {
+    min-width: 0;
+    margin: 0;
+}
+
 /* Data available to the edited activity. */
 .wfd-available {
     margin: 0.75rem;

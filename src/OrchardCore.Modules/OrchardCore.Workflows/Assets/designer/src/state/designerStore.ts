@@ -81,6 +81,10 @@ export interface DesignerState {
      */
     presence: Presence[];
     remoteChange: WorkflowTypeChangedMessage | null;
+    /**
+     * The journal record the instance viewer shows in the activity's Runs tab, after it was selected in the journal.
+     */
+    focusedRunSequence: number | null;
 }
 
 const createInitialState = (): DesignerState => ({
@@ -113,6 +117,7 @@ const createInitialState = (): DesignerState => ({
     canRedo: false,
     presence: [],
     remoteChange: null,
+    focusedRunSequence: null,
 });
 
 /**

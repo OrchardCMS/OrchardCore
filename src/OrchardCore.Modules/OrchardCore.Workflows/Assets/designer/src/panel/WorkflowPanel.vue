@@ -225,8 +225,10 @@ const onSettingsApplied = (result: FormApplyResult & { valid: true }) => {
     state.settings = applied.settings;
 };
 
-const onJournalSelected = (activityId: string) => {
+// A record of the journal opens its activity's panel on that run.
+const onJournalSelected = (activityId: string, sequence: number) => {
     if (props.store.getNode(activityId)) {
+        state.focusedRunSequence = sequence;
         selectNode(props.store, activityId);
         emit("focus-activity", activityId);
     }

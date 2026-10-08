@@ -73,11 +73,16 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
   - **Instance.** `WorkflowDesignerJournalRecord.HasData`; the records still don't carry their data.
   - **Tests.** `JournalData_RecordOfTheInstance_ReturnsItsDataWhenItHasSome` (the flags, the data, and 404 for a record without data or that doesn't exist); the viewer's configuration has the URL; the functional test of the designer endpoints for a user without Manage Workflows includes it (403). Workflows tests: 292/292.
 
-### - [ ] 10.3 The Runs tab
+### - [x] 10.3 The Runs tab
 
 - The viewer's activity panel has a **Runs** tab (when the instance ran the activity): its executions, each opening on its data (expressions, outputs, changed variables, last result), loaded when opened.
 - Selecting a journal record opens the panel on the Runs tab, on that record; a record without data says how to turn the setting on.
 - **Tests**: Vitest for the tab, the loading and the selection from the journal.
+- **Notes from implementing this step:**
+  - **Tab.** `panel/RunsTab.vue`, in the viewer's activity panel between Details and Outputs, when the journal has a record of the activity. Each run shows its sequence, status, outcomes, start time and duration, and opens (an `aria-expanded` button) on its error and its data: the expressions with their property and syntax and an arrow to their result, the outputs, the variables, the other properties and the last result. JSON objects are shown indented; a record whose values were cut says so.
+  - **Loading.** A run's data is loaded the first time it's opened (`api.getJournalData(sequence)`, with the URL from the configuration), and kept while the panel shows the activity. A run without data says the activity changed nothing or the workflow doesn't record activity data, and where to turn it on.
+  - **From the journal.** `JournalTab` emits the record's sequence with its activity; the workflow panel stores it in `state.focusedRunSequence` and selects the activity, whose panel opens on the Runs tab with that run open and scrolled into view. Selecting another activity on the canvas opens on its Details.
+  - **Tests.** `RunsTab.spec.ts` (3): the runs of the activity and the loading of a run's data (once), a run without data, and a journal record opening its run in the activity panel. `JournalTab.spec.ts` checks the sequence. Vitest 279/279.
 
 ### - [ ] 10.4 Docs and an end-to-end test (item 1)
 

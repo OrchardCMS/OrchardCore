@@ -8,6 +8,7 @@ import { clearSelection, selectNode } from "../canvas/useConnect";
 import ServerFormHost from "./ServerFormHost.vue";
 import OutputBindings from "./OutputBindings.vue";
 import AvailableData from "../available/AvailableData.vue";
+import RunsTab from "./RunsTab.vue";
 import { canInsertAt, insertAtCursor } from "../available/insertion";
 import type { FormApplyResult } from "./types";
 import type { RevisionTask } from "../services/revisionQueue";
@@ -17,8 +18,8 @@ import { readPreference, writePreference } from "../ui/preferences";
 import { t } from "../i18n";
 
 // The tabs of the selected activity: its settings, the variables that store its outputs, and the data its
-// expressions can read; the viewer shows its details instead of its settings.
-type Tab = "settings" | "outputs" | "data" | "details";
+// expressions can read; the viewer shows its details instead of its settings, and its runs by the instance.
+type Tab = "settings" | "outputs" | "data" | "details" | "runs";
 
 const MIN_HEIGHT = 128;
 // The canvas keeps at least this much room above the panel.
@@ -31,6 +32,7 @@ const TAB_ICONS: Record<Tab, string> = {
     outputs: "fa-solid fa-right-from-bracket",
     data: "fa-solid fa-database",
     details: "fa-solid fa-circle-info",
+    runs: "fa-solid fa-clock-rotate-left",
 };
 
 const props = withDefaults(
@@ -91,7 +93,9 @@ const tabs = computed<Tab[]>(() => {
     const hasOutputs = (node.outputs ?? []).length > 0;
 
     if (props.readOnly) {
-        return hasOutputs ? ["details", "outputs"] : ["details"];
+        const ran = (state.instance?.journal ?? []).some((record) => record.activityId === node.id);
+
+        return ["details", ...(ran ? (["runs"] as Tab[]) : []), ...(hasOutputs ? (["outputs"] as Tab[]) : [])];
     }
 
     if (node.isMissing) {
@@ -102,7 +106,7 @@ const tabs = computed<Tab[]>(() => {
 });
 
 // Direct t("…") calls, so the translations spec sees every key.
-const tabLabel = (item: Tab) => ({ settings: t("ActivitySettings"), outputs: t("Outputs"), data: t("AvailableData"), details: t("ActivityDetails") })[item];
+const tabLabel = (item: Tab) => ({ settings: t("ActivitySettings"), outputs: t("Outputs"), data: t("AvailableData"), details: t("ActivityDetails"), runs: t("RunsTab") })[item];
 
 const tabHint = (item: Tab) =>
     ({
@@ -110,6 +114,7 @@ const tabHint = (item: Tab) =>
         outputs: props.readOnly ? t("OutputsHintReadOnly") : t("OutputsHint"),
         data: t("AvailableDataHint"),
         details: t("ActivityTabHintReadOnly"),
+        runs: t("RunsTabHint"),
     })[item];
 
 // Set by open({ focus: true }): the first field of the activity editor gets the focus once it is loaded.
@@ -124,10 +129,24 @@ const onFormFocus = (event: FocusEvent) => {
     }
 };
 
+// Whether the run selected in the journal is one of the edited activity's.
+const isFocusedRun = () =>
+    state.focusedRunSequence !== null && (state.instance?.journal ?? []).some((record) => record.sequence === state.focusedRunSequence && record.activityId === editingId.value);
+
 watch(editingId, () => {
     lastField = null;
-    tab.value = props.readOnly ? "details" : "settings";
+    tab.value = props.readOnly ? (isFocusedRun() ? "runs" : "details") : "settings";
 });
+
+// A run selected in the journal opens on the Runs tab of its activity.
+watch(
+    () => state.focusedRunSequence,
+    () => {
+        if (props.readOnly && isFocusedRun()) {
+            tab.value = "runs";
+        }
+    },
+);
 
 // An activity whose outputs were removed no longer has their tab.
 watch(tabs, (next) => {
@@ -594,6 +613,9 @@ defineExpose({ open, settle, close, discardChanges, refresh, hasPendingChanges, 
                             {{ t("RetryFromHere") }}
                         </button>
                     </div>
+                </div>
+                <div v-if="tab === 'runs'" :id="`${ids}-tab-runs-panel`" role="tabpanel" :aria-labelledby="`${ids}-tab-runs`">
+                    <RunsTab :store="store" :api="api" :activity-id="editingNode.id" />
                 </div>
                 <div v-show="tab === 'outputs'" :id="`${ids}-tab-outputs-panel`" role="tabpanel" :aria-labelledby="`${ids}-tab-outputs`">
                     <OutputBindings :node="editingNode" :store="store" :api="api" read-only />

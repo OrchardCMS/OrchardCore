@@ -10,7 +10,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    (event: "select", activityId: string): void;
+    (event: "select", activityId: string, sequence: number): void;
 }>();
 
 const state = props.store.state;
@@ -37,7 +37,12 @@ const duration = (record: JournalRecord) => t("DurationMilliseconds", Math.round
         <p v-if="records.length === 0" class="wfd-panel-message" data-cy="journal-empty">{{ t("NoJournal") }}</p>
         <ol v-else class="wfd-journal-list list-unstyled">
             <li v-for="record in records" :key="record.sequence" :data-cy="`journal-record-${record.sequence}`">
-                <button type="button" class="wfd-journal-record" :class="{ 'is-faulted': record.status === 'Faulted', 'is-script-error': isScriptError(record) }" @click="emit('select', record.activityId)">
+                <button
+                    type="button"
+                    class="wfd-journal-record"
+                    :class="{ 'is-faulted': record.status === 'Faulted', 'is-script-error': isScriptError(record) }"
+                    @click="emit('select', record.activityId, record.sequence)"
+                >
                     <span class="wfd-journal-sequence">#{{ record.sequence }}</span>
                     <span class="wfd-journal-main">
                         <span class="wfd-journal-title">{{ titleOf(record) }}</span>

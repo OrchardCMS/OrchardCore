@@ -53,12 +53,12 @@ describe("JournalTab", () => {
         expect(wrapper.get("[data-cy=journal-record-2]").find("[data-cy=journal-script-error]").exists()).toBe(false);
     });
 
-    it("select_Record_EmitsItsActivity", async () => {
+    it("select_Record_EmitsItsActivityAndItsSequence", async () => {
         const wrapper = setup([record(1, "fork", "Completed")]);
 
         await wrapper.get("[data-cy=journal-record-1] button").trigger("click");
 
-        expect(wrapper.emitted("select")).toEqual([["fork"]]);
+        expect(wrapper.emitted("select")).toEqual([["fork", 1]]);
     });
 
     it("render_NoRecord_SaysSo", () => {
