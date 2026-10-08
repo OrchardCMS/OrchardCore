@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -11,6 +12,7 @@ namespace OrchardCore.Localization.PortableObject;
 public class PortableObjectStringLocalizerFactory : IStringLocalizerFactory
 {
     private readonly ILocalizationManager _localizationManager;
+    private readonly ConcurrentDictionary<LocalizerCacheKey, PortableObjectStringLocalizer> _localizerCache = new();
     private readonly bool _fallBackToParentCulture;
     private readonly ILogger _logger;
 
@@ -33,48 +35,50 @@ public class PortableObjectStringLocalizerFactory : IStringLocalizerFactory
     /// <inheritedoc />
     public IStringLocalizer Create(Type resourceSource)
     {
-        var resourceFullName = resourceSource.FullName;
-        resourceFullName = TryFixInnerClassPath(resourceFullName);
+        ArgumentNullException.ThrowIfNull(resourceSource);
 
-        return new PortableObjectStringLocalizer(resourceFullName, _localizationManager, _fallBackToParentCulture, _logger);
+        return _localizerCache.GetOrAdd(new(resourceSource, null, null), static (key, args) =>
+            new PortableObjectStringLocalizer(TryFixInnerClassPath(key.ResourceSource.FullName), args._localizationManager, args._fallBackToParentCulture, args._logger), (_localizationManager, _fallBackToParentCulture, _logger));
     }
 
     /// <inheritedoc />
     public IStringLocalizer Create(string baseName, string location)
     {
-        baseName = TryFixInnerClassPath(baseName);
+        ArgumentNullException.ThrowIfNull(baseName);
+        ArgumentNullException.ThrowIfNull(location);
 
-        var index = 0;
-        if (baseName.StartsWith(location, StringComparison.OrdinalIgnoreCase))
+        return _localizerCache.GetOrAdd(new(null, baseName, location), static (key, args) =>
         {
-            index = location.Length;
-        }
+            var normalizedBaseName = TryFixInnerClassPath(key.BaseName);
+            var index = 0;
+            if (normalizedBaseName.StartsWith(key.Location, StringComparison.OrdinalIgnoreCase))
+            {
+                index = key.Location.Length;
+            }
 
-        if (baseName.Length > index && baseName[index] == '.')
-        {
-            index += 1;
-        }
+            if (normalizedBaseName.Length > index && normalizedBaseName[index] == '.')
+            {
+                index += 1;
+            }
 
-        if (baseName.Length > index && baseName.IndexOf("Areas.", index, StringComparison.Ordinal) == index)
-        {
-            index += "Areas.".Length;
-        }
+            if (normalizedBaseName.Length > index && normalizedBaseName.IndexOf("Areas.", index, StringComparison.Ordinal) == index)
+            {
+                index += "Areas.".Length;
+            }
 
-        var relativeName = baseName[index..];
+            var relativeName = normalizedBaseName[index..];
 
-        return new PortableObjectStringLocalizer(relativeName, _localizationManager, _fallBackToParentCulture, _logger);
+            return new PortableObjectStringLocalizer(relativeName, args._localizationManager, args._fallBackToParentCulture, args._logger);
+        }, (_localizationManager, _fallBackToParentCulture, _logger));
     }
 
     // The context within inner class.
     private static string TryFixInnerClassPath(string context)
     {
         const char innerClassSeparator = '+';
-        var path = context;
-        if (context.Contains(innerClassSeparator))
-        {
-            path = context.Replace(innerClassSeparator, '.');
-        }
 
-        return path;
+        return context.Replace(innerClassSeparator, '.');
     }
+
+    private readonly record struct LocalizerCacheKey(Type ResourceSource, string BaseName, string Location);
 }
