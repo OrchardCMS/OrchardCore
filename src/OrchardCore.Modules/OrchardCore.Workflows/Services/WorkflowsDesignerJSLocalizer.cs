@@ -157,14 +157,6 @@ public sealed class WorkflowsDesignerJSLocalizer : IJSLocalizer
             { "RunExpressions", S["Expressions"].Value },
             { "RunProperties", S["Other properties"].Value },
             { "RunDataTruncated", S["Some values were too long, and were cut or left out."].Value },
-            { "RunsTab", S["Runs"].Value },
-            { "RunsTabHint", S["Each time the instance ran this activity, and what it evaluated, set and changed."].Value },
-            { "NoRuns", S["The instance didn't run this activity."].Value },
-            { "RunNoData", S["No data was recorded for this run: the activity changed nothing, or the workflow doesn't record activity data (see Record activity data in its settings)."].Value },
-            { "RunDataLoadFailed", S["The data of this run couldn't be loaded."].Value },
-            { "RunExpressions", S["Expressions"].Value },
-            { "RunProperties", S["Other properties"].Value },
-            { "RunDataTruncated", S["Some values were too long, and were cut or left out."].Value },
             { "ResizeActivityPanel", S["Resize the activity panel"].Value },
 
             // Draft: autosave, publish and discard.

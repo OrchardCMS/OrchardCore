@@ -30,7 +30,9 @@ const usedKeys = () => {
     return keys;
 };
 
-const definedKeys = () => new Set(Array.from(readFileSync(localizerPath, "utf8").matchAll(/\{\s*"([A-Za-z0-9]+)",\s*S\[/g), (match) => match[1]));
+const definedKeyList = () => Array.from(readFileSync(localizerPath, "utf8").matchAll(/\{\s*"([A-Za-z0-9]+)",\s*S\[/g), (match) => match[1]);
+
+const definedKeys = () => new Set(definedKeyList());
 
 describe("translations", () => {
     it("keys_UsedByTheDesigner_AreAllDefinedOnTheServer", () => {
@@ -39,6 +41,13 @@ describe("translations", () => {
 
         expect(used.size).toBeGreaterThan(50);
         expect([...used].filter((key) => !defined.has(key))).toEqual([]);
+    });
+
+    // The localizer builds a dictionary, so a key defined twice breaks every designer page.
+    it("keys_DefinedOnTheServer_AreDefinedOnce", () => {
+        const keys = definedKeyList();
+
+        expect(keys.filter((key, index) => keys.indexOf(key) !== index)).toEqual([]);
     });
 
     it("keys_DefinedOnTheServer_AreAllUsed", () => {
