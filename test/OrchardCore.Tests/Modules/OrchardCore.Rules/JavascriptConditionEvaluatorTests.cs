@@ -70,6 +70,82 @@ public class JavascriptConditionEvaluatorTests
             async () => await evaluator.EvaluateAsync(new JavascriptCondition { Script = "return true;" }));
     }
 
+    [Fact]
+    public async Task ARequestAbortedMidCondition_StopsTheScriptAndLeavesTheEngineForTheNextRequest()
+    {
+        // The conditions of a request run on the request-aborted token, on the pooled engine the evaluator
+        // holds for the whole request. A client going away in the middle of a condition must stop it, and
+        // the engine it ran on must still be handed back clean, with that token no longer armed on it.
+        var accessor = new HttpContextAccessor();
+        var gaveUpAfter = TimeSpan.FromSeconds(10);
+
+        using var firstRequestAborted = new CancellationTokenSource();
+
+        var services = new ServiceCollection()
+            .AddMemoryCache()
+            .AddScripting()
+            .AddJavaScriptEngine()
+            .Configure<JavaScriptEngineOptions>(options => options.EnginePoolSize = 1)
+            .AddSingleton<IHttpContextAccessor>(accessor)
+            .AddSingleton<IGlobalMethodProvider>(new RequestMethodProvider(
+                abort: firstRequestAborted.Cancel,
+                gaveUp: CreateGaveUp(gaveUpAfter)))
+            .BuildServiceProvider();
+
+        var scriptingManager = services.GetRequiredService<IScriptingManager>();
+        var scriptingEngine = scriptingManager.GetScriptingEngine("js");
+
+        var warmUp = (JavaScriptScope)scriptingEngine.CreateScope([], services, null, null);
+        var engine = warmUp.Engine;
+        warmUp.Dispose();
+
+        accessor.HttpContext = new DefaultHttpContext { RequestAborted = firstRequestAborted.Token };
+
+        var firstRequest = new JavascriptConditionEvaluator(scriptingManager, services);
+
+        try
+        {
+            // The client goes away once the condition is running, and the loop would otherwise only end when
+            // it gives up, returning true: a condition that was not stopped fails the assertion rather than
+            // hanging the test.
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(async () =>
+                await firstRequest.EvaluateAsync(new JavascriptCondition { Script = "globalThis.dirty = 1; abort(); while (!gaveUp()) { } return true;" }));
+        }
+        finally
+        {
+            firstRequest.Dispose();
+        }
+
+        using (var between = (JavaScriptScope)scriptingEngine.CreateScope([], services, null, null))
+        {
+            Assert.Same(engine, between.Engine);
+        }
+
+        using var secondRequestAborted = new CancellationTokenSource();
+        accessor.HttpContext = new DefaultHttpContext { RequestAborted = secondRequestAborted.Token };
+
+        using var secondRequest = new JavascriptConditionEvaluator(scriptingManager, services);
+
+        Assert.True(await secondRequest.EvaluateAsync(new JavascriptCondition { Script = "return typeof dirty === 'undefined';" }));
+
+        // A loop long enough to reach the deadline constraint's amortized check several times over would be
+        // stopped if the first request's cancelled token were still armed on the engine.
+        Assert.True(await secondRequest.EvaluateAsync(new JavascriptCondition { Script = "var n = 0; for (var i = 0; i < 10000; i++) { n++; } return n === 10000;" }));
+    }
+
+    private static Func<bool> CreateGaveUp(TimeSpan after)
+    {
+        // Started by the first call, so the time is counted from when the condition began looping.
+        var stopwatch = new System.Diagnostics.Stopwatch();
+
+        return () =>
+        {
+            stopwatch.Start();
+
+            return stopwatch.Elapsed >= after;
+        };
+    }
+
     private static (IServiceProvider Services, IScriptingEngine ScriptingEngine) CreateScriptingServices()
     {
         var services = new ServiceCollection()
@@ -80,5 +156,32 @@ public class JavascriptConditionEvaluatorTests
             .BuildServiceProvider();
 
         return (services, services.GetRequiredService<IScriptingManager>().GetScriptingEngine("js"));
+    }
+
+    private sealed class RequestMethodProvider : IGlobalMethodProvider
+    {
+        private readonly Action _abort;
+        private readonly Func<bool> _gaveUp;
+
+        public RequestMethodProvider(Action abort, Func<bool> gaveUp)
+        {
+            _abort = abort;
+            _gaveUp = gaveUp;
+        }
+
+        public IEnumerable<GlobalMethod> GetMethods()
+        {
+            yield return new GlobalMethod
+            {
+                Name = "abort",
+                Method = serviceProvider => _abort,
+            };
+
+            yield return new GlobalMethod
+            {
+                Name = "gaveUp",
+                Method = serviceProvider => _gaveUp,
+            };
+        }
     }
 }
