@@ -102,11 +102,11 @@ else
                                         var grantingRoles = new List<string>();
                                         if (Model.AnonymousGrantedPermissions.Contains(permission.Name))
                                         {
-                                            grantingRoles.Add(T["Anonymous"].Value);
+                                            grantingRoles.Add(T.GetString("Anonymous"));
                                         }
                                         if (Model.AuthenticatedGrantedPermissions.Contains(permission.Name))
                                         {
-                                            grantingRoles.Add(T["Authenticated"].Value);
+                                            grantingRoles.Add(T.GetString("Authenticated"));
                                         }
 
                                         toolTip = grantingRoles.Count > 0
