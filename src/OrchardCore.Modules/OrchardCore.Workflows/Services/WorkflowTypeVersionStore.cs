@@ -119,6 +119,7 @@ public sealed class WorkflowTypeVersionStore : IWorkflowTypeVersionStore
             IsActivity = workflowType.IsActivity,
             BranchingMode = workflowType.BranchingMode,
             FaultOnScriptErrors = workflowType.FaultOnScriptErrors,
+            RecordActivityData = workflowType.RecordActivityData,
             Activities = workflowType.Activities.Select(activity => activity.Clone()).ToList(),
             Transitions = workflowType.Transitions.Select(transition => transition.Clone()).ToList(),
             Variables = workflowType.Variables.Select(variable => variable.Clone()).ToList(),
@@ -198,6 +199,7 @@ public sealed class WorkflowTypeVersionStore : IWorkflowTypeVersionStore
         bool isActivity,
         WorkflowBranchingMode branchingMode,
         bool faultOnScriptErrors,
+        bool recordActivityData,
         IList<ActivityRecord> activities,
         IList<Transition> transitions,
         IList<WorkflowVariableDefinition> variables)
@@ -211,6 +213,7 @@ public sealed class WorkflowTypeVersionStore : IWorkflowTypeVersionStore
                 IsActivity = isActivity,
                 BranchingMode = branchingMode,
                 FaultOnScriptErrors = faultOnScriptErrors,
+                RecordActivityData = recordActivityData,
                 Activities = activities,
                 Transitions = transitions,
                 Variables = variables,
@@ -226,6 +229,7 @@ public sealed class WorkflowTypeVersionStore : IWorkflowTypeVersionStore
             workflowType.IsActivity,
             workflowType.BranchingMode,
             workflowType.FaultOnScriptErrors,
+            workflowType.RecordActivityData,
             workflowType.Activities,
             workflowType.Transitions,
             workflowType.Variables);
@@ -239,6 +243,7 @@ public sealed class WorkflowTypeVersionStore : IWorkflowTypeVersionStore
             version.IsActivity,
             version.BranchingMode,
             version.FaultOnScriptErrors,
+            version.RecordActivityData,
             version.Activities,
             version.Transitions,
             version.Variables);

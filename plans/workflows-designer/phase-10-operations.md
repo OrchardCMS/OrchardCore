@@ -8,7 +8,7 @@ Paths: `M/` = `src/OrchardCore.Modules/OrchardCore.Workflows/`, `A/` = `src/Orch
 
 | # | Item | Steps | Status |
 |---|---|---|---|
-| 1 | Each activity's data in the journal: the expressions it evaluated, the outputs it set, the variables it changed, its last result | 10.1–10.4 | In progress |
+| 1 | Each activity's data in the journal: the expressions it evaluated, the outputs it set, the variables it changed, its last result | 10.1–10.4 | In progress (10.1 done) |
 | 2 | Retry policies per activity, and what a failure does | 10.5 | Not started |
 | 3 | Run a workflow from the designer, with an input | 10.6 | Not started |
 | 4 | One running instance per correlation id | 10.7 | Not started |
@@ -43,12 +43,25 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
 
 ---
 
-### - [ ] 10.1 Record the activity data
+### - [x] 10.1 Record the activity data
 
 - `A/`: `WorkflowType.RecordActivityData`; `WorkflowExecutionRecord.Data` (`WorkflowExecutionData`: evaluations, outputs, variables, last result, whether something was cut); `WorkflowExecutionContext.ReportEvaluation` and the outputs it already keeps.
 - The JavaScript and Liquid evaluators and the Literal provider report their evaluations; the engine collects them, the outputs, the changed variables and the last result around each activity when the setting is on, with the caps of O3.
 - The setting is part of the draft, the versions, their comparison, the recipe step and the settings form (the designer's Workflow tab, and the create and clone pages).
 - **Tests**: a run with the setting records the evaluations (with the property name), outputs, changed variables and last result; without it, nothing; a large value is cut and marked.
+- **Notes from implementing this step:**
+  - **API (`A/`).**
+    - `WorkflowType.RecordActivityData`, and the same on `WorkflowTypeVersion`.
+    - `WorkflowExecutionRecord.Data` is a `WorkflowExecutionData`: `Evaluations` (`WorkflowExpressionEvaluation`: `Property`, `Syntax`, `Expression`, `Result`), `Outputs`, `Variables`, `Properties` (the workflow properties that aren't declared variables) and `LastResult`, as JSON text, with `IsTruncated`. A record without anything has no `Data`.
+    - `WorkflowExecutionContext.ReportEvaluation(syntax, expression, result)` (ignored unless the workflow records activity data), `RecordsActivityData`, and `TakeReportedData()`, which the engine calls around each activity. `SetActivityOutput` reports the output too. `RecordExecution` takes the data.
+    - `WorkflowExecutionData.FormatValue` serializes a value with `JOptions.Default` (as text when it can't be serialized) and cuts it at 2,000 characters with "…".
+  - **Reporting.** The JavaScript evaluator, the Liquid evaluator (both its value and template paths) and the Literal syntax report their evaluations, formatted when they're reported, since an object can change later in the run. A failed script reports its error, not an evaluation.
+  - **Engine.** `ActivityDataRecorder` (`M/Services/`) starts before each activity: it drops the reports made before, and snapshots the workflow properties and the last result. Once the activity completed, halted or faulted, it collects the reports, finds the property of each expression by matching its text in the activity's properties (`Condition`, `Script`, `Inputs.amount`), compares the properties (declared variables apart from the others) and the last result, and keeps the record within 32,000 characters (last result, outputs, variables, evaluations, then properties).
+  - **Setting.** The checkbox **Record activity data** is on the designer's Workflow tab and the create and clone pages; the create page checks it, so new workflows record their activities' data and existing ones don't (O2). It's part of the draft, the versions (and their fingerprint), the comparison and the recipe step.
+  - **Tests.**
+    - `WorkflowManagerTests`: the outputs and the changed variable are recorded only with the setting; a script's evaluation is recorded with its property, syntax and result, its last result and its output; a 3,000-character value is cut and the record marked.
+    - The setting's existing tests now cover it too: the Workflow tab, the draft, publishing, the comparison and the version fingerprint. `Create_NewWorkflow_RecordsActivityDataByDefault`, and Clone copies it.
+    - Workflows tests: 291/291.
 
 ### - [ ] 10.2 Read a record's data
 

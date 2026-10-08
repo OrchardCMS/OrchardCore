@@ -25,6 +25,7 @@ internal static class WorkflowTypeDraftExtensions
             IsActivity = workflowType.IsActivity,
             BranchingMode = workflowType.BranchingMode,
             FaultOnScriptErrors = workflowType.FaultOnScriptErrors,
+            RecordActivityData = workflowType.RecordActivityData,
             Activities = workflowType.Activities.Select(Clone).ToList(),
             Transitions = workflowType.Transitions.Select(Clone).ToList(),
             Variables = workflowType.Variables.Select(variable => variable.Clone()).ToList(),
@@ -48,6 +49,7 @@ internal static class WorkflowTypeDraftExtensions
         workflowType.IsActivity = draft.IsActivity;
         workflowType.BranchingMode = draft.BranchingMode;
         workflowType.FaultOnScriptErrors = draft.FaultOnScriptErrors;
+        workflowType.RecordActivityData = draft.RecordActivityData;
         workflowType.Activities = draft.Activities.Select(Clone).ToList();
         workflowType.Transitions = draft.Transitions.Select(Clone).ToList();
         workflowType.Variables = draft.Variables.Select(variable => variable.Clone()).ToList();

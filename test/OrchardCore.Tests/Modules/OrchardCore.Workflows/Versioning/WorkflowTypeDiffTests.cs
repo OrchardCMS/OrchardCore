@@ -78,10 +78,11 @@ public sealed class WorkflowTypeDiffTests
         to.IsActivity = true;
         to.BranchingMode = WorkflowBranchingMode.All;
         to.FaultOnScriptErrors = true;
+        to.RecordActivityData = true;
 
         var changes = WorkflowTypeDiff.Compare(CreateWorkflowType(), to);
 
-        Assert.Equal([nameof(WorkflowType.IsActivity), nameof(WorkflowType.BranchingMode), nameof(WorkflowType.FaultOnScriptErrors)], changes.ChangedSettings);
+        Assert.Equal([nameof(WorkflowType.IsActivity), nameof(WorkflowType.BranchingMode), nameof(WorkflowType.FaultOnScriptErrors), nameof(WorkflowType.RecordActivityData)], changes.ChangedSettings);
     }
 
     [Fact]

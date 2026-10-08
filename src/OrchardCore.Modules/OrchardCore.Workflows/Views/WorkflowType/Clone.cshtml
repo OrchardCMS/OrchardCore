@@ -91,6 +91,16 @@
                 </div>
             </div>
 
+            <div class="ocat-wrapper">
+                <div class="ocat-end-offset">
+                    <div class="form-check">
+                        <input asp-for="RecordActivityData" type="checkbox" class="form-check-input">
+                        <label class="form-check-label" asp-for="RecordActivityData">@T["Record activity data"]</label>
+                        <span class="hint dashed">@T["Check to record, in the journal of each instance, the expressions each activity evaluated, the outputs it set, the variables it changed and its last result, to see what a run did. Values can be large or sensitive (personal data, keys), so leave it unchecked when they shouldn't be stored."]</span>
+                    </div>
+                </div>
+            </div>
+
             <div><span asp-validation-for="LockTimeout" class="text-danger">@T["Invalid lock timeout value in the advanced tab"]</span></div>
             <div><span asp-validation-for="LockExpiration" class="text-danger">@T["Invalid lock expiration value in the advanced tab"]</span></div>
         </div>

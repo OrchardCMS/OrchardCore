@@ -63,6 +63,7 @@ public sealed class WorkflowTypeVersionStoreTests : IAsyncLifetime
     [InlineData("usable as an activity")]
     [InlineData("branching mode")]
     [InlineData("fault on script errors")]
+    [InlineData("record activity data")]
     [InlineData("variable")]
     public async Task SaveAsync_DefinitionChanged_CreatesTheNextVersion(string change)
     {
@@ -94,6 +95,9 @@ public sealed class WorkflowTypeVersionStoreTests : IAsyncLifetime
                 break;
             case "fault on script errors":
                 workflowType.FaultOnScriptErrors = true;
+                break;
+            case "record activity data":
+                workflowType.RecordActivityData = true;
                 break;
             case "variable":
                 workflowType.Variables.Add(new WorkflowVariableDefinition { Name = "total", TypeName = "number", DefaultValue = 0 });

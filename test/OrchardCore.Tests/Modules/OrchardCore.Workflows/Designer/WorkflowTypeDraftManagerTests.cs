@@ -301,6 +301,7 @@ public sealed class WorkflowTypeDraftManagerTests : IAsyncLifetime
             IsActivity = true,
             BranchingMode = WorkflowBranchingMode.All,
             FaultOnScriptErrors = true,
+            RecordActivityData = true,
         };
 
         var updated = await CreateManager().UpdateSettingsAsync(_workflowType.WorkflowTypeId, 0, settings);
@@ -318,6 +319,7 @@ public sealed class WorkflowTypeDraftManagerTests : IAsyncLifetime
         Assert.True(_workflowType.IsActivity);
         Assert.Equal(WorkflowBranchingMode.All, _workflowType.BranchingMode);
         Assert.True(_workflowType.FaultOnScriptErrors);
+        Assert.True(_workflowType.RecordActivityData);
     }
 
     [Fact]

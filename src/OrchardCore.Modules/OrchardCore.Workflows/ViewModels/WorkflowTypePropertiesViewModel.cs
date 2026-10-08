@@ -21,5 +21,7 @@ public class WorkflowTypePropertiesViewModel
     public WorkflowBranchingMode BranchingMode { get; set; }
 
     public bool FaultOnScriptErrors { get; set; }
+
+    public bool RecordActivityData { get; set; }
     public string ReturnUrl { get; set; }
 }

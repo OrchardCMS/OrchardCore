@@ -50,6 +50,7 @@ public static class WorkflowTypeDiff
         AddIfChanged(settings, nameof(WorkflowType.IsActivity), from.IsActivity, to.IsActivity);
         AddIfChanged(settings, nameof(WorkflowType.BranchingMode), from.BranchingMode, to.BranchingMode);
         AddIfChanged(settings, nameof(WorkflowType.FaultOnScriptErrors), from.FaultOnScriptErrors, to.FaultOnScriptErrors);
+        AddIfChanged(settings, nameof(WorkflowType.RecordActivityData), from.RecordActivityData, to.RecordActivityData);
 
         if (!JsonNode.DeepEquals(JsonSerializer.SerializeToNode(from.Variables, JOptions.Default), JsonSerializer.SerializeToNode(to.Variables, JOptions.Default)))
         {

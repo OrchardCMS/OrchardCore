@@ -191,6 +191,15 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
     }
 
     [Fact]
+    public async Task Create_NewWorkflow_RecordsActivityDataByDefault()
+    {
+        using var response = await _fixture.Context.Client.GetAsync("Admin/Workflows/Types/Create", TestContext.Current.CancellationToken);
+        var document = new HtmlParser().ParseDocument(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+
+        Assert.True(document.QuerySelector("input[name='RecordActivityData']")?.HasAttribute("checked"));
+    }
+
+    [Fact]
     public async Task Clone_Workflow_CopiesItsActivitiesVariablesAndPropertiesUnderTheNewName()
     {
         var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask", isStart: true));
@@ -201,6 +210,7 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
             var source = await store.GetAsync(workflowTypeId);
             source.Variables = [new WorkflowVariableDefinition { Name = "total", TypeName = "number" }];
             source.DeleteFinishedWorkflows = true;
+            source.RecordActivityData = true;
             await store.SaveAsync(source);
         });
 
@@ -209,6 +219,7 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
             var document = new HtmlParser().ParseDocument(await form.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
 
             Assert.True(document.QuerySelector("input[name='DeleteFinishedWorkflows']")?.HasAttribute("checked"));
+            Assert.True(document.QuerySelector("input[name='RecordActivityData']")?.HasAttribute("checked"));
         }
 
         using var response = await PostFormAsync($"Admin/Workflows/Types/Clone/{id}", new Dictionary<string, string>
@@ -1008,6 +1019,7 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         Assert.Contains("name=\"IsActivity\"", form["content"].GetValue<string>());
         Assert.Contains("name=\"BranchingMode\"", form["content"].GetValue<string>());
         Assert.Contains("name=\"FaultOnScriptErrors\"", form["content"].GetValue<string>());
+        Assert.Contains("name=\"RecordActivityData\"", form["content"].GetValue<string>());
 
         using var response = await PostFormAsync($"Admin/Workflows/Types/{id}/Designer/Settings?revision=0", new Dictionary<string, string>
         {
@@ -1016,6 +1028,7 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
             ["IsActivity"] = "true",
             ["BranchingMode"] = "All",
             ["FaultOnScriptErrors"] = "true",
+            ["RecordActivityData"] = "true",
         });
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -1030,6 +1043,7 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
             Assert.True(draft.IsActivity);
             Assert.Equal(WorkflowBranchingMode.All, draft.BranchingMode);
             Assert.True(draft.FaultOnScriptErrors);
+            Assert.True(draft.RecordActivityData);
         });
     }
 

@@ -41,6 +41,12 @@ public sealed class WorkflowExecutionContext : IDisposable
 
     private readonly List<string> _scriptErrors = [];
 
+    private readonly List<WorkflowExpressionEvaluation> _evaluations = [];
+
+    private readonly List<KeyValuePair<string, string>> _reportedOutputs = [];
+
+    private bool _dataTruncated;
+
     /// <summary>
     /// The errors of the scripts that ran in this context (see <see cref="ReportScriptError"/>).
     /// </summary>
@@ -57,6 +63,64 @@ public sealed class WorkflowExecutionContext : IDisposable
         {
             _scriptErrors.Add(message.Trim());
         }
+    }
+
+    /// <summary>
+    /// Whether the journal records the data of each activity's execution (<see cref="WorkflowType.RecordActivityData"/>).
+    /// </summary>
+    public bool RecordsActivityData => WorkflowType?.RecordActivityData == true;
+
+    /// <summary>
+    /// Reports an expression the running activity evaluated, and its result. When the workflow records activity data,
+    /// the journal records it with the activity; otherwise it's ignored. The built-in syntaxes report their
+    /// evaluations, and a custom <see cref="Services.IWorkflowExpressionProvider"/> can report its own.
+    /// </summary>
+    /// <param name="syntax">The syntax the expression was evaluated with.</param>
+    /// <param name="expression">The text of the expression.</param>
+    /// <param name="result">The result.</param>
+    public void ReportEvaluation(string syntax, string expression, object result)
+    {
+        if (!RecordsActivityData || string.IsNullOrWhiteSpace(expression))
+        {
+            return;
+        }
+
+        // The result is formatted now, as an object it refers to can change later in the run.
+        var text = expression.Length > WorkflowExecutionData.MaxValueLength ? expression[..WorkflowExecutionData.MaxValueLength] + "…" : expression;
+        _dataTruncated |= text.Length != expression.Length;
+
+        _evaluations.Add(new WorkflowExpressionEvaluation
+        {
+            Syntax = syntax,
+            Expression = text,
+            Result = WorkflowExecutionData.FormatValue(result, out var truncated),
+        });
+
+        _dataTruncated |= truncated;
+    }
+
+    /// <summary>
+    /// Returns, and forgets, what was reported since the last call: the evaluations (<see cref="ReportEvaluation"/>)
+    /// and the outputs (<see cref="SetActivityOutput"/>). The engine takes them around each activity it runs.
+    /// </summary>
+    public WorkflowExecutionData TakeReportedData()
+    {
+        var data = new WorkflowExecutionData
+        {
+            Evaluations = [.. _evaluations],
+            IsTruncated = _dataTruncated,
+        };
+
+        foreach (var (name, value) in _reportedOutputs)
+        {
+            data.Outputs[name] = value;
+        }
+
+        _evaluations.Clear();
+        _reportedOutputs.Clear();
+        _dataTruncated = false;
+
+        return data;
     }
 
     public Workflow Workflow { get; }
@@ -84,6 +148,12 @@ public sealed class WorkflowExecutionContext : IDisposable
         }
 
         outputs[name] = value;
+
+        if (RecordsActivityData)
+        {
+            _reportedOutputs.Add(new(name, WorkflowExecutionData.FormatValue(value, out var truncated)));
+            _dataTruncated |= truncated;
+        }
     }
 
     /// <summary>
@@ -188,6 +258,7 @@ public sealed class WorkflowExecutionContext : IDisposable
     /// <param name="completedUtc">When it ended.</param>
     /// <param name="isResume">Whether the activity was resumed rather than executed.</param>
     /// <param name="error">The error message of a faulted execution.</param>
+    /// <param name="data">What the activity evaluated, set and changed, when the workflow records activity data.</param>
     public void RecordExecution(
         ActivityContext activityContext,
         WorkflowExecutionRecordStatus status,
@@ -195,7 +266,8 @@ public sealed class WorkflowExecutionContext : IDisposable
         DateTime startedUtc,
         DateTime completedUtc,
         bool isResume = false,
-        string error = null)
+        string error = null,
+        WorkflowExecutionData data = null)
     {
         ArgumentNullException.ThrowIfNull(activityContext);
 
@@ -229,6 +301,7 @@ public sealed class WorkflowExecutionContext : IDisposable
             CompletedUtc = completedUtc,
             DurationMilliseconds = Math.Max(0, (completedUtc - startedUtc).TotalMilliseconds),
             Error = error,
+            Data = data is null || data.IsEmpty ? null : data,
         });
 
         if (outcomeList.Count == 0)

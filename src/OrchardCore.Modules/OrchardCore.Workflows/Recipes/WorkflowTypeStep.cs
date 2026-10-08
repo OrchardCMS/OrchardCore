@@ -76,6 +76,7 @@ public sealed class WorkflowTypeStep : NamedRecipeStepHandler
                 existing.IsActivity = workflow.IsActivity;
                 existing.BranchingMode = workflow.BranchingMode;
                 existing.FaultOnScriptErrors = workflow.FaultOnScriptErrors;
+                existing.RecordActivityData = workflow.RecordActivityData;
                 existing.Activities = workflow.Activities;
                 existing.Transitions = workflow.Transitions;
                 existing.Variables = workflow.Variables;

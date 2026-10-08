@@ -572,6 +572,9 @@ public class WorkflowManager : IWorkflowManager
                 var resumed = isResuming;
                 var scriptErrorCount = workflowContext.ScriptErrors.Count;
 
+                // What the activity evaluates, sets and changes, when the workflow records it.
+                var dataRecorder = ActivityDataRecorder.Start(workflowContext, activityContext);
+
                 try
                 {
                     ActivityExecutionResult result;
@@ -614,7 +617,7 @@ public class WorkflowManager : IWorkflowManager
 
                             // Block on this activity.
                             blocking.Add(activity);
-                            workflowContext.RecordExecution(activityContext, WorkflowExecutionRecordStatus.Halted, [], startedUtc, _clock.UtcNow, resumed, haltedScriptError);
+                            workflowContext.RecordExecution(activityContext, WorkflowExecutionRecordStatus.Halted, [], startedUtc, _clock.UtcNow, resumed, haltedScriptError, dataRecorder?.Collect());
 
                             continue;
                         }
@@ -646,11 +649,12 @@ public class WorkflowManager : IWorkflowManager
                         startedUtc,
                         _clock.UtcNow,
                         resumed,
-                        scriptError);
+                        scriptError,
+                        dataRecorder?.Collect());
                 }
                 catch (Exception ex)
                 {
-                    workflowContext.RecordExecution(activityContext, WorkflowExecutionRecordStatus.Faulted, [], startedUtc, _clock.UtcNow, resumed, ex.Message);
+                    workflowContext.RecordExecution(activityContext, WorkflowExecutionRecordStatus.Faulted, [], startedUtc, _clock.UtcNow, resumed, ex.Message, dataRecorder?.Collect());
 
                     _logger.LogError(ex, "An unhandled error occurred while executing an activity. Workflow ID: '{WorkflowTypeId}'. Activity: '{ActivityId}', '{ActivityName}'. Putting the workflow in the faulted state.", workflowType.Id, activityContext.ActivityRecord.ActivityId, activityContext.ActivityRecord.Name);
                     workflowContext.Fault(ex, activityContext);

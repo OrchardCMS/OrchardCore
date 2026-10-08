@@ -49,4 +49,9 @@ public sealed class WorkflowTypeDraftSettings
     /// See <see cref="WorkflowType.FaultOnScriptErrors"/>.
     /// </summary>
     public bool FaultOnScriptErrors { get; set; }
+
+    /// <summary>
+    /// See <see cref="WorkflowType.RecordActivityData"/>.
+    /// </summary>
+    public bool RecordActivityData { get; set; }
 }

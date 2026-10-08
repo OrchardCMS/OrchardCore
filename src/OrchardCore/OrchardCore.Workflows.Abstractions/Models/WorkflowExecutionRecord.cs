@@ -81,6 +81,12 @@ public sealed class WorkflowExecutionRecord
     /// The error message, when the execution faulted.
     /// </summary>
     public string Error { get; set; }
+
+    /// <summary>
+    /// What the activity evaluated, set and changed, when its workflow records activity data
+    /// (<see cref="WorkflowType.RecordActivityData"/>), or <see langword="null"/>.
+    /// </summary>
+    public WorkflowExecutionData Data { get; set; }
 }
 
 /// <summary>

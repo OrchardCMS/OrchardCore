@@ -236,9 +236,11 @@ public sealed class WorkflowTypeController : Controller
             return Forbid();
         }
 
+        // A new workflow records the data of its activities, to see what its runs did; existing ones keep their setting.
         return View(new WorkflowTypePropertiesViewModel
         {
             IsEnabled = true,
+            RecordActivityData = true,
             ReturnUrl = returnUrl,
         });
     }
@@ -303,6 +305,7 @@ public sealed class WorkflowTypeController : Controller
             IsActivity = workflowType.IsActivity,
             BranchingMode = workflowType.BranchingMode,
             FaultOnScriptErrors = workflowType.FaultOnScriptErrors,
+            RecordActivityData = workflowType.RecordActivityData,
             ReturnUrl = returnUrl,
         });
     }
@@ -353,6 +356,7 @@ public sealed class WorkflowTypeController : Controller
         workflowType.IsActivity = viewModel.IsActivity;
         workflowType.BranchingMode = viewModel.BranchingMode;
         workflowType.FaultOnScriptErrors = viewModel.FaultOnScriptErrors;
+        workflowType.RecordActivityData = viewModel.RecordActivityData;
     }
 
     /// <summary>

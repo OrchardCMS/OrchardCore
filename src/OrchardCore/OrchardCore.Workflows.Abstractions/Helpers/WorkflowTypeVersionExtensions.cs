@@ -35,6 +35,7 @@ public static class WorkflowTypeVersionExtensions
             IsActivity = version.IsActivity,
             BranchingMode = version.BranchingMode,
             FaultOnScriptErrors = version.FaultOnScriptErrors,
+            RecordActivityData = version.RecordActivityData,
             Activities = version.Activities
                 .Select(activity => new ActivityRecord
                 {

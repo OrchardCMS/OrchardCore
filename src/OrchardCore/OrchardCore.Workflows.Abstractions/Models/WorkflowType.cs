@@ -66,6 +66,12 @@ public class WorkflowType : Entity
     public bool FaultOnScriptErrors { get; set; }
 
     /// <summary>
+    /// Whether the journal records the data of each activity's execution: the expressions it evaluated, the outputs it
+    /// set, the variables it changed and its last result. Values can be large or sensitive, so it's a choice.
+    /// </summary>
+    public bool RecordActivityData { get; set; }
+
+    /// <summary>
     /// A complete list of all activities that are part of this workflow.
     /// </summary>
     public IList<ActivityRecord> Activities { get; set; } = [];

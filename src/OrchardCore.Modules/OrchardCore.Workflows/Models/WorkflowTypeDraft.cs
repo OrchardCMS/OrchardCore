@@ -87,6 +87,11 @@ public sealed class WorkflowTypeDraft
     public bool FaultOnScriptErrors { get; set; }
 
     /// <summary>
+    /// The draft value of <see cref="WorkflowType.RecordActivityData"/>.
+    /// </summary>
+    public bool RecordActivityData { get; set; }
+
+    /// <summary>
     /// The draft activities.
     /// </summary>
     public IList<ActivityRecord> Activities { get; set; } = [];

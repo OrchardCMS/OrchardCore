@@ -1054,6 +1054,91 @@ public class WorkflowManagerTests
         Assert.Contains("Boom", record.Error);
     }
 
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task StartWorkflowAsync_RecordActivityData_RecordsTheOutputsAndTheChangedVariablesOnlyWhenOn(bool recordActivityData)
+    {
+        var (journal, saved) = CreateJournal();
+        var (workflowManager, workflowType) = CreateOutputWorkflow(output: "42", bindings: new() { ["Value"] = "answer" }, journal: journal);
+        workflowType.RecordActivityData = recordActivityData;
+
+        await workflowManager.StartWorkflowAsync(workflowType);
+
+        var record = saved.Single(record => record.ActivityId == "output");
+
+        if (!recordActivityData)
+        {
+            Assert.Null(record.Data);
+
+            return;
+        }
+
+        // The output as it was set, and the variable it's bound to, converted to a number.
+        Assert.Equal("\"42\"", Assert.Single(record.Data.Outputs).Value);
+        Assert.Equal("42", record.Data.Variables["answer"]);
+        Assert.Empty(record.Data.Properties);
+        Assert.False(record.Data.IsTruncated);
+
+        // The start activity set its output to nothing, and changed no variable.
+        var start = saved.Single(record => record.ActivityId == "start").Data;
+        Assert.Equal("null", start.Outputs["Value"]);
+        Assert.Empty(start.Variables);
+    }
+
+    [Fact]
+    public async Task StartWorkflowAsync_RecordActivityData_RecordsTheEvaluatedScriptWithItsPropertyAndTheLastResult()
+    {
+        var (journal, saved) = CreateJournal();
+        var serviceProvider = CreateServiceProvider();
+        var scriptTask = new ScriptTask(CreateWorkflowScriptEvaluator(serviceProvider), new PassThroughStringLocalizer<ScriptTask>());
+        var workflowType = new WorkflowType
+        {
+            Id = 1,
+            WorkflowTypeId = IdGenerator.GenerateId(),
+            RecordActivityData = true,
+            Activities =
+            [
+                new()
+                {
+                    ActivityId = "script",
+                    IsStart = true,
+                    Name = scriptTask.Name,
+                    Properties = JObject.FromObject(new { AvailableOutcomes = new[] { "Done" }, Script = new WorkflowExpression<object>("setOutcome('Done'); 6 * 7") }),
+                },
+            ],
+            Transitions = [],
+        };
+        var workflowManager = CreateWorkflowManager(serviceProvider, [scriptTask], workflowType, journal: journal);
+
+        await workflowManager.StartWorkflowAsync(workflowType);
+
+        var data = Assert.Single(saved).Data;
+        var evaluation = Assert.Single(data.Evaluations);
+        Assert.Equal("Script", evaluation.Property);
+        Assert.Equal(WorkflowExpressionSyntaxes.JavaScript, evaluation.Syntax);
+        Assert.Equal("setOutcome('Done'); 6 * 7", evaluation.Expression);
+        Assert.Equal("42", evaluation.Result);
+        Assert.Equal("42", data.LastResult);
+        Assert.Equal("42", data.Outputs["Result"]);
+    }
+
+    [Fact]
+    public async Task StartWorkflowAsync_RecordActivityDataWithALargeValue_CutsItAndMarksTheRecord()
+    {
+        var (journal, saved) = CreateJournal();
+        var (workflowManager, workflowType) = CreateOutputWorkflow(output: new string('x', 3_000), bindings: [], journal: journal);
+        workflowType.RecordActivityData = true;
+
+        await workflowManager.StartWorkflowAsync(workflowType);
+
+        var data = saved.Single(record => record.ActivityId == "output").Data;
+        var value = Assert.Single(data.Outputs).Value;
+        Assert.Equal(WorkflowExecutionData.MaxValueLength + 1, value.Length);
+        Assert.EndsWith("…", value);
+        Assert.True(data.IsTruncated);
+    }
+
     [Fact]
     public async Task RetryActivityAsync_FaultedInstance_RunsAgainFromTheActivity()
     {

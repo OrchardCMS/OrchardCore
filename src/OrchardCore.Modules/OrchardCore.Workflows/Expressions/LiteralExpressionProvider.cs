@@ -35,6 +35,8 @@ public sealed class LiteralExpressionProvider : IWorkflowExpressionProvider
             throw new FormatException($"The literal '{expression?.Expression}' isn't a valid {Describe(typeof(T))}.");
         }
 
+        workflowContext?.ReportEvaluation(Name, expression?.Expression, value);
+
         return Task.FromResult((T)value);
     }
 

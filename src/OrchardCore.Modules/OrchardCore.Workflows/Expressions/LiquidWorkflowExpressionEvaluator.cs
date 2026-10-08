@@ -52,15 +52,22 @@ public class LiquidWorkflowExpressionEvaluator : IWorkflowExpressionEvaluator
         templateContext.SetValue("Workflow", new ObjectValue(workflowContext));
         var template = GetTemplate(expression.Expression);
 
+        T value;
+
         if (typeof(T) != typeof(string) && TryGetSingleOutputStatement(template, out var outputStatement))
         {
             var fluidValue = await EvaluateOutputValueAsync(outputStatement, templateContext);
-            return ConvertValue<T>(fluidValue.ToObjectValue(), fluidValue.ToStringValue());
+            value = ConvertValue<T>(fluidValue.ToObjectValue(), fluidValue.ToStringValue());
+        }
+        else
+        {
+            var result = await RenderTemplateAsync(template, templateContext, encoder ?? NullEncoder.Default);
+            value = ConvertValue<T>(result, result);
         }
 
-        var result = await RenderTemplateAsync(template, templateContext, encoder ?? NullEncoder.Default);
+        workflowContext.ReportEvaluation(WorkflowExpressionSyntaxes.Liquid, expression.Expression, value);
 
-        return ConvertValue<T>(result, result);
+        return value;
     }
 
     private IFluidTemplate GetTemplate(string expression)

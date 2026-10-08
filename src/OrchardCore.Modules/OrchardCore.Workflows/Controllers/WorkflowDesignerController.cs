@@ -572,6 +572,7 @@ public sealed class WorkflowDesignerController : Controller
                 IsActivity = source.IsActivity,
                 BranchingMode = source.BranchingMode,
                 FaultOnScriptErrors = source.FaultOnScriptErrors,
+                RecordActivityData = source.RecordActivityData,
             },
             WorkflowTypeId = workflowType.Id,
         });
@@ -617,6 +618,7 @@ public sealed class WorkflowDesignerController : Controller
             IsActivity = model.IsActivity,
             BranchingMode = model.BranchingMode,
             FaultOnScriptErrors = model.FaultOnScriptErrors,
+            RecordActivityData = model.RecordActivityData,
         };
 
         var result = await _draftManager.UpdateSettingsAsync(workflowType.WorkflowTypeId, revision, settings);
@@ -832,6 +834,7 @@ public sealed class WorkflowDesignerController : Controller
             IsActivity = workflowType.IsActivity,
             BranchingMode = workflowType.BranchingMode,
             FaultOnScriptErrors = workflowType.FaultOnScriptErrors,
+            RecordActivityData = workflowType.RecordActivityData,
         };
 
     private async Task<WorkflowDesignerVersion> PublishedVersionAsync(WorkflowType workflowType)

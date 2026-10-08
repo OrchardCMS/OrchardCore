@@ -88,6 +88,11 @@ public sealed class WorkflowTypeVersion
     public bool FaultOnScriptErrors { get; set; }
 
     /// <summary>
+    /// The value of <see cref="WorkflowType.RecordActivityData"/> in this version.
+    /// </summary>
+    public bool RecordActivityData { get; set; }
+
+    /// <summary>
     /// The activities of this version.
     /// </summary>
     public IList<ActivityRecord> Activities { get; set; } = [];

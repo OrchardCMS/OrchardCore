@@ -234,6 +234,7 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
             draft.IsActivity = settings.IsActivity;
             draft.BranchingMode = settings.BranchingMode;
             draft.FaultOnScriptErrors = settings.FaultOnScriptErrors;
+            draft.RecordActivityData = settings.RecordActivityData;
 
             return Task.FromResult(new ChangeOutcome());
         });
@@ -300,6 +301,7 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
             draft.IsActivity = version.IsActivity;
             draft.BranchingMode = version.BranchingMode;
             draft.FaultOnScriptErrors = version.FaultOnScriptErrors;
+            draft.RecordActivityData = version.RecordActivityData;
             draft.Activities = version.Activities.Select(activity => activity.Clone()).ToList();
             draft.Transitions = version.Transitions.Select(transition => transition.Clone()).ToList();
             draft.Variables = version.Variables.Select(variable => variable.Clone()).ToList();
