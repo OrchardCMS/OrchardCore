@@ -13,9 +13,6 @@ RegistrationOptions.Value.UsersMustValidateEmail &&
 await AuthorizationService.AuthorizeAsync(User, UsersPermissions.EditUsers, Model.User))
 {
     <li>
-        <form method="post" class="d-inline-block" class="no-multisubmit">
-            <input name="id" type="hidden" value="@Model.User.UserId" />
-            <button asp-action="SendVerificationEmail" asp-controller="EmailConfirmation" class="dropdown-item">@T["Send verification email"]</button>
-        </form>
+        <a asp-action="SendVerificationEmail" asp-controller="EmailConfirmation" asp-route-id="@Model.User.UserId" class="dropdown-item" data-url-af="UnsafeUrl">@T["Send verification email"]</a>
     </li>
 }
