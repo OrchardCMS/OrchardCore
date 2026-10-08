@@ -43,6 +43,25 @@ public class PortableObjectStringLocalizerFactoryTests
         Assert.NotSame(localizer1, localizer2);
     }
 
+    [Theory]
+    [InlineData("OrchardCore.Tests.Localization.Model")]
+    [InlineData("OrchardCore.Tests.Localization.Outer+Inner")]
+    public void Create_Twice_WithSameBaseNameAndLocation_ReturnsSameLocalizerInstance(string baseName)
+    {
+        // Arrange
+        var localizationManager = new Mock<ILocalizationManager>();
+        var requestLocalizationOptions = Options.Create(new RequestLocalizationOptions { FallBackToParentUICultures = true });
+        var logger = new Mock<ILogger<PortableObjectStringLocalizerFactory>>();
+        var factory = new PortableObjectStringLocalizerFactory(localizationManager.Object, requestLocalizationOptions, logger.Object);
+
+        // Act
+        var localizer1 = factory.Create(baseName, "OrchardCore.Tests");
+        var localizer2 = factory.Create(baseName, "OrchardCore.Tests");
+
+        // Assert
+        Assert.Same(localizer1, localizer2);
+    }
+
     public class PortableObjectStringLocalizerFactoryStartup
     {
 #pragma warning disable CA1822 // Mark members as static
