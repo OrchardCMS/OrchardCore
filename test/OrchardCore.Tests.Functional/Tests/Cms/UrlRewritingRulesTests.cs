@@ -57,11 +57,15 @@ public sealed class UrlRewritingRulesTests : CmsTestBase<UrlRewritingRulesTestsF
 
         // Drag the first row's handle past the second row's vertical midpoint so
         // SortableJS's onUpdate fires with oldIndex=0/newIndex=1, then POSTs the new
-        // order to SortRulesEndpoint (url-rewriting/resort).
+        // order to SortRulesEndpoint (url-rewriting/resort). Wait for that POST to complete
+        // before reloading: the reload below would otherwise abort it while it is still in
+        // flight on a busy runner, and the page would come back in its original order.
         await page.Mouse.MoveAsync(firstBox!.X + (firstBox.Width / 2), firstBox.Y + (firstBox.Height / 2));
         await page.Mouse.DownAsync();
         await page.Mouse.MoveAsync(secondBox!.X + (secondBox.Width / 2), secondBox.Y + (secondBox.Height / 2) + 5, new MouseMoveOptions { Steps = 10 });
-        await page.Mouse.UpAsync();
+        await page.RunAndWaitForResponseAsync(
+            () => page.Mouse.UpAsync(),
+            response => response.Url.Contains("/url-rewriting/resort", StringComparison.OrdinalIgnoreCase) && response.Request.Method == "POST");
 
         await Assertions.Expect(rows.Nth(0)).ToContainTextAsync(second);
         await Assertions.Expect(rows.Nth(1)).ToContainTextAsync(first);

@@ -91,6 +91,7 @@ public sealed class OrchardTestFixture : IAsyncDisposable
                 // GitHub Actions CI under heavy runner contention: raising the assertion/wait
                 // timeout only made the race window bigger, it didn't remove the race.
                 ReducedMotion = ReducedMotion.Reduce,
+                Locale = "en-US",
             }
         );
 
@@ -103,6 +104,49 @@ public sealed class OrchardTestFixture : IAsyncDisposable
                 Sources = true,
             });
         }
+
+        // sortable-menu.ts (the nested Menu/Taxonomy hierarchy drag-and-drop editor)
+        // configures SortableJS with animation: 150, and SortableJS ignores dragover
+        // events entirely while one of its own reorder animations is still running.
+        // That 150ms of real interaction latency is purely cosmetic in production but
+        // was the actual root cause behind TaxonomyHierarchyTests/MenuHierarchyTests
+        // intermittently failing to ever reach the expected drop order under CI/CPU
+        // contention (SortableMenuHelper's drag helpers had to retry-nudge the pointer
+        // to progress the drag, and a retry cadence tight enough to be fast risked
+        // landing mid-animation and being silently dropped, while a cadence loose
+        // enough to always clear the animation made the whole polling loop slower to
+        // reach its own attempt budget). Same fix shape as ReducedMotion above: remove
+        // the latency at its source for every test page, rather than working around
+        // its timing from the outside.
+        //
+        // Sortable is loaded as a plain global <script> (declared as a ResourceManager
+        // dependency), and sortable-menu.ts's initSortableMenu() runs as an ES module
+        // that executes as soon as the document finishes parsing - BEFORE
+        // DOMContentLoaded fires, per the module-script spec - so by the time
+        // DOMContentLoaded would fire, Sortable.create has already been called with
+        // its real animation: 150. A property trap on `window.Sortable` itself, rather
+        // than a DOMContentLoaded listener, is the only timing-independent way to patch
+        // it exactly when the global is assigned, regardless of script load order.
+        await context.AddInitScriptAsync(
+            """
+            (() => {
+                let sortableValue;
+
+                Object.defineProperty(window, 'Sortable', {
+                    configurable: true,
+                    get: () => sortableValue,
+                    set: (value) => {
+                        if (value && typeof value.create === 'function' && !value.__animationPatched) {
+                            const originalCreate = value.create;
+                            value.create = (el, options) => originalCreate(el, { ...options, animation: 0 });
+                            value.__animationPatched = true;
+                        }
+
+                        sortableValue = value;
+                    },
+                });
+            })();
+            """);
 
         var page = await context.NewPageAsync();
 

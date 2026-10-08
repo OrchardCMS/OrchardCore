@@ -1,5 +1,5 @@
-using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan;
 
@@ -8,15 +8,12 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan;
 /// </summary>
 public class ContentItemDeploymentStep : DeploymentStep
 {
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<ContentItemDeploymentStep>("Content Management");
+
     public ContentItemDeploymentStep()
     {
         Name = nameof(ContentItemDeploymentStep);
-    }
-
-    public ContentItemDeploymentStep(IStringLocalizer<ContentItemDeploymentStep> S)
-        : this()
-    {
-        Category = S["Content Management"];
+        Category = s_category;
     }
 
     public string ContentItemId { get; set; }

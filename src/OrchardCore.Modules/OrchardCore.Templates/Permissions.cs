@@ -1,10 +1,11 @@
+using OrchardCore.Localization;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Templates;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageTemplates = new("ManageTemplates", "Manage templates", isSecurityCritical: true);
+    public static readonly Permission ManageTemplates = new("ManageTemplates", LocalizationSource.Create<Permissions>("Manage templates"), isSecurityCritical: true);
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

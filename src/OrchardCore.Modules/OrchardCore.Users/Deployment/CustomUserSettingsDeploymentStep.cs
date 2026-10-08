@@ -1,20 +1,18 @@
-using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Users.Deployment;
 
 public class CustomUserSettingsDeploymentStep : DeploymentStep
 {
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<CustomUserSettingsDeploymentStep>("Security");
+    private static readonly LocalizationSource s_title = LocalizationSource.Create<CustomUserSettingsDeploymentStep>("Custom User Settings");
+
     public CustomUserSettingsDeploymentStep()
     {
         Name = "CustomUserSettings";
-    }
-
-    public CustomUserSettingsDeploymentStep(IStringLocalizer<CustomUserSettingsDeploymentStep> S)
-        : this()
-    {
-        Category = S["Security"];
-        Title = S["Custom User Settings"];
+        Category = s_category;
+        Title = s_title;
     }
 
     public bool IncludeAll { get; set; } = true;

@@ -1,6 +1,8 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Tenants.Models;
+using OrchardCore.Tenants.Services;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -10,14 +12,18 @@ namespace OrchardCore.Tenants.Workflows.Activities;
 
 public class CreateTenantTask : TenantTask
 {
+    private readonly ITenantValidator _tenantValidator;
+
     public CreateTenantTask(
         IShellSettingsManager shellSettingsManager,
         IShellHost shellHost,
         IWorkflowExpressionEvaluator expressionEvaluator,
         IWorkflowScriptEvaluator scriptEvaluator,
+        ITenantValidator tenantValidator,
         IStringLocalizer<CreateTenantTask> localizer)
         : base(shellSettingsManager, shellHost, expressionEvaluator, scriptEvaluator, localizer)
     {
+        _tenantValidator = tenantValidator;
     }
 
     public override string Name => nameof(CreateTenantTask);
@@ -111,6 +117,31 @@ public class CreateTenantTask : TenantTask
         var schema = (await ExpressionEvaluator.EvaluateAsync(Schema, workflowContext, null))?.Trim();
         var recipeName = (await ExpressionEvaluator.EvaluateAsync(RecipeName, workflowContext, null))?.Trim();
         var featureProfile = (await ExpressionEvaluator.EvaluateAsync(FeatureProfile, workflowContext, null))?.Trim();
+
+        // Apply the same validation as the admin UI and the API, so that a workflow can't create a tenant
+        // whose name would be rejected there. The name is used as a folder name, e.g. to resolve the tenant
+        // media root, so an unvalidated one can redirect tenant owned files outside of the tenant directory.
+        var errors = await _tenantValidator.ValidateAsync(new TenantApiModel
+        {
+            Name = tenantName,
+            Description = description,
+            RequestUrlPrefix = requestUrlPrefix,
+            RequestUrlHost = requestUrlHost,
+            DatabaseProvider = databaseProvider,
+            ConnectionString = connectionString,
+            TablePrefix = tablePrefix,
+            Schema = schema,
+            RecipeName = recipeName,
+            FeatureProfiles = featureProfile?.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries) ?? [],
+            IsNewTenant = true,
+        });
+
+        if (errors.Any())
+        {
+            workflowContext.LastResult = errors;
+
+            return Outcome("Failed");
+        }
 
         // Creates a default shell settings based on the configuration.
         using var shellSettings = ShellSettingsManager

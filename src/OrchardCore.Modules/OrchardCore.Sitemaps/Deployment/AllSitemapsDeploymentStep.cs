@@ -1,18 +1,15 @@
-using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Sitemaps.Deployment;
 
 public sealed class AllSitemapsDeploymentStep : DeploymentStep
 {
+    private static readonly LocalizationSource s_category = LocalizationSource.Create<AllSitemapsDeploymentStep>("Content Management");
+
     public AllSitemapsDeploymentStep()
     {
         Name = "AllSitemaps";
-    }
-
-    public AllSitemapsDeploymentStep(IStringLocalizer<AllSitemapsDeploymentStep> S)
-        : this()
-    {
-        Category = S["Content Management"];
+        Category = s_category;
     }
 }
