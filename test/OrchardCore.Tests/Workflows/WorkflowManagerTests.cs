@@ -637,7 +637,7 @@ public class WorkflowManagerTests
         var scriptEvaluator = CreateWorkflowScriptEvaluator(serviceProvider, jintOptions);
 
         var stringBuilder = new StringBuilder();
-        var ifElseTask = new IfElseTask(scriptEvaluator, new Mock<IWorkflowExpressionEvaluator>().Object, new Mock<IStringLocalizer<IfElseTask>>().Object);
+        var ifElseTask = new IfElseTask(TestExpressions.CreateManager(scriptEvaluator), new Mock<IStringLocalizer<IfElseTask>>().Object);
         var writeLineTask = new WriteLineTask(scriptEvaluator, new Mock<IStringLocalizer<WriteLineTask>>().Object, new StringWriter(stringBuilder));
         var workflowType = new WorkflowType
         {
