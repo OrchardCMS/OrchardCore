@@ -127,6 +127,48 @@ msgid "Hello"
 msgstr "Bonjour"
 ```
 
+### Using multiple or custom contexts
+
+A service can use multiple translation contexts by injecting `IStringLocalizerFactory` from `Microsoft.Extensions.Localization` and creating a separate localizer for each context. When messages belong to a shared resource class, resolve the localizer using that resource type:
+
+```csharp
+public MyService(IStringLocalizerFactory factory)
+{
+    S = factory.Create(typeof(SharedMessages));
+}
+```
+
+The context is the full name of `SharedMessages`, rather than the name of the consuming service.
+
+For a context that is independent of any class name, use `Create(string baseName, string location)`. With the PO localizer, pass the desired `msgctxt` as `baseName` and an empty `location` to preserve that context:
+
+```csharp
+private readonly IStringLocalizer S;
+private readonly IStringLocalizer _sharedLocalizer;
+
+public MyService(IStringLocalizerFactory factory)
+{
+    S = factory.Create(typeof(MyService));
+    _sharedLocalizer = factory.Create("MySharedContext", string.Empty);
+}
+
+public void DoSomething()
+{
+    Console.WriteLine(S["Hello"]);
+    Console.WriteLine(_sharedLocalizer["Hello"]);
+}
+```
+
+Here, `S` uses `MyNamespace.MyService` as above, while `_sharedLocalizer` uses the following PO entry for the same message:
+
+```po
+msgctxt "MySharedContext"
+msgid "Hello"
+msgstr "Salut"
+```
+
+Choose the localizer for the context you need at each lookup. Formatting and pluralization work as usual on each localizer.
+
 ### Deferring localization with `LocalizationSource`
 
 When no localizer is available where a string is declared, use `LocalizationSource` from `OrchardCore.Abstractions` to keep the untranslated value and the source type of its localizer:

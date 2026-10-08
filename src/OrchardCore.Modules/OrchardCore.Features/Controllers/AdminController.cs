@@ -157,7 +157,7 @@ public sealed class AdminController : Controller
         return View(viewModel);
     }
 
-    private static FeatureEntry CreateEntry(FeaturesViewModel viewModel, ModuleFeature feature, string category, string tenant)
+    internal static FeatureEntry CreateEntry(FeaturesViewModel viewModel, ModuleFeature feature, string category, string tenant)
     {
         var descriptor = feature.Descriptor;
         var isAlwaysEnabled = feature.IsAlwaysEnabled;
