@@ -36,6 +36,7 @@ public sealed class WorkflowDesignerModelBuilder
     private readonly HtmlEncoder _htmlEncoder;
     private readonly WorkflowOptions _workflowOptions;
     private readonly IEnumerable<IActivityPresetProvider> _presetProviders;
+    private readonly IWorkflowTypeStore _workflowTypeStore;
 
     public WorkflowDesignerModelBuilder(
         IWorkflowManager workflowManager,
@@ -48,7 +49,8 @@ public sealed class WorkflowDesignerModelBuilder
         ITempDataProvider tempDataProvider,
         HtmlEncoder htmlEncoder,
         IOptions<WorkflowOptions> workflowOptions,
-        IEnumerable<IActivityPresetProvider> presetProviders)
+        IEnumerable<IActivityPresetProvider> presetProviders,
+        IWorkflowTypeStore workflowTypeStore)
     {
         _workflowManager = workflowManager;
         _activityLibrary = activityLibrary;
@@ -61,6 +63,7 @@ public sealed class WorkflowDesignerModelBuilder
         _htmlEncoder = htmlEncoder;
         _workflowOptions = workflowOptions.Value;
         _presetProviders = presetProviders;
+        _workflowTypeStore = workflowTypeStore;
     }
 
     /// <summary>
@@ -226,9 +229,10 @@ public sealed class WorkflowDesignerModelBuilder
         var activity = activityContext.Activity;
         var outcomes = await GetOutcomesAsync(workflowContext, activityContext);
         var shape = await _activityDisplayManager.BuildDisplayAsync(activity, _updateModelAccessor.ModelUpdater, "Design");
+        var displayText = await GetDisplayTextAsync(activity);
         var title = activity.TryGet<ActivityMetadata>(out var metadata) && !string.IsNullOrWhiteSpace(metadata.Title)
             ? metadata.Title
-            : activity.DisplayText.Value;
+            : displayText;
 
         return new WorkflowDesignerNode
         {
@@ -241,7 +245,7 @@ public sealed class WorkflowDesignerModelBuilder
             HasEditor = activity.HasEditor,
             IsMissing = activity is MissingActivity,
             Title = title,
-            DisplayText = activity.DisplayText.Value,
+            DisplayText = displayText,
             Category = activity.Category.Value,
             DesignHtml = await RenderContentZoneAsync(shape),
             Icon = WorkflowDesignerIcons.Resolve(activity, _workflowOptions),
@@ -282,6 +286,22 @@ public sealed class WorkflowDesignerModelBuilder
                 })
                 .ToList(),
         };
+    }
+
+    // A task that runs a workflow usable as an activity is shown as that workflow, as the activities pane lists it.
+    private async Task<string> GetDisplayTextAsync(IActivity activity)
+    {
+        if (activity is ExecuteWorkflowTask executeWorkflow && !string.IsNullOrEmpty(executeWorkflow.WorkflowTypeId))
+        {
+            var workflowType = await _workflowTypeStore.GetAsync(executeWorkflow.WorkflowTypeId);
+
+            if (!string.IsNullOrWhiteSpace(workflowType?.Name))
+            {
+                return workflowType.Name;
+            }
+        }
+
+        return activity.DisplayText.Value;
     }
 
     // The 'Activity_Design' and 'Activity_Thumbnail' templates wrap the activity's own shape with the markup of

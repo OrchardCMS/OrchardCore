@@ -1,22 +1,14 @@
-@using OrchardCore.Entities
-@using OrchardCore.Workflows.Models
 @using OrchardCore.Workflows.Services
 @model ActivityViewModel<ExecuteWorkflowTask>
 @inject IWorkflowTypeStore WorkflowTypeStore
 
 @{
     var workflowType = string.IsNullOrEmpty(Model.Activity.WorkflowTypeId) ? null : await WorkflowTypeStore.GetAsync(Model.Activity.WorkflowTypeId);
-    var hasTitle = Model.Activity.TryGet<ActivityMetadata>(out var metadata) && !string.IsNullOrEmpty(metadata.Title);
 }
 
 <header>
     <h4><i class="fa-solid fa-diagram-project" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => workflowType is null ? T["Execute Workflow"] : T["Execute {0}", workflowType.Name])</h4>
 </header>
-@* A title of its own hides the workflow it runs, so it is named below. *@
-@if (hasTitle && workflowType is not null)
-{
-    <div>@T["Runs <em>{0}</em>", workflowType.Name]</div>
-}
 @if (!Model.Activity.WaitForCompletion)
 {
     <span><em>@T["Doesn't wait for it to finish"]</em></span>
