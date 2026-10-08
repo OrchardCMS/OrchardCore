@@ -2,7 +2,7 @@ namespace OrchardCore.Media.Processing;
 
 /// <summary>
 /// Transforms images on demand for the media pipeline. Implementations wrap a concrete imaging
-/// library (for example NetVips or ImageSharp); the media module ships a NetVips implementation by
+/// library (for example NetVips); the media module ships a NetVips implementation by
 /// default and a site can replace it by registering a different <see cref="IImageProcessingEngine"/>.
 /// </summary>
 public interface IImageProcessingEngine

@@ -7,7 +7,7 @@ public static class MediaHelper
     private static readonly string s_tempDir = Path.Combine(Path.GetTempPath(), "playwright-test-files");
 
     // Minimal valid 1x1 white JPEG (635 bytes). Generated files use this as a header
-    // so ImageSharp can decode them without throwing UnknownImageFormatException.
+    // so the image processing engine can decode them as valid images.
     private static readonly byte[] s_jpegHeader =
     [
         0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46, 0x00, 0x01,
