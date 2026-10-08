@@ -119,35 +119,41 @@ public class JavaScriptEngineTests
         Assert.True((bool)engine.Evaluate(scope, DeepPrototypeChain + script));
     }
 
+    // How deep a chain has to be before the guard steps in depends on the size of the thread's stack, which is
+    // larger on Linux than on Windows, so a chain of a fixed length may raise the error on one and simply complete
+    // on the other. Either is fine. What these tests pin is that the process survives and the engine still works:
+    // on Jint 4.16.x each of these shapes ended the process.
     [Fact]
-    public void Evaluate_DeepChainOfProxies_RaisesAnErrorTheScriptCanCatch()
+    public void Evaluate_DeepChainOfProxies_DoesNotKillTheProcess()
     {
         var (engine, scope) = CreateScope();
 
         // A proxy cannot be walked in a loop, because each one may answer differently. Up to Jint 4.16.2 the
         // forward from one proxy without a trap to the next did not measure the native stack, so this ended
-        // the process even with the guard on. It now measures it, and raises a RangeError in time.
-        Assert.Equal("RangeError", engine.Evaluate(scope, """
+        // the process even with the guard on. It now measures it, and raises a RangeError if the stack runs low.
+        var result = engine.Evaluate(scope, """
             var p = {};
             for (var i = 0; i < 100000; i++) { p = new Proxy(p, {}); }
-            try { p.missing; return 'no error'; } catch (e) { return e.constructor.name; }
-            """));
+            try { p.missing; return 'completed'; } catch (e) { return e.constructor.name; }
+            """);
 
+        string[] outcomes = ["completed", "RangeError"];
+        Assert.Contains(Assert.IsType<string>(result), outcomes);
         Assert.Equal(2, Convert.ToInt32(engine.Evaluate(scope, "return 1 + 1;")));
     }
 
     // Up to Jint 4.16.2, asking whether a function made by a long '.bind()' chain is a constructor recursed
     // through every link before any guarded call ran, so 'new' or 'class extends' on it ended the process.
     // That question is now answered in a loop. Constructing through the chain still descends it, and that
-    // descent is guarded, so it raises a RangeError; 'class extends' stops earlier, with the TypeError for a
-    // superclass without a 'prototype', which a bound function never has.
+    // descent is guarded, so it either completes or raises a RangeError; 'class extends' stops earlier, with
+    // the TypeError for a superclass without a 'prototype', which a bound function never has.
     private const string DeepBindChain = "var f = function () { }; for (var i = 0; i < 50000; i++) { f = f.bind(null); }";
 
     [Theory]
-    [InlineData("new f();", "RangeError")]
-    [InlineData("Reflect.construct(f, []);", "RangeError")]
+    [InlineData("new f();", "constructed", "RangeError")]
+    [InlineData("Reflect.construct(f, []);", "constructed", "RangeError")]
     [InlineData("class C extends f { } new C();", "TypeError")]
-    public void Evaluate_DeepBindChain_RaisesAnErrorTheScriptCanCatch(string construct, string error)
+    public void Evaluate_DeepBindChain_DoesNotKillTheProcess(string construct, params string[] outcomes)
     {
         var (engine, scope) = CreateScope();
 
@@ -156,7 +162,7 @@ public class JavaScriptEngineTests
             try { {{construct}} return 'constructed'; } catch (e) { return e.constructor.name; }
             """);
 
-        Assert.Equal(error, result);
+        Assert.Contains(Assert.IsType<string>(result), outcomes);
         Assert.Equal(2, Convert.ToInt32(engine.Evaluate(scope, "return 1 + 1;")));
     }
 
@@ -164,13 +170,15 @@ public class JavaScriptEngineTests
     // ended the process: 'eval' parsed and ran its argument without measuring the stack, also when it is the
     // Symbol.hasInstance method 'instanceof' calls, and a failure leaving a ShadowRealm was copied into a
     // TypeError from inside the catch handling it, one nested exception dispatch per wrapped function. The
-    // last row needs no chain at all: wrapping a function reads its 'name', and that getter wraps it again.
+    // 'eval' rows and the last row never end, so they always raise the error; the chain of wrapped functions
+    // has a fixed length, so it may also complete. The last row needs no chain at all: wrapping a function
+    // reads its 'name', and that getter wraps it again.
     [Theory]
     [InlineData("var s = 'eval(s)'; eval(s);", "RangeError")]
     [InlineData("var o = {}; Object.defineProperty(o, Symbol.hasInstance, { value: eval }); var s = 's instanceof o'; s instanceof o;", "RangeError")]
-    [InlineData("const sr = new ShadowRealm(); const id = sr.evaluate('x => x'); let f = function () { return 1; }; for (let i = 0; i < 5000; i++) f = id(f); f();", "TypeError")]
+    [InlineData("const sr = new ShadowRealm(); const id = sr.evaluate('x => x'); let f = function () { return 1; }; for (let i = 0; i < 5000; i++) f = id(f); f();", "completed", "TypeError")]
     [InlineData("const sr = new ShadowRealm(); const g = function () {}; Object.defineProperty(g, 'name', { get: sr.evaluate('(function () {})') }); sr.evaluate('f => f')(g);", "TypeError")]
-    public void Evaluate_EvalOrShadowRealmRecursion_RaisesAnErrorTheScriptCanCatch(string script, string error)
+    public void Evaluate_EvalOrShadowRealmRecursion_DoesNotKillTheProcess(string script, params string[] outcomes)
     {
         var (engine, scope) = CreateScope();
 
@@ -178,7 +186,7 @@ public class JavaScriptEngineTests
             try { {{script}} return 'completed'; } catch (e) { return e.constructor.name; }
             """);
 
-        Assert.Equal(error, result);
+        Assert.Contains(Assert.IsType<string>(result), outcomes);
         Assert.Equal(2, Convert.ToInt32(engine.Evaluate(scope, "return 1 + 1;")));
     }
 
