@@ -1,11 +1,10 @@
 @model WorkflowDesignerViewModel
-@using OrchardCore.DisplayManagement.Html
 
-<zone Name="Title">
-    <breadcrumb name="WorkflowTypesEdit" title="@(new HtmlContentString(Model.WorkflowType.Name ?? string.Empty))">
-        <breadcrumb-item id="WorkflowTypes" action="Index" controller="WorkflowType" area="OrchardCore.Workflows" permission="@WorkflowsPermissions.ManageWorkflows.Name">@T["Workflows"]</breadcrumb-item>
-    </breadcrumb>
-</zone>
+@* The designer's toolbar shows the workflow's name and links back to the list, so the page has no heading or
+   breadcrumb of its own, which leaves the height to the canvas. *@
+@{
+    Title.AddSegment(Html.Raw(Html.Encode(Model.WorkflowType.Name ?? string.Empty)));
+}
 
 @* The designer reads the antiforgery token from this form for its POST requests. *@
 <form id="workflow-designer-antiforgery" class="d-none">@Html.AntiForgeryToken()</form>

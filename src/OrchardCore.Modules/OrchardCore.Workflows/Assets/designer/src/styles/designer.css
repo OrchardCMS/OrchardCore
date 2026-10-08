@@ -4,8 +4,8 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    /* The page header above, and a small gap below. */
-    height: calc(100vh - 9.875rem);
+    /* The admin's top bar above (the designer's page has no heading), and a small gap below. */
+    height: calc(100vh - 5.375rem);
     min-height: 32rem;
     border: var(--bs-border-width) solid var(--bs-border-color);
     border-radius: var(--bs-border-radius);
@@ -20,6 +20,21 @@
     padding: 0.5rem 0.75rem;
     border-bottom: var(--bs-border-width) solid var(--bs-border-color);
     background-color: var(--bs-tertiary-bg);
+}
+
+.wfd-back {
+    flex: 0 0 auto;
+    font-size: 0.875rem;
+    text-decoration: none;
+}
+
+.wfd-back:hover {
+    text-decoration: underline;
+}
+
+.wfd-back-separator {
+    margin-inline: -0.125rem;
+    color: var(--bs-secondary-color);
 }
 
 .wfd-title {
@@ -200,7 +215,7 @@
     z-index: 9;
     display: flex;
     flex-direction: column;
-    height: 30%;
+    height: 40%;
     min-height: 8rem;
     max-height: calc(100% - 6rem);
     border-top: var(--bs-border-width) solid var(--bs-border-color);
@@ -548,17 +563,93 @@
     margin: 0.75rem;
 }
 
-.wfd-available-group {
-    margin: 0.75rem 0 0.375rem;
+/* The groups are vertical tabs beside their values, which fill the panel's width in columns. */
+.wfd-available-layout {
+    display: grid;
+    grid-template-columns: minmax(9rem, 13rem) minmax(0, 1fr);
+    gap: 0.75rem;
+    align-items: start;
+}
+
+.wfd-available-tabs {
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    padding: 0.1875rem;
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-tertiary-bg);
+}
+
+.wfd-available-tab {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3125rem 0.5rem;
+    border: 0;
+    border-radius: var(--bs-border-radius-sm);
+    background: none;
     color: var(--bs-secondary-color);
-    font-size: 0.75rem;
+    font-size: 0.8125rem;
+    text-align: start;
+}
+
+.wfd-available-tab:hover {
+    color: var(--bs-emphasis-color);
+}
+
+.wfd-available-tab.active {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-emphasis-color);
     font-weight: 600;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
+    box-shadow: var(--bs-box-shadow-sm);
+}
+
+.wfd-available-tab-title {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.wfd-available-tab-count {
+    background-color: var(--bs-secondary-bg);
+    color: var(--bs-secondary-color);
+    font-weight: 400;
 }
 
 .wfd-available-list {
     margin: 0;
+}
+
+.wfd-available-values > .wfd-available-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    gap: 0.625rem;
+    align-items: start;
+}
+
+.wfd-available-values > .wfd-available-list > .wfd-available-value {
+    margin-bottom: 0;
+}
+
+.wfd-available-values > .wfd-section-hint:last-child {
+    margin: 0.75rem 0 0;
+}
+
+/* In a narrow panel, the groups wrap above their values. */
+@container (max-width: 34rem) {
+    .wfd-available-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .wfd-available-tabs {
+        position: static;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
 }
 
 .wfd-available-value {

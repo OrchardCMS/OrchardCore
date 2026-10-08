@@ -38,7 +38,13 @@ describe("AvailableData", () => {
     it("render_ActivityAfterAnEvent_ListsItsDataWithTheirExpressions", () => {
         const { wrapper } = setup();
 
-        expect(wrapper.findAll(".wfd-available-group").map((group) => group.text())).toEqual(["VariablesTab", "AvailableFrom", "AvailableWorkflow", "AvailableGlobal", "AvailableFunctions"]);
+        expect(wrapper.findAll(".wfd-available-tab-title").map((group) => group.text())).toEqual([
+            "VariablesTab",
+            "AvailableFrom",
+            "AvailableWorkflow",
+            "AvailableGlobal",
+            "AvailableFunctions",
+        ]);
 
         const contentItem = wrapper.get("[data-cy='available-start-Input:ContentItem']");
         expect(contentItem.text()).toContain("ContentItem");
@@ -47,6 +53,33 @@ describe("AvailableData", () => {
         expect(contentItem.get("[data-cy=available-liquid]").text()).toContain("{{ Workflow.Input.ContentItem }}");
 
         expect(wrapper.get("[data-cy='available-variables-Variable:total']").text()).toContain("Number");
+    });
+
+    it("groups_Tabs_ShowOneGroupAtATimeStartingWithTheFirstThatHasValues", async () => {
+        const { wrapper } = setup();
+        const variables = wrapper.get("[data-cy=available-group-variables]");
+        const start = wrapper.get("[data-cy=available-group-start]");
+        // Whether the group of a value is the one shown.
+        const shown = (selector: string) => !wrapper.get(selector).element.closest("[role=tabpanel]")!.getAttribute("style")?.includes("display: none");
+
+        expect(variables.attributes("aria-selected")).toBe("true");
+        expect(variables.get(".wfd-available-tab-count").text()).toBe("1");
+        expect(shown("[data-cy='available-variables-Variable:total']")).toBe(true);
+        expect(shown("[data-cy='available-start-Input:ContentItem']")).toBe(false);
+
+        await start.trigger("click");
+
+        expect(start.attributes("aria-selected")).toBe("true");
+        expect(shown("[data-cy='available-variables-Variable:total']")).toBe(false);
+        expect(shown("[data-cy='available-start-Input:ContentItem']")).toBe(true);
+
+        // The arrows move down the groups, and wrap around.
+        await start.trigger("keydown", { key: "ArrowDown" });
+        expect(wrapper.get("[data-cy=available-group-workflow]").attributes("aria-selected")).toBe("true");
+
+        await wrapper.get("[data-cy=available-group-workflow]").trigger("keydown", { key: "End" });
+        await wrapper.get("[data-cy=available-group-functions]").trigger("keydown", { key: "ArrowDown" });
+        expect(variables.attributes("aria-selected")).toBe("true");
     });
 
     it("click_Expression_AsksToInsertIt", async () => {

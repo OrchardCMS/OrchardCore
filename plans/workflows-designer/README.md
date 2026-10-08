@@ -109,6 +109,7 @@ The work is pushed to the draft pull request [OrchardCMS/OrchardCore#19996](http
     - The new **activity panel** (`panel/ActivityPanel.vue`) holds the selected activity's Settings, Outputs (its own tab, shown when the activity has outputs) and Available data; the viewer shows Details and Outputs. It opens over the bottom of the canvas when one activity is selected and closes when the selection is cleared (or with its Close button, which applies the changes and clears the selection). It resizes from its top edge, and a pin keeps it open below the canvas, which then shrinks. The height and the pin are remembered in the browser.
     - The zoom controls and the hidden-activities notice move up above the panel while it covers the canvas (`--wfd-covered-height`).
     - Tests: `ActivityPanel.spec.ts` (19) and `WorkflowPanel.spec.ts` (6) replace `PropertiesPanel.spec.ts`; Vitest 272 of 272, and the designer functional class 27 of 27.
+    - Then, from the same review: **Available data** shows one group per tab (vertical tabs with their counts, beside values laid out in columns; they wrap above the values in a narrow panel), starting with the first group that has values. The activity panel opens at 40% of the canvas instead of 30%. The designer's page has no heading or breadcrumb any more: the toolbar links back to the list (**Workflows** / name), and the designer fills the page down to the same 18px gap.
 
 | Phase | Scope | Depends on | Status |
 |---|---|---|---|

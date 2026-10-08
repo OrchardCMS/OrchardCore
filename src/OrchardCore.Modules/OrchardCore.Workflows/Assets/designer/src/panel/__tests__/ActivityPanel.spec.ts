@@ -128,7 +128,11 @@ describe("ActivityPanel", () => {
         selectNode(store, "a");
         await flushPromises();
 
-        expect(wrapper.findAll("[role=tab]").map((tab) => tab.attributes("data-cy"))).toEqual(["activity-tab-settings", "activity-tab-outputs", "activity-tab-data"]);
+        expect(wrapper.findAll(".wfd-activity-panel-header [role=tab]").map((tab) => tab.attributes("data-cy"))).toEqual([
+            "activity-tab-settings",
+            "activity-tab-outputs",
+            "activity-tab-data",
+        ]);
 
         const outputs = wrapper.get("[data-cy=activity-outputs]");
         expect(outputs.isVisible()).toBe(false);
@@ -142,7 +146,7 @@ describe("ActivityPanel", () => {
         selectNode(store, "b");
         await flushPromises();
 
-        expect(wrapper.findAll("[role=tab]").map((tab) => tab.attributes("data-cy"))).toEqual(["activity-tab-settings", "activity-tab-data"]);
+        expect(wrapper.findAll(".wfd-activity-panel-header [role=tab]").map((tab) => tab.attributes("data-cy"))).toEqual(["activity-tab-settings", "activity-tab-data"]);
     });
 
     it("tabs_Switch_ShowTheSettingsOrTheAvailableData", async () => {

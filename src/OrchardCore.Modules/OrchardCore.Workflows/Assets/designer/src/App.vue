@@ -532,6 +532,11 @@ defineExpose({ canvas, panel, activityPanel, addActivity, autosave, publish, dis
 <template>
     <div class="wfd" :class="{ 'wfd-readonly': config.readOnly }" data-cy="workflow-designer">
         <header class="wfd-toolbar" data-cy="designer-toolbar">
+            <!-- The designer's page has no breadcrumb, to leave the height to the canvas: the toolbar links back to the list. -->
+            <template v-if="!config.readOnly && config.listUrl">
+                <a :href="config.listUrl" class="wfd-back link-secondary" data-cy="toolbar-list">{{ t("WorkflowsList") }}</a>
+                <span class="wfd-back-separator" aria-hidden="true">/</span>
+            </template>
             <h2 class="wfd-title text-truncate">{{ state.settings?.name }}</h2>
 
             <span

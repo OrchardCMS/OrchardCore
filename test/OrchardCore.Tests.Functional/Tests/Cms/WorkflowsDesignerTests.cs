@@ -750,7 +750,8 @@ public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsF
         await Assertions.Expect(lastResult).ToContainTextAsync("The content item the activity retrieved.");
         await Assertions.Expect(data.Locator("[data-cy=available-group-global]")).ToBeVisibleAsync();
 
-        // A field is inserted where the cursor was, and the settings come back.
+        // A field of the event's data (a tab of its own) is inserted where the cursor was, and the settings come back.
+        await data.Locator("[data-cy=available-group-datapublished]").ClickAsync();
         await data.Locator("[data-cy='available-datapublished-Input:ContentEvent'] > details > summary").ClickAsync();
         await data.Locator("[data-cy='available-datapublished-Input:ContentEvent.ContentType'] [data-cy=available-liquid]").ClickAsync();
         await Assertions.Expect(page.Locator("[data-cy=activity-tab-settings]")).ToHaveAttributeAsync("aria-selected", "true");

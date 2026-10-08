@@ -30,6 +30,7 @@ public sealed class WorkflowsDesignerJSLocalizer : IJSLocalizer
         return new Dictionary<string, string>
         {
             // Shell.
+            { "WorkflowsList", S["Workflows"].Value },
             { "Loading", S["Loading the workflow…"].Value },
             { "LoadFailed", S["The workflow couldn't be loaded. Reload the page to try again."].Value },
             { "History", S["History"].Value },
