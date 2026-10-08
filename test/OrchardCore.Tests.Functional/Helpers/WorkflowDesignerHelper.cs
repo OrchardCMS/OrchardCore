@@ -32,7 +32,7 @@ public static class WorkflowDesignerHelper
     /// </summary>
     public static async Task<long> CreateWorkflowTypeAsync(this IPage page, string name)
     {
-        await page.GotoAndAssertOkAsync("/Admin/Workflows/Types/EditProperties");
+        await page.GotoAndAssertOkAsync("/Admin/Workflows/Types/Create");
         await page.Locator("#Name").FillAsync(name);
         await page.Locator("button.save").ClickAsync();
         await page.WaitForURLAsync("**/Admin/Workflows/Types/Edit/**");

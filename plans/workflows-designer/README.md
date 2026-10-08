@@ -110,6 +110,9 @@ The work is pushed to the draft pull request [OrchardCMS/OrchardCore#19996](http
     - The zoom controls and the hidden-activities notice move up above the panel while it covers the canvas (`--wfd-covered-height`).
     - Tests: `ActivityPanel.spec.ts` (19) and `WorkflowPanel.spec.ts` (6) replace `PropertiesPanel.spec.ts`; Vitest 272 of 272, and the designer functional class 27 of 27.
     - Then, from the same review: **Available data** shows one group per tab (vertical tabs with their counts, beside values laid out in columns; they wrap above the values in a narrow panel), starting with the first group that has values. The activity panel opens at 40% of the canvas instead of 30%. The designer's page has no heading or breadcrumb any more: the toolbar links back to the list (**Workflows** / name), and the designer fills the page down to the same 18px gap.
+    - An Execute Workflow task shows on the canvas (and in the activity panel's header) as the workflow it runs, with the name the activities pane lists it under, instead of "Execute Workflow Task".
+- **Workflows list (2026-10-08, from review).** Each workflow has **Edit** and an **Actions** menu with **Clone** (was Duplicate), **Export** and **Delete**, like the other admin lists. The **Properties** button and page are gone: they saved over the live workflow, outside the draft, and the designer's Workflow tab edits the same settings. `EditProperties` redirects to the designer (or to the new `Create` page without an id); Clone now also copies "Delete finished workflows". Tests: `OldUrls_PropertiesPage_RedirectsToTheDesignerOrToTheCreatePage`, `Clone_Workflow_CopiesItsActivitiesVariablesAndPropertiesUnderTheNewName`; workflow unit tests 285 of 285, designer functional class 27 of 27.
+- **CI.** `main` was merged again (`9c9d8a2d1d`); its new cancellation test creates `IfElseTask` with the expression manager.
 
 | Phase | Scope | Depends on | Status |
 |---|---|---|---|

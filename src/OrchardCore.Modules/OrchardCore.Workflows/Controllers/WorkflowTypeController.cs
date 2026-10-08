@@ -229,45 +229,22 @@ public sealed class WorkflowTypeController : Controller
         return await ExportWorkflows(id);
     }
 
-    public async Task<IActionResult> EditProperties(int? id, string returnUrl = null)
-
+    public async Task<IActionResult> Create(string returnUrl = null)
     {
         if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows))
         {
             return Forbid();
         }
 
-        if (id == null)
+        return View(new WorkflowTypePropertiesViewModel
         {
-            return View(new WorkflowTypePropertiesViewModel
-            {
-                IsEnabled = true,
-                ReturnUrl = returnUrl,
-            });
-        }
-        else
-        {
-            var workflowType = await _session.GetAsync<WorkflowType>(id.Value);
-
-            return View(new WorkflowTypePropertiesViewModel
-            {
-                Id = workflowType.Id,
-                Name = workflowType.Name,
-                IsEnabled = workflowType.IsEnabled,
-                IsSingleton = workflowType.IsSingleton,
-                LockTimeout = workflowType.LockTimeout,
-                LockExpiration = workflowType.LockExpiration,
-                DeleteFinishedWorkflows = workflowType.DeleteFinishedWorkflows,
-                IsActivity = workflowType.IsActivity,
-                BranchingMode = workflowType.BranchingMode,
-                FaultOnScriptErrors = workflowType.FaultOnScriptErrors,
-                ReturnUrl = returnUrl,
-            });
-        }
+            IsEnabled = true,
+            ReturnUrl = returnUrl,
+        });
     }
 
     [HttpPost]
-    public async Task<IActionResult> EditProperties(WorkflowTypePropertiesViewModel viewModel, long? id)
+    public async Task<IActionResult> Create(WorkflowTypePropertiesViewModel viewModel)
     {
         if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows))
         {
@@ -279,47 +256,28 @@ public sealed class WorkflowTypeController : Controller
             return View(viewModel);
         }
 
-        var isNew = id == null;
-        var workflowType = default(WorkflowType);
-
-        if (isNew)
-        {
-            workflowType = new WorkflowType();
-            workflowType.WorkflowTypeId = _workflowTypeIdGenerator.GenerateUniqueId(workflowType);
-        }
-        else
-        {
-            workflowType = await _session.GetAsync<WorkflowType>(id.Value);
-
-            if (workflowType == null)
-            {
-                return NotFound();
-            }
-        }
-
-        workflowType.Name = viewModel.Name?.Trim();
-        workflowType.IsEnabled = viewModel.IsEnabled;
-        workflowType.IsSingleton = viewModel.IsSingleton;
-        workflowType.LockTimeout = viewModel.LockTimeout;
-        workflowType.LockExpiration = viewModel.LockExpiration;
-        workflowType.DeleteFinishedWorkflows = viewModel.DeleteFinishedWorkflows;
-        workflowType.IsActivity = viewModel.IsActivity;
-        workflowType.BranchingMode = viewModel.BranchingMode;
-        workflowType.FaultOnScriptErrors = viewModel.FaultOnScriptErrors;
+        var workflowType = new WorkflowType();
+        workflowType.WorkflowTypeId = _workflowTypeIdGenerator.GenerateUniqueId(workflowType);
+        ApplyProperties(workflowType, viewModel);
 
         await _workflowTypeStore.SaveAsync(workflowType);
 
-        return isNew
-            ? RedirectToAction(nameof(Edit), new
-            {
-                workflowType.Id,
-            })
-            : Url.IsLocalUrl(viewModel.ReturnUrl)
-                ? (IActionResult)this.Redirect(viewModel.ReturnUrl, true)
-                : RedirectToAction(nameof(Index));
+        return RedirectToAction(nameof(Edit), new
+        {
+            workflowType.Id,
+        });
     }
 
-    public async Task<IActionResult> Duplicate(long id, string returnUrl = null)
+    /// <summary>
+    /// The properties of a workflow are edited in the designer, on its Workflow tab, so the old properties page
+    /// opens the designer, or the page that creates a workflow.
+    /// </summary>
+    public IActionResult EditProperties(long? id, string returnUrl = null)
+        => id is null
+            ? RedirectToAction(nameof(Create), new { returnUrl })
+            : RedirectToAction(nameof(Edit), new { id });
+
+    public async Task<IActionResult> Clone(long id, string returnUrl = null)
     {
         if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows))
         {
@@ -341,6 +299,7 @@ public sealed class WorkflowTypeController : Controller
             LockExpiration = workflowType.LockExpiration,
             Name = "Copy-" + workflowType.Name,
             IsEnabled = workflowType.IsEnabled,
+            DeleteFinishedWorkflows = workflowType.DeleteFinishedWorkflows,
             IsActivity = workflowType.IsActivity,
             BranchingMode = workflowType.BranchingMode,
             FaultOnScriptErrors = workflowType.FaultOnScriptErrors,
@@ -349,7 +308,7 @@ public sealed class WorkflowTypeController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Duplicate(WorkflowTypePropertiesViewModel viewModel, long id)
+    public async Task<IActionResult> Clone(WorkflowTypePropertiesViewModel viewModel, long id)
     {
         if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows))
         {
@@ -362,18 +321,15 @@ public sealed class WorkflowTypeController : Controller
         }
 
         var existingWorkflowType = await _session.GetAsync<WorkflowType>(id);
+
+        if (existingWorkflowType == null)
+        {
+            return NotFound();
+        }
+
         var workflowType = new WorkflowType();
         workflowType.WorkflowTypeId = _workflowTypeIdGenerator.GenerateUniqueId(workflowType);
-
-        workflowType.Name = viewModel.Name?.Trim();
-        workflowType.IsEnabled = viewModel.IsEnabled;
-        workflowType.IsSingleton = viewModel.IsSingleton;
-        workflowType.LockTimeout = viewModel.LockTimeout;
-        workflowType.LockExpiration = viewModel.LockExpiration;
-        workflowType.DeleteFinishedWorkflows = viewModel.DeleteFinishedWorkflows;
-        workflowType.IsActivity = viewModel.IsActivity;
-        workflowType.BranchingMode = viewModel.BranchingMode;
-        workflowType.FaultOnScriptErrors = viewModel.FaultOnScriptErrors;
+        ApplyProperties(workflowType, viewModel);
         workflowType.Activities = existingWorkflowType.Activities;
         workflowType.Transitions = existingWorkflowType.Transitions;
         workflowType.Variables = existingWorkflowType.Variables.Select(variable => variable.Clone()).ToList();
@@ -384,6 +340,19 @@ public sealed class WorkflowTypeController : Controller
         {
             workflowType.Id,
         });
+    }
+
+    private static void ApplyProperties(WorkflowType workflowType, WorkflowTypePropertiesViewModel viewModel)
+    {
+        workflowType.Name = viewModel.Name?.Trim();
+        workflowType.IsEnabled = viewModel.IsEnabled;
+        workflowType.IsSingleton = viewModel.IsSingleton;
+        workflowType.LockTimeout = viewModel.LockTimeout;
+        workflowType.LockExpiration = viewModel.LockExpiration;
+        workflowType.DeleteFinishedWorkflows = viewModel.DeleteFinishedWorkflows;
+        workflowType.IsActivity = viewModel.IsActivity;
+        workflowType.BranchingMode = viewModel.BranchingMode;
+        workflowType.FaultOnScriptErrors = viewModel.FaultOnScriptErrors;
     }
 
     /// <summary>

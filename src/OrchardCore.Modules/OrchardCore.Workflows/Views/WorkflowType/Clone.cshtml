@@ -2,13 +2,13 @@
 @model OrchardCore.Workflows.ViewModels.WorkflowTypePropertiesViewModel
 
 <zone Name="Title">
-    <breadcrumb name="WorkflowTypesDuplicate" title="@T["Copy Workflow"]">
+    <breadcrumb name="WorkflowTypesClone" title="@T["Clone Workflow"]">
         <breadcrumb-item id="WorkflowTypes" action="Index" controller="WorkflowType" area="OrchardCore.Workflows" permission="@WorkflowsPermissions.ManageWorkflows.Name">@T["Workflows"]</breadcrumb-item>
     </breadcrumb>
 </zone>
 
 <div asp-validation-summary="ModelOnly"></div>
-<form asp-action="Duplicate" method="post" class="no-multisubmit">
+<form asp-action="Clone" method="post" class="no-multisubmit">
 
     <ul class="nav nav-tabs">
         <li class="nav-item pe-md-2">

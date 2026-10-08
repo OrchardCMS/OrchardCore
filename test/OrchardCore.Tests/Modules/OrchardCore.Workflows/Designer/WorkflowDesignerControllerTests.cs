@@ -173,6 +173,65 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
     }
 
     [Fact]
+    public async Task OldUrls_PropertiesPage_RedirectsToTheDesignerOrToTheCreatePage()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
+
+        // The properties of a workflow are edited in the designer.
+        using (var existing = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/EditProperties/{id}", TestContext.Current.CancellationToken))
+        {
+            Assert.Equal(HttpStatusCode.Redirect, existing.StatusCode);
+            Assert.Equal($"/{_fixture.Context.TenantName}/Admin/Workflows/Types/Edit/{id}", existing.Headers.Location?.OriginalString);
+        }
+
+        using var created = await _fixture.Context.Client.GetAsync("Admin/Workflows/Types/EditProperties", TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.Redirect, created.StatusCode);
+        Assert.Equal($"/{_fixture.Context.TenantName}/Admin/Workflows/Types/Create", created.Headers.Location?.OriginalString);
+    }
+
+    [Fact]
+    public async Task Clone_Workflow_CopiesItsActivitiesVariablesAndPropertiesUnderTheNewName()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask", isStart: true));
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            var store = scope.ServiceProvider.GetRequiredService<IWorkflowTypeStore>();
+            var source = await store.GetAsync(workflowTypeId);
+            source.Variables = [new WorkflowVariableDefinition { Name = "total", TypeName = "number" }];
+            source.DeleteFinishedWorkflows = true;
+            await store.SaveAsync(source);
+        });
+
+        using (var form = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/Clone/{id}", TestContext.Current.CancellationToken))
+        {
+            var document = new HtmlParser().ParseDocument(await form.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+
+            Assert.True(document.QuerySelector("input[name='DeleteFinishedWorkflows']")?.HasAttribute("checked"));
+        }
+
+        using var response = await PostFormAsync($"Admin/Workflows/Types/Clone/{id}", new Dictionary<string, string>
+        {
+            ["Name"] = "Cloned",
+            ["IsEnabled"] = "true",
+            ["DeleteFinishedWorkflows"] = "true",
+        });
+
+        Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            var clone = (await scope.ServiceProvider.GetRequiredService<IWorkflowTypeStore>().ListAsync()).Single(workflowType => workflowType.Name == "Cloned");
+
+            Assert.NotEqual(workflowTypeId, clone.WorkflowTypeId);
+            Assert.Equal("notify", Assert.Single(clone.Activities).ActivityId);
+            Assert.Equal("total", Assert.Single(clone.Variables).Name);
+            Assert.True(clone.DeleteFinishedWorkflows);
+        });
+    }
+
+    [Fact]
     public async Task Library_RegisteredActivities_ReturnsRegistrationIconsAndCategoryDefaults()
     {
         var (id, _) = await CreateWorkflowTypeAsync();
@@ -562,6 +621,10 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
             var node = (await ReadJsonAsync(added))["node"];
             Assert.Equal("ExecuteWorkflowTask", node["name"].GetValue<string>());
             Assert.Equal("approved", Assert.Single(node["outputs"].AsArray())["name"].GetValue<string>());
+
+            // On the canvas, the task is the workflow it runs, as in the activities pane.
+            Assert.Equal("Preset child", node["displayText"].GetValue<string>());
+            Assert.Equal("Preset child", node["title"].GetValue<string>());
         }
 
         using var unknown = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/AddActivity", new { revision = 1, preset = "workflow:missing", x = 0, y = 0 });
@@ -1424,7 +1487,7 @@ public sealed class WorkflowDesignerSiteFixture : IAsyncLifetime
     {
         if (_antiforgeryToken is null)
         {
-            using var response = await Context.Client.GetAsync("Admin/Workflows/Types/EditProperties", TestContext.Current.CancellationToken);
+            using var response = await Context.Client.GetAsync("Admin/Workflows/Types/Create", TestContext.Current.CancellationToken);
             response.EnsureSuccessStatusCode();
             var document = new HtmlParser().ParseDocument(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
 

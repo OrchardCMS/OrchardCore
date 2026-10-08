@@ -24,7 +24,7 @@
                     </div>
                 </div>
                 <div class="col-auto">
-                    <a asp-action="EditProperties" asp-route-returnUrl="@FullRequestPath" class="btn btn-secondary create" role="button">@T["Create Workflow"]</a>
+                    <a asp-action="Create" asp-route-returnUrl="@FullRequestPath" class="btn btn-secondary create" role="button">@T["Create Workflow"]</a>
                 </div>
             </div>
         </div>
@@ -63,12 +63,20 @@
                 var entry = Model.WorkflowTypes[i];
                 <li class="list-group-item">
                     <div class="properties">
+                        @* The properties of a workflow are edited in the designer, on its Workflow tab. *@
                         <div class="float-end">
-                            <a asp-action="Export" data-url-af="UnsafeUrl" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" class="btn btn-sm btn-secondary">@T["Export"]</a>
                             <a asp-action="Edit" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                            <a asp-action="EditProperties" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" class="btn btn-success btn-sm">@T["Properties"]</a>
-                            <a asp-action="Delete" asp-route-id="@entry.WorkflowType.Id" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
-                            <a asp-action="Duplicate" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" class="btn btn-warning btn-sm">@T["Duplicate"]</a>
+                            <div class="btn-group" title="@T["Actions"]">
+                                <button type="button" class="btn btn-sm btn-secondary dropdown-toggle actions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span>@T["Actions"]</span>
+                                </button>
+                                <ul class="actions-menu dropdown-menu dropdown-menu-end">
+                                    <li><a asp-action="Clone" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" class="dropdown-item">@T["Clone"]</a></li>
+                                    <li><a asp-action="Export" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" class="dropdown-item" data-url-af="UnsafeUrl">@T["Export"]</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a asp-action="Delete" asp-route-id="@entry.WorkflowType.Id" class="dropdown-item" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Delete"]" data-message="@T["Are you sure you want to delete this workflow?"]">@T["Delete"]</a></li>
+                                </ul>
+                            </div>
                         </div>
 
                         <div class="form-check float-start">

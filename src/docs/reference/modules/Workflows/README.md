@@ -24,6 +24,8 @@ By connecting activities, you are effectively creating a program that can be exe
 
 Workflow definitions are edited in the workflow designer: open **Workflows** in the admin menu, then select a workflow. The designer takes the whole page: its toolbar shows the name of the workflow, after a **Workflows** link back to the list.
 
+In the list of workflows, **Edit** opens the designer, and each workflow's **Actions** menu can **Clone** it (with a new name and its own settings), **Export** it as a recipe, or **Delete** it. The settings of a workflow, such as its name or whether it is enabled, are edited on the designer's **Workflow** tab.
+
 ![The workflow designer](docs/workflow-designer.png)
 
 The designer has four areas. What concerns the whole workflow is on the right, and what concerns the selected activity is below the canvas:
