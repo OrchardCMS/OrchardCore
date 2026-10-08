@@ -12,7 +12,7 @@ namespace OrchardCore.Localization.PortableObject;
 public class PortableObjectStringLocalizerFactory : IStringLocalizerFactory
 {
     private readonly ILocalizationManager _localizationManager;
-    private readonly ConcurrentDictionary<(Type ResourceSource, string BaseName, string Location), PortableObjectStringLocalizer> _localizerCache = new();
+    private readonly ConcurrentDictionary<LocalizerCacheKey, PortableObjectStringLocalizer> _localizerCache = new();
     private readonly bool _fallBackToParentCulture;
     private readonly ILogger _logger;
 
@@ -37,7 +37,7 @@ public class PortableObjectStringLocalizerFactory : IStringLocalizerFactory
     {
         ArgumentNullException.ThrowIfNull(resourceSource);
 
-        return _localizerCache.GetOrAdd((resourceSource, null, null), static (key, args) =>
+        return _localizerCache.GetOrAdd(new(resourceSource, null, null), static (key, args) =>
             new PortableObjectStringLocalizer(TryFixInnerClassPath(key.ResourceSource.FullName), args._localizationManager, args._fallBackToParentCulture, args._logger), (_localizationManager, _fallBackToParentCulture, _logger));
     }
 
@@ -47,7 +47,7 @@ public class PortableObjectStringLocalizerFactory : IStringLocalizerFactory
         ArgumentNullException.ThrowIfNull(baseName);
         ArgumentNullException.ThrowIfNull(location);
 
-        return _localizerCache.GetOrAdd((null, baseName, location), static (key, args) =>
+        return _localizerCache.GetOrAdd(new(null, baseName, location), static (key, args) =>
         {
             var normalizedBaseName = TryFixInnerClassPath(key.BaseName);
             var index = 0;
@@ -79,4 +79,6 @@ public class PortableObjectStringLocalizerFactory : IStringLocalizerFactory
 
         return context.Replace(innerClassSeparator, '.');
     }
+
+    private readonly record struct LocalizerCacheKey(Type ResourceSource, string BaseName, string Location);
 }
