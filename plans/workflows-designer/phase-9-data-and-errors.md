@@ -282,11 +282,27 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
 
 ## Definition of done (Phase 9)
 
-- [ ] Steps 9.1–9.10 are checked.
-- [ ] The CI-flag build is green; `OrchardCore.Tests`, Vitest and the functional `*Cms*` tests pass.
-- [ ] `yarn lint`, `yarn check` and `yarn build` leave a clean `git status`.
-- [ ] Workflows run as before when the new setting is off.
-- [ ] Docs and release notes are updated.
+- [x] Steps 9.1–9.10 are checked.
+- [x] The CI-flag build is green; `OrchardCore.Tests`, Vitest and the functional `*Cms*` tests pass.
+- [x] `yarn lint`, `yarn check` and `yarn build` leave a clean `git status`.
+- [x] Workflows run as before when the new setting is off.
+- [x] Docs and release notes are updated.
+- **Notes from checking the Definition of done:**
+  - **Build.** The CI-flag build of `OrchardCore.slnx` has 0 warnings and 0 errors.
+  - **`OrchardCore.Tests`.** 3,664 tests: 3,662 passed and 2 skipped (Unix-only).
+  - **Vitest.** The designer's 262 tests pass.
+  - **Functional `*Cms*`.**
+    - 167 tests. In the run with every host at once, 131 passed and 36 failed in 0 ms, as their hosts timed out starting together on this machine.
+    - The 9 classes that failed passed when run again four at a time: 36 of 36. `WorkflowsDesignerTests` has 27 tests.
+  - **Assets.**
+    - `yarn lint` has 0 errors (the 2 warnings in `OrchardCore.Cors` were already there), and `yarn check` passes.
+    - The full `yarn build` couldn't start its processes on the busy machine ("spawn UNKNOWN", Parcel crashing with 0xC0000409), even with the Parcel cache cleared.
+    - Built in batches of 6 with `yarn build -n` (227 groups in 38 batches, all on the first try), it reproduces the committed output. `git status` only shows the six line-ending files from Phase 1.
+  - **Setting off.** `FaultOnScriptErrors` is off by default and stored workflows don't have it. With it off, a failing script still returns its default value and the instance goes on (`WorkflowManagerTests`), and the other workflow tests pass unchanged.
+  - **Docs.** Available Data (the views, the groups, Last Result, global values and functions), Script Errors, the `SelectContentTypes` picker, and the release notes.
+  - **From review, after 9.10.**
+    - `Co-Authored-By` trailers were removed from the branch's commit messages (the code is unchanged) and the branch was force-pushed; the plan cites the new hashes.
+    - TheAdmin's and TheTheme's `.btn-theme` helper now sets Bootstrap's button variables, so bootstrap-select's toggle, whose default style class is also `btn-theme`, keeps its border. The admin list filters use `btn-sm` and don't change.
 
 ## Open questions
 
