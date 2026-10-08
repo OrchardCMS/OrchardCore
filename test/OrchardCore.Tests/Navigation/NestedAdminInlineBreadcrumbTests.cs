@@ -153,10 +153,18 @@ public class NestedAdminInlineBreadcrumbTests
 
         var workflowLink = $"Admin/Workflows/Types/Edit/{workflowType.Id}";
 
-        // The designer edits the activities in its properties panel; the old activity pages redirect to it.
-        await AssertPageAsync(context, workflowLink, showBreadcrumb,
-            "breadcrumb-workflow-types-edit", EscapedName,
-            ("Workflows", "Admin/Workflows/Types"));
+        // The designer leaves the page's height to its canvas: it has no heading or trail, whatever the setting, and its
+        // toolbar links back to the list. The workflow still names the page.
+        using (var response = await context.Client.GetAsync(workflowLink, TestContext.Current.CancellationToken))
+        {
+            response.EnsureSuccessStatusCode();
+            using var document = new HtmlParser().ParseDocument(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+
+            Assert.Empty(document.QuerySelectorAll("h1.oc-breadcrumb-title"));
+            Assert.Empty(document.QuerySelectorAll("nav.oc-breadcrumb"));
+            Assert.Equal($"Test Site - {EscapedName}", document.Title);
+        }
+
         await AssertPageAsync(context, $"Admin/Workflows/Types/{workflowType.Id}/Instances/Index", showBreadcrumb,
             "breadcrumb-workflow-instances", "Instances",
             ("Workflows", "Admin/Workflows/Types"), (EscapedName, workflowLink));
