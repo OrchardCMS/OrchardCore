@@ -63,10 +63,15 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
     - The setting's existing tests now cover it too: the Workflow tab, the draft, publishing, the comparison and the version fingerprint. `Create_NewWorkflow_RecordsActivityDataByDefault`, and Clone copies it.
     - Workflows tests: 291/291.
 
-### - [ ] 10.2 Read a record's data
+### - [x] 10.2 Read a record's data
 
-- The instance's journal records say whether they have data (`hasData`); `GET …/Designer/Instance/{workflowId}/Journal/{sequence}` returns a record's data, with the instance page's permission.
+- The instance's journal records say whether they have data (`hasData`); `GET …/Designer/JournalData?instanceId={id}&sequence={n}` returns a record's data, with the instance page's permission.
 - **Tests**: the endpoint returns the data, 404 for an unknown record, and 403 without the permission.
+- **Notes from implementing this step:**
+  - **Route.** The action follows the designer controller's other actions (`Designer/{action}` with query string parameters) rather than the path sketched above. The viewer's configuration has its URL (`urls.journalData`), without the sequence.
+  - **API (`A/`).** `IWorkflowExecutionJournal.GetAsync(workflowId, sequence)` returns one record, through the index on the workflow id and the sequence.
+  - **Instance.** `WorkflowDesignerJournalRecord.HasData`; the records still don't carry their data.
+  - **Tests.** `JournalData_RecordOfTheInstance_ReturnsItsDataWhenItHasSome` (the flags, the data, and 404 for a record without data or that doesn't exist); the viewer's configuration has the URL; the functional test of the designer endpoints for a user without Manage Workflows includes it (403). Workflows tests: 292/292.
 
 ### - [ ] 10.3 The Runs tab
 

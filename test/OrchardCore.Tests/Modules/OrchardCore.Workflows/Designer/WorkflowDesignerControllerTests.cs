@@ -1123,6 +1123,45 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         Assert.Equal(new Dictionary<string, int> { ["start:Done:fork"] = 1, ["fork:A:a"] = 1, ["fork:B:b"] = 1 }, transitions);
     }
 
+    [Fact]
+    public async Task JournalData_RecordOfTheInstance_ReturnsItsDataWhenItHasSome()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));
+        var workflow = await _fixture.CreateFaultedInstanceAsync(workflowTypeId);
+        var withData = Record(workflow, 1, "start", WorkflowExecutionRecordStatus.Completed, "Done");
+        withData.Data = new WorkflowExecutionData
+        {
+            Evaluations = [new WorkflowExpressionEvaluation { Property = "Condition", Syntax = "JavaScript", Expression = "1 + 1", Result = "2" }],
+            Variables = new Dictionary<string, string> { ["total"] = "2" },
+            LastResult = "2",
+        };
+
+        await _fixture.Context.UsingTenantScopeAsync(scope => scope.ServiceProvider.GetRequiredService<IWorkflowExecutionJournal>().SaveAsync(workflow.WorkflowId,
+        [
+            withData,
+            Record(workflow, 2, "start", WorkflowExecutionRecordStatus.Completed, "Done"),
+        ]));
+
+        // The instance only says which records have data.
+        var journal = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Instance?instanceId={workflow.Id}"))["instance"]["journal"].AsArray();
+        Assert.Equal([true, false], journal.Select(record => record["hasData"].GetValue<bool>()));
+        Assert.Null(journal[0]["data"]);
+
+        var data = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/JournalData?instanceId={workflow.Id}&sequence=1");
+        var evaluation = Assert.Single(data["evaluations"].AsArray());
+        Assert.Equal("Condition", evaluation["property"].GetValue<string>());
+        Assert.Equal("2", evaluation["result"].GetValue<string>());
+        Assert.Equal("2", data["variables"]["total"].GetValue<string>());
+        Assert.Equal("2", data["lastResult"].GetValue<string>());
+
+        // A record without data, or that doesn't exist.
+        foreach (var sequence in new[] { 2, 9 })
+        {
+            using var response = await _fixture.Context.Client.GetAsync($"Admin/Workflows/Types/{id}/Designer/JournalData?instanceId={workflow.Id}&sequence={sequence}", TestContext.Current.CancellationToken);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+    }
+
     private static WorkflowExecutionRecord Record(Workflow workflow, int sequence, string activityId, WorkflowExecutionRecordStatus status, params string[] outcomes)
         => new()
         {
@@ -1219,6 +1258,7 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         Assert.True(config["readOnly"].GetValue<bool>());
         Assert.EndsWith($"Admin/Workflows/Types/{id}/Designer/Instance?instanceId={instanceId}", config["urls"]["definition"].GetValue<string>());
         Assert.EndsWith($"Admin/Workflows/Types/{id}/Designer/Retry", config["urls"]["retry"].GetValue<string>());
+        Assert.EndsWith($"Admin/Workflows/Types/{id}/Designer/JournalData?instanceId={instanceId}", config["urls"]["journalData"].GetValue<string>());
         Assert.Null(config["urls"]["save"]);
 
         // The State tab is kept, and the jsPlumb viewer and the stale Bootstrap 4 script are gone.

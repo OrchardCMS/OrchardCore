@@ -92,6 +92,12 @@ public sealed class WorkflowDesignerJournalRecord
 
     public string Error { get; init; }
 
+    /// <summary>
+    /// Whether the record has the data of the execution (<see cref="WorkflowExecutionRecord.Data"/>), which the viewer
+    /// loads when it's opened.
+    /// </summary>
+    public bool HasData { get; init; }
+
     public static WorkflowDesignerJournalRecord From(WorkflowExecutionRecord record)
         => new()
         {
@@ -106,5 +112,6 @@ public sealed class WorkflowDesignerJournalRecord
             CompletedUtc = record.CompletedUtc,
             DurationMilliseconds = record.DurationMilliseconds,
             Error = record.Error,
+            HasData = record.Data is not null,
         };
 }

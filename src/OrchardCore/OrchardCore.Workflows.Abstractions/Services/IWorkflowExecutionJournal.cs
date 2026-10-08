@@ -27,6 +27,13 @@ public interface IWorkflowExecutionJournal
     Task<IReadOnlyList<WorkflowExecutionRecord>> ListAsync(string workflowId, int count = 500);
 
     /// <summary>
+    /// Returns a record of an instance, or <see langword="null"/> when it doesn't have one with this sequence number.
+    /// </summary>
+    /// <param name="workflowId">The <see cref="Workflow.WorkflowId"/>.</param>
+    /// <param name="sequence">The <see cref="WorkflowExecutionRecord.Sequence"/>.</param>
+    Task<WorkflowExecutionRecord> GetAsync(string workflowId, int sequence);
+
+    /// <summary>
     /// Deletes the records of instances.
     /// </summary>
     /// <param name="workflowIds">The <see cref="Workflow.WorkflowId"/> of each instance.</param>

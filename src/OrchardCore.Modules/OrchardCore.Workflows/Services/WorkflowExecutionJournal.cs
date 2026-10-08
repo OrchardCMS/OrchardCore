@@ -82,6 +82,13 @@ public sealed class WorkflowExecutionJournal : IWorkflowExecutionJournal
     }
 
     /// <inheritdoc />
+    public Task<WorkflowExecutionRecord> GetAsync(string workflowId, int sequence)
+        => string.IsNullOrEmpty(workflowId)
+            ? Task.FromResult<WorkflowExecutionRecord>(null)
+            : _session.Query<WorkflowExecutionRecord, WorkflowExecutionRecordIndex>(index => index.WorkflowId == workflowId && index.Sequence == sequence, collection: WorkflowExecutionRecord.Collection)
+                .FirstOrDefaultAsync();
+
+    /// <inheritdoc />
     public async Task DeleteAsync(IEnumerable<string> workflowIds)
     {
         ArgumentNullException.ThrowIfNull(workflowIds);

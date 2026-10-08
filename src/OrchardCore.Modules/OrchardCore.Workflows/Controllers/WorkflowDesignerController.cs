@@ -152,6 +152,31 @@ public sealed class WorkflowDesignerController : Controller
     /// The graph of the read-only instance viewer: the version the instance runs on (never the draft), with the
     /// activities the instance waits on.
     /// </summary>
+    /// <summary>
+    /// The data of an activity's execution, from a record of an instance's journal: what the activity evaluated, set
+    /// and changed (see <see cref="WorkflowType.RecordActivityData"/>). The viewer loads it when the record is opened.
+    /// </summary>
+    [HttpGet]
+    public async Task<IActionResult> JournalData(long workflowTypeId, long instanceId, int sequence)
+    {
+        if (!await CanManageAsync())
+        {
+            return this.ApiForbidProblem();
+        }
+
+        var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
+        var workflow = workflowType is null ? null : await _workflowStore.GetAsync(instanceId);
+
+        if (workflow is null || workflow.WorkflowTypeId != workflowType.WorkflowTypeId)
+        {
+            return this.ApiNotFoundProblem();
+        }
+
+        var record = await _journal.GetAsync(workflow.WorkflowId, sequence);
+
+        return record?.Data is null ? this.ApiNotFoundProblem() : Ok(record.Data);
+    }
+
     [HttpGet]
     public async Task<IActionResult> Instance(long workflowTypeId, long instanceId)
     {

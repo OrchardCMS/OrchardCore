@@ -52,8 +52,10 @@ internal static class WorkflowDesignerConfigBuilder
             }
             : new DesignerUrls
             {
-                // The viewer only loads the instance and retries it; it never changes the workflow type.
+                // The viewer only loads the instance, the data of its journal records, and retries it; it never changes
+                // the workflow type.
                 Definition = url.Action("Instance", DesignerController, new { area = Area, workflowTypeId = workflowType.Id, instanceId = instance.Id }),
+                JournalData = url.Action("JournalData", DesignerController, new { area = Area, workflowTypeId = workflowType.Id, instanceId = instance.Id }),
                 Retry = canRetry ? url.Action("Retry", DesignerController, route) : null,
             };
 
@@ -149,5 +151,7 @@ internal static class WorkflowDesignerConfigBuilder
         public string OutputBindings { get; init; }
 
         public string Retry { get; init; }
+
+        public string JournalData { get; init; }
     }
 }

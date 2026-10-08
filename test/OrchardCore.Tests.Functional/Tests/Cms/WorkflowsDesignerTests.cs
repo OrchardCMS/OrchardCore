@@ -819,7 +819,7 @@ public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsF
         await UserHelper.CreateUserAsync(page, string.Empty, "workflowviewer", "workflowviewer@orchard.com", TestUtils.DefaultConfig.Password, "WorkflowViewer");
         await UserHelper.LoginAsAsync(page, string.Empty, "workflowviewer", TestUtils.DefaultConfig.Password);
 
-        foreach (var action in new[] { "Definition", "Library", "Editor?activityId=seedednotify", "Settings", $"Instance?instanceId=1" })
+        foreach (var action in new[] { "Definition", "Library", "Editor?activityId=seedednotify", "Settings", $"Instance?instanceId=1", "JournalData?instanceId=1&sequence=1" })
         {
             var response = await page.APIRequest.GetAsync($"/Admin/Workflows/Types/{id}/Designer/{action}");
             Assert.Equal(403, response.Status);
