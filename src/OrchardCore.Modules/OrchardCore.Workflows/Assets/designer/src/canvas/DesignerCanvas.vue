@@ -12,7 +12,7 @@ import type { CanvasChanges } from "./changes";
 import { GRID_SIZE, NODE_WIDTH, boundsOf, nodeRect, portAnchor, previewPath, rectFromPoints, rectsIntersect, snap, type NodeLayout, type Point, type Rect } from "./geometry";
 import { ZOOM_STEP, canvasToScreen, fitToContent, screenToCanvas, visibleCenter, zoomAt, zoomBy, type Size, type ViewportState } from "./viewport";
 import { startPointerDrag } from "./useDrag";
-import { clearSelection, connectOutcome, deleteSelection, nudgeSelection, selectAll, selectNode, selectTransition, toggleStart } from "./useConnect";
+import { clearSelection, connectOutcome, deleteSelection, nudgeSelection, selectAll, selectNode, selectTransition, showActivity, toggleStart } from "./useConnect";
 import { useCollapsedBranches } from "./useCollapsedBranches";
 import { scriptErrorsByActivity } from "./scriptErrors";
 import { showToast } from "../ui/toasts";
@@ -45,6 +45,8 @@ const props = withDefaults(
 const emit = defineEmits<{
     (event: "edit", activityId: string): void;
     (event: "drop-activity", activityName: string, point: Point): void;
+    // A click on an unconnected outcome port: add the next activity after it, at that point of the window.
+    (event: "add-after", activityId: string, outcome: string, clientX: number, clientY: number): void;
 }>();
 
 const state = props.store.state;
@@ -210,6 +212,30 @@ const centerOn = (activityId: string) => {
     });
 };
 
+// How far to pan along one axis so [start, end] is within [min, max]: its end first, but never past its start.
+const panOffset = (start: number, end: number, min: number, max: number) => (end > max ? Math.min(end - max, start - min) : start < min ? start - min : 0);
+
+/**
+ * Pans, only as far as needed, so an activity is in view above the bottom `inset` pixels of the canvas, which the
+ * activity panel covers when it opens over it.
+ */
+const keepVisible = (activityId: string, inset = 0) => {
+    const node = nodeById.value.get(activityId);
+
+    if (!node || hostSize.height === 0) {
+        return;
+    }
+
+    const margin = 24;
+    const rect = nodeRect(node, layouts.get(node.id));
+    const offsetX = panOffset(rect.x * viewport.zoom + viewport.panX, (rect.x + rect.width) * viewport.zoom + viewport.panX, margin, hostSize.width - margin);
+    const offsetY = panOffset(rect.y * viewport.zoom + viewport.panY, (rect.y + rect.height) * viewport.zoom + viewport.panY, margin, hostSize.height - inset - margin);
+
+    if (offsetX !== 0 || offsetY !== 0) {
+        setViewport({ zoom: viewport.zoom, panX: viewport.panX - offsetX, panY: viewport.panY - offsetY });
+    }
+};
+
 const cssEscape = (value: string) => (typeof CSS !== "undefined" && CSS.escape ? CSS.escape(value) : value.replace(/["\\]/g, "\\$&"));
 
 const nodeElement = (activityId: string) => host.value?.querySelector<HTMLElement>(`[data-node-id="${cssEscape(activityId)}"]`);
@@ -372,12 +398,17 @@ const onNodePointerDown = (node: DesignerNode, event: PointerEvent) => {
 
     const wasSelected = selectedIds.value.has(node.id);
 
-    if (!wasSelected) {
-        selectNode(props.store, node.id);
+    // The viewer has nothing to move: a click shows the activity's panel.
+    if (props.readOnly) {
+        showActivity(props.store, node.id);
+
+        return;
     }
 
-    if (props.readOnly) {
-        return;
+    // Another activity starts without its panel, which a click (not a drag) opens.
+    if (!wasSelected) {
+        selectNode(props.store, node.id);
+        state.activityPanelRequested = false;
     }
 
     const ids = [...state.selectedNodeIds];
@@ -387,6 +418,9 @@ const onNodePointerDown = (node: DesignerNode, event: PointerEvent) => {
     startPointerDrag(event, {
         onStart: () => {
             liftedIds.value = ids.length <= LIFT_LIMIT ? new Set(ids) : new Set();
+
+            // Moving activities around closes their panel (unless it's pinned), so it doesn't cover them.
+            state.activityPanelRequested = false;
         },
         onMove: (dx, dy) => {
             const moves = ids.map((id) => {
@@ -405,6 +439,11 @@ const onNodePointerDown = (node: DesignerNode, event: PointerEvent) => {
             if (!moved && wasSelected && state.selectedNodeIds.length > 1) {
                 selectNode(props.store, node.id);
             }
+
+            // A click on one activity shows its panel.
+            if (!moved && state.selectedNodeIds.length === 1) {
+                state.activityPanelRequested = true;
+            }
         },
     });
 };
@@ -421,18 +460,27 @@ const onPortPointerDown = (node: DesignerNode, outcome: string, event: PointerEv
     connecting.value = { sourceId: node.id, outcome, pointer: toCanvas(event), targetId: null };
 
     startPointerDrag(event, {
-        threshold: 0,
+        threshold: 3,
         onMove: (_dx, _dy, moveEvent) => {
             if (connecting.value) {
                 connecting.value.pointer = toCanvas(moveEvent);
                 connecting.value.targetId = nodeIdAt(moveEvent.clientX, moveEvent.clientY, node.id);
             }
         },
-        onEnd: (_moved, endEvent) => {
+        onEnd: (moved, endEvent) => {
             const connection = connecting.value;
             connecting.value = null;
 
             if (!connection || !endEvent) {
+                return;
+            }
+
+            // A click on an outcome that leads nowhere yet adds the next activity after it.
+            if (!moved) {
+                if (!state.transitions.some((transition) => transition.sourceActivityId === node.id && transition.sourceOutcomeName === outcome)) {
+                    emit("add-after", node.id, outcome, endEvent.clientX, endEvent.clientY);
+                }
+
                 return;
             }
 
@@ -697,6 +745,7 @@ defineExpose({
     fit,
     centerOn,
     focusNode,
+    keepVisible,
     deleteActivity,
     reveal,
     expandAll,

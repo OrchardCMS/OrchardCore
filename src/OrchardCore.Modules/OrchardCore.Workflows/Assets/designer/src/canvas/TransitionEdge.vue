@@ -40,6 +40,7 @@ const label = computed(() => (props.executedCount > 1 ? `${outcomeLabel.value} Ã
 const geometry = computed(() =>
     edgeGeometry(
         portAnchor(props.source, props.sourceLayout, props.outcome, outcomeIndex.value, props.source.outcomes.length),
+        nodeRect(props.source, props.sourceLayout),
         nodeRect(props.target, props.targetLayout),
     ),
 );

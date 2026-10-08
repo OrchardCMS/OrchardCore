@@ -29,6 +29,39 @@ describe("DesignerCanvas", () => {
         expect(wrapper.get("[data-cy='edge-fork:A:a']").exists()).toBe(true);
     });
 
+    // A pointer event (jsdom has no PointerEvent) on an element, or on the window, where the canvas tracks drags.
+    const pointer = (target: EventTarget, type: string, clientX: number, clientY: number) => {
+        const event = new MouseEvent(type, { clientX, clientY, bubbles: true, cancelable: true });
+        Object.defineProperty(event, "pointerId", { value: 1 });
+        target.dispatchEvent(event);
+    };
+    const windowPointer = (type: string, clientX: number, clientY: number) => pointer(window, type, clientX, clientY);
+
+    it("pointer_ClickOnAnActivity_AsksForItsPanel_ButADragDoesNot", async () => {
+        const { store, wrapper } = setup();
+        const fork = wrapper.get("[data-cy=activity-fork]");
+
+        // A click (pressed and released without moving) shows the panel.
+        pointer(fork.element, "pointerdown", 100, 100);
+        windowPointer("pointerup", 100, 100);
+
+        expect(store.state.selectedNodeIds).toEqual(["fork"]);
+        expect(store.state.activityPanelRequested).toBe(true);
+
+        // Moving it closes the panel, and selecting another activity by dragging it doesn't open its panel.
+        pointer(fork.element, "pointerdown", 100, 100);
+        windowPointer("pointermove", 160, 140);
+        windowPointer("pointerup", 160, 140);
+        expect(store.state.activityPanelRequested).toBe(false);
+
+        pointer(wrapper.get("[data-cy=activity-a]").element, "pointerdown", 100, 100);
+        windowPointer("pointermove", 160, 140);
+        windowPointer("pointerup", 160, 140);
+
+        expect(store.state.selectedNodeIds).toEqual(["a"]);
+        expect(store.state.activityPanelRequested).toBe(false);
+    });
+
     it("keyboard_DeleteSelectedNode_RemovesNodeAndEdgesAndOffersUndo", async () => {
         const { store, wrapper, surface } = setup();
         store.state.selectedNodeIds = ["fork"];

@@ -4,7 +4,7 @@ import type { DesignerApi } from "../api/designerApi";
 import { DesignerApiError } from "../api/designerApi";
 import type { DesignIssue, SettingsApplied } from "../api/types";
 import type { DesignerStore } from "../state/designerStore";
-import { selectNode } from "../canvas/useConnect";
+import { showActivity } from "../canvas/useConnect";
 import ServerFormHost from "./ServerFormHost.vue";
 import IssuesList from "./IssuesList.vue";
 import VariablesTab from "./VariablesTab.vue";
@@ -229,14 +229,14 @@ const onSettingsApplied = (result: FormApplyResult & { valid: true }) => {
 const onJournalSelected = (activityId: string, sequence: number) => {
     if (props.store.getNode(activityId)) {
         state.focusedRunSequence = sequence;
-        selectNode(props.store, activityId);
+        showActivity(props.store, activityId);
         emit("focus-activity", activityId);
     }
 };
 
 const onIssueSelected = (issue: DesignIssue) => {
     if (issue.activityId) {
-        selectNode(props.store, issue.activityId);
+        showActivity(props.store, issue.activityId);
         emit("focus-activity", issue.activityId);
     }
 };

@@ -4,7 +4,7 @@ import type { DesignerApi } from "../api/designerApi";
 import { DesignerApiError } from "../api/designerApi";
 import type { EditorApplied, RetryResult } from "../api/types";
 import type { DesignerStore } from "../state/designerStore";
-import { clearSelection, selectNode } from "../canvas/useConnect";
+import { clearSelection, showActivity } from "../canvas/useConnect";
 import ServerFormHost from "./ServerFormHost.vue";
 import OutputBindings from "./OutputBindings.vue";
 import AvailableData from "../available/AvailableData.vue";
@@ -81,7 +81,8 @@ const ids = `wfd-activity-${useId()}`;
 
 const selectedId = computed(() => (state.selectedNodeIds.length === 1 ? state.selectedNodeIds[0] : null));
 const editingNode = computed(() => (editingId.value ? props.store.getNode(editingId.value) : undefined));
-const isOpen = computed(() => pinned.value || !!editingNode.value);
+// Unpinned, it opens when the selected activity's panel is asked for (a click, not a drag; see activityPanelRequested).
+const isOpen = computed(() => pinned.value || (!!editingNode.value && state.activityPanelRequested));
 
 const tabs = computed<Tab[]>(() => {
     const node = editingNode.value;
@@ -209,8 +210,8 @@ watch(selectedId, async (next) => {
     }
 
     if (editingId.value && !(await settle())) {
-        // Keep the invalid activity selected so its errors stay visible.
-        selectNode(props.store, editingId.value);
+        // Keep the invalid activity selected, and its panel open, so its errors stay visible.
+        showActivity(props.store, editingId.value);
 
         return;
     }
@@ -260,7 +261,7 @@ const open = async (activityId: string, options: { focus?: boolean } = {}) => {
 
     tab.value = props.readOnly ? "details" : "settings";
     focusOnLoad = !!options.focus;
-    selectNode(props.store, activityId);
+    showActivity(props.store, activityId);
     await nextTick();
 
     // The editor of this activity is already open, so it won't load again.
@@ -535,6 +536,18 @@ defineExpose({ open, settle, close, discardChanges, refresh, hasPendingChanges, 
             </ul>
 
             <div class="wfd-activity-panel-actions">
+                <!-- Retrying a faulted instance from the activity shown, whichever tab is open. -->
+                <button
+                    v-if="editingNode && isFaultedInstance"
+                    type="button"
+                    class="btn btn-sm btn-outline-primary"
+                    :disabled="retrying"
+                    data-cy="retry-button"
+                    @click="retry"
+                >
+                    <i class="fa-solid fa-rotate-right" aria-hidden="true"></i>
+                    {{ t("RetryFromHere") }}
+                </button>
                 <button
                     v-if="editingNode && !readOnly"
                     type="button"
@@ -603,15 +616,11 @@ defineExpose({ open, settle, close, discardChanges, refresh, hasPendingChanges, 
                     </dl>
                     <p v-if="editingNode.isMissing" class="text-warning small">{{ t("MissingActivity") }}</p>
                     <div class="wfd-node-body" v-html="editingNode.designHtml"></div>
-                    <div v-if="isFaultedInstance" class="wfd-retry" data-cy="retry">
-                        <p v-if="state.instance?.faultedActivityId === editingNode.id && state.instance.faultMessage" class="wfd-retry-error" data-cy="fault-message">
+                    <div v-if="isFaultedInstance && state.instance?.faultedActivityId === editingNode.id && state.instance.faultMessage" class="wfd-retry" data-cy="retry">
+                        <p class="wfd-retry-error" data-cy="fault-message">
                             <i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>
                             {{ state.instance.faultMessage }}
                         </p>
-                        <button type="button" class="btn btn-sm btn-outline-primary" :disabled="retrying" data-cy="retry-button" @click="retry">
-                            <i class="fa-solid fa-rotate-right" aria-hidden="true"></i>
-                            {{ t("RetryFromHere") }}
-                        </button>
                     </div>
                 </div>
                 <div v-if="tab === 'runs'" :id="`${ids}-tab-runs-panel`" role="tabpanel" :aria-labelledby="`${ids}-tab-runs`">

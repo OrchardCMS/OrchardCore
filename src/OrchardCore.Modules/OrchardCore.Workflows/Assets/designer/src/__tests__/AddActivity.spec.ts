@@ -6,6 +6,9 @@ import { ACTIVITY_DRAG_TYPE } from "../toolbox/filter";
 import type { DesignerApi } from "../api/designerApi";
 import type { DesignerConfig } from "../config";
 import { createDefinition, createNode } from "../canvas/__tests__/fixtures";
+import { library } from "../toolbox/__tests__/library";
+import DesignerCanvas from "../canvas/DesignerCanvas.vue";
+import { transitionKey } from "../state/commands";
 
 const config: DesignerConfig = {
     workflowTypeId: 1,
@@ -21,7 +24,7 @@ const setup = async () => {
     const added = createNode("new", { x: 90, y: 80 });
     const api = {
         getDefinition: vi.fn().mockResolvedValue(createDefinition()),
-        getLibrary: vi.fn().mockResolvedValue({ categories: [] }),
+        getLibrary: vi.fn().mockResolvedValue(library),
         addActivity: vi.fn().mockResolvedValue({ revision: 1, node: added, issues: [] }),
         getEditor: vi.fn().mockResolvedValue({ valid: true, content: '<input name="NotifyTask.Message" />', scripts: "", styles: "" }),
     } as unknown as DesignerApi & { addActivity: ReturnType<typeof vi.fn>; getEditor: ReturnType<typeof vi.fn> };
@@ -66,6 +69,24 @@ describe("adding activities", () => {
         store.undo();
         expect(store.toSavePayload().removedActivityIds).toEqual(["new"]);
 
+        wrapper.unmount();
+    });
+
+    it("addAfter_OutcomeClicked_AddsThePickedActivityToTheRightConnectedToTheOutcome", async () => {
+        const { api, store, wrapper } = await setup();
+
+        // A click on the unconnected Done outcome of "a" (at 600, 0).
+        wrapper.findComponent(DesignerCanvas).vm.$emit("add-after", "a", "Done", 10, 10);
+        await flushPromises();
+
+        expect(wrapper.get("[data-cy=quick-add]").text()).toContain("AddNextActivity");
+        await wrapper.get("[data-cy=quick-add-NotifyTask]").trigger("click");
+        await flushPromises();
+
+        // To the right of "a", and connected to its outcome.
+        expect(api.addActivity).toHaveBeenCalledWith(0, "NotifyTask", 920, 0);
+        expect(store.state.transitions.map(transitionKey)).toContain("a:Done:new");
+        expect(wrapper.find("[data-cy=quick-add]").exists()).toBe(false);
         wrapper.unmount();
     });
 

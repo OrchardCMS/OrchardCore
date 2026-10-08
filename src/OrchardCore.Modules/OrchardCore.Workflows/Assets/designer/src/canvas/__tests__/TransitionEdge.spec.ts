@@ -24,11 +24,12 @@ describe("TransitionEdge", () => {
         expect(mountEdge().get(".wfd-edge").classes()).not.toContain("is-executed");
     });
 
-    it("render_Edge_DrawsBezierFromPortToTargetSideWithLabel", () => {
+    it("render_Edge_DrawsARouteFromPortToTargetSideWithLabel", () => {
         const wrapper = mountEdge();
 
         expect(wrapper.get("[data-cy='edge-s:Done:t']").exists()).toBe(true);
-        expect(wrapper.get(".wfd-edge-line").attributes("d")).toBe("M220,80 C311.2,80 308.8,50 400,50");
+        // The target faces the port, so the route is a straight line into its left side.
+        expect(wrapper.get(".wfd-edge-line").attributes("d")).toBe("M220,80 L400,80");
         expect(wrapper.get(".wfd-edge-line").attributes("marker-end")).toBe("url(#wfd-arrow)");
         expect(wrapper.get(".wfd-edge-label").text()).toBe("Done label");
         expect(wrapper.find("[data-cy=edge-delete]").exists()).toBe(false);

@@ -85,6 +85,11 @@ export interface DesignerState {
      * The journal record the instance viewer shows in the activity's Runs tab, after it was selected in the journal.
      */
     focusedRunSequence: number | null;
+    /**
+     * Whether the selected activity's panel was asked for: by a click on the activity (not a drag), a double-click,
+     * Enter, or the issues and journal lists. Moving activities around doesn't open it, so it doesn't cover them.
+     */
+    activityPanelRequested: boolean;
 }
 
 const createInitialState = (): DesignerState => ({
@@ -118,6 +123,7 @@ const createInitialState = (): DesignerState => ({
     presence: [],
     remoteChange: null,
     focusedRunSequence: null,
+    activityPanelRequested: false,
 });
 
 /**

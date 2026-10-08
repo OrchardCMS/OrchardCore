@@ -1537,6 +1537,144 @@
     pointer-events: none;
 }
 
+/* The activities to add after an outcome, opened by a click on its port. */
+.wfd-quick-add {
+    position: absolute;
+    z-index: 15;
+    width: 19rem;
+}
+
+.wfd-quick-add-title {
+    margin-bottom: 0.375rem;
+    color: var(--bs-secondary-color);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.wfd-quick-add-list {
+    max-height: 16rem;
+    margin: 0.375rem 0 0;
+    overflow-y: auto;
+}
+
+.wfd-quick-add-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3125rem 0.5rem;
+    border-radius: var(--bs-border-radius-sm);
+    font-size: 0.8125rem;
+    cursor: pointer;
+}
+
+.wfd-quick-add-item.active {
+    background-color: var(--bs-primary-bg-subtle);
+    color: var(--bs-primary-text-emphasis);
+}
+
+.wfd-quick-add-item > i {
+    width: 1rem;
+    text-align: center;
+}
+
+.wfd-quick-add-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.wfd-quick-add-category {
+    color: var(--bs-secondary-color);
+    font-size: 0.6875rem;
+}
+
+/* An unconnected outcome shows that a click adds the next activity. */
+.wfd-port:not(:disabled):not(.is-connected):hover .wfd-port-dot {
+    transform: none;
+    width: 17px;
+    height: 17px;
+    right: -9px;
+    margin-top: -8.5px;
+    background-color: var(--bs-success);
+}
+
+.wfd-port:not(:disabled):not(.is-connected):hover .wfd-port-dot::after {
+    content: "+";
+    position: absolute;
+    inset: 0;
+    color: var(--bs-white);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 13px;
+    text-align: center;
+}
+
+/* An empty workflow offers the events it can start with. */
+.wfd-start-picker {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 5;
+    width: min(36rem, calc(100% - 2rem));
+    padding: 1.25rem;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius-lg);
+    background-color: var(--bs-body-bg);
+    box-shadow: var(--bs-box-shadow);
+    text-align: center;
+    transform: translate(-50%, -50%);
+    /* A drop on its empty space reaches the canvas. */
+    pointer-events: none;
+}
+
+.wfd-canvas-host:has(.wfd-start-picker) .wfd-empty {
+    display: none;
+}
+
+.wfd-start-picker-title {
+    margin: 0 0 0.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.wfd-start-picker-hint {
+    margin: 0 0 1rem;
+    color: var(--bs-secondary-color);
+    font-size: 0.875rem;
+}
+
+.wfd-start-picker-events {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    gap: 0.5rem;
+}
+
+.wfd-start-picker-event {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 0.75rem;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    font-size: 0.875rem;
+    text-align: start;
+}
+
+.wfd-start-picker-event:hover,
+.wfd-start-picker-event:focus-visible {
+    border-color: var(--bs-primary);
+    background-color: var(--bs-primary-bg-subtle);
+}
+
+.wfd-start-picker-event > i {
+    color: var(--bs-warning-text-emphasis);
+}
+
 /* The notice and the zoom controls stay above the activity's panel when it opens over the canvas. */
 .wfd-hidden-notice {
     position: absolute;

@@ -3,7 +3,7 @@ import { flushPromises, mount } from "@vue/test-utils";
 import ActivityPanel from "../ActivityPanel.vue";
 import { createDesignerStore } from "../../state/designerStore";
 import { transitionKey } from "../../state/commands";
-import { clearSelection, selectNode } from "../../canvas/useConnect";
+import { clearSelection, selectNode, showActivity } from "../../canvas/useConnect";
 import { clearToasts, useToasts } from "../../ui/toasts";
 import type { DesignerApi } from "../../api/designerApi";
 import { createDefinition, createNode } from "../../canvas/__tests__/fixtures";
@@ -41,7 +41,7 @@ describe("ActivityPanel", () => {
 
         expect(panel.isVisible()).toBe(false);
 
-        selectNode(store, "a");
+        showActivity(store, "a");
         await flushPromises();
 
         expect(panel.isVisible()).toBe(true);
@@ -51,9 +51,25 @@ describe("ActivityPanel", () => {
         expect((wrapper.get("input[name='Task.Value']").element as HTMLInputElement).value).toBe("a");
     });
 
+    it("selection_WithoutAClick_LoadsTheEditorButKeepsThePanelClosedUntilAskedFor", async () => {
+        const { store, api, wrapper } = setup();
+
+        // Tabbing to an activity, or dragging it, selects it without opening its panel.
+        selectNode(store, "a");
+        await flushPromises();
+
+        expect(api.getEditor).toHaveBeenCalledWith("a");
+        expect(wrapper.get("[data-cy=activity-panel]").isVisible()).toBe(false);
+
+        store.state.activityPanelRequested = true;
+        await flushPromises();
+
+        expect(wrapper.get("[data-cy=activity-panel]").isVisible()).toBe(true);
+    });
+
     it("selection_Cleared_ClosesThePanel", async () => {
         const { store, wrapper } = setup();
-        selectNode(store, "a");
+        showActivity(store, "a");
         await flushPromises();
 
         clearSelection(store);
@@ -64,7 +80,7 @@ describe("ActivityPanel", () => {
 
     it("selection_SeveralActivities_ClosesThePanel", async () => {
         const { store, wrapper } = setup();
-        selectNode(store, "a");
+        showActivity(store, "a");
         await flushPromises();
 
         selectNode(store, "b", true);
@@ -75,7 +91,7 @@ describe("ActivityPanel", () => {
 
     it("pin_Toggle_KeepsThePanelOpenBelowTheCanvasAndIsRemembered", async () => {
         const { store, api, wrapper } = setup();
-        selectNode(store, "a");
+        showActivity(store, "a");
         await flushPromises();
         const panel = wrapper.get("[data-cy=activity-panel]");
 
@@ -92,7 +108,7 @@ describe("ActivityPanel", () => {
         expect(panel.isVisible()).toBe(true);
         expect(wrapper.find("[data-cy=panel-empty]").exists()).toBe(true);
 
-        selectNode(store, "a");
+        showActivity(store, "a");
         selectNode(store, "b", true);
         await flushPromises();
 
@@ -108,7 +124,7 @@ describe("ActivityPanel", () => {
         const { store, api, wrapper } = setup((id) =>
             Promise.resolve({ valid: true, revision: 3, node: createNode(id as string, { x: 600 }), removedTransitions: [], issues: [] }),
         );
-        selectNode(store, "a");
+        showActivity(store, "a");
         await flushPromises();
         await edit(wrapper);
 
@@ -123,7 +139,7 @@ describe("ActivityPanel", () => {
 
     it("delete_Clicked_DropsTheUnappliedChangesAndAsksToDeleteTheActivity", async () => {
         const { store, api, wrapper } = setup();
-        selectNode(store, "a");
+        showActivity(store, "a");
         await flushPromises();
         await edit(wrapper);
 
@@ -141,7 +157,7 @@ describe("ActivityPanel", () => {
         const store = createDesignerStore();
         store.loadDefinition(createDefinition());
         const wrapper = mount(ActivityPanel, { props: { store, api: {} as DesignerApi, readOnly: true }, attachTo: document.body });
-        selectNode(store, "a");
+        showActivity(store, "a");
         await flushPromises();
 
         expect(wrapper.find("[data-cy=activity-panel-delete]").exists()).toBe(false);
@@ -151,7 +167,7 @@ describe("ActivityPanel", () => {
         const { store, wrapper } = setup();
         store.state.variables = [{ name: "greeting", typeName: "string" }];
         store.getNode("a")!.outputs = [{ name: "Result", typeName: "any", displayName: "Result" }];
-        selectNode(store, "a");
+        showActivity(store, "a");
         await flushPromises();
 
         expect(wrapper.findAll(".wfd-activity-panel-header [role=tab]").map((tab) => tab.attributes("data-cy"))).toEqual([
@@ -169,7 +185,7 @@ describe("ActivityPanel", () => {
         expect(outputs.text()).toContain("Result");
 
         // An activity without outputs has no Outputs tab.
-        selectNode(store, "b");
+        showActivity(store, "b");
         await flushPromises();
 
         expect(wrapper.findAll(".wfd-activity-panel-header [role=tab]").map((tab) => tab.attributes("data-cy"))).toEqual(["activity-tab-settings", "activity-tab-data"]);
@@ -177,7 +193,7 @@ describe("ActivityPanel", () => {
 
     it("tabs_Switch_ShowTheSettingsOrTheAvailableData", async () => {
         const { store, wrapper } = setup();
-        selectNode(store, "a");
+        showActivity(store, "a");
         await flushPromises();
 
         const settings = wrapper.get("[data-cy=panel-activity-form]");
@@ -193,7 +209,7 @@ describe("ActivityPanel", () => {
         expect(data.isVisible()).toBe(true);
 
         // Another activity opens on its settings.
-        selectNode(store, "b");
+        showActivity(store, "b");
         await flushPromises();
 
         expect(wrapper.get("[data-cy=activity-tab-settings]").attributes("aria-selected")).toBe("true");
@@ -201,7 +217,7 @@ describe("ActivityPanel", () => {
 
     it("tabs_ArrowKeys_MoveTheSelectionAndTheFocus", async () => {
         const { store, wrapper } = setup();
-        selectNode(store, "a");
+        showActivity(store, "a");
         await flushPromises();
 
         await wrapper.get("[data-cy=activity-tab-settings]").trigger("keydown", { key: "ArrowRight" });
@@ -218,7 +234,7 @@ describe("ActivityPanel", () => {
 
     it("insert_WithAFieldFocused_InsertsInItAndShowsTheSettings", async () => {
         const { store, wrapper } = setup();
-        selectNode(store, "a");
+        showActivity(store, "a");
         await flushPromises();
 
         const input = wrapper.get("input[name='Task.Value']");
@@ -236,11 +252,11 @@ describe("ActivityPanel", () => {
     it("selectionChange_InvalidEditorAndUserKeepsEditing_KeepsTheSelection", async () => {
         const { store, api, wrapper } = setup(() => Promise.resolve({ valid: false, content: '<span class="field-validation-error">Required</span>', scripts: "", styles: "" }));
         vi.spyOn(window, "confirm").mockReturnValue(false);
-        selectNode(store, "a");
+        showActivity(store, "a");
         await flushPromises();
         await edit(wrapper);
 
-        selectNode(store, "b");
+        showActivity(store, "b");
         await flushPromises();
 
         expect(api.postEditor).toHaveBeenCalledTimes(1);
@@ -253,7 +269,7 @@ describe("ActivityPanel", () => {
     it("selectionCleared_InvalidEditorAndUserKeepsEditing_KeepsThePanelOpen", async () => {
         const { store, wrapper } = setup(() => Promise.resolve({ valid: false, content: '<span class="field-validation-error">Required</span>', scripts: "", styles: "" }));
         vi.spyOn(window, "confirm").mockReturnValue(false);
-        selectNode(store, "a");
+        showActivity(store, "a");
         await flushPromises();
         await edit(wrapper);
 
@@ -267,11 +283,11 @@ describe("ActivityPanel", () => {
     it("selectionChange_InvalidEditorAndUserDiscards_MovesToTheNewActivity", async () => {
         const { store, api, wrapper } = setup(() => Promise.resolve({ valid: false, content: '<span class="field-validation-error">Required</span>', scripts: "", styles: "" }));
         vi.spyOn(window, "confirm").mockReturnValue(true);
-        selectNode(store, "a");
+        showActivity(store, "a");
         await flushPromises();
         await edit(wrapper);
 
-        selectNode(store, "b");
+        showActivity(store, "b");
         await flushPromises();
 
         expect(store.state.selectedNodeIds).toEqual(["b"]);
@@ -282,11 +298,11 @@ describe("ActivityPanel", () => {
         const { store, api, wrapper } = setup((id) =>
             Promise.resolve({ valid: true, revision: 3, node: { ...createNode(id as string, { x: 999 }), title: "Applied" }, removedTransitions: [], issues: [] }),
         );
-        selectNode(store, "a");
+        showActivity(store, "a");
         await flushPromises();
         await edit(wrapper);
 
-        selectNode(store, "b");
+        showActivity(store, "b");
         await flushPromises();
 
         expect(api.postEditor).toHaveBeenCalledWith("a", 0, expect.any(FormData));
@@ -307,7 +323,7 @@ describe("ActivityPanel", () => {
                 issues: [],
             }),
         );
-        selectNode(store, "fork");
+        showActivity(store, "fork");
         await flushPromises();
         await edit(wrapper);
 
@@ -334,7 +350,7 @@ describe("ActivityPanel", () => {
                 }),
         );
         const wrapper = mount(ActivityPanel, { props: { store, api, mutate }, attachTo: document.body });
-        selectNode(store, "a");
+        showActivity(store, "a");
         await flushPromises();
         await edit(wrapper);
 
@@ -361,7 +377,7 @@ describe("ActivityPanel", () => {
 
     it("escape_InTheEditor_ReturnsTheFocusToTheActivity", async () => {
         const { store, wrapper } = setup();
-        selectNode(store, "a");
+        showActivity(store, "a");
         await flushPromises();
 
         await wrapper.get("input[name='Task.Value']").trigger("keydown", { key: "Escape" });
@@ -372,7 +388,7 @@ describe("ActivityPanel", () => {
     it("resizer_ArrowKeys_ResizeThePanelWithinTheDesignerAndAreRemembered", async () => {
         const { store, api, wrapper } = setup();
         Object.defineProperty(wrapper.element.parentElement!, "clientHeight", { configurable: true, value: 600 });
-        selectNode(store, "a");
+        showActivity(store, "a");
         await flushPromises();
         const resizer = wrapper.get("[data-cy=activity-panel-resizer]");
 

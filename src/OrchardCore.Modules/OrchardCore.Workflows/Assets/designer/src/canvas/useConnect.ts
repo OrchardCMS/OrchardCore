@@ -103,6 +103,7 @@ export const selectAll = (store: DesignerStore, include: (id: string) => boolean
 export const clearSelection = (store: DesignerStore) => {
     store.state.selectedNodeIds = [];
     store.state.selectedTransitionKey = null;
+    store.state.activityPanelRequested = false;
 };
 
 /**
@@ -118,6 +119,14 @@ export const selectNode = (store: DesignerStore, id: string, toggle = false) => 
     }
 
     store.state.selectedTransitionKey = null;
+};
+
+/**
+ * Selects one activity and shows its panel.
+ */
+export const showActivity = (store: DesignerStore, id: string) => {
+    selectNode(store, id);
+    store.state.activityPanelRequested = true;
 };
 
 export const selectTransition = (store: DesignerStore, key: string) => {

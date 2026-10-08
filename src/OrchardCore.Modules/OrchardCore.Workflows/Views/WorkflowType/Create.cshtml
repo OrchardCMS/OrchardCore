@@ -1,6 +1,12 @@
 @using OrchardCore.Workflows.Models
 @model OrchardCore.Workflows.ViewModels.WorkflowTypePropertiesViewModel
 
+@{
+    // A new workflow only needs a name: the other settings have defaults, and the designer's Workflow tab changes them.
+    // They open when one of them is invalid.
+    var settingsInvalid = ViewData.ModelState.Any(entry => entry.Key != nameof(Model.Name) && entry.Value.Errors.Count > 0);
+}
+
 <zone Name="Title">
     <breadcrumb name="WorkflowTypesCreate" title="@T["Create Workflow"]">
         <breadcrumb-item id="WorkflowTypes" action="Index" controller="WorkflowType" area="OrchardCore.Workflows" permission="@WorkflowsPermissions.ManageWorkflows.Name">@T["Workflows"]</breadcrumb-item>
@@ -11,123 +17,117 @@
 <form asp-action="Create" method="post" class="no-multisubmit">
     <input type="hidden" asp-for="ReturnUrl" />
 
-    <ul class="nav nav-tabs">
-        <li class="nav-item pe-md-2">
-            <a class="nav-link active" id="properties-tab" data-bs-toggle="tab" href="#properties" role="tab" aria-controls="site" aria-selected="true">@T["Properties"]</a>
-        </li>
-        <li class="nav-item pe-md-2">
-            <a class="nav-link" id="advanced-tab" data-bs-toggle="tab" href="#advanced" role="tab" aria-controls="resources">@T["Advanced"]</a>
-        </li>
-    </ul>
-
-    <div class="tab-content" id="tabs">
-        <div class="tab-pane fade show active" id="properties" role="tabpanel" aria-labelledby="properties-tab">
-            <div class="ocat-wrapper" asp-validation-class-for="Name">
-                <label asp-for="Name" class="ocat-label">@T["Name"]</label>
-                <div class="ocat-end">
-                    <input asp-for="Name" class="form-control" autofocus />
-                    <span asp-validation-for="Name" class="text-danger"></span>
-                    <div class="hint">@T["The name of the workflow."]</div>
-                </div>
-            </div>
-
-            <div class="ocat-wrapper">
-                <div class="ocat-end-offset">
-                    <div class="form-check">
-                        <input asp-for="IsEnabled" type="checkbox" class="form-check-input">
-                        <label class="form-check-label" asp-for="IsEnabled">@T["Enabled"]</label>
-                        <span class="hint dashed">@T["Uncheck to prevent workflows of this type from being executed."]</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="ocat-wrapper">
-                <div class="ocat-end-offset">
-                    <div class="form-check">
-                        <input asp-for="IsSingleton" type="checkbox" class="form-check-input">
-                        <label class="form-check-label" asp-for="IsSingleton">@T["Single instance"]</label>
-                        <span class="hint dashed">@T["Check to ensure only one workflow of this type can execute at a time. Leave unchecked to allow any number of workflows to execute at the same time."]</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="ocat-wrapper">
-                <div class="ocat-end-offset">
-                    <div class="form-check">
-                        <input asp-for="DeleteFinishedWorkflows" type="checkbox" class="form-check-input">
-                        <label class="form-check-label" asp-for="DeleteFinishedWorkflows">@T["Delete successfully completed workflows"]</label>
-                        <span class="hint dashed">@T["Check to automatically delete workflows that have completed successfully. Leave unchecked to maintain a history of executed workflows."]</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="ocat-wrapper">
-                <div class="ocat-end-offset">
-                    <div class="form-check">
-                        <input asp-for="IsActivity" type="checkbox" class="form-check-input">
-                        <label class="form-check-label" asp-for="IsActivity">@T["Usable as an activity"]</label>
-                        <span class="hint dashed">@T["Check to let other workflows run this one with the Execute Workflow task. Its variables marked as inputs and outputs are what they pass and get back."]</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="ocat-wrapper">
-                <label asp-for="BranchingMode" class="ocat-label">@T["Outcomes with several transitions"]</label>
-                <div class="ocat-end">
-                    <select asp-for="BranchingMode" class="form-select">
-                        <option value="@WorkflowBranchingMode.FirstOnly">@T["Follow the first transition only"]</option>
-                        <option value="@WorkflowBranchingMode.All">@T["Follow every transition"]</option>
-                    </select>
-                    <span class="hint">@T["Follow every transition to run several branches from one outcome without a Fork activity. With the first transition only, the other transitions of an outcome are ignored."]</span>
-                </div>
-            </div>
-
-            <div class="ocat-wrapper">
-                <div class="ocat-end-offset">
-                    <div class="form-check">
-                        <input asp-for="FaultOnScriptErrors" type="checkbox" class="form-check-input">
-                        <label class="form-check-label" asp-for="FaultOnScriptErrors">@T["Fault the workflow on script errors"]</label>
-                        <span class="hint dashed">@T["Check to fault an instance at the activity whose script failed, so it can be retried. Leave unchecked to go on with what the script fell back to; the error shows on the instance's page."]</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="ocat-wrapper">
-                <div class="ocat-end-offset">
-                    <div class="form-check">
-                        <input asp-for="RecordActivityData" type="checkbox" class="form-check-input">
-                        <label class="form-check-label" asp-for="RecordActivityData">@T["Record activity data"]</label>
-                        <span class="hint dashed">@T["Check to record, in the journal of each instance, the expressions each activity evaluated, the outputs it set, the variables it changed and its last result, to see what a run did. Values can be large or sensitive (personal data, keys), so leave it unchecked when they shouldn't be stored."]</span>
-                    </div>
-                </div>
-            </div>
-
-            <div><span asp-validation-for="LockTimeout" class="text-danger">@T["Invalid lock timeout value in the advanced tab"]</span></div>
-            <div><span asp-validation-for="LockExpiration" class="text-danger">@T["Invalid lock expiration value in the advanced tab"]</span></div>
-        </div>
-
-        <div class="tab-pane fade" id="advanced" role="tabpanel" aria-labelledby="advanced-tab">
-            <div class="ocat-wrapper">
-                <label asp-for="LockTimeout" class="ocat-label">@T["Lock timeout (ms)"]</label>
-                <div class="ocat-end">
-                    <input asp-for="LockTimeout" type="number" max="30000" class="form-control">
-                    <span class="hint">@T["The timeout in milliseconds to acquire a lock before resuming a given workflow instance of this type atomically. Leave it to zero to not use any locking."]</span>
-                </div>
-            </div>
-
-            <div class="ocat-wrapper">
-                <label asp-for="LockExpiration" class="ocat-label">@T["Lock expiration (ms)"]</label>
-                <div class="ocat-end">
-                    <input asp-for="LockExpiration" type="number" max="30000" class="form-control">
-                    <span class="hint">@T["The expiration in milliseconds of the lock acquired before resuming a workflow instance of this type atomically. Leave it to zero to not use any locking."]</span>
-                </div>
-            </div>
+    <div class="ocat-wrapper" asp-validation-class-for="Name">
+        <label asp-for="Name" class="ocat-label ocat-label-required">@T["Name"]</label>
+        <div class="ocat-end">
+            <input asp-for="Name" class="form-control" autofocus />
+            <span asp-validation-for="Name" class="text-danger"></span>
+            <span class="hint">@T["What the workflow does, such as \"Notify the editors when an article is published\"."]</span>
         </div>
     </div>
 
+    <details class="ocat-wrapper" open="@settingsInvalid" data-cy="create-more-settings">
+        <summary class="ocat-end-offset">@T["More settings"]</summary>
+
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
+                <span class="hint">@T["The defaults suit most workflows. You can change these settings later, on the designer's Workflow tab."]</span>
+            </div>
+        </div>
+
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
+                <div class="form-check">
+                    <input asp-for="IsEnabled" type="checkbox" class="form-check-input">
+                    <label class="form-check-label" asp-for="IsEnabled">@T["Enabled"]</label>
+                    <span class="hint dashed">@T["Uncheck to prevent workflows of this type from being executed."]</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
+                <div class="form-check">
+                    <input asp-for="IsSingleton" type="checkbox" class="form-check-input">
+                    <label class="form-check-label" asp-for="IsSingleton">@T["Single instance"]</label>
+                    <span class="hint dashed">@T["Check to ensure only one workflow of this type can execute at a time. Leave unchecked to allow any number of workflows to execute at the same time."]</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
+                <div class="form-check">
+                    <input asp-for="DeleteFinishedWorkflows" type="checkbox" class="form-check-input">
+                    <label class="form-check-label" asp-for="DeleteFinishedWorkflows">@T["Delete successfully completed workflows"]</label>
+                    <span class="hint dashed">@T["Check to automatically delete workflows that have completed successfully. Leave unchecked to maintain a history of executed workflows."]</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
+                <div class="form-check">
+                    <input asp-for="IsActivity" type="checkbox" class="form-check-input">
+                    <label class="form-check-label" asp-for="IsActivity">@T["Usable as an activity"]</label>
+                    <span class="hint dashed">@T["Check to let other workflows run this one with the Execute Workflow task. Its variables marked as inputs and outputs are what they pass and get back."]</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="ocat-wrapper">
+            <label asp-for="BranchingMode" class="ocat-label">@T["Outcomes with several transitions"]</label>
+            <div class="ocat-end">
+                <select asp-for="BranchingMode" class="form-select">
+                    <option value="@WorkflowBranchingMode.FirstOnly">@T["Follow the first transition only"]</option>
+                    <option value="@WorkflowBranchingMode.All">@T["Follow every transition"]</option>
+                </select>
+                <span class="hint">@T["Follow every transition to run several branches from one outcome without a Fork activity. With the first transition only, the other transitions of an outcome are ignored."]</span>
+            </div>
+        </div>
+
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
+                <div class="form-check">
+                    <input asp-for="FaultOnScriptErrors" type="checkbox" class="form-check-input">
+                    <label class="form-check-label" asp-for="FaultOnScriptErrors">@T["Fault the workflow on script errors"]</label>
+                    <span class="hint dashed">@T["Check to fault an instance at the activity whose script failed, so it can be retried. Leave unchecked to go on with what the script fell back to; the error shows on the instance's page."]</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
+                <div class="form-check">
+                    <input asp-for="RecordActivityData" type="checkbox" class="form-check-input">
+                    <label class="form-check-label" asp-for="RecordActivityData">@T["Record activity data"]</label>
+                    <span class="hint dashed">@T["Check to record, in the journal of each instance, the expressions each activity evaluated, the outputs it set, the variables it changed and its last result, to see what a run did. Values can be large or sensitive (personal data, keys), so leave it unchecked when they shouldn't be stored."]</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="ocat-limited-wrapper" asp-validation-class-for="LockTimeout">
+            <label asp-for="LockTimeout" class="ocat-label">@T["Lock timeout (ms)"]</label>
+            <div class="ocat-limited">
+                <input asp-for="LockTimeout" type="number" max="30000" class="form-control">
+                <span asp-validation-for="LockTimeout" class="text-danger"></span>
+                <span class="hint">@T["The timeout in milliseconds to acquire a lock before resuming a given workflow instance of this type atomically. Leave it to zero to not use any locking."]</span>
+            </div>
+        </div>
+
+        <div class="ocat-limited-wrapper" asp-validation-class-for="LockExpiration">
+            <label asp-for="LockExpiration" class="ocat-label">@T["Lock expiration (ms)"]</label>
+            <div class="ocat-limited">
+                <input asp-for="LockExpiration" type="number" max="30000" class="form-control">
+                <span asp-validation-for="LockExpiration" class="text-danger"></span>
+                <span class="hint">@T["The expiration in milliseconds of the lock acquired before resuming a workflow instance of this type atomically. Leave it to zero to not use any locking."]</span>
+            </div>
+        </div>
+    </details>
+
     <div class="ocat-wrapper">
         <div class="ocat-end-offset">
-            <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+            <button class="btn btn-primary save" type="submit">@T["Create and open the designer"]</button>
             <a class="btn btn-secondary cancel" role="button" href="@Model.ReturnUrl">@T["Cancel"]</a>
         </div>
     </div>

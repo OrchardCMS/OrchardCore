@@ -24,6 +24,8 @@ By connecting activities, you are effectively creating a program that can be exe
 
 Workflow definitions are edited in the workflow designer: open **Workflows** in the admin menu, then select a workflow. The designer takes the whole page: its toolbar shows the name of the workflow, after a **Workflows** link back to the list.
 
+**Create Workflow** only asks for a name; the other settings have defaults, under **More settings**, and the designer's **Workflow** tab changes them later. A new workflow starts empty, and offers the common events to start it with: a workflow runs when something happens, so its first activity is an event.
+
 In the list of workflows, **Edit** opens the designer, and each workflow's **Actions** menu can **Clone** it (with a new name and its own settings), **Export** it as a recipe, or **Delete** it. The settings of a workflow, such as its name or whether it is enabled, are edited on the designer's **Workflow** tab.
 
 ![The workflow designer](docs/workflow-designer.png)
@@ -31,7 +33,8 @@ In the list of workflows, **Edit** opens the designer, and each workflow's **Act
 The designer has four areas. What concerns the whole workflow is on the right, and what concerns the selected activity is below the canvas:
 
 - **Activities** (on the left) lists the activities you can add, grouped by category. Search them by name or category, or show only events or tasks. Drag an activity onto the canvas, or click it to add it in the middle of the view.
-- **The canvas** (in the middle) shows the activities and the transitions between them. Each activity shows its type, its settings, and one port per outcome.
+- **The canvas** (in the middle) shows the activities and the transitions between them. Each activity shows its type, its settings, and one port per outcome. Transitions are drawn with right angles, around the activity they leave.
+    - Click the port of an outcome that leads nowhere yet (it shows a **+**) to add the next activity: pick it in the list (type to search), and it's added to the right, already connected.
     - Drag from an outcome's port to another activity to connect them. An outcome has at most one transition, so connecting it again replaces its previous transition.
     - Start activities show a **Start** badge, and activities with problems show their number of issues.
     - Right-click an activity, a transition or the canvas for more actions, such as making an event the start activity.
@@ -39,12 +42,12 @@ The designer has four areas. What concerns the whole workflow is on the right, a
     - **Variables**: the [variables](#variables) of the workflow, with their types and default values.
     - **Workflow**: the settings of the workflow: its name, whether it is enabled, whether it is a singleton, its lock settings, and whether finished instances are deleted.
     - **Issues**: the problems found in the workflow, errors first. Select one to go to its activity.
-- **The activity panel** (at the bottom of the canvas) opens when you select an activity, and closes when you click away from it, on the canvas, or press **Close**. Double-click an activity, or select it and press Enter, to move to its first field. It has up to three tabs:
+- **The activity panel** (at the bottom of the canvas) opens when you click an activity, and closes when you click away from it, on the canvas, or press **Close**. Moving activities around doesn't open it, and closes it while you move them. Double-click an activity, or select it and press Enter, to open it on its first field. It has up to three tabs:
     - **Settings**: the editor of the activity.
     - **Outputs**: for an activity that produces values, each value with its type, and the [variable](#variables) to **Store in**, which the activities after it read. The variables of a type the value may not convert to are listed apart.
     - **Available data**: what the activity's expressions can read (see [Available Data](#available-data)).
 
-The activity panel opens over the bottom of the canvas, without moving the workflow. Drag its top edge to resize it. Its **Delete** button deletes the activity, which the toast that follows can undo, as the Delete key does. **Pin** it to keep it open below the canvas, which then gets shorter, whether an activity is selected or not.
+The activity panel opens over the bottom of the canvas, without moving the workflow; the canvas only pans when the activity would be under the panel. Drag its top edge to resize it. Its **Delete** button deletes the activity, which the toast that follows can undo, as the Delete key does. **Pin** it to keep it open below the canvas, which then gets shorter, whether an activity is selected or not.
 
 The activities pane and the workflow panel can be collapsed to a narrow rail, to give the canvas more room. Hover a rail to open its pane over the canvas, or click it to expand the pane again. The workflow panel's rail shows its tabs, so you can go straight to one of them. The width of the workflow panel, the height of the activity panel, whether it is pinned and whether each pane is collapsed are remembered in your browser.
 

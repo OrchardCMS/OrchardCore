@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import type { DesignerConfig } from "./config";
 import { DesignerApiError, withQuery, type DesignerApi } from "./api/designerApi";
 import type { DesignIssue, DesignerVersion, Library, RetryResult } from "./api/types";
@@ -9,6 +9,8 @@ import DesignerCanvas from "./canvas/DesignerCanvas.vue";
 import ActivityToolbox from "./toolbox/ActivityToolbox.vue";
 import WorkflowPanel from "./panel/WorkflowPanel.vue";
 import ActivityPanel from "./panel/ActivityPanel.vue";
+import QuickAddMenu from "./canvas/QuickAddMenu.vue";
+import StartPicker from "./canvas/StartPicker.vue";
 import { startVariableCompletions } from "./variables/variableCompletions";
 import { upstreamValues } from "./available/availableData";
 import ToastHost from "./ui/ToastHost.vue";
@@ -28,9 +30,9 @@ import { showToast } from "./ui/toasts";
 import { confirmAction } from "./ui/confirm";
 import { usePeek } from "./ui/usePeek";
 import { readPreference, writePreference } from "./ui/preferences";
-import { selectNode } from "./canvas/useConnect";
+import { connectOutcome, selectNode, showActivity } from "./canvas/useConnect";
 import { scriptErrorsByActivity } from "./canvas/scriptErrors";
-import { DEFAULT_NODE_HEIGHT, NODE_WIDTH, snap, type Point } from "./canvas/geometry";
+import { DEFAULT_NODE_HEIGHT, NODE_WIDTH, findFreeSpot, nodeRect, snap, type Point } from "./canvas/geometry";
 import { t } from "./i18n";
 
 const props = withDefaults(defineProps<{ config: DesignerConfig; api: DesignerApi; store?: DesignerStore }>(), {
@@ -76,6 +78,19 @@ const setToolboxCollapsed = (value: boolean) => {
     toolboxCollapsed.value = value;
     toolboxPeek.close();
     writePreference(TOOLBOX_COLLAPSED_KEY, String(value));
+};
+
+// While an activity is dragged from the toolbox, the toolbox stays open and the canvas takes the whole drop.
+const draggingActivity = ref(false);
+
+const onToolboxDragStart = () => {
+    draggingActivity.value = true;
+    toolboxPeek.hold();
+};
+
+const onToolboxDragEnd = () => {
+    draggingActivity.value = false;
+    toolboxPeek.release();
 };
 
 const closeToolboxPeek = () => {
@@ -125,6 +140,16 @@ const showBanner = computed(
 const editActivity = (activityId: string) => {
     void activityPanel.value?.open(activityId, { focus: true });
 };
+
+// The activity panel opens over the bottom of the canvas: the selected activity stays in view above it.
+watch(
+    () => [activityPanel.value?.coveredHeight ?? 0, state.selectedNodeIds.length === 1 ? state.selectedNodeIds[0] : null] as const,
+    ([covered, activityId]) => {
+        if (covered > 0 && activityId) {
+            canvas.value?.keepVisible(activityId, covered);
+        }
+    },
+);
 
 const returnFocus = (activityId: string) => {
     canvas.value?.focusNode(activityId);
@@ -232,7 +257,7 @@ const loadLibrary = async () => {
  * Adds an activity with its top-left corner at `position` (canvas coordinates, snapped to the grid). The
  * activity is created on the server first, so it has an id and properties; the canvas change is undoable.
  */
-const addActivity = async (activityName: string, position: Point) => {
+const addActivity = async (activityName: string, position: Point): Promise<string | null> => {
     try {
         const result = await mutate((revision) => props.api.addActivity(revision, activityName, snap(position.x), snap(position.y)));
 
@@ -246,8 +271,64 @@ const addActivity = async (activityName: string, position: Point) => {
         if (result.node.hasEditor) {
             void activityPanel.value?.open(result.node.id);
         }
+
+        canvas.value?.keepVisible(result.node.id, activityPanel.value?.coveredHeight ?? 0);
+
+        return result.node.id;
     } catch (error) {
         onRequestError(error, t("AddActivityFailed"));
+
+        return null;
+    }
+};
+
+// Clicking an outcome that leads nowhere yet offers the activities to add after it.
+const main = ref<HTMLElement | null>(null);
+const quickAdd = ref<{ sourceId: string; outcome: string; outcomeLabel: string; left: number; top: number } | null>(null);
+
+const onAddAfter = (sourceId: string, outcome: string, clientX: number, clientY: number) => {
+    const source = props.store.getNode(sourceId);
+    const bounds = main.value?.getBoundingClientRect();
+
+    if (!source || !bounds) {
+        return;
+    }
+
+    // Beside the port, within the canvas area.
+    const left = Math.max(8, Math.min(clientX - bounds.left + 12, bounds.width - 320));
+    const top = Math.max(8, Math.min(clientY - bounds.top - 16, bounds.height - 340));
+
+    quickAdd.value = { sourceId, outcome, outcomeLabel: source.outcomes.find((item) => item.name === outcome)?.displayName ?? outcome, left, top };
+};
+
+/**
+ * Adds the activity picked after the outcome: to the right of its activity, below the cards in the way, connected to it.
+ */
+const onQuickAddPick = async (activityKey: string) => {
+    const target = quickAdd.value;
+    quickAdd.value = null;
+    const source = target ? props.store.getNode(target.sourceId) : undefined;
+
+    if (!target || !source) {
+        return;
+    }
+
+    const sourceRect = nodeRect(source, canvas.value?.layoutOf(source.id));
+    const rects = state.nodes.map((node) => nodeRect(node, canvas.value?.layoutOf(node.id)));
+    const position = findFreeSpot({ x: sourceRect.x + sourceRect.width + 100, y: sourceRect.y }, { width: NODE_WIDTH, height: DEFAULT_NODE_HEIGHT }, rects);
+    const activityId = await addActivity(activityKey, position);
+
+    if (activityId) {
+        connectOutcome(props.store, { sourceActivityId: source.id, sourceOutcomeName: target.outcome, destinationActivityId: activityId });
+    }
+};
+
+const onQuickAddCancel = () => {
+    const target = quickAdd.value;
+    quickAdd.value = null;
+
+    if (target) {
+        canvas.value?.focusNode(target.sourceId);
     }
 };
 
@@ -327,7 +408,7 @@ const onPublishIssueSelected = (issue: DesignIssue) => {
     publishDialog.value = null;
 
     if (issue.activityId) {
-        selectNode(props.store, issue.activityId);
+        showActivity(props.store, issue.activityId);
         focusActivity(issue.activityId);
     }
 };
@@ -687,8 +768,8 @@ defineExpose({ canvas, panel, activityPanel, addActivity, autosave, publish, dis
                     v-show="!toolboxCollapsed || toolboxPeeking"
                     class="wfd-toolbox-sheet"
                     data-cy="toolbox-sheet"
-                    @dragstart="toolboxPeek.hold()"
-                    @dragend="toolboxPeek.release()"
+                    @dragstart="onToolboxDragStart"
+                    @dragend="onToolboxDragEnd"
                 >
                     <div class="wfd-toolbox-header">
                         <h3 class="wfd-toolbox-title" :title="t('ActivitiesHint')">{{ t("Activities") }}</h3>
@@ -711,15 +792,39 @@ defineExpose({ canvas, panel, activityPanel, addActivity, autosave, publish, dis
             </aside>
 
             <!-- The canvas, with the selected activity's panel over it, or below it when pinned. -->
-            <div class="wfd-main" :style="{ '--wfd-covered-height': `${activityPanel?.coveredHeight ?? 0}px` }">
+            <div ref="main" class="wfd-main" :style="{ '--wfd-covered-height': `${activityPanel?.coveredHeight ?? 0}px` }">
                 <section class="wfd-canvas-host" :aria-label="t('Canvas')" :aria-busy="loading" data-cy="designer-canvas">
                     <div v-if="loading" class="wfd-message">
                         <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
                         {{ t("Loading") }}
                     </div>
                     <div v-else-if="loadError" class="wfd-message text-danger" role="alert">{{ loadError }}</div>
-                    <DesignerCanvas v-else ref="canvas" :store="store" :read-only="config.readOnly" @edit="editActivity" @drop-activity="onDropActivity" />
+                    <DesignerCanvas
+                        v-else
+                        ref="canvas"
+                        :store="store"
+                        :read-only="config.readOnly"
+                        @edit="editActivity"
+                        @drop-activity="onDropActivity"
+                        @add-after="onAddAfter"
+                    />
+                    <!-- An empty workflow starts with an event: the common ones are offered. -->
+                    <StartPicker
+                        v-if="!config.readOnly && !loading && !loadError && state.nodes.length === 0 && !draggingActivity"
+                        :library="library"
+                        @pick="onAddActivity"
+                    />
                 </section>
+
+                <QuickAddMenu
+                    v-if="quickAdd"
+                    :library="library"
+                    :outcome="quickAdd.outcomeLabel"
+                    :left="quickAdd.left"
+                    :top="quickAdd.top"
+                    @pick="onQuickAddPick"
+                    @cancel="onQuickAddCancel"
+                />
 
                 <ActivityPanel
                     v-if="!loading && !loadError"
