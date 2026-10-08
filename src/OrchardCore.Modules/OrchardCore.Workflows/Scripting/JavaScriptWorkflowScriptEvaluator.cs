@@ -42,7 +42,7 @@ public class JavaScriptWorkflowScriptEvaluator : IWorkflowScriptEvaluator
             var methodProviders = scopedMethodProviders.Concat(expressionContext.ScopedMethodProviders);
 
             // Some types cannot be cast (e.g., null to bool), so we need to catch the exception and return the default value.
-            return (T)await _scriptingManager.EvaluateAsync(directive, null, null, methodProviders);
+            return (T)await _scriptingManager.EvaluateAsync(directive, null, null, methodProviders, workflowContext.CancellationToken);
         }
         catch (Exception ex) when (!IsStoppedEvaluation(ex))
         {
