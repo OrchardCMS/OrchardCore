@@ -1159,12 +1159,22 @@ public sealed class WorkflowDesignerController : Controller
 
         var httpRequest = starts.FirstOrDefault(activity => activity.Name == HttpRequestEvent.EventName);
 
+        if (httpRequest is null)
+        {
+            return new WorkflowDesignerRun { IsEnabled = workflowType.IsEnabled };
+        }
+
+        // What the activities read from the request, which the dialog asks for.
+        var (queryParameters, formFields) = WorkflowRequestNames.Find(workflowType.Activities);
+
         return new WorkflowDesignerRun
         {
-            Mode = httpRequest is null ? null : WorkflowDesignerRun.HttpMode,
+            Mode = WorkflowDesignerRun.HttpMode,
             IsEnabled = workflowType.IsEnabled,
-            ActivityId = httpRequest?.ActivityId,
-            HttpMethod = httpRequest?.Properties?[nameof(HttpRequestEvent.HttpMethod)]?.GetValue<string>() ?? "GET",
+            ActivityId = httpRequest.ActivityId,
+            HttpMethod = httpRequest.Properties?[nameof(HttpRequestEvent.HttpMethod)]?.GetValue<string>() ?? "GET",
+            QueryParameters = queryParameters,
+            FormFields = formFields,
         };
     }
 

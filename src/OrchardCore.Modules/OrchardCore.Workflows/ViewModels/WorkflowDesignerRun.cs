@@ -40,6 +40,16 @@ public sealed class WorkflowDesignerRun
     public string HttpMethod { get; init; }
 
     /// <summary>
+    /// The query string parameters the published version reads from the request, in <see cref="HttpMode"/>.
+    /// </summary>
+    public IReadOnlyList<string> QueryParameters { get; init; } = [];
+
+    /// <summary>
+    /// The form fields the published version reads from the request, in <see cref="HttpMode"/>.
+    /// </summary>
+    public IReadOnlyList<string> FormFields { get; init; } = [];
+
+    /// <summary>
     /// The input variables of the published version, in <see cref="InputsMode"/>.
     /// </summary>
     public IReadOnlyList<WorkflowVariableDefinition> Inputs { get; init; } = [];

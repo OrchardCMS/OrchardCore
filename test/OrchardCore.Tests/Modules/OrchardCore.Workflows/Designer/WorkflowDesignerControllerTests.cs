@@ -1257,7 +1257,17 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
     [Fact]
     public async Task Run_HttpOrDisabledWorkflow_IsRefused()
     {
-        var (httpId, _) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true, properties: new JsonObject { ["HttpMethod"] = "POST" }));
+        var (httpId, _) = await CreateWorkflowTypeAsync(
+            Activity("start", "HttpRequestEvent", isStart: true, properties: new JsonObject { ["HttpMethod"] = "POST" }),
+            Activity("read", "SetPropertyTask", properties: new JsonObject
+            {
+                ["PropertyName"] = "Order",
+                ["Value"] = new JsonObject { ["Expression"] = "queryString('size') + requestForm(\"note\") + queryString('size')", ["Syntax"] = "JavaScript" },
+            }),
+            Activity("reply", "HttpResponseTask", properties: new JsonObject
+            {
+                ["Content"] = new JsonObject { ["Expression"] = "{{ Request.QueryString[\"color\"] }} {{ Request.Form.city }}" },
+            }));
         var (disabledId, disabledWorkflowTypeId) = await CreateWorkflowTypeAsync(Activity("start", "StartedByWorkflowEvent", isStart: true));
 
         await _fixture.Context.UsingTenantScopeAsync(async scope =>
@@ -1272,6 +1282,10 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         var run = (await GetJsonAsync($"Admin/Workflows/Types/{httpId}/Designer/Definition"))["run"];
         Assert.Equal("http", run["mode"].GetValue<string>());
         Assert.Equal("POST", run["httpMethod"].GetValue<string>());
+
+        // The values its expressions read from the request, once each.
+        Assert.Equal(["size", "color"], run["queryParameters"].AsArray().Select(name => name.GetValue<string>()));
+        Assert.Equal(["note", "city"], run["formFields"].AsArray().Select(name => name.GetValue<string>()));
 
         using (var http = await PostJsonAsync($"Admin/Workflows/Types/{httpId}/Designer/Run", new { inputs = new { } }))
         {

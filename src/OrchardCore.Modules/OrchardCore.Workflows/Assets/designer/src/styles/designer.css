@@ -1928,3 +1928,19 @@
     margin-bottom: 0.5rem;
     word-break: break-all;
 }
+
+/* The name and value rows of the Run dialog's request. */
+.wfd-name-value {
+    display: grid;
+    grid-template-columns: minmax(8rem, 1fr) 2fr 2rem;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 0.375rem;
+}
+
+.wfd-name-value-name {
+    overflow: hidden;
+    font-size: 0.875rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

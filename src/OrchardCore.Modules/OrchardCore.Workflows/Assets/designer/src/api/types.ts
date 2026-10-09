@@ -213,6 +213,9 @@ export interface DesignerRun {
     activityId?: string | null;
     httpMethod?: string | null;
     inputs: VariableDefinition[];
+    // What the workflow reads from the request, found in its expressions.
+    queryParameters?: string[];
+    formFields?: string[];
 }
 
 // What a run started (WorkflowDesignerRunResult).

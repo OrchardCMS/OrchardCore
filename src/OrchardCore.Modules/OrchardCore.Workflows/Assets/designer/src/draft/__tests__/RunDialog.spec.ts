@@ -82,17 +82,45 @@ describe("RunDialog", () => {
         const sendHttpRequest = vi.fn().mockResolvedValue({ status: 200, body: "big" });
         const { wrapper } = await setup(httpRun, { getLatestInstance, generateHttpUrl, sendHttpRequest });
 
-        await wrapper.get("[data-cy=run-query]").setValue("?size=3");
+        await wrapper.get("[data-cy=run-body-text]").setValue(true);
         await wrapper.get("[data-cy=run-body]").setValue('{ "a": 1 }');
         await wrapper.get("form").trigger("submit");
         await flushPromises();
 
         expect(generateHttpUrl).toHaveBeenCalledWith(7, "request");
-        expect(sendHttpRequest).toHaveBeenCalledWith("/invoke?token=abc&size=3", "POST", '{ "a": 1 }', "application/json");
+        expect(sendHttpRequest).toHaveBeenCalledWith("/invoke?token=abc", "POST", '{ "a": 1 }', "application/json");
         expect(wrapper.get("[data-cy=run-response-status]").text()).toBe("200");
         expect(wrapper.get("[data-cy=run-response-body]").text()).toBe("big");
         expect(wrapper.get("[data-cy=run-status]").text()).toBe("Halted");
         expect(wrapper.get("[data-cy=run-open-instance]").attributes("href")).toBe("/instances/4");
+        wrapper.unmount();
+    });
+
+    it("run_ValuesTheWorkflowReads_AreListedAndSentWithTheOnesAdded", async () => {
+        const sendHttpRequest = vi.fn().mockResolvedValue({ status: 200, body: "" });
+        const { wrapper } = await setup(
+            { ...httpRun, queryParameters: ["size", "color"], formFields: ["note"] },
+            { getLatestInstance: vi.fn().mockResolvedValue({}), generateHttpUrl: vi.fn().mockResolvedValue("/invoke?token=abc"), sendHttpRequest },
+        );
+
+        // The names the workflow reads are listed, and the form fields are the body.
+        expect(wrapper.get("[data-cy=run-query-name-0]").text()).toBe("size");
+        expect(wrapper.get("[data-cy=run-query-name-1]").text()).toBe("color");
+        expect(wrapper.get("[data-cy=run-form-name-0]").text()).toBe("note");
+
+        await wrapper.get("[data-cy=run-query-value-0]").setValue("3");
+        await wrapper.get("[data-cy=run-query-add]").trigger("click");
+        await wrapper.get("[data-cy=run-query-name-2]").setValue("debug");
+        await wrapper.get("[data-cy=run-query-value-2]").setValue("on");
+        await wrapper.get("[data-cy=run-form-value-0]").setValue("Hi there");
+        await wrapper.get("form").trigger("submit");
+        await flushPromises();
+
+        // The color, left empty, isn't sent.
+        expect(sendHttpRequest).toHaveBeenCalledWith("/invoke?token=abc&size=3&debug=on", "POST", "note=Hi+there", "application/x-www-form-urlencoded");
+
+        await wrapper.get("[data-cy=run-query-remove-2]").trigger("click");
+        expect(wrapper.find("[data-cy=run-query-row-2]").exists()).toBe(false);
         wrapper.unmount();
     });
 

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, useId } from "vue";
 import ModalDialog from "../ui/ModalDialog.vue";
+import NameValueRows, { type NameValueRow } from "./NameValueRows.vue";
 import type { DesignerApi } from "../api/designerApi";
 import { DesignerApiError } from "../api/designerApi";
 import type { DesignerRun, HttpRunResponse, RunResult, VariableDefinition } from "../api/types";
@@ -24,7 +25,10 @@ const run = ref<DesignerRun | null>(null);
 const error = ref<string | null>(null);
 // The fields' values: a number input's v-model gives a number.
 const values = reactive<Record<string, string | number | boolean>>({});
-const query = ref("");
+// The request: its query string and its body, as form fields or as text.
+const queryRows = ref<NameValueRow[]>([]);
+const formRows = ref<NameValueRow[]>([]);
+const bodyKind = ref<"form" | "text">("text");
 const body = ref("");
 const contentType = ref("application/json");
 const result = ref<RunResult | null>(null);
@@ -59,6 +63,11 @@ onMounted(async () => {
         for (const variable of run.value?.inputs ?? []) {
             values[variable.name] = fieldKind(variable) === "boolean" ? false : "";
         }
+
+        // The names the workflow reads from the request come first.
+        queryRows.value = (run.value?.queryParameters ?? []).map((name) => ({ name, value: "", isKnown: true }));
+        formRows.value = (run.value?.formFields ?? []).map((name) => ({ name, value: "", isKnown: true }));
+        bodyKind.value = formRows.value.length > 0 ? "form" : "text";
     } catch (failure) {
         error.value = failure instanceof DesignerApiError ? failure.message : t("RunFailed");
     } finally {
@@ -110,16 +119,21 @@ const runWithInputs = async () => {
     }
 };
 
+// The rows that are sent: those with a name, except the ones the workflow reads that were left empty.
+const encode = (rows: NameValueRow[]) =>
+    new URLSearchParams(rows.filter((row) => row.name.trim() !== "" && (!row.isKnown || row.value !== "")).map((row) => [row.name.trim(), row.value])).toString();
+
 const runWithRequest = async () => {
     const before = await props.api.getLatestInstance();
     const url = await props.api.generateHttpUrl(props.workflowTypeId, run.value!.activityId!);
-    const search = query.value.trim().replace(/^\?/, "");
+    const search = encode(queryRows.value);
+    const isForm = bodyKind.value === "form";
 
     response.value = await props.api.sendHttpRequest(
         search ? `${url}${url.includes("?") ? "&" : "?"}${search}` : url,
         run.value!.httpMethod ?? "GET",
-        hasBody.value ? body.value : null,
-        contentType.value,
+        hasBody.value ? (isForm ? encode(formRows.value) : body.value) : null,
+        isForm ? "application/x-www-form-urlencoded" : contentType.value,
     );
 
     // The instance the request started: the newest one, when it's not the one that was newest before.
@@ -201,20 +215,34 @@ const formatValue = (value: unknown) => (typeof value === "string" ? value : JSO
 
                 <template v-else>
                     <p class="wfd-section-hint">{{ t("RunRequestHint", run.httpMethod ?? "GET") }}</p>
-                    <div class="mb-3">
-                        <label :for="`${ids}-query`" class="form-label">{{ t("RunQueryString") }}</label>
-                        <input :id="`${ids}-query`" v-model="query" type="text" class="form-control font-monospace" placeholder="name=value&amp;other=value" data-cy="run-query" />
-                    </div>
-                    <template v-if="hasBody">
-                        <div class="mb-3">
-                            <label :for="`${ids}-content-type`" class="form-label">{{ t("RunContentType") }}</label>
-                            <input :id="`${ids}-content-type`" v-model="contentType" type="text" class="form-control font-monospace" data-cy="run-content-type" />
+                    <fieldset class="mb-3">
+                        <legend class="form-label fs-6">{{ t("RunQueryString") }}</legend>
+                        <p v-if="queryRows.length === 0" class="wfd-section-hint mb-1" data-cy="run-query-none">{{ t("RunNoQueryParameters") }}</p>
+                        <NameValueRows v-model="queryRows" :label="t('RunQueryString')" cy="run-query" />
+                    </fieldset>
+                    <fieldset v-if="hasBody" class="mb-3">
+                        <legend class="form-label fs-6">{{ t("RunBody") }}</legend>
+                        <div class="btn-group btn-group-sm mb-2" role="radiogroup" :aria-label="t('RunBody')">
+                            <input :id="`${ids}-body-form`" v-model="bodyKind" type="radio" class="btn-check" value="form" data-cy="run-body-form" />
+                            <label class="btn btn-outline-secondary" :for="`${ids}-body-form`">{{ t("RunFormFields") }}</label>
+                            <input :id="`${ids}-body-text`" v-model="bodyKind" type="radio" class="btn-check" value="text" data-cy="run-body-text" />
+                            <label class="btn btn-outline-secondary" :for="`${ids}-body-text`">{{ t("RunBodyText") }}</label>
                         </div>
-                        <div class="mb-3">
-                            <label :for="`${ids}-body`" class="form-label">{{ t("RunBody") }}</label>
-                            <textarea :id="`${ids}-body`" v-model="body" class="form-control font-monospace" rows="4" spellcheck="false" data-cy="run-body"></textarea>
-                        </div>
-                    </template>
+                        <NameValueRows v-if="bodyKind === 'form'" v-model="formRows" :label="t('RunFormFields')" cy="run-form" />
+                        <template v-else>
+                            <div class="mb-2">
+                                <label :for="`${ids}-content-type`" class="form-label small">{{ t("RunContentType") }}</label>
+                                <input
+                                    :id="`${ids}-content-type`"
+                                    v-model="contentType"
+                                    type="text"
+                                    class="form-control form-control-sm font-monospace"
+                                    data-cy="run-content-type"
+                                />
+                            </div>
+                            <textarea v-model="body" class="form-control font-monospace" rows="4" spellcheck="false" :aria-label="t('RunBodyText')" data-cy="run-body"></textarea>
+                        </template>
+                    </fieldset>
                 </template>
             </form>
         </template>
