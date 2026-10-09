@@ -31,7 +31,6 @@
         "OrchardCore.Workflows.Timers",
         "WorkflowsSample",
         "OrchardCore.SignalR",
-        "OrchardCore.Workflows.SignalR",
 
         "TheAdmin",
         "SafeMode"

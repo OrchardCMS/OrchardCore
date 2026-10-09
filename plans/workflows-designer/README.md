@@ -121,6 +121,9 @@ The work is pushed to the draft pull request [OrchardCMS/OrchardCore#19996](http
     - **Getting started**: an empty workflow offers the common events (`canvas/StartPicker.vue`), and the create page only asks for a name, the other settings under **More settings**.
     - **Retry from here** moved to the activity panel's header, so it's there whichever tab is open.
     - Tests: geometry routes, the click-versus-drag rule, the quick-add menu, the start picker and the add-after flow; Vitest 295/295, designer functional class 27/27.
+- **From review, after the UX pass (2026-10-08).**
+    - A click on an activity only selects it, to move it around: its panel opens on a double-click, the new settings button of its card (`node-edit`), Enter, the Issues and Journal lists, or when it's added. The viewer still opens it on a click, since nothing moves there.
+    - Real time is no longer a feature of its own: `RealTimeStartup` has `[RequireFeatures("OrchardCore.SignalR")]`, so the workflow pages update live as soon as SignalR is enabled (`OrchardCore.Workflows.SignalR` is gone; it never shipped). The startup now runs in the same feature as the module's main one, in no set order, so the main one registers its default notifier with `TryAddScoped` and never replaces the SignalR one (the real-time functional tests caught it).
 - **CI.** `main` was merged again (`9c9d8a2d1d`); its new cancellation test creates `IfElseTask` with the expression manager.
 
 | Phase | Scope | Depends on | Status |

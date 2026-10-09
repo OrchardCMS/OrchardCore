@@ -18,14 +18,6 @@ using OrchardCore.Modules.Manifest;
 )]
 
 [assembly: Feature(
-    Id = "OrchardCore.Workflows.SignalR",
-    Name = "Workflows Real Time",
-    Description = "Updates the workflow designer and instance pages live: who else is editing, others' changes, and running instances.",
-    Dependencies = ["OrchardCore.Workflows", "OrchardCore.SignalR"],
-    Category = "Workflows"
-)]
-
-[assembly: Feature(
     Id = "OrchardCore.Workflows.Http",
     Name = "HTTP Workflows Activities",
     Description = "Provides HTTP-related services and activities.",

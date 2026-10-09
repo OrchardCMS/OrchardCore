@@ -4,8 +4,8 @@ namespace OrchardCore.Workflows.Services;
 
 /// <summary>
 /// Tells the open designers and instance pages that a workflow type or an instance changed. The default
-/// implementation does nothing; the <c>OrchardCore.Workflows.SignalR</c> feature sends the changes to the
-/// browsers once the request's changes are committed.
+/// implementation does nothing; when <c>OrchardCore.SignalR</c> is enabled, the changes are sent to the browsers
+/// once the request's changes are committed.
 /// </summary>
 public interface IWorkflowDesignerNotifier
 {

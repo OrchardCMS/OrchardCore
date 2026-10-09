@@ -4,7 +4,7 @@ using OrchardCore.Workflows.Services;
 namespace OrchardCore.Workflows.RealTime;
 
 /// <summary>
-/// Whether the <c>OrchardCore.Workflows.SignalR</c> feature is enabled.
+/// Whether the workflow pages update live, which they do when <c>OrchardCore.SignalR</c> is enabled.
 /// </summary>
 public static class WorkflowsRealTime
 {
@@ -14,8 +14,8 @@ public static class WorkflowsRealTime
     public const string HubPath = "/hubs/workflows";
 
     /// <summary>
-    /// Whether the pages connect to <see cref="WorkflowsHub"/>. SignalR's hub contexts resolve for any hub once
-    /// <c>OrchardCore.SignalR</c> is enabled, so this checks the feature's notifier instead.
+    /// Whether the pages connect to <see cref="WorkflowsHub"/>: whether the real-time notifier is registered, which it
+    /// is when <c>OrchardCore.SignalR</c> is enabled.
     /// </summary>
     public static bool IsEnabled(IServiceProvider services)
         => services?.GetService<IWorkflowDesignerNotifier>() is SignalRWorkflowDesignerNotifier;

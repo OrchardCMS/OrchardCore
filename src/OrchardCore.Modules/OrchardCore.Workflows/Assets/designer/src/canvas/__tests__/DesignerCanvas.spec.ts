@@ -37,18 +37,19 @@ describe("DesignerCanvas", () => {
     };
     const windowPointer = (type: string, clientX: number, clientY: number) => pointer(window, type, clientX, clientY);
 
-    it("pointer_ClickOnAnActivity_AsksForItsPanel_ButADragDoesNot", async () => {
+    it("pointer_ClickOrDragOnAnActivity_SelectsItWithoutOpeningItsPanel", async () => {
         const { store, wrapper } = setup();
         const fork = wrapper.get("[data-cy=activity-fork]");
 
-        // A click (pressed and released without moving) shows the panel.
+        // A click selects the activity, to move it around; its panel opens on a double-click or its Edit button.
         pointer(fork.element, "pointerdown", 100, 100);
         windowPointer("pointerup", 100, 100);
 
         expect(store.state.selectedNodeIds).toEqual(["fork"]);
-        expect(store.state.activityPanelRequested).toBe(true);
+        expect(store.state.activityPanelRequested).toBe(false);
 
-        // Moving it closes the panel, and selecting another activity by dragging it doesn't open its panel.
+        // Moving an activity whose panel is open closes it, and dragging another activity doesn't open its panel.
+        store.state.activityPanelRequested = true;
         pointer(fork.element, "pointerdown", 100, 100);
         windowPointer("pointermove", 160, 140);
         windowPointer("pointerup", 160, 140);

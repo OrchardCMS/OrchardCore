@@ -92,6 +92,18 @@ describe("ActivityNode", () => {
         expect(wrapper.emitted("open-menu")).toEqual([[null]]);
     });
 
+    it("editButton_Clicked_EmitsEditWithoutAPointerDownOnTheNode", async () => {
+        const wrapper = mount(ActivityNode, { props: { node: createNode("n1") } });
+
+        await wrapper.get("[data-cy=node-edit]").trigger("pointerdown");
+        await wrapper.get("[data-cy=node-edit]").trigger("click");
+
+        // The button doesn't start a drag of the node.
+        expect(wrapper.emitted("node-pointerdown")).toBeUndefined();
+        expect(wrapper.emitted("edit")).toHaveLength(1);
+        expect(mount(ActivityNode, { props: { node: createNode("n2"), readOnly: true } }).find("[data-cy=node-edit]").exists()).toBe(false);
+    });
+
     it("keyboard_ReadOnly_DoesNotEmitEdit", async () => {
         const wrapper = mount(ActivityNode, { props: { node: createNode("n1"), readOnly: true } });
 

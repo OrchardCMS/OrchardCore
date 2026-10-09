@@ -9,7 +9,8 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.RealTime;
 
-[Feature("OrchardCore.Workflows.SignalR")]
+// The workflow pages update live as soon as SignalR is enabled: who else is editing, others' changes, and running instances.
+[RequireFeatures("OrchardCore.SignalR")]
 public sealed class RealTimeStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)

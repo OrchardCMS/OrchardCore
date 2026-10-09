@@ -149,6 +149,8 @@ public sealed class WorkflowsDesignerJSLocalizer : IJSLocalizer
             { "UnpinActivityPanel", S["Open the activity panel over the canvas only while an activity is selected"].Value },
             { "CloseActivityPanel", S["Close the activity panel"].Value },
             { "DeleteActivity", S["Delete the activity"].Value },
+            { "OpenActivitySettings", S["Settings (or double-click the activity)"].Value },
+            { "OpenActivitySettingsOf", S["Open the settings of {0}"].Value },
             { "RunsTab", S["Runs"].Value },
             { "RunsTabHint", S["Each time the instance ran this activity, and what it evaluated, set and changed."].Value },
             { "NoRuns", S["The instance didn't run this activity."].Value },

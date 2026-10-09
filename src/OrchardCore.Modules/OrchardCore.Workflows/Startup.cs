@@ -1,5 +1,6 @@
 using Fluid;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
@@ -61,7 +62,9 @@ public sealed class Startup : StartupBase
         services.Configure<WorkflowVersionOptions>(_shellConfiguration.GetSection("Workflows:Versions"));
         services.Configure<WorkflowJournalOptions>(_shellConfiguration.GetSection("Workflows:Journal"));
         services.AddScoped<IWorkflowExecutionJournal, WorkflowExecutionJournal>();
-        services.AddScoped<IWorkflowDesignerNotifier, NullWorkflowDesignerNotifier>();
+        // The real-time startup of this module, when SignalR is enabled, registers the notifier that sends the changes; it can
+        // run before or after this one, so the default one doesn't replace it.
+        services.TryAddScoped<IWorkflowDesignerNotifier, NullWorkflowDesignerNotifier>();
         services.AddScoped<IActivityPresetProvider, WorkflowActivityPresetProvider>();
         services.AddScoped<IWorkflowHandler, WorkflowJournalHandler>();
         services.AddIndexProvider<WorkflowExecutionRecordIndexProvider>();

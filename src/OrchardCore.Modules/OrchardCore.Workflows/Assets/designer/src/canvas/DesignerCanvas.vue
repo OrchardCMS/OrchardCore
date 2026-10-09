@@ -405,7 +405,7 @@ const onNodePointerDown = (node: DesignerNode, event: PointerEvent) => {
         return;
     }
 
-    // Another activity starts without its panel, which a click (not a drag) opens.
+    // A click only selects an activity, to move it around: its panel opens on a double-click or its Edit button.
     if (!wasSelected) {
         selectNode(props.store, node.id);
         state.activityPanelRequested = false;
@@ -438,11 +438,6 @@ const onNodePointerDown = (node: DesignerNode, event: PointerEvent) => {
 
             if (!moved && wasSelected && state.selectedNodeIds.length > 1) {
                 selectNode(props.store, node.id);
-            }
-
-            // A click on one activity shows its panel.
-            if (!moved && state.selectedNodeIds.length === 1) {
-                state.activityPanelRequested = true;
             }
         },
     });

@@ -1372,6 +1372,41 @@
     font-size: 0.75rem;
 }
 
+/* Opens the activity's settings: a click on the activity only selects it. */
+.wfd-node-edit {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 1.375rem;
+    height: 1.375rem;
+    margin: -0.125rem -0.25rem -0.125rem 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--bs-border-radius-sm);
+    background: none;
+    color: inherit;
+    font-size: 0.75rem;
+    opacity: 0.55;
+    cursor: pointer;
+}
+
+.wfd-node:hover .wfd-node-edit,
+.wfd-node.is-selected .wfd-node-edit,
+.wfd-node-edit:focus-visible {
+    opacity: 1;
+}
+
+.wfd-node-edit:hover {
+    background-color: rgba(var(--bs-emphasis-color-rgb), 0.08);
+    color: var(--bs-emphasis-color);
+}
+
+.wfd-node-edit:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: 1px;
+}
+
 .wfd-node.is-event .wfd-node-header {
     background-color: var(--bs-warning-bg-subtle);
     color: var(--bs-warning-text-emphasis);

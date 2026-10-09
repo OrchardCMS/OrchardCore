@@ -124,7 +124,8 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
     {
         using var context = new SiteContext();
         await context.InitializeAsync();
-        await WorkflowDesignerSiteFixture.EnableFeaturesAsync(context, "OrchardCore.Workflows", "OrchardCore.Workflows.SignalR");
+        // Real time comes with SignalR; there is no feature of its own.
+        await WorkflowDesignerSiteFixture.EnableFeaturesAsync(context, "OrchardCore.Workflows", "OrchardCore.SignalR");
         var (id, _) = await WorkflowDesignerSiteFixture.CreateWorkflowTypeAsync(context, Activity("notify", "NotifyTask"));
 
         using var response = await context.Client.GetAsync($"Admin/Workflows/Types/Edit/{id}", TestContext.Current.CancellationToken);

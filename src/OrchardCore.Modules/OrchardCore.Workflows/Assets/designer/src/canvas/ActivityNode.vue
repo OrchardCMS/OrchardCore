@@ -251,6 +251,20 @@ const onKeyDown = (event: KeyboardEvent) => {
                 <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
                 {{ issues.length }}
             </span>
+            <!-- A click on the activity only selects it, to move it around; this opens its settings, as a double-click does. -->
+            <button
+                v-if="!readOnly"
+                type="button"
+                class="wfd-node-edit"
+                :title="t('OpenActivitySettings')"
+                :aria-label="t('OpenActivitySettingsOf', node.title)"
+                data-cy="node-edit"
+                @pointerdown.stop
+                @dblclick.stop
+                @click.stop="emit('edit')"
+            >
+                <i class="fa-solid fa-sliders" aria-hidden="true"></i>
+            </button>
         </div>
         <div class="wfd-node-content">
             <div class="wfd-node-body" v-html="node.designHtml"></div>

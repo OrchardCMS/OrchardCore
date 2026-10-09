@@ -42,7 +42,7 @@ The designer has four areas. What concerns the whole workflow is on the right, a
     - **Variables**: the [variables](#variables) of the workflow, with their types and default values.
     - **Workflow**: the settings of the workflow: its name, whether it is enabled, whether it is a singleton, its lock settings, and whether finished instances are deleted.
     - **Issues**: the problems found in the workflow, errors first. Select one to go to its activity.
-- **The activity panel** (at the bottom of the canvas) opens when you click an activity, and closes when you click away from it, on the canvas, or press **Close**. Moving activities around doesn't open it, and closes it while you move them. Double-click an activity, or select it and press Enter, to open it on its first field. It has up to three tabs:
+- **The activity panel** (at the bottom of the canvas) opens when you double-click an activity, click the settings button at the top right of its card, or select it and press Enter. A click only selects an activity, so you can move activities around without opening it; moving them closes it, and so does a click on the canvas or **Close**. It has up to three tabs:
     - **Settings**: the editor of the activity.
     - **Outputs**: for an activity that produces values, each value with its type, and the [variable](#variables) to **Store in**, which the activities after it read. The variables of a type the value may not convert to are listed apart.
     - **Available data**: what the activity's expressions can read (see [Available Data](#available-data)).
@@ -274,13 +274,13 @@ Register it with `services.AddScoped<IActivityPresetProvider, WeatherPresetProvi
 
 ## Real-Time Updates
 
-With the **Workflows Real Time** feature (`OrchardCore.Workflows.SignalR`, which enables [SignalR](../SignalR/README.md)), the designer and the instance pages update live:
+When [SignalR](../SignalR/README.md) is enabled (the `OrchardCore.SignalR` feature), the designer and the instance pages update live:
 
 - **Who else is here.** The designer's toolbar shows the initials of the other users who have the workflow open.
 - **Others' changes.** When someone else changes the draft, publishes it or discards it, the designer shows a notice with **Reload**. Your unsaved changes stay until you reload. The changes you make in another tab are detected when you save, as before.
 - **Running instances.** The page of an instance follows it: when the instance runs again (resumed by an event, or retried), the executed path, the journal and the activities it waits on update.
 
-The pages connect to the `/hubs/workflows` hub of the tenant, which requires the **Manage workflows** permission. Clients subscribe to a workflow type or an instance; the server keeps no list of who is connected, so it works on several nodes with the Redis or Azure SignalR backplanes. Without the feature, the pages work as before.
+The pages connect to the `/hubs/workflows` hub of the tenant, which requires the **Manage workflows** permission. Clients subscribe to a workflow type or an instance; the server keeps no list of who is connected, so it works on several nodes with the Redis or Azure SignalR backplanes. Without SignalR, the pages work as before.
 
 For developers, `IWorkflowDesignerNotifier` is told about the changes of workflow types (by the draft manager) and instances (each time the engine saves one). The default implementation does nothing; the feature's implementation sends the changes once the request's changes are committed.
 
