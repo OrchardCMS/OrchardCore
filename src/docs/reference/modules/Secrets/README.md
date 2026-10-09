@@ -847,7 +847,7 @@ if (certificate != null)
 
 ## Adding Secret Support to Your Own Credentials
 
-A module that stores a password, an API key, a connection string, or any other credential in its settings can let users keep it in the Secrets module, without depending on it. The `OrchardCore.Secrets.Abstractions` package provides everything needed:
+A module that stores a password, an API key, a connection string, or any other credential, in its settings or elsewhere, can let users keep it in the Secrets module, without depending on it. The steps below use site settings; see [Credentials Stored Outside Site Settings](#credentials-stored-outside-site-settings) for content parts and other documents. The `OrchardCore.Secrets.Abstractions` package provides everything needed:
 
 | Piece | Purpose |
 |-------|---------|
@@ -1092,6 +1092,122 @@ public sealed class SecretsStartup : StartupBase
 ```
 
 `MoveToSecretAsync()` never overwrites an existing secret, and records a failed move, for instance when the value can't be decrypted, without changing the settings. Also check the permission that guards your settings before listing or moving the credential.
+
+### Credentials Stored Outside Site Settings
+
+The same steps apply to a credential stored anywhere else, for instance in a content part, a custom document, or a workflow activity: keep the protected value and the secret name side by side, edit them with a `SecretInputViewModel`, and read them with `GetSecretValueAsync()`. Only the driver and the persistence change.
+
+For example, a `WebhookPart` that keeps the key used to sign the requests sent by each webhook content item:
+
+```csharp
+public sealed class WebhookPart : ContentPart
+{
+    public string Url { get; set; }
+
+    // The signing key, protected with Data Protection.
+    public string SigningKey { get; set; }
+
+    // The name of the secret containing the signing key, which takes precedence over SigningKey.
+    public string SigningKeySecretName { get; set; }
+}
+
+public class WebhookPartViewModel
+{
+    public string Url { get; set; }
+
+    public SecretInputViewModel SigningKey { get; set; } = new();
+
+    [BindNever]
+    public string SuggestedSecretName { get; set; }
+}
+```
+
+The content part driver works like the site settings driver. The part is saved with its content item, so the driver only updates its properties:
+
+```csharp
+public sealed class WebhookPartDisplayDriver : ContentPartDisplayDriver<WebhookPart>
+{
+    // The purpose must never change, or the stored keys can't be decrypted anymore.
+    public const string ProtectorName = "Webhooks.SigningKey";
+
+    private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IServiceProvider _serviceProvider;
+
+    public WebhookPartDisplayDriver(
+        IDataProtectionProvider dataProtectionProvider,
+        IServiceProvider serviceProvider)
+    {
+        _dataProtectionProvider = dataProtectionProvider;
+        _serviceProvider = serviceProvider;
+    }
+
+    public override IDisplayResult Edit(WebhookPart part, BuildPartEditorContext context)
+        => Initialize<WebhookPartViewModel>(GetEditorShapeType(context), model =>
+        {
+            model.Url = part.Url;
+            model.SigningKey = SecretInputViewModel.Create(part.SigningKey, part.SigningKeySecretName);
+
+            // Each webhook can get its own secret.
+            model.SuggestedSecretName = $"Webhooks.{part.ContentItem.ContentItemId}.SigningKey";
+        });
+
+    public override async Task<IDisplayResult> UpdateAsync(WebhookPart part, UpdatePartEditorContext context)
+    {
+        var model = new WebhookPartViewModel();
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+        var signingKey = await model.SigningKey.UpdateAsync(new SecretInputUpdateContext(
+            _serviceProvider,
+            _dataProtectionProvider.CreateProtector(ProtectorName),
+            context.Updater.ModelState,
+            $"{Prefix}.{nameof(model.SigningKey)}")
+        {
+            ProtectedValue = part.SigningKey,
+            SecretName = part.SigningKeySecretName,
+        });
+
+        if (signingKey.Succeeded)
+        {
+            part.SigningKey = signingKey.ProtectedValue;
+            part.SigningKeySecretName = signingKey.SecretName;
+        }
+
+        part.Url = model.Url;
+
+        return Edit(part, context);
+    }
+}
+```
+
+The editor view, `WebhookPart.Edit.cshtml`, renders the input like any other field, with the suggested name computed by the driver:
+
+```cshtml
+@model WebhookPartViewModel
+
+<div class="ocat-wrapper" asp-validation-class-for="SigningKey">
+    <label asp-for="SigningKey" class="ocat-label">@T["Signing key"]</label>
+    <div class="ocat-end">
+        <secret-input asp-for="SigningKey" secret-name="@Model.SuggestedSecretName" />
+        <span class="hint">@T["The key used to sign the requests sent to the webhook."]</span>
+    </div>
+</div>
+```
+
+At runtime, read the key from the part of the content item being processed:
+
+```csharp
+var part = contentItem.As<WebhookPart>();
+
+var signingKey = await _serviceProvider.GetSecretValueAsync(
+    part.SigningKeySecretName,
+    part.SigningKey,
+    _dataProtectionProvider.CreateProtector(WebhookPartDisplayDriver.ProtectorName),
+    _logger);
+```
+
+A credential stored in a custom document, for instance one managed by an `IDocumentManager<TDocument>`, follows the same pattern: load the document for update, apply the values returned by `UpdateAsync()` to it, and save it with the document manager.
+
+Credentials stored per item can be numerous, so think twice before listing them on the **Migrate Secrets** screen. Users can select a secret in each item instead. If you do contribute them, list a bounded number of items in the `SecretMigration` driver, save each moved item with its own service, such as `IContentManager.UpdateAsync()`, and give each item its own secret name.
 
 ## Using the SelectSecret ViewComponent
 
