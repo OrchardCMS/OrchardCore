@@ -84,18 +84,19 @@
         for (var i = 0; i < featureGroups.Length; i++)
         {
             var featureGroup = featureGroups[i];
-            var categoryName = featureGroup.FirstOrDefault()?.Descriptor.Category ?? T["Uncategorized"].Value;
+            var categoryName = featureGroup.FirstOrDefault()?.Descriptor.Category;
+            var categoryDisplayName = categoryName ?? (object)T["Uncategorized"];
             var features = featureGroup.OrderBy(f => f.Descriptor.Name);
-            var categoryCheckboxId = Html.GenerateIdFromName($"select-all-{categoryName}");
+            var categoryCheckboxId = Html.GenerateIdFromName($"select-all-{categoryDisplayName}");
 
             <div class="feature-group list-management-group@(i < featureGroups.Length - 1 ? " mb-3" : "")">
-                <h3 class="mb-2">@categoryName</h3>
+                <h3 class="mb-2">@categoryDisplayName</h3>
                 <ul class="list-group with-checkbox">
                     <li class="list-group-item text-bg-theme list-group-select-all-container">
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input list-group-select-all" id="@categoryCheckboxId">
-                            <label class="form-check-label list-group-select-all-label" for="@categoryCheckboxId" data-select-all-text="@T["Select all {0} features grouped under {1} category", "__COUNT__", categoryName]">
-                                <span class="list-group-select-all-text">@T["Select all {0} features grouped under {1} category", 0, categoryName]</span>
+                            <label class="form-check-label list-group-select-all-label" for="@categoryCheckboxId" data-select-all-text="@T["Select all {0} features grouped under {1} category", "__COUNT__", categoryDisplayName]">
+                                <span class="list-group-select-all-text">@T["Select all {0} features grouped under {1} category", 0, categoryDisplayName]</span>
                             </label>
                         </div>
                     </li>
