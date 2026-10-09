@@ -803,6 +803,32 @@ public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsF
     }
 
     // Opens the page of the instance of a workflow that has the status.
+    [Fact]
+    public async Task RecordActivityData_RunOfAnIfElse_ShowsItsConditionAndItsValueInTheRunsTab()
+    {
+        var (page, consoleErrors) = await OpenAsync();
+        var id = await page.FindWorkflowTypeIdAsync("Recorded condition");
+        await page.OpenDesignerAsync(id);
+
+        var url = await page.GenerateHttpUrlAsync(id, "recstart");
+        Assert.Equal("big", (await (await page.APIRequest.GetAsync(url)).TextAsync()).Trim());
+
+        // The journal record of the If/Else opens its Runs tab, on that run, with what the activity evaluated.
+        await OpenInstanceAsync(page, id, "Finished");
+        await page.Locator("[data-cy=panel-tab-journal]").ClickAsync();
+        await page.Locator("[data-cy=journal-record-2] button").ClickAsync();
+
+        await Assertions.Expect(page.Locator("[data-cy=activity-tab-runs]")).ToHaveAttributeAsync("aria-selected", "true");
+        var run = page.Locator("[data-cy=run-2]");
+        await Assertions.Expect(run.Locator("[data-cy=run-toggle]")).ToHaveAttributeAsync("aria-expanded", "true");
+        await Assertions.Expect(run.Locator("[data-cy=run-evaluations]")).ToContainTextAsync("Condition");
+        await Assertions.Expect(run.Locator("[data-cy=run-evaluations]")).ToContainTextAsync("6 * 7 > 40");
+        await Assertions.Expect(run.Locator("[data-cy=run-evaluation-result]")).ToHaveTextAsync("true");
+
+        Assert.Empty(consoleErrors);
+        await page.CloseAsync();
+    }
+
     private static async Task OpenInstanceAsync(IPage page, long workflowTypeId, string status)
     {
         await page.GotoAndAssertOkAsync($"/Admin/Workflows/Types/{workflowTypeId}/Instances/Index");

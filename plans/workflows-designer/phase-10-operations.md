@@ -8,7 +8,7 @@ Paths: `M/` = `src/OrchardCore.Modules/OrchardCore.Workflows/`, `A/` = `src/Orch
 
 | # | Item | Steps | Status |
 |---|---|---|---|
-| 1 | Each activity's data in the journal: the expressions it evaluated, the outputs it set, the variables it changed, its last result | 10.1–10.4 | In progress (10.1 done) |
+| 1 | Each activity's data in the journal: the expressions it evaluated, the outputs it set, the variables it changed, its last result | 10.1–10.4 | Done |
 | 2 | Retry policies per activity, and what a failure does | 10.5 | Not started |
 | 3 | Run a workflow from the designer, with an input | 10.6 | Not started |
 | 4 | One running instance per correlation id | 10.7 | Not started |
@@ -84,10 +84,13 @@ Do the steps in order. Each step is one commit; tick its box in that commit. Eve
   - **From the journal.** `JournalTab` emits the record's sequence with its activity; the workflow panel stores it in `state.focusedRunSequence` and selects the activity, whose panel opens on the Runs tab with that run open and scrolled into view. Selecting another activity on the canvas opens on its Details.
   - **Tests.** `RunsTab.spec.ts` (3): the runs of the activity and the loading of a run's data (once), a run without data, and a journal record opening its run in the activity panel. `JournalTab.spec.ts` checks the sequence. Vitest 279/279.
 
-### - [ ] 10.4 Docs and an end-to-end test (item 1)
+### - [x] 10.4 Docs and an end-to-end test (item 1)
 
 - Docs: the setting, the Runs tab, what's recorded and its caps; release notes.
 - **Functional test**: a run of a seeded workflow with the setting shows the condition's value of an If/Else in the Runs tab.
+- **Notes from implementing this step:**
+  - **Docs.** "Recording What Each Activity Did" in the Execution Journal section: the setting, what a record keeps (expressions with their setting, syntax and result; outputs; changed variables and properties; last result), the caps, the default (checked for workflows created in the admin), the sensitive-data warning, and `ReportEvaluation` for custom syntaxes. The Journal and Runs tabs are described with the instance page. Release notes, under the execution journal.
+  - **Functional test.** `RecordActivityData_RunOfAnIfElse_ShowsItsConditionAndItsValueInTheRunsTab`, with the seeded "Recorded condition" workflow (HTTP request, If/Else `6 * 7 > 40`, response): its journal record opens the Runs tab on that run, with `Condition`, the expression and `true`. The designer functional class passes 28/28.
 
 ### - [ ] 10.5 Retry policies (item 2)
 

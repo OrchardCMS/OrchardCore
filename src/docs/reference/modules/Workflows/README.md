@@ -151,8 +151,24 @@ Workflow instances record each activity they run in a **journal**: the activity,
 The page of a workflow instance uses the journal:
 
 - **Executed path.** The activities the instance ran and the connections it followed are highlighted, with the number of times when it's more than one (in a loop, for example). The activity that faulted the instance is marked.
-- **Journal tab.** The workflow panel lists the records in order, with their status, outcomes, duration and error. Select a record to go to its activity.
+- **Journal tab.** The workflow panel lists the records in order, with their status, outcomes, duration and error. Select a record to open its activity on that run.
+- **Runs tab.** The activity panel lists each time the instance ran the selected activity. Open a run to see what the activity did, when the workflow records it (see below).
 - **Script errors.** An activity whose scripts failed is outlined in amber, with a badge that lists the errors.
+
+### Recording What Each Activity Did
+
+With **Record activity data** checked in the workflow's settings, each record of the journal also keeps the data of the activity's execution, which the **Runs** tab shows:
+
+- **Expressions.** Each expression the activity evaluated, with the setting it belongs to (`Condition`, `Script`, `Inputs.amount`…), its syntax, and its result. For example, the condition of an If/Else and whether it was true.
+- **Outputs.** The [outputs](#variables) the activity set.
+- **Variables.** The variables the activity changed, with their new value, and the other workflow properties it changed (such as with **Set Property**).
+- **Last result.** The value the activity returned, which the next activity reads as the [last result](#last-result).
+
+Values are kept as JSON. A value longer than 2,000 characters is cut, and a record keeps at most 32,000 characters of values; the run then says that some values were cut or left out. A record of an activity that evaluated, set and changed nothing has no data.
+
+The setting is checked for the workflows created in the admin, and off for the existing ones and those that recipes create without it. Values can be large, and they can be sensitive (personal data, keys): leave it unchecked for a workflow whose values shouldn't be stored. The data is deleted with the journal. The setting is part of the workflow's [versions](#versions).
+
+The built-in JavaScript, Liquid and Literal syntaxes record their evaluations. A [custom syntax](#adding-a-syntax) records its own with `WorkflowExecutionContext.ReportEvaluation(syntax, expression, result)`, and an activity's outputs are recorded by `SetActivityOutput`.
 
 ### Retrying a Faulted Instance
 
