@@ -130,8 +130,10 @@ A theme styles it by providing its own `Pager_PageSizeSelector` template, e.g. `
 
 | Parameter         | Type                   | Description                                                                                       |
 |-------------------|------------------------|---------------------------------------------------------------------------------------------------|
-| `Items`           | `List<SelectListItem>` | The allowed page sizes: `Text` is the size, `Value` the URL using it, `Selected` the current one. |
+| `PageSizes`       | `List<SelectListItem>` | The allowed page sizes: `Text` is the size, `Value` the URL using it, `Selected` the current one. |
 | `CurrentPageSize` | `int`                  | The page size used by the current page.                                                           |
+
+The page sizes are passed as `PageSizes` rather than `Items`: every shape already has an `Items` property holding its child shapes, so a template reading `Model.Items` would get that list instead.
 
 ## SEO
 
