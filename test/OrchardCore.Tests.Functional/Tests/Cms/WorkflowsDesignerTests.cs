@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.RegularExpressions;
 using Microsoft.Playwright;
 using OrchardCore.Tests.Functional.Helpers;
@@ -911,6 +912,40 @@ public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsF
         await page.OpenDesignerAsync(id);
         await page.Locator("[data-cy=panel-tab-workflow]").ClickAsync();
         await Assertions.Expect(page.Locator("[data-cy=panel-settings-form] [data-cy=instance-limit]")).ToHaveValueAsync("OnePerCorrelation");
+
+        Assert.Empty(consoleErrors);
+        await page.CloseAsync();
+    }
+
+    [Fact]
+    public async Task AllInstances_InstancesOfAWorkflow_AreCountedFilteredAndDeletedInBulk()
+    {
+        var (page, consoleErrors) = await OpenAsync();
+        var id = await page.FindWorkflowTypeIdAsync("Implicit branches");
+        var url = await page.GenerateHttpUrlAsync(id, "branchstart");
+        await page.APIRequest.GetAsync(url);
+        await page.APIRequest.GetAsync(url);
+
+        // The workflows list links to the instances of every workflow.
+        await page.GotoAndAssertOkAsync("/Admin/Workflows/Types");
+        await page.GotoAndAssertOkAsync(await page.Locator("[data-cy=all-instances]").GetAttributeAsync("href"));
+        await Assertions.Expect(page.Locator("[data-cy=instance-counts]")).ToBeVisibleAsync();
+
+        // The instances of the workflow, with their workflow and their count.
+        await page.GotoAndAssertOkAsync("/Admin/Workflows/Instances?Options.WorkflowTypeId=wfdimplicitbranches&Options.Filter=Finished");
+        var instances = page.Locator("input[name='itemIds']");
+        var count = await instances.CountAsync();
+        Assert.True(count >= 2);
+        await Assertions.Expect(page.Locator("[data-cy=instance-count-Finished] .badge")).ToHaveTextAsync(count.ToString(CultureInfo.InvariantCulture));
+        await Assertions.Expect(page.Locator("[data-cy=instance-workflow]").First).ToHaveTextAsync("Implicit branches");
+
+        // Deleted in bulk.
+        await page.Locator("#select-all").CheckAsync();
+        await page.Locator("#bulk-action-menu-button").ClickAsync();
+        await page.Locator("[data-cy=bulk-action-Delete]").ClickAsync();
+        await page.Locator("#modalOkButton").ClickAsync();
+
+        await Assertions.Expect(page.Locator("[data-cy=instances-empty]")).ToBeVisibleAsync();
 
         Assert.Empty(consoleErrors);
         await page.CloseAsync();

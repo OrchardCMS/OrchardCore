@@ -109,6 +109,19 @@ The page of a workflow instance shows the version of its workflow that the insta
 
 ![A workflow instance waiting on a signal](docs/workflow-instance-viewer.png)
 
+### Listing and Operating Instances
+
+The designer's **Instances** button lists the instances of a workflow, and the **Instances** button of the workflows list lists those of every workflow, with the workflow of each. Both lists have the same tools:
+
+- **Counts.** The number of instances of each status heads the list: all, **Halted** (waiting on an event), **Running** (starting, running or resuming), **Faulted**, **Finished** and **Aborted** (canceled). Click one to list those instances.
+- **Filters.** The status, when the instances were created (any time, the last 24 hours, 7 or 30 days), the workflow (on the list of every workflow), and the order.
+- **Bulk actions.** Check instances, then choose an action:
+    - **Retry** runs the faulted instances again from the activity they faulted at, as [Retry from here](#retrying-a-faulted-instance) does. It requires the **Execute workflows** permission. An instance whose faulted activity isn't known (for example when the journal is off) is skipped, and the list says how many were.
+    - **Cancel** aborts the instances that haven't ended: they stop waiting for their events, and a [retry due](#retrying-failed-tasks-automatically) is dropped.
+    - **Delete** deletes the instances, with their journal.
+
+A faulted instance that waits for a retry shows when the retry is due.
+
 ## Versions
 
 Each time a workflow is published, its definition is saved as a new **version**, numbered 1, 2, 3 and so on. A version holds what affects how the workflow runs: its activities and their settings, its transitions, its variables, and the **Instances at a time**, lock, **Delete finished workflows**, **Outcomes with several transitions** and **Fault the workflow on script errors** settings. Renaming a workflow, or enabling and disabling it, doesn't create a version.

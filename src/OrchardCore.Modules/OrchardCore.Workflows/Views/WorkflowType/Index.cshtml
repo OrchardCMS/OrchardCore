@@ -24,6 +24,7 @@
                     </div>
                 </div>
                 <div class="col-auto">
+                    <a asp-controller="Workflow" asp-action="All" asp-route-returnUrl="@FullRequestPath" class="btn btn-outline-secondary" role="button" data-cy="all-instances">@T["Instances"]</a>
                     <a asp-action="Create" asp-route-returnUrl="@FullRequestPath" class="btn btn-secondary create" role="button">@T["Create Workflow"]</a>
                 </div>
             </div>
@@ -43,7 +44,7 @@
                         </div>
                     </div>
                     <div class="col-auto">
-                        <div class="dropdown d-none" id="actions">
+                        <div class="dropdown" id="actions" style="display: none">
                             <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 @T["Actions"]
                             </button>

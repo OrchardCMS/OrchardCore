@@ -12,7 +12,7 @@ Paths: `M/` = `src/OrchardCore.Modules/OrchardCore.Workflows/`, `A/` = `src/Orch
 | 2 | Retry policies per activity, and what a failure does | 10.5 | Done |
 | 3 | Run a workflow from the designer, with an input | 10.6 | Done |
 | 4 | One running instance per correlation id | 10.7 | Done |
-| 5 | Instances across workflows: filters, bulk actions | 10.8 | Not started |
+| 5 | Instances across workflows: filters, bulk actions | 10.8 | Done |
 | 6 | Links between a parent instance and the child instances it ran | 10.9 | Not started |
 
 ## Target experience (item 1)
@@ -158,9 +158,26 @@ Decisions:
   - **Docs.** "Instances at a Time" after Correlation, the Workflow tab and versions lists, release notes and the store's breaking change.
   - **Tests.** `TriggerEventAsync_OneInstancePerCorrelationId_StartsNoInstanceWhileOneWithTheSameIdWaits` (the test workflow manager's lock now succeeds); the settings form posts `InstanceLimit` and the draft gets the flags. Functional `InstanceLimit_OnePerCorrelatedItem_IsSavedInTheDraft`; the designer class passes 31/31. Workflows tests: 529/529.
 
-### - [ ] 10.8 Instances across workflows (item 5)
+### - [x] 10.8 Instances across workflows (item 5)
 
-To detail when it starts. Sketch: an **Instances** page under Workflows that lists the instances of every workflow, filtered by workflow, status (Executing, Halted, Faulted, Finished, Aborted) and date, with bulk Retry, Cancel and Delete, and counts by status.
+Decisions:
+
+| # | Decision | Why |
+|---|---|---|
+| L1 | One list serves both pages: the instances of a workflow (`Workflows/Types/{id}/Instances`) and of every workflow (`Workflows/Instances`), which adds a workflow filter and the workflow of each instance. The workflows list links to it; the admin menu doesn't change. | Same filters, actions and look in both places; operating instances starts from the workflows. |
+| L2 | Filters: the status (all, halted, running, faulted, finished, aborted), when it was created (any time, the last 24 hours, 7 or 30 days), and the order. The counts by status of the filtered instances head the list, each a link to its filter. | Finding the faulted or stuck instances is the first thing someone operating workflows does. |
+| L3 | Bulk actions: **Retry** the faulted instances from the activity that faulted (the pending retry's, or the journal's last faulted record; those without one are skipped and counted), **Cancel** the instances that haven't ended (aborted: they stop waiting and their pending retry is dropped), and **Delete**. Retrying requires Execute workflows, like the Retry button. | The actions an operator takes after a fix, an outage or a mistaken run, on many instances at once. |
+
+Steps:
+
+- `WorkflowController.All` and the shared list; the options (`WorkflowTypeId`, `Created`, the new statuses and bulk actions); the counts; Retry and Cancel; the view; a link on the workflows list.
+- **Tests**: the list filters by workflow, status and date, and counts; Retry, Cancel and Delete in bulk; a functional test of the page.
+- **Notes from implementing this step:**
+  - **Controller.** `WorkflowController.All` (`Workflows/Instances`) and `Index` share `BuildListAsync`: a query per status filter (counted for the counts, the selected one paged), the creation date from `IClock`, the workflow from `Options.WorkflowTypeId` on the list of every workflow, and the version numbers of the instances' workflow types. The filter and bulk posts of both lists keep the filters. `ApplyBulkActionAsync` does Retry (Execute workflows; the activity from `PendingRetry` or the journal's last faulted record; `ArgumentException`/`InvalidOperationException` and a lock held count as skipped), Cancel (`Aborted`, no blocking activities, no pending retry; finished and aborted instances are left) and Delete.
+  - **Options.** `WorkflowFilter` gets `Halted`, `Running` and `Aborted`; `WorkflowCreatedFilter`; `WorkflowBulkAction` gets `Retry` and `Cancel`; `WorkflowIndexOptions.WorkflowTypeId` and `Created`; `WorkflowIndexViewModel.StatusCounts`; `WorkflowEntry.WorkflowType`.
+  - **View.** `Views/Workflow/Index.cshtml` serves both: the counts as links (`data-cy=instance-count-{filter}`), the workflow filter on the list of every workflow, the creation date filter, the workflow of each instance, and a faulted instance's retry due. The workflows list has an **Instances** button.
+  - **Fix.** The bulk **Actions** menu of this list and of the workflows list never showed: the column had `d-none`, which the list script's inline `display` can't override. It's hidden with an inline style now.
+  - **Tests.** `AllInstances_Filters_ListAndCountTheInstancesOfTheWorkflowStatusAndDate` and `AllInstances_BulkActions_RetryCancelAndDeleteTheCheckedInstances` (the post needs a non-empty `submit.BulkAction`, as a browser sends). Functional `AllInstances_InstancesOfAWorkflow_AreCountedFilteredAndDeletedInBulk`; the designer class passes 32/32.
 
 ### - [ ] 10.9 Parent and child instances (item 6)
 

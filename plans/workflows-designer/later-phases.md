@@ -23,7 +23,7 @@ Paths: `M/` = `src/OrchardCore.Modules/OrchardCore.Workflows/`, `A/` = `src/Orch
 | Composition (containers, nested sequences and flowcharts) | Flat graph only | Large workflows | 8 | Hard (new execution model) | Evaluated; not built (see phase 8) |
 | State-machine modeling | None | Approvals and lifecycles | 8 | Hard | Evaluated; documented as a pattern (see phase 8) |
 | Audit trail for workflow type changes | None | Governance | Backlog | Small | Not scheduled |
-| List of instances across all types, more status filters, bulk actions | Per type only; filters All, Finished, Faulted | Operations | 10 (10.8) | Small | Not started |
+| List of instances across all types, more status filters, bulk actions | Per type only; filters All, Finished, Faulted | Operations | 10 (10.8) | Small | Done |
 | Workflow testing from the designer ("Run with input…") | None | Authoring speed | 10 (10.6) | Small–Medium | Done |
 | Each activity's data in the journal (evaluated expressions, outputs, changed variables, last result) | Status, outcomes, duration and error only | Debugging | 10 (10.1–10.4) | Medium | Done |
 | Retry policies per activity, and what a failure does | Manual retry of a faulted instance | Transient failures | 10 (10.5) | Medium | Done |

@@ -1,5 +1,7 @@
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
 using Fluid;
 using Microsoft.AspNetCore.Authorization;
@@ -1281,6 +1283,125 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         using var disabled = await PostJsonAsync($"Admin/Workflows/Types/{disabledId}/Designer/Run", new { inputs = new { } });
 
         Assert.Equal(HttpStatusCode.BadRequest, disabled.StatusCode);
+    }
+
+    [Fact]
+    public async Task AllInstances_Filters_ListAndCountTheInstancesOfTheWorkflowStatusAndDate()
+    {
+        var (_, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));
+        var (_, otherWorkflowTypeId) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true));
+        var halted = await _fixture.CreateInstanceAsync(workflowTypeId, WorkflowStatus.Halted, "start");
+        var faulted = await _fixture.CreateInstanceAsync(workflowTypeId, WorkflowStatus.Faulted);
+        var old = await _fixture.CreateInstanceAsync(workflowTypeId, WorkflowStatus.Finished);
+        var other = await _fixture.CreateInstanceAsync(otherWorkflowTypeId, WorkflowStatus.Finished);
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            var store = scope.ServiceProvider.GetRequiredService<IWorkflowStore>();
+            var workflow = await store.GetAsync(old);
+            workflow.CreatedUtc = DateTime.UtcNow.AddDays(-3);
+            await store.SaveAsync(workflow);
+        });
+
+        // The instances of one workflow, with their counts by status.
+        var page = await GetDocumentAsync($"Admin/Workflows/Instances?Options.WorkflowTypeId={workflowTypeId}");
+        Assert.Equal(new[] { halted, faulted, old }.Order(), InstanceIds(page).Order());
+        Assert.Equal("3", Count(page, "All"));
+        Assert.Equal("1", Count(page, "Halted"));
+        Assert.Equal("1", Count(page, "Faulted"));
+        Assert.Equal("1", Count(page, "Finished"));
+        Assert.Equal("0", Count(page, "Running"));
+
+        // The status filter, the date filter, and every workflow.
+        Assert.Equal([faulted], InstanceIds(await GetDocumentAsync($"Admin/Workflows/Instances?Options.WorkflowTypeId={workflowTypeId}&Options.Filter=Faulted")));
+        Assert.DoesNotContain(old, InstanceIds(await GetDocumentAsync($"Admin/Workflows/Instances?Options.WorkflowTypeId={workflowTypeId}&Options.Created=Last24Hours")));
+
+        var all = await GetDocumentAsync("Admin/Workflows/Instances?pagesize=100");
+        Assert.Contains(other, InstanceIds(all));
+        Assert.Contains(halted, InstanceIds(all));
+        Assert.NotNull(all.QuerySelector($"[data-cy=instance-{other}] [data-cy=instance-workflow]"));
+    }
+
+    [Fact]
+    public async Task AllInstances_BulkActions_RetryCancelAndDeleteTheCheckedInstances()
+    {
+        var (_, workflowTypeId) = await CreateWorkflowTypeAsync(
+            Activity("start", "HttpRequestEvent", isStart: true),
+            Activity("set", "SetPropertyTask", properties: new JsonObject
+            {
+                ["PropertyName"] = "Fixed",
+                ["Value"] = new JsonObject { ["Expression"] = "yes", ["Syntax"] = "Literal" },
+            }));
+        var faulted = await _fixture.CreateFaultedInstanceAsync(workflowTypeId);
+        var halted = await _fixture.CreateInstanceAsync(workflowTypeId, WorkflowStatus.Halted, "start");
+        var finished = await _fixture.CreateInstanceAsync(workflowTypeId, WorkflowStatus.Finished);
+
+        // The journal says where the faulted instance faulted.
+        await _fixture.Context.UsingTenantScopeAsync(scope => scope.ServiceProvider.GetRequiredService<IWorkflowExecutionJournal>().SaveAsync(faulted.WorkflowId,
+        [
+            new WorkflowExecutionRecord { WorkflowId = faulted.WorkflowId, WorkflowTypeId = workflowTypeId, Sequence = 1, ActivityId = "set", ActivityName = "SetPropertyTask", Status = WorkflowExecutionRecordStatus.Faulted, Error = "Broken" },
+        ]));
+
+        // The list's actions need two checked instances.
+        await PostBulkActionAsync("Retry", faulted.Id, halted);
+        await PostBulkActionAsync("Cancel", halted, finished);
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            var store = scope.ServiceProvider.GetRequiredService<IWorkflowStore>();
+            Assert.Equal(WorkflowStatus.Finished, (await store.GetAsync(faulted.Id)).Status);
+
+            var canceled = await store.GetAsync(halted);
+            Assert.Equal(WorkflowStatus.Aborted, canceled.Status);
+            Assert.Empty(canceled.BlockingActivities);
+
+            // A finished instance isn't canceled.
+            Assert.Equal(WorkflowStatus.Finished, (await store.GetAsync(finished)).Status);
+        });
+
+        await PostBulkActionAsync("Delete", halted, finished);
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            var store = scope.ServiceProvider.GetRequiredService<IWorkflowStore>();
+            Assert.Null(await store.GetAsync(halted));
+            Assert.Null(await store.GetAsync(finished));
+        });
+    }
+
+    private async Task<IHtmlDocument> GetDocumentAsync(string path)
+    {
+        using var response = await _fixture.Context.Client.GetAsync(path, TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        return new HtmlParser().ParseDocument(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
+    }
+
+    private static long[] InstanceIds(IHtmlDocument document)
+        => document.QuerySelectorAll("input[name='itemIds']").Select(input => long.Parse(input.GetAttribute("value"), CultureInfo.InvariantCulture)).ToArray();
+
+    private static string Count(IHtmlDocument document, string filter)
+        => document.QuerySelector($"[data-cy=instance-count-{filter}] .badge").TextContent.Trim();
+
+    private async Task PostBulkActionAsync(string action, params long[] itemIds)
+    {
+        var content = new MultipartFormDataContent
+        {
+            { new StringContent(action), "Options.BulkAction" },
+            { new StringContent("Submit"), "submit.BulkAction" },
+        };
+
+        foreach (var id in itemIds)
+        {
+            content.Add(new StringContent(id.ToString(CultureInfo.InvariantCulture)), "itemIds");
+        }
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, "Admin/Workflows/Instances") { Content = content };
+        await _fixture.AddAntiforgeryAsync(request);
+
+        using var response = await _fixture.Context.Client.SendAsync(request, TestContext.Current.CancellationToken);
+
+        Assert.True(response.IsSuccessStatusCode || response.StatusCode == HttpStatusCode.Redirect, $"The {action} bulk action returned {response.StatusCode}.");
     }
 
     [Fact]
