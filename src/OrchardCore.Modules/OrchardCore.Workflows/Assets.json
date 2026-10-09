@@ -6,35 +6,9 @@
     "tags": ["workflows", "css"]
   },
   {
-    "action": "sass",
-    "name": "workflow-editor-css",
-    "source": "Assets/Styles/orchard.workflows-editor.scss",
-    "tags": ["workflows", "css"]
-  },
-  {
-    "action": "sass",
-    "name": "workflow-viewer-css",
-    "source": "Assets/Styles/orchard.workflows-viewer.scss",
-    "tags": ["workflows", "css"]
-  },
-  {
     "action": "min",
     "name": "workflow-jsplumb",
     "source": "../../../node_modules/jsplumb/dist/js/jsplumb.js",
-    "tags": ["workflows", "js"]
-  },
-  {
-    "action": "parcel",
-    "name": "workflow-editor-js",
-    "source": "Assets/Scripts/workflow-editor.ts",
-    "dest": "wwwroot/Scripts/Workflows/editor/",
-    "tags": ["workflows", "js"]
-  },
-  {
-    "action": "parcel",
-    "name": "workflow-viewer-js",
-    "source": "Assets/Scripts/workflow-viewer.ts",
-    "dest": "wwwroot/Scripts/Workflows/viewer/",
     "tags": ["workflows", "js"]
   },
   {
@@ -67,6 +41,13 @@
   },
   {
     "action": "parcel",
+    "name": "workflow-expression-editor-js",
+    "source": "Assets/Scripts/workflow-expression-editor.ts",
+    "dest": "wwwroot/Scripts/Workflows/expression-editor/",
+    "tags": ["workflows", "js"]
+  },
+  {
+    "action": "parcel",
     "name": "workflow-index-editors",
     "source": [
       "Assets/Scripts/workflow-index.ts",
@@ -76,10 +57,15 @@
     "tags": ["workflows", "js"]
   },
   {
+    "action": "vite",
+    "name": "workflows-designer",
+    "source": "Assets/designer",
+    "tags": ["admin", "workflows"]
+  },
+  {
     "action": "parcel",
     "name": "task-editors",
     "source": [
-      "Assets/Scripts/correlate-task.ts",
       "Assets/Scripts/http-request-task.ts",
       "Assets/Scripts/http-response-task.ts",
       "Assets/Scripts/liquid-task.ts"

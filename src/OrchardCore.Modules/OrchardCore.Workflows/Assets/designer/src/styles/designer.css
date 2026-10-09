@@ -1,0 +1,1946 @@
+/* Workflow designer. Only Bootstrap and --bs-* / --oc-* variables, so light, dark and RTL work. */
+
+.wfd {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    /* The admin's top bar above (the designer's page has no heading), and a small gap below. */
+    height: calc(100vh - 5.375rem);
+    min-height: 32rem;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-body-bg);
+    overflow: hidden;
+}
+
+.wfd-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+    background-color: var(--bs-tertiary-bg);
+}
+
+.wfd-back {
+    flex: 0 0 auto;
+    font-size: 0.875rem;
+    text-decoration: none;
+}
+
+.wfd-back:hover {
+    text-decoration: underline;
+}
+
+.wfd-back-separator {
+    margin-inline: -0.125rem;
+    color: var(--bs-secondary-color);
+}
+
+.wfd-title {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.wfd.wfd-readonly {
+    height: min(calc(100vh - 11rem), 40rem);
+    min-height: 24rem;
+}
+
+/* The legend wraps when the toolbar is narrow. */
+.wfd-legend {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0.375rem;
+    min-width: 0;
+}
+
+/* Directional icons outside the canvas point the other way in RTL. */
+[dir="rtl"] .wfd-mirror-rtl {
+    transform: scaleX(-1);
+}
+
+.wfd-save-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    white-space: nowrap;
+}
+
+.wfd-save-status[data-status="unsaved"] .fa-circle {
+    font-size: 0.5em;
+}
+
+.wfd-draft-banner {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-width: 0 0 var(--bs-border-width);
+}
+
+.wfd-draft-banner .btn-close {
+    padding: 0.75rem 1rem;
+}
+
+.wfd-body {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.wfd-toolbox {
+    position: relative;
+    display: flex;
+    flex: 0 0 16rem;
+    flex-direction: column;
+    min-height: 0;
+    border-right: var(--bs-border-width) solid var(--bs-border-color);
+    background-color: var(--bs-body-bg);
+}
+
+.wfd-toolbox.is-collapsed {
+    flex: 0 0 2.75rem;
+}
+
+.wfd-toolbox-sheet {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    background-color: var(--bs-body-bg);
+}
+
+/* Collapsed, the toolbox opens over the canvas while its rail is hovered. */
+.wfd-toolbox.is-peeking .wfd-toolbox-sheet {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    inset-inline-start: 100%;
+    z-index: 12;
+    width: 16rem;
+    border-inline-end: var(--bs-border-width) solid var(--bs-border-color);
+    box-shadow: var(--bs-box-shadow-lg);
+}
+
+.wfd-toolbox-header {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.25rem 0.25rem 0.75rem;
+    border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+}
+
+.wfd-toolbox-title {
+    flex: 1 1 auto;
+    margin: 0;
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.wfd-toolbox-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+}
+
+/* The rail of a collapsed toolbox or panel. */
+.wfd-rail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.375rem 0;
+}
+
+.wfd-rail-button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--bs-border-radius);
+    background-color: transparent;
+    color: var(--bs-secondary-color);
+}
+
+.wfd-rail-button:hover,
+.wfd-rail-button.active {
+    background-color: var(--bs-tertiary-bg);
+    color: var(--bs-emphasis-color);
+}
+
+.wfd-rail-button:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: -2px;
+}
+
+.wfd-rail-badge {
+    position: absolute;
+    top: 0;
+    inset-inline-end: 0;
+    padding: 0.125rem 0.25rem;
+    font-size: 0.5625rem;
+}
+
+/* The canvas, with the selected activity's panel at its bottom. */
+.wfd-main {
+    position: relative;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+
+.wfd-canvas-host {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* The selected activity's panel opens over the bottom of the canvas; pinned, it stays below the canvas. */
+.wfd-activity-panel {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 9;
+    display: flex;
+    flex-direction: column;
+    height: 40%;
+    min-height: 8rem;
+    max-height: calc(100% - 6rem);
+    border-top: var(--bs-border-width) solid var(--bs-border-color);
+    background-color: var(--bs-body-bg);
+    box-shadow: 0 -0.5rem 1rem rgba(0, 0, 0, 0.12);
+}
+
+.wfd-activity-panel.is-pinned {
+    position: relative;
+    z-index: auto;
+    flex: 0 0 auto;
+    box-shadow: none;
+}
+
+.wfd-activity-panel-resizer {
+    position: absolute;
+    top: -3px;
+    right: 0;
+    left: 0;
+    z-index: 2;
+    height: 6px;
+    cursor: row-resize;
+}
+
+.wfd-activity-panel-resizer:hover,
+.wfd-activity-panel-resizer:focus-visible {
+    outline: none;
+    background-color: rgba(var(--bs-primary-rgb), 0.35);
+}
+
+.wfd-activity-panel-header {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.75rem;
+    min-width: 0;
+    border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+}
+
+.wfd-panel-title.wfd-activity-panel-title {
+    flex: 0 1 auto;
+    align-items: center;
+    align-self: center;
+    min-width: 0;
+    max-width: 40%;
+    padding: 0.375rem 0 0.375rem 0.75rem;
+    white-space: nowrap;
+}
+
+.wfd-activity-panel-title small {
+    margin-inline-start: 0;
+}
+
+.wfd-activity-panel .wfd-panel-tabs {
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+    padding-inline-start: 0;
+}
+
+.wfd-activity-panel .wfd-panel-tabs .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    white-space: nowrap;
+}
+
+.wfd-activity-panel-actions {
+    display: flex;
+    flex: 0 0 auto;
+    align-self: center;
+    margin-inline-start: auto;
+    padding-inline-end: 0.25rem;
+}
+
+.wfd-activity-panel-actions .btn.active {
+    color: var(--bs-primary);
+}
+
+.wfd-activity-panel-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+}
+
+/* The panel is as wide as the canvas, which the toolbox and the workflow's panel narrow: its header drops the
+   activity type, then the tabs' labels (their icons and tooltips remain). */
+.wfd-activity-panel {
+    container-type: inline-size;
+}
+
+@container (max-width: 48rem) {
+    .wfd-activity-panel-title small {
+        display: none;
+    }
+}
+
+@container (max-width: 34rem) {
+    .wfd-activity-tab-label {
+        display: none;
+    }
+}
+
+.wfd-activity-panel .wfd-outputs {
+    margin: 0.75rem;
+    padding-top: 0;
+    border-top: 0;
+}
+
+.wfd-panel {
+    position: relative;
+    display: flex;
+    flex: 0 0 24rem;
+    flex-direction: column;
+    min-width: 0;
+    border-left: var(--bs-border-width) solid var(--bs-border-color);
+    background-color: var(--bs-body-bg);
+}
+
+.wfd-panel.is-collapsed {
+    flex: 0 0 2.75rem;
+    width: 2.75rem;
+}
+
+.wfd-panel-sheet {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    background-color: var(--bs-body-bg);
+}
+
+/* Collapsed, the panel opens over the canvas while its rail is hovered. */
+.wfd-panel.is-peeking .wfd-panel-sheet {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    inset-inline-end: 100%;
+    z-index: 12;
+    border-inline-start: var(--bs-border-width) solid var(--bs-border-color);
+    box-shadow: var(--bs-box-shadow-lg);
+}
+
+.wfd-panel-intro {
+    margin: 0;
+    padding: 0.75rem 0.75rem 0;
+    color: var(--bs-secondary-color);
+    font-size: 0.8125rem;
+}
+
+.wfd-panel-resizer {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -3px;
+    z-index: 2;
+    width: 6px;
+    cursor: col-resize;
+}
+
+.wfd-panel-resizer:hover,
+.wfd-panel-resizer:focus-visible {
+    outline: none;
+    background-color: rgba(var(--bs-primary-rgb), 0.35);
+}
+
+.wfd-panel-header {
+    display: flex;
+    align-items: flex-end;
+    border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+}
+
+.wfd-panel-tabs {
+    flex: 1 1 auto;
+    gap: 0.25rem;
+    border-bottom: 0;
+    padding-top: 0.25rem;
+    padding-inline-start: 0.25rem;
+}
+
+.wfd-panel-tabs .nav-link {
+    padding: 0.375rem 0.625rem;
+    font-size: 0.8125rem;
+}
+
+.wfd-panel-toggle {
+    align-self: center;
+    margin-inline-start: auto;
+}
+
+.wfd-panel-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+}
+
+.wfd-panel-title {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0.75rem 0.75rem 0;
+}
+
+.wfd-panel-title small {
+    margin-inline-start: auto;
+    font-weight: 400;
+}
+
+.wfd-panel-message {
+    margin: 0;
+    padding: 1rem 0.75rem;
+    color: var(--bs-secondary-color);
+}
+
+.wfd-panel-summary {
+    padding: 0.75rem;
+}
+
+/* The server-rendered forms use the admin's two-column 'ocat-*' rows; the panel is narrow, so they stack. */
+.wfd-form {
+    padding: 0.75rem;
+}
+
+.wfd-form .ocat-wrapper,
+.wfd-form .ocat-limited-wrapper {
+    display: block;
+    margin-bottom: 0.75rem;
+}
+
+.wfd-form .ocat-label,
+.wfd-form .ocat-end,
+.wfd-form .ocat-end-offset,
+.wfd-form .ocat-limited {
+    width: auto;
+    max-width: none;
+    margin-inline-start: 0;
+    padding-inline: 0;
+    text-align: start;
+}
+
+.wfd-form-actions {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin: 0 -0.75rem -0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-top: var(--bs-border-width) solid var(--bs-border-color);
+    background-color: var(--bs-body-bg);
+}
+
+.wfd-form-status {
+    flex: 1 1 auto;
+    color: var(--bs-secondary-color);
+    font-size: 0.8125rem;
+}
+
+/* Variables tab. */
+.wfd-variable-list {
+    margin: 0;
+    padding: 0.75rem 0.75rem 0;
+}
+
+.wfd-variable {
+    display: grid;
+    gap: 0.375rem;
+    margin-bottom: 0.75rem;
+    padding: 0.5rem;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+}
+
+.wfd-variable.is-invalid {
+    border-color: var(--bs-form-invalid-border-color);
+}
+
+.wfd-variable-head {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr) auto;
+    gap: 0.375rem;
+    align-items: center;
+}
+
+.wfd-variable-flags {
+    font-size: 0.8125rem;
+}
+
+.wfd-variable-flag {
+    margin-inline-start: 0.25rem;
+    font-weight: normal;
+}
+
+.wfd-variables-actions {
+    padding: 0 0.75rem 0.75rem;
+}
+
+.wfd-variable-table {
+    margin: 0.75rem;
+    width: calc(100% - 1.5rem);
+    font-size: 0.8125rem;
+}
+
+.wfd-variable-value code {
+    word-break: break-all;
+}
+
+/* Outputs of the edited activity. */
+.wfd-outputs {
+    margin: 0 0.75rem 0.75rem;
+    padding-top: 0.75rem;
+    border-top: var(--bs-border-width) solid var(--bs-border-color);
+}
+
+.wfd-section-title {
+    margin-bottom: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.wfd-section-hint {
+    margin-bottom: 0.5rem;
+    color: var(--bs-secondary-color);
+    font-size: 0.8125rem;
+}
+
+/* An output, an arrow, and the variable that stores it; they stack in a narrow panel. */
+.wfd-output {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 0.25rem 0.75rem;
+    align-items: start;
+    padding: 0.5rem 0;
+    border-bottom: var(--bs-border-width) solid var(--bs-border-color-translucent);
+    font-size: 0.8125rem;
+}
+
+.wfd-output:last-child {
+    border-bottom: 0;
+}
+
+.wfd-output-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0.5rem;
+    min-height: calc(1.5em + 0.5rem + 2 * var(--bs-border-width));
+}
+
+.wfd-output-name {
+    color: var(--bs-emphasis-color);
+    font-weight: 600;
+}
+
+.wfd-output-type {
+    background-color: var(--bs-secondary-bg);
+    color: var(--bs-secondary-color);
+    font-weight: 400;
+}
+
+.wfd-output-description {
+    margin: 0;
+    color: var(--bs-secondary-color);
+}
+
+.wfd-output-arrow {
+    align-self: start;
+    margin-top: 0.5rem;
+    color: var(--bs-secondary-color);
+}
+
+@container (max-width: 34rem) {
+    .wfd-output {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .wfd-output-arrow {
+        display: none;
+    }
+}
+
+.wfd-output-problem {
+    margin: 0.25rem 0 0;
+    color: var(--bs-warning-text-emphasis);
+    font-size: 0.8125rem;
+}
+
+/* The runs of an activity by the instance shown, with what each evaluated, set and changed. */
+.wfd-runs {
+    margin: 0.5rem 0.75rem;
+}
+
+.wfd-run {
+    border-bottom: var(--bs-border-width) solid var(--bs-border-color-translucent);
+}
+
+.wfd-run:last-child {
+    border-bottom: 0;
+}
+
+.wfd-run-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.375rem 0.5rem;
+    width: 100%;
+    padding: 0.375rem 0.25rem;
+    border: 0;
+    border-radius: var(--bs-border-radius-sm);
+    background: none;
+    color: var(--bs-body-color);
+    font-size: 0.8125rem;
+    text-align: start;
+}
+
+.wfd-run-head:hover {
+    background-color: var(--bs-tertiary-bg);
+}
+
+.wfd-run-head.is-focused {
+    background-color: rgba(var(--bs-primary-rgb), 0.08);
+}
+
+.wfd-run-chevron {
+    color: var(--bs-secondary-color);
+    font-size: 0.6875rem;
+    transition: transform 0.15s;
+}
+
+.wfd-run-head[aria-expanded="true"] .wfd-run-chevron {
+    transform: rotate(90deg);
+}
+
+.wfd-run-data {
+    padding: 0.25rem 0.25rem 0.75rem 1.5rem;
+    font-size: 0.8125rem;
+}
+
+.wfd-run-section {
+    margin: 0.5rem 0 0.25rem;
+    color: var(--bs-secondary-color);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.wfd-run-evaluation {
+    margin-bottom: 0.5rem;
+}
+
+.wfd-run-evaluation-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.125rem;
+}
+
+.wfd-run-name {
+    color: var(--bs-emphasis-color);
+    font-family: var(--bs-font-monospace);
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.wfd-run-code {
+    max-height: 12rem;
+    margin: 0;
+    padding: 0.25rem 0.5rem;
+    overflow: auto;
+    border-radius: var(--bs-border-radius-sm);
+    background-color: var(--bs-tertiary-bg);
+    font-size: 0.75rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.wfd-run-result {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+}
+
+.wfd-run-result > i {
+    margin-top: 0.375rem;
+    color: var(--bs-secondary-color);
+}
+
+.wfd-run-result > pre {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.wfd-run-values {
+    display: grid;
+    grid-template-columns: minmax(6rem, max-content) minmax(0, 1fr);
+    gap: 0.25rem 0.75rem;
+    margin: 0;
+}
+
+.wfd-run-values dd {
+    min-width: 0;
+    margin: 0;
+}
+
+/* Data available to the edited activity. */
+.wfd-available {
+    margin: 0.75rem;
+}
+
+/* The groups are vertical tabs beside their values, which fill the panel's width in columns. */
+.wfd-available-layout {
+    display: grid;
+    grid-template-columns: minmax(9rem, 13rem) minmax(0, 1fr);
+    gap: 0.75rem;
+    align-items: start;
+}
+
+.wfd-available-tabs {
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    padding: 0.1875rem;
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-tertiary-bg);
+}
+
+.wfd-available-tab {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3125rem 0.5rem;
+    border: 0;
+    border-radius: var(--bs-border-radius-sm);
+    background: none;
+    color: var(--bs-secondary-color);
+    font-size: 0.8125rem;
+    text-align: start;
+}
+
+.wfd-available-tab:hover {
+    color: var(--bs-emphasis-color);
+}
+
+.wfd-available-tab.active {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-emphasis-color);
+    font-weight: 600;
+    box-shadow: var(--bs-box-shadow-sm);
+}
+
+.wfd-available-tab-title {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.wfd-available-tab-count {
+    background-color: var(--bs-secondary-bg);
+    color: var(--bs-secondary-color);
+    font-weight: 400;
+}
+
+.wfd-available-list {
+    margin: 0;
+}
+
+.wfd-available-values > .wfd-available-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    gap: 0.625rem;
+    align-items: start;
+}
+
+.wfd-available-values > .wfd-available-list > .wfd-available-value {
+    margin-bottom: 0;
+}
+
+.wfd-available-values > .wfd-section-hint:last-child {
+    margin: 0.75rem 0 0;
+}
+
+/* In a narrow panel, the groups wrap above their values. */
+@container (max-width: 34rem) {
+    .wfd-available-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .wfd-available-tabs {
+        position: static;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+}
+
+.wfd-available-value {
+    margin-bottom: 0.625rem;
+    padding: 0.5rem;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-body-bg);
+    font-size: 0.8125rem;
+}
+
+.wfd-available-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.5rem;
+}
+
+.wfd-available-name {
+    color: var(--bs-emphasis-color);
+    font-weight: 700;
+}
+
+.wfd-available-type {
+    color: var(--bs-secondary-color);
+    font-size: 0.75rem;
+}
+
+.wfd-available-description {
+    margin-top: 0.125rem;
+    color: var(--bs-secondary-color);
+}
+
+.wfd-available-expressions {
+    display: grid;
+    gap: 0.25rem;
+    margin-top: 0.375rem;
+}
+
+.wfd-snippet {
+    display: grid;
+    grid-template-columns: 3.25rem minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.25rem 0.5rem;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius-sm);
+    background-color: var(--bs-tertiary-bg);
+    color: inherit;
+    font-size: 0.75rem;
+    text-align: start;
+}
+
+.wfd-snippet:hover,
+.wfd-snippet:focus-visible {
+    border-color: var(--bs-primary);
+    background-color: var(--bs-primary-bg-subtle);
+}
+
+.wfd-snippet code {
+    color: var(--bs-emphasis-color);
+    overflow-wrap: anywhere;
+    white-space: normal;
+}
+
+.wfd-snippet-syntax {
+    color: var(--bs-emphasis-color);
+    font-weight: 700;
+}
+
+.wfd-snippet-icon {
+    align-self: center;
+    color: var(--bs-secondary-color);
+}
+
+.wfd-snippet:hover .wfd-snippet-icon,
+.wfd-snippet:focus-visible .wfd-snippet-icon {
+    color: var(--bs-primary);
+}
+
+.wfd-available-members {
+    margin-top: 0.375rem;
+}
+
+.wfd-available-members > summary {
+    color: var(--bs-link-color);
+    font-size: 0.75rem;
+    cursor: pointer;
+}
+
+.wfd-available-members > ul {
+    margin: 0.375rem 0 0;
+}
+
+/* Each field is a box of its own in the box of its value. */
+.wfd-available-members .wfd-available-value {
+    margin-bottom: 0.375rem;
+    padding: 0.375rem 0.5rem;
+    border-color: var(--bs-border-color-translucent);
+    background-color: var(--bs-tertiary-bg);
+}
+
+.wfd-available-members .wfd-available-value:last-child {
+    margin-bottom: 0;
+}
+
+.wfd-available-members .wfd-snippet {
+    background-color: var(--bs-body-bg);
+}
+
+/* Journal tab and retry. */
+.wfd-journal-list {
+    margin: 0;
+    padding: 0.5rem 0;
+}
+
+.wfd-journal-record {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    border: 0;
+    background: none;
+    color: var(--bs-body-color);
+    font-size: 0.8125rem;
+    text-align: start;
+}
+
+.wfd-journal-record:hover,
+.wfd-journal-record:focus-visible {
+    background-color: var(--bs-tertiary-bg);
+}
+
+.wfd-journal-sequence {
+    flex: 0 0 auto;
+    min-width: 2rem;
+    color: var(--bs-secondary-color);
+}
+
+.wfd-journal-main {
+    display: grid;
+    gap: 0.125rem;
+    min-width: 0;
+}
+
+.wfd-journal-title {
+    font-weight: 600;
+}
+
+.wfd-journal-details {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.375rem;
+    color: var(--bs-secondary-color);
+}
+
+.wfd-journal-error,
+.wfd-retry-error {
+    color: var(--bs-danger-text-emphasis);
+    word-break: break-word;
+}
+
+.wfd-journal-record.is-script-error .wfd-journal-error,
+.wfd-journal-record.is-retrying .wfd-journal-error {
+    color: var(--bs-warning-text-emphasis);
+}
+
+.wfd-retry {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: var(--bs-border-width) solid var(--bs-border-color);
+}
+
+.wfd-retry-error {
+    margin-bottom: 0.5rem;
+    font-size: 0.8125rem;
+}
+
+.wfd-pending-retry {
+    margin: 0.5rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--bs-warning-text-emphasis);
+}
+
+.wfd-legend-executed {
+    display: inline-block;
+    width: 1.25rem;
+    height: 0;
+    margin-inline-start: 0.5rem;
+    border-top: 3px solid var(--bs-success);
+}
+
+.wfd-summary-list {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.25rem 0.75rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.8125rem;
+}
+
+.wfd-summary-list dt {
+    font-weight: 600;
+}
+
+.wfd-summary-list dd {
+    margin: 0;
+}
+
+.wfd-issue {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    color: var(--bs-body-color);
+    text-decoration: none;
+    font-size: 0.8125rem;
+}
+
+.wfd-issue:hover:not(:disabled) {
+    background-color: var(--bs-tertiary-bg);
+}
+
+.wfd-issue:disabled {
+    opacity: 1;
+}
+
+.wfd-issue-activity {
+    display: block;
+    font-weight: 600;
+}
+
+.wfd-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 100%;
+    color: var(--bs-secondary-color);
+}
+
+/* Toolbox. */
+
+.wfd-toolbox-inner {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+
+.wfd-toolbox-filters {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: 0.5rem;
+    border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+    background-color: var(--bs-body-bg);
+}
+
+.wfd-toolbox-message {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    color: var(--bs-secondary-color);
+    font-size: 0.8125rem;
+}
+
+.wfd-toolbox-category-title {
+    margin: 0;
+    font-size: 0.8125rem;
+}
+
+.wfd-toolbox-category-title .btn {
+    font-weight: 600;
+}
+
+.wfd-toolbox-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    margin: 0;
+    padding: 0 0.5rem 0.5rem;
+    list-style: none;
+}
+
+.wfd-toolbox-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.375rem 0.5rem;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    font-size: 0.75rem;
+    text-align: start;
+    cursor: grab;
+}
+
+.wfd-toolbox-card:hover {
+    border-color: var(--bs-primary);
+}
+
+.wfd-toolbox-card:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: 1px;
+}
+
+.wfd-toolbox-card.is-event {
+    border-inline-start: 3px solid var(--bs-warning);
+}
+
+.wfd-toolbox-icon {
+    margin-top: 0.125rem;
+    color: var(--bs-secondary-color);
+}
+
+.wfd-toolbox-thumb {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.wfd-toolbox-thumb h4 {
+    margin: 0 0 0.125rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+/* The thumbnail templates start with their own icon; the card already shows one. */
+.wfd-toolbox-thumb h4 > i:first-child {
+    display: none;
+}
+
+.wfd-toolbox-thumb p {
+    margin: 0;
+    color: var(--bs-secondary-color);
+}
+
+/* Canvas. The canvas coordinate space never mirrors in RTL: a workflow lays out the same for everyone. */
+
+/* rtl:begin:ignore */
+
+.wfd-canvas {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    direction: ltr;
+    outline: none;
+    touch-action: none;
+    user-select: none;
+    background-color: var(--bs-body-bg);
+}
+
+.wfd-canvas:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--bs-primary);
+}
+
+.wfd-canvas.is-space-held,
+.wfd-canvas.is-panning {
+    cursor: grabbing;
+}
+
+.wfd-grid {
+    position: absolute;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+    background-image: radial-gradient(var(--bs-border-color) 1px, transparent 1px);
+    will-change: transform;
+}
+
+.wfd-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform-origin: 0 0;
+}
+
+.wfd-edges {
+    position: absolute;
+    left: 0;
+    top: 0;
+    overflow: visible;
+}
+
+.wfd-edges.is-lifted {
+    pointer-events: none;
+    will-change: transform;
+}
+
+.wfd-edge-hit {
+    fill: none;
+    stroke: transparent;
+    stroke-width: 12;
+    pointer-events: stroke;
+    cursor: pointer;
+}
+
+.wfd-edge-line {
+    fill: none;
+    stroke: var(--bs-secondary-color);
+    stroke-width: 1.5;
+    pointer-events: none;
+}
+
+.wfd-edge:hover .wfd-edge-line {
+    stroke: var(--bs-primary);
+    stroke-width: 2;
+}
+
+.wfd-edge.is-executed .wfd-edge-line {
+    stroke: var(--bs-success);
+    stroke-width: 2.5;
+}
+
+.wfd-edge.is-selected .wfd-edge-line {
+    stroke: var(--bs-primary);
+    stroke-width: 2.5;
+}
+
+.wfd-arrow {
+    fill: var(--bs-secondary-color);
+}
+
+.wfd-arrow.is-selected {
+    fill: var(--bs-primary);
+}
+
+.wfd-edge-label {
+    font-size: 11px;
+    fill: var(--bs-secondary-color);
+    paint-order: stroke;
+    stroke: var(--bs-body-bg);
+    stroke-width: 3px;
+    pointer-events: none;
+}
+
+.wfd-edge-delete {
+    cursor: pointer;
+}
+
+.wfd-edge-delete circle {
+    fill: var(--bs-danger);
+}
+
+.wfd-edge-delete path {
+    stroke: var(--bs-white);
+    stroke-width: 2;
+}
+
+.wfd-edge-delete:focus-visible circle {
+    stroke: var(--bs-body-color);
+    stroke-width: 2;
+}
+
+.wfd-edge-preview {
+    fill: none;
+    stroke: var(--bs-primary);
+    stroke-width: 2;
+    stroke-dasharray: 6 4;
+    pointer-events: none;
+}
+
+.wfd-node {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 220px;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-body-bg);
+    box-shadow: var(--bs-box-shadow-sm);
+    font-size: 0.8125rem;
+    cursor: move;
+    outline: none;
+}
+
+.wfd-canvas.is-readonly .wfd-node {
+    cursor: pointer;
+}
+
+.wfd-node:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: 2px;
+}
+
+/* A collapsed activity looks like a stack: the activities after it are hidden behind it. The rings below
+   keep the stack. */
+.wfd-node.is-collapsed {
+    --wfd-node-stack:
+        4px 4px 0 -1px var(--bs-body-bg),
+        4px 4px 0 0 var(--bs-border-color),
+        8px 8px 0 -1px var(--bs-body-bg),
+        8px 8px 0 0 var(--bs-border-color);
+    box-shadow: var(--wfd-node-stack);
+}
+
+.wfd-node.is-selected {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 2px var(--bs-primary), var(--wfd-node-stack, 0 0 transparent);
+}
+
+.wfd-node.is-lifted {
+    will-change: transform;
+    box-shadow: var(--bs-box-shadow), var(--wfd-node-stack, 0 0 transparent);
+}
+
+.wfd-node.is-drop-target {
+    box-shadow: 0 0 0 3px var(--bs-success), var(--wfd-node-stack, 0 0 transparent);
+}
+
+.wfd-node.is-missing {
+    border-style: dashed;
+    border-color: var(--bs-warning);
+}
+
+.wfd-node.has-errors {
+    border-color: var(--bs-danger);
+}
+
+.wfd-node.is-highlighted {
+    box-shadow: 0 0 0 3px var(--bs-warning), var(--wfd-node-stack, 0 0 transparent);
+}
+
+/* The instance shown by the viewer waits on this activity. */
+.wfd-node.is-blocking {
+    border-color: var(--bs-info-border-subtle);
+    box-shadow: 0 0 0 3px rgba(var(--bs-info-rgb), 0.6), var(--wfd-node-stack, 0 0 transparent);
+}
+
+.wfd-node.is-blocking.is-selected {
+    box-shadow:
+        0 0 0 2px var(--bs-primary),
+        0 0 0 5px rgba(var(--bs-info-rgb), 0.6), var(--wfd-node-stack, 0 0 transparent);
+}
+
+/* Centered under the activity, away from the outcome ports on its side. */
+.wfd-node-expand {
+    position: absolute;
+    left: 50%;
+    bottom: -0.75rem;
+    transform: translateX(-50%);
+    border: 2px solid var(--bs-body-bg);
+    cursor: pointer;
+}
+
+.wfd-node-expand:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: 1px;
+}
+
+.wfd-node-header {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.5rem;
+    border-bottom: var(--bs-border-width) solid var(--bs-border-color-translucent);
+    border-radius: var(--bs-border-radius) var(--bs-border-radius) 0 0;
+    background-color: var(--bs-tertiary-bg);
+    color: var(--bs-secondary-color);
+    font-size: 0.75rem;
+}
+
+/* Opens the activity's settings: a click on the activity only selects it. */
+.wfd-node-edit {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 1.375rem;
+    height: 1.375rem;
+    margin: -0.125rem -0.25rem -0.125rem 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--bs-border-radius-sm);
+    background: none;
+    color: inherit;
+    font-size: 0.75rem;
+    opacity: 0.55;
+    cursor: pointer;
+}
+
+.wfd-node:hover .wfd-node-edit,
+.wfd-node.is-selected .wfd-node-edit,
+.wfd-node-edit:focus-visible {
+    opacity: 1;
+}
+
+.wfd-node-edit:hover {
+    background-color: rgba(var(--bs-emphasis-color-rgb), 0.08);
+    color: var(--bs-emphasis-color);
+}
+
+.wfd-node-edit:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: 1px;
+}
+
+.wfd-node.is-event .wfd-node-header {
+    background-color: var(--bs-warning-bg-subtle);
+    color: var(--bs-warning-text-emphasis);
+}
+
+.wfd-node.is-start .wfd-node-header {
+    background-color: var(--bs-success-bg-subtle);
+    color: var(--bs-success-text-emphasis);
+}
+
+/* What the viewed instance ran: executed activities and transitions, and the activity that faulted it. */
+.wfd-node.is-executed {
+    border-color: var(--bs-success-border-subtle);
+}
+
+.wfd-node.is-executed .wfd-node-header {
+    border-inline-start: 3px solid var(--bs-success);
+}
+
+.wfd-node.is-faulted {
+    border-color: var(--bs-danger);
+    box-shadow: 0 0 0 3px rgba(var(--bs-danger-rgb), 0.45), var(--wfd-node-stack, 0 0 transparent);
+}
+
+.wfd-node.is-faulted .wfd-node-header {
+    border-inline-start-color: var(--bs-danger);
+}
+
+/* An activity whose scripts failed, and used their fallback values, for the instance shown. */
+.wfd-node.has-script-errors {
+    border-color: var(--bs-warning);
+    box-shadow: 0 0 0 3px rgba(var(--bs-warning-rgb), 0.45), var(--wfd-node-stack, 0 0 transparent);
+}
+
+.wfd-node.has-script-errors .wfd-node-header {
+    border-inline-start-color: var(--bs-warning);
+}
+
+.wfd-node.is-blocking .wfd-node-header {
+    background-color: var(--bs-info-bg-subtle);
+    color: var(--bs-info-text-emphasis);
+}
+
+.wfd-node-type {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.wfd-node-badge {
+    font-size: 0.625rem;
+}
+
+/* The outcome ports sit in a column beside the body (not below it), which keeps nodes about as tall as
+   in the legacy editor, so existing layouts don't overlap. */
+.wfd-node-content {
+    display: flex;
+    align-items: stretch;
+}
+
+.wfd-node-body {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-height: 6rem;
+    padding: 0.375rem 0.5rem;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+}
+
+.wfd-node-body header h4 {
+    margin: 0 0 0.125rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.wfd-node-body header h4 i {
+    margin-inline-end: 0.375rem;
+}
+
+.wfd-node-body em,
+.wfd-node-body span {
+    color: var(--bs-secondary-color);
+}
+
+.wfd-node-ports {
+    display: flex;
+    flex: 0 1 auto;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 0.125rem;
+    max-width: 50%;
+    padding: 0.25rem 0;
+}
+
+.wfd-port {
+    position: relative;
+    display: flex;
+    align-items: center;
+    max-width: 100%;
+    padding: 0.0625rem 0.875rem 0.0625rem 0.5rem;
+    border: 0;
+    border-radius: var(--bs-border-radius-sm);
+    background: none;
+    color: var(--bs-body-color);
+    font-size: 0.6875rem;
+    line-height: 1.4;
+    cursor: crosshair;
+}
+
+.wfd-port-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.wfd-port:disabled {
+    color: var(--bs-body-color);
+    cursor: inherit;
+}
+
+.wfd-port:focus-visible {
+    outline: 2px solid var(--bs-primary);
+}
+
+.wfd-port-dot {
+    position: absolute;
+    right: -6px;
+    top: 50%;
+    width: 11px;
+    height: 11px;
+    margin-top: -5.5px;
+    border: 2px solid var(--bs-success);
+    border-radius: 50%;
+    background-color: var(--bs-body-bg);
+}
+
+.wfd-port.is-connected .wfd-port-dot {
+    background-color: var(--bs-success);
+}
+
+.wfd-port:not(:disabled):hover .wfd-port-dot {
+    transform: scale(1.3);
+}
+
+.wfd-marquee {
+    position: absolute;
+    left: 0;
+    top: 0;
+    border: 1px dashed var(--bs-primary);
+    background-color: rgba(var(--bs-primary-rgb), 0.08);
+    pointer-events: none;
+}
+
+.wfd-empty {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: var(--bs-secondary-color);
+    text-align: center;
+    pointer-events: none;
+}
+
+/* The activities to add after an outcome, opened by a click on its port. */
+.wfd-quick-add {
+    position: absolute;
+    z-index: 15;
+    width: 19rem;
+}
+
+.wfd-quick-add-title {
+    margin-bottom: 0.375rem;
+    color: var(--bs-secondary-color);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.wfd-quick-add-list {
+    max-height: 16rem;
+    margin: 0.375rem 0 0;
+    overflow-y: auto;
+}
+
+.wfd-quick-add-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3125rem 0.5rem;
+    border-radius: var(--bs-border-radius-sm);
+    font-size: 0.8125rem;
+    cursor: pointer;
+}
+
+.wfd-quick-add-item.active {
+    background-color: var(--bs-primary-bg-subtle);
+    color: var(--bs-primary-text-emphasis);
+}
+
+.wfd-quick-add-item > i {
+    width: 1rem;
+    text-align: center;
+}
+
+.wfd-quick-add-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.wfd-quick-add-category {
+    color: var(--bs-secondary-color);
+    font-size: 0.6875rem;
+}
+
+/* An unconnected outcome shows that a click adds the next activity. */
+.wfd-port:not(:disabled):not(.is-connected):hover .wfd-port-dot {
+    transform: none;
+    width: 17px;
+    height: 17px;
+    right: -9px;
+    margin-top: -8.5px;
+    background-color: var(--bs-success);
+}
+
+.wfd-port:not(:disabled):not(.is-connected):hover .wfd-port-dot::after {
+    content: "+";
+    position: absolute;
+    inset: 0;
+    color: var(--bs-white);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 13px;
+    text-align: center;
+}
+
+/* An empty workflow offers the events it can start with. */
+.wfd-start-picker {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 5;
+    width: min(36rem, calc(100% - 2rem));
+    padding: 1.25rem;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius-lg);
+    background-color: var(--bs-body-bg);
+    box-shadow: var(--bs-box-shadow);
+    text-align: center;
+    transform: translate(-50%, -50%);
+    /* A drop on its empty space reaches the canvas. */
+    pointer-events: none;
+}
+
+.wfd-canvas-host:has(.wfd-start-picker) .wfd-empty {
+    display: none;
+}
+
+.wfd-start-picker-title {
+    margin: 0 0 0.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.wfd-start-picker-hint {
+    margin: 0 0 1rem;
+    color: var(--bs-secondary-color);
+    font-size: 0.875rem;
+}
+
+.wfd-start-picker-events {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    gap: 0.5rem;
+}
+
+.wfd-start-picker-event {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 0.75rem;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    font-size: 0.875rem;
+    text-align: start;
+}
+
+.wfd-start-picker-event:hover,
+.wfd-start-picker-event:focus-visible {
+    border-color: var(--bs-primary);
+    background-color: var(--bs-primary-bg-subtle);
+}
+
+.wfd-start-picker-event > i {
+    color: var(--bs-warning-text-emphasis);
+}
+
+/* The notice and the zoom controls stay above the activity's panel when it opens over the canvas. */
+.wfd-hidden-notice {
+    position: absolute;
+    left: 0.75rem;
+    bottom: calc(0.75rem + var(--wfd-covered-height, 0px));
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-tertiary-bg);
+}
+
+.wfd-zoom-controls {
+    position: absolute;
+    right: 0.75rem;
+    bottom: calc(0.75rem + var(--wfd-covered-height, 0px));
+}
+
+.wfd-zoom-level {
+    min-width: 3.5rem;
+}
+
+.wfd-context-menu {
+    position: absolute;
+    z-index: 10;
+}
+
+.wfd-connect-dialog {
+    position: absolute;
+    top: 1rem;
+    left: 50%;
+    z-index: 10;
+    width: 20rem;
+    transform: translateX(-50%);
+}
+
+/* rtl:end:ignore */
+
+.wfd-toasts {
+    position: absolute;
+    left: 0.75rem;
+    bottom: 0.75rem;
+    z-index: 20;
+}
+
+/* Comparing two definitions: what changed from the left one to the right one. */
+.wfd.wfd-compare {
+    height: calc(100vh - 11rem);
+    min-height: 32rem;
+}
+
+.wfd-compare-body {
+    display: grid;
+    flex: 1 1 auto;
+    grid-template-columns: 1fr 1fr;
+    min-height: 0;
+}
+
+.wfd-compare-side {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+
+.wfd-compare-side + .wfd-compare-side {
+    border-inline-start: var(--bs-border-width) solid var(--bs-border-color);
+}
+
+.wfd-compare-heading {
+    margin: 0;
+    padding: 0.375rem 0.75rem;
+    border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.wfd-compare-changes {
+    max-height: 9rem;
+    padding: 0.5rem 0.75rem;
+    border-top: var(--bs-border-width) solid var(--bs-border-color);
+    overflow: auto;
+    font-size: 0.875rem;
+}
+
+.wfd-compare-changes dt {
+    font-weight: 600;
+}
+
+.wfd-compare-changes dd {
+    margin-bottom: 0.25rem;
+}
+
+.wfd-change-badge.is-added {
+    border: var(--bs-border-width) solid var(--bs-success-border-subtle);
+    background-color: var(--bs-success-bg-subtle);
+    color: var(--bs-success-text-emphasis);
+}
+
+.wfd-change-badge.is-removed {
+    border: var(--bs-border-width) solid var(--bs-danger-border-subtle);
+    background-color: var(--bs-danger-bg-subtle);
+    color: var(--bs-danger-text-emphasis);
+}
+
+.wfd-change-badge.is-changed {
+    border: var(--bs-border-width) solid var(--bs-warning-border-subtle);
+    background-color: var(--bs-warning-bg-subtle);
+    color: var(--bs-warning-text-emphasis);
+}
+
+.wfd-change-badge.is-moved {
+    border: var(--bs-border-width) solid var(--bs-info-border-subtle);
+    background-color: var(--bs-info-bg-subtle);
+    color: var(--bs-info-text-emphasis);
+}
+
+.wfd-node.is-added {
+    border-color: var(--bs-success);
+    box-shadow: 0 0 0 2px rgba(var(--bs-success-rgb), 0.5), var(--wfd-node-stack, 0 0 transparent);
+}
+
+.wfd-node.is-removed {
+    border-style: dashed;
+    border-color: var(--bs-danger);
+    box-shadow: 0 0 0 2px rgba(var(--bs-danger-rgb), 0.5), var(--wfd-node-stack, 0 0 transparent);
+}
+
+.wfd-node.is-changed {
+    border-color: var(--bs-warning);
+    box-shadow: 0 0 0 2px rgba(var(--bs-warning-rgb), 0.5), var(--wfd-node-stack, 0 0 transparent);
+}
+
+.wfd-node.is-moved {
+    border-style: dashed;
+    border-color: var(--bs-info);
+}
+
+.wfd-edge.is-added .wfd-edge-line {
+    stroke: var(--bs-success);
+    stroke-width: 2.5;
+}
+
+.wfd-edge.is-removed .wfd-edge-line {
+    stroke: var(--bs-danger);
+    stroke-width: 2.5;
+    stroke-dasharray: 6 4;
+}
+
+/* Real time: who else has the workflow open, and others' changes. */
+.wfd-presence {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.wfd-presence-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    background-color: var(--bs-primary-bg-subtle);
+    color: var(--bs-primary-text-emphasis);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.wfd-remote-change {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* The Run dialog: its result, the response of a request and the outputs. */
+.wfd-run-dialog-result {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: var(--bs-border-width) solid var(--bs-border-color);
+}
+
+.wfd-run-response-body,
+.wfd-run-outputs pre {
+    max-height: 16rem;
+    margin: 0.5rem 0 0;
+    padding: 0.5rem;
+    overflow: auto;
+    font-size: 0.8125rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+    background: var(--bs-tertiary-bg);
+    border-radius: var(--bs-border-radius);
+}
+
+.wfd-run-outputs dt {
+    font-weight: 600;
+}
+
+.wfd-run-outputs dd {
+    margin-bottom: 0.5rem;
+}
+
+/* The instance a run of the activity started (Execute Workflow). */
+.wfd-run-child {
+    margin-bottom: 0.5rem;
+    word-break: break-all;
+}
+
+/* The name and value rows of the Run dialog's request. */
+.wfd-name-value {
+    display: grid;
+    grid-template-columns: minmax(8rem, 1fr) 2fr 2rem;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 0.375rem;
+}
+
+.wfd-name-value-name {
+    overflow: hidden;
+    font-size: 0.875rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

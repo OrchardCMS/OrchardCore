@@ -1,0 +1,23 @@
+@using OrchardCore.Workflows.Models
+@model SetVariableTaskViewModel
+
+<div class="ocat-wrapper" asp-validation-class-for="VariableName">
+    <label asp-for="VariableName" class="ocat-label ocat-label-required">@T["Variable"]</label>
+    <div class="ocat-end">
+        @* The designer lists the declared variables in this datalist. *@
+        <input asp-for="VariableName" class="form-control" list="wfd-variables" autocomplete="off" autofocus="autofocus" />
+        <span asp-validation-for="VariableName"></span>
+        <span class="hint">@T["The variable to set. A variable declared in the Variables tab gets the value converted to its type; another name sets the workflow property of that name."]</span>
+    </div>
+</div>
+
+@{
+    var valueEditor = await Factory.CreateWorkflowExpressionEditorAsync(Html, m => m.Value, editor =>
+    {
+        editor.Label = T["Value"].Value;
+        editor.Hint = T["The value to store in the variable."].Value;
+        editor.Required = true;
+        editor.Multiline = true;
+    });
+}
+@await DisplayAsync(valueEditor)

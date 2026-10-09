@@ -13,6 +13,6 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<IContentDisplayDriver, UserTaskEventContentDriver>();
-        services.AddActivity<UserTaskEvent, UserTaskEventDisplayDriver>();
+        services.AddActivity<UserTaskEvent, UserTaskEventDisplayDriver>(activity => activity.Icon = "fa-solid fa-user-check");
     }
 }

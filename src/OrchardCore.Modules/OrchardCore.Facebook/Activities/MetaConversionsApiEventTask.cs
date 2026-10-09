@@ -3,6 +3,7 @@ using OrchardCore.Facebook.Models;
 using OrchardCore.Facebook.Services;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
@@ -13,7 +14,7 @@ namespace OrchardCore.Facebook.Activities;
 /// completed order or a captured lead directly from the server, independently of (and optionally
 /// deduplicated with) the browser-side Meta Pixel.
 /// </summary>
-public sealed class MetaConversionsApiEventTask : TaskActivity<MetaConversionsApiEventTask>
+public sealed class MetaConversionsApiEventTask : TaskActivity<MetaConversionsApiEventTask>, IActivityProvidedValues
 {
     private readonly IMetaConversionsApiService _metaConversionsApiService;
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
@@ -60,6 +61,9 @@ public sealed class MetaConversionsApiEventTask : TaskActivity<MetaConversionsAp
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         => Outcome(S["Done"], S["Failed"]);
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => [ActivityProvidedValue.LastResult("object", S["The result of sending the event."], WorkflowValueMembers.Result(S))];
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {

@@ -6,13 +6,14 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Workflows;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using YesSql;
 
 namespace OrchardCore.Contents.Workflows.Activities;
 
-public class CreateContentTask : ContentTask
+public class CreateContentTask : ContentTask, IActivityOutputs, IActivityProvidedValues
 {
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
     private readonly JavaScriptEncoder _javaScriptEncoder;
@@ -119,6 +120,7 @@ public class CreateContentTask : ContentTask
 
             workflowContext.Properties[ContentEventConstants.ContentItemInputKey] = contentItem;
             workflowContext.LastResult = contentItem;
+            workflowContext.SetActivityOutput(activityContext, "ContentItem", contentItem);
 
             return Outcome("Done");
         }
@@ -129,4 +131,14 @@ public class CreateContentTask : ContentTask
 
         return Outcome("Failed");
     }
+
+    public IEnumerable<ActivityOutputDescriptor> GetOutputs()
+        => [new ActivityOutputDescriptor { Name = "ContentItem", TypeName = "contentItem", DisplayName = S["Content item"], Description = S["The content item the task created."] }];
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        =>
+        [
+            new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = ContentEventConstants.ContentItemInputKey, TypeName = "contentItem", Description = S["The content item the activity created."], Members = WorkflowValueMembers.ContentItem(S) },
+            ActivityProvidedValue.LastResult("contentItem", S["The content item the activity created, or the validation result when it failed."], WorkflowValueMembers.ContentItem(S)),
+        ];
 }

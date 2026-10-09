@@ -12,36 +12,19 @@
 }
 
 .btn-theme {
-    color: #fff;
-    background-color: #212529;
-    border-color: #212529;
-}
-
-.btn-theme:hover {
-    color: #fff;
-    background-color: #1c1f23;
-    border-color: #1a1e21;
-}
-
-.btn-check:focus + .btn-theme, .btn-theme:focus {
-    color: #fff;
-    background-color: #1c1f23;
-    border-color: #1a1e21;
-    box-shadow: 0 0 0 0.25rem rgba(66, 70, 73, 0.5);
-}
-
-.btn-check:checked + .btn-theme, .btn-check:active + .btn-theme, .btn-theme:active, .btn-theme.active, .show > .btn-theme.dropdown-toggle {
-    color: #fff;
-    background-color: #1a1e21;
-    border-color: #191c1f;
-}
-
-.btn-check:checked + .btn-theme:focus, .btn-check:active + .btn-theme:focus, .btn-theme:active:focus, .btn-theme.active:focus, .show > .btn-theme.dropdown-toggle:focus {
-    box-shadow: 0 0 0 0.25rem rgba(66, 70, 73, 0.5);
-}
-
-.btn-theme:disabled, .btn-theme.disabled {
-    color: #fff;
-    background-color: #212529;
-    border-color: #212529;
+    // The theme sets Bootstrap's button variables rather than the colors themselves, so a component that styles
+    // its own .btn-theme, such as the toggle of bootstrap-select, keeps its own look.
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #212529;
+    --bs-btn-border-color: #212529;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #1c1f23;
+    --bs-btn-hover-border-color: #1a1e21;
+    --bs-btn-focus-shadow-rgb: 66, 70, 73;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #1a1e21;
+    --bs-btn-active-border-color: #191c1f;
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: #212529;
+    --bs-btn-disabled-border-color: #212529;
 }

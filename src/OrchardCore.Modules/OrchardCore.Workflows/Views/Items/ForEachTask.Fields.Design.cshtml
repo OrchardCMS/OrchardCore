@@ -2,9 +2,7 @@
 @model ActivityViewModel<ForEachTask>
 
 @{
-    var expression = Model.Activity.Syntax == WorkflowScriptSyntax.Liquid
-        ? Model.Activity.LiquidEnumerable?.Expression
-        : Model.Activity.Enumerable?.Expression;
+    var expression = WorkflowExpressionSyntaxes.Resolve(Model.Activity.Enumerable, Model.Activity.LiquidEnumerable?.Expression, Model.Activity.Syntax).Expression;
 }
 
 <header>

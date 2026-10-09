@@ -1,12 +1,13 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Events;
 
-public class WorkflowFaultEvent : EventActivity
+public class WorkflowFaultEvent : EventActivity, IActivityProvidedValues
 {
     protected readonly IStringLocalizer<WorkflowFaultEvent> S;
     private readonly IWorkflowScriptEvaluator _scriptEvaluator;
@@ -68,4 +69,7 @@ return result;";
 
         return sample;
     }
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => [new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = WorkflowFaultModel.WorkflowFaultInputKey, TypeName = "object", Description = S["The fault the workflow caught."], Members = WorkflowValueMembers.WorkflowFault(S) }];
 }

@@ -10,7 +10,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Tenants.Workflows.Activities;
 
-public class CreateTenantTask : TenantTask
+public class CreateTenantTask : TenantTask, IActivityProvidedValues
 {
     private readonly ITenantValidator _tenantValidator;
 
@@ -88,6 +88,9 @@ public class CreateTenantTask : TenantTask
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         => Outcome(S["Done"], S["Failed"]);
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => [ActivityProvidedValue.LastResult("any", S["The settings of the tenant it created, or the validation errors when it failed."])];
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {

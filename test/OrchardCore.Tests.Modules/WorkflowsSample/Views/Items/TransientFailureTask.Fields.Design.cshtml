@@ -1,0 +1,6 @@
+@model ActivityViewModel<TransientFailureTask>
+
+<header>
+    <h4><i class="fa-solid fa-plug-circle-exclamation" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Transient failure"])</h4>
+</header>
+<span>@T["Fails the first time it runs."]</span>

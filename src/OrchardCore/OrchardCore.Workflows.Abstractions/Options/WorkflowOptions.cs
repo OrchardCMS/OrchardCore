@@ -17,6 +17,13 @@ public class WorkflowOptions
     public IEnumerable<Type> ActivityDisplayDriverTypes => ActivityDictionary.Values.SelectMany(x => x.DriverTypes).ToList().AsReadOnly();
 
     public WorkflowOptions RegisterActivity(Type activityType, Type driverType = null)
+        => RegisterActivity(activityType, driverType, null);
+
+    /// <summary>
+    /// Registers an activity type and an optional display driver, then lets <paramref name="configure"/>
+    /// change the registration, for example to set its <see cref="ActivityRegistration.Icon"/>.
+    /// </summary>
+    public WorkflowOptions RegisterActivity(Type activityType, Type driverType, Action<ActivityRegistration> configure)
     {
         if (ActivityDictionary.TryGetValue(activityType, out var value))
         {
@@ -27,10 +34,23 @@ public class WorkflowOptions
         }
         else
         {
-            ActivityDictionary.Add(activityType, new ActivityRegistration(activityType, driverType));
+            value = new ActivityRegistration(activityType, driverType);
+            ActivityDictionary.Add(activityType, value);
         }
 
+        configure?.Invoke(value);
+
         return this;
+    }
+
+    /// <summary>
+    /// Returns the registration of an activity type, or <see langword="null"/> when it isn't registered.
+    /// </summary>
+    public ActivityRegistration GetActivityRegistration(Type activityType)
+    {
+        ArgumentNullException.ThrowIfNull(activityType);
+
+        return ActivityDictionary.GetValueOrDefault(activityType);
     }
 
     public WorkflowOptions UnregisterActivityType(Type activityType)

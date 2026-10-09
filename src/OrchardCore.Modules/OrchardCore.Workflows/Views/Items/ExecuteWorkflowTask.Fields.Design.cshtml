@@ -1,0 +1,15 @@
+@using OrchardCore.Workflows.Services
+@model ActivityViewModel<ExecuteWorkflowTask>
+@inject IWorkflowTypeStore WorkflowTypeStore
+
+@{
+    var workflowType = string.IsNullOrEmpty(Model.Activity.WorkflowTypeId) ? null : await WorkflowTypeStore.GetAsync(Model.Activity.WorkflowTypeId);
+}
+
+<header>
+    <h4><i class="fa-solid fa-diagram-project" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => workflowType is null ? T["Execute Workflow"] : T["Execute {0}", workflowType.Name])</h4>
+</header>
+@if (!Model.Activity.WaitForCompletion)
+{
+    <span><em>@T["Doesn't wait for it to finish"]</em></span>
+}

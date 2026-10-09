@@ -1,0 +1,39 @@
+@using Microsoft.AspNetCore.Html
+@model WorkflowDesignerFragmentViewModel
+@inject OrchardCore.ResourceManagement.IResourceManager ResourceManager
+@{
+    // Returns a server-rendered form to the designer as JSON. Unlike the Flows 'BuildEditor' fragment, the
+    // scripts and stylesheets are rendered from the required resources (with their dependencies), because the
+    // editors register them with asp-name / asp-src rather than as raw blocks.
+    Layout = null;
+
+    IHtmlContent body = Model.Shape is not null
+        ? await DisplayAsync(Model.Shape)
+        : await Html.PartialAsync(Model.PartialName, Model.PartialModel);
+
+    using var contentWriter = new System.IO.StringWriter();
+    contentWriter.Write("<div class=\"workflow-designer-form\" data-workflow-type-id=\"");
+    contentWriter.Write(Model.WorkflowTypeId);
+    contentWriter.Write("\" data-activity-id=\"");
+    HtmlEncoder.Encode(contentWriter, Model.ActivityId ?? string.Empty);
+    contentWriter.Write("\">");
+    var summary = Html.ValidationSummary(excludePropertyErrors: true, message: null, htmlAttributes: new { @class = "text-danger" });
+    summary?.WriteTo(contentWriter, HtmlEncoder);
+    body.WriteTo(contentWriter, HtmlEncoder);
+    contentWriter.Write("</div>");
+
+    using var scriptsWriter = new System.IO.StringWriter();
+    ResourceManager.RenderHeadScript(scriptsWriter);
+    scriptsWriter.WriteLine();
+    ResourceManager.RenderFootScript(scriptsWriter);
+
+    using var stylesWriter = new System.IO.StringWriter();
+    ResourceManager.RenderStylesheet(stylesWriter);
+}
+@Json.Serialize(new
+{
+    valid = Model.Valid,
+    content = contentWriter.ToString(),
+    scripts = scriptsWriter.ToString().Trim(),
+    styles = stylesWriter.ToString().Trim(),
+})

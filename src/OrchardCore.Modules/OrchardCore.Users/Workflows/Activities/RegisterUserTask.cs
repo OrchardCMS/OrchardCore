@@ -15,7 +15,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Users.Workflows.Activities;
 
-public class RegisterUserTask : TaskActivity<RegisterUserTask>
+public class RegisterUserTask : TaskActivity<RegisterUserTask>, IActivityProvidedValues
 {
     private static readonly string s_emailConfirmationControllerName = typeof(Controllers.EmailConfirmationController).ControllerName();
     private readonly IUserService _userService;
@@ -181,4 +181,7 @@ public class RegisterUserTask : TaskActivity<RegisterUserTask>
 
         return true;
     }
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = "EmailConfirmationUrl", TypeName = "string", Description = S["The URL that confirms the email of the registered user."], AvailableToItself = true }];
 }

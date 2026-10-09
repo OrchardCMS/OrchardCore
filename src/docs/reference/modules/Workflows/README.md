@@ -20,17 +20,404 @@ A workflow can have more than one start event. This allows you to trigger (run) 
 Each activity has one or more **outcomes**, which represent a source endpoint from which a connection can be made to the next activity, which are called transitions.  
 By connecting activities, you are effectively creating a program that can be executed by Orchard in response to a multitude of events.
 
-![The workflow editor](docs/workflow-editor.png)
+## Workflow Designer
 
-1. Activity Picker (Task / Event)
-2. Activity actions (click an activity to display activity actions)
-3. An activity configured as the starting activity of the workflow.
-4. An activity.
-5. An Outcome ("Done") of an activity.
-6. A transition between two activities (from "Content Created" via the "Done" outcome to the "Send Email" activity).
-7. The workflow editor design surface.
-8. Edit the workflow definition properties (Name, Enabled, etc.)
-9. List the workflow instances for this workflow definition.
+Workflow definitions are edited in the workflow designer: open **Workflows** in the admin menu, then select a workflow. The designer takes the whole page: its toolbar shows the name of the workflow, after a **Workflows** link back to the list.
+
+**Create Workflow** only asks for a name; the other settings have defaults, under **More settings**, and the designer's **Workflow** tab changes them later. A new workflow starts empty, and offers the common events to start it with: a workflow runs when something happens, so its first activity is an event.
+
+In the list of workflows, **Edit** opens the designer, and each workflow's **Actions** menu can **Clone** it (with a new name and its own settings), **Export** it as a recipe, or **Delete** it. The settings of a workflow, such as its name or whether it is enabled, are edited on the designer's **Workflow** tab.
+
+![The workflow designer](docs/workflow-designer.png)
+
+The designer has four areas. What concerns the whole workflow is on the right, and what concerns the selected activity is below the canvas:
+
+- **Activities** (on the left) lists the activities you can add, grouped by category. Search them by name or category, or show only events or tasks. Drag an activity onto the canvas, or click it to add it in the middle of the view.
+- **The canvas** (in the middle) shows the activities and the transitions between them. Each activity shows its type, its settings, and one port per outcome. Transitions are drawn with right angles, around the activity they leave.
+    - Click the port of an outcome that leads nowhere yet (it shows a **+**) to add the next activity: pick it in the list (type to search), and it's added to the right, already connected.
+    - Drag from an outcome's port to another activity to connect them. An outcome has at most one transition, so connecting it again replaces its previous transition.
+    - Start activities show a **Start** badge, and activities with problems show their number of issues.
+    - Right-click an activity, a transition or the canvas for more actions, such as making an event the start activity.
+- **The workflow panel** (on the right) has three tabs:
+    - **Variables**: the [variables](#variables) of the workflow, with their types and default values.
+    - **Workflow**: the settings of the workflow: its name, whether it is enabled, how many [instances run at a time](#instances-at-a-time), its lock settings, and whether finished instances are deleted.
+    - **Issues**: the problems found in the workflow, errors first. Select one to go to its activity. The settings of each activity are checked as its editor checks them when it's saved, so an activity added with a required setting left empty, such as a Log activity without its text, is an error until its settings are saved.
+- **The activity panel** (at the bottom of the canvas) opens when you double-click an activity, click the settings button at the top right of its card, or select it and press Enter. A click only selects an activity, so you can move activities around without opening it; moving them closes it, and so does a click on the canvas or **Close**. It has up to three tabs:
+    - **Settings**: the editor of the activity.
+    - **Outputs**: for an activity that produces values, each value with its type, and the [variable](#variables) to **Store in**, which the activities after it read. The variables of a type the value may not convert to are listed apart.
+    - **Available data**: what the activity's expressions can read (see [Available Data](#available-data)).
+
+The activity panel opens over the bottom of the canvas, without moving the workflow; the canvas only pans when the activity would be under the panel. Drag its top edge to resize it. Its **Delete** button deletes the activity, which the toast that follows can undo, as the Delete key does. **Pin** it to keep it open below the canvas, which then gets shorter, whether an activity is selected or not.
+
+The activities pane and the workflow panel can be collapsed to a narrow rail, to give the canvas more room. Hover a rail to open its pane over the canvas, or click it to expand the pane again. The workflow panel's rail shows its tabs, so you can go straight to one of them. The width of the workflow panel, the height of the activity panel, whether it is pinned and whether each pane is collapsed are remembered in your browser.
+
+### Running a Workflow from the Designer
+
+**Run…** in the designer's toolbar runs the workflow, to try it while you build it. It runs the **published version**: publish your changes first to run them, since an instance runs on a version, so it can wait and resume. Running requires the **Execute workflows** permission, and the workflow must be enabled.
+
+- **A workflow that starts with Started by Workflow** (a workflow [usable as an activity](#workflows-as-activities)) runs with the values of its input variables: the dialog has a field per input variable, of its type (a number, a checkbox for a boolean, JSON for an object or an array). An empty field keeps the variable's default value. The dialog then shows the status of the instance, its error, and the values of its output variables.
+- **A workflow that starts with an HTTP Request event** runs with a request to the event's URL, sent by your browser as a client would, with the event's method. The dialog lists the query string parameters and form fields the workflow's expressions read (`queryString('name')`, `requestForm('name')`, or `Request.QueryString` and `Request.Form` in Liquid), each with a field for its value; a value left empty isn't sent. **Add a value** sends another one. For a method other than GET, the body is either form fields, or JSON or text with its content type. The dialog shows the response, and the instance the request started.
+
+**Open the instance** opens the page of the instance, to see what each activity did. Workflows that start with another event, such as a content event or a timer, run when what they wait for happens.
+
+### Focusing on Part of a Workflow
+
+In a large workflow, you can hide the activities you aren't working on. Right-click an activity (or press Shift+F10 or the Menu key) and choose **Collapse the activities after it** to hide the activities that come after it. An activity that a start activity also reaches without going through the collapsed one (for example a branch that joins back) stays visible, and start activities are never hidden. The collapsed activity looks like a stack and shows how many activities it hides: click that number, or choose **Show the hidden activities after it**, to show them again.
+
+While activities are hidden, a notice at the bottom of the canvas shows how many, with **Show all**. Hidden activities are still part of the workflow: they are saved, published and executed as usual. Selecting one, for example from the **Issues** tab, shows it again. The collapsed activities of each workflow are remembered in your browser.
+
+### Drafts and Publishing
+
+The designer saves your changes as you make them, to a **draft** of the workflow. A draft doesn't run: the workflow keeps running its published definition until you publish the draft.
+
+- The toolbar shows whether all changes are saved. When the connection is lost, the designer retries until it can save, and leaving the page asks first while changes aren't saved.
+- **Publish** makes the draft the published definition, as a new [version](#versions). Errors must be fixed first, and when the workflow has warnings, the designer asks before publishing. Running instances keep running on the version they started on.
+- **Discard draft** deletes the draft and goes back to the published definition.
+- When someone else changes the workflow while you edit it, the designer stops saving and asks what to do. **Reload** loads their version and drops your unsaved changes. **Overwrite** saves your layout and connections over theirs.
+- When someone else last changed the draft, a banner shows who and when.
+
+The changes made in an activity editor are applied when you leave a field, and when you select another activity. When a field is invalid, the editor shows the error, and the designer asks before you leave that activity.
+
+**Instances** lists the instances of the workflow, and **Export** downloads its published definition as a recipe.
+
+### Keyboard Shortcuts
+
+| Keys | Action |
+|------|--------|
+| Ctrl+Z, Ctrl+Y (or Ctrl+Shift+Z) | Undo, redo a change on the canvas |
+| Tab | Move between activities; the focused activity is selected |
+| Enter | Edit the selected activity |
+| Escape, in the activity panel | Go back to the activity on the canvas |
+| Arrow keys | Move the selected activities by one grid cell, or by one pixel with Shift |
+| Delete, Backspace | Delete the selection; the toast that follows can undo it |
+| Ctrl+A | Select all the activities |
+| Escape | Clear the selection |
+| Shift+F10, Menu key | Open the actions of the focused activity, including **Connect an outcome to…** |
+| +, − | Zoom in, zoom out |
+| Ctrl+wheel | Zoom around the pointer |
+| Drag the background, Space+drag, middle button, wheel | Pan |
+
+Undo covers the changes made on the canvas: adding, moving, connecting and deleting activities. The changes made in an activity editor are applied on the server, so the undo history starts over after them.
+
+### Right-to-Left Languages
+
+In right-to-left languages, the activities pane and the workflow panel swap sides, but the canvas isn't mirrored: a workflow looks the same to every user, whatever their language.
+
+### Workflow Instances
+
+The page of a workflow instance shows the version of its workflow that the instance runs on, in a read-only designer, with the activities the instance waits on (its **blocking** activities) highlighted. Select an activity to see its details and outputs in the activity panel. The **Variables** tab of the workflow panel shows the values of the instance's variables, and the activities and connections the instance ran are highlighted (see [Execution Journal](#execution-journal)). Right-click an activity to collapse the activities after it; the blocking activities are never hidden. The **State** tab shows the instance's state as JSON.
+
+![A workflow instance waiting on a signal](docs/workflow-instance-viewer.png)
+
+### Listing and Operating Instances
+
+The designer's **Instances** button lists the instances of a workflow, and the **Instances** button of the workflows list lists those of every workflow, with the workflow of each. Both lists have the same tools:
+
+- **Counts.** The number of instances of each status heads the list: all, **Halted** (waiting on an event), **Running** (starting, running or resuming), **Faulted**, **Finished** and **Aborted** (canceled). Click one to list those instances.
+- **Filters.** The status, when the instances were created (any time, the last 24 hours, 7 or 30 days), the workflow (on the list of every workflow), and the order.
+- **Bulk actions.** Check instances, then choose an action:
+    - **Retry** runs the faulted instances again from the activity they faulted at, as [Retry from here](#retrying-a-faulted-instance) does. It requires the **Execute workflows** permission. An instance whose faulted activity isn't known (for example when the journal is off) is skipped, and the list says how many were.
+    - **Cancel** aborts the instances that haven't ended: they stop waiting for their events, and a [retry due](#retrying-failed-tasks-automatically) is dropped.
+    - **Delete** deletes the instances, with their journal.
+
+A faulted instance that waits for a retry shows when the retry is due.
+
+## Versions
+
+Each time a workflow is published, its definition is saved as a new **version**, numbered 1, 2, 3 and so on. A version holds what affects how the workflow runs: its activities and their settings, its transitions, its variables, and the **Instances at a time**, lock, **Delete finished workflows**, **Outcomes with several transitions** and **Fault the workflow on script errors** settings. Renaming a workflow, or enabling and disabling it, doesn't create a version.
+
+- **Instances run on their version.** A new instance starts on the published version, and keeps running on it until it finishes, even when newer versions are published. Changing or removing the activities an instance waits on doesn't affect it.
+- **Instances created before versions existed** (on a site upgraded from an earlier release) keep running on the current definition, as they did before. Upgrading turns each existing workflow into its version 1.
+- **Restarting** an instance starts a new one on the published version.
+
+**Versions**, in the designer's toolbar, lists the versions with when and by whom they were published, and how many instances run on each:
+
+- **View** shows a version in a read-only designer.
+- **Compare** shows a version next to the draft (or next to the published version when there is no draft), with the added, removed, changed and moved activities and the added and removed transitions highlighted, and listed below.
+- **Restore** copies a version into the draft, so that it can be published again as the next version. The name and enabled state of the draft are kept.
+
+The list of instances shows the version each instance runs on, and the page of an instance says which version it runs on and whether that is the published version.
+
+### Versions in Recipes and Deployments
+
+A `WorkflowType` recipe step that imports a workflow that already exists updates it: the imported definition becomes its next version, its instances are kept and keep running on their versions, and its draft is discarded. Exports and deployment plans contain the published definition, without the version history.
+
+### Keeping Fewer Versions
+
+Every version is kept by default. To keep only the most recent versions of each workflow, set `MaxCount` in the `OrchardCore:Workflows:Versions` configuration, for example in an `appsettings.json` file:
+
+```json
+{
+  "OrchardCore": {
+    "Workflows": {
+      "Versions": {
+        "MaxCount": 20
+      }
+    }
+  }
+}
+```
+
+When a version is created, the versions older than the most recent `MaxCount` ones are deleted, except those that instances run on. See [Configuration](../Configuration/README.md) for more information on such configuration.
+
+### Versions for Developers
+
+- `IWorkflowTypeStore.SaveAsync` creates the versions: saving a workflow type whose activities, transitions or execution settings changed creates its next `WorkflowTypeVersion` and sets `WorkflowType.VersionId`.
+- `IWorkflowManager.NewWorkflow` stores that version in `Workflow.WorkflowTypeVersionId`, and `ResumeWorkflowAsync` runs it.
+- `IWorkflowTypeVersionStore` lists and loads versions. Its `GetWorkflowTypeAsync(workflowType, versionId)` returns the definition an instance runs; never save the workflow type it returns.
+
+## Execution Journal
+
+Workflow instances record each activity they run in a **journal**: the activity, how it ended (completed, waiting on an event, faulted, failed and [retried](#retrying-failed-tasks-automatically), or failed and following its **Failed** outcome), its outcomes, when it started and how long it took, and the error of a fault or of a [script that failed](#script-errors). The journal is saved with the instance, in its own collection, and is deleted with the instance (when it is deleted, trimmed, or when its workflow is deleted).
+
+The page of a workflow instance uses the journal:
+
+- **Executed path.** The activities the instance ran and the connections it followed are highlighted, with the number of times when it's more than one (in a loop, for example). The activity that faulted the instance is marked.
+- **Journal tab.** The workflow panel lists the records in order, with their status, outcomes, duration and error. Select a record to open its activity on that run.
+- **Runs tab.** The activity panel lists each time the instance ran the selected activity. Open a run to see what the activity did, when the workflow records it (see below).
+- **Script errors.** An activity whose scripts failed is outlined in amber, with a badge that lists the errors.
+
+### Recording What Each Activity Did
+
+With **Record activity data** checked in the workflow's settings, each record of the journal also keeps the data of the activity's execution, which the **Runs** tab shows:
+
+- **Expressions.** Each expression the activity evaluated, with the setting it belongs to (`Condition`, `Script`, `Inputs.amount`…), its syntax, and its result. For example, the condition of an If/Else and whether it was true.
+- **Outputs.** The [outputs](#variables) the activity set.
+- **Variables.** The variables the activity changed, with their new value, and the other workflow properties it changed (such as with **Set Property**).
+- **Last result.** The value the activity returned, which the next activity reads as the [last result](#last-result).
+
+Values are kept as JSON. A value longer than 2,000 characters is cut, and a record keeps at most 32,000 characters of values; the run then says that some values were cut or left out. A record of an activity that evaluated, set and changed nothing has no data.
+
+The setting is checked for the workflows created in the admin, and off for the existing ones and those that recipes create without it. Values can be large, and they can be sensitive (personal data, keys): leave it unchecked for a workflow whose values shouldn't be stored. The data is deleted with the journal. The setting is part of the workflow's [versions](#versions).
+
+The built-in JavaScript, Liquid and Literal syntaxes record their evaluations. A [custom syntax](#adding-a-syntax) records its own with `WorkflowExecutionContext.ReportEvaluation(syntax, expression, result)`, and an activity's outputs are recorded by `SetActivityOutput`.
+
+### Retrying a Faulted Instance
+
+When an activity fails, for example because a service it calls is down, the instance is **faulted** and stops. After fixing the cause, select an activity of the faulted instance, usually the one that faulted, and choose **Retry from here**. The instance runs again from that activity, with the state it had (its properties, variables and activity states), on the version it runs on. Retrying requires the **Execute workflows** permission.
+
+### Retrying Failed Tasks Automatically
+
+A task can be retried by itself when it fails, for example when a service it calls is down for a moment. Set it in the **When it fails** section of the task's settings:
+
+| Setting | Description |
+|---|---|
+| **Retries** | How many times the task is retried, up to 10. With 0 (the default), it isn't. |
+| **Delay (seconds)** | How long to wait before the first retry. With 0, the task is retried at once, in the same run. |
+| **Delay between retries** | The same each time, or twice as long each time, up to a day. |
+| **Once the retries are spent** | **Fault the workflow** (the default), or **Follow the Failed outcome**. |
+
+How it runs:
+
+- **At once.** Without a delay, the task runs again right away, until it succeeds or the retries are spent.
+- **Later.** With a delay, the instance is faulted with a retry due, and its page says when the next retry is due. The **Workflow Retries** background task, which runs every minute, retries the due instances from the task, with their state, on the version they run on. A retry is due at the earliest when its delay is over, and runs within a minute of it. Waiting doesn't hold anything in memory, and survives a restart.
+- **Spent.** Once the retries are spent, the instance is faulted as without retries: the workflows that start with a **Catch Workflow Fault Event** run then, not at each failed attempt, and the instance can be [retried by hand](#retrying-a-faulted-instance), which starts the retries again. With **Follow the Failed outcome**, the task shows a **Failed** outcome on the canvas instead, and the instance goes on with it, for example to notify someone or to call another service; the error is the task's [last result](#last-result).
+- **Journal.** Each failed attempt that is retried is recorded as **Retrying**, with its error, and a failure that follows the outcome as **Failed**. The card of a task that is retried shows how many times.
+
+Events aren't retried: they wait for something to happen rather than doing it. A [child instance](#workflows-as-activities) that waits for a retry keeps its parent waiting until it ends.
+
+The retry policy is kept in the task's properties (`ActivityRetryPolicy`), so it is part of the workflow's [versions](#versions), recipes and deployments.
+
+### Script Errors
+
+When a JavaScript expression fails, for example because it reads a field of a value that is missing (`input("Order").Total` when there is no `Order`), the error is logged and the expression returns its default value (nothing, `false` or `0`), so the activity goes on with that value. The journal records the error on the activity's record:
+
+- **Canvas.** On the page of the instance, the activity is outlined in amber, with a warning badge that lists the errors. The legend explains the badge.
+- **Journal tab.** The record shows a **Script error** badge, and the error.
+
+To stop at such an error instead, check **Fault the workflow on script errors** in the workflow's settings. The instance then faults at the activity whose script failed, like with any other error: the activity is marked as faulted, the workflows that start with a **Catch Workflow Fault Event** run, and the instance can be [retried](#retrying-a-faulted-instance) after the script is fixed. The setting is off by default, and is part of the workflow's [versions](#versions).
+
+An expression that is stopped, because it runs too long or the request is canceled, always faults the instance.
+
+### Journal Settings
+
+The journal is configured in the `OrchardCore:Workflows:Journal` section, for example in an `appsettings.json` file:
+
+```json
+{
+  "OrchardCore": {
+    "Workflows": {
+      "Journal": {
+        "Enabled": true,
+        "MaxRecordsPerInstance": 1000
+      }
+    }
+  }
+}
+```
+
+| Setting | Description | Default |
+|---|---|---|
+| `Enabled` | Whether the activities instances run are recorded. | `true` |
+| `MaxRecordsPerInstance` | The number of most recent records kept per instance; 0 keeps every record. | `1000` |
+
+The journal doesn't record the input or output of the activities.
+
+### Journal for Developers
+
+- `IWorkflowExecutionJournal` lists, saves and deletes the `WorkflowExecutionRecord` documents of an instance.
+- `WorkflowExecutionContext.ExecutedActivities` holds the most recent 100 activities and outcomes the instance ran, and is saved with its state (`WorkflowState.ExecutedActivities`, oldest first).
+- `IWorkflowManager.RetryActivityAsync(workflow, activityId)` runs a faulted instance again from an activity.
+- `ActivityRetryPolicy` is the retry policy of a task (`activity.GetRetryPolicy()` returns it when it's active). `Workflow.PendingRetry` is the next attempt of a task that is retried later; `IWorkflowStore.ListDueRetriesAsync` lists the instances whose retry is due, and `IWorkflowManager.RunDueRetryAsync` runs it.
+- `WorkflowExecutionContext.ReportScriptError(message)` reports an error that an expression recovered from; the JavaScript evaluator reports the errors of its expressions. The engine records them on the activity's record, or faults the instance with a `WorkflowScriptException` when `WorkflowType.FaultOnScriptErrors` is set.
+
+## Branching
+
+An outcome usually has one transition. To run several branches, use a **Fork** activity, whose outcomes each start a branch, and a **Join** activity to wait for them.
+
+A workflow can also follow every transition of an outcome. In its settings, set **Outcomes with several transitions** to **Follow every transition**:
+
+- In the designer, connecting an outcome adds a transition instead of replacing the existing one.
+- The engine runs the transitions in the order they were added, in the same run, like the branches of a Fork. A branch that waits on an event makes the instance wait while the other branches go on, and a Join after the branches waits for them as after a Fork.
+
+With the default, **Follow the first transition only**, the other transitions of an outcome are ignored, and the designer warns about them. The setting is part of the workflow's [versions](#versions); workflows saved before it existed use the default.
+
+### Modeling a State Machine
+
+Approvals and other lifecycles can be modeled as a state machine with a variable and a loop:
+
+1. Declare a `state` [variable](#variables) of type Text, and set it to the first state, for example `Draft`, with a **Set Variable** activity.
+2. Add a **Script** task whose **Available Outcomes** are the states (`Draft, Review, Published`...), with the script `setOutcome(variable('state'));`.
+3. From each state's outcome, wait for the events that leave the state: a **Signal**, a content or user event, or a timer. When several events can fire, use a **Fork** into the events and a **Join** whose mode is `WaitAny`. Then set `state` to the next state, and connect back to the Script task.
+4. Leave the final state's outcome unconnected, so the workflow finishes.
+
+The [execution journal](#execution-journal) of an instance shows the states it went through, and the work of each state can be a workflow of its own, run with [Execute Workflow](#workflows-as-activities).
+
+## Workflows as Activities
+
+A workflow can run another workflow as one of its activities, pass it values, and get values back:
+
+1. In the settings of the workflow to run, check **Usable as an activity**.
+2. In its **Variables** tab, mark the variables it takes as **Input**, and those it returns as **Output**.
+3. Make its start activity a **Started By Workflow** event. A workflow without one starts on its first start activity.
+
+The workflows usable as an activity are listed in the **Workflows** category of the activities pane. Each one adds an **Execute Workflow** task that runs it. The task can also be added from the **Primitives** category, and its workflow selected in its editor. The task has these settings:
+
+- **Workflow.** The workflow to run. Its input variables show up below once it's selected.
+- **Inputs.** An expression per input variable, in any [syntax](#choosing-the-syntax-of-an-expression). The value is converted to the variable's type; a value that doesn't convert is logged, and the variable keeps its default value.
+- **Wait for the workflow to finish.**
+    - When checked, the task continues with its **Done** outcome once the workflow finished, and its outputs are the workflow's output variables. They can be [bound](#reading-and-writing-variables) to the variables of the calling workflow. When the workflow waits on an event, the calling workflow waits too, and continues when the workflow finishes. When the workflow faults, the task takes its **Failed** outcome.
+    - When unchecked, the task takes its **Done** outcome as soon as the workflow started.
+
+The task's outputs are stored when it's edited (or added from the activities pane). Edit the task again after changing the outputs of the workflow it runs.
+
+The workflow runs on its published version, as a new instance that records the instance and the activity that started it (`ParentWorkflowId` and `ParentActivityId`). Workflows can run each other 16 levels deep in a run; a task that runs the workflow it belongs to shows a warning in the designer.
+
+The instances link to each other: on the page of the calling instance, each run of the task in its **Runs** tab links to the instance it ran, and the page of that instance links back to the calling instance in its toolbar. An instance that was deleted is named by its id. The journal records the instance a run started (`WorkflowExecutionRecord.ChildWorkflowId`); a custom activity that starts workflows reports it with `WorkflowExecutionContext.ReportChildWorkflow(workflowId)`.
+
+Code can start a workflow as the child of an activity with `IWorkflowManager.StartChildWorkflowAsync`. When the child ends in a later run, the activity that started it is resumed with a `ChildWorkflowResult` input.
+
+### Activity Presets
+
+Entries of the activities pane can add an existing activity with preset properties: the workflows usable as an activity are presets of the Execute Workflow task. Modules can add presets with an `IActivityPresetProvider`, from code, configuration or data, like a catalog of HTTP calls:
+
+```csharp
+public sealed class WeatherPresetProvider : IActivityPresetProvider
+{
+    public Task<IEnumerable<ActivityPreset>> GetPresetsAsync()
+        => Task.FromResult<IEnumerable<ActivityPreset>>(
+        [
+            new ActivityPreset
+            {
+                Id = "weather:forecast",
+                ActivityName = "HttpRequestTask",
+                DisplayText = "Weather forecast",
+                Category = "Weather",
+                Properties = new JsonObject
+                {
+                    ["Url"] = new JsonObject { ["Expression"] = "https://weather.example.com/forecast" },
+                    ["HttpMethod"] = "GET",
+                },
+            },
+        ]);
+}
+```
+
+Register it with `services.AddScoped<IActivityPresetProvider, WeatherPresetProvider>()`. A preset sets the properties of the activity it adds over the activity's defaults; the stored workflow refers to the registered activity, so it keeps working when the preset changes or goes away.
+
+## Real-Time Updates
+
+When [SignalR](../SignalR/README.md) is enabled (the `OrchardCore.SignalR` feature), the designer and the instance pages update live:
+
+- **Who else is here.** The designer's toolbar shows the initials of the other users who have the workflow open.
+- **Others' changes.** When someone else changes the draft, publishes it or discards it, the designer shows a notice with **Reload**. Your unsaved changes stay until you reload. The changes you make in another tab are detected when you save, as before.
+- **Running instances.** The page of an instance follows it: when the instance runs again (resumed by an event, or retried), the executed path, the journal and the activities it waits on update.
+
+The pages connect to the `/hubs/workflows` hub of the tenant, which requires the **Manage workflows** permission. Clients subscribe to a workflow type or an instance; the server keeps no list of who is connected, so it works on several nodes with the Redis or Azure SignalR backplanes. Without SignalR, the pages work as before.
+
+For developers, `IWorkflowDesignerNotifier` is told about the changes of workflow types (by the draft manager) and instances (each time the engine saves one). The default implementation does nothing; the feature's implementation sends the changes once the request's changes are committed.
+
+## Variables
+
+A workflow can declare **variables**: named values that every activity of an instance can read and write, each with a type and an optional default value. Variables are declared in the **Variables** tab of the designer's workflow panel, and are part of the workflow's [versions](#versions).
+
+Variables belong to the workflow, not to an activity: an activity sets a variable, and the activities that run after it read the new value. Each instance has its own values, so two instances that run at the same time don't share them. The [samples](#samples) show them at work.
+
+| Type | Name | Values | Default value |
+|---|---|---|---|
+| Text | `string` | Text. Numbers, dates (ISO 8601), booleans (`true`/`false`) and objects (JSON) convert to text. | Text |
+| Number | `number` | A number (`double`). Numbers and text in the invariant culture convert to it. | A number |
+| Yes or no | `boolean` | `true` or `false`, from booleans and the texts `true` and `false`. | Yes, no or none |
+| Date and time | `datetime` | A UTC date and time, from dates and ISO 8601 text; text without an offset is UTC. | A date and time |
+| Object | `object` | A dictionary, from objects, JSON objects and their text. | JSON |
+| List | `array` | A list, from lists, JSON arrays and their text. | JSON |
+| Any | `any` | Any value, as it is. | JSON |
+| Content item | `contentItem` | A content item, when the `OrchardCore.Contents` feature is enabled. | None |
+
+- **Defaults.** A variable gets its default value when an instance starts, or when it resumes on a version that declares a variable it doesn't have yet. A variable without a default has no value until it's set.
+- **Names.** Names are identifiers (a letter or `_`, then letters, digits or `_`), unique ignoring case. Variables are found ignoring case.
+- **Values.** Setting a variable converts the value to its type. When the value doesn't convert, the workflow faults, with a message naming the variable.
+- **Inputs and outputs.** A variable marked as **Input** is set from the input value of the same name the workflow starts with, converted to its type. One marked as **Output** is returned to the workflow that runs this one as an activity. See [Workflows as Activities](#workflows-as-activities).
+
+### Reading and Writing Variables
+
+- **JavaScript.** `variable("name")` returns the value of a variable, and `setVariable("name", value)` sets it. In the designer's script editors, typing `variable` or `setVariable` suggests the declared variables. A value that doesn't convert is a script error: it's logged, and the variable doesn't change.
+- **Liquid.** `{{ Workflow.Variables.name }}` returns the value of a variable.
+- **Set Variable activity.** It sets a variable to the result of a JavaScript or Liquid expression. Its name field suggests the declared variables.
+- **Activity outputs.** Some activities produce values, their **outputs**. The **Outputs** tab of the activity panel stores each output in a variable. The value is converted to the variable's type after the activity runs (not when it waits on an event or faults), and the workflow faults when it doesn't convert.
+
+| Activity | Outputs |
+|---|---|
+| Script | `Result` (any): the value the script returns. |
+| Liquid | `Result` (text): the rendered template. |
+| Set Property | `Value` (any): the value it sets. |
+| HTTP Request | `Body` (text), `StatusCode` (number) and `Response` (object): the response. |
+| Create Content, Retrieve Content, Update Content | `ContentItem` (content item): the content item, when the activity succeeds. |
+
+The **Issues** tab warns about a Set Variable activity or an output that names a variable the workflow doesn't declare, and about an output whose values may not convert to its variable's type (for example a number output stored in a yes or no variable). Any value converts to text, and nothing is checked for `any`.
+
+### Samples
+
+The **Workflow Variables Samples** recipe adds three sample workflows. Run it from **Configuration** → **Recipes**; it also enables the **Workflows** and **HTTP Workflows Activities** features. Each sample starts with an HTTP request: open that activity's editor to generate its URL, then open the URL in a browser.
+
+- **Sample: order total.** Its variables have defaults, and its activities set them one after the other:
+    1. **Read the query string** (Script) sets `customer` and `quantity` with `setVariable()`. The text `3` becomes the number `3`, since `quantity` is a number.
+    2. **Compute the total** (Set Variable, JavaScript) sets `total` to `variable('quantity') * variable('unitPrice')`.
+    3. **Choose a discount** (Script) returns the discount, and its **Result** output is stored in the `discount` variable.
+    4. **Compose the reply** (Set Variable, Liquid) builds `message` from the other variables, and **Reply** returns it.
+
+    With `&customer=Ann&quantity=3` at the end of its URL, it replies "Ann ordered 3 item(s) for 28.5, with a 10% discount."; without them, the defaults apply: "Guest ordered 1 item(s) for 9.5, with a 0% discount."
+- **Sample: format a greeting.** It's usable as an activity: its `name` variable is an input, and its `greeting` variable an output.
+- **Sample: greet through another workflow.** An Execute Workflow task runs **Sample: format a greeting**, with `queryString('name') || 'world'` as its `name` input, and stores its `greeting` output in the `reply` variable. With `&name=Ann`, it replies "Hello, Ann!".
+
+The **Variables** tab of an instance's page shows the values its variables have.
+
+### Variables and Properties
+
+A variable is a workflow property with a type: the variable `greeting` is stored as `Properties["greeting"]`. Activities and scripts that use properties (`property("greeting")`, `{{ Workflow.Properties.greeting }}`, Set Property) see variables, and the existing workflows that use properties keep working. Writing a variable as a property doesn't convert the value. Setting an undeclared name with Set Variable or `setVariable()` stores the value as a property, as it is.
+
+The page of a workflow instance lists its variables, with the values the instance has, in the **Variables** tab.
+
+### Variables for Developers
+
+- `WorkflowExecutionContext.Variables` reads and writes the declared variables with their types; a value that doesn't convert throws `WorkflowVariableException`.
+- An activity declares outputs by implementing `IActivityOutputs`, each with a `Name`, a `TypeName`, a `DisplayName` and an optional `Description`, and sets them while it runs with `workflowContext.SetActivityOutput(activityContext, "Result", value)`. The bindings are stored in the activity's `Properties["OutputBindings"]` (see `ActivityOutputBindingExtensions`).
+- A module adds a variable type by registering an `IWorkflowVariableType`: its name, display name, how the designer edits its default (`text`, `number`, `boolean`, `datetime`, `json` or `none`), and how values convert to it. Its values are persisted with the instance like other workflow properties, so it needs an `IWorkflowValueSerializer` if they don't serialize to JSON and back. A type registered with an existing name replaces it.
+- The built-in types cover most values. A type of its own is worth it for a value that needs its own conversion, editor or storage. For example, `contentItem` stores the id of the content item, and loads the item again when the instance resumes, so instances don't keep a copy of the item that goes stale.
+
+```csharp
+services.AddScoped<IWorkflowVariableType, MyVariableType>();
+```
 
 ## Vocabulary
 
@@ -61,20 +448,18 @@ A specialized type of activity.
 Like tasks, events can perform actions, but typically all they do is halt the workflow, awaiting an event to happen before continuing on to the next activity.  
 When an event is configured as the starting activity of a workflow, that workflow is started when that event is triggered.
 
-### Workflow Editor
+### Workflow Designer
 
-An editor that allows you to create and manage a workflow definition using a drag & drop visual interface.
+The editor that allows you to create and manage a workflow definition visually. See [Workflow Designer](#workflow-designer).
 
 ### Activity Editor
 
-Most activities expose settings that can be configured via the activity editor.  
-To configure an activity, you can either double-click an activity on the design surface of the workflow editor, or click an activity once to activate a small popup that provides various actions you can perform on an activity.  
-One of these actions is the *Edit* action.
+Most activities expose settings that can be configured in the activity editor, on the **Settings** tab of the designer's activity panel.
+To configure an activity, double-click it on the canvas, or select it and press Enter.
 
-### Activity Picker
+### Activities Pane
 
-When you are in the Workflow Editor, you use the Activity Picker to add activities to the design surface.  
-Open the activity picker by clicking **Add Task** or **Add Event** to add a task or event, respectively.
+The list of the activities you can add to a workflow, on the left of the designer. Drag an activity onto the canvas, or click it to add it.
 
 ### Outcome
 
@@ -87,7 +472,7 @@ When the email was sent successfully, it yields "Done" as the outcome, and "Fail
 
 ### Transition
 
-A transition is the connection between the outcome of one activity to another activity. Transitions are created using drag & drop operations in the workflow editor.
+A transition is the connection between the outcome of one activity to another activity. Transitions are created by dragging from an outcome's port to another activity in the designer, or with the **Connect an outcome to…** action of an activity.
 
 ### Workflow Manager
 
@@ -105,6 +490,18 @@ Correlation is the act of associating a workflow instance with one or more *iden
 For example, when a workflow has the *Content Created* event as its starting point, the workflow instance will be associated, or rather *correlated* to the content item ID that was just created.  
 This allows long-running workflow scenarios where only workflow instances associated with a given content item ID are resumed.
 
+### Instances at a Time
+
+The workflow setting **Instances at a time** chooses how many instances of the workflow can run together:
+
+| Choice | What it does |
+|---|---|
+| **Any number** (the default) | Every event that starts the workflow starts a new instance. |
+| **One at a time** | An event doesn't start an instance while another instance of the workflow waits (it's halted on an event). Formerly the **Single instance** checkbox (`WorkflowType.IsSingleton`). |
+| **One per correlated item** | An event doesn't start an instance while an instance with the same [correlation id](#correlation) waits: one instance per content item or per user, for example, while the instances of other items run. It applies to the events that start a workflow with a correlation id, such as the content and user events and signals; the others, such as HTTP requests and timers, start instances as with **Any number**. (`WorkflowType.IsSingletonPerCorrelation`) |
+
+For example, a workflow that starts when an article is published and waits for an editor to approve it runs one approval per article with **One per correlated item**: publishing the article again while its approval waits doesn't start a second one, and publishing another article starts its own. The event that would have started the instance still resumes the waiting instance when that instance waits for it.
+
 ### Input
 
 When a workflow is executed, the caller can provide input to the workflow instance. This input is stored in the `Input` dictionary of the workflow execution context.  
@@ -120,6 +517,10 @@ This is analogous to returning values from a function.
 When a workflow executes, each activity can set property values to the workflow instance. These properties are stored in the `Properties` dictionary of the workflow execution context.  
 Each activity can set and access these properties, allowing a workflow to compute and retrieve information that can then be processed by other activities further down the chain.  
 This is analogous to a function setting local variables.
+
+### Variables
+
+Variables are typed workflow properties that a workflow declares, with default values. See [Variables](#variables).
 
 ## Workflow Execution
 
@@ -139,10 +540,165 @@ When the appropriate event is triggered (which could happen seconds, days, weeks
 
 ## Scripts and Expressions
 
-Many activities have settings that can contain either **JavaScript** or **Liquid** syntax.  
-For example, activities such as **Correlate**, **For Each**, **For Loop**, **If / Else**, **Set Output**, **Set Property**, and **While Loop** provide a syntax selector in their editors.  
-Liquid-enabled fields allow you to enter Liquid markup, enabling access to system-wide variables and filters as well as variables from the **workflow execution context**.
+Many activities have settings that are **expressions**, evaluated each time the activity runs. Liquid-enabled fields allow you to enter Liquid markup, enabling access to system-wide variables and filters as well as variables from the **workflow execution context**.
 
+### Available Data
+
+The **Available data** tab of the designer's activity panel, next to the activity's **Settings**, lists what the selected activity's expressions can read. Each group below is a tab of its own, with the number of values it has, and the first group that has values is shown first:
+
+- **Variables.** The workflow's [variables](#variables).
+- **This activity.** The values that the selected activity sets before it evaluates its own expressions, such as the `EmailConfirmationUrl` that **Register User Task** sets before it renders its email.
+- **From an activity.** The values that the activities which can run before this one provide: the input of an event (the content item of a content event, for example), and the properties and outputs that tasks set. Only the activities on a path to the selected one are listed, nearest first.
+- **Workflow.** The [last result](#last-result), and the correlation id of the instance.
+- **Inputs.** The inputs the workflow starts with: its variables marked as **Input**, which the workflow that runs it as an activity passes, read with `input("name")` or `{{ Workflow.Input.name }}` as well as through the variable.
+- **Global.** The Liquid values that every template can read, with their fields: `Site` (`{{ Site.SiteName }}`, `{{ Site.BaseUrl }}`, …), `User` (`{{ User.Identity.Name }}`), `Request`, `Culture` and `Environment`, and `Content` with the Contents feature. `User` and `Request` have no value when the workflow doesn't run in a request, for example after a timer.
+- **Functions.** The functions that scripts can call: `setProperty()`, `setVariable()`, `output()`, `setCorrelationId()`, `workflowId()`, `uuid()`, `log()`, `base64()` and `html()`, and the HTTP functions, such as `queryString()` and `requestForm()`, with the HTTP workflows feature.
+
+A value that has fields, such as a content item or a user, lists them under **Fields**, each with its own expressions.
+
+Liquid filters, such as `raw`, `json` or `date`, aren't listed: the **Global** group links to the [Liquid documentation](../Liquid/README.md).
+
+Each value shows its JavaScript and Liquid expressions, for example `input("ContentEvent").ContentType` and `{{ Workflow.Input.ContentEvent.ContentType }}`. Click one to insert it where the cursor was in the settings, which then come back into view. When no field of the settings had the cursor, the expression is copied instead. The script editors also suggest these values as you type.
+
+The built-in activities provide the following values:
+
+| Activity | Values |
+|---|---|
+| Content events (Content Created, Published, Updated, …) | Input `ContentItem`, and `ContentEvent`: `Name` (of the event), `ContentType`, `ContentItemId`, `ContentItemVersionId` and `IsStart`. |
+| Create Content, Retrieve Content, Update Content | Property `ContentItem`. |
+| User Task Event | Input `UserAction`, `ContentItem` and `ContentEvent`. |
+| User events (User Created, Enabled, Updated, …) | Input `User`: `UserId`, `UserName`, `Email`, `EmailConfirmed`, `IsEnabled` and `RoleNames`. |
+| User Logged In Event | Input `UserName`, `Roles`, `Provider` and `ExternalClaims`. |
+| User Logged Out Event | Input `UserName` and `Roles`. |
+| Validate User Task | Property `UserName`, when it sets the user name. |
+| Register User Task | Property `EmailConfirmationUrl`. |
+| Notify Content Owner | Input `Owner`, a user. |
+| Get Users by Role Task | The output it is configured with, unless its name is a Liquid template. |
+| Signal Event | Input `Signal`. |
+| Http Request Event | Output `FormLocation`, when it saves the form location. |
+| Catch Workflow Fault Event | Input `WorkflowFault`: `WorkflowName`, `WorkflowId`, `ActivityId`, `ActivityDisplayName`, `ActivityTypeName`, `ErrorMessage`, `FaultMessage`, `ExceptionDetails` and `ExecutedActivityCount`. |
+| For Each, For Loop | The property of their loop variable. |
+| Set Property, Set Output | The property or output they set. |
+
+The [outputs](#reading-and-writing-variables) of activities are listed with the variables they are stored in. An activity whose values depend on how it runs, such as a Script that sets properties, doesn't list them.
+
+### Last Result
+
+The last result (`lastResult()`, `{{ Workflow.LastResult }}`) is the value that the activity which ran just before returned, so its type depends on that activity. When every activity with a connection to the selected one declares its last result, the **Available data** tab shows its type and what it is, and its fields when they all have the same; otherwise it's **Any**.
+
+| Activity | Last result |
+|---|---|
+| Create Content, Update Content | The content item, or the validation result (`Succeeded`, `Errors`) when it failed. |
+| Retrieve Content | The content item. |
+| Script | The value the script returns. |
+| Liquid | The rendered template, as text. |
+| HTTP Request | The response: `Body`, `Headers`, `StatusCode`, `ReasonPhrase` and `IsSuccessStatusCode`. |
+| Email, SMS, Meta Conversions API Event | The result of sending: `Succeeded` and `Errors`. |
+| Notify User, Notify Content Owner, … | How many notifications were sent. |
+| For Each, For Loop | The current item, or the current index. |
+| Execute Workflow | The outputs of the workflow it ran, by name (its fields, for example `lastResult().greeting`), or its fault message when it failed. |
+| Validate User | The names of the user's roles, when the user is in one of the roles. |
+| Create Tenant | The settings of the tenant, or the validation errors when it failed. |
+| Timer Event | The text `TimerEvent`. |
+
+Other activities leave the last result as it was.
+
+### Available Data for Developers
+
+An activity lists the values it provides by implementing `IActivityProvidedValues`. `GetProvidedValues()` can use the activity's properties, for example to provide the property that it sets:
+
+```csharp
+public sealed class AssignCustomerTask : TaskActivity<AssignCustomerTask>, IActivityProvidedValues
+{
+    // ...
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        =>
+        [
+            new ActivityProvidedValue
+            {
+                Source = WorkflowValueSource.Properties,
+                Name = "Customer",
+                TypeName = "object",
+                Description = S["The customer of the order."],
+                Members =
+                [
+                    new ActivityProvidedValueMember { Name = "Email", TypeName = "string", Description = S["The email address."] },
+                ],
+            },
+        ];
+}
+```
+
+- **Sources.** `Input` (`input("name")`, `{{ Workflow.Input.name }}`), `Output` (`workflow().Output["name"]`, `{{ Workflow.Output.name }}`) or `Properties` (`property("name")`, `{{ Workflow.Properties.name }}`).
+- **Last result.** `ActivityProvidedValue.LastResult(typeName, description, members)` declares what the activity sets as the last result, for example `ActivityProvidedValue.LastResult("contentItem", S["The content item."], WorkflowValueMembers.ContentItem(S))`.
+- **Types.** `TypeName` is the name of a [variable type](#variables-for-developers), or `any`.
+- **Fields.** `Members` lists the fields of the value. `WorkflowValueMembers` has the fields of a content item, a content event, a user, a workflow fault, a `Result` and an HTTP response. The Liquid expressions of the fields only work for types registered with `TemplateOptions.MemberAccessStrategy`.
+- **Its own expressions.** `AvailableToItself = true` lists the value for the activity itself too, when it sets the value before it evaluates its own expressions.
+- **Registration.** A module can declare the values of an activity, its own or another module's, when it registers it. The values that the activity declares itself replace the declared values with the same source and name.
+
+```csharp
+services.AddActivity<MyTask, MyTaskDisplayDriver>(activity => activity
+    .Provides(WorkflowValueSource.Input, "Customer", "object", "The customer of the order.", [new ActivityProvidedValueMember { Name = "Email", TypeName = "string" }]));
+```
+
+A module that adds a Liquid value to `TemplateOptions.Scope`, or a JavaScript method with `IGlobalMethodProvider`, lists it in the **Global** or **Functions** group with an `IWorkflowGlobalValueProvider`. A field name can be a path, such as `Identity.Name`.
+
+```csharp
+public sealed class StoreWorkflowGlobalValueProvider : IWorkflowGlobalValueProvider
+{
+    // ...
+
+    public IEnumerable<WorkflowGlobalValue> GetGlobalValues()
+        =>
+        [
+            WorkflowGlobalValue.Liquid("Store", "object", S["The settings of the store."],
+            [
+                new ActivityProvidedValueMember { Name = "Currency", TypeName = "string", Description = S["The currency of the prices."] },
+            ]),
+            WorkflowGlobalValue.Function("formatPrice(amount)", "string", S["Formats an amount in the store's currency."]),
+        ];
+}
+```
+
+```csharp
+services.AddScoped<IWorkflowGlobalValueProvider, StoreWorkflowGlobalValueProvider>();
+```
+
+### Choosing the Syntax of an Expression
+
+The expressions of the **Correlate**, **For Each**, **For Loop**, **If / Else**, **Set Output**, **Set Property**, **Set Variable** and **While Loop** activities each have their own syntax, chosen next to the expression:
+
+| Syntax | The expression is | Example (If / Else) |
+|---|---|---|
+| Literal | The value itself, converted to the expected type: text as is, `true` or `false`, numbers in the invariant culture, JSON for objects, and a JSON array or comma-separated values for lists. A value that doesn't convert is an error in the editor. | `true` |
+| Liquid | A Liquid template. | `{{ Workflow.Properties.Count > 0 }}` |
+| JavaScript | A JavaScript expression. | `input("Count") > 0` |
+
+Values that span several lines (Set Output, Set Property, Set Variable and Correlate) are edited in a code editor whose language follows the syntax. Modules can add syntaxes, which then appear in the same lists.
+
+Activities saved before syntaxes could be chosen for each expression had one syntax setting for the whole activity, with a JavaScript and a Liquid property for each expression. They keep running as before. Opening one in the designer shows each expression with that syntax, and saving it stores the new shape: the expression with its `Syntax`, without the former properties.
+
+```json
+"Condition": {
+  "Expression": "{{ Workflow.Properties.Count > 0 }}",
+  "Syntax": "Liquid"
+}
+```
+
+### Adding a Syntax
+
+A module adds a syntax by registering an `IWorkflowExpressionProvider`: its name (stored in `WorkflowExpression<T>.Syntax`), its display name, the language of the code editor (a Monaco language such as `plaintext`, `liquid` or `javascript`), how it evaluates an expression to the expected type, and how it validates the text of an expression in the editor. A provider registered with the name of an existing one replaces it.
+
+```csharp
+services.AddScoped<IWorkflowExpressionProvider, MyExpressionProvider>();
+```
+
+`IWorkflowExpressionManager` lists the syntaxes and evaluates an expression with the provider of its syntax. An activity evaluates its expressions with it:
+
+```csharp
+var condition = await _expressionManager.EvaluateAsync(Condition, workflowContext, defaultSyntax: WorkflowExpressionSyntaxes.JavaScript);
+```
 ### JavaScript Functions
 
 The following JavaScript functions are available by default to any activity that supports script expressions:
@@ -155,6 +711,8 @@ The following JavaScript functions are available by default to any activity that
 | `output`           | Sets an output parameter with the specified name. Workflow output can be collected by the invoker of the workflow.                                                                                                                                                                               | `output(name: string, value: any): void`                                                 |
 | `property`         | Returns the property value with the specified name. Properties are a dictionary that workflow activities can read and write information from and to.                                                                                                                                             | `property(name: string): any`                                                            |
 | `setProperty`      | Stores the specified data in workflow properties.                                                                                                                                                                                                                                                | `setProperty(name: string,data:any):void`                                                |
+| `variable`         | Returns the value of the [variable](#variables) with the specified name, converted to its type.                                                                                                                                                                                                 | `variable(name: string): any`                                                            |
+| `setVariable`      | Sets the [variable](#variables) with the specified name, converting the value to its type.                                                                                                                                                                                                      | `setVariable(name: string, value: any): void`                                            |
 | `executeQuery`     | Returns the result of the query, see [more](../Queries/README.md#scripting).                                                                                                                                                                                                                     | `executeQuery(name: String, parameters: Dictionary<string,object>): IEnumerable<object>` |
 | `log`              | Output logs according to the specified log level. Allowed log levels : `'Trace','Debug','Information','Warning','Error','Critical','None'`                                                                                                                                                       | `log(level: string, text: string, param: object): void`                                  |
 | `lastResult`       | Returns the value that the previous activity provided, if any.                                                                                                                                                                                                                                   | `lastResult(): any`                                                                      |
@@ -186,6 +744,7 @@ The following Liquid tags, properties and filters are available by default to an
 | `Workflow.Input`         | Property | Returns the Input dictionary.                                                                                             | `{{ Workflow.Input["ContentItem"] }}` |
 | `Workflow.Output`        | Property | Returns the Output dictionary.                                                                                            | `{{ Workflow.Output["SomeResult"] }}` |
 | `Workflow.Properties`    | Property | Returns the Properties dictionary.                                                                                        | `{{ Workflow.Properties["Foo"] }}`    |
+| `Workflow.Variables`     | Property | Returns the [variables](#variables), converted to their types.                                                            | `{{ Workflow.Variables.greeting }}`   |
 | `signal_url`             | Filter   | Returns the workflow trigger URL. You can use the `input("Signal")` JavaScript method to check which signal is triggered. | `{{ 'Approved' \| signal_url }}`      |
 
 Instead of using the indexer syntax on the three workflow dictionaries `Input`, `Output` and `Properties`, you can also use dot notation, e.g.:
@@ -204,6 +763,8 @@ For example, if you have a workflow that starts with the **Content Created Event
 {{ Workflow.Input.ContentItem | display_text }}
 {{ Workflow.Input.ContentItem.DisplayText }}
 ```
+
+The event itself is in `Workflow.Input.ContentEvent`, for example `{{ Workflow.Input.ContentEvent.ContentType }}` or `{{ Workflow.Input.ContentEvent.Name }}`. The designer lists these values in the [available data](#available-data) of the activities that follow the event.
 
 For more examples of supported content item filters, see the documentation on [Liquid](../Liquid/README.md).
 
@@ -226,6 +787,7 @@ The following activities are available with any default Orchard installation:
 | Script                        | Task  | Execute script and continue execution based on the returned outcome.                |
 | Set Output                    | Task  | Evaluate a JavaScript or Liquid expression and store the result into the workflow's output. |
 | Set Property                  | Task  | Evaluate a JavaScript or Liquid expression and store the result into workflow properties. |
+| Set Variable                  | Task  | Evaluate a JavaScript or Liquid expression and store the result into a [workflow variable](#variables). |
 | While Loop                    | Task  | Iterate while a JavaScript or Liquid condition is true.                             |
 | **HTTP Workflow Activities**  | *     | *                                                                                   | * |
 | HTTP Redirect                 | Task  | Redirect the user agent to the specified URL (301/302).                             |
@@ -255,7 +817,7 @@ Orchard is built to be extended, and the `Workflows` module is no different. Whe
 Developing custom activities involve the following steps:
 
 1. Create a new class that directly or indirectly implements `IActivity`. In most cases, you either derive from `TaskActivity` or `EventActivity`, depending on whether your activity represents an event or not. Although not required, it is recommended to keep this class in a folder called `Activities`.
-2. Create a new **display driver** class that directly or indirectly implements `IDisplayDriver`. An activity display driver controls the activity's display on the **workflow editor canvas**, the **activity picker** and the **activity editor**. Although not required, it is recommended to keep this class in a folder called `Drivers`.
+2. Create a new **display driver** class that directly or indirectly implements `IDisplayDriver`. An activity display driver controls the activity's display on the designer's **canvas**, in its **activities pane** and in the **activity editor**. Although not required, it is recommended to keep this class in a folder called `Drivers`.
 3. Optionally implement a **view model** if your activity has properties that the user should be able to configure.
 4. Implement the various Razor views for the various shapes provided by the driver. Although not required, it is recommended to store these files in the `Views/Items` folder. Note that it is required for your views to be discoverable by the display engine.  
 
@@ -290,10 +852,83 @@ An activity has the following display types:
 - Design
 
 **Thumbnail**
-Used when the activity is rendered as part of the activity picker.
+Used for the activity's card in the designer's activities pane.
 
 **Design**
-Used when the activity is rendered as part of the workflow editor design surface.
+Used for the body of the activity on the designer's canvas.
+
+The designer renders the `Content` zone of these shapes, where `ActivityDisplayDriver` places the `{Name}_Fields_Thumbnail` and `{Name}_Fields_Design` shapes. It draws the card, the node, the icon and the outcome ports itself.
+
+### Activity Icons
+
+The designer shows an icon for each activity, on the canvas and in the activities pane. An activity that doesn't declare one gets the default icon of its category, or a generic event or task icon. To declare one, set a Font Awesome class when registering the activity:
+
+```csharp
+services.AddActivity<NotifyTask, NotifyTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-bell");
+```
+
+### Expression Editors in Custom Activities
+
+A custom activity edits an expression with the `WorkflowExpressionEditor` shape, which shows the syntax select and the expression, and posts both:
+
+1. In the activity's view model, the input is a `WorkflowExpressionInput`.
+2. In the driver, `EditActivity` fills it with `WorkflowExpressionInput.From(activity.Condition)`, and `UpdateAsync` reads it back with `WorkflowExpressionInputValidator.Validate<T>()`. It adds the errors to the model state: a missing required expression, an unknown or disallowed syntax, and what the syntax's provider finds wrong.
+3. In the editor view, `Factory.CreateWorkflowExpressionEditorAsync()` creates the shape, which `DisplayAsync` renders.
+
+```cshtml
+@{
+    var conditionEditor = await Factory.CreateWorkflowExpressionEditorAsync(Html, m => m.Condition, editor =>
+    {
+        editor.Label = T["Condition"].Value;
+        editor.Required = true;
+        // Only these syntaxes; every registered one by default.
+        editor.Syntaxes = [WorkflowExpressionSyntaxes.Liquid, WorkflowExpressionSyntaxes.JavaScript];
+        editor.Examples[WorkflowExpressionSyntaxes.JavaScript] = "input(\"Count\") > 0";
+    });
+}
+@await DisplayAsync(conditionEditor)
+```
+
+```csharp
+activity.Condition = _expressionValidator.Validate<bool>(model.Condition, context.Updater.ModelState, Prefix, nameof(model.Condition), new()
+{
+    Label = S["Condition"],
+    Required = true,
+    Syntaxes = [WorkflowExpressionSyntaxes.Liquid, WorkflowExpressionSyntaxes.JavaScript],
+});
+```
+
+Set `Multiline` for values that span several lines: they are edited in a code editor whose language follows the syntax.
+
+### Activity Editors in the Designer
+
+The designer loads an activity's editor (the `{Name}_Fields_Edit` shape) into its activity panel without reloading the page. It posts the editor as a form when a field changes, and replaces it when another activity is selected. Editors made of plain form fields need nothing more. An editor that has a script must be safe to inject:
+
+- **Register the script as a resource** (`<script asp-name="…" at="Foot">` or `asp-src`), so the designer loads it with the editor. A script that is already on the page isn't loaded again, so it must also initialize the editors that are added to the page later. In the Orchard Core repository, `observeAndInit(selector, init)` from `@orchardcore/bloom/helpers/observeAndInit` does this: it runs `init` once for every matching element, including the ones added later.
+- **Scope the script to its editor**, for example with a `data-task-editor="my-task"` wrapper element, and read element ids from `data-` attributes rather than hard-coding them.
+- **Keep the form fields up to date.** The designer collects the form with `FormData`. It dispatches a `submit` event on the form first, so rich editors that copy their value when the form is submitted keep working. Dispatch a bubbling `change` event on a field when the user commits an edit, so the designer applies it.
+- **Release what the script creates** when the editor is removed. Right before replacing an editor, the designer dispatches the bubbling `oc:editor-unmounting` event on the element that contains it.
+
+The bloom helpers in `@orchardcore/bloom/helpers/editorLifecycle` implement this contract:
+
+- `onEditorUnmounting(element, dispose)` calls `dispose` once, when the editor is removed.
+- `dispatchFieldChange(field)` reports an edit.
+- `bindCodeMirrorToTextArea(editor, textArea)` does all of it for a CodeMirror 5 editor.
+
+```typescript
+import observeAndInit from "@orchardcore/bloom/helpers/observeAndInit";
+import { bindCodeMirrorToTextArea } from "@orchardcore/bloom/helpers/editorLifecycle";
+
+observeAndInit('[data-task-editor="my-task"]', (element) => {
+    const textArea = element.querySelector<HTMLTextAreaElement>(`#${CSS.escape(element.dataset.expressionId ?? "")}`);
+
+    if (textArea) {
+        bindCodeMirrorToTextArea(CodeMirror.fromTextArea(textArea, { mode: { name: "liquid" } }), textArea);
+    }
+});
+```
+
+The validation errors that the driver's `UpdateAsync` adds are shown in the editor.
 
 ### IActivity
 

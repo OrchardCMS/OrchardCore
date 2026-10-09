@@ -5,19 +5,16 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities;
 
-public class SetPropertyTask : TaskActivity<SetPropertyTask>
+public class SetPropertyTask : TaskActivity<SetPropertyTask>, IActivityOutputs, IActivityProvidedValues
 {
-    private readonly IWorkflowScriptEvaluator _scriptEvaluator;
-    private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+    private readonly IWorkflowExpressionManager _expressionManager;
     protected readonly IStringLocalizer S;
 
     public SetPropertyTask(
-        IWorkflowScriptEvaluator scriptEvaluator,
-        IWorkflowExpressionEvaluator expressionEvaluator,
+        IWorkflowExpressionManager expressionManager,
         IStringLocalizer<SetPropertyTask> localizer)
     {
-        _scriptEvaluator = scriptEvaluator;
-        _expressionEvaluator = expressionEvaluator;
+        _expressionManager = expressionManager;
         S = localizer;
     }
 
@@ -31,18 +28,29 @@ public class SetPropertyTask : TaskActivity<SetPropertyTask>
         set => SetProperty(value);
     }
 
+    /// <summary>
+    /// The value.
+    /// </summary>
     public WorkflowExpression<object> Value
     {
         get => GetProperty(() => new WorkflowExpression<object>());
         set => SetProperty(value);
     }
 
+    /// <summary>
+    /// Legacy: the Liquid liquidvalue of an activity saved before a syntax could be chosen for each expression, used when
+    /// <see cref="Value"/> has no syntax and <see cref="Syntax"/> is Liquid.
+    /// </summary>
     public WorkflowExpression<object> LiquidValue
     {
         get => GetProperty(() => new WorkflowExpression<object>());
         set => SetProperty(value);
     }
 
+    /// <summary>
+    /// Legacy: which expression an activity saved before a syntax could be chosen for each expression evaluates.
+    /// It's only used when <see cref="Value"/> has no <see cref="WorkflowExpression{T}.Syntax"/>.
+    /// </summary>
     public WorkflowScriptSyntax Syntax
     {
         get => GetProperty(() => WorkflowScriptSyntax.JavaScript);
@@ -54,15 +62,17 @@ public class SetPropertyTask : TaskActivity<SetPropertyTask>
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var value = Syntax switch
-        {
-            WorkflowScriptSyntax.Liquid => await _expressionEvaluator.EvaluateAsync(LiquidValue, workflowContext, null),
-            WorkflowScriptSyntax.JavaScript => await _scriptEvaluator.EvaluateAsync(Value, workflowContext),
-            _ => throw new NotSupportedException($"The syntax {Syntax} isn't supported for SetPropertyTask.")
-        };
+        var value = await _expressionManager.EvaluateAsync(WorkflowExpressionSyntaxes.Resolve(Value, LiquidValue.Expression, Syntax), workflowContext);
 
         workflowContext.Properties[PropertyName] = value;
+        workflowContext.SetActivityOutput(activityContext, "Value", value);
 
         return Outcome("Done");
     }
+
+    public IEnumerable<ActivityOutputDescriptor> GetOutputs()
+        => [new ActivityOutputDescriptor { Name = "Value", TypeName = "any", DisplayName = S["Value"], Description = S["The value the task sets the property to."] }];
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        => string.IsNullOrEmpty(PropertyName) ? [] : [new ActivityProvidedValue { Source = WorkflowValueSource.Properties, Name = PropertyName, TypeName = "any", Description = S["The value this activity sets."] }];
 }

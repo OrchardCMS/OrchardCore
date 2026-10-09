@@ -11,7 +11,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Roles.Workflows.Activities;
 
-public class GetUsersByRoleTask : TaskActivity<GetUsersByRoleTask>
+public class GetUsersByRoleTask : TaskActivity<GetUsersByRoleTask>, IActivityProvidedValues
 {
     private readonly UserManager<IUser> _userManager;
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
@@ -70,5 +70,15 @@ public class GetUsersByRoleTask : TaskActivity<GetUsersByRoleTask>
         }
 
         return Outcome("Failed");
+    }
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+    {
+        var name = OutputKeyName?.Expression?.Trim();
+
+        // A name computed by Liquid is only known when the activity runs.
+        return string.IsNullOrEmpty(name) || name.Contains("{{") || name.Contains("{%")
+            ? []
+            : [new ActivityProvidedValue { Source = WorkflowValueSource.Output, Name = name, TypeName = "object", Description = S["The users in the selected roles: their ids, by user name."] }];
     }
 }

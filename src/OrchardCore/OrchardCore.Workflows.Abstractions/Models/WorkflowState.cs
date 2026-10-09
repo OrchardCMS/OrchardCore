@@ -37,4 +37,9 @@ public class WorkflowState
     /// The list of executed activities.
     /// </summary>
     public IList<ExecutedActivity> ExecutedActivities { get; set; } = [];
+
+    /// <summary>
+    /// The sequence number of the instance's last journal record (see <see cref="WorkflowExecutionRecord"/>).
+    /// </summary>
+    public int ExecutionSequence { get; set; }
 }

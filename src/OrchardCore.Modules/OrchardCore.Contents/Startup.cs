@@ -11,6 +11,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Routing;
+using OrchardCore.ContentManagement.Workflows;
 using OrchardCore.Contents.AdminNodes;
 using OrchardCore.Contents.AuditTrail.Settings;
 using OrchardCore.Contents.Controllers;
@@ -72,6 +73,7 @@ public sealed class Startup : StartupBase
         services.Configure<TemplateOptions>(o =>
         {
             o.MemberAccessStrategy.Register<ContentItem>();
+            o.MemberAccessStrategy.Register<ContentEventContext>();
             o.MemberAccessStrategy.Register<ContentElement>();
             o.MemberAccessStrategy.Register<ShapeViewModel<ContentItem>>();
             o.MemberAccessStrategy.Register<ContentTypePartDefinition>();

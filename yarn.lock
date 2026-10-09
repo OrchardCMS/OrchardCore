@@ -2767,9 +2767,11 @@ __metadata:
     "@microsoft/signalr": "npm:^8.0.0"
     axios: "npm:^1.20.0"
     debug: "npm:^4.3.4"
+    jsdom: "npm:^29.1.1"
     mitt: "npm:^3.0.0"
     monaco-editor: "npm:0.52.2"
     oidc-client-ts: "npm:^3.1.0"
+    vitest: "npm:4.1.10"
   languageName: unknown
   linkType: soft
 
@@ -3215,13 +3217,26 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@orchardcore/workflows-designer@workspace:src/OrchardCore.Modules/OrchardCore.Workflows/Assets/designer":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/workflows-designer@workspace:src/OrchardCore.Modules/OrchardCore.Workflows/Assets/designer"
+  dependencies:
+    "@vitejs/plugin-vue": "npm:^6.0.8"
+    "@vue/test-utils": "npm:^2.4.11"
+    jsdom: "npm:^29.1.1"
+    postcss-rtlcss: "npm:^5.6.0"
+    typescript: "npm:^5.7.3"
+    vite: "npm:^8.1.5"
+    vitest: "npm:4.1.10"
+    vue: "npm:3.5.40"
+    vue-tsc: "npm:^3.3.7"
+  languageName: unknown
+  linkType: soft
+
 "@orchardcore/workflows@workspace:src/OrchardCore.Modules/OrchardCore.Workflows/Assets":
   version: 0.0.0-use.local
   resolution: "@orchardcore/workflows@workspace:src/OrchardCore.Modules/OrchardCore.Workflows/Assets"
   dependencies:
-    "@popperjs/core": "npm:2.11.8"
-    "@types/bootstrap": "npm:5.2.7"
-    bootstrap: "npm:5.3.8"
     jsplumb: "npm:2.15.6"
   languageName: unknown
   linkType: soft

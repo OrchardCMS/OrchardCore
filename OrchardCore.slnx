@@ -350,6 +350,7 @@
     <Project Path="test/OrchardCore.Tests.Modules/Examples.Modules.AssyAttrib.Charlie/Examples.Modules.AssyAttrib.Charlie.csproj" />
     <Project Path="test/OrchardCore.Tests.Modules/Examples.OrchardCoreModules.Alpha/Examples.OrchardCoreModules.Alpha.csproj" />
     <Project Path="test/OrchardCore.Tests.Modules/ModuleSample/ModuleSample.csproj" />
+    <Project Path="test/OrchardCore.Tests.Modules/WorkflowsSample/WorkflowsSample.csproj" />
   </Folder>
   <Folder Name="/test/OrchardCore.Tests.Pages/" />
   <Folder Name="/test/OrchardCore.Tests.Pages/OrchardCore.Application.Pages/">

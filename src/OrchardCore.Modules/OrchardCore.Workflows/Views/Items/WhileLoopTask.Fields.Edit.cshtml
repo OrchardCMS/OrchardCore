@@ -1,40 +1,16 @@
-@using System.Text.Json
 @using OrchardCore.Workflows.Models
-@using OrchardCore.Workflows.ViewModels
 @model WhileLoopTaskViewModel
 
 @{
-    var javaScriptGroupIds = new[] { $"{Html.IdFor(m => m.ConditionExpression)}_group" };
-    var liquidGroupIds = new[] { $"{Html.IdFor(m => m.LiquidConditionExpression)}_group" };
+    var conditionEditor = await Factory.CreateWorkflowExpressionEditorAsync(Html, m => m.Condition, editor =>
+    {
+        editor.Label = T["Condition"].Value;
+        editor.Hint = T["The loop goes on while this expression evaluates to true."].Value;
+        editor.Required = true;
+        editor.Multiline = false;
+        editor.Examples[WorkflowExpressionSyntaxes.Literal] = "true";
+        editor.Examples[WorkflowExpressionSyntaxes.JavaScript] = "input(\"Count\") > 0";
+        editor.Examples[WorkflowExpressionSyntaxes.Liquid] = "{{ Workflow.Properties.Count > 0 }}";
+    });
 }
-
-<div class="ocat-wrapper" asp-validation-class-for="Syntax">
-    <label asp-for="Syntax" class="ocat-label">@T["Syntax"]</label>
-    <div class="ocat-end">
-        <select asp-for="Syntax" class="form-select" data-syntax-toggle data-javascript-group-ids="@JsonSerializer.Serialize(javaScriptGroupIds)" data-liquid-group-ids="@JsonSerializer.Serialize(liquidGroupIds)">
-            <option value="@nameof(WorkflowScriptSyntax.JavaScript)">@T["JavaScript"]</option>
-            <option value="@nameof(WorkflowScriptSyntax.Liquid)">@T["Liquid"]</option>
-        </select>
-        <span asp-validation-for="Syntax"></span>
-    </div>
-</div>
-
-<div id="@(Html.IdFor(m => m.ConditionExpression))_group" class="ocat-wrapper @(Model.Syntax == WorkflowScriptSyntax.JavaScript ? "" : "d-none")" asp-validation-class-for="ConditionExpression">
-    <label asp-for="ConditionExpression" class="ocat-label">@T["Condition Expression"]</label>
-    <div class="ocat-end">
-        <input type="text" asp-for="ConditionExpression" class="form-control code" autofocus />
-        <span asp-validation-for="ConditionExpression"></span>
-        <span class="hint">@T["A JavaScript expression that evaluates to true or false. Example: {0}", "input(\"Count\") > 0"]</span>
-    </div>
-</div>
-
-<div id="@(Html.IdFor(m => m.LiquidConditionExpression))_group" class="ocat-wrapper @(Model.Syntax == WorkflowScriptSyntax.Liquid ? "" : "d-none")" asp-validation-class-for="LiquidConditionExpression">
-    <label asp-for="LiquidConditionExpression" class="ocat-label">@T["Condition Expression"]</label>
-    <div class="ocat-end">
-        <input type="text" asp-for="LiquidConditionExpression" class="form-control code" />
-        <span asp-validation-for="LiquidConditionExpression"></span>
-        <span class="hint">@T["A Liquid template that renders true or false. Example: {0}", "{{ Workflow.Properties.Count > 0 }}"]</span>
-    </div>
-</div>
-
-<script asp-name="workflow-syntax-toggle" at="Foot" type="module"></script>
+@await DisplayAsync(conditionEditor)

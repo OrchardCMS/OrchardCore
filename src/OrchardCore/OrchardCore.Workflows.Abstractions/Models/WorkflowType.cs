@@ -15,6 +15,12 @@ public class WorkflowType : Entity
     public string WorkflowTypeId { get; set; }
 
     /// <summary>
+    /// The <see cref="WorkflowTypeVersion.VersionId"/> of the version this definition was saved as: the version
+    /// new instances start on. <see cref="Services.IWorkflowTypeStore.SaveAsync"/> sets it.
+    /// </summary>
+    public string VersionId { get; set; }
+
+    /// <summary>
     /// The name of this workflow type.
     /// </summary>
     public string Name { get; set; }
@@ -28,6 +34,13 @@ public class WorkflowType : Entity
     /// Controls whether this workflow can spawn one or multiple instances.
     /// </summary>
     public bool IsSingleton { get; set; }
+
+    /// <summary>
+    /// Whether an event that starts this workflow with a correlation id, such as the id of a content item or of a
+    /// user, doesn't start a new instance while an instance with the same correlation id waits. Ignored when
+    /// <see cref="IsSingleton"/> is set.
+    /// </summary>
+    public bool IsSingletonPerCorrelation { get; set; }
 
     /// <summary>
     /// The timeout in milliseconds to acquire a lock before resuming a given workflow instance of this type.
@@ -45,6 +58,27 @@ public class WorkflowType : Entity
     public bool DeleteFinishedWorkflows { get; set; }
 
     /// <summary>
+    /// Whether other workflows can run this one as an activity (Execute Workflow), with its input and output variables.
+    /// </summary>
+    public bool IsActivity { get; set; }
+
+    /// <summary>
+    /// How the engine follows an outcome that has several transitions: only the first one (the default), or all of them.
+    /// </summary>
+    public WorkflowBranchingMode BranchingMode { get; set; }
+
+    /// <summary>
+    /// Whether a script error faults the instance at the activity that ran the script. Otherwise, the run goes on with what the script fell back to, and the error is recorded in the journal.
+    /// </summary>
+    public bool FaultOnScriptErrors { get; set; }
+
+    /// <summary>
+    /// Whether the journal records the data of each activity's execution: the expressions it evaluated, the outputs it
+    /// set, the variables it changed and its last result. Values can be large or sensitive, so it's a choice.
+    /// </summary>
+    public bool RecordActivityData { get; set; }
+
+    /// <summary>
     /// A complete list of all activities that are part of this workflow.
     /// </summary>
     public IList<ActivityRecord> Activities { get; set; } = [];
@@ -53,4 +87,9 @@ public class WorkflowType : Entity
     /// A complete list of the transitions between the activities on this workflow.
     /// </summary>
     public IList<Transition> Transitions { get; set; } = [];
+
+    /// <summary>
+    /// The variables this workflow declares.
+    /// </summary>
+    public IList<WorkflowVariableDefinition> Variables { get; set; } = [];
 }

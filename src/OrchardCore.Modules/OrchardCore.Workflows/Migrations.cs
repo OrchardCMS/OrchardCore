@@ -5,6 +5,8 @@ using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Workflows.Indexes;
+using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Services;
 using YesSql;
 using YesSql.Sql;
 
@@ -90,6 +92,113 @@ public sealed class Migrations : DataMigration
 
         // Shortcut other migration steps on new content definition schemas.
         return 4;
+    }
+
+    public async Task<int> UpdateFrom4Async()
+    {
+        await SchemaBuilder.CreateMapIndexTableAsync<WorkflowTypeDraftIndex>(table => table
+            .Column<string>("WorkflowTypeId")
+        );
+
+        await SchemaBuilder.AlterIndexTableAsync<WorkflowTypeDraftIndex>(table => table
+            .CreateIndex("IDX_WorkflowTypeDraftIndex_DocumentId",
+                "DocumentId",
+                "WorkflowTypeId")
+        );
+
+        return 5;
+    }
+
+    public async Task<int> UpdateFrom5Async()
+    {
+        await SchemaBuilder.CreateMapIndexTableAsync<WorkflowTypeVersionIndex>(table => table
+            .Column<string>("WorkflowTypeId", c => c.WithLength(26))
+            .Column<string>("VersionId", c => c.WithLength(26))
+            .Column<int>("Version")
+            .Column<DateTime>("CreatedUtc")
+        );
+
+        await SchemaBuilder.AlterIndexTableAsync<WorkflowTypeVersionIndex>(table => table
+            .CreateIndex("IDX_WorkflowTypeVersionIndex_DocumentId",
+                "DocumentId",
+                "WorkflowTypeId",
+                "VersionId",
+                "Version")
+        );
+
+        await SchemaBuilder.AlterIndexTableAsync<WorkflowIndex>(table => table
+            .AddColumn<string>("WorkflowTypeVersionId", c => c.WithLength(26))
+        );
+
+        await SchemaBuilder.AlterIndexTableAsync<WorkflowIndex>(table => table
+            .CreateIndex("IDX_WorkflowIndex_WorkflowTypeVersionId",
+                "DocumentId",
+                "WorkflowTypeVersionId")
+        );
+
+        // Existing workflow types become their version 1. Existing instances stay unpinned: they keep resuming on
+        // the current definition, as before.
+        ShellScope.AddDeferredTask(scope => CreateInitialVersionsAsync(
+            scope.ServiceProvider.GetRequiredService<ISession>(),
+            scope.ServiceProvider.GetRequiredService<IWorkflowTypeVersionStore>()));
+
+        return 6;
+    }
+
+    public async Task<int> UpdateFrom6Async()
+    {
+        await SchemaBuilder.CreateMapIndexTableAsync<WorkflowExecutionRecordIndex>(table => table
+            .Column<string>(nameof(WorkflowExecutionRecordIndex.WorkflowId), column => column.WithLength(26))
+            .Column<int>(nameof(WorkflowExecutionRecordIndex.Sequence)),
+            collection: WorkflowExecutionRecord.Collection);
+
+        await SchemaBuilder.AlterIndexTableAsync<WorkflowExecutionRecordIndex>(table => table
+            .CreateIndex("IDX_WorkflowExecutionRecordIndex_DocumentId",
+                "DocumentId",
+                nameof(WorkflowExecutionRecordIndex.WorkflowId),
+                nameof(WorkflowExecutionRecordIndex.Sequence)),
+            collection: WorkflowExecutionRecord.Collection);
+
+        return 7;
+    }
+
+    public async Task<int> UpdateFrom7Async()
+    {
+        await SchemaBuilder.AlterIndexTableAsync<WorkflowIndex>(table => table
+            .AddColumn<DateTime?>(nameof(WorkflowIndex.RetryDueUtc), column => column.Nullable())
+        );
+
+        await SchemaBuilder.AlterIndexTableAsync<WorkflowIndex>(table => table
+            .CreateIndex("IDX_WorkflowIndex_RetryDueUtc",
+                "DocumentId",
+                nameof(WorkflowIndex.RetryDueUtc),
+                nameof(WorkflowIndex.WorkflowStatus))
+        );
+
+        return 8;
+    }
+
+    /// <summary>
+    /// Creates the first version of the workflow types that have none, without raising the workflow type
+    /// handlers. Returns the number of workflow types it versioned.
+    /// </summary>
+    public static async Task<int> CreateInitialVersionsAsync(ISession session, IWorkflowTypeVersionStore versionStore)
+    {
+        var count = 0;
+
+        foreach (var workflowType in await session.Query<WorkflowType, WorkflowTypeIndex>().ListAsync())
+        {
+            if (!string.IsNullOrEmpty(workflowType.VersionId))
+            {
+                continue;
+            }
+
+            await versionStore.CreateIfChangedAsync(workflowType);
+            await session.SaveAsync(workflowType);
+            count++;
+        }
+
+        return count;
     }
 
     // This code can be removed in a later version.

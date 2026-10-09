@@ -38,14 +38,15 @@ public sealed class Startup : StartupBase
         services.AddSingleton<IWorkflowTypeRouteEntries, WorkflowTypeRouteEntries>();
         services.AddSingleton<IWorkflowInstanceRouteEntries, WorkflowInstanceRouteEntries>();
         services.AddSingleton<IGlobalMethodProvider, HttpMethodsProvider>();
+        services.AddScoped<IWorkflowGlobalValueProvider, HttpWorkflowGlobalValueProvider>();
         services.AddScoped<IWorkflowExecutionContextHandler, SignalWorkflowExecutionContextHandler>();
 
-        services.AddActivity<HttpRequestEvent, HttpRequestEventDisplayDriver>();
-        services.AddActivity<HttpRequestFilterEvent, HttpRequestFilterEventDisplayDriver>();
-        services.AddActivity<HttpRedirectTask, HttpRedirectTaskDisplayDriver>();
-        services.AddActivity<HttpRequestTask, HttpRequestTaskDisplayDriver>();
-        services.AddActivity<HttpResponseTask, HttpResponseTaskDisplayDriver>();
-        services.AddActivity<SignalEvent, SignalEventDisplayDriver>();
+        services.AddActivity<HttpRequestEvent, HttpRequestEventDisplayDriver>(activity => activity.Icon = "fa-solid fa-globe");
+        services.AddActivity<HttpRequestFilterEvent, HttpRequestFilterEventDisplayDriver>(activity => activity.Icon = "fa-solid fa-filter");
+        services.AddActivity<HttpRedirectTask, HttpRedirectTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-share");
+        services.AddActivity<HttpRequestTask, HttpRequestTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-paper-plane");
+        services.AddActivity<HttpResponseTask, HttpResponseTaskDisplayDriver>(activity => activity.Icon = "fa-solid fa-reply");
+        services.AddActivity<SignalEvent, SignalEventDisplayDriver>(activity => activity.Icon = "fa-solid fa-signal");
 
         services.AddSingleton<IGlobalMethodProvider, TokenMethodProvider>();
     }

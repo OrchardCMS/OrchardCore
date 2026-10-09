@@ -2,11 +2,12 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Workflows;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.UserTasks.Activities;
 
-public class UserTaskEvent : EventActivity
+public class UserTaskEvent : EventActivity, IActivityProvidedValues
 {
     protected readonly IStringLocalizer S;
 
@@ -53,4 +54,12 @@ public class UserTaskEvent : EventActivity
     {
         return (string)workflowContext.Input[ContentEventConstants.UserActionInputKey];
     }
+
+    public IEnumerable<ActivityProvidedValue> GetProvidedValues()
+        =>
+        [
+            new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = "UserAction", TypeName = "string", Description = S["The action the user chose."] },
+            new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = "ContentItem", TypeName = "contentItem", Description = S["The content item the user acted on."], Members = WorkflowValueMembers.ContentItem(S) },
+            new ActivityProvidedValue { Source = WorkflowValueSource.Input, Name = "ContentEvent", TypeName = "object", Description = S["The content event."], Members = WorkflowValueMembers.ContentEvent(S) },
+        ];
 }

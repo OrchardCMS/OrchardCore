@@ -15,7 +15,7 @@
 <nav class="mb-3">
     <ul class="nav nav-pills" role="tablist">
         <li class="nav-item">
-            <a class="nav-link active" id="workflow-tab" data-bs-toggle="pill" href="#workflow" role="tab" aria-controls="workflow" aria-selected="true">Workflow</a>
+            <a class="nav-link active" id="workflow-tab" data-bs-toggle="pill" href="#workflow" role="tab" aria-controls="workflow" aria-selected="true">@T["Workflow"]</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" id="state-tab" data-bs-toggle="pill" href="#state" role="tab" aria-controls="state">@T["State"]</a>
@@ -60,25 +60,13 @@
                 <div class="ocat-wrapper">
                     <label class="ocat-label">@T["Correlation ID"]</label>
                     <div class="ocat-end">
-                        <span>@(Model.Workflow.CorrelationId ?? "None")</span>
+                        <span>@(Model.Workflow.CorrelationId ?? T["None"].Value)</span>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="ocat-wrapper">
-            <div class="ocat-end-offset">
-                <div class="workflow-container">
-                    <div class="workflow-canvas-container">
-                        <div class="workflow-canvas" data-workflow-type="@Model.WorkflowTypeJson">
-                            @foreach (var activityShape in Model.ActivityDesignShapes)
-                            {
-                                @await DisplayAsync(activityShape)
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        @* The workflow designer, read-only, showing the activities the instance waits on. *@
+        <div id="workflow-designer" class="mb-3" data-config="@Model.DesignerConfigJson"></div>
     </div>
     <div id="state" class="tab-pane" role="tabpanel" aria-labelledby="state-tab">
         <div class="card">
@@ -110,7 +98,9 @@
     </div>
 </div>
 
-<style asp-name="jsplumbtoolkit-defaults"></style>
-<style asp-src="~/OrchardCore.Workflows/Styles/orchard.workflows-viewer.min.css" debug-src="~/OrchardCore.Workflows/Styles/orchard.workflows-viewer.css"></style>
-<script asp-name="bootstrap" version="4" at="Foot"></script>
-<script asp-name="workflow-viewer" at="Foot"></script>
+<style asp-name="workflows-designer"></style>
+@if (OrchardCore.Workflows.RealTime.WorkflowsRealTime.IsEnabled(Context.RequestServices))
+{
+    <script asp-name="signalr" at="Foot"></script>
+}
+<script asp-name="workflows-designer" at="Foot"></script>

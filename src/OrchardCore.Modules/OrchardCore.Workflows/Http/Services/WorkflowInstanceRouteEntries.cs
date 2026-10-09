@@ -1,4 +1,6 @@
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Documents;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Workflows.Http.Activities;
 using OrchardCore.Workflows.Http.Models;
 using OrchardCore.Workflows.Indexes;
@@ -15,6 +17,7 @@ internal sealed class WorkflowInstanceRouteEntries : WorkflowRouteEntries<Workfl
     protected override async Task<WorkflowRouteDocument> CreateDocumentAsync()
     {
         var workflowTypeDictionary = (await Session.Query<WorkflowType, WorkflowTypeIndex>().ListAsync()).ToDictionary(x => x.WorkflowTypeId);
+        var versionStore = ShellScope.Services.GetRequiredService<IWorkflowTypeVersionStore>();
 
         var skip = 0;
         var pageSize = 50;
@@ -34,12 +37,17 @@ internal sealed class WorkflowInstanceRouteEntries : WorkflowRouteEntries<Workfl
                 break;
             }
 
-            var workflowRouteEntries =
-                from workflow in pendingWorkflows
-                from entry in GetWorkflowRoutesEntries(workflowTypeDictionary[workflow.WorkflowTypeId], workflow, ActivityLibrary)
-                select entry;
+            foreach (var workflow in pendingWorkflows)
+            {
+                if (!workflowTypeDictionary.TryGetValue(workflow.WorkflowTypeId, out var workflowType))
+                {
+                    continue;
+                }
 
-            AddEntries(document, workflowRouteEntries);
+                // The routes an instance waits on are those of the version it runs.
+                var definition = await versionStore.GetWorkflowTypeAsync(workflowType, workflow.WorkflowTypeVersionId);
+                AddEntries(document, GetWorkflowRoutesEntries(definition, workflow, ActivityLibrary));
+            }
 
             if (pendingWorkflows.Count < pageSize)
             {
