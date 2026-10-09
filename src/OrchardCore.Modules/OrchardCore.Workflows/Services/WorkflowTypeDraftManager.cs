@@ -27,6 +27,7 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IClock _clock;
     private readonly IWorkflowDesignerNotifier _notifier;
+    private readonly IWorkflowActivityEditorValidator _activityEditorValidator;
 
     internal readonly IStringLocalizer S;
 
@@ -39,6 +40,7 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
         IHttpContextAccessor httpContextAccessor,
         IClock clock,
         IWorkflowDesignerNotifier notifier,
+        IWorkflowActivityEditorValidator activityEditorValidator,
         IStringLocalizer<WorkflowTypeDraftManager> stringLocalizer)
     {
         _session = session;
@@ -49,6 +51,7 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
         _httpContextAccessor = httpContextAccessor;
         _clock = clock;
         _notifier = notifier;
+        _activityEditorValidator = activityEditorValidator;
         S = stringLocalizer;
     }
 
@@ -378,19 +381,49 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
     }
 
     /// <inheritdoc />
-    public Task<IReadOnlyList<WorkflowDesignIssue>> ValidateAsync(WorkflowTypeDraft draft)
+    public async Task<IReadOnlyList<WorkflowDesignIssue>> ValidateAsync(WorkflowTypeDraft draft)
     {
         ArgumentNullException.ThrowIfNull(draft);
 
-        return Task.FromResult<IReadOnlyList<WorkflowDesignIssue>>(Validate(draft.WorkflowTypeId, draft.BranchingMode, draft.Activities, draft.Transitions, draft.Variables));
+        var issues = Validate(draft.WorkflowTypeId, draft.BranchingMode, draft.Activities, draft.Transitions, draft.Variables);
+        await ValidateActivitySettingsAsync(draft.Activities, issues);
+
+        return issues;
     }
 
     /// <inheritdoc />
-    public Task<IReadOnlyList<WorkflowDesignIssue>> ValidateAsync(WorkflowType workflowType)
+    public async Task<IReadOnlyList<WorkflowDesignIssue>> ValidateAsync(WorkflowType workflowType)
     {
         ArgumentNullException.ThrowIfNull(workflowType);
 
-        return Task.FromResult<IReadOnlyList<WorkflowDesignIssue>>(Validate(workflowType.WorkflowTypeId, workflowType.BranchingMode, workflowType.Activities, workflowType.Transitions, workflowType.Variables));
+        var issues = Validate(workflowType.WorkflowTypeId, workflowType.BranchingMode, workflowType.Activities, workflowType.Transitions, workflowType.Variables);
+        await ValidateActivitySettingsAsync(workflowType.Activities, issues);
+
+        return issues;
+    }
+
+    // Activities whose editor wouldn't accept their settings, like one added from the toolbox and never saved.
+    private async Task ValidateActivitySettingsAsync(IList<ActivityRecord> activities, List<WorkflowDesignIssue> issues)
+    {
+        // These rules already report what the editor would.
+        var reported = issues
+            .Where(issue => issue.ActivityId is not null && issue.Code is IssueCodes.MissingActivity or IssueCodes.MissingWorkflowToExecute)
+            .Select(issue => issue.ActivityId)
+            .ToHashSet(StringComparer.Ordinal);
+
+        foreach (var activity in activities.Where(activity => !reported.Contains(activity.ActivityId)))
+        {
+            foreach (var error in await _activityEditorValidator.ValidateAsync(activity))
+            {
+                issues.Add(new WorkflowDesignIssue
+                {
+                    Severity = WorkflowDesignIssueSeverity.Error,
+                    Code = IssueCodes.InvalidActivitySettings,
+                    Message = S["Fix the settings of this activity: {0}", error],
+                    ActivityId = activity.ActivityId,
+                });
+            }
+        }
     }
 
     private List<WorkflowDesignIssue> Validate(

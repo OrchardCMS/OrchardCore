@@ -57,5 +57,11 @@ public static class WorkflowDesignerConstants
         /// An Execute Workflow task runs the workflow it belongs to.
         /// </summary>
         public const string RecursiveWorkflowExecution = nameof(RecursiveWorkflowExecution);
+
+        /// <summary>
+        /// The editor of an activity doesn't accept its settings, for example a required value is empty. It
+        /// happens to an activity added from the toolbox whose editor was closed without saving it.
+        /// </summary>
+        public const string InvalidActivitySettings = nameof(InvalidActivitySettings);
     }
 }

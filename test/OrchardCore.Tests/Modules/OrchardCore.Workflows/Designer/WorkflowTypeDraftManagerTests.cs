@@ -676,6 +676,7 @@ public sealed class WorkflowTypeDraftManagerTests : IAsyncLifetime
             Mock.Of<IHttpContextAccessor>(x => x.HttpContext == httpContext),
             Mock.Of<IClock>(x => x.UtcNow == s_now),
             _notifier.Object,
+            Mock.Of<IWorkflowActivityEditorValidator>(x => x.ValidateAsync(It.IsAny<ActivityRecord>()) == Task.FromResult<IReadOnlyList<string>>(Array.Empty<string>())),
             new PassThroughStringLocalizer<WorkflowTypeDraftManager>());
     }
 

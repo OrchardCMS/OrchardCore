@@ -41,7 +41,7 @@ The designer has four areas. What concerns the whole workflow is on the right, a
 - **The workflow panel** (on the right) has three tabs:
     - **Variables**: the [variables](#variables) of the workflow, with their types and default values.
     - **Workflow**: the settings of the workflow: its name, whether it is enabled, how many [instances run at a time](#instances-at-a-time), its lock settings, and whether finished instances are deleted.
-    - **Issues**: the problems found in the workflow, errors first. Select one to go to its activity.
+    - **Issues**: the problems found in the workflow, errors first. Select one to go to its activity. The settings of each activity are checked as its editor checks them when it's saved, so an activity added with a required setting left empty, such as a Log activity without its text, is an error until its settings are saved.
 - **The activity panel** (at the bottom of the canvas) opens when you double-click an activity, click the settings button at the top right of its card, or select it and press Enter. A click only selects an activity, so you can move activities around without opening it; moving them closes it, and so does a click on the canvas or **Close**. It has up to three tabs:
     - **Settings**: the editor of the activity.
     - **Outputs**: for an activity that produces values, each value with its type, and the [variable](#variables) to **Store in**, which the activities after it read. The variables of a type the value may not convert to are listed apart.

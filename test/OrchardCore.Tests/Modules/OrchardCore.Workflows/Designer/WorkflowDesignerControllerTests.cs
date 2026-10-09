@@ -15,6 +15,7 @@ using OrchardCore.Tests.Apis.Context;
 using OrchardCore.Workflows.Http.Models;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
+using static OrchardCore.Workflows.WorkflowDesignerConstants;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Workflows.Designer;
 
@@ -299,7 +300,7 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
 
         Assert.Equal(HttpStatusCode.OK, saved.StatusCode);
         var savedJson = await ReadJsonAsync(saved);
-        Assert.Equal(1, savedJson["revision"].GetValue<int>());
+        Assert.Empty(savedJson["issues"].AsArray());
         Assert.Empty(savedJson["issues"].AsArray());
 
         var draft = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition");
@@ -354,6 +355,40 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
             var live = await scope.ServiceProvider.GetRequiredService<IWorkflowTypeStore>().GetAsync(workflowTypeId);
             Assert.Empty(live.Activities);
         });
+    }
+
+    [Fact]
+    public async Task AddActivity_RequiredSettingEmpty_IsAnIssueUntilItsEditorSavesIt()
+    {
+        var (id, _) = await CreateWorkflowTypeAsync();
+
+        string logId;
+
+        using (var added = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/AddActivity", new { revision = 0, name = "LogTask", x = 0, y = 0 }))
+        {
+            var json = await ReadJsonAsync(added);
+            logId = json["node"]["id"].GetValue<string>();
+
+            // The Log task is added with an empty text, which its editor requires.
+            var issue = Assert.Single(json["issues"].AsArray(), issue => issue["code"].GetValue<string>() == IssueCodes.InvalidActivitySettings);
+            Assert.Equal("Error", issue["severity"].GetValue<string>());
+            Assert.Equal(logId, issue["activityId"].GetValue<string>());
+        }
+
+        using (var publish = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Publish", new { revision = 1 }))
+        {
+            Assert.NotEqual(HttpStatusCode.OK, publish.StatusCode);
+        }
+
+        using var saved = await PostFormAsync($"Admin/Workflows/Types/{id}/Designer/Editor?activityId={logId}&revision=1", new Dictionary<string, string>
+        {
+            ["LogTask.LogLevel"] = "Information",
+            ["LogTask.Text"] = "Hello",
+        });
+
+        var result = await ReadJsonAsync(saved);
+        Assert.True(result["valid"].GetValue<bool>());
+        Assert.DoesNotContain(result["issues"].AsArray(), issue => issue["code"].GetValue<string>() == IssueCodes.InvalidActivitySettings);
     }
 
     [Fact]
@@ -1781,7 +1816,16 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         => JsonNode.Parse(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
 
     private static ActivityRecord Activity(string id, string name, bool isStart = false, int x = 0, int y = 0, JsonObject properties = null)
-        => new() { ActivityId = id, Name = name, IsStart = isStart, X = x, Y = y, Properties = properties ?? [] };
+        => new() { ActivityId = id, Name = name, IsStart = isStart, X = x, Y = y, Properties = properties ?? DefaultProperties(name) };
+
+    // The settings an activity needs for its editor to accept them, so it isn't reported as an issue.
+    private static JsonObject DefaultProperties(string name)
+        => name switch
+        {
+            "NotifyTask" => new JsonObject { ["Message"] = new JsonObject { ["Expression"] = "Hello" } },
+            "HttpRequestTask" => new JsonObject { ["Url"] = new JsonObject { ["Expression"] = "https://localhost/" } },
+            _ => [],
+        };
 
     private static Transition Transition(string source, string outcome, string destination)
         => new() { SourceActivityId = source, SourceOutcomeName = outcome, DestinationActivityId = destination };

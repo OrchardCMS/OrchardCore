@@ -95,6 +95,7 @@ public sealed class Startup : StartupBase
         services.AddIndexProvider<WorkflowIndexProvider>();
         services.AddIndexProvider<WorkflowTypeDraftIndexProvider>();
         services.AddIndexProvider<WorkflowTypeVersionIndexProvider>();
+        services.AddScoped<IWorkflowActivityEditorValidator, WorkflowActivityEditorValidator>();
         services.AddScoped<IWorkflowTypeDraftManager, WorkflowTypeDraftManager>();
         services.AddScoped<WorkflowDesignerModelBuilder>();
         services.AddScoped<IJSLocalizer, WorkflowsDesignerJSLocalizer>();
