@@ -123,7 +123,6 @@ public sealed class TwilioSettingsDisplayDriver : SiteDisplayDriver<TwilioSettin
             {
                 ProtectedValue = settings.AuthToken,
                 SecretName = settings.AuthTokenSecretName,
-                Description = "Twilio auth token",
             });
 
             if (authToken.Succeeded)

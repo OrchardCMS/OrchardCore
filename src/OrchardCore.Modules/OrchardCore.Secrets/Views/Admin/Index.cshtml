@@ -10,6 +10,11 @@
     <breadcrumb name="Secrets" title="@T["Secrets"]" />
 </zone>
 
+@if (Model.ExpiredCount > 0 || Model.ExpiringCount > 0)
+{
+    @await DisplayAsync(await New.SecretsExpirationWarning(ExpiredCount: Model.ExpiredCount, ExpiringCount: Model.ExpiringCount, ShowReviewLink: false))
+}
+
 @* The form is necessary to generate an antiforgery token for the delete and bulk actions. *@
 <form asp-action="Index" method="post" class="no-multisubmit" data-list-management data-min-selected-items="1" data-selected-label="@T["selected"]">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
@@ -28,7 +33,6 @@
                 @if (canManage)
                 {
                     <div class="col-auto">
-                        <a asp-action="Index" asp-controller="Migration" class="btn btn-secondary">@T["Migrate Credentials"]</a>
                         <button type="button" class="btn btn-secondary create" data-bs-toggle="modal" data-bs-target="#modalSecretTypes">@T["Add Secret"]</button>
                     </div>
                 }

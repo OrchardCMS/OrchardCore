@@ -183,7 +183,6 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
             {
                 ProtectedValue = settings.ClientSecret,
                 SecretName = settings.ClientSecretSecretName,
-                Description = "OpenID Connect client secret",
             });
 
             if (clientSecret.Succeeded)

@@ -77,7 +77,6 @@ public sealed class FacebookSettingsDisplayDriver : SiteDisplayDriver<FacebookSe
         {
             ProtectedValue = settings.AppSecret,
             SecretName = settings.AppSecretSecretName,
-            Description = "Meta app secret",
         });
 
         if (appSecret.Succeeded)

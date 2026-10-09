@@ -120,7 +120,6 @@ public sealed class AzureSettingsDisplayDriver : SiteDisplayDriver<AzureSmsSetti
             {
                 ProtectedValue = settings.ConnectionString,
                 SecretName = settings.ConnectionStringSecretName,
-                Description = "Azure Communication Services SMS connection string",
             });
 
             if (connectionString.Succeeded)

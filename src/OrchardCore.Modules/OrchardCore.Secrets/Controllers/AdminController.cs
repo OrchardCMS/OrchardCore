@@ -61,7 +61,7 @@ public sealed class AdminController : Controller
 
         var providers = _secretTypeProviders.ToList();
 
-        var secrets = (await _secretManager.GetSecretInfosAsync())
+        var allSecrets = (await _secretManager.GetSecretInfosAsync())
             .Select(info =>
             {
                 var type = GetSimpleTypeName(info.Type);
@@ -77,7 +77,10 @@ public sealed class AdminController : Controller
                     UpdatedUtc = info.UpdatedUtc,
                     ExpiresUtc = info.ExpiresUtc,
                 };
-            });
+            })
+            .ToList();
+
+        IEnumerable<SecretEntryViewModel> secrets = allSecrets;
 
         if (!string.IsNullOrWhiteSpace(options.Search))
         {
@@ -115,6 +118,8 @@ public sealed class AdminController : Controller
             Secrets = filtered.Skip(pager.GetStartIndex()).Take(pager.PageSize).ToList(),
             Options = options,
             Pager = await _shapeFactory.PagerAsync(pager, filtered.Count, routeData),
+            ExpiredCount = allSecrets.Count(secret => secret.IsExpired),
+            ExpiringCount = allSecrets.Count(secret => secret.IsExpiringSoon),
             AvailableTypes = providers.Select(p => new SecretTypeViewModel
             {
                 Name = p.Name,
@@ -190,7 +195,7 @@ public sealed class AdminController : Controller
         });
     }
 
-    public async Task<IActionResult> Create(string type)
+    public async Task<IActionResult> Create(string type, string name)
     {
         if (!await _authorizationService.AuthorizeAsync(User, SecretsPermissions.ManageSecrets))
         {
@@ -213,6 +218,7 @@ public sealed class AdminController : Controller
         var model = new SecretEditViewModel
         {
             IsNew = true,
+            Name = name?.Trim(),
             SecretType = provider.Name,
             SecretTypeDisplayName = provider.DisplayName,
             AvailableStores = _secretManager.GetStores()
@@ -226,6 +232,26 @@ public sealed class AdminController : Controller
         model.Store = model.AvailableStores.FirstOrDefault();
 
         return View(nameof(Edit), model);
+    }
+
+    /// <summary>
+    /// Renders the options of the secrets of a type, so that an editor can reload them after a secret was created.
+    /// </summary>
+    public async Task<IActionResult> SelectOptions(string type)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, SecretsPermissions.ViewSecrets))
+        {
+            return Forbid();
+        }
+
+        return ViewComponent("SelectSecret", new
+        {
+            selectedSecret = (string)null,
+            htmlId = "SecretName",
+            htmlName = "SecretName",
+            secretTypes = new[] { string.IsNullOrEmpty(type) ? nameof(TextSecret) : type },
+            required = false,
+        });
     }
 
     [HttpPost]

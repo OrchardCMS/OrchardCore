@@ -77,7 +77,6 @@ public sealed class GitHubAuthenticationSettingsDisplayDriver : SiteDisplayDrive
         {
             ProtectedValue = settings.ClientSecret,
             SecretName = settings.ClientSecretSecretName,
-            Description = "GitHub client secret",
         });
 
         if (clientSecret.Succeeded)

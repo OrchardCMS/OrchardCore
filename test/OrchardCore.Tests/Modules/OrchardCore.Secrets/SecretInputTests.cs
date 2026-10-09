@@ -80,54 +80,16 @@ public class SecretInputTests
     }
 
     [Fact]
-    public async Task UpdateAsync_NewSecretWithoutValue_MovesTheStoredValue()
+    public async Task UpdateAsync_SwitchingFromSecretToValue_ClearsTheSecretName()
     {
         var context = CreateContext();
-        context.ProtectedValue = _protector.Protect("stored");
+        context.SecretName = "Existing";
 
-        var result = await new SecretInputViewModel { Source = SecretInputSource.NewSecret, NewSecretName = " New " }.UpdateAsync(context);
+        var result = await new SecretInputViewModel { Source = SecretInputSource.Value, Value = "clear" }.UpdateAsync(context);
 
         Assert.True(result.Succeeded);
-        Assert.Null(result.ProtectedValue);
-        Assert.Equal("New", result.SecretName);
-        _secretManager.Verify(m => m.SaveSecretAsync("New", It.Is<TextSecret>(s => s.Text == "stored"), It.IsAny<SecretSaveOptions>()), Times.Once);
-    }
-
-    [Fact]
-    public async Task UpdateAsync_NewSecretWithValue_SavesTheEnteredValue()
-    {
-        var context = CreateContext();
-        context.ProtectedValue = _protector.Protect("stored");
-
-        var result = await new SecretInputViewModel { Source = SecretInputSource.NewSecret, NewSecretName = "New", Value = "entered" }.UpdateAsync(context);
-
-        Assert.True(result.Succeeded);
-        _secretManager.Verify(m => m.SaveSecretAsync("New", It.Is<TextSecret>(s => s.Text == "entered"), It.IsAny<SecretSaveOptions>()), Times.Once);
-    }
-
-    [Fact]
-    public async Task UpdateAsync_NewSecretWithExistingName_NeverOverwrites()
-    {
-        var context = CreateContext();
-
-        var result = await new SecretInputViewModel { Source = SecretInputSource.NewSecret, NewSecretName = "existing", Value = "entered" }.UpdateAsync(context);
-
-        Assert.False(result.Succeeded);
-        Assert.True(_modelState.ContainsKey($"{Prefix}.{nameof(SecretInputViewModel.NewSecretName)}"));
-        _secretManager.Verify(m => m.SaveSecretAsync(It.IsAny<string>(), It.IsAny<TextSecret>(), It.IsAny<SecretSaveOptions>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task UpdateAsync_NewSecretWithUndecryptableValue_Fails()
-    {
-        var context = CreateContext();
-        context.ProtectedValue = "not-protected";
-
-        var result = await new SecretInputViewModel { Source = SecretInputSource.NewSecret, NewSecretName = "New" }.UpdateAsync(context);
-
-        Assert.False(result.Succeeded);
-        Assert.True(_modelState.ContainsKey($"{Prefix}.{nameof(SecretInputViewModel.Value)}"));
-        _secretManager.Verify(m => m.SaveSecretAsync(It.IsAny<string>(), It.IsAny<TextSecret>(), It.IsAny<SecretSaveOptions>()), Times.Never);
+        Assert.Null(result.SecretName);
+        Assert.Equal("clear", _protector.Unprotect(result.ProtectedValue));
     }
 
     [Fact]

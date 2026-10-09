@@ -27,11 +27,6 @@ public class SecretInputViewModel
     public string SecretName { get; set; }
 
     /// <summary>
-    /// Gets or sets the name of the secret to create when <see cref="Source"/> is <see cref="SecretInputSource.NewSecret"/>.
-    /// </summary>
-    public string NewSecretName { get; set; }
-
-    /// <summary>
     /// Gets or sets whether a protected value is currently kept in the settings.
     /// </summary>
     [BindNever]

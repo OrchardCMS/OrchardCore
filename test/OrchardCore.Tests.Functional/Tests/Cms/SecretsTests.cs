@@ -49,6 +49,13 @@ public sealed class SecretsTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await warning.GetByRole(AriaRole.Link, new LocatorGetByRoleOptions { Name = "Review secrets" }).ClickAsync();
         await Assertions.Expect(page).ToHaveURLAsync(s_indexUrl);
 
+        // The Secrets list shows the warning under its title, without the link to itself.
+        warning = page.Locator(".secrets-expiration-warning");
+        await Assertions.Expect(warning).ToHaveCountAsync(1);
+        await Assertions.Expect(warning.GetByRole(AriaRole.Link)).ToHaveCountAsync(0);
+        await page.GotoAndAssertOkAsync($"{Tenant.Prefix}/Admin/Secrets/Stores/Index");
+        await Assertions.Expect(page.Locator(".secrets-expiration-warning")).ToHaveCountAsync(0);
+
         await OpenEditEditorAsync(page, "ExpiredKey");
         await page.Locator("#ExpiresUtc").FillAsync(string.Empty);
         await SaveAsync(page, "updated");
@@ -185,10 +192,46 @@ public sealed class SecretsTests : CmsTestBase, IClassFixture<CmsSetupFixture>
     public async Task MigrationPage_WithoutStoredCredentials_ShowsNothingToMigrate()
     {
         var page = await CreateAdminPageAsync();
-        await page.GetByRole(AriaRole.Link, new PageGetByRoleOptions { Name = "Migrate Credentials", Exact = true }).ClickAsync();
+        await Assertions.Expect(page.Locator("#adminMenu a[href$='/Admin/Secrets/Migration/Index']")).ToHaveCountAsync(1);
+        await page.GotoAndAssertOkAsync($"{Tenant.Prefix}/Admin/Secrets/Migration/Index");
 
-        await Assertions.Expect(page.Locator("h1")).ToContainTextAsync("Migrate Credentials");
+        await Assertions.Expect(page.Locator("h1")).ToContainTextAsync("Migrate Secrets");
         await Assertions.Expect(page.Locator(".alert-info")).ToContainTextAsync("Nothing to migrate");
+    }
+
+    [Fact]
+    public async Task SecretInput_ReloadsSecretsCreatedInAnotherTab()
+    {
+        var page = await CreateAdminPageAsync();
+        await page.EnableFeatureAsync(Tenant.Prefix, "OrchardCore.Email.Smtp");
+        await page.GotoAndAssertOkAsync($"{Tenant.Prefix}/Admin/Settings/email");
+        await page.Locator(".nav-tabs a.nav-link", new PageLocatorOptions { HasText = "SMTP" }).ClickAsync();
+
+        // The credentials are only shown once SMTP is enabled and requires credentials.
+        await page.Locator("#ISite_SmtpSettings_IsEnabled").CheckAsync();
+        await page.Locator("#ISite_SmtpSettings_RequireCredentials").CheckAsync();
+
+        var source = page.Locator("#ISite_SmtpSettings_Password");
+        await Assertions.Expect(source).ToHaveValueAsync("Value");
+        await source.SelectOptionAsync("Secret");
+
+        var newSecret = page.GetByRole(AriaRole.Link, new PageGetByRoleOptions { Name = "New secret" });
+        await Assertions.Expect(newSecret).ToHaveAttributeAsync("target", "_blank");
+        await Assertions.Expect(newSecret).ToHaveAttributeAsync("href", new Regex(@"/Admin/Secrets/Create/Smtp\.Password\?type=TextSecret$"));
+
+        // Create the suggested secret as if it was in the new tab.
+        var tab = await page.Context.NewPageAsync();
+        await tab.GotoAndAssertOkAsync(await newSecret.GetAttributeAsync("href"));
+        await Assertions.Expect(tab.Locator("#Name")).ToHaveValueAsync("Smtp.Password");
+        await tab.Locator("#TextValue").FillAsync("smtp-password");
+        await SaveAsync(tab, "created");
+        await tab.CloseAsync();
+
+        var secrets = page.Locator("#ISite_SmtpSettings_Password_SecretName");
+        await Assertions.Expect(secrets.Locator("option[value='Smtp.Password']")).ToHaveCountAsync(0);
+        await page.GetByRole(AriaRole.Button, new PageGetByRoleOptions { Name = "Reload the secrets" }).ClickAsync();
+
+        await Assertions.Expect(secrets).ToHaveValueAsync("Smtp.Password");
     }
 
     [Fact]

@@ -77,7 +77,6 @@ public sealed class MicrosoftAccountSettingsDisplayDriver : SiteDisplayDriver<Mi
         {
             ProtectedValue = settings.AppSecret,
             SecretName = settings.AppSecretSecretName,
-            Description = "Microsoft account app secret",
         });
 
         if (appSecret.Succeeded)

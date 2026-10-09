@@ -77,7 +77,6 @@ public sealed class GoogleAuthenticationSettingsDisplayDriver : SiteDisplayDrive
         {
             ProtectedValue = settings.ClientSecret,
             SecretName = settings.ClientSecretSecretName,
-            Description = "Google client secret",
         });
 
         if (clientSecret.Succeeded)

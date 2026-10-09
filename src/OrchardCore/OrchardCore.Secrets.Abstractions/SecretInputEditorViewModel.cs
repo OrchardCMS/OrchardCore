@@ -22,7 +22,7 @@ public sealed class SecretInputEditorViewModel
     public string HtmlId { get; set; }
 
     /// <summary>
-    /// Gets or sets the name suggested for a new secret, for instance <c>Facebook.AppSecret</c>.
+    /// Gets or sets the name suggested when the user creates a secret for this credential, for instance <c>Facebook.AppSecret</c>.
     /// </summary>
     public string SuggestedSecretName { get; set; }
 

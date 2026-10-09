@@ -159,7 +159,6 @@ public sealed class SmtpSettingsDisplayDriver : SiteDisplayDriver<SmtpSettings>
             {
                 ProtectedValue = settings.Password,
                 SecretName = settings.PasswordSecretName,
-                Description = "SMTP password",
             });
 
             if (password.Succeeded)

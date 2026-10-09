@@ -132,7 +132,6 @@ public sealed class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDrive
                 {
                     ProtectedValue = settings.ApiKey,
                     SecretName = settings.ApiKeySecretName,
-                    Description = "Azure AI Search API key",
                 });
 
                 if (result.Succeeded)

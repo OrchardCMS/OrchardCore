@@ -77,7 +77,6 @@ public sealed class TwitterSettingsDisplayDriver : SiteDisplayDriver<TwitterSett
         {
             ProtectedValue = settings.ConsumerSecret,
             SecretName = settings.ConsumerSecretSecretName,
-            Description = "X (Twitter) API secret key",
         });
 
         if (consumerSecret.Succeeded)
@@ -94,7 +93,6 @@ public sealed class TwitterSettingsDisplayDriver : SiteDisplayDriver<TwitterSett
         {
             ProtectedValue = settings.AccessTokenSecret,
             SecretName = settings.AccessTokenSecretSecretName,
-            Description = "X (Twitter) access token secret",
         });
 
         if (accessTokenSecret.Succeeded)

@@ -45,6 +45,7 @@ public class SecretExpirationWarningFilterTests
         Assert.Equal("SecretsExpirationWarning", warning.Metadata.Type);
         Assert.Equal(1, warning.Properties["ExpiredCount"]);
         Assert.Equal(2, warning.Properties["ExpiringCount"]);
+        Assert.Equal(true, warning.Properties["ShowReviewLink"]);
         manager.Verify(service => service.GetSecretInfosAsync(), Times.Once);
         manager.VerifyNoOtherCalls();
     }
@@ -72,6 +73,7 @@ public class SecretExpirationWarningFilterTests
     [InlineData("unauthorized")]
     [InlineData("json")]
     [InlineData("redirect")]
+    [InlineData("secrets")]
     public async Task IneligibleRequest_DoesNotReadSecretMetadata(string request)
     {
         var manager = new Mock<ISecretManager>(MockBehavior.Strict);
@@ -92,6 +94,11 @@ public class SecretExpirationWarningFilterTests
         else if (request == "redirect")
         {
             context.Result = new RedirectResult("/Admin");
+        }
+        else if (request == "secrets")
+        {
+            // The Secrets pages render the warning themselves.
+            context.RouteData.Values["area"] = "OrchardCore.Secrets";
         }
 
         await ExecuteAsync(manager, layout, context, authorized: request != "unauthorized");

@@ -10,6 +10,8 @@ namespace OrchardCore.Secrets.Filters;
 
 public sealed class SecretExpirationWarningFilter : IAsyncResultFilter
 {
+    private const string SecretsArea = "OrchardCore.Secrets";
+
     private readonly ISecretManager _secretManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly IClock _clock;
@@ -34,6 +36,7 @@ public sealed class SecretExpirationWarningFilter : IAsyncResultFilter
     {
         if (context.IsViewOrPageResult() &&
             AdminAttribute.IsApplied(context.HttpContext) &&
+            !IsSecretsPage(context) &&
             context.HttpContext.User.Identity?.IsAuthenticated == true &&
             await _authorizationService.AuthorizeAsync(context.HttpContext.User, SecretsPermissions.ManageSecrets))
         {
@@ -66,6 +69,7 @@ public sealed class SecretExpirationWarningFilter : IAsyncResultFilter
                     var shape = new Shape();
                     shape.Properties["ExpiredCount"] = expiredCount;
                     shape.Properties["ExpiringCount"] = expiringCount;
+                    shape.Properties["ShowReviewLink"] = true;
                     return ValueTask.FromResult<IShape>(shape);
                 });
                 var layout = await _layoutAccessor.GetLayoutAsync();
@@ -75,4 +79,9 @@ public sealed class SecretExpirationWarningFilter : IAsyncResultFilter
 
         await next();
     }
+
+    // The Secrets pages show the warning themselves, where it is relevant.
+    private static bool IsSecretsPage(ResultExecutingContext context)
+        => context.RouteData.Values.TryGetValue("area", out var area) &&
+            string.Equals(area as string, SecretsArea, StringComparison.OrdinalIgnoreCase);
 }

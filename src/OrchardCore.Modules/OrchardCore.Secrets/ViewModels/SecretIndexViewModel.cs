@@ -13,6 +13,12 @@ public class SecretIndexViewModel
 
     [BindNever]
     public dynamic Pager { get; set; }
+
+    [BindNever]
+    public int ExpiredCount { get; set; }
+
+    [BindNever]
+    public int ExpiringCount { get; set; }
 }
 
 public class SecretIndexOptions

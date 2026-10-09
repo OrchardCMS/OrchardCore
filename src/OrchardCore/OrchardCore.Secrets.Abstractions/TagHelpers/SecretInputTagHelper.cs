@@ -11,8 +11,7 @@ namespace OrchardCore.Secrets.TagHelpers;
 /// </summary>
 /// <remarks>
 /// Without the Secrets feature, this renders a password input whose value is kept, protected, in the settings. When the
-/// Secrets feature is enabled, this renders its <c>SecretInput</c> partial view, which also lets the user reference an
-/// existing secret, or move the value to a new secret.
+/// Secrets feature is enabled, this renders its <c>SecretInput</c> partial view, which also lets the user reference a secret.
 /// </remarks>
 [HtmlTargetElement("secret-input", Attributes = ForAttributeName, TagStructure = TagStructure.WithoutEndTag)]
 public sealed class SecretInputTagHelper : TagHelper
@@ -43,7 +42,7 @@ public sealed class SecretInputTagHelper : TagHelper
     public ModelExpression For { get; set; }
 
     /// <summary>
-    /// Gets or sets the name suggested when the value is moved to a new secret, for instance <c>Facebook.AppSecret</c>.
+    /// Gets or sets the name suggested when the user creates a secret for this credential, for instance <c>Facebook.AppSecret</c>.
     /// </summary>
     [HtmlAttributeName("secret-name")]
     public string SuggestedSecretName { get; set; }
@@ -100,14 +99,9 @@ public sealed class SecretInputTagHelper : TagHelper
         input.Attributes["autocomplete"] = "new-password";
         input.AddCssClass("form-control");
 
-        var placeholder = model.Input.HasValue
-            ? S["A value is stored. Enter a new value to replace it."].Value
-            : model.Placeholder;
-
-        if (!string.IsNullOrEmpty(placeholder))
-        {
-            input.Attributes["placeholder"] = placeholder;
-        }
+        input.Attributes["placeholder"] = model.Input.HasValue
+            ? S["The value is securely stored. Enter a new value to update it, or leave it blank to keep it."].Value
+            : model.Placeholder ?? S["Enter a new value"].Value;
 
         if (string.IsNullOrWhiteSpace(model.Input.SecretName))
         {

@@ -116,7 +116,6 @@ public sealed class AzureEmailSettingsDisplayDriver : SiteDisplayDriver<AzureEma
             {
                 ProtectedValue = settings.ConnectionString,
                 SecretName = settings.ConnectionStringSecretName,
-                Description = "Azure Communication Services email connection string",
             });
 
             if (connectionString.Succeeded)

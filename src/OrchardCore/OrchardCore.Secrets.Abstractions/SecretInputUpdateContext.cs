@@ -60,9 +60,4 @@ public sealed class SecretInputUpdateContext
     /// Gets or sets the name of the secret currently referenced by the settings.
     /// </summary>
     public string SecretName { get; set; }
-
-    /// <summary>
-    /// Gets or sets the description given to a secret created from the settings.
-    /// </summary>
-    public string Description { get; set; }
 }
