@@ -16,6 +16,12 @@ public class WorkflowIndex : MapIndex
     public string WorkflowId { get; set; }
     public WorkflowStatus WorkflowStatus { get; set; }
     public DateTime CreatedUtc { get; set; }
+
+    /// <summary>
+    /// When the next attempt of the task a faulted instance is retried from is due
+    /// (<see cref="Workflow.PendingRetry"/>), if any.
+    /// </summary>
+    public DateTime? RetryDueUtc { get; set; }
 }
 
 public class WorkflowBlockingActivitiesIndex : MapIndex
@@ -41,6 +47,7 @@ public class WorkflowIndexProvider : IndexProvider<Workflow>
                     WorkflowId = workflow.WorkflowId,
                     CreatedUtc = workflow.CreatedUtc,
                     WorkflowStatus = workflow.Status,
+                    RetryDueUtc = workflow.Status == WorkflowStatus.Faulted ? workflow.PendingRetry?.DueUtc : null,
                 }
             );
 

@@ -132,6 +132,30 @@ describe("instance viewer", () => {
         wrapper.unmount();
     });
 
+    it("select_TaskWithAPendingRetry_ShowsItsNextAttempt", async () => {
+        const { store, wrapper } = await setup();
+        store.state.instance = {
+            id: 12,
+            workflowId: "wf-12",
+            status: "Faulted",
+            blockingActivityIds: [],
+            faultMessage: "Timeout",
+            faultedActivityId: "a",
+            pendingRetry: { activityId: "a", failedAttempts: 1, maxRetries: 3, dueUtc: "2026-10-08T12:00:30Z" },
+        };
+
+        selectNode(store, "b");
+        await flushPromises();
+
+        expect(wrapper.find("[data-cy=pending-retry]").exists()).toBe(false);
+
+        selectNode(store, "a");
+        await flushPromises();
+
+        expect(wrapper.get("[data-cy=pending-retry]").text()).toBe("NextRetryDue");
+        wrapper.unmount();
+    });
+
     it("select_Activity_ShowsAReadOnlySummary", async () => {
         const { api, store, wrapper } = await setup();
 

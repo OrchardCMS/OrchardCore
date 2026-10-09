@@ -162,6 +162,22 @@ public sealed class Migrations : DataMigration
         return 7;
     }
 
+    public async Task<int> UpdateFrom7Async()
+    {
+        await SchemaBuilder.AlterIndexTableAsync<WorkflowIndex>(table => table
+            .AddColumn<DateTime?>(nameof(WorkflowIndex.RetryDueUtc), column => column.Nullable())
+        );
+
+        await SchemaBuilder.AlterIndexTableAsync<WorkflowIndex>(table => table
+            .CreateIndex("IDX_WorkflowIndex_RetryDueUtc",
+                "DocumentId",
+                nameof(WorkflowIndex.RetryDueUtc),
+                nameof(WorkflowIndex.WorkflowStatus))
+        );
+
+        return 8;
+    }
+
     /// <summary>
     /// Creates the first version of the workflow types that have none, without raising the workflow type
     /// handlers. Returns the number of workflow types it versioned.

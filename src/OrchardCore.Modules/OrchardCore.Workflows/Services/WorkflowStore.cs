@@ -53,6 +53,15 @@ public class WorkflowStore : IWorkflowStore
         return await _session.Query<Workflow, WorkflowIndex>(x => x.WorkflowTypeId.IsIn(workflowTypeIds)).ListAsync();
     }
 
+    public async Task<IEnumerable<Workflow>> ListDueRetriesAsync(DateTime utcNow, int take)
+    {
+        return await _session
+            .Query<Workflow, WorkflowIndex>(index => index.WorkflowStatus == WorkflowStatus.Faulted && index.RetryDueUtc != null && index.RetryDueUtc <= utcNow)
+            .OrderBy(index => index.RetryDueUtc)
+            .Take(take)
+            .ListAsync();
+    }
+
     public Task<Workflow> GetAsync(long id)
     {
         return _session.GetAsync<Workflow>(id);

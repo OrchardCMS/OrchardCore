@@ -46,6 +46,12 @@ public class Workflow
     public string FaultMessage { get; set; }
 
     /// <summary>
+    /// The next attempt of the task this faulted instance is retried from, by the task's
+    /// <see cref="ActivityRetryPolicy"/>, if any.
+    /// </summary>
+    public WorkflowPendingRetry PendingRetry { get; set; }
+
+    /// <summary>
     /// The timeout in milliseconds to acquire a lock before resuming this workflow instance.
     /// </summary>
     public int LockTimeout { get; set; }

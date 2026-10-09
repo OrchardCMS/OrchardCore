@@ -978,7 +978,8 @@
     word-break: break-word;
 }
 
-.wfd-journal-record.is-script-error .wfd-journal-error {
+.wfd-journal-record.is-script-error .wfd-journal-error,
+.wfd-journal-record.is-retrying .wfd-journal-error {
     color: var(--bs-warning-text-emphasis);
 }
 
@@ -991,6 +992,12 @@
 .wfd-retry-error {
     margin-bottom: 0.5rem;
     font-size: 0.8125rem;
+}
+
+.wfd-pending-retry {
+    margin: 0.5rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--bs-warning-text-emphasis);
 }
 
 .wfd-legend-executed {

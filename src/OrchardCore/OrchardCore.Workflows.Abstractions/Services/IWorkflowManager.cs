@@ -95,6 +95,16 @@ public interface IWorkflowManager
     Task<WorkflowExecutionContext> RetryActivityAsync(Workflow workflow, string activityId);
 
     /// <summary>
+    /// Runs the next attempt of a task that faulted and is retried by its <see cref="ActivityRetryPolicy"/>
+    /// (<see cref="Workflow.PendingRetry"/>), when it's due, as <see cref="RetryActivityAsync"/> does but counting
+    /// the attempts made before.
+    /// </summary>
+    /// <param name="workflow">The faulted instance.</param>
+    /// <returns>The context of the run, or <see langword="null"/> when the instance has no due retry or its lock
+    /// couldn't be acquired.</returns>
+    Task<WorkflowExecutionContext> RunDueRetryAsync(Workflow workflow);
+
+    /// <summary>
     /// Executes the specified workflow starting at the specified activity.
     /// </summary>
     Task<IEnumerable<ActivityRecord>> ExecuteWorkflowAsync(WorkflowExecutionContext workflowExecutionContext, ActivityRecord activity);

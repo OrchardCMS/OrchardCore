@@ -11,6 +11,13 @@ public interface IWorkflowStore
     Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, IEnumerable<string> blockingActivityIds);
     Task<IEnumerable<Workflow>> ListByActivityNameAsync(string activityName, string correlationId = null, bool isAlwaysCorrelated = false);
     Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, string activityName, string correlationId = null, bool isAlwaysCorrelated = false);
+
+    /// <summary>
+    /// Lists the faulted instances whose pending retry (<see cref="Workflow.PendingRetry"/>) is due, the earliest
+    /// first.
+    /// </summary>
+    Task<IEnumerable<Workflow>> ListDueRetriesAsync(DateTime utcNow, int take);
+
     Task<Workflow> GetAsync(long id);
     Task<Workflow> GetAsync(string uid);
     Task<IEnumerable<Workflow>> GetAsync(IEnumerable<long> ids);

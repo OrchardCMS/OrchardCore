@@ -686,7 +686,7 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
 
         using var workflowContext = await _workflowManager.CreateWorkflowExecutionContextAsync(transientType, workflow);
         var activityContext = await _workflowManager.CreateActivityExecutionContextAsync(record, record.Properties);
-        var outcomes = await activityContext.Activity.GetPossibleOutcomesAsync(workflowContext, activityContext);
+        var outcomes = await WorkflowDesignerModelBuilder.GetOutcomesAsync(workflowContext, activityContext);
 
         return outcomes.Select(outcome => outcome.Name).ToHashSet(StringComparer.Ordinal);
     }

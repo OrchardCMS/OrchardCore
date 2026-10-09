@@ -945,6 +945,73 @@
               "DestinationActivityId": "recreply"
             }
           ]
+        },
+        {
+          "WorkflowTypeId": "wfdretriedscript",
+          "Name": "Retried call",
+          "IsEnabled": true,
+          "IsSingleton": false,
+          "DeleteFinishedWorkflows": false,
+          "Activities": [
+            {
+              "ActivityId": "retrystart",
+              "Name": "HttpRequestEvent",
+              "X": 40,
+              "Y": 40,
+              "IsStart": true,
+              "Properties": {
+                "HttpMethod": "GET",
+                "ValidateAntiforgeryToken": false
+              }
+            },
+            {
+              "ActivityId": "retrycall",
+              "Name": "TransientFailureTask",
+              "X": 360,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "ActivityMetadata": {
+                  "Title": "Call the service"
+                },
+                "ActivityRetryPolicy": {
+                  "MaxRetries": 1,
+                  "DelaySeconds": 0,
+                  "Backoff": 0,
+                  "OnFailure": 1
+                },
+                "Failures": 2
+              }
+            },
+            {
+              "ActivityId": "retryfallback",
+              "Name": "HttpResponseTask",
+              "X": 680,
+              "Y": 40,
+              "IsStart": false,
+              "Properties": {
+                "Content": {
+                  "Expression": "fallback"
+                },
+                "HttpStatusCode": 200,
+                "ContentType": {
+                  "Expression": "text/plain"
+                }
+              }
+            }
+          ],
+          "Transitions": [
+            {
+              "SourceActivityId": "retrystart",
+              "SourceOutcomeName": "Done",
+              "DestinationActivityId": "retrycall"
+            },
+            {
+              "SourceActivityId": "retrycall",
+              "SourceOutcomeName": "Failed",
+              "DestinationActivityId": "retryfallback"
+            }
+          ]
         }
       ]
     }

@@ -6,8 +6,8 @@ using OrchardCore.Workflows.Models;
 namespace WorkflowsSample;
 
 /// <summary>
-/// Fails the first time it runs in an instance, like a call to a service that is briefly down, and succeeds when
-/// the instance is retried.
+/// Fails the first times it runs in an instance (<see cref="Failures"/>), like a call to a service that is briefly
+/// down, and succeeds when it's retried after that.
 /// </summary>
 public sealed class TransientFailureTask : TaskActivity<TransientFailureTask>
 {
@@ -16,11 +16,20 @@ public sealed class TransientFailureTask : TaskActivity<TransientFailureTask>
     public override LocalizedString Category => new("Test", "Test");
 
     /// <summary>
-    /// Whether the activity already failed in this instance. It is saved with the instance's state.
+    /// How many times the activity fails before it succeeds, once by default.
     /// </summary>
-    public bool HasFailed
+    public int Failures
     {
-        get => GetProperty<bool>();
+        get => GetProperty(() => 1);
+        set => SetProperty(value);
+    }
+
+    /// <summary>
+    /// How many times the activity failed in this instance. It is saved with the instance's state.
+    /// </summary>
+    public int FailedCount
+    {
+        get => GetProperty<int>();
         set => SetProperty(value);
     }
 
@@ -29,9 +38,9 @@ public sealed class TransientFailureTask : TaskActivity<TransientFailureTask>
 
     public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        if (!HasFailed)
+        if (FailedCount < Failures)
         {
-            HasFailed = true;
+            FailedCount++;
 
             throw new TransientFailureException();
         }

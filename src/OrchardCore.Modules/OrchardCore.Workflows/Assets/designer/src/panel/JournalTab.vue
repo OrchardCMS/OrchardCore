@@ -3,6 +3,7 @@ import { computed } from "vue";
 import type { JournalRecord } from "../api/types";
 import type { DesignerStore } from "../state/designerStore";
 import { formatDateTime } from "../draft/formatDateTime";
+import { isScriptError, journalStatusClass as statusClass, journalStatusLabel as statusLabel } from "./journalStatus";
 import { t } from "../i18n";
 
 const props = defineProps<{
@@ -18,16 +19,6 @@ const records = computed(() => state.instance?.journal ?? []);
 
 const titleOf = (record: JournalRecord) => record.activityTitle || props.store.getNode(record.activityId)?.title || record.activityName;
 
-const statusClass = (record: JournalRecord) =>
-    record.status === "Faulted" ? "text-bg-danger" : record.status === "Halted" ? "text-bg-info" : "text-bg-success";
-
-// Direct t("…") calls, so the translations spec sees every key.
-const statusLabel = (record: JournalRecord) =>
-    record.status === "Faulted" ? t("JournalFaulted") : record.status === "Halted" ? t("JournalHalted") : t("JournalCompleted");
-
-// A record that completed or halted with an error ran a script that failed.
-const isScriptError = (record: JournalRecord) => record.status !== "Faulted" && !!record.error;
-
 const duration = (record: JournalRecord) => t("DurationMilliseconds", Math.round(record.durationMilliseconds));
 </script>
 
@@ -40,7 +31,11 @@ const duration = (record: JournalRecord) => t("DurationMilliseconds", Math.round
                 <button
                     type="button"
                     class="wfd-journal-record"
-                    :class="{ 'is-faulted': record.status === 'Faulted', 'is-script-error': isScriptError(record) }"
+                    :class="{
+                        'is-faulted': record.status === 'Faulted' || record.status === 'Failed',
+                        'is-retrying': record.status === 'Retrying',
+                        'is-script-error': isScriptError(record),
+                    }"
                     @click="emit('select', record.activityId, record.sequence)"
                 >
                     <span class="wfd-journal-sequence">#{{ record.sequence }}</span>

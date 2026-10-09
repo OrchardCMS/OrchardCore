@@ -829,6 +829,36 @@ public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsF
         await page.CloseAsync();
     }
 
+    [Fact]
+    public async Task RetryPolicy_TaskThatKeepsFailing_IsRetriedThenFollowsItsFailedOutcome()
+    {
+        var (page, consoleErrors) = await OpenAsync();
+        var id = await page.FindWorkflowTypeIdAsync("Retried call");
+        await page.OpenDesignerAsync(id);
+
+        // The card says the task is retried, and has the Failed outcome its policy follows.
+        await Assertions.Expect(page.Activity("retrycall").Locator("[data-cy=retry-badge]")).ToHaveTextAsync("1");
+        await Assertions.Expect(page.Activity("retrycall").Locator("[data-outcome='Failed']")).ToBeVisibleAsync();
+
+        await page.EditActivityAsync("retrycall");
+        await Assertions.Expect(page.ActivityForm().Locator("[data-cy=retry-max-retries]")).ToHaveValueAsync("1");
+        await Assertions.Expect(page.ActivityForm().Locator("[data-cy=retry-on-failure]")).ToHaveValueAsync("FollowFailedOutcome");
+
+        var url = await page.GenerateHttpUrlAsync(id, "retrystart");
+        Assert.Equal("fallback", (await (await page.APIRequest.GetAsync(url)).TextAsync()).Trim());
+
+        // The journal has the failed attempt that was retried, then the failure that followed the outcome.
+        await OpenInstanceAsync(page, id, "Finished");
+        await page.Locator("[data-cy=panel-tab-journal]").ClickAsync();
+        await Assertions.Expect(page.Locator("[data-cy=journal-record-2] [data-cy=journal-status]")).ToHaveClassAsync(new Regex("text-bg-warning"));
+        await Assertions.Expect(page.Locator("[data-cy=journal-record-2] [data-cy=journal-error]")).ToContainTextAsync("The service is briefly unavailable.");
+        await Assertions.Expect(page.Locator("[data-cy=journal-record-3] [data-cy=journal-outcomes]")).ToHaveTextAsync("Failed");
+        await Assertions.Expect(page.Locator("[data-cy=journal-record-4]")).ToBeVisibleAsync();
+
+        Assert.Empty(consoleErrors);
+        await page.CloseAsync();
+    }
+
     private static async Task OpenInstanceAsync(IPage page, long workflowTypeId, string status)
     {
         await page.GotoAndAssertOkAsync($"/Admin/Workflows/Types/{workflowTypeId}/Instances/Index");

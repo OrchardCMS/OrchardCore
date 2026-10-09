@@ -146,7 +146,7 @@ When a version is created, the versions older than the most recent `MaxCount` on
 
 ## Execution Journal
 
-Workflow instances record each activity they run in a **journal**: the activity, how it ended (completed, waiting on an event, or faulted), its outcomes, when it started and how long it took, and the error of a fault or of a [script that failed](#script-errors). The journal is saved with the instance, in its own collection, and is deleted with the instance (when it is deleted, trimmed, or when its workflow is deleted).
+Workflow instances record each activity they run in a **journal**: the activity, how it ended (completed, waiting on an event, faulted, failed and [retried](#retrying-failed-tasks-automatically), or failed and following its **Failed** outcome), its outcomes, when it started and how long it took, and the error of a fault or of a [script that failed](#script-errors). The journal is saved with the instance, in its own collection, and is deleted with the instance (when it is deleted, trimmed, or when its workflow is deleted).
 
 The page of a workflow instance uses the journal:
 
@@ -173,6 +173,28 @@ The built-in JavaScript, Liquid and Literal syntaxes record their evaluations. A
 ### Retrying a Faulted Instance
 
 When an activity fails, for example because a service it calls is down, the instance is **faulted** and stops. After fixing the cause, select an activity of the faulted instance, usually the one that faulted, and choose **Retry from here**. The instance runs again from that activity, with the state it had (its properties, variables and activity states), on the version it runs on. Retrying requires the **Execute workflows** permission.
+
+### Retrying Failed Tasks Automatically
+
+A task can be retried by itself when it fails, for example when a service it calls is down for a moment. Set it in the **When it fails** section of the task's settings:
+
+| Setting | Description |
+|---|---|
+| **Retries** | How many times the task is retried, up to 10. With 0 (the default), it isn't. |
+| **Delay (seconds)** | How long to wait before the first retry. With 0, the task is retried at once, in the same run. |
+| **Delay between retries** | The same each time, or twice as long each time, up to a day. |
+| **Once the retries are spent** | **Fault the workflow** (the default), or **Follow the Failed outcome**. |
+
+How it runs:
+
+- **At once.** Without a delay, the task runs again right away, until it succeeds or the retries are spent.
+- **Later.** With a delay, the instance is faulted with a retry due, and its page says when the next retry is due. The **Workflow Retries** background task, which runs every minute, retries the due instances from the task, with their state, on the version they run on. A retry is due at the earliest when its delay is over, and runs within a minute of it. Waiting doesn't hold anything in memory, and survives a restart.
+- **Spent.** Once the retries are spent, the instance is faulted as without retries: the workflows that start with a **Catch Workflow Fault Event** run then, not at each failed attempt, and the instance can be [retried by hand](#retrying-a-faulted-instance), which starts the retries again. With **Follow the Failed outcome**, the task shows a **Failed** outcome on the canvas instead, and the instance goes on with it, for example to notify someone or to call another service; the error is the task's [last result](#last-result).
+- **Journal.** Each failed attempt that is retried is recorded as **Retrying**, with its error, and a failure that follows the outcome as **Failed**. The card of a task that is retried shows how many times.
+
+Events aren't retried: they wait for something to happen rather than doing it. A [child instance](#workflows-as-activities) that waits for a retry keeps its parent waiting until it ends.
+
+The retry policy is kept in the task's properties (`ActivityRetryPolicy`), so it is part of the workflow's [versions](#versions), recipes and deployments.
 
 ### Script Errors
 
@@ -214,6 +236,7 @@ The journal doesn't record the input or output of the activities.
 - `IWorkflowExecutionJournal` lists, saves and deletes the `WorkflowExecutionRecord` documents of an instance.
 - `WorkflowExecutionContext.ExecutedActivities` holds the most recent 100 activities and outcomes the instance ran, and is saved with its state (`WorkflowState.ExecutedActivities`, oldest first).
 - `IWorkflowManager.RetryActivityAsync(workflow, activityId)` runs a faulted instance again from an activity.
+- `ActivityRetryPolicy` is the retry policy of a task (`activity.GetRetryPolicy()` returns it when it's active). `Workflow.PendingRetry` is the next attempt of a task that is retried later; `IWorkflowStore.ListDueRetriesAsync` lists the instances whose retry is due, and `IWorkflowManager.RunDueRetryAsync` runs it.
 - `WorkflowExecutionContext.ReportScriptError(message)` reports an error that an expression recovered from; the JavaScript evaluator reports the errors of its expressions. The engine records them on the activity's record, or faults the instance with a `WorkflowScriptException` when `WorkflowType.FaultOnScriptErrors` is set.
 
 ## Branching

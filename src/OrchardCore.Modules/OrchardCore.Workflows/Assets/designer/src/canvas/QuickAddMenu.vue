@@ -50,7 +50,7 @@ const move = async (offset: number) => {
 
     active.value = (active.value + offset + items.value.length) % items.value.length;
     await nextTick();
-    list.value?.querySelector(`#${ids}-${active.value}`)?.scrollIntoView({ block: "nearest" });
+    list.value?.querySelector(`#${ids}-${active.value}`)?.scrollIntoView?.({ block: "nearest" });
 };
 
 const onKeyDown = (event: KeyboardEvent) => {

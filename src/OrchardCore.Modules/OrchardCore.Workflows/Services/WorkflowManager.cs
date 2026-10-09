@@ -344,11 +344,31 @@ public class WorkflowManager : IWorkflowManager
     }
 
     /// <inheritdoc />
-    public async Task<WorkflowExecutionContext> RetryActivityAsync(Workflow workflow, string activityId)
+    public Task<WorkflowExecutionContext> RetryActivityAsync(Workflow workflow, string activityId)
     {
         ArgumentNullException.ThrowIfNull(workflow);
         ArgumentException.ThrowIfNullOrEmpty(activityId);
 
+        return RetryCoreAsync(workflow, activityId, isScheduled: false);
+    }
+
+    /// <inheritdoc />
+    public Task<WorkflowExecutionContext> RunDueRetryAsync(Workflow workflow)
+    {
+        ArgumentNullException.ThrowIfNull(workflow);
+
+        if (workflow.Status != WorkflowStatus.Faulted || workflow.PendingRetry is not { } retry || retry.DueUtc > _clock.UtcNow)
+        {
+            return Task.FromResult<WorkflowExecutionContext>(null);
+        }
+
+        return RetryCoreAsync(workflow, retry.ActivityId, isScheduled: true);
+    }
+
+    // Runs a faulted instance again from an activity. A retry by hand starts the attempts of the task's retry policy
+    // again; a scheduled one counts the attempts made before.
+    private async Task<WorkflowExecutionContext> RetryCoreAsync(Workflow workflow, string activityId, bool isScheduled)
+    {
         if (workflow.Status != WorkflowStatus.Faulted)
         {
             throw new InvalidOperationException($"The workflow '{workflow.WorkflowId}' isn't faulted, so it can't be retried.");
@@ -375,6 +395,11 @@ public class WorkflowManager : IWorkflowManager
 
         var workflowContext = await CreateWorkflowExecutionContextAsync(workflowType, workflow);
         workflow.FaultMessage = null;
+
+        if (!isScheduled)
+        {
+            workflow.PendingRetry = null;
+        }
 
         await ExecuteWorkflowAsync(workflowContext, activity);
 
@@ -618,6 +643,7 @@ public class WorkflowManager : IWorkflowManager
                             // Block on this activity.
                             blocking.Add(activity);
                             workflowContext.RecordExecution(activityContext, WorkflowExecutionRecordStatus.Halted, [], startedUtc, _clock.UtcNow, resumed, haltedScriptError, dataRecorder?.Collect());
+                            ClearPendingRetry(workflowContext, activity);
 
                             continue;
                         }
@@ -651,20 +677,72 @@ public class WorkflowManager : IWorkflowManager
                         resumed,
                         scriptError,
                         dataRecorder?.Collect());
+
+                    ClearPendingRetry(workflowContext, activity);
                 }
                 catch (Exception ex)
                 {
-                    workflowContext.RecordExecution(activityContext, WorkflowExecutionRecordStatus.Faulted, [], startedUtc, _clock.UtcNow, resumed, ex.Message, dataRecorder?.Collect());
+                    var retryPolicy = activityContext.Activity.GetRetryPolicy();
+                    var pendingRetry = workflowContext.Workflow.PendingRetry;
+                    var failedAttempts = (pendingRetry?.ActivityId == activity.ActivityId ? pendingRetry.FailedAttempts : 0) + 1;
 
-                    _logger.LogError(ex, "An unhandled error occurred while executing an activity. Workflow ID: '{WorkflowTypeId}'. Activity: '{ActivityId}', '{ActivityName}'. Putting the workflow in the faulted state.", workflowType.Id, activityContext.ActivityRecord.ActivityId, activityContext.ActivityRecord.Name);
-                    workflowContext.Fault(ex, activityContext);
+                    if (retryPolicy is not null && failedAttempts <= retryPolicy.MaxRetries)
+                    {
+                        // The task's retry policy retries it: at once, in this run, or later, while the instance is
+                        // faulted with a retry due.
+                        var delay = retryPolicy.GetDelay(failedAttempts);
 
-                    DecrementRecursion(workflowContext.Workflow);
-                    recursionDecremented = true;
+                        workflowContext.RecordExecution(activityContext, WorkflowExecutionRecordStatus.Retrying, [], startedUtc, _clock.UtcNow, resumed, ex.Message, dataRecorder?.Collect());
+                        workflowContext.Workflow.PendingRetry = new WorkflowPendingRetry
+                        {
+                            ActivityId = activity.ActivityId,
+                            FailedAttempts = failedAttempts,
+                            MaxRetries = retryPolicy.MaxRetries,
+                            DueUtc = _clock.UtcNow + delay,
+                        };
 
-                    await _workflowFaultHandler.OnWorkflowFaultAsync(this, workflowContext, activityContext, ex);
+                        _logger.LogWarning(ex, "The activity '{ActivityId}' of the workflow '{WorkflowId}' failed, and is retried in {Delay} (retry {Retry} of {MaxRetries}).", activity.ActivityId, workflowContext.WorkflowId, delay, failedAttempts, retryPolicy.MaxRetries);
 
-                    return blocking.Distinct();
+                        if (delay == TimeSpan.Zero)
+                        {
+                            // The retry executes the task, as a retry by hand does.
+                            isResuming = false;
+                            scheduled.Push(activity);
+
+                            continue;
+                        }
+
+                        workflowContext.Fault(ex, activityContext);
+
+                        DecrementRecursion(workflowContext.Workflow);
+                        recursionDecremented = true;
+
+                        return blocking.Distinct();
+                    }
+
+                    workflowContext.Workflow.PendingRetry = null;
+
+                    if (retryPolicy?.FollowsFailedOutcome != true)
+                    {
+                        workflowContext.RecordExecution(activityContext, WorkflowExecutionRecordStatus.Faulted, [], startedUtc, _clock.UtcNow, resumed, ex.Message, dataRecorder?.Collect());
+
+                        _logger.LogError(ex, "An unhandled error occurred while executing an activity. Workflow ID: '{WorkflowTypeId}'. Activity: '{ActivityId}', '{ActivityName}'. Putting the workflow in the faulted state.", workflowType.Id, activityContext.ActivityRecord.ActivityId, activityContext.ActivityRecord.Name);
+                        workflowContext.Fault(ex, activityContext);
+
+                        DecrementRecursion(workflowContext.Workflow);
+                        recursionDecremented = true;
+
+                        await _workflowFaultHandler.OnWorkflowFaultAsync(this, workflowContext, activityContext, ex);
+
+                        return blocking.Distinct();
+                    }
+
+                    // The attempts are spent: the task produces its failed outcome, with the error as its result.
+                    outcomes = [ActivityRetryPolicy.FailedOutcome];
+                    workflowContext.LastResult = ex.Message;
+                    workflowContext.RecordExecution(activityContext, WorkflowExecutionRecordStatus.Failed, outcomes, startedUtc, _clock.UtcNow, resumed, ex.Message, dataRecorder?.Collect());
+
+                    _logger.LogWarning(ex, "The activity '{ActivityId}' of the workflow '{WorkflowId}' failed, and follows its '{Outcome}' outcome.", activity.ActivityId, workflowContext.WorkflowId, ActivityRetryPolicy.FailedOutcome);
                 }
 
                 // Signal every activity that the activity is executed.
@@ -728,7 +806,10 @@ public class WorkflowManager : IWorkflowManager
     {
         var child = childContext.Workflow;
 
-        if (string.IsNullOrEmpty(child.ParentWorkflowId) || childContext.Status is not (WorkflowStatus.Finished or WorkflowStatus.Faulted))
+        // A child that's retried later hasn't ended yet.
+        if (string.IsNullOrEmpty(child.ParentWorkflowId) ||
+            childContext.Status is not (WorkflowStatus.Finished or WorkflowStatus.Faulted) ||
+            child.PendingRetry is not null)
         {
             return;
         }
@@ -762,6 +843,15 @@ public class WorkflowManager : IWorkflowManager
         {
             [ChildWorkflowResult.InputKey] = ChildWorkflowResult.From(childContext),
         });
+    }
+
+    // The run completed or halted the task a retry was pending for: its attempts are over.
+    private static void ClearPendingRetry(WorkflowExecutionContext workflowContext, ActivityRecord activity)
+    {
+        if (workflowContext.Workflow.PendingRetry?.ActivityId == activity.ActivityId)
+        {
+            workflowContext.Workflow.PendingRetry = null;
+        }
     }
 
     // The errors of the scripts the running activity evaluated, or null.

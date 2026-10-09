@@ -77,6 +77,8 @@ const hasScriptErrors = computed(() => !props.faulted && props.scriptErrors.leng
 
 const scriptErrorTitle = computed(() => [t("ScriptErrorActivity"), ...props.scriptErrors].join("\n"));
 
+const retries = computed(() => props.node.retries ?? 0);
+
 const accessibleName = computed(() => {
     const parts = [props.node.title, props.node.displayText];
 
@@ -86,6 +88,10 @@ const accessibleName = computed(() => {
 
     if (props.blocking) {
         parts.push(t("BlockingActivity"));
+    }
+
+    if (retries.value > 0) {
+        parts.push(t("RetriedTimes", retries.value));
     }
 
     if (props.faulted) {
@@ -228,6 +234,10 @@ const onKeyDown = (event: KeyboardEvent) => {
             <span class="wfd-node-type text-truncate">{{ node.displayText }}</span>
             <span v-if="change" class="badge wfd-node-badge wfd-change-badge" :class="`is-${change}`" data-cy="change-badge">{{ changeLabel }}</span>
             <span v-if="node.isStart" class="badge text-bg-success wfd-node-badge" data-cy="start-badge">{{ t("Start") }}</span>
+            <span v-if="retries > 0" class="badge text-bg-secondary wfd-node-badge" :title="t('RetriedTimes', retries)" data-cy="retry-badge">
+                <i class="fa-solid fa-rotate-right" aria-hidden="true"></i>
+                {{ retries }}
+            </span>
             <span v-if="faulted" class="badge text-bg-danger wfd-node-badge" :title="t('FaultedActivity')" data-cy="faulted-badge">
                 <i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>
             </span>

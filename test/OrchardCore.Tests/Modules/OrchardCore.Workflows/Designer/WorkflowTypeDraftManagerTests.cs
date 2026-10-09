@@ -280,6 +280,23 @@ public sealed class WorkflowTypeDraftManagerTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task UpdateActivityAsync_RetryPolicyFollowsTheFailedOutcome_KeepsItsTransitionUntilItStops()
+    {
+        _workflowType.Transitions.Add(new Transition { SourceActivityId = "a", SourceOutcomeName = ActivityRetryPolicy.FailedOutcome, DestinationActivityId = "b" });
+        var following = new JsonObject
+        {
+            [nameof(ActivityRetryPolicy)] = JObject.FromObject(new ActivityRetryPolicy { OnFailure = ActivityFailureBehavior.FollowFailedOutcome }),
+        };
+
+        var kept = await CreateManager().UpdateActivityAsync(_workflowType.WorkflowTypeId, 0, "a", following);
+        var removed = await CreateManager().UpdateActivityAsync(_workflowType.WorkflowTypeId, kept.Revision, "a", []);
+
+        Assert.Empty(kept.RemovedTransitions);
+        Assert.Contains("a:Failed:b", kept.Draft.Transitions.Select(WorkflowDesignIssue.GetTransitionKey));
+        Assert.Equal(["a:Failed:b"], removed.RemovedTransitions.Select(WorkflowDesignIssue.GetTransitionKey));
+    }
+
+    [Fact]
     public async Task UpdateActivityAsync_UnknownActivityId_ReturnsNotFound()
     {
         var result = await CreateManager().UpdateActivityAsync(_workflowType.WorkflowTypeId, 0, "missing", []);

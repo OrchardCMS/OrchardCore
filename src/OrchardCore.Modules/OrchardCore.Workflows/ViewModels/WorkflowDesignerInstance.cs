@@ -44,6 +44,11 @@ public sealed class WorkflowDesignerInstance
     public string FaultedActivityId { get; init; }
 
     /// <summary>
+    /// The next attempt of the task a faulted instance is retried from, by the task's retry policy, if any.
+    /// </summary>
+    public WorkflowPendingRetry PendingRetry { get; init; }
+
+    /// <summary>
     /// The most recent records of the instance's journal, oldest first.
     /// </summary>
     public IReadOnlyList<WorkflowDesignerJournalRecord> Journal { get; init; } = [];

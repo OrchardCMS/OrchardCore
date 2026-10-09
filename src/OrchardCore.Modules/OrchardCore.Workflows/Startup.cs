@@ -1,6 +1,7 @@
 using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OrchardCore.BackgroundTasks;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
@@ -13,6 +14,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.BackgroundTasks;
 using OrchardCore.Workflows.Deployment;
 using OrchardCore.Workflows.Drivers;
 using OrchardCore.Workflows.Evaluators;
@@ -87,6 +89,8 @@ public sealed class Startup : StartupBase
         services.AddNavigationProvider<AdminMenu>();
         services.AddPermissionProvider<Permissions>();
         services.AddDisplayDriver<IActivity, MissingActivityDisplayDriver>();
+        services.AddDisplayDriver<IActivity, ActivityRetryPolicyDisplayDriver>();
+        services.AddSingleton<IBackgroundTask, WorkflowRetryBackgroundTask>();
         services.AddIndexProvider<WorkflowTypeIndexProvider>();
         services.AddIndexProvider<WorkflowIndexProvider>();
         services.AddIndexProvider<WorkflowTypeDraftIndexProvider>();

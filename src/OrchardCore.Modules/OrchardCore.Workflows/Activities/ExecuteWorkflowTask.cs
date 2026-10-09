@@ -145,7 +145,8 @@ public class ExecuteWorkflowTask : TaskActivity<ExecuteWorkflowTask>, IActivityO
             return Outcome("Done");
         }
 
-        if (child.Status == WorkflowStatus.Halted)
+        // A child that's retried later (its task's retry policy) is waited on like a halted one.
+        if (child.Status == WorkflowStatus.Halted || (child.Status == WorkflowStatus.Faulted && child.Workflow.PendingRetry is not null))
         {
             ChildWorkflowId = child.WorkflowId;
 

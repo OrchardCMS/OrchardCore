@@ -1,4 +1,5 @@
 import type { DesignerInstance } from "../api/types";
+import { isScriptError } from "../panel/journalStatus";
 
 /**
  * The script errors of the activities an instance ran without faulting, by activity, from its journal: a record that
@@ -8,7 +9,7 @@ export const scriptErrorsByActivity = (instance: DesignerInstance | null | undef
     const errors = new Map<string, string[]>();
 
     for (const record of instance?.journal ?? []) {
-        if (record.status === "Faulted" || !record.error) {
+        if (!isScriptError(record) || !record.error) {
             continue;
         }
 

@@ -145,6 +145,11 @@ public sealed class WorkflowDesignerNode
     public bool IsMissing { get; init; }
 
     /// <summary>
+    /// How many times the task is retried when it faults, by its <see cref="ActivityRetryPolicy"/>.
+    /// </summary>
+    public int Retries { get; init; }
+
+    /// <summary>
     /// The custom title of the activity, or its display text.
     /// </summary>
     public string Title { get; init; }

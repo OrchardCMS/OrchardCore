@@ -218,8 +218,9 @@ public sealed class WorkflowDesignerController : Controller
                 VariableValues = VariableValuesOf(workflow, definition.Variables),
                 FaultMessage = workflow.FaultMessage,
                 FaultedActivityId = workflow.Status == WorkflowStatus.Faulted
-                    ? journal.LastOrDefault(record => record.Status == WorkflowExecutionRecordStatus.Faulted)?.ActivityId
+                    ? workflow.PendingRetry?.ActivityId ?? journal.LastOrDefault(record => record.Status == WorkflowExecutionRecordStatus.Faulted)?.ActivityId
                     : null,
+                PendingRetry = workflow.Status == WorkflowStatus.Faulted ? workflow.PendingRetry : null,
                 Journal = journal.Select(WorkflowDesignerJournalRecord.From).ToList(),
                 ExecutedActivityCounts = journal
                     .GroupBy(record => record.ActivityId)

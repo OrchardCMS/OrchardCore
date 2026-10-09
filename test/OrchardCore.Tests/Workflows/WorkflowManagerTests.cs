@@ -4,6 +4,7 @@ using Fluid;
 using Fluid.Values;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Liquid;
+using OrchardCore.Entities;
 using OrchardCore.Json;
 using OrchardCore.Liquid;
 using OrchardCore.Locking.Distributed;
@@ -736,7 +737,8 @@ public class WorkflowManagerTests
         WorkflowType workflowType,
         Action<Mock<IWorkflowFaultHandler>, WorkflowManager> configureWorkflowFaultHandler = null,
         IWorkflowExecutionJournal journal = null,
-        IWorkflowDesignerNotifier notifier = null
+        IWorkflowDesignerNotifier notifier = null,
+        IClock clock = null
     )
     {
         var workflowValueSerializers = new Resolver<IEnumerable<IWorkflowValueSerializer>>(serviceProvider);
@@ -755,7 +757,6 @@ public class WorkflowManagerTests
         var workflowContextLogger = new Mock<ILogger<WorkflowExecutionContext>>();
         var missingActivityLogger = new Mock<ILogger<MissingActivity>>();
         var missingActivityLocalizer = new Mock<IStringLocalizer<MissingActivity>>();
-        var clock = new Mock<IClock>();
         var workflowFaultHandler = new Mock<IWorkflowFaultHandler>();
         var jsonOptionsMock = new Mock<IOptions<DocumentJsonSerializerOptions>>();
         jsonOptionsMock.Setup(x => x.Value)
@@ -777,7 +778,7 @@ public class WorkflowManagerTests
             missingActivityLogger.Object,
             missingActivityLocalizer.Object,
             jsonOptionsMock.Object,
-            clock.Object
+            clock ?? Mock.Of<IClock>()
             );
 
         configureWorkflowFaultHandler?.Invoke(workflowFaultHandler, workflowManager);
@@ -1182,6 +1183,191 @@ public class WorkflowManagerTests
         finished.Workflow.Status = WorkflowStatus.Faulted;
 
         await Assert.ThrowsAsync<ArgumentException>(() => workflowManager.RetryActivityAsync(finished.Workflow, "missing"));
+    }
+
+    [Fact]
+    public async Task StartWorkflowAsync_RetryPolicyWithoutDelay_RetriesTheTaskUntilItSucceeds()
+    {
+        var failures = 2;
+        var (workflowManager, workflowType, saved) = CreateRetryWorkflow(() => failures-- > 0, new ActivityRetryPolicy { MaxRetries = 3 });
+
+        var workflowContext = await workflowManager.StartWorkflowAsync(workflowType);
+
+        Assert.Equal(WorkflowStatus.Finished, workflowContext.Status);
+        Assert.Null(workflowContext.Workflow.PendingRetry);
+        Assert.Equal(
+            [WorkflowExecutionRecordStatus.Completed, WorkflowExecutionRecordStatus.Retrying, WorkflowExecutionRecordStatus.Retrying, WorkflowExecutionRecordStatus.Completed],
+            saved.Select(record => record.Status));
+        Assert.Equal("Not ready yet", saved[1].Error);
+    }
+
+    [Fact]
+    public async Task StartWorkflowAsync_RetriesSpent_FaultsTheInstanceAndRunsTheFaultHandlersOnce()
+    {
+        var faults = 0;
+        var (workflowManager, workflowType, saved) = CreateRetryWorkflow(() => true, new ActivityRetryPolicy { MaxRetries = 2 }, configureWorkflowFaultHandler: handler => handler
+            .Setup(x => x.OnWorkflowFaultAsync(It.IsAny<IWorkflowManager>(), It.IsAny<WorkflowExecutionContext>(), It.IsAny<ActivityContext>(), It.IsAny<Exception>()))
+            .Callback(() => faults++)
+            .Returns(Task.CompletedTask));
+
+        var workflowContext = await workflowManager.StartWorkflowAsync(workflowType);
+
+        Assert.Equal(WorkflowStatus.Faulted, workflowContext.Status);
+        Assert.Null(workflowContext.Workflow.PendingRetry);
+        Assert.Equal(1, faults);
+        Assert.Equal(
+            [WorkflowExecutionRecordStatus.Completed, WorkflowExecutionRecordStatus.Retrying, WorkflowExecutionRecordStatus.Retrying, WorkflowExecutionRecordStatus.Faulted],
+            saved.Select(record => record.Status));
+    }
+
+    [Fact]
+    public async Task StartWorkflowAsync_RetriesSpentWithTheFailedOutcome_FollowsIt()
+    {
+        var (workflowManager, workflowType, saved) = CreateRetryWorkflow(
+            () => true,
+            new ActivityRetryPolicy { MaxRetries = 1, OnFailure = ActivityFailureBehavior.FollowFailedOutcome },
+            failedOutcomeActivity: true);
+
+        var workflowContext = await workflowManager.StartWorkflowAsync(workflowType);
+
+        Assert.Equal(WorkflowStatus.Finished, workflowContext.Status);
+        Assert.Equal(
+            [WorkflowExecutionRecordStatus.Completed, WorkflowExecutionRecordStatus.Retrying, WorkflowExecutionRecordStatus.Failed, WorkflowExecutionRecordStatus.Completed],
+            saved.Select(record => record.Status));
+        Assert.Equal([ActivityRetryPolicy.FailedOutcome], saved[2].Outcomes);
+        Assert.Equal("Not ready yet", saved[2].Error);
+        Assert.Equal("fallback", saved[3].ActivityId);
+    }
+
+    [Fact]
+    public async Task RunDueRetryAsync_RetryPolicyWithDelay_RetriesWhenDueUntilItSucceeds()
+    {
+        var now = new DateTime(2026, 10, 8, 12, 0, 0, DateTimeKind.Utc);
+        var clock = new Mock<IClock>();
+        clock.SetupGet(x => x.UtcNow).Returns(() => now);
+        var fail = true;
+        var faults = 0;
+        var (workflowManager, workflowType, saved) = CreateRetryWorkflow(
+            () => fail,
+            new ActivityRetryPolicy { MaxRetries = 3, DelaySeconds = 30, Backoff = ActivityRetryBackoff.Exponential },
+            clock: clock.Object,
+            configureWorkflowFaultHandler: handler => handler
+                .Setup(x => x.OnWorkflowFaultAsync(It.IsAny<IWorkflowManager>(), It.IsAny<WorkflowExecutionContext>(), It.IsAny<ActivityContext>(), It.IsAny<Exception>()))
+                .Callback(() => faults++)
+                .Returns(Task.CompletedTask));
+
+        var workflow = (await workflowManager.StartWorkflowAsync(workflowType)).Workflow;
+
+        Assert.Equal(WorkflowStatus.Faulted, workflow.Status);
+        Assert.Equal("Not ready yet", workflow.FaultMessage);
+        Assert.Equal("flaky", workflow.PendingRetry.ActivityId);
+        Assert.Equal(1, workflow.PendingRetry.FailedAttempts);
+        Assert.Equal(3, workflow.PendingRetry.MaxRetries);
+        Assert.Equal(now.AddSeconds(30), workflow.PendingRetry.DueUtc);
+
+        // Not due yet.
+        now = now.AddSeconds(29);
+        Assert.Null(await workflowManager.RunDueRetryAsync(workflow));
+
+        // Due, and fails again: the next retry waits twice as long.
+        now = now.AddSeconds(1);
+        Assert.Equal(WorkflowStatus.Faulted, (await workflowManager.RunDueRetryAsync(workflow)).Status);
+        Assert.Equal(2, workflow.PendingRetry.FailedAttempts);
+        Assert.Equal(now.AddSeconds(60), workflow.PendingRetry.DueUtc);
+
+        fail = false;
+        now = now.AddSeconds(60);
+        var retried = await workflowManager.RunDueRetryAsync(workflow);
+
+        Assert.Equal(WorkflowStatus.Finished, retried.Status);
+        Assert.Null(workflow.PendingRetry);
+        Assert.Null(workflow.FaultMessage);
+        Assert.Equal(0, faults);
+        Assert.Equal(
+            [WorkflowExecutionRecordStatus.Completed, WorkflowExecutionRecordStatus.Retrying, WorkflowExecutionRecordStatus.Retrying, WorkflowExecutionRecordStatus.Completed],
+            saved.Select(record => record.Status));
+    }
+
+    [Fact]
+    public async Task RetryActivityAsync_InstanceWithAPendingRetry_StartsTheAttemptsAgain()
+    {
+        var (workflowManager, workflowType, _) = CreateRetryWorkflow(() => true, new ActivityRetryPolicy { MaxRetries = 2, DelaySeconds = 60 });
+
+        var workflow = (await workflowManager.StartWorkflowAsync(workflowType)).Workflow;
+        workflow.PendingRetry.FailedAttempts = 2;
+
+        await workflowManager.RetryActivityAsync(workflow, "flaky");
+
+        Assert.Equal(WorkflowStatus.Faulted, workflow.Status);
+        Assert.Equal(1, workflow.PendingRetry.FailedAttempts);
+    }
+
+    [Theory]
+    [InlineData(0, ActivityRetryBackoff.Exponential, 3, 0)]
+    [InlineData(30, ActivityRetryBackoff.Fixed, 3, 30)]
+    [InlineData(30, ActivityRetryBackoff.Exponential, 1, 30)]
+    [InlineData(30, ActivityRetryBackoff.Exponential, 3, 120)]
+    [InlineData(72000, ActivityRetryBackoff.Exponential, 2, 86400)]
+    public void GetDelay_PolicyAndRetry_ReturnsTheDelayCappedAtADay(int delaySeconds, ActivityRetryBackoff backoff, int retry, int expectedSeconds)
+    {
+        var policy = new ActivityRetryPolicy { MaxRetries = 3, DelaySeconds = delaySeconds, Backoff = backoff };
+
+        Assert.Equal(TimeSpan.FromSeconds(expectedSeconds), policy.GetDelay(retry));
+    }
+
+    [Fact]
+    public void GetRetryPolicy_TasksAndEvents_ReturnsTheActivePolicyOfTasksWithinTheLimit()
+    {
+        var task = new FlakyTask(() => false);
+        task.Put(new ActivityRetryPolicy { MaxRetries = 50 });
+
+        Assert.Equal(ActivityRetryPolicy.MaxRetriesLimit, task.GetRetryPolicy().MaxRetries);
+
+        task.Put(new ActivityRetryPolicy());
+        Assert.Null(task.GetRetryPolicy());
+
+        var timer = new Mock<IEvent>();
+        timer.SetupGet(x => x.Properties).Returns(new JsonObject { [nameof(ActivityRetryPolicy)] = new JsonObject { ["MaxRetries"] = 2 } });
+        Assert.Null(timer.Object.GetRetryPolicy());
+    }
+
+    // A start task, then a flaky task with the retry policy, then (when asked) a fallback task after its failed outcome.
+    private static (WorkflowManager Manager, WorkflowType WorkflowType, List<WorkflowExecutionRecord> Saved) CreateRetryWorkflow(
+        Func<bool> fail,
+        ActivityRetryPolicy policy,
+        bool failedOutcomeActivity = false,
+        IClock clock = null,
+        Action<Mock<IWorkflowFaultHandler>> configureWorkflowFaultHandler = null)
+    {
+        var (journal, saved) = CreateJournal();
+        var flaky = new FlakyTask(fail);
+        var workflowType = new WorkflowType
+        {
+            Id = 1,
+            WorkflowTypeId = IdGenerator.GenerateId(),
+            Activities =
+            [
+                new() { ActivityId = "start", IsStart = true, Name = "StartTask" },
+                new() { ActivityId = "flaky", Name = flaky.Name, Properties = new JsonObject { [nameof(ActivityRetryPolicy)] = JObject.FromObject(policy) } },
+            ],
+            Transitions = [new() { SourceActivityId = "start", SourceOutcomeName = "Done", DestinationActivityId = "flaky" }],
+        };
+
+        if (failedOutcomeActivity)
+        {
+            workflowType.Activities.Add(new() { ActivityId = "fallback", Name = "FallbackTask" });
+            workflowType.Transitions.Add(new() { SourceActivityId = "flaky", SourceOutcomeName = ActivityRetryPolicy.FailedOutcome, DestinationActivityId = "fallback" });
+        }
+
+        var workflowManager = CreateWorkflowManager(
+            CreateServiceProvider(),
+            [flaky, new NamedTask("StartTask", new OutputTask(null, halt: false)), new NamedTask("FallbackTask", new OutputTask(null, halt: false))],
+            workflowType,
+            (handler, _) => configureWorkflowFaultHandler?.Invoke(handler),
+            journal,
+            clock: clock);
+
+        return (workflowManager, workflowType, saved);
     }
 
     private static (IWorkflowExecutionJournal Journal, List<WorkflowExecutionRecord> Saved) CreateJournal(bool enabled = true)

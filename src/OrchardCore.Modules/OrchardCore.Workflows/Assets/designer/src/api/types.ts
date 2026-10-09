@@ -96,6 +96,8 @@ export interface DesignerNode {
     isEvent: boolean;
     hasEditor: boolean;
     isMissing: boolean;
+    // How many times the task is retried when it faults, by its retry policy.
+    retries?: number;
     title: string;
     displayText: string;
     category: string;
@@ -135,7 +137,7 @@ export interface JournalRecord {
     activityName: string;
     activityTitle?: string | null;
     isResume: boolean;
-    status: "Completed" | "Halted" | "Faulted" | string;
+    status: "Completed" | "Halted" | "Faulted" | "Retrying" | "Failed" | string;
     outcomes: string[];
     startedUtc: string;
     completedUtc: string;
@@ -178,11 +180,22 @@ export interface DesignerInstance {
     faultMessage?: string | null;
     // The activity whose execution faulted the instance.
     faultedActivityId?: string | null;
+    // The next attempt of the task a faulted instance is retried from, by the task's retry policy.
+    pendingRetry?: PendingRetry | null;
     // The most recent journal records, oldest first.
     journal?: JournalRecord[];
     // How many times each activity ran, and each transition (by transition key) was taken.
     executedActivityCounts?: Record<string, number>;
     executedTransitionCounts?: Record<string, number>;
+}
+
+// The next attempt of a task that faulted and is retried later (WorkflowPendingRetry).
+export interface PendingRetry {
+    activityId: string;
+    // How many attempts failed so far, the first one included.
+    failedAttempts: number;
+    maxRetries: number;
+    dueUtc: string;
 }
 
 export interface RetryResult {

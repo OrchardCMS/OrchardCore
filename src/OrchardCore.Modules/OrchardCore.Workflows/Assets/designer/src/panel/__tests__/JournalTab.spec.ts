@@ -53,6 +53,21 @@ describe("JournalTab", () => {
         expect(wrapper.get("[data-cy=journal-record-2]").find("[data-cy=journal-script-error]").exists()).toBe(false);
     });
 
+    it("render_RetryingAndFailed_ShowTheirStatusAndAreNotScriptErrors", () => {
+        const wrapper = setup([record(1, "a", "Retrying", { error: "Timeout" }), record(2, "a", "Failed", { error: "Timeout", outcomes: ["Failed"] })]);
+
+        const retrying = wrapper.get("[data-cy=journal-record-1]");
+        const failed = wrapper.get("[data-cy=journal-record-2]");
+
+        expect(retrying.get("[data-cy=journal-status]").text()).toBe("JournalRetrying");
+        expect(retrying.get("[data-cy=journal-status]").classes()).toContain("text-bg-warning");
+        expect(retrying.get("button").classes()).toContain("is-retrying");
+        expect(failed.get("[data-cy=journal-status]").text()).toBe("JournalFailed");
+        expect(failed.get("[data-cy=journal-status]").classes()).toContain("text-bg-danger");
+        expect(failed.get("[data-cy=journal-outcomes]").text()).toBe("Failed");
+        expect(wrapper.find("[data-cy=journal-script-error]").exists()).toBe(false);
+    });
+
     it("select_Record_EmitsItsActivityAndItsSequence", async () => {
         const wrapper = setup([record(1, "fork", "Completed")]);
 

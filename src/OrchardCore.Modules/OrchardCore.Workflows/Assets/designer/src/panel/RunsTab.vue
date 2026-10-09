@@ -4,6 +4,7 @@ import type { DesignerApi } from "../api/designerApi";
 import type { JournalData, JournalRecord } from "../api/types";
 import type { DesignerStore } from "../state/designerStore";
 import { formatDateTime } from "../draft/formatDateTime";
+import { journalStatusClass as statusClass, journalStatusLabel as statusLabel } from "./journalStatus";
 import { t } from "../i18n";
 
 // The executions of an activity by the instance shown, from its journal. Each opens on what the activity evaluated,
@@ -65,11 +66,6 @@ watch(
     },
     { immediate: true },
 );
-
-const statusClass = (record: JournalRecord) => (record.status === "Faulted" ? "text-bg-danger" : record.status === "Halted" ? "text-bg-info" : "text-bg-success");
-
-// Direct t("…") calls, so the translations spec sees every key.
-const statusLabel = (record: JournalRecord) => (record.status === "Faulted" ? t("JournalFaulted") : record.status === "Halted" ? t("JournalHalted") : t("JournalCompleted"));
 
 const loaded = (record: JournalRecord) => {
     const value = data.get(record.sequence);

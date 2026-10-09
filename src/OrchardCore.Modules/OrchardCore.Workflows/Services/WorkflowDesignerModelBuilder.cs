@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Extensions;
@@ -38,6 +39,8 @@ public sealed class WorkflowDesignerModelBuilder
     private readonly IEnumerable<IActivityPresetProvider> _presetProviders;
     private readonly IWorkflowTypeStore _workflowTypeStore;
 
+    internal readonly IStringLocalizer S;
+
     public WorkflowDesignerModelBuilder(
         IWorkflowManager workflowManager,
         IActivityLibrary activityLibrary,
@@ -50,7 +53,8 @@ public sealed class WorkflowDesignerModelBuilder
         HtmlEncoder htmlEncoder,
         IOptions<WorkflowOptions> workflowOptions,
         IEnumerable<IActivityPresetProvider> presetProviders,
-        IWorkflowTypeStore workflowTypeStore)
+        IWorkflowTypeStore workflowTypeStore,
+        IStringLocalizer<WorkflowDesignerModelBuilder> stringLocalizer)
     {
         _workflowManager = workflowManager;
         _activityLibrary = activityLibrary;
@@ -64,6 +68,7 @@ public sealed class WorkflowDesignerModelBuilder
         _workflowOptions = workflowOptions.Value;
         _presetProviders = presetProviders;
         _workflowTypeStore = workflowTypeStore;
+        S = stringLocalizer;
     }
 
     /// <summary>
@@ -77,14 +82,29 @@ public sealed class WorkflowDesignerModelBuilder
     }
 
     /// <summary>
-    /// Returns the outcomes an activity can produce, given its current properties.
+    /// Returns the outcomes an activity can produce, given its current properties: the activity's own, and the
+    /// failed outcome of its retry policy when the policy follows it.
     /// </summary>
-    public static async Task<IReadOnlyList<Outcome>> GetOutcomesAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    /// <param name="workflowContext">The context of the workflow.</param>
+    /// <param name="activityContext">The context of the activity.</param>
+    /// <param name="failedDisplayName">The display name of the retry policy's failed outcome, when the activity doesn't
+    /// have an outcome of that name itself.</param>
+    public static async Task<IReadOnlyList<Outcome>> GetOutcomesAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext, LocalizedString failedDisplayName = null)
     {
         ArgumentNullException.ThrowIfNull(workflowContext);
         ArgumentNullException.ThrowIfNull(activityContext);
 
-        return (await activityContext.Activity.GetPossibleOutcomesAsync(workflowContext, activityContext)).ToArray();
+        var outcomes = (await activityContext.Activity.GetPossibleOutcomesAsync(workflowContext, activityContext)).ToList();
+
+        if (activityContext.Activity.GetRetryPolicy()?.FollowsFailedOutcome == true &&
+            !outcomes.Any(outcome => outcome.Name == ActivityRetryPolicy.FailedOutcome))
+        {
+            outcomes.Add(new Outcome(
+                ActivityRetryPolicy.FailedOutcome,
+                failedDisplayName ?? new LocalizedString(ActivityRetryPolicy.FailedOutcome, ActivityRetryPolicy.FailedOutcome)));
+        }
+
+        return outcomes;
     }
 
     /// <summary>
@@ -227,7 +247,7 @@ public sealed class WorkflowDesignerModelBuilder
     {
         var record = activityContext.ActivityRecord;
         var activity = activityContext.Activity;
-        var outcomes = await GetOutcomesAsync(workflowContext, activityContext);
+        var outcomes = await GetOutcomesAsync(workflowContext, activityContext, S["Failed"]);
         var shape = await _activityDisplayManager.BuildDisplayAsync(activity, _updateModelAccessor.ModelUpdater, "Design");
         var displayText = await GetDisplayTextAsync(activity);
         var title = activity.TryGet<ActivityMetadata>(out var metadata) && !string.IsNullOrWhiteSpace(metadata.Title)
@@ -244,6 +264,7 @@ public sealed class WorkflowDesignerModelBuilder
             IsEvent = activity.IsEvent(),
             HasEditor = activity.HasEditor,
             IsMissing = activity is MissingActivity,
+            Retries = activity.GetRetryPolicy()?.MaxRetries ?? 0,
             Title = title,
             DisplayText = displayText,
             Category = activity.Category.Value,

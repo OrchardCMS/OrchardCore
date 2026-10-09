@@ -18,6 +18,16 @@ describe("ActivityNode", () => {
         expect(faulted.find("[data-cy=executed-badge]").exists()).toBe(false);
     });
 
+    it("render_TaskWithRetries_ShowsHowManyTimesItsRetried", () => {
+        const retried = mount(ActivityNode, { props: { node: createNode("n1", { retries: 3 }) } });
+        const notRetried = mount(ActivityNode, { props: { node: createNode("n2") } });
+
+        expect(retried.get("[data-cy=retry-badge]").text()).toBe("3");
+        expect(retried.get("[data-cy=retry-badge]").attributes("title")).toBe("RetriedTimes");
+        expect(retried.get("[data-cy=activity-n1]").attributes("aria-label")).toContain("RetriedTimes");
+        expect(notRetried.find("[data-cy=retry-badge]").exists()).toBe(false);
+    });
+
     it("render_ScriptErrors_ShowsAWarningUnlessTheActivityFaulted", () => {
         const withErrors = mount(ActivityNode, { props: { node: createNode("n1"), executedCount: 1, scriptErrors: ["x is not defined", "y is not defined"] } });
         const faulted = mount(ActivityNode, { props: { node: createNode("n2"), executedCount: 1, faulted: true, scriptErrors: ["x is not defined"] } });

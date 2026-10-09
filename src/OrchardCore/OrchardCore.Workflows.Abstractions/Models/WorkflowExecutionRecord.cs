@@ -78,7 +78,7 @@ public sealed class WorkflowExecutionRecord
     public double DurationMilliseconds { get; set; }
 
     /// <summary>
-    /// The error message, when the execution faulted.
+    /// The error message, when the execution faulted or failed.
     /// </summary>
     public string Error { get; set; }
 
@@ -108,4 +108,15 @@ public enum WorkflowExecutionRecordStatus
     /// The activity threw, which faulted the instance.
     /// </summary>
     Faulted,
+
+    /// <summary>
+    /// The activity threw, and its <see cref="ActivityRetryPolicy"/> retries it.
+    /// </summary>
+    Retrying,
+
+    /// <summary>
+    /// The activity threw once the retries of its <see cref="ActivityRetryPolicy"/> were spent, and produced its
+    /// <see cref="ActivityRetryPolicy.FailedOutcome"/>.
+    /// </summary>
+    Failed,
 }

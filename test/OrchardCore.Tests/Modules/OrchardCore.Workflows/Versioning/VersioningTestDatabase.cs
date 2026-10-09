@@ -57,6 +57,7 @@ internal sealed class VersioningTestDatabase : IAsyncDisposable
             await migrations.UpdateFrom4Async();
             await migrations.UpdateFrom5Async();
             await migrations.UpdateFrom6Async();
+            await migrations.UpdateFrom7Async();
             await session.SaveChangesAsync();
         }
 

@@ -9,6 +9,7 @@ import ServerFormHost from "./ServerFormHost.vue";
 import OutputBindings from "./OutputBindings.vue";
 import AvailableData from "../available/AvailableData.vue";
 import RunsTab from "./RunsTab.vue";
+import { formatDateTime } from "../draft/formatDateTime";
 import { canInsertAt, insertAtCursor } from "../available/insertion";
 import type { FormApplyResult } from "./types";
 import type { RevisionTask } from "../services/revisionQueue";
@@ -359,6 +360,13 @@ const onActivityApplied = (result: FormApplyResult & { valid: true }) => {
 const retrying = ref(false);
 const isFaultedInstance = computed(() => props.canRetry && state.instance?.status === "Faulted");
 
+// The next attempt of the shown task, when the instance waits to retry it.
+const pendingRetry = computed(() => {
+    const retry = state.instance?.status === "Faulted" ? state.instance.pendingRetry : null;
+
+    return retry && retry.activityId === editingNode.value?.id ? retry : null;
+});
+
 /**
  * Runs the faulted instance again from the activity shown, after a confirmation.
  */
@@ -622,6 +630,10 @@ defineExpose({ open, settle, close, discardChanges, refresh, hasPendingChanges, 
                             {{ state.instance.faultMessage }}
                         </p>
                     </div>
+                    <p v-if="pendingRetry" class="wfd-pending-retry" data-cy="pending-retry">
+                        <i class="fa-solid fa-rotate-right" aria-hidden="true"></i>
+                        {{ t("NextRetryDue", pendingRetry.failedAttempts, pendingRetry.maxRetries, formatDateTime(pendingRetry.dueUtc)) }}
+                    </p>
                 </div>
                 <div v-if="tab === 'runs'" :id="`${ids}-tab-runs-panel`" role="tabpanel" :aria-labelledby="`${ids}-tab-runs`">
                     <RunsTab :store="store" :api="api" :activity-id="editingNode.id" />
