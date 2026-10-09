@@ -16,7 +16,7 @@ public sealed record LocalizationSource
     /// </summary>
     /// <param name="value">The untranslated value, used as the localization key.</param>
     /// <param name="type">The source type of the localizer, or <see langword="null"/> for a value without a localization context.</param>
-    public LocalizationSource(string value, Type type = null)
+    public LocalizationSource(string value, Type? type = null)
     {
         ArgumentNullException.ThrowIfNull(value);
 
@@ -31,7 +31,7 @@ public sealed record LocalizationSource
     /// <param name="type">The source type of the localizer, or <see langword="null"/> for a value without a localization context.</param>
     /// <returns>A new untranslated source with the specified value and source type.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="value"/> is <see langword="null"/>.</exception>
-    public static LocalizationSource Create(string value, Type type = null)
+    public static LocalizationSource Create(string value, Type? type = null)
     {
         return new LocalizationSource(value, type);
     }
@@ -51,7 +51,7 @@ public sealed record LocalizationSource
     /// <summary>
     /// Gets the source type of the localizer, or <see langword="null"/> when no localization context is provided.
     /// </summary>
-    public Type Type { get; }
+    public Type? Type { get; }
 
     /// <summary>
     /// Gets the untranslated value, used as the localization key.

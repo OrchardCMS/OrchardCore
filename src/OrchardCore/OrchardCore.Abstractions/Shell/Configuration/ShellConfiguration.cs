@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Environment.Shell.Configuration.Internal;
@@ -11,11 +12,11 @@ namespace OrchardCore.Environment.Shell.Configuration;
 /// </summary>
 public class ShellConfiguration : IShellConfiguration
 {
-    private IConfigurationRoot _configuration;
-    private UpdatableDataProvider _updatableData;
+    private IConfigurationRoot? _configuration;
+    private UpdatableDataProvider? _updatableData;
 
-    private readonly string _name;
-    private readonly Func<string, Action<IConfigurationBuilder>, Task<IConfigurationRoot>> _factoryAsync;
+    private readonly string? _name;
+    private readonly Func<string, Action<IConfigurationBuilder>, Task<IConfigurationRoot>>? _factoryAsync;
     private readonly SemaphoreSlim _semaphore = new(1);
     private bool _released;
 
@@ -49,13 +50,13 @@ public class ShellConfiguration : IShellConfiguration
     {
     }
 
-    public ShellConfiguration(string name, ShellConfiguration configuration)
+    public ShellConfiguration(string? name, ShellConfiguration configuration)
     {
         _name = name;
 
         if (configuration._configuration is not null)
         {
-            _updatableData = new UpdatableDataProvider(configuration._updatableData.ToArray());
+            _updatableData = new UpdatableDataProvider(configuration._updatableData?.ToArray());
 
             _configuration = new ConfigurationBuilder()
                 .AddConfiguration(configuration._configuration, shouldDisposeConfiguration: true)
@@ -73,14 +74,16 @@ public class ShellConfiguration : IShellConfiguration
         _factoryAsync = configuration._factoryAsync;
     }
 
+    [MemberNotNull(nameof(_configuration), nameof(_updatableData))]
     private void EnsureConfiguration()
     {
-        if (_configuration is not null)
+        if (_configuration is null)
         {
-            return;
+            EnsureConfigurationAsync().GetAwaiter().GetResult();
         }
 
-        EnsureConfigurationAsync().GetAwaiter().GetResult();
+        ArgumentNullException.ThrowIfNull(_configuration);
+        ArgumentNullException.ThrowIfNull(_updatableData);
     }
 
     internal async Task EnsureConfigurationAsync()
@@ -101,7 +104,7 @@ public class ShellConfiguration : IShellConfiguration
             _updatableData = new UpdatableDataProvider();
 
             _configuration = _factoryAsync is not null
-                ? await _factoryAsync(_name, builder => builder.Add(_updatableData))
+                ? await _factoryAsync(_name!, builder => builder.Add(_updatableData))
                 : new ConfigurationBuilder().Add(_updatableData).Build();
         }
         finally
@@ -122,7 +125,7 @@ public class ShellConfiguration : IShellConfiguration
         }
     }
 
-    public string this[string key]
+    public string? this[string key]
     {
         get
         {

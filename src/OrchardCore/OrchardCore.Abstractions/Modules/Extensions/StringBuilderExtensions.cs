@@ -13,7 +13,7 @@ public static class StringBuilderExtensions
         return builder;
     }
 
-    public static StringBuilder AppendCommaSeparatedValues(this StringBuilder builder, params string[] values)
+    public static StringBuilder AppendCommaSeparatedValues(this StringBuilder builder, params string?[]? values)
     {
         if (values == null || values.Length == 0)
         {
@@ -38,7 +38,7 @@ public static class StringBuilderExtensions
         return builder;
     }
 
-    public static StringBuilder AppendCommaSeparatedValues(this StringBuilder builder, params char[] values)
+    public static StringBuilder AppendCommaSeparatedValues(this StringBuilder builder, params char[]? values)
     {
         if (values == null || values.Length == 0)
         {

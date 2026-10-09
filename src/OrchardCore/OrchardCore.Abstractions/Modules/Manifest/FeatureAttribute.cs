@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace OrchardCore.Modules.Manifest;
 
 /// <summary>
@@ -16,8 +18,8 @@ namespace OrchardCore.Modules.Manifest;
 [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true, Inherited = false)]
 public class FeatureAttribute : Attribute
 {
-    private string _id;
-    private string _name;
+    private string? _id;
+    private string? _name;
     private string _category = "";
     private string[] _dependencies = [];
     private string[] _before = [];
@@ -50,11 +52,11 @@ public class FeatureAttribute : Attribute
     /// <param name="enabledByDependencyOnly">A value indicating whether the feature can only be enabled as a dependency. Supported types are <see cref="string"/> and <see cref="bool"/>.</param>
     public FeatureAttribute(
         string id,
-        string description,
-        string featureDependencies,
-        object defaultTenant,
-        object alwaysEnabled,
-        object enabledByDependencyOnly
+        string? description,
+        string? featureDependencies,
+        object? defaultTenant,
+        object? alwaysEnabled,
+        object? enabledByDependencyOnly
     ) : this(
         id,
         default,
@@ -81,12 +83,12 @@ public class FeatureAttribute : Attribute
     /// <param name="enabledByDependencyOnly">A value indicating whether the feature can only be enabled as a dependency. Supported types are <see cref="string"/> and <see cref="bool"/>.</param>
     public FeatureAttribute(
         string id,
-        string name,
-        string description,
-        string featureDependencies,
-        object defaultTenant,
-        object alwaysEnabled,
-        object enabledByDependencyOnly
+        string? name,
+        string? description,
+        string? featureDependencies,
+        object? defaultTenant,
+        object? alwaysEnabled,
+        object? enabledByDependencyOnly
     ) : this(
         id,
         name,
@@ -115,14 +117,14 @@ public class FeatureAttribute : Attribute
     /// <param name="enabledByDependencyOnly">A value indicating whether the feature can only be enabled as a dependency. Supported types are <see cref="string"/> and <see cref="bool"/>.</param>
     public FeatureAttribute(
         string id,
-        string name,
-        string category,
-        string priority,
-        string description,
-        string featureDependencies,
-        object defaultTenant,
-        object alwaysEnabled,
-        object enabledByDependencyOnly
+        string? name,
+        string? category,
+        string? priority,
+        string? description,
+        string? featureDependencies,
+        object? defaultTenant,
+        object? alwaysEnabled,
+        object? enabledByDependencyOnly
     )
     {
         Id = id;
@@ -145,7 +147,8 @@ public class FeatureAttribute : Attribute
     /// Gets or sets the unique feature identifier.
     /// </summary>
     /// <exception cref="ArgumentException">Thrown when attempting to set a null or empty value.</exception>
-    public virtual string Id
+    [DisallowNull]
+    public virtual string? Id
     {
         get => _id;
         set
@@ -162,7 +165,7 @@ public class FeatureAttribute : Attribute
     /// <remarks>
     /// If not set or empty, returns the <see cref="Id"/> value.
     /// </remarks>
-    public virtual string Name
+    public virtual string? Name
     {
         get => string.IsNullOrEmpty(_name) ? Id : _name;
         set => _name = value;
@@ -171,7 +174,7 @@ public class FeatureAttribute : Attribute
     /// <summary>
     /// Gets or sets a brief summary of what the feature does.
     /// </summary>
-    public virtual string Description { get; set; } = "";
+    public virtual string? Description { get; set; } = "";
 
     /// <summary>
     /// Gets or sets the category used for grouping features in the UI.
@@ -179,6 +182,7 @@ public class FeatureAttribute : Attribute
     /// <remarks>
     /// Values are trimmed when set. If not specified, features will be categorized as "Uncategorized".
     /// </remarks>
+    [AllowNull]
     public virtual string Category
     {
         get => _category;
@@ -194,7 +198,7 @@ public class FeatureAttribute : Attribute
     /// result in later invocation. The default value is "0".
     /// If set to null or empty, the priority of the parent feature is used.
     /// </remarks>
-    public virtual string Priority { get; set; } = "0";
+    public virtual string? Priority { get; set; } = "0";
 
     /// <summary>
     /// Gets the parsed priority value for internal use.
@@ -212,6 +216,7 @@ public class FeatureAttribute : Attribute
     /// This is an ordering-only constraint and does not imply a hard feature dependency.
     /// Values are automatically trimmed when set.
     /// </remarks>
+    [AllowNull]
     public virtual string[] Before
     {
         get => _before;
@@ -226,6 +231,7 @@ public class FeatureAttribute : Attribute
     /// This is an ordering-only constraint and does not imply a hard feature dependency.
     /// Values are automatically trimmed when set.
     /// </remarks>
+    [AllowNull]
     public virtual string[] After
     {
         get => _after;
@@ -239,6 +245,7 @@ public class FeatureAttribute : Attribute
     /// Dependencies determine feature activation/closure semantics and should correspond to required features.
     /// Values are automatically trimmed when set.
     /// </remarks>
+    [AllowNull]
     public virtual string[] Dependencies
     {
         get => _dependencies;
@@ -265,7 +272,7 @@ public class FeatureAttribute : Attribute
     /// </summary>
     /// <param name="additionalFeatures">Additional features to check for descriptions if this instance has none.</param>
     /// <returns>The first non-empty description found, or an empty string if none exist.</returns>
-    internal string Describe(params FeatureAttribute[] additionalFeatures)
+    internal string Describe(params FeatureAttribute?[] additionalFeatures)
     {
         if (!string.IsNullOrEmpty(Description))
         {
@@ -288,7 +295,7 @@ public class FeatureAttribute : Attribute
     /// </summary>
     /// <param name="additionalFeatures">Additional features to check for categories if this instance has none.</param>
     /// <returns>The first non-empty category found, or "Uncategorized" if none exist.</returns>
-    internal string Categorize(params FeatureAttribute[] additionalFeatures)
+    internal string Categorize(params FeatureAttribute?[] additionalFeatures)
     {
         if (!string.IsNullOrEmpty(Category))
         {
@@ -311,7 +318,7 @@ public class FeatureAttribute : Attribute
     /// </summary>
     /// <param name="additionalFeatures">Additional features to check for priority values if this instance has none.</param>
     /// <returns>The first valid priority value found, or 0 if none exist.</returns>
-    internal int Prioritize(params FeatureAttribute[] additionalFeatures)
+    internal int Prioritize(params FeatureAttribute?[] additionalFeatures)
     {
         var priority = InternalPriority;
         if (priority.HasValue)
@@ -336,7 +343,7 @@ public class FeatureAttribute : Attribute
     /// </summary>
     /// <param name="dependencies">A string containing delimited feature dependencies.</param>
     /// <returns>An array of dependency strings, or an empty array if the input is null or whitespace.</returns>
-    private static string[] ParseDependencies(string dependencies)
+    private static string[] ParseDependencies(string? dependencies)
     {
         if (string.IsNullOrWhiteSpace(dependencies))
         {
@@ -346,10 +353,11 @@ public class FeatureAttribute : Attribute
         return dependencies.Split(ListDelimiters, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
     }
 
-    private static string[] NormalizeDependencies(string[] dependencies)
+    private static string[] NormalizeDependencies(string?[]? dependencies)
     {
         return dependencies?
             .Select(d => d?.Trim())
+            .OfType<string>()
             .Where(d => !string.IsNullOrWhiteSpace(d))
             .Distinct()
             .ToArray() ?? [];

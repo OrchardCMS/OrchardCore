@@ -8,6 +8,7 @@
 
     Abstractions of OrchardCore ShellHost.</Description>
     <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

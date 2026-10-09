@@ -17,7 +17,7 @@ public class ModuleEmbeddedFileProvider : IFileProvider
 
     private Application Application => _applicationContext.Application;
 
-    public IDirectoryContents GetDirectoryContents(string subpath)
+    public IDirectoryContents GetDirectoryContents(string? subpath)
     {
         if (subpath == null)
         {
@@ -62,11 +62,11 @@ public class ModuleEmbeddedFileProvider : IFileProvider
         return new EmbeddedDirectoryContents(entries);
     }
 
-    public IFileInfo GetFileInfo(string subpath)
+    public IFileInfo GetFileInfo(string? subpath)
     {
         if (subpath == null)
         {
-            return new NotFoundFileInfo(subpath);
+            return new NotFoundFileInfo(string.Empty);
         }
 
         var path = NormalizePath(subpath);

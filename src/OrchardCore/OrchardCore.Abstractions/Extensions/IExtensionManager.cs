@@ -4,9 +4,9 @@ namespace OrchardCore.Environment.Extensions;
 
 public interface IExtensionManager
 {
-    IExtensionInfo GetExtension(string extensionId);
+    IExtensionInfo GetExtension(string? extensionId);
     IEnumerable<IExtensionInfo> GetExtensions();
-    Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo);
+    Task<ExtensionEntry?> LoadExtensionAsync(IExtensionInfo extensionInfo);
 
     IEnumerable<IFeatureInfo> GetFeatures();
     [Obsolete("Use GetFeatures(IEnumerable<string> featureIdsToLoad) instead.")]

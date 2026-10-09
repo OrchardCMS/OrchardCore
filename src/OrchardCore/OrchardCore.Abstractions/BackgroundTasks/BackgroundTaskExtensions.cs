@@ -31,8 +31,8 @@ public static class BackgroundTaskExtensions
         };
     }
 
-    public static IBackgroundTask GetTaskByName(this IEnumerable<IBackgroundTask> tasks, string name)
+    public static IBackgroundTask? GetTaskByName(this IEnumerable<IBackgroundTask> tasks, string name)
         => tasks.LastOrDefault(task => task.GetTaskName() == name);
 
-    public static string GetTaskName(this IBackgroundTask task) => task.GetType().FullName;
+    public static string GetTaskName(this IBackgroundTask task) => task.GetType().FullName ?? task.GetType().Name;
 }

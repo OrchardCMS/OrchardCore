@@ -30,13 +30,13 @@ internal sealed class FallbackConfigurationSection : IConfigurationSection
 
     public string Path => _section.Path;
 
-    public string Value
+    public string? Value
     {
         get => _section.Value ?? _fallback.Value;
         set => _section.Value = value;
     }
 
-    public string this[string key]
+    public string? this[string key]
     {
         get => _section[key] ?? _fallback[key];
         set => _section[key] = value;

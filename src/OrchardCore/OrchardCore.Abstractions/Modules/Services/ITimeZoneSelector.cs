@@ -5,5 +5,5 @@ namespace OrchardCore.Modules;
 /// </summary>
 public interface ITimeZoneSelector
 {
-    Task<TimeZoneSelectorResult> GetTimeZoneAsync();
+    Task<TimeZoneSelectorResult?> GetTimeZoneAsync();
 }

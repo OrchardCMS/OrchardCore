@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Hosting;
 
 namespace OrchardCore.Modules;
@@ -7,7 +8,7 @@ public class ModularApplicationContext : IApplicationContext
 {
     private readonly IHostEnvironment _environment;
     private readonly IEnumerable<IModuleNamesProvider> _moduleNamesProviders;
-    private Application _application;
+    private Application? _application;
     private static readonly object s_initLock = new();
 
     public ModularApplicationContext(IHostEnvironment environment, IEnumerable<IModuleNamesProvider> moduleNamesProviders)
@@ -25,6 +26,7 @@ public class ModularApplicationContext : IApplicationContext
         }
     }
 
+    [MemberNotNull(nameof(_application))]
     private void EnsureInitialized()
     {
         if (_application == null)

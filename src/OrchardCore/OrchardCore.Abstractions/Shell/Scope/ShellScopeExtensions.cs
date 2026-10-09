@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace OrchardCore.Environment.Shell.Scope;
 
 public static class ShellScopeExtensions
@@ -10,7 +12,8 @@ public static class ShellScopeExtensions
     /// <param name="last">A boolean value indicating whether the delegate should be invoked last. 
     /// If true, the delegate is added to the end of the invocation list; otherwise, it is added to the beginning. The default value is false.</param>
     /// <returns>The <see cref="ShellScope"/> instance for chaining further calls.</returns>
-    public static ShellScope RegisterBeforeDispose(this ShellScope scope, Func<ShellScope, Task> callback, bool last = false)
+    [return: NotNullIfNotNull(nameof(scope))]
+    public static ShellScope? RegisterBeforeDispose(this ShellScope? scope, Func<ShellScope, Task> callback, bool last = false)
     {
         scope?.BeforeDispose(callback, last);
 
@@ -25,7 +28,8 @@ public static class ShellScopeExtensions
     /// <param name="last">A boolean value indicating whether the delegate should be invoked last. 
     /// If true, the delegate is added to the end of the invocation list; otherwise, it is added to the beginning. The default value is false.</param>
     /// <returns>The <see cref="ShellScope"/> instance for chaining further calls.</returns>
-    public static ShellScope RegisterBeforeDispose(this ShellScope scope, Action<ShellScope> callback, bool last = false)
+    [return: NotNullIfNotNull(nameof(scope))]
+    public static ShellScope? RegisterBeforeDispose(this ShellScope? scope, Action<ShellScope> callback, bool last = false)
     {
         scope?.BeforeDispose(scope =>
         {
@@ -39,7 +43,8 @@ public static class ShellScopeExtensions
     /// <summary>
     /// Adds a Signal (if not already present) to be sent just before this shell scope will be disposed.
     /// </summary>
-    public static ShellScope AddDeferredSignal(this ShellScope scope, string key)
+    [return: NotNullIfNotNull(nameof(scope))]
+    public static ShellScope? AddDeferredSignal(this ShellScope? scope, string key)
     {
         scope?.DeferredSignal(key);
         return scope;
@@ -48,7 +53,8 @@ public static class ShellScopeExtensions
     /// <summary>
     /// Adds a Task to be executed in a new scope once this shell scope has been disposed.
     /// </summary>
-    public static ShellScope AddDeferredTask(this ShellScope scope, Func<ShellScope, Task> task)
+    [return: NotNullIfNotNull(nameof(scope))]
+    public static ShellScope? AddDeferredTask(this ShellScope? scope, Func<ShellScope, Task> task)
     {
         scope?.DeferredTask(task);
         return scope;
@@ -57,7 +63,8 @@ public static class ShellScopeExtensions
     /// <summary>
     /// Adds an Action to be executed in a new scope once this shell scope has been disposed.
     /// </summary>
-    public static ShellScope AddDeferredTask(this ShellScope scope, Action<ShellScope> callback)
+    [return: NotNullIfNotNull(nameof(scope))]
+    public static ShellScope? AddDeferredTask(this ShellScope? scope, Action<ShellScope> callback)
     {
         scope?.DeferredTask(scope =>
         {
@@ -71,7 +78,8 @@ public static class ShellScopeExtensions
     /// <summary>
     /// Adds an handler task to be invoked if an exception is thrown while executing in this shell scope.
     /// </summary>
-    public static ShellScope AddExceptionHandler(this ShellScope scope, Func<ShellScope, Exception, Task> handler)
+    [return: NotNullIfNotNull(nameof(scope))]
+    public static ShellScope? AddExceptionHandler(this ShellScope? scope, Func<ShellScope, Exception, Task> handler)
     {
         scope?.ExceptionHandler(handler);
         return scope;
@@ -80,7 +88,8 @@ public static class ShellScopeExtensions
     /// <summary>
     /// Adds an handler action to be invoked if an exception is thrown while executing in this shell scope.
     /// </summary>
-    public static ShellScope AddExceptionHandler(this ShellScope scope, Action<ShellScope, Exception> handler)
+    [return: NotNullIfNotNull(nameof(scope))]
+    public static ShellScope? AddExceptionHandler(this ShellScope? scope, Action<ShellScope, Exception> handler)
     {
         scope?.ExceptionHandler((scope, e) =>
         {

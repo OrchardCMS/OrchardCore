@@ -7,7 +7,7 @@ public static class ShellHostExtensions
     /// <summary>
     /// Tries to create a standalone service scope that can be used to resolve local services.
     /// </summary>
-    public static async Task<(ShellScope scope, bool success)> TryGetScopeAsync(this IShellHost shellHost, string tenant)
+    public static async Task<(ShellScope? scope, bool success)> TryGetScopeAsync(this IShellHost shellHost, string tenant)
     {
         try
         {

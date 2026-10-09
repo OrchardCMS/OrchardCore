@@ -65,19 +65,19 @@ public sealed class ResilientPolymorphicJsonConverter<T> : JsonConverter<T> wher
 {
     private readonly Dictionary<string, Type> _discriminatorToType;
     private readonly Dictionary<Type, string> _typeToDiscriminator;
-    private readonly Type _fallbackType;
+    private readonly Type? _fallbackType;
 
     public ResilientPolymorphicJsonConverter(
         Dictionary<string, Type> discriminatorToType,
         Dictionary<Type, string> typeToDiscriminator,
-        Type fallbackType)
+        Type? fallbackType)
     {
         _discriminatorToType = discriminatorToType;
         _typeToDiscriminator = typeToDiscriminator;
         _fallbackType = fallbackType;
     }
 
-    public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType == JsonTokenType.Null)
         {
@@ -104,10 +104,10 @@ public sealed class ResilientPolymorphicJsonConverter<T> : JsonConverter<T> wher
             return DeserializeAsFallback(root, discriminator);
         }
 
-        return (T)root.Deserialize(derivedType, options);
+        return (T?)root.Deserialize(derivedType, options);
     }
 
-    public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, T? value, JsonSerializerOptions options)
     {
         if (value is null)
         {
@@ -145,7 +145,7 @@ public sealed class ResilientPolymorphicJsonConverter<T> : JsonConverter<T> wher
         writer.WriteEndObject();
     }
 
-    private T DeserializeAsFallback(JsonElement root, string discriminator)
+    private T? DeserializeAsFallback(JsonElement root, string? discriminator)
     {
         if (_fallbackType is null)
         {
@@ -154,7 +154,7 @@ public sealed class ResilientPolymorphicJsonConverter<T> : JsonConverter<T> wher
 
         // Deserialize into the fallback type. This populates base-type properties
         // (e.g., Id, Name) from the JSON automatically.
-        var fallback = (T)root.Deserialize(_fallbackType);
+        var fallback = (T?)root.Deserialize(_fallbackType);
 
         if (fallback is IUnknownTypePlaceholder placeholder)
         {

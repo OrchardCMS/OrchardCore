@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Environment.Shell;
@@ -7,47 +8,47 @@ public static class ShellSettingsExtensions
     /// <summary>
     /// Whether the tenant is the 'Default' tenant or not.
     /// </summary>
-    public static bool IsDefaultShell(this ShellSettings settings) => settings is { Name: ShellSettings.DefaultShellName };
+    public static bool IsDefaultShell([NotNullWhen(true)] this ShellSettings? settings) => settings is { Name: ShellSettings.DefaultShellName };
 
     /// <summary>
     /// Whether the tenant is uninitialized or not.
     /// </summary>
-    public static bool IsUninitialized(this ShellSettings settings) => settings is { State: TenantState.Uninitialized };
+    public static bool IsUninitialized([NotNullWhen(true)] this ShellSettings? settings) => settings is { State: TenantState.Uninitialized };
 
     /// <summary>
     /// Whether the tenant is initializing or not.
     /// </summary>
-    public static bool IsInitializing(this ShellSettings settings) => settings is { State: TenantState.Initializing };
+    public static bool IsInitializing([NotNullWhen(true)] this ShellSettings? settings) => settings is { State: TenantState.Initializing };
 
     /// <summary>
     /// Whether the tenant is running or not.
     /// </summary>
-    public static bool IsRunning(this ShellSettings settings) => settings is { State: TenantState.Running };
+    public static bool IsRunning([NotNullWhen(true)] this ShellSettings? settings) => settings is { State: TenantState.Running };
 
     /// <summary>
     /// Whether the tenant is disabled or not.
     /// </summary>
-    public static bool IsDisabled(this ShellSettings settings) => settings is { State: TenantState.Disabled };
+    public static bool IsDisabled([NotNullWhen(true)] this ShellSettings? settings) => settings is { State: TenantState.Disabled };
 
     /// <summary>
     /// Whether the tenant is initialized or not.
     /// </summary>
-    public static bool IsInitialized(this ShellSettings settings) => settings.IsRunning() || settings.IsDisabled();
+    public static bool IsInitialized([NotNullWhen(true)] this ShellSettings? settings) => settings.IsRunning() || settings.IsDisabled();
 
     /// <summary>
     /// Whether the tenant is removable or not.
     /// </summary>
-    public static bool IsRemovable(this ShellSettings settings) => settings.IsUninitialized() || settings.IsDisabled();
+    public static bool IsRemovable([NotNullWhen(true)] this ShellSettings? settings) => settings.IsUninitialized() || settings.IsDisabled();
 
     /// <summary>
     /// Whether or not the tenant configuration has not been disposed.
     /// </summary>
-    public static bool HasConfiguration(this ShellSettings settings) => settings is { Disposed: false };
+    public static bool HasConfiguration([NotNullWhen(true)] this ShellSettings? settings) => settings is { Disposed: false };
 
     /// <summary>
     /// Whether or not the tenant has the provided url prefix.
     /// </summary>
-    public static bool HasUrlPrefix(this ShellSettings settings, string urlPrefix) =>
+    public static bool HasUrlPrefix([NotNullWhen(true)] this ShellSettings? settings, string? urlPrefix) =>
         settings is not null &&
         string.Equals(
             settings.RequestUrlPrefix ?? string.Empty,
@@ -57,7 +58,7 @@ public static class ShellSettingsExtensions
     /// <summary>
     /// Whether or not the tenant has one of the url host(s) defined by the provided string.
     /// </summary>
-    public static bool HasUrlHost(this ShellSettings settings, string urlHost) =>
+    public static bool HasUrlHost([NotNullWhen(true)] this ShellSettings? settings, string? urlHost) =>
         settings.HasUrlHost(urlHost
             ?.Split(ShellSettings.HostSeparators, StringSplitOptions.RemoveEmptyEntries)
             ?? []);
@@ -65,7 +66,7 @@ public static class ShellSettingsExtensions
     /// <summary>
     /// Whether or not the tenant has one of the provided url hosts.
     /// </summary>
-    public static bool HasUrlHost(this ShellSettings settings, string[] urlHosts)
+    public static bool HasUrlHost([NotNullWhen(true)] this ShellSettings? settings, string[] urlHosts)
     {
         if (settings is null)
         {

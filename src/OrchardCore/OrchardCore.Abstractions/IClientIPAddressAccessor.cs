@@ -4,5 +4,5 @@ namespace OrchardCore;
 
 public interface IClientIPAddressAccessor
 {
-    Task<IPAddress> GetIPAddressAsync();
+    Task<IPAddress?> GetIPAddressAsync();
 }

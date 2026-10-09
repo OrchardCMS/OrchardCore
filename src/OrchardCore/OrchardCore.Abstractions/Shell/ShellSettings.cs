@@ -27,12 +27,12 @@ public class ShellSettings : IDisposable
     private readonly ShellConfiguration _configuration;
     internal volatile int _shellCreating;
 
-    private string _requestUrlPrefix;
+    private string? _requestUrlPrefix;
     private PathString _requestPathBase;
-    private string _versionId;
-    private string _tenantId;
-    private string _requestUrlHost;
-    private string[] _requestUrlHosts;
+    private string? _versionId;
+    private string? _tenantId;
+    private string? _requestUrlHost;
+    private string[]? _requestUrlHosts;
     private TenantState? _state;
 
     /// <summary>
@@ -50,8 +50,8 @@ public class ShellSettings : IDisposable
     /// </summary>
     public ShellSettings(ShellConfiguration settings, ShellConfiguration configuration)
     {
-        _settings = settings;
-        _configuration = configuration;
+        _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
     }
 
     /// <summary>
@@ -59,6 +59,8 @@ public class ShellSettings : IDisposable
     /// </summary>
     public ShellSettings(ShellSettings settings)
     {
+        ArgumentNullException.ThrowIfNull(settings);
+
         _settings = new ShellConfiguration(settings._settings);
         _configuration = new ShellConfiguration(settings.Name, settings._configuration);
         Name = settings.Name;
@@ -67,7 +69,7 @@ public class ShellSettings : IDisposable
     /// <summary>
     /// The tenant name.
     /// </summary>
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     /// <summary>
     /// Whether this instance has been disposed or not.
@@ -84,7 +86,7 @@ public class ShellSettings : IDisposable
     /// <summary>
     /// The tenant version identifier.
     /// </summary>
-    public string VersionId
+    public string? VersionId
     {
         get => _versionId ??= _settings["VersionId"];
         set
@@ -97,11 +99,12 @@ public class ShellSettings : IDisposable
     /// <summary>
     /// The tenant identifier.
     /// </summary>
-    public string TenantId => _tenantId ??= _settings["TenantId"] ?? _settings["VersionId"];
+    public string? TenantId => _tenantId ??= _settings["TenantId"] ?? _settings["VersionId"];
 
     /// <summary>
     /// The tenant request url host, multiple separated hosts may be provided.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.AllowNull]
     public string RequestUrlHost
     {
         get => _requestUrlHost ??= _settings["RequestUrlHost"] ?? string.Empty;
@@ -119,6 +122,7 @@ public class ShellSettings : IDisposable
     /// <summary>
     /// The tenant request url prefix.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.AllowNull]
     public string RequestUrlPrefix
     {
         get => _requestUrlPrefix ??= _settings["RequestUrlPrefix"]?.Trim(' ', '/') ?? string.Empty;
@@ -159,7 +163,7 @@ public class ShellSettings : IDisposable
     public IShellConfiguration ShellConfiguration => _configuration;
 
     [JsonIgnore]
-    public string this[string key]
+    public string? this[string key]
     {
         get => _configuration[key];
         set => _configuration[key] = value;

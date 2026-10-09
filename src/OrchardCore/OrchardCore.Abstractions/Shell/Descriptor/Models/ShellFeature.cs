@@ -14,12 +14,12 @@ public class ShellFeature : IEquatable<ShellFeature>
         AlwaysEnabled = alwaysEnabled;
     }
 
-    public string Id { get; set; }
+    public string? Id { get; set; }
 
     [JsonIgnore]
     public bool AlwaysEnabled { get; set; }
 
-    public bool Equals(ShellFeature other)
+    public bool Equals(ShellFeature? other)
     {
         if (other == null)
         {
@@ -29,13 +29,13 @@ public class ShellFeature : IEquatable<ShellFeature>
         return Id == other.Id;
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         return Equals(obj as ShellFeature);
     }
 
     public override int GetHashCode()
     {
-        return Id.GetHashCode();
+        return Id?.GetHashCode() ?? 0;
     }
 }

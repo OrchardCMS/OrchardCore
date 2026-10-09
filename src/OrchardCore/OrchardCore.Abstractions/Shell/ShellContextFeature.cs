@@ -11,7 +11,7 @@ public class ShellContextFeature
     /// <summary>
     /// The current shell context.
     /// </summary>
-    public ShellContext ShellContext { get; init; }
+    public ShellContext ShellContext { get; init; } = null!;
 
     /// <summary>
     /// The original path base.

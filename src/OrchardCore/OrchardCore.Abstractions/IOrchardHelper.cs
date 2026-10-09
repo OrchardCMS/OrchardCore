@@ -4,5 +4,5 @@ namespace OrchardCore;
 
 public interface IOrchardHelper
 {
-    HttpContext HttpContext { get; }
+    HttpContext? HttpContext { get; }
 }

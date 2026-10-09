@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace OrchardCore.Modules.Manifest;
 
 /// <summary>
@@ -12,7 +14,7 @@ namespace OrchardCore.Modules.Manifest;
 [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]
 public class ModuleAttribute : FeatureAttribute
 {
-    private string _type;
+    private string? _type;
     private string _author = "";
     private string _website = "";
     private string _version = "0.0";
@@ -40,15 +42,15 @@ public class ModuleAttribute : FeatureAttribute
     /// <param name="enabledByDependencyOnly">A value indicating whether the module can only be enabled as a dependency. Supported types are <see cref="string"/> and <see cref="bool"/>.</param>
     public ModuleAttribute(
         string id,
-        string description,
-        string author,
-        string semVer,
-        string websiteUrl,
-        string featureDependencies,
-        string tags,
-        object defaultTenant,
-        object alwaysEnabled,
-        object enabledByDependencyOnly
+        string? description,
+        string? author,
+        string? semVer,
+        string? websiteUrl,
+        string? featureDependencies,
+        string? tags,
+        object? defaultTenant,
+        object? alwaysEnabled,
+        object? enabledByDependencyOnly
     ) : this(
         id,
         default,
@@ -83,16 +85,16 @@ public class ModuleAttribute : FeatureAttribute
     /// <param name="enabledByDependencyOnly">A value indicating whether the module can only be enabled as a dependency. Supported types are <see cref="string"/> and <see cref="bool"/>.</param>
     public ModuleAttribute(
         string id,
-        string name,
-        string description,
-        string author,
-        string semVer,
-        string websiteUrl,
-        string featureDependencies,
-        string tags,
-        object defaultTenant,
-        object alwaysEnabled,
-        object enabledByDependencyOnly
+        string? name,
+        string? description,
+        string? author,
+        string? semVer,
+        string? websiteUrl,
+        string? featureDependencies,
+        string? tags,
+        object? defaultTenant,
+        object? alwaysEnabled,
+        object? enabledByDependencyOnly
     ) : this(
         id,
         name,
@@ -129,18 +131,18 @@ public class ModuleAttribute : FeatureAttribute
     /// <param name="enabledByDependencyOnly">A value indicating whether the module can only be enabled as a dependency. Supported types are <see cref="string"/> and <see cref="bool"/>.</param>
     public ModuleAttribute(
         string id,
-        string name,
-        string category,
-        string priority,
-        string description,
-        string author,
-        string semVer,
-        string websiteUrl,
-        string featureDependencies,
-        string tags,
-        object defaultTenant,
-        object alwaysEnabled,
-        object enabledByDependencyOnly
+        string? name,
+        string? category,
+        string? priority,
+        string? description,
+        string? author,
+        string? semVer,
+        string? websiteUrl,
+        string? featureDependencies,
+        string? tags,
+        object? defaultTenant,
+        object? alwaysEnabled,
+        object? enabledByDependencyOnly
     ) : base(
         id,
         name,
@@ -178,19 +180,19 @@ public class ModuleAttribute : FeatureAttribute
     /// <param name="enabledByDependencyOnly">A value indicating whether the module can only be enabled as a dependency. Supported types are <see cref="string"/> and <see cref="bool"/>.</param>
     public ModuleAttribute(
         string id,
-        string name,
-        string type,
-        string category,
-        string priority,
-        string description,
-        string author,
-        string semVer,
-        string websiteUrl,
-        string featureDependencies,
-        string tags,
-        object defaultTenant,
-        object alwaysEnabled,
-        object enabledByDependencyOnly
+        string? name,
+        string? type,
+        string? category,
+        string? priority,
+        string? description,
+        string? author,
+        string? semVer,
+        string? websiteUrl,
+        string? featureDependencies,
+        string? tags,
+        object? defaultTenant,
+        object? alwaysEnabled,
+        object? enabledByDependencyOnly
     ) : this(
         id,
         name,
@@ -242,6 +244,7 @@ public class ModuleAttribute : FeatureAttribute
     /// <remarks>
     /// This allows module authors to categorize modules by custom types beyond the default classification.
     /// </remarks>
+    [AllowNull]
     public virtual string Type
     {
         get => _type ??= GetAttributePrefix(GetType());
@@ -253,6 +256,7 @@ public class ModuleAttribute : FeatureAttribute
     /// </summary>
     /// <value>The author name, or an empty string if not set.</value>
     /// <remarks>Values are trimmed when set. Null values are converted to empty strings.</remarks>
+    [AllowNull]
     public virtual string Author
     {
         get => _author;
@@ -264,6 +268,7 @@ public class ModuleAttribute : FeatureAttribute
     /// </summary>
     /// <value>The website URL, or an empty string if not set.</value>
     /// <remarks>Values are trimmed when set. Null values are converted to empty strings.</remarks>
+    [AllowNull]
     public virtual string Website
     {
         get => _website;
@@ -278,6 +283,7 @@ public class ModuleAttribute : FeatureAttribute
     /// Values are trimmed when set. Null values are converted to "0.0".
     /// See <see href="https://semver.org">Semantic Versioning</see> for version format details.
     /// </remarks>
+    [AllowNull]
     public virtual string Version
     {
         get => _version;
@@ -292,6 +298,7 @@ public class ModuleAttribute : FeatureAttribute
     /// Tags are used for categorization and discovery of modules.
     /// Values are trimmed when set. Null values are converted to empty arrays.
     /// </remarks>
+    [AllowNull]
     public virtual string[] Tags
     {
         get => _tags;
@@ -317,7 +324,7 @@ public class ModuleAttribute : FeatureAttribute
     /// Supported delimiters are semicolon (;), comma (,), and space ( ).
     /// Empty entries are removed and all values are trimmed.
     /// </remarks>
-    private static string[] ParseTags(string tags)
+    private static string[] ParseTags(string? tags)
     {
         if (string.IsNullOrWhiteSpace(tags))
         {

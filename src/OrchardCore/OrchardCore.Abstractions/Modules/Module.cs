@@ -22,7 +22,7 @@ public class Module
     /// </summary>
     /// <param name="assemblyName">The assembly name to use when loading itself.</param>
     /// <param name="isApplication">Whether the Module may be considered to be the &quot;Application&quot;.</param>
-    public Module(string assemblyName, bool isApplication = false)
+    public Module(string? assemblyName, bool isApplication = false)
     {
         if (!string.IsNullOrWhiteSpace(assemblyName))
         {
@@ -119,7 +119,7 @@ public class Module
     public string Name { get; }
     public string Root { get; }
     public string SubPath { get; }
-    public Assembly Assembly { get; }
+    public Assembly? Assembly { get; }
     public IEnumerable<Asset> Assets { get; }
     public IEnumerable<string> AssetPaths { get; }
     public ModuleAttribute ModuleInfo { get; }
@@ -140,7 +140,7 @@ public class Module
                     var resourcePath = _baseNamespace + subpath.Replace('/', '>');
                     var fileName = Path.GetFileName(subpath);
 
-                    if (Assembly.GetManifestResourceInfo(resourcePath) == null)
+                    if (Assembly?.GetManifestResourceInfo(resourcePath) == null)
                     {
                         return new NotFoundFileInfo(fileName);
                     }

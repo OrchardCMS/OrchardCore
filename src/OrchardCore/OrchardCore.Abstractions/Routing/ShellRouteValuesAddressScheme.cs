@@ -13,7 +13,7 @@ public sealed class ShellRouteValuesAddressScheme : IEndpointAddressScheme<Route
     private readonly IEnumerable<IShellRouteValuesAddressScheme> _schemes;
     private readonly object _synLock = new();
 
-    private IEndpointAddressScheme<RouteValuesAddress> _defaultScheme;
+    private IEndpointAddressScheme<RouteValuesAddress>? _defaultScheme;
 
     public ShellRouteValuesAddressScheme(IHttpContextAccessor httpContextAccessor, IEnumerable<IShellRouteValuesAddressScheme> schemes)
     {

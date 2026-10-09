@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.FileProviders;
+using System.Diagnostics.CodeAnalysis;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Modules.FileProviders;
@@ -11,7 +12,7 @@ namespace OrchardCore.Modules;
 /// </summary>
 public class ModuleProjectStaticFileProvider : IModuleStaticFileProvider
 {
-    private static Dictionary<string, string> s_roots;
+    private static Dictionary<string, string>? s_roots;
     private static readonly object s_synLock = new();
 
     public ModuleProjectStaticFileProvider(IApplicationContext applicationContext)
@@ -67,11 +68,11 @@ public class ModuleProjectStaticFileProvider : IModuleStaticFileProvider
         return NotFoundDirectoryContents.Singleton;
     }
 
-    public IFileInfo GetFileInfo(string subpath)
+    public IFileInfo GetFileInfo(string? subpath)
     {
         if (subpath == null)
         {
-            return new NotFoundFileInfo(subpath);
+            return new NotFoundFileInfo(string.Empty);
         }
 
         // "{ModuleId}/**/*.*".
@@ -84,7 +85,7 @@ public class ModuleProjectStaticFileProvider : IModuleStaticFileProvider
         return new NotFoundFileInfo(subpath);
     }
 
-    public IChangeToken Watch(string filter)
+    public IChangeToken Watch(string? filter)
     {
         if (filter == null)
         {
@@ -105,7 +106,7 @@ public class ModuleProjectStaticFileProvider : IModuleStaticFileProvider
     /// Resolves an existing physical file path from a "{ModuleId}/**/*.*" path, only if the
     /// canonical path is contained in the module project "wwwroot" folder.
     /// </summary>
-    private static bool TryGetProjectFilePath(string path, out string filePath)
+    private static bool TryGetProjectFilePath(string path, [NotNullWhen(true)] out string? filePath)
     {
         filePath = null;
 
@@ -120,7 +121,7 @@ public class ModuleProjectStaticFileProvider : IModuleStaticFileProvider
         var module = path[..index];
 
         // Get the module project "wwwroot" folder.
-        if (!s_roots.TryGetValue(module, out var root))
+        if (s_roots is null || !s_roots.TryGetValue(module, out var root))
         {
             return false;
         }

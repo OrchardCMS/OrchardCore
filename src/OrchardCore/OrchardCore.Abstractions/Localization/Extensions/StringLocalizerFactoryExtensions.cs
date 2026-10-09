@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using OrchardCore.Localization;
 
 namespace Microsoft.Extensions.Localization;
@@ -17,7 +18,8 @@ public static class StringLocalizerFactoryExtensions
     /// The translated string, or the source value when no source type is provided.
     /// Returns <see langword="null"/> when <paramref name="source"/> is <see langword="null"/>.
     /// </returns>
-    public static LocalizedString Localize(this IStringLocalizerFactory factory, LocalizationSource source, params object[] arguments)
+    [return: NotNullIfNotNull(nameof(source))]
+    public static LocalizedString? Localize(this IStringLocalizerFactory factory, LocalizationSource? source, params object[]? arguments)
     {
         ArgumentNullException.ThrowIfNull(factory);
 

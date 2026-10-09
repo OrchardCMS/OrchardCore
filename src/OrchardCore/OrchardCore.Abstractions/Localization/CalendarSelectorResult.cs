@@ -13,5 +13,5 @@ public class CalendarSelectorResult
     /// <summary>
     /// Gets or sets a calendar name.
     /// </summary>
-    public Func<Task<CalendarName>> CalendarName { get; set; }
+    public Func<Task<CalendarName>> CalendarName { get; set; } = null!;
 }

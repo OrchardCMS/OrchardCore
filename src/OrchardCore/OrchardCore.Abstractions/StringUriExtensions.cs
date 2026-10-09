@@ -1,8 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace System;
 
 public static class StringUriExtensions
 {
-    public static string ToUriComponents(this string url, UriFormat uriFormat = UriFormat.UriEscaped)
+    [return: NotNullIfNotNull(nameof(url))]
+    public static string? ToUriComponents(this string? url, UriFormat uriFormat = UriFormat.UriEscaped)
     {
         if (string.IsNullOrEmpty(url))
         {
@@ -19,7 +22,8 @@ public static class StringUriExtensions
         return string.Concat(str.Select((x, i) => i > 0 && char.IsUpper(x) ? "_" + x.ToString() : x.ToString())).ToLower();
     }
 
-    public static string RemoveQueryString(this string url, out string queryString)
+    [return: NotNullIfNotNull(nameof(url))]
+    public static string? RemoveQueryString(this string? url, out string? queryString)
     {
         if (url != null)
         {

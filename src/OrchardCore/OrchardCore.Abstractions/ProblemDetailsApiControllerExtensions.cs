@@ -37,11 +37,11 @@ public static class ProblemDetailsApiControllerExtensions
     /// </summary>
     public static ObjectResult ApiBadRequestProblem(
         this ControllerBase controllerBase,
-        LocalizedString detail = null,
-        LocalizedString title = null
+        LocalizedString? detail = null,
+        LocalizedString? title = null
     )
     {
-        if (string.IsNullOrEmpty(title))
+        if (string.IsNullOrEmpty(title!))
         {
             var S = controllerBase.HttpContext.RequestServices.GetRequiredService<
                 IStringLocalizer<ProblemDetailsApiLocalization>
@@ -49,12 +49,12 @@ public static class ProblemDetailsApiControllerExtensions
 
             return controllerBase.Problem(
                 title: S["Bad request"],
-                detail: detail,
+                detail: detail!,
                 statusCode: StatusCodes.Status400BadRequest
             );
         }
 
-        return controllerBase.Problem(title: title, detail: detail, statusCode: StatusCodes.Status400BadRequest);
+        return controllerBase.Problem(title: title, detail: detail!, statusCode: StatusCodes.Status400BadRequest);
     }
 
     /// <summary>
@@ -62,11 +62,11 @@ public static class ProblemDetailsApiControllerExtensions
     /// </summary>
     public static ObjectResult ApiNotFoundProblem(
         this ControllerBase controllerBase,
-        LocalizedString detail = null,
-        LocalizedString title = null
+        LocalizedString? detail = null,
+        LocalizedString? title = null
     )
     {
-        if (string.IsNullOrEmpty(title))
+        if (string.IsNullOrEmpty(title!))
         {
             var S = controllerBase.HttpContext.RequestServices.GetRequiredService<
                 IStringLocalizer<ProblemDetailsApiLocalization>
@@ -74,12 +74,12 @@ public static class ProblemDetailsApiControllerExtensions
 
             return controllerBase.Problem(
                 title: S["Not Found"],
-                detail: detail,
+                detail: detail!,
                 statusCode: StatusCodes.Status404NotFound
             );
         }
 
-        return controllerBase.Problem(title: title, detail: detail, statusCode: StatusCodes.Status404NotFound);
+        return controllerBase.Problem(title: title, detail: detail!, statusCode: StatusCodes.Status404NotFound);
     }
 
     /// <summary>
@@ -87,19 +87,19 @@ public static class ProblemDetailsApiControllerExtensions
     /// </summary>
     public static ActionResult ApiValidationProblem(
         this ControllerBase controllerBase,
-        LocalizedString detail = null,
-        LocalizedString title = null,
-        ModelStateDictionary modelState = null
+        LocalizedString? detail = null,
+        LocalizedString? title = null,
+        ModelStateDictionary? modelState = null
     )
     {
-        if (string.IsNullOrEmpty(title))
+        if (string.IsNullOrEmpty(title!))
         {
             var S = controllerBase.HttpContext.RequestServices.GetRequiredService<
                 IStringLocalizer<ProblemDetailsApiLocalization>
             >();
 
             return controllerBase.ValidationProblem(
-                detail: detail,
+                detail: detail!,
                 title: S["A validation error occurred."],
                 statusCode: StatusCodes.Status400BadRequest,
                 modelStateDictionary: modelState
@@ -107,7 +107,7 @@ public static class ProblemDetailsApiControllerExtensions
         }
 
         return controllerBase.ValidationProblem(
-            detail: detail,
+            detail: detail!,
             title: title,
             statusCode: StatusCodes.Status400BadRequest,
             modelStateDictionary: modelState
@@ -142,20 +142,20 @@ public static class ProblemDetailsApiControllerExtensions
     /// </summary>
     public static IResult ApiBadRequestProblem(
         this HttpContext httpContext,
-        LocalizedString detail = null,
-        LocalizedString title = null
+        LocalizedString? detail = null,
+        LocalizedString? title = null
     )
     {
-        if (string.IsNullOrEmpty(title))
+        if (string.IsNullOrEmpty(title!))
         {
             var S = httpContext.RequestServices.GetRequiredService<
                 IStringLocalizer<ProblemDetailsApiLocalization>
             >();
 
-            return TypedResults.Problem(title: S["Bad request"], detail: detail, statusCode: StatusCodes.Status400BadRequest);
+            return TypedResults.Problem(title: S["Bad request"], detail: detail!, statusCode: StatusCodes.Status400BadRequest);
         }
 
-        return TypedResults.Problem(title: title, detail: detail, statusCode: StatusCodes.Status400BadRequest);
+        return TypedResults.Problem(title: title, detail: detail!, statusCode: StatusCodes.Status400BadRequest);
     }
 
     /// <summary>
@@ -163,20 +163,20 @@ public static class ProblemDetailsApiControllerExtensions
     /// </summary>
     public static IResult ApiNotFoundProblem(
         this HttpContext httpContext,
-        LocalizedString detail = null,
-        LocalizedString title = null
+        LocalizedString? detail = null,
+        LocalizedString? title = null
     )
     {
-        if (string.IsNullOrEmpty(title))
+        if (string.IsNullOrEmpty(title!))
         {
             var S = httpContext.RequestServices.GetRequiredService<
                 IStringLocalizer<ProblemDetailsApiLocalization>
             >();
 
-            return TypedResults.Problem(title: S["Not Found"], detail: detail, statusCode: StatusCodes.Status404NotFound);
+            return TypedResults.Problem(title: S["Not Found"], detail: detail!, statusCode: StatusCodes.Status404NotFound);
         }
 
-        return TypedResults.Problem(title: title, detail: detail, statusCode: StatusCodes.Status404NotFound);
+        return TypedResults.Problem(title: title, detail: detail!, statusCode: StatusCodes.Status404NotFound);
     }
 
     /// <summary>
@@ -184,18 +184,18 @@ public static class ProblemDetailsApiControllerExtensions
     /// </summary>
     public static IResult ApiValidationProblem(
         this HttpContext httpContext,
-        LocalizedString detail = null,
-        LocalizedString title = null,
-        ModelStateDictionary modelState = null
+        LocalizedString? detail = null,
+        LocalizedString? title = null,
+        ModelStateDictionary? modelState = null
     )
     {
         var errors = modelState is null
             ? new Dictionary<string, string[]>()
             : modelState
-                .Where(entry => entry.Value.Errors.Count > 0)
-                .ToDictionary(entry => entry.Key, entry => entry.Value.Errors.Select(error => error.ErrorMessage).ToArray());
+                .Where(entry => entry.Value?.Errors.Count > 0)
+                .ToDictionary(entry => entry.Key, entry => entry.Value!.Errors.Select(error => error.ErrorMessage).ToArray());
 
-        if (string.IsNullOrEmpty(title))
+        if (string.IsNullOrEmpty(title!))
         {
             var S = httpContext.RequestServices.GetRequiredService<
                 IStringLocalizer<ProblemDetailsApiLocalization>
@@ -203,11 +203,11 @@ public static class ProblemDetailsApiControllerExtensions
 
             return TypedResults.ValidationProblem(
                 errors,
-                detail: detail,
+                detail: detail!,
                 title: S["A validation error occurred."]
             );
         }
 
-        return TypedResults.ValidationProblem(errors, detail: detail, title: title);
+        return TypedResults.ValidationProblem(errors, detail: detail!, title: title!);
     }
 }

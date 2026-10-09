@@ -23,7 +23,7 @@ public interface IShellSettingsManager
     /// Retrieves the settings of a given tenant.
     /// </summary>
     /// <returns>The shell settings.</returns>
-    Task<ShellSettings> LoadSettingsAsync(string tenant);
+    Task<ShellSettings?> LoadSettingsAsync(string tenant);
 
     /// <summary>
     /// Persists shell settings to the storage.

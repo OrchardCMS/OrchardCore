@@ -10,8 +10,8 @@ namespace OrchardCore.Environment.Shell.Builders.Models;
 /// </summary>
 public class ShellBlueprint
 {
-    public ShellSettings Settings { get; set; }
-    public ShellDescriptor Descriptor { get; set; }
+    public ShellSettings Settings { get; set; } = null!;
+    public ShellDescriptor Descriptor { get; set; } = null!;
 
-    public IDictionary<Type, IEnumerable<IFeatureInfo>> Dependencies { get; set; }
+    public IDictionary<Type, IEnumerable<IFeatureInfo>> Dependencies { get; set; } = null!;
 }

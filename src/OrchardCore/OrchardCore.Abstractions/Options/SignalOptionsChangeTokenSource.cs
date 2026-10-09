@@ -28,7 +28,7 @@ public sealed class SignalOptionsChangeTokenSource<TOptions> : IOptionsChangeTok
     /// </summary>
     /// <param name="signal">The Orchard Core signal service.</param>
     /// <param name="name">The named options instance to observe.</param>
-    public SignalOptionsChangeTokenSource(ISignal signal, string name)
+    public SignalOptionsChangeTokenSource(ISignal signal, string? name)
     {
         _signal = signal;
         Name = name ?? Microsoft.Extensions.Options.Options.DefaultName;

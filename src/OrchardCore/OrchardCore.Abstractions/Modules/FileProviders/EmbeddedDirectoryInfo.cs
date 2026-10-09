@@ -29,7 +29,7 @@ public class EmbeddedDirectoryInfo : IFileInfo
     /// <summary>
     /// Always null.
     /// </summary>
-    public string PhysicalPath => null;
+    public string? PhysicalPath => null;
 
     /// <inheritdoc />
     public string Name { get; }

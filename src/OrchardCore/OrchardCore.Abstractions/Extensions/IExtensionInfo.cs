@@ -7,7 +7,7 @@ public interface IExtensionInfo
     /// <summary>
     /// The id of the extension.
     /// </summary>
-    string Id { get; }
+    string? Id { get; }
 
     /// <summary>
     /// The path to the extension.

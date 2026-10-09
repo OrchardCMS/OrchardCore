@@ -12,7 +12,7 @@ public static class OptionsUpdateSignal
     /// </summary>
     /// <param name="optionsType">The options type to invalidate.</param>
     /// <param name="name">The named options instance to invalidate.</param>
-    public static string GetKey(Type optionsType, string name)
+    public static string GetKey(Type optionsType, string? name)
     {
         ArgumentNullException.ThrowIfNull(optionsType);
 

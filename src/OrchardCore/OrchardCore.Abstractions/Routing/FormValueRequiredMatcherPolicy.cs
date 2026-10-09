@@ -67,7 +67,7 @@ public class FormValueRequiredMatcherPolicy : MatcherPolicy, IEndpointSelectorPo
 
     private sealed class FormValueRequiredEndpointComparer : EndpointMetadataComparer<FormValueRequiredAttribute>
     {
-        protected override int CompareMetadata(FormValueRequiredAttribute x, FormValueRequiredAttribute y)
+        protected override int CompareMetadata(FormValueRequiredAttribute? x, FormValueRequiredAttribute? y)
         {
             return base.CompareMetadata(x, y);
         }

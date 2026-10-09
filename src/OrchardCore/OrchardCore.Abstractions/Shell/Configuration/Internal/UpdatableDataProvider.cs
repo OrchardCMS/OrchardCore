@@ -6,31 +6,31 @@ using Microsoft.Extensions.Primitives;
 
 namespace OrchardCore.Environment.Shell.Configuration.Internal;
 
-internal class UpdatableDataProvider : IConfigurationProvider, IConfigurationSource, IEnumerable<KeyValuePair<string, string>>
+internal class UpdatableDataProvider : IConfigurationProvider, IConfigurationSource, IEnumerable<KeyValuePair<string, string?>>
 {
     public UpdatableDataProvider() => Data = new(StringComparer.OrdinalIgnoreCase);
 
-    public UpdatableDataProvider(IEnumerable<KeyValuePair<string, string>> initialData)
+    public UpdatableDataProvider(IEnumerable<KeyValuePair<string, string?>>? initialData)
     {
         initialData ??= [];
         Data = new(initialData, StringComparer.OrdinalIgnoreCase);
     }
 
-    protected ConcurrentDictionary<string, string> Data { get; set; }
+    protected ConcurrentDictionary<string, string?> Data { get; set; }
 
-    public IEnumerator<KeyValuePair<string, string>> GetEnumerator() => Data.GetEnumerator();
+    public IEnumerator<KeyValuePair<string, string?>> GetEnumerator() => Data.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-    public virtual bool TryGet(string key, out string value) => Data.TryGetValue(key, out value);
+    public virtual bool TryGet(string key, out string? value) => Data.TryGetValue(key, out value);
 
-    public virtual void Set(string key, string value) => Data[key] = value;
+    public virtual void Set(string key, string? value) => Data[key] = value;
 
     public virtual void Load()
     {
     }
 
-    public virtual IEnumerable<string> GetChildKeys(IEnumerable<string> earlierKeys, string parentPath)
+    public virtual IEnumerable<string> GetChildKeys(IEnumerable<string> earlierKeys, string? parentPath)
     {
         var prefix = parentPath == null ? string.Empty : parentPath + ConfigurationPath.KeyDelimiter;
 

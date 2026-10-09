@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace OrchardCore.Modules.FileProviders;
 
 /// <summary>
@@ -30,7 +32,7 @@ public static class PhysicalPathResolver
     /// A relative path may come from a request, where a '..' segment or a path alias of the current
     /// platform can be used to escape the root folder.
     /// </remarks>
-    public static bool TryResolve(string root, string relativePath, out string physicalPath)
+    public static bool TryResolve(string root, string relativePath, [NotNullWhen(true)] out string? physicalPath)
     {
         physicalPath = null;
 

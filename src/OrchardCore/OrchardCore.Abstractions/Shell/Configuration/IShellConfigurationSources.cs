@@ -5,7 +5,7 @@ namespace OrchardCore.Environment.Shell.Configuration;
 public interface IShellConfigurationSources
 {
     Task AddSourcesAsync(string tenant, IConfigurationBuilder builder);
-    Task SaveAsync(string tenant, IDictionary<string, string> data);
+    Task SaveAsync(string tenant, IDictionary<string, string?> data);
     Task RemoveAsync(string tenant);
 }
 

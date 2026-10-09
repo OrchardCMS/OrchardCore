@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using OrchardCore.Environment.Shell.Builders.Models;
 using OrchardCore.Environment.Shell.Scope;
 
@@ -8,7 +9,7 @@ namespace OrchardCore.Environment.Shell.Builders;
 /// </summary>
 public class ShellContext : IDisposable, IAsyncDisposable
 {
-    private List<WeakReference<ShellContext>> _dependents;
+    private List<WeakReference<ShellContext>>? _dependents;
     private readonly SemaphoreSlim _semaphore = new(1);
     private bool _disposed;
     private volatile int _refCount;
@@ -28,17 +29,17 @@ public class ShellContext : IDisposable, IAsyncDisposable
     /// <summary>
     /// The <see cref="ShellSettings"/> holding the tenant settings and configuration.
     /// </summary>
-    public ShellSettings Settings { get; set; }
+    public ShellSettings Settings { get; set; } = null!;
 
     /// <summary>
     /// The <see cref="ShellBlueprint"/> describing the tenant container.
     /// </summary>
-    public ShellBlueprint Blueprint { get; set; }
+    public ShellBlueprint? Blueprint { get; set; }
 
     /// <summary>
     /// The <see cref="IServiceProvider"/> of the tenant container.
     /// </summary>
-    public IServiceProvider ServiceProvider { get; set; }
+    public IServiceProvider? ServiceProvider { get; set; }
 
     /// <summary>
     /// Whether the shell is activated or not.
@@ -48,7 +49,7 @@ public class ShellContext : IDisposable, IAsyncDisposable
     /// <summary>
     /// The Pipeline built for this shell.
     /// </summary>
-    public IShellPipeline Pipeline { get; set; }
+    public IShellPipeline? Pipeline { get; set; }
 
     /// <summary>
     /// Whether or not this shell context has been disposed.
@@ -77,7 +78,7 @@ public class ShellContext : IDisposable, IAsyncDisposable
     /// <summary>
     /// Creates a <see cref="ShellScope"/> on this shell context.
     /// </summary>
-    public async Task<ShellScope> CreateScopeAsync()
+    public async Task<ShellScope?> CreateScopeAsync()
     {
         // Don't create a shell scope on a released shell.
         if (_released)
@@ -149,7 +150,7 @@ public class ShellContext : IDisposable, IAsyncDisposable
         // However, some uncompleted requests may still try to use or resolve services from child shell scopes. In that case,
         // this is the last shell scope (when the shell reference count reaches zero) that disposes its parent shell context.
 
-        ShellScope scope = null;
+        ShellScope? scope = null;
         await _semaphore.WaitAsync();
         try
         {
@@ -240,6 +241,7 @@ public class ShellContext : IDisposable, IAsyncDisposable
         }
     }
 
+    [MemberNotNull(nameof(ServiceProvider))]
     internal void AddRef()
     {
         // The service provider is null if we try to create

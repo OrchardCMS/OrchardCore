@@ -26,7 +26,7 @@ public class FeatureTypeDiscoveryAttribute : Attribute
     /// </remarks>
     public bool SingleFeatureOnly { get; set; }
 
-    public static FeatureTypeDiscoveryAttribute GetFeatureTypeDiscoveryForType(Type type)
+    public static FeatureTypeDiscoveryAttribute? GetFeatureTypeDiscoveryForType(Type type)
     {
         return type.GetCustomAttribute<FeatureTypeDiscoveryAttribute>(true)
             ?? type.GetInterfaces()

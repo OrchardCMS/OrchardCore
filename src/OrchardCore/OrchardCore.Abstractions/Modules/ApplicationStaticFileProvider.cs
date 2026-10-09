@@ -26,11 +26,11 @@ public sealed class ApplicationStaticFileProvider : IStaticFileProvider
         return NotFoundDirectoryContents.Singleton;
     }
 
-    public IFileInfo GetFileInfo(string subpath)
+    public IFileInfo GetFileInfo(string? subpath)
     {
         if (subpath == null)
         {
-            return new NotFoundFileInfo(subpath);
+            return new NotFoundFileInfo(string.Empty);
         }
 
         var path = NormalizePath(subpath);

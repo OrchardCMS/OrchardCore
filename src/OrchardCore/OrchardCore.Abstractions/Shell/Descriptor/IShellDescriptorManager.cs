@@ -12,7 +12,7 @@ public interface IShellDescriptorManager
     /// the current "correct" configuration. The host will use this information
     /// to reinitialize the shell.
     /// </summary>
-    Task<ShellDescriptor> GetShellDescriptorAsync();
+    Task<ShellDescriptor?> GetShellDescriptorAsync();
 
     /// <summary>
     /// Alters databased information to match information passed as arguments.

@@ -14,11 +14,11 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     private static readonly AsyncLocal<ShellScopeHolder> s_current = new();
 
     private readonly AsyncServiceScope _serviceScope;
-    private Dictionary<object, object> _items;
-    private List<Func<ShellScope, Task>> _beforeDispose;
-    private HashSet<string> _deferredSignals;
-    private List<Func<ShellScope, Task>> _deferredTasks;
-    private List<Func<ShellScope, Exception, Task>> _exceptionHandlers;
+    private Dictionary<object, object?>? _items;
+    private List<Func<ShellScope, Task>>? _beforeDispose;
+    private HashSet<string>? _deferredSignals;
+    private List<Func<ShellScope, Task>>? _deferredTasks;
+    private List<Func<ShellScope, Exception, Task>>? _exceptionHandlers;
 
     private ShellScopeStates _state;
 
@@ -49,22 +49,24 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// <summary>
     /// Retrieve the parent 'ShellContext' of the current shell scope.
     /// </summary>
-    public static ShellContext Context => Current?.ShellContext;
+    public static ShellContext? Context => Current?.ShellContext;
 
     /// <summary>
     /// Retrieve the 'IServiceProvider' of the current shell scope.
     /// </summary>
-    public static IServiceProvider Services => Current?.ServiceProvider;
+    public static IServiceProvider? Services => Current?.ServiceProvider;
 
     /// <summary>
     /// Retrieve the current shell scope from the async flow.
     /// </summary>
-    public static ShellScope Current => s_current.Value?.Scope;
+    public static ShellScope? Current => s_current.Value?.Scope;
+
+    private static ShellScope RequiredCurrent => Current ?? throw new InvalidOperationException("There is no current shell scope.");
 
     /// <summary>
     /// Sets a shared item to the current shell scope.
     /// </summary>
-    public static void Set(object key, object value)
+    public static void Set(object key, object? value)
     {
         var current = Current;
 
@@ -79,7 +81,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// <summary>
     /// Gets a shared item from the current shell scope.
     /// </summary>
-    public static object Get(object key)
+    public static object? Get(object key)
     {
         var current = Current;
 
@@ -94,7 +96,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// <summary>
     /// Gets a shared item of a given type from the current shell scope.
     /// </summary>
-    public static T Get<T>(object key)
+    public static T? Get<T>(object key)
     {
         var current = Current;
 
@@ -158,7 +160,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// <summary>
     /// Gets a shared feature from the current shell scope.
     /// </summary>
-    public static T GetFeature<T>() => Get<T>(typeof(T));
+    public static T? GetFeature<T>() => Get<T>(typeof(T));
 
     /// <summary>
     /// Gets (or creates) a shared feature from the current shell scope.
@@ -175,8 +177,9 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// </summary>
     public static Task<ShellScope> CreateChildScopeAsync()
     {
-        var shellHost = Services.GetRequiredService<IShellHost>();
-        return shellHost.GetScopeAsync(Context.Settings);
+        var current = RequiredCurrent;
+        var shellHost = current.ServiceProvider.GetRequiredService<IShellHost>();
+        return shellHost.GetScopeAsync(current.ShellContext.Settings);
     }
 
     /// <summary>
@@ -184,7 +187,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// </summary>
     public static Task<ShellScope> CreateChildScopeAsync(ShellSettings settings)
     {
-        var shellHost = Services.GetRequiredService<IShellHost>();
+        var shellHost = RequiredCurrent.ServiceProvider.GetRequiredService<IShellHost>();
         return shellHost.GetScopeAsync(settings);
     }
 
@@ -193,7 +196,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
     /// </summary>
     public static Task<ShellScope> CreateChildScopeAsync(string tenant)
     {
-        var shellHost = Services.GetRequiredService<IShellHost>();
+        var shellHost = RequiredCurrent.ServiceProvider.GetRequiredService<IShellHost>();
         return shellHost.GetScopeAsync(tenant);
     }
 
@@ -458,7 +461,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
 
         if (_deferredSignals?.Count > 0)
         {
-            var signal = ShellContext.ServiceProvider.GetRequiredService<ISignal>();
+            var signal = ShellContext.ServiceProvider!.GetRequiredService<ISignal>();
             foreach (var key in _deferredSignals)
             {
                 await signal.SignalTokenAsync(key);
@@ -467,7 +470,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
 
         if (_deferredTasks?.Count > 0)
         {
-            var shellHost = ShellContext.ServiceProvider.GetRequiredService<IShellHost>();
+            var shellHost = ShellContext.ServiceProvider!.GetRequiredService<IShellHost>();
 
             foreach (var task in _deferredTasks)
             {
@@ -598,7 +601,7 @@ public sealed class ShellScope : IServiceScope, IAsyncDisposable
 
     private sealed class ShellScopeHolder
     {
-        public ShellScope Scope;
+        public ShellScope? Scope;
     }
 
     [Flags]

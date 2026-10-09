@@ -19,7 +19,7 @@ public static class HttpBackgroundJob
     /// </summary>
     public static Task ExecuteAfterEndOfRequestAsync(string jobName, Func<ShellScope, Task> job)
     {
-        var scope = ShellScope.Current;
+        var scope = ShellScope.Current ?? throw new InvalidOperationException("There is no current shell scope.");
 
         // Allow a job to be triggered e.g. during a tenant setup, but later on only check if the tenant is running.
         if (!scope.ShellContext.Settings.IsRunning() && !scope.ShellContext.Settings.IsInitializing())

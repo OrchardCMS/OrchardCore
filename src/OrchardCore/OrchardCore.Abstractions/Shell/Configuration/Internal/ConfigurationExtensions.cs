@@ -19,8 +19,8 @@ public static class ConfigurationExtensions
 
     public static JsonNode ToJsonNode(this IConfiguration configuration)
     {
-        JsonArray jArray = null;
-        JsonObject jObject = null;
+        JsonArray? jArray = null;
+        JsonObject? jObject = null;
 
         foreach (var child in configuration.GetChildren())
         {
@@ -73,7 +73,7 @@ public static class ConfigurationExtensions
         return jArray as JsonNode ?? jObject ?? [];
     }
 
-    public static JsonObject ToJsonObject(this IDictionary<string, string> configurationData)
+    public static JsonObject ToJsonObject(this IDictionary<string, string?> configurationData)
     {
         var configuration = new ConfigurationBuilder()
             .Add(new UpdatableDataProvider(configurationData))
@@ -84,11 +84,11 @@ public static class ConfigurationExtensions
         return configuration.ToJsonObject();
     }
 
-    public static Task<IDictionary<string, string>> ToConfigurationDataAsync(this JsonObject jConfiguration)
+    public static Task<IDictionary<string, string?>> ToConfigurationDataAsync(this JsonObject? jConfiguration)
     {
         if (jConfiguration is null)
         {
-            return Task.FromResult<IDictionary<string, string>>(new Dictionary<string, string>());
+            return Task.FromResult<IDictionary<string, string?>>(new Dictionary<string, string?>());
         }
 
         var configurationString = jConfiguration.ToJsonString(JOptions.Default);

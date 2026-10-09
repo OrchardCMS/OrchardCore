@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace OrchardCore.Json;
@@ -21,7 +22,7 @@ public class JsonDerivedTypesOptions
         return true;
     }
 
-    public bool TryGetFallbackType(Type baseType, out Type fallbackType)
+    public bool TryGetFallbackType(Type baseType, [NotNullWhen(true)] out Type? fallbackType)
     {
         return FallbackTypes.TryGetValue(baseType, out fallbackType);
     }

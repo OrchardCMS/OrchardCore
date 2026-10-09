@@ -12,8 +12,8 @@ public class BackgroundTaskEventContext
     }
 
     public string Name { get; }
-    public string Tenant { get; }
+    public string? Tenant { get; }
     public IServiceProvider Services { get; }
-    public Exception Exception { get; set; }
+    public Exception? Exception { get; set; }
     public bool HasException => Exception != null;
 }

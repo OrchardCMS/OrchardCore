@@ -24,7 +24,7 @@ public static class ExceptionExtensions
         (ex.HResult == ERROR_SHARING_VIOLATION ||
         ex.HResult == ERROR_LOCK_VIOLATION);
 
-    public static void LogException(this Exception ex, ILogger logger, Type sourceType, string method)
+    public static void LogException(this Exception ex, ILogger logger, Type sourceType, string? method)
     {
         logger.LogError(ex, "{Exception} thrown from {Type} by {Method}", ex.GetType().Name, sourceType.Name, method);
     }

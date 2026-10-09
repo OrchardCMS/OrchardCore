@@ -53,7 +53,7 @@ public static class ConfigurationSectionExtensions
         }
 
         // Chain the legacy sections from the lowest to the highest priority.
-        IConfigurationSection fallback = null;
+        IConfigurationSection? fallback = null;
 
         for (var i = legacyKeys.Length - 1; i >= 0; i--)
         {
@@ -66,10 +66,10 @@ public static class ConfigurationSectionExtensions
                 : new FallbackConfigurationSection(legacySection, fallback);
         }
 
-        return new FallbackConfigurationSection(section, fallback);
+        return new FallbackConfigurationSection(section, fallback!);
     }
 
-    public static JsonNode AsJsonNode(this IConfiguration configuration)
+    public static JsonNode? AsJsonNode(this IConfiguration configuration)
     {
         if (configuration is IConfigurationSection configurationSection && configurationSection.Value != null)
         {

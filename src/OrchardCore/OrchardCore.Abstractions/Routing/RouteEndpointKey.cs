@@ -7,14 +7,14 @@ public readonly struct RouteEndpointKey : IEquatable<RouteEndpointKey>
     public string Path { get; }
     public RouteValueDictionary RouteValues { get; }
 
-    public RouteEndpointKey(string path, RouteValueDictionary routeValues)
+    public RouteEndpointKey(string? path, RouteValueDictionary? routeValues)
     {
         Path = path ?? string.Empty;
         // Defensive copy to ensure immutability for dictionary key usage
         RouteValues = new RouteValueDictionary(routeValues);
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         return obj is RouteEndpointKey && Equals((RouteEndpointKey)obj);
     }

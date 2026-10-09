@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Events;
 using OrchardCore.Environment.Shell.Scope;
@@ -53,12 +54,12 @@ public interface IShellHost : IShellEvents, IShellDescriptorManagerEventHandler
     /// Tries to retrieve the shell context associated with the specified tenant.
     /// The shell may have been temporarily removed while releasing or reloading.
     /// </summary>
-    bool TryGetShellContext(string name, out ShellContext shellContext);
+    bool TryGetShellContext(string name, [NotNullWhen(true)] out ShellContext? shellContext);
 
     /// <summary>
     /// Tries to retrieve the shell settings associated with the specified tenant.
     /// </summary>
-    bool TryGetSettings(string name, out ShellSettings settings);
+    bool TryGetSettings(string name, [NotNullWhen(true)] out ShellSettings? settings);
 
     /// <summary>
     /// Retrieves all shell settings.

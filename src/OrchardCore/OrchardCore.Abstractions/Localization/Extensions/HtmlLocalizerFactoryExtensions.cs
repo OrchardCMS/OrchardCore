@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using OrchardCore.Localization;
 
 namespace Microsoft.AspNetCore.Mvc.Localization;
@@ -20,7 +21,8 @@ public static class HtmlLocalizerFactoryExtensions
     /// <remarks>
     /// The translation itself is not HTML encoded. Use a string localizer for text that must be encoded when rendered.
     /// </remarks>
-    public static LocalizedHtmlString Localize(this IHtmlLocalizerFactory factory, LocalizationSource source, params object[] arguments)
+    [return: NotNullIfNotNull(nameof(source))]
+    public static LocalizedHtmlString? Localize(this IHtmlLocalizerFactory factory, LocalizationSource? source, params object[]? arguments)
     {
         ArgumentNullException.ThrowIfNull(factory);
 

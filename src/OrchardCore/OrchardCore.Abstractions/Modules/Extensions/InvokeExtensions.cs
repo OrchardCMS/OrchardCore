@@ -20,7 +20,7 @@ public static class InvokeExtensions
             }
             catch (Exception ex) when (!ex.IsFatal())
             {
-                ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
+                ex.LogException(logger, typeof(TEvents), sink?.GetType().FullName);
             }
         }
     }
@@ -38,7 +38,7 @@ public static class InvokeExtensions
             }
             catch (Exception ex) when (!ex.IsFatal())
             {
-                ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
+                ex.LogException(logger, typeof(TEvents), sink?.GetType().FullName);
             }
         }
     }
@@ -59,7 +59,7 @@ public static class InvokeExtensions
             }
             catch (Exception ex) when (!ex.IsFatal())
             {
-                ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
+                ex.LogException(logger, typeof(TEvents), sink?.GetType().FullName);
             }
         }
 
@@ -82,7 +82,7 @@ public static class InvokeExtensions
             }
             catch (Exception ex) when (!ex.IsFatal())
             {
-                ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
+                ex.LogException(logger, typeof(TEvents), sink?.GetType().FullName);
             }
         }
 
@@ -105,7 +105,7 @@ public static class InvokeExtensions
             }
             catch (Exception ex) when (!ex.IsFatal())
             {
-                ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
+                ex.LogException(logger, typeof(TEvents), sink?.GetType().FullName);
             }
         }
 
@@ -189,7 +189,7 @@ public static class InvokeExtensions
                 }
                 catch (Exception ex) when (!ex.IsFatal())
                 {
-                    ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
+                    ex.LogException(logger, typeof(TEvents), sink?.GetType().FullName);
                 }
             }
 
@@ -215,7 +215,7 @@ public static class InvokeExtensions
                     }
                     catch (Exception ex) when (!ex.IsFatal())
                     {
-                        ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
+                        ex.LogException(logger, typeof(TEvents), sink?.GetType().FullName);
                     }
 
                     if (!enumerator.MoveNext())
@@ -231,7 +231,7 @@ public static class InvokeExtensions
                     }
                     catch (Exception ex) when (!ex.IsFatal())
                     {
-                        ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
+                        ex.LogException(logger, typeof(TEvents), sink?.GetType().FullName);
                     }
                 }
             }
@@ -265,7 +265,7 @@ public static class InvokeExtensions
                 }
                 catch (Exception ex) when (!ex.IsFatal())
                 {
-                    ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
+                    ex.LogException(logger, typeof(TEvents), sink?.GetType().FullName);
                 }
             }
 
@@ -291,7 +291,7 @@ public static class InvokeExtensions
                     }
                     catch (Exception ex) when (!ex.IsFatal())
                     {
-                        ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
+                        ex.LogException(logger, typeof(TEvents), sink?.GetType().FullName);
                     }
 
                     if (!enumerator.MoveNext())
@@ -307,7 +307,7 @@ public static class InvokeExtensions
                     }
                     catch (Exception ex) when (!ex.IsFatal())
                     {
-                        ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
+                        ex.LogException(logger, typeof(TEvents), sink?.GetType().FullName);
                     }
                 }
             }
@@ -341,7 +341,7 @@ public static class InvokeExtensions
                 }
                 catch (Exception ex) when (!ex.IsFatal())
                 {
-                    ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
+                    ex.LogException(logger, typeof(TEvents), sink?.GetType().FullName);
                 }
             }
 
@@ -367,7 +367,7 @@ public static class InvokeExtensions
                     }
                     catch (Exception ex) when (!ex.IsFatal())
                     {
-                        ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
+                        ex.LogException(logger, typeof(TEvents), sink?.GetType().FullName);
                     }
 
                     if (!enumerator.MoveNext())
@@ -383,7 +383,7 @@ public static class InvokeExtensions
                     }
                     catch (Exception ex) when (!ex.IsFatal())
                     {
-                        ex.LogException(logger, typeof(TEvents), sink.GetType().FullName);
+                        ex.LogException(logger, typeof(TEvents), sink?.GetType().FullName);
                     }
                 }
             }

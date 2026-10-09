@@ -8,11 +8,11 @@ public static class DistributedLockExtensions
     /// <summary>
     /// Tries to acquire a lock on the background task if it is atomic and if the lock service is not a local lock, otherwise returns true with a null locker.
     /// </summary>
-    public static Task<(ILocker locker, bool locked)> TryAcquireBackgroundTaskLockAsync(this IDistributedLock distributedLock, BackgroundTaskSettings settings)
+    public static Task<(ILocker? locker, bool locked)> TryAcquireBackgroundTaskLockAsync(this IDistributedLock distributedLock, BackgroundTaskSettings settings)
     {
         if (distributedLock is ILocalLock || !settings.IsAtomic)
         {
-            return Task.FromResult<(ILocker, bool)>((null, true));
+            return Task.FromResult<(ILocker?, bool)>((null, true));
         }
 
         return distributedLock.TryAcquireLockAsync(

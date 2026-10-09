@@ -6,7 +6,7 @@ namespace OrchardCore.Environment.Extensions;
 
 public class NotFoundExtensionInfo : IExtensionInfo
 {
-    public NotFoundExtensionInfo(string extensionId)
+    public NotFoundExtensionInfo(string? extensionId)
     {
         Id = extensionId;
         SubPath = Application.ModulesRoot + extensionId;
@@ -14,7 +14,7 @@ public class NotFoundExtensionInfo : IExtensionInfo
         Features = [];
     }
 
-    public string Id { get; }
+    public string? Id { get; }
     public string SubPath { get; }
     public IManifestInfo Manifest { get; }
     public IEnumerable<IFeatureInfo> Features { get; }

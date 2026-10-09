@@ -10,6 +10,43 @@ namespace OrchardCore.Modules;
 public class InvokeExtensionsTests
 {
     [Fact]
+    public void Invoke_NullHandlerThrows_ContinuesToNextHandler()
+    {
+        var invoked = new List<string>();
+
+        new string[] { null, "next" }.Invoke(sink =>
+        {
+            if (sink is null)
+            {
+                throw new InvalidOperationException("Failed");
+            }
+
+            invoked.Add(sink);
+        }, NullLogger.Instance);
+
+        Assert.Equal(["next"], invoked);
+    }
+
+    [Fact]
+    public async Task InvokeAsync_NullHandlerReturnsFaultedTask_ContinuesToNextHandler()
+    {
+        var invoked = new List<string>();
+
+        await new string[] { null, "next" }.InvokeAsync(sink =>
+        {
+            if (sink is null)
+            {
+                return Task.FromException(new InvalidOperationException("Failed"));
+            }
+
+            invoked.Add(sink);
+            return Task.CompletedTask;
+        }, NullLogger.Instance);
+
+        Assert.Equal(["next"], invoked);
+    }
+
+    [Fact]
     public void InvokeAsync_CallbacksCompleteSynchronously_ReturnsCompletedTask()
     {
         // Arrange

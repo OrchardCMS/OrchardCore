@@ -10,7 +10,7 @@ public interface IUnknownTypePlaceholder
     /// <summary>
     /// Gets or sets the original type discriminator value from the JSON payload.
     /// </summary>
-    string TypeDiscriminator { get; set; }
+    string? TypeDiscriminator { get; set; }
 
     /// <summary>
     /// Gets or sets the original raw JSON data, enabling round-trip serialization.

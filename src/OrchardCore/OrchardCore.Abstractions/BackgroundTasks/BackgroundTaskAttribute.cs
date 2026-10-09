@@ -6,7 +6,7 @@ public sealed class BackgroundTaskAttribute : Attribute
     /// <summary>
     /// The display name of this background task.
     /// </summary>
-    public string Title { get; set; }
+    public string? Title { get; set; }
 
     /// <summary>
     /// Whether this background task is enabled or not.

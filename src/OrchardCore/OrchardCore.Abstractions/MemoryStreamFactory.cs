@@ -17,9 +17,9 @@ public static class MemoryStreamFactory
         s_manager = new RecyclableMemoryStreamManager(options);
     }
 
-    public static RecyclableMemoryStream GetStream(string tag = null)
+    public static RecyclableMemoryStream GetStream(string? tag = null)
         => s_manager.GetStream(tag);
 
-    public static RecyclableMemoryStream GetStream(int requiredSize, string tag = null)
+    public static RecyclableMemoryStream GetStream(int requiredSize, string? tag = null)
         => s_manager.GetStream(tag, requiredSize);
 }

@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace OrchardCore.Localization.Data;
 
 public class DataLocalizedString
@@ -18,7 +20,8 @@ public class DataLocalizedString
         ResourceNotFound = resourceNotFound;
     }
 
-    public static implicit operator string(DataLocalizedString dataLocalizedString) => dataLocalizedString?.Value;
+    [return: NotNullIfNotNull(nameof(dataLocalizedString))]
+    public static implicit operator string?(DataLocalizedString? dataLocalizedString) => dataLocalizedString?.Value;
 
     /// <summary>
     /// The context string for categorization (e.g., "Content Types", "Content Fields:BlogPost").

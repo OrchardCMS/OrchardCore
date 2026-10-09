@@ -15,7 +15,8 @@ public class JsonDerivedTypeInfo<TDerived, TBase> : IJsonDerivedTypeInfo
 
     internal static string CreateTypeDiscriminator<T>()
     {
-        var fullyQualifiedTypeName = typeof(T).AssemblyQualifiedName;
+        var fullyQualifiedTypeName = typeof(T).AssemblyQualifiedName
+            ?? throw new InvalidOperationException($"The type '{typeof(T)}' does not have an assembly-qualified name.");
         fullyQualifiedTypeName = RemoveAssemblyDetails(fullyQualifiedTypeName);
         return fullyQualifiedTypeName;
     }
