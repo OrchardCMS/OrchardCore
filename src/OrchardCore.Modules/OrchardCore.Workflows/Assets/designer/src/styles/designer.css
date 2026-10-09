@@ -1896,7 +1896,7 @@
 }
 
 /* The Run dialog: its result, the response of a request and the outputs. */
-.wfd-run-result {
+.wfd-run-dialog-result {
     margin-top: 1rem;
     padding-top: 1rem;
     border-top: var(--bs-border-width) solid var(--bs-border-color);

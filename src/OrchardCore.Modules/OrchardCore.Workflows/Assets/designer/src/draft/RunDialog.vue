@@ -249,7 +249,7 @@ const formatValue = (value: unknown) => (typeof value === "string" ? value : JSO
 
         <p v-if="error" class="alert alert-danger mt-3 mb-0" role="alert" data-cy="run-error">{{ error }}</p>
 
-        <section v-if="response || result" class="wfd-run-result" aria-live="polite" data-cy="run-result">
+        <section v-if="response || result" class="wfd-run-dialog-result" aria-live="polite" data-cy="run-result">
             <h3 class="wfd-section-title">{{ t("RunResult") }}</h3>
             <div v-if="response" class="mb-2" data-cy="run-response">
                 {{ t("RunResponseStatus") }}
