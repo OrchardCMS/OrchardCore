@@ -199,12 +199,19 @@ Steps:
   - **Viewer.** A run with a child shows "Ran the instance" with a link (`data-cy=run-child-link`), or the id of a deleted one; the toolbar of a child shows "Run by the instance" with a link to its parent (`data-cy=instance-parent-link`).
   - **Tests.** `ExecuteWorkflowTaskTests` (now with a journal that keeps the records): the task's record has the child's id, others don't, and a waiting task's halted record has it. `Instance_ParentAndChild_LinkToEachOtherWhenTheyExist` (and a deleted child without a link). Vitest (RunsTab, instance viewer): 307/307. The composition functional test opens the parent's run, follows the link to the child and back; the designer class passes 32/32. Workflows tests: 533/533.
 
-### - [ ] 10.10 Definition of done
+### - [x] 10.10 Definition of done
+
+- **Notes from checking it (2026-10-08):**
+  - The CI-flag build (`-c Release -p:TreatWarningsAsErrors=true --warnaserror -p:RunAnalyzers=true`) of `OrchardCore.Tests` is clean.
+  - `OrchardCore.Tests`: 3,694 of 3,696 pass, 2 skipped on Windows (Unix permissions); two cases of `ContentQuickNavigationTests` failed once on a temporary file still in use when the test cleaned up, and pass when run again. The Workflows tests: 533/533.
+  - Vitest: 307/307. The functional `Cms` tests: 172/172.
+  - `yarn lint` (0 errors; the 2 warnings are in `OrchardCore.Cors`), `yarn check` and `yarn build -n workflows-designer` leave a clean `git status`.
+  - With the new settings off (no retry policy, any number of instances, Record activity data unchecked), the engine takes the paths it took before; the existing engine, designer and functional tests run unchanged.
 
 ## Definition of done (Phase 10)
 
-- [ ] Steps 10.1–10.9 are checked.
-- [ ] The CI-flag build is green; `OrchardCore.Tests`, Vitest and the functional `*Cms*` tests pass.
-- [ ] `yarn lint`, `yarn check` and `yarn build` leave a clean `git status`.
-- [ ] Workflows run as before when the new settings are off.
-- [ ] Docs and release notes are updated.
+- [x] Steps 10.1–10.9 are checked.
+- [x] The CI-flag build is green; `OrchardCore.Tests`, Vitest and the functional `*Cms*` tests pass.
+- [x] `yarn lint`, `yarn check` and `yarn build` leave a clean `git status`.
+- [x] Workflows run as before when the new settings are off.
+- [x] Docs and release notes are updated.
