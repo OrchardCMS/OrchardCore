@@ -459,8 +459,9 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
         var unversionedPath = path;
 
         var versionSeparatorPosition = path.LastIndexOf('-');
-        if (versionSeparatorPosition > -1 && int.TryParse(path[versionSeparatorPosition..].TrimStart('-'), out version))
+        if (versionSeparatorPosition > -1 && int.TryParse(path[versionSeparatorPosition..].TrimStart('-'), out var parsedVersion))
         {
+            version = parsedVersion;
             unversionedPath = path[..versionSeparatorPosition];
         }
 

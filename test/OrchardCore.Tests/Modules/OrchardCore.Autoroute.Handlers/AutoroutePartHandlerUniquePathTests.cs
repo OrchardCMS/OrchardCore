@@ -169,6 +169,18 @@ public class AutoroutePartHandlerUniquePathTests : IAsyncLifetime
         Assert.Equal("blog/post-2", actual);
     }
 
+    [Theory]
+    [InlineData("my-post")]
+    [InlineData("blog/my-post")]
+    public async Task GenerateUniqueAbsolutePathAsync_PathNotEndingWithANumber_StartsNumberingAtOne(string path)
+    {
+        await SaveRoutesAsync(Taken(path));
+
+        var (actual, _) = await GenerateUniqueAbsolutePathAsync(path);
+
+        Assert.Equal($"{path}-1", actual);
+    }
+
     private static RouteDocument Taken(string path)
         => new() { ContentItemId = "other", Path = path, Published = true, Latest = true };
 
