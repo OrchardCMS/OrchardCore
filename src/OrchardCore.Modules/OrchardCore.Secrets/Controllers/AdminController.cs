@@ -19,6 +19,8 @@ namespace OrchardCore.Secrets.Controllers;
 public sealed class AdminController : Controller
 {
     private const string OptionsSearch = "Options.Search";
+    private const string OptionsStatus = "Options.Status";
+    private const string OptionsType = "Options.Type";
 
     private readonly ISecretManager _secretManager;
     private readonly IEnumerable<ISecretTypeProvider> _secretTypeProviders;
@@ -93,6 +95,19 @@ public sealed class AdminController : Controller
                 Contains(secret.TypeDisplayName, search));
         }
 
+        secrets = options.Status switch
+        {
+            SecretStatusFilter.Expired => secrets.Where(secret => secret.IsExpired),
+            SecretStatusFilter.ExpiringSoon => secrets.Where(secret => secret.IsExpiringSoon),
+            SecretStatusFilter.NeverExpires => secrets.Where(secret => !secret.ExpiresUtc.HasValue),
+            _ => secrets,
+        };
+
+        if (!string.IsNullOrEmpty(options.Type))
+        {
+            secrets = secrets.Where(secret => secret.Type.Equals(options.Type, StringComparison.OrdinalIgnoreCase));
+        }
+
         var filtered = secrets
             .OrderBy(secret => secret.Name, StringComparer.OrdinalIgnoreCase)
             .ThenBy(secret => secret.Store, StringComparer.OrdinalIgnoreCase)
@@ -101,12 +116,23 @@ public sealed class AdminController : Controller
         var pager = new Pager(pagerParameters, _pagerOptions);
 
         // Maintain previous route data when generating page links.
-        var routeData = new RouteData();
+        var routeData = new RouteData(GetFilterRouteValues(options));
 
-        if (!string.IsNullOrEmpty(options.Search))
-        {
-            routeData.Values.TryAdd(OptionsSearch, options.Search);
-        }
+        options.Statuses =
+        [
+            new SelectListItem(S["All"], nameof(SecretStatusFilter.All)),
+            new SelectListItem(S["Expired"], nameof(SecretStatusFilter.Expired)),
+            new SelectListItem(S["Expires within 30 days"], nameof(SecretStatusFilter.ExpiringSoon)),
+            new SelectListItem(S["Never expires"], nameof(SecretStatusFilter.NeverExpires)),
+        ];
+
+        options.Types =
+        [
+            new SelectListItem(S["All types"], string.Empty),
+            .. providers
+                .OrderBy(provider => provider.DisplayName, StringComparer.CurrentCultureIgnoreCase)
+                .Select(provider => new SelectListItem(provider.DisplayName, provider.Name)),
+        ];
 
         options.BulkActions =
         [
@@ -135,10 +161,7 @@ public sealed class AdminController : Controller
     [ActionName(nameof(Index))]
     [FormValueRequired("submit.Filter")]
     public ActionResult IndexFilterPost(SecretIndexViewModel model)
-        => RedirectToAction(nameof(Index), new RouteValueDictionary
-        {
-            { OptionsSearch, model.Options?.Search },
-        });
+        => RedirectToAction(nameof(Index), GetFilterRouteValues(model.Options ?? new SecretIndexOptions()));
 
     [HttpPost]
     [ActionName(nameof(Index))]
@@ -189,10 +212,7 @@ public sealed class AdminController : Controller
             }
         }
 
-        return RedirectToAction(nameof(Index), new RouteValueDictionary
-        {
-            { OptionsSearch, options.Search },
-        });
+        return RedirectToAction(nameof(Index), GetFilterRouteValues(options));
     }
 
     public async Task<IActionResult> Create(string type, string name)
@@ -548,6 +568,28 @@ public sealed class AdminController : Controller
         {
             await _secretManager.SaveSecretAsync(name, secret, options);
         }
+    }
+
+    private static RouteValueDictionary GetFilterRouteValues(SecretIndexOptions options)
+    {
+        var values = new RouteValueDictionary();
+
+        if (!string.IsNullOrEmpty(options.Search))
+        {
+            values[OptionsSearch] = options.Search;
+        }
+
+        if (options.Status != SecretStatusFilter.All)
+        {
+            values[OptionsStatus] = options.Status.ToString();
+        }
+
+        if (!string.IsNullOrEmpty(options.Type))
+        {
+            values[OptionsType] = options.Type;
+        }
+
+        return values;
     }
 
     private static bool Contains(string value, string search)

@@ -6,6 +6,9 @@
     var canManage = await AuthorizationService.AuthorizeAsync(User, SecretsPermissions.ManageSecrets);
 }
 
+<style asp-name="bootstrap-select" at="Head"></style>
+<script asp-name="bootstrap-select" at="Foot"></script>
+
 <zone Name="Title">
     <breadcrumb name="Secrets" title="@T["Secrets"]" />
 </zone>
@@ -16,7 +19,7 @@
 }
 
 @* The form is necessary to generate an antiforgery token for the delete and bulk actions. *@
-<form asp-action="Index" method="post" class="no-multisubmit" data-list-management data-min-selected-items="1" data-selected-label="@T["selected"]">
+<form asp-action="Index" method="post" class="no-multisubmit" data-list-management data-filter-submit="true" data-min-selected-items="1" data-selected-label="@T["selected"]">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
@@ -41,39 +44,43 @@
     </div>
 
     <ul class="list-group with-checkbox">
-        @if (Model.Secrets.Count > 0)
-        {
-            <li class="list-group-item text-bg-theme">
-                <div class="row gx-3">
-                    <div class="col">
-                        <div class="form-check my-1">
-                            @if (canManage)
-                            {
-                                <input type="checkbox" class="form-check-input" id="select-all">
-                                <label class="form-check-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
-                            }
-                            <label id="items" for="select-all">@T.Plural(Model.Secrets.Count, "{0} item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
-                            <label id="selected-items" class="text-muted" for="select-all"></label>
-                        </div>
+        <li class="list-group-item text-bg-theme">
+            <div class="row gx-3 align-items-center">
+                <div class="col">
+                    <div class="form-check my-1">
+                        @if (canManage && Model.Secrets.Count > 0)
+                        {
+                            <input type="checkbox" class="form-check-input" id="select-all">
+                            <label class="form-check-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
+                        }
+                        <label id="items" for="select-all">@T.Plural(Model.Secrets.Count, "{0} item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
+                        <label id="selected-items" class="text-muted" for="select-all"></label>
+                    </div>
+                </div>
+                <div class="col-auto d-flex align-items-center">
+                    <div class="btn-group filter">
+                        <select asp-for="Options.Status" asp-items="Model.Options.Statuses" class="selectpicker show-tick me-2" data-header="@T["Filter by expiration"]" data-selected-text-format="static" data-width="fit" data-dropdown-align-right="auto" title="@T["Expiration"]" data-style="btn-sm"></select>
+                        <select asp-for="Options.Type" asp-items="Model.Options.Types" class="selectpicker show-tick" data-header="@T["Filter by type"]" data-selected-text-format="static" data-width="fit" data-dropdown-align-right="auto" title="@T["Type"]" data-style="btn-sm"></select>
                     </div>
                     @if (canManage)
                     {
-                        <div class="col-auto">
-                            <div class="dropdown d-none" id="actions">
-                                <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    @T["Actions"]
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bulk-action-menu-button">
-                                    @foreach (var item in Model.Options.BulkActions)
-                                    {
-                                        <li><a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", item.Text.ToLower()]">@item.Text</a></li>
-                                    }
-                                </ul>
-                            </div>
+                        <div class="dropdown d-none" id="actions">
+                            <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                @T["Actions"]
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bulk-action-menu-button">
+                                @foreach (var item in Model.Options.BulkActions)
+                                {
+                                    <li><a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", item.Text.ToLower()]">@item.Text</a></li>
+                                }
+                            </ul>
                         </div>
                     }
                 </div>
-            </li>
+            </div>
+        </li>
+        @if (Model.Secrets.Count > 0)
+        {
             @foreach (var secret in Model.Secrets)
             {
                 <li class="list-group-item">
@@ -98,8 +105,8 @@
                                     }
                                 </div>
                                 <div class="me-1">
-                                    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["Type"]">
-                                        <i class="fa-solid fa-key text-secondary" aria-hidden="true"></i> @secret.TypeDisplayName
+                                    <span class="badge ta-badge fw-normal">
+                                        <i class="fa-solid fa-key text-secondary" aria-hidden="true"></i> <a asp-action="Index" asp-route-Options.Type="@secret.Type" data-bs-toggle="tooltip" title="@T["Show the secrets of this type"]">@secret.TypeDisplayName</a>
                                     </span>
                                 </div>
                                 <div class="me-1">
@@ -167,7 +174,7 @@
         {
             <li class="list-group-item">
                 <div class="alert alert-info mb-0" role="alert">
-                    @if (string.IsNullOrWhiteSpace(Model.Options.Search))
+                    @if (!Model.Options.HasFilters)
                     {
                         @T["<strong>Nothing here!</strong> There are no secrets stored. Click 'Add Secret' to create one."]
                     }

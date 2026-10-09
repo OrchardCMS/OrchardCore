@@ -170,7 +170,7 @@ Once enabled, the Secrets admin is available under the **Tools → Security** me
 
 #### Viewing Secrets
 
-The Secrets index page lists the stored secrets like the other admin lists. Each entry shows its name and description, with badges for its type, its store, its expiration, and when it was last updated. Use the search box to filter the secrets by name, description, type, or store; the list is paged, and the page size can be changed when the site settings allow it. Select several secrets to delete them at once with the **Actions** menu.
+The Secrets index page lists the stored secrets like the other admin lists. Each entry shows its name and description, with badges for its type, its store, its expiration, and when it was last updated. Use the search box to find secrets by name, description, type, or store, and the filters of the list header to show the secrets that have expired, expire within 30 days, or never expire, or the secrets of a type, such as **Text Secret**. Clicking the type badge of a secret also shows the secrets of that type. The list is paged, and the page size can be changed when the site settings allow it. Select several secrets to delete them at once with the **Actions** menu.
 
 ![Secrets list](images/secrets-list.png)
 

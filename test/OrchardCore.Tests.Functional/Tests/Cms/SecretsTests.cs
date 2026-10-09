@@ -193,6 +193,32 @@ public sealed class SecretsTests : CmsTestBase, IClassFixture<CmsSetupFixture>
     }
 
     [Fact]
+    public async Task SecretsList_FiltersByExpirationAndType()
+    {
+        var page = await CreateAdminPageAsync();
+        await CreateTextSecretAsync(page, "ExpiredKey", "expired-value",
+            expiration: DateTime.UtcNow.AddDays(-1).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+        await CreateTextSecretAsync(page, "ExpiringKey", "expiring-value",
+            expiration: DateTime.UtcNow.AddDays(10).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+        await CreateTextSecretAsync(page, "LaterKey", "later-value",
+            expiration: DateTime.UtcNow.AddDays(90).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+        await CreateTextSecretAsync(page, "PermanentKey", "permanent-value");
+
+        await AssertFilterAsync(page, "Options.Status=Expired", "ExpiredKey");
+        await AssertFilterAsync(page, "Options.Status=ExpiringSoon", "ExpiringKey");
+        await AssertFilterAsync(page, "Options.Status=NeverExpires", "PermanentKey");
+        await AssertFilterAsync(page, "Options.Type=RsaKeySecret");
+        await Assertions.Expect(page.Locator(".alert-info")).ToContainTextAsync("No results found.");
+
+        // The type badge shows the secrets of that type, and the filters keep the list header to clear them.
+        await page.GotoAndAssertOkAsync($"{Tenant.Prefix}/Admin/Secrets/Index");
+        await SecretEntry(page, "LaterKey").GetByRole(AriaRole.Link, new LocatorGetByRoleOptions { Name = "Text Secret" }).ClickAsync();
+        await Assertions.Expect(page).ToHaveURLAsync(new Regex(@"Options\.Type=TextSecret"));
+        await Assertions.Expect(page.Locator("input[name=itemIds]")).ToHaveCountAsync(4);
+        await Assertions.Expect(page.Locator("#Options_Type")).ToHaveValueAsync("TextSecret");
+    }
+
+    [Fact]
     public async Task MigrationPage_WithoutStoredCredentials_ShowsNothingToMigrate()
     {
         var page = await CreateAdminPageAsync();
@@ -380,6 +406,19 @@ public sealed class SecretsTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await page.ClickSaveAsync();
         await Assertions.Expect(page).ToHaveURLAsync(s_indexUrl);
         await Assertions.Expect(page.Locator(".message-success")).ToContainTextAsync(message);
+    }
+
+    private async Task AssertFilterAsync(IPage page, string query, params string[] names)
+    {
+        await page.GotoAndAssertOkAsync($"{Tenant.Prefix}/Admin/Secrets/Index?{query}");
+
+        var items = page.Locator("input[name=itemIds]");
+        await Assertions.Expect(items).ToHaveCountAsync(names.Length);
+
+        foreach (var name in names)
+        {
+            await Assertions.Expect(SecretEntry(page, name)).ToHaveCountAsync(1);
+        }
     }
 
     private static ILocator SecretEntry(IPage page, string name) =>

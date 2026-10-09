@@ -25,10 +25,31 @@ public class SecretIndexOptions
 {
     public string Search { get; set; }
 
+    public SecretStatusFilter Status { get; set; }
+
+    public string Type { get; set; }
+
     public SecretsBulkAction BulkAction { get; set; }
 
     [BindNever]
+    public List<SelectListItem> Statuses { get; set; } = [];
+
+    [BindNever]
+    public List<SelectListItem> Types { get; set; } = [];
+
+    [BindNever]
     public List<SelectListItem> BulkActions { get; set; } = [];
+
+    [BindNever]
+    public bool HasFilters => !string.IsNullOrWhiteSpace(Search) || Status != SecretStatusFilter.All || !string.IsNullOrEmpty(Type);
+}
+
+public enum SecretStatusFilter
+{
+    All,
+    Expired,
+    ExpiringSoon,
+    NeverExpires,
 }
 
 public enum SecretsBulkAction
