@@ -315,6 +315,25 @@ public sealed class WorkflowDesignerController : Controller
         var version = string.IsNullOrEmpty(workflow.WorkflowTypeVersionId) ? null : await _versionStore.GetAsync(workflow.WorkflowTypeVersionId);
         var journal = await _journal.ListAsync(workflow.WorkflowId, JournalRecordCount);
 
+        // The pages of the parent instance and of the child instances the journal names, when they still exist.
+        var linkedWorkflowIds = journal
+            .Select(record => record.ChildWorkflowId)
+            .Append(workflow.ParentWorkflowId)
+            .Where(id => !string.IsNullOrEmpty(id))
+            .Distinct()
+            .ToArray();
+        var linkedInstanceUrls = linkedWorkflowIds.Length == 0
+            ? []
+            : (await _session.QueryIndex<WorkflowIndex>(index => index.WorkflowId.IsIn(linkedWorkflowIds)).ListAsync())
+                .ToDictionary(index => index.WorkflowId, index => InstanceUrl(index.DocumentId));
+
+        var journalRecords = journal.Select(WorkflowDesignerJournalRecord.From).ToList();
+
+        foreach (var record in journalRecords.Where(record => record.ChildWorkflowId is not null))
+        {
+            record.ChildInstanceUrl = linkedInstanceUrls.GetValueOrDefault(record.ChildWorkflowId);
+        }
+
         return Ok(new WorkflowDesignerDefinition
         {
             Id = workflowType.Id,
@@ -339,7 +358,9 @@ public sealed class WorkflowDesignerController : Controller
                     ? workflow.PendingRetry?.ActivityId ?? journal.LastOrDefault(record => record.Status == WorkflowExecutionRecordStatus.Faulted)?.ActivityId
                     : null,
                 PendingRetry = workflow.Status == WorkflowStatus.Faulted ? workflow.PendingRetry : null,
-                Journal = journal.Select(WorkflowDesignerJournalRecord.From).ToList(),
+                ParentWorkflowId = workflow.ParentWorkflowId,
+                ParentInstanceUrl = string.IsNullOrEmpty(workflow.ParentWorkflowId) ? null : linkedInstanceUrls.GetValueOrDefault(workflow.ParentWorkflowId),
+                Journal = journalRecords,
                 ExecutedActivityCounts = journal
                     .GroupBy(record => record.ActivityId)
                     .ToDictionary(group => group.Key, group => group.Count()),

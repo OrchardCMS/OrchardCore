@@ -146,6 +146,9 @@ export interface JournalRecord {
     error?: string | null;
     // Whether the record has the data of the execution, which the viewer loads when it's opened.
     hasData?: boolean;
+    // The instance the activity started, or whose result it resumed with, and its page when it still exists.
+    childWorkflowId?: string | null;
+    childInstanceUrl?: string | null;
 }
 
 // An expression an activity evaluated, and its result (WorkflowExpressionEvaluation).
@@ -183,6 +186,9 @@ export interface DesignerInstance {
     faultedActivityId?: string | null;
     // The next attempt of the task a faulted instance is retried from, by the task's retry policy.
     pendingRetry?: PendingRetry | null;
+    // The instance that runs this one as an activity, and its page when it still exists.
+    parentWorkflowId?: string | null;
+    parentInstanceUrl?: string | null;
     // The most recent journal records, oldest first.
     journal?: JournalRecord[];
     // How many times each activity ran, and each transition (by transition key) was taken.

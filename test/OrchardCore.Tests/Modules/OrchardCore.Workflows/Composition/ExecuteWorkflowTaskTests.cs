@@ -24,6 +24,9 @@ public sealed class ExecuteWorkflowTaskTests
 
     // The flags the parents reached, with the value their "result" variable had then.
     private readonly List<(string Flag, object Result)> _flags = [];
+
+    // The journal records the instances saved.
+    private readonly List<WorkflowExecutionRecord> _journalRecords = [];
     private readonly WorkflowManager _manager;
 
     public ExecuteWorkflowTaskTests()
@@ -37,6 +40,12 @@ public sealed class ExecuteWorkflowTaskTests
         var workflowStore = new Mock<IWorkflowStore>();
         workflowStore.Setup(x => x.SaveAsync(It.IsAny<Workflow>())).Callback((Workflow workflow) => _instances[workflow.WorkflowId] = workflow).Returns(Task.CompletedTask);
         workflowStore.Setup(x => x.GetAsync(It.IsAny<string>())).ReturnsAsync((string id) => _instances.GetValueOrDefault(id));
+
+        var journal = new Mock<IWorkflowExecutionJournal>();
+        journal.SetupGet(x => x.IsEnabled).Returns(true);
+        journal.Setup(x => x.SaveAsync(It.IsAny<string>(), It.IsAny<IEnumerable<WorkflowExecutionRecord>>()))
+            .Callback((string _, IEnumerable<WorkflowExecutionRecord> records) => _journalRecords.AddRange(records))
+            .Returns(Task.CompletedTask);
 
         var idGenerator = new Mock<IWorkflowIdGenerator>();
         idGenerator.Setup(x => x.GenerateUniqueId(It.IsAny<Workflow>())).Returns(() => IdGenerator.GenerateId());
@@ -59,7 +68,7 @@ public sealed class ExecuteWorkflowTaskTests
             versionStore.Object,
             TestVariableTypes.CreateProvider(),
             workflowStore.Object,
-            Mock.Of<IWorkflowExecutionJournal>(),
+            journal.Object,
             Mock.Of<IWorkflowDesignerNotifier>(),
             idGenerator.Object,
             new Resolver<IEnumerable<IWorkflowValueSerializer>>(serviceProvider),
@@ -95,6 +104,11 @@ public sealed class ExecuteWorkflowTaskTests
         Assert.Equal(WorkflowStatus.Finished, child.Status);
         Assert.Equal(parent.WorkflowId, child.ParentWorkflowId);
         Assert.Equal("exec", child.ParentActivityId);
+
+        // The journal record of the task names the child it ran.
+        var parentRecords = _journalRecords.Where(record => record.WorkflowId == parent.WorkflowId).ToList();
+        Assert.Equal(child.WorkflowId, Assert.Single(parentRecords, record => record.ActivityId == "exec").ChildWorkflowId);
+        Assert.All(parentRecords.Where(record => record.ActivityId != "exec"), record => Assert.Null(record.ChildWorkflowId));
     }
 
     [Fact]
@@ -111,6 +125,7 @@ public sealed class ExecuteWorkflowTaskTests
         var child = Assert.Single(_instances.Values, workflow => workflow.WorkflowTypeId == "child");
         Assert.Equal(WorkflowStatus.Halted, child.Status);
         Assert.Empty(_flags);
+        Assert.Equal(child.WorkflowId, Assert.Single(_journalRecords, record => record.WorkflowId == parent.WorkflowId && record.ActivityId == "exec").ChildWorkflowId);
 
         await _manager.ResumeWorkflowAsync(child, child.BlockingActivities.Single());
 

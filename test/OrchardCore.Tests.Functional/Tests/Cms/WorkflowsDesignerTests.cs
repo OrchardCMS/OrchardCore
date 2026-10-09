@@ -678,6 +678,16 @@ public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsF
 
         Assert.Equal("42", (await response.TextAsync()).Trim());
 
+        // The run of the task links to the child instance, which links back to its parent.
+        await OpenInstanceAsync(page, parentId, "Finished");
+        await page.Locator("[data-cy=panel-tab-journal]").ClickAsync();
+        await page.Locator("[data-cy=journal-record-2] button").ClickAsync();
+        await page.Locator("[data-cy=run-child-link]").ClickAsync();
+        await page.WaitForDesignerAsync();
+        await page.Locator("[data-cy=instance-parent-link]").ClickAsync();
+        await page.WaitForDesignerAsync();
+        await Assertions.Expect(page.Activity("composeexec")).ToBeVisibleAsync();
+
         // The Doubler is in the activities pane, and adds an Execute Workflow task that runs it.
         var id = await page.CreateWorkflowTypeAsync("Runs the doubler");
         await page.OpenDesignerAsync(id);

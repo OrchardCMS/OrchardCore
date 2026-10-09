@@ -117,6 +117,13 @@ const entries = (values: Record<string, string> | undefined) => Object.entries(v
                 <div v-if="open.has(record.sequence)" :id="`${ids}-${record.sequence}-data`" class="wfd-run-data" data-cy="run-data">
                     <p v-if="record.error" class="wfd-journal-error">{{ record.error }}</p>
 
+                    <p v-if="record.childWorkflowId" class="wfd-run-child" data-cy="run-child">
+                        <i class="fa-solid fa-diagram-project" aria-hidden="true"></i>
+                        {{ t("RunChildInstance") }}
+                        <a v-if="record.childInstanceUrl" :href="record.childInstanceUrl" data-cy="run-child-link">{{ record.childWorkflowId }}</a>
+                        <span v-else :title="t('InstanceDeleted')">{{ record.childWorkflowId }}</span>
+                    </p>
+
                     <p v-if="!record.hasData" class="wfd-section-hint" data-cy="run-no-data">{{ t("RunNoData") }}</p>
                     <p v-else-if="data.get(record.sequence) === 'loading'" class="wfd-section-hint">
                         <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>

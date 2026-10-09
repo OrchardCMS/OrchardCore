@@ -242,6 +242,18 @@ public sealed class WorkflowExecutionContext : IDisposable
     /// </summary>
     public IList<WorkflowExecutionRecord> JournalRecords { get; } = new List<WorkflowExecutionRecord>();
 
+    private string _reportedChildWorkflowId;
+
+    /// <summary>
+    /// Reports the instance the running activity started, or whose result it resumed with: the next journal record
+    /// (<see cref="RecordExecution"/>) keeps it as its <see cref="WorkflowExecutionRecord.ChildWorkflowId"/>.
+    /// </summary>
+    /// <param name="workflowId">The <see cref="Workflow.WorkflowId"/> of the other instance.</param>
+    public void ReportChildWorkflow(string workflowId)
+    {
+        _reportedChildWorkflowId = string.IsNullOrEmpty(workflowId) ? null : workflowId;
+    }
+
     /// <summary>
     /// The sequence number of the instance's last journal record.
     /// </summary>
@@ -302,7 +314,10 @@ public sealed class WorkflowExecutionContext : IDisposable
             DurationMilliseconds = Math.Max(0, (completedUtc - startedUtc).TotalMilliseconds),
             Error = error,
             Data = data is null || data.IsEmpty ? null : data,
+            ChildWorkflowId = _reportedChildWorkflowId,
         });
+
+        _reportedChildWorkflowId = null;
 
         if (outcomeList.Count == 0)
         {

@@ -44,6 +44,23 @@ describe("RunsTab", () => {
         document.body.innerHTML = "";
     });
 
+    it("render_RunThatRanAnInstance_LinksToItUnlessItWasDeleted", async () => {
+        const { store, api } = setup([
+            record(2, "exec", { hasData: false, childWorkflowId: "child-1", childInstanceUrl: "/instances/7" }),
+            record(4, "exec", { hasData: false, childWorkflowId: "child-2" }),
+        ]);
+        const wrapper = mount(RunsTab, { props: { store, api, activityId: "exec" } });
+
+        await wrapper.get("[data-cy=run-2] [data-cy=run-toggle]").trigger("click");
+        await wrapper.get("[data-cy=run-4] [data-cy=run-toggle]").trigger("click");
+
+        const link = wrapper.get("[data-cy=run-2] [data-cy=run-child-link]");
+        expect(link.attributes("href")).toBe("/instances/7");
+        expect(link.text()).toBe("child-1");
+        expect(wrapper.get("[data-cy=run-4] [data-cy=run-child]").text()).toContain("child-2");
+        expect(wrapper.find("[data-cy=run-4] [data-cy=run-child-link]").exists()).toBe(false);
+    });
+
     it("render_Runs_ListsTheActivitysRunsAndLoadsTheDataOfARunWhenOpened", async () => {
         const { store, api, getJournalData } = setup([record(1, "start"), record(2, "a"), record(5, "a", { outcomes: ["False"] })]);
         const wrapper = mount(RunsTab, { props: { store, api, activityId: "a" } });

@@ -645,6 +645,13 @@ defineExpose({ canvas, panel, activityPanel, addActivity, autosave, publish, dis
                 </div>
             </template>
 
+            <span v-if="state.instance?.parentWorkflowId" class="small text-nowrap" data-cy="instance-parent">
+                <i class="fa-solid fa-diagram-project" aria-hidden="true"></i>
+                {{ t("ParentInstance") }}
+                <a v-if="state.instance.parentInstanceUrl" :href="state.instance.parentInstanceUrl" data-cy="instance-parent-link">{{ state.instance.parentWorkflowId }}</a>
+                <span v-else :title="t('InstanceDeleted')">{{ state.instance.parentWorkflowId }}</span>
+            </span>
+
             <span v-if="state.instance && state.version" class="small text-nowrap" data-cy="instance-version">
                 {{ t("RunsOnVersion", state.version.version) }}
                 <span v-if="!state.version.isPublished" class="text-body-secondary" data-cy="instance-version-not-published">({{ t("NotThePublishedVersion") }})</span>

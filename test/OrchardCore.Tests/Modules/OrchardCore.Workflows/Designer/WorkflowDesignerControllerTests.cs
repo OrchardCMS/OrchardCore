@@ -1405,6 +1405,47 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
     }
 
     [Fact]
+    public async Task Instance_ParentAndChild_LinkToEachOtherWhenTheyExist()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true), Activity("exec", "ExecuteWorkflowTask"));
+        var parentId = await _fixture.CreateInstanceAsync(workflowTypeId, WorkflowStatus.Finished);
+        var childId = await _fixture.CreateInstanceAsync(workflowTypeId, WorkflowStatus.Finished);
+        string parentWorkflowId = null;
+        string childWorkflowId = null;
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            var store = scope.ServiceProvider.GetRequiredService<IWorkflowStore>();
+            var parent = await store.GetAsync(parentId);
+            var child = await store.GetAsync(childId);
+            parentWorkflowId = parent.WorkflowId;
+            childWorkflowId = child.WorkflowId;
+
+            child.ParentWorkflowId = parent.WorkflowId;
+            child.ParentActivityId = "exec";
+            await store.SaveAsync(child);
+
+            await scope.ServiceProvider.GetRequiredService<IWorkflowExecutionJournal>().SaveAsync(parent.WorkflowId,
+            [
+                new WorkflowExecutionRecord { WorkflowId = parent.WorkflowId, WorkflowTypeId = workflowTypeId, Sequence = 1, ActivityId = "exec", ActivityName = "ExecuteWorkflowTask", Status = WorkflowExecutionRecordStatus.Completed, ChildWorkflowId = child.WorkflowId },
+                new WorkflowExecutionRecord { WorkflowId = parent.WorkflowId, WorkflowTypeId = workflowTypeId, Sequence = 2, ActivityId = "exec", ActivityName = "ExecuteWorkflowTask", Status = WorkflowExecutionRecordStatus.Completed, ChildWorkflowId = "deletedchild" },
+            ]);
+        });
+
+        var parentJournal = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Instance?instanceId={parentId}"))["instance"]["journal"].AsArray();
+        Assert.Equal(childWorkflowId, parentJournal[0]["childWorkflowId"].GetValue<string>());
+        Assert.EndsWith($"Workflow/Details/{childId}", parentJournal[0]["childInstanceUrl"].GetValue<string>());
+
+        // A deleted child is named, without a link.
+        Assert.Equal("deletedchild", parentJournal[1]["childWorkflowId"].GetValue<string>());
+        Assert.Null(parentJournal[1]["childInstanceUrl"]);
+
+        var child = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Instance?instanceId={childId}"))["instance"];
+        Assert.Equal(parentWorkflowId, child["parentWorkflowId"].GetValue<string>());
+        Assert.EndsWith($"Workflow/Details/{parentId}", child["parentInstanceUrl"].GetValue<string>());
+    }
+
+    [Fact]
     public async Task Retry_FaultedInstance_RunsItAgainFromTheActivity()
     {
         var (id, workflowTypeId) = await CreateWorkflowTypeAsync(

@@ -139,6 +139,7 @@ public class ExecuteWorkflowTask : TaskActivity<ExecuteWorkflowTask>, IActivityO
         // Resolved here: the workflow manager creates the activities.
         var workflowManager = _serviceProvider.GetRequiredService<IWorkflowManager>();
         var child = await workflowManager.StartChildWorkflowAsync(workflowType, workflowContext, activityContext.ActivityRecord.ActivityId, input);
+        workflowContext.ReportChildWorkflow(child.WorkflowId);
 
         if (!WaitForCompletion)
         {
@@ -169,6 +170,7 @@ public class ExecuteWorkflowTask : TaskActivity<ExecuteWorkflowTask>, IActivityO
 
         // The result isn't kept in the instance's input.
         workflowContext.Input.Remove(ChildWorkflowResult.InputKey);
+        workflowContext.ReportChildWorkflow(result.WorkflowId);
         ChildWorkflowId = null;
 
         return Complete(workflowContext, activityContext, result);

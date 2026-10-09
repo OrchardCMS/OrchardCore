@@ -87,6 +87,12 @@ public sealed class WorkflowExecutionRecord
     /// (<see cref="WorkflowType.RecordActivityData"/>), or <see langword="null"/>.
     /// </summary>
     public WorkflowExecutionData Data { get; set; }
+
+    /// <summary>
+    /// The <see cref="Workflow.WorkflowId"/> of the instance the activity started, or whose result it resumed with,
+    /// such as the child of an Execute Workflow task, or <see langword="null"/>.
+    /// </summary>
+    public string ChildWorkflowId { get; set; }
 }
 
 /// <summary>

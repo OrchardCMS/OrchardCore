@@ -49,6 +49,16 @@ public sealed class WorkflowDesignerInstance
     public WorkflowPendingRetry PendingRetry { get; init; }
 
     /// <summary>
+    /// The <see cref="Workflow.WorkflowId"/> of the instance that runs this one as an activity, if any.
+    /// </summary>
+    public string ParentWorkflowId { get; init; }
+
+    /// <summary>
+    /// The URL of the parent instance's page, when it still exists.
+    /// </summary>
+    public string ParentInstanceUrl { get; init; }
+
+    /// <summary>
     /// The most recent records of the instance's journal, oldest first.
     /// </summary>
     public IReadOnlyList<WorkflowDesignerJournalRecord> Journal { get; init; } = [];
@@ -103,6 +113,16 @@ public sealed class WorkflowDesignerJournalRecord
     /// </summary>
     public bool HasData { get; init; }
 
+    /// <summary>
+    /// The instance the activity started, or whose result it resumed with (<see cref="WorkflowExecutionRecord.ChildWorkflowId"/>).
+    /// </summary>
+    public string ChildWorkflowId { get; init; }
+
+    /// <summary>
+    /// The URL of the page of <see cref="ChildWorkflowId"/>, when the instance still exists.
+    /// </summary>
+    public string ChildInstanceUrl { get; set; }
+
     public static WorkflowDesignerJournalRecord From(WorkflowExecutionRecord record)
         => new()
         {
@@ -118,5 +138,6 @@ public sealed class WorkflowDesignerJournalRecord
             DurationMilliseconds = record.DurationMilliseconds,
             Error = record.Error,
             HasData = record.Data is not null,
+            ChildWorkflowId = record.ChildWorkflowId,
         };
 }

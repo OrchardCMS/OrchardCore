@@ -303,6 +303,8 @@ The task's outputs are stored when it's edited (or added from the activities pan
 
 The workflow runs on its published version, as a new instance that records the instance and the activity that started it (`ParentWorkflowId` and `ParentActivityId`). Workflows can run each other 16 levels deep in a run; a task that runs the workflow it belongs to shows a warning in the designer.
 
+The instances link to each other: on the page of the calling instance, each run of the task in its **Runs** tab links to the instance it ran, and the page of that instance links back to the calling instance in its toolbar. An instance that was deleted is named by its id. The journal records the instance a run started (`WorkflowExecutionRecord.ChildWorkflowId`); a custom activity that starts workflows reports it with `WorkflowExecutionContext.ReportChildWorkflow(workflowId)`.
+
 Code can start a workflow as the child of an activity with `IWorkflowManager.StartChildWorkflowAsync`. When the child ends in a later run, the activity that started it is resumed with a `ChildWorkflowResult` input.
 
 ### Activity Presets

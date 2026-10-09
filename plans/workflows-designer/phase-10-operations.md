@@ -13,7 +13,7 @@ Paths: `M/` = `src/OrchardCore.Modules/OrchardCore.Workflows/`, `A/` = `src/Orch
 | 3 | Run a workflow from the designer, with an input | 10.6 | Done |
 | 4 | One running instance per correlation id | 10.7 | Done |
 | 5 | Instances across workflows: filters, bulk actions | 10.8 | Done |
-| 6 | Links between a parent instance and the child instances it ran | 10.9 | Not started |
+| 6 | Links between a parent instance and the child instances it ran | 10.9 | Done |
 
 ## Target experience (item 1)
 
@@ -179,9 +179,25 @@ Steps:
   - **Fix.** The bulk **Actions** menu of this list and of the workflows list never showed: the column had `d-none`, which the list script's inline `display` can't override. It's hidden with an inline style now.
   - **Tests.** `AllInstances_Filters_ListAndCountTheInstancesOfTheWorkflowStatusAndDate` and `AllInstances_BulkActions_RetryCancelAndDeleteTheCheckedInstances` (the post needs a non-empty `submit.BulkAction`, as a browser sends). Functional `AllInstances_InstancesOfAWorkflow_AreCountedFilteredAndDeletedInBulk`; the designer class passes 32/32.
 
-### - [ ] 10.9 Parent and child instances (item 6)
+### - [x] 10.9 Parent and child instances (item 6)
 
-To detail when it starts. Sketch: an Execute Workflow task records the instance it started, which its Runs tab links to; a child instance links back to its parent.
+Decisions:
+
+| # | Decision | Why |
+|---|---|---|
+| P1 | A journal record can say which instance its activity started or got the result of (`WorkflowExecutionRecord.ChildWorkflowId`), which the activity reports with `WorkflowExecutionContext.ReportChildWorkflow`; Execute Workflow reports the child it starts, and the child whose result it resumes with. | The record is what the Runs tab shows for each run, and a custom activity that starts workflows can report its children the same way. |
+| P2 | The instance viewer resolves the ids to the instances' pages: a run of Execute Workflow links to its child, and the page of a child links to its parent (`Workflow.ParentWorkflowId`, which exists). A deleted instance is named by its id, without a link. | Following a composed workflow from one instance to the next is what debugging it needs. |
+
+Steps:
+
+- `A/`: `WorkflowExecutionRecord.ChildWorkflowId`, `WorkflowExecutionContext.ReportChildWorkflow`; Execute Workflow reports it.
+- The instance endpoint resolves the child and parent instances to their pages; the Runs tab and the toolbar link to them.
+- **Tests**: the record of an Execute Workflow run has the child's id; the endpoint links the child and the parent; Vitest for the links; the functional test of composition follows the links.
+- **Notes from implementing this step:**
+  - **API (`A/`).** `WorkflowExecutionRecord.ChildWorkflowId`; `WorkflowExecutionContext.ReportChildWorkflow(workflowId)` keeps it for the next record, which `RecordExecution` takes. Execute Workflow reports the child it starts (the halted record of a waiting task has it too) and the child whose result it resumes with.
+  - **Instance endpoint.** It looks up the child ids of the journal and the parent id in `WorkflowIndex` and gives the pages of those that exist: `WorkflowDesignerJournalRecord.ChildWorkflowId`/`ChildInstanceUrl`, `WorkflowDesignerInstance.ParentWorkflowId`/`ParentInstanceUrl`.
+  - **Viewer.** A run with a child shows "Ran the instance" with a link (`data-cy=run-child-link`), or the id of a deleted one; the toolbar of a child shows "Run by the instance" with a link to its parent (`data-cy=instance-parent-link`).
+  - **Tests.** `ExecuteWorkflowTaskTests` (now with a journal that keeps the records): the task's record has the child's id, others don't, and a waiting task's halted record has it. `Instance_ParentAndChild_LinkToEachOtherWhenTheyExist` (and a deleted child without a link). Vitest (RunsTab, instance viewer): 307/307. The composition functional test opens the parent's run, follows the link to the child and back; the designer class passes 32/32. Workflows tests: 533/533.
 
 ### - [ ] 10.10 Definition of done
 

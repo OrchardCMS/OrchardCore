@@ -132,6 +132,19 @@ describe("instance viewer", () => {
         wrapper.unmount();
     });
 
+    it("mount_ChildInstance_LinksToItsParent", async () => {
+        const { store, wrapper } = await setup();
+
+        expect(wrapper.find("[data-cy=instance-parent]").exists()).toBe(false);
+
+        store.state.instance = { id: 12, workflowId: "wf-12", status: "Halted", blockingActivityIds: [], parentWorkflowId: "parent-1", parentInstanceUrl: "/instances/3" };
+        await flushPromises();
+
+        expect(wrapper.get("[data-cy=instance-parent-link]").attributes("href")).toBe("/instances/3");
+        expect(wrapper.get("[data-cy=instance-parent-link]").text()).toBe("parent-1");
+        wrapper.unmount();
+    });
+
     it("select_TaskWithAPendingRetry_ShowsItsNextAttempt", async () => {
         const { store, wrapper } = await setup();
         store.state.instance = {
