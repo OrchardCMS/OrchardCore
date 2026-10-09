@@ -21,6 +21,11 @@ public sealed class WorkflowTypeDraftSettings
     public bool IsSingleton { get; set; }
 
     /// <summary>
+    /// See <see cref="WorkflowType.IsSingletonPerCorrelation"/>.
+    /// </summary>
+    public bool IsSingletonPerCorrelation { get; set; }
+
+    /// <summary>
     /// See <see cref="WorkflowType.LockTimeout"/>.
     /// </summary>
     public int LockTimeout { get; set; }

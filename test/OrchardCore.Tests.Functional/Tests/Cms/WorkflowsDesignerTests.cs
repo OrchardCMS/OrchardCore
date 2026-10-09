@@ -893,6 +893,29 @@ public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsF
         await page.CloseAsync();
     }
 
+    [Fact]
+    public async Task InstanceLimit_OnePerCorrelatedItem_IsSavedInTheDraft()
+    {
+        var (page, consoleErrors) = await OpenAsync();
+        var id = await page.CreateWorkflowTypeAsync("One approval per article");
+        await page.OpenDesignerAsync(id);
+
+        await page.Locator("[data-cy=panel-tab-workflow]").ClickAsync();
+        await Assertions.Expect(page.Locator("[data-cy=panel-settings-form] [data-cy=instance-limit]")).ToHaveValueAsync("Any");
+        // The form applies its changes a moment after they're made.
+        var applied = page.WaitForResponseAsync(response => response.Url.Contains("/Designer/Settings") && response.Request.Method == "POST");
+        await page.Locator("[data-cy=panel-settings-form] [data-cy=instance-limit]").SelectOptionAsync("OnePerCorrelation");
+        await applied;
+        await page.WaitForSavedAsync();
+
+        await page.OpenDesignerAsync(id);
+        await page.Locator("[data-cy=panel-tab-workflow]").ClickAsync();
+        await Assertions.Expect(page.Locator("[data-cy=panel-settings-form] [data-cy=instance-limit]")).ToHaveValueAsync("OnePerCorrelation");
+
+        Assert.Empty(consoleErrors);
+        await page.CloseAsync();
+    }
+
     private static async Task OpenInstanceAsync(IPage page, long workflowTypeId, string status)
     {
         await page.GotoAndAssertOkAsync($"/Admin/Workflows/Types/{workflowTypeId}/Instances/Index");

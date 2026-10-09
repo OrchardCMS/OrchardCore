@@ -228,6 +228,7 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
             draft.Name = settings.Name?.Trim();
             draft.IsEnabled = settings.IsEnabled;
             draft.IsSingleton = settings.IsSingleton;
+            draft.IsSingletonPerCorrelation = settings.IsSingletonPerCorrelation;
             draft.LockTimeout = settings.LockTimeout;
             draft.LockExpiration = settings.LockExpiration;
             draft.DeleteFinishedWorkflows = settings.DeleteFinishedWorkflows;
@@ -295,6 +296,7 @@ public sealed class WorkflowTypeDraftManager : IWorkflowTypeDraftManager
             }
 
             draft.IsSingleton = version.IsSingleton;
+            draft.IsSingletonPerCorrelation = version.IsSingletonPerCorrelation;
             draft.LockTimeout = version.LockTimeout;
             draft.LockExpiration = version.LockExpiration;
             draft.DeleteFinishedWorkflows = version.DeleteFinishedWorkflows;

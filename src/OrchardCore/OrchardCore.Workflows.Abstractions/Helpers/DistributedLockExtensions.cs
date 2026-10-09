@@ -27,17 +27,28 @@ public static class DistributedLockExtensions
 
     /// <summary>
     /// Tries to acquire a lock before starting an instance of this workflow type, if it is
-    /// a singleton or if the event is exclusive, otherwise returns true with a null locker.
+    /// a singleton or if the event is exclusive, or a lock per correlation id if it runs one instance
+    /// per correlation id (<see cref="WorkflowType.IsSingletonPerCorrelation"/>), otherwise returns
+    /// true with a null locker.
     /// </summary>
     public static Task<(ILocker locker, bool locked)> TryAcquireWorkflowTypeLockAsync(
         this IDistributedLock distributedLock,
         WorkflowType workflowType,
-        bool isExclusiveEvent = false)
+        bool isExclusiveEvent = false,
+        string correlationId = null)
     {
         if (workflowType.IsSingleton || isExclusiveEvent)
         {
             return distributedLock.TryAcquireLockAsync(
                 "WFT_" + workflowType.WorkflowTypeId + "_LOCK",
+                TimeSpan.FromMilliseconds(20_000),
+                TimeSpan.FromMilliseconds(20_000));
+        }
+
+        if (workflowType.IsSingletonPerCorrelation && !string.IsNullOrEmpty(correlationId))
+        {
+            return distributedLock.TryAcquireLockAsync(
+                "WFT_" + workflowType.WorkflowTypeId + "_" + correlationId + "_LOCK",
                 TimeSpan.FromMilliseconds(20_000),
                 TimeSpan.FromMilliseconds(20_000));
         }

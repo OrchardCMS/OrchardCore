@@ -30,6 +30,11 @@ public class WorkflowStore : IWorkflowStore
         return (await _session.Query<Workflow, WorkflowBlockingActivitiesIndex>(x => x.WorkflowTypeId == workflowTypeId).FirstOrDefaultAsync()) != null;
     }
 
+    public async Task<bool> HasHaltedInstanceAsync(string workflowTypeId, string correlationId)
+    {
+        return (await _session.Query<Workflow, WorkflowBlockingActivitiesIndex>(x => x.WorkflowTypeId == workflowTypeId && x.WorkflowCorrelationId == (correlationId ?? "")).FirstOrDefaultAsync()) != null;
+    }
+
     public async Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId = null, int? skip = null, int? take = null)
     {
         var query = (IQuery<Workflow>)FilterByWorkflowTypeId(_session.Query<Workflow, WorkflowIndex>(), workflowTypeId)

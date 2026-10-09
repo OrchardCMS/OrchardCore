@@ -29,6 +29,7 @@ public static class WorkflowTypeVersionExtensions
             IsEnabled = workflowType.IsEnabled,
             Properties = workflowType.Properties?.DeepClone().AsObject() ?? [],
             IsSingleton = version.IsSingleton,
+            IsSingletonPerCorrelation = version.IsSingletonPerCorrelation,
             LockTimeout = version.LockTimeout,
             LockExpiration = version.LockExpiration,
             DeleteFinishedWorkflows = version.DeleteFinishedWorkflows,

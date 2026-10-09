@@ -113,6 +113,7 @@ public sealed class WorkflowTypeVersionStore : IWorkflowTypeVersionStore
             CreatedByUserName = user?.Identity?.Name,
             Name = workflowType.Name,
             IsSingleton = workflowType.IsSingleton,
+            IsSingletonPerCorrelation = workflowType.IsSingletonPerCorrelation,
             LockTimeout = workflowType.LockTimeout,
             LockExpiration = workflowType.LockExpiration,
             DeleteFinishedWorkflows = workflowType.DeleteFinishedWorkflows,
@@ -193,6 +194,7 @@ public sealed class WorkflowTypeVersionStore : IWorkflowTypeVersionStore
     // What a version holds besides its metadata: two definitions with the same fingerprint run the same way.
     private string Fingerprint(
         bool isSingleton,
+        bool isSingletonPerCorrelation,
         int lockTimeout,
         int lockExpiration,
         bool deleteFinishedWorkflows,
@@ -207,6 +209,7 @@ public sealed class WorkflowTypeVersionStore : IWorkflowTypeVersionStore
             new
             {
                 IsSingleton = isSingleton,
+                IsSingletonPerCorrelation = isSingletonPerCorrelation,
                 LockTimeout = lockTimeout,
                 LockExpiration = lockExpiration,
                 DeleteFinishedWorkflows = deleteFinishedWorkflows,
@@ -223,6 +226,7 @@ public sealed class WorkflowTypeVersionStore : IWorkflowTypeVersionStore
     private string Fingerprint(WorkflowType workflowType)
         => Fingerprint(
             workflowType.IsSingleton,
+            workflowType.IsSingletonPerCorrelation,
             workflowType.LockTimeout,
             workflowType.LockExpiration,
             workflowType.DeleteFinishedWorkflows,
@@ -237,6 +241,7 @@ public sealed class WorkflowTypeVersionStore : IWorkflowTypeVersionStore
     private string Fingerprint(WorkflowTypeVersion version)
         => Fingerprint(
             version.IsSingleton,
+            version.IsSingletonPerCorrelation,
             version.LockTimeout,
             version.LockExpiration,
             version.DeleteFinishedWorkflows,

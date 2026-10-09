@@ -40,7 +40,7 @@ The designer has four areas. What concerns the whole workflow is on the right, a
     - Right-click an activity, a transition or the canvas for more actions, such as making an event the start activity.
 - **The workflow panel** (on the right) has three tabs:
     - **Variables**: the [variables](#variables) of the workflow, with their types and default values.
-    - **Workflow**: the settings of the workflow: its name, whether it is enabled, whether it is a singleton, its lock settings, and whether finished instances are deleted.
+    - **Workflow**: the settings of the workflow: its name, whether it is enabled, how many [instances run at a time](#instances-at-a-time), its lock settings, and whether finished instances are deleted.
     - **Issues**: the problems found in the workflow, errors first. Select one to go to its activity.
 - **The activity panel** (at the bottom of the canvas) opens when you double-click an activity, click the settings button at the top right of its card, or select it and press Enter. A click only selects an activity, so you can move activities around without opening it; moving them closes it, and so does a click on the canvas or **Close**. It has up to three tabs:
     - **Settings**: the editor of the activity.
@@ -111,7 +111,7 @@ The page of a workflow instance shows the version of its workflow that the insta
 
 ## Versions
 
-Each time a workflow is published, its definition is saved as a new **version**, numbered 1, 2, 3 and so on. A version holds what affects how the workflow runs: its activities and their settings, its transitions, its variables, and the **Singleton**, lock, **Delete finished workflows**, **Outcomes with several transitions** and **Fault the workflow on script errors** settings. Renaming a workflow, or enabling and disabling it, doesn't create a version.
+Each time a workflow is published, its definition is saved as a new **version**, numbered 1, 2, 3 and so on. A version holds what affects how the workflow runs: its activities and their settings, its transitions, its variables, and the **Instances at a time**, lock, **Delete finished workflows**, **Outcomes with several transitions** and **Fault the workflow on script errors** settings. Renaming a workflow, or enabling and disabling it, doesn't create a version.
 
 - **Instances run on their version.** A new instance starts on the published version, and keeps running on it until it finishes, even when newer versions are published. Changing or removing the activities an instance waits on doesn't affect it.
 - **Instances created before versions existed** (on a site upgraded from an earlier release) keep running on the current definition, as they did before. Upgrading turns each existing workflow into its version 1.
@@ -474,6 +474,18 @@ Each activity has access to this execution context.
 Correlation is the act of associating a workflow instance with one or more *identifiers*. These identifiers can be anything.  
 For example, when a workflow has the *Content Created* event as its starting point, the workflow instance will be associated, or rather *correlated* to the content item ID that was just created.  
 This allows long-running workflow scenarios where only workflow instances associated with a given content item ID are resumed.
+
+### Instances at a Time
+
+The workflow setting **Instances at a time** chooses how many instances of the workflow can run together:
+
+| Choice | What it does |
+|---|---|
+| **Any number** (the default) | Every event that starts the workflow starts a new instance. |
+| **One at a time** | An event doesn't start an instance while another instance of the workflow waits (it's halted on an event). Formerly the **Single instance** checkbox (`WorkflowType.IsSingleton`). |
+| **One per correlated item** | An event doesn't start an instance while an instance with the same [correlation id](#correlation) waits: one instance per content item or per user, for example, while the instances of other items run. It applies to the events that start a workflow with a correlation id, such as the content and user events and signals; the others, such as HTTP requests and timers, start instances as with **Any number**. (`WorkflowType.IsSingletonPerCorrelation`) |
+
+For example, a workflow that starts when an article is published and waits for an editor to approve it runs one approval per article with **One per correlated item**: publishing the article again while its approval waits doesn't start a second one, and publishing another article starts its own. The event that would have started the instance still resumes the waiting instance when that instance waits for it.
 
 ### Input
 

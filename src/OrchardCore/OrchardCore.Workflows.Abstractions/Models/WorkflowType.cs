@@ -36,6 +36,13 @@ public class WorkflowType : Entity
     public bool IsSingleton { get; set; }
 
     /// <summary>
+    /// Whether an event that starts this workflow with a correlation id, such as the id of a content item or of a
+    /// user, doesn't start a new instance while an instance with the same correlation id waits. Ignored when
+    /// <see cref="IsSingleton"/> is set.
+    /// </summary>
+    public bool IsSingletonPerCorrelation { get; set; }
+
+    /// <summary>
     /// The timeout in milliseconds to acquire a lock before resuming a given workflow instance of this type.
     /// </summary>
     public int LockTimeout { get; set; }

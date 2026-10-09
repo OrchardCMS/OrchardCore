@@ -11,7 +11,7 @@ Paths: `M/` = `src/OrchardCore.Modules/OrchardCore.Workflows/`, `A/` = `src/Orch
 | 1 | Each activity's data in the journal: the expressions it evaluated, the outputs it set, the variables it changed, its last result | 10.1–10.4 | Done |
 | 2 | Retry policies per activity, and what a failure does | 10.5 | Done |
 | 3 | Run a workflow from the designer, with an input | 10.6 | Done |
-| 4 | One running instance per correlation id | 10.7 | Not started |
+| 4 | One running instance per correlation id | 10.7 | Done |
 | 5 | Instances across workflows: filters, bulk actions | 10.8 | Not started |
 | 6 | Links between a parent instance and the child instances it ran | 10.9 | Not started |
 
@@ -142,9 +142,21 @@ Steps:
   - **Tests.** `WorkflowDesignerControllerTests`: `Run_WorkflowStartedByWorkflow_RunsThePublishedVersionWithTheInputsAndReturnsTheOutputs` (the definition's run, the outputs, the instance URL, the newest instance, an input of the wrong type), `Run_HttpOrDisabledWorkflow_IsRefused`, the URLs in the configuration, and Run in the endpoints refused without the permission. `RunDialog.spec.ts` (6): typed inputs, invalid JSON, the request and its instance, a request that started none, the notes, the toolbar button. Vitest 305/305. Functional `Run_WorkflowWithInputsOrStartedByARequest_RunsItFromTheDesignerAndOpensTheInstance` (the seeded Doubler with 21 gives 42 and opens its instance; Recorded condition answers "big"); the designer class passes 30/30.
   - **Also.** The instance viewer's endpoint had lost its doc comment to the journal data's; it's back above `Instance`.
 
-### - [ ] 10.7 One instance per correlation id (item 4)
+### - [x] 10.7 One instance per correlation id (item 4)
 
-To detail when it starts. Sketch: the workflow's setting **Single instance** becomes a choice: any number of instances, one at a time (today's singleton), or one per correlation id, which the events that correlate (content, users) honor.
+Decisions:
+
+| # | Decision | Why |
+|---|---|---|
+| C1 | `WorkflowType.IsSingletonPerCorrelation` sits next to `IsSingleton` rather than replacing it with an enum; the forms show both as one choice, **Instances at a time**: any number, one at a time, one per correlated item. | `IsSingleton` is public API, stored in every workflow type, version, recipe and deployment; a second flag keeps them valid, and the choice keeps the forms simple. |
+| C2 | With one per correlated item, an event that starts the workflow with a correlation id doesn't start an instance while an instance of the workflow with that correlation id waits (has blocking activities). Starts without a correlation id aren't limited. The lock taken before starting is per workflow type and correlation id. | The content and user events and signals start with a correlation id: that's "one approval per content item". HTTP requests and timers have none at start, so there's nothing to compare. |
+
+- **Notes from implementing this step:**
+  - **API.** `WorkflowType.IsSingletonPerCorrelation` and the same on `WorkflowTypeVersion`, the draft and its settings; it's part of the versions (and their fingerprint), the comparison, the recipe step, the clone and the create page. `IWorkflowStore.HasHaltedInstanceAsync(workflowTypeId, correlationId)` (through `WorkflowBlockingActivitiesIndex`). `TryAcquireWorkflowTypeLockAsync` takes an optional correlation id, for a lock per type and correlation id.
+  - **Engine.** `TriggerEventAsync` skips starting a workflow that runs one instance per correlation id when one with the event's correlation id waits; **Restart** does the same with the instance's correlation id.
+  - **Forms.** `WorkflowTypePropertiesViewModel.InstanceLimit` (`WorkflowInstanceLimit`: `Any`, `One`, `OnePerCorrelation`) maps the two flags; the designer's Workflow tab, the create and clone pages show it as a select (`data-cy=instance-limit`) instead of the Single instance checkbox.
+  - **Docs.** "Instances at a Time" after Correlation, the Workflow tab and versions lists, release notes and the store's breaking change.
+  - **Tests.** `TriggerEventAsync_OneInstancePerCorrelationId_StartsNoInstanceWhileOneWithTheSameIdWaits` (the test workflow manager's lock now succeeds); the settings form posts `InstanceLimit` and the draft gets the flags. Functional `InstanceLimit_OnePerCorrelatedItem_IsSavedInTheDraft`; the designer class passes 31/31. Workflows tests: 529/529.
 
 ### - [ ] 10.8 Instances across workflows (item 5)
 

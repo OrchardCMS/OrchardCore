@@ -7,6 +7,7 @@ using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Entities;
 using OrchardCore.Json;
 using OrchardCore.Liquid;
+using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Scripting;
@@ -537,6 +538,34 @@ public class WorkflowManagerTests
     }
 
     [Fact]
+    public async Task TriggerEventAsync_OneInstancePerCorrelationId_StartsNoInstanceWhileOneWithTheSameIdWaits()
+    {
+        var executions = 0;
+        var start = new CountingTask(() => executions++);
+        var workflowType = new WorkflowType
+        {
+            Id = 1,
+            WorkflowTypeId = IdGenerator.GenerateId(),
+            IsSingletonPerCorrelation = true,
+            Activities = [new() { ActivityId = "start", IsStart = true, Name = start.Name }],
+        };
+        var workflowManager = CreateWorkflowManager(
+            CreateServiceProvider(),
+            [start],
+            workflowType,
+            configureWorkflowStore: store => store
+                .Setup(x => x.HasHaltedInstanceAsync(workflowType.WorkflowTypeId, "item-1"))
+                .ReturnsAsync(true));
+
+        Assert.Empty(await workflowManager.TriggerEventAsync(start.Name, correlationId: "item-1"));
+        Assert.Single(await workflowManager.TriggerEventAsync(start.Name, correlationId: "item-2"));
+
+        // An event without a correlation id isn't limited.
+        Assert.Single(await workflowManager.TriggerEventAsync(start.Name));
+        Assert.Equal(2, executions);
+    }
+
+    [Fact]
     public async Task TriggerEventAsync_Default_AllowsFaultHandlerToTriggerWorkflowAfterActivityError()
     {
         var serviceProvider = CreateServiceProvider();
@@ -738,7 +767,8 @@ public class WorkflowManagerTests
         Action<Mock<IWorkflowFaultHandler>, WorkflowManager> configureWorkflowFaultHandler = null,
         IWorkflowExecutionJournal journal = null,
         IWorkflowDesignerNotifier notifier = null,
-        IClock clock = null
+        IClock clock = null,
+        Action<Mock<IWorkflowStore>> configureWorkflowStore = null
     )
     {
         var workflowValueSerializers = new Resolver<IEnumerable<IWorkflowValueSerializer>>(serviceProvider);
@@ -753,6 +783,8 @@ public class WorkflowManagerTests
         var workflowIdGenerator = new Mock<IWorkflowIdGenerator>();
         workflowIdGenerator.Setup(x => x.GenerateUniqueId(It.IsAny<Workflow>())).Returns(IdGenerator.GenerateId());
         var distributedLock = new Mock<IDistributedLock>();
+        distributedLock.Setup(x => x.TryAcquireLockAsync(It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<TimeSpan?>()))
+            .ReturnsAsync((Mock.Of<ILocker>(), true));
         var workflowManagerLogger = new Mock<ILogger<WorkflowManager>>();
         var workflowContextLogger = new Mock<ILogger<WorkflowExecutionContext>>();
         var missingActivityLogger = new Mock<ILogger<MissingActivity>>();
@@ -799,6 +831,7 @@ public class WorkflowManagerTests
             .ReturnsAsync(false);
         workflowStore.Setup(x => x.ListAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync([]);
+        configureWorkflowStore?.Invoke(workflowStore);
 
         return workflowManager;
     }

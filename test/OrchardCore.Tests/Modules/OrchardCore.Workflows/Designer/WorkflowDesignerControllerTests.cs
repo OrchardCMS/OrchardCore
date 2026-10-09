@@ -1023,6 +1023,7 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         Assert.Contains("name=\"BranchingMode\"", form["content"].GetValue<string>());
         Assert.Contains("name=\"FaultOnScriptErrors\"", form["content"].GetValue<string>());
         Assert.Contains("name=\"RecordActivityData\"", form["content"].GetValue<string>());
+        Assert.Contains("name=\"InstanceLimit\"", form["content"].GetValue<string>());
 
         using var response = await PostFormAsync($"Admin/Workflows/Types/{id}/Designer/Settings?revision=0", new Dictionary<string, string>
         {
@@ -1032,12 +1033,15 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
             ["BranchingMode"] = "All",
             ["FaultOnScriptErrors"] = "true",
             ["RecordActivityData"] = "true",
+            ["InstanceLimit"] = "OnePerCorrelation",
         });
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var settings = (await ReadJsonAsync(response))["settings"];
         Assert.True(settings["isActivity"].GetValue<bool>());
         Assert.Equal("All", settings["branchingMode"].GetValue<string>());
+        Assert.True(settings["isSingletonPerCorrelation"].GetValue<bool>());
+        Assert.False(settings["isSingleton"].GetValue<bool>());
 
         await _fixture.Context.UsingTenantScopeAsync(async scope =>
         {
@@ -1047,6 +1051,8 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
             Assert.Equal(WorkflowBranchingMode.All, draft.BranchingMode);
             Assert.True(draft.FaultOnScriptErrors);
             Assert.True(draft.RecordActivityData);
+            Assert.True(draft.IsSingletonPerCorrelation);
+            Assert.False(draft.IsSingleton);
         });
     }
 

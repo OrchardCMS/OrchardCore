@@ -121,6 +121,7 @@ export interface WorkflowSettings {
     name: string;
     isEnabled: boolean;
     isSingleton: boolean;
+    isSingletonPerCorrelation?: boolean;
     lockTimeout: number;
     lockExpiration: number;
     deleteFinishedWorkflows: boolean;

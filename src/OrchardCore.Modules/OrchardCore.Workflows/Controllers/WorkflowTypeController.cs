@@ -297,6 +297,7 @@ public sealed class WorkflowTypeController : Controller
         {
             Id = id,
             IsSingleton = workflowType.IsSingleton,
+            IsSingletonPerCorrelation = workflowType.IsSingletonPerCorrelation,
             LockTimeout = workflowType.LockTimeout,
             LockExpiration = workflowType.LockExpiration,
             Name = "Copy-" + workflowType.Name,
@@ -350,6 +351,7 @@ public sealed class WorkflowTypeController : Controller
         workflowType.Name = viewModel.Name?.Trim();
         workflowType.IsEnabled = viewModel.IsEnabled;
         workflowType.IsSingleton = viewModel.IsSingleton;
+        workflowType.IsSingletonPerCorrelation = viewModel.IsSingletonPerCorrelation;
         workflowType.LockTimeout = viewModel.LockTimeout;
         workflowType.LockExpiration = viewModel.LockExpiration;
         workflowType.DeleteFinishedWorkflows = viewModel.DeleteFinishedWorkflows;

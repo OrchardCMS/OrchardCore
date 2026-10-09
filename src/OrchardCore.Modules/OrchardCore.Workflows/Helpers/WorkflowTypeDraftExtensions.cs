@@ -19,6 +19,7 @@ internal static class WorkflowTypeDraftExtensions
             Name = workflowType.Name,
             IsEnabled = workflowType.IsEnabled,
             IsSingleton = workflowType.IsSingleton,
+            IsSingletonPerCorrelation = workflowType.IsSingletonPerCorrelation,
             LockTimeout = workflowType.LockTimeout,
             LockExpiration = workflowType.LockExpiration,
             DeleteFinishedWorkflows = workflowType.DeleteFinishedWorkflows,
@@ -43,6 +44,7 @@ internal static class WorkflowTypeDraftExtensions
         workflowType.Name = draft.Name;
         workflowType.IsEnabled = draft.IsEnabled;
         workflowType.IsSingleton = draft.IsSingleton;
+        workflowType.IsSingletonPerCorrelation = draft.IsSingletonPerCorrelation;
         workflowType.LockTimeout = draft.LockTimeout;
         workflowType.LockExpiration = draft.LockExpiration;
         workflowType.DeleteFinishedWorkflows = draft.DeleteFinishedWorkflows;

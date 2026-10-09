@@ -70,6 +70,7 @@ public sealed class WorkflowTypeStep : NamedRecipeStepHandler
                 existing.Name = workflow.Name;
                 existing.IsEnabled = workflow.IsEnabled;
                 existing.IsSingleton = workflow.IsSingleton;
+                existing.IsSingletonPerCorrelation = workflow.IsSingletonPerCorrelation;
                 existing.LockTimeout = workflow.LockTimeout;
                 existing.LockExpiration = workflow.LockExpiration;
                 existing.DeleteFinishedWorkflows = workflow.DeleteFinishedWorkflows;

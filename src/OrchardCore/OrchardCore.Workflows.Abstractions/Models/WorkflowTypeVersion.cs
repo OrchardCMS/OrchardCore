@@ -58,6 +58,11 @@ public sealed class WorkflowTypeVersion
     public bool IsSingleton { get; set; }
 
     /// <summary>
+    /// The value of <see cref="WorkflowType.IsSingletonPerCorrelation"/> in this version.
+    /// </summary>
+    public bool IsSingletonPerCorrelation { get; set; }
+
+    /// <summary>
     /// The value of <see cref="WorkflowType.LockTimeout"/> in this version.
     /// </summary>
     public int LockTimeout { get; set; }

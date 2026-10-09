@@ -235,7 +235,7 @@ public class WorkflowManager : IWorkflowManager
             }
 
             // If a singleton or the event is exclusive, try to acquire a lock per workflow type.
-            (var locker, var locked) = await _distributedLock.TryAcquireWorkflowTypeLockAsync(workflowType, isExclusive);
+            (var locker, var locked) = await _distributedLock.TryAcquireWorkflowTypeLockAsync(workflowType, isExclusive, correlationId);
             if (!locked)
             {
                 continue;
@@ -245,6 +245,15 @@ public class WorkflowManager : IWorkflowManager
 
             // Check if this is a workflow singleton and there's already an halted instance on any activity.
             if (workflowType.IsSingleton && await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId))
+            {
+                continue;
+            }
+
+            // Check if the workflow runs one instance per correlation id and one with this correlation id waits.
+            if (!workflowType.IsSingleton &&
+                workflowType.IsSingletonPerCorrelation &&
+                !string.IsNullOrEmpty(correlationId) &&
+                await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId, correlationId))
             {
                 continue;
             }

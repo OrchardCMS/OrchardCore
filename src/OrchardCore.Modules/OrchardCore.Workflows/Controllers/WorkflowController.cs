@@ -251,8 +251,8 @@ public sealed class WorkflowController : Controller
             return NotFound();
         }
 
-        // If a singleton, try to acquire a lock per workflow type.
-        (var locker, var locked) = await _distributedLock.TryAcquireWorkflowTypeLockAsync(workflowType);
+        // If a singleton, try to acquire a lock per workflow type, or per correlation id.
+        (var locker, var locked) = await _distributedLock.TryAcquireWorkflowTypeLockAsync(workflowType, correlationId: workflow.CorrelationId);
         if (!locked)
         {
             await _notifier.ErrorAsync(H["Another instance is already running.", id]);
@@ -261,8 +261,12 @@ public sealed class WorkflowController : Controller
         {
             await using var acquiredLock = locker;
 
-            // Check if this is a workflow singleton and there's already an halted instance on any activity.
-            if (workflowType.IsSingleton && await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId))
+            // Check if this is a workflow singleton and there's already an halted instance on any activity, or one with
+            // the same correlation id when it runs one instance per correlation id.
+            if ((workflowType.IsSingleton && await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId)) ||
+                (workflowType.IsSingletonPerCorrelation &&
+                    !string.IsNullOrEmpty(workflow.CorrelationId) &&
+                    await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId, workflow.CorrelationId)))
             {
                 await _notifier.ErrorAsync(H["Another instance is already running.", id]);
             }

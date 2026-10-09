@@ -27,7 +27,7 @@ Paths: `M/` = `src/OrchardCore.Modules/OrchardCore.Workflows/`, `A/` = `src/Orch
 | Workflow testing from the designer ("Run with input…") | None | Authoring speed | 10 (10.6) | Small–Medium | Done |
 | Each activity's data in the journal (evaluated expressions, outputs, changed variables, last result) | Status, outcomes, duration and error only | Debugging | 10 (10.1–10.4) | Medium | Done |
 | Retry policies per activity, and what a failure does | Manual retry of a faulted instance | Transient failures | 10 (10.5) | Medium | Done |
-| One running instance per correlation id | Single instance per workflow only | Approvals per content item | 10 (10.7) | Small–Medium | Not started |
+| One running instance per correlation id | Single instance per workflow only | Approvals per content item | 10 (10.7) | Small–Medium | Done |
 | Links between parent and child instances | None | Debugging composed workflows | 10 (10.9) | Small | Not started |
 
 ---

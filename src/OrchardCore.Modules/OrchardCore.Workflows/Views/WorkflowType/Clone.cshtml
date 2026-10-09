@@ -41,12 +41,14 @@
             </div>
 
             <div class="ocat-wrapper">
-                <div class="ocat-end-offset">
-                    <div class="form-check">
-                        <input asp-for="IsSingleton" type="checkbox" class="form-check-input">
-                        <label class="form-check-label" asp-for="IsSingleton">@T["Single instance"]</label>
-                        <span class="hint dashed">@T["Check to ensure only one workflow of this type can execute at a time. Leave unchecked to allow any number of workflows to execute at the same time."]</span>
-                    </div>
+                <label asp-for="InstanceLimit" class="ocat-label">@T["Instances at a time"]</label>
+                <div class="ocat-end">
+                    <select asp-for="InstanceLimit" class="form-select" data-cy="instance-limit">
+                        <option value="@WorkflowInstanceLimit.Any">@T["Any number"]</option>
+                        <option value="@WorkflowInstanceLimit.One">@T["One at a time"]</option>
+                        <option value="@WorkflowInstanceLimit.OnePerCorrelation">@T["One per correlated item"]</option>
+                    </select>
+                    <span class="hint">@T["With one at a time, an event doesn't start an instance while another instance waits. With one per correlated item, it doesn't start one while an instance for the same item waits, such as the same content item or user, when the event starting it has a correlation id."]</span>
                 </div>
             </div>
 

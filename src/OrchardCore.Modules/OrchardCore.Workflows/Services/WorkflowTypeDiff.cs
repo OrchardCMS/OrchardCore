@@ -44,6 +44,7 @@ public static class WorkflowTypeDiff
         var settings = new List<string>();
         AddIfChanged(settings, nameof(WorkflowType.Name), from.Name, to.Name);
         AddIfChanged(settings, nameof(WorkflowType.IsSingleton), from.IsSingleton, to.IsSingleton);
+        AddIfChanged(settings, nameof(WorkflowType.IsSingletonPerCorrelation), from.IsSingletonPerCorrelation, to.IsSingletonPerCorrelation);
         AddIfChanged(settings, nameof(WorkflowType.LockTimeout), from.LockTimeout, to.LockTimeout);
         AddIfChanged(settings, nameof(WorkflowType.LockExpiration), from.LockExpiration, to.LockExpiration);
         AddIfChanged(settings, nameof(WorkflowType.DeleteFinishedWorkflows), from.DeleteFinishedWorkflows, to.DeleteFinishedWorkflows);

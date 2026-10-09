@@ -6,6 +6,11 @@ public interface IWorkflowStore
 {
     Task<int> CountAsync(string workflowTypeId = null);
     Task<bool> HasHaltedInstanceAsync(string workflowTypeId);
+
+    /// <summary>
+    /// Whether an instance of the workflow type with this correlation id waits on an activity.
+    /// </summary>
+    Task<bool> HasHaltedInstanceAsync(string workflowTypeId, string correlationId);
     Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId = null, int? skip = null, int? take = null);
     Task<IEnumerable<Workflow>> ListAsync(IEnumerable<string> workflowTypeIds);
     Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, IEnumerable<string> blockingActivityIds);
