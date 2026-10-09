@@ -1,9 +1,13 @@
 using System.Collections;
+using System.Text.Encodings.Web;
 using System.Text.Json.Nodes;
 using Fluid;
 using Fluid.Values;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Liquid;
+using OrchardCore.DisplayManagement.Liquid.Filters;
 using OrchardCore.Json;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
@@ -372,6 +376,98 @@ public class WorkflowManagerTests
     }
 
     [Fact]
+    public async Task LiquidWorkflowExpressionEvaluator_StringExpression_UsesViewLocalizer()
+    {
+        using var serviceProvider = CreateLiquidWorkflowServiceProvider();
+        var localizer = Mock.Get(serviceProvider.GetRequiredService<IViewLocalizer>());
+        localizer
+            .Setup(viewLocalizer => viewLocalizer.GetString("Name", It.IsAny<object[]>()))
+            .Returns(new LocalizedString("Name", "Localized name"));
+        var evaluator = CreateLiquidWorkflowExpressionEvaluator(serviceProvider);
+        using var workflowContext = new WorkflowExecutionContext(
+            new WorkflowType(),
+            new Workflow { WorkflowId = IdGenerator.GenerateId() },
+            null,
+            null,
+            null,
+            null,
+            null,
+            []);
+
+        var result = await evaluator.EvaluateAsync(
+            new WorkflowExpression<string>("{{ \"Name\" | t }}"),
+            workflowContext,
+            null);
+
+        Assert.Equal("Localized name", result);
+    }
+
+    [Fact]
+    public async Task LiquidWorkflowExpressionEvaluator_NonStringExpression_UsesViewLocalizer()
+    {
+        using var serviceProvider = CreateLiquidWorkflowServiceProvider();
+        var localizer = Mock.Get(serviceProvider.GetRequiredService<IViewLocalizer>());
+        localizer
+            .Setup(viewLocalizer => viewLocalizer.GetString("Name", It.IsAny<object[]>()))
+            .Returns(new LocalizedString("Name", "Localized name"));
+        var evaluator = CreateLiquidWorkflowExpressionEvaluator(serviceProvider);
+        using var workflowContext = new WorkflowExecutionContext(
+            new WorkflowType(),
+            new Workflow { WorkflowId = IdGenerator.GenerateId() },
+            null,
+            null,
+            null,
+            null,
+            null,
+            []);
+
+        var result = await evaluator.EvaluateAsync(
+            new WorkflowExpression<object>("{{ \"Name\" | t }}"),
+            workflowContext,
+            null);
+
+        Assert.Equal("Localized name", result.ToString());
+    }
+
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(false, true)]
+    [InlineData(true, false)]
+    [InlineData(true, true)]
+    public async Task LiquidWorkflowExpressionEvaluator_CustomHandler_ExposesVariables(bool stringResult, bool hasViewContext)
+    {
+        using var serviceProvider = CreateLiquidWorkflowServiceProvider();
+        if (!hasViewContext)
+        {
+            serviceProvider.GetRequiredService<ViewContextAccessor>().ViewContext = null;
+        }
+
+        var handler = new Mock<IWorkflowExecutionContextHandler>();
+        handler.Setup(value => value.EvaluatingExpressionAsync(It.IsAny<WorkflowExecutionExpressionContext>()))
+            .Callback<WorkflowExecutionExpressionContext>(context => context.TemplateContext.SetValue("Greeting", "Hello"))
+            .Returns(Task.CompletedTask);
+        var evaluator = CreateLiquidWorkflowExpressionEvaluator(serviceProvider, [handler.Object]);
+        using var workflowContext = new WorkflowExecutionContext(
+            new WorkflowType(),
+            new Workflow { WorkflowId = IdGenerator.GenerateId() },
+            null,
+            null,
+            null,
+            null,
+            null,
+            []);
+        workflowContext.Properties["Name"] = "World";
+        const string expression = "{{ Greeting }} {{ Workflow.Properties.Name }}";
+
+        object result = stringResult
+            ? await evaluator.EvaluateAsync(new WorkflowExpression<string>(expression), workflowContext, null)
+            : await evaluator.EvaluateAsync(new WorkflowExpression<object>(expression), workflowContext, null);
+
+        Assert.Equal("Hello World", result);
+        handler.Verify(value => value.EvaluatingExpressionAsync(It.IsAny<WorkflowExecutionExpressionContext>()), Times.Once);
+    }
+
+    [Fact]
     public async Task WorkflowScriptEvaluator_Default_EvaluateAsyncScopedGlobalMethods()
     {
         var serviceProvider = CreateServiceProvider();
@@ -588,22 +684,30 @@ public class WorkflowManagerTests
         services.Configure<LiquidViewOptions>(_ => { });
         services.Configure<TemplateOptions>(options =>
         {
+            options.Filters.AddFilter("t", LiquidViewFilters.Localize);
             options.MemberAccessStrategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
             options.MemberAccessStrategy.Register<WorkflowExecutionContext>();
             options.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Input", (obj, context) => new LiquidPropertyAccessor((LiquidTemplateContext)context, (name, context) => LiquidWorkflowExpressionEvaluator.ToFluidValue(obj.Input, name, context)));
             options.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Output", (obj, context) => new LiquidPropertyAccessor((LiquidTemplateContext)context, (name, context) => LiquidWorkflowExpressionEvaluator.ToFluidValue(obj.Output, name, context)));
             options.MemberAccessStrategy.Register<WorkflowExecutionContext, LiquidPropertyAccessor>("Properties", (obj, context) => new LiquidPropertyAccessor((LiquidTemplateContext)context, (name, context) => LiquidWorkflowExpressionEvaluator.ToFluidValue(obj.Properties, name, context)));
         });
+        services.AddHttpContextAccessor();
+        services.AddScoped(_ => new ViewContextAccessor { ViewContext = new ViewContext() });
+        services.AddScoped(_ => Mock.Of<IViewLocalizer>());
+        var localClock = new Mock<ILocalClock>();
+        localClock.Setup(clock => clock.GetLocalNowAsync()).ReturnsAsync(DateTimeOffset.UtcNow);
+        localClock.Setup(clock => clock.GetLocalTimeZoneAsync()).ReturnsAsync(Mock.Of<ITimeZone>(timeZone => timeZone.TimeZoneId == "UTC"));
+        services.AddScoped(_ => localClock.Object);
 
         return services.BuildServiceProvider();
     }
 
-    private static LiquidWorkflowExpressionEvaluator CreateLiquidWorkflowExpressionEvaluator(ServiceProvider serviceProvider)
+    private static LiquidWorkflowExpressionEvaluator CreateLiquidWorkflowExpressionEvaluator(ServiceProvider serviceProvider, IEnumerable<IWorkflowExecutionContextHandler> handlers = null)
         => new(
             new LiquidViewParser(
                 serviceProvider.GetRequiredService<IOptions<LiquidViewOptions>>(),
                 serviceProvider.GetRequiredService<IOptions<FluidParserOptions>>()),
-            [],
+            handlers ?? [],
             serviceProvider,
             new Mock<ILogger<LiquidWorkflowExpressionEvaluator>>().Object,
             serviceProvider.GetRequiredService<IOptions<TemplateOptions>>());

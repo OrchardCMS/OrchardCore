@@ -1232,6 +1232,14 @@ Output
 
 Optionally you can pass a class for model binding.
 
+## Evaluating Liquid in code
+
+The `LiquidViewTemplateExtensions.RenderAsync` overloads render parsed templates in a Liquid view scope. They reuse the current `ViewContext` or create one from the current HTTP request.
+
+For custom evaluation that needs the same model and localization scope, use `LiquidViewTemplateExtensions.InvokeInScopeAsync` with a `LiquidTemplateContext`, an explicit `ViewContext`, a model, and an asynchronous callback. The helper initializes the context, exposes `Model` and `ViewLocalizer` in a child scope, and releases that scope even when the callback throws. Both callbacks returning a result and callbacks returning only a `Task` are supported.
+
+The caller is responsible for resolving the view context. Passing `null` initializes the Liquid context without entering a child scope or setting `Model` and `ViewLocalizer`; this supports non-view evaluation outside an HTTP request.
+
 ## CREDITS
 
 ### Fluid
