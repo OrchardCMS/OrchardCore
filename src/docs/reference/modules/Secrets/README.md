@@ -243,7 +243,7 @@ Secrets can have an optional expiration date. This is an **informational** featu
 
 - **Purpose**: Track when secrets should be rotated or renewed
 - **Behavior**: Expired secrets **continue to work** - expiration does not automatically disable them
-- **Admin-Wide Warning**: Users with the Manage Secrets permission see a warning on admin pages when secrets have expired or expire within 30 days, with counts and a link to review the secrets. The Secrets list shows the warning under its title instead, and the other Secrets pages don't show it. The warning uses metadata only and does not expose secret values.
+- **Expiration Warning**: Users with the Manage Secrets permission see a warning on the admin dashboard when secrets have expired or expire within 30 days, with counts and a link to review the secrets. The Secrets list shows the same warning under its title. Other admin pages, and users without the permission, don't see it. The warning uses metadata only and does not expose secret names or values.
 - **List-Page Visual Indicators**:
   - Expired secrets show a red "Expired" badge
   - Secrets expiring within 30 days show a yellow "Expires" badge

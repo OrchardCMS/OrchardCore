@@ -29,7 +29,7 @@ public sealed class SecretsTests : CmsTestBase, IClassFixture<CmsSetupFixture>
     }
 
     [Fact]
-    public async Task ExpiringSecrets_ShowAdminWideWarningAndReviewLink()
+    public async Task ExpiringSecrets_ShowDashboardWarningAndReviewLink()
     {
         var page = await CreateAdminPageAsync();
         await Assertions.Expect(page.Locator(".secrets-expiration-warning")).ToHaveCountAsync(0);
@@ -38,7 +38,11 @@ public sealed class SecretsTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await CreateTextSecretAsync(page, "ExpiringKey", "expiring-value",
             expiration: DateTime.UtcNow.AddDays(10).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
 
+        // Other admin pages don't repeat the warning.
         await page.GotoAndAssertOkAsync($"{Tenant.Prefix}/Admin/Features");
+        await Assertions.Expect(page.Locator(".secrets-expiration-warning")).ToHaveCountAsync(0);
+
+        await page.GotoAndAssertOkAsync($"{Tenant.Prefix}/Admin");
 
         var warning = page.Locator(".secrets-expiration-warning");
         await Assertions.Expect(warning).ToHaveCountAsync(1);
@@ -62,7 +66,7 @@ public sealed class SecretsTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await OpenEditEditorAsync(page, "ExpiringKey");
         await page.Locator("#ExpiresUtc").FillAsync(string.Empty);
         await SaveAsync(page, "updated");
-        await page.GotoAndAssertOkAsync($"{Tenant.Prefix}/Admin/Features");
+        await page.GotoAndAssertOkAsync($"{Tenant.Prefix}/Admin");
 
         await Assertions.Expect(page.Locator(".secrets-expiration-warning")).ToHaveCountAsync(0);
     }

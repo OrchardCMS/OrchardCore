@@ -23,8 +23,10 @@ public class SecretExpirationWarningFilterTests
 {
     private static readonly DateTime s_now = new(2026, 10, 3, 12, 0, 0, DateTimeKind.Utc);
 
-    [Fact]
-    public async Task AdminView_AddsWarningWithExpiredAndExpiringCounts()
+    [Theory]
+    [InlineData("OrchardCore.Admin", "Admin")]
+    [InlineData("OrchardCore.AdminDashboard", "Dashboard")]
+    public async Task Dashboard_AddsWarningWithExpiredAndExpiringCounts(string area, string controller)
     {
         var manager = new Mock<ISecretManager>();
         manager.Setup(service => service.GetSecretInfosAsync()).ReturnsAsync(
@@ -37,7 +39,7 @@ public class SecretExpirationWarningFilterTests
             new SecretInfo(),
         ]);
         var layout = CreateLayout();
-        var context = CreateContext();
+        var context = CreateContext(area, controller);
 
         await ExecuteAsync(manager, layout, context);
 
@@ -74,6 +76,7 @@ public class SecretExpirationWarningFilterTests
     [InlineData("json")]
     [InlineData("redirect")]
     [InlineData("secrets")]
+    [InlineData("otherAdminPage")]
     public async Task IneligibleRequest_DoesNotReadSecretMetadata(string request)
     {
         var manager = new Mock<ISecretManager>(MockBehavior.Strict);
@@ -97,8 +100,12 @@ public class SecretExpirationWarningFilterTests
         }
         else if (request == "secrets")
         {
-            // The Secrets pages render the warning themselves.
-            context.RouteData.Values["area"] = "OrchardCore.Secrets";
+            // The Secrets list renders the warning itself.
+            context = CreateContext("OrchardCore.Secrets", "Admin");
+        }
+        else if (request == "otherAdminPage")
+        {
+            context = CreateContext("OrchardCore.Features", "Admin", "Features");
         }
 
         await ExecuteAsync(manager, layout, context, authorized: request != "unauthorized");
@@ -114,7 +121,7 @@ public class SecretExpirationWarningFilterTests
         return layout;
     }
 
-    private static ResultExecutingContext CreateContext()
+    private static ResultExecutingContext CreateContext(string area = "OrchardCore.Admin", string controller = "Admin", string action = "Index")
     {
         var httpContext = new DefaultHttpContext
         {
@@ -122,7 +129,12 @@ public class SecretExpirationWarningFilterTests
         };
         AdminAttribute.Apply(httpContext);
         return new ResultExecutingContext(
-            new ActionContext(httpContext, new RouteData(), new ActionDescriptor()),
+            new ActionContext(httpContext, new RouteData(new RouteValueDictionary
+            {
+                ["area"] = area,
+                ["controller"] = controller,
+                ["action"] = action,
+            }), new ActionDescriptor()),
             [],
             new ViewResult(),
             new object());

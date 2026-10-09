@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Routing;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Layout;
@@ -8,9 +9,12 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Secrets.Filters;
 
+/// <summary>
+/// Warns the users who manage secrets about expired and expiring secrets on the admin dashboard. The Secrets list
+/// renders the same warning itself.
+/// </summary>
 public sealed class SecretExpirationWarningFilter : IAsyncResultFilter
 {
-    private const string SecretsArea = "OrchardCore.Secrets";
 
     private readonly ISecretManager _secretManager;
     private readonly IAuthorizationService _authorizationService;
@@ -36,7 +40,7 @@ public sealed class SecretExpirationWarningFilter : IAsyncResultFilter
     {
         if (context.IsViewOrPageResult() &&
             AdminAttribute.IsApplied(context.HttpContext) &&
-            !IsSecretsPage(context) &&
+            IsDashboard(context) &&
             context.HttpContext.User.Identity?.IsAuthenticated == true &&
             await _authorizationService.AuthorizeAsync(context.HttpContext.User, SecretsPermissions.ManageSecrets))
         {
@@ -80,8 +84,17 @@ public sealed class SecretExpirationWarningFilter : IAsyncResultFilter
         await next();
     }
 
-    // The Secrets pages show the warning themselves, where it is relevant.
-    private static bool IsSecretsPage(ResultExecutingContext context)
-        => context.RouteData.Values.TryGetValue("area", out var area) &&
-            string.Equals(area as string, SecretsArea, StringComparison.OrdinalIgnoreCase);
+    // The admin root is served by the Admin module, or by the Admin Dashboard module when it is enabled.
+    private static bool IsDashboard(ResultExecutingContext context)
+    {
+        var values = context.RouteData.Values;
+
+        return IsRoute(values, "OrchardCore.Admin", "Admin", "Index") ||
+            IsRoute(values, "OrchardCore.AdminDashboard", "Dashboard", "Index");
+    }
+
+    private static bool IsRoute(RouteValueDictionary values, string area, string controller, string action)
+        => string.Equals(values["area"] as string, area, StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(values["controller"] as string, controller, StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(values["action"] as string, action, StringComparison.OrdinalIgnoreCase);
 }
