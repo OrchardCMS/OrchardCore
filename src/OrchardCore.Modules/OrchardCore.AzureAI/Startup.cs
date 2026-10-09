@@ -19,8 +19,8 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Search;
-using OrchardCore.AzureAI.Migrations;
 using OrchardCore.Search.AzureAI.Migrations;
+using OrchardCore.Secrets;
 
 namespace OrchardCore.AzureAI;
 
@@ -41,8 +41,16 @@ public sealed class Startup : StartupBase
         services.AddAzureAISearchServices();
         services.AddSiteDisplayDriver<AzureAISearchDefaultSettingsDisplayDriver>();
         services.AddDataMigration<AzureAISearchIndexSettingsMigrations>();
-        services.AddDataMigration<ApiKeySecretsMigration>();
         services.AddDataMigration<PermissionMigrations>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Secrets")]
+public sealed class SecretsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDisplayDriver<SecretMigration, AzureAISearchSecretMigrationDisplayDriver>();
     }
 }
 

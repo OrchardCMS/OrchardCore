@@ -34,6 +34,7 @@ using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.Tasks;
 using OrchardCore.Recipes;
 using OrchardCore.RateLimits;
+using OrchardCore.Secrets;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Users;
@@ -83,8 +84,16 @@ public sealed class ClientStartup : StartupBase
             // Built-in initializers:
             ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>(),
         });
+    }
+}
 
-        services.AddDataMigration<ClientSecretsMigration>();
+[Feature(OpenIdConstants.Features.Client)]
+[RequireFeatures("OrchardCore.Secrets")]
+public sealed class ClientSecretsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDisplayDriver<SecretMigration, OpenIdClientSecretMigrationDisplayDriver>();
     }
 }
 

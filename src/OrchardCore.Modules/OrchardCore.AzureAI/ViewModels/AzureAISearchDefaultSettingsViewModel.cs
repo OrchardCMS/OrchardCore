@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.AzureAI.Models;
+using OrchardCore.Secrets;
 
 namespace OrchardCore.AzureAI.ViewModels;
 
@@ -12,7 +13,7 @@ public class AzureAISearchDefaultSettingsViewModel
 
     public string Endpoint { get; set; }
 
-    public string ApiKeySecretName { get; set; }
+    public SecretInputViewModel ApiKey { get; set; } = new();
 
     public string IdentityClientId { get; set; }
 
@@ -23,7 +24,4 @@ public class AzureAISearchDefaultSettingsViewModel
 
     [BindNever]
     public bool ConfigurationsAreOptional { get; set; }
-
-    [BindNever]
-    public bool ApiKeyExists { get; set; }
 }

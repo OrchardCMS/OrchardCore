@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
@@ -8,9 +9,11 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
+using OrchardCore.OpenId.Configuration;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.ViewModels;
+using OrchardCore.Secrets;
 using OrchardCore.Settings;
 
 namespace OrchardCore.OpenId.Drivers;
@@ -23,6 +26,8 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IOpenIdClientService _clientService;
+    private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IServiceProvider _serviceProvider;
 
     internal readonly IStringLocalizer S;
 
@@ -34,12 +39,16 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
         IAuthorizationService authorizationService,
         IOpenIdClientService clientService,
         IHttpContextAccessor httpContextAccessor,
+        IDataProtectionProvider dataProtectionProvider,
+        IServiceProvider serviceProvider,
         IStringLocalizer<OpenIdClientSettingsDisplayDriver> stringLocalizer)
     {
         _shellReleaseManager = shellReleaseManager;
         _authorizationService = authorizationService;
         _clientService = clientService;
         _httpContextAccessor = httpContextAccessor;
+        _dataProtectionProvider = dataProtectionProvider;
+        _serviceProvider = serviceProvider;
         S = stringLocalizer;
     }
 
@@ -53,7 +62,6 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
 
         context.AddTenantReloadWarningWrapper();
 
-#pragma warning disable CS0618 // Type or member is obsolete
         return Initialize<OpenIdClientSettingsViewModel>("OpenIdClientSettings_Edit", model =>
         {
             model.DisplayName = settings.DisplayName;
@@ -61,8 +69,7 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
             model.Authority = settings.Authority?.AbsoluteUri;
             model.CallbackPath = settings.CallbackPath;
             model.ClientId = settings.ClientId;
-            model.ClientSecretSecretName = settings.ClientSecretSecretName;
-            model.HasClientSecret = !string.IsNullOrEmpty(settings.ClientSecret);
+            model.ClientSecret = SecretInputViewModel.Create(settings.ClientSecret, settings.ClientSecretSecretName);
             model.SignedOutCallbackPath = settings.SignedOutCallbackPath;
             model.SignedOutRedirectUri = settings.SignedOutRedirectUri;
             model.ResponseMode = settings.ResponseMode;
@@ -96,7 +103,6 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
             model.Parameters = JConvert.SerializeObject(settings.Parameters, JOptions.CamelCase);
         }).Location("Content:2")
         .OnGroup(SettingsGroupId);
-#pragma warning restore CS0618 // Type or member is obsolete
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, OpenIdClientSettings settings, UpdateEditorContext context)
@@ -117,7 +123,6 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
         settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
         settings.CallbackPath = model.CallbackPath;
         settings.ClientId = model.ClientId;
-        settings.ClientSecretSecretName = model.ClientSecretSecretName;
         settings.SignedOutCallbackPath = model.SignedOutCallbackPath;
         settings.SignedOutRedirectUri = model.SignedOutRedirectUri;
         settings.ResponseMode = model.ResponseMode;
@@ -168,9 +173,24 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
             context.Updater.ModelState.AddModelError(Prefix, S["The parameters are written in an incorrect format."]);
         }
 
-        if (!useClientSecret)
+        if (useClientSecret)
         {
-            settings.ClientSecretSecretName = null;
+            var clientSecret = await model.ClientSecret.UpdateAsync(new SecretInputUpdateContext(
+                _serviceProvider,
+                _dataProtectionProvider.CreateProtector(nameof(OpenIdClientConfiguration)),
+                context.Updater.ModelState,
+                $"{Prefix}.{nameof(model.ClientSecret)}")
+            {
+                ProtectedValue = settings.ClientSecret,
+                SecretName = settings.ClientSecretSecretName,
+                Description = "OpenID Connect client secret",
+            });
+
+            if (clientSecret.Succeeded)
+            {
+                settings.ClientSecret = clientSecret.ProtectedValue;
+                settings.ClientSecretSecretName = clientSecret.SecretName;
+            }
         }
 
         foreach (var result in await _clientService.ValidateSettingsAsync(settings))

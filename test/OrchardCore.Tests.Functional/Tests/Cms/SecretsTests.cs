@@ -66,7 +66,7 @@ public sealed class SecretsTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         var page = await CreateAdminPageAsync();
         await OpenCreateEditorAsync(page);
 
-        await Assertions.Expect(page.Locator("h1")).ToContainTextAsync("Create");
+        await Assertions.Expect(page.Locator("h1")).ToContainTextAsync("New Text Secret");
         await Assertions.Expect(page.Locator("#SecretType")).ToHaveValueAsync("TextSecret");
         await Assertions.Expect(page.Locator("#Store")).ToHaveValueAsync("Database");
 
@@ -83,17 +83,19 @@ public sealed class SecretsTests : CmsTestBase, IClassFixture<CmsSetupFixture>
         await CreateTextSecretAsync(page, "TestApiKey", "original-secret-value", "API key description", "2030-01-01");
 
         var entry = SecretEntry(page, "TestApiKey");
-        await Assertions.Expect(entry).ToContainTextAsync("TextSecret");
-        await Assertions.Expect(entry).ToContainTextAsync("Database");
+        await Assertions.Expect(entry.Locator(".badge").Filter(new LocatorFilterOptions { HasText = "Text Secret" })).ToHaveCountAsync(1);
+        await Assertions.Expect(entry.Locator(".badge").Filter(new LocatorFilterOptions { HasText = "Database" })).ToHaveCountAsync(1);
+        await Assertions.Expect(entry).ToContainTextAsync("API key description");
         await Assertions.Expect(page.Locator("body")).Not.ToContainTextAsync("original-secret-value");
 
         await entry.GetByRole(AriaRole.Link, new LocatorGetByRoleOptions { Name = "TestApiKey", Exact = true }).ClickAsync();
 
         await Assertions.Expect(page).ToHaveURLAsync(new Regex(@"/Admin/Secrets/Edit/TestApiKey\?store=Database$"));
+        await Assertions.Expect(page.Locator("h1")).ToContainTextAsync("Edit 'TestApiKey' secret");
         await Assertions.Expect(page.Locator("#Name")).ToHaveValueAsync("TestApiKey");
-        await Assertions.Expect(page.Locator("#Name")).ToHaveAttributeAsync("readonly", string.Empty);
+        await Assertions.Expect(page.Locator("#Name")).ToHaveAttributeAsync("type", "hidden");
         await Assertions.Expect(page.Locator("#Store")).ToHaveValueAsync("Database");
-        await Assertions.Expect(page.Locator("#Store")).ToHaveAttributeAsync("readonly", string.Empty);
+        await Assertions.Expect(page.Locator("#Store")).ToHaveAttributeAsync("type", "hidden");
         await Assertions.Expect(page.Locator("#TextValue")).ToHaveValueAsync(string.Empty);
         await Assertions.Expect(page.Locator("#Description")).ToHaveValueAsync("API key description");
         await Assertions.Expect(page.Locator("#ExpiresUtc")).ToHaveValueAsync("2030-01-01");
@@ -126,37 +128,67 @@ public sealed class SecretsTests : CmsTestBase, IClassFixture<CmsSetupFixture>
     }
 
     [Fact]
-    public async Task StoreManagement_RequiresConfirmationAndDoesNotExposeValues()
+    public async Task StoreManagement_ShowsActiveCountWithoutValues()
     {
         var page = await CreateAdminPageAsync();
         await CreateTextSecretAsync(page, "FirstKey", "first-private-value");
         await CreateTextSecretAsync(page, "SecondKey", "second-private-value");
-        await page.GetByRole(AriaRole.Link, new PageGetByRoleOptions { Name = "Manage Stores", Exact = true }).ClickAsync();
-        await Assertions.Expect(page.Locator("body")).ToContainTextAsync("Active secrets: 2");
+        await page.GotoAndAssertOkAsync($"{Tenant.Prefix}/Admin/Secrets/Stores/Index");
+
+        await Assertions.Expect(page.Locator("label[for='source-store']")).ToHaveTextAsync("Source store");
+        await Assertions.Expect(page.Locator("body")).ToContainTextAsync("Total active secrets in the selected store: 2");
+        await Assertions.Expect(page.Locator("body")).ToContainTextAsync("Move all active secrets from this store to");
+        await Assertions.Expect(page.Locator("body")).ToContainTextAsync("There is no other writable store");
         await Assertions.Expect(page.Locator("body")).Not.ToContainTextAsync("first-private-value");
         await Assertions.Expect(page.Locator("body")).Not.ToContainTextAsync("second-private-value");
-        await page.GetByRole(AriaRole.Button, new PageGetByRoleOptions { Name = "Execute", Exact = true }).ClickAsync();
-        await Assertions.Expect(page.Locator("body")).ToContainTextAsync("Confirm the operation");
-        await Assertions.Expect(page.Locator("body")).ToContainTextAsync("Active secrets: 2");
-        await page.GotoAndAssertOkAsync($"{Tenant.Prefix}/Admin/Secrets/Stores/Index?sourceStore=Database");
-        await Assertions.Expect(page.Locator("body")).ToContainTextAsync("Active secrets: 2");
-        await page.GetByRole(AriaRole.Link, new PageGetByRoleOptions { Name = "Back to Secrets" }).ClickAsync();
-        await Assertions.Expect(SecretEntry(page, "FirstKey")).ToHaveCountAsync(1);
-        await Assertions.Expect(SecretEntry(page, "SecondKey")).ToHaveCountAsync(1);
     }
 
     [Fact]
-    public async Task MovePage_ContainsOnlyMetadataAndRejectsMissingDestination()
+    public async Task StoreManagement_HidesMoveSectionForEmptyStore()
+    {
+        var page = await CreateAdminPageAsync();
+        await page.GotoAndAssertOkAsync($"{Tenant.Prefix}/Admin/Secrets/Stores/Index");
+
+        await Assertions.Expect(page.Locator("body")).ToContainTextAsync("Total active secrets in the selected store: 0");
+        await Assertions.Expect(page.Locator("body")).Not.ToContainTextAsync("Move all active secrets from this store to");
+        await Assertions.Expect(page.Locator("body")).Not.ToContainTextAsync("This tenant has no active secrets");
+    }
+
+    [Fact]
+    public async Task MovePage_ContainsOnlyMetadata()
     {
         var page = await CreateAdminPageAsync();
         await CreateTextSecretAsync(page, "MoveKey", "move-private-value");
         await SecretEntry(page, "MoveKey").GetByRole(AriaRole.Link, new LocatorGetByRoleOptions { Name = "Move", Exact = true }).ClickAsync();
-        await Assertions.Expect(page.Locator("body")).ToContainTextAsync("Move secret: MoveKey");
+
+        await Assertions.Expect(page.Locator("h1")).ToContainTextAsync("Move 'MoveKey' secret");
         await Assertions.Expect(page.Locator("body")).Not.ToContainTextAsync("move-private-value");
-        await page.Locator("#Confirm").CheckAsync();
-        await page.GetByRole(AriaRole.Button, new PageGetByRoleOptions { Name = "Execute", Exact = true }).ClickAsync();
-        await Assertions.Expect(page.Locator("body")).ToContainTextAsync("Select a different writable destination store");
-        await Assertions.Expect(page.Locator("body")).ToContainTextAsync("Active secrets: 1");
+        await Assertions.Expect(page.Locator("body")).ToContainTextAsync("There is no other writable store");
+    }
+
+    [Fact]
+    public async Task SecretsList_FiltersBySearch()
+    {
+        var page = await CreateAdminPageAsync();
+        await CreateTextSecretAsync(page, "SearchAlpha", "alpha-value");
+        await CreateTextSecretAsync(page, "SearchBeta", "beta-value");
+
+        await page.Locator("#search-box").FillAsync("Alpha");
+        await page.Locator("#search-box").PressAsync("Enter");
+
+        await Assertions.Expect(page).ToHaveURLAsync(new Regex(@"Options\.Search=Alpha"));
+        await Assertions.Expect(SecretEntry(page, "SearchAlpha")).ToHaveCountAsync(1);
+        await Assertions.Expect(SecretEntry(page, "SearchBeta")).ToHaveCountAsync(0);
+    }
+
+    [Fact]
+    public async Task MigrationPage_WithoutStoredCredentials_ShowsNothingToMigrate()
+    {
+        var page = await CreateAdminPageAsync();
+        await page.GetByRole(AriaRole.Link, new PageGetByRoleOptions { Name = "Migrate Credentials", Exact = true }).ClickAsync();
+
+        await Assertions.Expect(page.Locator("h1")).ToContainTextAsync("Migrate Credentials");
+        await Assertions.Expect(page.Locator(".alert-info")).ToContainTextAsync("Nothing to migrate");
     }
 
     [Fact]

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Google.Analytics;
 using OrchardCore.Google.Analytics.Drivers;
@@ -19,6 +18,7 @@ using OrchardCore.Google.TagManager.Services;
 using OrchardCore.Google.TagManager.Settings;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using OrchardCore.Secrets;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings.Deployment;
 
@@ -43,8 +43,16 @@ public sealed class GoogleAuthenticationStartup : StartupBase
         services.AddTransient<IPostConfigureOptions<GoogleOptions>, OAuthPostConfigureOptions<GoogleOptions, GoogleHandler>>();
 
         services.AddTransient<IConfigureOptions<GoogleAuthenticationSettings>, GoogleAuthenticationSettingsConfiguration>();
+    }
+}
 
-        services.AddScoped<IDataMigration, Migrations>();
+[Feature(GoogleConstants.Features.GoogleAuthentication)]
+[RequireFeatures("OrchardCore.Secrets")]
+public sealed class GoogleAuthenticationSecretsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDisplayDriver<SecretMigration, GoogleSecretMigrationDisplayDriver>();
     }
 }
 

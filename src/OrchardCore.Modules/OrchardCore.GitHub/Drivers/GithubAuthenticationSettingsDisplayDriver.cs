@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
@@ -6,6 +7,7 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.GitHub.Settings;
 using OrchardCore.GitHub.ViewModels;
+using OrchardCore.Secrets;
 using OrchardCore.Settings;
 
 namespace OrchardCore.GitHub.Drivers;
@@ -15,15 +17,21 @@ public sealed class GitHubAuthenticationSettingsDisplayDriver : SiteDisplayDrive
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IServiceProvider _serviceProvider;
 
     public GitHubAuthenticationSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
         IAuthorizationService authorizationService,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IDataProtectionProvider dataProtectionProvider,
+        IServiceProvider serviceProvider)
     {
         _shellReleaseManager = shellReleaseManager;
         _authorizationService = authorizationService;
         _httpContextAccessor = httpContextAccessor;
+        _dataProtectionProvider = dataProtectionProvider;
+        _serviceProvider = serviceProvider;
     }
 
     protected override string SettingsGroupId
@@ -37,12 +45,10 @@ public sealed class GitHubAuthenticationSettingsDisplayDriver : SiteDisplayDrive
             return null;
         }
 
-#pragma warning disable CS0618 // Type or member is obsolete
         return Initialize<GitHubAuthenticationSettingsViewModel>("GitHubAuthenticationSettings_Edit", model =>
         {
             model.ClientID = settings.ClientID;
-            model.ClientSecretSecretName = settings.ClientSecretSecretName;
-            model.HasClientSecret = !string.IsNullOrWhiteSpace(settings.ClientSecret);
+            model.ClientSecret = SecretInputViewModel.Create(settings.ClientSecret, settings.ClientSecretSecretName);
             if (settings.CallbackPath.HasValue)
             {
                 model.CallbackUrl = settings.CallbackPath.Value;
@@ -50,7 +56,6 @@ public sealed class GitHubAuthenticationSettingsDisplayDriver : SiteDisplayDrive
             model.SaveTokens = settings.SaveTokens;
         }).Location("Content:5")
         .OnGroup(SettingsGroupId);
-#pragma warning restore CS0618 // Type or member is obsolete
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, GitHubAuthenticationSettings settings, UpdateEditorContext context)
@@ -64,8 +69,24 @@ public sealed class GitHubAuthenticationSettingsDisplayDriver : SiteDisplayDrive
         var model = new GitHubAuthenticationSettingsViewModel();
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
+        var clientSecret = await model.ClientSecret.UpdateAsync(new SecretInputUpdateContext(
+            _serviceProvider,
+            _dataProtectionProvider.CreateProtector(GitHubConstants.Features.GitHubAuthentication),
+            context.Updater.ModelState,
+            $"{Prefix}.{nameof(model.ClientSecret)}")
+        {
+            ProtectedValue = settings.ClientSecret,
+            SecretName = settings.ClientSecretSecretName,
+            Description = "GitHub client secret",
+        });
+
+        if (clientSecret.Succeeded)
+        {
+            settings.ClientSecret = clientSecret.ProtectedValue;
+            settings.ClientSecretSecretName = clientSecret.SecretName;
+        }
+
         settings.ClientID = model.ClientID;
-        settings.ClientSecretSecretName = model.ClientSecretSecretName;
         settings.CallbackPath = model.CallbackUrl;
         settings.SaveTokens = model.SaveTokens;
 

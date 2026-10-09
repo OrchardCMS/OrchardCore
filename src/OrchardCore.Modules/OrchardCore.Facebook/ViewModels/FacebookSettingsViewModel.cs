@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using OrchardCore.Secrets;
 
 namespace OrchardCore.Facebook.ViewModels;
 
@@ -7,7 +8,7 @@ public class FacebookSettingsViewModel
     [Required]
     public string AppId { get; set; }
 
-    public string AppSecretSecretName { get; set; }
+    public SecretInputViewModel AppSecret { get; set; } = new();
 
     [Required]
     public string SdkJs { get; set; }
@@ -17,6 +18,4 @@ public class FacebookSettingsViewModel
 
     [RegularExpression(@"(v)\d+\.\d+")]
     public string Version { get; set; }
-
-    public bool HasAppSecret { get; set; }
 }

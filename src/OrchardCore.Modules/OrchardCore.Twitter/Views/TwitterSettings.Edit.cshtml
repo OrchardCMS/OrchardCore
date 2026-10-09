@@ -1,15 +1,6 @@
 @using OrchardCore.Twitter.ViewModels
 @model TwitterSettingsViewModel
 
-@if (Model.HasConsumerSecret || Model.HasAccessTokenSecret)
-{
-    <div class="ocat-wrapper">
-        <div class="ocat-end-offset">
-            <p class="alert alert-info">@T["Legacy secrets are configured. Please create new secrets using the Secrets module and select them below, then save to complete the migration."]</p>
-        </div>
-    </div>
-}
-
 <div class="ocat-wrapper">
     <div class="ocat-end-offset">
         <p class="alert alert-warning" role="alert">
@@ -18,8 +9,6 @@
         </p>
     </div>
 </div>
-
-
 
 <div class="ocat-wrapper">
     <div class="ocat-end-offset">
@@ -36,18 +25,10 @@
     </div>
 </div>
 
-<div class="ocat-limited-wrapper" asp-validation-class-for="ConsumerSecretSecretName">
-    <label asp-for="ConsumerSecretSecretName" class="ocat-label">@T["API secret key"]</label>
-    <div class="ocat-limited">
-        @await Component.InvokeAsync("SelectSecret", new
-        {
-            secretTypes = new[] { "TextSecret" },
-            selectedSecret = Model.ConsumerSecretSecretName,
-            htmlId = Html.IdFor(m => m.ConsumerSecretSecretName).ToString(),
-            htmlName = Html.NameFor(m => m.ConsumerSecretSecretName).ToString(),
-            required = false
-        })
-        <span asp-validation-for="ConsumerSecretSecretName"></span>
+<div class="ocat-wrapper" asp-validation-class-for="ConsumerSecret">
+    <label asp-for="ConsumerSecret" class="ocat-label">@T["API secret key"]</label>
+    <div class="ocat-end">
+        <secret-input asp-for="ConsumerSecret" secret-name="@TwitterConstants.SecretNames.ConsumerSecret" />
         <span class="hint">@T["The API secret defined in the Keys and tokens tab of X (Twitter) app dashboard."]</span>
     </div>
 </div>
@@ -61,18 +42,10 @@
     </div>
 </div>
 
-<div class="ocat-limited-wrapper" asp-validation-class-for="AccessTokenSecretSecretName">
-    <label asp-for="AccessTokenSecretSecretName" class="ocat-label">@T["Access Token Secret"]</label>
-    <div class="ocat-limited">
-        @await Component.InvokeAsync("SelectSecret", new
-        {
-            secretTypes = new[] { "TextSecret" },
-            selectedSecret = Model.AccessTokenSecretSecretName,
-            htmlId = Html.IdFor(m => m.AccessTokenSecretSecretName).ToString(),
-            htmlName = Html.NameFor(m => m.AccessTokenSecretSecretName).ToString(),
-            required = false
-        })
-        <span asp-validation-for="AccessTokenSecretSecretName"></span>
+<div class="ocat-wrapper" asp-validation-class-for="AccessTokenSecret">
+    <label asp-for="AccessTokenSecret" class="ocat-label">@T["Access Token Secret"]</label>
+    <div class="ocat-end">
+        <secret-input asp-for="AccessTokenSecret" secret-name="@TwitterConstants.SecretNames.AccessTokenSecret" />
         <span class="hint">@T["The Access Token Secret in the Keys and tokens tab of X (Twitter) app dashboard."]</span>
     </div>
 </div>

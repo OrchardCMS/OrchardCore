@@ -214,9 +214,7 @@ public class LegacySecretConfigurationTests
         services.AddSingleton<IDataProtectionProvider>(protection);
         services.Configure<GoogleAuthenticationSettings>(settings =>
         {
-#pragma warning disable CS0618 // Model legacy tenant settings separately from configuration.
             settings.ClientSecret = protectedValue;
-#pragma warning restore CS0618
             settings.ClientSecretSecretName = useReference ? "Selected.Secret" : null;
         });
         foreach (var startup in application.GetServices<global::OrchardCore.Modules.IStartup>())
@@ -227,9 +225,7 @@ public class LegacySecretConfigurationTests
         using var provider = services.BuildServiceProvider();
         var settings = provider.GetRequiredService<IOptions<GoogleAuthenticationSettings>>().Value;
 
-#pragma warning disable CS0618 // Verify that the legacy credential remains protected.
         Assert.Equal(Credential, protector.Unprotect(settings.ClientSecret));
-#pragma warning restore CS0618
         Assert.Equal(useReference ? "Selected.Secret" : null, settings.ClientSecretSecretName);
         Assert.Equal(configuredValue == null ? 0 : 1, logger.Invocations.Count(call => call.Method.Name == nameof(ILogger.Log)));
     }
@@ -296,7 +292,6 @@ public class LegacySecretConfigurationTests
         }
     }
 
-#pragma warning disable CS0618 // Verify that legacy configuration binding and protection are preserved.
     private static string ResolveCredential(IServiceProvider provider, string integration, string key) => integration switch
     {
         "GitHub" => provider.GetRequiredService<IOptions<GitHubAuthenticationSettings>>().Value.ClientSecret,
@@ -311,5 +306,4 @@ public class LegacySecretConfigurationTests
         "AzureAI" => provider.GetRequiredService<IOptions<AzureAISearchDefaultOptions>>().Value.Credential.Key,
         _ => throw new ArgumentOutOfRangeException(nameof(integration)),
     };
-#pragma warning restore CS0618
 }

@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
@@ -37,7 +36,14 @@ public sealed class Startup : StartupBase
 
             options.IsEnabled = options.ConfigurationExists();
         });
+    }
+}
 
-        services.AddScoped<IDataMigration, Migrations>();
+[RequireFeatures("OrchardCore.Secrets")]
+public sealed class SecretsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDisplayDriver<SecretMigration, AzureSmsSecretMigrationDisplayDriver>();
     }
 }

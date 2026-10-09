@@ -1,0 +1,88 @@
+@model SecretMigrationViewModel
+@using OrchardCore.DisplayManagement.Zones
+@{
+    var hasItems = Model.Editor is IZoneHolding zoneHolding && zoneHolding.Zones.IsNotEmpty("Content");
+}
+
+<zone Name="Title">
+    <breadcrumb name="SecretsMigration" title="@T["Migrate Credentials"]">
+        <breadcrumb-item id="Secrets" action="Index" controller="Admin" area="OrchardCore.Secrets" permission="@SecretsPermissions.ViewSecrets.Name">@T["Secrets"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
+
+<div asp-validation-summary="ModelOnly"></div>
+
+@if (Model.Results.Any(result => !result.Succeeded))
+{
+    <ul class="list-group mb-3">
+        @foreach (var result in Model.Results.Where(result => !result.Succeeded))
+        {
+            <li class="list-group-item list-group-item-danger">
+                <strong>@result.DisplayName</strong>:
+                @switch (result.Error)
+                {
+                    case SecretMigrationError.MissingName:
+                        @T["Enter the name of the secret."]
+                        break;
+                    case SecretMigrationError.AlreadyExists:
+                        @T["A secret named '{0}' already exists. Enter another name, or select the existing secret in the settings.", result.SecretName]
+                        break;
+                    case SecretMigrationError.DecryptionFailed:
+                        @T["The stored value could not be decrypted. Enter the value again in the settings."]
+                        break;
+                    default:
+                        @T["The secret store could not save the secret."]
+                        break;
+                }
+            </li>
+        }
+    </ul>
+}
+
+@if (!hasItems)
+{
+    <div class="alert alert-info" role="alert">
+        @T["<strong>Nothing to migrate!</strong> No setting keeps a credential outside of the Secrets module."]
+    </div>
+}
+else
+{
+    <form asp-action="Index" method="post" class="no-multisubmit">
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
+                <p>@T["These credentials are kept, encrypted, in the settings of the features that use them. Select the ones to move to secrets. The settings then reference the new secrets, and no longer keep the values."]</p>
+            </div>
+        </div>
+
+        @if (Model.AvailableStores.Count > 1)
+        {
+            <div class="ocat-wrapper" asp-validation-class-for="Store">
+                <label asp-for="Store" class="ocat-label">@T["Destination store"]</label>
+                <div class="ocat-end">
+                    <select asp-for="Store" asp-items="@(new SelectList(Model.AvailableStores))" class="form-select"></select>
+                    <span asp-validation-for="Store"></span>
+                    <span class="hint">@T["The secret store that receives the new secrets."]</span>
+                </div>
+            </div>
+        }
+        else
+        {
+            <input type="hidden" asp-for="Store" />
+        }
+
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
+                <div class="list-group">
+                    @await DisplayAsync(Model.Editor)
+                </div>
+            </div>
+        </div>
+
+        <div class="ocat-wrapper">
+            <div class="ocat-end-offset">
+                <button type="submit" class="btn btn-primary">@T["Move to Secrets"]</button>
+                <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary">@T["Cancel"]</a>
+            </div>
+        </div>
+    </form>
+}

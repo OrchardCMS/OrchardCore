@@ -2,6 +2,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
 using OrchardCore.Secrets;
@@ -12,20 +13,23 @@ namespace OrchardCore.Twitter.Services;
 public class TwitterClientMessageHandler : DelegatingHandler
 {
     private readonly TwitterSettings _twitterSettings;
-    private readonly ISecretManager _secretManager;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IClock _clock;
+    private readonly ILogger _logger;
 
     public TwitterClientMessageHandler(
         IClock clock,
         IOptions<TwitterSettings> twitterSettings,
-        ISecretManager secretManager,
-        IDataProtectionProvider dataProtectionProvider)
+        IServiceProvider serviceProvider,
+        IDataProtectionProvider dataProtectionProvider,
+        ILogger<TwitterClientMessageHandler> logger)
     {
         _twitterSettings = twitterSettings.Value;
-        _secretManager = secretManager;
+        _serviceProvider = serviceProvider;
         _dataProtectionProvider = dataProtectionProvider;
         _clock = clock;
+        _logger = logger;
     }
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -41,8 +45,20 @@ public class TwitterClientMessageHandler : DelegatingHandler
 
     public async Task ConfigureOAuthAsync(HttpRequestMessage request)
     {
-        var consumerSecret = await GetConsumerSecretAsync();
-        var accessTokenSecret = await GetAccessTokenSecretAsync();
+        var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
+
+        // Read the secrets in local variables, as the settings instance is shared by all the requests.
+        var consumerSecret = await _serviceProvider.GetSecretValueAsync(
+            _twitterSettings.ConsumerSecretSecretName,
+            _twitterSettings.ConsumerSecret,
+            protector,
+            _logger) ?? string.Empty;
+
+        var accessTokenSecret = await _serviceProvider.GetSecretValueAsync(
+            _twitterSettings.AccessTokenSecretSecretName,
+            _twitterSettings.AccessTokenSecret,
+            protector,
+            _logger) ?? string.Empty;
 
         var nonce = GetNonce();
         var timeStamp = Convert.ToInt64((_clock.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds).ToString();
@@ -102,53 +118,5 @@ public class TwitterClientMessageHandler : DelegatingHandler
         sb.Append("oauth_version=\"").Append(Uri.EscapeDataString("1.0")).Append('"');
 
         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("OAuth", sb.ToString());
-    }
-
-    private async Task<string> GetConsumerSecretAsync()
-    {
-        // Try to get from secrets first.
-        if (!string.IsNullOrWhiteSpace(_twitterSettings.ConsumerSecretSecretName))
-        {
-            var secret = await _secretManager.GetSecretAsync<TextSecret>(_twitterSettings.ConsumerSecretSecretName);
-            if (secret != null)
-            {
-                return secret.Text;
-            }
-        }
-
-        // Fall back to legacy encrypted setting.
-#pragma warning disable CS0618 // Type or member is obsolete
-        if (!string.IsNullOrWhiteSpace(_twitterSettings.ConsumerSecret))
-        {
-            var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
-            return protector.Unprotect(_twitterSettings.ConsumerSecret);
-        }
-#pragma warning restore CS0618 // Type or member is obsolete
-
-        return string.Empty;
-    }
-
-    private async Task<string> GetAccessTokenSecretAsync()
-    {
-        // Try to get from secrets first.
-        if (!string.IsNullOrWhiteSpace(_twitterSettings.AccessTokenSecretSecretName))
-        {
-            var secret = await _secretManager.GetSecretAsync<TextSecret>(_twitterSettings.AccessTokenSecretSecretName);
-            if (secret != null)
-            {
-                return secret.Text;
-            }
-        }
-
-        // Fall back to legacy encrypted setting.
-#pragma warning disable CS0618 // Type or member is obsolete
-        if (!string.IsNullOrWhiteSpace(_twitterSettings.AccessTokenSecret))
-        {
-            var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
-            return protector.Unprotect(_twitterSettings.AccessTokenSecret);
-        }
-#pragma warning restore CS0618 // Type or member is obsolete
-
-        return string.Empty;
     }
 }

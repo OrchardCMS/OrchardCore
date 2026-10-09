@@ -275,6 +275,7 @@ public class SmtpOptionsConfigurationTests
             }),
             shellSettings,
             new EphemeralDataProtectionProvider(),
+            new ServiceCollection().BuildServiceProvider(),
             NullLogger<SmtpOptionsConfiguration>.Instance);
     }
 

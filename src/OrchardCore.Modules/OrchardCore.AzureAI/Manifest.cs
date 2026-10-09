@@ -14,7 +14,6 @@ using OrchardCore.Modules.Manifest;
     Dependencies =
     [
         "OrchardCore.Indexing",
-        "OrchardCore.Secrets",
     ],
     Category = "Search"
 )]

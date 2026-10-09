@@ -37,23 +37,11 @@
         </div>
     </div>
 
-    <div class="ocat-wrapper" asp-validation-class-for="AuthTokenSecretName">
-        <label asp-for="AuthTokenSecretName" class="ocat-label">@T["Auth Token"]</label>
+    <div class="ocat-wrapper" asp-validation-class-for="AuthToken">
+        <label asp-for="AuthToken" class="ocat-label">@T["Auth Token"]</label>
         <div class="ocat-end">
-            @await Component.InvokeAsync("SelectSecret", new
-            {
-                secretTypes = new[] { "TextSecret" },
-                selectedSecret = Model.AuthTokenSecretName,
-                htmlId = Html.IdFor(m => m.AuthTokenSecretName).ToString(),
-                htmlName = Html.NameFor(m => m.AuthTokenSecretName).ToString(),
-                required = false
-            })
-            <span asp-validation-for="AuthTokenSecretName"></span>
-            @if (Model.HasAuthToken && string.IsNullOrWhiteSpace(Model.AuthTokenSecretName))
-            {
-                <p class="alert alert-warning mt-2">@T["A legacy auth token is configured. Please migrate to using a secret for improved security."]</p>
-            }
-
+            <secret-input asp-for="AuthToken" secret-name="@TwilioConstants.SecretNames.AuthToken" />
+            <span asp-validation-for="AuthToken"></span>
         </div>
     </div>
 </div>

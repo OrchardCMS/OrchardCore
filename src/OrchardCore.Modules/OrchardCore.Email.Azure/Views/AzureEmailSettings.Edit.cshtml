@@ -22,22 +22,11 @@
         </div>
     </div>
 
-    <div class="ocat-wrapper" asp-validation-class-for="ConnectionStringSecretName">
-        <label asp-for="ConnectionStringSecretName" class="ocat-label">@T["Connection String"]</label>
+    <div class="ocat-wrapper" asp-validation-class-for="ConnectionString">
+        <label asp-for="ConnectionString" class="ocat-label">@T["Connection String"]</label>
         <div class="ocat-end">
-            @await Component.InvokeAsync("SelectSecret", new
-            {
-                secretTypes = new[] { "TextSecret" },
-                selectedSecret = Model.ConnectionStringSecretName,
-                htmlId = Html.IdFor(m => m.ConnectionStringSecretName).ToString(),
-                htmlName = Html.NameFor(m => m.ConnectionStringSecretName).ToString(),
-                required = false
-            })
-            <span asp-validation-for="ConnectionStringSecretName"></span>
-            @if (Model.HasConnectionString && string.IsNullOrWhiteSpace(Model.ConnectionStringSecretName))
-            {
-                <p class="alert alert-warning mt-2">@T["A legacy connection string is configured. Please migrate to using a secret for improved security."]</p>
-            }
+            <secret-input asp-for="ConnectionString" secret-name="@AzureEmailConstants.SecretNames.ConnectionString" placeholder="@T["Azure connection string"].Value" />
+            <span asp-validation-for="ConnectionString"></span>
         </div>
     </div>
 </div>

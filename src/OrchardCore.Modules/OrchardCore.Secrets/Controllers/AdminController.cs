@@ -2,9 +2,15 @@ using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Navigation;
+using OrchardCore.Routing;
 using OrchardCore.Secrets.ViewModels;
 
 namespace OrchardCore.Secrets.Controllers;
@@ -12,10 +18,14 @@ namespace OrchardCore.Secrets.Controllers;
 [Admin("Secrets/{action}/{name?}", "Secrets{action}")]
 public sealed class AdminController : Controller
 {
+    private const string OptionsSearch = "Options.Search";
+
     private readonly ISecretManager _secretManager;
     private readonly IEnumerable<ISecretTypeProvider> _secretTypeProviders;
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
+    private readonly IShapeFactory _shapeFactory;
+    private readonly PagerOptions _pagerOptions;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -25,6 +35,8 @@ public sealed class AdminController : Controller
         IEnumerable<ISecretTypeProvider> secretTypeProviders,
         IAuthorizationService authorizationService,
         INotifier notifier,
+        IShapeFactory shapeFactory,
+        IOptions<PagerOptions> pagerOptions,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer)
     {
@@ -32,31 +44,78 @@ public sealed class AdminController : Controller
         _secretTypeProviders = secretTypeProviders;
         _authorizationService = authorizationService;
         _notifier = notifier;
+        _shapeFactory = shapeFactory;
+        _pagerOptions = pagerOptions.Value;
         S = stringLocalizer;
         H = htmlLocalizer;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(SecretIndexOptions options, PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, SecretsPermissions.ViewSecrets))
         {
             return Forbid();
         }
 
-        var secretInfos = await _secretManager.GetSecretInfosAsync();
+        options ??= new SecretIndexOptions();
+
+        var providers = _secretTypeProviders.ToList();
+
+        var secrets = (await _secretManager.GetSecretInfosAsync())
+            .Select(info =>
+            {
+                var type = GetSimpleTypeName(info.Type);
+
+                return new SecretEntryViewModel
+                {
+                    Name = info.Name,
+                    Store = info.Store,
+                    Type = type,
+                    TypeDisplayName = providers.FirstOrDefault(p => p.Name.Equals(type, StringComparison.OrdinalIgnoreCase))?.DisplayName ?? type,
+                    Description = info.Description,
+                    CreatedUtc = info.CreatedUtc,
+                    UpdatedUtc = info.UpdatedUtc,
+                    ExpiresUtc = info.ExpiresUtc,
+                };
+            });
+
+        if (!string.IsNullOrWhiteSpace(options.Search))
+        {
+            var search = options.Search.Trim();
+
+            secrets = secrets.Where(secret =>
+                Contains(secret.Name, search) ||
+                Contains(secret.Description, search) ||
+                Contains(secret.Store, search) ||
+                Contains(secret.TypeDisplayName, search));
+        }
+
+        var filtered = secrets
+            .OrderBy(secret => secret.Name, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(secret => secret.Store, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        var pager = new Pager(pagerParameters, _pagerOptions);
+
+        // Maintain previous route data when generating page links.
+        var routeData = new RouteData();
+
+        if (!string.IsNullOrEmpty(options.Search))
+        {
+            routeData.Values.TryAdd(OptionsSearch, options.Search);
+        }
+
+        options.BulkActions =
+        [
+            new SelectListItem(S["Delete"], nameof(SecretsBulkAction.Remove)),
+        ];
 
         var model = new SecretIndexViewModel
         {
-            Secrets = secretInfos.Select(info => new SecretEntryViewModel
-            {
-                Name = info.Name,
-                Store = info.Store,
-                Type = GetSimpleTypeName(info.Type),
-                CreatedUtc = info.CreatedUtc,
-                UpdatedUtc = info.UpdatedUtc,
-                ExpiresUtc = info.ExpiresUtc,
-            }).ToList(),
-            AvailableTypes = _secretTypeProviders.Select(p => new SecretTypeViewModel
+            Secrets = filtered.Skip(pager.GetStartIndex()).Take(pager.PageSize).ToList(),
+            Options = options,
+            Pager = await _shapeFactory.PagerAsync(pager, filtered.Count, routeData),
+            AvailableTypes = providers.Select(p => new SecretTypeViewModel
             {
                 Name = p.Name,
                 DisplayName = p.DisplayName,
@@ -65,6 +124,70 @@ public sealed class AdminController : Controller
         };
 
         return View(model);
+    }
+
+    [HttpPost]
+    [ActionName(nameof(Index))]
+    [FormValueRequired("submit.Filter")]
+    public ActionResult IndexFilterPost(SecretIndexViewModel model)
+        => RedirectToAction(nameof(Index), new RouteValueDictionary
+        {
+            { OptionsSearch, model.Options?.Search },
+        });
+
+    [HttpPost]
+    [ActionName(nameof(Index))]
+    [FormValueRequired("submit.BulkAction")]
+    public async Task<IActionResult> IndexBulkActionPost(SecretIndexOptions options, IEnumerable<string> itemIds)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, SecretsPermissions.ManageSecrets))
+        {
+            return Forbid();
+        }
+
+        if (itemIds?.Any() == true)
+        {
+            switch (options.BulkAction)
+            {
+                case SecretsBulkAction.None:
+                    break;
+
+                case SecretsBulkAction.Remove:
+                    var infos = (await _secretManager.GetSecretInfosAsync()).ToList();
+                    var removed = 0;
+
+                    foreach (var itemId in itemIds)
+                    {
+                        if (!SecretEntryId.TryParse(itemId, out var store, out var name))
+                        {
+                            continue;
+                        }
+
+                        var info = infos.FirstOrDefault(info =>
+                            info.Name.Equals(name, StringComparison.OrdinalIgnoreCase) &&
+                            info.Store.Equals(store, StringComparison.OrdinalIgnoreCase));
+
+                        if (info is null)
+                        {
+                            continue;
+                        }
+
+                        await _secretManager.RemoveSecretAsync(info.Name, info.Store);
+                        removed++;
+                    }
+
+                    await _notifier.SuccessAsync(H.Plural(removed, "1 secret was deleted.", "{0} secrets were deleted."));
+                    break;
+
+                default:
+                    return BadRequest();
+            }
+        }
+
+        return RedirectToAction(nameof(Index), new RouteValueDictionary
+        {
+            { OptionsSearch, options.Search },
+        });
     }
 
     public async Task<IActionResult> Create(string type)
@@ -400,6 +523,9 @@ public sealed class AdminController : Controller
             await _secretManager.SaveSecretAsync(name, secret, options);
         }
     }
+
+    private static bool Contains(string value, string search)
+        => value?.Contains(search, StringComparison.OrdinalIgnoreCase) == true;
 
     private static string GetSimpleTypeName(string fullTypeName)
     {

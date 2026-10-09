@@ -1,5 +1,3 @@
-#pragma warning disable CS0618 // Type or member is obsolete
-
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authentication;
@@ -24,7 +22,7 @@ public class TwitterOptionsConfiguration :
     private readonly ITwitterSettingsService _twitterService;
     private readonly ITwitterSigninService _twitterSigninService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
-    private readonly ISecretManager _secretManager;
+    private readonly IServiceProvider _serviceProvider;
     private readonly ShellSettings _shellSettings;
     private readonly string _tenantPrefix;
     private readonly ILogger _logger;
@@ -33,7 +31,7 @@ public class TwitterOptionsConfiguration :
         ITwitterSettingsService twitterService,
         ITwitterSigninService twitterSigninService,
         IDataProtectionProvider dataProtectionProvider,
-        ISecretManager secretManager,
+        IServiceProvider serviceProvider,
         IHttpContextAccessor httpContextAccessor,
         ShellSettings shellSettings,
         ILogger<TwitterOptionsConfiguration> logger)
@@ -41,7 +39,7 @@ public class TwitterOptionsConfiguration :
         _twitterService = twitterService;
         _twitterSigninService = twitterSigninService;
         _dataProtectionProvider = dataProtectionProvider;
-        _secretManager = secretManager;
+        _serviceProvider = serviceProvider;
         _shellSettings = shellSettings;
 
         var pathBase = httpContextAccessor.HttpContext?.Request.PathBase ?? PathString.Empty;
@@ -91,28 +89,13 @@ public class TwitterOptionsConfiguration :
         }
 
         options.ConsumerKey = settings.Item1.ConsumerKey;
-        try
-        {
-            if (!string.IsNullOrWhiteSpace(settings.Item1.ConsumerSecretSecretName))
-            {
-                var secret = _secretManager.GetSecretAsync<TextSecret>(settings.Item1.ConsumerSecretSecretName).GetAwaiter().GetResult();
-                if (string.IsNullOrEmpty(secret?.Text))
-                {
-                    throw new InvalidOperationException("The X (Twitter) consumer secret was not found or is empty.");
-                }
-
-                options.ConsumerSecret = secret.Text;
-            }
-            else
-            {
-                options.ConsumerSecret = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter).Unprotect(settings.Item1.ConsumerSecret);
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "The X (Twitter) Consumer Secret could not be loaded.");
-            throw;
-        }
+        options.ConsumerSecret = _serviceProvider.GetSecretValueAsync(
+            settings.Item1.ConsumerSecretSecretName,
+            settings.Item1.ConsumerSecret,
+            _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter),
+            _logger)
+            .GetAwaiter()
+            .GetResult();
 
         if (settings.Item2.CallbackPath.HasValue)
         {

@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Microsoft.Authentication.Configuration;
@@ -14,6 +13,7 @@ using OrchardCore.Microsoft.Authentication.Settings;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
+using OrchardCore.Secrets;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Microsoft.Authentication;
@@ -35,8 +35,6 @@ public sealed class MicrosoftAccountStartup : StartupBase
         services.AddTransient<IConfigureOptions<AuthenticationOptions>, MicrosoftAccountOptionsConfiguration>();
         services.AddTransient<IConfigureOptions<MicrosoftAccountOptions>, MicrosoftAccountOptionsConfiguration>();
         services.AddTransient<IPostConfigureOptions<MicrosoftAccountOptions>, OAuthPostConfigureOptions<MicrosoftAccountOptions, MicrosoftAccountHandler>>();
-
-        services.AddScoped<IDataMigration, Migrations>();
     }
 }
 
@@ -47,5 +45,15 @@ public sealed class MicrosoftAccountDeploymentStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDeployment<MicrosoftAccountDeploymentSource, MicrosoftAccountDeploymentStep, MicrosoftAccountDeploymentStepDriver>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Secrets")]
+[Feature(MicrosoftAuthenticationConstants.Features.MicrosoftAccount)]
+public sealed class MicrosoftAccountSecretsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDisplayDriver<SecretMigration, MicrosoftAccountSecretMigrationDisplayDriver>();
     }
 }
