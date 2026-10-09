@@ -169,6 +169,59 @@ public class JavaScriptScopeTests
         Assert.Contains("scopeName", exception.Message);
     }
 
+    [Fact]
+    public void RegisteredGlobals_AreBuiltWithoutServices_WhenTheScopeWasCreatedWithoutServices()
+    {
+        // A scope can be created without services, which is what DefaultScriptingManager does outside of a
+        // shell scope. The globals still work there, and their factories are handed no services, exactly as
+        // when the scope's methods are set eagerly.
+        var (engine, methods, _, provider) = CreateEngine();
+
+        var scope = engine.CreateScope(methods, null, null, null);
+
+        Assert.Equal("counted", engine.Evaluate(scope, "return counted();"));
+        Assert.Equal(1, provider.BuildCount);
+        Assert.Null(provider.LastServices);
+    }
+
+    [Fact]
+    public async Task ScriptingManager_EvaluatesRegisteredGlobals_OutsideOfAShellScope()
+    {
+        var (_, _, serviceProvider, provider) = CreateEngine();
+        var scriptingManager = serviceProvider.GetRequiredService<IScriptingManager>();
+
+        Assert.Equal("counted", scriptingManager.Evaluate("js: counted()", null, null, null));
+        Assert.Equal("counted async", await scriptingManager.EvaluateAsync("js: countedAsync()", null, null, null, TestContext.Current.CancellationToken));
+        Assert.Equal(1, provider.BuildCount);
+        Assert.Equal(1, provider.AsyncBuildCount);
+        Assert.Null(provider.LastServices);
+    }
+
+    [Fact]
+    public void PublicConstructor_WithoutServices_BuildsRegisteredGlobalsWithoutServices()
+    {
+        var (engine, _, serviceProvider, provider) = CreateEngine();
+        var callerEngine = CreateEngineFromTenantOptions(serviceProvider);
+
+        var scope = new JavaScriptScope(callerEngine, null, []);
+
+        Assert.Equal("counted", engine.Evaluate(scope, "return counted();"));
+        Assert.Equal(1, provider.BuildCount);
+        Assert.Null(provider.LastServices);
+    }
+
+    [Fact]
+    public void RegisteredGlobals_Throw_OnAnEngineNoScopeWasCreatedFor()
+    {
+        // An engine built from the tenant's options outside of a scope has nothing in its host slot, and that
+        // is a defect in the caller, not a scope that has no services.
+        var (_, _, tenantServices) = CreateEngineWithScopeNames();
+        var callerEngine = CreateEngineFromTenantOptions(tenantServices);
+
+        var exception = Assert.Throws<InvalidOperationException>(() => callerEngine.Evaluate("scopeName()"));
+        Assert.Contains("scopeName", exception.Message);
+    }
+
     private static (IScriptingEngine Engine, IEnumerable<GlobalMethod> Methods, IServiceProvider Services) CreateEngineWithScopeNames()
     {
         var serviceProvider = new ServiceCollection()
@@ -239,15 +292,17 @@ public class JavaScriptScopeTests
             _globalMethod = new GlobalMethod
             {
                 Name = "counted",
-                Method = _ =>
+                Method = sp =>
                 {
                     BuildCount++;
+                    LastServices = sp;
 
                     return (Func<string>)(() => "counted");
                 },
-                AsyncMethod = _ =>
+                AsyncMethod = sp =>
                 {
                     AsyncBuildCount++;
+                    LastServices = sp;
 
                     return (Func<Task<string>>)(() => Task.FromResult("counted async"));
                 },
@@ -257,6 +312,8 @@ public class JavaScriptScopeTests
         public int BuildCount { get; private set; }
 
         public int AsyncBuildCount { get; private set; }
+
+        public IServiceProvider LastServices { get; private set; }
 
         public IEnumerable<GlobalMethod> GetMethods() => [_globalMethod];
     }

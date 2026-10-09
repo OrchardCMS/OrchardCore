@@ -8,7 +8,7 @@
         @if (!string.IsNullOrEmpty(Model.SitemapId))
         {
             var sitemap = await SitemapManager.GetSitemapAsync(Model.SitemapId);
-            <breadcrumb-item id="Sitemap" action="Display" controller="Admin" area="OrchardCore.Sitemaps" route-sitemapId="@Model.SitemapId" permission="@SitemapsPermissions.ManageSitemaps.Name">@(sitemap?.Name ?? T["Sitemap"].Value)</breadcrumb-item>
+            <breadcrumb-item id="Sitemap" action="Display" controller="Admin" area="OrchardCore.Sitemaps" route-sitemapId="@Model.SitemapId" permission="@SitemapsPermissions.ManageSitemaps.Name">@(sitemap?.Name ?? (object)T["Sitemap"])</breadcrumb-item>
         }
     </breadcrumb>
 </zone>

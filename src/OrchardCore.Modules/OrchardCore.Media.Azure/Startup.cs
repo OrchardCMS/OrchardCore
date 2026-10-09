@@ -201,14 +201,14 @@ public sealed class MediaAzureImageCacheStartup : Modules.StartupBase
         if (string.IsNullOrWhiteSpace(connectionString))
         {
             _logger.LogError(
-                "Azure Media ImageSharp Image Cache is enabled but not active because the 'ConnectionString' is missing or empty in application configuration.");
+                "Azure Media Image Cache is enabled but not active because the 'ConnectionString' is missing or empty in application configuration.");
             optionsAreValid = false;
         }
 
         if (string.IsNullOrWhiteSpace(containerName))
         {
             _logger.LogError(
-                "Azure Media ImageSharp Image Cache is enabled but not active because the 'ContainerName' is missing or empty in application configuration.");
+                "Azure Media Image Cache is enabled but not active because the 'ContainerName' is missing or empty in application configuration.");
             optionsAreValid = false;
         }
 
