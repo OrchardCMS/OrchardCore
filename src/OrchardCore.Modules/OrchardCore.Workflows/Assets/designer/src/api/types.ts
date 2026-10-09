@@ -198,6 +198,32 @@ export interface PendingRetry {
     dueUtc: string;
 }
 
+// How the Run dialog runs the published version (WorkflowDesignerRun): with its inputs when it starts with Started by
+// Workflow, with a request to its URL when it starts with an HTTP Request event, or not at all.
+export interface DesignerRun {
+    mode: "inputs" | "http" | null;
+    isEnabled: boolean;
+    activityId?: string | null;
+    httpMethod?: string | null;
+    inputs: VariableDefinition[];
+}
+
+// What a run started (WorkflowDesignerRunResult).
+export interface RunResult {
+    // Null when the instance was deleted once finished, or when there's none.
+    instanceId?: number | null;
+    instanceUrl?: string | null;
+    status?: string | null;
+    faultMessage?: string | null;
+    outputs?: Record<string, unknown>;
+}
+
+// The answer to the request the Run dialog sent to an HTTP Request event.
+export interface HttpRunResponse {
+    status: number;
+    body: string;
+}
+
 export interface RetryResult {
     status: string;
     faultMessage?: string | null;
@@ -236,6 +262,8 @@ export interface DesignerDefinition {
     instance?: DesignerInstance | null;
     // The version new instances start on.
     publishedVersion?: DesignerVersion | null;
+    // How the designer runs the published version (WorkflowDesignerRun).
+    run?: DesignerRun | null;
     // The version shown by a version page, or the one the viewed instance runs on.
     version?: DesignerVersion | null;
 }

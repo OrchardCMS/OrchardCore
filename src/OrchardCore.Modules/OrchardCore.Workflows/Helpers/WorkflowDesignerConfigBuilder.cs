@@ -21,7 +21,8 @@ internal static class WorkflowDesignerConfigBuilder
     /// The configuration of the designer of <paramref name="workflowType"/>, or, when
     /// <paramref name="instance"/> is set, of the read-only viewer of that instance.
     /// <paramref name="initialActivityId"/> is the activity the designer selects and opens when it loads, and
-    /// <paramref name="canRetry"/> whether the viewer offers to retry a faulted instance.
+    /// <paramref name="canRetry"/> whether the viewer offers to retry a faulted instance, and
+    /// <paramref name="canRun"/> whether the designer offers to run the workflow.
     /// </summary>
     public static string Build(
         IUrlHelper url,
@@ -30,7 +31,8 @@ internal static class WorkflowDesignerConfigBuilder
         WorkflowType workflowType,
         Workflow instance = null,
         string initialActivityId = null,
-        bool canRetry = false)
+        bool canRetry = false,
+        bool canRun = false)
     {
         var route = new { area = Area, workflowTypeId = workflowType.Id };
 
@@ -49,6 +51,11 @@ internal static class WorkflowDesignerConfigBuilder
                 Restore = url.Action("Restore", DesignerController, route),
                 Variables = url.Action("Variables", DesignerController, route),
                 OutputBindings = url.Action("OutputBindings", DesignerController, route),
+                Run = canRun ? url.Action("Run", DesignerController, route) : null,
+                LatestInstance = canRun ? url.Action("LatestInstance", DesignerController, route) : null,
+
+                // Null when the HTTP feature is disabled.
+                GenerateHttpUrl = canRun ? url.Action("GenerateUrl", "HttpWorkflow", new { area = Area }) : null,
             }
             : new DesignerUrls
             {
@@ -153,5 +160,11 @@ internal static class WorkflowDesignerConfigBuilder
         public string Retry { get; init; }
 
         public string JournalData { get; init; }
+
+        public string Run { get; init; }
+
+        public string LatestInstance { get; init; }
+
+        public string GenerateHttpUrl { get; init; }
     }
 }

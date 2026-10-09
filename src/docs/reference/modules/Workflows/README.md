@@ -51,6 +51,15 @@ The activity panel opens over the bottom of the canvas, without moving the workf
 
 The activities pane and the workflow panel can be collapsed to a narrow rail, to give the canvas more room. Hover a rail to open its pane over the canvas, or click it to expand the pane again. The workflow panel's rail shows its tabs, so you can go straight to one of them. The width of the workflow panel, the height of the activity panel, whether it is pinned and whether each pane is collapsed are remembered in your browser.
 
+### Running a Workflow from the Designer
+
+**Run…** in the designer's toolbar runs the workflow, to try it while you build it. It runs the **published version**: publish your changes first to run them, since an instance runs on a version, so it can wait and resume. Running requires the **Execute workflows** permission, and the workflow must be enabled.
+
+- **A workflow that starts with Started by Workflow** (a workflow [usable as an activity](#workflows-as-activities)) runs with the values of its input variables: the dialog has a field per input variable, of its type (a number, a checkbox for a boolean, JSON for an object or an array). An empty field keeps the variable's default value. The dialog then shows the status of the instance, its error, and the values of its output variables.
+- **A workflow that starts with an HTTP Request event** runs with a request to the event's URL, sent by your browser as a client would: with the event's method, the query string you type, and for a method other than GET a body and its content type. The dialog shows the response, and the instance the request started.
+
+**Open the instance** opens the page of the instance, to see what each activity did. Workflows that start with another event, such as a content event or a timer, run when what they wait for happens.
+
 ### Focusing on Part of a Workflow
 
 In a large workflow, you can hide the activities you aren't working on. Right-click an activity (or press Shift+F10 or the Menu key) and choose **Collapse the activities after it** to hide the activities that come after it. An activity that a start activity also reaches without going through the collapsed one (for example a branch that joins back) stays visible, and start activities are never hidden. The collapsed activity looks like a stack and shows how many activities it hides: click that number, or choose **Show the hidden activities after it**, to show them again.

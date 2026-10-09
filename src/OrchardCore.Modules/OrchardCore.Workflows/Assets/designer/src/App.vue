@@ -17,6 +17,7 @@ import ToastHost from "./ui/ToastHost.vue";
 import SaveStatusIndicator from "./draft/SaveStatusIndicator.vue";
 import ConflictDialog from "./draft/ConflictDialog.vue";
 import PublishDialog from "./draft/PublishDialog.vue";
+import RunDialog from "./draft/RunDialog.vue";
 import DraftBanner from "./draft/DraftBanner.vue";
 import PresenceList from "./realtime/PresenceList.vue";
 import RemoteChangeNotice from "./realtime/RemoteChangeNotice.vue";
@@ -54,6 +55,7 @@ const publishDialog = ref<Exclude<PublishDecision, { kind: "publish" }> | null>(
 const busy = ref(false);
 const bannerDismissed = ref(false);
 const versionsOpen = ref(false);
+const runOpen = ref(false);
 
 // Whether an activity of the instance shown by the viewer ran a script that failed.
 const hasScriptErrors = computed(() => scriptErrorsByActivity(state.instance).size > 0);
@@ -715,6 +717,10 @@ defineExpose({ canvas, panel, activityPanel, addActivity, autosave, publish, dis
                     </a>
                 </div>
 
+                <button v-if="config.urls.run" type="button" class="btn btn-sm btn-outline-success" :title="t('RunHint')" data-cy="toolbar-run" @click="runOpen = true">
+                    <i class="fa-solid fa-play" aria-hidden="true"></i>
+                    {{ t("RunEllipsis") }}
+                </button>
                 <button type="button" class="btn btn-sm btn-outline-danger" :disabled="!hasChanges || busy" data-cy="toolbar-discard" @click="discard">
                     {{ t("DiscardDraft") }}
                 </button>
@@ -877,6 +883,7 @@ defineExpose({ canvas, panel, activityPanel, addActivity, autosave, publish, dis
             @close="publishDialog = null"
             @select-issue="onPublishIssueSelected"
         />
+        <RunDialog v-if="runOpen" :api="api" :workflow-type-id="config.workflowTypeId" :has-changes="hasChanges" @close="runOpen = false" />
 
         <ToastHost />
     </div>

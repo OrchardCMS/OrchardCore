@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.ViewModels;
@@ -94,6 +95,14 @@ public sealed class WorkflowDesignerRestoreRequest
 /// <summary>
 /// The body of the instance viewer's retry request.
 /// </summary>
+public sealed class WorkflowDesignerRunRequest
+{
+    /// <summary>
+    /// The values of the input variables, by name.
+    /// </summary>
+    public Dictionary<string, JsonNode> Inputs { get; set; } = [];
+}
+
 public sealed class WorkflowDesignerRetryRequest
 {
     /// <summary>

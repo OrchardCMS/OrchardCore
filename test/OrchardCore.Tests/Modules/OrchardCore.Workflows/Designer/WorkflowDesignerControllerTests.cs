@@ -63,7 +63,7 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         });
         var (id, _) = await CreateWorkflowTypeAsync(Activity("notify", "NotifyTask"));
 
-        foreach (var action in new[] { "Variables", "OutputBindings", "Retry" })
+        foreach (var action in new[] { "Variables", "OutputBindings", "Retry", "Run" })
         {
             using var request = new HttpRequestMessage(HttpMethod.Post, $"Admin/Workflows/Types/{id}/Designer/{action}")
             {
@@ -97,6 +97,8 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
         Assert.Equal($"{tenantPrefix}Admin/Workflows/Types/{id}/Designer/Definition", config["urls"]["definition"].GetValue<string>());
         Assert.Equal($"{tenantPrefix}Admin/Workflows/Types/{id}/Designer/Editor", config["urls"]["editor"].GetValue<string>());
         Assert.Equal($"{tenantPrefix}Admin/Workflows/Types/{id}/Designer/Versions", config["urls"]["versions"].GetValue<string>());
+        Assert.Equal($"{tenantPrefix}Admin/Workflows/Types/{id}/Designer/Run", config["urls"]["run"].GetValue<string>());
+        Assert.Equal($"{tenantPrefix}Admin/Workflows/Types/{id}/Designer/LatestInstance", config["urls"]["latestInstance"].GetValue<string>());
         Assert.Equal($"{tenantPrefix}Admin/Workflows/Types/Version/{id}", config["versionPageUrl"].GetValue<string>());
         Assert.Equal("designer", config["mode"].GetValue<string>());
         Assert.False(string.IsNullOrEmpty(config["translations"]["Undo"].GetValue<string>()));
@@ -1190,6 +1192,89 @@ public sealed class WorkflowDesignerControllerTests : IClassFixture<WorkflowDesi
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.Equal("application/problem+json", response.Content.Headers.ContentType?.MediaType);
+    }
+
+    [Fact]
+    public async Task Run_WorkflowStartedByWorkflow_RunsThePublishedVersionWithTheInputsAndReturnsTheOutputs()
+    {
+        var (id, workflowTypeId) = await CreateWorkflowTypeAsync(
+            [
+                Activity("start", "StartedByWorkflowEvent", isStart: true),
+                Activity("double", "SetVariableTask", properties: new JsonObject
+                {
+                    ["VariableName"] = "doubled",
+                    ["Value"] = new JsonObject { ["Expression"] = "variable('amount') * 2", ["Syntax"] = "JavaScript" },
+                }),
+            ],
+            [Transition("start", "Done", "double")]);
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            var store = scope.ServiceProvider.GetRequiredService<IWorkflowTypeStore>();
+            var workflowType = await store.GetAsync(workflowTypeId);
+            workflowType.IsActivity = true;
+            workflowType.Variables =
+            [
+                new WorkflowVariableDefinition { Name = "amount", TypeName = "number", IsInput = true },
+                new WorkflowVariableDefinition { Name = "doubled", TypeName = "number", IsOutput = true },
+            ];
+            await store.SaveAsync(workflowType);
+        });
+
+        var run = (await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/Definition"))["run"];
+        Assert.Equal("inputs", run["mode"].GetValue<string>());
+        Assert.Equal("start", run["activityId"].GetValue<string>());
+        Assert.Equal(["amount"], run["inputs"].AsArray().Select(input => input["name"].GetValue<string>()));
+
+        using (var response = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Run", new { inputs = new { amount = 21 } }))
+        {
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var json = await ReadJsonAsync(response);
+            Assert.Equal("Finished", json["status"].GetValue<string>());
+            Assert.Equal(42, json["outputs"]["doubled"].GetValue<double>());
+            Assert.EndsWith($"Workflow/Details/{json["instanceId"].GetValue<long>()}", json["instanceUrl"].GetValue<string>());
+
+            var latest = await GetJsonAsync($"Admin/Workflows/Types/{id}/Designer/LatestInstance");
+            Assert.Equal(json["instanceId"].GetValue<long>(), latest["instanceId"].GetValue<long>());
+            Assert.Equal("Finished", latest["status"].GetValue<string>());
+        }
+
+        // An input that isn't a value of its type is refused, and runs nothing.
+        using var invalid = await PostJsonAsync($"Admin/Workflows/Types/{id}/Designer/Run", new { inputs = new { amount = "many" } });
+
+        Assert.Equal(HttpStatusCode.BadRequest, invalid.StatusCode);
+        Assert.Contains("amount", (await ReadJsonAsync(invalid))["title"].GetValue<string>());
+    }
+
+    [Fact]
+    public async Task Run_HttpOrDisabledWorkflow_IsRefused()
+    {
+        var (httpId, _) = await CreateWorkflowTypeAsync(Activity("start", "HttpRequestEvent", isStart: true, properties: new JsonObject { ["HttpMethod"] = "POST" }));
+        var (disabledId, disabledWorkflowTypeId) = await CreateWorkflowTypeAsync(Activity("start", "StartedByWorkflowEvent", isStart: true));
+
+        await _fixture.Context.UsingTenantScopeAsync(async scope =>
+        {
+            var store = scope.ServiceProvider.GetRequiredService<IWorkflowTypeStore>();
+            var workflowType = await store.GetAsync(disabledWorkflowTypeId);
+            workflowType.IsEnabled = false;
+            await store.SaveAsync(workflowType);
+        });
+
+        // A workflow started by an HTTP request is run with a request to its URL.
+        var run = (await GetJsonAsync($"Admin/Workflows/Types/{httpId}/Designer/Definition"))["run"];
+        Assert.Equal("http", run["mode"].GetValue<string>());
+        Assert.Equal("POST", run["httpMethod"].GetValue<string>());
+
+        using (var http = await PostJsonAsync($"Admin/Workflows/Types/{httpId}/Designer/Run", new { inputs = new { } }))
+        {
+            Assert.Equal(HttpStatusCode.BadRequest, http.StatusCode);
+        }
+
+        Assert.False((await GetJsonAsync($"Admin/Workflows/Types/{disabledId}/Designer/Definition"))["run"]["isEnabled"].GetValue<bool>());
+
+        using var disabled = await PostJsonAsync($"Admin/Workflows/Types/{disabledId}/Designer/Run", new { inputs = new { } });
+
+        Assert.Equal(HttpStatusCode.BadRequest, disabled.StatusCode);
     }
 
     [Fact]

@@ -93,6 +93,11 @@ public sealed class WorkflowDesignerDefinition
     public WorkflowDesignerVersion PublishedVersion { get; init; }
 
     /// <summary>
+    /// How the designer runs the published version, in the designer.
+    /// </summary>
+    public WorkflowDesignerRun Run { get; init; }
+
+    /// <summary>
     /// The version shown: the one a read-only version page shows, or the one the instance of the instance
     /// viewer runs on. <see langword="null"/> in the designer, and for instances created before versions existed.
     /// </summary>

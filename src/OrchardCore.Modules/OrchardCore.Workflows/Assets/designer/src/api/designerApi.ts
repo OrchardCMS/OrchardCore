@@ -8,6 +8,7 @@ import type {
     DesignerVersions,
     EditorApplyResult,
     FormFragment,
+    HttpRunResponse,
     JournalData,
     Library,
     OutputBindingsResult,
@@ -15,6 +16,7 @@ import type {
     PublishResult,
     RestoreResult,
     RetryResult,
+    RunResult,
     SavePayload,
     SaveResult,
     SettingsApplyResult,
@@ -114,6 +116,30 @@ export const createDesignerApi = (urls: DesignerUrls, service: ApiService = crea
         saveVariables: (revision: number, variables: VariableDefinition[]) =>
             call(() => service.post<VariablesResult>(urls.variables!, { revision, variables })),
         retry: (instanceId: number, activityId: string) => call(() => service.post<RetryResult>(urls.retry!, { instanceId, activityId })),
+        run: (inputs: Record<string, unknown>) => call(() => service.post<RunResult>(urls.run!, { inputs })),
+        getLatestInstance: () => call(() => service.get<RunResult>(urls.latestInstance!)),
+        /**
+         * Generates the URL of an HTTP Request event, valid for a day.
+         */
+        generateHttpUrl: (workflowTypeId: number, activityId: string) =>
+            call(() => service.post<string>(withQuery(urls.generateHttpUrl!, { workflowTypeId, activityId, tokenLifeSpan: 1 }), {})),
+        /**
+         * Sends the request of a run to an HTTP Request event's URL, as a client would.
+         */
+        sendHttpRequest: async (url: string, method: string, body: string | null, contentType: string): Promise<HttpRunResponse> => {
+            try {
+                const response = await fetch(url, {
+                    method,
+                    credentials: "same-origin",
+                    headers: body === null ? undefined : { "Content-Type": contentType },
+                    body,
+                });
+
+                return { status: response.status, body: await response.text() };
+            } catch (error) {
+                throw new DesignerApiError(0, undefined, (error as Error)?.message);
+            }
+        },
         getJournalData: (sequence: number) => call(() => service.get<JournalData>(withQuery(urls.journalData!, { sequence }))),
         saveOutputBindings: (activityId: string, revision: number, bindings: Record<string, string>) =>
             call(() => service.post<OutputBindingsResult>(urls.outputBindings!, { activityId, revision, bindings })),

@@ -20,6 +20,11 @@ export interface DesignerUrls {
     retry?: string | null;
     // Set on the instance viewer: the data of a journal record, with a sequence query string parameter.
     journalData?: string | null;
+    // Set on the designer when the user can execute workflows: runs it with inputs, finds the newest instance, and
+    // generates the URL of an HTTP Request event (null when the HTTP feature is disabled).
+    run?: string | null;
+    latestInstance?: string | null;
+    generateHttpUrl?: string | null;
 }
 
 /**

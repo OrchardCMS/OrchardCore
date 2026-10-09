@@ -859,6 +859,40 @@ public sealed class WorkflowsDesignerTests : CmsTestBase<WorkflowsDesignerTestsF
         await page.CloseAsync();
     }
 
+    [Fact]
+    public async Task Run_WorkflowWithInputsOrStartedByARequest_RunsItFromTheDesignerAndOpensTheInstance()
+    {
+        var (page, consoleErrors) = await OpenAsync();
+
+        // The Doubler runs with its input, and shows its output.
+        var doublerId = await page.FindWorkflowTypeIdAsync("Doubler");
+        await page.OpenDesignerAsync(doublerId);
+        await page.Locator("[data-cy=toolbar-run]").ClickAsync();
+        await page.Locator("[data-cy=run-input-amount] input").FillAsync("21");
+        await page.Locator("[data-cy=run-start]").ClickAsync();
+
+        await Assertions.Expect(page.Locator("[data-cy=run-status]")).ToHaveTextAsync("Finished");
+        await Assertions.Expect(page.Locator("[data-cy=run-output-doubled]")).ToHaveTextAsync("42");
+
+        await page.Locator("[data-cy=run-open-instance]").ClickAsync();
+        await page.WaitForDesignerAsync();
+        await Assertions.Expect(page.Locator("[data-cy=panel-tab-journal]")).ToBeVisibleAsync();
+
+        // A workflow started by an HTTP request is run with a request to its URL.
+        var requestId = await page.FindWorkflowTypeIdAsync("Recorded condition");
+        await page.OpenDesignerAsync(requestId);
+        await page.Locator("[data-cy=toolbar-run]").ClickAsync();
+        await page.Locator("[data-cy=run-start]").ClickAsync();
+
+        await Assertions.Expect(page.Locator("[data-cy=run-response-status]")).ToHaveTextAsync("200");
+        await Assertions.Expect(page.Locator("[data-cy=run-response-body]")).ToHaveTextAsync("big");
+        await Assertions.Expect(page.Locator("[data-cy=run-status]")).ToHaveTextAsync("Finished");
+        await Assertions.Expect(page.Locator("[data-cy=run-open-instance]")).ToBeVisibleAsync();
+
+        Assert.Empty(consoleErrors);
+        await page.CloseAsync();
+    }
+
     private static async Task OpenInstanceAsync(IPage page, long workflowTypeId, string status)
     {
         await page.GotoAndAssertOkAsync($"/Admin/Workflows/Types/{workflowTypeId}/Instances/Index");

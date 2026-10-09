@@ -380,7 +380,13 @@ public sealed class WorkflowTypeController : Controller
         return View(new WorkflowDesignerViewModel
         {
             WorkflowType = workflowType,
-            ConfigJson = WorkflowDesignerConfigBuilder.Build(Url, User, _jsLocalizers, workflowType, initialActivityId: activityId),
+            ConfigJson = WorkflowDesignerConfigBuilder.Build(
+                Url,
+                User,
+                _jsLocalizers,
+                workflowType,
+                initialActivityId: activityId,
+                canRun: await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ExecuteWorkflows)),
         });
     }
 

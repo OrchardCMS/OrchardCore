@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -6,7 +7,9 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Modules;
+using OrchardCore.Workflows.Events;
 using OrchardCore.Workflows.Helpers;
+using OrchardCore.Workflows.Http.Activities;
 using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
@@ -145,13 +148,124 @@ public sealed class WorkflowDesignerController : Controller
             Issues = issues,
             RunningInstanceCount = runningInstanceCount,
             PublishedVersion = await PublishedVersionAsync(workflowType),
+            Run = RunOf(workflowType),
         });
     }
 
     /// <summary>
-    /// The graph of the read-only instance viewer: the version the instance runs on (never the draft), with the
-    /// activities the instance waits on.
+    /// Runs the published version of a workflow type that starts with <see cref="StartedByWorkflowEvent"/>, with the
+    /// values of its input variables, as the Execute Workflow task does. It requires the permission to execute
+    /// workflows.
     /// </summary>
+    [HttpPost]
+    public async Task<IActionResult> Run(long workflowTypeId, [FromBody] WorkflowDesignerRunRequest request)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ExecuteWorkflows))
+        {
+            return this.ApiForbidProblem();
+        }
+
+        var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
+
+        if (workflowType is null)
+        {
+            return this.ApiNotFoundProblem();
+        }
+
+        var run = RunOf(workflowType);
+
+        if (!run.IsEnabled)
+        {
+            return ProblemResult(StatusCodes.Status400BadRequest, S["The workflow is disabled. Enable it to run it."]);
+        }
+
+        if (run.Mode != WorkflowDesignerRun.InputsMode)
+        {
+            return ProblemResult(StatusCodes.Status400BadRequest, S["Only a published workflow that starts with Started by Workflow runs with inputs."]);
+        }
+
+        if (workflowType.IsSingleton && await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId))
+        {
+            return ProblemResult(StatusCodes.Status409Conflict, S["This workflow runs one instance at a time, and one is running."]);
+        }
+
+        var input = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+        var invalid = new List<string>();
+
+        foreach (var variable in run.Inputs)
+        {
+            var value = request?.Inputs?.FirstOrDefault(entry => string.Equals(entry.Key, variable.Name, StringComparison.OrdinalIgnoreCase)).Value;
+
+            if (value is null)
+            {
+                continue;
+            }
+
+            if (_variableTypes.Get(variable.TypeName) is { } type && !type.TryCoerce(value, out _))
+            {
+                invalid.Add(variable.Name);
+
+                continue;
+            }
+
+            input[variable.Name] = value;
+        }
+
+        if (invalid.Count > 0)
+        {
+            return ProblemResult(StatusCodes.Status400BadRequest, S["These inputs don't have a value of their type: {0}.", string.Join(", ", invalid)]);
+        }
+
+        var start = workflowType.Activities.First(activity => activity.ActivityId == run.ActivityId);
+        var workflowContext = await _workflowManager.StartWorkflowAsync(workflowType, start, input);
+        var workflow = workflowContext.Workflow;
+        var exists = workflow.Id != 0 && await _workflowStore.GetAsync(workflow.Id) is not null;
+
+        return Ok(new WorkflowDesignerRunResult
+        {
+            InstanceId = exists ? workflow.Id : null,
+            InstanceUrl = exists ? InstanceUrl(workflow.Id) : null,
+            Status = workflowContext.Status.ToString(),
+            FaultMessage = workflow.FaultMessage,
+            Outputs = workflowContext.Variables.GetOutputs().ToDictionary(
+                output => output.Key,
+                output => SerializeValue(output.Value),
+                StringComparer.OrdinalIgnoreCase),
+        });
+    }
+
+    /// <summary>
+    /// The newest instance of a workflow type, which the Run dialog looks for once the request it sent to an HTTP
+    /// Request event answered. It requires the permission to execute workflows.
+    /// </summary>
+    [HttpGet]
+    public async Task<IActionResult> LatestInstance(long workflowTypeId)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ExecuteWorkflows))
+        {
+            return this.ApiForbidProblem();
+        }
+
+        var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
+
+        if (workflowType is null)
+        {
+            return this.ApiNotFoundProblem();
+        }
+
+        var latest = await _session.Query<Workflow, WorkflowIndex>(index => index.WorkflowTypeId == workflowType.WorkflowTypeId)
+            .OrderByDescending(index => index.DocumentId)
+            .FirstOrDefaultAsync();
+
+        return Ok(new WorkflowDesignerRunResult
+        {
+            InstanceId = latest?.Id,
+            InstanceUrl = latest is null ? null : InstanceUrl(latest.Id),
+            Status = latest?.Status.ToString(),
+            FaultMessage = latest?.FaultMessage,
+        });
+    }
+
     /// <summary>
     /// The data of an activity's execution, from a record of an instance's journal: what the activity evaluated, set
     /// and changed (see <see cref="WorkflowType.RecordActivityData"/>). The viewer loads it when the record is opened.
@@ -177,6 +291,10 @@ public sealed class WorkflowDesignerController : Controller
         return record?.Data is null ? this.ApiNotFoundProblem() : Ok(record.Data);
     }
 
+    /// <summary>
+    /// The graph of the read-only instance viewer: the version the instance runs on (never the draft), with the
+    /// activities the instance waits on.
+    /// </summary>
     [HttpGet]
     public async Task<IActionResult> Instance(long workflowTypeId, long instanceId)
     {
@@ -995,6 +1113,50 @@ public sealed class WorkflowDesignerController : Controller
         }
 
         return values;
+    }
+
+    // How the Run dialog runs the published version: with its inputs when it starts with Started by Workflow,
+    // otherwise with a request when it starts with an HTTP Request event.
+    private static WorkflowDesignerRun RunOf(WorkflowType workflowType)
+    {
+        var starts = workflowType.Activities?.Where(activity => activity.IsStart).ToList() ?? [];
+        var startedByWorkflow = starts.FirstOrDefault(activity => activity.Name == nameof(StartedByWorkflowEvent));
+
+        if (startedByWorkflow is not null)
+        {
+            return new WorkflowDesignerRun
+            {
+                Mode = WorkflowDesignerRun.InputsMode,
+                IsEnabled = workflowType.IsEnabled,
+                ActivityId = startedByWorkflow.ActivityId,
+                Inputs = (workflowType.Variables ?? []).Where(variable => variable.IsInput).ToList(),
+            };
+        }
+
+        var httpRequest = starts.FirstOrDefault(activity => activity.Name == HttpRequestEvent.EventName);
+
+        return new WorkflowDesignerRun
+        {
+            Mode = httpRequest is null ? null : WorkflowDesignerRun.HttpMode,
+            IsEnabled = workflowType.IsEnabled,
+            ActivityId = httpRequest?.ActivityId,
+            HttpMethod = httpRequest?.Properties?[nameof(HttpRequestEvent.HttpMethod)]?.GetValue<string>() ?? "GET",
+        };
+    }
+
+    private string InstanceUrl(long instanceId)
+        => Url.Action("Details", "Workflow", new { area = "OrchardCore.Workflows", id = instanceId });
+
+    private static JsonNode SerializeValue(object value)
+    {
+        try
+        {
+            return value is JsonNode node ? node.DeepClone() : JsonSerializer.SerializeToNode(value, JOptions.Default);
+        }
+        catch (Exception ex) when (ex is NotSupportedException or InvalidOperationException or JsonException)
+        {
+            return JsonValue.Create(value?.ToString());
+        }
     }
 
     private Task<bool> CanManageAsync()

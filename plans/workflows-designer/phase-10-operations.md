@@ -10,7 +10,7 @@ Paths: `M/` = `src/OrchardCore.Modules/OrchardCore.Workflows/`, `A/` = `src/Orch
 |---|---|---|---|
 | 1 | Each activity's data in the journal: the expressions it evaluated, the outputs it set, the variables it changed, its last result | 10.1–10.4 | Done |
 | 2 | Retry policies per activity, and what a failure does | 10.5 | Done |
-| 3 | Run a workflow from the designer, with an input | 10.6 | Not started |
+| 3 | Run a workflow from the designer, with an input | 10.6 | Done |
 | 4 | One running instance per correlation id | 10.7 | Not started |
 | 5 | Instances across workflows: filters, bulk actions | 10.8 | Not started |
 | 6 | Links between a parent instance and the child instances it ran | 10.9 | Not started |
@@ -119,9 +119,28 @@ Steps:
   - **Docs.** "Retrying Failed Tasks Automatically" in the Execution Journal section, the API for developers, release notes and breaking changes (the interface members and statuses).
   - **Tests.** `WorkflowManagerTests` (7): retries without a delay until success, spent retries fault with the handlers run once, spent retries follow Failed, a delayed retry runs when due and doubles, a retry by hand starts the attempts again, the delays, the policy of tasks and events. `WorkflowStoreRetryTests` lists the due retries on SQLite with the real migration. `WorkflowTypeDraftManagerTests` keeps the `Failed` transition while followed. Vitest (JournalTab, ActivityNode, instance viewer): 299/299. Functional `RetryPolicy_TaskThatKeepsFailing_IsRetriedThenFollowsItsFailedOutcome` with the seeded "Retried call" (the sample `TransientFailureTask` now fails `Failures` times): the badge, the Failed port, the settings, the response from the Failed branch, and the journal; the designer class passes 29/29. Workflows tests: 526/526.
 
-### - [ ] 10.6 Run from the designer (item 3)
+### - [x] 10.6 Run from the designer (item 3)
 
-To detail when it starts. Sketch: **Run…** in the designer's toolbar for a workflow started by an HTTP request or usable as an activity: it asks for the inputs (the input variables, or a query string and a body), runs the published version or the draft, and opens the instance.
+Decisions:
+
+| # | Decision | Why |
+|---|---|---|
+| RN1 | **Run…** in the designer's toolbar runs the **published version**, never the draft; when the draft has changes, the dialog says to publish them first. | Instances run on a version so they can wait and resume (Phase 5); a draft isn't one, and a run has real effects (emails, content). |
+| RN2 | A workflow that starts with **Started by Workflow** runs with its **input variables**, one field per variable, typed by the variable's type, on the server (`Designer/Run`), which returns the instance, its status, its error and its output variables. | That's what Execute Workflow passes it, so it runs as it would from another workflow. |
+| RN3 | A workflow that starts with an **HTTP Request** event is run by sending the request from the browser to its generated URL, with the event's method, a query string and a body, as a client would. The dialog shows the response, and finds the instance the request started (the newest of the workflow, created after the request was sent). | The HTTP event reads the request (its method, query string, body, headers), which only a real request has. |
+| RN4 | Running requires **Execute workflows**, like retrying. A workflow that's disabled, or whose published version starts with another event, doesn't offer Run. | Running from the designer is executing the workflow. Other events (content, timers, users) are triggered by what they wait for. |
+
+Steps:
+
+- `Designer/Run` (inputs) and `Designer/LatestInstance`; the definition says how the published version runs (`run`: inputs or HTTP, its start activity, its method, its input variables); the configuration has the URLs when the user can execute workflows.
+- `RunDialog.vue`: the inputs or the request, the result (status, error, outputs, or the response), and a link to the instance.
+- **Tests**: the endpoint runs with typed inputs and returns the outputs, refuses without the permission, a disabled workflow or another start; Vitest for both modes; a functional test of each mode.
+- **Notes from implementing this step:**
+  - **Server.** `WorkflowDesignerDefinition.Run` (`WorkflowDesignerRun`: `Mode` `inputs`/`http`/null, `IsEnabled`, `ActivityId`, `HttpMethod`, `Inputs`) is computed from the published workflow type: Started by Workflow first, then HTTP Request. `POST Designer/Run` checks Execute workflows, the mode, that the workflow is enabled, a singleton that's running (409), and that each input coerces to its variable's type (400 naming those that don't), then starts the published version and returns a `WorkflowDesignerRunResult` (instance id and page URL unless it was deleted once finished, status, error, outputs as JSON). `GET Designer/LatestInstance` returns the newest instance of the type (by document id).
+  - **Configuration.** With Execute workflows, the designer's configuration has `urls.run`, `urls.latestInstance` and `urls.generateHttpUrl` (the HTTP feature's `GenerateUrl`, null when it's disabled); the toolbar shows **Run…** then.
+  - **Dialog.** `draft/RunDialog.vue` loads the definition when it opens, since a publish may have changed how the workflow runs. Inputs: a field per input variable by type (number, checkbox, JSON for object, array and any, text otherwise); an empty field is left out. HTTP: it notes the newest instance, generates a URL valid for a day, sends the request with `fetch` (same-origin credentials), shows the status and the body (cut at 5,000 characters), then takes the newest instance if it's a new one. Notes for a draft with changes, a workflow that can't run here, and a disabled one.
+  - **Tests.** `WorkflowDesignerControllerTests`: `Run_WorkflowStartedByWorkflow_RunsThePublishedVersionWithTheInputsAndReturnsTheOutputs` (the definition's run, the outputs, the instance URL, the newest instance, an input of the wrong type), `Run_HttpOrDisabledWorkflow_IsRefused`, the URLs in the configuration, and Run in the endpoints refused without the permission. `RunDialog.spec.ts` (6): typed inputs, invalid JSON, the request and its instance, a request that started none, the notes, the toolbar button. Vitest 305/305. Functional `Run_WorkflowWithInputsOrStartedByARequest_RunsItFromTheDesignerAndOpensTheInstance` (the seeded Doubler with 21 gives 42 and opens its instance; Recorded condition answers "big"); the designer class passes 30/30.
+  - **Also.** The instance viewer's endpoint had lost its doc comment to the journal data's; it's back above `Instance`.
 
 ### - [ ] 10.7 One instance per correlation id (item 4)
 
