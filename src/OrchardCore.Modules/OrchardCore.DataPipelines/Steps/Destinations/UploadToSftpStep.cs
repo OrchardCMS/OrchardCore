@@ -89,7 +89,7 @@ public sealed class UploadToSftpStep : DataPipelineStepType<UploadToSftpStepSett
             (!string.IsNullOrEmpty(settings.ProtectedPrivateKey) && _secrets.Unprotect(settings.ProtectedPrivateKey) is null) ||
             (!string.IsNullOrEmpty(settings.ProtectedPassphrase) && _secrets.Unprotect(settings.ProtectedPassphrase) is null))
         {
-            context.AddError(S["The credentials can't be read on this site, such as after an import: enter them again."]);
+            context.AddError(S["The credentials can't be read on this site, such as when its data protection keys changed: enter them again."]);
         }
 
         if (string.IsNullOrWhiteSpace(settings.HostKeyFingerprint))

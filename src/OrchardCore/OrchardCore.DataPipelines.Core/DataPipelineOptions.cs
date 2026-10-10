@@ -17,7 +17,7 @@ public sealed class DataPipelineOptions
     public int MaxRowsInMemory { get; set; } = DefaultMaxRowsInMemory;
 
     /// <summary>
-    /// Gets or sets the number of days the runs of a pipeline are kept. Older runs are deleted. Defaults to 30.
+    /// Gets or sets the number of days the runs of a pipeline are kept. Older runs are deleted; 0 keeps them. Defaults to 30.
     /// </summary>
     public int RunRetentionDays { get; set; } = 30;
 

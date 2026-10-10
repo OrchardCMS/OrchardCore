@@ -81,7 +81,7 @@ public sealed class UploadToFtpStep : DataPipelineStepType<UploadToFtpStepSettin
 
         if (!string.IsNullOrEmpty(settings.ProtectedPassword) && _secrets.Unprotect(settings.ProtectedPassword) is null)
         {
-            context.AddError(S["The password can't be read on this site, such as after an import: enter it again."]);
+            context.AddError(S["The password can't be read on this site, such as when its data protection keys changed: enter it again."]);
         }
 
         if (settings.TimeoutSeconds < 1)

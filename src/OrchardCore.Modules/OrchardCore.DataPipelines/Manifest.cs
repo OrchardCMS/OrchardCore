@@ -36,7 +36,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.DataPipelines.Email",
     Name = "Data Pipelines - Email",
-    Description = "Lets data pipelines send the files they create by email, and notify the recipients of download links.",
+    Description = "Lets data pipelines send the files they create by email.",
     Dependencies =
     [
         "OrchardCore.DataPipelines",
