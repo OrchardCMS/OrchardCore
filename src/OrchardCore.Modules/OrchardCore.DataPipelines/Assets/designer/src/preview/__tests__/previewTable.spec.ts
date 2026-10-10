@@ -51,6 +51,12 @@ describe("previewTable", () => {
         expect(formatValue("2026-10-01", "Date").text).toBe("2026-10-01");
     });
 
+    it("formatValue_DateTimeWithTicks_KeepsMillisecondsAtMost", () => {
+        expect(formatValue("2026-10-10T20:47:54.0699028Z", "DateTime").text).toBe("2026-10-10 20:47:54.069Z");
+        expect(formatValue("2026-10-10T20:47:54.0000000Z", "DateTime").text).toBe("2026-10-10 20:47:54Z");
+        expect(formatValue("2026-10-10T20:47:54.5+02:00", "DateTime").text).toBe("2026-10-10 20:47:54.5+02:00");
+    });
+
     it("formatFileSize_Lengths_UsesTheRightUnit", () => {
         expect(formatFileSize(512)).toBe("512 B");
         expect(formatFileSize(1536)).toBe("1.5 KB");

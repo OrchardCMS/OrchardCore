@@ -3,7 +3,20 @@ import { computed } from "vue";
 import type { SaveStatus } from "../state/designerStore";
 import { t } from "../i18n";
 
-const props = defineProps<{ status: SaveStatus }>();
+const props = defineProps<{
+    status: SaveStatus;
+    // Whether the pipeline has a draft, and a published version: once published, a saved pipeline has no draft.
+    hasDraft: boolean;
+    isPublished: boolean;
+}>();
+
+const savedText = () => {
+    if (props.hasDraft) {
+        return t("Saved", "Draft saved");
+    }
+
+    return props.isPublished ? t("NoUnpublishedChanges", "No unpublished changes") : t("SavedNoDraft", "Saved");
+};
 
 const emit = defineEmits<{
     (event: "retry"): void;
@@ -23,7 +36,7 @@ const view = computed(() => {
         case "conflict":
             return { icon: "fa-solid fa-code-merge", text: t("SaveConflict", "Changed elsewhere"), tone: "text-danger" };
         default:
-            return { icon: "fa-solid fa-check", text: t("Saved", "Draft saved"), tone: "text-body-secondary" };
+            return { icon: "fa-solid fa-check", text: savedText(), tone: "text-body-secondary" };
     }
 });
 </script>

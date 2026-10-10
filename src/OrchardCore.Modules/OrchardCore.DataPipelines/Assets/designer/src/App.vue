@@ -616,7 +616,13 @@ defineExpose({ canvas, panel, stepPanel, addStep, autosave, publish, discard, st
             </template>
 
             <template v-if="!readOnly && !loading && !loadError">
-                <SaveStatusIndicator :status="state.saveStatus" @retry="autosave.save()" @resolve="conflictOpen = true" />
+                <SaveStatusIndicator
+                    :status="state.saveStatus"
+                    :has-draft="state.hasDraft"
+                    :is-published="!!state.publishedVersion"
+                    @retry="autosave.save()"
+                    @resolve="conflictOpen = true"
+                />
 
                 <div class="btn-group btn-group-sm" role="group" :aria-label="t('History', 'History')">
                     <button

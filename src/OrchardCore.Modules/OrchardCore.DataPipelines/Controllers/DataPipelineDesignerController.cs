@@ -127,7 +127,8 @@ public sealed class DataPipelineDesignerController : Controller
             Issues = analysis.Issues.Select(DesignerIssue.From).ToList(),
             PublishedVersion = DesignerVersion.From(published, pipeline),
             Version = DesignerVersion.From(version, pipeline),
-            CanRun = pipeline.Published is not null && pipeline.IsEnabled && await AuthorizeAsync(DataPipelinePermissions.RunDataPipelines),
+            // The designer offers to run a pipeline published while it's open; the run endpoint rejects a disabled one.
+            CanRun = await AuthorizeAsync(DataPipelinePermissions.RunDataPipelines),
             LastRun = DataPipelineDesignerModelBuilder.BuildRun(lastRun, RunUrl(lastRun), await AuthorizeAsync(DataPipelinePermissions.RunDataPipelines)),
         });
     }

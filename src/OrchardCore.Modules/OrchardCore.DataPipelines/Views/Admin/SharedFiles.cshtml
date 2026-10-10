@@ -49,7 +49,7 @@
                 <div class="col-auto">
                     @if (!string.IsNullOrEmpty(file.RunId))
                     {
-                        <a asp-action="Run" asp-route-runId="@file.RunId" class="btn btn-secondary btn-sm">@T["Run"]</a>
+                        <a asp-action="Run" asp-route-runId="@file.RunId" class="btn btn-secondary btn-sm">@T["View the run"]</a>
                     }
                     @if (active)
                     {

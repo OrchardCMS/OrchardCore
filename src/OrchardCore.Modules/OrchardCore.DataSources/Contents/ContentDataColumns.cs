@@ -55,8 +55,11 @@ public static class ContentDataColumns
             {
                 foreach (var value in partValues)
                 {
+                    // The title of a TitlePart is "Title", not "Title Title".
+                    var label = string.Equals(partLabel, value.Property, StringComparison.OrdinalIgnoreCase) ? partLabel : $"{partLabel} {value.Property}";
+
                     columns.Add(new(
-                        new DataField($"{partName}.{value.Property}", $"{partLabel} {value.Property}", value.Type, partLabel),
+                        new DataField($"{partName}.{value.Property}", label, value.Type, partLabel),
                         item => ReadValue(((JsonObject)item.Content)[partName]?[value.Property], value))
                     {
                         Write = (item, data) => WriteValue(item, partName, null, value, data),

@@ -2,7 +2,7 @@
 @{
     var run = Model.Run;
     var culture = System.Globalization.CultureInfo.CurrentCulture;
-    var titles = run.Definition?.Steps.ToDictionary(step => step.StepId, step => step.Title ?? step.Type) ?? new Dictionary<string, string>();
+    var titles = Model.StepNames;
 }
 
 <zone Name="Title">

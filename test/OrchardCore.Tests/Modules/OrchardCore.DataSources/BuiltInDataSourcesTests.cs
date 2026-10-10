@@ -40,6 +40,10 @@ public sealed class BuiltInDataSourcesTests
             Assert.Equal(DataFieldType.Text, fields["MarkdownBodyPart.Markdown"].Type);
             Assert.Equal(DataFieldType.Text, fields["BlogPost.Subtitle"].Type);
             Assert.Equal(DataFieldType.Text, fields["BlogPost.Tags"].Type);
+
+            // A part value named like its part isn't labeled twice.
+            Assert.Equal("Title", fields["TitlePart.Title"].DisplayName);
+            Assert.Equal("Autoroute Path", fields["AutoroutePart.Path"].DisplayName);
         });
     }
 

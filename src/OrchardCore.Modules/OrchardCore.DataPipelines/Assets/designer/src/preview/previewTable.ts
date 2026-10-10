@@ -31,9 +31,20 @@ export const fieldTypeLabel = (type: FieldType) =>
 
 const isNumericType = (type: FieldType | undefined) => type === "Integer" || type === "Decimal";
 
+// The fraction of the seconds of an ISO date and time, such as ".0699028" in "2026-10-10T20:47:54.0699028Z".
+const secondsFraction = /(:\d{2})\.(\d+)/;
+
+const trimSecondsFraction = (value: string) =>
+    value.replace(secondsFraction, (_, seconds: string, fraction: string) => {
+        const milliseconds = fraction.slice(0, 3).replace(/0+$/, "");
+
+        return milliseconds ? `${seconds}.${milliseconds}` : seconds;
+    });
+
 /**
- * The text of a value: null is "null", booleans are "true"/"false", a date and time loses its "T" separator (its zone
- * designator stays, so the value isn't misread), and everything else is shown as is.
+ * The text of a value: null is "null", booleans are "true"/"false", a date and time loses its "T" separator and the
+ * digits of its seconds after the milliseconds (its zone designator stays, so the value isn't misread), and everything
+ * else is shown as is.
  */
 export const formatValue = (value: PreviewValue | undefined, type?: FieldType): PreviewCell => {
     if (value === null || value === undefined) {
@@ -49,7 +60,7 @@ export const formatValue = (value: PreviewValue | undefined, type?: FieldType): 
     }
 
     if (type === "DateTime" && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(value)) {
-        return { text: value.replace("T", " "), isNull: false, isNumber: false };
+        return { text: trimSecondsFraction(value.replace("T", " ")), isNull: false, isNumber: false };
     }
 
     return { text: value, isNull: false, isNumber: isNumericType(type) };

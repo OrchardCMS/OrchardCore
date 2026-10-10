@@ -25,6 +25,7 @@ public sealed class AdminController : Controller
     private readonly DataPipelineManager _pipelineManager;
     private readonly DataPipelineRunManager _runManager;
     private readonly DataPipelineSharedFileManager _sharedFileManager;
+    private readonly IDataPipelineStepTypeManager _stepTypeManager;
     private readonly OrchardCore.Modules.IClock _clock;
     private readonly IAuthorizationService _authorizationService;
     private readonly IShapeFactory _shapeFactory;
@@ -37,6 +38,7 @@ public sealed class AdminController : Controller
         DataPipelineManager pipelineManager,
         DataPipelineRunManager runManager,
         DataPipelineSharedFileManager sharedFileManager,
+        IDataPipelineStepTypeManager stepTypeManager,
         OrchardCore.Modules.IClock clock,
         IAuthorizationService authorizationService,
         IShapeFactory shapeFactory,
@@ -48,6 +50,7 @@ public sealed class AdminController : Controller
         _pipelineManager = pipelineManager;
         _runManager = runManager;
         _sharedFileManager = sharedFileManager;
+        _stepTypeManager = stepTypeManager;
         _clock = clock;
         _authorizationService = authorizationService;
         _shapeFactory = shapeFactory;
@@ -256,9 +259,20 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
+        // A step is named by its title, or else by the name of its type.
+        var stepNames = new Dictionary<string, string>(StringComparer.Ordinal);
+
+        foreach (var step in run.Definition?.Steps ?? [])
+        {
+            stepNames[step.StepId] = !string.IsNullOrWhiteSpace(step.Title)
+                ? step.Title
+                : _stepTypeManager.GetStepType(step.Type)?.DisplayName.Value ?? step.Type;
+        }
+
         return View(new DataPipelineRunViewModel
         {
             Run = run,
+            StepNames = stepNames,
             Pipeline = await _pipelineManager.GetAsync(run.PipelineId),
             CanCancel = !run.IsCompleted && await _authorizationService.AuthorizeAsync(User, DataPipelinePermissions.RunDataPipelines),
         });
