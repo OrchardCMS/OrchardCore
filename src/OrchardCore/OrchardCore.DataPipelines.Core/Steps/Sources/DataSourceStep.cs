@@ -79,13 +79,14 @@ public sealed class DataSourceStep : DataPipelineStepType<DataSourceStepSettings
         }
 
         var today = DateTime.UtcNow.Date;
+        var now = await DataPipelineFormulas.GetRunTimeAsync(context.Run);
+        var maxRows = context.Run.IsPreview
+            ? (settings.MaxRows > 0 ? Math.Min(settings.MaxRows, context.Run.PreviewRowLimit) : context.Run.PreviewRowLimit)
+            : Math.Max(0, settings.MaxRows);
         var query = new DataSourceQuery
         {
             DataSet = settings.DataSet,
             Context = new DataSourceContext { User = context.Run.User },
-            MaxRows = context.Run.IsPreview
-                ? (settings.MaxRows > 0 ? Math.Min(settings.MaxRows, context.Run.PreviewRowLimit) : context.Run.PreviewRowLimit)
-                : Math.Max(0, settings.MaxRows),
         };
 
         foreach (var field in plan.ReadFields)
@@ -93,9 +94,10 @@ public sealed class DataSourceStep : DataPipelineStepType<DataSourceStepSettings
             query.Fields.Add(field);
         }
 
+        // Parameter values and filter values can hold placeholders, such as {Parameter:Since} for a value a workflow passes.
         foreach (var (name, value) in settings.Parameters ?? [])
         {
-            query.Parameters[name] = value;
+            query.Parameters[name] = DataPipelineTemplate.Render(value, context.Run, now);
         }
 
         var predicates = new List<(string Field, Func<object, bool> Predicate)>();
@@ -103,7 +105,8 @@ public sealed class DataSourceStep : DataPipelineStepType<DataSourceStepSettings
         foreach (var filter in settings.Filters)
         {
             var field = schema.FindField(filter.Field);
-            var predicate = DataFilterPredicates.Build(filter.Operator, field.Type, filter.Values, today);
+            var values = filter.Values.Select(value => DataPipelineTemplate.Render(value, context.Run, now)).ToArray();
+            var predicate = DataFilterPredicates.Build(filter.Operator, field.Type, values, today);
 
             if (predicate is null)
             {
@@ -112,14 +115,18 @@ public sealed class DataSourceStep : DataPipelineStepType<DataSourceStepSettings
 
             predicates.Add((field.Name, predicate));
 
-            if (DataFilterPredicates.BuildCondition(field.Name, filter.Operator, field.Type, filter.Values, value => value, today) is { } condition)
+            if (DataFilterPredicates.BuildCondition(field.Name, filter.Operator, field.Type, values, value => value, today) is { } condition)
             {
                 query.Conditions.Add(condition);
             }
         }
 
+        // The rows are filtered again here, as a source may ignore conditions: it can only stop at the most rows when
+        // every row it reads is kept.
+        query.MaxRows = predicates.Count == 0 ? maxRows : 0;
+
         var output = context.GetOutput();
-        var remaining = query.MaxRows > 0 ? query.MaxRows : long.MaxValue;
+        var remaining = maxRows > 0 ? maxRows : long.MaxValue;
 
         await foreach (var batch in dataSource.ReadAsync(query, context.CancellationToken))
         {

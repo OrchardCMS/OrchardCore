@@ -148,6 +148,9 @@ public sealed class DataPipelineRunManager
             run.Status = DataPipelineRunStatus.Cancelled;
             run.CompletedUtc = _clock.UtcNow;
             run.Error = "The run was cancelled before it started.";
+
+            // A running run tells the handlers itself when it stops.
+            DataPipelineRunNotifications.NotifyAfterCommit(run);
         }
         else
         {

@@ -6,8 +6,9 @@ namespace OrchardCore.DataPipelines.Steps;
 
 /// <summary>
 /// Renders the names steps give their files and the texts they send, from placeholders: <c>{PipelineName}</c>,
-/// <c>{RunId}</c>, and <c>{Date:format}</c>, where format is a .NET date format such as <c>yyyy-MM-dd</c>. The date is
-/// when the run started, in the time zone of the site. Unknown placeholders are left as they are.
+/// <c>{RunId}</c>, <c>{Date:format}</c>, where format is a .NET date format such as <c>yyyy-MM-dd</c>, and
+/// <c>{Parameter:name}</c>, a parameter of the run such as one a workflow passes, or nothing when the run has none of
+/// that name. The date is when the run started, in the time zone of the site. Unknown placeholders are left as they are.
 /// </summary>
 public static partial class DataPipelineTemplate
 {
@@ -52,6 +53,11 @@ public static partial class DataPipelineTemplate
                     {
                         return match.Value;
                     }
+
+                case "Parameter":
+                    return format is not null && run.Parameters.TryGetValue(format, out var value)
+                        ? Convert.ToString(value, CultureInfo.InvariantCulture) ?? string.Empty
+                        : string.Empty;
 
                 default:
                     return match.Value;

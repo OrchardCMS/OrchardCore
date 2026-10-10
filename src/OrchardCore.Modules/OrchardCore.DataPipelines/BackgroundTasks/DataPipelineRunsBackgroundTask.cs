@@ -68,6 +68,7 @@ public sealed class DataPipelineRunsBackgroundTask : IBackgroundTask
             run.CompletedUtc = now;
             run.Error = "The run stopped unexpectedly, such as when the site restarted.";
             await session.SaveAsync(run, cancellationToken: cancellationToken);
+            DataPipelineRunNotifications.NotifyAfterCommit(run);
 
             logger.LogWarning("The data pipeline run '{RunId}' stopped reporting its progress and was marked as failed.", run.RunId);
         }

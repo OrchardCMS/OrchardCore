@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.DataPipelines.Services;
 using OrchardCore.Workflows.Display;
+using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.DataPipelines.Workflows;
 
@@ -17,6 +18,7 @@ public sealed class RunDataPipelineTaskDisplayDriver : ActivityDisplayDriver<Run
     {
         model.PipelineId = activity.PipelineId;
         model.WaitForCompletion = activity.WaitForCompletion;
+        model.Parameters = activity.Parameters.Expression;
         model.Pipelines = (await _pipelineManager.ListAsync()).Select(pipeline => (pipeline.PipelineId, pipeline.Name)).ToList();
     }
 
@@ -24,6 +26,7 @@ public sealed class RunDataPipelineTaskDisplayDriver : ActivityDisplayDriver<Run
     {
         activity.PipelineId = model.PipelineId;
         activity.WaitForCompletion = model.WaitForCompletion;
+        activity.Parameters = new WorkflowExpression<string>(model.Parameters?.Trim());
     }
 }
 
@@ -32,6 +35,8 @@ public class RunDataPipelineTaskViewModel
     public string PipelineId { get; set; }
 
     public bool WaitForCompletion { get; set; }
+
+    public string Parameters { get; set; }
 
     [BindNever]
     public List<(string PipelineId, string Name)> Pipelines { get; set; } = [];

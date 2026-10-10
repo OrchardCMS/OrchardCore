@@ -3,6 +3,7 @@ using OrchardCore.DataPipelines.Services;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.DataPipelines.Workflows;
 
@@ -19,15 +20,18 @@ public sealed class RunDataPipelineTask : TaskActivity<RunDataPipelineTask>
 
     private readonly DataPipelineManager _pipelineManager;
     private readonly DataPipelineRunManager _runManager;
+    private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
     private readonly IStringLocalizer S;
 
     public RunDataPipelineTask(
         DataPipelineManager pipelineManager,
         DataPipelineRunManager runManager,
+        IWorkflowExpressionEvaluator expressionEvaluator,
         IStringLocalizer<RunDataPipelineTask> localizer)
     {
         _pipelineManager = pipelineManager;
         _runManager = runManager;
+        _expressionEvaluator = expressionEvaluator;
         S = localizer;
     }
 
@@ -53,6 +57,16 @@ public sealed class RunDataPipelineTask : TaskActivity<RunDataPipelineTask>
         set => SetProperty(value);
     }
 
+    /// <summary>
+    /// Gets or sets the parameters of the run, one <c>name=value</c> per line, as a Liquid template. Steps read them
+    /// with the <c>{Parameter:name}</c> placeholder.
+    /// </summary>
+    public WorkflowExpression<string> Parameters
+    {
+        get => GetProperty(() => new WorkflowExpression<string>());
+        set => SetProperty(value);
+    }
+
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         => WaitForCompletion
             ? Outcome(S["Succeeded"], S["Failed"])
@@ -73,11 +87,15 @@ public sealed class RunDataPipelineTask : TaskActivity<RunDataPipelineTask>
 
         var activityId = activityContext.ActivityRecord.ActivityId;
         var wait = WaitForCompletion;
+        var parameters = string.IsNullOrWhiteSpace(Parameters?.Expression)
+            ? null
+            : await _expressionEvaluator.EvaluateAsync(Parameters, workflowContext, null);
 
         var run = await _runManager.QueueAsync(pipeline, new DataPipelineRunRequest
         {
             Trigger = DataPipelineRunRequest.WorkflowTrigger,
             CorrelationId = workflowContext.WorkflowId,
+            Parameters = ParseParameters(parameters),
             Alter = run =>
             {
                 run.Properties[DataPipelineWorkflowKeys.WorkflowId] = workflowContext.WorkflowId;
@@ -111,4 +129,22 @@ public sealed class RunDataPipelineTask : TaskActivity<RunDataPipelineTask>
     }
 
     private static string RunPropertyName(string activityId) => $"{RunKey}:{activityId}";
+
+    // One name=value per line; a line without a name is ignored.
+    private static Dictionary<string, string> ParseParameters(string text)
+    {
+        var parameters = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var line in (text ?? string.Empty).Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            var separator = line.IndexOf('=');
+
+            if (separator > 0)
+            {
+                parameters[line[..separator].Trim()] = line[(separator + 1)..].Trim();
+            }
+        }
+
+        return parameters;
+    }
 }

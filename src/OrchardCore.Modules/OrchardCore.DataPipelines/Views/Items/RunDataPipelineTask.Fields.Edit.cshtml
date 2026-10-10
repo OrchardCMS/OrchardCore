@@ -16,6 +16,14 @@
 </div>
 
 <div class="ocat-wrapper">
+    <label asp-for="Parameters" class="ocat-label">@T["Parameters"]</label>
+    <div class="ocat-end">
+        <textarea asp-for="Parameters" rows="3" class="form-control font-monospace" placeholder="Region=EMEA"></textarea>
+        <span class="hint">@T["Values passed to the run, one name=value per line, with Liquid. Steps use them with the {0} placeholder, such as in the parameters and filters of a data source.", "{Parameter:name}"]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
     <div class="ocat-end-offset">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="WaitForCompletion" />

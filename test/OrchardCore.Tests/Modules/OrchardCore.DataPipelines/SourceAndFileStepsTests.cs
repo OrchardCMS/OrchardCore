@@ -37,7 +37,7 @@ public sealed class SourceAndFileStepsTests
 
         // Act
         var description = await host.DescribeAsync();
-        await host.ExecuteAsync();
+        await host.ExecuteAsync(TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(["Name", "Id"], description.Outputs[DataPipelinePort.Output].Select(field => field.Name));
@@ -59,7 +59,7 @@ public sealed class SourceAndFileStepsTests
         host.Run.PreviewRowLimit = 2;
 
         // Act
-        await host.ExecuteAsync();
+        await host.ExecuteAsync(TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(2, host.Output().Rows.Count);
@@ -103,6 +103,65 @@ public sealed class SourceAndFileStepsTests
     }
 
     [Fact]
+    public async Task DataSource_MostRowsWithFilterTheSourceIgnores_ReadsUpToMostMatchingRows()
+    {
+        // Arrange: the source applies the most rows, but not the conditions.
+        var source = new InMemoryDataSource("Memory").Add("People", _people, _peopleRows);
+        var settings = new DataSourceStepSettings
+        {
+            Source = "Memory",
+            DataSet = "People",
+            MaxRows = 1,
+            Filters = [new DataSourceFilter { Field = "Joined", Operator = DataFilterOperator.GreaterThanOrEqual, Values = ["2026-02-01"] }],
+        };
+        using var host = new StepTestHost(new DataSourceStep(new PassThroughStringLocalizer<DataSourceStep>()), settings, Services(source));
+
+        // Act
+        await host.ExecuteAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Equal([[2L, "Bob", new DateTime(2026, 2, 10, 0, 0, 0, DateTimeKind.Utc)]], host.Output().Rows);
+    }
+
+    [Fact]
+    public async Task DataSource_ParameterPlaceholders_UseTheParametersOfTheRun()
+    {
+        // Arrange
+        var source = new InMemoryDataSource("Memory").Add("People", _people, _peopleRows);
+        var settings = new DataSourceStepSettings
+        {
+            Source = "Memory",
+            DataSet = "People",
+            Fields = ["Name"],
+            Parameters = new() { ["Since"] = "{Parameter:Since}" },
+            Filters = [new DataSourceFilter { Field = "Joined", Operator = DataFilterOperator.GreaterThanOrEqual, Values = ["{Parameter:Since}"] }],
+        };
+        using var host = new StepTestHost(new DataSourceStep(new PassThroughStringLocalizer<DataSourceStep>()), settings, Services(source));
+        host.Run.Parameters["Since"] = "2026-03-01";
+
+        // Act
+        await host.ExecuteAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.Equal([["Cy"]], host.Output().Rows);
+        Assert.Equal("2026-03-01", Assert.Single(source.Queries).Parameters["Since"]);
+    }
+
+    [Fact]
+    public void Render_ParameterPlaceholder_UsesTheParameterOrNothing()
+    {
+        // Arrange
+        var run = new DataPipelineRunContext { PipelineName = "Export" };
+        run.Parameters["Region"] = "EMEA";
+
+        // Act
+        var text = DataPipelineTemplate.Render("{PipelineName}-{Parameter:Region}-{Parameter:Missing}.", run, DateTime.UtcNow);
+
+        // Assert
+        Assert.Equal("Export-EMEA-.", text);
+    }
+
+    [Fact]
     public async Task CreateFile_Csv_WritesRowsAndNamesFileFromTemplate()
     {
         // Arrange
@@ -111,7 +170,7 @@ public sealed class SourceAndFileStepsTests
             .WithRows(_people, _peopleRows);
 
         // Act
-        await host.ExecuteAsync();
+        await host.ExecuteAsync(TestContext.Current.CancellationToken);
 
         // Assert
         var file = Assert.Single(host.Output().Files);
@@ -131,7 +190,7 @@ public sealed class SourceAndFileStepsTests
             .WithRows(_people);
 
         // Act
-        await host.ExecuteAsync();
+        await host.ExecuteAsync(TestContext.Current.CancellationToken);
 
         // Assert
         var file = Assert.Single(host.Output().Files);
@@ -139,7 +198,7 @@ public sealed class SourceAndFileStepsTests
         Assert.Equal(0, file.RowCount);
 
         await using var stream = file.OpenRead();
-        var batches = await DataTestHelpers.ToListAsync(new ExcelDataFileFormat(new PassThroughStringLocalizer<ExcelDataFileFormat>()).ReadAsync(stream, new DataFileOptions()));
+        var batches = await DataTestHelpers.ToListAsync(new ExcelDataFileFormat(new PassThroughStringLocalizer<ExcelDataFileFormat>()).ReadAsync(stream, new DataFileOptions(), TestContext.Current.CancellationToken));
         Assert.Equal(["Id", "Name", "Joined"], batches.Single().Fields.Select(field => field.Name));
     }
 
@@ -167,7 +226,7 @@ public sealed class SourceAndFileStepsTests
         host.WithFiles(host.CreateFile("a.csv", "A"), host.CreateFile("b.csv", "B"));
 
         // Act
-        await host.ExecuteAsync();
+        await host.ExecuteAsync(TestContext.Current.CancellationToken);
 
         // Assert
         var file = Assert.Single(host.Output().Files);

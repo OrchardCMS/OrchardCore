@@ -237,23 +237,8 @@ public sealed class DataPipelineRunExecutor
         }
     }
 
-    private async Task NotifyAsync(DataPipelineRun run)
-    {
-        await ShellScope.UsingChildScopeAsync(async scope =>
-        {
-            foreach (var handler in scope.ServiceProvider.GetServices<IDataPipelineRunHandler>())
-            {
-                try
-                {
-                    await handler.CompletedAsync(run);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "A handler of the end of the data pipeline run '{RunId}' failed.", run.RunId);
-                }
-            }
-        });
-    }
+    private static Task NotifyAsync(DataPipelineRun run)
+        => ShellScope.UsingChildScopeAsync(scope => DataPipelineRunNotifications.NotifyAsync(scope.ServiceProvider, run));
 
     private static async Task<DataPipelineRun> LoadAsync(string runId)
     {
