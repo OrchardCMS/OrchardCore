@@ -1,6 +1,5 @@
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
-using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -260,96 +259,6 @@ public sealed class ContentItemsDataSource : IDataSource
             DefaultDateField = "CreatedUtc",
         };
 
-    private List<ContentColumn> BuildColumns(ContentTypeDefinition definition)
-    {
-        var common = S["Content item"].Value;
-        var columns = new List<ContentColumn>
-        {
-            new(new DataField("ContentItemId", S["Content item id"], DataFieldType.Text, common) { IsIdentifier = true, IsKeyFilterable = true }, item => item.ContentItemId),
-            new(new DataField("ContentItemVersionId", S["Version id"], DataFieldType.Text, common) { IsIdentifier = true }, item => item.ContentItemVersionId),
-            new(new DataField("ContentType", S["Content type"], DataFieldType.Text, common), item => item.ContentType),
-            new(new DataField("DisplayText", S["Display text"], DataFieldType.Text, common), item => item.DisplayText),
-            new(new DataField("Owner", S["Owner"], DataFieldType.Text, common)
-            {
-                IsIdentifier = true,
-                IsKeyFilterable = true,
-                References = [new("Users", "Users", "UserId")],
-            }, item => item.Owner),
-            new(new DataField("Author", S["Author"], DataFieldType.Text, common), item => item.Author),
-            new(new DataField("Published", S["Published"], DataFieldType.Boolean, common), item => item.Published),
-            new(new DataField("Latest", S["Latest"], DataFieldType.Boolean, common), item => item.Latest),
-            new(new DataField("CreatedUtc", S["Created"], DataFieldType.DateTime, common), item => item.CreatedUtc),
-            new(new DataField("ModifiedUtc", S["Modified"], DataFieldType.DateTime, common), item => item.ModifiedUtc),
-            new(new DataField("PublishedUtc", S["Published on"], DataFieldType.DateTime, common), item => item.PublishedUtc),
-        };
-
-        foreach (var typePart in definition.Parts)
-        {
-            var partName = typePart.Name;
-            var partLabel = typePart.DisplayName();
-
-            if (_options.Parts.TryGetValue(typePart.PartDefinition.Name, out var partValues))
-            {
-                foreach (var value in partValues)
-                {
-                    columns.Add(new(
-                        new DataField($"{partName}.{value.Property}", $"{partLabel} {value.Property}", value.Type, partLabel),
-                        item => Read(((JsonObject)item.Content)[partName]?[value.Property], value)));
-                }
-            }
-
-            foreach (var partField in typePart.PartDefinition.Fields)
-            {
-                if (!_options.Fields.TryGetValue(partField.FieldDefinition.Name, out var fieldValues))
-                {
-                    continue;
-                }
-
-                var fieldName = partField.Name;
-                var fieldLabel = partField.DisplayName();
-
-                foreach (var value in fieldValues)
-                {
-                    var name = fieldValues.Length == 1 ? $"{partName}.{fieldName}" : $"{partName}.{fieldName}.{value.Property}";
-                    var label = fieldValues.Length == 1 ? fieldLabel : $"{fieldLabel} {value.Property}";
-
-                    columns.Add(new(
-                        new DataField(name, label, value.Type, partLabel),
-                        item => Read(((JsonObject)item.Content)[partName]?[fieldName]?[value.Property], value)));
-                }
-            }
-        }
-
-        return columns;
-    }
-
-    private static object Read(JsonNode node, ContentDataValue value)
-    {
-        if (node is null)
-        {
-            return null;
-        }
-
-        if (value.IsList || node is JsonArray)
-        {
-            if (node is not JsonArray array)
-            {
-                return DataValues.Coerce(node.ToString(), value.Type);
-            }
-
-            var items = array
-                .Where(item => item is not null)
-                .Select(item => item is JsonValue jsonValue ? DataValues.ToText(jsonValue) : item.ToJsonString())
-                .Where(text => !string.IsNullOrEmpty(text))
-                .ToArray();
-
-            return items.Length == 0 ? null : string.Join(',', items);
-        }
-
-        return node is JsonValue scalar
-            ? DataValues.Coerce(scalar, value.Type)
-            : DataValues.Coerce(node.ToJsonString(), value.Type);
-    }
-
-    private sealed record ContentColumn(DataField Field, Func<ContentItem, object> Read);
+    private List<ContentDataColumn> BuildColumns(ContentTypeDefinition definition)
+        => ContentDataColumns.Build(definition, _options, S);
 }

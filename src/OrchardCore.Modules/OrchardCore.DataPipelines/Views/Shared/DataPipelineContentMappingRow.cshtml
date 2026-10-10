@@ -1,0 +1,24 @@
+@model (IReadOnlyList<DataField> Targets, IReadOnlyList<DataField> Sources, ContentFieldMapping Mapping, string Index)
+@{
+    var prefix = $"Mappings[{Model.Index}]";
+}
+
+<div class="input-group input-group-sm mb-2" data-dp-row>
+    <select name="@(prefix).Target" class="form-select" aria-label="@T["Part or field"]">
+        <option value="">@T["Choose a part or field"]</option>
+        @foreach (var group in Model.Targets.GroupBy(target => target.Group ?? string.Empty))
+        {
+            <optgroup label="@group.Key">
+                @foreach (var target in group)
+                {
+                    <option value="@target.Name" selected="@(target.Name == Model.Mapping.Target)">@target.DisplayName (@target.Name)</option>
+                }
+            </optgroup>
+        }
+    </select>
+    <span class="input-group-text">←</span>
+    <select name="@(prefix).Source" class="form-select" aria-label="@T["Field of the rows"]">
+        <partial name="DataPipelineFieldOptions" model="@((Model.Sources, Model.Mapping.Source, true))" />
+    </select>
+    <button type="button" class="btn btn-outline-danger" data-dp-remove title="@T["Remove"]"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
+</div>
