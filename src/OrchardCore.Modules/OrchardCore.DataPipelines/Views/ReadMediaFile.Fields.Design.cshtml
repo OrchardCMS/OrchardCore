@@ -1,0 +1,10 @@
+@model ReadMediaFileStepViewModel
+
+@if (string.IsNullOrEmpty(Model.Path))
+{
+    <span class="text-muted">@T["Choose a file"]</span>
+}
+else
+{
+    <span class="text-break">@Model.Path</span>
+}
