@@ -17,7 +17,7 @@
 
 <div class="ocat-wrapper">
     <label class="ocat-label ocat-label-required">@T["Match on"]</label>
-    <div class="ocat-end" data-dp-list data-dp-prefix="Keys">
+    <div class="ocat-end" data-dp-list data-dp-prefix="@Html.Name("Keys")">
         <template data-dp-template>
             <partial name="DataPipelineJoinKeyRow" model="@((Model.LeftFields, Model.RightFields, new JoinKey(), "__index__"))" />
         </template>

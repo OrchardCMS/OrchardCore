@@ -1,6 +1,7 @@
 @model (IReadOnlyList<DataField> Targets, IReadOnlyList<DataField> Sources, ContentFieldMapping Mapping, string Index)
 @{
-    var prefix = $"Mappings[{Model.Index}]";
+    // The full name, such as "DataPipelineStep.Mappings[0]", so the row binds to the step's editor.
+    var prefix = Html.Name($"Mappings[{Model.Index}]");
 }
 
 <div class="input-group input-group-sm mb-2" data-dp-row>

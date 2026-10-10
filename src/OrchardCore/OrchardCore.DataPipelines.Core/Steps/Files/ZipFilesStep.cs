@@ -14,6 +14,11 @@ public sealed class ZipFilesStep : DataPipelineStepType<ZipFilesStepSettings>
     /// </summary>
     public const string StepName = "ZipFiles";
 
+    /// <summary>
+    /// The extension of the archives the step creates.
+    /// </summary>
+    public const string Extension = ".zip";
+
     private readonly IStringLocalizer S;
 
     public ZipFilesStep(IStringLocalizer<ZipFilesStep> localizer)
@@ -43,7 +48,7 @@ public sealed class ZipFilesStep : DataPipelineStepType<ZipFilesStepSettings>
         var settings = GetSettings(context.Step);
         var now = await DataPipelineFormulas.GetRunTimeAsync(context.Run);
         var name = DataPipelineTemplate.RenderFileName(string.IsNullOrWhiteSpace(settings.FileName) ? "{PipelineName}-{Date:yyyyMMdd-HHmmss}" : settings.FileName, context.Run, now);
-        var archive = context.Run.CreateFile(DataPipelineTemplate.WithExtension(string.IsNullOrEmpty(name) ? "files" : name, ".zip"), "application/zip");
+        var archive = context.Run.CreateFile(DataPipelineTemplate.WithExtension(string.IsNullOrEmpty(name) ? "files" : name, Extension), "application/zip");
         var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var count = 0;
 

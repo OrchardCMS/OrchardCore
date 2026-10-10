@@ -44,7 +44,7 @@
 
 <div class="ocat-wrapper" asp-validation-class-for="Headers">
     <label class="ocat-label">@T["Headers"]</label>
-    <div class="ocat-end" data-dp-list data-dp-prefix="Headers">
+    <div class="ocat-end" data-dp-list data-dp-prefix="@Html.Name("Headers")">
         <template data-dp-template>
             <partial name="DataPipelineHttpHeaderRow" model="@((new DataPipelineHttpHeader(), "__index__"))" />
         </template>

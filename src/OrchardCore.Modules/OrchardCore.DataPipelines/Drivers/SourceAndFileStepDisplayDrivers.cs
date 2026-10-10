@@ -182,11 +182,16 @@ public sealed class DataSetOption
 public sealed class CreateFileStepDisplayDriver : DataPipelineStepDisplayDriver<CreateFileStepSettings, CreateFileStepViewModel>
 {
     private readonly IDataFileFormatManager _formatManager;
+    private readonly DataPipelineEditorContext _editorContext;
     private readonly IStringLocalizer S;
 
-    public CreateFileStepDisplayDriver(IDataFileFormatManager formatManager, IStringLocalizer<CreateFileStepDisplayDriver> localizer)
+    public CreateFileStepDisplayDriver(
+        IDataFileFormatManager formatManager,
+        DataPipelineEditorContext editorContext,
+        IStringLocalizer<CreateFileStepDisplayDriver> localizer)
     {
         _formatManager = formatManager;
+        _editorContext = editorContext;
         S = localizer;
     }
 
@@ -213,6 +218,9 @@ public sealed class CreateFileStepDisplayDriver : DataPipelineStepDisplayDriver<
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.Format), S["Choose the format of the file."]);
         }
+
+        // The editor shows the options of the format.
+        _editorContext.ReloadEditor |= settings.Format != model.Format;
 
         settings.Format = model.Format;
         settings.FileName = model.FileName?.Trim();

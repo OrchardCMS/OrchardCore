@@ -1,6 +1,7 @@
 @model (CalculatedField Field, string Index)
 @{
-    var prefix = $"Fields[{Model.Index}]";
+    // The full name, such as "DataPipelineStep.Fields[0]", so the row binds to the step's editor.
+    var prefix = Html.Name($"Fields[{Model.Index}]");
 }
 
 <div class="input-group input-group-sm mb-2" data-dp-row>

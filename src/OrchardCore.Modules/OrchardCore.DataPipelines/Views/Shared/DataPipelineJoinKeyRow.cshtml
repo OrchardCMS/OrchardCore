@@ -1,6 +1,7 @@
 @model (IReadOnlyList<DataField> LeftFields, IReadOnlyList<DataField> RightFields, JoinKey Key, string Index)
 @{
-    var prefix = $"Keys[{Model.Index}]";
+    // The full name, such as "DataPipelineStep.Keys[0]", so the row binds to the step's editor.
+    var prefix = Html.Name($"Keys[{Model.Index}]");
 }
 
 <div class="input-group input-group-sm mb-2" data-dp-row>

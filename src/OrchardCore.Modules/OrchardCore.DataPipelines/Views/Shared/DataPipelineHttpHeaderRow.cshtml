@@ -1,6 +1,7 @@
 @model (DataPipelineHttpHeader Header, string Index)
 @{
-    var prefix = $"Headers[{Model.Index}]";
+    // The full name, such as "DataPipelineStep.Headers[0]", so the row binds to the step's editor.
+    var prefix = Html.Name($"Headers[{Model.Index}]");
 }
 
 <div class="input-group input-group-sm mb-2" data-dp-row>

@@ -1,6 +1,7 @@
 @model (IReadOnlyList<DataField> Fields, AggregateMeasure Measure, string Index)
 @{
-    var prefix = $"Measures[{Model.Index}]";
+    // The full name, such as "DataPipelineStep.Measures[0]", so the row binds to the step's editor.
+    var prefix = Html.Name($"Measures[{Model.Index}]");
     var functions = Enum.GetValues<DataAggregate>().Where(function => function != DataAggregate.None);
 }
 

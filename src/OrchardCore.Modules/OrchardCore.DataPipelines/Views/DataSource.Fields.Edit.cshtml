@@ -44,7 +44,7 @@
 
     <div class="ocat-wrapper">
         <label class="ocat-label">@T["Filters"]</label>
-        <div class="ocat-end" data-dp-list data-dp-prefix="Filters">
+        <div class="ocat-end" data-dp-list data-dp-prefix="@Html.Name("Filters")">
             <template data-dp-template>
                 <partial name="DataPipelineDataSourceFilterRow" model="@((Model.AvailableFields, new DataSourceFilterRow(), "__index__"))" />
             </template>

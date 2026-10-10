@@ -4,7 +4,7 @@
 
 <div class="ocat-wrapper">
     <label class="ocat-label">@T["Calculated fields"]</label>
-    <div class="ocat-end" data-dp-list data-dp-prefix="Fields">
+    <div class="ocat-end" data-dp-list data-dp-prefix="@Html.Name("Fields")">
         <template data-dp-template>
             <partial name="DataPipelineCalculatedFieldRow" model="@((new CalculatedField(), "__index__"))" />
         </template>

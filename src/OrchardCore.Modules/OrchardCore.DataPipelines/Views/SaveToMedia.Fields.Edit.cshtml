@@ -8,6 +8,17 @@
     </div>
 </div>
 
+@if (Model.RejectedExtensions.Count > 0)
+{
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <div class="alert alert-warning mb-0" role="alert" data-dp-rejected-extensions>
+                @T["The media library doesn't accept {0} files, so a run fails when it saves one. Create files in a format it accepts, such as an Excel workbook, or add the extensions to its allowed file extensions (the OrchardCore:Media:AllowedFileExtensions setting).", string.Join(", ", Model.RejectedExtensions)]
+            </div>
+        </div>
+    </div>
+}
+
 <div class="ocat-wrapper">
     <div class="ocat-end-offset">
         <div class="form-check">

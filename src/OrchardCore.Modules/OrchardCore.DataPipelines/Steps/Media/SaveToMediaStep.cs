@@ -70,7 +70,7 @@ public sealed class SaveToMediaStep : DataPipelineStepType<SaveToMediaStepSettin
 
             if (options.AllowedFileExtensions is { Count: > 0 } allowed && !allowed.Contains(extension, StringComparer.OrdinalIgnoreCase))
             {
-                throw new InvalidOperationException(S["The media library doesn't accept files with the extension '{0}'. Add it to the allowed file extensions of the media library (the OrchardCore_Media:AllowedFileExtensions setting), or create a file in a format it accepts, such as an Excel workbook.", extension]);
+                throw new InvalidOperationException(S["The media library doesn't accept files with the extension '{0}'. Add it to the allowed file extensions of the media library (the OrchardCore:Media:AllowedFileExtensions setting), or create a file in a format it accepts, such as an Excel workbook.", extension]);
             }
 
             if (options.MaxFileSize > 0 && file.Length > options.MaxFileSize)

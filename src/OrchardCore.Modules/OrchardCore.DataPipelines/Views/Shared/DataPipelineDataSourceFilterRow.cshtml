@@ -1,6 +1,7 @@
 @model (IReadOnlyList<DataField> Fields, DataSourceFilterRow Filter, string Index)
 @{
-    var prefix = $"Filters[{Model.Index}]";
+    // The full name, such as "DataPipelineStep.Filters[0]", so the row binds to the step's editor.
+    var prefix = Html.Name($"Filters[{Model.Index}]");
     var operators = Enum.GetValues<DataFilterOperator>();
 }
 

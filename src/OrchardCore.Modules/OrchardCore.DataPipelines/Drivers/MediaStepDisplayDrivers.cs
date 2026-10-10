@@ -1,19 +1,41 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Options;
 using OrchardCore.DataPipelines.Models;
 using OrchardCore.DataPipelines.Steps;
 using OrchardCore.DataSources.Files;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Media;
 
 namespace OrchardCore.DataPipelines.Drivers;
 
 public sealed class SaveToMediaStepDisplayDriver : DataPipelineStepDisplayDriver<SaveToMediaStepSettings, SaveToMediaStepViewModel>
 {
+    private readonly IDataFileFormatManager _formatManager;
+    private readonly MediaOptions _mediaOptions;
+
+    public SaveToMediaStepDisplayDriver(IDataFileFormatManager formatManager, IOptions<MediaOptions> mediaOptions)
+    {
+        _formatManager = formatManager;
+        _mediaOptions = mediaOptions.Value;
+    }
+
     protected override string StepName => SaveToMediaStep.StepName;
 
     protected override ValueTask EditAsync(DataPipelineStep step, SaveToMediaStepSettings settings, SaveToMediaStepViewModel model)
     {
         model.Folder = settings.Folder;
         model.Overwrite = settings.Overwrite;
+
+        // The files a pipeline creates that the media library rejects, such as .csv files with its default options.
+        if (_mediaOptions.AllowedFileExtensions is { Count: > 0 } allowed)
+        {
+            model.RejectedExtensions = _formatManager.GetFormats()
+                .Select(format => format.Extension)
+                .Append(ZipFilesStep.Extension)
+                .Where(extension => !allowed.Contains(extension, StringComparer.OrdinalIgnoreCase))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+        }
 
         return ValueTask.CompletedTask;
     }
@@ -32,6 +54,9 @@ public class SaveToMediaStepViewModel
     public string Folder { get; set; }
 
     public bool Overwrite { get; set; }
+
+    [BindNever]
+    public IReadOnlyList<string> RejectedExtensions { get; set; } = [];
 }
 
 public sealed class ReadMediaFileStepDisplayDriver : DataPipelineStepDisplayDriver<ReadMediaFileStepSettings, ReadMediaFileStepViewModel>
