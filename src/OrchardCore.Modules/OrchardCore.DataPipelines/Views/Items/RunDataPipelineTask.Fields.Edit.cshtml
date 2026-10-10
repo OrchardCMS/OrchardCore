@@ -1,0 +1,26 @@
+@model OrchardCore.DataPipelines.Workflows.RunDataPipelineTaskViewModel
+
+<div class="ocat-wrapper" asp-validation-class-for="PipelineId">
+    <label asp-for="PipelineId" class="ocat-label ocat-label-required">@T["Data pipeline"]</label>
+    <div class="ocat-end">
+        <select asp-for="PipelineId" class="form-select">
+            <option value="">@T["Choose a data pipeline"]</option>
+            @foreach (var (pipelineId, name) in Model.Pipelines)
+            {
+                <option value="@pipelineId" selected="@(pipelineId == Model.PipelineId)">@name</option>
+            }
+        </select>
+        <span asp-validation-for="PipelineId"></span>
+        <span class="hint">@T["The published version of the pipeline runs in the background, with the access of the user who published it."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="WaitForCompletion" />
+            <label class="form-check-label" asp-for="WaitForCompletion">@T["Wait for the run to end"]</label>
+            <span class="hint dashed">@T["The workflow then continues with the Succeeded or Failed outcome, and the run as its last result and its DataPipelineRun output. Otherwise it continues at once with the Queued outcome."]</span>
+        </div>
+    </div>
+</div>
