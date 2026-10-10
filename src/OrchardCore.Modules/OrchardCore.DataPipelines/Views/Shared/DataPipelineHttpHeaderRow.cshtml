@@ -1,0 +1,11 @@
+@model (DataPipelineHttpHeader Header, string Index)
+@{
+    var prefix = $"Headers[{Model.Index}]";
+}
+
+<div class="input-group input-group-sm mb-2" data-dp-row>
+    <input name="@(prefix).Name" value="@Model.Header.Name" class="form-control" style="max-width: 14rem" aria-label="@T["Name"]" placeholder="X-Tenant" />
+    <span class="input-group-text">:</span>
+    <input name="@(prefix).Value" value="@Model.Header.Value" class="form-control" aria-label="@T["Value"]" placeholder="@T["Value"]" />
+    <button type="button" class="btn btn-outline-danger" data-dp-remove title="@T["Remove"]"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
+</div>

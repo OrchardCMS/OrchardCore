@@ -1,0 +1,98 @@
+@model UploadToSftpStepViewModel
+
+<div class="ocat-wrapper" asp-validation-class-for="Host">
+    <label asp-for="Host" class="ocat-label ocat-label-required">@T["Host"]</label>
+    <div class="ocat-end">
+        <input asp-for="Host" class="form-control" placeholder="sftp.example.com" autocomplete="off" />
+        <span asp-validation-for="Host"></span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="Port">
+    <label asp-for="Port" class="ocat-label">@T["Port"]</label>
+    <div class="ocat-limited">
+        <input asp-for="Port" type="number" min="1" max="65535" class="form-control" />
+        <span asp-validation-for="Port"></span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <label asp-for="Username" class="ocat-label ocat-label-required">@T["User name"]</label>
+    <div class="ocat-end">
+        <input asp-for="Username" class="form-control" autocomplete="off" />
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <span class="hint">@T["Authenticate with a password, a private key, or both when the server asks for both."]</span>
+    </div>
+</div>
+
+<partial name="DataPipelineSecretInput" model="@(new DataPipelineSecretInputViewModel
+{
+    Name = nameof(Model.Password),
+    Label = T["Password"].Value,
+    HasValue = Model.HasPassword,
+    KeepHint = T["Leave empty to keep the current password."].Value,
+    RemoveName = nameof(Model.RemovePassword),
+    RemoveLabel = T["Remove the password"].Value,
+})" />
+
+<partial name="DataPipelineSecretInput" model="@(new DataPipelineSecretInputViewModel
+{
+    Name = nameof(Model.PrivateKey),
+    Label = T["Private key"].Value,
+    Hint = T["The content of the key file, in PEM or OpenSSH format, starting with -----BEGIN."].Value,
+    HasValue = Model.HasPrivateKey,
+    KeepHint = T["Leave empty to keep the current private key."].Value,
+    RemoveName = nameof(Model.RemovePrivateKey),
+    RemoveLabel = T["Remove the private key"].Value,
+    Multiline = true,
+})" />
+
+<partial name="DataPipelineSecretInput" model="@(new DataPipelineSecretInputViewModel
+{
+    Name = nameof(Model.Passphrase),
+    Label = T["Passphrase"].Value,
+    Hint = T["When the private key is encrypted."].Value,
+    HasValue = Model.HasPassphrase,
+    KeepHint = T["Leave empty to keep the current passphrase."].Value,
+    RemoveName = nameof(Model.RemovePassphrase),
+    RemoveLabel = T["Remove the passphrase"].Value,
+})" />
+
+<div class="ocat-wrapper" asp-validation-class-for="HostKeyFingerprint">
+    <label asp-for="HostKeyFingerprint" class="ocat-label">@T["Host key fingerprint"]</label>
+    <div class="ocat-end">
+        <input asp-for="HostKeyFingerprint" class="form-control font-monospace" placeholder="SHA256:ohD8VZEXGWo6Ez8GSEJQ9WpafgLFsOfLOtGGQCQo6Og" autocomplete="off" spellcheck="false" />
+        <span asp-validation-for="HostKeyFingerprint"></span>
+        <span class="hint">@T["The SHA-256 fingerprint of the server's host key, as shown by ssh-keyscan or by the run history. The step refuses to connect to a server with another key. When it is empty, the server isn't verified."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <label asp-for="RemoteFolder" class="ocat-label">@T["Remote folder"]</label>
+    <div class="ocat-end">
+        <input asp-for="RemoteFolder" class="form-control" placeholder="/exports/{Date:yyyy}" />
+        <span class="hint">@T["Created when it doesn't exist. Empty for the home folder of the user. Placeholders: {0}, {1}, and {2}.", "{PipelineName}", "{RunId}", "{Date:format}"]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="Overwrite" />
+            <label class="form-check-label" asp-for="Overwrite">@T["Replace existing files"]</label>
+            <span class="hint dashed">@T["Otherwise the step fails when a file with the same name exists."]</span>
+        </div>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="TimeoutSeconds">
+    <label asp-for="TimeoutSeconds" class="ocat-label">@T["Timeout (seconds)"]</label>
+    <div class="ocat-limited">
+        <input asp-for="TimeoutSeconds" type="number" min="1" class="form-control" />
+        <span asp-validation-for="TimeoutSeconds"></span>
+    </div>
+</div>
