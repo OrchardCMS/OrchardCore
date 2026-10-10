@@ -1,0 +1,239 @@
+@model BackgroundTaskDetailsViewModel
+
+@{
+    var state = Model.State;
+}
+
+<zone Name="Title">
+    <breadcrumb name="BackgroundTasksDetails" title="@(new OrchardCore.DisplayManagement.Html.HtmlContentString(Model.Title ?? string.Empty))">
+        <breadcrumb-item id="BackgroundTasks" action="Index" controller="BackgroundTask" area="OrchardCore.BackgroundTasks" permission="@Permissions.ManageBackgroundTasks.Name">@T["Background Tasks"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
+
+<div data-background-task-states-url="@Url.Action("States")">
+    <div data-task-name="@Model.Name" data-task-status="@state?.Status" class="background-task-details">
+
+        <form asp-action="Run" asp-route-name="@Model.Name" asp-route-returnUrl="@FullRequestPath" method="post" class="no-multisubmit mb-3">
+            @if (Model.IsMonitored)
+            {
+                <button type="submit" class="btn btn-success" data-run-task disabled="@(state?.Status != BackgroundTaskStatus.Idle)">
+                    <i class="fa-solid fa-play" aria-hidden="true"></i> @T["Run now"]
+                </button>
+            }
+            <a asp-action="Edit" asp-route-name="@Model.Name" class="btn btn-primary">@T["Edit"]</a>
+            <a asp-action="Index" class="btn btn-secondary">@T["Back to the list"]</a>
+        </form>
+
+        @if (!string.IsNullOrWhiteSpace(Model.Description))
+        {
+            <p class="text-muted">@Model.Description</p>
+        }
+
+        <div class="row g-3 mb-3">
+            <div class="col-12 col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header">@T["Execution"]</div>
+                    <div class="card-body">
+                        @if (!Model.IsMonitored)
+                        {
+                            <p class="mb-0">@T["The execution state of the task is not available because the background service is not registered."]</p>
+                        }
+                        else if (state is null)
+                        {
+                            <p class="mb-0">@T["Waiting for the background service to load this task."]</p>
+                        }
+                        else
+                        {
+                            <dl class="row mb-0">
+                                <dt class="col-sm-5">@T["Status"]</dt>
+                                <dd class="col-sm-7" data-status>
+                                    @switch (state.Status)
+                                    {
+                                        case BackgroundTaskStatus.Running:
+                                            <partial name="_BackgroundTaskStatus" model="state" />
+                                            <span class="text-muted">@T["started {0}", await DisplayAsync(await New.TimeSpan(Utc: state.LastStartTime))]</span>
+                                            break;
+
+                                        case BackgroundTaskStatus.Queued:
+                                            <partial name="_BackgroundTaskStatus" model="state" />
+                                            if (state.QueuedTime.HasValue)
+                                            {
+                                                <span class="text-muted">@T["requested {0}", await DisplayAsync(await New.TimeSpan(Utc: state.QueuedTime.Value))]</span>
+                                            }
+                                            break;
+
+                                        default:
+                                            <span class="badge text-bg-light border">@T["Idle"]</span>
+                                            break;
+                                    }
+                                </dd>
+
+                                <dt class="col-sm-5">@T["Last run"]</dt>
+                                <dd class="col-sm-7" data-last-run>
+                                    @if (state.LastRun is null)
+                                    {
+                                        @T["Never"]
+                                    }
+                                    else
+                                    {
+                                        <partial name="_BackgroundTaskRunResult" model="state.LastRun.Result" />
+                                        <span>@await DisplayAsync(await New.DateTime(Utc: state.LastRun.StartTime, Format: "G"))</span>
+                                        <span class="text-muted">(@await DisplayAsync(await New.TimeSpan(Utc: state.LastRun.StartTime)))</span>
+                                    }
+                                </dd>
+
+                                @if (state.LastRun is not null)
+                                {
+                                    <dt class="col-sm-5">@T["Last run duration"]</dt>
+                                    <dd class="col-sm-7" data-last-duration><partial name="_BackgroundTaskDuration" model="state.LastRun.Duration" /></dd>
+
+                                    <dt class="col-sm-5">@T["Last run triggered by"]</dt>
+                                    <dd class="col-sm-7">@(state.LastRun.Trigger == BackgroundTaskTrigger.Manual ? T["Run now"] : T["Schedule"])</dd>
+                                }
+
+                                <dt class="col-sm-5">@T["Next run"]</dt>
+                                <dd class="col-sm-7" data-next-run>
+                                    @if (state.NextStartTime is not null)
+                                    {
+                                        <span>@await DisplayAsync(await New.DateTime(Utc: state.NextStartTime.Value, Format: "G"))</span>
+                                        <span class="text-muted">(@await DisplayAsync(await New.TimeSpan(Utc: state.NextStartTime.Value)))</span>
+                                    }
+                                    else if (Model.Enable)
+                                    {
+                                        @T["The schedule is not a valid cron expression."]
+                                    }
+                                    else
+                                    {
+                                        @T["Not scheduled, the task is disabled."]
+                                    }
+                                </dd>
+
+                                <dt class="col-sm-5">@T["Completed runs"]</dt>
+                                <dd class="col-sm-7" data-run-count>@state.RunCount</dd>
+
+                                <dt class="col-sm-5">@T["Failed runs"]</dt>
+                                <dd class="col-sm-7" data-failure-count>
+                                    <span class="@(state.FailureCount > 0 ? "text-danger" : null)">@state.FailureCount</span>
+                                </dd>
+                            </dl>
+                        }
+                    </div>
+                    @if (Model.IsMonitored)
+                    {
+                        <div class="card-footer small text-muted">
+                            @T["The execution state is tracked in memory by the server handling this request, since the application started."]
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header">@T["Settings"]</div>
+                    <div class="card-body">
+                        <dl class="row mb-0">
+                            <dt class="col-sm-5">@T["Technical name"]</dt>
+                            <dd class="col-sm-7 text-break"><code>@Model.Name</code></dd>
+
+                            <dt class="col-sm-5">@T["Enabled"]</dt>
+                            <dd class="col-sm-7">
+                                @if (Model.Enable)
+                                {
+                                    <span class="badge text-bg-success">@T["Enabled"]</span>
+                                }
+                                else
+                                {
+                                    <span class="badge text-bg-secondary">@T["Disabled"]</span>
+                                }
+                            </dd>
+
+                            <dt class="col-sm-5">@T["Schedule"]</dt>
+                            <dd class="col-sm-7" data-schedule>
+                                <code>@Model.Schedule</code>
+                                @if (!string.Equals(Model.Schedule, Model.DefaultSchedule, StringComparison.Ordinal))
+                                {
+                                    <span class="text-muted small">@T["(default: {0})", Model.DefaultSchedule]</span>
+                                }
+                            </dd>
+
+                            <dt class="col-sm-5">@T["Use tenant pipeline"]</dt>
+                            <dd class="col-sm-7">@(Model.UsePipeline ? T["Yes"] : T["No"])</dd>
+
+                            <dt class="col-sm-5">@T["Atomic"]</dt>
+                            <dd class="col-sm-7">
+                                @if (Model.IsAtomic)
+                                {
+                                    @T["Yes, lock timeout {0} ms, lock expiration {1} ms", Model.LockTimeout, Model.LockExpiration]
+                                }
+                                else
+                                {
+                                    @T["No"]
+                                }
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (state?.LastRun?.Result == BackgroundTaskRunResult.Failed)
+        {
+            <div class="card border-danger mb-3" data-last-error>
+                <div class="card-header text-bg-danger">@T["Last error"]</div>
+                <div class="card-body">
+                    <p class="text-danger mb-2" data-error-message>@state.LastRun.ErrorMessage</p>
+                    @if (!string.IsNullOrEmpty(state.LastRun.ErrorDetails))
+                    {
+                        <details>
+                            <summary>@T["Details"]</summary>
+                            <pre class="mt-2 mb-0 small text-break" style="white-space: pre-wrap" data-error-details>@state.LastRun.ErrorDetails</pre>
+                        </details>
+                    }
+                </div>
+            </div>
+        }
+
+        @if (state is not null)
+        {
+            <div class="card mb-3">
+                <div class="card-header">@T["Recent runs"]</div>
+                @if (state.RecentRuns.Count == 0)
+                {
+                    <div class="card-body">
+                        <p class="mb-0 text-muted">@T["The task has not completed any run yet."]</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-sm mb-0 align-middle" data-recent-runs>
+                            <thead>
+                                <tr>
+                                    <th scope="col">@T["Started"]</th>
+                                    <th scope="col">@T["Duration"]</th>
+                                    <th scope="col">@T["Triggered by"]</th>
+                                    <th scope="col">@T["Result"]</th>
+                                    <th scope="col">@T["Error"]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var run in state.RecentRuns)
+                                {
+                                    <tr>
+                                        <td class="text-nowrap">@await DisplayAsync(await New.DateTime(Utc: run.StartTime, Format: "G"))</td>
+                                        <td class="text-nowrap"><partial name="_BackgroundTaskDuration" model="run.Duration" /></td>
+                                        <td>@(run.Trigger == BackgroundTaskTrigger.Manual ? T["Run now"] : T["Schedule"])</td>
+                                        <td><partial name="_BackgroundTaskRunResult" model="run.Result" /></td>
+                                        <td class="text-danger text-break small">@run.ErrorMessage</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+<script asp-src="~/OrchardCore.BackgroundTasks/Scripts/background-task-editors/background-task-state.min.js" debug-src="~/OrchardCore.BackgroundTasks/Scripts/background-task-editors/background-task-state.js" at="Foot" type="module"></script>

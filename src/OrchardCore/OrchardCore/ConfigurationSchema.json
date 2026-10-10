@@ -110,6 +110,12 @@
               "type": "string",
               "default": "00:00:10",
               "description": "The minimum idle time before the background tasks of a tenant are triggered, as well as between tasks, in the 'hh:mm:ss' format."
+            },
+            "MaxRecentRuns": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 10,
+              "description": "The number of completed runs kept in memory for each background task, to be shown with its execution state in the admin."
             }
           }
         },

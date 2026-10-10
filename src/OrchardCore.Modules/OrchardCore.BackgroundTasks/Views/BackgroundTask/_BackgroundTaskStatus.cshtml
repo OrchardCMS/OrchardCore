@@ -1,0 +1,16 @@
+@model BackgroundTaskState
+
+@switch (Model?.Status)
+{
+    case BackgroundTaskStatus.Running:
+        <span class="badge text-bg-info" data-task-status-badge="Running">
+            <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>@T["Running"]
+        </span>
+        break;
+
+    case BackgroundTaskStatus.Queued:
+        <span class="badge text-bg-warning" data-task-status-badge="Queued">
+            <i class="fa-solid fa-hourglass-half me-1" aria-hidden="true"></i>@T["Queued"]
+        </span>
+        break;
+}
