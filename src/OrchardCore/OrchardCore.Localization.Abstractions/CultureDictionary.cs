@@ -69,6 +69,11 @@ public class CultureDictionary : IEnumerable<CultureDictionaryRecord>
     public IDictionary<CultureDictionaryRecordKey, string[]> Translations { get; }
 
     /// <summary>
+    /// Gets keys whose translations are plain text and must be encoded by HTML localizers.
+    /// </summary>
+    public ISet<CultureDictionaryRecordKey> PlainTextTranslations { get; } = new HashSet<CultureDictionaryRecordKey>();
+
+    /// <summary>
     /// Merges the translations from multiple dictionary records.
     /// </summary>
     /// <param name="records">The records to be merged.</param>

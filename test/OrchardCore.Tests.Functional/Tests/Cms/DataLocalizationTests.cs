@@ -27,6 +27,7 @@ public sealed class DataLocalizationTests : CmsTestBase<DataLocalizationTestsFix
         var page = await Fixture.CreatePageAsync();
         await page.LoginAsync();
         var consoleErrors = page.CollectConsoleErrors();
+        page.PageError += (_, error) => consoleErrors.Add(error);
 
         await page.GotoAndAssertOkAsync("/Admin/DataLocalization/Index");
 
@@ -38,6 +39,7 @@ public sealed class DataLocalizationTests : CmsTestBase<DataLocalizationTestsFix
         // via the recipe's own admin-user/content-type setup) guarantees at least one
         // ILocalizationDataProvider yields translatable strings on a stock setup.
         var visibleRows = editor.Locator("table tbody tr");
+        Assert.Empty(consoleErrors);
         await Assertions.Expect(visibleRows).Not.ToHaveCountAsync(0);
 
         var firstInput = visibleRows.First.Locator("input[type='text']");
@@ -111,4 +113,190 @@ public sealed class DataLocalizationTests : CmsTestBase<DataLocalizationTestsFix
         Assert.Empty(consoleErrors);
         await page.CloseAsync();
     }
+
+    [Fact]
+    public async Task UiOverrides_SharedEditor_AutosaveFiltersCultureImportAndRemoval()
+    {
+        var page = await Fixture.CreatePageAsync();
+        page.SetDefaultNavigationTimeout(120000);
+        await page.LoginAsync();
+        var consoleErrors = page.CollectConsoleErrors();
+        page.PageError += (_, error) => consoleErrors.Add(error);
+        await page.GotoAndAssertOkAsync("/Admin/Localization/UI/Index");
+        Assert.Contains("\"fr\"", await page.Locator("#translation-editor").GetAttributeAsync("data-cultures"), StringComparison.Ordinal);
+        await page.GotoAndAssertOkAsync("/Admin/Localization/UI/Index?culture=fr&ui-culture=fr&search=UI%20Translations");
+        var editor = page.Locator("#translation-editor");
+        await Assertions.Expect(editor).ToHaveAttributeAsync("data-ui-localization", "true");
+        await Assertions.Expect(editor.Locator("#auto-save-toggle")).ToBeCheckedAsync();
+        await Assertions.Expect(editor.Locator("fieldset.translations-list")).Not.ToHaveCountAsync(0);
+        var row = UiRow(page, "OrchardCore.DataLocalization.Views.Admin.Index", "UI Translations");
+        await Assertions.Expect(row).ToHaveCountAsync(1);
+        const string text = "<img src=x onerror=alert(1)>";
+        var responseTask = page.WaitForResponseAsync(response => response.Url.Contains("/Localization/UI/Save") && response.Request.Method == "POST");
+        await row.Locator("textarea").FillAsync(text);
+        var response = await responseTask;
+        Assert.True(response.Ok, await response.TextAsync());
+        await Assertions.Expect(editor.Locator("button.save")).ToBeDisabledAsync();
+
+        await editor.Locator("#search-box").FillAsync(text);
+        await Assertions.Expect(editor.Locator("tbody tr")).ToHaveCountAsync(1);
+        await editor.Locator("#missing-only-toggle").CheckAsync();
+        await Assertions.Expect(editor.Locator("tbody tr")).ToHaveCountAsync(0);
+        await editor.Locator("#missing-only-toggle").UncheckAsync();
+        await editor.Locator("#search-box").FillAsync("UI Translations");
+        await Assertions.Expect(page.Locator("img[onerror]")).ToHaveCountAsync(0);
+        await page.ReloadAsync();
+        await Assertions.Expect(row.Locator("textarea")).ToHaveValueAsync(text);
+        await Assertions.Expect(page.Locator("h1").First).ToHaveTextAsync(text);
+        await Assertions.Expect(page.Locator("img[onerror]")).ToHaveCountAsync(0);
+
+        var downloadTask = page.WaitForDownloadAsync();
+        await editor.GetByRole(AriaRole.Link, new() { Name = "Export overrides" }).ClickAsync();
+        var download = await downloadTask;
+        var export = await File.ReadAllTextAsync(await download.PathAsync(), TestContext.Current.CancellationToken);
+        Assert.Contains(text, export, StringComparison.Ordinal);
+        responseTask = page.WaitForResponseAsync(response => response.Url.Contains("/Localization/UI/Save") && response.Request.Method == "POST");
+        await row.GetByRole(AriaRole.Button, new() { Name = "Restore fallback" }).ClickAsync();
+        Assert.True((await responseTask).Ok);
+        await Assertions.Expect(editor.Locator("button.save")).ToBeDisabledAsync();
+        await Assertions.Expect(row.Locator("textarea")).ToHaveValueAsync("");
+
+        await editor.Locator("#import-file").SetInputFilesAsync(new FilePayload
+        {
+            Name = "overrides.po",
+            MimeType = "text/plain",
+            Buffer = System.Text.Encoding.UTF8.GetBytes(export),
+        });
+        responseTask = page.WaitForResponseAsync(response => response.Url.Contains("/Localization/UI/Import") && response.Request.Method == "POST");
+        await editor.GetByRole(AriaRole.Button, new() { Name = "Import", Exact = true }).ClickAsync();
+        Assert.True((await responseTask).Ok);
+        await Assertions.Expect(row.Locator("textarea")).ToHaveValueAsync(text);
+
+        var previousErrors = consoleErrors.Count;
+        await page.RouteAsync("**/Localization/UI/GetStrings?culture=fr", route => route.FulfillAsync(new()
+        {
+            Status = 500,
+            ContentType = "application/json",
+            Body = """{"message":"Reload unavailable."}""",
+        }));
+        await editor.GetByRole(AriaRole.Button, new() { Name = "Import", Exact = true }).ClickAsync();
+        await Assertions.Expect(page.GetByText("Reload unavailable.", new() { Exact = true })).ToBeVisibleAsync();
+        await Assertions.Expect(row.Locator("textarea")).ToBeDisabledAsync();
+        var reloadErrors = consoleErrors.Skip(previousErrors).ToArray();
+        Assert.Contains(reloadErrors, error => error.StartsWith("Load error:", StringComparison.Ordinal));
+        Assert.All(reloadErrors, error => Assert.True(error.StartsWith("Load error:", StringComparison.Ordinal) || error.Contains("500", StringComparison.Ordinal)));
+        consoleErrors.RemoveRange(previousErrors, consoleErrors.Count - previousErrors);
+        await page.UnrouteAsync("**/Localization/UI/GetStrings?culture=fr");
+        await page.ReloadAsync();
+        await Assertions.Expect(row.Locator("textarea")).ToHaveValueAsync(text);
+        await Assertions.Expect(row.Locator("textarea")).Not.ToBeDisabledAsync();
+
+        await editor.Locator("#auto-save-toggle").UncheckAsync();
+        var saveStarted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var releaseSave = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        await page.RouteAsync("**/Localization/UI/Save", async route =>
+        {
+            saveStarted.TrySetResult();
+            await releaseSave.Task;
+            await route.ContinueAsync();
+        });
+        try
+        {
+            await row.Locator("textarea").FillAsync("First update");
+            responseTask = page.WaitForResponseAsync(response => response.Url.Contains("/Localization/UI/Save") && response.Request.Method == "POST");
+            await editor.Locator("button.save").ClickAsync();
+            await saveStarted.Task.WaitAsync(TimeSpan.FromSeconds(30), TestContext.Current.CancellationToken);
+            await row.Locator("textarea").FillAsync("Second update");
+            releaseSave.TrySetResult();
+            Assert.True((await responseTask).Ok);
+            await Assertions.Expect(editor.Locator("button.save")).Not.ToBeDisabledAsync();
+        }
+        finally
+        {
+            releaseSave.TrySetResult();
+            await page.UnrouteAsync("**/Localization/UI/Save");
+        }
+
+        responseTask = page.WaitForResponseAsync(response => response.Url.Contains("/Localization/UI/Save") && response.Request.Method == "POST");
+        await editor.Locator("button.save").ClickAsync();
+        var updated = await responseTask;
+        Assert.True(updated.Ok);
+        Assert.Contains("Second update", updated.Request.PostData, StringComparison.Ordinal);
+        await Assertions.Expect(editor.Locator("button.save")).ToBeDisabledAsync();
+        for (var attempt = 0; attempt < 5; attempt++)
+        {
+            await page.ReloadAsync();
+            await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            if (await row.Locator("textarea").InputValueAsync() == "Second update")
+            {
+                break;
+            }
+        }
+
+        await Assertions.Expect(row.Locator("textarea")).ToHaveValueAsync("Second update");
+        await editor.Locator("#auto-save-toggle").UncheckAsync();
+        await row.Locator("textarea").FillAsync("Unsaved");
+        page.Dialog += DismissDialog;
+        await editor.Locator("#culture-select").SelectOptionAsync("ar");
+        await Assertions.Expect(editor.Locator("#culture-select")).ToHaveValueAsync("fr");
+        await Assertions.Expect(row.Locator("textarea")).ToHaveValueAsync("Unsaved");
+        page.Dialog -= DismissDialog;
+        page.Dialog += AcceptDialog;
+        await editor.Locator("#culture-select").SelectOptionAsync("ar");
+        await Assertions.Expect(editor.Locator("#culture-select")).ToHaveValueAsync("ar");
+        await Assertions.Expect(row.Locator("textarea")).ToHaveValueAsync("");
+        page.Dialog -= AcceptDialog;
+
+        // Pick an authoritative plural entry from the initial catalog rather than a hard-coded module string.
+        var source = await page.EvaluateAsync<string[]>(
+            """
+            () => {
+                const providers = JSON.parse(document.querySelector('#translation-editor').dataset.providers);
+                const entry = providers.flatMap(p => p.subGroups.flatMap(g => g.strings)).find(s => s.plural && s.formatArguments?.length);
+                return [entry.context, entry.key];
+            }
+            """);
+        await editor.Locator("#search-box").FillAsync(source[1]);
+        var plural = UiRow(page, source[0], source[1]);
+        await Assertions.Expect(plural.Locator("textarea")).ToHaveCountAsync(6);
+        await Assertions.Expect(plural.GetByText("Available placeholders:")).ToBeVisibleAsync();
+        await Assertions.Expect(plural.Locator("label.ocat-label")).ToHaveTextAsync([
+            "Translation for count 0", "Translation for count 1", "Translation for count 2",
+            "Translation for count 3", "Translation for count 11", "Translation for count 100",
+        ]);
+        await editor.Locator("#auto-save-toggle").CheckAsync();
+        var saves = 0;
+        page.Request += CountSaves;
+        await plural.Locator("textarea").First.FillAsync("First form");
+        await page.WaitForTimeoutAsync(2300);
+        Assert.Equal(0, saves);
+        responseTask = page.WaitForResponseAsync(response => response.Url.Contains("/Localization/UI/Save") && response.Request.Method == "POST");
+        for (var form = 1; form < 6; form++)
+        {
+            await plural.Locator("textarea").Nth(form).FillAsync($"Form {form}");
+        }
+
+        Assert.True((await responseTask).Ok);
+        await Assertions.Expect(editor.Locator("button.save")).ToBeDisabledAsync();
+        page.Request -= CountSaves;
+        Assert.Empty(consoleErrors);
+        await page.CloseAsync();
+
+        void CountSaves(object sender, IRequest request)
+        {
+            if (request.Url.Contains("/Localization/UI/Save") && request.Method == "POST")
+            {
+                Interlocked.Increment(ref saves);
+            }
+        }
+
+        async void DismissDialog(object sender, IDialog dialog) => await dialog.DismissAsync();
+        async void AcceptDialog(object sender, IDialog dialog) => await dialog.AcceptAsync();
+    }
+
+    private static ILocator UiRow(IPage page, string context, string key)
+        => page.Locator("#translation-editor .ms-3")
+            .Filter(new LocatorFilterOptions { Has = page.Locator("h6").Filter(new LocatorFilterOptions { HasText = context }) })
+            .Locator("tbody tr")
+            .Filter(new LocatorFilterOptions { Has = page.GetByText(key, new PageGetByTextOptions { Exact = true }) });
 }

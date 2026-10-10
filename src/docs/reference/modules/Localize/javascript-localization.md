@@ -248,7 +248,7 @@ dotnet build src/MyModule/MyModule.csproj -p:LocalizationCatalogOutputPath="$PWD
 
 The exported template is written to `<output>/<TargetFramework>/<AssemblyName>.pot`, for example `artifacts/localization/net10.0/MyModule.pot`. Build the solution or application with the same property to collect templates from all participating projects built through that entry point. Without the property, templates are generated and embedded but not copied into an export directory.
 
-This is the recommended successor to POExtractor. Follow the [build-time POT export workflow](README.md#export-translation-templates-for-localization-platforms) to produce a fresh snapshot, upload source templates, and download translated PO files for deployment.
+This is the recommended successor to POExtractor. Follow the [build-time POT export workflow](README.md#build-time-embedded-translation-templates) to produce a fresh snapshot, upload source templates, and download translated PO files for deployment.
 
 !!! note
     Extraction reads the C# localizer calls in `GetLocalizations`; it does not scan JavaScript or TypeScript assets. Declare localizable strings as constant C# localizer keys and expose them through `IJSLocalizer` as shown above. The existing PO-file-backed runtime translation workflow is unchanged.
