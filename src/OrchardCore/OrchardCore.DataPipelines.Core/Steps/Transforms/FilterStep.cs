@@ -89,7 +89,7 @@ public sealed class FilterStep : DataPipelineStepType<FilterStepSettings>
         var matched = context.GetOutput(Matched);
         var unmatched = context.GetOutput(Unmatched);
         var settings = GetSettings(context.Step);
-        var now = await DataPipelineFormulas.GetNowAsync(context.Services);
+        var now = await DataPipelineFormulas.GetRunTimeAsync(context.Run);
         var warnings = 0;
 
         CompiledExpression expression = null;

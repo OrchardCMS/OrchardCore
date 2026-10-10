@@ -56,21 +56,24 @@ public static class DataPipelineFormulas
     }
 
     /// <summary>
-    /// Gets the current date and time the formulas of a run use, in the time zone of the site, so that
-    /// <c>TODAY()</c> is the site's current day.
+    /// Gets the date and time the formulas and file names of a run use: when the run started, in the time zone of the
+    /// site, so that <c>NOW()</c> is the same for every row and <c>TODAY()</c> is the site's current day.
     /// </summary>
-    /// <param name="services">The services of the run.</param>
-    /// <returns>The current local date and time.</returns>
-    public static async Task<DateTime> GetNowAsync(IServiceProvider services)
+    /// <param name="run">The run.</param>
+    /// <returns>The local date and time the run started.</returns>
+    public static async Task<DateTime> GetRunTimeAsync(DataPipelineRunContext run)
     {
-        var clock = services?.GetService<ILocalClock>();
+        ArgumentNullException.ThrowIfNull(run);
+
+        var clock = run.Services?.GetService<ILocalClock>();
+        var started = DateTime.SpecifyKind(run.StartedUtc, DateTimeKind.Utc);
 
         if (clock is null)
         {
-            return DateTime.UtcNow;
+            return started;
         }
 
-        return (await clock.GetLocalNowAsync()).DateTime;
+        return (await clock.ConvertToLocalAsync(new DateTimeOffset(started))).DateTime;
     }
 
     /// <summary>

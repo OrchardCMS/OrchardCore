@@ -61,7 +61,7 @@ public sealed class CalculatedFieldsStep : DataPipelineStepType<CalculatedFields
 
         var settings = GetSettings(context.Step);
         var output = context.GetOutput();
-        var now = await DataPipelineFormulas.GetNowAsync(context.Services);
+        var now = await DataPipelineFormulas.GetRunTimeAsync(context.Run);
         var warnings = 0;
 
         Plan plan = null;
