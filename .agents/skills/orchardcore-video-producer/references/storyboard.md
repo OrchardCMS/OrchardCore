@@ -58,6 +58,9 @@ A pull request demo can be shorter: an opening card, the recordings, and a closi
   so describe what's on screen, as it happens.
 - **Plain, direct, present tense.** Address the viewer as "you", or use "let's" for actions in a recording.
 - **Name UI elements as they're labeled** on screen, so the viewer can find them: "Tools, Security, Secrets".
+- **Acronyms**: the voice reads most of them correctly (API, SMTP, SMS, RSA). For one that must be spelled out letter by
+  letter, add a `spoken` entry with commas between the letters, such as "A, S, P dot net" for "ASP.NET", and check it
+  with `scripts/pronounce.py`.
 - **Spell out** what a voice could misread: say "Get Secret Value Async" for `GetSecretValueAsync()`, "an X.509
   certificate", "Azure AI Search". Check every name of the narration for pronunciation, and add fixes to `spoken`.
 - **No marketing words**: no "powerful", "seamless", "simply", "easily".

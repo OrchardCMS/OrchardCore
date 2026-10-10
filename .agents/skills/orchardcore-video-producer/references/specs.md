@@ -70,5 +70,7 @@ Every Orchard Core video follows these values. They are applied by `scripts/bran
 ## Voice
 
 - `en-US-AndrewMultilingualNeural` at `+2%` rate, through `edge-tts`: a neutral, clear voice.
-- Pronunciation fixes in `SPOKEN` (`scripts/narrate.py`), such as "ASP.NET" spoken as "A S P dot net". The
+- Pronunciation fixes in `SPOKEN` (`scripts/narrate.py`), such as "ASP.NET" spoken as "A, S, P dot net". The
   captions keep the written form.
+- Acronyms said letter by letter are written with commas ("A, S, P"), so each letter is distinct: with spaces only,
+  the letters run together. Check them with `scripts/pronounce.py`: gaps of about 0.3 to 0.8 seconds between letters.

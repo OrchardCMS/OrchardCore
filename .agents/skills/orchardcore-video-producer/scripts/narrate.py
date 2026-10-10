@@ -21,7 +21,7 @@ RATE = "+2%"
 # How the voice must say words it misreads. The subtitles keep the written form. A storyboard can add its own in
 # "spoken"; add the ones that apply to every video here.
 SPOKEN = {
-    "ASP.NET": "A S P dot net",
+    "ASP.NET": "A, S, P dot net",
 }
 
 
@@ -74,4 +74,5 @@ async def main():
     print(f"{len(durations)} steps, {sum(durations.values()) / 60:.1f} minutes of narration")
 
 
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())

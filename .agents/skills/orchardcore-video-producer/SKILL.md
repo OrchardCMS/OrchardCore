@@ -74,7 +74,15 @@ It writes `audio/` and `durations.json`. Run it again after any change to the te
 generated again. **Record after narrating**, since the recorder holds each step for the length of its narration.
 
 If the voice mispronounces a word, add it to `SPOKEN` in `scripts/narrate.py` (for every video) or to `"spoken"` in
-the storyboard (for this one). For example, "ASP.NET" is spoken as "A S P dot net". The captions keep the written form.
+the storyboard (for this one). The captions keep the written form. Check a spelling before using it with
+`scripts/pronounce.py`, which shows the words the voice speaks and the gaps between them:
+
+```bash
+python .agents/skills/orchardcore-video-producer/scripts/pronounce.py "It encrypts secrets with {} Core Data Protection." "A S P dot net" "A, S, P dot net"
+```
+
+Letters spelled out need commas: "A S P" is read with 0.25 second gaps, and the letters run together into "asp",
+while "A, S, P" spaces them like a person spelling them. "ASP.NET" is spoken as "A, S, P dot net".
 
 ### 4. Record the clips
 
