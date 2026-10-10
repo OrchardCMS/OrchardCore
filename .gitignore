@@ -229,4 +229,3 @@ BenchmarkDotNet.Artifacts
 .playwright-cli
 .playwright-mcp
 .claude/*
-

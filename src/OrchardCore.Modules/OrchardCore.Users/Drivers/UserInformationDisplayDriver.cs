@@ -1,12 +1,9 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
-using OrchardCore.Sms;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.ViewModels;
 
@@ -16,22 +13,15 @@ public sealed class UserInformationDisplayDriver : DisplayDriver<User>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IPhoneFormatValidator _phoneFormatValidator;
     private readonly ISiteService _siteService;
-
-    internal readonly IStringLocalizer S;
 
     public UserInformationDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IPhoneFormatValidator phoneFormatValidator,
-        IStringLocalizer<UserInformationDisplayDriver> stringLocalizer,
         ISiteService siteService)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
-        _phoneFormatValidator = phoneFormatValidator;
-        S = stringLocalizer;
         _siteService = siteService;
     }
 
@@ -44,30 +34,18 @@ public sealed class UserInformationDisplayDriver : DisplayDriver<User>
 
         var settings = await _siteService.GetSettingsAsync<LoginSettings>();
         var canEditUserInfo = await CanEditUserInfoAsync(user);
+
         return Combine(
             Initialize<EditUserNameViewModel>("UserName_Edit", model =>
             {
                 model.UserName = user.UserName;
-
                 model.AllowEditing = context.IsNew || (settings.AllowChangingUsername && canEditUserInfo);
-
             }).Location("Content:1"),
 
             Initialize<EditUserEmailViewModel>("UserEmail_Edit", model =>
             {
                 model.Email = user.Email;
-
                 model.AllowEditing = context.IsNew || (settings.AllowChangingEmail && canEditUserInfo);
-
-            }).Location("Content:1.3"),
-
-            Initialize<EditUserPhoneNumberViewModel>("UserPhoneNumber_Edit", model =>
-            {
-                model.PhoneNumber = user.PhoneNumber;
-                model.PhoneNumberConfirmed = user.PhoneNumberConfirmed;
-
-                model.AllowEditing = context.IsNew || (settings.AllowChangingPhoneNumber && canEditUserInfo);
-
             }).Location("Content:1.3")
         );
     }
@@ -81,34 +59,18 @@ public sealed class UserInformationDisplayDriver : DisplayDriver<User>
 
         var userNameModel = new EditUserNameViewModel();
         var emailModel = new EditUserEmailViewModel();
-        var phoneNumberModel = new EditUserPhoneNumberViewModel();
 
         // Do not use the user manager to set these values, or validate them here, as they will validate at the incorrect time.
         // After this driver runs the IUserService.UpdateAsync or IUserService.CreateAsync method will
         // validate the user and provide the correct error messages based on the entire user objects values.
 
-        // Custom properties should still be validated in the driver.
-
         if (context.IsNew)
         {
             await context.Updater.TryUpdateModelAsync(userNameModel, Prefix);
-
             user.UserName = userNameModel.UserName;
 
             await context.Updater.TryUpdateModelAsync(emailModel, Prefix);
-
             user.Email = emailModel.Email;
-
-            await context.Updater.TryUpdateModelAsync(phoneNumberModel, Prefix);
-
-            if (!string.IsNullOrEmpty(phoneNumberModel.PhoneNumber) && !_phoneFormatValidator.IsValid(phoneNumberModel.PhoneNumber))
-            {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(phoneNumberModel.PhoneNumber), S["Please provide a valid phone number."]);
-            }
-            else
-            {
-                user.PhoneNumber = phoneNumberModel.PhoneNumber;
-            }
         }
         else
         {
@@ -124,18 +86,6 @@ public sealed class UserInformationDisplayDriver : DisplayDriver<User>
                 if (settings.AllowChangingEmail && await context.Updater.TryUpdateModelAsync(emailModel, Prefix))
                 {
                     user.Email = emailModel.Email;
-                }
-
-                if (settings.AllowChangingPhoneNumber && await context.Updater.TryUpdateModelAsync(phoneNumberModel, Prefix))
-                {
-                    if (!string.IsNullOrEmpty(phoneNumberModel.PhoneNumber) && !_phoneFormatValidator.IsValid(phoneNumberModel.PhoneNumber))
-                    {
-                        context.Updater.ModelState.AddModelError(Prefix, nameof(phoneNumberModel.PhoneNumber), S["Please provide a valid phone number."]);
-                    }
-                    else
-                    {
-                        user.PhoneNumber = phoneNumberModel.PhoneNumber;
-                    }
                 }
             }
         }
