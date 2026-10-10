@@ -53,15 +53,17 @@ public sealed class DataPipelineManager
     /// <param name="name">The name of the pipeline.</param>
     /// <param name="description">The description of the pipeline.</param>
     /// <param name="user">The user who creates it.</param>
+    /// <param name="pipelineId">The identifier of the pipeline, such as the one it has on the site it was exported from, or
+    /// <see langword="null"/> for a new identifier.</param>
     /// <returns>The pipeline.</returns>
-    public async Task<DataPipeline> CreateAsync(string name, string description, ClaimsPrincipal user)
+    public async Task<DataPipeline> CreateAsync(string name, string description, ClaimsPrincipal user, string pipelineId = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
 
         var now = _clock.UtcNow;
         var pipeline = new DataPipeline
         {
-            PipelineId = _idGenerator.GenerateUniqueId(),
+            PipelineId = string.IsNullOrWhiteSpace(pipelineId) ? _idGenerator.GenerateUniqueId() : pipelineId.Trim(),
             Name = name.Trim(),
             Description = description?.Trim(),
             CreatedUtc = now,

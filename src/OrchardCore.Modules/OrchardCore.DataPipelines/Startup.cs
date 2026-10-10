@@ -6,6 +6,7 @@ using OrchardCore.DataPipelines.BackgroundTasks;
 using OrchardCore.DataPipelines.Drivers;
 using OrchardCore.DataPipelines.Indexes;
 using OrchardCore.DataPipelines.Migrations;
+using OrchardCore.DataPipelines.Recipes;
 using OrchardCore.DataPipelines.Models;
 using OrchardCore.DataPipelines.Services;
 using OrchardCore.DataPipelines.Steps;
@@ -14,6 +15,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using OrchardCore.Recipes;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 
@@ -72,5 +74,7 @@ public sealed class Startup : StartupBase
         services.AddDataPipelineStep<CreateFileStep, CreateFileStepDisplayDriver>();
         services.AddDataPipelineStep<ZipFilesStep, ZipFilesStepDisplayDriver>();
         services.AddDataPipelineStep<ShareDownloadLinkStep, ShareDownloadLinkStepDisplayDriver>();
+
+        services.AddRecipeExecutionStep<DataPipelinesRecipeStep>();
     }
 }

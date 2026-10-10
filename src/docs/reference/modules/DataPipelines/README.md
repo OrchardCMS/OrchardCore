@@ -292,6 +292,57 @@ To save these files to the media library, add their extensions to the `AllowedFi
 !!! warning
     The files of the media library are served to anyone who knows their URL, unless the [Secure Media](../Media/README.md#secure-media) feature restricts them. Use the **Share a download link** step for data that must only reach some users.
 
+## Recipes and deployment
+
+The **All Data Pipelines** deployment step, in the **Data** category of deployment plans, exports every pipeline with its published definition, or its draft when it was never published. The secrets of the steps, the settings whose names start with `Protected`, aren't exported, as they can't be read on another site.
+
+The `DataPipelines` recipe step imports pipelines:
+
+```json
+{
+  "steps": [
+    {
+      "name": "DataPipelines",
+      "Pipelines": [
+        {
+          "PipelineId": "4fa5t9rfmxagnt3ab966tzrk5r",
+          "Name": "Blog posts export",
+          "Description": "Exports the blog posts every night.",
+          "IsEnabled": true,
+          "Definition": {
+            "Steps": [
+              {
+                "StepId": "source",
+                "Type": "DataSource",
+                "X": 180,
+                "Y": 320,
+                "Properties": {
+                  "DataSourceStepSettings": { "Source": "Contents", "DataSet": "BlogPost" }
+                }
+              },
+              {
+                "StepId": "file",
+                "Type": "CreateFile",
+                "X": 480,
+                "Y": 320,
+                "Properties": {
+                  "CreateFileStepSettings": { "Format": "xlsx", "FileName": "posts" }
+                }
+              }
+            ],
+            "Connections": [
+              { "SourceStepId": "source", "SourcePort": "Output", "TargetStepId": "file", "TargetPort": "Input" }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+A pipeline is matched by its identifier, at most 26 characters: an existing pipeline gets the imported name, description and definition as its draft, and keeps its published version; otherwise a pipeline is created, with a new identifier when none is given. The settings of a step are in its `Properties`, under the name of their type, as an export shows them. An imported definition is a draft: it runs once a user publishes it, as runs execute with the access of the user who published the pipeline. Enter the secrets of the steps again before publishing.
+
 ## Configuration
 
 The limits of the engine are the `DataPipelineOptions`, bound to the `OrchardCore:DataPipelines` section of the configuration, for all tenants or per tenant:
