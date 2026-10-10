@@ -8,8 +8,6 @@ namespace OrchardCore.Localization;
 
 public class AdminCookieCultureProvider : CookieRequestCultureProvider
 {
-    public const string CookieNamePrefix = "admin_culture_";
-
     private readonly PathString _adminPath;
 
     public AdminCookieCultureProvider(ShellSettings shellSettings, AdminOptions adminOptions)
@@ -28,7 +26,8 @@ public class AdminCookieCultureProvider : CookieRequestCultureProvider
         return NullProviderCultureResult;
     }
 
-    public static string MakeCookieName(ShellSettings shellSettings) => CookieNamePrefix + shellSettings.VersionId;
+    public static string MakeCookieName(ShellSettings shellSettings)
+        => $"{OrchardCoreConstants.Cookies.AdminCulture}.{shellSettings.VersionId}";
 
     public static string MakeCookiePath(HttpContext httpContext) => httpContext.Request.PathBase.HasValue
         ? httpContext.Request.PathBase.ToString()
