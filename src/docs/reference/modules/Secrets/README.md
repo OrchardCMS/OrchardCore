@@ -2,6 +2,14 @@
 
 The Secrets module provides a secure, centralized way to store and manage sensitive data such as passwords, API keys, connection strings, and certificates. It addresses common challenges in managing secrets across development, staging, and production environments.
 
+The following video explains why the Secrets module exists, walks through each of its features, and shows how to adopt it in your own modules.
+
+<video controls preload="metadata" width="100%" poster="videos/secrets-module.jpg">
+    <source src="videos/secrets-module.mp4" type="video/mp4">
+    <track kind="captions" src="videos/secrets-module.vtt" srclang="en" label="English">
+    Your browser does not support embedded videos. <a href="videos/secrets-module.mp4">Download the video</a>.
+</video>
+
 ## Why Use the Secrets Module?
 
 ### The Problem
@@ -1062,18 +1070,22 @@ public sealed class MyServiceSecretMigrationDisplayDriver : DisplayDriver<Secret
         var model = new SecretMigrationItemViewModel();
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        if (model.Migrate && await migration.MoveToSecretAsync(
-            _secretManager,
-            _dataProtectionProvider.CreateProtector(MyServiceConstants.ProtectorName),
-            settings.ApiKey,
-            model.SecretName,
-            S["My service: API key"]))
+        if (model.Migrate)
         {
-            settings.ApiKeySecretName = model.SecretName.Trim();
-            settings.ApiKey = null;
+            await migration.MoveToSecretAsync(
+                _secretManager,
+                _dataProtectionProvider.CreateProtector(MyServiceConstants.ProtectorName),
+                settings.ApiKey,
+                model.SecretName,
+                S["My service: API key"],
+                async secretName =>
+                {
+                    settings.ApiKeySecretName = secretName;
+                    settings.ApiKey = null;
 
-            site.Put(settings);
-            await _siteService.UpdateSiteSettingsAsync(site);
+                    site.Put(settings);
+                    await _siteService.UpdateSiteSettingsAsync(site);
+                });
         }
 
         return await EditAsync(migration, context);
@@ -1091,7 +1103,7 @@ public sealed class SecretsStartup : StartupBase
 }
 ```
 
-`MoveToSecretAsync()` never overwrites an existing secret, and records a failed move, for instance when the value can't be decrypted, without changing the settings. Also check the permission that guards your settings before listing or moving the credential.
+`MoveToSecretAsync()` saves the secret right away, but only calls the last argument, which makes the settings reference the secret, once every driver has saved its secrets: a secret store can commit a secret in its own scope, which must not wait on settings that the same request already changed. So don't change the settings anywhere else in the driver. It never overwrites an existing secret, and records a failed move, for instance when the value can't be decrypted, without calling it. Also check the permission that guards your settings before listing or moving the credential.
 
 ### Credentials Stored Outside Site Settings
 
