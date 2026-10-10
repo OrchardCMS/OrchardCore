@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Data Pipelines</Title>
+    <Description>$(OCCMSDescription)
+
+    Design data pipelines that read data from any data source, transform it with filters, calculated fields, joins and
+    aggregates, and deliver it as files to the media library, FTP or SFTP servers, web APIs, email recipients or secure
+    download links.
+    </Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS DataPipelines ETL</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.DataPipelines.Core\OrchardCore.DataPipelines.Core.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
+  </ItemGroup>
+
+</Project>
