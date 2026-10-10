@@ -1,0 +1,13 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Features.Models
+
+@model ShapeViewModel<FeatureEntry>
+
+@{
+    var featureId = Model.Value.Feature.Descriptor.Id;
+}
+
+<div class="form-check">
+    <input type="checkbox" class="form-check-input" name="featureIds" id="@featureId" value="@featureId">
+    <label class="form-check-label" for="@featureId">&nbsp;</label>
+</div>

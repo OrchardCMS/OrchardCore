@@ -1,0 +1,15 @@
+@*
+    One layout of the selector. A layout ships its own button by adding AdminListLayoutSelectorItem-{Layout}.cshtml,
+    which is how the built-in ones carry their icon; this is what a layout without one falls back to.
+
+    Properties:
+        Layout     The layout this button offers.
+        Url        The address rendering the list with it.
+        IsCurrent  Whether the list is rendered with it already.
+*@
+@{
+    string layout = Model.Layout;
+    var isCurrent = Model.IsCurrent != null && (bool)Model.IsCurrent;
+}
+
+<a href="@Model.Url" class="btn btn-sm @(isCurrent ? "btn-primary active" : "btn-outline-secondary")" title="@layout" aria-pressed="@isCurrent">@layout</a>

@@ -8,6 +8,8 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
@@ -61,7 +63,12 @@ public sealed class AdminController : Controller
     }
 
     [Admin("Shortcodes", "Shortcodes.Index")]
-    public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(
+        ContentOptions options,
+        PagerParameters pagerParameters,
+        [FromServices] IDisplayManager<ShortcodeTemplateEntry> displayManager,
+        [FromServices] IUpdateModelAccessor updateModelAccessor,
+        [FromServices] IAdminListFactory adminListFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, ShortcodesPermissions.ManageShortcodeTemplates))
         {
@@ -105,6 +112,23 @@ public sealed class AdminController : Controller
         [
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
+
+        var rows = new List<IShape>(model.ShortcodeTemplates.Count);
+
+        foreach (var entry in model.ShortcodeTemplates)
+        {
+            rows.Add(await displayManager.BuildDisplayAsync(entry, updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin));
+        }
+
+        // The AdminList shape renders the templates with the configured layout (List, Grid, ...).
+        model.List = await adminListFactory.CreateAsync(new AdminListContext(ShortcodesAdminList.Name)
+        {
+            Rows = rows,
+            BulkActions = model.Options.ContentsBulkAction,
+            Pager = model.Pager,
+            ItemCssClass = "list-group-item",
+            EmptyMessage = H["<strong>Nothing here!</strong> There are no shortcode templates for the moment."],
+        }, HttpContext.RequestAborted);
 
         return View(model);
     }

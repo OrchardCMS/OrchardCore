@@ -1,4 +1,4 @@
-@using Microsoft.AspNetCore.Identity
+﻿@using Microsoft.AspNetCore.Identity
 @using Microsoft.Extensions.Options
 @using OrchardCore.Users.Models
 
@@ -12,7 +12,5 @@
 RegistrationOptions.Value.UsersMustValidateEmail &&
 await AuthorizationService.AuthorizeAsync(User, UsersPermissions.EditUsers, Model.User))
 {
-    <li>
-        <a asp-action="SendVerificationEmail" asp-controller="EmailConfirmation" asp-route-id="@Model.User.UserId" class="dropdown-item" data-url-af="UnsafeUrl">@T["Send verification email"]</a>
-    </li>
+    <a asp-action="SendVerificationEmail" asp-controller="EmailConfirmation" asp-route-id="@Model.User.UserId" class="dropdown-item" data-url-af="UnsafeUrl">@T["Send verification email"]</a>
 }

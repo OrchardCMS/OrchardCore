@@ -1,0 +1,9 @@
+@using OrchardCore.Deployment.Remote.Models
+@using OrchardCore.DisplayManagement.Views
+
+@model ShapeViewModel<RemoteInstance>
+
+@if (!string.IsNullOrWhiteSpace(Model.Value.Url))
+{
+    <div class="admin-list-secondary remote-instance-url">@Model.Value.Url</div>
+}

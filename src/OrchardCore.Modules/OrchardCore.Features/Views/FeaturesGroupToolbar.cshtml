@@ -1,0 +1,19 @@
+@*
+    The toolbar of one category of the features admin list: the checkbox selecting every feature of that
+    category. The list-management script keeps its label and its state in sync with the rows.
+
+    Properties:
+        CategoryName  The name of the category.
+        CheckboxId    The id of the select-all checkbox.
+*@
+@{
+    string categoryName = Model.CategoryName;
+    string checkboxId = Model.CheckboxId;
+}
+
+<div class="form-check list-group-select-all-container">
+    <input type="checkbox" class="form-check-input list-group-select-all" id="@checkboxId">
+    <label class="form-check-label list-group-select-all-label" for="@checkboxId" data-select-all-text="@T["Select all {0} features grouped under {1} category", "__COUNT__", categoryName]">
+        <span class="list-group-select-all-text">@T["Select all {0} features grouped under {1} category", 0, categoryName]</span>
+    </label>
+</div>

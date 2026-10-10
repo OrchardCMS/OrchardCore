@@ -34,7 +34,8 @@ public sealed class ElasticsearchQueryDisplayDriver : DisplayDriver<Query>
         }
 
         return Combine(
-            Dynamic("ElasticQuery_SummaryAdmin", static (model, query) => { model.Query = query; }, query).Location("Content:5"),
+            // The source is a badge in the Tags zone, which the 'Source' column of the admin list renders.
+            Dynamic("ElasticQuery_SummaryAdmin", static (model, query) => { model.Query = query; }, query).Location("Tags:5"),
             Dynamic("ElasticQuery_Buttons_SummaryAdmin", static (model, query) => { model.Query = query; }, query).Location("Actions:2")
         );
     }

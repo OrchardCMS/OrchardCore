@@ -1,0 +1,17 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Features.Models
+
+@model ShapeViewModel<FeatureEntry>
+
+@if (Model.Value.Feature.IsEnabled)
+{
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@(Model.Value.IsAlwaysEnabled ? T["This feature is always enabled."] : T["This feature is enabled."])">
+        <i class="fa-solid fa-circle-check text-success" aria-hidden="true"></i> @T["Enabled"]
+    </span>
+}
+else
+{
+    <span class="badge ta-badge fw-normal" data-bs-toggle="tooltip" title="@T["This feature is disabled."]">
+        <i class="fa-solid fa-circle-xmark text-secondary" aria-hidden="true"></i> @T["Disabled"]
+    </span>
+}

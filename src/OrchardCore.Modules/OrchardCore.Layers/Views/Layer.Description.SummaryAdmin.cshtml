@@ -1,0 +1,9 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Layers.Models
+
+@model ShapeViewModel<Layer>
+
+@if (!string.IsNullOrEmpty(Model.Value.Description))
+{
+    <div class="admin-list-secondary">@Model.Value.Description</div>
+}

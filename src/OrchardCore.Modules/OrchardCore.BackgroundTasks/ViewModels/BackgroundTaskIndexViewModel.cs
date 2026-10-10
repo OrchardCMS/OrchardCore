@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.BackgroundTasks.ViewModels;
 
@@ -10,7 +11,13 @@ public class BackgroundTaskIndexViewModel
     public IList<BackgroundTaskEntry> Tasks { get; set; }
 
     [BindNever]
-    public dynamic Pager { get; set; }
+    public IShape Pager { get; set; }
+
+    /// <summary>
+    /// The <c>AdminList</c> shape rendering the tasks, the toolbar and the pager in the configured layout.
+    /// </summary>
+    [BindNever]
+    public IShape List { get; set; }
 }
 
 public class BackgroundTaskEntry

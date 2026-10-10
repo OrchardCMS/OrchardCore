@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using OrchardCore.DisplayManagement;
 using OrchardCore.Templates.Models;
 
 namespace OrchardCore.Templates.ViewModels;
@@ -7,7 +8,12 @@ namespace OrchardCore.Templates.ViewModels;
 public class TemplateIndexViewModel
 {
     public IList<TemplateEntry> Templates { get; set; }
-    public dynamic Pager { get; set; }
+    public IShape Pager { get; set; }
+
+    /// <summary>
+    /// The <c>AdminList</c> shape rendering the templates, the toolbar and the pager in the configured layout.
+    /// </summary>
+    public IShape List { get; set; }
     public ContentOptions Options { get; set; } = new ContentOptions();
 }
 
@@ -15,6 +21,11 @@ public class TemplateEntry
 {
     public string Name { get; set; }
     public Template Template { get; set; }
+
+    /// <summary>
+    /// Whether the entry belongs to the admin templates, which the row links carry in their route.
+    /// </summary>
+    public bool AdminTemplates { get; set; }
 }
 
 public class ContentOptions

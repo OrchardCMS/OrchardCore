@@ -1,0 +1,9 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Workflows.ViewModels
+
+@model ShapeViewModel<WorkflowEntry>
+
+<div class="form-check">
+    <input type="checkbox" class="form-check-input" value="@Model.Value.Workflow.Id" name="itemIds" id="itemIds-@Model.Value.Workflow.Id">
+    <label class="form-check-label" for="itemIds-@Model.Value.Workflow.Id"></label>
+</div>

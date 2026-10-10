@@ -1,0 +1,10 @@
+@*
+    The 'Actions' column of an admin list in a layout with columns, e.g. 'Grid': delegates to the AdminListActions shape,
+    which renders the 'Actions' and 'ActionsMenu' zones of the row in the configured layout (Buttons, Menu, ...).
+    The layouts render the actions this way themselves, and only create this shape when a template overrides a cell.
+*@
+@using OrchardCore.DisplayManagement
+@if (Model.Row is IShape row)
+{
+    @await DisplayAsync(await Factory.CreateAdminListActionsAsync(row, (string)Model.ListName))
+}

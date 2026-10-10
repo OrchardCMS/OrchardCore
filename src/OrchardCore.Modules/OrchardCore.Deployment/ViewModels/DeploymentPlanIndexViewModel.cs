@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.Deployment.ViewModels;
 
@@ -7,7 +8,12 @@ public class DeploymentPlanIndexViewModel
 {
     public IList<DeploymentPlanEntry> DeploymentPlans { get; set; }
     public ContentOptions Options { get; set; } = new ContentOptions();
-    public dynamic Pager { get; set; }
+    public IShape Pager { get; set; }
+
+    /// <summary>
+    /// The <c>AdminList</c> shape rendering the plans, the toolbar and the pager in the configured layout.
+    /// </summary>
+    public IShape List { get; set; }
 }
 
 public class DeploymentPlanEntry

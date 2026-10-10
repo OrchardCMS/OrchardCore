@@ -1,0 +1,10 @@
+@using OrchardCore.AdminMenu.ViewModels
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Localization.Data
+
+@inject IDataLocalizer D
+
+@model ShapeViewModel<AdminMenuEntry>
+
+@* Plain link, like the title of a content item in the Manage Content list. *@
+<a asp-controller="Node" asp-action="List" asp-route-id="@Model.Value.AdminMenu.Id" class="tree-name-link">@D[Model.Value.AdminMenu.Name, "Admin Menus"]</a>

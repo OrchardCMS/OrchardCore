@@ -24,6 +24,7 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Tests.Apis.Context;
 using OrchardCore.Users.AuditTrail.Services;
 using OrchardCore.Users.AuditTrail.ViewModels;
+using FeaturesAdminController = OrchardCore.Features.Controllers.AdminController;
 
 namespace OrchardCore.Tests.Localization;
 
@@ -65,31 +66,46 @@ public class LocalizedViewEncodingTests
     }
 
     [Fact]
-    public async Task Features_NonInternedCoreCategory_DoesNotOfferDisable()
+    public void Features_NonInternedCoreCategory_DoesNotOfferDisable()
+    {
+        var category = new string("Core".ToCharArray());
+        var model = CreateFeaturesModel(category);
+
+        // The rows of the features list are built by the controller, which decides what a row offers.
+        var entry = FeaturesAdminController.CreateEntry(model, Assert.Single(model.Features), category, tenant: null);
+
+        Assert.False(entry.CanDisable);
+        Assert.False(entry.IsSelectable);
+    }
+
+    [Theory]
+    [InlineData("Other & miscellaneous")]
+    [InlineData("Category \"quoted\" <tag>")]
+    public async Task Features_CategoryName_EncodesOnce(string category)
     {
         using var context = new SiteContext();
         await context.InitializeAsync();
 
-        var category = new string("Core".ToCharArray());
+        // The controller names the categories, "Uncategorized" with its string localizer, so they are plain text.
         var model = CreateFeaturesModel(category);
+        model.Groups.Add(new FeatureGroupViewModel { Category = category });
+
         var html = await RenderAsync(context, "OrchardCore.Features", "Admin/Features", model);
         using var document = new HtmlParser().ParseDocument(html);
 
-        Assert.Equal("Core", Assert.Single(document.QuerySelectorAll(".feature-group h3")).TextContent);
-        Assert.Empty(document.QuerySelectorAll("#btn-disable-TestFeature, input[name='featureIds']"));
-    }
+        Assert.Equal(category, Assert.Single(document.QuerySelectorAll(".feature-group h3")).TextContent);
 
-    [Fact]
-    public async Task Features_UncategorizedTranslation_RendersEntitiesOnce()
-    {
-        using var context = new SiteContext();
-        await context.InitializeAsync();
+        // The select-all checkbox of the category passes its name to the view localizer as an argument.
+        var toolbar = new Shape();
+        toolbar.Properties["CategoryName"] = category;
+        toolbar.Properties["CheckboxId"] = "select-all-category";
 
-        var html = await RenderAsync(context, "OrchardCore.Features", "Admin/Features", CreateFeaturesModel(null), "Uncategorized", "Other &amp; miscellaneous");
-        using var document = new HtmlParser().ParseDocument(html);
+        html = await RenderAsync(context, "OrchardCore.Features", "FeaturesGroupToolbar", toolbar);
+        using var toolbarDocument = new HtmlParser().ParseDocument(html);
 
-        Assert.Equal("Other & miscellaneous", Assert.Single(document.QuerySelectorAll(".feature-group h3")).TextContent);
-        Assert.NotNull(document.QuerySelector("#btn-disable-TestFeature"));
+        var label = Assert.Single(toolbarDocument.QuerySelectorAll(".list-group-select-all-label"));
+        Assert.Equal($"Select all __COUNT__ features grouped under {category} category", label.GetAttribute("data-select-all-text"));
+        Assert.Equal($"Select all 0 features grouped under {category} category", label.TextContent.Trim());
     }
 
     [Theory]

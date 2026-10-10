@@ -1,0 +1,14 @@
+@*
+    The status and sort filters of the workflow instances admin list, passed to the AdminListToolbar as its
+    'Actions' so they render at the end of the toolbar next to the bulk actions.
+*@
+@using OrchardCore.Workflows.ViewModels
+
+@{
+    var options = (WorkflowIndexOptions)Model.Options;
+}
+
+<div class="btn-group filter">
+    <select asp-for="@options.Filter" name="Options.Filter" asp-items="@options.WorkflowsStatuses" class="selectpicker show-tick me-2" data-header="@T["Filter by status"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Status"]" data-style="btn-sm"></select>
+    <select asp-for="@options.OrderBy" name="Options.OrderBy" asp-items="@options.WorkflowsSorts" class="selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Sort"]" data-style="btn-sm"></select>
+</div>

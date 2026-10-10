@@ -1,0 +1,9 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.UrlRewriting.Models
+
+@model ShapeViewModel<RewriteRule>
+
+@* The drag handle the sortable script looks for. Rules are evaluated in order, so the order is the data. *@
+<div class="ui-sortable-handle cursor-pointer" title="@T["Drag to reorder"]">
+    <i class="fa-solid fa-up-down-left-right text-secondary" aria-hidden="true"></i>
+</div>

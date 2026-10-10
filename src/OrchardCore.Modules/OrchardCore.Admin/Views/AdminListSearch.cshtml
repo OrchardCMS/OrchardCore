@@ -1,0 +1,34 @@
+@*
+    The search bar of an admin list: the input the page filters on, followed by a search button (a magnifying
+    glass) so the filter can be submitted without the keyboard. A page passes it to the AdminList shape as its 'Search' property, and
+    the layout decides where it goes.
+
+    Properties:
+        Name         The name of the input, e.g. "Options.Search". Required for the value to be posted back.
+        Value        The current search text.
+        Placeholder  The placeholder of the input, defaults to "Search".
+        Id           The id of the input, defaults to "search-box", which the list-management script reads.
+        SubmitName   The name of the search button, defaults to "submit.Filter".
+        Autofocus    Whether the input takes the focus when the page opens, defaults to true.
+        Filters      Zone rendered before the input, e.g. a filter dropdown. Its items open the input group.
+*@
+@using OrchardCore.DisplayManagement.Zones
+@{
+    string name = Model.Name;
+    string value = Model.Value;
+    string id = Model.Id ?? "search-box";
+    string submitName = Model.SubmitName ?? "submit.Filter";
+    var placeholder = Model.Placeholder ?? T["Search"];
+    var autofocus = Model.Autofocus == null || (bool)Model.Autofocus;
+    var zones = Model as IZoneHolding;
+    var filters = zones != null && zones.Zones.IsNotEmpty("Filters") ? zones.Zones["Filters"] : null;
+}
+
+<div class="input-group">
+    @if (filters != null)
+    {
+        @await DisplayAsync(filters)
+    }
+    <input id="@id" name="@name" value="@value" class="form-control" placeholder="@placeholder" type="search" autofocus="@autofocus" autocomplete="off" />
+    <button type="submit" name="@submitName" class="btn btn-outline-secondary" title="@T["Search"]" aria-label="@T["Search"]"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
+</div>

@@ -1,0 +1,22 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Tenants.ViewModels
+
+@model ShapeViewModel<ShellSettingsEntry>
+
+@{
+    var entry = Model.Value;
+}
+
+@if (!string.IsNullOrEmpty(entry.Description) || !string.IsNullOrEmpty(entry.ShellSettings.RequestUrlHost))
+{
+    <div class="admin-list-secondary">
+        @if (!string.IsNullOrEmpty(entry.Description))
+        {
+            <div>@entry.Description</div>
+        }
+        @if (!string.IsNullOrEmpty(entry.ShellSettings.RequestUrlHost))
+        {
+            <div><code class="text-break" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@T["Url host"]">@entry.ShellSettings.RequestUrlHost</code></div>
+        }
+    </div>
+}

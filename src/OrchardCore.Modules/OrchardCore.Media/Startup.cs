@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -217,6 +218,9 @@ public sealed class Startup : StartupBase
 
         // Media Profiles
         services.AddScoped<MediaProfilesManager>();
+
+        // Builds the rows of the media profiles admin list.
+        services.AddDisplayDriver<MediaProfileEntry, MediaProfileEntryDisplayDriver>();
         services.AddScoped<IMediaProfileService, MediaProfileService>();
         services.AddRecipeExecutionStep<MediaProfileStep>();
 
@@ -225,6 +229,8 @@ public sealed class Startup : StartupBase
 
         services.AddScoped<IUserAssetFolderNameProvider, DefaultUserAssetFolderNameProvider>();
         services.AddChunkFileUploadServices();
+
+        services.AddAdminListColumnProvider<MediaProfilesAdminListColumnProvider>(MediaProfilesAdminList.Name);
     }
 
     public override void Configure(
