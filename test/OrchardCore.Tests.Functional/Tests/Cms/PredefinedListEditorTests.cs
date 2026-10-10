@@ -29,6 +29,15 @@ public sealed class PredefinedListEditorTests : CmsTestBase<PredefinedListEditor
 
     private static ILocator AddRowLink(IPage page) => page.Locator(".options-table-editor-mount a.btn-light");
 
+    // Saving posts the form, which redirects to the content type editor. Wait until that page has loaded before
+    // navigating away or closing it: Chromium can ignore a close request that arrives while it is still loading the
+    // redirected document, and Page.CloseAsync() has no timeout, so the whole test run then hangs.
+    private static async Task SaveAsync(IPage page)
+    {
+        await page.Locator("button.save[type='submit']").ClickAsync();
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+    }
+
     [Fact]
     public async Task DirectlyEditedValue_IsNotOverwrittenByLaterLabelEdit()
     {
@@ -150,7 +159,7 @@ public sealed class PredefinedListEditorTests : CmsTestBase<PredefinedListEditor
         await nameInput.FillAsync("Red");
         await valueInput.FillAsync("custom-red-value");
 
-        await page.Locator("button.save[type='submit']").ClickAsync();
+        await SaveAsync(page);
 
         optionsTable = await OpenFieldEditorAsync(page);
         rows = optionsTable.Locator("tbody tr");
@@ -171,7 +180,7 @@ public sealed class PredefinedListEditorTests : CmsTestBase<PredefinedListEditor
         // from an empty options list again.
         await row.Locator("a.btn").Last.ClickAsync();
         await Assertions.Expect(rows).ToHaveCountAsync(0);
-        await page.Locator("button.save[type='submit']").ClickAsync();
+        await SaveAsync(page);
 
         Assert.Empty(consoleErrors);
         await page.CloseAsync();
@@ -373,7 +382,7 @@ public sealed class PredefinedListEditorTests : CmsTestBase<PredefinedListEditor
 
         await modal.Locator("button.btn-submit").ClickAsync();
         await Assertions.Expect(modal).Not.ToBeVisibleAsync();
-        await page.Locator("button.save[type='submit']").ClickAsync();
+        await SaveAsync(page);
 
         // The selection made by typing must survive the round trip.
         optionsTable = await OpenFieldEditorAsync(page);
@@ -387,7 +396,7 @@ public sealed class PredefinedListEditorTests : CmsTestBase<PredefinedListEditor
         await rows.Nth(1).Locator("a.btn").Last.ClickAsync();
         await rows.Nth(0).Locator("a.btn").Last.ClickAsync();
         await Assertions.Expect(rows).ToHaveCountAsync(0);
-        await page.Locator("button.save[type='submit']").ClickAsync();
+        await SaveAsync(page);
 
         Assert.Empty(consoleErrors);
         await page.CloseAsync();
