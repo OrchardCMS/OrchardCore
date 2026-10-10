@@ -10,12 +10,11 @@ using OrchardCore.Modules;
 namespace OrchardCore.Secrets.Filters;
 
 /// <summary>
-/// Warns the users who manage secrets about expired and expiring secrets on the admin dashboard. The Secrets list
-/// renders the same warning itself.
+/// Warns the users who can view secrets about expired and expiring secrets on the admin dashboard, whatever their
+/// roles. The Secrets list renders the same warning itself.
 /// </summary>
 public sealed class SecretExpirationWarningFilter : IAsyncResultFilter
 {
-
     private readonly ISecretManager _secretManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly IClock _clock;
@@ -42,7 +41,8 @@ public sealed class SecretExpirationWarningFilter : IAsyncResultFilter
             AdminAttribute.IsApplied(context.HttpContext) &&
             IsDashboard(context) &&
             context.HttpContext.User.Identity?.IsAuthenticated == true &&
-            await _authorizationService.AuthorizeAsync(context.HttpContext.User, SecretsPermissions.ManageSecrets))
+            // ManageSecrets implies ViewSecrets.
+            await _authorizationService.AuthorizeAsync(context.HttpContext.User, SecretsPermissions.ViewSecrets))
         {
             var now = _clock.UtcNow;
             var warningThreshold = now.AddDays(30);

@@ -72,6 +72,32 @@ public sealed class SecretsTests : CmsTestBase, IClassFixture<CmsSetupFixture>
     }
 
     [Fact]
+    public async Task ExpiringSecrets_ShowDashboardWarningToUsersWithViewPermission()
+    {
+        const string password = "Password1!";
+
+        var page = await CreateAdminPageAsync();
+        await CreateTextSecretAsync(page, "ExpiredKey", "expired-value",
+            expiration: DateTime.UtcNow.AddDays(-1).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+        await CreateRoleWithPermissionsAsync(page, "SecretsViewer", "AccessAdminPanel", "ViewSecrets");
+        await CreateRoleWithPermissionsAsync(page, "AdminPanelOnly", "AccessAdminPanel");
+        await UserHelper.CreateUserAsync(page, Tenant.Prefix, "secrets-viewer", "secrets-viewer@test.com", password, "SecretsViewer");
+        await UserHelper.CreateUserAsync(page, Tenant.Prefix, "admin-panel-only", "admin-panel-only@test.com", password, "AdminPanelOnly");
+
+        // The warning depends on the permission, not on the Administrator role.
+        await SignInToAdminAsync(page, "secrets-viewer", password);
+        var warning = page.Locator(".secrets-expiration-warning");
+        await Assertions.Expect(warning).ToContainTextAsync("One secret has expired.");
+        await warning.GetByRole(AriaRole.Link, new LocatorGetByRoleOptions { Name = "Review secrets" }).ClickAsync();
+        await Assertions.Expect(page).ToHaveURLAsync(s_indexUrl);
+        await Assertions.Expect(page.Locator("li.list-group-item").Filter(new() { HasText = "ExpiredKey" })).ToHaveCountAsync(1);
+        await Assertions.Expect(page.Locator("button.create")).ToHaveCountAsync(0);
+
+        await SignInToAdminAsync(page, "admin-panel-only", password);
+        await Assertions.Expect(page.Locator(".secrets-expiration-warning")).ToHaveCountAsync(0);
+    }
+
+    [Fact]
     public async Task TypeSelectionModal_OpensTextEditorAndCancelReturnsToList()
     {
         var page = await CreateAdminPageAsync();
@@ -400,6 +426,38 @@ public sealed class SecretsTests : CmsTestBase, IClassFixture<CmsSetupFixture>
 
     private Task OpenEditEditorAsync(IPage page, string name) =>
         page.GotoAndAssertOkAsync($"{Tenant.Prefix}/Admin/Secrets/Edit/{name}?store=Database");
+
+    private async Task CreateRoleWithPermissionsAsync(IPage page, string roleName, params string[] permissionNames)
+    {
+        await page.GotoAndAssertOkAsync($"{Tenant.Prefix}/Admin/Roles/Create");
+        await page.Locator("input[name='RoleName']").FillAsync(roleName);
+        await page.ClickCreateAsync();
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        await page.GotoAndAssertOkAsync($"{Tenant.Prefix}/Admin/Roles/Edit/{Uri.EscapeDataString(roleName)}");
+
+        foreach (var permissionName in permissionNames)
+        {
+            var permission = page.Locator($"input[id='Checkbox.{permissionName}']");
+            await permission.WaitForAsync(new() { State = WaitForSelectorState.Attached });
+            await permission.CheckAsync();
+        }
+
+        await page.ClickSaveAsync();
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+    }
+
+    // Signs in as another user from the dashboard, which redirects to the login page and back: the tenant has no
+    // home page to land on.
+    private async Task SignInToAdminAsync(IPage page, string userName, string password)
+    {
+        await page.Context.ClearCookiesAsync();
+        await page.GotoAndAssertOkAsync($"{Tenant.Prefix}/Admin");
+        await page.Locator("#LoginForm_UserName").FillAsync(userName);
+        await page.Locator("#LoginForm_Password").FillAsync(password);
+        await page.Locator("button[type='submit']").ClickAsync();
+        await page.WaitForURLAsync(url => url.EndsWith("/Admin", StringComparison.OrdinalIgnoreCase));
+    }
 
     private static async Task SaveAsync(IPage page, string message)
     {

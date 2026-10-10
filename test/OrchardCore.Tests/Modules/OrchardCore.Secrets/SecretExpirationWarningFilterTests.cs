@@ -152,7 +152,7 @@ public class SecretExpirationWarningFilterTests
             It.IsAny<object>(),
             It.Is<IEnumerable<IAuthorizationRequirement>>(requirements =>
                 requirements.OfType<PermissionRequirement>().Any(requirement =>
-                    requirement.Permission == SecretsPermissions.ManageSecrets))))
+                    requirement.Permission == SecretsPermissions.ViewSecrets))))
             .ReturnsAsync(authorized ? AuthorizationResult.Success() : AuthorizationResult.Failed());
         var clock = new Mock<IClock>();
         clock.SetupGet(service => service.UtcNow).Returns(s_now);
