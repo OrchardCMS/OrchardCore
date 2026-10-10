@@ -75,8 +75,10 @@ public sealed class Migrations : DataMigration
                 "Latest")
         );
 
+        await CreateContentItemIdIndexAsync();
+
         // Shortcut other migration steps on new content definition schemas.
-        return 6;
+        return 7;
     }
 
     public async Task<int> UpdateFrom1Async()
@@ -232,4 +234,23 @@ public sealed class Migrations : DataMigration
 
         return 6;
     }
+
+    public async Task<int> UpdateFrom6Async()
+    {
+        await CreateContentItemIdIndexAsync();
+
+        return 7;
+    }
+
+    // Every other index on ContentItemIndex leads with DocumentId, so a query by ContentItemId (IContentManager.GetAsync, for one
+    // item or a batch) can't seek and scans an index instead. DocumentId is the join to Document; Published and Latest are what a
+    // read by ID filters on.
+    private Task CreateContentItemIdIndexAsync()
+        => SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
+            .CreateIndex("IDX_ContentItemIndex_ContentItemId",
+                "ContentItemId",
+                "DocumentId",
+                "Published",
+                "Latest")
+        );
 }
