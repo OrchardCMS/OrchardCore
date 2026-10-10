@@ -1,0 +1,65 @@
+@model DataPipelineSharedFilesViewModel
+@{
+    var culture = System.Globalization.CultureInfo.CurrentCulture;
+}
+
+<zone Name="Title">
+    <breadcrumb name="DataPipelinesSharedFiles" title="@T["Shared files"]">
+        <breadcrumb-item action="Index" controller="Admin" area="OrchardCore.DataPipelines">@T["Data pipelines"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
+
+<p class="text-muted">@T["The files pipelines shared through download links. A link works only for its recipients, once signed in. A file is deleted a day after its link stops working."]</p>
+
+<ul class="list-group">
+    @if (Model.Files.Count == 0)
+    {
+        <li class="list-group-item">
+            <div class="alert alert-info mb-0" role="alert">@T["No file was shared yet."]</div>
+        </li>
+    }
+
+    @foreach (var file in Model.Files)
+    {
+        var active = file.IsActive(Model.UtcNow);
+
+        <li class="list-group-item">
+            <div class="row gx-3 align-items-center">
+                <div class="col">
+                    <span class="fw-semibold">@file.FileName</span>
+                    @if (file.RevokedUtc is not null)
+                    {
+                        <span class="badge text-bg-secondary ms-1">@T["Revoked"]</span>
+                    }
+                    else if (!active)
+                    {
+                        <span class="badge text-bg-secondary ms-1">@T["Expired"]</span>
+                    }
+                    else
+                    {
+                        <span class="badge text-bg-success ms-1">@T["Active"]</span>
+                    }
+                    <div class="text-muted small">
+                        @T["Shared with {0}", string.Join(", ", file.RecipientNames)]
+                        · @T["by {0}", file.PipelineName]
+                        · @T["until {0} (UTC)", file.ExpiresUtc.ToString("g", culture)]
+                        · @T.Plural(file.Downloads, "1 download", "{0} downloads")
+                    </div>
+                </div>
+                <div class="col-auto">
+                    @if (!string.IsNullOrEmpty(file.RunId))
+                    {
+                        <a asp-action="Run" asp-route-runId="@file.RunId" class="btn btn-secondary btn-sm">@T["Run"]</a>
+                    }
+                    @if (active)
+                    {
+                        <a asp-action="RevokeSharedFile" asp-route-fileId="@file.FileId" class="btn btn-warning btn-sm" data-url-af="UnsafeUrl" data-title="@T["Revoke"]" data-message="@T["Stop the link to '{0}' from working?", file.FileName]">@T["Revoke"]</a>
+                    }
+                    <a asp-action="DeleteSharedFile" asp-route-fileId="@file.FileId" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl" data-message="@T["Delete the shared file '{0}'?", file.FileName]">@T["Delete"]</a>
+                </div>
+            </div>
+        </li>
+    }
+</ul>
+
+@await DisplayAsync(Model.Pager)

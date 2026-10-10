@@ -14,6 +14,7 @@
                 <a class="btn btn-secondary" asp-action="Runs">@T["All runs"]</a>
                 @if (Model.CanManage)
                 {
+                    <a class="btn btn-secondary" asp-action="SharedFiles">@T["Shared files"]</a>
                     <a class="btn btn-primary create" asp-action="Create">@T["Add pipeline"]</a>
                 }
             </div>

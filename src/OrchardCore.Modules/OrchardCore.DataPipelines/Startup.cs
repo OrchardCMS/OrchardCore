@@ -46,6 +46,8 @@ public sealed class Startup : StartupBase
         services.AddScoped<DataPipelineEditorContext>();
         services.AddScoped<DataPipelineDesignerModelBuilder>();
         services.AddSingleton<DataPipelineSecrets>();
+        services.AddScoped<DataPipelineSharedFileManager>();
+        services.AddScoped<IDataPipelineSharedFileManager>(serviceProvider => serviceProvider.GetRequiredService<DataPipelineSharedFileManager>());
         services.AddSingleton<DataPipelineRunTracker>();
         services.AddSingleton<DataPipelineRunDispatcher>();
         services.AddSingleton<IBackgroundTask, DataPipelineRunsBackgroundTask>();
@@ -69,5 +71,6 @@ public sealed class Startup : StartupBase
         services.AddDataPipelineStep<LimitStep, LimitStepDisplayDriver>();
         services.AddDataPipelineStep<CreateFileStep, CreateFileStepDisplayDriver>();
         services.AddDataPipelineStep<ZipFilesStep, ZipFilesStepDisplayDriver>();
+        services.AddDataPipelineStep<ShareDownloadLinkStep, ShareDownloadLinkStepDisplayDriver>();
     }
 }

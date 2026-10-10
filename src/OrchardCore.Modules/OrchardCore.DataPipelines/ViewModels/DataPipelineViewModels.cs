@@ -65,3 +65,12 @@ public sealed class DataPipelineRunViewModel
 
     public bool CanCancel { get; set; }
 }
+
+public sealed class DataPipelineSharedFilesViewModel
+{
+    public List<DataPipelineSharedFile> Files { get; set; } = [];
+
+    public DateTime UtcNow { get; set; }
+
+    public dynamic Pager { get; set; }
+}

@@ -12,7 +12,8 @@ namespace OrchardCore.DataPipelines.BackgroundTasks;
 
 /// <summary>
 /// Starts the queued runs that didn't start yet, fails the runs that stopped reporting their progress, such as when
-/// the site restarted, and deletes the runs older than <see cref="DataPipelineOptions.RunRetentionDays"/>. It never
+/// the site restarted, deletes the runs older than <see cref="DataPipelineOptions.RunRetentionDays"/>, and deletes the
+/// files shared through links that stopped working. It never
 /// executes a run itself, so a long run doesn't hold up the other background tasks.
 /// </summary>
 [BackgroundTask(
@@ -69,6 +70,14 @@ public sealed class DataPipelineRunsBackgroundTask : IBackgroundTask
             await session.SaveAsync(run, cancellationToken: cancellationToken);
 
             logger.LogWarning("The data pipeline run '{RunId}' stopped reporting its progress and was marked as failed.", run.RunId);
+        }
+
+        // The content of a shared file is kept a day after its link stops working, then deleted.
+        var sharedFileManager = serviceProvider.GetRequiredService<DataPipelineSharedFileManager>();
+
+        foreach (var sharedFile in await sharedFileManager.ListExpiredAsync(now.AddDays(-1), 50))
+        {
+            sharedFileManager.Delete(sharedFile);
         }
 
         if (options.RunRetentionDays > 0)
