@@ -1,0 +1,28 @@
+@model DataPipelineSharedWithMeViewModel
+@{
+    var culture = System.Globalization.CultureInfo.CurrentCulture;
+}
+
+<h1>@RenderTitleSegments(T["Files shared with you"])</h1>
+
+@if (Model.Files.Count == 0)
+{
+    <p class="text-muted" data-dp-shared-empty>@T["No file is shared with you."]</p>
+}
+else
+{
+    <ul class="list-group mb-3" data-dp-shared-files>
+        @foreach (var file in Model.Files)
+        {
+            <li class="list-group-item d-flex flex-wrap align-items-center gap-2">
+                <div class="flex-grow-1">
+                    <a asp-action="Download" asp-route-fileId="@file.FileId">@file.FileName</a>
+                    <div class="small text-muted">
+                        @T["From {0}, until {1} (UTC).", file.PipelineName, file.ExpiresUtc.ToString("g", culture)]
+                    </div>
+                </div>
+                <a asp-action="Download" asp-route-fileId="@file.FileId" class="btn btn-primary btn-sm">@T["Download"]</a>
+            </li>
+        }
+    </ul>
+}

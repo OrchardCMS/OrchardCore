@@ -61,6 +61,17 @@ public sealed class DataPipelineMigrations : DataMigration
             .CreateIndex("IDX_DataPipelineSharedFileIndex_DocumentId", "DocumentId", "FileId", "ExpiresUtc")
         );
 
+        await SchemaBuilder.CreateMapIndexTableAsync<DataPipelineSharedFileRecipientIndex>(table => table
+            .Column<string>("FileId", column => column.WithLength(DataPipelineIndex.MaxIdLength))
+            .Column<string>("UserId", column => column.WithLength(DataPipelineIndex.MaxIdLength))
+            .Column<DateTime>("CreatedUtc")
+            .Column<DateTime>("ExpiresUtc")
+        );
+
+        await SchemaBuilder.AlterIndexTableAsync<DataPipelineSharedFileRecipientIndex>(table => table
+            .CreateIndex("IDX_DataPipelineSharedFileRecipientIndex_DocumentId", "DocumentId", "UserId", "ExpiresUtc")
+        );
+
         return 1;
     }
 }

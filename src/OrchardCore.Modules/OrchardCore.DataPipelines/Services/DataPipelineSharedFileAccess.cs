@@ -7,8 +7,9 @@ using OrchardCore.DataPipelines.Models;
 namespace OrchardCore.DataPipelines.Services;
 
 /// <summary>
-/// Creates the tokens of download links, and decides who may download a shared file: a signed-in recipient, with the
-/// link's token, before the link expires or is revoked.
+/// Creates the tokens of download links, and decides who may download a shared file: a signed-in recipient, before the
+/// link expires or is revoked. A request through the link must also carry its token; recipients can also download their
+/// files from the list of the files shared with them, which has no token.
 /// </summary>
 public static class DataPipelineSharedFileAccess
 {
@@ -31,7 +32,8 @@ public static class DataPipelineSharedFileAccess
     /// Decides whether a user may download a shared file.
     /// </summary>
     /// <param name="file">The shared file.</param>
-    /// <param name="token">The token of the link.</param>
+    /// <param name="token">The token of the link, or <see langword="null"/> for a download from the list of the files shared
+    /// with the user.</param>
     /// <param name="user">The signed-in user.</param>
     /// <param name="utcNow">The current time, in UTC.</param>
     /// <returns>Whether the download is allowed, or why not.</returns>
@@ -47,12 +49,15 @@ public static class DataPipelineSharedFileAccess
             return DataPipelineSharedFileAccessResult.Expired;
         }
 
-        var expected = Convert.FromHexString(file.TokenHash ?? string.Empty);
-        var actual = SHA256.HashData(Encoding.UTF8.GetBytes(token ?? string.Empty));
-
-        if (expected.Length != actual.Length || !CryptographicOperations.FixedTimeEquals(expected, actual))
+        if (token is not null)
         {
-            return DataPipelineSharedFileAccessResult.InvalidToken;
+            var expected = Convert.FromHexString(file.TokenHash ?? string.Empty);
+            var actual = SHA256.HashData(Encoding.UTF8.GetBytes(token));
+
+            if (expected.Length != actual.Length || !CryptographicOperations.FixedTimeEquals(expected, actual))
+            {
+                return DataPipelineSharedFileAccessResult.InvalidToken;
+            }
         }
 
         var userId = user?.FindFirstValue(ClaimTypes.NameIdentifier);

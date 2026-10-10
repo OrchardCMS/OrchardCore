@@ -1,14 +1,17 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.DataPipelines.Services;
+using OrchardCore.DataPipelines.ViewModels;
 using OrchardCore.Modules;
 using ISession = YesSql.ISession;
 
 namespace OrchardCore.DataPipelines.Controllers;
 
 /// <summary>
-/// Serves the files shared through download links, to their signed-in recipients only.
+/// Serves the files shared through download links, to their signed-in recipients only, and lists the files shared with
+/// the signed-in user.
 /// </summary>
 [Authorize]
 public sealed class SharedFileController : Controller
@@ -24,6 +27,14 @@ public sealed class SharedFileController : Controller
         _clock = clock;
     }
 
+    [HttpGet("DataPipelines/Files")]
+    public async Task<IActionResult> Index()
+        => View(new DataPipelineSharedWithMeViewModel
+        {
+            Files = await _manager.ListSharedWithAsync(User.FindFirstValue(ClaimTypes.NameIdentifier), _clock.UtcNow),
+        });
+
+    // A download from the list of the files shared with the user has no token; a link always has one.
     [HttpGet("DataPipelines/Files/{fileId}")]
     public async Task<IActionResult> Download(string fileId, string token)
     {

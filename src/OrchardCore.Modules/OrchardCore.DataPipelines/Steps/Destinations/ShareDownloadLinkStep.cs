@@ -83,7 +83,7 @@ public sealed class ShareDownloadLinkStep : DataPipelineStepType<ShareDownloadLi
 
             if (settings.NotifyByEmail && result.Notified.Count < recipients.Length)
             {
-                context.LogWarning(S["Some recipients were not notified by email: the Email feature may be disabled, or they have no email address."]);
+                context.LogWarning(S["Some recipients were not notified by email: the Email feature may be disabled, or they have no email address. Signed in, they find the file at /DataPipelines/Files."]);
             }
         }
     }

@@ -174,6 +174,26 @@ public sealed class DataPipelineSharedFileManager : IDataPipelineSharedFileManag
     }
 
     /// <summary>
+    /// Lists the files shared with a user whose link still works, the most recent first.
+    /// </summary>
+    /// <param name="userId">The identifier of the user.</param>
+    /// <param name="utcNow">The current time, in UTC.</param>
+    /// <returns>The files.</returns>
+    public async Task<IReadOnlyList<DataPipelineSharedFile>> ListSharedWithAsync(string userId, DateTime utcNow)
+    {
+        if (string.IsNullOrEmpty(userId))
+        {
+            return [];
+        }
+
+        var files = await _session.Query<DataPipelineSharedFile, DataPipelineSharedFileRecipientIndex>(index => index.UserId == userId && index.ExpiresUtc > utcNow)
+            .OrderByDescending(index => index.CreatedUtc)
+            .ListAsync();
+
+        return files.ToList();
+    }
+
+    /// <summary>
     /// Saves a shared file, such as after revoking its link.
     /// </summary>
     /// <param name="sharedFile">The shared file.</param>
@@ -220,6 +240,15 @@ public sealed class DataPipelineSharedFileManager : IDataPipelineSharedFileManag
             ?? _linkGenerator.GetPathByAction("Download", "SharedFile", values);
     }
 
+    private string GetListUrl()
+    {
+        var values = new RouteValueDictionary { ["area"] = "OrchardCore.DataPipelines" };
+        var httpContext = _httpContextAccessor.HttpContext;
+
+        return (httpContext is null ? null : _linkGenerator.GetUriByAction(httpContext, "Index", "SharedFile", values))
+            ?? _linkGenerator.GetPathByAction("Index", "SharedFile", values);
+    }
+
     private async Task<IReadOnlyList<string>> NotifyAsync(List<User> recipients, DataPipelineSharedFile sharedFile, string url, DataPipelineSharedFileRequest request, CancellationToken cancellationToken)
     {
         var emailService = _services.GetService<IEmailService>();
@@ -236,6 +265,7 @@ public sealed class DataPipelineSharedFileManager : IDataPipelineSharedFileManag
             {(string.IsNullOrWhiteSpace(request.Message) ? string.Empty : $"<p>{_htmlEncoder.Encode(request.Message)}</p>")}
             <p><a href="{_htmlEncoder.Encode(url)}">{_htmlEncoder.Encode(S["Download {0}", sharedFile.FileName])}</a></p>
             <p>{_htmlEncoder.Encode(S["Sign in to download it. The link works until {0} (UTC).", sharedFile.ExpiresUtc.ToString("f", CultureInfo.CurrentCulture)])}</p>
+            <p><a href="{_htmlEncoder.Encode(GetListUrl())}">{_htmlEncoder.Encode(S["See all the files shared with you"])}</a></p>
             """;
 
         var notified = new List<string>();

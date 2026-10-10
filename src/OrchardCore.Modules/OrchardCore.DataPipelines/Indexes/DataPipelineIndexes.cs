@@ -82,6 +82,22 @@ public sealed class DataPipelineSharedFileIndex : MapIndex
     public DateTime ExpiresUtc { get; set; }
 }
 
+/// <summary>
+/// Indexes the recipients of the files shared through download links, one row per recipient.
+/// </summary>
+public sealed class DataPipelineSharedFileRecipientIndex : MapIndex
+{
+    public long DocumentId { get; set; }
+
+    public string FileId { get; set; }
+
+    public string UserId { get; set; }
+
+    public DateTime CreatedUtc { get; set; }
+
+    public DateTime ExpiresUtc { get; set; }
+}
+
 public sealed class DataPipelineIndexProvider : IndexProvider<DataPipeline>
 {
     public override void Describe(DescribeContext<DataPipeline> context)
@@ -128,7 +144,8 @@ public sealed class DataPipelineRunIndexProvider : IndexProvider<DataPipelineRun
 public sealed class DataPipelineSharedFileIndexProvider : IndexProvider<DataPipelineSharedFile>
 {
     public override void Describe(DescribeContext<DataPipelineSharedFile> context)
-        => context.For<DataPipelineSharedFileIndex>()
+    {
+        context.For<DataPipelineSharedFileIndex>()
             .Map(file => new DataPipelineSharedFileIndex
             {
                 FileId = file.FileId,
@@ -137,4 +154,14 @@ public sealed class DataPipelineSharedFileIndexProvider : IndexProvider<DataPipe
                 CreatedUtc = file.CreatedUtc,
                 ExpiresUtc = file.RevokedUtc ?? file.ExpiresUtc,
             });
+
+        context.For<DataPipelineSharedFileRecipientIndex>()
+            .Map(file => file.RecipientUserIds.Distinct(StringComparer.Ordinal).Select(userId => new DataPipelineSharedFileRecipientIndex
+            {
+                FileId = file.FileId,
+                UserId = userId,
+                CreatedUtc = file.CreatedUtc,
+                ExpiresUtc = file.RevokedUtc ?? file.ExpiresUtc,
+            }));
+    }
 }

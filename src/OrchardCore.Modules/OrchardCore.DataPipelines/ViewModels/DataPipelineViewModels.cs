@@ -61,9 +61,17 @@ public sealed class DataPipelineRunViewModel
 {
     public DataPipelineRun Run { get; set; }
 
+    // The names of the steps of the run, by their identifiers.
+    public IReadOnlyDictionary<string, string> StepNames { get; set; } = new Dictionary<string, string>();
+
     public DataPipeline Pipeline { get; set; }
 
     public bool CanCancel { get; set; }
+}
+
+public sealed class DataPipelineSharedWithMeViewModel
+{
+    public IReadOnlyList<DataPipelineSharedFile> Files { get; set; } = [];
 }
 
 public sealed class DataPipelineSharedFilesViewModel
