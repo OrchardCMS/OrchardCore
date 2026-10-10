@@ -1,0 +1,49 @@
+{
+  "name": "Localization",
+  "displayName": "Localization",
+  "description": "Minimal recipe for testing request localization for tenant-configured cultures.",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0",
+  "issetuprecipe": true,
+  "categories": [ "tests" ],
+  "tags": [ "tests" ],
+
+  "steps": [
+    {
+      "name": "feature",
+      "enable": [
+        "OrchardCore.HomeRoute",
+        "OrchardCore.Admin",
+        "OrchardCore.Diagnostics",
+        "OrchardCore.Features",
+        "OrchardCore.Localization",
+        "OrchardCore.Navigation",
+        "OrchardCore.Recipes",
+        "OrchardCore.Resources",
+        "OrchardCore.Roles",
+        "OrchardCore.Security",
+        "OrchardCore.Settings",
+        "OrchardCore.Setup",
+        "OrchardCore.Themes",
+        "OrchardCore.Users",
+        "OrchardCore.Contents",
+        "OrchardCore.ContentTypes",
+        "TheAdmin",
+        "SafeMode"
+      ]
+    },
+    {
+      "name": "themes",
+      "admin": "TheAdmin",
+      "site": ""
+    },
+    {
+      "name": "settings",
+      "LocalizationSettings": {
+        "DefaultCulture": "en-US",
+        "SupportedCultures": [ "en-US", "sl-SI" ]
+      }
+    }
+  ]
+}
