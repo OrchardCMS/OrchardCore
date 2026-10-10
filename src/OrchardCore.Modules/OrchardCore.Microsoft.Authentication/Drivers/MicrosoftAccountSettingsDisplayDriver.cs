@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
@@ -6,6 +7,7 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Microsoft.Authentication.Settings;
 using OrchardCore.Microsoft.Authentication.ViewModels;
+using OrchardCore.Secrets;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Microsoft.Authentication.Drivers;
@@ -15,15 +17,21 @@ public sealed class MicrosoftAccountSettingsDisplayDriver : SiteDisplayDriver<Mi
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IServiceProvider _serviceProvider;
 
     public MicrosoftAccountSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
         IAuthorizationService authorizationService,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IDataProtectionProvider dataProtectionProvider,
+        IServiceProvider serviceProvider)
     {
         _shellReleaseManager = shellReleaseManager;
         _authorizationService = authorizationService;
         _httpContextAccessor = httpContextAccessor;
+        _dataProtectionProvider = dataProtectionProvider;
+        _serviceProvider = serviceProvider;
     }
 
     protected override string SettingsGroupId
@@ -37,12 +45,10 @@ public sealed class MicrosoftAccountSettingsDisplayDriver : SiteDisplayDriver<Mi
             return null;
         }
 
-#pragma warning disable CS0618 // Type or member is obsolete
         return Initialize<MicrosoftAccountSettingsViewModel>("MicrosoftAccountSettings_Edit", model =>
         {
             model.AppId = settings.AppId;
-            model.AppSecretSecretName = settings.AppSecretSecretName;
-            model.HasAppSecret = !string.IsNullOrWhiteSpace(settings.AppSecret);
+            model.AppSecret = SecretInputViewModel.Create(settings.AppSecret, settings.AppSecretSecretName);
             if (settings.CallbackPath.HasValue)
             {
                 model.CallbackPath = settings.CallbackPath.Value;
@@ -50,7 +56,6 @@ public sealed class MicrosoftAccountSettingsDisplayDriver : SiteDisplayDriver<Mi
             model.SaveTokens = settings.SaveTokens;
         }).Location("Content:5")
         .OnGroup(SettingsGroupId);
-#pragma warning restore CS0618 // Type or member is obsolete
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, MicrosoftAccountSettings settings, UpdateEditorContext context)
@@ -64,8 +69,23 @@ public sealed class MicrosoftAccountSettingsDisplayDriver : SiteDisplayDriver<Mi
         var model = new MicrosoftAccountSettingsViewModel();
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
+        var appSecret = await model.AppSecret.UpdateAsync(new SecretInputUpdateContext(
+            _serviceProvider,
+            _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount),
+            context.Updater.ModelState,
+            $"{Prefix}.{nameof(model.AppSecret)}")
+        {
+            ProtectedValue = settings.AppSecret,
+            SecretName = settings.AppSecretSecretName,
+        });
+
+        if (appSecret.Succeeded)
+        {
+            settings.AppSecret = appSecret.ProtectedValue;
+            settings.AppSecretSecretName = appSecret.SecretName;
+        }
+
         settings.AppId = model.AppId;
-        settings.AppSecretSecretName = model.AppSecretSecretName;
         settings.CallbackPath = model.CallbackPath;
         settings.SaveTokens = model.SaveTokens;
 

@@ -2,6 +2,14 @@
 
 The Secrets module provides a secure, centralized way to store and manage sensitive data such as passwords, API keys, connection strings, and certificates. It addresses common challenges in managing secrets across development, staging, and production environments.
 
+The following video explains why the Secrets module exists, walks through each of its features, and shows how to adopt it in your own modules.
+
+<video controls preload="metadata" width="100%" poster="videos/secrets-module.jpg">
+    <source src="videos/secrets-module.mp4" type="video/mp4">
+    <track kind="captions" src="videos/secrets-module.vtt" srclang="en" label="English">
+    Your browser does not support embedded videos. <a href="videos/secrets-module.mp4">Download the video</a>.
+</video>
+
 ## Why Use the Secrets Module?
 
 ### The Problem
@@ -140,7 +148,8 @@ Register the named client in the host as shown in [Azure Key Vault Store](#azure
 - Secure storage of sensitive data using ASP.NET Core Data Protection
 - Multiple secret store providers (database, Azure Key Vault)
 - Three secret types: Text, RSA Keys, and X.509 Certificates
-- Admin UI for managing secrets
+- Admin UI for managing secrets, secret stores, and the credentials kept by other features
+- A `<secret-input>` tag helper that lets any settings screen keep a credential in its own settings, or in the Secrets module, see [Adding Secret Support to Your Own Credentials](#adding-secret-support-to-your-own-credentials)
 - ViewComponent for selecting secrets in other module UIs
 - Recipe support for importing secrets during setup
 - Deployment step for exporting secret metadata
@@ -157,11 +166,11 @@ Register the named client in the host as shown in [Azure Key Vault Store](#azure
 
 ### Accessing the Secrets Admin
 
-Once enabled, the Secrets admin is available under the **Settings → Security** menu:
+Once enabled, the Secrets admin is available under the **Tools → Security** menu:
 
-1. In the admin sidebar, click **Settings** to expand the menu
-2. Click **Security** to see the security settings
-3. Click **Secrets** to open the secrets management page
+1. In the admin sidebar, click **Tools** to expand the menu
+2. Click **Security**
+3. Click **Secrets** to manage the secrets, **Secret Stores** to move secrets between stores, or **Migrate Secrets** to move the credentials kept in the settings of other features to secrets
 
 ![Secrets menu location](images/admin-menu.png)
 
@@ -169,25 +178,26 @@ Once enabled, the Secrets admin is available under the **Settings → Security**
 
 #### Viewing Secrets
 
-The Secrets index page displays all stored secrets with their name, type, store, and last updated date.
+The Secrets index page lists the stored secrets like the other admin lists. Each entry shows its name and description, with badges for its type, its store, its expiration, and when it was last updated. Use the search box to find secrets by name, description, type, or store, and the filters of the list header to show the secrets that have expired, expire within 30 days, or never expire, or the secrets of a type, such as **Text Secret**. Clicking the type badge of a secret also shows the secrets of that type. The list is paged, and the page size can be changed when the site settings allow it. Select several secrets to delete them at once with the **Actions** menu.
 
 ![Secrets list](images/secrets-list.png)
 
 #### Creating a Secret
 
 1. Click **Add Secret** on the Secrets index page
-2. Fill in the required fields:
-   - **Name**: A unique identifier for the secret (e.g., `SmtpPassword`, `ApiKey`)
-   - **Secret Type**: Select the type of secret (e.g., `TextSecret`)
-   - **Secret Value**: The actual secret value (will be encrypted before storage)
+2. Select the type of secret (e.g., **Text Secret**)
+3. Fill in the fields:
+   - **Name**: A unique name for the secret (e.g., `Smtp.Password`, `ApiKey`). Settings reference secrets by this name, so it cannot be changed later.
+   - **Store**: The store that keeps the secret, when several writable stores are enabled
+   - **Value**: The actual secret value (will be encrypted before storage)
    - **Description**: Optional description for documentation purposes
-3. Click **Save**
+4. Click **Save**
 
 ![Create secret form](images/secret-create.png)
 
 #### Editing a Secret
 
-1. Click **Edit** next to the secret you want to modify
+1. Click **Edit** next to the secret you want to modify. The page title shows the name of the secret, which cannot be changed, and the store that keeps it.
 2. Update the fields as needed
    - Note: The secret value field is empty for security. Leave it empty to keep the existing value, or enter a new value to update it.
 3. Click **Save**
@@ -201,11 +211,11 @@ The Secrets index page displays all stored secrets with their name, type, store,
 
 #### Moving Secrets and Retiring a Store
 
-Use **Move** on an individual entry, or **Manage Stores → Move all active secrets** to transfer every active entry in one source store. Select a different writable destination and confirm. The operation retains logical names, types, descriptions, and expiration dates, verifies the committed destination value and metadata, and then removes only the selected source copy. Values never pass through the management form, response, or an export file. X.509 entries move references only.
+Use **Move** on an individual entry, or **Tools → Security → Secret Stores** to transfer every active entry of a store: select the **Source store**, which shows the total number of active secrets it keeps, then the destination store under **Move all active secrets from this store to**. The move section is only shown when the source store keeps active secrets, and when another writable store is enabled. Select a different writable destination and confirm. The operation retains logical names, types, descriptions, and expiration dates, verifies the committed destination value and metadata, and then removes only the selected source copy. Values never pass through the management form, response, or an export file. X.509 entries move references only.
 
 Destination collisions are rejected, not overwritten. Bulk transfers are not atomic: review each result, especially failures with a saved destination copy, before retrying or deleting a remaining source. Verification failures retain the source. Normal secret-manager writes and store operations share a tenant lock; configure a distributed lock provider for multiple instances and pause direct store writes, rotation, and provider changes while transferring.
 
-**Manage Stores** displays the active-secret count for the selected tenant/store. Successful moves remove the source using the provider's existing `RemoveSecretAsync` operation. The existing **Delete** action also removes only the selected secret/store and can break consumers if no destination copy exists. No new purge interface or purge action is provided.
+**Secret Stores** displays the total number of active secrets in the selected store of the current tenant. Successful moves remove the source using the provider's existing `RemoveSecretAsync` operation. The existing **Delete** action also removes only the selected secret/store and can break consumers if no destination copy exists. No new purge interface or purge action is provided.
 
 Inspect every affected tenant, ensure the active-secret count is zero, and verify destination consumers after restart before disabling an optional provider. If inspection fails, cleanup status is unknown, not empty. The database store cannot be disabled independently of the base Secrets feature. Transfers do not change the default writable store: select the destination explicitly when creating or saving later secrets and recheck the source before retirement.
 
@@ -223,17 +233,29 @@ await secretManager.RemoveSecretAsync("Payment.ApiKey", "Database");
 
 Store `SaveSecretAsync` and `RemoveSecretAsync` implementations must complete only after persistence, not after merely staging a write. Built-in database mutations use a separate tenant scope to commit the secret change before releasing the mutation lock, without committing unrelated caller changes.
 
+#### Moving Credentials from Settings to Secrets
+
+Features that use a credential, such as the SMTP password or an external login client secret, can keep it encrypted in their own settings, which works without the Secrets module. To move these credentials to secrets on demand:
+
+1. Go to **Tools → Security → Migrate Secrets**.
+2. The page lists every credential that is kept in the settings of an enabled feature and that does not already reference a secret. Select the ones to move, and adjust the name of each new secret if needed.
+3. Select the **Destination store** when several writable stores are enabled, then click **Move to Secrets**.
+
+Each selected value is decrypted with its original Data Protection purpose, saved as a `TextSecret`, and the settings then reference the new secret and no longer keep the value. A secret with the same name is never overwritten, and a credential that cannot be decrypted or saved is reported and left unchanged in its settings. Only users who can manage both the secrets and the settings of a feature see its credentials.
+
+Each feature contributes its credentials through a display driver of `SecretMigration`, see [Step 7](#step-7-list-the-credential-on-the-migrate-secrets-screen-optional).
+
 ### Secret Expiration
 
 Secrets can have an optional expiration date. This is an **informational** feature designed to help with secret rotation planning:
 
 - **Purpose**: Track when secrets should be rotated or renewed
 - **Behavior**: Expired secrets **continue to work** - expiration does not automatically disable them
-- **Admin-Wide Warning**: Users with the Manage Secrets permission see a warning on admin pages when secrets have expired or expire within 30 days, with counts and a link to review the secrets. The warning uses metadata only and does not expose secret values.
+- **Expiration Warning**: Users with the View Secrets or Manage Secrets permission, whatever their roles, see a warning on the admin dashboard when secrets have expired or expire within 30 days, with counts and a link to review the secrets. The Secrets list shows the same warning under its title. Other admin pages, and users without the permission, don't see it. The warning uses metadata only and does not expose secret names or values.
 - **List-Page Visual Indicators**:
   - Expired secrets show a red "Expired" badge
-  - Secrets expiring within 30 days show a yellow "Expiring" badge
-  - The secrets list highlights expired/expiring secrets with colored backgrounds
+  - Secrets expiring within 30 days show a yellow "Expires" badge
+  - Other secrets show their expiration date, or "Never expires"
 
 **Use Cases for Expiration:**
 
@@ -831,12 +853,380 @@ if (certificate != null)
 }
 ```
 
+## Adding Secret Support to Your Own Credentials
+
+A module that stores a password, an API key, a connection string, or any other credential, in its settings or elsewhere, can let users keep it in the Secrets module, without depending on it. The steps below use site settings; see [Credentials Stored Outside Site Settings](#credentials-stored-outside-site-settings) for content parts and other documents. The `OrchardCore.Secrets.Abstractions` package provides everything needed:
+
+| Piece | Purpose |
+|-------|---------|
+| `SecretInputViewModel` | The editor model of the credential. |
+| `<secret-input>` tag helper | Renders the editor of the credential. |
+| `SecretInputViewModel.Create()` and `UpdateAsync()` | Read the stored values into the editor, and validate and apply the posted ones. |
+| `IServiceProvider.GetSecretValueAsync()` | Reads the clear value at runtime. |
+| `DisplayDriver<SecretMigration>` (optional) | Lists the credential on the **Migrate Secrets** screen. |
+
+### What the user sees
+
+- **Without the Secrets feature**, the editor is a password input. The value is protected with Data Protection and kept in the settings, and an empty value keeps the current one. This is how credentials were stored before the Secrets module, so existing values keep working.
+- **With the Secrets feature**, the user chooses where the value is kept:
+    - **User-specified value**, the default, keeps the value entered in the settings, as above.
+    - **Use a secret** selects a `TextSecret` of the Secrets module. **New secret** opens the secret editor in a new tab, with a suggested name filled in. Once the secret is saved, the reload button refreshes the list without reloading the page, and selects the suggested secret. The value kept in the settings is removed when the settings are saved with a secret.
+
+A value already kept in the settings can be moved to a secret without being entered again, from the **Migrate Secrets** screen.
+
+### Step 1: Reference the abstractions
+
+Add a reference to `OrchardCore.Secrets.Abstractions`. Don't add a dependency on the `OrchardCore.Secrets` feature in the manifest: the editor and the runtime helper detect whether it is enabled.
+
+### Step 2: Store the protected value and the secret name
+
+Keep the protected value, as before, and add a property that holds the name of the secret. The secret takes precedence when it is set.
+
+```csharp
+public class MyServiceSettings
+{
+    // The API key, protected with Data Protection.
+    public string ApiKey { get; set; }
+
+    // The name of the secret containing the API key, which takes precedence over ApiKey.
+    public string ApiKeySecretName { get; set; }
+}
+```
+
+Use a constant for the Data Protection purpose, and a suggested secret name:
+
+```csharp
+public static class MyServiceConstants
+{
+    public const string ProtectorName = "MyService";
+
+    public const string ApiKeySecretName = "MyService.ApiKey";
+}
+```
+
+!!! warning
+    Keep the purpose of the protector unchanged. Values protected with another purpose can't be decrypted, and can't be moved to secrets.
+
+### Step 3: Use `SecretInputViewModel` in the editor model
+
+```csharp
+public class MyServiceSettingsViewModel
+{
+    public SecretInputViewModel ApiKey { get; set; } = new();
+}
+```
+
+### Step 4: Read and apply the credential in the display driver
+
+`SecretInputViewModel.Create()` builds the editor model from the stored values. `UpdateAsync()` validates the posted model, adds errors to the model state, and returns the values to store, protecting a new value with the given protector. Only store them when the result succeeded.
+
+```csharp
+public sealed class MyServiceSettingsDisplayDriver : SiteDisplayDriver<MyServiceSettings>
+{
+    private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IServiceProvider _serviceProvider;
+
+    public MyServiceSettingsDisplayDriver(
+        IDataProtectionProvider dataProtectionProvider,
+        IServiceProvider serviceProvider)
+    {
+        _dataProtectionProvider = dataProtectionProvider;
+        _serviceProvider = serviceProvider;
+    }
+
+    protected override string SettingsGroupId => "MyService";
+
+    public override IDisplayResult Edit(ISite site, MyServiceSettings settings, BuildEditorContext context)
+        => Initialize<MyServiceSettingsViewModel>("MyServiceSettings_Edit", model =>
+        {
+            model.ApiKey = SecretInputViewModel.Create(settings.ApiKey, settings.ApiKeySecretName);
+        }).Location("Content:5")
+        .OnGroup(SettingsGroupId);
+
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, MyServiceSettings settings, UpdateEditorContext context)
+    {
+        var model = new MyServiceSettingsViewModel();
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+        var apiKey = await model.ApiKey.UpdateAsync(new SecretInputUpdateContext(
+            _serviceProvider,
+            _dataProtectionProvider.CreateProtector(MyServiceConstants.ProtectorName),
+            context.Updater.ModelState,
+            $"{Prefix}.{nameof(model.ApiKey)}")
+        {
+            ProtectedValue = settings.ApiKey,
+            SecretName = settings.ApiKeySecretName,
+        });
+
+        if (apiKey.Succeeded)
+        {
+            settings.ApiKey = apiKey.ProtectedValue;
+            settings.ApiKeySecretName = apiKey.SecretName;
+        }
+
+        return await EditAsync(site, settings, context);
+    }
+}
+```
+
+The last argument of `SecretInputUpdateContext` must be the full name of the edited property, so that the errors are shown next to it.
+
+### Step 5: Render the editor
+
+Add the tag helper to `Views/_ViewImports.cshtml`:
+
+```cshtml
+@addTagHelper *, OrchardCore.Secrets.Abstractions
+```
+
+Then render the credential in a standard row. The `secret-name` attribute is the name suggested when the user creates a secret for this credential, and `placeholder` is optional:
+
+```cshtml
+<div class="ocat-wrapper" asp-validation-class-for="ApiKey">
+    <label asp-for="ApiKey" class="ocat-label">@T["API key"]</label>
+    <div class="ocat-end">
+        <secret-input asp-for="ApiKey" secret-name="@MyServiceConstants.ApiKeySecretName" />
+        <span class="hint">@T["The API key of the service."]</span>
+    </div>
+</div>
+```
+
+The first control of the editor gets the id of the property, so `<label asp-for>` targets it.
+
+### Step 6: Read the clear value at runtime
+
+`GetSecretValueAsync()` reads the referenced secret when the Secrets feature is enabled, and otherwise decrypts the protected value. It returns `null` when no value is available, and logs why, without logging values.
+
+```csharp
+var apiKey = await _serviceProvider.GetSecretValueAsync(
+    settings.ApiKeySecretName,
+    settings.ApiKey,
+    _dataProtectionProvider.CreateProtector(MyServiceConstants.ProtectorName),
+    _logger);
+```
+
+When the value is used to build options that are cached, for instance in an `IConfigureOptions<T>`, release the tenant or signal the options change when the settings are saved, as the settings already did.
+
+### Step 7: List the credential on the Migrate Secrets screen (optional)
+
+To let users move a value kept in the settings to a secret without entering it again, add a display driver of `SecretMigration`. Register it only when the Secrets feature is enabled. Its editor renders a `SecretMigrationItem_Edit` shape when a protected value is kept and no secret is referenced, and its update moves the selected credential with `MoveToSecretAsync()`.
+
+Several drivers edit the same `SecretMigration`, so each one must bind its own fields: override `BuildPrefix()` to append a segment to the prefix.
+
+```csharp
+public sealed class MyServiceSecretMigrationDisplayDriver : DisplayDriver<SecretMigration>
+{
+    private readonly ISiteService _siteService;
+    private readonly ISecretManager _secretManager;
+    private readonly IDataProtectionProvider _dataProtectionProvider;
+
+    internal readonly IStringLocalizer S;
+
+    public MyServiceSecretMigrationDisplayDriver(
+        ISiteService siteService,
+        ISecretManager secretManager,
+        IDataProtectionProvider dataProtectionProvider,
+        IStringLocalizer<MyServiceSecretMigrationDisplayDriver> stringLocalizer)
+    {
+        _siteService = siteService;
+        _secretManager = secretManager;
+        _dataProtectionProvider = dataProtectionProvider;
+        S = stringLocalizer;
+    }
+
+    protected override void BuildPrefix(SecretMigration model, string htmlFieldPrefix)
+    {
+        base.BuildPrefix(model, htmlFieldPrefix);
+        Prefix += ".MyService";
+    }
+
+    public override async Task<IDisplayResult> EditAsync(SecretMigration migration, BuildEditorContext context)
+    {
+        var settings = await _siteService.GetSettingsAsync<MyServiceSettings>();
+
+        if (!CanMigrate(settings))
+        {
+            return null;
+        }
+
+        return Initialize<SecretMigrationItemViewModel>("SecretMigrationItem_Edit", model =>
+        {
+            model.Group = S["My service"];
+            model.DisplayName = S["API key"];
+            model.SecretName = MyServiceConstants.ApiKeySecretName;
+        }).Location("Content");
+    }
+
+    public override async Task<IDisplayResult> UpdateAsync(SecretMigration migration, UpdateEditorContext context)
+    {
+        var site = await _siteService.LoadSiteSettingsAsync();
+        var settings = site.GetOrCreate<MyServiceSettings>();
+
+        if (!CanMigrate(settings))
+        {
+            return null;
+        }
+
+        var model = new SecretMigrationItemViewModel();
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+        if (model.Migrate)
+        {
+            await migration.MoveToSecretAsync(
+                _secretManager,
+                _dataProtectionProvider.CreateProtector(MyServiceConstants.ProtectorName),
+                settings.ApiKey,
+                model.SecretName,
+                S["My service: API key"],
+                async secretName =>
+                {
+                    settings.ApiKeySecretName = secretName;
+                    settings.ApiKey = null;
+
+                    site.Put(settings);
+                    await _siteService.UpdateSiteSettingsAsync(site);
+                });
+        }
+
+        return await EditAsync(migration, context);
+    }
+
+    private static bool CanMigrate(MyServiceSettings settings)
+        => !string.IsNullOrWhiteSpace(settings.ApiKey) && string.IsNullOrWhiteSpace(settings.ApiKeySecretName);
+}
+
+[RequireFeatures("OrchardCore.Secrets")]
+public sealed class SecretsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+        => services.AddDisplayDriver<SecretMigration, MyServiceSecretMigrationDisplayDriver>();
+}
+```
+
+`MoveToSecretAsync()` saves the secret right away, but only calls the last argument, which makes the settings reference the secret, once every driver has saved its secrets: a secret store can commit a secret in its own scope, which must not wait on settings that the same request already changed. So don't change the settings anywhere else in the driver. It never overwrites an existing secret, and records a failed move, for instance when the value can't be decrypted, without calling it. Also check the permission that guards your settings before listing or moving the credential.
+
+### Credentials Stored Outside Site Settings
+
+The same steps apply to a credential stored anywhere else, for instance in a content part, a custom document, or a workflow activity: keep the protected value and the secret name side by side, edit them with a `SecretInputViewModel`, and read them with `GetSecretValueAsync()`. Only the driver and the persistence change.
+
+For example, a `WebhookPart` that keeps the key used to sign the requests sent by each webhook content item:
+
+```csharp
+public sealed class WebhookPart : ContentPart
+{
+    public string Url { get; set; }
+
+    // The signing key, protected with Data Protection.
+    public string SigningKey { get; set; }
+
+    // The name of the secret containing the signing key, which takes precedence over SigningKey.
+    public string SigningKeySecretName { get; set; }
+}
+
+public class WebhookPartViewModel
+{
+    public string Url { get; set; }
+
+    public SecretInputViewModel SigningKey { get; set; } = new();
+
+    [BindNever]
+    public string SuggestedSecretName { get; set; }
+}
+```
+
+The content part driver works like the site settings driver. The part is saved with its content item, so the driver only updates its properties:
+
+```csharp
+public sealed class WebhookPartDisplayDriver : ContentPartDisplayDriver<WebhookPart>
+{
+    // The purpose must never change, or the stored keys can't be decrypted anymore.
+    public const string ProtectorName = "Webhooks.SigningKey";
+
+    private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IServiceProvider _serviceProvider;
+
+    public WebhookPartDisplayDriver(
+        IDataProtectionProvider dataProtectionProvider,
+        IServiceProvider serviceProvider)
+    {
+        _dataProtectionProvider = dataProtectionProvider;
+        _serviceProvider = serviceProvider;
+    }
+
+    public override IDisplayResult Edit(WebhookPart part, BuildPartEditorContext context)
+        => Initialize<WebhookPartViewModel>(GetEditorShapeType(context), model =>
+        {
+            model.Url = part.Url;
+            model.SigningKey = SecretInputViewModel.Create(part.SigningKey, part.SigningKeySecretName);
+
+            // Each webhook can get its own secret.
+            model.SuggestedSecretName = $"Webhooks.{part.ContentItem.ContentItemId}.SigningKey";
+        });
+
+    public override async Task<IDisplayResult> UpdateAsync(WebhookPart part, UpdatePartEditorContext context)
+    {
+        var model = new WebhookPartViewModel();
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+        var signingKey = await model.SigningKey.UpdateAsync(new SecretInputUpdateContext(
+            _serviceProvider,
+            _dataProtectionProvider.CreateProtector(ProtectorName),
+            context.Updater.ModelState,
+            $"{Prefix}.{nameof(model.SigningKey)}")
+        {
+            ProtectedValue = part.SigningKey,
+            SecretName = part.SigningKeySecretName,
+        });
+
+        if (signingKey.Succeeded)
+        {
+            part.SigningKey = signingKey.ProtectedValue;
+            part.SigningKeySecretName = signingKey.SecretName;
+        }
+
+        part.Url = model.Url;
+
+        return Edit(part, context);
+    }
+}
+```
+
+The editor view, `WebhookPart.Edit.cshtml`, renders the input like any other field, with the suggested name computed by the driver:
+
+```cshtml
+@model WebhookPartViewModel
+
+<div class="ocat-wrapper" asp-validation-class-for="SigningKey">
+    <label asp-for="SigningKey" class="ocat-label">@T["Signing key"]</label>
+    <div class="ocat-end">
+        <secret-input asp-for="SigningKey" secret-name="@Model.SuggestedSecretName" />
+        <span class="hint">@T["The key used to sign the requests sent to the webhook."]</span>
+    </div>
+</div>
+```
+
+At runtime, read the key from the part of the content item being processed:
+
+```csharp
+var part = contentItem.As<WebhookPart>();
+
+var signingKey = await _serviceProvider.GetSecretValueAsync(
+    part.SigningKeySecretName,
+    part.SigningKey,
+    _dataProtectionProvider.CreateProtector(WebhookPartDisplayDriver.ProtectorName),
+    _logger);
+```
+
+A credential stored in a custom document, for instance one managed by an `IDocumentManager<TDocument>`, follows the same pattern: load the document for update, apply the values returned by `UpdateAsync()` to it, and save it with the document manager.
+
+Credentials stored per item can be numerous, so think twice before listing them on the **Migrate Secrets** screen. Users can select a secret in each item instead. If you do contribute them, list a bounded number of items in the `SecretMigration` driver, save each moved item with its own service, such as `IContentManager.UpdateAsync()`, and give each item its own secret name.
+
 ## Using the SelectSecret ViewComponent
 
-When building custom modules that need to reference secrets, you can use the `SelectSecret` ViewComponent to provide a dropdown of available secrets:
+When a setting must always reference a secret, for instance an RSA key, you can use the `SelectSecret` ViewComponent to provide a dropdown of available secrets:
 
 ```html
-@await Component.InvokeAsync("SelectSecret", new { 
+@await Component.InvokeAsync("SelectSecret", new {
     secretTypes = new[] { "TextSecret" }, // Filter by type (optional)
     selectedSecret = Model.SecretName,
     htmlId = "SecretName",
@@ -845,7 +1235,7 @@ When building custom modules that need to reference secrets, you can use the `Se
 })
 ```
 
-This renders a dropdown populated with all secrets of the specified type, making it easy to let administrators select which secret to use for a particular configuration.
+This renders a dropdown populated with all secrets of the specified type. As the view component belongs to the Secrets module, the feature that renders it must depend on `OrchardCore.Secrets`.
 
 Use `Html.IdFor` and `Html.NameFor` when the editor has a binding prefix. The optional `cssClass` parameter adds a CSS class to the select element for client-side behavior.
 
@@ -1032,7 +1422,7 @@ This module addresses several long-standing issues in Orchard Core:
 
 ## Migration Guide
 
-Credential migrations only replace existing settings after successful Data Protection decryption and secret persistence. Missing keys, unavailable stores, and other failures are logged and propagated so migrations can be retried after fixing the cause; encrypted payloads are never treated as plaintext. Preserve the original Data Protection key ring during upgrades.
+Credentials kept in the settings of a feature keep working after an upgrade, with or without the Secrets feature. Move them to secrets on demand from the **Migrate Secrets** screen, or select a secret in each settings screen. A credential is only replaced after a successful Data Protection decryption and secret persistence; failures are reported and leave the settings unchanged, and encrypted payloads are never treated as plaintext. Preserve the original Data Protection key ring during upgrades.
 
 Credentials supplied directly through configuration produce a `LegacySecretConfiguration` warning (event ID `8100`) when their options are initialized. The warning identifies the tenant, integration, and current configuration key, but never includes the value. After moving credentials to secrets and removing the old configuration values, restart the application, activate each tenant, exercise its configured integrations, and check the logs again. Also audit configuration sources directly: options initialize lazily and overridden or unused configuration values may not produce warnings. See the [4.0 upgrade instructions](../../../releases/4.0.0.md#checking-for-remaining-configuration-credentials) for the affected keys, legacy aliases, and verification procedure.
 
@@ -1054,9 +1444,8 @@ If you're currently storing passwords in configuration:
 **After:**
 
 1. Enable the Secrets module
-2. Create a secret named `Smtp.Password` with the password value
-3. Update your code to retrieve the password from the secret store
-4. Remove the password from configuration files
+2. In the SMTP settings, select **Use a secret**, click **New secret** to create the `Smtp.Password` secret in a new tab, reload the secrets, and save.
+3. Remove the password from configuration files
 
 ### From Environment Variables
 
@@ -1068,29 +1457,25 @@ Environment variables are still useful for providing initial secret values durin
 
 ## Module Integrations
 
-The Secrets module provides optional integration modules for common use cases.
+Built-in features can keep their credentials in the Secrets module, and an optional integration module covers the OpenID Connect server keys.
 
-### SMTP Email Secrets (`OrchardCore.Email.Smtp.Secrets`)
+### Credentials of Built-in Features
 
-This feature allows you to store SMTP passwords as secrets instead of in settings.
+The following settings render their credential with the [secret input](#adding-secret-support-to-your-own-credentials), and contribute it to the **Migrate Secrets** screen. They don't depend on the Secrets feature.
 
-**Prerequisites:**
-
-- `OrchardCore.Email.Smtp` - SMTP email provider
-- `OrchardCore.Secrets` - Core secrets module
-
-**Setup:**
-
-1. Enable the `OrchardCore.Email.Smtp.Secrets` feature
-2. Create a `TextSecret` with your SMTP password
-3. Go to **Configuration → Settings → Email**
-4. In the SMTP settings, select your password secret from the **Password Secret** dropdown
-
-**Benefits:**
-
-- SMTP password stored encrypted in secrets store
-- Can use Azure Key Vault for password storage
-- Password not visible in settings export
+| Feature | Credential | Suggested secret name |
+|---------|------------|-----------------------|
+| SMTP email | Password | `Smtp.Password` |
+| Azure email | Connection string | `AzureEmail.ConnectionString` |
+| Twilio SMS | Auth token | `Twilio.AuthToken` |
+| Azure SMS | Connection string | `AzureSms.ConnectionString` |
+| Meta (Facebook) | App secret | `Facebook.AppSecret` |
+| GitHub authentication | Client secret | `GitHub.ClientSecret` |
+| Google authentication | Client secret | `Google.ClientSecret` |
+| Microsoft Account authentication | App secret | `MicrosoftAccount.AppSecret` |
+| X (Twitter) | Consumer secret, access token secret | `Twitter.ConsumerSecret`, `Twitter.AccessTokenSecret` |
+| OpenID Connect client | Client secret | `OpenIdClient.ClientSecret` |
+| Azure AI Search | API key | `AzureAISearch.ApiKey` |
 
 ### OpenID Connect Secrets (`OrchardCore.OpenId.Secrets`)
 

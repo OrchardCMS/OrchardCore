@@ -41,13 +41,15 @@ public class SmtpSettings : EmailProviderSettings
     public string UserName { get; set; }
 
     /// <summary>
-    /// Gets or sets the user password.
+    /// Gets or sets the user password, protected with Data Protection.
     /// </summary>
-    /// <remarks>
-    /// This property is obsolete. Use the Secrets module (OrchardCore.Email.Smtp.Secrets) to store SMTP passwords securely.
-    /// </remarks>
-    [Obsolete("Use the Secrets module (OrchardCore.Email.Smtp.Secrets) to store SMTP passwords. This property will be removed in a future version.")]
     public string Password { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name of the secret of the Secrets module containing the user password.
+    /// When set, this takes precedence over <see cref="Password"/>.
+    /// </summary>
+    public string PasswordSecretName { get; set; }
 
     /// <summary>
     /// Gets or sets the proxy server.

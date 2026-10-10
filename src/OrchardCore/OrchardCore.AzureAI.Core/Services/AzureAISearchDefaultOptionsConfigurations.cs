@@ -16,7 +16,7 @@ public sealed class AzureAISearchDefaultOptionsConfigurations : IConfigureOption
     public const string ProtectorName = "AzureAISearch";
 
     private readonly IShellConfiguration _shellConfiguration;
-    private readonly ISecretManager _secretManager;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ISiteService _siteService;
     private readonly ShellSettings _shellSettings;
@@ -24,14 +24,14 @@ public sealed class AzureAISearchDefaultOptionsConfigurations : IConfigureOption
 
     public AzureAISearchDefaultOptionsConfigurations(
         IShellConfiguration shellConfiguration,
-        ISecretManager secretManager,
+        IServiceProvider serviceProvider,
         IDataProtectionProvider dataProtectionProvider,
         ISiteService siteService,
         ShellSettings shellSettings,
         ILoggerFactory loggerFactory)
     {
         _shellConfiguration = shellConfiguration;
-        _secretManager = secretManager;
+        _serviceProvider = serviceProvider;
         _dataProtectionProvider = dataProtectionProvider;
         _siteService = siteService;
         _shellSettings = shellSettings;
@@ -101,29 +101,17 @@ public sealed class AzureAISearchDefaultOptionsConfigurations : IConfigureOption
 
         if (settings.AuthenticationType == AzureAIAuthenticationType.ApiKey)
         {
-            // Try to get the API key from the Secrets module first.
-            if (!string.IsNullOrWhiteSpace(settings.ApiKeySecretName))
-            {
-                var secret = _secretManager.GetSecretAsync<TextSecret>(settings.ApiKeySecretName)
-                    .GetAwaiter()
-                    .GetResult();
+            var apiKey = _serviceProvider.GetSecretValueAsync(
+                settings.ApiKeySecretName,
+                settings.ApiKey,
+                _dataProtectionProvider.CreateProtector(ProtectorName),
+                _logger)
+                .GetAwaiter()
+                .GetResult();
 
-                if (secret != null)
-                {
-                    options.Credential = new AzureKeyCredential(secret.Text);
-                }
-            }
-            else
+            if (!string.IsNullOrEmpty(apiKey))
             {
-                // Fall back to legacy encrypted setting.
-#pragma warning disable CS0618 // Type or member is obsolete
-                if (!string.IsNullOrWhiteSpace(settings.ApiKey))
-                {
-                    var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
-
-                    options.Credential = new AzureKeyCredential(protector.Unprotect(settings.ApiKey));
-                }
-#pragma warning restore CS0618 // Type or member is obsolete
+                options.Credential = new AzureKeyCredential(apiKey);
             }
         }
         else if (settings.AuthenticationType == AzureAIAuthenticationType.ManagedIdentity)

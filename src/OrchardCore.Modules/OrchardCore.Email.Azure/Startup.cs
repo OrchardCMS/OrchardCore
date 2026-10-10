@@ -3,13 +3,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Azure.Email.Drivers;
-using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Email.Azure.Models;
 using OrchardCore.Email.Azure.Services;
 using OrchardCore.Email.Services;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Modules;
 using OrchardCore.Secrets;
 
 namespace OrchardCore.Email.Azure;
@@ -45,7 +45,14 @@ public sealed class Startup
 
             options.IsEnabled = options.ConfigurationExists();
         });
+    }
+}
 
-        services.AddScoped<IDataMigration, Migrations>();
+[RequireFeatures("OrchardCore.Secrets")]
+public sealed class SecretsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDisplayDriver<SecretMigration, AzureEmailSecretMigrationDisplayDriver>();
     }
 }

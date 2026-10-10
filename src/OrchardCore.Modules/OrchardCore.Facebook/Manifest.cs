@@ -14,8 +14,7 @@ using OrchardCore.Modules.Manifest;
     Name = "Meta Core Components",
     Category = "Meta",
     Description = "Registers the core components used by the Meta features.",
-    EnabledByDependencyOnly = true,
-    Dependencies = ["OrchardCore.Secrets"]
+    EnabledByDependencyOnly = true
 )]
 
 [assembly: Feature(

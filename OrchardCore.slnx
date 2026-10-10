@@ -160,7 +160,6 @@
     <Project Path="src/OrchardCore.Modules/OrchardCore.Diagnostics/OrchardCore.Diagnostics.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.DynamicCache/OrchardCore.DynamicCache.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Email.Azure/OrchardCore.Email.Azure.csproj" />
-    <Project Path="src/OrchardCore.Modules/OrchardCore.Email.Smtp.Secrets/OrchardCore.Email.Smtp.Secrets.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Email.Smtp/OrchardCore.Email.Smtp.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Email/OrchardCore.Email.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Facebook/OrchardCore.Facebook.csproj" />

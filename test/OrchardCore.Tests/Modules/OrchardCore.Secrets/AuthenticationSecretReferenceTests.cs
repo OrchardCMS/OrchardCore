@@ -37,12 +37,14 @@ public class AuthenticationSecretReferenceTests
     private readonly SiteSettings _site = new();
     private readonly Mock<ISiteService> _siteService = new();
     private readonly Mock<ISecretManager> _manager = new();
+    private readonly IServiceProvider _services;
 
     public AuthenticationSecretReferenceTests()
     {
         _siteService.Setup(s => s.GetSiteSettingsAsync()).ReturnsAsync(_site);
         _siteService.Setup(s => s.LoadSiteSettingsAsync()).ReturnsAsync(_site);
         _manager.Setup(m => m.GetSecretAsync<TextSecret>("reference")).ReturnsAsync(new TextSecret { Text = "resolved" });
+        _services = new ServiceCollection().AddSingleton(_manager.Object).BuildServiceProvider();
     }
 
     [Fact]
@@ -59,7 +61,7 @@ public class AuthenticationSecretReferenceTests
         login.Setup(s => s.GetSettingsAsync()).ReturnsAsync(new FacebookLoginSettings());
         login.Setup(s => s.ValidateSettingsAsync(It.IsAny<FacebookLoginSettings>())).ReturnsAsync(Array.Empty<ValidationResult>());
         var configuration = new FacebookLoginConfiguration(Options.Create(settings), login.Object,
-            new EphemeralDataProtectionProvider(), _manager.Object, NullLogger<FacebookLoginConfiguration>.Instance);
+            new EphemeralDataProtectionProvider(), _services, NullLogger<FacebookLoginConfiguration>.Instance);
         var authentication = new AuthenticationOptions();
         configuration.Configure(authentication);
         Assert.Contains(authentication.Schemes, s => s.Name == FacebookDefaults.AuthenticationScheme);
@@ -78,7 +80,7 @@ public class AuthenticationSecretReferenceTests
         new GoogleAuthenticationSettingsConfiguration(service).Configure(settings);
         Assert.Equal("reference", settings.ClientSecretSecretName);
         var configuration = new GoogleOptionsConfiguration(Options.Create(settings), new EphemeralDataProtectionProvider(),
-            _manager.Object, NullLogger<GoogleOptionsConfiguration>.Instance);
+            _services, NullLogger<GoogleOptionsConfiguration>.Instance);
         var authentication = new AuthenticationOptions();
         configuration.Configure(authentication);
         Assert.Contains(authentication.Schemes, s => s.Name == GoogleDefaults.AuthenticationScheme);
@@ -96,7 +98,7 @@ public class AuthenticationSecretReferenceTests
         var settings = new MicrosoftAccountSettings();
         new MicrosoftAccountSettingsConfiguration(service).Configure(settings);
         Assert.Equal("reference", settings.AppSecretSecretName);
-        var configuration = new MicrosoftAccountOptionsConfiguration(Options.Create(settings), _manager.Object,
+        var configuration = new MicrosoftAccountOptionsConfiguration(Options.Create(settings), _services,
             new EphemeralDataProtectionProvider(), NullLogger<MicrosoftAccountOptionsConfiguration>.Instance);
         var authentication = new AuthenticationOptions();
         configuration.Configure(authentication);
@@ -125,7 +127,7 @@ public class AuthenticationSecretReferenceTests
         var signin = new Mock<ITwitterSigninService>();
         signin.Setup(s => s.GetSettingsAsync()).ReturnsAsync(new TwitterSigninSettings());
         var configuration = new TwitterOptionsConfiguration(service, signin.Object, new EphemeralDataProtectionProvider(),
-            _manager.Object, new HttpContextAccessor(), new ShellSettings(), NullLogger<TwitterOptionsConfiguration>.Instance);
+            _services, new HttpContextAccessor(), new ShellSettings(), NullLogger<TwitterOptionsConfiguration>.Instance);
         var authentication = new AuthenticationOptions();
         configuration.Configure(authentication);
         Assert.Contains(authentication.Schemes, s => s.Name == TwitterDefaults.AuthenticationScheme);
@@ -144,7 +146,8 @@ public class AuthenticationSecretReferenceTests
             PhoneNumber = "+15555555555",
             AuthTokenSecretName = "reference",
         });
-        var configuration = new TwilioOptionsConfiguration(_siteService.Object, new EphemeralDataProtectionProvider(), _manager.Object);
+        var configuration = new TwilioOptionsConfiguration(_siteService.Object, new EphemeralDataProtectionProvider(), _services,
+            NullLogger<TwilioOptionsConfiguration>.Instance);
         var options = new TwilioOptions();
 
         configuration.Configure(options);
