@@ -2,12 +2,14 @@ using System.Runtime.CompilerServices;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Mvc.Localization;
+using OrchardCore.Localization;
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.DisplayManagement.Liquid.Filters;
 
 public static class LiquidViewFilters
 {
+    [SkipLocalizationExtraction]
     public static ValueTask<FluidValue> Localize(FluidValue input, FilterArguments arguments, TemplateContext ctx)
     {
         var localizer = ctx.GetValue("ViewLocalizer")?.ToObjectValue() as IViewLocalizer;

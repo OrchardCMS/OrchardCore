@@ -8,6 +8,7 @@ namespace OrchardCore.Localization.PortableObject;
 /// <summary>
 /// Represents <see cref="IPluralStringLocalizer"/> for portable objects.
 /// </summary>
+[SkipLocalizationExtraction]
 public class PortableObjectStringLocalizer : IPluralStringLocalizer
 {
     private static readonly string s_dataAnnotationsDefaultErrorMessagesContext = typeof(DataAnnotationsDefaultErrorMessages).FullName;
@@ -76,6 +77,8 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
     public virtual (LocalizedString, object[]) GetTranslation(string name, params object[] arguments)
     {
         ArgumentNullException.ThrowIfNull(name);
+
+        arguments ??= Array.Empty<object>();
 
         // Check if a plural form is called, which is when the only argument is of type PluralizationArgument.
         if (arguments.Length == 1 && arguments[0] is PluralizationArgument pluralArgument)

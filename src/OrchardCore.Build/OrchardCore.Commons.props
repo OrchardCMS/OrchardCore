@@ -53,4 +53,9 @@
                       OutputItemType="Analyzer" 
                       ReferenceOutputAssembly="false" />
   </ItemGroup>
+  <Import Project="../OrchardCore/OrchardCore.Localization.Build/OrchardCore.Localization.Build.props"
+          Condition="'$(GenerateLocalizationCatalog)' != 'false' and '$(MSBuildProjectName)' != 'OrchardCore.SourceGenerators' and '$(MSBuildProjectName)' != 'OrchardCore.Localization.Extraction' and '$(MSBuildProjectName)' != 'OrchardCore.Localization.Tools' and '$(MSBuildProjectName)' != 'OrchardCore.Localization.Build'" />
+  <Import Project="../OrchardCore/OrchardCore.Localization.Build/OrchardCore.Localization.Build.targets"
+          Condition="'$(GenerateLocalizationCatalog)' != 'false' and '$(MSBuildProjectName)' != 'OrchardCore.SourceGenerators' and '$(MSBuildProjectName)' != 'OrchardCore.Localization.Extraction' and '$(MSBuildProjectName)' != 'OrchardCore.Localization.Tools' and '$(MSBuildProjectName)' != 'OrchardCore.Localization.Build'" />
+
 </Project>

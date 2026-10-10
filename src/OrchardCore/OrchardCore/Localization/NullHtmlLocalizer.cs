@@ -6,6 +6,7 @@ namespace OrchardCore.Localization;
 /// <summary>
 /// Minimalistic HTML-aware localizer that does nothing.
 /// </summary>
+[SkipLocalizationExtraction]
 public class NullHtmlLocalizer : IHtmlLocalizer
 {
     private static readonly PluralizationRuleDelegate s_defaultPluralRule = n => (n == 1) ? 0 : 1;

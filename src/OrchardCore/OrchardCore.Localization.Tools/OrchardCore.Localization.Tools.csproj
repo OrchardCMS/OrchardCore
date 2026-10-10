@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>$(DefaultTargetFramework)</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <UseAppHost>false</UseAppHost>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../OrchardCore.Localization.Extraction/OrchardCore.Localization.Extraction.csproj" GlobalPropertiesToRemove="GenerateLocalizationCatalog" />
+  </ItemGroup>
+</Project>

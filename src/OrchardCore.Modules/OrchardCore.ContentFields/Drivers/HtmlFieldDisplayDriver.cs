@@ -36,7 +36,7 @@ public sealed class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField
 
     public override IDisplayResult Display(HtmlField field, BuildFieldDisplayContext context)
     {
-        return Initialize<DisplayHtmlFieldViewModel, HtmlFieldDisplayDriver, HtmlField, BuildFieldDisplayContext> (GetDisplayShapeType(context), static async (model, driver, field, context) =>
+        return Initialize<DisplayHtmlFieldViewModel, HtmlFieldDisplayDriver, HtmlField, BuildFieldDisplayContext>(GetDisplayShapeType(context), static async (model, driver, field, context) =>
         {
             model.Html = field.Html;
             model.Field = field;
@@ -82,11 +82,13 @@ public sealed class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField
             && !_liquidTemplateManager.Validate(field.Html, out var errors))
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(field.Html),
-                S[settings.SanitizeHtml
-                    ? "{0} contains invalid Liquid expression. Note that HTML sanitization affects the value being saved and thus can break Liquid code: {1}"
-                    : "{0} contains invalid Liquid expression: {1}",
-                    context.PartFieldDefinition.DisplayName(),
-                    string.Join(" ", errors)]);
+                settings.SanitizeHtml
+                    ? S["{0} contains invalid Liquid expression. Note that HTML sanitization affects the value being saved and thus can break Liquid code: {1}",
+                            context.PartFieldDefinition.DisplayName(),
+                            string.Join(" ", errors)]
+                    : S["{0} contains invalid Liquid expression: {1}",
+                            context.PartFieldDefinition.DisplayName(),
+                            string.Join(" ", errors)]);
         }
 
         return Edit(field, context);

@@ -1,0 +1,12 @@
+<Project>
+  <PropertyGroup>
+    <GenerateLocalizationCatalog Condition="'$(GenerateLocalizationCatalog)' == ''">true</GenerateLocalizationCatalog>
+    <LocalizationStrict Condition="'$(LocalizationStrict)' == ''">false</LocalizationStrict>
+    <_LocalizationToolsProject>$(MSBuildThisFileDirectory)../OrchardCore.Localization.Tools/OrchardCore.Localization.Tools.csproj</_LocalizationToolsProject>
+    <_LocalizationToolsDirectory>$(MSBuildThisFileDirectory)../OrchardCore.Localization.Tools/</_LocalizationToolsDirectory>
+    <LocalizationToolPath Condition="'$(LocalizationToolPath)' == '' and !Exists('$(_LocalizationToolsProject)')">$(MSBuildThisFileDirectory)../tools/any/OrchardCore.Localization.Tools.dll</LocalizationToolPath>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(GenerateLocalizationCatalog)' == 'true' and Exists('$(_LocalizationToolsProject)')">
+    <ProjectReference Include="$(_LocalizationToolsProject)" ReferenceOutputAssembly="false" PrivateAssets="all" AdditionalProperties="GenerateLocalizationCatalog=false" />
+  </ItemGroup>
+</Project>
