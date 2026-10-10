@@ -77,18 +77,23 @@ public sealed class FacebookSecretMigrationDisplayDriver : DisplayDriver<SecretM
         var model = new SecretMigrationItemViewModel();
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        if (model.Migrate && await migration.MoveToSecretAsync(
-            _secretManager,
-            _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core),
-            settings.AppSecret,
-            model.SecretName,
-            S["Meta: App secret"]))
+        if (model.Migrate)
         {
-            settings.AppSecretSecretName = model.SecretName.Trim();
-            settings.AppSecret = null;
+            // The settings reference the secret once every selected credential is saved.
+            await migration.MoveToSecretAsync(
+                _secretManager,
+                _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core),
+                settings.AppSecret,
+                model.SecretName,
+                S["Meta: App secret"],
+                async secretName =>
+                {
+                    settings.AppSecretSecretName = secretName;
+                    settings.AppSecret = null;
 
-            site.Put(settings);
-            await _siteService.UpdateSiteSettingsAsync(site);
+                    site.Put(settings);
+                    await _siteService.UpdateSiteSettingsAsync(site);
+                });
         }
 
         return await EditAsync(migration, context);

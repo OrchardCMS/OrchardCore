@@ -134,12 +134,24 @@ public class SecretInputTests
     public async Task MoveToSecretAsync_SavesInTheSelectedStore()
     {
         var migration = new SecretMigration { Store = "Vault" };
+        string referenced = null;
 
-        var moved = await migration.MoveToSecretAsync(_secretManager.Object, _protector, _protector.Protect("stored"), "New", "Test: Credential");
+        var moved = await migration.MoveToSecretAsync(_secretManager.Object, _protector, _protector.Protect("stored"), "New", "Test: Credential",
+            secretName =>
+            {
+                referenced = secretName;
+
+                return Task.CompletedTask;
+            });
 
         Assert.True(moved);
         Assert.True(Assert.Single(migration.Results).Succeeded);
         _secretManager.Verify(m => m.SaveSecretAsync("New", It.Is<TextSecret>(s => s.Text == "stored"), "Vault", It.IsAny<SecretSaveOptions>()), Times.Once);
+
+        // The settings reference the secret only once every secret is saved.
+        Assert.Null(referenced);
+        await migration.UpdateSettingsAsync();
+        Assert.Equal("New", referenced);
     }
 
     [Fact]
@@ -149,9 +161,19 @@ public class SecretInputTests
         var failing = new Mock<IDataProtector>();
         failing.Setup(p => p.Unprotect(It.IsAny<byte[]>())).Throws(new CryptographicException("Key missing"));
 
-        Assert.False(await migration.MoveToSecretAsync(_secretManager.Object, _protector, "x", "Existing", "Exists"));
-        Assert.False(await migration.MoveToSecretAsync(_secretManager.Object, failing.Object, "x", "New", "Undecryptable"));
-        Assert.False(await migration.MoveToSecretAsync(_secretManager.Object, _protector, "x", " ", "Unnamed"));
+        var referenced = false;
+        Task Reference(string secretName)
+        {
+            referenced = true;
+
+            return Task.CompletedTask;
+        }
+
+        Assert.False(await migration.MoveToSecretAsync(_secretManager.Object, _protector, "x", "Existing", "Exists", Reference));
+        Assert.False(await migration.MoveToSecretAsync(_secretManager.Object, failing.Object, "x", "New", "Undecryptable", Reference));
+        Assert.False(await migration.MoveToSecretAsync(_secretManager.Object, _protector, "x", " ", "Unnamed", Reference));
+        await migration.UpdateSettingsAsync();
+        Assert.False(referenced);
 
         Assert.Equal(
             new[] { SecretMigrationError.AlreadyExists, SecretMigrationError.DecryptionFailed, SecretMigrationError.MissingName },
@@ -166,7 +188,7 @@ public class SecretInputTests
             .ThrowsAsync(new InvalidOperationException("Store unavailable"));
         var migration = new SecretMigration { Store = "Vault" };
 
-        Assert.False(await migration.MoveToSecretAsync(_secretManager.Object, _protector, _protector.Protect("stored"), "New", "Test"));
+        Assert.False(await migration.MoveToSecretAsync(_secretManager.Object, _protector, _protector.Protect("stored"), "New", "Test", _ => Task.CompletedTask));
         Assert.Equal(SecretMigrationError.StoreFailed, Assert.Single(migration.Results).Error);
     }
 

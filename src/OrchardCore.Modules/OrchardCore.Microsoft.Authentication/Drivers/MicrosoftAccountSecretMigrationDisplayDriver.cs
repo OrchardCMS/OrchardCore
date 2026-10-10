@@ -77,18 +77,23 @@ public sealed class MicrosoftAccountSecretMigrationDisplayDriver : DisplayDriver
         var model = new SecretMigrationItemViewModel();
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        if (model.Migrate && await migration.MoveToSecretAsync(
-            _secretManager,
-            _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount),
-            settings.AppSecret,
-            model.SecretName,
-            S["Microsoft Account Authentication: App secret"]))
+        if (model.Migrate)
         {
-            settings.AppSecretSecretName = model.SecretName.Trim();
-            settings.AppSecret = null;
+            // The settings reference the secret once every selected credential is saved.
+            await migration.MoveToSecretAsync(
+                _secretManager,
+                _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount),
+                settings.AppSecret,
+                model.SecretName,
+                S["Microsoft Account Authentication: App secret"],
+                async secretName =>
+                {
+                    settings.AppSecretSecretName = secretName;
+                    settings.AppSecret = null;
 
-            site.Put(settings);
-            await _siteService.UpdateSiteSettingsAsync(site);
+                    site.Put(settings);
+                    await _siteService.UpdateSiteSettingsAsync(site);
+                });
         }
 
         return await EditAsync(migration, context);

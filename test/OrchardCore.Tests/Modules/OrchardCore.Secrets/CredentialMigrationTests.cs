@@ -252,6 +252,10 @@ public class CredentialMigrationTests
             var migration = new SecretMigration { Store = "Vault" };
             await _driver.UpdateEditorAsync(migration, new UpdateEditorContext(new Shape(), string.Empty, false, string.Empty, null, null, updater.Object));
 
+            // A secret store can commit in its own scope, so no driver may change settings before every secret is saved.
+            SiteService.Verify(s => s.UpdateSiteSettingsAsync(It.IsAny<ISite>()), Times.Never);
+            await migration.UpdateSettingsAsync();
+
             return migration;
         }
     }

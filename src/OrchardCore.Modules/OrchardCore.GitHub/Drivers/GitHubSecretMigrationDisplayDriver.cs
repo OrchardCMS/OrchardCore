@@ -77,18 +77,23 @@ public sealed class GitHubSecretMigrationDisplayDriver : DisplayDriver<SecretMig
         var model = new SecretMigrationItemViewModel();
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        if (model.Migrate && await migration.MoveToSecretAsync(
-            _secretManager,
-            _dataProtectionProvider.CreateProtector(GitHubConstants.Features.GitHubAuthentication),
-            settings.ClientSecret,
-            model.SecretName,
-            S["GitHub Authentication: Client secret"]))
+        if (model.Migrate)
         {
-            settings.ClientSecretSecretName = model.SecretName.Trim();
-            settings.ClientSecret = null;
+            // The settings reference the secret once every selected credential is saved.
+            await migration.MoveToSecretAsync(
+                _secretManager,
+                _dataProtectionProvider.CreateProtector(GitHubConstants.Features.GitHubAuthentication),
+                settings.ClientSecret,
+                model.SecretName,
+                S["GitHub Authentication: Client secret"],
+                async secretName =>
+                {
+                    settings.ClientSecretSecretName = secretName;
+                    settings.ClientSecret = null;
 
-            site.Put(settings);
-            await _siteService.UpdateSiteSettingsAsync(site);
+                    site.Put(settings);
+                    await _siteService.UpdateSiteSettingsAsync(site);
+                });
         }
 
         return await EditAsync(migration, context);

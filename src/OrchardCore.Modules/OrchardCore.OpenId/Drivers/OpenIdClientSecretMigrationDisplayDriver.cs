@@ -76,17 +76,22 @@ public sealed class OpenIdClientSecretMigrationDisplayDriver : DisplayDriver<Sec
         var model = new SecretMigrationItemViewModel();
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        if (model.Migrate && await migration.MoveToSecretAsync(
-            _secretManager,
-            _dataProtectionProvider.CreateProtector(nameof(OpenIdClientConfiguration)),
-            settings.ClientSecret,
-            model.SecretName,
-            S["OpenID Connect: Client secret"]))
+        if (model.Migrate)
         {
-            settings.ClientSecretSecretName = model.SecretName.Trim();
-            settings.ClientSecret = null;
+            // The settings reference the secret once every selected credential is saved.
+            await migration.MoveToSecretAsync(
+                _secretManager,
+                _dataProtectionProvider.CreateProtector(nameof(OpenIdClientConfiguration)),
+                settings.ClientSecret,
+                model.SecretName,
+                S["OpenID Connect: Client secret"],
+                secretName =>
+                {
+                    settings.ClientSecretSecretName = secretName;
+                    settings.ClientSecret = null;
 
-            await _clientService.UpdateSettingsAsync(settings);
+                    return _clientService.UpdateSettingsAsync(settings);
+                });
         }
 
         return await EditAsync(migration, context);

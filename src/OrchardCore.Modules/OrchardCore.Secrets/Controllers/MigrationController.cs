@@ -94,12 +94,16 @@ public sealed class MigrationController : Controller
             return View(nameof(Index), model);
         }
 
-        model.Editor = await _displayManager.UpdateEditorAsync(migration, _updateModelAccessor.ModelUpdater, false);
+        await _displayManager.UpdateEditorAsync(migration, _updateModelAccessor.ModelUpdater, false);
+
+        // The settings are updated once every secret is saved, see SecretMigration.UpdateSettingsAsync().
+        await migration.UpdateSettingsAsync();
         model.Results = migration.Results;
 
         if (migration.Results.Count == 0)
         {
             await _notifier.WarningAsync(H["Select at least one credential to move."]);
+            model.Editor = await _displayManager.BuildEditorAsync(migration, _updateModelAccessor.ModelUpdater, false);
 
             return View(nameof(Index), model);
         }
@@ -117,6 +121,7 @@ public sealed class MigrationController : Controller
         if (moved < migration.Results.Count)
         {
             await _notifier.ErrorAsync(H["Some credentials could not be moved. Their settings were left unchanged."]);
+            model.Editor = await _displayManager.BuildEditorAsync(new SecretMigration { Store = model.Store }, _updateModelAccessor.ModelUpdater, false);
 
             return View(nameof(Index), model);
         }

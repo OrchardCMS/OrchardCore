@@ -78,18 +78,23 @@ public sealed class AzureAISearchSecretMigrationDisplayDriver : DisplayDriver<Se
         var model = new SecretMigrationItemViewModel();
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        if (model.Migrate && await migration.MoveToSecretAsync(
-            _secretManager,
-            _dataProtectionProvider.CreateProtector(AzureAISearchDefaultOptionsConfigurations.ProtectorName),
-            settings.ApiKey,
-            model.SecretName,
-            S["Azure AI Search: API key"]))
+        if (model.Migrate)
         {
-            settings.ApiKeySecretName = model.SecretName.Trim();
-            settings.ApiKey = null;
+            // The settings reference the secret once every selected credential is saved.
+            await migration.MoveToSecretAsync(
+                _secretManager,
+                _dataProtectionProvider.CreateProtector(AzureAISearchDefaultOptionsConfigurations.ProtectorName),
+                settings.ApiKey,
+                model.SecretName,
+                S["Azure AI Search: API key"],
+                async secretName =>
+                {
+                    settings.ApiKeySecretName = secretName;
+                    settings.ApiKey = null;
 
-            site.Put(settings);
-            await _siteService.UpdateSiteSettingsAsync(site);
+                    site.Put(settings);
+                    await _siteService.UpdateSiteSettingsAsync(site);
+                });
         }
 
         return await EditAsync(migration, context);

@@ -77,18 +77,23 @@ public sealed class SmtpSecretMigrationDisplayDriver : DisplayDriver<SecretMigra
         var model = new SecretMigrationItemViewModel();
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        if (model.Migrate && await migration.MoveToSecretAsync(
-            _secretManager,
-            _dataProtectionProvider.CreateProtector(SmtpOptionsConfiguration.ProtectorName),
-            settings.Password,
-            model.SecretName,
-            S["SMTP: Password"]))
+        if (model.Migrate)
         {
-            settings.PasswordSecretName = model.SecretName.Trim();
-            settings.Password = null;
+            // The settings reference the secret once every selected credential is saved.
+            await migration.MoveToSecretAsync(
+                _secretManager,
+                _dataProtectionProvider.CreateProtector(SmtpOptionsConfiguration.ProtectorName),
+                settings.Password,
+                model.SecretName,
+                S["SMTP: Password"],
+                async secretName =>
+                {
+                    settings.PasswordSecretName = secretName;
+                    settings.Password = null;
 
-            site.Put(settings);
-            await _siteService.UpdateSiteSettingsAsync(site);
+                    site.Put(settings);
+                    await _siteService.UpdateSiteSettingsAsync(site);
+                });
         }
 
         return await EditAsync(migration, context);

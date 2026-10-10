@@ -10,7 +10,8 @@ public static class SecretMigrationExtensions
 {
     /// <summary>
     /// Decrypts a protected value and saves it as a <see cref="TextSecret"/> in the store selected for the migration,
-    /// then records the outcome in <see cref="SecretMigration.Results"/>.
+    /// records the outcome in <see cref="SecretMigration.Results"/>, and, when the secret was saved, schedules the update
+    /// of the settings that reference it, which <see cref="SecretMigration.UpdateSettingsAsync"/> runs.
     /// </summary>
     /// <param name="migration">The current migration.</param>
     /// <param name="secretManager">The secret manager.</param>
@@ -18,18 +19,21 @@ public static class SecretMigrationExtensions
     /// <param name="protectedValue">The protected value kept in the settings.</param>
     /// <param name="secretName">The name of the secret to create. An existing secret is never overwritten.</param>
     /// <param name="displayName">The display name of the credential, used in the results and as the secret description.</param>
-    /// <returns><see langword="true"/> when the secret was saved and the settings can reference it; otherwise, <see langword="false"/>.</returns>
+    /// <param name="referenceSecretAsync">Updates the settings to reference the secret, whose name it receives, and to no longer keep the protected value.</param>
+    /// <returns><see langword="true"/> when the secret was saved; otherwise, <see langword="false"/>.</returns>
     public static async Task<bool> MoveToSecretAsync(
         this SecretMigration migration,
         ISecretManager secretManager,
         IDataProtector protector,
         string protectedValue,
         string secretName,
-        string displayName)
+        string displayName,
+        Func<string, Task> referenceSecretAsync)
     {
         ArgumentNullException.ThrowIfNull(migration);
         ArgumentNullException.ThrowIfNull(secretManager);
         ArgumentNullException.ThrowIfNull(protector);
+        ArgumentNullException.ThrowIfNull(referenceSecretAsync);
 
         secretName = secretName?.Trim();
 
@@ -94,6 +98,7 @@ public static class SecretMigrationExtensions
         }
 
         result.Succeeded = true;
+        migration.AddSettingsUpdate(() => referenceSecretAsync(secretName));
 
         return true;
     }

@@ -78,18 +78,23 @@ public sealed class TwilioSecretMigrationDisplayDriver : DisplayDriver<SecretMig
         var model = new SecretMigrationItemViewModel();
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        if (model.Migrate && await migration.MoveToSecretAsync(
-            _secretManager,
-            _dataProtectionProvider.CreateProtector(TwilioSmsProvider.ProtectorName),
-            settings.AuthToken,
-            model.SecretName,
-            S["Twilio: Auth token"]))
+        if (model.Migrate)
         {
-            settings.AuthTokenSecretName = model.SecretName.Trim();
-            settings.AuthToken = null;
+            // The settings reference the secret once every selected credential is saved.
+            await migration.MoveToSecretAsync(
+                _secretManager,
+                _dataProtectionProvider.CreateProtector(TwilioSmsProvider.ProtectorName),
+                settings.AuthToken,
+                model.SecretName,
+                S["Twilio: Auth token"],
+                async secretName =>
+                {
+                    settings.AuthTokenSecretName = secretName;
+                    settings.AuthToken = null;
 
-            site.Put(settings);
-            await _siteService.UpdateSiteSettingsAsync(site);
+                    site.Put(settings);
+                    await _siteService.UpdateSiteSettingsAsync(site);
+                });
         }
 
         return await EditAsync(migration, context);

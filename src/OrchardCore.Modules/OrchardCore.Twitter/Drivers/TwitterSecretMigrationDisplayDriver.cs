@@ -102,23 +102,28 @@ public sealed class TwitterSecretMigrationDisplayDriver : DisplayDriver<SecretMi
         }
 
         var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
-        var updated = false;
 
         if (canMigrateConsumerSecret)
         {
             var model = new SecretMigrationItemViewModel();
             await context.Updater.TryUpdateModelAsync(model, ConsumerSecretPrefix);
 
-            if (model.Migrate && await migration.MoveToSecretAsync(
-                _secretManager,
-                protector,
-                settings.ConsumerSecret,
-                model.SecretName,
-                S["X (Twitter): API secret key"]))
+            if (model.Migrate)
             {
-                settings.ConsumerSecretSecretName = model.SecretName.Trim();
-                settings.ConsumerSecret = null;
-                updated = true;
+                // The settings reference the secret once every selected credential is saved.
+                await migration.MoveToSecretAsync(
+                    _secretManager,
+                    protector,
+                    settings.ConsumerSecret,
+                    model.SecretName,
+                    S["X (Twitter): API secret key"],
+                    secretName =>
+                    {
+                        settings.ConsumerSecretSecretName = secretName;
+                        settings.ConsumerSecret = null;
+
+                        return SaveAsync(site, settings);
+                    });
             }
         }
 
@@ -127,26 +132,32 @@ public sealed class TwitterSecretMigrationDisplayDriver : DisplayDriver<SecretMi
             var model = new SecretMigrationItemViewModel();
             await context.Updater.TryUpdateModelAsync(model, AccessTokenSecretPrefix);
 
-            if (model.Migrate && await migration.MoveToSecretAsync(
-                _secretManager,
-                protector,
-                settings.AccessTokenSecret,
-                model.SecretName,
-                S["X (Twitter): Access token secret"]))
+            if (model.Migrate)
             {
-                settings.AccessTokenSecretSecretName = model.SecretName.Trim();
-                settings.AccessTokenSecret = null;
-                updated = true;
+                await migration.MoveToSecretAsync(
+                    _secretManager,
+                    protector,
+                    settings.AccessTokenSecret,
+                    model.SecretName,
+                    S["X (Twitter): Access token secret"],
+                    secretName =>
+                    {
+                        settings.AccessTokenSecretSecretName = secretName;
+                        settings.AccessTokenSecret = null;
+
+                        return SaveAsync(site, settings);
+                    });
             }
         }
 
-        if (updated)
-        {
-            site.Put(settings);
-            await _siteService.UpdateSiteSettingsAsync(site);
-        }
-
         return await EditAsync(migration, context);
+    }
+
+    private Task SaveAsync(ISite site, TwitterSettings settings)
+    {
+        site.Put(settings);
+
+        return _siteService.UpdateSiteSettingsAsync(site);
     }
 
     private string ConsumerSecretPrefix
