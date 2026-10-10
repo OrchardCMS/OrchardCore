@@ -1,0 +1,20 @@
+@model (IReadOnlyList<DataField> Fields, DataSourceFilterRow Filter, string Index)
+@{
+    var prefix = $"Filters[{Model.Index}]";
+    var operators = Enum.GetValues<DataFilterOperator>();
+}
+
+<div class="input-group input-group-sm mb-2" data-dp-row>
+    <select name="@(prefix).Field" class="form-select" aria-label="@T["Field"]">
+        <partial name="DataPipelineFieldOptions" model="@((Model.Fields, Model.Filter.Field, true))" />
+    </select>
+    <select name="@(prefix).Operator" class="form-select" aria-label="@T["Comparison"]">
+        @foreach (var item in operators)
+        {
+            <option value="@item" selected="@(item == Model.Filter.Operator)">@T[item.ToString()]</option>
+        }
+    </select>
+    <input name="@(prefix).Value" value="@Model.Filter.Value" class="form-control" aria-label="@T["Value"]" placeholder="@T["Value"]" />
+    <input name="@(prefix).SecondValue" value="@Model.Filter.SecondValue" class="form-control" aria-label="@T["Second value, for Between"]" placeholder="@T["And (Between)"]" />
+    <button type="button" class="btn btn-outline-danger" data-dp-remove title="@T["Remove"]"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
+</div>

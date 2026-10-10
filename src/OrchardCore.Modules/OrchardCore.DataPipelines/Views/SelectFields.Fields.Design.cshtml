@@ -1,0 +1,10 @@
+@model SelectFieldsStepViewModel
+
+@if (Model.Fields.Count == 0)
+{
+    <span class="text-muted">@T["Every field"]</span>
+}
+else
+{
+    <span class="text-break">@string.Join(", ", Model.Fields.Select(field => string.IsNullOrEmpty(field.Name) ? field.Field : $"{field.Field} → {field.Name}"))</span>
+}

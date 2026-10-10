@@ -1,0 +1,3 @@
+@model LimitStepViewModel
+
+<span>@(Model.Skip > 0 ? T["{0} rows after the first {1}", Model.Count, Model.Skip] : T["The first {0} rows", Model.Count])</span>

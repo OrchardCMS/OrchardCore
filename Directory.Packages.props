@@ -22,6 +22,7 @@
     <PackageVersion Include="Cyqwel" Version="0.3.0" />
     <PackageVersion Include="DocumentFormat.OpenXml" Version="3.5.1" />
     <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.19.26" />
+    <PackageVersion Include="FluentFTP" Version="54.2.1" />
     <PackageVersion Include="Fluid.Core" Version="2.40.0" />
     <PackageVersion Include="GraphQL" Version="8.8.5" />
     <PackageVersion Include="GraphQL.DataLoader" Version="8.8.5" />
@@ -65,6 +66,7 @@
     <PackageVersion Include="PdfPig" Version="0.1.16" />
     <PackageVersion Include="Scalar.AspNetCore" Version="2.17.6" />
     <PackageVersion Include="Shortcodes" Version="1.3.6" />
+    <PackageVersion Include="SSH.NET" Version="2026.0.0" />
     <PackageVersion Include="NetVips" Version="3.2.0" />
     <PackageVersion Include="NetVips.Native" Version="8.18.6" />
     <PackageVersion Include="StackExchange.Redis" Version="3.1.31" />

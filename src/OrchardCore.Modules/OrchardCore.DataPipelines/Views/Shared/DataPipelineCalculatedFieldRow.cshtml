@@ -1,0 +1,12 @@
+@model (CalculatedField Field, string Index)
+@{
+    var prefix = $"Fields[{Model.Index}]";
+}
+
+<div class="input-group input-group-sm mb-2" data-dp-row>
+    <input name="@(prefix).Name" value="@Model.Field.Name" class="form-control" style="max-width: 12rem" aria-label="@T["Name"]" placeholder="@T["Name"]" />
+    <span class="input-group-text">=</span>
+    <input name="@(prefix).Formula" value="@Model.Field.Formula" class="form-control font-monospace" aria-label="@T["Formula"]" placeholder="[Price] * [Quantity]" />
+    <button type="button" class="btn btn-outline-secondary" data-dp-up title="@T["Move up"]"><i class="fa-solid fa-arrow-up" aria-hidden="true"></i></button>
+    <button type="button" class="btn btn-outline-danger" data-dp-remove title="@T["Remove"]"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
+</div>

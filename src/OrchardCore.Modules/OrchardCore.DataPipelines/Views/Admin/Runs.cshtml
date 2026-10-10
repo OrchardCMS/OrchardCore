@@ -1,0 +1,62 @@
+@model DataPipelineRunsViewModel
+
+<zone Name="Title">
+    <breadcrumb name="DataPipelinesRuns" title="@(Model.Pipeline is null ? T["Runs"] : T["Runs of {0}", Model.Pipeline.Name])">
+        <breadcrumb-item action="Index" controller="Admin" area="OrchardCore.DataPipelines">@T["Data pipelines"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
+
+<ul class="list-group">
+    @if (Model.Runs.Count == 0)
+    {
+        <li class="list-group-item">
+            <div class="alert alert-info mb-0" role="alert">@T["No run yet."]</div>
+        </li>
+    }
+
+    @foreach (var run in Model.Runs)
+    {
+        <li class="list-group-item">
+            <div class="row gx-3 align-items-center">
+                <div class="col">
+                    <a asp-action="Run" asp-route-runId="@run.RunId" class="fw-semibold">@run.PipelineName</a>
+                    <span class="badge @RunBadge(run.Status) ms-1">@T[run.Status.ToString()]</span>
+                    <span class="badge text-bg-light ms-1">@T["Version {0}", run.VersionNumber]</span>
+                    <div class="text-muted small">
+                        @T["Queued {0}", run.QueuedUtc.ToString("g", System.Globalization.CultureInfo.CurrentCulture)]
+                        @if (!string.IsNullOrEmpty(run.TriggeredBy))
+                        {
+                            <span>· @T["by {0}", run.TriggeredBy]</span>
+                        }
+                        <span>· @run.Trigger</span>
+                        @if (run.CompletedUtc is { } completed && run.StartedUtc is { } started)
+                        {
+                            <span>· @T["{0:N1} seconds", (completed - started).TotalSeconds]</span>
+                        }
+                    </div>
+                    @if (!string.IsNullOrEmpty(run.Error))
+                    {
+                        <div class="text-danger small">@run.Error</div>
+                    }
+                </div>
+                <div class="col-auto">
+                    <a asp-action="Run" asp-route-runId="@run.RunId" class="btn btn-secondary btn-sm">@T["Details"]</a>
+                </div>
+            </div>
+        </li>
+    }
+</ul>
+
+@await DisplayAsync(Model.Pager)
+
+@functions {
+    private static string RunBadge(DataPipelineRunStatus status)
+        => status switch
+        {
+            DataPipelineRunStatus.Succeeded => "text-bg-success",
+            DataPipelineRunStatus.Failed => "text-bg-danger",
+            DataPipelineRunStatus.Cancelled => "text-bg-secondary",
+            DataPipelineRunStatus.Running => "text-bg-primary",
+            _ => "text-bg-light",
+        };
+}

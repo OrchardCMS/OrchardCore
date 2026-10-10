@@ -1,0 +1,14 @@
+@model FilterStepViewModel
+
+<script asp-name="data-pipelines-editors" at="Foot"></script>
+
+<div class="ocat-wrapper" asp-validation-class-for="Condition">
+    <label asp-for="Condition" class="ocat-label ocat-label-required">@T["Condition"]</label>
+    <div class="ocat-end">
+        <textarea asp-for="Condition" class="form-control font-monospace" rows="3" placeholder="[Amount] >= 100 AND [Country] = 'CA'"></textarea>
+        <span asp-validation-for="Condition"></span>
+        <span class="hint">@T["The rows for which the condition is true go to the Matched output; the others to the Unmatched output."]</span>
+        <partial name="DataPipelineFieldInsert" model="@((Model.AvailableFields, Html.IdFor(m => m.Condition)))" />
+        <partial name="DataPipelineFormulaHelp" />
+    </div>
+</div>

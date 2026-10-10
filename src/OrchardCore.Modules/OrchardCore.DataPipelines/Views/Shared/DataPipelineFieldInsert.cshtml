@@ -1,0 +1,16 @@
+@model (IReadOnlyList<DataField> Fields, string TargetId)
+
+@* The fields a formula can use; clicking one inserts it into the formula. *@
+@if (Model.Fields.Count > 0)
+{
+    <div class="d-flex flex-wrap gap-1 mt-1">
+        @foreach (var field in Model.Fields)
+        {
+            <button type="button" class="btn btn-sm btn-outline-secondary py-0" data-dp-insert="@field.Name" data-dp-target="@Model.TargetId" title="@field.DisplayName (@field.Type)">@field.Name</button>
+        }
+    </div>
+}
+else
+{
+    <span class="hint">@T["Connect a step to the input to list its fields here."]</span>
+}

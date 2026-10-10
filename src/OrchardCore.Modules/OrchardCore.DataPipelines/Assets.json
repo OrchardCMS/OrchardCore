@@ -1,0 +1,15 @@
+[
+  {
+    "action": "vite",
+    "name": "data-pipelines-designer",
+    "source": "Assets/designer",
+    "tags": ["admin", "datapipelines"]
+  },
+  {
+    "action": "min",
+    "name": "data-pipelines-editors",
+    "source": "Assets/Scripts/data-pipelines-editors.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["admin", "datapipelines", "js"]
+  }
+]

@@ -1,0 +1,106 @@
+@model DataPipelineIndexViewModel
+
+<zone Name="Title">
+    <breadcrumb name="DataPipelines" title="@T["Data pipelines"]" />
+</zone>
+
+<div class="card text-bg-theme mb-3 position-sticky action-bar">
+    <div class="card-body">
+        <div class="row gx-3 align-items-center">
+            <div class="col">
+                <span class="text-muted">@T["Pipelines read data from any data source, transform it, and deliver it as files or content items."]</span>
+            </div>
+            <div class="col-auto">
+                <a class="btn btn-secondary" asp-action="Runs">@T["All runs"]</a>
+                @if (Model.CanManage)
+                {
+                    <a class="btn btn-primary create" asp-action="Create">@T["Add pipeline"]</a>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<ul class="list-group">
+    @if (Model.Pipelines.Count == 0)
+    {
+        <li class="list-group-item">
+            <div class="alert alert-info mb-0" role="alert">
+                @T["<strong>Nothing here!</strong> There are no data pipelines for the moment."]
+            </div>
+        </li>
+    }
+
+    @foreach (var entry in Model.Pipelines)
+    {
+        var pipeline = entry.Pipeline;
+
+        <li class="list-group-item">
+            <div class="row gx-3 align-items-center">
+                <div class="col">
+                    <a asp-action="Edit" asp-route-pipelineId="@pipeline.PipelineId" class="fw-semibold">@pipeline.Name</a>
+
+                    @if (!pipeline.IsEnabled)
+                    {
+                        <span class="badge text-bg-secondary ms-1">@T["Disabled"]</span>
+                    }
+
+                    @if (pipeline.Published is null)
+                    {
+                        <span class="badge text-bg-warning ms-1">@T["Not published yet"]</span>
+                    }
+                    else
+                    {
+                        <span class="badge text-bg-light ms-1">@T["Version {0}", pipeline.PublishedVersionNumber]</span>
+
+                        if (pipeline.Draft is not null)
+                        {
+                            <span class="badge text-bg-info ms-1">@T["Unpublished changes"]</span>
+                        }
+                    }
+
+                    @if (!string.IsNullOrEmpty(pipeline.Description))
+                    {
+                        <div class="text-muted small">@pipeline.Description</div>
+                    }
+
+                    @if (entry.LastRun is { } run)
+                    {
+                        <div class="small mt-1">
+                            <a asp-action="Run" asp-route-runId="@run.RunId">
+                                <span class="badge @RunBadge(run.Status)">@T[run.Status.ToString()]</span>
+                            </a>
+                            <span class="text-muted">@T["Last run {0}", run.QueuedUtc.ToString("g", System.Globalization.CultureInfo.CurrentCulture)]</span>
+                        </div>
+                    }
+                </div>
+                <div class="col-auto">
+                    <a asp-action="Edit" asp-route-pipelineId="@pipeline.PipelineId" class="btn btn-primary btn-sm">@(Model.CanManage ? T["Edit"] : T["View"])</a>
+                    <a asp-action="Runs" asp-route-pipelineId="@pipeline.PipelineId" class="btn btn-secondary btn-sm">@T["Runs"]</a>
+
+                    @if (Model.CanRun && pipeline.Published is not null && pipeline.IsEnabled)
+                    {
+                        <a asp-action="RunNow" asp-route-pipelineId="@pipeline.PipelineId" class="btn btn-success btn-sm" data-url-af="UnsafeUrl" data-title="@T["Run"]" data-message="@T["Run the pipeline '{0}' now?", pipeline.Name]">@T["Run"]</a>
+                    }
+
+                    @if (Model.CanManage)
+                    {
+                        <a asp-action="Delete" asp-route-pipelineId="@pipeline.PipelineId" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl" data-message="@T["Are you sure you want to delete the pipeline '{0}', its versions and its runs?", pipeline.Name]">@T["Delete"]</a>
+                    }
+                </div>
+            </div>
+        </li>
+    }
+</ul>
+
+@functions {
+    private static string RunBadge(DataPipelineRunStatus status)
+        => status switch
+        {
+            DataPipelineRunStatus.Succeeded => "text-bg-success",
+            DataPipelineRunStatus.Failed => "text-bg-danger",
+            DataPipelineRunStatus.Cancelled => "text-bg-secondary",
+            DataPipelineRunStatus.Running => "text-bg-primary",
+            _ => "text-bg-light",
+        };
+}

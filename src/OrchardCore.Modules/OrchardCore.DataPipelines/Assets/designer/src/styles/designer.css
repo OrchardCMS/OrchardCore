@@ -1,0 +1,1558 @@
+/* Data pipeline designer. Only Bootstrap and --bs-* / --oc-* variables, so light, dark and RTL work. */
+
+.dpd {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    /* The admin's top bar above (the designer's page has no heading), and a small gap below. */
+    height: calc(100vh - 5.375rem);
+    min-height: 32rem;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-body-bg);
+    overflow: hidden;
+}
+
+.dpd-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+    background-color: var(--bs-tertiary-bg);
+}
+
+.dpd-back {
+    flex: 0 0 auto;
+    font-size: 0.875rem;
+    text-decoration: none;
+}
+
+.dpd-back:hover {
+    text-decoration: underline;
+}
+
+.dpd-back-separator {
+    margin-inline: -0.125rem;
+    color: var(--bs-secondary-color);
+}
+
+.dpd-title {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* Directional icons outside the canvas point the other way in RTL. */
+[dir="rtl"] .dpd-mirror-rtl {
+    transform: scaleX(-1);
+}
+
+.dpd-save-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    white-space: nowrap;
+}
+
+.dpd-save-status[data-status="unsaved"] .fa-circle {
+    font-size: 0.5em;
+}
+
+.dpd-draft-banner {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-width: 0 0 var(--bs-border-width);
+}
+
+.dpd-draft-banner .btn-close {
+    padding: 0.75rem 1rem;
+}
+
+.dpd-body {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.dpd-toolbox {
+    position: relative;
+    display: flex;
+    flex: 0 0 16rem;
+    flex-direction: column;
+    min-height: 0;
+    border-right: var(--bs-border-width) solid var(--bs-border-color);
+    background-color: var(--bs-body-bg);
+}
+
+.dpd-toolbox.is-collapsed {
+    flex: 0 0 2.75rem;
+}
+
+.dpd-toolbox-sheet {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    background-color: var(--bs-body-bg);
+}
+
+/* Collapsed, the toolbox opens over the canvas while its rail is hovered. */
+.dpd-toolbox.is-peeking .dpd-toolbox-sheet {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    inset-inline-start: 100%;
+    z-index: 12;
+    width: 16rem;
+    border-inline-end: var(--bs-border-width) solid var(--bs-border-color);
+    box-shadow: var(--bs-box-shadow-lg);
+}
+
+.dpd-toolbox-header {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.25rem 0.25rem 0.75rem;
+    border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+}
+
+.dpd-toolbox-title {
+    flex: 1 1 auto;
+    margin: 0;
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.dpd-toolbox-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+}
+
+/* The rail of a collapsed toolbox or panel. */
+.dpd-rail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.375rem 0;
+}
+
+.dpd-rail-button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--bs-border-radius);
+    background-color: transparent;
+    color: var(--bs-secondary-color);
+}
+
+.dpd-rail-button:hover,
+.dpd-rail-button.active {
+    background-color: var(--bs-tertiary-bg);
+    color: var(--bs-emphasis-color);
+}
+
+.dpd-rail-button:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: -2px;
+}
+
+.dpd-rail-badge {
+    position: absolute;
+    top: 0;
+    inset-inline-end: 0;
+    padding: 0.125rem 0.25rem;
+    font-size: 0.5625rem;
+}
+
+/* The canvas, with the selected step's panel at its bottom. */
+.dpd-main {
+    position: relative;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+
+.dpd-canvas-host {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* The selected step's panel opens over the bottom of the canvas; pinned, it stays below the canvas. */
+.dpd-step-panel {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 9;
+    display: flex;
+    flex-direction: column;
+    height: 40%;
+    min-height: 8rem;
+    max-height: calc(100% - 6rem);
+    border-top: var(--bs-border-width) solid var(--bs-border-color);
+    background-color: var(--bs-body-bg);
+    box-shadow: 0 -0.5rem 1rem rgba(0, 0, 0, 0.12);
+}
+
+.dpd-step-panel.is-pinned {
+    position: relative;
+    z-index: auto;
+    flex: 0 0 auto;
+    box-shadow: none;
+}
+
+.dpd-step-panel-resizer {
+    position: absolute;
+    top: -3px;
+    right: 0;
+    left: 0;
+    z-index: 2;
+    height: 6px;
+    cursor: row-resize;
+}
+
+.dpd-step-panel-resizer:hover,
+.dpd-step-panel-resizer:focus-visible {
+    outline: none;
+    background-color: rgba(var(--bs-primary-rgb), 0.35);
+}
+
+.dpd-step-panel-header {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.75rem;
+    min-width: 0;
+    border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+}
+
+.dpd-panel-title.dpd-step-panel-title {
+    flex: 0 1 auto;
+    align-items: center;
+    align-self: center;
+    min-width: 0;
+    max-width: 40%;
+    padding: 0.375rem 0 0.375rem 0.75rem;
+    white-space: nowrap;
+}
+
+.dpd-step-panel-title small {
+    margin-inline-start: 0;
+}
+
+.dpd-step-panel .dpd-panel-tabs {
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+    padding-inline-start: 0;
+}
+
+.dpd-step-panel .dpd-panel-tabs .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    white-space: nowrap;
+}
+
+.dpd-step-panel-actions {
+    display: flex;
+    flex: 0 0 auto;
+    align-self: center;
+    margin-inline-start: auto;
+    padding-inline-end: 0.25rem;
+}
+
+.dpd-step-panel-actions .btn.active {
+    color: var(--bs-primary);
+}
+
+.dpd-step-panel-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+}
+
+/* The panel is as wide as the canvas, which the toolbox and the pipeline's panel narrow: its header drops the
+   step type, then the tabs' labels (their icons and tooltips remain). */
+.dpd-step-panel {
+    container-type: inline-size;
+}
+
+@container (max-width: 48rem) {
+    .dpd-step-panel-title small {
+        display: none;
+    }
+}
+
+@container (max-width: 34rem) {
+    .dpd-step-tab-label {
+        display: none;
+    }
+}
+
+.dpd-panel {
+    position: relative;
+    display: flex;
+    flex: 0 0 24rem;
+    flex-direction: column;
+    min-width: 0;
+    border-left: var(--bs-border-width) solid var(--bs-border-color);
+    background-color: var(--bs-body-bg);
+}
+
+.dpd-panel.is-collapsed {
+    flex: 0 0 2.75rem;
+    width: 2.75rem;
+}
+
+.dpd-panel-sheet {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    background-color: var(--bs-body-bg);
+}
+
+/* Collapsed, the panel opens over the canvas while its rail is hovered. */
+.dpd-panel.is-peeking .dpd-panel-sheet {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    inset-inline-end: 100%;
+    z-index: 12;
+    border-inline-start: var(--bs-border-width) solid var(--bs-border-color);
+    box-shadow: var(--bs-box-shadow-lg);
+}
+
+.dpd-panel-intro {
+    margin: 0;
+    padding: 0.75rem 0.75rem 0;
+    color: var(--bs-secondary-color);
+    font-size: 0.8125rem;
+}
+
+.dpd-panel-resizer {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -3px;
+    z-index: 2;
+    width: 6px;
+    cursor: col-resize;
+}
+
+.dpd-panel-resizer:hover,
+.dpd-panel-resizer:focus-visible {
+    outline: none;
+    background-color: rgba(var(--bs-primary-rgb), 0.35);
+}
+
+.dpd-panel-header {
+    display: flex;
+    align-items: flex-end;
+    border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+}
+
+.dpd-panel-tabs {
+    flex: 1 1 auto;
+    gap: 0.25rem;
+    border-bottom: 0;
+    padding-top: 0.25rem;
+    padding-inline-start: 0.25rem;
+}
+
+.dpd-panel-tabs .nav-link {
+    padding: 0.375rem 0.625rem;
+    font-size: 0.8125rem;
+}
+
+.dpd-panel-toggle {
+    align-self: center;
+    margin-inline-start: auto;
+}
+
+.dpd-panel-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+}
+
+.dpd-panel-title {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0.75rem 0.75rem 0;
+}
+
+.dpd-panel-title small {
+    margin-inline-start: auto;
+    font-weight: 400;
+}
+
+.dpd-panel-message {
+    margin: 0;
+    padding: 1rem 0.75rem;
+    color: var(--bs-secondary-color);
+}
+
+.dpd-panel-summary {
+    padding: 0.75rem;
+}
+
+/* The server-rendered forms use the admin's two-column 'ocat-*' rows; the panel is narrow, so they stack. */
+.dpd-form {
+    padding: 0.75rem;
+}
+
+.dpd-form .ocat-wrapper,
+.dpd-form .ocat-limited-wrapper {
+    display: block;
+    margin-bottom: 0.75rem;
+}
+
+.dpd-form .ocat-label,
+.dpd-form .ocat-end,
+.dpd-form .ocat-end-offset,
+.dpd-form .ocat-limited {
+    width: auto;
+    max-width: none;
+    margin-inline-start: 0;
+    padding-inline: 0;
+    text-align: start;
+}
+
+.dpd-form-actions {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin: 0 -0.75rem -0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-top: var(--bs-border-width) solid var(--bs-border-color);
+    background-color: var(--bs-body-bg);
+}
+
+.dpd-form-status {
+    flex: 1 1 auto;
+    color: var(--bs-secondary-color);
+    font-size: 0.8125rem;
+}
+
+.dpd-section-title {
+    margin-bottom: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.dpd-section-hint {
+    margin-bottom: 0.5rem;
+    color: var(--bs-secondary-color);
+    font-size: 0.8125rem;
+}
+
+.dpd-summary-list {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.25rem 0.75rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.8125rem;
+}
+
+.dpd-summary-list dt {
+    font-weight: 600;
+}
+
+.dpd-summary-list dd {
+    margin: 0;
+}
+
+.dpd-issue {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    color: var(--bs-body-color);
+    text-decoration: none;
+    font-size: 0.8125rem;
+}
+
+.dpd-issue:hover:not(:disabled) {
+    background-color: var(--bs-tertiary-bg);
+}
+
+.dpd-issue:disabled {
+    opacity: 1;
+}
+
+.dpd-issue-step {
+    display: block;
+    font-weight: 600;
+}
+
+.dpd-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 100%;
+    color: var(--bs-secondary-color);
+}
+
+/* Toolbox. */
+
+.dpd-toolbox-inner {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+
+.dpd-toolbox-filters {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: 0.5rem;
+    border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+    background-color: var(--bs-body-bg);
+}
+
+.dpd-toolbox-message {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    color: var(--bs-secondary-color);
+    font-size: 0.8125rem;
+}
+
+.dpd-toolbox-category-title {
+    margin: 0;
+    font-size: 0.8125rem;
+}
+
+.dpd-toolbox-category-title .btn {
+    font-weight: 600;
+}
+
+.dpd-toolbox-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    margin: 0;
+    padding: 0 0.5rem 0.5rem;
+    list-style: none;
+}
+
+.dpd-toolbox-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.375rem 0.5rem;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    font-size: 0.75rem;
+    text-align: start;
+    cursor: grab;
+}
+
+.dpd-toolbox-card:hover {
+    border-color: var(--bs-primary);
+}
+
+.dpd-toolbox-card:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: 1px;
+}
+
+.dpd-toolbox-icon {
+    margin-top: 0.125rem;
+    color: var(--bs-secondary-color);
+}
+
+/* Canvas. The canvas coordinate space never mirrors in RTL: a pipeline lays out the same for everyone. */
+
+/* rtl:begin:ignore */
+
+.dpd-canvas {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    direction: ltr;
+    outline: none;
+    touch-action: none;
+    user-select: none;
+    background-color: var(--bs-body-bg);
+}
+
+.dpd-canvas:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--bs-primary);
+}
+
+.dpd-canvas.is-space-held,
+.dpd-canvas.is-panning {
+    cursor: grabbing;
+}
+
+.dpd-grid {
+    position: absolute;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+    background-image: radial-gradient(var(--bs-border-color) 1px, transparent 1px);
+    will-change: transform;
+}
+
+.dpd-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform-origin: 0 0;
+}
+
+.dpd-edges {
+    position: absolute;
+    left: 0;
+    top: 0;
+    overflow: visible;
+}
+
+.dpd-edges.is-lifted {
+    pointer-events: none;
+    will-change: transform;
+}
+
+.dpd-edge-hit {
+    fill: none;
+    stroke: transparent;
+    stroke-width: 12;
+    pointer-events: stroke;
+    cursor: pointer;
+}
+
+.dpd-edge-line {
+    fill: none;
+    stroke: var(--bs-secondary-color);
+    stroke-width: 1.5;
+    pointer-events: none;
+}
+
+.dpd-edge:hover .dpd-edge-line {
+    stroke: var(--bs-primary);
+    stroke-width: 2;
+}
+
+.dpd-edge.is-selected .dpd-edge-line {
+    stroke: var(--bs-primary);
+    stroke-width: 2.5;
+}
+
+.dpd-arrow {
+    fill: var(--bs-secondary-color);
+}
+
+.dpd-arrow.is-selected {
+    fill: var(--bs-primary);
+}
+
+.dpd-edge-label {
+    font-size: 11px;
+    fill: var(--bs-secondary-color);
+    paint-order: stroke;
+    stroke: var(--bs-body-bg);
+    stroke-width: 3px;
+    pointer-events: none;
+}
+
+.dpd-edge-delete {
+    cursor: pointer;
+}
+
+.dpd-edge-delete circle {
+    fill: var(--bs-danger);
+}
+
+.dpd-edge-delete path {
+    stroke: var(--bs-white);
+    stroke-width: 2;
+}
+
+.dpd-edge-delete:focus-visible circle {
+    stroke: var(--bs-body-color);
+    stroke-width: 2;
+}
+
+.dpd-edge-preview {
+    fill: none;
+    stroke: var(--bs-primary);
+    stroke-width: 2;
+    stroke-dasharray: 6 4;
+    pointer-events: none;
+}
+
+.dpd-marquee {
+    position: absolute;
+    left: 0;
+    top: 0;
+    border: 1px dashed var(--bs-primary);
+    background-color: rgba(var(--bs-primary-rgb), 0.08);
+    pointer-events: none;
+}
+
+.dpd-empty {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: var(--bs-secondary-color);
+    text-align: center;
+    pointer-events: none;
+}
+
+/* The activities to add after an outcome, opened by a click on its port. */
+.dpd-quick-add {
+    position: absolute;
+    z-index: 15;
+    width: 19rem;
+}
+
+.dpd-quick-add-title {
+    margin-bottom: 0.375rem;
+    color: var(--bs-secondary-color);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.dpd-quick-add-list {
+    max-height: 16rem;
+    margin: 0.375rem 0 0;
+    overflow-y: auto;
+}
+
+.dpd-quick-add-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3125rem 0.5rem;
+    border-radius: var(--bs-border-radius-sm);
+    font-size: 0.8125rem;
+    cursor: pointer;
+}
+
+.dpd-quick-add-item.active {
+    background-color: var(--bs-primary-bg-subtle);
+    color: var(--bs-primary-text-emphasis);
+}
+
+.dpd-quick-add-item > i {
+    width: 1rem;
+    text-align: center;
+}
+
+.dpd-quick-add-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* An empty pipeline offers the events it can start with. */
+.dpd-start-picker {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 5;
+    width: min(36rem, calc(100% - 2rem));
+    padding: 1.25rem;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius-lg);
+    background-color: var(--bs-body-bg);
+    box-shadow: var(--bs-box-shadow);
+    text-align: center;
+    transform: translate(-50%, -50%);
+    /* A drop on its empty space reaches the canvas. */
+    pointer-events: none;
+}
+
+.dpd-canvas-host:has(.dpd-start-picker) .dpd-empty {
+    display: none;
+}
+
+.dpd-start-picker-title {
+    margin: 0 0 0.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.dpd-start-picker-hint {
+    margin: 0 0 1rem;
+    color: var(--bs-secondary-color);
+    font-size: 0.875rem;
+}
+
+.dpd-zoom-controls {
+    position: absolute;
+    right: 0.75rem;
+    bottom: calc(0.75rem + var(--dpd-covered-height, 0px));
+}
+
+.dpd-zoom-level {
+    min-width: 3.5rem;
+}
+
+.dpd-context-menu {
+    position: absolute;
+    z-index: 10;
+}
+
+.dpd-connect-dialog {
+    position: absolute;
+    top: 1rem;
+    left: 50%;
+    z-index: 10;
+    width: 20rem;
+    transform: translateX(-50%);
+}
+
+/* A step: inputs on its left edge, outputs on its right edge, its summary between them. */
+.dpd-node {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 240px;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-left-width: 3px;
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-body-bg);
+    box-shadow: var(--bs-box-shadow-sm);
+    font-size: 0.8125rem;
+    cursor: move;
+    outline: none;
+}
+
+/* The category's color, on the step's leading edge. */
+.dpd-node.is-source {
+    border-left-color: var(--bs-primary);
+}
+
+.dpd-node.is-transform {
+    border-left-color: var(--bs-secondary);
+}
+
+.dpd-node.is-file {
+    border-left-color: var(--bs-info);
+}
+
+.dpd-node.is-destination {
+    border-left-color: var(--bs-success);
+}
+
+.dpd-canvas.is-readonly .dpd-node {
+    cursor: pointer;
+}
+
+.dpd-node:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: 2px;
+}
+
+.dpd-node.is-selected {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 2px var(--bs-primary);
+}
+
+.dpd-node.is-lifted {
+    will-change: transform;
+    box-shadow: var(--bs-box-shadow);
+}
+
+.dpd-node.is-drop-target {
+    box-shadow: 0 0 0 3px var(--bs-success);
+}
+
+.dpd-node.is-missing {
+    border-style: dashed;
+    border-color: var(--bs-warning);
+}
+
+.dpd-node.has-errors {
+    border-color: var(--bs-danger);
+}
+
+/* The status of the step in the run selected in the Runs tab. */
+.dpd-node.is-run-succeeded {
+    border-color: var(--bs-success);
+    box-shadow: 0 0 0 3px rgba(var(--bs-success-rgb), 0.35);
+}
+
+.dpd-node.is-run-failed {
+    border-color: var(--bs-danger);
+    box-shadow: 0 0 0 3px rgba(var(--bs-danger-rgb), 0.45);
+}
+
+.dpd-node.is-run-running {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), 0.45);
+    animation: dpd-running 1.5s ease-in-out infinite;
+}
+
+.dpd-node.is-run-cancelled {
+    border-color: var(--bs-warning);
+    box-shadow: 0 0 0 3px rgba(var(--bs-warning-rgb), 0.35);
+}
+
+.dpd-node.is-run-pending,
+.dpd-node.is-run-skipped {
+    border-style: dashed;
+    opacity: 0.75;
+}
+
+.dpd-node.is-selected[class*="is-run-"] {
+    box-shadow: 0 0 0 2px var(--bs-primary);
+}
+
+@keyframes dpd-running {
+    50% {
+        box-shadow: 0 0 0 5px rgba(var(--bs-primary-rgb), 0.15);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dpd-node.is-run-running {
+        animation: none;
+    }
+}
+
+.dpd-node-header {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.5rem;
+    border-bottom: var(--bs-border-width) solid var(--bs-border-color-translucent);
+    border-radius: var(--bs-border-radius) var(--bs-border-radius) 0 0;
+    background-color: var(--bs-tertiary-bg);
+    color: var(--bs-emphasis-color);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.dpd-node-header > i {
+    color: var(--bs-secondary-color);
+}
+
+.dpd-node-title {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.dpd-node-badge {
+    font-size: 0.625rem;
+}
+
+/* Opens the step's panel: a click on the step only selects it. */
+.dpd-node-edit {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 1.375rem;
+    height: 1.375rem;
+    margin: -0.125rem -0.25rem -0.125rem 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--bs-border-radius-sm);
+    background: none;
+    color: var(--bs-secondary-color);
+    font-size: 0.75rem;
+    opacity: 0.55;
+    cursor: pointer;
+}
+
+.dpd-node:hover .dpd-node-edit,
+.dpd-node.is-selected .dpd-node-edit,
+.dpd-node-edit:focus-visible {
+    opacity: 1;
+}
+
+.dpd-node-edit:hover {
+    background-color: rgba(var(--bs-emphasis-color-rgb), 0.08);
+    color: var(--bs-emphasis-color);
+}
+
+.dpd-node-edit:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: 1px;
+}
+
+.dpd-node-content {
+    display: flex;
+    align-items: stretch;
+    min-height: 2.75rem;
+}
+
+.dpd-node-body {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 0.375rem 0.5rem;
+    overflow-wrap: anywhere;
+}
+
+.dpd-node-summary {
+    max-height: 5rem;
+    overflow: hidden;
+    color: var(--bs-secondary-color);
+}
+
+.dpd-node-summary p {
+    margin: 0;
+}
+
+.dpd-node-missing {
+    margin: 0;
+    color: var(--bs-warning-text-emphasis);
+}
+
+.dpd-run-badge {
+    margin-top: 0.25rem;
+    background-color: var(--bs-secondary-bg);
+    color: var(--bs-emphasis-color);
+    font-weight: 600;
+}
+
+.dpd-node.is-run-succeeded .dpd-run-badge {
+    background-color: var(--bs-success-bg-subtle);
+    color: var(--bs-success-text-emphasis);
+}
+
+.dpd-node.is-run-failed .dpd-run-badge {
+    background-color: var(--bs-danger-bg-subtle);
+    color: var(--bs-danger-text-emphasis);
+}
+
+.dpd-node.is-run-running .dpd-run-badge {
+    background-color: var(--bs-primary-bg-subtle);
+    color: var(--bs-primary-text-emphasis);
+}
+
+/* The ports sit in a column on each side of the summary; their dots are on the step's edges. */
+.dpd-node-ports {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.25rem;
+    max-width: 40%;
+    padding: 0.25rem 0;
+}
+
+.dpd-node-ports.is-inputs {
+    align-items: flex-start;
+}
+
+.dpd-node-ports.is-outputs {
+    align-items: flex-end;
+}
+
+.dpd-port {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 1rem;
+    max-width: 100%;
+    padding: 0.0625rem 0.5rem;
+    border: 0;
+    border-radius: var(--bs-border-radius-sm);
+    background: none;
+    color: var(--bs-body-color);
+    font-size: 0.6875rem;
+    line-height: 1.4;
+}
+
+.dpd-port.is-output {
+    padding-right: 0.875rem;
+    cursor: crosshair;
+}
+
+.dpd-port.is-input {
+    padding-left: 0.875rem;
+}
+
+.dpd-port-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dpd-port:disabled {
+    color: var(--bs-body-color);
+    cursor: inherit;
+}
+
+.dpd-port:focus-visible {
+    outline: 2px solid var(--bs-primary);
+}
+
+/* Rows flow through circles, files through squares. */
+.dpd-port-dot {
+    position: absolute;
+    top: 50%;
+    width: 11px;
+    height: 11px;
+    margin-top: -5.5px;
+    border: 2px solid var(--bs-success);
+    border-radius: 50%;
+    background-color: var(--bs-body-bg);
+}
+
+.dpd-port.is-output .dpd-port-dot {
+    right: -7px;
+}
+
+.dpd-port.is-input .dpd-port-dot {
+    left: -8px;
+}
+
+.dpd-port.is-files .dpd-port-dot {
+    border-color: var(--bs-info);
+    border-radius: 2px;
+}
+
+.dpd-port.is-connected .dpd-port-dot {
+    background-color: var(--bs-success);
+}
+
+.dpd-port.is-files.is-connected .dpd-port-dot {
+    background-color: var(--bs-info);
+}
+
+/* A required input that nothing feeds yet. */
+.dpd-port.is-input.is-required:not(.is-connected) .dpd-port-dot {
+    border-style: dashed;
+}
+
+.dpd-port.is-output:not(:disabled):hover .dpd-port-dot {
+    transform: scale(1.3);
+}
+
+/* An unconnected output shows that a click adds the next step. */
+.dpd-port.is-output:not(:disabled):not(.is-connected):hover .dpd-port-dot {
+    transform: none;
+    width: 17px;
+    height: 17px;
+    right: -10px;
+    margin-top: -8.5px;
+    background-color: var(--bs-success);
+}
+
+.dpd-port.is-output.is-files:not(:disabled):not(.is-connected):hover .dpd-port-dot {
+    background-color: var(--bs-info);
+}
+
+.dpd-port.is-output:not(:disabled):not(.is-connected):hover .dpd-port-dot::after {
+    content: "+";
+    position: absolute;
+    inset: 0;
+    color: var(--bs-white);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 13px;
+    text-align: center;
+}
+
+/* While a connection is dragged: the inputs that can receive it, and those that can't. */
+.dpd-port.is-input.is-compatible .dpd-port-dot {
+    box-shadow: 0 0 0 3px rgba(var(--bs-success-rgb), 0.35);
+}
+
+.dpd-port.is-input.is-incompatible {
+    opacity: 0.45;
+}
+
+.dpd-port.is-input.is-hovered.is-compatible .dpd-port-dot {
+    transform: scale(1.4);
+    background-color: var(--bs-success);
+}
+
+.dpd-port.is-input.is-hovered.is-incompatible {
+    opacity: 1;
+}
+
+.dpd-port.is-input.is-hovered.is-incompatible .dpd-port-dot {
+    border-color: var(--bs-danger);
+    background-color: var(--bs-danger);
+    transform: scale(1.4);
+}
+
+/* Files flow along dashed connections. */
+.dpd-edge.is-files .dpd-edge-line {
+    stroke-dasharray: 5 3;
+}
+
+.dpd-edge-preview.is-invalid {
+    stroke: var(--bs-danger);
+}
+
+.dpd-quick-add-category {
+    color: var(--bs-secondary-color);
+    font-size: 0.6875rem;
+}
+
+.dpd-start-picker-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    gap: 0.5rem;
+}
+
+.dpd-start-picker-step {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 0.75rem;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    font-size: 0.875rem;
+    text-align: start;
+}
+
+.dpd-start-picker-step:hover,
+.dpd-start-picker-step:focus-visible {
+    border-color: var(--bs-primary);
+    background-color: var(--bs-primary-bg-subtle);
+}
+
+.dpd-start-picker-step > i {
+    color: var(--bs-primary);
+}
+
+/* rtl:end:ignore */
+
+.dpd-toasts {
+    position: absolute;
+    left: 0.75rem;
+    bottom: 0.75rem;
+    z-index: 20;
+}
+
+/* Toolbox cards: the step's name, its description and its ports. */
+.dpd-toolbox-card.is-source {
+    border-inline-start: 3px solid var(--bs-primary);
+}
+
+.dpd-toolbox-card.is-transform {
+    border-inline-start: 3px solid var(--bs-secondary);
+}
+
+.dpd-toolbox-card.is-file {
+    border-inline-start: 3px solid var(--bs-info);
+}
+
+.dpd-toolbox-card.is-destination {
+    border-inline-start: 3px solid var(--bs-success);
+}
+
+.dpd-toolbox-text {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.dpd-toolbox-name {
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.dpd-toolbox-description,
+.dpd-toolbox-ports {
+    color: var(--bs-secondary-color);
+}
+
+.dpd-toolbox-ports {
+    font-size: 0.6875rem;
+}
+
+.dpd-description {
+    white-space: pre-line;
+}
+
+/* Runs tab. */
+.dpd-runs-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+}
+
+.dpd-run-head {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.125rem 0.5rem;
+    align-items: center;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 0;
+    background: none;
+    color: var(--bs-body-color);
+    font-size: 0.8125rem;
+    text-align: start;
+}
+
+.dpd-run-head:hover {
+    background-color: var(--bs-tertiary-bg);
+}
+
+.dpd-run-head.is-selected {
+    background-color: var(--bs-primary-bg-subtle);
+}
+
+.dpd-run-head:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: -2px;
+}
+
+.dpd-run-meta {
+    grid-column: 2;
+    color: var(--bs-secondary-color);
+    font-size: 0.75rem;
+}
+
+.dpd-run-details {
+    padding: 0.5rem 0.75rem 0.75rem;
+    border-top: var(--bs-border-width) solid var(--bs-border-color-translucent);
+    font-size: 0.8125rem;
+}
+
+.dpd-run-error {
+    margin-bottom: 0.5rem;
+    color: var(--bs-danger-text-emphasis);
+}
+
+.dpd-run-steps {
+    font-size: 0.75rem;
+}
+
+.dpd-run-deliveries {
+    margin: 0 0 0.5rem;
+    padding-inline-start: 1.25rem;
+}
+
+.dpd-run-log {
+    max-height: 16rem;
+    margin: 0;
+    padding: 0;
+    overflow: auto;
+    list-style: none;
+    font-size: 0.75rem;
+}
+
+.dpd-run-log li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.5rem;
+    padding: 0.25rem 0;
+    border-bottom: var(--bs-border-width) solid var(--bs-border-color-translucent);
+}
+
+.dpd-run-log time {
+    color: var(--bs-secondary-color);
+}
+
+.dpd-run-log-step {
+    font-weight: 600;
+}
+
+.dpd-run-log .is-warning .dpd-run-log-message {
+    color: var(--bs-warning-text-emphasis);
+}
+
+.dpd-run-log .is-error .dpd-run-log-message {
+    color: var(--bs-danger-text-emphasis);
+}
+
+/* Data tab. */
+.dpd-preview-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    padding: 0.75rem;
+}
+
+.dpd-preview-port {
+    padding: 0 0.75rem 0.75rem;
+}
+
+.dpd-preview-scroll {
+    max-height: 20rem;
+    overflow: auto;
+    border-radius: var(--bs-border-radius-sm);
+}
+
+.dpd-preview-scroll:focus-visible {
+    outline: 2px solid var(--bs-primary);
+}
+
+.dpd-preview-table {
+    font-size: 0.75rem;
+}
+
+.dpd-preview-table th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: var(--bs-tertiary-bg);
+    white-space: nowrap;
+}
+
+.dpd-preview-table td {
+    max-width: 20rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dpd-preview-field,
+.dpd-preview-type {
+    display: block;
+}
+
+.dpd-preview-type {
+    color: var(--bs-secondary-color);
+    font-weight: 400;
+}
+
+.dpd-preview-null {
+    color: var(--bs-secondary-color);
+    font-style: italic;
+}
+
+.dpd-preview-issues {
+    margin: 0 0 0.5rem;
+    padding-inline-start: 2rem;
+    font-size: 0.8125rem;
+}
+
+.dpd-preview-files {
+    margin: 0 0 0.5rem;
+    padding: 0;
+    list-style: none;
+    font-size: 0.8125rem;
+}
+
+.dpd-preview-files li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 0.5rem;
+    padding: 0.25rem 0;
+}
+
+.dpd-preview-file-name {
+    font-weight: 600;
+}
+
+/* Fields tab. */
+.dpd-fields-columns {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: 0.75rem;
+    padding: 0.75rem;
+}
+
+.dpd-fields-port {
+    margin-bottom: 0.75rem;
+}
+
+.dpd-fields-port-name {
+    margin-bottom: 0.25rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.dpd-fields-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.dpd-field-copy {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 0 0.5rem;
+    align-items: baseline;
+    width: 100%;
+    padding: 0.25rem 0.375rem;
+    border: 0;
+    border-radius: var(--bs-border-radius-sm);
+    background: none;
+    color: var(--bs-body-color);
+    font-size: 0.8125rem;
+    text-align: start;
+}
+
+.dpd-field-copy:hover,
+.dpd-field-copy:focus-visible {
+    background-color: var(--bs-tertiary-bg);
+}
+
+.dpd-field-copy:focus-visible {
+    outline: 2px solid var(--bs-primary);
+}
+
+.dpd-field-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dpd-field-reference {
+    grid-column: 1;
+    grid-row: 2;
+    font-size: 0.75rem;
+}
+
+.dpd-field-type {
+    color: var(--bs-secondary-color);
+    font-size: 0.75rem;
+}
+
+.dpd-field-icon {
+    color: var(--bs-secondary-color);
+    opacity: 0;
+}
+
+.dpd-field-copy:hover .dpd-field-icon,
+.dpd-field-copy:focus-visible .dpd-field-icon {
+    opacity: 1;
+}
+
+.dpd-field-group {
+    display: block;
+    padding-inline-start: 0.375rem;
+    color: var(--bs-secondary-color);
+    font-size: 0.6875rem;
+}

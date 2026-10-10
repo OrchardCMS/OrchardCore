@@ -1,0 +1,20 @@
+@model SelectFieldsStepViewModel
+
+<script asp-name="data-pipelines-editors" at="Foot"></script>
+
+<div class="ocat-wrapper">
+    <label class="ocat-label">@T["Fields"]</label>
+    <div class="ocat-end" data-dp-list data-dp-prefix="Fields">
+        <template data-dp-template>
+            <partial name="DataPipelineSelectedFieldRow" model="@((Model.AvailableFields, new SelectedFieldRow(), "__index__"))" />
+        </template>
+        <div data-dp-rows>
+            @for (var index = 0; index < Model.Fields.Count; index++)
+            {
+                <partial name="DataPipelineSelectedFieldRow" model="@((Model.AvailableFields, Model.Fields[index], index.ToString(System.Globalization.CultureInfo.InvariantCulture)))" />
+            }
+        </div>
+        <button type="button" class="btn btn-sm btn-secondary" data-dp-add>@T["Add a field"]</button>
+        <span class="hint">@T["The fields to keep, in this order, with an optional new name and type. Without any field, the rows pass unchanged. A value that can't be converted becomes empty."]</span>
+    </div>
+</div>

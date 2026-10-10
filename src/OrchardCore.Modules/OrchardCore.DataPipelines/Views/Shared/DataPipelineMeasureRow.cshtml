@@ -1,0 +1,21 @@
+@model (IReadOnlyList<DataField> Fields, AggregateMeasure Measure, string Index)
+@{
+    var prefix = $"Measures[{Model.Index}]";
+    var functions = Enum.GetValues<DataAggregate>().Where(function => function != DataAggregate.None);
+}
+
+<div class="input-group input-group-sm mb-2" data-dp-row>
+    <input name="@(prefix).Name" value="@Model.Measure.Name" class="form-control" style="max-width: 12rem" aria-label="@T["Name"]" placeholder="@T["Name"]" />
+    <span class="input-group-text">=</span>
+    <select name="@(prefix).Function" class="form-select" style="max-width: 12rem" aria-label="@T["Function"]">
+        @foreach (var function in functions)
+        {
+            <option value="@function" selected="@(function == Model.Measure.Function)">@T[function.ToString()]</option>
+        }
+    </select>
+    <select name="@(prefix).Field" class="form-select" aria-label="@T["Field"]">
+        <option value="">@T["(rows, for a count)"]</option>
+        <partial name="DataPipelineFieldOptions" model="@((Model.Fields, Model.Measure.Field, false))" />
+    </select>
+    <button type="button" class="btn btn-outline-danger" data-dp-remove title="@T["Remove"]"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
+</div>

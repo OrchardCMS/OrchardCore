@@ -1,0 +1,25 @@
+@model DataPipelineCreateViewModel
+
+<zone Name="Title">
+    <breadcrumb name="DataPipelinesCreate" title="@T["Add pipeline"]">
+        <breadcrumb-item action="Index" controller="Admin" area="OrchardCore.DataPipelines">@T["Data pipelines"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
+
+<form asp-action="Create" method="post">
+    <div class="ocat-wrapper" asp-validation-class-for="Name">
+        <label asp-for="Name" class="ocat-label ocat-label-required">@T["Name"]</label>
+        <div class="ocat-end">
+            <input asp-for="Name" class="form-control" autofocus />
+            <span asp-validation-for="Name"></span>
+            <span class="hint">@T["You design the pipeline next: add a source to read data from, then the steps that transform and deliver it."]</span>
+        </div>
+    </div>
+
+    <div class="ocat-wrapper">
+        <div class="ocat-end-offset">
+            <button type="submit" class="btn btn-primary save">@T["Create"]</button>
+            <a class="btn btn-secondary cancel" asp-action="Index">@T["Cancel"]</a>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,14 @@
+@model DistinctStepViewModel
+
+<div class="ocat-wrapper">
+    <label asp-for="Fields" class="ocat-label">@T["Compare"]</label>
+    <div class="ocat-end">
+        <select asp-for="Fields" class="form-select" multiple size="@Math.Min(8, Math.Max(3, Model.AvailableFields.Count))">
+            @foreach (var field in Model.AvailableFields)
+            {
+                <option value="@field.Name" selected="@Model.Fields.Contains(field.Name)">@field.Name (@field.Type)</option>
+            }
+        </select>
+        <span class="hint">@T["A row is a duplicate when these fields hold the same values as a row before it. Select none to compare every field. Values are compared exactly."]</span>
+    </div>
+</div>

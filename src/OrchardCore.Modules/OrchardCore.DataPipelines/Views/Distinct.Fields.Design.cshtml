@@ -1,0 +1,3 @@
+@model DistinctStepViewModel
+
+<span class="text-break">@(Model.Fields.Length == 0 ? T["Every field"] : T["By {0}", string.Join(", ", Model.Fields)])</span>

@@ -1,0 +1,30 @@
+@model CalculatedFieldsStepViewModel
+
+<script asp-name="data-pipelines-editors" at="Foot"></script>
+
+<div class="ocat-wrapper">
+    <label class="ocat-label">@T["Calculated fields"]</label>
+    <div class="ocat-end" data-dp-list data-dp-prefix="Fields">
+        <template data-dp-template>
+            <partial name="DataPipelineCalculatedFieldRow" model="@((new CalculatedField(), "__index__"))" />
+        </template>
+        <div data-dp-rows>
+            @for (var index = 0; index < Model.Fields.Count; index++)
+            {
+                <partial name="DataPipelineCalculatedFieldRow" model="@((Model.Fields[index], index.ToString(System.Globalization.CultureInfo.InvariantCulture)))" />
+            }
+        </div>
+        <button type="button" class="btn btn-sm btn-secondary" data-dp-add>@T["Add a field"]</button>
+        <span class="hint">@T["Each formula can use the fields of the input and the fields calculated before it. A field with the name of an input field replaces its value."]</span>
+        <div class="mt-2">
+            <span class="hint">@T["Fields of the input:"]</span>
+            <div class="d-flex flex-wrap gap-1">
+                @foreach (var field in Model.AvailableFields)
+                {
+                    <code title="@field.Type">[@field.Name]</code>
+                }
+            </div>
+        </div>
+        <partial name="DataPipelineFormulaHelp" />
+    </div>
+</div>

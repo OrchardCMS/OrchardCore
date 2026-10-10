@@ -1,0 +1,20 @@
+@model (IReadOnlyList<DataField> Fields, SelectedFieldRow Row, string Index)
+@{
+    var prefix = $"Fields[{Model.Index}]";
+}
+
+<div class="input-group input-group-sm mb-2" data-dp-row>
+    <select name="@(prefix).Field" class="form-select" aria-label="@T["Field"]">
+        <partial name="DataPipelineFieldOptions" model="@((Model.Fields, Model.Row.Field, true))" />
+    </select>
+    <input name="@(prefix).Name" value="@Model.Row.Name" class="form-control" aria-label="@T["New name"]" placeholder="@T["New name"]" />
+    <select name="@(prefix).Type" class="form-select" aria-label="@T["Type"]">
+        <option value="">@T["Same type"]</option>
+        @foreach (var type in Enum.GetValues<DataFieldType>())
+        {
+            <option value="@type" selected="@(type.ToString() == Model.Row.Type)">@T[type.ToString()]</option>
+        }
+    </select>
+    <button type="button" class="btn btn-outline-secondary" data-dp-up title="@T["Move up"]"><i class="fa-solid fa-arrow-up" aria-hidden="true"></i></button>
+    <button type="button" class="btn btn-outline-danger" data-dp-remove title="@T["Remove"]"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
+</div>
