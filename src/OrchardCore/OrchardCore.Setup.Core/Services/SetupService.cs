@@ -10,6 +10,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -83,6 +84,36 @@ public class SetupService : ISetupService
         }
 
         return _recipes;
+    }
+
+    /// <inheritdoc />
+    public async Task<IEnumerable<RecipeDescriptor>> GetSetupRecipesAsync(ShellSettings shellSettings)
+    {
+        ArgumentNullException.ThrowIfNull(shellSettings);
+
+        // The current tenant is the requested one, e.g. on its own setup screen.
+        if (ShellScope.Context?.Settings is { } currentSettings && currentSettings.Name == shellSettings.Name)
+        {
+            return await GetSetupRecipesAsync();
+        }
+
+        // Build the setup shell of the requested tenant, without registering it, to list the recipes of its own
+        // setup screen. The settings are owned by the caller.
+        await using var shellContext = (await _shellContextFactory.CreateSetupContextAsync(shellSettings)).WithSharedSettings();
+
+        IEnumerable<RecipeDescriptor> recipes = [];
+
+        await (await shellContext.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
+        {
+            var setupService = scope.ServiceProvider.GetService<ISetupService>();
+
+            if (setupService is not null)
+            {
+                recipes = await setupService.GetSetupRecipesAsync();
+            }
+        });
+
+        return recipes;
     }
 
     /// <inheritdoc />

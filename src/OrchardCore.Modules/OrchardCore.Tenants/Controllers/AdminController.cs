@@ -16,8 +16,9 @@ using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Navigation;
-using OrchardCore.Recipes.Services;
+using OrchardCore.Recipes.Models;
 using OrchardCore.Routing;
+using OrchardCore.Setup.Services;
 using OrchardCore.Tenants.Services;
 using OrchardCore.Tenants.ViewModels;
 
@@ -34,7 +35,7 @@ public sealed class AdminController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly ShellSettings _currentShellSettings;
     private readonly IFeatureProfilesService _featureProfilesService;
-    private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
+    private readonly ISetupService _setupService;
     private readonly IDataProtectionProvider _dataProtectorProvider;
     private readonly IClock _clock;
     private readonly INotifier _notifier;
@@ -56,7 +57,7 @@ public sealed class AdminController : Controller
         IAuthorizationService authorizationService,
         ShellSettings currentShellSettings,
         IFeatureProfilesService featureProfilesService,
-        IEnumerable<IRecipeHarvester> recipeHarvesters,
+        ISetupService setupService,
         IDataProtectionProvider dataProtectorProvider,
         IClock clock,
         INotifier notifier,
@@ -76,7 +77,7 @@ public sealed class AdminController : Controller
         _authorizationService = authorizationService;
         _currentShellSettings = currentShellSettings;
         _featureProfilesService = featureProfilesService;
-        _recipeHarvesters = recipeHarvesters;
+        _setupService = setupService;
         _dataProtectorProvider = dataProtectorProvider;
         _clock = clock;
         _notifier = notifier;
@@ -310,8 +311,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
-        var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).OrderBy(r => r.DisplayName).ToArray();
+        var recipes = await GetNewTenantSetupRecipesAsync();
 
         // Creates a default shell settings based on the configuration.
         using var shellSettings = _shellSettingsManager
@@ -428,9 +428,7 @@ public sealed class AdminController : Controller
             }
         }
 
-        var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
-        var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).OrderBy(r => r.DisplayName).ToArray();
-        model.Recipes = recipes;
+        model.Recipes = await GetNewTenantSetupRecipesAsync();
         model.FeatureProfilesItems = await GetFeatureProfilesAsync(model.FeatureProfiles);
 
         // If we got this far, something failed, redisplay form
@@ -476,9 +474,7 @@ public sealed class AdminController : Controller
         // tenant has not been initialized yet
         if (shellSettings.IsUninitialized())
         {
-            var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
-            var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).OrderBy(r => r.DisplayName).ToArray();
-            model.Recipes = recipes;
+            model.Recipes = await GetSetupRecipesAsync(shellSettings);
 
             model.DatabaseProvider = shellSettings["DatabaseProvider"];
             model.TablePrefix = shellSettings["TablePrefix"];
@@ -584,9 +580,11 @@ public sealed class AdminController : Controller
             model.CanEditDatabasePresets = !model.DatabaseConfigurationPreset;
         }
 
-        var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
-        var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).OrderBy(r => r.DisplayName).ToArray();
-        model.Recipes = recipes;
+        if (shellSettings.IsUninitialized())
+        {
+            model.Recipes = await GetSetupRecipesAsync(shellSettings);
+        }
+
         model.FeatureProfilesItems = await GetFeatureProfilesAsync(model.FeatureProfiles);
 
         return View(model);
@@ -741,6 +739,26 @@ public sealed class AdminController : Controller
         model.IsNewTenant = isNewTenant;
 
         ModelState.AddModelErrors(await _tenantValidator.ValidateAsync(model));
+    }
+
+    private async Task<RecipeDescriptor[]> GetSetupRecipesAsync(ShellSettings shellSettings)
+    {
+        var recipes = await _setupService.GetSetupRecipesAsync(shellSettings);
+
+        return recipes.OrderBy(recipe => recipe.DisplayName).ToArray();
+    }
+
+    private async Task<RecipeDescriptor[]> GetNewTenantSetupRecipesAsync()
+    {
+        // The tenant doesn't exist yet, so list the setup recipes of a new tenant based on the configuration.
+        using var shellSettings = _shellSettingsManager
+            .CreateDefaultSettings()
+            .AsUninitialized()
+            .AsDisposable();
+
+        shellSettings.Name = TenantsConstants.NewTenantName;
+
+        return await GetSetupRecipesAsync(shellSettings);
     }
 
     private void ApplyPresetDatabaseConfiguration(EditTenantViewModel model)

@@ -75,7 +75,7 @@ public sealed class AdminController : Controller
             BasePath = recipe.BasePath,
             Tags = recipe.Tags,
             IsSetupRecipe = recipe.IsSetupRecipe,
-            Feature = features.FirstOrDefault(f => recipe.BasePath.Contains(f.Extension.SubPath))?.Name ?? "Application",
+            Feature = GetFeature(recipe, features)?.Name ?? "Application",
             Description = recipe.Description,
         }).ToArray();
 
@@ -136,8 +136,25 @@ public sealed class AdminController : Controller
         var recipes = recipeCollections.SelectMany(x => x)
             .Where(r => !r.IsSetupRecipe &&
                 (r.Tags == null || !r.Tags.Contains("hidden", StringComparer.InvariantCultureIgnoreCase)) &&
-                features.Any(f => r.BasePath != null && f.Extension?.SubPath != null && r.BasePath.Contains(f.Extension.SubPath, StringComparison.OrdinalIgnoreCase)));
+
+                // A registered recipe is only harvested while the feature registering it is enabled.
+                (r.FeatureId != null || features.Any(f => IsInExtension(r, f))));
 
         return recipes;
     }
+
+    private static IFeatureInfo GetFeature(RecipeDescriptor recipe, IEnumerable<IFeatureInfo> features)
+    {
+        if (recipe.FeatureId != null)
+        {
+            return features.FirstOrDefault(f => f.Id == recipe.FeatureId);
+        }
+
+        return features.FirstOrDefault(f => IsInExtension(recipe, f));
+    }
+
+    private static bool IsInExtension(RecipeDescriptor recipe, IFeatureInfo feature)
+        => recipe.BasePath != null &&
+            feature.Extension?.SubPath != null &&
+            recipe.BasePath.Contains(feature.Extension.SubPath, StringComparison.OrdinalIgnoreCase);
 }

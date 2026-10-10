@@ -142,6 +142,8 @@ The Saas recipe includes a Software as a Service multi tenancy configuration.
 It configures the site to use TheTheme, and you are then able to create Tenants
 using any of the other recipes.
 
+The SaaS recipe is provided by the `OrchardCore.Recipes.Default` feature, so it is only available to set up the Default tenant.
+
 #### Saas Recipe Contents
 
 - Multi-tenancy feature

@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Apis\Context\Recipes\minimal.recipe.json" />
     <None Remove="Apis\Lucene\Recipes\luceneQueryTest.json" />
     <None Remove="Apis\GraphQL\ContentManagement\Recipes\DynamicContentTypeQueryTest.json" />
     <None Remove="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe1.json" />
@@ -41,6 +42,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Localization\PoFiles\*.po" />
+    <EmbeddedResource Include="Apis\Context\Recipes\minimal.recipe.json" />
     <EmbeddedResource Include="Apis\Lucene\Recipes\luceneQueryTest.json" />
     <EmbeddedResource Include="Apis\GraphQL\ContentManagement\Recipes\DynamicContentTypeQueryTest.json" />
     <EmbeddedResource Include="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe3.json" />

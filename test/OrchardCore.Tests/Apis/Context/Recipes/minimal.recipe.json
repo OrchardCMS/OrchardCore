@@ -1,18 +1,17 @@
 {
-  "name": "SaaS",
-  "displayName": "Software as a Service",
-  "description": "Provides default SaaS features like managing multiple websites.",
+  "name": "Minimal",
+  "displayName": "Minimal",
+  "description": "A minimal site used by the tests that need a tenant with the SaaS features, the SaaS recipe being available to the Default tenant only.",
   "author": "The Orchard Core Team",
   "website": "https://orchardcore.net",
   "version": "1.0.0",
   "issetuprecipe": true,
-  "categories": [ "default" ],
-  "tags": [ "developer", "default" ],
+  "categories": [ "tests" ],
+  "tags": [ "tests" ],
   "steps": [
     {
       "name": "feature",
       "enable": [
-        // SaaS
         "OrchardCore.Admin",
         "OrchardCore.Diagnostics",
         "OrchardCore.DynamicCache",
@@ -25,11 +24,8 @@
         "OrchardCore.Roles",
         "OrchardCore.Security",
         "OrchardCore.Settings",
-        "OrchardCore.Tenants",
         "OrchardCore.Themes",
         "OrchardCore.Users",
-
-        // Themes
         "TheTheme",
         "TheAdmin",
         "SafeMode"

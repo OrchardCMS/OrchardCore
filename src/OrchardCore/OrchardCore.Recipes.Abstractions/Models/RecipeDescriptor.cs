@@ -1,9 +1,17 @@
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.FileProviders;
 
 namespace OrchardCore.Recipes.Models;
 
 public class RecipeDescriptor
 {
+    /// <summary>
+    /// Gets or sets the identifier of the feature that registered the recipe, or <see langword="null"/> for a recipe
+    /// found in a <c>Recipes</c> folder or not registered by a feature.
+    /// </summary>
+    [JsonIgnore]
+    public string FeatureId { get; set; }
+
     public string Name { get; set; }
     public string DisplayName { get; set; }
     public string Description { get; set; }
