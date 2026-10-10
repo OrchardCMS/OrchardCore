@@ -29,7 +29,7 @@ public sealed class DataFileFormatTests
         using var stream = new MemoryStream();
 
         // Act
-        var count = await format.WriteAsync(stream, _fields, DataTestHelpers.ToBatches(_fields, _rows), new DataFileOptions());
+        var count = await format.WriteAsync(stream, _fields, DataTestHelpers.ToBatches(_fields, _rows), new DataFileOptions(), TestContext.Current.CancellationToken);
 
         // Assert
         var text = Encoding.UTF8.GetString(stream.ToArray()).TrimStart('﻿');
@@ -49,7 +49,7 @@ public sealed class DataFileFormatTests
         using var stream = new MemoryStream();
 
         // Act
-        await format.WriteAsync(stream, _fields, DataTestHelpers.ToBatches(_fields), new DataFileOptions { UseDisplayNames = true });
+        await format.WriteAsync(stream, _fields, DataTestHelpers.ToBatches(_fields), new DataFileOptions { UseDisplayNames = true }, TestContext.Current.CancellationToken);
 
         // Assert
         var text = Encoding.UTF8.GetString(stream.ToArray()).TrimStart('﻿');
@@ -64,7 +64,7 @@ public sealed class DataFileFormatTests
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes("﻿Name;Note\n\"a;b\";\"say \"\"hi\"\"\nthere\"\r\nc;\n"));
 
         // Act
-        var (fields, rows) = await DataTestHelpers.ReadAllAsync(format.ReadAsync(stream, new DataFileOptions { Delimiter = ";" }));
+        var (fields, rows) = await DataTestHelpers.ReadAllAsync(format.ReadAsync(stream, new DataFileOptions { Delimiter = ";" }, TestContext.Current.CancellationToken));
 
         // Assert
         Assert.Equal(["Name", "Note"], fields.Select(field => field.Name));
@@ -82,7 +82,7 @@ public sealed class DataFileFormatTests
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes("1,2\n3,4,5\n"));
 
         // Act
-        var (fields, rows) = await DataTestHelpers.ReadAllAsync(format.ReadAsync(stream, new DataFileOptions { HasHeaderRow = false }));
+        var (fields, rows) = await DataTestHelpers.ReadAllAsync(format.ReadAsync(stream, new DataFileOptions { HasHeaderRow = false }, TestContext.Current.CancellationToken));
 
         // Assert
         Assert.Equal(["Column1", "Column2"], fields.Select(field => field.Name));
@@ -98,7 +98,7 @@ public sealed class DataFileFormatTests
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes("Name,Name,\nx,y,z\n"));
 
         // Act
-        var (fields, _) = await DataTestHelpers.ReadAllAsync(format.ReadAsync(stream, new DataFileOptions()));
+        var (fields, _) = await DataTestHelpers.ReadAllAsync(format.ReadAsync(stream, new DataFileOptions(), TestContext.Current.CancellationToken));
 
         // Assert
         Assert.Equal(["Name", "Name2", "Column3"], fields.Select(field => field.Name));
@@ -112,7 +112,7 @@ public sealed class DataFileFormatTests
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes("N\n1\n2\n3\n4\n5\n"));
 
         // Act
-        var batches = await DataTestHelpers.ToListAsync(format.ReadAsync(stream, new DataFileOptions { BatchSize = 2 }));
+        var batches = await DataTestHelpers.ToListAsync(format.ReadAsync(stream, new DataFileOptions { BatchSize = 2 }, TestContext.Current.CancellationToken));
 
         // Assert
         Assert.Equal([2, 2, 1], batches.Select(batch => batch.Count));
@@ -126,7 +126,7 @@ public sealed class DataFileFormatTests
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes("A,B\n"));
 
         // Act
-        var batches = await DataTestHelpers.ToListAsync(format.ReadAsync(stream, new DataFileOptions()));
+        var batches = await DataTestHelpers.ToListAsync(format.ReadAsync(stream, new DataFileOptions(), TestContext.Current.CancellationToken));
 
         // Assert
         var batch = Assert.Single(batches);
@@ -142,7 +142,7 @@ public sealed class DataFileFormatTests
         using var stream = new MemoryStream();
 
         // Act
-        var count = await format.WriteAsync(stream, _fields, DataTestHelpers.ToBatches(_fields, _rows), new DataFileOptions());
+        var count = await format.WriteAsync(stream, _fields, DataTestHelpers.ToBatches(_fields, _rows), new DataFileOptions(), TestContext.Current.CancellationToken);
 
         // Assert
         var text = Encoding.UTF8.GetString(stream.ToArray());
@@ -162,7 +162,7 @@ public sealed class DataFileFormatTests
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
 
         // Act
-        var (fields, rows) = await DataTestHelpers.ReadAllAsync(format.ReadAsync(stream, new DataFileOptions()));
+        var (fields, rows) = await DataTestHelpers.ReadAllAsync(format.ReadAsync(stream, new DataFileOptions(), TestContext.Current.CancellationToken));
 
         // Assert
         Assert.Equal(["Id", "Name", "Price", "On", "Tags", "Extra"], fields.Select(field => field.Name));
@@ -181,10 +181,10 @@ public sealed class DataFileFormatTests
         using var stream = new MemoryStream();
 
         // Act
-        await format.WriteAsync(stream, _fields, DataTestHelpers.ToBatches(_fields, _rows), new DataFileOptions());
+        await format.WriteAsync(stream, _fields, DataTestHelpers.ToBatches(_fields, _rows), new DataFileOptions(), TestContext.Current.CancellationToken);
         var lines = Encoding.UTF8.GetString(stream.ToArray()).Split('\n', StringSplitOptions.RemoveEmptyEntries);
         stream.Position = 0;
-        var (fields, rows) = await DataTestHelpers.ReadAllAsync(format.ReadAsync(stream, new DataFileOptions()));
+        var (fields, rows) = await DataTestHelpers.ReadAllAsync(format.ReadAsync(stream, new DataFileOptions(), TestContext.Current.CancellationToken));
 
         // Assert
         Assert.Equal(2, lines.Length);
@@ -203,9 +203,9 @@ public sealed class DataFileFormatTests
         using var stream = new MemoryStream();
 
         // Act
-        var count = await format.WriteAsync(stream, _fields, DataTestHelpers.ToBatches(_fields, _rows), new DataFileOptions { SheetName = "Orders" });
+        var count = await format.WriteAsync(stream, _fields, DataTestHelpers.ToBatches(_fields, _rows), new DataFileOptions { SheetName = "Orders" }, TestContext.Current.CancellationToken);
         stream.Position = 0;
-        var (fields, rows) = await DataTestHelpers.ReadAllAsync(format.ReadAsync(stream, new DataFileOptions { SheetName = "Orders" }));
+        var (fields, rows) = await DataTestHelpers.ReadAllAsync(format.ReadAsync(stream, new DataFileOptions { SheetName = "Orders" }, TestContext.Current.CancellationToken));
 
         // Assert
         Assert.Equal(2, count);
@@ -223,11 +223,11 @@ public sealed class DataFileFormatTests
         // Arrange
         var format = new ExcelDataFileFormat(new PassThroughStringLocalizer<ExcelDataFileFormat>());
         using var stream = new MemoryStream();
-        await format.WriteAsync(stream, _fields, DataTestHelpers.ToBatches(_fields, _rows), new DataFileOptions());
+        await format.WriteAsync(stream, _fields, DataTestHelpers.ToBatches(_fields, _rows), new DataFileOptions(), TestContext.Current.CancellationToken);
         stream.Position = 0;
 
         // Act & Assert
-        await Assert.ThrowsAsync<InvalidDataException>(() => DataTestHelpers.ToListAsync(format.ReadAsync(stream, new DataFileOptions { SheetName = "Missing" })));
+        await Assert.ThrowsAsync<InvalidDataException>(() => DataTestHelpers.ToListAsync(format.ReadAsync(stream, new DataFileOptions { SheetName = "Missing" }, TestContext.Current.CancellationToken)));
     }
 
     [Fact]

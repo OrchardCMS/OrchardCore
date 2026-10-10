@@ -47,7 +47,7 @@ public sealed class DataSourceManagerTests
         var source = new InMemoryDataSource().Add("Numbers", _fields, [1L], [2L], [3L]);
 
         // Act
-        var result = await source.ReadRowsAsync(new DataSourceQuery { DataSet = "Numbers", BatchSize = 1 }, 2);
+        var result = await source.ReadRowsAsync(new DataSourceQuery { DataSet = "Numbers", BatchSize = 1 }, 2, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(result.Truncated);
@@ -62,7 +62,7 @@ public sealed class DataSourceManagerTests
         var source = new InMemoryDataSource().Add("Numbers", _fields, [1L]);
 
         // Act
-        var result = await source.ReadRowsAsync(new DataSourceQuery { DataSet = "Numbers" }, 5);
+        var result = await source.ReadRowsAsync(new DataSourceQuery { DataSet = "Numbers" }, 5, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.False(result.Truncated);

@@ -32,7 +32,7 @@ public sealed class TransformStepsTests
             .WithRows(_orders, _orderRows);
 
         // Act
-        await host.ExecuteAsync();
+        await host.ExecuteAsync(TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal([1L, 2L, 5L], host.Output(FilterStep.Matched).Rows.Select(row => row[0]));
@@ -76,7 +76,7 @@ public sealed class TransformStepsTests
 
         // Act
         var description = await host.DescribeAsync();
-        await host.ExecuteAsync();
+        await host.ExecuteAsync(TestContext.Current.CancellationToken);
 
         // Assert
         var fields = description.Outputs[DataPipelinePort.Output];
@@ -122,7 +122,7 @@ public sealed class TransformStepsTests
 
         // Act
         var description = await host.DescribeAsync();
-        await host.ExecuteAsync();
+        await host.ExecuteAsync(TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(["Name", "Amount", "Id"], description.Outputs[DataPipelinePort.Output].Select(field => field.Name));
@@ -154,7 +154,7 @@ public sealed class TransformStepsTests
         using var host = new StepTestHost(new SortStep(Localizer<SortStep>()), settings).WithRows(_orders, _orderRows);
 
         // Act
-        await host.ExecuteAsync();
+        await host.ExecuteAsync(TestContext.Current.CancellationToken);
 
         // Assert: text sorts ignore case, and rows with equal keys keep their order.
         Assert.Equal([1L, 3L, 2L, 5L, 4L], host.Output().Rows.Select(row => row[0]));
@@ -180,7 +180,7 @@ public sealed class TransformStepsTests
 
         // Act
         var description = await host.DescribeAsync();
-        await host.ExecuteAsync();
+        await host.ExecuteAsync(TestContext.Current.CancellationToken);
 
         // Assert
         var fields = description.Outputs[DataPipelinePort.Output];
@@ -213,7 +213,7 @@ public sealed class TransformStepsTests
         using var host = new StepTestHost(new AggregateStep(Localizer<AggregateStep>()), settings).WithRows(_orders, _orderRows);
 
         // Act
-        await host.ExecuteAsync();
+        await host.ExecuteAsync(TestContext.Current.CancellationToken);
 
         // Assert: values compare exactly, so "Bob" and "bob" are two customers.
         var row = Assert.Single(host.Output().Rows);
@@ -241,7 +241,7 @@ public sealed class TransformStepsTests
 
         // Act
         var description = await host.DescribeAsync();
-        await host.ExecuteAsync();
+        await host.ExecuteAsync(TestContext.Current.CancellationToken);
 
         // Assert
         var fields = description.Outputs[DataPipelinePort.Output];
@@ -268,7 +268,7 @@ public sealed class TransformStepsTests
             .WithInput(JoinStep.Right, customers, ["BOB", "Silver"]);
 
         // Act
-        await host.ExecuteAsync();
+        await host.ExecuteAsync(TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal([2L, 5L], host.Output().Rows.Select(row => row[0]));
@@ -305,7 +305,7 @@ public sealed class TransformStepsTests
 
         // Act
         var description = await host.DescribeAsync();
-        await host.ExecuteAsync();
+        await host.ExecuteAsync(TestContext.Current.CancellationToken);
 
         // Assert
         var fields = description.Outputs[DataPipelinePort.Output];
@@ -323,7 +323,7 @@ public sealed class TransformStepsTests
         using var host = new StepTestHost(new DistinctStep(Localizer<DistinctStep>()), settings).WithRows(_orders, _orderRows);
 
         // Act
-        await host.ExecuteAsync();
+        await host.ExecuteAsync(TestContext.Current.CancellationToken);
 
         // Assert: keys compare exactly, so "Bob" and "bob" are different.
         Assert.Equal([1L, 2L, 4L, 5L], host.Output().Rows.Select(row => row[0]));
@@ -337,7 +337,7 @@ public sealed class TransformStepsTests
         using var host = new StepTestHost(new LimitStep(Localizer<LimitStep>()), settings).WithRows(_orders, _orderRows);
 
         // Act
-        await host.ExecuteAsync();
+        await host.ExecuteAsync(TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal([2L, 3L, 4L], host.Output().Rows.Select(row => row[0]));

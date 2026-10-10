@@ -27,7 +27,7 @@ public sealed class DataPipelineExecutorTests : IDisposable
         var definition = Define([Step("a", "Missing")], []);
 
         // Act
-        var analysis = await CreateAnalyzer().AnalyzeAsync(definition, null, null);
+        var analysis = await CreateAnalyzer().AnalyzeAsync(definition, null, null, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(analysis.HasErrors);
@@ -43,7 +43,7 @@ public sealed class DataPipelineExecutorTests : IDisposable
             [Connect("s", "u"), Connect("u", "d"), Connect("d", "u")]);
 
         // Act
-        var analysis = await CreateAnalyzer().AnalyzeAsync(definition, null, null);
+        var analysis = await CreateAnalyzer().AnalyzeAsync(definition, null, null, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(analysis.HasErrors);
@@ -57,7 +57,7 @@ public sealed class DataPipelineExecutorTests : IDisposable
         var definition = Define([Step("d", nameof(DoubleTransform))], []);
 
         // Act
-        var analysis = await CreateAnalyzer().AnalyzeAsync(definition, null, null);
+        var analysis = await CreateAnalyzer().AnalyzeAsync(definition, null, null, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Contains(analysis.Issues, issue => issue.StepId == "d" && issue.Severity == DataPipelineIssueSeverity.Error);
@@ -72,7 +72,7 @@ public sealed class DataPipelineExecutorTests : IDisposable
             [Connect("s", "f")]);
 
         // Act
-        var analysis = await CreateAnalyzer().AnalyzeAsync(definition, null, null);
+        var analysis = await CreateAnalyzer().AnalyzeAsync(definition, null, null, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Contains(analysis.Issues, issue => issue.Severity == DataPipelineIssueSeverity.Error && issue.StepId == "f");
@@ -87,7 +87,7 @@ public sealed class DataPipelineExecutorTests : IDisposable
             [Connect("s1", "d"), Connect("s2", "d"), Connect("d", "c")]);
 
         // Act
-        var analysis = await CreateAnalyzer().AnalyzeAsync(definition, null, null);
+        var analysis = await CreateAnalyzer().AnalyzeAsync(definition, null, null, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Contains(analysis.Issues, issue => issue.Severity == DataPipelineIssueSeverity.Error && issue.StepId == "d");
@@ -102,7 +102,7 @@ public sealed class DataPipelineExecutorTests : IDisposable
             [Connect("s", "d"), Connect("d", "c")]);
 
         // Act
-        var analysis = await CreateAnalyzer().AnalyzeAsync(definition, null, null);
+        var analysis = await CreateAnalyzer().AnalyzeAsync(definition, null, null, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.False(analysis.HasErrors);
@@ -118,7 +118,7 @@ public sealed class DataPipelineExecutorTests : IDisposable
         var definition = Define([Step("s", nameof(NumbersSource), 1)], []);
 
         // Act
-        var analysis = await CreateAnalyzer().AnalyzeAsync(definition, null, null);
+        var analysis = await CreateAnalyzer().AnalyzeAsync(definition, null, null, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.False(analysis.HasErrors);
@@ -134,7 +134,7 @@ public sealed class DataPipelineExecutorTests : IDisposable
             [Connect("s", "d"), Connect("d", "c")]);
 
         // Act
-        var result = await CreateExecutor().ExecuteAsync(definition, CreateRun());
+        var result = await CreateExecutor().ExecuteAsync(definition, CreateRun(TestContext.Current.CancellationToken));
 
         // Assert
         Assert.Equal(DataPipelineRunStatus.Succeeded, result.Status);
@@ -156,7 +156,7 @@ public sealed class DataPipelineExecutorTests : IDisposable
             [Step("s", nameof(NumbersSource), 10), Step("d", nameof(DoubleTransform)), Step("c", nameof(CollectDestination))],
             [Connect("s", "d"), Connect("d", "c")]);
         var scoped = new ConcurrentBag<string>();
-        var run = CreateRun();
+        var run = CreateRun(TestContext.Current.CancellationToken);
         run.StepScope = async (step, work) =>
         {
             scoped.Add(step.StepId);
@@ -184,7 +184,7 @@ public sealed class DataPipelineExecutorTests : IDisposable
             [Connect("s", "fast"), Connect("s", "slow")]);
 
         // Act
-        var result = await CreateExecutor(steps).ExecuteAsync(definition, CreateRun());
+        var result = await CreateExecutor(steps).ExecuteAsync(definition, CreateRun(TestContext.Current.CancellationToken));
 
         // Assert
         Assert.Equal(DataPipelineRunStatus.Succeeded, result.Status);
@@ -226,7 +226,7 @@ public sealed class DataPipelineExecutorTests : IDisposable
             [Connect("s", "f"), Connect("f", "c")]);
 
         // Act
-        var result = await CreateExecutor().ExecuteAsync(definition, CreateRun());
+        var result = await CreateExecutor().ExecuteAsync(definition, CreateRun(TestContext.Current.CancellationToken));
 
         // Assert
         Assert.Equal(DataPipelineRunStatus.Failed, result.Status);
@@ -281,7 +281,7 @@ public sealed class DataPipelineExecutorTests : IDisposable
         var definition = Define([Step("s", nameof(NumbersSource), 10), Step("d", nameof(DoubleTransform))], []);
 
         // Act
-        var result = await CreateExecutor(steps).ExecuteAsync(definition, CreateRun());
+        var result = await CreateExecutor(steps).ExecuteAsync(definition, CreateRun(TestContext.Current.CancellationToken));
 
         // Assert
         Assert.Equal(DataPipelineRunStatus.Failed, result.Status);
@@ -298,7 +298,7 @@ public sealed class DataPipelineExecutorTests : IDisposable
             [Connect("s", "m"), Connect("m", "f")]);
 
         // Act
-        var result = await CreateExecutor().ExecuteAsync(definition, CreateRun());
+        var result = await CreateExecutor().ExecuteAsync(definition, CreateRun(TestContext.Current.CancellationToken));
 
         // Assert
         Assert.Equal(DataPipelineRunStatus.Succeeded, result.Status);
@@ -314,7 +314,7 @@ public sealed class DataPipelineExecutorTests : IDisposable
         var definition = Define(
             [Step("s", nameof(NumbersSource), 10_000), Step("d", nameof(DoubleTransform)), Step("c", nameof(CollectDestination))],
             [Connect("s", "d"), Connect("d", "c")]);
-        var run = CreateRun();
+        var run = CreateRun(TestContext.Current.CancellationToken);
         run.IsPreview = true;
         run.PreviewRowLimit = 25;
 
@@ -338,7 +338,7 @@ public sealed class DataPipelineExecutorTests : IDisposable
         var definition = Define(
             [Step("s", nameof(NumbersSource), 10), Step("c", nameof(CollectDestination))],
             [Connect("s", "c")]);
-        var run = CreateRun();
+        var run = CreateRun(TestContext.Current.CancellationToken);
         run.IsPreview = true;
 
         // Act

@@ -89,7 +89,7 @@ public sealed class SharedFileTests
         host.WithFiles(host.CreateFile("report.csv", "x"), host.CreateFile("report.xlsx", "y"));
 
         // Act
-        await host.ExecuteAsync();
+        await host.ExecuteAsync(TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(2, manager.Shared.Count);

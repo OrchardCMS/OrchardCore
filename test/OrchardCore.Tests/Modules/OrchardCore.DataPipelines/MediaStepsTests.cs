@@ -18,7 +18,7 @@ public sealed class MediaStepsTests
         host.WithFiles(host.CreateFile("orders.csv", "Id\r\n1\r\n"));
 
         // Act
-        await host.ExecuteAsync();
+        await host.ExecuteAsync(TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal("Id\r\n1\r\n", store.Read("exports/daily/orders.csv"));
@@ -37,7 +37,7 @@ public sealed class MediaStepsTests
         host.WithFiles(host.CreateFile("orders.csv", "new"));
 
         // Act
-        await host.ExecuteAsync();
+        await host.ExecuteAsync(TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal("old", store.Read("orders.csv"));
@@ -53,7 +53,7 @@ public sealed class MediaStepsTests
         host.WithFiles(host.CreateFile("page.html", "<script></script>"));
 
         // Act & Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(() => host.ExecuteAsync());
+        await Assert.ThrowsAsync<InvalidOperationException>(() => host.ExecuteAsync(TestContext.Current.CancellationToken));
         Assert.Empty(store.Files);
     }
 
@@ -81,7 +81,7 @@ public sealed class MediaStepsTests
         host.WithFiles(host.CreateFile("orders.csv", "x"));
 
         // Act & Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(() => host.ExecuteAsync());
+        await Assert.ThrowsAsync<InvalidOperationException>(() => host.ExecuteAsync(TestContext.Current.CancellationToken));
         Assert.Empty(store.Files);
     }
 
@@ -96,7 +96,7 @@ public sealed class MediaStepsTests
 
         // Act
         var description = await host.DescribeAsync();
-        await host.ExecuteAsync();
+        await host.ExecuteAsync(TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(["Id", "Name"], description.Outputs[DataPipelinePort.Output].Select(field => field.Name));
