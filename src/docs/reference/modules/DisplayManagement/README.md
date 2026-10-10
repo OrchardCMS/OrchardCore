@@ -128,11 +128,25 @@ Renders a `Date` and `Time` value using the TimeZone of the request.
 |-----------|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `Utc`     | `DateTime?` | The date and time to render. If not specified, the current time will be used.                                                                                                                                 |
 | `Format`  | `string`    | The .NET format string. If not specified the long format `dddd, MMMM d, yyyy h:mm:ss tt` will be used. The accepted format can be found at <https://msdn.microsoft.com/en-us/library/8kb3ddd4(v=vs.110).aspx> |
+| `TimeTag` | `bool`      | When `true`, wraps the value in an HTML `<time>` element whose `datetime` attribute holds `Utc` in the universal sortable format. Defaults to `false`. |
 
 Tag helper example:
 
 ```html
 <datetime utc="@contentItem.CreatedUtc" />
+<datetime utc="@contentItem.CreatedUtc" format="MMMM d, yyyy" time-tag="true" />
+```
+
+Liquid example:
+
+```liquid
+{{ "DateTime" | shape_new: utc: Model.ContentItem.CreatedUtc, format: "MMMM d, yyyy", time_tag: true | shape_render }}
+```
+
+Result with `TimeTag` enabled:
+
+```html
+<time datetime="2019-04-30 12:30:00Z">April 30, 2019</time>
 ```
 
 #### `TimeSpan`
@@ -143,6 +157,7 @@ Renders a relative textual representation of a `Date` and `Time` interval.
 |-----------|-------------|-----------------------------------------------------------------------------|
 | `Utc`     | `DateTime?` | The initial date and time. If not specified, the current time will be used. |
 | `Origin`  | `DateTime?` | The current date and time. If not specified, the current time will be used. |
+| `TimeTag` | `bool`      | When `true`, wraps the value in an HTML `<time>` element whose `datetime` attribute holds `Utc`. Defaults to `false`. |
 
 Tag helper example:
 
@@ -154,6 +169,12 @@ Result:
 
 ```text
 3 days ago
+```
+
+With `time-tag="true"` (or `time_tag: true` in Liquid):
+
+```html
+<time datetime="2019-04-27 12:30:00Z">3 days ago</time>
 ```
 
 #### `Duration`
