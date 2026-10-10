@@ -149,6 +149,31 @@ public sealed class DataPipelineExecutorTests : IDisposable
     }
 
     [Fact]
+    public async Task ExecuteAsync_StepScope_RunsEachStepWithItsOwnServices()
+    {
+        // Arrange
+        var definition = Define(
+            [Step("s", nameof(NumbersSource), 10), Step("d", nameof(DoubleTransform)), Step("c", nameof(CollectDestination))],
+            [Connect("s", "d"), Connect("d", "c")]);
+        var scoped = new ConcurrentBag<string>();
+        var run = CreateRun();
+        run.StepScope = async (step, work) =>
+        {
+            scoped.Add(step.StepId);
+            await using var services = new ServiceCollection().BuildServiceProvider();
+            await work(services);
+        };
+
+        // Act
+        var result = await CreateExecutor().ExecuteAsync(definition, run);
+
+        // Assert
+        Assert.Equal(DataPipelineRunStatus.Succeeded, result.Status);
+        Assert.Equal(["c", "d", "s"], scoped.Order(StringComparer.Ordinal));
+        Assert.Equal(10, _collector.Rows("c").Count);
+    }
+
+    [Fact]
     public async Task ExecuteAsync_FanOut_ReadsSourceOnceAndFeedsEveryBranch()
     {
         // Arrange

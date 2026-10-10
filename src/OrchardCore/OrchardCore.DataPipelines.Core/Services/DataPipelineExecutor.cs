@@ -230,16 +230,13 @@ public sealed class DataPipelineExecutor
                 outputs[port.Name] = new DataPipelineChannelOutput(port, fields, portEdges, metrics);
             }
 
-            var context = new DataPipelineStepContext(
-                analysis.Step,
-                run,
-                inputs.ToDictionary(pair => pair.Key, pair => (DataPipelineInput)pair.Value, StringComparer.Ordinal),
-                outputs.ToDictionary(pair => pair.Key, pair => (DataPipelineOutput)pair.Value, StringComparer.Ordinal),
-                metrics,
-                entry => observer?.Log(entry),
-                token);
+            var inputViews = inputs.ToDictionary(pair => pair.Key, pair => (DataPipelineInput)pair.Value, StringComparer.Ordinal);
+            var outputViews = outputs.ToDictionary(pair => pair.Key, pair => (DataPipelineOutput)pair.Value, StringComparer.Ordinal);
 
-            tasks.Add(Task.Run(() => RunStepAsync(analysis, context, inputs.Values, outputs.Values, results[stepId], cancellation, observer, failures, failuresLock), CancellationToken.None));
+            DataPipelineStepContext CreateContext(IServiceProvider services)
+                => new(analysis.Step, run, inputViews, outputViews, metrics, entry => observer?.Log(entry), token, services);
+
+            tasks.Add(Task.Run(() => RunStepAsync(analysis, CreateContext, inputs.Values, outputs.Values, results[stepId], cancellation, observer, failures, failuresLock), CancellationToken.None));
         }
 
         foreach (var capture in captures)
@@ -277,7 +274,7 @@ public sealed class DataPipelineExecutor
 
     private async Task RunStepAsync(
         DataPipelineStepAnalysis analysis,
-        DataPipelineStepContext context,
+        Func<IServiceProvider, DataPipelineStepContext> createContext,
         IEnumerable<DataPipelineChannelInput> inputs,
         IEnumerable<DataPipelineChannelOutput> outputs,
         DataPipelineStepResult result,
@@ -287,6 +284,8 @@ public sealed class DataPipelineExecutor
         object failuresLock)
     {
         var step = analysis.Step;
+        var run = createContext(null).Run;
+        var token = cancellation.Token;
         Exception error = null;
 
         result.Status = DataPipelineStepStatus.Running;
@@ -294,11 +293,18 @@ public sealed class DataPipelineExecutor
 
         try
         {
-            context.CancellationToken.ThrowIfCancellationRequested();
+            token.ThrowIfCancellationRequested();
 
-            await analysis.StepType.ExecuteAsync(context);
+            if (run.StepScope is null)
+            {
+                await analysis.StepType.ExecuteAsync(createContext(null));
+            }
+            else
+            {
+                await run.StepScope(step, services => analysis.StepType.ExecuteAsync(createContext(services)));
+            }
 
-            context.CancellationToken.ThrowIfCancellationRequested();
+            token.ThrowIfCancellationRequested();
 
             result.Status = DataPipelineStepStatus.Succeeded;
         }
@@ -317,7 +323,7 @@ public sealed class DataPipelineExecutor
                 failures.Add((DateTime.UtcNow, step.StepId, ex));
             }
 
-            _logger.LogWarning(ex, "The step '{StepId}' of the data pipeline run '{RunId}' failed.", step.StepId, context.Run.RunId);
+            _logger.LogWarning(ex, "The step '{StepId}' of the data pipeline run '{RunId}' failed.", step.StepId, run.RunId);
 
             // Stop the other steps before closing the outputs, so the steps downstream don't take what they read
             // so far for a complete input.

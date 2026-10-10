@@ -80,6 +80,14 @@ public sealed class DataPipelineRunContext
     public CancellationToken CancellationToken { get; set; }
 
     /// <summary>
+    /// Gets or sets how each step gets the services it runs with. Steps run at the same time, so a host that uses
+    /// services that aren't thread-safe, such as a database session, gives each step its own scope: the delegate
+    /// receives the step, and the work to do with the services of its scope. When it is not set, every step uses
+    /// <see cref="Services"/>.
+    /// </summary>
+    public Func<Models.DataPipelineStep, Func<IServiceProvider, Task>, Task> StepScope { get; set; }
+
+    /// <summary>
     /// Gets what the run delivered so far, such as the files it saved or sent.
     /// </summary>
     public IReadOnlyCollection<DataPipelineDelivery> Deliveries => _deliveries;

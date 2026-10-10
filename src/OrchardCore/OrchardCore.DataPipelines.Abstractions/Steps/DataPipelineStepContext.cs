@@ -22,6 +22,7 @@ public sealed class DataPipelineStepContext
     /// <param name="metrics">The counters of the step.</param>
     /// <param name="log">Records a message in the run's history.</param>
     /// <param name="cancellationToken">The token that is cancelled when the run is cancelled or fails.</param>
+    /// <param name="services">The services the step runs with, or <see langword="null"/> for the services of the run.</param>
     public DataPipelineStepContext(
         DataPipelineStep step,
         DataPipelineRunContext run,
@@ -29,7 +30,8 @@ public sealed class DataPipelineStepContext
         IReadOnlyDictionary<string, DataPipelineOutput> outputs,
         DataPipelineStepMetrics metrics,
         Action<DataPipelineLogEntry> log,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        IServiceProvider services = null)
     {
         ArgumentNullException.ThrowIfNull(step);
         ArgumentNullException.ThrowIfNull(run);
@@ -41,6 +43,7 @@ public sealed class DataPipelineStepContext
         Metrics = metrics ?? new DataPipelineStepMetrics();
         _log = log;
         CancellationToken = cancellationToken;
+        Services = services ?? run.Services;
     }
 
     /// <summary>
@@ -64,9 +67,10 @@ public sealed class DataPipelineStepContext
     public CancellationToken CancellationToken { get; }
 
     /// <summary>
-    /// Gets the services of the scope the run executes in.
+    /// Gets the services the step runs with: its own scope when the host gives each step one, see
+    /// <see cref="DataPipelineRunContext.StepScope"/>.
     /// </summary>
-    public IServiceProvider Services => Run.Services;
+    public IServiceProvider Services { get; }
 
     /// <summary>
     /// Gets an input of the step.
