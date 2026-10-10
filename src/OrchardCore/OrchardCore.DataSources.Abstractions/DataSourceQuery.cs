@@ -38,6 +38,11 @@ public sealed class DataSourceQuery
     public int BatchSize { get; set; } = DefaultBatchSize;
 
     /// <summary>
+    /// Gets or sets the values of the parameters of a data set that takes them, such as a saved query.
+    /// </summary>
+    public IDictionary<string, object> Parameters { get; set; } = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>
     /// Gets or sets the caller context of the run.
     /// </summary>
     public DataSourceContext Context { get; set; } = new();

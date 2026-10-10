@@ -5,10 +5,17 @@ using System.Text.Json.Nodes;
 namespace OrchardCore.DataSources.Files;
 
 /// <summary>
-/// Converts rows to and from JSON objects, for the JSON based file formats.
+/// Converts rows to and from JSON objects, for the JSON based file formats and for data sources that read JSON
+/// documents.
 /// </summary>
-internal static class JsonRecords
+public static class JsonDataRecords
 {
+    /// <summary>
+    /// Writes a row as a JSON object whose properties are the fields of the row, with typed values.
+    /// </summary>
+    /// <param name="writer">The writer.</param>
+    /// <param name="fields">The fields of the row.</param>
+    /// <param name="row">The row.</param>
     public static void WriteObject(Utf8JsonWriter writer, IReadOnlyList<DataField> fields, object[] row)
     {
         writer.WriteStartObject();
@@ -23,6 +30,14 @@ internal static class JsonRecords
         writer.WriteEndObject();
     }
 
+    /// <summary>
+    /// Converts JSON objects to batches of rows. The fields and their types are inferred from the objects of the first
+    /// batch.
+    /// </summary>
+    /// <param name="objects">The objects.</param>
+    /// <param name="batchSize">The number of rows per batch.</param>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+    /// <returns>The batches. No objects yield one empty batch.</returns>
     public static async IAsyncEnumerable<DataBatch> ToBatchesAsync(
         IAsyncEnumerable<JsonObject> objects,
         int batchSize,
@@ -61,7 +76,13 @@ internal static class JsonRecords
         }
     }
 
-    private static DataField[] InferFields(List<JsonObject> records)
+    /// <summary>
+    /// Infers the fields of JSON objects: one field per property, in the order properties first appear, typed from
+    /// their values. Nested objects and arrays are text.
+    /// </summary>
+    /// <param name="records">The objects.</param>
+    /// <returns>The fields.</returns>
+    public static DataField[] InferFields(IEnumerable<JsonObject> records)
     {
         var names = new List<string>();
         var types = new Dictionary<string, List<DataFieldType>>(StringComparer.Ordinal);
@@ -89,7 +110,13 @@ internal static class JsonRecords
             .ToArray();
     }
 
-    private static object[] ToRow(IReadOnlyList<DataField> fields, JsonObject record)
+    /// <summary>
+    /// Converts a JSON object to a row of the given fields. Nested objects and arrays become JSON text.
+    /// </summary>
+    /// <param name="fields">The fields of the row.</param>
+    /// <param name="record">The object.</param>
+    /// <returns>The row.</returns>
+    public static object[] ToRow(IReadOnlyList<DataField> fields, JsonObject record)
     {
         var row = new object[fields.Count];
 

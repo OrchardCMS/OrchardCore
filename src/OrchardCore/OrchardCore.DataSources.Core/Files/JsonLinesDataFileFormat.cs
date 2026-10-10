@@ -51,7 +51,7 @@ public sealed class JsonLinesDataFileFormat : IDataFileFormat
         {
             foreach (var row in batch.Rows)
             {
-                JsonRecords.WriteObject(writer, fields, row);
+                JsonDataRecords.WriteObject(writer, fields, row);
                 await writer.FlushAsync(cancellationToken);
                 writer.Reset();
                 await stream.WriteAsync(_newLine, cancellationToken);
@@ -71,7 +71,7 @@ public sealed class JsonLinesDataFileFormat : IDataFileFormat
     {
         ArgumentNullException.ThrowIfNull(stream);
 
-        return JsonRecords.ToBatchesAsync(ReadObjectsAsync(stream, cancellationToken), options?.BatchSize ?? DataSourceQuery.DefaultBatchSize, cancellationToken);
+        return JsonDataRecords.ToBatchesAsync(ReadObjectsAsync(stream, cancellationToken), options?.BatchSize ?? DataSourceQuery.DefaultBatchSize, cancellationToken);
     }
 
     private static async IAsyncEnumerable<JsonObject> ReadObjectsAsync(Stream stream, [EnumeratorCancellation] CancellationToken cancellationToken)

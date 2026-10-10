@@ -50,7 +50,7 @@ public sealed class JsonDataFileFormat : IDataFileFormat
         {
             foreach (var row in batch.Rows)
             {
-                JsonRecords.WriteObject(writer, fields, row);
+                JsonDataRecords.WriteObject(writer, fields, row);
                 count++;
             }
 
@@ -72,6 +72,6 @@ public sealed class JsonDataFileFormat : IDataFileFormat
 
         var objects = JsonSerializer.DeserializeAsyncEnumerable<JsonObject>(stream, cancellationToken: cancellationToken);
 
-        return JsonRecords.ToBatchesAsync(objects, options?.BatchSize ?? DataSourceQuery.DefaultBatchSize, cancellationToken);
+        return JsonDataRecords.ToBatchesAsync(objects, options?.BatchSize ?? DataSourceQuery.DefaultBatchSize, cancellationToken);
     }
 }
