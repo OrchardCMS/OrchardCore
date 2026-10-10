@@ -154,6 +154,7 @@
     <Project Path="src/OrchardCore.Modules/OrchardCore.Cors/OrchardCore.Cors.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.DataLocalization/OrchardCore.DataLocalization.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.DataProtection.Azure/OrchardCore.DataProtection.Azure.csproj" />
+    <Project Path="src/OrchardCore.Modules/OrchardCore.DataSources/OrchardCore.DataSources.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Deployment.Remote/OrchardCore.Deployment.Remote.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Deployment/OrchardCore.Deployment.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Diagnostics/OrchardCore.Diagnostics.csproj" />
@@ -236,6 +237,8 @@
     <Project Path="src/OrchardCore/OrchardCore.Data.Abstractions/OrchardCore.Data.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Data.YesSql.Abstractions/OrchardCore.Data.YesSql.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Data.YesSql/OrchardCore.Data.YesSql.csproj" />
+    <Project Path="src/OrchardCore/OrchardCore.DataSources.Abstractions/OrchardCore.DataSources.Abstractions.csproj" />
+    <Project Path="src/OrchardCore/OrchardCore.DataSources.Core/OrchardCore.DataSources.Core.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Data/OrchardCore.Data.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Deployment.Abstractions/OrchardCore.Deployment.Abstractions.csproj" />
     <Project Path="src/OrchardCore/OrchardCore.Deployment.Core/OrchardCore.Deployment.Core.csproj" />
