@@ -17,6 +17,7 @@ Fields support multiple editors — different UIs for data input. For example, a
 | `DateTimeField`                     | `DateTime? Value`                                              | (Standard "empty")                                                                                                                 |
 | `HtmlField`                         | `string Html`                                                  | (Standard "empty"), `Monaco`, `Multiline`, `Trumbowyg`, `Wysiwyg`                                                                  |
 | `LinkField`                         | `string Url, string Text`                                      | (Standard "empty")                                                                                                                 |
+| `LiquidField`                       | `string Liquid`                                                | (Standard "empty")                                                                                                                 |
 | `LocalizationSetContentPickerField` | `string[] LocalizationSets`                                    | (Standard "empty")                                                                                                                 |
 | `MarkdownField`                     | `string Markdown`                                              | (Standard "empty"), `Wysiwyg`                                                                                                      |
 | `MediaField`                        | `string[] Paths`                                               | (Standard "empty"), `Attached`                                                                                                     |
@@ -82,7 +83,7 @@ Some view models have special properties that are computed from the actual field
 
 | Property | Description                                                   |
 |----------|---------------------------------------------------------------|
-| `Html`   | The processed HTML, once all liquid tags have been processed. |
+| `Html`   | The rendered HTML after shortcodes and optional sanitization.  |
 
 #### Html Field Example
 
@@ -90,11 +91,13 @@ Some view models have special properties that are computed from the actual field
 {{ Model.Html }}
 ```
 
-or, to display the raw content before the tags are converted:
+or, to display the exact authored source:
 
 ``` liquid
 {{ Model.Field.Html }}
 ```
+
+Liquid syntax in `HtmlField` is not executed. Use `LiquidField` when templating is required.
 
 ### `DateTimeField`
 

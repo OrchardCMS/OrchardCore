@@ -65,11 +65,24 @@ public static class CreateEndpoint
 
             contentItem = await contentManager.NewAsync(model.ContentType);
 
+            if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.EditContent, contentItem))
+            {
+                return httpContext.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
+            }
+
             if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.PublishContent, contentItem))
             {
                 return httpContext.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
             }
+
             contentItem.Merge(model);
+
+            if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.EditContent, contentItem))
+            {
+                await session.CancelAsync();
+
+                return httpContext.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
+            }
 
             var result = await contentManager.ValidateAsync(contentItem);
 
@@ -101,6 +114,13 @@ public static class CreateEndpoint
             }
 
             contentItem.Merge(model, s_updateJsonMergeSettings);
+
+            if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.EditContent, contentItem))
+            {
+                await session.CancelAsync();
+
+                return httpContext.ChallengeOrForbid(OrchardCoreConstants.AuthenticationSchemes.Api);
+            }
 
             await contentManager.UpdateAsync(contentItem);
             var result = await contentManager.ValidateAsync(contentItem);

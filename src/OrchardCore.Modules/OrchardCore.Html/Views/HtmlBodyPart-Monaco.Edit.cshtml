@@ -7,11 +7,11 @@
 
 @await DisplayAsync(await New.ShortcodeModal())
 
-<div class="row mb-3 html-monaco-editor" data-options="@(string.IsNullOrWhiteSpace(monacoSettings.Options) ? "{}" : monacoSettings.Options)">
+<div class="ocat-wrapper html-monaco-editor" data-options="@(string.IsNullOrWhiteSpace(monacoSettings.Options) ? "{}" : monacoSettings.Options)">
     <label asp-for="Html" class="ocat-label">@Model.TypePartDefinition.DisplayName()</label>
     <div class="ocat-end">
         <div id="@Html.IdFor(x => x.Html)_editor" asp-for="Text" style="min-height: 400px;" class="form-control html-monaco-editor-container" dir="@culture.GetLanguageDirection()"></div>
-        <textarea asp-for="Html" class="content-preview-text html-monaco-editor-value" hidden>@Html.Raw(Model.Html)</textarea>
+        <textarea asp-for="Html" class="content-preview-text html-monaco-editor-value" hidden></textarea>
         <span class="hint">@T["The body of the content item."]</span>
     </div>
 </div>

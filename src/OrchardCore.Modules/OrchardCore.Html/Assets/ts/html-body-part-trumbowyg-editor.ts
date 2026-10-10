@@ -11,6 +11,7 @@ observeAndInit(".html-body-part-trumbowyg-editor", (wrapper) => {
 
     initTrumbowygEditor({
         element,
+        editorValue: wrapper.dataset.editorValue,
         languageCode: wrapper.dataset.languageCode ?? "",
         isRtl: getDatasetBoolean(wrapper, "isRtl"),
         languageDirection: wrapper.dataset.languageDirection ?? "",
