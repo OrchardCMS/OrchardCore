@@ -1,6 +1,6 @@
 @using Microsoft.AspNetCore.Mvc.Rendering
 @{
-    var items = Model.Items as List<SelectListItem>;
+    var items = Model.PageSizes as List<SelectListItem>;
 }
 @if (items is { Count: > 0 })
 {
