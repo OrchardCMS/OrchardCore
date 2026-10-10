@@ -1,4 +1,4 @@
-namespace OrchardCore.DataSources.Operations;
+namespace OrchardCore.DataSources;
 
 /// <summary>
 /// Identifies how a column combines the values of a group of rows.
