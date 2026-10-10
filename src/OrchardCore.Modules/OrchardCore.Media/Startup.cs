@@ -65,6 +65,9 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddHttpClient();
+        services.AddRecipe("Recipes/Api/media-api-pkce.recipe.json");
+        services.AddRecipe("Recipes/Api/media-api-standalone.recipe.json");
+        services.AddRecipe("Recipes/Api/media-api-standalone-localhost.recipe.json");
         services.AddSingleton<IJSLocalizer, MediaJSLocalizer>();
         services.AddSingleton<IAnchorTag, MediaAnchorTag>();
 

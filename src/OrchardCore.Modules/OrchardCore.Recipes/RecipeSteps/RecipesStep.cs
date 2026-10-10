@@ -28,7 +28,13 @@ public sealed class RecipesStep : NamedRecipeStepHandler
         var step = context.Step.ToObject<InternalStep>();
 
         var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(harvester => harvester.HarvestRecipesAsync()));
-        var recipes = recipeCollections.SelectMany(recipe => recipe).ToDictionary(recipe => recipe.Name);
+        var recipes = new Dictionary<string, RecipeDescriptor>();
+
+        foreach (var recipe in recipeCollections.SelectMany(recipe => recipe))
+        {
+            // Recipes can be found by more than one harvester, the first one wins.
+            recipes.TryAdd(recipe.Name, recipe);
+        }
 
         var innerRecipes = new List<RecipeDescriptor>();
         foreach (var recipe in step.Values)

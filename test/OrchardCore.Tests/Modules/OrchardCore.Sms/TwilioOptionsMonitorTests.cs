@@ -18,7 +18,7 @@ public class TwilioOptionsMonitorTests
     public async Task RequestUpdate_ShouldRefreshTwilioOptionsWithoutReleasingTenant()
     {
         using var context = new SiteContext()
-            .WithRecipe("SaaS");
+            .WithRecipe("Minimal");
 
         await context.InitializeAsync();
 

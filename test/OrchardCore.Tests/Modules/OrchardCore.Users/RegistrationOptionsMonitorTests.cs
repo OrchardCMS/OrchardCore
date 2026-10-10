@@ -16,7 +16,7 @@ public class RegistrationOptionsMonitorTests
     public async Task RequestUpdate_ShouldRefreshRegistrationOptionsWithoutReleasingTenant()
     {
         using var context = new SiteContext()
-            .WithRecipe("SaaS");
+            .WithRecipe("Minimal");
 
         await context.InitializeAsync();
 

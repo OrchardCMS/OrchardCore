@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 
@@ -11,17 +12,20 @@ public class ShellContextFactory : IShellContextFactory
     private readonly ICompositionStrategy _compositionStrategy;
     private readonly IShellContainerFactory _shellContainerFactory;
     private readonly IEnumerable<ShellFeature> _shellFeatures;
+    private readonly IExtensionManager _extensionManager;
     private readonly ILogger _logger;
 
     public ShellContextFactory(
         ICompositionStrategy compositionStrategy,
         IShellContainerFactory shellContainerFactory,
         IEnumerable<ShellFeature> shellFeatures,
+        IExtensionManager extensionManager,
         ILogger<ShellContextFactory> logger)
     {
         _compositionStrategy = compositionStrategy;
         _shellContainerFactory = shellContainerFactory;
         _shellFeatures = shellFeatures;
+        _extensionManager = extensionManager;
         _logger = logger;
     }
 
@@ -58,7 +62,7 @@ public class ShellContextFactory : IShellContextFactory
             _logger.LogDebug("No shell settings available. Creating shell context for setup");
         }
 
-        var descriptor = MinimumShellDescriptor();
+        var descriptor = MinimumShellDescriptor(settings);
 
         return CreateDescribedContextAsync(settings, descriptor);
     }
@@ -121,14 +125,27 @@ public class ShellContextFactory : IShellContextFactory
     /// core components necessary for the desired scenario.
     /// </summary>
     /// <returns></returns>
-    private ShellDescriptor MinimumShellDescriptor()
+    private ShellDescriptor MinimumShellDescriptor(ShellSettings settings)
     {
-        // Load default features from the list of registered ShellFeature instances in the DI
+        // Load default features from the list of registered ShellFeature instances in the DI.
+        var features = _shellFeatures;
+
+        // A setup feature allowed on the default tenant only, e.g. one providing the setup recipes of the default
+        // tenant, is not part of the setup shell of the other tenants.
+        if (!settings.IsDefaultShell())
+        {
+            var defaultTenantOnlyFeatureIds = _extensionManager.GetFeatures()
+                .Where(feature => feature.DefaultTenantOnly)
+                .Select(feature => feature.Id)
+                .ToHashSet();
+
+            features = features.Where(feature => !defaultTenantOnlyFeatureIds.Contains(feature.Id));
+        }
 
         return new ShellDescriptor
         {
             SerialNumber = -1,
-            Features = new List<ShellFeature>(_shellFeatures),
+            Features = features.ToList(),
         };
     }
 }

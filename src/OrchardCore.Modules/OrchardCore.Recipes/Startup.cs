@@ -25,6 +25,15 @@ public sealed class Startup : StartupBase
     }
 }
 
+[Feature("OrchardCore.Recipes.Default")]
+public sealed class DefaultRecipesStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddRecipe("Recipes/Default/saas.recipe.json");
+    }
+}
+
 [Feature("OrchardCore.Recipes.Core")]
 public sealed class RecipesCoreStartup : StartupBase
 {

@@ -16,6 +16,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.AdminDashboard;
@@ -45,6 +46,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IContentDisplayDriver, DashboardContentDisplayDriver>();
 
         services.AddDataMigration<Migrations>();
+        services.AddRecipe("Recipes/Samples/dashboard-widgets-samples.recipe.json");
         services.AddScoped<IContentDefinitionHandler, DashboardPartContentTypeDefinitionHandler>();
     }
 

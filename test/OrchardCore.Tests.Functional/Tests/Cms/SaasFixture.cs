@@ -35,8 +35,8 @@ public sealed class SaasFixture : IAsyncLifetime
                 });
             }
 
-            // Create a test tenant to verify multi-tenancy.
-            Tenant = TestUtils.GenerateTenantInfo("SaaS");
+            // Create a test tenant to verify multi-tenancy. The SaaS recipe is available to the Default tenant only.
+            Tenant = TestUtils.GenerateTenantInfo("SaasTenant");
             await page.LoginAsync();
             await page.SetPageSizeAsync(string.Empty, "100");
             await page.CreateTenantAsync(Tenant);
