@@ -25,6 +25,8 @@ public interface ISite : IEntity
 
     int PageSize { get; set; }
 
+    bool ShowContentTypesGrouping { get; set; }
+
     int MaxPageSize { get; set; }
 
     int MaxPagedCount { get; set; }
