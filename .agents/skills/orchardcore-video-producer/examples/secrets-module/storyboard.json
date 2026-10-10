@@ -1,0 +1,372 @@
+{
+  "title": "The Orchard Core Secrets module",
+  "output": "secrets-module",
+  "spoken": {},
+  "chapters": [
+    {
+      "id": "00",
+      "title": "The Orchard Core Secrets module",
+      "subtitle": "One secure home for the sensitive values of your site",
+      "clips": [
+        {
+          "id": "00-intro",
+          "kind": "card",
+          "steps": [
+            {
+              "id": "intro",
+              "text": "Passwords, API keys, connection strings, and signing keys. Almost every Orchard Core site depends on sensitive values like these. The Secrets module gives them one secure home. In this video, we'll see why the Secrets module exists, how to use each of its features, and how to adopt it in your own modules."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "01",
+      "title": "Why the Secrets module",
+      "subtitle": "The problem it solves",
+      "clips": [
+        {
+          "id": "01-why",
+          "kind": "slide",
+          "steps": [
+            {
+              "id": "why-1",
+              "text": "Without a central place for them, each feature keeps its own credentials in its own settings, protected in its own way. Nothing lists them, so it's hard to know which credentials a site uses, which ones expire soon, or which ones need to be rotated."
+            },
+            {
+              "id": "why-2",
+              "text": "A value can't be shared between features, and it can't be kept in a dedicated vault, such as Azure Key Vault. And moving a site to another environment means entering every credential again."
+            },
+            {
+              "id": "why-3",
+              "text": "The Secrets module solves this. Secrets are encrypted, listed in one place, kept in the store of your choice, and referenced by name from the settings that use them. And it's optional: every feature keeps working without it."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "02",
+      "title": "Three features",
+      "subtitle": "Secrets, Azure Key Vault, and OpenID Connect",
+      "clips": [
+        {
+          "id": "02-features",
+          "kind": "clip",
+          "steps": [
+            {
+              "id": "features-1",
+              "text": "The Secrets module comes with three features. Let's search the features for secret."
+            },
+            {
+              "id": "features-2",
+              "text": "Secrets is the core feature. It encrypts secrets with ASP.NET Core Data Protection, and keeps them in the database by default."
+            },
+            {
+              "id": "features-3",
+              "text": "Secrets, Azure Key Vault, adds another store, which keeps secrets in an Azure Key Vault."
+            },
+            {
+              "id": "features-4",
+              "text": "And OpenID Connect Secrets lets the OpenID Connect server sign and encrypt its tokens with keys kept as secrets."
+            },
+            {
+              "id": "features-5",
+              "text": "Let's enable Secrets. Its pages are under Tools, Security: Secrets, Migrate Secrets, and Secret Stores."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "03",
+      "title": "Creating secrets",
+      "subtitle": "Text values, RSA keys and certificates",
+      "clips": [
+        {
+          "id": "03-create",
+          "kind": "clip",
+          "steps": [
+            {
+              "id": "create-1",
+              "text": "On the Secrets page, Add Secret first asks for the type of secret."
+            },
+            {
+              "id": "create-2",
+              "text": "A text secret holds a value, like a password or an API key. An RSA key holds a key pair, generated for you. And an X.509 certificate references a certificate from the certificate store of the machine."
+            },
+            {
+              "id": "create-3",
+              "text": "Let's create a text secret for a payment API key. Its name is how settings reference it, so it can't be changed later."
+            },
+            {
+              "id": "create-4",
+              "text": "The value is encrypted before it's saved, and it's never displayed again. A description tells others what the secret is for."
+            },
+            {
+              "id": "create-5",
+              "text": "The expiration date is optional. It doesn't disable the secret: it's a reminder of when to rotate it."
+            },
+            {
+              "id": "create-6",
+              "text": "The secret is listed with badges for its type, its store, and its expiration."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "04",
+      "title": "Managing secrets",
+      "subtitle": "Search, filter, edit and delete",
+      "clips": [
+        {
+          "id": "04-manage",
+          "kind": "clip",
+          "steps": [
+            {
+              "id": "manage-1",
+              "text": "As the list grows, the search box finds secrets by name, description, type, or store."
+            },
+            {
+              "id": "manage-2",
+              "text": "And the filters show the secrets that have expired, expire within 30 days, or never expire, as well as the secrets of a type."
+            },
+            {
+              "id": "manage-3",
+              "text": "Expired secrets keep working: the warning is there so that you rotate them in time. Administrators also see it on their dashboard."
+            },
+            {
+              "id": "manage-4",
+              "text": "To rotate a secret, open it. The value field stays empty. Enter a new value to replace it, or leave it empty to keep the current one."
+            },
+            {
+              "id": "manage-5",
+              "text": "To delete several secrets at once, select them, and use the Actions menu."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "05",
+      "title": "Using secrets in settings",
+      "subtitle": "One editor for every credential",
+      "clips": [
+        {
+          "id": "05-input",
+          "kind": "clip",
+          "steps": [
+            {
+              "id": "input-1",
+              "text": "Features that need a credential, like the SMTP email settings, all use the same editor. By default, it holds a user-specified value: the value is encrypted, and kept with the settings, exactly as without the Secrets module."
+            },
+            {
+              "id": "input-2",
+              "text": "Choose Use a secret, and pick one from the list."
+            },
+            {
+              "id": "input-3",
+              "text": "If the secret doesn't exist yet, New secret opens the secret editor in a new tab, with a suggested name."
+            },
+            {
+              "id": "input-4",
+              "text": "Enter the value, and save it."
+            },
+            {
+              "id": "input-5",
+              "text": "Back in the settings, the reload button refreshes the list, and selects the new secret, without losing the changes on the page."
+            },
+            {
+              "id": "input-6",
+              "text": "Save the settings, and SMTP now reads its password from the Secrets module. The email, SMS, Meta, GitHub, Google, Microsoft, X, OpenID Connect, and Azure AI Search settings all work this way."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "06",
+      "title": "Migrating existing credentials",
+      "subtitle": "Move them to secrets, on demand",
+      "clips": [
+        {
+          "id": "06-migrate",
+          "kind": "clip",
+          "steps": [
+            {
+              "id": "migrate-1",
+              "text": "Most sites already have credentials saved in their settings. Migrate Secrets lists every credential that's still kept in the settings of an enabled feature."
+            },
+            {
+              "id": "migrate-2",
+              "text": "Select the ones to move. Each one gets a suggested name, which you can change."
+            },
+            {
+              "id": "migrate-3",
+              "text": "Move to Secrets decrypts each value, saves it as a secret, and updates the settings to reference it. An existing secret is never overwritten, and a credential that can't be moved stays where it was."
+            },
+            {
+              "id": "migrate-4",
+              "text": "The credentials are now secrets, and the features that use them keep working, without any other change."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "07",
+      "title": "Azure Key Vault",
+      "subtitle": "Keep secrets in a dedicated vault",
+      "clips": [
+        {
+          "id": "07-keyvault-setup",
+          "kind": "slide",
+          "steps": [
+            {
+              "id": "keyvault-1",
+              "text": "To keep secrets in Azure Key Vault, register a Secret Client in the host, and select it in the configuration of the Azure Key Vault feature. Each tenant gets its own namespace in the vault."
+            }
+          ]
+        },
+        {
+          "id": "07-keyvault",
+          "kind": "clip",
+          "steps": [
+            {
+              "id": "keyvault-2",
+              "text": "Then enable Secrets, Azure Key Vault."
+            },
+            {
+              "id": "keyvault-3",
+              "text": "When you create a secret, you can now choose its store."
+            },
+            {
+              "id": "keyvault-4",
+              "text": "The store badge shows where each secret is kept. Settings reference secrets by name, so they don't need to know which store keeps them."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "08",
+      "title": "Secret Stores",
+      "subtitle": "Move secrets between stores",
+      "clips": [
+        {
+          "id": "08-stores",
+          "kind": "clip",
+          "steps": [
+            {
+              "id": "stores-1",
+              "text": "Secret Stores moves secrets from one store to another. Select the source store, and it shows how many active secrets it keeps."
+            },
+            {
+              "id": "stores-2",
+              "text": "Choose the destination store, and confirm. Each secret is copied, verified, and only then removed from the source. Names don't change, so the settings that use them keep working."
+            },
+            {
+              "id": "stores-3",
+              "text": "And to move a single secret, use Move, next to it, on the Secrets list."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "09",
+      "title": "OpenID Connect",
+      "subtitle": "Signing and encryption keys as secrets",
+      "clips": [
+        {
+          "id": "09-openid",
+          "kind": "clip",
+          "steps": [
+            {
+              "id": "openid-1",
+              "text": "With OpenID Connect Secrets enabled, the OpenID Connect server can sign and encrypt its tokens with RSA keys kept as secrets, instead of certificates installed on the machine."
+            },
+            {
+              "id": "openid-2",
+              "text": "Select the keys in the server settings. Every instance of the site then uses the same keys, wherever it runs."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "10",
+      "title": "Deployment and recipes",
+      "subtitle": "Move secrets between environments",
+      "clips": [
+        {
+          "id": "10-deploy",
+          "kind": "clip",
+          "steps": [
+            {
+              "id": "deploy-1",
+              "text": "Deployment plans can include secrets. The Secrets step exports their names and metadata, and their values only when they're encrypted with an RSA key that the target site also has."
+            }
+          ]
+        },
+        {
+          "id": "10-recipe",
+          "kind": "slide",
+          "steps": [
+            {
+              "id": "deploy-2",
+              "text": "And the Secrets recipe step creates secrets when a site is set up, with values read from the configuration, such as environment variables, so they never appear in the recipe."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "11",
+      "title": "Adopting the Secrets module",
+      "subtitle": "Secret support in your own modules",
+      "clips": [
+        {
+          "id": "11-adopt",
+          "kind": "slide",
+          "steps": [
+            {
+              "id": "adopt-1",
+              "text": "Your own modules can offer the same experience, without depending on the Secrets module. Keep the protected value in your settings, add a property for the name of a secret, and edit both with a secret input view model."
+            },
+            {
+              "id": "adopt-2",
+              "text": "In the display driver, create the editor model from the stored values, and apply the posted one with Update Async. It validates the input, and protects a new value."
+            },
+            {
+              "id": "adopt-3",
+              "text": "Render it with the secret input tag helper. At runtime, Get Secret Value Async reads the secret when one is selected, and the protected value otherwise."
+            },
+            {
+              "id": "adopt-4",
+              "text": "Optionally, a display driver lists your credentials on the Migrate Secrets screen. The documentation of the Secrets module walks through every step."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "99",
+      "title": "The Orchard Core Secrets module",
+      "subtitle": "docs.orchardcore.net",
+      "clips": [
+        {
+          "id": "99-outro",
+          "kind": "card",
+          "steps": [
+            {
+              "id": "outro",
+              "text": "That's the Secrets module: one secure home for the sensitive values of your site, kept in the store of your choice, and easy to adopt in your own modules. Thanks for watching."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
