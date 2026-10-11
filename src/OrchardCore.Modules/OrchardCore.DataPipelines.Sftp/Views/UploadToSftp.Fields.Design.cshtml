@@ -1,0 +1,7 @@
+@model UploadToSftpStepViewModel
+
+<span class="text-break">@Model.Summary</span>
+@if (string.IsNullOrEmpty(Model.HostKeyFingerprint) && !string.IsNullOrEmpty(Model.Summary))
+{
+    <span class="text-muted d-block">@T["Host key not verified"]</span>
+}

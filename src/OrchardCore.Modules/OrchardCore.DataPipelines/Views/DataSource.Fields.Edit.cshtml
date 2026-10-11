@@ -1,0 +1,78 @@
+@model DataSourceStepViewModel
+
+<script asp-name="data-pipelines-editors" at="Foot"></script>
+
+<div class="ocat-wrapper" asp-validation-class-for="DataSet">
+    <label asp-for="DataSet" class="ocat-label ocat-label-required">@T["Data set"]</label>
+    <div class="ocat-end">
+        <select asp-for="DataSet" class="form-select">
+            <option value="">@T["Choose a data set"]</option>
+            @foreach (var group in Model.DataSets.GroupBy(option => option.Group))
+            {
+                <optgroup label="@group.Key">
+                    @foreach (var option in group)
+                    {
+                        <option value="@option.Value" selected="@(option.Value == Model.DataSet)">@option.Text</option>
+                    }
+                </optgroup>
+            }
+        </select>
+        <span asp-validation-for="DataSet"></span>
+        <span class="hint">@T["The data is read with the access of the user who publishes the pipeline."]</span>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.DataSet))
+{
+    <div class="ocat-wrapper">
+        <label asp-for="Fields" class="ocat-label">@T["Fields"]</label>
+        <div class="ocat-end">
+            <select asp-for="Fields" class="form-select" multiple size="@Math.Min(10, Math.Max(4, Model.AvailableFields.Count))">
+                @foreach (var group in Model.AvailableFields.GroupBy(field => field.Group ?? string.Empty))
+                {
+                    <optgroup label="@group.Key">
+                        @foreach (var field in group)
+                        {
+                            <option value="@field.Name" selected="@Model.Fields.Contains(field.Name)">@field.DisplayName (@field.Name)</option>
+                        }
+                    </optgroup>
+                }
+            </select>
+            <span class="hint">@T["The fields to read, in this order. Select none to read every field."]</span>
+        </div>
+    </div>
+
+    <div class="ocat-wrapper">
+        <label class="ocat-label">@T["Filters"]</label>
+        <div class="ocat-end" data-dp-list data-dp-prefix="@Html.Name("Filters")">
+            <template data-dp-template>
+                <partial name="DataPipelineDataSourceFilterRow" model="@((Model.AvailableFields, new DataSourceFilterRow(), "__index__"))" />
+            </template>
+            <div data-dp-rows>
+                @for (var index = 0; index < Model.Filters.Count; index++)
+                {
+                    <partial name="DataPipelineDataSourceFilterRow" model="@((Model.AvailableFields, Model.Filters[index], index.ToString(System.Globalization.CultureInfo.InvariantCulture)))" />
+                }
+            </div>
+            <button type="button" class="btn btn-sm btn-secondary" data-dp-add>@T["Add a filter"]</button>
+            <span class="hint">@T["Only the rows that match every filter are read. Write dates as yyyy-MM-dd; they are compared in UTC."]</span>
+        </div>
+    </div>
+
+    <div class="ocat-limited-wrapper" asp-validation-class-for="MaxRows">
+        <label asp-for="MaxRows" class="ocat-label">@T["Most rows"]</label>
+        <div class="ocat-limited">
+            <input asp-for="MaxRows" type="number" min="0" class="form-control" />
+            <span asp-validation-for="MaxRows"></span>
+            <span class="hint">@T["0 reads every row."]</span>
+        </div>
+    </div>
+
+    <div class="ocat-wrapper">
+        <label asp-for="Parameters" class="ocat-label">@T["Parameters"]</label>
+        <div class="ocat-end">
+            <textarea asp-for="Parameters" class="form-control font-monospace" rows="2" placeholder="name=value"></textarea>
+            <span class="hint">@T["The parameters of a data set that takes them, such as a saved query: one name=value per line."]</span>
+        </div>
+    </div>
+}

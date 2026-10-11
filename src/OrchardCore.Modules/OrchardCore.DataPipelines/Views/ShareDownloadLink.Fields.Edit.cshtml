@@ -1,0 +1,45 @@
+@model ShareDownloadLinkStepViewModel
+
+<div class="ocat-wrapper" asp-validation-class-for="Recipients">
+    <label asp-for="Recipients" class="ocat-label ocat-label-required">@T["Recipients"]</label>
+    <div class="ocat-end">
+        <textarea asp-for="Recipients" class="form-control" rows="2" placeholder="alice, bob@example.com"></textarea>
+        <span asp-validation-for="Recipients"></span>
+        <span class="hint">@T["The user names or emails of the users of this site the files are shared with, separated by commas. A link works only for them, once signed in."]</span>
+    </div>
+</div>
+
+<div class="ocat-limited-wrapper" asp-validation-class-for="ExpiresAfterDays">
+    <label asp-for="ExpiresAfterDays" class="ocat-label ocat-label-required">@T["Days the link works"]</label>
+    <div class="ocat-limited">
+        <input asp-for="ExpiresAfterDays" type="number" min="1" max="@ShareDownloadLinkStep.MaxDays" class="form-control" />
+        <span asp-validation-for="ExpiresAfterDays"></span>
+        <span class="hint">@T["A link can also be revoked from the list of shared files."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="NotifyByEmail" />
+            <label class="form-check-label" asp-for="NotifyByEmail">@T["Send the link to the recipients by email"]</label>
+            <span class="hint dashed">@T["Requires the Email feature."]</span>
+        </div>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <label asp-for="Subject" class="ocat-label">@T["Email subject"]</label>
+    <div class="ocat-end">
+        <input asp-for="Subject" class="form-control" />
+        <span class="hint">@T["Placeholders: {0}, {1}, and {2}.", "{PipelineName}", "{RunId}", "{Date:format}"]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <label asp-for="Message" class="ocat-label">@T["Message"]</label>
+    <div class="ocat-end">
+        <textarea asp-for="Message" class="form-control" rows="3"></textarea>
+        <span class="hint">@T["An optional message added to the email."]</span>
+    </div>
+</div>

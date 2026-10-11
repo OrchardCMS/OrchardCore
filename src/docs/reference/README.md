@@ -76,6 +76,11 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - [XML-RPC](modules/XmlRpc/README.md)
 - [Shortcodes](modules/Shortcodes/README.md)
 
+### Data Sources and Pipelines
+
+- [Data Sources](modules/DataSources/README.md)
+- [Data Pipelines](modules/DataPipelines/README.md)
+
 ### Design
 
 - [Display Management](modules/DisplayManagement/README.md)

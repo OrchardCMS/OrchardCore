@@ -1,0 +1,92 @@
+@model CreateFileStepViewModel
+
+<div class="ocat-wrapper" asp-validation-class-for="Format">
+    <label asp-for="Format" class="ocat-label ocat-label-required">@T["Format"]</label>
+    <div class="ocat-end">
+        <select asp-for="Format" class="form-select">
+            @foreach (var format in Model.Formats)
+            {
+                <option value="@format.Name" selected="@(format.Name == Model.Format)">@format.DisplayName (@format.Extension)</option>
+            }
+        </select>
+        <span asp-validation-for="Format"></span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <label asp-for="FileName" class="ocat-label">@T["File name"]</label>
+    <div class="ocat-end">
+        <input asp-for="FileName" class="form-control" placeholder="{PipelineName}-{Date:yyyyMMdd-HHmmss}" />
+        <span class="hint">@T["Without the extension. Placeholders: {0}, {1}, and {2}, where the format is a .NET date format such as yyyy-MM-dd.", "{PipelineName}", "{RunId}", "{Date:format}"]</span>
+    </div>
+</div>
+
+@{
+    // Only the options of the chosen format are shown; the others are kept for when the format changes back. A format
+    // added by another module shows them all.
+    var isKnown = Model.Format is "csv" or "xlsx" or "json" or "jsonl";
+    var hasHeader = !isKnown || Model.Format is "csv" or "xlsx";
+    var hasDelimiter = !isKnown || Model.Format == "csv";
+    var hasSheet = !isKnown || Model.Format == "xlsx";
+    var hasIndent = !isKnown || Model.Format == "json";
+}
+
+<div class="ocat-wrapper">
+    <div class="ocat-end-offset">
+        @if (hasHeader)
+        {
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" asp-for="IncludeHeader" />
+                <label class="form-check-label" asp-for="IncludeHeader">@T["Start with a row of column names"]</label>
+            </div>
+        }
+        else
+        {
+            <input type="hidden" asp-for="IncludeHeader" />
+        }
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="UseDisplayNames" />
+            <label class="form-check-label" asp-for="UseDisplayNames">@T["Name the columns with the labels of the fields"]</label>
+        </div>
+        @if (hasIndent)
+        {
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" asp-for="Indented" />
+                <label class="form-check-label" asp-for="Indented">@T["Indent the JSON"]</label>
+            </div>
+        }
+        else
+        {
+            <input type="hidden" asp-for="Indented" />
+        }
+    </div>
+</div>
+
+@if (hasDelimiter)
+{
+    <div class="ocat-limited-wrapper">
+        <label asp-for="Delimiter" class="ocat-label">@T["CSV delimiter"]</label>
+        <div class="ocat-limited">
+            <input asp-for="Delimiter" class="form-control" maxlength="3" />
+            <span class="hint">@T["A comma by default; type tab for tab-separated values."]</span>
+        </div>
+    </div>
+}
+else
+{
+    <input type="hidden" asp-for="Delimiter" />
+}
+
+@if (hasSheet)
+{
+    <div class="ocat-wrapper">
+        <label asp-for="SheetName" class="ocat-label">@T["Worksheet name"]</label>
+        <div class="ocat-end">
+            <input asp-for="SheetName" class="form-control" placeholder="Sheet1" />
+        </div>
+    </div>
+}
+else
+{
+    <input type="hidden" asp-for="SheetName" />
+}

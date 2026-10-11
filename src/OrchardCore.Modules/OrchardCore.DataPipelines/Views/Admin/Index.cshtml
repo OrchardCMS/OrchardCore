@@ -1,0 +1,130 @@
+@model DataPipelineIndexViewModel
+
+<zone Name="Title">
+    <breadcrumb name="DataPipelines" title="@T["Data Pipelines"]" />
+</zone>
+
+<form asp-action="Index" method="get">
+    <div class="card mb-3 text-bg-theme position-sticky action-bar">
+        <div class="card-body">
+            <div class="row gx-3">
+                <div class="col">
+                    <div class="has-search">
+                        <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
+                        <input name="q" value="@Model.Search" class="form-control" placeholder="@T["Search"]" type="search" aria-label="@T["Search the pipelines"]" autofocus />
+                    </div>
+                </div>
+                @if (Model.CanManage)
+                {
+                    <div class="col-auto">
+                        <a asp-action="Create" class="btn btn-secondary create" role="button">@T["Add Pipeline"]</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</form>
+
+<ul class="list-group">
+    @if (Model.Pipelines.Count > 0)
+    {
+        <li class="list-group-item text-bg-theme">
+            <div class="my-1">
+                @T.Plural(Model.Pipelines.Count, "{0} item", "{0} items")<span class="text-muted">@T.Plural(Model.TotalCount, " / {0} item in total", " / {0} items in total")</span>
+            </div>
+        </li>
+
+        foreach (var entry in Model.Pipelines)
+        {
+            var pipeline = entry.Pipeline;
+            var canRunNow = Model.CanRun && pipeline.Published is not null && pipeline.IsEnabled;
+
+            <li class="list-group-item" data-pipeline-id="@pipeline.PipelineId">
+                <div class="row">
+                    <div class="col-lg col-12 d-flex align-items-center">
+                        <div class="d-flex flex-column flex-md-row flex-wrap align-items-md-center gap-1">
+                            <div class="me-2">
+                                <a asp-action="Edit" asp-route-pipelineId="@pipeline.PipelineId">@pipeline.Name</a>
+                            </div>
+                            <div>
+                                @if (pipeline.Published is null)
+                                {
+                                    <span class="badge ta-badge fw-normal" title="@T["Publish the pipeline to run it."]"><i class="fa-solid fa-pen-ruler text-secondary" aria-hidden="true"></i> @T["Draft"]</span>
+                                }
+                                else
+                                {
+                                    <span class="badge ta-badge fw-normal" title="@T["The published version runs."]"><i class="fa-solid fa-check text-success" aria-hidden="true"></i> @T["Version {0}", pipeline.PublishedVersionNumber]</span>
+
+                                    if (pipeline.Draft is not null)
+                                    {
+                                        <span class="badge ta-badge fw-normal"><i class="fa-solid fa-pen text-info" aria-hidden="true"></i> @T["Unpublished changes"]</span>
+                                    }
+                                }
+
+                                @if (!pipeline.IsEnabled)
+                                {
+                                    <span class="badge ta-badge fw-normal"><i class="fa-solid fa-power-off text-danger" aria-hidden="true"></i> @T["Disabled"]</span>
+                                }
+
+                                @if (entry.LastRun is { } run)
+                                {
+                                    <a asp-action="Run" asp-route-runId="@run.RunId" class="badge ta-badge fw-normal" title="@T["Last run"]">
+                                        <i class="@run.Status.GetIcon()" aria-hidden="true"></i>
+                                        @T[run.Status.ToString()] · <time datetime="@run.QueuedUtc.ToString("o")">@await DisplayAsync(await New.Timespan(Utc: run.QueuedUtc))</time>
+                                    </a>
+                                }
+
+                                <span class="badge ta-badge fw-normal" title="@T["Modified"]">
+                                    <i class="fa-solid fa-calendar text-secondary" aria-hidden="true"></i> @await DisplayAsync(await New.Timespan(Utc: pipeline.ModifiedUtc))
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-auto col-12 d-flex justify-content-end align-items-center">
+                        <a asp-action="Edit" asp-route-pipelineId="@pipeline.PipelineId" class="btn btn-primary btn-sm me-1">@(Model.CanManage ? T["Edit"] : T["View"])</a>
+                        <div class="btn-group" title="@T["Actions"]">
+                            <button type="button" class="btn btn-sm btn-secondary dropdown-toggle actions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span>@T["Actions"]</span>
+                            </button>
+                            <div class="actions-menu dropdown-menu dropdown-menu-end">
+                                @if (canRunNow)
+                                {
+                                    <a asp-action="RunNow" asp-route-pipelineId="@pipeline.PipelineId" class="dropdown-item btn-sm" data-url-af="UnsafeUrl" data-title="@T["Run now"]" data-message="@T["Run the pipeline '{0}' now?", pipeline.Name]" data-ok-text="@T["Run"]" data-cancel-text="@T["Cancel"]" data-ok-class="btn-primary">@T["Run now"]</a>
+                                }
+                                <a asp-action="Runs" asp-route-pipelineId="@pipeline.PipelineId" class="dropdown-item btn-sm">@T["Run history"]</a>
+                                @if (Model.CanManage)
+                                {
+                                    <div class="dropdown-divider"></div>
+                                    <a asp-action="Delete" asp-route-pipelineId="@pipeline.PipelineId" class="dropdown-item btn-sm" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Delete"]" data-message="@T["Are you sure you want to delete the pipeline '{0}', its versions and its run history?", pipeline.Name]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Delete"]</a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @if (!string.IsNullOrEmpty(pipeline.Description))
+                {
+                    <div class="hint mt-1">@pipeline.Description</div>
+                }
+            </li>
+        }
+    }
+    else
+    {
+        <li class="list-group-item">
+            <div class="alert alert-info mb-0" role="alert">
+                @if (string.IsNullOrWhiteSpace(Model.Search))
+                {
+                    @T["<strong>Nothing here!</strong> There are no data pipelines for the moment."]
+                }
+                else
+                {
+                    @T["<strong>Nothing here!</strong> No data pipeline matches your search."]
+                }
+                <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/DataPipelines/" target="_blank">@T["See documentation"]</a>
+            </div>
+        </li>
+    }
+</ul>
+
+@await DisplayAsync(Model.Pager)
+

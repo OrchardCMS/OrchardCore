@@ -1,0 +1,10 @@
+@model SortStepViewModel
+
+@if (Model.Keys.Count == 0)
+{
+    <span class="text-muted">@T["Choose the fields to sort by"]</span>
+}
+else
+{
+    <span class="text-break">@string.Join(", ", Model.Keys.Select(key => key.Descending ? $"{key.Field} ↓" : $"{key.Field} ↑"))</span>
+}

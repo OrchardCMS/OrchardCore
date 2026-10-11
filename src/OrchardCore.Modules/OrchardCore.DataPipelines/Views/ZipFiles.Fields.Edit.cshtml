@@ -1,0 +1,9 @@
+@model ZipFilesStepViewModel
+
+<div class="ocat-wrapper">
+    <label asp-for="FileName" class="ocat-label">@T["Archive name"]</label>
+    <div class="ocat-end">
+        <input asp-for="FileName" class="form-control" placeholder="{PipelineName}-{Date:yyyyMMdd-HHmmss}" />
+        <span class="hint">@T["Without the .zip extension. Placeholders: {0}, {1}, and {2}.", "{PipelineName}", "{RunId}", "{Date:format}"]</span>
+    </div>
+</div>

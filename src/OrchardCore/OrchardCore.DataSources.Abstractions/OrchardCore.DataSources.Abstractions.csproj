@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>OrchardCore.DataSources</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Data Sources Abstractions</Title>
+    <Description>$(OCCMSDescription)
+
+      Abstractions to describe and read tabular data from pluggable data sources, and to read and write data files.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS DataSources</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+</Project>

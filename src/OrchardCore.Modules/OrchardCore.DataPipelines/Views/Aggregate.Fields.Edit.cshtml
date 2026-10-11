@@ -1,0 +1,33 @@
+@model AggregateStepViewModel
+
+<script asp-name="data-pipelines-editors" at="Foot"></script>
+
+<div class="ocat-wrapper">
+    <label asp-for="GroupBy" class="ocat-label">@T["Group by"]</label>
+    <div class="ocat-end">
+        <select asp-for="GroupBy" class="form-select" multiple size="@Math.Min(8, Math.Max(3, Model.AvailableFields.Count))">
+            @foreach (var field in Model.AvailableFields)
+            {
+                <option value="@field.Name" selected="@Model.GroupBy.Contains(field.Name)">@field.Name (@field.Type)</option>
+            }
+        </select>
+        <span class="hint">@T["The rows with the same values of these fields form a group. Select none to summarize every row into one."]</span>
+    </div>
+</div>
+
+<div class="ocat-wrapper">
+    <label class="ocat-label ocat-label-required">@T["Values"]</label>
+    <div class="ocat-end" data-dp-list data-dp-prefix="@Html.Name("Measures")">
+        <template data-dp-template>
+            <partial name="DataPipelineMeasureRow" model="@((Model.AvailableFields, new AggregateMeasure(), "__index__"))" />
+        </template>
+        <div data-dp-rows>
+            @for (var index = 0; index < Model.Measures.Count; index++)
+            {
+                <partial name="DataPipelineMeasureRow" model="@((Model.AvailableFields, Model.Measures[index], index.ToString(System.Globalization.CultureInfo.InvariantCulture)))" />
+            }
+        </div>
+        <button type="button" class="btn btn-sm btn-secondary" data-dp-add>@T["Add a value"]</button>
+        <span class="hint">@T["The values computed for each group, such as the number of rows or the sum of a field."]</span>
+    </div>
+</div>
