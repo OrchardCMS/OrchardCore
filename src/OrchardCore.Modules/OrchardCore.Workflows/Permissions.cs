@@ -33,7 +33,7 @@ public sealed class Permissions : IPermissionProvider
         new PermissionStereotype
         {
             Name = OrchardCoreConstants.Roles.Editor,
-            Permissions = _allPermissions,
+            Permissions = [WorkflowsPermissions.ExecuteWorkflows],
         }
     ];
 }
