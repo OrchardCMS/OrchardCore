@@ -541,6 +541,7 @@ public class PagerShapes : IShapeAttributeProvider
         else
         {
             shape.Attributes.Remove("href");
+            shape.Attributes.Remove("rel");
         }
 
         var tag = shape.GetTagBuilder("a");
