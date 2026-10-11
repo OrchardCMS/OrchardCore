@@ -85,7 +85,7 @@ onMounted(() => {
                 <i class="fa-solid fa-rotate" :class="{ 'fa-spin': tracker.state.loading }" aria-hidden="true"></i>
                 {{ t("Refresh", "Refresh") }}
             </button>
-            <a v-if="runsPageUrl" :href="runsPageUrl" class="btn btn-sm btn-link ms-auto" data-cy="runs-all">{{ t("AllRuns", "All runs") }}</a>
+            <a v-if="runsPageUrl" :href="runsPageUrl" class="btn btn-sm btn-link ms-auto" data-cy="runs-all">{{ t("RunHistory", "Run history") }}</a>
         </div>
         <p v-if="runDisabledReason" class="dpd-panel-intro pt-0" data-cy="runs-disabled-reason">{{ runDisabledReason }}</p>
 

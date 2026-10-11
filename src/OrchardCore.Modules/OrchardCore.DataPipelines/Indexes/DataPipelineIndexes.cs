@@ -69,9 +69,13 @@ public sealed class DataPipelineRunIndex : MapIndex
 /// </summary>
 public sealed class DataPipelineSharedFileIndex : MapIndex
 {
+    public const int MaxFileNameLength = 255;
+
     public long DocumentId { get; set; }
 
     public string FileId { get; set; }
+
+    public string FileName { get; set; }
 
     public string PipelineId { get; set; }
 
@@ -149,6 +153,7 @@ public sealed class DataPipelineSharedFileIndexProvider : IndexProvider<DataPipe
             .Map(file => new DataPipelineSharedFileIndex
             {
                 FileId = file.FileId,
+                FileName = file.FileName?.Length > DataPipelineSharedFileIndex.MaxFileNameLength ? file.FileName[..DataPipelineSharedFileIndex.MaxFileNameLength] : file.FileName,
                 PipelineId = file.PipelineId,
                 RunId = file.RunId,
                 CreatedUtc = file.CreatedUtc,

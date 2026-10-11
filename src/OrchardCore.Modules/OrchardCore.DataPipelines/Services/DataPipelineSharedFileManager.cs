@@ -15,6 +15,7 @@ using OrchardCore.Modules;
 using OrchardCore.Users;
 using OrchardCore.Users.Models;
 using YesSql;
+using YesSql.Services;
 using IIdGenerator = OrchardCore.Entities.IIdGenerator;
 using ISession = YesSql.ISession;
 
@@ -159,14 +160,25 @@ public sealed class DataPipelineSharedFileManager : IDataPipelineSharedFileManag
     }
 
     /// <summary>
-    /// Lists the shared files, the most recent first.
+    /// Lists the shared files whose name, or the name of whose pipeline, contains a text, the most recent first.
     /// </summary>
+    /// <param name="search">The text, or <see langword="null"/> for every file.</param>
     /// <param name="skip">The number of files to skip.</param>
     /// <param name="take">The number of files to return.</param>
-    /// <returns>The files and their number.</returns>
-    public async Task<(IReadOnlyList<DataPipelineSharedFile> Files, int Count)> ListAsync(int skip, int take)
+    /// <returns>The files, and the number of files that match.</returns>
+    public async Task<(IReadOnlyList<DataPipelineSharedFile> Files, int Count)> ListAsync(string search, int skip, int take)
     {
         var query = _session.Query<DataPipelineSharedFile, DataPipelineSharedFileIndex>();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var text = search.Trim();
+            var pipelineIds = await _services.GetRequiredService<DataPipelineManager>().FindIdsAsync(text);
+
+            query = pipelineIds.Count == 0
+                ? query.Where(index => index.FileName.Contains(text))
+                : query.Where(index => index.FileName.Contains(text) || index.PipelineId.IsIn(pipelineIds));
+        }
         var count = await query.CountAsync();
         var files = await query.OrderByDescending(index => index.CreatedUtc).Skip(skip).Take(take).ListAsync();
 

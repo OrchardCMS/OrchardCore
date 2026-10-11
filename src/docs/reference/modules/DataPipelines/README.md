@@ -8,7 +8,9 @@ Pipelines read their data from the [Data Sources](../DataSources/README.md) of t
 
 | Feature | Description |
 |---------|-------------|
-| Data Pipelines (`OrchardCore.DataPipelines`) | The designer, the runs, and the steps that read data sources, transform rows, create and zip files, share download links, upload files to FTP and SFTP servers, and send them to web APIs. Depends on the Data Sources and Users features. |
+| Data Pipelines (`OrchardCore.DataPipelines`) | The designer, the runs, and the steps that read data sources, transform rows, create and zip files, share download links, and send files to web APIs. Depends on the Data Sources and Users features. |
+| Data Pipelines - FTP (`OrchardCore.DataPipelines.Ftp`) | Adds the **Upload to an FTP server** step, with the FluentFTP library. |
+| Data Pipelines - SFTP (`OrchardCore.DataPipelines.Sftp`) | Adds the **Upload to an SFTP server** step, with the SSH.NET library. |
 | Data Pipelines - Media (`OrchardCore.DataPipelines.Media`) | Adds the **Read a media file** and **Save to the media library** steps. Depends on the Media feature. |
 | Data Pipelines - Email (`OrchardCore.DataPipelines.Email`) | Adds the **Send by email** step. Depends on the Email feature. |
 | Data Pipelines - Content Items (`OrchardCore.DataPipelines.Contents`) | Adds the **Save content items** step, which creates and updates content items from rows. Depends on the Contents feature. |
@@ -31,7 +33,11 @@ Each step describes the fields it produces from the fields it receives, so the d
 
 ## Designing pipelines
 
-Pipelines are listed under **Tools** > **Data Pipelines**. **Add pipeline** creates a pipeline from its name and description, then opens the designer.
+The **Tools** > **Data Pipelines** menu has three pages:
+
+- **Pipelines** lists the pipelines, which can be searched by name. Each one shows its published version, whether it has unpublished changes or is disabled, and the status of its last run. **Edit** opens the designer, and the **Actions** menu runs the pipeline now, opens its run history, or deletes it. **Add Pipeline** creates a pipeline from its name and description, then opens the designer.
+- **Run History** lists the runs, see [Run history](#run-history).
+- **Shared Files** lists the files shared through download links, see [Download links](#download-links).
 
 The designer has:
 
@@ -41,7 +47,7 @@ The designer has:
     - **Settings**: the editor of the step, including an optional title shown on the canvas instead of the name of the step. Changes are applied as they are made;
     - **Data**: a preview of the first rows the step produces, see [Previews](#previews);
     - **Fields**: the fields the step receives and produces, with their types. A field's reference, such as `[TitlePart.Title]`, can be copied to use it in a formula;
-- the **pipeline panel**, with the **Pipeline** tab (the name and the description of the pipeline, and whether it is enabled), the **Issues** tab, which lists what must be fixed before the pipeline can be published and what deserves a look, and the **Runs** tab.
+- the **pipeline panel**, with the **Pipeline** tab (the name and the description of the pipeline, and whether it is enabled), the **Issues** tab, which lists what must be fixed before the pipeline can be published and what deserves a look, and the **History** tab.
 
 ### Drafts and versions
 
@@ -66,7 +72,7 @@ The **Data** tab runs the pipeline up to the selected step, with the draft's set
 
 ### Runs in the designer
 
-**Run** runs the published version, once the pipeline was published. The **Runs** tab lists the most recent runs; selecting one shows, on the canvas, the status of each step and the number of rows or files it produced, and follows a queued or running run until it ends. A run can be cancelled from there.
+**Run** runs the published version, once the pipeline was published. The **History** tab lists the most recent runs; selecting one shows, on the canvas, the status of each step and the number of rows or files it produced, and follows a queued or running run until it ends. A run can be cancelled from there.
 
 ## Steps
 
@@ -108,8 +114,8 @@ Grouping, deduplicating and joining compare values exactly: numbers compare by v
 |------|-------|----------|
 | **Save to the media library** (`SaveToMedia`) | In: files. | The **folder** of the media library, empty for the root, and whether a file with the same name is **replaced**, or saved under a name with a number appended. The user the run is for must be allowed to manage the media of the folder, and the media library must accept the extension of each file, see [Saving files to the media library](#saving-files-to-the-media-library). Requires the Data Pipelines - Media feature. |
 | **Share a download link** (`ShareDownloadLink`) | In: files. | The **recipients**, user names or emails of users of the site, separated by commas. The number of **days the link works**, from 1 to 365 (7 by default). Whether the link is **sent to the recipients by email**, with a **subject** and an optional **message**. See [Download links](#download-links). |
-| **Upload to an FTP server** (`UploadToFtp`) | In: files. | The **host** and **port** (21 by default), the **encryption** (explicit TLS, the default, implicit TLS, or none), whether the server's **certificate is validated** (by default), the **user name** and **password**, the **remote folder** (created when it doesn't exist, the user's starting folder when empty), whether existing files are **replaced** (otherwise the step fails when a file exists), and the **timeout** in seconds (30 by default). |
-| **Upload to an SFTP server** (`UploadToSftp`) | In: files. | The **host** and **port** (22 by default), the **user name**, a **password**, a **private key** (PEM or OpenSSH format) with its optional **passphrase**, or both, the **host key fingerprint**, the **remote folder** (created when it doesn't exist, the user's home folder when empty), whether existing files are **replaced**, and the **timeout** in seconds (30 by default). See [SFTP host keys](#sftp-host-keys). |
+| **Upload to an FTP server** (`UploadToFtp`) | In: files. | The **host** and **port** (21 by default), the **encryption** (explicit TLS, the default, implicit TLS, or none), whether the server's **certificate is validated** (by default), the **user name** and **password**, the **remote folder** (created when it doesn't exist, the user's starting folder when empty), whether existing files are **replaced** (otherwise the step fails when a file exists), and the **timeout** in seconds (30 by default). Requires the Data Pipelines - FTP feature. |
+| **Upload to an SFTP server** (`UploadToSftp`) | In: files. | The **host** and **port** (22 by default), the **user name**, a **password**, a **private key** (PEM or OpenSSH format) with its optional **passphrase**, or both, the **host key fingerprint**, the **remote folder** (created when it doesn't exist, the user's home folder when empty), whether existing files are **replaced**, and the **timeout** in seconds (30 by default). See [SFTP host keys](#sftp-host-keys). Requires the Data Pipelines - SFTP feature. |
 | **Send to a web API** (`SendToWebApi`) | In: files. | The absolute http or https **URL**, the **method** (`POST` or `PUT`), and the **body**: a `multipart/form-data` form with the file in a field (`file` by default), or the raw content of the file with its media type. Additional **headers**, which aren't secret. The **authentication**: none, basic (user name and password), a bearer token, or an API key in a header (`X-API-Key` by default). The **timeout** of each request in seconds (100 by default). Each file is sent in its own request, and a response with a status code other than 2xx fails the step. |
 | **Send by email** (`SendByEmail`) | In: files. | The **To**, **Cc** and **Bcc** recipients, separated by commas or semicolons, the **subject** and the **body**, plain text or HTML, and the **maximum size** of the attachments in megabytes (10 by default; larger files fail the step). Sends one email with every file attached, with the default email provider of the site. By default, no email is sent when there are no files. Requires the Data Pipelines - Email feature. |
 | **Save content items** (`SaveContentItems`) | In: rows. Out: **Rejected** rows. | See [Saving content items](#saving-content-items). Requires the Data Pipelines - Content Items feature. |
@@ -152,7 +158,7 @@ Unknown placeholders are left as they are. The characters a file name can't hold
 
 A run executes the published version of a pipeline. A run starts:
 
-- with **Run**, in the list of pipelines or in the designer, which requires the **Run data pipelines** permission;
+- with **Run now**, in the **Actions** menu of the list of pipelines, or **Run**, in the designer, which requires the **Run data pipelines** permission;
 - from a workflow, with the **Run Data Pipeline Task**, see [Workflows](#workflows).
 
 A disabled pipeline, or one that was never published, doesn't run.
@@ -167,7 +173,7 @@ Runs execute in the background, so a long run neither delays a response nor hold
 
 ### Run history
 
-**Runs**, in the list of pipelines, lists the runs of every pipeline or of one, the most recent first, with their status (queued, running, succeeded, failed or cancelled), their version, what started them and who. The page of a run shows:
+**Tools** > **Data Pipelines** > **Run History** lists the runs of every pipeline, the most recent first, with their status (queued, running, succeeded, failed or cancelled), their version, when they were queued, how long they took, and what started them and who. The runs can be searched by the name of their pipeline and filtered by status; **Run history**, in the **Actions** menu of a pipeline, lists the runs of that pipeline. The page of a run shows:
 
 - when it was queued, started and ended, and the error that made it fail;
 - each step, with its status, the rows and files it read and wrote, and its warnings;
@@ -232,7 +238,7 @@ The **Share a download link** step shares files with users of the site:
 - a link works only for its recipients, once signed in, until it expires or is revoked;
 - signed in, recipients also find the files shared with them, while their link works, on the **Files shared with you** page, at `/DataPipelines/Files`. The notification email links to this page, which is how recipients without an email address, or sites without the Email feature, get the files.
 
-**Shared files**, in the list of pipelines, lists the shared files, with their recipients, when their link expires and how many times they were downloaded. A link can be revoked, and a file deleted. The content of a file is deleted a day after its link expires.
+**Tools** > **Data Pipelines** > **Shared Files** lists the shared files, which can be searched by file or pipeline name, with their recipients, when their link expires and how many times they were downloaded. A link can be revoked, and a file deleted. The content of a file is deleted a day after its link expires.
 
 ### SFTP host keys
 

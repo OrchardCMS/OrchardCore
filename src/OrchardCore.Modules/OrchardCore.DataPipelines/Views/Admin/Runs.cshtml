@@ -1,62 +1,137 @@
 @model DataPipelineRunsViewModel
+@{
+    var statuses = Enum.GetValues<DataPipelineRunStatus>();
+}
 
 <zone Name="Title">
-    <breadcrumb name="DataPipelinesRuns" title="@(Model.Pipeline is null ? T["Runs"] : T["Runs of {0}", Model.Pipeline.Name])">
-        <breadcrumb-item action="Index" controller="Admin" area="OrchardCore.DataPipelines">@T["Data pipelines"]</breadcrumb-item>
+    <breadcrumb name="DataPipelinesRuns" title="@(Model.Pipeline is null ? T["Run History"] : T["Run History of {0}", Model.Pipeline.Name])">
+        <breadcrumb-item action="Index" controller="Admin" area="OrchardCore.DataPipelines">@T["Data Pipelines"]</breadcrumb-item>
     </breadcrumb>
 </zone>
 
+<form asp-action="Runs" asp-route-pipelineId="@Model.Pipeline?.PipelineId" method="get">
+    @if (Model.Status is { } selected)
+    {
+        <input type="hidden" name="status" value="@selected" />
+    }
+    <div class="card mb-3 text-bg-theme position-sticky action-bar">
+        <div class="card-body">
+            <div class="row gx-3">
+                <div class="col">
+                    @if (Model.Pipeline is null)
+                    {
+                        <div class="has-search">
+                            <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
+                            <input name="q" value="@Model.Search" class="form-control" placeholder="@T["Search by pipeline"]" type="search" aria-label="@T["Search by pipeline"]" autofocus />
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="form-control-plaintext">
+                            @T["The runs of {0}, the most recent first.", Model.Pipeline.Name]
+                            <a asp-action="Runs" asp-route-pipelineId="">@T["See every pipeline"]</a>
+                        </div>
+                    }
+                </div>
+                @if (Model.Pipeline is not null)
+                {
+                    <div class="col-auto">
+                        <a asp-action="Edit" asp-route-pipelineId="@Model.Pipeline.PipelineId" class="btn btn-secondary">@T["Open the pipeline"]</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</form>
+
 <ul class="list-group">
+    <li class="list-group-item text-bg-theme">
+        <div class="row gx-3 align-items-center">
+            <div class="col">
+                @T.Plural(Model.Runs.Count, "{0} item", "{0} items")<span class="text-muted">@T.Plural(Model.TotalCount, " / {0} item in total", " / {0} items in total")</span>
+            </div>
+            <div class="col-auto">
+                <div class="dropdown">
+                    <button class="btn btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-dp-status-filter>
+                        @(Model.Status is { } current ? T[current.ToString()] : T["Status"])
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item@(Model.Status is null ? " active" : string.Empty)" asp-action="Runs" asp-route-pipelineId="@Model.Pipeline?.PipelineId" asp-route-q="@Model.Search">@T["Every status"]</a></li>
+                        @foreach (var status in statuses)
+                        {
+                            <li><a class="dropdown-item@(Model.Status == status ? " active" : string.Empty)" asp-action="Runs" asp-route-pipelineId="@Model.Pipeline?.PipelineId" asp-route-q="@Model.Search" asp-route-status="@status">@T[status.ToString()]</a></li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </li>
+
     @if (Model.Runs.Count == 0)
     {
         <li class="list-group-item">
-            <div class="alert alert-info mb-0" role="alert">@T["No run yet."]</div>
+            <div class="alert alert-info mb-0" role="alert">
+                @if (string.IsNullOrWhiteSpace(Model.Search) && Model.Status is null)
+                {
+                    @T["<strong>Nothing here!</strong> No pipeline ran yet."]
+                }
+                else
+                {
+                    @T["<strong>Nothing here!</strong> No run matches your search."]
+                }
+            </div>
         </li>
     }
 
     @foreach (var run in Model.Runs)
     {
-        <li class="list-group-item">
-            <div class="row gx-3 align-items-center">
-                <div class="col">
-                    <a asp-action="Run" asp-route-runId="@run.RunId" class="fw-semibold">@run.PipelineName</a>
-                    <span class="badge @RunBadge(run.Status) ms-1">@T[run.Status.ToString()]</span>
-                    <span class="badge text-bg-light ms-1">@T["Version {0}", run.VersionNumber]</span>
-                    <div class="text-muted small">
-                        @T["Queued {0}", run.QueuedUtc.ToString("g", System.Globalization.CultureInfo.CurrentCulture)]
-                        @if (!string.IsNullOrEmpty(run.TriggeredBy))
-                        {
-                            <span>· @T["by {0}", run.TriggeredBy]</span>
-                        }
-                        <span>· @run.Trigger</span>
-                        @if (run.CompletedUtc is { } completed && run.StartedUtc is { } started)
-                        {
-                            <span>· @T["{0:N1} seconds", (completed - started).TotalSeconds]</span>
-                        }
+        <li class="list-group-item" data-run-id="@run.RunId">
+            <div class="row">
+                <div class="col-lg col-12 d-flex align-items-center">
+                    <div class="d-flex flex-column flex-md-row flex-wrap align-items-md-center gap-1">
+                        <div class="me-2">
+                            <a asp-action="Run" asp-route-runId="@run.RunId">@run.PipelineName</a>
+                        </div>
+                        <div>
+                            <span class="badge ta-badge fw-normal"><i class="@run.Status.GetIcon()" aria-hidden="true"></i> @T[run.Status.ToString()]</span>
+                            <span class="badge ta-badge fw-normal" title="@T["The version that ran"]"><i class="fa-solid fa-code-branch text-secondary" aria-hidden="true"></i> @T["Version {0}", run.VersionNumber]</span>
+                            <span class="badge ta-badge fw-normal" title="@T["Queued"]"><i class="fa-solid fa-calendar text-secondary" aria-hidden="true"></i> <time datetime="@run.QueuedUtc.ToString("o")">@await DisplayAsync(await New.Timespan(Utc: run.QueuedUtc))</time></span>
+                            @if (run.CompletedUtc is { } completed && run.StartedUtc is { } started)
+                            {
+                                <span class="badge ta-badge fw-normal" title="@T["Duration"]"><i class="fa-solid fa-stopwatch text-secondary" aria-hidden="true"></i> @T["{0:N1} s", (completed - started).TotalSeconds]</span>
+                            }
+                            <span class="badge ta-badge fw-normal" title="@T["Started by"]"><i class="fa-solid fa-play text-secondary" aria-hidden="true"></i> @run.Trigger@(string.IsNullOrEmpty(run.TriggeredBy) ? string.Empty : " · " + run.TriggeredBy)</span>
+                        </div>
                     </div>
-                    @if (!string.IsNullOrEmpty(run.Error))
-                    {
-                        <div class="text-danger small">@run.Error</div>
-                    }
                 </div>
-                <div class="col-auto">
-                    <a asp-action="Run" asp-route-runId="@run.RunId" class="btn btn-secondary btn-sm">@T["Details"]</a>
+                <div class="col-lg-auto col-12 d-flex justify-content-end align-items-center">
+                    <a asp-action="Run" asp-route-runId="@run.RunId" class="btn btn-primary btn-sm me-1">@T["Details"]</a>
+                    <div class="btn-group" title="@T["Actions"]">
+                        <button type="button" class="btn btn-sm btn-secondary dropdown-toggle actions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span>@T["Actions"]</span>
+                        </button>
+                        <div class="actions-menu dropdown-menu dropdown-menu-end">
+                            <a asp-action="Edit" asp-route-pipelineId="@run.PipelineId" class="dropdown-item btn-sm">@T["Open the pipeline"]</a>
+                            @if (Model.Pipeline is null)
+                            {
+                                <a asp-action="Runs" asp-route-pipelineId="@run.PipelineId" class="dropdown-item btn-sm">@T["Run history of the pipeline"]</a>
+                            }
+                            @if (Model.CanRun && !run.IsCompleted)
+                            {
+                                <div class="dropdown-divider"></div>
+                                <a asp-action="CancelRun" asp-route-runId="@run.RunId" class="dropdown-item btn-sm" data-url-af="UnsafeUrl" data-title="@T["Cancel the run"]" data-message="@T["Cancel this run?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]">@T["Cancel the run"]</a>
+                            }
+                        </div>
+                    </div>
                 </div>
             </div>
+            @if (!string.IsNullOrEmpty(run.Error))
+            {
+                <div class="text-danger small mt-1">@run.Error</div>
+            }
         </li>
     }
 </ul>
 
 @await DisplayAsync(Model.Pager)
 
-@functions {
-    private static string RunBadge(DataPipelineRunStatus status)
-        => status switch
-        {
-            DataPipelineRunStatus.Succeeded => "text-bg-success",
-            DataPipelineRunStatus.Failed => "text-bg-danger",
-            DataPipelineRunStatus.Cancelled => "text-bg-secondary",
-            DataPipelineRunStatus.Running => "text-bg-primary",
-            _ => "text-bg-light",
-        };
-}

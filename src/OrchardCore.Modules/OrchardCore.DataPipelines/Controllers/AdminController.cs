@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
+using OrchardCore.DataPipelines.Models;
 using OrchardCore.DataPipelines.Services;
 using OrchardCore.DataPipelines.ViewModels;
 using OrchardCore.DisplayManagement;
@@ -61,20 +62,26 @@ public sealed class AdminController : Controller
     }
 
     [Admin("DataPipelines", "DataPipelines")]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string q, PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, DataPipelinePermissions.ViewDataPipelines))
         {
             return Forbid();
         }
 
+        var pager = new Pager(pagerParameters, (await _siteService.GetSiteSettingsAsync()).PageSize);
+        var (pipelines, count) = await _pipelineManager.ListAsync(q, pager.GetStartIndex(), pager.PageSize);
+
         var model = new DataPipelineIndexViewModel
         {
+            Search = q,
+            TotalCount = count,
+            Pager = await _shapeFactory.PagerAsync(pager, count, new RouteData(new RouteValueDictionary { ["q"] = q })),
             CanManage = await _authorizationService.AuthorizeAsync(User, DataPipelinePermissions.ManageDataPipelines),
             CanRun = await _authorizationService.AuthorizeAsync(User, DataPipelinePermissions.RunDataPipelines),
         };
 
-        foreach (var pipeline in await _pipelineManager.ListAsync())
+        foreach (var pipeline in pipelines)
         {
             var (runs, _) = await _runManager.ListAsync(pipeline.PipelineId, 0, 1);
             model.Pipelines.Add(new DataPipelineEntryViewModel { Pipeline = pipeline, LastRun = runs.Count > 0 ? runs[0] : null });
@@ -218,7 +225,7 @@ public sealed class AdminController : Controller
     }
 
     [Admin("DataPipelines/Runs/{pipelineId?}", "DataPipelinesRuns")]
-    public async Task<IActionResult> Runs(string pipelineId, PagerParameters pagerParameters)
+    public async Task<IActionResult> Runs(string pipelineId, string q, DataPipelineRunStatus? status, PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, DataPipelinePermissions.ViewDataPipelines))
         {
@@ -233,13 +240,22 @@ public sealed class AdminController : Controller
         }
 
         var pager = new Pager(pagerParameters, (await _siteService.GetSiteSettingsAsync()).PageSize);
-        var (runs, count) = await _runManager.ListAsync(pipelineId, pager.GetStartIndex(), pager.PageSize);
+        var filter = new DataPipelineRunFilter { PipelineId = pipelineId, Search = pipeline is null ? q : null, Status = status };
+        var (runs, count) = await _runManager.ListAsync(filter, pager.GetStartIndex(), pager.PageSize);
 
         return View(new DataPipelineRunsViewModel
         {
             Pipeline = pipeline,
+            Search = filter.Search,
+            Status = status,
+            TotalCount = count,
             Runs = runs.ToList(),
-            Pager = await _shapeFactory.PagerAsync(pager, count, new RouteData(new RouteValueDictionary { ["pipelineId"] = pipelineId })),
+            Pager = await _shapeFactory.PagerAsync(pager, count, new RouteData(new RouteValueDictionary
+            {
+                ["pipelineId"] = pipelineId,
+                ["q"] = filter.Search,
+                ["status"] = status?.ToString(),
+            })),
             CanRun = await _authorizationService.AuthorizeAsync(User, DataPipelinePermissions.RunDataPipelines),
         });
     }
@@ -303,7 +319,7 @@ public sealed class AdminController : Controller
     }
 
     [Admin("DataPipelines/SharedFiles", "DataPipelinesSharedFiles")]
-    public async Task<IActionResult> SharedFiles(PagerParameters pagerParameters)
+    public async Task<IActionResult> SharedFiles(string q, PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, DataPipelinePermissions.ManageDataPipelines))
         {
@@ -311,13 +327,15 @@ public sealed class AdminController : Controller
         }
 
         var pager = new Pager(pagerParameters, (await _siteService.GetSiteSettingsAsync()).PageSize);
-        var (files, count) = await _sharedFileManager.ListAsync(pager.GetStartIndex(), pager.PageSize);
+        var (files, count) = await _sharedFileManager.ListAsync(q, pager.GetStartIndex(), pager.PageSize);
 
         return View(new DataPipelineSharedFilesViewModel
         {
+            Search = q,
+            TotalCount = count,
             Files = files.ToList(),
             UtcNow = _clock.UtcNow,
-            Pager = await _shapeFactory.PagerAsync(pager, count),
+            Pager = await _shapeFactory.PagerAsync(pager, count, new RouteData(new RouteValueDictionary { ["q"] = q })),
         });
     }
 

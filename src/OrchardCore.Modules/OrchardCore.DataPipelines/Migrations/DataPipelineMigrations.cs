@@ -51,6 +51,7 @@ public sealed class DataPipelineMigrations : DataMigration
 
         await SchemaBuilder.CreateMapIndexTableAsync<DataPipelineSharedFileIndex>(table => table
             .Column<string>("FileId", column => column.WithLength(DataPipelineIndex.MaxIdLength))
+            .Column<string>("FileName", column => column.WithLength(DataPipelineSharedFileIndex.MaxFileNameLength))
             .Column<string>("PipelineId", column => column.WithLength(DataPipelineIndex.MaxIdLength))
             .Column<string>("RunId", column => column.WithLength(DataPipelineIndex.MaxIdLength))
             .Column<DateTime>("CreatedUtc")

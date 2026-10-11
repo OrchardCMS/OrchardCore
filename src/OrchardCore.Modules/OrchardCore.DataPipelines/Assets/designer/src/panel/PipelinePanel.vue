@@ -85,7 +85,7 @@ const tabs = computed<PipelineTab[]>(() => (props.tracker ? ["pipeline", "issues
 const peek = usePeek((element) => !!element && !!panel.value?.contains(element));
 const peeking = computed(() => collapsed.value && peek.open.value);
 
-const tabLabel = (item: PipelineTab) => ({ pipeline: t("PipelineTab", "Pipeline"), issues: t("IssuesTab", "Issues"), runs: t("RunsTab", "Runs") })[item];
+const tabLabel = (item: PipelineTab) => ({ pipeline: t("PipelineTab", "Pipeline"), issues: t("IssuesTab", "Issues"), runs: t("HistoryTab", "History") })[item];
 
 const tabHint = (item: PipelineTab) =>
     ({

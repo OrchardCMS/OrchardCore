@@ -6,6 +6,7 @@ using OrchardCore.Entities;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using YesSql;
+using YesSql.Services;
 using IIdGenerator = OrchardCore.Entities.IIdGenerator;
 
 namespace OrchardCore.DataPipelines.Services;
@@ -20,17 +21,20 @@ public sealed class DataPipelineRunManager
     private readonly IIdGenerator _idGenerator;
     private readonly IClock _clock;
     private readonly DataPipelineRunTracker _tracker;
+    private readonly DataPipelineManager _pipelineManager;
 
     public DataPipelineRunManager(
         ISession session,
         IIdGenerator idGenerator,
         IClock clock,
-        DataPipelineRunTracker tracker)
+        DataPipelineRunTracker tracker,
+        DataPipelineManager pipelineManager)
     {
         _session = session;
         _idGenerator = idGenerator;
         _clock = clock;
         _tracker = tracker;
+        _pipelineManager = pipelineManager;
     }
 
     /// <summary>
@@ -110,11 +114,44 @@ public sealed class DataPipelineRunManager
     /// <param name="skip">The number of runs to skip.</param>
     /// <param name="take">The number of runs to return.</param>
     /// <returns>The runs, the most recent first, and the number of runs.</returns>
-    public async Task<(IReadOnlyList<DataPipelineRun> Runs, int Count)> ListAsync(string pipelineId, int skip, int take)
+    public Task<(IReadOnlyList<DataPipelineRun> Runs, int Count)> ListAsync(string pipelineId, int skip, int take)
+        => ListAsync(new DataPipelineRunFilter { PipelineId = pipelineId }, skip, take);
+
+    /// <summary>
+    /// Lists the most recent runs that match a filter.
+    /// </summary>
+    /// <param name="filter">The filter.</param>
+    /// <param name="skip">The number of runs to skip.</param>
+    /// <param name="take">The number of runs to return.</param>
+    /// <returns>The runs, the most recent first, and the number of runs that match.</returns>
+    public async Task<(IReadOnlyList<DataPipelineRun> Runs, int Count)> ListAsync(DataPipelineRunFilter filter, int skip, int take)
     {
-        var query = string.IsNullOrEmpty(pipelineId)
-            ? _session.Query<DataPipelineRun, DataPipelineRunIndex>()
-            : _session.Query<DataPipelineRun, DataPipelineRunIndex>(index => index.PipelineId == pipelineId);
+        ArgumentNullException.ThrowIfNull(filter);
+
+        var query = _session.Query<DataPipelineRun, DataPipelineRunIndex>();
+
+        if (!string.IsNullOrEmpty(filter.PipelineId))
+        {
+            query = query.Where(index => index.PipelineId == filter.PipelineId);
+        }
+
+        if (filter.Status is { } status)
+        {
+            var statusName = status.ToString();
+            query = query.Where(index => index.Status == statusName);
+        }
+
+        if (!string.IsNullOrWhiteSpace(filter.Search))
+        {
+            var pipelineIds = await _pipelineManager.FindIdsAsync(filter.Search);
+
+            if (pipelineIds.Count == 0)
+            {
+                return ([], 0);
+            }
+
+            query = query.Where(index => index.PipelineId.IsIn(pipelineIds));
+        }
 
         var count = await query.CountAsync();
         var runs = await query.OrderByDescending(index => index.QueuedUtc).Skip(skip).Take(take).ListAsync();

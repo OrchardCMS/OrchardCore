@@ -48,6 +48,35 @@ public sealed class DataPipelineManager
         => (await _session.Query<DataPipeline, DataPipelineIndex>().OrderBy(index => index.Name).ListAsync()).ToList();
 
     /// <summary>
+    /// Lists a page of the pipelines whose name contains a text, ordered by name.
+    /// </summary>
+    /// <param name="search">The text, or <see langword="null"/> for every pipeline.</param>
+    /// <param name="skip">The number of pipelines to skip.</param>
+    /// <param name="take">The number of pipelines to return.</param>
+    /// <returns>The pipelines, and the number of pipelines that match.</returns>
+    public async Task<(IReadOnlyList<DataPipeline> Pipelines, int Count)> ListAsync(string search, int skip, int take)
+    {
+        var query = string.IsNullOrWhiteSpace(search)
+            ? _session.Query<DataPipeline, DataPipelineIndex>()
+            : _session.Query<DataPipeline, DataPipelineIndex>(index => index.Name.Contains(search.Trim()));
+
+        var count = await query.CountAsync();
+        var pipelines = await query.OrderBy(index => index.Name).Skip(skip).Take(take).ListAsync();
+
+        return (pipelines.ToList(), count);
+    }
+
+    /// <summary>
+    /// Finds the identifiers of the pipelines whose name contains a text.
+    /// </summary>
+    /// <param name="search">The text.</param>
+    /// <returns>The identifiers.</returns>
+    public async Task<IReadOnlyList<string>> FindIdsAsync(string search)
+        => (await _session.QueryIndex<DataPipelineIndex>(index => index.Name.Contains(search.Trim())).ListAsync())
+            .Select(index => index.PipelineId)
+            .ToList();
+
+    /// <summary>
     /// Creates a pipeline, with an empty draft.
     /// </summary>
     /// <param name="name">The name of the pipeline.</param>

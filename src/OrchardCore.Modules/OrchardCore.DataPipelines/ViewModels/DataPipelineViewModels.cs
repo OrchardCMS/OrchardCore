@@ -7,6 +7,12 @@ public sealed class DataPipelineIndexViewModel
 {
     public List<DataPipelineEntryViewModel> Pipelines { get; set; } = [];
 
+    public string Search { get; set; }
+
+    public int TotalCount { get; set; }
+
+    public dynamic Pager { get; set; }
+
     public bool CanManage { get; set; }
 
     public bool CanRun { get; set; }
@@ -50,6 +56,12 @@ public sealed class DataPipelineRunsViewModel
 {
     public DataPipeline Pipeline { get; set; }
 
+    public string Search { get; set; }
+
+    public DataPipelineRunStatus? Status { get; set; }
+
+    public int TotalCount { get; set; }
+
     public List<DataPipelineRun> Runs { get; set; } = [];
 
     public dynamic Pager { get; set; }
@@ -77,6 +89,10 @@ public sealed class DataPipelineSharedWithMeViewModel
 public sealed class DataPipelineSharedFilesViewModel
 {
     public List<DataPipelineSharedFile> Files { get; set; } = [];
+
+    public string Search { get; set; }
+
+    public int TotalCount { get; set; }
 
     public DateTime UtcNow { get; set; }
 

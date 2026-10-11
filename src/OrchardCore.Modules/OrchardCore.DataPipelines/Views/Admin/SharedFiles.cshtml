@@ -1,21 +1,43 @@
 @model DataPipelineSharedFilesViewModel
-@{
-    var culture = System.Globalization.CultureInfo.CurrentCulture;
-}
 
 <zone Name="Title">
-    <breadcrumb name="DataPipelinesSharedFiles" title="@T["Shared files"]">
-        <breadcrumb-item action="Index" controller="Admin" area="OrchardCore.DataPipelines">@T["Data pipelines"]</breadcrumb-item>
+    <breadcrumb name="DataPipelinesSharedFiles" title="@T["Shared Files"]">
+        <breadcrumb-item action="Index" controller="Admin" area="OrchardCore.DataPipelines">@T["Data Pipelines"]</breadcrumb-item>
     </breadcrumb>
 </zone>
 
-<p class="text-muted">@T["The files pipelines shared through download links. A link works only for its recipients, once signed in. A file is deleted a day after its link stops working."]</p>
+<form asp-action="SharedFiles" method="get">
+    <div class="card mb-3 text-bg-theme position-sticky action-bar">
+        <div class="card-body">
+            <div class="has-search">
+                <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
+                <input name="q" value="@Model.Search" class="form-control" placeholder="@T["Search by file or pipeline"]" type="search" aria-label="@T["Search by file or pipeline"]" autofocus />
+            </div>
+        </div>
+    </div>
+</form>
 
 <ul class="list-group">
+    <li class="list-group-item text-bg-theme">
+        <div class="my-1">
+            @T.Plural(Model.Files.Count, "{0} item", "{0} items")<span class="text-muted">@T.Plural(Model.TotalCount, " / {0} item in total", " / {0} items in total")</span>
+            <span class="hint ms-2">@T["A link works only for its recipients, once signed in. A file is deleted a day after its link stops working."]</span>
+        </div>
+    </li>
+
     @if (Model.Files.Count == 0)
     {
         <li class="list-group-item">
-            <div class="alert alert-info mb-0" role="alert">@T["No file was shared yet."]</div>
+            <div class="alert alert-info mb-0" role="alert">
+                @if (string.IsNullOrWhiteSpace(Model.Search))
+                {
+                    @T["<strong>Nothing here!</strong> No pipeline shared a file yet."]
+                }
+                else
+                {
+                    @T["<strong>Nothing here!</strong> No shared file matches your search."]
+                }
+            </div>
         </li>
     }
 
@@ -23,39 +45,49 @@
     {
         var active = file.IsActive(Model.UtcNow);
 
-        <li class="list-group-item">
-            <div class="row gx-3 align-items-center">
-                <div class="col">
-                    <span class="fw-semibold">@file.FileName</span>
-                    @if (file.RevokedUtc is not null)
-                    {
-                        <span class="badge text-bg-secondary ms-1">@T["Revoked"]</span>
-                    }
-                    else if (!active)
-                    {
-                        <span class="badge text-bg-secondary ms-1">@T["Expired"]</span>
-                    }
-                    else
-                    {
-                        <span class="badge text-bg-success ms-1">@T["Active"]</span>
-                    }
-                    <div class="text-muted small">
-                        @T["Shared with {0}", string.Join(", ", file.RecipientNames)]
-                        · @T["by {0}", file.PipelineName]
-                        · @T["until {0} (UTC)", file.ExpiresUtc.ToString("g", culture)]
-                        · @T.Plural(file.Downloads, "1 download", "{0} downloads")
+        <li class="list-group-item" data-file-id="@file.FileId">
+            <div class="row">
+                <div class="col-lg col-12 d-flex align-items-center">
+                    <div class="d-flex flex-column flex-md-row flex-wrap align-items-md-center gap-1">
+                        <div class="me-2">@file.FileName</div>
+                        <div>
+                            @if (file.RevokedUtc is not null)
+                            {
+                                <span class="badge ta-badge fw-normal"><i class="fa-solid fa-link-slash text-danger" aria-hidden="true"></i> @T["Revoked"]</span>
+                            }
+                            else if (!active)
+                            {
+                                <span class="badge ta-badge fw-normal"><i class="fa-solid fa-hourglass-end text-secondary" aria-hidden="true"></i> @T["Expired"]</span>
+                            }
+                            else
+                            {
+                                <span class="badge ta-badge fw-normal" title="@T["The link works until {0} (UTC).", file.ExpiresUtc.ToString("g", System.Globalization.CultureInfo.CurrentCulture)]"><i class="fa-solid fa-link text-success" aria-hidden="true"></i> @T["Active"]</span>
+                            }
+                            <span class="badge ta-badge fw-normal" title="@T["Recipients"]"><i class="fa-solid fa-user-group text-secondary" aria-hidden="true"></i> @string.Join(", ", file.RecipientNames)</span>
+                            <span class="badge ta-badge fw-normal" title="@T["Shared by"]"><i class="fa-solid fa-diagram-project text-secondary" aria-hidden="true"></i> @file.PipelineName</span>
+                            <span class="badge ta-badge fw-normal" title="@T["Shared"]"><i class="fa-solid fa-calendar text-secondary" aria-hidden="true"></i> @await DisplayAsync(await New.Timespan(Utc: file.CreatedUtc))</span>
+                            <span class="badge ta-badge fw-normal"><i class="fa-solid fa-download text-secondary" aria-hidden="true"></i> @T.Plural(file.Downloads, "1 download", "{0} downloads")</span>
+                        </div>
                     </div>
                 </div>
-                <div class="col-auto">
-                    @if (!string.IsNullOrEmpty(file.RunId))
-                    {
-                        <a asp-action="Run" asp-route-runId="@file.RunId" class="btn btn-secondary btn-sm">@T["View the run"]</a>
-                    }
-                    @if (active)
-                    {
-                        <a asp-action="RevokeSharedFile" asp-route-fileId="@file.FileId" class="btn btn-warning btn-sm" data-url-af="UnsafeUrl" data-title="@T["Revoke"]" data-message="@T["Stop the link to '{0}' from working?", file.FileName]">@T["Revoke"]</a>
-                    }
-                    <a asp-action="DeleteSharedFile" asp-route-fileId="@file.FileId" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl" data-message="@T["Delete the shared file '{0}'?", file.FileName]">@T["Delete"]</a>
+                <div class="col-lg-auto col-12 d-flex justify-content-end align-items-center">
+                    <div class="btn-group" title="@T["Actions"]">
+                        <button type="button" class="btn btn-sm btn-secondary dropdown-toggle actions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span>@T["Actions"]</span>
+                        </button>
+                        <div class="actions-menu dropdown-menu dropdown-menu-end">
+                            @if (!string.IsNullOrEmpty(file.RunId))
+                            {
+                                <a asp-action="Run" asp-route-runId="@file.RunId" class="dropdown-item btn-sm">@T["View the run"]</a>
+                            }
+                            @if (active)
+                            {
+                                <a asp-action="RevokeSharedFile" asp-route-fileId="@file.FileId" class="dropdown-item btn-sm" data-url-af="UnsafeUrl" data-title="@T["Revoke"]" data-message="@T["Stop the link to '{0}' from working?", file.FileName]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]">@T["Revoke the link"]</a>
+                            }
+                            <div class="dropdown-divider"></div>
+                            <a asp-action="DeleteSharedFile" asp-route-fileId="@file.FileId" class="dropdown-item btn-sm" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Delete"]" data-message="@T["Delete the shared file '{0}'?", file.FileName]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Delete"]</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </li>
