@@ -11,7 +11,7 @@
     <select name="@(prefix).Function" class="form-select" style="max-width: 12rem" aria-label="@T["Function"]">
         @foreach (var function in functions)
         {
-            <option value="@function" selected="@(function == Model.Measure.Function)">@T[function.ToString()]</option>
+            <option value="@function" selected="@(function == Model.Measure.Function)">@FunctionLabel(function)</option>
         }
     </select>
     <select name="@(prefix).Field" class="form-select" aria-label="@T["Field"]">
@@ -20,3 +20,18 @@
     </select>
     <button type="button" class="btn btn-outline-danger" data-dp-remove title="@T["Remove"]"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
 </div>
+
+@functions {
+    private string FunctionLabel(DataAggregate function)
+        => function switch
+        {
+            DataAggregate.Count => T["Count"].Value,
+            DataAggregate.CountDistinct => T["Count distinct"].Value,
+            DataAggregate.Sum => T["Sum"].Value,
+            DataAggregate.Average => T["Average"].Value,
+            DataAggregate.Min => T["Minimum"].Value,
+            DataAggregate.Max => T["Maximum"].Value,
+            DataAggregate.Median => T["Median"].Value,
+            _ => function.ToString(),
+        };
+}

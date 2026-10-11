@@ -13,9 +13,23 @@
         <option value="">@T["Same type"]</option>
         @foreach (var type in Enum.GetValues<DataFieldType>())
         {
-            <option value="@type" selected="@(type.ToString() == Model.Row.Type)">@T[type.ToString()]</option>
+            <option value="@type" selected="@(type.ToString() == Model.Row.Type)">@TypeLabel(type)</option>
         }
     </select>
     <button type="button" class="btn btn-outline-secondary" data-dp-up title="@T["Move up"]"><i class="fa-solid fa-arrow-up" aria-hidden="true"></i></button>
     <button type="button" class="btn btn-outline-danger" data-dp-remove title="@T["Remove"]"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
 </div>
+
+@functions {
+    private string TypeLabel(DataFieldType type)
+        => type switch
+        {
+            DataFieldType.Text => T["Text"].Value,
+            DataFieldType.Integer => T["Integer"].Value,
+            DataFieldType.Decimal => T["Decimal"].Value,
+            DataFieldType.Boolean => T["Boolean"].Value,
+            DataFieldType.Date => T["Date"].Value,
+            DataFieldType.DateTime => T["Date and time"].Value,
+            _ => type.ToString(),
+        };
+}

@@ -6,5 +6,5 @@
 }
 else
 {
-    <span class="text-break">@T[Model.JoinType.ToString()] · @string.Join(", ", Model.Keys.Select(key => $"{key.LeftField} = {key.RightField}"))</span>
+    <span class="text-break">@(Model.JoinType switch { DataJoinType.Left => T["Left join"], DataJoinType.Right => T["Right join"], DataJoinType.Full => T["Full join"], _ => T["Inner join"] }) · @string.Join(", ", Model.Keys.Select(key => $"{key.LeftField} = {key.RightField}"))</span>
 }

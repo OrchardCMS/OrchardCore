@@ -588,7 +588,7 @@ defineExpose({ canvas, panel, stepPanel, addStep, autosave, publish, discard, st
         <header class="dpd-toolbar" data-cy="designer-toolbar">
             <!-- The designer's page has no breadcrumb, to leave the height to the canvas: the toolbar links back to the list. -->
             <template v-if="config.listUrl">
-                <a :href="config.listUrl" class="dpd-back link-secondary" data-cy="toolbar-list">{{ t("PipelinesList", "Data pipelines") }}</a>
+                <a :href="config.listUrl" class="dpd-back link-secondary" data-cy="toolbar-list">{{ t("PipelinesList", "Data Pipelines") }}</a>
                 <span class="dpd-back-separator" aria-hidden="true">/</span>
             </template>
             <h2 class="dpd-title text-truncate" :title="state.settings?.description ?? undefined">{{ state.settings?.name }}</h2>

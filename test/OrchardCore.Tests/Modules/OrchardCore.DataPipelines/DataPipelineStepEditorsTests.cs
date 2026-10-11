@@ -6,6 +6,7 @@ using OrchardCore.DataPipelines.Ftp;
 using OrchardCore.DataPipelines.Models;
 using OrchardCore.DataPipelines.Services;
 using OrchardCore.DataPipelines.Steps;
+using OrchardCore.DataSources;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
@@ -122,6 +123,29 @@ public sealed class DataPipelineStepEditorsTests
         // Assert
         using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
         Assert.True(json.RootElement.GetProperty("reloadEditor").GetBoolean());
+    }
+
+    [Fact]
+    public async Task Editor_DataSourceFilter_NamesTheOperatorsInWords()
+    {
+        // Arrange
+        using var context = await CreateContextAsync();
+        var step = new DataPipelineStep { StepId = "source", Type = DataSourceStep.StepName };
+        step.Put(new DataSourceStepSettings
+        {
+            Source = "Contents",
+            DataSet = "BlogPost",
+            Filters = [new DataSourceFilter { Field = "PublishedUtc", Operator = DataFilterOperator.GreaterThanOrEqual, Values = ["2026-01-01"] }],
+        });
+        var pipelineId = await CreatePipelineAsync(context, [step]);
+
+        // Act
+        var editor = await GetEditorAsync(context, pipelineId, "source");
+
+        // Assert
+        var operators = editor.QuerySelectorAll($"select[name='{Prefix}Filters[0].Operator'] option").ToList();
+        Assert.Contains(operators, option => option.TextContent == "is greater than or equal to" && option.HasAttribute("selected"));
+        Assert.DoesNotContain(operators, option => option.TextContent == option.GetAttribute("value"));
     }
 
     [Fact]
