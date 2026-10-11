@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Playwright;
 
 namespace OrchardCore.Tests.Functional.Helpers;
@@ -14,6 +15,7 @@ public sealed class OrchardTestFixture : IAsyncDisposable
 
     private readonly bool _isMvc;
     private readonly string _instanceId;
+    private readonly Action<OrchardCoreBuilder> _configureOrchardCore;
 
     private OrchardTestServer _server;
     private IPlaywright _playwright;
@@ -23,10 +25,11 @@ public sealed class OrchardTestFixture : IAsyncDisposable
     public string BaseUrl { get; private set; }
     public IBrowser Browser => _browser;
 
-    public OrchardTestFixture(bool isMvc = false, string instanceId = null)
+    public OrchardTestFixture(bool isMvc = false, string instanceId = null, Action<OrchardCoreBuilder> configureOrchardCore = null)
     {
         _isMvc = isMvc;
         _instanceId = instanceId;
+        _configureOrchardCore = configureOrchardCore;
     }
 
     private static string ProjectRoot =>
@@ -54,7 +57,7 @@ public sealed class OrchardTestFixture : IAsyncDisposable
         {
             _server = _isMvc
                 ? await OrchardTestServer.StartMvcAsync(AppDir, AppDataPath)
-                : await OrchardTestServer.StartCmsAsync(AppDir, AppDataPath, _instanceId);
+                : await OrchardTestServer.StartCmsAsync(AppDir, AppDataPath, _instanceId, _configureOrchardCore);
 
             BaseUrl = _server.ServerAddress;
         }

@@ -16,4 +16,9 @@ public class BackgroundServiceOptions
     /// Gets or sets the minimum idle time before the background tasks of a tenant are triggered, as well as between tasks similar to <see cref="PollingTime" />.
     /// </summary>
     public TimeSpan MinimumIdleTime { get; set; } = TimeSpan.FromSeconds(10);
+
+    /// <summary>
+    /// Gets or sets the number of completed runs kept in memory for each background task, to be shown with its execution state.
+    /// </summary>
+    public int MaxRecentRuns { get; set; } = 10;
 }
