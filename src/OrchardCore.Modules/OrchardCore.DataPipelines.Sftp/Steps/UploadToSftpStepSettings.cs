@@ -1,10 +1,17 @@
-namespace OrchardCore.DataPipelines.Steps;
+using OrchardCore.DataPipelines.Steps;
+
+namespace OrchardCore.DataPipelines.Sftp;
 
 /// <summary>
 /// The settings of an <see cref="UploadToSftpStep"/>.
 /// </summary>
 public sealed class UploadToSftpStepSettings
 {
+    /// <summary>
+    /// The number of seconds to wait for the server, by default.
+    /// </summary>
+    public const int DefaultTimeoutSeconds = 30;
+
     /// <summary>
     /// Gets or sets the host name or IP address of the server.
     /// </summary>
@@ -57,5 +64,5 @@ public sealed class UploadToSftpStepSettings
     /// <summary>
     /// Gets or sets the number of seconds to wait for the server.
     /// </summary>
-    public int TimeoutSeconds { get; set; } = UploadToFtpStepSettings.DefaultTimeoutSeconds;
+    public int TimeoutSeconds { get; set; } = DefaultTimeoutSeconds;
 }

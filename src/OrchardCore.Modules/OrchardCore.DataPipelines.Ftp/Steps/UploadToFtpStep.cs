@@ -1,7 +1,8 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DataPipelines.Services;
+using OrchardCore.DataPipelines.Steps;
 
-namespace OrchardCore.DataPipelines.Steps;
+namespace OrchardCore.DataPipelines.Ftp;
 
 /// <summary>
 /// Uploads the files it reads to a folder of an FTP server, over TLS unless told otherwise.

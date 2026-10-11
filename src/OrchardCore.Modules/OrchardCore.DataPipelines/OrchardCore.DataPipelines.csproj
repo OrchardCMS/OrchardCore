@@ -7,8 +7,7 @@
     <Description>$(OCCMSDescription)
 
     Design data pipelines that read data from any data source, transform it with filters, calculated fields, joins and
-    aggregates, and deliver it as files to the media library, FTP or SFTP servers, web APIs, email recipients or secure
-    download links.
+    aggregates, and deliver it as files to the media library, web APIs, email recipients or secure download links.
     </Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS DataPipelines ETL</PackageTags>
   </PropertyGroup>
@@ -35,11 +34,6 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Users.Core\OrchardCore.Users.Core.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Workflows.Abstractions\OrchardCore.Workflows.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.DataSources\OrchardCore.DataSources.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="FluentFTP" />
-    <PackageReference Include="SSH.NET" />
   </ItemGroup>
 
 </Project>

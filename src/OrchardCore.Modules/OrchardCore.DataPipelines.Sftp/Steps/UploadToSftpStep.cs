@@ -1,7 +1,8 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DataPipelines.Services;
+using OrchardCore.DataPipelines.Steps;
 
-namespace OrchardCore.DataPipelines.Steps;
+namespace OrchardCore.DataPipelines.Sftp;
 
 /// <summary>
 /// Uploads the files it reads to a folder of an SFTP server, authenticating with a password, a private key, or both,

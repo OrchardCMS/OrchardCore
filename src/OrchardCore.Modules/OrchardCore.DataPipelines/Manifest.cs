@@ -12,7 +12,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.DataPipelines",
     Name = "Data Pipelines",
-    Description = "Design pipelines that read data from any data source, transform it, and deliver it to FTP and SFTP servers, web APIs and download links.",
+    Description = "Design pipelines that read data from any data source, transform it, and deliver it to web APIs and download links.",
     Dependencies =
     [
         "OrchardCore.DataSources",

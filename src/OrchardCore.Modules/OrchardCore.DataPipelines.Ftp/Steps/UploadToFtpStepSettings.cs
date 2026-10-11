@@ -1,4 +1,6 @@
-namespace OrchardCore.DataPipelines.Steps;
+using OrchardCore.DataPipelines.Steps;
+
+namespace OrchardCore.DataPipelines.Ftp;
 
 /// <summary>
 /// The settings of an <see cref="UploadToFtpStep"/>.

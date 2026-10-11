@@ -1,4 +1,4 @@
-namespace OrchardCore.DataPipelines.Steps;
+namespace OrchardCore.DataPipelines.Sftp;
 
 /// <summary>
 /// Reads and compares the SHA-256 fingerprints of SSH host keys, in the format the <c>ssh</c> command shows, such as

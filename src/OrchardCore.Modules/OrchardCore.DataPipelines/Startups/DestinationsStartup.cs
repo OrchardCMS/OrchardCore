@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.DataPipelines.Drivers;
 using OrchardCore.DataPipelines.Steps;
 using OrchardCore.Modules;
@@ -7,7 +6,7 @@ using OrchardCore.Modules;
 namespace OrchardCore.DataPipelines;
 
 /// <summary>
-/// Registers the steps that deliver files to FTP and SFTP servers and to web APIs.
+/// Registers the step that sends files to web APIs.
 /// </summary>
 [Feature("OrchardCore.DataPipelines")]
 public sealed class RemoteDestinationsStartup : StartupBase
@@ -15,11 +14,6 @@ public sealed class RemoteDestinationsStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddHttpClient(SendToWebApiStep.HttpClientName);
-        services.TryAddSingleton<IDataPipelineFtpClientFactory, FluentFtpClientFactory>();
-        services.TryAddSingleton<IDataPipelineSftpClientFactory, SshNetSftpClientFactory>();
-
-        services.AddDataPipelineStep<UploadToFtpStep, UploadToFtpStepDisplayDriver>();
-        services.AddDataPipelineStep<UploadToSftpStep, UploadToSftpStepDisplayDriver>();
         services.AddDataPipelineStep<SendToWebApiStep, SendToWebApiStepDisplayDriver>();
     }
 }

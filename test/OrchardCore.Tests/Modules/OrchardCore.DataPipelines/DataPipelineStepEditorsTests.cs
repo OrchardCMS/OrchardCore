@@ -2,6 +2,7 @@ using System.Text.Json;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
+using OrchardCore.DataPipelines.Ftp;
 using OrchardCore.DataPipelines.Models;
 using OrchardCore.DataPipelines.Services;
 using OrchardCore.DataPipelines.Steps;
@@ -41,6 +42,13 @@ public sealed class DataPipelineStepEditorsTests
             // Assert
             var names = GetNames(editor).ToList();
             Assert.NotEmpty(names);
+
+            // An editor that fails to render, such as when its view model is sealed, only logs the error: the editor of
+            // the step must be there, next to the title every step has. Combining rows has no setting.
+            if (stepType != UnionStep.StepName)
+            {
+                Assert.True(names.Any(name => name != $"{Prefix}Title"), $"The {stepType} editor has no input of its own.");
+            }
             // ASP.NET adds an "__Invariant" input next to the number inputs.
             Assert.All(names.Where(name => name != "__Invariant"), name => Assert.True(name.StartsWith(Prefix, StringComparison.Ordinal), $"The input '{name}' of the {stepType} editor isn't bound to the step."));
             Assert.All(editor.QuerySelectorAll("[data-dp-prefix]"), list => Assert.StartsWith(Prefix, list.GetAttribute("data-dp-prefix"), StringComparison.Ordinal));

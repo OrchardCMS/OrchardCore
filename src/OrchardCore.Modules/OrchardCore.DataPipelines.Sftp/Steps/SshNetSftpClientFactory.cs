@@ -1,14 +1,16 @@
 using System.Text;
+using OrchardCore.DataPipelines.Steps;
 using Renci.SshNet;
 using Renci.SshNet.Common;
 
-namespace OrchardCore.DataPipelines.Steps;
+namespace OrchardCore.DataPipelines.Sftp;
 
 /// <summary>
 /// Creates SFTP clients with SSH.NET.
 /// </summary>
 public sealed class SshNetSftpClientFactory : IDataPipelineSftpClientFactory
 {
+    /// <inheritdoc/>
     public IDataPipelineFileTransferClient CreateClient(DataPipelineSftpConnection connection)
     {
         ArgumentNullException.ThrowIfNull(connection);

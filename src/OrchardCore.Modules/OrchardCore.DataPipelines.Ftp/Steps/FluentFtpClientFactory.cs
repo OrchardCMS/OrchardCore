@@ -1,14 +1,16 @@
 using System.Net.Security;
 using FluentFTP;
 using FluentFTP.Exceptions;
+using OrchardCore.DataPipelines.Steps;
 
-namespace OrchardCore.DataPipelines.Steps;
+namespace OrchardCore.DataPipelines.Ftp;
 
 /// <summary>
 /// Creates FTP clients with FluentFTP.
 /// </summary>
 public sealed class FluentFtpClientFactory : IDataPipelineFtpClientFactory
 {
+    /// <inheritdoc/>
     public IDataPipelineFileTransferClient CreateClient(DataPipelineFtpConnection connection)
     {
         ArgumentNullException.ThrowIfNull(connection);

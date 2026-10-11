@@ -1,5 +1,6 @@
 using System.Text.Json.Nodes;
 using OrchardCore.DataPipelines.Deployment;
+using OrchardCore.DataPipelines.Ftp;
 using OrchardCore.DataPipelines.Models;
 using OrchardCore.DataPipelines.Recipes;
 using OrchardCore.DataPipelines.Services;
@@ -211,7 +212,7 @@ public sealed class DataPipelineRecipeTests
         {
             var featuresManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
             var features = (await featuresManager.GetAvailableFeaturesAsync())
-                .Where(feature => feature.Id == "OrchardCore.DataPipelines")
+                .Where(feature => feature.Id is "OrchardCore.DataPipelines" or "OrchardCore.DataPipelines.Ftp")
                 .ToList();
 
             await featuresManager.UpdateFeaturesAsync([], features, force: true);
