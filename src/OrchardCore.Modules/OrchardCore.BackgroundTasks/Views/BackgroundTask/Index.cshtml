@@ -71,113 +71,99 @@
                 var state = task.State;
 
                 <li class="list-group-item" data-task-name="@task.Name" data-task-status="@state?.Status">
-                    <div class="d-flex">
+                    <div class="d-flex align-items-start">
                         <div class="form-check pe-2">
                             <input type="checkbox" class="form-check-input" name="taskNames" value="@task.Name" id="@checkboxId">
                             <label class="form-check-label" for="@checkboxId">&nbsp;</label>
                         </div>
-                        <div class="flex-grow-1" style="min-width: 0">
-                            <div class="d-flex flex-wrap gap-2">
-                                <div class="me-auto">
-                                    <span class="text-primary" title="@T["Settings"]"><i class="fa-solid fa-gear" aria-hidden="true"></i></span>
-                                    <span class="text-primary"><a asp-action="Details" asp-route-name="@task.Name">@task.Title</a></span>
+                        <div class="flex-grow-1 d-flex flex-column flex-md-row align-items-md-center gap-2" style="min-width: 0">
+                            <div class="flex-grow-1" style="min-width: 0">
+                                <div class="d-flex flex-wrap align-items-center gap-1">
+                                    <span class="text-primary me-1"><i class="fa-solid fa-gear" aria-hidden="true"></i> <a asp-action="Details" asp-route-name="@task.Name">@task.Title</a></span>
                                     <partial name="_BackgroundTaskStatus" model="state" />
                                     @if (!task.Enable)
                                     {
                                         <span class="badge text-bg-secondary">@T["Disabled"]</span>
                                     }
-                                </div>
-                                <div class="d-flex flex-wrap gap-1">
+
                                     @if (Model.IsMonitored)
                                     {
-                                        if (state?.Status == BackgroundTaskStatus.Idle)
+                                        if (state is null)
                                         {
-                                            <a asp-action="Run" asp-route-name="@task.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-sm btn-success" data-url-af="UnsafeUrl" data-run-task title="@T["Run this task now"]">
-                                                <i class="fa-solid fa-play" aria-hidden="true"></i> @T["Run now"]
-                                            </a>
+                                            <span class="badge ta-badge fw-normal">@T["Waiting for the background service to load this task"]</span>
                                         }
                                         else
                                         {
-                                            <a class="btn btn-sm btn-success disabled" aria-disabled="true" role="button" data-run-task>
-                                                <i class="fa-solid fa-play" aria-hidden="true"></i> @T["Run now"]
-                                            </a>
-                                        }
-                                    }
-
-                                    <a asp-action="Details" asp-route-name="@task.Name" class="btn btn-info btn-sm">@T["Details"]</a>
-                                    <a asp-action="Edit" asp-route-name="@task.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
-
-                                    @if (task.Enable)
-                                    {
-                                        <a asp-action="Disable" asp-route-name="@task.Name" class="btn btn-sm btn-danger" data-url-af="UnsafeUrl">@T["Disable"]</a>
-                                    }
-                                    else
-                                    {
-                                        <a asp-action="Enable" asp-route-name="@task.Name" class="btn btn-sm btn-success" data-url-af="UnsafeUrl">@T["Enable"]</a>
-                                    }
-                                </div>
-                            </div>
-
-                            @if (!string.IsNullOrWhiteSpace(task.Description))
-                            {
-                                <div class="row">
-                                    <div class="col">
-                                        <p class="mb-0"><small class="text-muted">@task.Description</small></p>
-                                    </div>
-                                </div>
-                            }
-
-                            @if (Model.IsMonitored)
-                            {
-                                <div class="d-flex flex-wrap column-gap-3 small text-muted mt-1">
-                                    @if (state is null)
-                                    {
-                                        <span>@T["Waiting for the background service to load this task."]</span>
-                                    }
-                                    else
-                                    {
-                                        <span data-last-run>
-                                            @T["Last run:"]
-                                            @if (state.LastRun is null)
+                                            var lastRun = state.LastRun;
+                                            if (lastRun is null)
                                             {
-                                                @T["never"]
+                                                <span class="badge ta-badge fw-normal" data-last-run>
+                                                    <i class="fa-solid fa-circle-minus text-secondary" aria-hidden="true"></i>
+                                                    <span class="fw-bold">@T["Last run"]</span> @T["never"]
+                                                </span>
                                             }
                                             else
                                             {
-                                                <span title="@await DisplayAsync(await New.DateTime(Utc: state.LastRun.StartTime, Format: "G"))">@await DisplayAsync(await New.TimeSpan(Utc: state.LastRun.StartTime))</span>
-                                                <partial name="_BackgroundTaskRunResult" model="state.LastRun.Result" />
-                                                @T["in {0}", await Html.PartialAsync("_BackgroundTaskDuration", state.LastRun.Duration)]
+                                                var (lastRunClasses, lastRunIcon) = lastRun.Result switch
+                                                {
+                                                    BackgroundTaskRunResult.Succeeded => ("text-success-emphasis bg-success-subtle border border-success-subtle", "fa-circle-check"),
+                                                    BackgroundTaskRunResult.Failed => ("text-danger-emphasis bg-danger-subtle border border-danger-subtle", "fa-circle-xmark"),
+                                                    _ => ("ta-badge", "fa-circle-stop"),
+                                                };
+
+                                                <span class="badge fw-normal @lastRunClasses" data-last-run data-run-result="@lastRun.Result" title="@await DisplayAsync(await New.DateTime(Utc: lastRun.StartTime, Format: "G"))">
+                                                    <i class="fa-solid @lastRunIcon" aria-hidden="true"></i>
+                                                    <span class="fw-bold">@T["Last run"]</span>
+                                                    <span class="visually-hidden"><partial name="_BackgroundTaskRunResult" model="lastRun.Result" /></span>
+                                                    @await DisplayAsync(await New.TimeSpan(Utc: lastRun.StartTime))
+                                                    &middot; <partial name="_BackgroundTaskDuration" model="lastRun.Duration" />
+                                                </span>
                                             }
-                                        </span>
-                                        <span data-next-run>
-                                            @T["Next run:"]
-                                            @if (state.NextStartTime is not null)
+
+                                            <span class="badge ta-badge fw-normal" data-next-run title="@(state.NextStartTime is null ? null : await DisplayAsync(await New.DateTime(Utc: state.NextStartTime.Value, Format: "G")))">
+                                                <i class="fa-regular fa-clock text-secondary" aria-hidden="true"></i>
+                                                <span class="fw-bold">@T["Next run"]</span>
+                                                @if (state.NextStartTime is not null)
+                                                {
+                                                    @await DisplayAsync(await New.TimeSpan(Utc: state.NextStartTime.Value))
+                                                }
+                                                else if (task.Enable)
+                                                {
+                                                    @T["invalid schedule"]
+                                                }
+                                                else
+                                                {
+                                                    @T["not scheduled"]
+                                                }
+                                            </span>
+
+                                            if (state.FailureCount > 0)
                                             {
-                                                <span title="@await DisplayAsync(await New.DateTime(Utc: state.NextStartTime.Value, Format: "G"))">@await DisplayAsync(await New.TimeSpan(Utc: state.NextStartTime.Value))</span>
+                                                <span class="badge fw-normal text-danger-emphasis bg-danger-subtle border border-danger-subtle" data-failure-count>
+                                                    <span class="fw-bold">@T["Failed runs"]</span> @T["{0} of {1}", state.FailureCount, state.RunCount]
+                                                </span>
                                             }
-                                            else if (task.Enable)
-                                            {
-                                                @T["invalid schedule"]
-                                            }
-                                            else
-                                            {
-                                                @T["not scheduled"]
-                                            }
-                                        </span>
-                                        @if (state.FailureCount > 0)
-                                        {
-                                            <span class="text-danger">@T["Failed runs: {0} of {1}", state.FailureCount, state.RunCount]</span>
                                         }
                                     }
                                 </div>
 
-                                if (state?.LastRun?.Result == BackgroundTaskRunResult.Failed && !string.IsNullOrEmpty(state.LastRun.ErrorMessage))
+                                @if (!string.IsNullOrWhiteSpace(task.Description))
+                                {
+                                    <p class="mb-0 mt-1"><small class="text-muted">@task.Description</small></p>
+                                }
+
+                                @if (state?.LastRun?.Result == BackgroundTaskRunResult.Failed && !string.IsNullOrEmpty(state.LastRun.ErrorMessage))
                                 {
                                     <div class="small text-danger text-truncate mt-1" title="@state.LastRun.ErrorMessage" data-last-error>
                                         <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> @state.LastRun.ErrorMessage
                                     </div>
                                 }
-                            }
+                            </div>
+
+                            <div class="d-flex gap-1 justify-content-end flex-shrink-0">
+                                <a asp-action="Edit" asp-route-name="@task.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                                <partial name="_BackgroundTaskActions" model="new BackgroundTaskActionsViewModel { Name = task.Name, Enable = task.Enable, IsMonitored = Model.IsMonitored, State = state, ShowDetails = true }" />
+                            </div>
                         </div>
                     </div>
                 </li>

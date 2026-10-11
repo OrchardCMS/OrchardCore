@@ -24,20 +24,19 @@ public sealed class BackgroundTasksTests : CmsTestBase<BackgroundTasksTestsFixtu
         // The task is disabled, so it is not scheduled, but it can still be run on demand.
         await Assertions.Expect(row.Locator("[data-next-run]")).ToContainTextAsync("not scheduled");
 
-        await row.Locator("a[data-run-task]").ClickAsync();
-        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await RunNowAsync(page, row);
 
         await Assertions.Expect(page.Locator(".message-success")).ToContainTextAsync("has been queued and will run shortly");
 
         // The page polls the status of the queued task and reloads once it ran.
         row = page.Locator($"li[data-task-name='{SucceedingTestBackgroundTask.TaskName}']");
-        await Assertions.Expect(row.Locator("[data-last-run] [data-run-result='Succeeded']"))
+        await Assertions.Expect(row.Locator("[data-last-run][data-run-result='Succeeded']"))
             .ToBeVisibleAsync(new LocatorAssertionsToBeVisibleOptions { Timeout = _runTimeout });
         await Assertions.Expect(row).ToHaveAttributeAsync("data-task-status", "Idle");
         await Assertions.Expect(row.Locator("a[data-run-task]")).Not.ToHaveClassAsync(new System.Text.RegularExpressions.Regex("\\bdisabled\\b"));
 
         // The details page shows the run, and runs the task again from its own button.
-        await row.Locator("a", new LocatorLocatorOptions { HasText = "Details" }).ClickAsync();
+        await row.Locator("a", new LocatorLocatorOptions { HasText = "Functional Test Succeeding Task" }).ClickAsync();
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
         var details = page.Locator(".background-task-details");
@@ -47,8 +46,7 @@ public sealed class BackgroundTasksTests : CmsTestBase<BackgroundTasksTestsFixtu
         await Assertions.Expect(details.Locator("[data-recent-runs] tbody tr")).ToHaveCountAsync(1);
         await Assertions.Expect(details.Locator("[data-last-error]")).ToHaveCountAsync(0);
 
-        await details.Locator("button[data-run-task]").ClickAsync();
-        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await RunNowAsync(page, details);
 
         // The run redirects back to the details page, which reloads once the task ran again.
         Assert.Contains("/Admin/BackgroundTasks/Details/", page.Url);
@@ -70,11 +68,10 @@ public sealed class BackgroundTasksTests : CmsTestBase<BackgroundTasksTestsFixtu
 
         var row = await GotoLoadedTaskRowAsync(page, FailingTestBackgroundTask.TaskName);
 
-        await row.Locator("a[data-run-task]").ClickAsync();
-        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await RunNowAsync(page, row);
 
         row = page.Locator($"li[data-task-name='{FailingTestBackgroundTask.TaskName}']");
-        await Assertions.Expect(row.Locator("[data-last-run] [data-run-result='Failed']"))
+        await Assertions.Expect(row.Locator("[data-last-run][data-run-result='Failed']"))
             .ToBeVisibleAsync(new LocatorAssertionsToBeVisibleOptions { Timeout = _runTimeout });
         await Assertions.Expect(row.Locator("[data-last-error]")).ToContainTextAsync(FailingTestBackgroundTask.ErrorMessage);
 
@@ -95,6 +92,16 @@ public sealed class BackgroundTasksTests : CmsTestBase<BackgroundTasksTestsFixtu
         await Assertions.Expect(lastRun).ToContainTextAsync(FailingTestBackgroundTask.ErrorMessage);
 
         await page.CloseAsync();
+    }
+
+    /// <summary>
+    /// Clicks the run now action of the actions dropdown of a task.
+    /// </summary>
+    private static async Task RunNowAsync(IPage page, ILocator task)
+    {
+        await task.Locator("[data-task-actions]").ClickAsync();
+        await task.Locator("a[data-run-task]").ClickAsync();
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 
     /// <summary>

@@ -2,7 +2,7 @@ using OrchardCore.BackgroundTasks;
 
 namespace OrchardCore.Media.Services;
 
-[BackgroundTask(Schedule = "0 0 * * *", Description = "Checks for abandoned file uploads.")]
+[BackgroundTask(Title = "Abandoned File Uploads Cleaner", Schedule = "0 0 * * *", Description = "Checks for abandoned file uploads.")]
 public sealed class ChunkFileUploadBackgroundTask : IBackgroundTask
 {
     private readonly IChunkFileUploadService _chunkFileUploadService;

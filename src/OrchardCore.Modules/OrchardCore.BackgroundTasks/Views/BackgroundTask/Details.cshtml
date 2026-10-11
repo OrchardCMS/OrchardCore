@@ -13,21 +13,16 @@
 <div data-background-task-states-url="@Url.Action("States")">
     <div data-task-name="@Model.Name" data-task-status="@state?.Status" class="background-task-details">
 
-        <form asp-action="Run" asp-route-name="@Model.Name" asp-route-returnUrl="@FullRequestPath" method="post" class="no-multisubmit mb-3">
-            @if (Model.IsMonitored)
-            {
-                <button type="submit" class="btn btn-success" data-run-task disabled="@(state?.Status != BackgroundTaskStatus.Idle)">
-                    <i class="fa-solid fa-play" aria-hidden="true"></i> @T["Run now"]
-                </button>
-            }
-            <a asp-action="Edit" asp-route-name="@Model.Name" class="btn btn-primary">@T["Edit"]</a>
-            <a asp-action="Index" class="btn btn-secondary">@T["Back to the list"]</a>
-        </form>
+        @* The actions are posted with the antiforgery token of the page. *@
+        @Html.AntiForgeryToken()
 
-        @if (!string.IsNullOrWhiteSpace(Model.Description))
-        {
-            <p class="text-muted">@Model.Description</p>
-        }
+        <div class="d-flex flex-wrap align-items-start gap-2 mb-3">
+            <p class="text-muted mb-0 me-auto">@Model.Description</p>
+            <div class="d-flex gap-1 ms-auto">
+                <a asp-action="Edit" asp-route-name="@Model.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                <partial name="_BackgroundTaskActions" model="new BackgroundTaskActionsViewModel { Name = Model.Name, Enable = Model.Enable, IsMonitored = Model.IsMonitored, State = state }" />
+            </div>
+        </div>
 
         <div class="row g-3 mb-3">
             <div class="col-12 col-lg-6">
@@ -222,9 +217,9 @@
                                     <tr>
                                         <td class="text-nowrap">@await DisplayAsync(await New.DateTime(Utc: run.StartTime, Format: "G"))</td>
                                         <td class="text-nowrap"><partial name="_BackgroundTaskDuration" model="run.Duration" /></td>
-                                        <td>@(run.Trigger == BackgroundTaskTrigger.Manual ? T["Run now"] : T["Schedule"])</td>
+                                        <td class="text-nowrap">@(run.Trigger == BackgroundTaskTrigger.Manual ? T["Run now"] : T["Schedule"])</td>
                                         <td><partial name="_BackgroundTaskRunResult" model="run.Result" /></td>
-                                        <td class="text-danger text-break small">@run.ErrorMessage</td>
+                                        <td class="text-danger small" style="min-width: 16rem">@run.ErrorMessage</td>
                                     </tr>
                                 }
                             </tbody>

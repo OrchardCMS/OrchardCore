@@ -16,6 +16,9 @@ namespace OrchardCore.Modules;
 
 internal sealed class ModularBackgroundService : BackgroundService
 {
+    // The idle time before running a task requested on demand, which bounds how often a request can trigger the service.
+    private static readonly TimeSpan _requestedRunIdleTime = TimeSpan.FromSeconds(1);
+
     private readonly ConcurrentDictionary<string, IChangeToken> _changeTokens = new();
 
     private readonly IShellHost _shellHost;
@@ -362,11 +365,21 @@ internal sealed class ModularBackgroundService : BackgroundService
     {
         try
         {
-            await Task.Delay(_options.MinimumIdleTime, stoppingToken);
+            var minimumIdleTime = Task.Delay(_options.MinimumIdleTime, stoppingToken);
+            if (await Task.WhenAny(minimumIdleTime, _monitor.RunRequested) == minimumIdleTime)
+            {
+                await minimumIdleTime;
 
-            // A run requested on demand doesn't wait for the end of the polling time.
-            await Task.WhenAny(pollingDelay, _monitor.RunRequested);
-            stoppingToken.ThrowIfCancellationRequested();
+                // A run requested on demand doesn't wait for the end of the polling time.
+                await Task.WhenAny(pollingDelay, _monitor.RunRequested);
+                stoppingToken.ThrowIfCancellationRequested();
+
+                return;
+            }
+
+            // A run requested before the end of the minimum idle time only waits for a shorter idle time,
+            // so that it starts promptly.
+            await Task.Delay(_requestedRunIdleTime < _options.MinimumIdleTime ? _requestedRunIdleTime : _options.MinimumIdleTime, stoppingToken);
         }
         catch (OperationCanceledException)
         {

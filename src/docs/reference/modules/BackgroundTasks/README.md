@@ -12,9 +12,11 @@ After enabling the feature, you'll be able to manage background tasks under Tool
 
 ## Execution State
 
-Each task of the list shows whether it is running or queued, when its last run started, its outcome and duration, the error message of a failed run, and when its next scheduled run is expected. The **Status** filter lists the tasks that are running or queued, or whose last run failed.
+Each task of the list shows badges next to its title telling whether it is running or queued, when its last run started with its outcome and duration, when its next scheduled run is expected, and how many of its runs failed. The error message of a failed run is shown under the description of the task. The **Status** filter lists the tasks that are running or queued, or whose last run failed.
 
-Clicking the title of a task, or its **Details** button, opens a page with:
+The title of a task is the `Title` of its `[BackgroundTask]` attribute. A task that doesn't define one is shown with a title built from the name of its type, for instance **Chunk File Upload** for `ChunkFileUploadBackgroundTask`.
+
+Clicking the title of a task, or the **Details** item of its **Actions** menu, opens a page with:
 
 - The status of the task, the start time, outcome, duration and trigger of its last run, and the date and time of its next scheduled run.
 - The number of completed runs and of failed runs.
@@ -29,11 +31,11 @@ While a displayed task is queued or running, the page checks its status in the b
 
 ## Running a Task on Demand
 
-The **Run now** button of a task, available in the list and on the details page, queues the task to run as soon as possible, regardless of its schedule. Select several tasks and use the **Run now** bulk action to queue them all at once.
+The **Run now** item of the **Actions** menu of a task, available in the list and on the details page, queues the task to run as soon as possible, regardless of its schedule. Select several tasks and use the **Run now** bulk action to queue them all at once.
 
 - A task that is already running or queued is not queued again.
 - A disabled task can also be run on demand, which is convenient to check a task before enabling it. Its schedule is not affected.
-- The task runs on the server that handled the request, usually within a few seconds, as the background service doesn't wait for the end of its polling time to pick up a requested run. An atomic task still waits to acquire its lock, as for a scheduled run.
+- The task runs on the server that handled the request, usually within a second or two, as the background service doesn't wait for the end of its polling time nor of its minimum idle time to pick up a requested run. An atomic task still waits to acquire its lock, as for a scheduled run.
 - Right after a tenant starts, its tasks are only known to the background service after its next polling, so a task may first be reported as not loaded yet. The request triggers that polling, so trying again a moment later succeeds.
 
 ## Configuration

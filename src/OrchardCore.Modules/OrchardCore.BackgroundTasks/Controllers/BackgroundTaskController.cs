@@ -315,12 +315,7 @@ public sealed class BackgroundTaskController : Controller
 
         await RunTasksAsync([name]);
 
-        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-        {
-            return this.LocalRedirect(returnUrl, true);
-        }
-
-        return RedirectToAction(nameof(Index));
+        return RedirectToReturnUrlOrIndex(returnUrl);
     }
 
     public async Task<IActionResult> Edit(string name)
@@ -404,7 +399,7 @@ public sealed class BackgroundTaskController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Enable(string name)
+    public async Task<IActionResult> Enable(string name, string returnUrl)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
         {
@@ -429,11 +424,11 @@ public sealed class BackgroundTaskController : Controller
 
         await _notifier.SuccessAsync(H["The task has been enabled."]);
 
-        return RedirectToAction(nameof(Index));
+        return RedirectToReturnUrlOrIndex(returnUrl);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Disable(string name)
+    public async Task<IActionResult> Disable(string name, string returnUrl)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
         {
@@ -457,6 +452,16 @@ public sealed class BackgroundTaskController : Controller
         await _backgroundTaskManager.UpdateAsync(name, settings);
 
         await _notifier.SuccessAsync(H["The task has been disabled."]);
+
+        return RedirectToReturnUrlOrIndex(returnUrl);
+    }
+
+    private IActionResult RedirectToReturnUrlOrIndex(string returnUrl)
+    {
+        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+        {
+            return this.LocalRedirect(returnUrl, true);
+        }
 
         return RedirectToAction(nameof(Index));
     }
