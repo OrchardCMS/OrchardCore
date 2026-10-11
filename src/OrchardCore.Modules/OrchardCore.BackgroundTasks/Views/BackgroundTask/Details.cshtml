@@ -11,7 +11,7 @@
 </zone>
 
 <div data-background-task-states-url="@Url.Action("States")">
-    <div data-task-name="@Model.Name" data-task-status="@state?.Status" class="background-task-details">
+    <div data-task-name="@Model.Name" data-task-status="@state?.Status" data-task-run-count="@state?.RunCount" class="background-task-details">
 
         @* The actions are posted with the antiforgery token of the page. *@
         @Html.AntiForgeryToken()

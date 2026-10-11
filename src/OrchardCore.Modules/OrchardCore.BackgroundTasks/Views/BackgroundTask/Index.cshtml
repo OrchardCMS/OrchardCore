@@ -70,7 +70,7 @@
                 var checkboxId = Html.GenerateIdFromName(task.Name);
                 var state = task.State;
 
-                <li class="list-group-item" data-task-name="@task.Name" data-task-status="@state?.Status">
+                <li class="list-group-item" data-task-name="@task.Name" data-task-status="@state?.Status" data-task-run-count="@state?.RunCount">
                     <div class="d-flex align-items-start">
                         <div class="form-check pe-2">
                             <input type="checkbox" class="form-check-input" name="taskNames" value="@task.Name" id="@checkboxId">

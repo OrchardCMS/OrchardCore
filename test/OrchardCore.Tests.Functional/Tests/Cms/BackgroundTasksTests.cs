@@ -21,6 +21,9 @@ public sealed class BackgroundTasksTests : CmsTestBase<BackgroundTasksTestsFixtu
 
         var row = await GotoLoadedTaskRowAsync(page, SucceedingTestBackgroundTask.TaskName);
 
+        // Another test may already have run the task.
+        var runCount = await GetRunCountAsync(row);
+
         // The task is disabled, so it is not scheduled, but it can still be run on demand.
         await Assertions.Expect(row.Locator("[data-next-run]")).ToContainTextAsync("not scheduled");
 
@@ -28,10 +31,10 @@ public sealed class BackgroundTasksTests : CmsTestBase<BackgroundTasksTestsFixtu
 
         await Assertions.Expect(page.Locator(".message-success")).ToContainTextAsync("has been queued and will run shortly");
 
-        // The page polls the status of the queued task and reloads once it ran.
+        // The page polls the status of the queued task and updates it once it ran.
         row = page.Locator($"li[data-task-name='{SucceedingTestBackgroundTask.TaskName}']");
-        await Assertions.Expect(row.Locator("[data-last-run][data-run-result='Succeeded']"))
-            .ToBeVisibleAsync(new LocatorAssertionsToBeVisibleOptions { Timeout = _runTimeout });
+        await Assertions.Expect(row).ToHaveAttributeAsync("data-task-run-count", ToText(runCount + 1), new LocatorAssertionsToHaveAttributeOptions { Timeout = _runTimeout });
+        await Assertions.Expect(row.Locator("[data-last-run][data-run-result='Succeeded']")).ToBeVisibleAsync();
         await Assertions.Expect(row).ToHaveAttributeAsync("data-task-status", "Idle");
         await Assertions.Expect(row.Locator("a[data-run-task]")).Not.ToHaveClassAsync(new System.Text.RegularExpressions.Regex("\\bdisabled\\b"));
 
@@ -41,20 +44,20 @@ public sealed class BackgroundTasksTests : CmsTestBase<BackgroundTasksTestsFixtu
 
         var details = page.Locator(".background-task-details");
         await Assertions.Expect(details.Locator("[data-last-run] [data-run-result='Succeeded']")).ToBeVisibleAsync();
-        await Assertions.Expect(details.Locator("[data-run-count]")).ToHaveTextAsync("1");
+        await Assertions.Expect(details.Locator("[data-run-count]")).ToHaveTextAsync(ToText(runCount + 1));
         await Assertions.Expect(details.Locator("[data-failure-count]")).ToHaveTextAsync("0");
-        await Assertions.Expect(details.Locator("[data-recent-runs] tbody tr")).ToHaveCountAsync(1);
+        await Assertions.Expect(details.Locator("[data-recent-runs] tbody tr")).ToHaveCountAsync(runCount + 1);
         await Assertions.Expect(details.Locator("[data-last-error]")).ToHaveCountAsync(0);
 
         await RunNowAsync(page, details);
 
-        // The run redirects back to the details page, which reloads once the task ran again.
+        // The run redirects back to the details page, which is updated once the task ran again.
         Assert.Contains("/Admin/BackgroundTasks/Details/", page.Url);
         await Assertions.Expect(page.Locator(".background-task-details [data-run-count]"))
-            .ToHaveTextAsync("2", new LocatorAssertionsToHaveTextOptions { Timeout = _runTimeout });
+            .ToHaveTextAsync(ToText(runCount + 2), new LocatorAssertionsToHaveTextOptions { Timeout = _runTimeout });
 
         var recentRuns = page.Locator(".background-task-details [data-recent-runs] tbody tr");
-        await Assertions.Expect(recentRuns).ToHaveCountAsync(2);
+        await Assertions.Expect(recentRuns).ToHaveCountAsync(runCount + 2);
         await Assertions.Expect(recentRuns.First).ToContainTextAsync("Run now");
 
         await page.CloseAsync();
@@ -93,6 +96,40 @@ public sealed class BackgroundTasksTests : CmsTestBase<BackgroundTasksTestsFixtu
 
         await page.CloseAsync();
     }
+
+    [Fact]
+    public async Task Polling_TaskRunFromAnotherPage_UpdatesListWithoutReloading()
+    {
+        var page = await Fixture.CreatePageAsync();
+        await page.LoginAsync();
+
+        var row = await GotoLoadedTaskRowAsync(page, SucceedingTestBackgroundTask.TaskName);
+        var runCount = await GetRunCountAsync(row);
+
+        // A reload would lose this marker and the selection of the other task.
+        await page.EvaluateAsync("() => window.backgroundTasksMarker = true");
+        var otherCheckbox = page.Locator($"li[data-task-name='{FailingTestBackgroundTask.TaskName}'] input[name='taskNames']");
+        await otherCheckbox.CheckAsync();
+
+        var otherPage = await Fixture.CreatePageAsync();
+        await otherPage.LoginAsync();
+        await RunNowAsync(otherPage, await GotoLoadedTaskRowAsync(otherPage, SucceedingTestBackgroundTask.TaskName));
+        await otherPage.CloseAsync();
+
+        // The idle polling picks up the run and replaces the task in place.
+        await Assertions.Expect(row).ToHaveAttributeAsync("data-task-run-count", ToText(runCount + 1), new LocatorAssertionsToHaveAttributeOptions { Timeout = _runTimeout });
+        await Assertions.Expect(row.Locator("[data-last-run][data-run-result='Succeeded']")).ToBeVisibleAsync();
+
+        Assert.True(await page.EvaluateAsync<bool>("() => window.backgroundTasksMarker === true"));
+        await Assertions.Expect(otherCheckbox).ToBeCheckedAsync();
+
+        await page.CloseAsync();
+    }
+
+    private static async Task<int> GetRunCountAsync(ILocator task)
+        => int.Parse(await task.GetAttributeAsync("data-task-run-count") ?? "0", System.Globalization.CultureInfo.InvariantCulture);
+
+    private static string ToText(int value) => value.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
     /// <summary>
     /// Clicks the run now action of the actions dropdown of a task.
