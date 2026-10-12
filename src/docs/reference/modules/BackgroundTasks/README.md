@@ -35,8 +35,22 @@ The **Run now** item of the **Actions** menu of a task, available in the list an
 
 - A task that is already running or queued is not queued again.
 - A disabled task can also be run on demand, which is convenient to check a task before enabling it. Its schedule is not affected.
-- The task runs on the server that handled the request, usually within a second or two, as the background service doesn't wait for the end of its polling time nor of its minimum idle time to pick up a requested run. An atomic task still waits to acquire its lock, as for a scheduled run.
+- The task runs only on the server that handled the request, usually within a second or two, as the background service doesn't wait for the end of its polling time nor of its minimum idle time to pick up a requested run. An atomic task still waits to acquire its lock, as for a scheduled run. In a web farm, the other servers are not affected, see [Running in a Web Farm](#running-in-a-web-farm).
+- If the task was already due on that server, the requested run takes the place of the scheduled one. The next scheduled run is not affected.
 - Right after a tenant starts, its tasks are only known to the background service after its next polling, so a task may first be reported as not loaded yet. The request triggers that polling, so trying again a moment later succeeds.
+
+## Running in a Web Farm
+
+When the application runs on several servers, each server runs its own background service, which runs the tasks of the tenants independently of the other servers:
+
+- A scheduled task runs on every server, each one following its own copy of the schedule. For instance, with three servers, a task scheduled every day at midnight runs three times every day, once per server.
+- By default, these runs can happen at the same time. To prevent two servers from running a task at the same time, make the task atomic by setting its lock timeout and lock expiration, in its `[BackgroundTask]` attribute or in the **Advanced** tab of its settings, and enable a distributed lock feature such as **Redis Lock** (`OrchardCore.Redis.Lock`). Without a distributed lock, these settings are ignored.
+- An atomic task still runs on every server, but one server at a time. A server that can't acquire the lock within the lock timeout tries again on its next polling, and runs the task once the lock is released. Set the lock expiration above the longest expected duration of the task, otherwise the lock may expire while the task is still running.
+- Unless the `ShellWarmup` option is enabled, a server only runs the tasks of a tenant once this tenant has handled a request on this server.
+
+**Run now** doesn't follow this behavior: it runs the task only on the server that handled the request, and doesn't affect the other servers, which keep running the task on schedule. This is enough for a task that works on shared data, such as the database, as most tasks do. For a task that works on the local data of each server, such as a local cache, it only processes the data of the server that ran it.
+
+As the execution state is kept in memory by each server, the pages show the runs of the server handling the request, so a run requested on demand is only shown by the server that ran it.
 
 ## Configuration
 
