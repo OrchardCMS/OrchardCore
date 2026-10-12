@@ -105,6 +105,40 @@ describe("Gallery upload size validation", () => {
     wrapper.unmount();
   });
 
+  it.each([false, true])("rejects repeated drops without replacing a pending upload (TUS: %s)", async (tus) => {
+    const upload = vi.spyOn(Uppy.prototype, "upload").mockReturnValue(new Promise(() => {}));
+    const setOptions = vi.spyOn(Uppy.prototype, "setOptions");
+    const wrapper = await mountUploader(tus);
+    await flushPromises();
+    const uppy = setOptions.mock.contexts[0];
+    const droppedFile = {
+      source: "DropTarget",
+      name: "file.txt",
+      data: new File(["x"], "file.txt", { lastModified: 1 }),
+    };
+    uppy.addFiles([droppedFile]);
+    await flushPromises();
+    expect(upload).toHaveBeenCalledTimes(1);
+    const fileId = uppy.getFiles()[0].id;
+    uppy.setFileState(fileId, {
+      progress: {
+        ...uppy.getFile(fileId).progress,
+        uploadStarted: Date.now(),
+        bytesUploaded: 1,
+        percentage: 50,
+      },
+    });
+    const pendingFile = uppy.getFile(fileId);
+
+    uppy.addFiles([droppedFile]);
+    await flushPromises();
+    expect(uppy.getFiles()).toHaveLength(1);
+    expect(uppy.getFile(fileId)).toBe(pendingFile);
+    expect(upload).toHaveBeenCalledTimes(1);
+    expect(notify).toHaveBeenCalledTimes(1);
+    wrapper.unmount();
+  });
+
   it("blocks file input and dropped files while options are pending", async () => {
     getUploadOptions.mockReturnValue(new Promise(() => {}));
     const upload = vi.spyOn(Uppy.prototype, "upload").mockResolvedValue(undefined);

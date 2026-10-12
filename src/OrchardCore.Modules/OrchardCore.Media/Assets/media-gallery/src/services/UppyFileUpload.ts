@@ -144,7 +144,8 @@ export const useFileUpload = (model: IFileUploadModel) => {
   // All mounts (including pickers and standalone clients) load the tenant's limit.
   // Block both the file input and DropTarget until it is known, not just upload().
   uppy.setOptions({
-    onBeforeFileAdded: () => uploadReady.value && generation === uploadOptionsGeneration,
+    onBeforeFileAdded: (file, files) =>
+      uploadReady.value && generation === uploadOptionsGeneration && !Object.hasOwn(files, file.id),
     restrictions: {
       maxFileSize: model.maxFileSize > 0 ? model.maxFileSize : null,
       allowedFileTypes: model.allowedExtensions ? model.allowedExtensions.split(",") : null,
