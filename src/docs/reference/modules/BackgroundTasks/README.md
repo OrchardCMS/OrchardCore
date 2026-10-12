@@ -2,6 +2,14 @@
 
 This module provides tools to manage background tasks. This includes an admin UI to show which background tasks are registered, how they ran, and to control them.
 
+This video shows the list of tasks, running a task on demand, investigating a failure, configuring a task, how tasks run on several servers, and how to write a background task.
+
+<video controls preload="metadata" width="100%" poster="videos/background-tasks-module.jpg">
+    <source src="videos/background-tasks-module.mp4" type="video/mp4">
+    <track kind="captions" src="videos/background-tasks-module.vtt" srclang="en" label="English">
+    Your browser does not support embedded videos. <a href="videos/background-tasks-module.mp4">Download the video</a>.
+</video>
+
 After enabling the feature, you'll be able to manage background tasks under Tools → Background Tasks. This includes the following:
 
 - Enable or disable a task.
