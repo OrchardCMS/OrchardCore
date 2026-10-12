@@ -5,7 +5,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.DataPipelines.Startups;
 
-[Feature("OrchardCore.DataPipelines.Media")]
+[RequireFeatures("OrchardCore.Media")]
 public sealed class MediaStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)

@@ -1,12 +1,18 @@
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.DataSources;
 using OrchardCore.DataSources.Contents;
 using OrchardCore.DataSources.Queries;
 using OrchardCore.DataSources.Users;
 using OrchardCore.Modules;
 
-namespace OrchardCore.DataSources;
+namespace OrchardCore.DataPipelines.Startups;
 
-public sealed class Startup : StartupBase
+/// <summary>
+/// The reusable data layer of the <c>OrchardCore.DataPipelines.Core</c> feature: data sources, file formats, the
+/// formula language and its functions, and data transforms, shared by data pipelines and other modules, such as reports.
+/// </summary>
+[Feature(DataPipelinesConstants.CoreFeatureId)]
+public sealed class CoreStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -14,8 +20,9 @@ public sealed class Startup : StartupBase
     }
 }
 
+[Feature(DataPipelinesConstants.CoreFeatureId)]
 [RequireFeatures("OrchardCore.Contents")]
-public sealed class ContentsStartup : StartupBase
+public sealed class ContentsDataSourceStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -24,8 +31,9 @@ public sealed class ContentsStartup : StartupBase
     }
 }
 
+[Feature(DataPipelinesConstants.CoreFeatureId)]
 [RequireFeatures("OrchardCore.Users")]
-public sealed class UsersStartup : StartupBase
+public sealed class UsersDataSourceStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -33,8 +41,9 @@ public sealed class UsersStartup : StartupBase
     }
 }
 
+[Feature(DataPipelinesConstants.CoreFeatureId)]
 [RequireFeatures("OrchardCore.Queries")]
-public sealed class QueriesStartup : StartupBase
+public sealed class QueriesDataSourceStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {

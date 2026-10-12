@@ -198,7 +198,7 @@ public sealed class DataPipelineRunTests
         {
             var featuresManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
             var features = (await featuresManager.GetAvailableFeaturesAsync())
-                .Where(feature => feature.Id is "OrchardCore.DataPipelines.Media")
+                .Where(feature => feature.Id is "OrchardCore.DataPipelines" or "OrchardCore.Media")
                 .ToList();
 
             await featuresManager.UpdateFeaturesAsync([], features, force: true);

@@ -254,7 +254,7 @@ public sealed class DataPipelineWorkflowTests
         {
             var featuresManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
             var features = (await featuresManager.GetAvailableFeaturesAsync())
-                .Where(feature => feature.Id is "OrchardCore.Workflows" or "OrchardCore.DataPipelines.Workflows")
+                .Where(feature => feature.Id is "OrchardCore.Workflows" or "OrchardCore.DataPipelines")
                 .ToList();
 
             await featuresManager.UpdateFeaturesAsync([], features, force: true);

@@ -5,7 +5,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.DataPipelines.Startups;
 
-[Feature("OrchardCore.DataPipelines.Contents")]
+[RequireFeatures("OrchardCore.Contents")]
 public sealed class ContentsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)

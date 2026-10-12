@@ -262,7 +262,7 @@ public sealed class BuiltInDataSourcesTests
         {
             var featuresManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
             var features = (await featuresManager.GetAvailableFeaturesAsync())
-                .Where(feature => feature.Id == "OrchardCore.DataSources")
+                .Where(feature => feature.Id == "OrchardCore.DataPipelines")
                 .ToList();
 
             await featuresManager.UpdateFeaturesAsync([], features, force: true);

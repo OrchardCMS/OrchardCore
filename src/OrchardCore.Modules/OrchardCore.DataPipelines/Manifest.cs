@@ -10,61 +10,21 @@ using OrchardCore.Modules.Manifest;
 )]
 
 [assembly: Feature(
+    Id = "OrchardCore.DataPipelines.Core",
+    Name = "Data Pipelines Core",
+    Description = "Provides the data sources, file formats, formula functions and data transforms that data pipelines and other features, such as reports, share.",
+    EnabledByDependencyOnly = true,
+    Category = "Data"
+)]
+
+[assembly: Feature(
     Id = "OrchardCore.DataPipelines",
     Name = "Data Pipelines",
-    Description = "Design pipelines that read data from any data source, transform it, and deliver it to web APIs and download links.",
+    Description = "Design pipelines that read data from any data source, transform it, and deliver it to the media library, download links, email, web APIs and content items. The steps of the media library, email, content items and workflows are available when those features are enabled.",
     Dependencies =
     [
-        "OrchardCore.DataSources",
+        "OrchardCore.DataPipelines.Core",
         "OrchardCore.Users",
-    ],
-    Category = "Data"
-)]
-
-[assembly: Feature(
-    Id = "OrchardCore.DataPipelines.Media",
-    Name = "Data Pipelines - Media",
-    Description = "Lets data pipelines read data files from the media library and save the files they create to it.",
-    Dependencies =
-    [
-        "OrchardCore.DataPipelines",
-        "OrchardCore.Media",
-    ],
-    Category = "Data"
-)]
-
-[assembly: Feature(
-    Id = "OrchardCore.DataPipelines.Email",
-    Name = "Data Pipelines - Email",
-    Description = "Lets data pipelines send the files they create by email.",
-    Dependencies =
-    [
-        "OrchardCore.DataPipelines",
-        "OrchardCore.Email",
-    ],
-    Category = "Data"
-)]
-
-[assembly: Feature(
-    Id = "OrchardCore.DataPipelines.Contents",
-    Name = "Data Pipelines - Content Items",
-    Description = "Lets data pipelines create and update content items from rows.",
-    Dependencies =
-    [
-        "OrchardCore.DataPipelines",
-        "OrchardCore.Contents",
-    ],
-    Category = "Data"
-)]
-
-[assembly: Feature(
-    Id = "OrchardCore.DataPipelines.Workflows",
-    Name = "Data Pipelines - Workflows",
-    Description = "Lets workflows run data pipelines and react to the end of their runs.",
-    Dependencies =
-    [
-        "OrchardCore.DataPipelines",
-        "OrchardCore.Workflows",
     ],
     Category = "Data"
 )]

@@ -157,7 +157,6 @@
     <Project Path="src/OrchardCore.Modules/OrchardCore.DataPipelines/OrchardCore.DataPipelines.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.DataPipelines.Ftp/OrchardCore.DataPipelines.Ftp.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.DataPipelines.Sftp/OrchardCore.DataPipelines.Sftp.csproj" />
-    <Project Path="src/OrchardCore.Modules/OrchardCore.DataSources/OrchardCore.DataSources.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Deployment.Remote/OrchardCore.Deployment.Remote.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Deployment/OrchardCore.Deployment.csproj" />
     <Project Path="src/OrchardCore.Modules/OrchardCore.Diagnostics/OrchardCore.Diagnostics.csproj" />

@@ -8,7 +8,7 @@ namespace OrchardCore.DataPipelines;
 /// <summary>
 /// Registers the step that sends files to web APIs.
 /// </summary>
-[Feature("OrchardCore.DataPipelines")]
+[Feature(DataPipelinesConstants.FeatureId)]
 public sealed class RemoteDestinationsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
@@ -21,7 +21,7 @@ public sealed class RemoteDestinationsStartup : StartupBase
 /// <summary>
 /// Registers the step that sends files by email.
 /// </summary>
-[Feature("OrchardCore.DataPipelines.Email")]
+[RequireFeatures("OrchardCore.Email")]
 public sealed class EmailDestinationStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)

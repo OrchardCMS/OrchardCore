@@ -185,7 +185,7 @@ public sealed class SaveContentItemsStepTests
         {
             var featuresManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
             var features = (await featuresManager.GetAvailableFeaturesAsync())
-                .Where(feature => feature.Id is "OrchardCore.DataPipelines.Contents")
+                .Where(feature => feature.Id is "OrchardCore.DataPipelines" or "OrchardCore.Contents")
                 .ToList();
 
             await featuresManager.UpdateFeaturesAsync([], features, force: true);

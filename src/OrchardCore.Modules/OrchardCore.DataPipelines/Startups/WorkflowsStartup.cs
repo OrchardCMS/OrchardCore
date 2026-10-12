@@ -6,7 +6,7 @@ using OrchardCore.Workflows.Helpers;
 
 namespace OrchardCore.DataPipelines.Startups;
 
-[Feature("OrchardCore.DataPipelines.Workflows")]
+[RequireFeatures("OrchardCore.Workflows")]
 public sealed class WorkflowsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
