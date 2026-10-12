@@ -24,7 +24,7 @@ public sealed class AdminMenu : AdminNavigationProvider
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Access Control"], S["Access Control"].PrefixPosition(), accessControl => accessControl
+            .Add(S["Access Control"], NavigationConstants.AdminMenuAccessControlPosition, accessControl => accessControl
                 .AddClass("accessControl")
                 .Id("accessControl")
                 .Add(S["Users"], S["Users"].PrefixPosition(), users => users

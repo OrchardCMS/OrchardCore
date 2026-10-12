@@ -15,7 +15,7 @@ public sealed class AdminMenu : AdminNavigationProvider
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Media"], S["Media"].PrefixPosition(), media => media
+            .Add(S["Media"], "after.15", media => media
                 .AddClass("media")
                 .Id("media")
                 .Add(S["Library"], S["Library"].PrefixPosition("1"), library => library

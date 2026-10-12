@@ -4,6 +4,14 @@ public static class NavigationConstants
 {
     public const string CssClassPrefix = "icon-class-";
 
+    public const string AdminMenuContentPosition = "1";
+
+    public const string AdminMenuDesignPosition = "2";
+
+    public const string AdminMenuSearchPosition = "6";
+
+    public const string AdminMenuAccessControlPosition = "7";
+
     public const string AdminId = "admin";
 
     public const string AdminMenuId = "adminMenu";
