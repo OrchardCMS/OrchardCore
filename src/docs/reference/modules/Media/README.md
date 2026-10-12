@@ -411,6 +411,26 @@ The following configuration values are used by default and can be customized:
 }
 ```
 
+`MaxFileSize` is the maximum size of an individual upload, in bytes. The admin media library
+and media field editors pass the tenant's configured value to the uploader, including galleries
+opened by media fields and HTML/Markdown editors. Files larger than a positive limit are rejected
+locally with a validation notification without starting an upload; files exactly at the limit
+pass this client-side size check. This applies to regular and resumable gallery uploads.
+Existing file-extension restrictions still apply, and server-side validation remains authoritative.
+
+For a standalone media gallery, set the optional numeric `maxFileSize` property in its
+`config.json` to the same byte limit as the tenant's `Media:MaxFileSize`, for example:
+
+```json
+{
+  "orchardBaseUrl": "https://cms.example.com/",
+  "maxFileSize": 30000000
+}
+```
+
+Keep this value aligned with the tenant configuration. An absent or nonpositive `maxFileSize`
+disables only the client-side size limit; it does not bypass server-side validation.
+
 ### Media storage location
 
 `AssetsPath` is relative to the current tenant's data directory, which defaults to `App_Data/Sites/{tenant}`.

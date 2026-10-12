@@ -49,6 +49,8 @@ export interface IMediaPickerConfig {
   basePath: string;
   uploadFilesUrl: string;
   allowedExtensions?: string;
+  /** Maximum upload size in bytes; nonpositive or absent means no client-side size limit. */
+  maxFileSize?: number;
   allowMultiple?: boolean;
   maxUploadChunkSize?: number;
   /** Connect to the MediaHub for real-time media updates while the picker is open. */
@@ -96,6 +98,7 @@ export function mountMediaAppAsPicker(
         basePath: config.basePath,
         uploadFilesUrl: config.uploadFilesUrl,
         allowedExtensions: config.allowedExtensions ?? "",
+        maxFileSize: config.maxFileSize ?? 0,
         allowMultipleSelection: pickerAllowsMultiple,
         maxUploadChunkSize: config.maxUploadChunkSize ?? 0,
         signalrEnabled: config.signalrEnabled ? "true" : "false",
@@ -141,5 +144,4 @@ export function mountMediaAppAsPicker(
     },
   };
 }
-
 
