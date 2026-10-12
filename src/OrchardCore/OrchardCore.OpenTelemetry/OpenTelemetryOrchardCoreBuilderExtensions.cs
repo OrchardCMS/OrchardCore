@@ -149,7 +149,9 @@ public static class OpenTelemetryOrchardCoreBuilderExtensions
     private sealed class OpenTelemetryMarker;
 
     private static OrchardCoreOpenTelemetryOptions GetOptions(IServiceProvider serviceProvider)
-        => serviceProvider.GetRequiredService<IOptions<OrchardCoreOpenTelemetryOptions>>().Value;
+    {
+        return serviceProvider.GetRequiredService<IOptions<OrchardCoreOpenTelemetryOptions>>().Value;
+    }
 
     private static Sampler CreateSampler(OrchardCoreOpenTelemetryOptions options)
     {

@@ -56,6 +56,8 @@ internal sealed class OrchardCoreResourceDetector : IResourceDetector
     }
 
     private static string GetVersion(Assembly assembly)
-        => assembly?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
-        ?? assembly?.GetName().Version?.ToString();
+    {
+        return assembly?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
+            ?? assembly?.GetName().Version?.ToString();
+    }
 }

@@ -50,5 +50,7 @@ internal sealed class TenantMetrics
     }
 
     private int ObserveLoadedTenants()
-        => _shellHost.ListShellContexts().Count(shell => !shell.Released && shell.ServiceProvider is not null);
+    {
+        return _shellHost.ListShellContexts().Count(shell => !shell.Released && shell.ServiceProvider is not null);
+    }
 }

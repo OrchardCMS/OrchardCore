@@ -8,9 +8,12 @@ namespace OrchardCore.Telemetry;
 /// </summary>
 internal sealed class TenantTelemetryStartupFilter : IStartupFilter
 {
-    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next) => app =>
+    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
     {
-        app.UseMiddleware<TenantTelemetryMiddleware>();
-        next(app);
-    };
+        return app =>
+        {
+            app.UseMiddleware<TenantTelemetryMiddleware>();
+            next(app);
+        };
+    }
 }

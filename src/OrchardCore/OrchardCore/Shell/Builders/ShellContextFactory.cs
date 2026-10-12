@@ -28,7 +28,9 @@ public class ShellContextFactory : IShellContextFactory
     }
 
     Task<ShellContext> IShellContextFactory.CreateShellContextAsync(ShellSettings settings)
-        => MeasureAsync(settings, CreateShellContextInternalAsync);
+    {
+        return MeasureAsync(settings, CreateShellContextInternalAsync);
+    }
 
     private async Task<ShellContext> CreateShellContextInternalAsync(ShellSettings settings)
     {
@@ -57,17 +59,21 @@ public class ShellContextFactory : IShellContextFactory
     }
 
     Task<ShellContext> IShellContextFactory.CreateSetupContextAsync(ShellSettings settings)
-        => MeasureAsync(settings, settings =>
+    {
+        return MeasureAsync(settings, CreateSetupContextInternalAsync);
+    }
+
+    private Task<ShellContext> CreateSetupContextInternalAsync(ShellSettings settings)
+    {
+        if (_logger.IsEnabled(LogLevel.Debug))
         {
-            if (_logger.IsEnabled(LogLevel.Debug))
-            {
-                _logger.LogDebug("No shell settings available. Creating shell context for setup");
-            }
+            _logger.LogDebug("No shell settings available. Creating shell context for setup");
+        }
 
-            var descriptor = MinimumShellDescriptor();
+        var descriptor = MinimumShellDescriptor();
 
-            return CreateDescribedContextAsync(settings, descriptor);
-        });
+        return CreateDescribedContextAsync(settings, descriptor);
+    }
 
     public async Task<ShellContext> CreateDescribedContextAsync(ShellSettings settings, ShellDescriptor shellDescriptor)
     {

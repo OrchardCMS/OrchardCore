@@ -225,7 +225,9 @@ public class RecipeExecutor : IRecipeExecutor
     }
 
     private static string GetActivityName(string operation, string name)
-        => string.IsNullOrEmpty(name) ? operation : $"{operation} {name}";
+    {
+        return string.IsNullOrEmpty(name) ? operation : $"{operation} {name}";
+    }
 
     /// <summary>
     /// Traverse all the nodes of the json document and replaces their value if they are scripted.

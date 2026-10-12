@@ -462,13 +462,15 @@ internal sealed class ModularBackgroundService : BackgroundService
         }
     }
 
-    private static void RecordBackgroundTaskDuration(long startTimestamp, string tenant, string taskName, Exception exception = null) =>
+    private static void RecordBackgroundTaskDuration(long startTimestamp, string tenant, string taskName, Exception exception = null)
+    {
         OrchardCoreTelemetry.RecordDuration(
             OrchardCoreTelemetry.BackgroundTaskDuration,
             startTimestamp,
             tenant,
             exception,
             new KeyValuePair<string, object>(OrchardCoreTelemetryConstants.Attributes.BackgroundTaskName, taskName));
+    }
 
     private static void SetBaseUrl(HttpContext context, string baseUrl)
     {
