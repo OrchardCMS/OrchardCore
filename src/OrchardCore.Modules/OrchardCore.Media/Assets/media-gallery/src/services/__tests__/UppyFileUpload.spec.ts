@@ -18,7 +18,6 @@ const {
   mockUse,
   mockUppyInstance,
   mockNotify,
-  mockGetUploadOptions,
 } = vi.hoisted(() => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const uppyEventHandlers: Record<string, ((...args: any[]) => any)[]> = {};
@@ -35,7 +34,6 @@ const {
   const mockGetPlugin = vi.fn(() => null);
   const mockUse = vi.fn();
   const mockNotify = vi.fn();
-  const mockGetUploadOptions = vi.fn(() => Promise.resolve({ data: { maxFileSize: 30000000 } }));
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function mockUppyOn(event: string, handler: (...args: any[]) => any) {
@@ -79,7 +77,6 @@ const {
     mockUse,
     mockUppyInstance,
     mockNotify,
-    mockGetUploadOptions,
   };
 });
 
@@ -100,9 +97,6 @@ vi.mock("@uppy/locales/lib/fr_FR", () => ({ default: { strings: {} } }));
 vi.mock("@uppy/locales/lib/it_IT", () => ({ default: { strings: {} } }));
 vi.mock("@uppy/locales/lib/es_ES", () => ({ default: { strings: {} } }));
 vi.mock("@uppy/drop-target/css/style.css", () => ({}));
-vi.mock("../apiClient", () => ({
-  getSharedAxios: () => ({ get: mockGetUploadOptions }),
-}));
 
 vi.mock("@bloom/services/notifications/notifier", () => ({
   notify: (...args: any[]) => mockNotify(...args), // eslint-disable-line @typescript-eslint/no-explicit-any

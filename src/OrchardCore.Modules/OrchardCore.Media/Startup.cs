@@ -235,7 +235,6 @@ public sealed class Startup : StartupBase
     {
         routes.AddGetLocalizationsEndpoint()
             .AddGetPermittedStorageEndpoint()
-            .AddGetUploadOptionsEndpoint()
             .AddGetDirectoryTreeEndpoint()
             .AddGetFoldersEndpoint()
             .AddGetMediaItemsEndpoint()
