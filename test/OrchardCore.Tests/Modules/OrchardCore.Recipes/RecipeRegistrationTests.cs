@@ -141,7 +141,7 @@ public class RecipeRegistrationTests
 
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, setupResult.StatusCode);
-        Assert.Contains("Recipe 'SaaS' not found.", await setupResult.Content.ReadAsStringAsync());
+        Assert.Contains("Recipe 'SaaS' not found.", await setupResult.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
     }
 
     [Fact]
