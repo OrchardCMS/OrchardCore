@@ -126,6 +126,39 @@ public sealed class BackgroundTasksTests : CmsTestBase<BackgroundTasksTestsFixtu
         await page.CloseAsync();
     }
 
+    [Fact]
+    public async Task BulkRunNow_SelectedTasks_RunsEachTask()
+    {
+        var page = await Fixture.CreatePageAsync();
+        await page.LoginAsync();
+
+        var succeeding = await GotoLoadedTaskRowAsync(page, SucceedingTestBackgroundTask.TaskName);
+        var failing = page.Locator($"li[data-task-name='{FailingTestBackgroundTask.TaskName}']");
+        var succeedingRunCount = await GetRunCountAsync(succeeding);
+        var failingRunCount = await GetRunCountAsync(failing);
+
+        // The actions of the list only appear once tasks are selected.
+        var bulkActions = page.Locator("#bulk-action-menu-button");
+        await Assertions.Expect(bulkActions).ToBeHiddenAsync();
+
+        await succeeding.Locator("input[name='taskNames']").CheckAsync();
+        await failing.Locator("input[name='taskNames']").CheckAsync();
+        await Assertions.Expect(page.Locator("#selected-items")).ToContainTextAsync("2");
+
+        await bulkActions.ClickAsync();
+        await page.Locator("#actions .dropdown-item").Filter(new LocatorFilterOptions { HasText = "Run now" }).ClickAsync();
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        await Assertions.Expect(page.Locator(".message-success")).ToHaveCountAsync(2);
+
+        await Assertions.Expect(page.Locator($"li[data-task-name='{SucceedingTestBackgroundTask.TaskName}']"))
+            .ToHaveAttributeAsync("data-task-run-count", ToText(succeedingRunCount + 1), new LocatorAssertionsToHaveAttributeOptions { Timeout = _runTimeout });
+        await Assertions.Expect(page.Locator($"li[data-task-name='{FailingTestBackgroundTask.TaskName}']"))
+            .ToHaveAttributeAsync("data-task-run-count", ToText(failingRunCount + 1), new LocatorAssertionsToHaveAttributeOptions { Timeout = _runTimeout });
+
+        await page.CloseAsync();
+    }
+
     private static async Task<int> GetRunCountAsync(ILocator task)
         => int.Parse(await task.GetAttributeAsync("data-task-run-count") ?? "0", System.Globalization.CultureInfo.InvariantCulture);
 
