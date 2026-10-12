@@ -236,7 +236,8 @@ public sealed class DataPipelineDesignerModelBuilder
     /// <param name="duration">How long the preview took.</param>
     /// <returns>The preview model.</returns>
     public static DesignerPreview BuildPreview(DataPipelinePreview preview, bool isInputPreview, TimeSpan duration)
-        => new()
+    {
+        return new()
         {
             StepId = preview.StepId,
             Error = preview.Error,
@@ -260,9 +261,11 @@ public sealed class DataPipelineDesignerModelBuilder
                 }).ToList(),
             }).ToList(),
         };
+    }
 
     private static object ToJsonValue(object value)
-        => value switch
+    {
+        return value switch
         {
             null => null,
             DateTime date => date.TimeOfDay == TimeSpan.Zero && date.Kind != DateTimeKind.Utc
@@ -271,15 +274,18 @@ public sealed class DataPipelineDesignerModelBuilder
             string or bool or long or int or decimal or double => value,
             _ => DataSources.DataValues.ToText(value),
         };
+    }
 
     private string GetCategoryName(DataPipelineStepCategory category)
-        => category switch
+    {
+        return category switch
         {
             DataPipelineStepCategory.Source => S["Sources"],
             DataPipelineStepCategory.Transform => S["Transforms"],
             DataPipelineStepCategory.File => S["Files"],
             _ => S["Destinations"],
         };
+    }
 
     private async Task<string> RenderContentZoneAsync(IShape shape)
     {

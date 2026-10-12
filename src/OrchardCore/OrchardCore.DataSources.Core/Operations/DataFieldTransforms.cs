@@ -88,7 +88,8 @@ public static class DataFieldTransforms
     /// <param name="type">The type of the values.</param>
     /// <returns><see langword="true"/> when the transform applies.</returns>
     public static bool Supports(DataFieldTransform transform, DataFieldType type)
-        => transform switch
+    {
+        return transform switch
         {
             DataFieldTransform.None => true,
             DataFieldTransform.Upper or DataFieldTransform.Lower or DataFieldTransform.Trim or DataFieldTransform.Length => type == DataFieldType.Text,
@@ -96,6 +97,7 @@ public static class DataFieldTransforms
             DataFieldTransform.Round => DataValues.IsNumeric(type),
             _ => DataValues.IsTemporal(type),
         };
+    }
 
     /// <summary>
     /// Gets the type of the values a transform returns.
@@ -104,7 +106,8 @@ public static class DataFieldTransforms
     /// <param name="type">The type of the values it reads.</param>
     /// <returns>The type of the values it returns.</returns>
     public static DataFieldType GetResultType(DataFieldTransform transform, DataFieldType type)
-        => transform switch
+    {
+        return transform switch
         {
             DataFieldTransform.None => type,
             DataFieldTransform.Upper or DataFieldTransform.Lower or DataFieldTransform.Trim => DataFieldType.Text,
@@ -113,6 +116,7 @@ public static class DataFieldTransforms
             DataFieldTransform.Hour => DataFieldType.DateTime,
             _ => type,
         };
+    }
 
     /// <summary>
     /// Applies a transform to a value.

@@ -150,5 +150,7 @@ public sealed class UploadToFtpStep : DataPipelineStepType<UploadToFtpStepSettin
     }
 
     private static string GetScheme(DataPipelineFtpEncryption encryption)
-        => encryption == DataPipelineFtpEncryption.None ? "ftp" : "ftps";
+    {
+        return encryption == DataPipelineFtpEncryption.None ? "ftp" : "ftps";
+    }
 }

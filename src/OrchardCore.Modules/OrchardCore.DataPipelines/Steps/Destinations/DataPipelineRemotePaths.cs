@@ -33,7 +33,9 @@ public static class DataPipelineRemotePaths
     /// <param name="fileName">The name of the file.</param>
     /// <returns>The path of the file in the folder.</returns>
     public static string Combine(string folder, string fileName)
-        => string.IsNullOrEmpty(folder) ? fileName : folder.EndsWith('/') ? folder + fileName : folder + "/" + fileName;
+    {
+        return string.IsNullOrEmpty(folder) ? fileName : folder.EndsWith('/') ? folder + fileName : folder + "/" + fileName;
+    }
 
     /// <summary>
     /// Describes a remote path as a URL, such as <c>sftp://host:22/folder/file.csv</c>. It never holds credentials.
@@ -44,7 +46,9 @@ public static class DataPipelineRemotePaths
     /// <param name="path">The path on the server.</param>
     /// <returns>The URL.</returns>
     public static string ToDisplayUrl(string scheme, string host, int port, string path)
-        => $"{scheme}://{host}:{port}/{(path ?? string.Empty).TrimStart('/')}";
+    {
+        return $"{scheme}://{host}:{port}/{(path ?? string.Empty).TrimStart('/')}";
+    }
 
     /// <summary>
     /// Replaces the secrets a message may hold, such as the message of an exception thrown by a client library.

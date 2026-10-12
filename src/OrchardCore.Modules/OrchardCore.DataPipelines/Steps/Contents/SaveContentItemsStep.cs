@@ -54,10 +54,14 @@ public sealed class SaveContentItemsStep : DataPipelineStepType<SaveContentItems
     public override string Icon => "fa-solid fa-file-pen";
 
     public override IReadOnlyList<DataPipelinePort> GetInputs(DataPipelineStep step)
-        => [new(DataPipelinePort.Input, S["Rows"]) { IsRequired = true }];
+    {
+        return [new(DataPipelinePort.Input, S["Rows"]) { IsRequired = true }];
+    }
 
     public override IReadOnlyList<DataPipelinePort> GetOutputs(DataPipelineStep step)
-        => [new(Rejected, S["Rejected"])];
+    {
+        return [new(Rejected, S["Rejected"])];
+    }
 
     public override async Task DescribeAsync(DataPipelineDescribeContext context)
     {

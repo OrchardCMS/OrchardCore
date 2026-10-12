@@ -9,5 +9,7 @@ namespace OrchardCore.DataPipelines.Startups;
 public sealed class DeploymentStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
-        => services.AddDeployment<AllDataPipelinesDeploymentSource, AllDataPipelinesDeploymentStep, AllDataPipelinesDeploymentStepDriver>();
+    {
+        services.AddDeployment<AllDataPipelinesDeploymentSource, AllDataPipelinesDeploymentStep, AllDataPipelinesDeploymentStepDriver>();
+    }
 }

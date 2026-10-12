@@ -36,7 +36,13 @@ public sealed class SendByEmailStep : DataPipelineStepType<SendByEmailStepSettin
 
     public override LocalizedString DisplayName => S["Send by email"];
 
-    public override LocalizedString Description => S["Sends the files as the attachments of an email."];
+    public override LocalizedString Description
+    {
+        get
+        {
+            return S["Sends the files as the attachments of an email."];
+        }
+    }
 
     public override DataPipelineStepCategory Category => DataPipelineStepCategory.Destination;
 
@@ -48,7 +54,9 @@ public sealed class SendByEmailStep : DataPipelineStepType<SendByEmailStepSettin
     /// <param name="addresses">The list.</param>
     /// <returns>The addresses.</returns>
     public static IReadOnlyList<string> SplitAddresses(string addresses)
-        => (addresses ?? string.Empty).Split(_separators, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+    {
+        return (addresses ?? string.Empty).Split(_separators, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+    }
 
     public override Task DescribeAsync(DataPipelineDescribeContext context)
     {
@@ -176,5 +184,7 @@ public sealed class SendByEmailStep : DataPipelineStepType<SendByEmailStepSettin
     }
 
     private static string Render(string template, DataPipelineRunContext run, DateTime now, string fileNames)
-        => (DataPipelineTemplate.Render(template, run, now) ?? string.Empty).Replace(FileNamesPlaceholder, fileNames, StringComparison.Ordinal);
+    {
+        return (DataPipelineTemplate.Render(template, run, now) ?? string.Empty).Replace(FileNamesPlaceholder, fileNames, StringComparison.Ordinal);
+    }
 }

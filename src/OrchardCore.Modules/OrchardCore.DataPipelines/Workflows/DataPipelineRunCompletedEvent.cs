@@ -60,7 +60,9 @@ public sealed class DataPipelineRunCompletedEvent : EventActivity
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        => Outcome(S["Done"]);
+    {
+        return Outcome(S["Done"]);
+    }
 
     public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {

@@ -143,7 +143,9 @@ public static class DataSorter
     }
 
     private static List<object[]> Sort(List<object[]> rows, IComparer<object[]> comparer)
-        => rows.Count < 2 ? rows : rows.Order(comparer).ToList();
+    {
+        return rows.Count < 2 ? rows : rows.Order(comparer).ToList();
+    }
 
     private static DataRowFile WriteRun(List<object[]> rows, DataSpillOptions options)
     {
@@ -211,5 +213,7 @@ public static class DataSorter
     }
 
     private static object Value(object[] row, int index)
-        => index >= 0 && index < row.Length ? row[index] : null;
+    {
+        return index >= 0 && index < row.Length ? row[index] : null;
+    }
 }

@@ -75,7 +75,9 @@ public sealed class DataRowBuffer : IDisposable
     /// </summary>
     /// <returns>The rows.</returns>
     public IEnumerable<object[]> Read()
-        => _file is null ? _rows : _file.Read();
+    {
+        return _file is null ? _rows : _file.Read();
+    }
 
     /// <summary>
     /// Deletes the temporary file, if any.

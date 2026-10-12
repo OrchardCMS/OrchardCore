@@ -89,7 +89,8 @@ public sealed class SharedWithMeTests
     }
 
     private static DataPipelineSharedFile SharedFile(string fileId, List<string> recipients, DateTime expiresUtc, DateTime? revokedUtc = null)
-        => new()
+    {
+        return new()
         {
             FileId = fileId,
             FileName = $"{fileId}.csv",
@@ -99,7 +100,10 @@ public sealed class SharedWithMeTests
             ExpiresUtc = expiresUtc,
             RevokedUtc = revokedUtc,
         };
+    }
 
     private static ClaimsPrincipal User(string userId)
-        => new(new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, userId)], "Test"));
+    {
+        return new(new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, userId)], "Test"));
+    }
 }

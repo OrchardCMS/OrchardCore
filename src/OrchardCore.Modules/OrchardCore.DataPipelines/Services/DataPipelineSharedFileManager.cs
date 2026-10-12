@@ -211,7 +211,9 @@ public sealed class DataPipelineSharedFileManager : IDataPipelineSharedFileManag
     /// <param name="sharedFile">The shared file.</param>
     /// <returns>A task that completes when the file is saved.</returns>
     public Task SaveAsync(DataPipelineSharedFile sharedFile)
-        => _session.SaveAsync(sharedFile);
+    {
+        return _session.SaveAsync(sharedFile);
+    }
 
     /// <summary>
     /// Lists the shared files whose link stopped working before a date.
@@ -220,7 +222,9 @@ public sealed class DataPipelineSharedFileManager : IDataPipelineSharedFileManag
     /// <param name="take">The number of files to return.</param>
     /// <returns>The files.</returns>
     public async Task<IReadOnlyList<DataPipelineSharedFile>> ListExpiredAsync(DateTime before, int take)
-        => (await _session.Query<DataPipelineSharedFile, DataPipelineSharedFileIndex>(index => index.ExpiresUtc < before).Take(take).ListAsync()).ToList();
+    {
+        return (await _session.Query<DataPipelineSharedFile, DataPipelineSharedFileIndex>(index => index.ExpiresUtc < before).Take(take).ListAsync()).ToList();
+    }
 
     /// <summary>
     /// Deletes a shared file, its content and its link.
@@ -241,7 +245,9 @@ public sealed class DataPipelineSharedFileManager : IDataPipelineSharedFileManag
     }
 
     private string GetDirectory(string fileId)
-        => Path.Combine(_shellOptions.Value.ShellsApplicationDataPath, _shellOptions.Value.ShellsContainerName, _shellSettings.Name, "DataPipelines", "SharedFiles", Path.GetFileName(fileId));
+    {
+        return Path.Combine(_shellOptions.Value.ShellsApplicationDataPath, _shellOptions.Value.ShellsContainerName, _shellSettings.Name, "DataPipelines", "SharedFiles", Path.GetFileName(fileId));
+    }
 
     private string GetUrl(string fileId, string token)
     {

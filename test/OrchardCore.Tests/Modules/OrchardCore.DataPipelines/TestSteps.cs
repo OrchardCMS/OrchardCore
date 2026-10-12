@@ -21,7 +21,9 @@ internal static class TestSteps
     }
 
     public static DataPipelineConnection Connect(string source, string target, string sourcePort = DataPipelinePort.Output, string targetPort = DataPipelinePort.Input)
-        => new() { SourceStepId = source, SourcePort = sourcePort, TargetStepId = target, TargetPort = targetPort };
+    {
+        return new() { SourceStepId = source, SourcePort = sourcePort, TargetStepId = target, TargetPort = targetPort };
+    }
 
     public static IDataPipelineStepType[] All(TestCollector collector)
         =>
@@ -188,7 +190,9 @@ internal static class TestSteps
         public override DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
 
         public override IReadOnlyList<DataPipelinePort> GetInputs(DataPipelineStep step)
-            => [new(DataPipelinePort.Input, "Rows") { IsRequired = true, AllowsMany = true }];
+        {
+            return [new(DataPipelinePort.Input, "Rows") { IsRequired = true, AllowsMany = true }];
+        }
 
         public override async Task ExecuteAsync(DataPipelineStepContext context)
         {
@@ -214,7 +218,9 @@ internal static class TestSteps
         public override DataPipelineStepCategory Category => DataPipelineStepCategory.Destination;
 
         public override IReadOnlyList<DataPipelinePort> GetInputs(DataPipelineStep step)
-            => [new(DataPipelinePort.Input, "Rows") { IsRequired = true }];
+        {
+            return [new(DataPipelinePort.Input, "Rows") { IsRequired = true }];
+        }
 
         public override async Task ExecuteAsync(DataPipelineStepContext context)
         {
@@ -305,5 +311,8 @@ internal sealed class TestCollector
 
     public void AddFile(string name, string content) => Files[name] = content;
 
-    public IReadOnlyList<object[]> Rows(string stepId) => _rows.TryGetValue(stepId, out var queue) ? queue.ToList() : [];
+    public IReadOnlyList<object[]> Rows(string stepId)
+    {
+        return _rows.TryGetValue(stepId, out var queue) ? queue.ToList() : [];
+    }
 }

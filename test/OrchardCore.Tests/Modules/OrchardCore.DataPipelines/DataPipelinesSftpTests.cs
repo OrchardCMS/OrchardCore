@@ -170,7 +170,9 @@ public sealed class DataPipelinesSftpTests
     }
 
     private UploadToSftpStep SftpStep(FakeSftpClientFactory factory)
-        => new(factory, _secrets, new PassThroughStringLocalizer<UploadToSftpStep>());
+    {
+        return new(factory, _secrets, new PassThroughStringLocalizer<UploadToSftpStep>());
+    }
 
     private sealed class FakeSftpClientFactory : IDataPipelineSftpClientFactory
     {

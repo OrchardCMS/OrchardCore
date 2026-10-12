@@ -71,7 +71,9 @@ public sealed class DataPipelineDescribeContext
     /// <param name="port">The input name.</param>
     /// <returns>The fields, or an empty list when the input is not connected.</returns>
     public IReadOnlyList<DataField> GetInputFields(string port = DataPipelinePort.Input)
-        => _inputs.TryGetValue(port, out var sets) && sets.Count > 0 ? sets[0] : [];
+    {
+        return _inputs.TryGetValue(port, out var sets) && sets.Count > 0 ? sets[0] : [];
+    }
 
     /// <summary>
     /// Gets the fields of each connection of an input, in the order of the connections.
@@ -79,7 +81,9 @@ public sealed class DataPipelineDescribeContext
     /// <param name="port">The input name.</param>
     /// <returns>The fields of each connection.</returns>
     public IReadOnlyList<IReadOnlyList<DataField>> GetInputFieldSets(string port = DataPipelinePort.Input)
-        => _inputs.TryGetValue(port, out var sets) ? sets : [];
+    {
+        return _inputs.TryGetValue(port, out var sets) ? sets : [];
+    }
 
     /// <summary>
     /// Sets the fields of a record output.
@@ -87,19 +91,25 @@ public sealed class DataPipelineDescribeContext
     /// <param name="fields">The fields.</param>
     /// <param name="port">The output name.</param>
     public void SetOutputFields(IReadOnlyList<DataField> fields, string port = DataPipelinePort.Output)
-        => Outputs[port] = fields ?? [];
+    {
+        Outputs[port] = fields ?? [];
+    }
 
     /// <summary>
     /// Reports an error that prevents the pipeline from running.
     /// </summary>
     /// <param name="message">The message shown to the user.</param>
     public void AddError(string message)
-        => Issues.Add(new DataPipelineIssue(DataPipelineIssueSeverity.Error, message, Step.StepId));
+    {
+        Issues.Add(new DataPipelineIssue(DataPipelineIssueSeverity.Error, message, Step.StepId));
+    }
 
     /// <summary>
     /// Reports a warning, which doesn't prevent the pipeline from running.
     /// </summary>
     /// <param name="message">The message shown to the user.</param>
     public void AddWarning(string message)
-        => Issues.Add(new DataPipelineIssue(DataPipelineIssueSeverity.Warning, message, Step.StepId));
+    {
+        Issues.Add(new DataPipelineIssue(DataPipelineIssueSeverity.Warning, message, Step.StepId));
+    }
 }

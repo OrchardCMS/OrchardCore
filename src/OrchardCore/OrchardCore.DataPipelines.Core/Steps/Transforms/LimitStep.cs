@@ -25,7 +25,13 @@ public sealed class LimitStep : DataPipelineStepType<LimitStepSettings>
 
     public override LocalizedString DisplayName => S["Keep first rows"];
 
-    public override LocalizedString Description => S["Keeps a number of rows, optionally after skipping some."];
+    public override LocalizedString Description
+    {
+        get
+        {
+            return S["Keeps a number of rows, optionally after skipping some."];
+        }
+    }
 
     public override DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
 

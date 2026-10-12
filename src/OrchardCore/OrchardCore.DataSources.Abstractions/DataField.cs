@@ -78,10 +78,12 @@ public sealed class DataField
     /// <param name="displayName">The label of the copy, or <see langword="null"/> to use <paramref name="name"/>.</param>
     /// <returns>The copy.</returns>
     public DataField WithName(string name, string displayName = null)
-        => new(name, displayName ?? name, Type, Group)
+    {
+        return new(name, displayName ?? name, Type, Group)
         {
             Description = Description,
             IsIdentifier = IsIdentifier,
             References = [.. References ?? []],
         };
+    }
 }

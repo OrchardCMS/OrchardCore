@@ -53,7 +53,13 @@ public sealed class ExcelDataFileFormat : IDataWorkbookFormat
 
     public string Extension => ".xlsx";
 
-    public string ContentType => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+    public string ContentType
+    {
+        get
+        {
+            return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+        }
+    }
 
     public async Task<long> WriteAsync(
         Stream stream,
@@ -254,7 +260,8 @@ public sealed class ExcelDataFileFormat : IDataWorkbookFormat
     }
 
     private static DataFieldType TypeOf(object value)
-        => value switch
+    {
+        return value switch
         {
             ExcelDate date => date.HasTime ? DataFieldType.DateTime : DataFieldType.Date,
             long => DataFieldType.Integer,
@@ -262,6 +269,7 @@ public sealed class ExcelDataFileFormat : IDataWorkbookFormat
             bool => DataFieldType.Boolean,
             _ => DataFieldType.Text,
         };
+    }
 
     private static object[] ReadRow(Row row, string[] sharedStrings, IReadOnlyList<StyleKind> styles)
     {
@@ -473,10 +481,14 @@ public sealed class ExcelDataFileFormat : IDataWorkbookFormat
     }
 
     private static string WorksheetPath(int index)
-        => $"xl/worksheets/sheet{(index + 1).ToString(CultureInfo.InvariantCulture)}.xml";
+    {
+        return $"xl/worksheets/sheet{(index + 1).ToString(CultureInfo.InvariantCulture)}.xml";
+    }
 
     private static string RelationshipId(int index)
-        => $"rId{(index + 1).ToString(CultureInfo.InvariantCulture)}";
+    {
+        return $"rId{(index + 1).ToString(CultureInfo.InvariantCulture)}";
+    }
 
     private static async Task WriteContentTypesAsync(XmlWriter writer, int sheetCount)
     {
@@ -809,7 +821,10 @@ public sealed class ExcelDataFileFormat : IDataWorkbookFormat
     }
 
     // Removes the characters XML can't hold, and keeps the text within the length Excel allows in a cell.
-    private static string CellText(string text) => Truncate(RemoveInvalidXmlCharacters(text), MaxCellText);
+    private static string CellText(string text)
+    {
+        return Truncate(RemoveInvalidXmlCharacters(text), MaxCellText);
+    }
 
     private static string RemoveInvalidXmlCharacters(string text)
     {

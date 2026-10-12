@@ -22,20 +22,24 @@ public abstract class DataPipelineStepType : IDataPipelineStepType
     public virtual string Icon => "fa-solid fa-cube";
 
     public virtual IReadOnlyList<DataPipelinePort> GetInputs(DataPipelineStep step)
-        => Category switch
+    {
+        return Category switch
         {
             DataPipelineStepCategory.Source => [],
             DataPipelineStepCategory.Destination => [new(DataPipelinePort.Input, "Files", DataPipelinePortKind.Files) { IsRequired = true }],
             _ => [new(DataPipelinePort.Input, "Rows") { IsRequired = true }],
         };
+    }
 
     public virtual IReadOnlyList<DataPipelinePort> GetOutputs(DataPipelineStep step)
-        => Category switch
+    {
+        return Category switch
         {
             DataPipelineStepCategory.Destination => [],
             DataPipelineStepCategory.File => [new(DataPipelinePort.Output, "Files", DataPipelinePortKind.Files)],
             _ => [new(DataPipelinePort.Output, "Rows")],
         };
+    }
 
     public virtual Task DescribeAsync(DataPipelineDescribeContext context)
     {

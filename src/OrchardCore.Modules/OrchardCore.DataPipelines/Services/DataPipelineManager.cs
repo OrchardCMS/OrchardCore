@@ -58,7 +58,9 @@ public sealed class DataPipelineManager
     /// </summary>
     /// <returns>The pipelines.</returns>
     public async Task<IReadOnlyList<DataPipeline>> ListAsync()
-        => (await _session.Query<DataPipeline, DataPipelineIndex>().OrderBy(index => index.Name).ListAsync()).ToList();
+    {
+        return (await _session.Query<DataPipeline, DataPipelineIndex>().OrderBy(index => index.Name).ListAsync()).ToList();
+    }
 
     /// <summary>
     /// Lists a page of the pipelines whose name contains a text, ordered by name.
@@ -85,9 +87,11 @@ public sealed class DataPipelineManager
     /// <param name="search">The text.</param>
     /// <returns>The identifiers.</returns>
     public async Task<IReadOnlyList<string>> FindIdsAsync(string search)
-        => (await _session.QueryIndex<DataPipelineIndex>(index => index.Name.Contains(search.Trim())).ListAsync())
+    {
+        return (await _session.QueryIndex<DataPipelineIndex>(index => index.Name.Contains(search.Trim())).ListAsync())
             .Select(index => index.PipelineId)
             .ToList();
+    }
 
     /// <summary>
     /// Creates a pipeline, with an empty draft.
@@ -259,9 +263,11 @@ public sealed class DataPipelineManager
     /// <param name="pipelineId">The identifier of the pipeline.</param>
     /// <returns>The versions.</returns>
     public async Task<IReadOnlyList<DataPipelineVersion>> ListVersionsAsync(string pipelineId)
-        => (await _session.Query<DataPipelineVersion, DataPipelineVersionIndex>(index => index.PipelineId == pipelineId)
+    {
+        return (await _session.Query<DataPipelineVersion, DataPipelineVersionIndex>(index => index.PipelineId == pipelineId)
             .OrderByDescending(index => index.Number)
             .ListAsync()).ToList();
+    }
 
     /// <summary>
     /// Finds a version of a pipeline.
@@ -333,7 +339,9 @@ public sealed class DataPipelineManager
     /// <param name="definition">The definition.</param>
     /// <returns>The copy.</returns>
     public static DataPipelineDefinition Clone(DataPipelineDefinition definition)
-        => JsonSerializer.Deserialize<DataPipelineDefinition>(JsonSerializer.Serialize(definition ?? new DataPipelineDefinition(), JOptions.Default), JOptions.Default);
+    {
+        return JsonSerializer.Deserialize<DataPipelineDefinition>(JsonSerializer.Serialize(definition ?? new DataPipelineDefinition(), JOptions.Default), JOptions.Default);
+    }
 
     /// <summary>
     /// Tells whether two definitions are the same.
@@ -342,8 +350,12 @@ public sealed class DataPipelineManager
     /// <param name="right">Another definition.</param>
     /// <returns><see langword="true"/> when they are the same.</returns>
     public static bool AreEqual(DataPipelineDefinition left, DataPipelineDefinition right)
-        => JsonSerializer.Serialize(left, JOptions.Default) == JsonSerializer.Serialize(right, JOptions.Default);
+    {
+        return JsonSerializer.Serialize(left, JOptions.Default) == JsonSerializer.Serialize(right, JOptions.Default);
+    }
 
     private static string GetUserId(ClaimsPrincipal user)
-        => user?.FindFirstValue(ClaimTypes.NameIdentifier);
+    {
+        return user?.FindFirstValue(ClaimTypes.NameIdentifier);
+    }
 }

@@ -379,10 +379,14 @@ public sealed class DataPipelineExecutorTests : IDisposable
     }
 
     private static DataPipelineDefinition Define(IEnumerable<DataPipelineStep> steps, IEnumerable<DataPipelineConnection> connections)
-        => new() { Steps = [.. steps], Connections = [.. connections] };
+    {
+        return new() { Steps = [.. steps], Connections = [.. connections] };
+    }
 
     private DataPipelineAnalyzer CreateAnalyzer(IDataPipelineStepType[] steps = null)
-        => new(new DataPipelineStepTypeManager(steps ?? TestSteps.All(_collector)), new PassThroughStringLocalizer<DataPipelineAnalyzer>());
+    {
+        return new(new DataPipelineStepTypeManager(steps ?? TestSteps.All(_collector)), new PassThroughStringLocalizer<DataPipelineAnalyzer>());
+    }
 
     private DataPipelineExecutor CreateExecutor(IDataPipelineStepType[] steps = null)
     {

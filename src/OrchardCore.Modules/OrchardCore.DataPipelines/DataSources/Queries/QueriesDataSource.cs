@@ -146,13 +146,15 @@ public sealed class QueriesDataSource : IDataSource
     }
 
     private static JsonObject ToJsonObject(object item)
-        => item switch
+    {
+        return item switch
         {
             null => null,
             JsonObject jsonObject => jsonObject,
             JsonNode node => new JsonObject { ["Value"] = node.DeepClone() },
             _ => JsonSerializer.SerializeToNode(item) is JsonObject converted ? converted : new JsonObject { ["Value"] = JsonValue.Create(DataValues.ToText(item)) },
         };
+    }
 
     private async Task<Query> GetExecutableQueryAsync(string name, ClaimsPrincipal user)
     {
@@ -167,14 +169,18 @@ public sealed class QueriesDataSource : IDataSource
     }
 
     private async Task<bool> CanExecuteAsync(ClaimsPrincipal user, Query query)
-        => user is not null && await _authorizationService.AuthorizeAsync(user, QueryPermissions.CreatePermissionForQuery(query.Name));
+    {
+        return user is not null && await _authorizationService.AuthorizeAsync(user, QueryPermissions.CreatePermissionForQuery(query.Name));
+    }
 
     private DataSetDescriptor Describe(Query query)
-        => new(query.Name, query.Name)
+    {
+        return new(query.Name, query.Name)
         {
             Group = query.Source,
             Description = query.ReturnContentItems ? S["A {0} query that returns content items.", query.Source] : S["A {0} query.", query.Source],
         };
+    }
 
     private DataField[] ContentFields()
         =>

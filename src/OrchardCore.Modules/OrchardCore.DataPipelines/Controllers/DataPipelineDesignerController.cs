@@ -751,13 +751,19 @@ public sealed class DataPipelineDesignerController : Controller
     }
 
     private Task<DataPipelineAnalysis> AnalyzeAsync(DataPipelineDefinition definition)
-        => _analyzer.AnalyzeAsync(definition, User, HttpContext.RequestServices, HttpContext.RequestAborted);
+    {
+        return _analyzer.AnalyzeAsync(definition, User, HttpContext.RequestServices, HttpContext.RequestAborted);
+    }
 
     private Task<bool> AuthorizeAsync(OrchardCore.Security.Permissions.Permission permission)
-        => _authorizationService.AuthorizeAsync(User, permission);
+    {
+        return _authorizationService.AuthorizeAsync(User, permission);
+    }
 
     private string RunUrl(DataPipelineRun run)
-        => run is null ? null : Url.Action(nameof(AdminController.Run), "Admin", new { area = "OrchardCore.DataPipelines", runId = run.RunId });
+    {
+        return run is null ? null : Url.Action(nameof(AdminController.Run), "Admin", new { area = "OrchardCore.DataPipelines", runId = run.RunId });
+    }
 
     private ViewResult Fragment(DesignerFragmentViewModel model)
     {

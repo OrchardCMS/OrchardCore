@@ -40,7 +40,13 @@ public sealed class JoinStep : DataPipelineStepType<JoinStepSettings>
 
     public override LocalizedString DisplayName => S["Join"];
 
-    public override LocalizedString Description => S["Combines the rows of two inputs that share key values."];
+    public override LocalizedString Description
+    {
+        get
+        {
+            return S["Combines the rows of two inputs that share key values."];
+        }
+    }
 
     public override DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
 

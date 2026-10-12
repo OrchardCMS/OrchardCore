@@ -142,7 +142,10 @@ public sealed class MediaStepsTests
     {
         public Dictionary<string, byte[]> Files { get; } = new(StringComparer.OrdinalIgnoreCase);
 
-        public void Write(string path, string content) => Files[path] = Encoding.UTF8.GetBytes(content);
+        public void Write(string path, string content)
+        {
+            Files[path] = Encoding.UTF8.GetBytes(content);
+        }
 
         public string Read(string path) => Encoding.UTF8.GetString(Files[path]);
 
@@ -151,9 +154,14 @@ public sealed class MediaStepsTests
         public string MapPathToPublicUrl(string path) => "/media/" + path;
 
         public Task<IFileStoreEntry> GetFileInfoAsync(string path)
-            => Task.FromResult<IFileStoreEntry>(Files.TryGetValue(path, out var content) ? new Entry(path, content.Length) : null);
+        {
+            return Task.FromResult<IFileStoreEntry>(Files.TryGetValue(path, out var content) ? new Entry(path, content.Length) : null);
+        }
 
-        public Task<IFileStoreEntry> GetDirectoryInfoAsync(string path) => Task.FromResult<IFileStoreEntry>(null);
+        public Task<IFileStoreEntry> GetDirectoryInfoAsync(string path)
+        {
+            return Task.FromResult<IFileStoreEntry>(null);
+        }
 
         public async IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentAsync(string path = null, bool includeSubDirectories = false)
         {
@@ -168,14 +176,25 @@ public sealed class MediaStepsTests
 
         public Task<bool> TryDeleteDirectoryAsync(string path) => Task.FromResult(false);
 
-        public Task MoveFileAsync(string oldPath, string newPath) => throw new NotSupportedException();
+        public Task MoveFileAsync(string oldPath, string newPath)
+        {
+            throw new NotSupportedException();
+        }
 
-        public Task CopyFileAsync(string srcPath, string dstPath) => throw new NotSupportedException();
+        public Task CopyFileAsync(string srcPath, string dstPath)
+        {
+            throw new NotSupportedException();
+        }
 
         public Task<Stream> GetFileStreamAsync(string path)
-            => Task.FromResult<Stream>(new MemoryStream(Files[path], writable: false));
+        {
+            return Task.FromResult<Stream>(new MemoryStream(Files[path], writable: false));
+        }
 
-        public Task<Stream> GetFileStreamAsync(IFileStoreEntry fileStoreEntry) => GetFileStreamAsync(fileStoreEntry.Path);
+        public Task<Stream> GetFileStreamAsync(IFileStoreEntry fileStoreEntry)
+        {
+            return GetFileStreamAsync(fileStoreEntry.Path);
+        }
 
         public async Task<string> CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
         {
@@ -203,7 +222,13 @@ public sealed class MediaStepsTests
 
             public string Name => System.IO.Path.GetFileName(Path);
 
-            public string DirectoryPath => System.IO.Path.GetDirectoryName(Path)?.Replace('\\', '/');
+            public string DirectoryPath
+            {
+                get
+                {
+                    return System.IO.Path.GetDirectoryName(Path)?.Replace('\\', '/');
+                }
+            }
 
             public long Length { get; }
 

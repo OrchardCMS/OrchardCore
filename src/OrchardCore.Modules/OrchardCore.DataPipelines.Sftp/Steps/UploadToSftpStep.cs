@@ -33,7 +33,13 @@ public sealed class UploadToSftpStep : DataPipelineStepType<UploadToSftpStepSett
 
     public override LocalizedString DisplayName => S["Upload to an SFTP server"];
 
-    public override LocalizedString Description => S["Uploads files to a folder of an SFTP server, over SSH."];
+    public override LocalizedString Description
+    {
+        get
+        {
+            return S["Uploads files to a folder of an SFTP server, over SSH."];
+        }
+    }
 
     public override DataPipelineStepCategory Category => DataPipelineStepCategory.Destination;
 

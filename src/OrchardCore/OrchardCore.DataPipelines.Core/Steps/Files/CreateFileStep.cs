@@ -31,14 +31,22 @@ public sealed class CreateFileStep : DataPipelineStepType<CreateFileStepSettings
 
     public override LocalizedString DisplayName => S["Create a file"];
 
-    public override LocalizedString Description => S["Writes the rows to a CSV, JSON or Excel file."];
+    public override LocalizedString Description
+    {
+        get
+        {
+            return S["Writes the rows to a CSV, JSON or Excel file."];
+        }
+    }
 
     public override DataPipelineStepCategory Category => DataPipelineStepCategory.File;
 
     public override string Icon => "fa-solid fa-file-export";
 
     public override IReadOnlyList<DataPipelinePort> GetInputs(DataPipelineStep step)
-        => [new(DataPipelinePort.Input, S["Rows"]) { IsRequired = true, AllowsMany = true }];
+    {
+        return [new(DataPipelinePort.Input, S["Rows"]) { IsRequired = true, AllowsMany = true }];
+    }
 
     public override Task DescribeAsync(DataPipelineDescribeContext context)
     {
@@ -194,5 +202,7 @@ public sealed class CreateFileStep : DataPipelineStepType<CreateFileStepSettings
     }
 
     private static IDataFileFormat GetFormat(IServiceProvider services, CreateFileStepSettings settings)
-        => services?.GetService<IDataFileFormatManager>()?.GetFormat(settings.Format);
+    {
+        return services?.GetService<IDataFileFormatManager>()?.GetFormat(settings.Format);
+    }
 }

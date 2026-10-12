@@ -29,7 +29,13 @@ public sealed class AggregateStep : DataPipelineStepType<AggregateStepSettings>
 
     public override LocalizedString DisplayName => S["Group and summarize"];
 
-    public override LocalizedString Description => S["Groups rows and computes counts, sums, averages, minimums and maximums."];
+    public override LocalizedString Description
+    {
+        get
+        {
+            return S["Groups rows and computes counts, sums, averages, minimums and maximums."];
+        }
+    }
 
     public override DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
 

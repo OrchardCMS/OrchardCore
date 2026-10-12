@@ -281,7 +281,9 @@ public sealed class DataPipelineRunExecutor
     }
 
     private static Task NotifyAsync(DataPipelineRun run)
-        => ShellScope.UsingChildScopeAsync(scope => DataPipelineRunNotifications.NotifyAsync(scope.ServiceProvider, run));
+    {
+        return ShellScope.UsingChildScopeAsync(scope => DataPipelineRunNotifications.NotifyAsync(scope.ServiceProvider, run));
+    }
 
     private static async Task<DataPipelineRun> LoadAsync(string runId)
     {
@@ -301,7 +303,8 @@ public sealed class DataPipelineRunExecutor
     /// Changes a run in its own scope, so the change is saved at once, whatever the run's steps do.
     /// </summary>
     private static Task UpdateAsync(string runId, Func<DataPipelineRun, bool> change)
-        => ShellScope.UsingChildScopeAsync(async scope =>
+    {
+        return ShellScope.UsingChildScopeAsync(async scope =>
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
             var run = await session.Query<DataPipelineRun, DataPipelineRunIndex>(index => index.RunId == runId).FirstOrDefaultAsync();
@@ -311,6 +314,7 @@ public sealed class DataPipelineRunExecutor
                 await session.SaveAsync(run);
             }
         });
+    }
 
     private static void AddLog(DataPipelineRun run, DataPipelineLogEntry entry)
     {
@@ -351,7 +355,9 @@ public sealed class DataPipelineRunExecutor
         }
 
         public void StepStarted(DataPipelineStep step, DataPipelineStepMetrics metrics)
-            => _steps[step.StepId] = new StepState { Metrics = metrics, Status = DataPipelineStepStatus.Running, StartedUtc = _clock.UtcNow };
+        {
+            _steps[step.StepId] = new StepState { Metrics = metrics, Status = DataPipelineStepStatus.Running, StartedUtc = _clock.UtcNow };
+        }
 
         public void StepCompleted(DataPipelineStep step, DataPipelineStepStatus status, Exception error)
         {

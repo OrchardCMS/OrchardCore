@@ -77,13 +77,17 @@ public static class DataConditions
     }
 
     private static IEnumerable<DataCondition> Of(IEnumerable<DataCondition> conditions, string field)
-        => (conditions ?? []).Where(condition => condition is not null && string.Equals(condition.Field, field, StringComparison.Ordinal));
+    {
+        return (conditions ?? []).Where(condition => condition is not null && string.Equals(condition.Field, field, StringComparison.Ordinal));
+    }
 
     private static DateTime? AsDate(object value)
-        => value switch
+    {
+        return value switch
         {
             DateTime date => date,
             DateTimeOffset date => date.UtcDateTime,
             _ => null,
         };
+    }
 }

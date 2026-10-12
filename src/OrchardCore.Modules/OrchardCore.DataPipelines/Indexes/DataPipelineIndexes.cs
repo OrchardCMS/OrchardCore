@@ -115,14 +115,17 @@ public sealed class DataPipelineStateIndex : MapIndex
 public sealed class DataPipelineStateIndexProvider : IndexProvider<DataPipelineStateDocument>
 {
     public override void Describe(DescribeContext<DataPipelineStateDocument> context)
-        => context.For<DataPipelineStateIndex>()
+    {
+        context.For<DataPipelineStateIndex>()
             .Map(state => new DataPipelineStateIndex { PipelineId = state.PipelineId });
+    }
 }
 
 public sealed class DataPipelineIndexProvider : IndexProvider<DataPipeline>
 {
     public override void Describe(DescribeContext<DataPipeline> context)
-        => context.For<DataPipelineIndex>()
+    {
+        context.For<DataPipelineIndex>()
             .Map(pipeline => new DataPipelineIndex
             {
                 PipelineId = pipeline.PipelineId,
@@ -131,12 +134,14 @@ public sealed class DataPipelineIndexProvider : IndexProvider<DataPipeline>
                 IsPublished = pipeline.Published is not null,
                 ModifiedUtc = pipeline.ModifiedUtc,
             });
+    }
 }
 
 public sealed class DataPipelineVersionIndexProvider : IndexProvider<DataPipelineVersion>
 {
     public override void Describe(DescribeContext<DataPipelineVersion> context)
-        => context.For<DataPipelineVersionIndex>()
+    {
+        context.For<DataPipelineVersionIndex>()
             .Map(version => new DataPipelineVersionIndex
             {
                 VersionId = version.VersionId,
@@ -144,12 +149,14 @@ public sealed class DataPipelineVersionIndexProvider : IndexProvider<DataPipelin
                 Number = version.Number,
                 PublishedUtc = version.PublishedUtc,
             });
+    }
 }
 
 public sealed class DataPipelineRunIndexProvider : IndexProvider<DataPipelineRun>
 {
     public override void Describe(DescribeContext<DataPipelineRun> context)
-        => context.For<DataPipelineRunIndex>()
+    {
+        context.For<DataPipelineRunIndex>()
             .Map(run => new DataPipelineRunIndex
             {
                 RunId = run.RunId,
@@ -160,6 +167,7 @@ public sealed class DataPipelineRunIndexProvider : IndexProvider<DataPipelineRun
                 CompletedUtc = run.CompletedUtc,
                 HeartbeatUtc = run.HeartbeatUtc,
             });
+    }
 }
 
 public sealed class DataPipelineSharedFileIndexProvider : IndexProvider<DataPipelineSharedFile>

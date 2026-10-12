@@ -172,7 +172,8 @@ public sealed class ExpressionFunctionCatalogTests
     }
 
     private static ExpressionFunction Tax()
-        => ExpressionFunction.CreateScalar(
+    {
+        return ExpressionFunction.CreateScalar(
             "TAX",
             "Finance",
             "TAX(amount)",
@@ -181,6 +182,7 @@ public sealed class ExpressionFunctionCatalogTests
             1,
             _ => DataFieldType.Decimal,
             args => args[0] is null ? null : Convert.ToDecimal(args[0]) * 0.15m);
+    }
 
     private sealed class TestProvider : IExpressionFunctionProvider
     {

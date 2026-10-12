@@ -63,7 +63,9 @@ public sealed class DataPipelineState
     /// <param name="key">The key of the value.</param>
     /// <returns>The value, or the default value of <typeparamref name="T"/> when there is none.</returns>
     public T Get<T>(string key)
-        => TryGet<T>(key, out var value) ? value : default;
+    {
+        return TryGet<T>(key, out var value) ? value : default;
+    }
 
     /// <summary>
     /// Gets a value.

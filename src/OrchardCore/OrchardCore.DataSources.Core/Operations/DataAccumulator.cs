@@ -83,7 +83,8 @@ internal sealed class DataAccumulator
     }
 
     public object Result()
-        => _function switch
+    {
+        return _function switch
         {
             DataAggregate.Count => _count,
             DataAggregate.CountDistinct => (long)_distinct.Count,
@@ -93,4 +94,5 @@ internal sealed class DataAccumulator
             DataAggregate.Median => DataAggregations.Median(_values),
             _ => null,
         };
+    }
 }

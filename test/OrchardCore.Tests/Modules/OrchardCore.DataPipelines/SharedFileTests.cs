@@ -127,7 +127,9 @@ public sealed class SharedFileTests
     }
 
     private static ClaimsPrincipal User(string userId)
-        => new(new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, userId)], "Test"));
+    {
+        return new(new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, userId)], "Test"));
+    }
 
     private static ServiceProvider Services(IDataPipelineSharedFileManager manager)
     {

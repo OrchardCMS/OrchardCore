@@ -12,7 +12,9 @@ public sealed class PermissionsProvider : IPermissionProvider
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
+    {
+        return Task.FromResult(_allPermissions);
+    }
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
     [

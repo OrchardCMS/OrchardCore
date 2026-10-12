@@ -18,7 +18,9 @@ public static class DataPipelineSharedFileAccess
     /// </summary>
     /// <returns>The token.</returns>
     public static string CreateToken()
-        => WebEncoders.Base64UrlEncode(RandomNumberGenerator.GetBytes(32));
+    {
+        return WebEncoders.Base64UrlEncode(RandomNumberGenerator.GetBytes(32));
+    }
 
     /// <summary>
     /// Hashes a token, as stored. The token itself is never stored.
@@ -26,7 +28,9 @@ public static class DataPipelineSharedFileAccess
     /// <param name="token">The token.</param>
     /// <returns>The SHA-256 hash of the token, as hexadecimal text.</returns>
     public static string Hash(string token)
-        => Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(token ?? string.Empty)));
+    {
+        return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(token ?? string.Empty)));
+    }
 
     /// <summary>
     /// Decides whether a user may download a shared file.

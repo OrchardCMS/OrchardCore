@@ -27,7 +27,9 @@ public sealed class DataFileFormatManager : IDataFileFormatManager
     public IReadOnlyList<IDataFileFormat> GetFormats() => _formats;
 
     public IDataFileFormat GetFormat(string name)
-        => string.IsNullOrEmpty(name) ? null : _byName.GetValueOrDefault(name);
+    {
+        return string.IsNullOrEmpty(name) ? null : _byName.GetValueOrDefault(name);
+    }
 
     public IDataFileFormat GetFormatByFileName(string fileName)
     {

@@ -30,7 +30,13 @@ public sealed class ReadMediaFileStep : DataPipelineStepType<ReadMediaFileStepSe
 
     public override LocalizedString DisplayName => S["Read a media file"];
 
-    public override LocalizedString Description => S["Reads the rows of a CSV, JSON or Excel file of the media library."];
+    public override LocalizedString Description
+    {
+        get
+        {
+            return S["Reads the rows of a CSV, JSON or Excel file of the media library."];
+        }
+    }
 
     public override DataPipelineStepCategory Category => DataPipelineStepCategory.Source;
 
@@ -132,12 +138,14 @@ public sealed class ReadMediaFileStep : DataPipelineStepType<ReadMediaFileStepSe
     }
 
     private static DataFileOptions CreateOptions(ReadMediaFileStepSettings settings)
-        => new()
+    {
+        return new()
         {
             Delimiter = string.IsNullOrEmpty(settings.Delimiter) ? "," : settings.Delimiter,
             HasHeaderRow = settings.HasHeaderRow,
             SheetName = settings.SheetName,
         };
+    }
 
     // Excel workbooks are zip packages, which need a stream that can seek; media stores may return one that can't.
     private static async Task<Stream> OpenSeekableAsync(IMediaFileStore store, string path, CancellationToken cancellationToken)

@@ -49,7 +49,9 @@ public sealed class DataPipelineAnalysis
     /// <param name="stepId">The step identifier.</param>
     /// <returns>The analysis, or <see langword="null"/> when the pipeline has no such step.</returns>
     public DataPipelineStepAnalysis GetStep(string stepId)
-        => stepId is not null && _steps.TryGetValue(stepId, out var step) ? step : null;
+    {
+        return stepId is not null && _steps.TryGetValue(stepId, out var step) ? step : null;
+    }
 }
 
 /// <summary>
@@ -115,5 +117,7 @@ public sealed class DataPipelineStepAnalysis
     /// <param name="port">The input name.</param>
     /// <returns>The fields, or an empty list.</returns>
     public IReadOnlyList<DataField> GetInputFields(string port)
-        => Inputs.TryGetValue(port, out var sets) && sets.Count > 0 ? sets[0] : [];
+    {
+        return Inputs.TryGetValue(port, out var sets) && sets.Count > 0 ? sets[0] : [];
+    }
 }

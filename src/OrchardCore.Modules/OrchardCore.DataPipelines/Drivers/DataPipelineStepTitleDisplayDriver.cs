@@ -10,8 +10,10 @@ namespace OrchardCore.DataPipelines.Drivers;
 public sealed class DataPipelineStepTitleDisplayDriver : DisplayDriver<DataPipelineStep>
 {
     public override IDisplayResult Edit(DataPipelineStep step, BuildEditorContext context)
-        => Initialize<DataPipelineStepTitleViewModel>("DataPipelineStepTitle_Edit", model => model.Title = step.Title)
+    {
+        return Initialize<DataPipelineStepTitleViewModel>("DataPipelineStepTitle_Edit", model => model.Title = step.Title)
             .Location("Content:0");
+    }
 
     public override async Task<IDisplayResult> UpdateAsync(DataPipelineStep step, UpdateEditorContext context)
     {

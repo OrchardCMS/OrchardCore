@@ -22,5 +22,7 @@ public sealed class DataPipelineDefinition
     /// <param name="stepId">The step identifier.</param>
     /// <returns>The step, or <see langword="null"/> when the pipeline has no such step.</returns>
     public DataPipelineStep FindStep(string stepId)
-        => string.IsNullOrEmpty(stepId) ? null : Steps.FirstOrDefault(step => step.StepId == stepId);
+    {
+        return string.IsNullOrEmpty(stepId) ? null : Steps.FirstOrDefault(step => step.StepId == stepId);
+    }
 }

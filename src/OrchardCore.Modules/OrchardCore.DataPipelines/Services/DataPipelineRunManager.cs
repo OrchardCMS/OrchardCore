@@ -129,7 +129,9 @@ public sealed class DataPipelineRunManager
     /// <param name="take">The number of runs to return.</param>
     /// <returns>The runs, the most recent first, and the number of runs.</returns>
     public Task<(IReadOnlyList<DataPipelineRun> Runs, int Count)> ListAsync(string pipelineId, int skip, int take)
-        => ListAsync(new DataPipelineRunFilter { PipelineId = pipelineId }, skip, take);
+    {
+        return ListAsync(new DataPipelineRunFilter { PipelineId = pipelineId }, skip, take);
+    }
 
     /// <summary>
     /// Lists the most recent runs that match a filter.

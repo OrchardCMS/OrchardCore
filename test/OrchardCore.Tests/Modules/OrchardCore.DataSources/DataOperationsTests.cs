@@ -262,7 +262,9 @@ public sealed class DataOperationsTests : IDisposable
     private DataSpillOptions Options(long memoryLimit) => new(_directory, memoryLimit);
 
     private void AssertNoTemporaryFiles()
-        => Assert.True(!Directory.Exists(_directory) || Directory.GetFiles(_directory).Length == 0, "The operation left temporary files behind.");
+    {
+        Assert.True(!Directory.Exists(_directory) || Directory.GetFiles(_directory).Length == 0, "The operation left temporary files behind.");
+    }
 
     // Rows of an id, a category among 7, a code among 5, and an amount.
     private static List<object[]> Rows(int count, int seed)

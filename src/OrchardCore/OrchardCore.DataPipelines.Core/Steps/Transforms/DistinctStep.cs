@@ -27,7 +27,13 @@ public sealed class DistinctStep : DataPipelineStepType<DistinctStepSettings>
 
     public override LocalizedString DisplayName => S["Remove duplicates"];
 
-    public override LocalizedString Description => S["Keeps the first row of each set of equal values."];
+    public override LocalizedString Description
+    {
+        get
+        {
+            return S["Keeps the first row of each set of equal values."];
+        }
+    }
 
     public override DataPipelineStepCategory Category => DataPipelineStepCategory.Transform;
 

@@ -50,7 +50,9 @@ public sealed class FluentFtpClientFactory : IDataPipelineFtpClientFactory
         }
 
         public Task ConnectAsync(CancellationToken cancellationToken)
-            => _client.Connect(cancellationToken);
+        {
+            return _client.Connect(cancellationToken);
+        }
 
         public async Task EnsureFolderAsync(string folder, CancellationToken cancellationToken)
         {
@@ -61,7 +63,9 @@ public sealed class FluentFtpClientFactory : IDataPipelineFtpClientFactory
         }
 
         public Task<bool> ExistsAsync(string remotePath, CancellationToken cancellationToken)
-            => _client.FileExists(remotePath, cancellationToken);
+        {
+            return _client.FileExists(remotePath, cancellationToken);
+        }
 
         public async Task UploadAsync(Stream content, string remotePath, bool overwrite, CancellationToken cancellationToken)
         {

@@ -24,12 +24,16 @@ public abstract class DataPipelineStepDisplayDriver<TSettings, TViewModel> : Dis
     public override bool CanHandleModel(DataPipelineStep model) => model?.Type == StepName;
 
     public override IDisplayResult Display(DataPipelineStep step, BuildDisplayContext context)
-        => Initialize<TViewModel>($"{StepName}_Fields_Design", model => EditAsync(step, DataPipelineStepType<TSettings>.GetSettings(step), model))
+    {
+        return Initialize<TViewModel>($"{StepName}_Fields_Design", model => EditAsync(step, DataPipelineStepType<TSettings>.GetSettings(step), model))
             .Location("Design", "Content");
+    }
 
     public override IDisplayResult Edit(DataPipelineStep step, BuildEditorContext context)
-        => Initialize<TViewModel>($"{StepName}_Fields_Edit", model => EditAsync(step, DataPipelineStepType<TSettings>.GetSettings(step), model))
+    {
+        return Initialize<TViewModel>($"{StepName}_Fields_Edit", model => EditAsync(step, DataPipelineStepType<TSettings>.GetSettings(step), model))
             .Location("Content");
+    }
 
     public override async Task<IDisplayResult> UpdateAsync(DataPipelineStep step, UpdateEditorContext context)
     {

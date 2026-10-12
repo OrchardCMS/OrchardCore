@@ -241,7 +241,9 @@ public sealed class DataPipelineStateTests
     }
 
     private static DataPipelineConnection Connect(string source, string target)
-        => new() { SourceStepId = source, SourcePort = DataPipelinePort.Output, TargetStepId = target, TargetPort = DataPipelinePort.Input };
+    {
+        return new() { SourceStepId = source, SourcePort = DataPipelinePort.Output, TargetStepId = target, TargetPort = DataPipelinePort.Input };
+    }
 
     private static async Task<DataPipelineRun> WaitForRunAsync(BlogContext context, string runId)
     {

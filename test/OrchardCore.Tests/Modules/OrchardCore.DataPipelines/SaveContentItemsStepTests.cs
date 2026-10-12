@@ -162,11 +162,13 @@ public sealed class SaveContentItemsStepTests
     }
 
     private static async Task<List<ContentItem>> FindAsync(ShellScope scope, params string[] titles)
-        => (await scope.ServiceProvider.GetRequiredService<ISession>()
+    {
+        return (await scope.ServiceProvider.GetRequiredService<ISession>()
             .Query<ContentItem, ContentItemIndex>(index => index.ContentType == "BlogPost" && index.Latest)
             .ListAsync())
             .Where(item => titles.Contains(item.DisplayText))
             .ToList();
+    }
 
     private static async Task<ClaimsPrincipal> GetAdminAsync(ShellScope scope)
     {

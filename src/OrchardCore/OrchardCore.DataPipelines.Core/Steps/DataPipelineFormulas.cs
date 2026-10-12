@@ -84,7 +84,9 @@ public static class DataPipelineFormulas
     /// <param name="services">The services of the run.</param>
     /// <returns>The options.</returns>
     public static DataPipelineOptions GetOptions(IServiceProvider services)
-        => services?.GetService<IOptions<DataPipelineOptions>>()?.Value ?? new DataPipelineOptions();
+    {
+        return services?.GetService<IOptions<DataPipelineOptions>>()?.Value ?? new DataPipelineOptions();
+    }
 
     /// <summary>
     /// Evaluates a formula on a row. A row whose values make the formula fail, such as a division by zero,

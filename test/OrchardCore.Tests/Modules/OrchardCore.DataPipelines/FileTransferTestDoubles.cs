@@ -8,7 +8,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.DataPipelines;
 internal static class DestinationStepAssert
 {
     public static List<string> Errors(DataPipelineDescribeContext description)
-        => description.Issues.Where(issue => issue.Severity == DataPipelineIssueSeverity.Error).Select(issue => issue.Message).ToList();
+    {
+        return description.Issues.Where(issue => issue.Severity == DataPipelineIssueSeverity.Error).Select(issue => issue.Message).ToList();
+    }
 
     public static void AssertNoSecrets(StepTestHost host, params string[] secrets)
     {

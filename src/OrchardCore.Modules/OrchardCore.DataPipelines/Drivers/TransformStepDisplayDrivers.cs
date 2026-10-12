@@ -276,10 +276,14 @@ public sealed class UnionStepDisplayDriver : DataPipelineStepDisplayDriver<Union
     protected override string StepName => UnionStep.StepName;
 
     protected override ValueTask EditAsync(DataPipelineStep step, UnionStepSettings settings, UnionStepViewModel model)
-        => ValueTask.CompletedTask;
+    {
+        return ValueTask.CompletedTask;
+    }
 
     protected override ValueTask UpdateAsync(DataPipelineStep step, UnionStepSettings settings, UnionStepViewModel model, UpdateEditorContext context)
-        => ValueTask.CompletedTask;
+    {
+        return ValueTask.CompletedTask;
+    }
 }
 
 /// <summary>

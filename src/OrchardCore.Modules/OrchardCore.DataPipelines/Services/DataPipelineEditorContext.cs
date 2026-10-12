@@ -36,5 +36,7 @@ public sealed class DataPipelineEditorContext
     /// <param name="port">The input name.</param>
     /// <returns>The fields, or an empty list.</returns>
     public IReadOnlyList<DataField> GetInputFields(string port = Steps.DataPipelinePort.Input)
-        => Analysis?.GetStep(Step?.StepId)?.GetInputFields(port) ?? [];
+    {
+        return Analysis?.GetStep(Step?.StepId)?.GetInputFields(port) ?? [];
+    }
 }

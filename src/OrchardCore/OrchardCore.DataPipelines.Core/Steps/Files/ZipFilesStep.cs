@@ -37,7 +37,9 @@ public sealed class ZipFilesStep : DataPipelineStepType<ZipFilesStepSettings>
     public override string Icon => "fa-solid fa-file-zipper";
 
     public override IReadOnlyList<DataPipelinePort> GetInputs(DataPipelineStep step)
-        => [new(DataPipelinePort.Input, S["Files"], DataPipelinePortKind.Files) { IsRequired = true, AllowsMany = true }];
+    {
+        return [new(DataPipelinePort.Input, S["Files"], DataPipelinePortKind.Files) { IsRequired = true, AllowsMany = true }];
+    }
 
     public override Task DescribeAsync(DataPipelineDescribeContext context) => Task.CompletedTask;
 

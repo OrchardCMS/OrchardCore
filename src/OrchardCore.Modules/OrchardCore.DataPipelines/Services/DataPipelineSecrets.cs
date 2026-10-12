@@ -31,7 +31,9 @@ public sealed class DataPipelineSecrets
     /// <param name="secret">The secret.</param>
     /// <returns>The protected value, or <see langword="null"/> for an empty secret.</returns>
     public string Protect(string secret)
-        => string.IsNullOrEmpty(secret) ? null : _protector.Protect(secret);
+    {
+        return string.IsNullOrEmpty(secret) ? null : _protector.Protect(secret);
+    }
 
     /// <summary>
     /// Reads a protected secret.

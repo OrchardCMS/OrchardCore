@@ -133,7 +133,13 @@ public sealed class DataPipelineRun : Entity
     /// <summary>
     /// Gets a value indicating whether the run ended.
     /// </summary>
-    public bool IsCompleted => Status is DataPipelineRunStatus.Succeeded or DataPipelineRunStatus.Failed or DataPipelineRunStatus.Cancelled;
+    public bool IsCompleted
+    {
+        get
+        {
+            return Status is DataPipelineRunStatus.Succeeded or DataPipelineRunStatus.Failed or DataPipelineRunStatus.Cancelled;
+        }
+    }
 }
 
 /// <summary>

@@ -42,7 +42,8 @@ public sealed class WorkflowDataPipelineRunHandler : IDataPipelineRunHandler
     }
 
     private static Dictionary<string, object> ToDictionary(DataPipelineRun run)
-        => new(StringComparer.Ordinal)
+    {
+        return new(StringComparer.Ordinal)
         {
             ["RunId"] = run.RunId,
             ["PipelineId"] = run.PipelineId,
@@ -64,4 +65,5 @@ public sealed class WorkflowDataPipelineRunHandler : IDataPipelineRunHandler
                 })
                 .ToList(),
         };
+    }
 }

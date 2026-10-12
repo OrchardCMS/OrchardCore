@@ -33,7 +33,13 @@ public sealed class ShareDownloadLinkStep : DataPipelineStepType<ShareDownloadLi
 
     public override LocalizedString DisplayName => S["Share a download link"];
 
-    public override LocalizedString Description => S["Shares files with users through secure, expiring download links."];
+    public override LocalizedString Description
+    {
+        get
+        {
+            return S["Shares files with users through secure, expiring download links."];
+        }
+    }
 
     public override DataPipelineStepCategory Category => DataPipelineStepCategory.Destination;
 

@@ -52,5 +52,7 @@ public sealed class DataPipelineFile
     /// </summary>
     /// <returns>A read-only stream. The caller disposes it.</returns>
     public Stream OpenRead()
-        => new FileStream(Path, FileMode.Open, FileAccess.Read, FileShare.Read, 16 * 1024, FileOptions.Asynchronous | FileOptions.SequentialScan);
+    {
+        return new FileStream(Path, FileMode.Open, FileAccess.Read, FileShare.Read, 16 * 1024, FileOptions.Asynchronous | FileOptions.SequentialScan);
+    }
 }

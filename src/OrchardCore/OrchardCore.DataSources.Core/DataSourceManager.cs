@@ -30,5 +30,7 @@ public sealed class DataSourceManager : IDataSourceManager
     public IReadOnlyList<IDataSource> GetDataSources() => _dataSources;
 
     public IDataSource GetDataSource(string name)
-        => string.IsNullOrEmpty(name) ? null : _byName.GetValueOrDefault(name);
+    {
+        return string.IsNullOrEmpty(name) ? null : _byName.GetValueOrDefault(name);
+    }
 }

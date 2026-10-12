@@ -15,12 +15,14 @@ public sealed class DesignerIssue
     public string StepId { get; set; }
 
     public static DesignerIssue From(DataPipelineIssue issue)
-        => new()
+    {
+        return new()
         {
             Severity = issue.Severity.ToString(),
             Message = issue.Message,
             StepId = issue.StepId,
         };
+    }
 }
 
 public sealed class DesignerPort
@@ -36,7 +38,8 @@ public sealed class DesignerPort
     public bool AllowsMany { get; set; }
 
     public static DesignerPort From(DataPipelinePort port)
-        => new()
+    {
+        return new()
         {
             Name = port.Name,
             DisplayName = port.DisplayName,
@@ -44,6 +47,7 @@ public sealed class DesignerPort
             IsRequired = port.IsRequired,
             AllowsMany = port.AllowsMany,
         };
+    }
 }
 
 public sealed class DesignerField
@@ -57,13 +61,15 @@ public sealed class DesignerField
     public string Group { get; set; }
 
     public static DesignerField From(DataField field)
-        => new()
+    {
+        return new()
         {
             Name = field.Name,
             DisplayName = field.DisplayName,
             Type = field.Type.ToString(),
             Group = field.Group,
         };
+    }
 }
 
 public sealed class DesignerNode
@@ -106,22 +112,26 @@ public sealed class DesignerConnection
     public string TargetPort { get; set; }
 
     public static DesignerConnection From(DataPipelineConnection connection)
-        => new()
+    {
+        return new()
         {
             SourceStepId = connection.SourceStepId,
             SourcePort = connection.SourcePort,
             TargetStepId = connection.TargetStepId,
             TargetPort = connection.TargetPort,
         };
+    }
 
     public DataPipelineConnection ToConnection()
-        => new()
+    {
+        return new()
         {
             SourceStepId = SourceStepId,
             SourcePort = SourcePort,
             TargetStepId = TargetStepId,
             TargetPort = TargetPort,
         };
+    }
 }
 
 public sealed class DesignerSettings
@@ -144,7 +154,8 @@ public sealed class DesignerVersion
     public bool IsPublished { get; set; }
 
     public static DesignerVersion From(DataPipelineVersion version, DataPipeline pipeline)
-        => version is null
+    {
+        return version is null
             ? null
             : new()
             {
@@ -154,6 +165,7 @@ public sealed class DesignerVersion
                 PublishedBy = version.PublishedBy,
                 IsPublished = version.VersionId == pipeline?.PublishedVersionId,
             };
+    }
 }
 
 public sealed class DesignerRunStep

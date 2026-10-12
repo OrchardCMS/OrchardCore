@@ -60,7 +60,13 @@ public sealed partial class SendToWebApiStep : DataPipelineStepType<SendToWebApi
 
     public override LocalizedString DisplayName => S["Send to a web API"];
 
-    public override LocalizedString Description => S["Sends each file to a web API, in an HTTP request."];
+    public override LocalizedString Description
+    {
+        get
+        {
+            return S["Sends each file to a web API, in an HTTP request."];
+        }
+    }
 
     public override DataPipelineStepCategory Category => DataPipelineStepCategory.Destination;
 
@@ -72,9 +78,11 @@ public sealed partial class SendToWebApiStep : DataPipelineStepType<SendToWebApi
     /// <param name="url">The URL.</param>
     /// <returns>The description, or <see langword="null"/> when the URL is not absolute.</returns>
     public static string GetDisplayUrl(string url)
-        => Uri.TryCreate(url?.Trim(), UriKind.Absolute, out var uri)
+    {
+        return Uri.TryCreate(url?.Trim(), UriKind.Absolute, out var uri)
             ? uri.GetComponents(UriComponents.SchemeAndServer | UriComponents.Path, UriFormat.UriEscaped)
             : null;
+    }
 
     /// <summary>
     /// Tells whether a text is a valid HTTP header name.
@@ -82,7 +90,9 @@ public sealed partial class SendToWebApiStep : DataPipelineStepType<SendToWebApi
     /// <param name="name">The text.</param>
     /// <returns><see langword="true"/> when it is a valid header name.</returns>
     public static bool IsValidHeaderName(string name)
-        => !string.IsNullOrEmpty(name) && HeaderNamePattern().IsMatch(name);
+    {
+        return !string.IsNullOrEmpty(name) && HeaderNamePattern().IsMatch(name);
+    }
 
     public override Task DescribeAsync(DataPipelineDescribeContext context)
     {

@@ -328,13 +328,19 @@ public sealed class DestinationStepsTests
     }
 
     private SendToWebApiStep WebApiStep(FakeHttpHandler handler)
-        => new(new FakeHttpClientFactory(handler), _secrets, new PassThroughStringLocalizer<SendToWebApiStep>());
+    {
+        return new(new FakeHttpClientFactory(handler), _secrets, new PassThroughStringLocalizer<SendToWebApiStep>());
+    }
 
     private static SendByEmailStep EmailStep()
-        => new(new PassThroughStringLocalizer<SendByEmailStep>());
+    {
+        return new(new PassThroughStringLocalizer<SendByEmailStep>());
+    }
 
     private static ServiceProvider EmailServices(IEmailService email)
-        => new ServiceCollection().AddSingleton(email).BuildServiceProvider();
+    {
+        return new ServiceCollection().AddSingleton(email).BuildServiceProvider();
+    }
 
     private sealed class FakeHttpClientFactory : IHttpClientFactory
     {

@@ -241,7 +241,9 @@ public sealed class RecordDataSourceTests
         }
 
         public override Task<bool> CanReadAsync(DataSourceContext context, CancellationToken cancellationToken = default)
-            => Task.FromResult(context.Properties.TryGetValue("CanRead", out var canRead) && canRead is true);
+        {
+            return Task.FromResult(context.Properties.TryGetValue("CanRead", out var canRead) && canRead is true);
+        }
 
         protected override async IAsyncEnumerable<Ticket> LoadAsync(DataSourceQuery query, [EnumeratorCancellation] CancellationToken cancellationToken)
         {

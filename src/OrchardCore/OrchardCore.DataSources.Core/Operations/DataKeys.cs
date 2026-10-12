@@ -46,10 +46,13 @@ public static class DataKeys
     /// <param name="indexes">The positions of the key fields.</param>
     /// <returns><see langword="true"/> when a key field is missing.</returns>
     public static bool HasEmptyKey(object[] row, IReadOnlyList<int> indexes)
-        => indexes.Any(index => index >= row.Length || DataValues.IsEmpty(row[index]));
+    {
+        return indexes.Any(index => index >= row.Length || DataValues.IsEmpty(row[index]));
+    }
 
     private static string ToKey(object value, bool ignoreCase)
-        => value switch
+    {
+        return value switch
         {
             null => "\0",
             string text => "s:" + (ignoreCase ? text.ToUpperInvariant() : text),
@@ -61,4 +64,5 @@ public static class DataKeys
                     : DataValues.ToText(value)),
             _ => "s:" + (ignoreCase ? DataValues.ToText(value)?.ToUpperInvariant() : DataValues.ToText(value)),
         };
+    }
 }

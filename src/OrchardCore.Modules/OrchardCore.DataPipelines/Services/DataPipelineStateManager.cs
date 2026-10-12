@@ -39,7 +39,9 @@ public sealed class DataPipelineStateManager
     /// <param name="pipelineId">The identifier of the pipeline.</param>
     /// <returns><see langword="true"/> when it does.</returns>
     public async Task<bool> HasStateAsync(string pipelineId)
-        => (await FindAsync(pipelineId))?.Values.Count > 0;
+    {
+        return (await FindAsync(pipelineId))?.Values.Count > 0;
+    }
 
     /// <summary>
     /// Saves the values of a run.
@@ -76,7 +78,9 @@ public sealed class DataPipelineStateManager
     }
 
     private Task<DataPipelineStateDocument> FindAsync(string pipelineId)
-        => string.IsNullOrEmpty(pipelineId)
+    {
+        return string.IsNullOrEmpty(pipelineId)
             ? Task.FromResult<DataPipelineStateDocument>(null)
             : _session.Query<DataPipelineStateDocument, DataPipelineStateIndex>(index => index.PipelineId == pipelineId).FirstOrDefaultAsync();
+    }
 }

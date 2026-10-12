@@ -27,11 +27,13 @@ internal static class DataRowSize
     }
 
     public static long Estimate(object value)
-        => value switch
+    {
+        return value switch
         {
             null => 0,
             string text => ObjectHeader + (2L * text.Length),
             decimal or Guid or DateTimeOffset => ObjectHeader + 16,
             _ => ObjectHeader + 8,
         };
+    }
 }

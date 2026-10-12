@@ -52,7 +52,13 @@ public sealed class ContentItemsDataSource : IDataSource
 
     public LocalizedString DisplayName => S["Content items"];
 
-    public LocalizedString Description => S["The content items of each content type, with their parts and fields."];
+    public LocalizedString Description
+    {
+        get
+        {
+            return S["The content items of each content type, with their parts and fields."];
+        }
+    }
 
     public async Task<IReadOnlyList<DataSetDescriptor>> GetDataSetsAsync(DataSourceContext context, CancellationToken cancellationToken = default)
     {
@@ -250,15 +256,21 @@ public sealed class ContentItemsDataSource : IDataSource
     }
 
     private async Task<bool> CanReadAsync(ClaimsPrincipal user, ContentTypeDefinition definition)
-        => user is not null && await _authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.ViewContent, definition);
+    {
+        return user is not null && await _authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.ViewContent, definition);
+    }
 
     private DataSetDescriptor Describe(ContentTypeDefinition definition)
-        => new(definition.Name, definition.DisplayName)
+    {
+        return new(definition.Name, definition.DisplayName)
         {
             Group = definition.GetStereotype() is { Length: > 0 } stereotype ? stereotype : S["Content"].Value,
             DefaultDateField = "CreatedUtc",
         };
+    }
 
     private List<ContentDataColumn> BuildColumns(ContentTypeDefinition definition)
-        => ContentDataColumns.Build(definition, _options, S);
+    {
+        return ContentDataColumns.Build(definition, _options, S);
+    }
 }

@@ -107,10 +107,12 @@ public static class DataFileValues
     }
 
     private static DateTime ToUtc(DateTime value)
-        => value.Kind switch
+    {
+        return value.Kind switch
         {
             DateTimeKind.Local => value.ToUniversalTime(),
             DateTimeKind.Unspecified => DateTime.SpecifyKind(value, DateTimeKind.Utc),
             _ => value,
         };
+    }
 }

@@ -16,7 +16,9 @@ public static class DataPipelineHostKeyFingerprint
     /// <param name="fingerprint">The text.</param>
     /// <returns><see langword="true"/> when it is a SHA-256 fingerprint.</returns>
     public static bool IsValid(string fingerprint)
-        => Normalize(fingerprint) is not null;
+    {
+        return Normalize(fingerprint) is not null;
+    }
 
     /// <summary>
     /// Normalizes a SHA-256 fingerprint to unpadded Base64, without the <c>SHA256:</c> prefix.

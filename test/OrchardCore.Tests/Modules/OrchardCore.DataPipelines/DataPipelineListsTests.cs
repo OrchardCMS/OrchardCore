@@ -142,7 +142,8 @@ public sealed class DataPipelineListsTests
     }
 
     private static DataPipelineRun Run(string runId, DataPipeline pipeline, DataPipelineRunStatus status, DateTime queuedUtc)
-        => new()
+    {
+        return new()
         {
             RunId = runId,
             PipelineId = pipeline.PipelineId,
@@ -151,6 +152,7 @@ public sealed class DataPipelineListsTests
             QueuedUtc = queuedUtc,
             CompletedUtc = status is DataPipelineRunStatus.Queued or DataPipelineRunStatus.Running ? null : queuedUtc,
         };
+    }
 
     private static async Task<BlogContext> CreateContextAsync()
     {

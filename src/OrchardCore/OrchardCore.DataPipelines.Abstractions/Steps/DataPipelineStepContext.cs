@@ -79,9 +79,11 @@ public sealed class DataPipelineStepContext
     /// <returns>The input.</returns>
     /// <exception cref="ArgumentException">The step has no input with that name.</exception>
     public DataPipelineInput GetInput(string port = DataPipelinePort.Input)
-        => _inputs.TryGetValue(port, out var input)
+    {
+        return _inputs.TryGetValue(port, out var input)
             ? input
             : throw new ArgumentException($"The step '{Step.StepId}' has no input named '{port}'.", nameof(port));
+    }
 
     /// <summary>
     /// Gets an output of the step.
@@ -90,16 +92,20 @@ public sealed class DataPipelineStepContext
     /// <returns>The output.</returns>
     /// <exception cref="ArgumentException">The step has no output with that name.</exception>
     public DataPipelineOutput GetOutput(string port = DataPipelinePort.Output)
-        => _outputs.TryGetValue(port, out var output)
+    {
+        return _outputs.TryGetValue(port, out var output)
             ? output
             : throw new ArgumentException($"The step '{Step.StepId}' has no output named '{port}'.", nameof(port));
+    }
 
     /// <summary>
     /// Records a message in the run's history.
     /// </summary>
     /// <param name="message">The message. It must not contain secrets.</param>
     public void LogInformation(string message)
-        => _log?.Invoke(new DataPipelineLogEntry { Level = LogLevel.Information, StepId = Step.StepId, Message = message });
+    {
+        _log?.Invoke(new DataPipelineLogEntry { Level = LogLevel.Information, StepId = Step.StepId, Message = message });
+    }
 
     /// <summary>
     /// Records a warning in the run's history, such as a row that could not be converted.
@@ -135,7 +141,9 @@ public sealed class DataPipelineStepContext
     /// <param name="key">The key of the value, unique within the step.</param>
     /// <returns>The value, or the default value of <typeparamref name="T"/> when there is none.</returns>
     public T GetState<T>(string key)
-        => Run.State.Get<T>(GetStateKey(Step.StepId, key));
+    {
+        return Run.State.Get<T>(GetStateKey(Step.StepId, key));
+    }
 
     /// <summary>
     /// Sets a value the step keeps for the next runs. It is saved when the run succeeds, and never by a preview.
@@ -144,7 +152,9 @@ public sealed class DataPipelineStepContext
     /// <param name="key">The key of the value, unique within the step.</param>
     /// <param name="value">The value; <see langword="null"/> removes it.</param>
     public void SetState<T>(string key, T value)
-        => Run.State.Set(GetStateKey(Step.StepId, key), value);
+    {
+        Run.State.Set(GetStateKey(Step.StepId, key), value);
+    }
 
     /// <summary>
     /// Gets the key of a value of a step in <see cref="DataPipelineRunContext.State"/>.

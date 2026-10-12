@@ -34,7 +34,9 @@ public sealed class UnionStep : DataPipelineStepType
     public override string Icon => "fa-solid fa-object-group";
 
     public override IReadOnlyList<DataPipelinePort> GetInputs(DataPipelineStep step)
-        => [new(DataPipelinePort.Input, S["Rows"]) { IsRequired = true, AllowsMany = true }];
+    {
+        return [new(DataPipelinePort.Input, S["Rows"]) { IsRequired = true, AllowsMany = true }];
+    }
 
     public override Task DescribeAsync(DataPipelineDescribeContext context)
     {

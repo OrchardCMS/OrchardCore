@@ -38,5 +38,7 @@ internal static class DataPipelineRunNotifications
     /// </summary>
     /// <param name="run">The run that ended.</param>
     public static void NotifyAfterCommit(DataPipelineRun run)
-        => ShellScope.AddDeferredTask(scope => NotifyAsync(scope.ServiceProvider, run));
+    {
+        ShellScope.AddDeferredTask(scope => NotifyAsync(scope.ServiceProvider, run));
+    }
 }

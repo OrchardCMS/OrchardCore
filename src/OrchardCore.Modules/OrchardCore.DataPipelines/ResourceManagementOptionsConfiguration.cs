@@ -36,5 +36,7 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
     }
 
     public void Configure(ResourceManagementOptions options)
-        => options.ResourceManifests.Add(_manifest);
+    {
+        options.ResourceManifests.Add(_manifest);
+    }
 }

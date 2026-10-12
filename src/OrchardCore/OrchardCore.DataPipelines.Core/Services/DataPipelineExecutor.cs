@@ -240,7 +240,9 @@ public sealed class DataPipelineExecutor
             var outputViews = outputs.ToDictionary(pair => pair.Key, pair => (DataPipelineOutput)pair.Value, StringComparer.Ordinal);
 
             DataPipelineStepContext CreateContext(IServiceProvider services)
-                => new(analysis.Step, run, inputViews, outputViews, metrics, entry => observer?.Log(entry), token, services);
+            {
+                return new(analysis.Step, run, inputViews, outputViews, metrics, entry => observer?.Log(entry), token, services);
+            }
 
             tasks.Add(Task.Run(() => RunStepAsync(analysis, CreateContext, inputs.Values, outputs.Values, results[stepId], cancellation, observer, failures, failuresLock), CancellationToken.None));
         }
@@ -500,7 +502,8 @@ public sealed class DataPipelineExecutor
         }
 
         public DataPipelinePreviewPort ToPreviewPort()
-            => new()
+        {
+            return new()
             {
                 Name = Port.Name,
                 DisplayName = Port.DisplayName,
@@ -510,5 +513,6 @@ public sealed class DataPipelineExecutor
                 Truncated = Truncated,
                 Files = Files,
             };
+        }
     }
 }

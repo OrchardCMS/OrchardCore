@@ -144,13 +144,15 @@ public sealed class DataPipelineWorkflowTests
     }
 
     private static ActivityRecord RunActivity(string pipelineId)
-        => new()
+    {
+        return new()
         {
             ActivityId = "run",
             Name = nameof(RunDataPipelineTask),
             IsStart = true,
             Properties = new JsonObject { ["PipelineId"] = pipelineId, ["WaitForCompletion"] = true },
         };
+    }
 
     // Starts a workflow and returns its identifier. The action runs in the same scope, after the run is queued and
     // before it is dispatched.

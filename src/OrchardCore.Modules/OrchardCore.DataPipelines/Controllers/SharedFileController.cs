@@ -29,10 +29,12 @@ public sealed class SharedFileController : Controller
 
     [HttpGet("DataPipelines/Files")]
     public async Task<IActionResult> Index()
-        => View(new DataPipelineSharedWithMeViewModel
+    {
+        return View(new DataPipelineSharedWithMeViewModel
         {
             Files = await _manager.ListSharedWithAsync(User.FindFirstValue(ClaimTypes.NameIdentifier), _clock.UtcNow),
         });
+    }
 
     // A download from the list of the files shared with the user has no token; a link always has one.
     [HttpGet("DataPipelines/Files/{fileId}")]

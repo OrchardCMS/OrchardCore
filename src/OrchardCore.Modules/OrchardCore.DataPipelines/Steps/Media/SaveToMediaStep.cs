@@ -29,7 +29,13 @@ public sealed class SaveToMediaStep : DataPipelineStepType<SaveToMediaStepSettin
 
     public override LocalizedString DisplayName => S["Save to the media library"];
 
-    public override LocalizedString Description => S["Saves files to a folder of the media library."];
+    public override LocalizedString Description
+    {
+        get
+        {
+            return S["Saves files to a folder of the media library."];
+        }
+    }
 
     public override DataPipelineStepCategory Category => DataPipelineStepCategory.Destination;
 

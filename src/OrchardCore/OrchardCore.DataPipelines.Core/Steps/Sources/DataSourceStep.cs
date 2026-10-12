@@ -41,7 +41,13 @@ public sealed class DataSourceStep : DataPipelineStepType<DataSourceStepSettings
 
     public override LocalizedString DisplayName => S["Read a data source"];
 
-    public override LocalizedString Description => S["Reads content items, users, query results or any other data set."];
+    public override LocalizedString Description
+    {
+        get
+        {
+            return S["Reads content items, users, query results or any other data set."];
+        }
+    }
 
     public override DataPipelineStepCategory Category => DataPipelineStepCategory.Source;
 
@@ -340,9 +346,11 @@ public sealed class DataSourceStep : DataPipelineStepType<DataSourceStepSettings
 
     // Keeps every tick of a date, so the next run doesn't read the last row again.
     private static string ToWatermark(object value)
-        => value is DateTime date
+    {
+        return value is DateTime date
             ? date.ToString("O", System.Globalization.CultureInfo.InvariantCulture)
             : DataValues.ToText(value);
+    }
 
     private sealed record Plan(DataField[] Fields, IEnumerable<string> ReadFields, DataField IncrementalField);
 }

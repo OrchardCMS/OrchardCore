@@ -56,10 +56,14 @@ internal sealed class StepTestHost : IDisposable
     public List<DataPipelineLogEntry> Log { get; } = [];
 
     public StepTestHost WithRows(IReadOnlyList<DataField> fields, params object[][] rows)
-        => WithInput(DataPipelinePort.Input, fields, rows);
+    {
+        return WithInput(DataPipelinePort.Input, fields, rows);
+    }
 
     public StepTestHost WithInput(string port, IReadOnlyList<DataField> fields, params object[][] rows)
-        => WithConnection(port, null, fields, rows);
+    {
+        return WithConnection(port, null, fields, rows);
+    }
 
     /// <summary>
     /// Adds a connection to an input, coming from a step with the given title.
@@ -169,7 +173,13 @@ internal sealed class StepTestHost : IDisposable
 
         public override bool IsConnected => _fieldSets.Count > 0 || Files.Count > 0;
 
-        public override IReadOnlyList<DataField> Fields => _fieldSets.Count > 0 ? _fieldSets[0] : [];
+        public override IReadOnlyList<DataField> Fields
+        {
+            get
+            {
+                return _fieldSets.Count > 0 ? _fieldSets[0] : [];
+            }
+        }
 
         public override IReadOnlyList<IReadOnlyList<DataField>> FieldSets => _fieldSets;
 
@@ -246,7 +256,13 @@ internal sealed class StepTestHost : IDisposable
 
         public List<object[]> Rows => Batches.SelectMany(batch => batch.Rows).ToList();
 
-        public IReadOnlyList<DataField> RuntimeFields => Batches.Count > 0 ? Batches[0].Fields : Fields;
+        public IReadOnlyList<DataField> RuntimeFields
+        {
+            get
+            {
+                return Batches.Count > 0 ? Batches[0].Fields : Fields;
+            }
+        }
 
         public object Value(int row, string field) => Rows[row][RuntimeFields.IndexOf(field)];
 

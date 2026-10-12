@@ -25,5 +25,7 @@ public sealed class DataPipelineStepTypeManager : IDataPipelineStepTypeManager
     public IReadOnlyList<IDataPipelineStepType> GetStepTypes() => _stepTypes;
 
     public IDataPipelineStepType GetStepType(string name)
-        => string.IsNullOrEmpty(name) ? null : _byName.GetValueOrDefault(name);
+    {
+        return string.IsNullOrEmpty(name) ? null : _byName.GetValueOrDefault(name);
+    }
 }

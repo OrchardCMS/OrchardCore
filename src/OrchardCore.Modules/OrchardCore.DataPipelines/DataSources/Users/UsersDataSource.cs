@@ -151,23 +151,31 @@ public sealed class UsersDataSource : IDataSource
     }
 
     private static string[] GetKeys(DataSourceQuery query, string field)
-        => query.Conditions?
+    {
+        return query.Conditions?
             .FirstOrDefault(condition => condition.Field == field && condition.Operator is DataFilterOperator.In or DataFilterOperator.Equals)?
             .Values?
             .OfType<string>()
             .ToArray();
+    }
 
     private async Task<bool> CanReadAsync(DataSourceContext context)
-        => context?.User is not null && await _authorizationService.AuthorizeAsync(context.User, UsersPermissions.ViewUsers);
+    {
+        return context?.User is not null && await _authorizationService.AuthorizeAsync(context.User, UsersPermissions.ViewUsers);
+    }
 
     private DataSetDescriptor DescribeUsers()
-        => new(UsersDataSet, S["Users"], S["One row per user."]);
+    {
+        return new(UsersDataSet, S["Users"], S["One row per user."]);
+    }
 
     private DataSetDescriptor DescribeUserRoles()
-        => new(UserRolesDataSet, S["User roles"], S["One row per role of each user."])
+    {
+        return new(UserRolesDataSet, S["User roles"], S["One row per role of each user."])
         {
             References = [new(SourceName, UsersDataSet, "UserId")],
         };
+    }
 
     private List<UserColumn> UserColumns()
         =>

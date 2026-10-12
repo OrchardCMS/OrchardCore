@@ -114,5 +114,7 @@ public sealed class DataPipeline
     /// </summary>
     /// <returns>The definition.</returns>
     public DataPipelineDefinition GetEditableDefinition()
-        => Draft ?? Published ?? new DataPipelineDefinition();
+    {
+        return Draft ?? Published ?? new DataPipelineDefinition();
+    }
 }

@@ -181,7 +181,9 @@ public sealed class DataPipelinesFtpTests
     }
 
     private UploadToFtpStep FtpStep(FakeFtpClientFactory factory)
-        => new(factory, _secrets, new PassThroughStringLocalizer<UploadToFtpStep>());
+    {
+        return new(factory, _secrets, new PassThroughStringLocalizer<UploadToFtpStep>());
+    }
 
     private sealed class FakeFtpClientFactory : IDataPipelineFtpClientFactory
     {

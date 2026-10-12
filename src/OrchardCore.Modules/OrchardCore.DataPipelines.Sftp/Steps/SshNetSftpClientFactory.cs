@@ -106,10 +106,14 @@ public sealed class SshNetSftpClientFactory : IDataPipelineSftpClientFactory
         }
 
         public Task<bool> ExistsAsync(string remotePath, CancellationToken cancellationToken)
-            => _client.ExistsAsync(remotePath, cancellationToken);
+        {
+            return _client.ExistsAsync(remotePath, cancellationToken);
+        }
 
         public Task UploadAsync(Stream content, string remotePath, bool overwrite, CancellationToken cancellationToken)
-            => _client.UploadFileAsync(content, remotePath, overwrite, (IProgress<UploadFileProgressReport>)null, cancellationToken);
+        {
+            return _client.UploadFileAsync(content, remotePath, overwrite, (IProgress<UploadFileProgressReport>)null, cancellationToken);
+        }
 
         public ValueTask DisposeAsync()
         {

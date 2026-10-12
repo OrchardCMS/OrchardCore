@@ -37,7 +37,9 @@ public sealed class ExpressionCompiler
     /// <returns>The compiled formula.</returns>
     /// <exception cref="ExpressionException">The formula is malformed or does not make sense in the scope.</exception>
     public static CompiledExpression Compile(string formula, IExpressionScope scope, IStringLocalizer localizer)
-        => Compile(formula, scope, ExpressionFunctionCatalog.BuiltIn, localizer);
+    {
+        return Compile(formula, scope, ExpressionFunctionCatalog.BuiltIn, localizer);
+    }
 
     /// <summary>
     /// Parses and compiles a formula that calls the functions of a catalog.

@@ -28,7 +28,9 @@ internal static class MediaStepPaths
     /// Tells whether a user may manage the media of a folder, as the media library would.
     /// </summary>
     public static async Task<bool> CanManageAsync(IAuthorizationService authorizationService, ClaimsPrincipal user, string folder)
-        => user is not null &&
+    {
+        return user is not null &&
             await authorizationService.AuthorizeAsync(user, MediaPermissions.ManageMedia) &&
             await authorizationService.AuthorizeAsync(user, MediaPermissions.ManageMediaFolder, (object)(folder ?? string.Empty));
+    }
 }

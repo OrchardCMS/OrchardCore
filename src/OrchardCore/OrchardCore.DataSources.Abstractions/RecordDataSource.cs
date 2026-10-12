@@ -71,9 +71,11 @@ public abstract class RecordDataSource : IDataSource
     }
 
     private IRecordDataSet Find(string name)
-        => string.IsNullOrEmpty(name)
+    {
+        return string.IsNullOrEmpty(name)
             ? null
             : DataSets.FirstOrDefault(dataSet => string.Equals(dataSet.Descriptor?.Name, name, StringComparison.Ordinal));
+    }
 }
 
 /// <summary>
@@ -141,7 +143,9 @@ public abstract class RecordDataSet<TRecord> : IRecordDataSet
     /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
     /// <returns><see langword="true"/> when the user may read the data set.</returns>
     public virtual Task<bool> CanReadAsync(DataSourceContext context, CancellationToken cancellationToken = default)
-        => Task.FromResult(true);
+    {
+        return Task.FromResult(true);
+    }
 
     public async IAsyncEnumerable<DataBatch> ReadAsync(DataSourceQuery query, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
@@ -230,7 +234,8 @@ public abstract class RecordDataSet<TRecord> : IRecordDataSet
     protected abstract IAsyncEnumerable<TRecord> LoadAsync(DataSourceQuery query, CancellationToken cancellationToken);
 
     private static object Normalize(object value)
-        => value switch
+    {
+        return value switch
         {
             Enum enumeration => enumeration.ToString(),
             DateTimeOffset date => date.UtcDateTime,
@@ -238,4 +243,5 @@ public abstract class RecordDataSet<TRecord> : IRecordDataSet
             DateTime { Kind: DateTimeKind.Local } date => date.ToUniversalTime(),
             _ => value,
         };
+    }
 }
