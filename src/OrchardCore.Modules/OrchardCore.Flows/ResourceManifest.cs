@@ -18,13 +18,13 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
 
         s_manifest
             .DefineScript("flowpart-edit")
-            .SetDependencies("jQuery")
-            .SetUrl("~/OrchardCore.Flows/Scripts/flows.edit.min.js", "~/OrchardCore.Flows/Scripts/flows.edit.js");
+            .SetDependencies("Sortable")
+            .SetUrl("~/OrchardCore.Flows/Scripts/flows/flows.edit.min.js", "~/OrchardCore.Flows/Scripts/flows/flows.edit.js");
 
         s_manifest
             .DefineScript("content-type-picker")
-            .SetDependencies("jQuery", "vuejs:2")
-            .SetUrl("~/OrchardCore.Flows/Scripts/content-type-picker.min.js", "~/OrchardCore.Flows/Scripts/content-type-picker.js");
+            .SetDependencies("vuejs")
+            .SetUrl("~/OrchardCore.Flows/Scripts/content-type-picker/content-type-picker.min.js", "~/OrchardCore.Flows/Scripts/content-type-picker/content-type-picker.js");
     }
 
     public void Configure(ResourceManagementOptions options)

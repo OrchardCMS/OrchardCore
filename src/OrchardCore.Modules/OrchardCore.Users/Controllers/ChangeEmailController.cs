@@ -11,6 +11,7 @@ using OrchardCore.Users.ViewModels;
 namespace OrchardCore.Users.Controllers;
 
 [Feature("OrchardCore.Users.ChangeEmail")]
+[Authorize]
 public sealed class ChangeEmailController : Controller
 {
     private readonly IUserService _userService;
@@ -33,7 +34,6 @@ public sealed class ChangeEmailController : Controller
     }
 
     [HttpGet]
-    [Authorize]
     public async Task<IActionResult> Index()
     {
         if (!(await _siteService.GetSettingsAsync<ChangeEmailSettings>()).AllowChangeEmail)

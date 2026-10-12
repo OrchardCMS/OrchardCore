@@ -541,6 +541,7 @@ public class PagerShapes : IShapeAttributeProvider
         else
         {
             shape.Attributes.Remove("href");
+            shape.Attributes.Remove("rel");
         }
 
         var tag = shape.GetTagBuilder("a");
@@ -557,6 +558,47 @@ public class PagerShapes : IShapeAttributeProvider
         var parentTag = shape.GetProperty<TagBuilder>("Tag");
         parentTag.AddCssClass("disabled");
         return displayContext.DisplayHelper.ShapeExecuteAsync(shape);
+    }
+
+    // Default "Items per page" selector, so every theme can render a pager with page size selection
+    // enabled. It is framework agnostic, themes provide a "Pager_PageSizeSelector" template to style it.
+    [Shape]
+    public IHtmlContent Pager_PageSizeSelector(IEnumerable<SelectListItem> PageSizes)
+    {
+        if (PageSizes is null || !PageSizes.Any())
+        {
+            return HtmlString.Empty;
+        }
+
+        var labelText = S["Items per page"].Value;
+
+        var label = new TagBuilder("label");
+        label.InnerHtml.Append(labelText);
+
+        var select = new TagBuilder("select");
+        select.Attributes["aria-label"] = labelText;
+        select.Attributes["onchange"] = "if (this.value) { window.location.href = this.value; }";
+
+        foreach (var item in PageSizes)
+        {
+            var option = new TagBuilder("option");
+            option.Attributes["value"] = item.Value;
+
+            if (item.Selected)
+            {
+                option.Attributes["selected"] = "selected";
+            }
+
+            option.InnerHtml.Append(item.Text);
+            select.InnerHtml.AppendHtml(option);
+        }
+
+        var wrapper = new TagBuilder("div");
+        wrapper.AddCssClass("pager-page-size");
+        wrapper.InnerHtml.AppendHtml(label);
+        wrapper.InnerHtml.AppendHtml(select);
+
+        return wrapper;
     }
 
     private static IHtmlContent WrapWithPageSizeSelector(IHtmlContent pagerContent, IHtmlContent selector)
@@ -587,7 +629,9 @@ public class PagerShapes : IShapeAttributeProvider
 
         var selectorShape = await shapeFactory.CreateAsync("Pager_PageSizeSelector", Arguments.From(new
         {
-            Items = items,
+            // Not named "Items": every shape already has an Items property (its child shapes), and a template reading
+            // Model.Items would get that empty list instead of the page sizes.
+            PageSizes = items,
             CurrentPageSize = currentPageSize,
         }));
 

@@ -36,8 +36,10 @@ In the root web application's `appsettings.json`, configure the option under the
 ```json
 {
   "OrchardCore": {
-    "OrchardCore_Data_Sqlite": {
-      "UseConnectionPooling": false
+    "Data": {
+      "Sqlite": {
+        "UseConnectionPooling": false
+      }
     }
   }
 }
@@ -47,7 +49,7 @@ See the [`Microsoft.Data.Sqlite` connection string documentation](https://learn.
 
 ## YesSql options
 
-Orchard Core binds the `OrchardCore_YesSql` configuration section to `YesSqlOptions`.
+Orchard Core binds the `OrchardCore:YesSql` configuration section to `YesSqlOptions`.
 
 | Setting | Default | Description |
 | --- | --- | --- |
@@ -61,7 +63,7 @@ Configure these values through any supported tenant configuration source. For ex
 ```json
 {
   "OrchardCore": {
-    "OrchardCore_YesSql": {
+    "YesSql": {
       "CommandsPageSize": 1000,
       "QueryGatingEnabled": true,
       "EnableThreadSafetyChecks": false,
@@ -84,7 +86,7 @@ services.Configure<YesSqlOptions>(options =>
 
 ## Table naming presets
 
-The `OrchardCore_Data_TableOptions` section defines presets that Orchard Core copies into a tenant's shell settings during initial setup.
+The `OrchardCore:Data:TableOptions` section defines presets that Orchard Core copies into a tenant's shell settings during initial setup.
 
 | Setting | Default for a new tenant | Description |
 | --- | --- | --- |
@@ -95,10 +97,12 @@ The `OrchardCore_Data_TableOptions` section defines presets that Orchard Core co
 ```json
 {
   "OrchardCore": {
-    "OrchardCore_Data_TableOptions": {
-      "DefaultDocumentTable": "Document",
-      "DefaultTableNameSeparator": "_",
-      "DefaultIdentityColumnSize": "Int64"
+    "Data": {
+      "TableOptions": {
+        "DefaultDocumentTable": "Document",
+        "DefaultTableNameSeparator": "_",
+        "DefaultIdentityColumnSize": "Int64"
+      }
     }
   }
 }

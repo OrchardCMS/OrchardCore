@@ -39,7 +39,8 @@ public sealed class Startup : StartupBase
         services.AddShapeTableProvider<TenantShapeTableProvider>();
         services.AddSetup();
 
-        services.Configure<TenantsOptions>(_shellConfiguration.GetSection("OrchardCore_Tenants"));
+        // The 'OrchardCore_Tenants' section is deprecated and will be removed in a future major version, use 'Tenants' instead.
+        services.Configure<TenantsOptions>(_shellConfiguration.GetSectionCompat("Tenants", "OrchardCore_Tenants"));
     }
 }
 

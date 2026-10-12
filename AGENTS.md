@@ -171,8 +171,13 @@ The following skills are available in `.agents/skills/` for guided workflows:
 | `orchardcore-docs-writer` | Author docs | MkDocs pages, module README, nav, admonitions, redirects |
 | `orchardcore-tester` | Browser-based testing | Testing features via Playwright automation |
 | `orchardcore-nswag-regenerate` | Regenerate NSwag API clients | Updating `Services/OpenApiClient.cs`/`OpenApiClient.ts`, noisy NSwag regeneration diffs |
+| `orchardcore-video-producer` | Produce narrated videos | Feature walkthroughs, module overviews, PR demos, videos in the docs |
 
 These skills provide step-by-step guidance, code templates, and references for common tasks.
+
+## Videos
+
+Every video of Orchard Core (documentation, pull requests, walkthroughs) follows one specification: 1920x1080 at 30 fps, the Orchard Core logo, colors and Open Sans font on a dark background, recordings at 1536x864 in a green frame, the `en-US-AndrewMultilingualNeural` voice, WebVTT captions, and an H.264 encode under 10 MB. Always produce videos with the `orchardcore-video-producer` skill, and don't change its specification for a single video. Narration describes the current behavior, with no "new", "now", or version wording, so videos stay accurate. In the docs, keep a video in a `videos/` folder next to its page.
 
 ## Frontend Assets
 
@@ -242,6 +247,12 @@ For detailed patterns including Content Parts, Content Part Drivers, Content Fie
 - Private fields: `_camelCase`
 - Local variables: `camelCase`
 - Constants: `PascalCase`
+
+### Configuration Sections
+
+- Name configuration sections without the redundant `OrchardCore_` prefix, and group them by service with a nested section per provider, e.g. `_shellConfiguration.GetSection("Email:Smtp")` for the `OrchardCore:Email:Smtp` section, next to `OrchardCore:Email:Azure`.
+- When renaming a section that has been released, keep supporting its legacy name by binding `GetSectionCompat("New:Name", "OrchardCore_Legacy")`, with a `// The 'OrchardCore_Legacy' section is deprecated and will be removed in a future major version, use 'New:Name' instead.` comment above it. The values of the new section win, and its arrays replace the legacy ones. Don't bind the two sections one after the other, as arrays would be appended.
+- Describe the sections read by a project in a `ConfigurationSchema.json` file at the project root, which is packed with a `JsonSchemaSegment` to provide IntelliSense in `appsettings.json` files.
 
 ### Async Conventions
 

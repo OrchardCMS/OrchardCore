@@ -47,7 +47,8 @@ public sealed class Startup : StartupBase
         services.AddNavigationProvider<AdminMenu>();
         services.Configure<SystemRoleOptions>(options =>
         {
-            var adminRoleName = _shellConfiguration.GetSection("OrchardCore_Roles").GetValue<string>("AdminRoleName");
+            // The 'OrchardCore_Roles' section is deprecated and will be removed in a future major version, use 'Roles' instead.
+            var adminRoleName = _shellConfiguration.GetSectionCompat("Roles", "OrchardCore_Roles").GetValue<string>("AdminRoleName");
 
             if (!string.IsNullOrWhiteSpace(adminRoleName))
             {

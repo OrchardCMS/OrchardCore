@@ -15,7 +15,7 @@
     string serverDecimalSeparator = CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator;
 }
 
-<div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty))" id="@Html.IdFor(x => x.Value)_FieldWrapper">
+<div class="@($"ocat-wrapper field-wrapper field-wrapper-{Model.PartFieldDefinition.PartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" + (Model.PartFieldDefinition.IsNamedPart() ? $" field-wrapper-{Model.PartFieldDefinition.ContentTypePartDefinition.Name.HtmlClassify()}-{Model.PartFieldDefinition.Name.HtmlClassify()}" : string.Empty)) numeric-field-range" id="@Html.IdFor(x => x.Value)_FieldWrapper" data-js-decimal-separator="@javascriptDecimalSeparator" data-server-decimal-separator="@serverDecimalSeparator">
     <label asp-for="Value" class="ocat-label @(settings.Required ? "ocat-label-required" : "")">@localizedFieldName</label>
     <div class="ocat-end">
         <div class="ocat-limited-wrapper">
@@ -25,13 +25,13 @@
                     {
                         <span class="input-group-text">@min</span>
                     }
-                    <input asp-for="Value" class="form-control content-preview-select" placeholder="@settings.Placeholder" onchange="numericFieldRangeSync('@(id)-range', value);" />
+                    <input asp-for="Value" class="form-control content-preview-select numeric-field-range-text" placeholder="@settings.Placeholder" />
                     @if (settings.Maximum.HasValue)
                     {
                         <span class="input-group-text">@max</span>
                     }
                 </div>
-                <input id="@(id)-range" class="form-control-range" type="range" min="@min" max="@max" step="@step" oninput="numericFieldRange('@(id)', value);" onchange="numericFieldRange('@(id)', value);" />
+                <input id="@(id)-range" class="form-control-range numeric-field-range-slider" type="range" min="@min" max="@max" step="@step" />
                 <span asp-validation-for="Value"></span>
             </div>
         </div>
@@ -42,27 +42,4 @@
     </div>
 </div>
 
-<script asp-name="numericFieldRange" at="Foot">
-    function numericFieldRange(id, value) {
-        @if (javascriptDecimalSeparator != serverDecimalSeparator)
-        {
-        <text>value = value.replace('@(javascriptDecimalSeparator)', '@(serverDecimalSeparator)'); </text>
-        }
-        var element = document.getElementById(id);
-        if (element) {
-            element.value = value;
-        }
-    }
-
-    function numericFieldRangeSync(id, value) {
-        @if (javascriptDecimalSeparator != serverDecimalSeparator)
-        {
-        <text>value = value.replace('@(serverDecimalSeparator)', '@(javascriptDecimalSeparator)'); </text>
-        }
-        value = (Number(value) || 0);
-        var element = document.getElementById(id);
-        if (element) {
-            element.value = value;
-        }
-    }
-</script>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/numeric-field-range/numeric-field-range.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/numeric-field-range/numeric-field-range.js" at="Foot" type="module"></script>

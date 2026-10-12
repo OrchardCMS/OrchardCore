@@ -83,7 +83,8 @@ public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
 
     public void Configure(MediaOptions options)
     {
-        var section = _shellConfiguration.GetSection("OrchardCore_Media");
+        // The 'OrchardCore_Media' section is deprecated and will be removed in a future major version, use 'Media' instead.
+        var section = _shellConfiguration.GetSectionCompat("Media", "OrchardCore_Media");
 
         // Because IShellConfiguration treats arrays as key value pairs, we replace the array value,
         // rather than letting Configure merge the default array with the appsettings value.
@@ -114,7 +115,7 @@ public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
 
         var contentSecurityPolicy = section.GetValue("ContentSecurityPolicy", DefaultContentSecurityPolicy);
 
-        // Use the same cache control header as ImageSharp does for resized images.
+        // Use the same cache control header as the one used for resized images.
         var cacheControl = "public, must-revalidate, max-age=" + TimeSpan.FromDays(options.MaxBrowserCacheDays).TotalSeconds.ToString();
         // Secure files are not cached at all.
         var secureCacheControl = options.MaxSecureFilesBrowserCacheDays == 0

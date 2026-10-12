@@ -1,6 +1,10 @@
 @model OrchardCore.RateLimits.ViewModels.RateLimitPolicyEditViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Rate Limit Policy"])</h1></zone>
+<zone Name="Title">
+    <breadcrumb name="RateLimitsEdit" title="@T["Edit Rate Limit Policy"]">
+        <breadcrumb-item id="RateLimits" action="Index" controller="Admin" area="OrchardCore.RateLimits" permission="@RateLimitsPermissions.ManageRateLimits.Name">@T["Rate Limit Policies"]</breadcrumb-item>
+    </breadcrumb>
+</zone>
 
 @{
     var limiterActionsDisabled = !Model.AreLimiterChangesAllowed;

@@ -63,6 +63,7 @@ public sealed class OpenIdServerSettingsStep : NamedRecipeStepHandler
         settings.UseReferenceAccessTokens = model.UseReferenceAccessTokens;
         settings.RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange;
         settings.RequirePushedAuthorizationRequests = model.RequirePushedAuthorizationRequests;
+        settings.RequireEndSessionConfirmation = model.RequireEndSessionConfirmation;
 
         await _serverService.UpdateSettingsAsync(settings);
     }

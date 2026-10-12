@@ -50,6 +50,10 @@
                 <div class="d-flex w-100 justify-content-between align-items-center">
                     <div class="brand-wrapper">
                         <div class="d-flex w-100 justify-content-between align-items-center">
+                            <button type="button" class="ta-sidebar-toggler" aria-controls="ta-left-sidebar" aria-expanded="false" aria-label="@T["Show / hide menu"]">
+                                <i class="fa-solid fa-bars" aria-hidden="true"></i>
+                            </button>
+
                             @brandingHtml
 
                             @if (adminSettings.DisplayTitlesInTopbar)
@@ -65,7 +69,9 @@
             </div>
         </nav>
 
-        <div id="ta-left-sidebar" class="d-flex flex-column justify-content-between align-items-stretch">
+        <div class="ta-sidebar-backdrop"></div>
+
+        <div id="ta-left-sidebar" class="d-flex flex-column align-items-stretch">
             @await RenderSectionAsync("Navigation", required: false)
             <div class="footer">
                 <button type="button" class="leftbar-compactor" title="@T["Collapse / expand menu"]">

@@ -32,7 +32,7 @@ vi.mock("@media-gallery", () => ({
 vi.mock("../components/MediaFieldBasic.vue", () => ({
   default: {
     name: "MediaFieldBasic",
-    template: "<div class='stub-basic' :data-media-app-translations='config?.mediaAppTranslations' :data-signalr-enabled='config?.signalrEnabled'></div>",
+    template: "<div class='stub-basic' :data-max-file-size='config?.maxFileSize' :data-media-app-translations='config?.mediaAppTranslations' :data-signalr-enabled='config?.signalrEnabled'></div>",
     props: ["config", "inputName"],
   },
 }));
@@ -40,7 +40,7 @@ vi.mock("../components/MediaFieldBasic.vue", () => ({
 vi.mock("../components/MediaFieldAttached.vue", () => ({
   default: {
     name: "MediaFieldAttached",
-    template: "<div class='stub-attached'></div>",
+    template: "<div class='stub-attached' :data-max-file-size='config?.maxFileSize'></div>",
     props: ["config", "inputName"],
   },
   // The interface re-export is only a type; we don't need a runtime value.
@@ -49,7 +49,7 @@ vi.mock("../components/MediaFieldAttached.vue", () => ({
 vi.mock("../components/MediaFieldGallery.vue", () => ({
   default: {
     name: "MediaFieldGallery",
-    template: "<div class='stub-gallery'></div>",
+    template: "<div class='stub-gallery' :data-max-file-size='config?.maxFileSize'></div>",
     props: ["config", "inputName"],
   },
 }));
@@ -57,6 +57,13 @@ vi.mock("../components/MediaFieldGallery.vue", () => ({
 // Stub PrimeVue so createFieldApp doesn't blow up
 vi.mock("primevue/config", () => ({
   default: { install: vi.fn() },
+}));
+
+vi.mock("../components/MediaPickerModal.vue", () => ({
+  default: {
+    template: "<button :data-programmatic-size='maxFileSize' @click='onResolve([])'></button>",
+    props: ["maxFileSize", "onResolve"],
+  },
 }));
 
 // Stub FontAwesome so library.add / FontAwesomeIcon don't fail
@@ -94,6 +101,35 @@ function createMountEl(
 // ── Tests ───────────────────────────────────────────────────────────────────
 
 describe("main.ts", () => {
+  it.each(["basic", "attached", "gallery"])("reads the exact byte limit for %s fields", (type) => {
+    const el = createMountEl(type, { maxFileSize: "1234567" });
+    const mount = type === "basic" ? main.mountMediaField
+      : type === "attached" ? main.mountAttachedMediaField : main.mountGalleryMediaField;
+    const app = mount(el);
+    expect(el.firstElementChild?.getAttribute("data-max-file-size")).toBe("1234567");
+    app.unmount();
+  });
+
+  it("passes the byte limit to a programmatically opened picker", async () => {
+    const result = main.openMediaPicker("{}", "/", "/api/media/Upload", ".jpg", true, 1234567);
+    const button = document.querySelector<HTMLButtonElement>("[data-programmatic-size]")!;
+    expect(button.dataset.programmaticSize).toBe("1234567");
+    button.click();
+    expect(await result).toEqual([]);
+  });
+
+  it("uses the rendered tenant limit for existing five-argument editor callers", async () => {
+    const config = document.createElement("div");
+    config.dataset.mediaPickerConfig = "";
+    config.dataset.maxFileSize = "1234567";
+    document.body.appendChild(config);
+    const result = main.openMediaPicker("{}", "/", "/api/media/Upload", "", true);
+    const button = document.querySelector<HTMLButtonElement>("[data-programmatic-size]")!;
+    expect(button.dataset.programmaticSize).toBe("1234567");
+    button.click();
+    expect(await result).toEqual([]);
+  });
+
   // We use dynamic import + vi.resetModules so the top-level autoMount()
   // runs against a clean DOM for every test.
   let main: typeof import("../main");

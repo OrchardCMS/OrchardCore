@@ -59,6 +59,7 @@
   --media-card-bg: #fff;
   --media-card-border: #dee2e6;
   --media-card-footer-bg: var(--blue-100);
+  --media-card-footer-hover-bg: var(--blue-200);
   --media-breadcrumb-bg: #f1f6ff;
   --media-upload-list-header-bg: rgba(0, 0, 0, 0.03);
   --media-upload-list-header-color: var(--gray-600);
@@ -894,6 +895,7 @@ ol.file-items-grid li .ma-card-footer {
   padding: 8px 12px;
   gap: 4px;
   min-width: 0;
+  transition: background-color 0.2s;
 }
 
 ol.file-items-grid li .ma-card-footer .action-button {
@@ -901,11 +903,16 @@ ol.file-items-grid li .ma-card-footer .action-button {
 }
 
 ol.file-items-grid li.selected {
-  border-color: var(--media-primary);
+  outline: 3px solid var(--media-primary);
+  outline-offset: -3px;
 }
 
 ol.file-items-grid li:hover {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+ol.file-items-grid li:hover .ma-card-footer {
+  background-color: var(--media-card-footer-hover-bg);
 }
 
 ol.file-items-grid .thumb-container {
@@ -2024,6 +2031,7 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
   --media-card-bg: var(--mg-surface);
   --media-card-border: var(--mg-border);
   --media-card-footer-bg: rgba(255, 255, 255, 0.05);
+  --media-card-footer-hover-bg: var(--media-selected-bg);
   --media-breadcrumb-bg: rgba(255, 255, 255, 0.05);
   --media-upload-bg: rgba(255, 255, 255, 0.05);
   --media-upload-list-header-bg: rgba(255, 255, 255, 0.05);
@@ -2207,6 +2215,10 @@ ol.file-items-grid .file-icon-placeholder .file-ext {
   background-color: var(--media-card-footer-bg);
   border-top-color: var(--mg-border);
   color: var(--mg-text);
+}
+
+[data-bs-theme="dark"] .fileApp ol.file-items-grid li:hover .ma-card-footer {
+  background-color: var(--media-card-footer-hover-bg);
 }
 
 [data-bs-theme="dark"] .fileApp .file-filter .input-filter {

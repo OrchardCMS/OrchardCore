@@ -28,7 +28,8 @@ public sealed class Startup : StartupBase
     {
         services.Configure<ContentTypesOptions>(options =>
         {
-            var configSection = _shellConfiguration.GetSection("OrchardCore_ContentTypes");
+            // The 'OrchardCore_ContentTypes' section is deprecated and will be removed in a future major version, use 'ContentTypes' instead.
+            var configSection = _shellConfiguration.GetSectionCompat("ContentTypes", "OrchardCore_ContentTypes");
 
             var defaultThumbnailPath = configSection.GetValue<string>("DefaultThumbnailPath");
             if (!string.IsNullOrWhiteSpace(defaultThumbnailPath))

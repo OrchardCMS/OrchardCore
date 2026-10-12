@@ -62,7 +62,8 @@ public sealed class Startup : StartupBase
             return new DefaultNotificationAdminListFilterParser(parser);
         });
 
-        services.Configure<NotificationOptions>(_shellConfiguration.GetSection("OrchardCore_Notifications"));
+        // The 'OrchardCore_Notifications' section is deprecated and will be removed in a future major version, use 'Notifications' instead.
+        services.Configure<NotificationOptions>(_shellConfiguration.GetSectionCompat("Notifications", "OrchardCore_Notifications"));
 
         services.AddResourceConfiguration<NotificationOptionsConfiguration>();
         services.AddDisplayDriver<User, UserNotificationPreferencesPartDisplayDriver>();

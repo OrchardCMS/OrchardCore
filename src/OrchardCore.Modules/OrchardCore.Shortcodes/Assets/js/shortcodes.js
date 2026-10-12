@@ -53,12 +53,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 var shortcodesApp;
 
-function initializeShortcodesApp(element) {
+window.initializeShortcodesApp = function (element) {
     if (element && !shortcodesApp) {
-        var elementId = element.id;
-
-        shortcodesApp = new Vue({
-            el: '#' + elementId,
+        shortcodesApp = Vue.createApp({
             data : function () {
                 
                 var shortcodes = JSON.parse(element.dataset.shortcodes || "[]");
@@ -92,14 +89,18 @@ function initializeShortcodesApp(element) {
                         this.onClose = onClose;
                     }
                     this.selectedValue = '';
-                    this.modal = new bootstrap.Modal(this.$el);
+                    // Vue 3's mount() renders the app's template INSIDE the container element
+                    // rather than replacing it (unlike Vue 2, where this.$el was the container
+                    // itself) - this.$el is now the modal-dialog div, not the .modal container,
+                    // so bootstrap.Modal must target the actual container (`element`, closed
+                    // over from initializeShortcodesApp's parameter) instead.
+                    this.modal = new bootstrap.Modal(element);
                     this.modal.show();
-                    var self = this;
-                    this.$el.addEventListener('shown.bs.modal', function (e) {
-                        self.$refs.filter.focus();
+                    element.addEventListener('shown.bs.modal', () => {
+                        this.$refs.filter.focus();
                     });
                 },
-                onClose(defaultValue)
+                onClose()
                 {
                     return;
                 },
@@ -122,14 +123,14 @@ function initializeShortcodesApp(element) {
                     this.onClose(this.defaultValue);
                 }
             }
-        });
+        }).mount(element);
 
         return shortcodesApp;
     }
-}
+};
 
 // initializes a code mirror editor with a shortcode modal.
-function initializeCodeMirrorShortcodeWrapper(editor) {
+window.initializeCodeMirrorShortcodeWrapper = function (editor) {
     const codemirrorWrapper = editor.display.wrapper;
 
     const wrapper = document.createElement('div');
@@ -140,7 +141,7 @@ function initializeCodeMirrorShortcodeWrapper(editor) {
     codemirrorWrapper.parentElement.insertAdjacentHTML('beforeend', shortcodeBtnTemplate);
     codemirrorWrapper.parentElement.querySelector('.shortcode-modal-btn').addEventListener('click', () => {
         shortcodesApp.init(defaultValue => {
-            editor.replaceSelection(defaultValue);   
-        });   
+            editor.replaceSelection(defaultValue);
+        });
     });
-}
+};

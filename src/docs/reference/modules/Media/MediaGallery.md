@@ -158,12 +158,14 @@ For multi-instance deployments, a backplane is required. The backplane is provid
 
 ### Backplane Configuration
 
-The Redis backplane reuses the same connection string as the `OrchardCore.Redis` module (`OrchardCore_Redis:Configuration`), so a single Redis instance can serve the backplane and the other Redis-backed features (cache, lock, Data Protection):
+The Redis backplane reuses the same connection string as the `OrchardCore.Redis` module (`OrchardCore:Redis:Configuration`), so a single Redis instance can serve the backplane and the other Redis-backed features (cache, lock, Data Protection):
 
 ```json
 {
-  "OrchardCore_Redis": {
-    "Configuration": "your-redis-host:6379,password=...,ssl=true"
+  "OrchardCore": {
+    "Redis": {
+      "Configuration": "your-redis-host:6379,password=...,ssl=true"
+    }
   }
 }
 ```
@@ -172,10 +174,12 @@ The Azure SignalR Service backplane is configured with its own connection string
 
 ```json
 {
-  "SignalR": {
-    "Azure": {
-      "ConnectionString": "Endpoint=https://<your-service>.service.signalr.net;AccessKey=...;Version=1.0;",
-      "ApplicationName": "OrchardCore"
+  "OrchardCore": {
+    "SignalR": {
+      "Azure": {
+        "ConnectionString": "Endpoint=https://<your-service>.service.signalr.net;AccessKey=...;Version=1.0;",
+        "ApplicationName": "OrchardCore"
+      }
     }
   }
 }
@@ -208,11 +212,13 @@ A single Redis instance can carry the whole cross-instance coordination load. En
 
 ```json
 {
-  "OrchardCore_Redis": {
-    "Configuration": "your-redis-host:6379,password=...,ssl=true"
-  },
-  "TempDirectory": {
-    "Path": "/mnt/shared/temp"
+  "OrchardCore": {
+    "Redis": {
+      "Configuration": "your-redis-host:6379,password=...,ssl=true"
+    },
+    "TempDirectory": {
+      "Path": "/mnt/shared/temp"
+    }
   }
 }
 ```

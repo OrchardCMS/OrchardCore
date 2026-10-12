@@ -26,7 +26,7 @@ public static class LuceneIndexPermissionHelper
 
         return s_permissions.GetOrAdd(indexName, indexName => new Permission(
                 string.Format(s_indexPermissionTemplate.Name, indexName),
-                string.Format(s_indexPermissionTemplate.Description, indexName),
+                string.Format(s_indexPermissionTemplate.Description.Value, indexName),
                 s_indexPermissionTemplate.ImpliedBy));
     }
 

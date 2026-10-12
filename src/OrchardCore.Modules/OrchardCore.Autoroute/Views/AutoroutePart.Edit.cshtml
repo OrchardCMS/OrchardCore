@@ -118,17 +118,4 @@
     }
 </div>
 
-@if (Model.Settings.AllowDisabled)
-{
-    <script at="Foot">
-        var disabledElement = document.getElementById('@Html.IdFor(i => i.Disabled)');
-        if (disabledElement) {
-            disabledElement.addEventListener('change', function (e) {
-                var checked = e.target.checked;
-                document.querySelectorAll('.autoroute-disabled').forEach(function (element) {
-                    element.style.display = checked ? 'none' : '';
-                });
-            });
-        }
-    </script>
-}
+<script asp-src="~/OrchardCore.Autoroute/Scripts/autoroute-editors/autoroute-part.min.js" debug-src="~/OrchardCore.Autoroute/Scripts/autoroute-editors/autoroute-part.js" at="Foot" type="module"></script>
