@@ -1,341 +1,359 @@
 WEBVTT
 
-00:00:01.000 --> 00:00:05.456
-The Data Pipelines module lets you read data from any source of your
+00:00:01.000 --> 00:00:05.957
+The Data Pipelines module reads data from any source of your site, transforms
 
-00:00:05.456 --> 00:00:10.816
-site, transform it, and deliver it as files or content items, without writing code.
+00:00:05.957 --> 00:00:10.376
+it, and delivers it as files or content items, without writing code.
 
-00:00:10.816 --> 00:00:15.454
-This video shows why it exists, how to design, preview, publish and run
+00:00:10.376 --> 00:00:14.915
+This video shows why it exists, how to build, preview, publish and run
 
-00:00:15.454 --> 00:00:19.910
-a pipeline, where its results go, and how to automate and extend it.
+00:00:14.915 --> 00:00:18.020
+a pipeline, and how to automate and extend it.
 
-00:00:24.510 --> 00:00:29.521
-The data of your site lives in content items, users and saved queries.
+00:00:22.620 --> 00:00:27.142
+The data of your site lives in content items, users and saved queries,
 
-00:00:29.521 --> 00:00:33.147
-Sooner or later, someone needs it somewhere else:
+00:00:27.142 --> 00:00:30.950
+and you can define your own data sources to bring in more.
 
-00:00:33.147 --> 00:00:38.290
+00:00:30.950 --> 00:00:34.639
+Sooner or later, someone needs that data somewhere else:
+
+00:00:34.639 --> 00:00:39.280
 a spreadsheet for the team, a feed for a partner, or a file on a server.
 
-00:00:39.040 --> 00:00:43.667
+00:00:40.030 --> 00:00:44.493
 Each of those exports usually means custom code, a scheduled job, or a
 
-00:00:43.667 --> 00:00:46.650
+00:00:44.493 --> 00:00:47.370
 script that only one developer understands.
 
-00:00:47.400 --> 00:00:51.307
+00:00:48.120 --> 00:00:51.942
 A data pipeline describes the export once, in the admin:
 
-00:00:51.307 --> 00:00:55.528
+00:00:51.942 --> 00:00:56.073
 where the data comes from, how it changes, and where it goes.
 
-00:00:55.528 --> 00:01:00.380
+00:00:56.073 --> 00:01:00.820
 Anyone allowed can preview it, run it, and see what each run delivered.
 
-00:01:04.580 --> 00:01:07.429
-The Data Sources module provides the data.
+00:01:05.020 --> 00:01:07.131
+Data sources provide the data:
 
-00:01:07.429 --> 00:01:11.464
-A data source offers data sets, such as the items of a content
+00:01:07.131 --> 00:01:11.059
+data sets, such as the items of a content type, the users, or
 
-00:01:11.464 --> 00:01:15.559
-type, the users, or the results of a saved query, and each data
+00:01:11.059 --> 00:01:14.518
+the results of a saved query, each with typed fields.
 
-00:01:15.559 --> 00:01:18.348
-set describes its fields and their types.
+00:01:14.518 --> 00:01:19.502
+The Data Pipelines Core feature shares them, with the formula functions and the
 
-00:01:18.348 --> 00:01:22.680
-Other modules, such as reporting tools, read the same data sources.
+00:01:19.502 --> 00:01:23.430
+data operations, with other modules, such as reporting tools.
 
-00:01:23.430 --> 00:01:28.461
+00:01:24.180 --> 00:01:28.978
 A pipeline connects steps through ports that carry rows or files.
 
-00:01:28.461 --> 00:01:34.412
+00:01:28.978 --> 00:01:34.655
 Sources read rows, transforms change them, file steps write them as CSV, Excel
 
-00:01:34.412 --> 00:01:38.380
+00:01:34.655 --> 00:01:38.440
 or JSON files, and destinations deliver the files.
 
-00:01:39.130 --> 00:01:43.242
-A run streams the rows through the steps in batches, so a large
+00:01:39.190 --> 00:01:43.516
+A run streams the rows through the steps in batches, in the background,
 
-00:01:43.242 --> 00:01:45.626
-export never has to fit in memory.
+00:01:43.516 --> 00:01:46.942
+with the access of the user who published the pipeline.
 
-00:01:45.626 --> 00:01:50.870
-It runs in the background, with the access of the user who published the pipeline.
+00:01:46.942 --> 00:01:50.650
+A sort or a join keeps its memory within a limit, and writes
 
-00:01:51.620 --> 00:01:54.262
-Features add the steps you need:
+00:01:50.650 --> 00:01:52.560
+the rest to temporary files.
 
-00:01:54.262 --> 00:01:58.434
-the media library, email, content items and workflows.
+00:01:53.310 --> 00:01:55.476
+One feature turns it all on.
 
-00:01:58.434 --> 00:02:05.040
+00:01:55.476 --> 00:02:00.827
+The steps of the media library, email, content items and workflows appear when
+
+00:02:00.827 --> 00:02:02.929
+those features are enabled.
+
+00:02:02.929 --> 00:02:08.980
 The FTP and SFTP uploads are modules of their own, as they rely on third-party libraries.
 
-00:02:09.219 --> 00:02:12.791
-The data pipeline features are in the Data category.
+00:02:13.171 --> 00:02:17.061
+Data Pipelines is in the Data category of the Features page.
 
-00:02:12.791 --> 00:02:15.439
-Search for them on the Features page.
+00:02:17.513 --> 00:02:22.138
+Enable it, and its steps follow the features the site already uses.
 
-00:02:15.890 --> 00:02:19.132
-Data Pipelines is the core feature.
+00:02:22.138 --> 00:02:25.813
+The FTP and SFTP uploads have features of their own.
 
-00:02:19.132 --> 00:02:21.267
-The others add steps:
-
-00:02:21.267 --> 00:02:26.880
-the media library, email, content items, workflows, FTP and SFTP.
-
-00:02:31.082 --> 00:02:36.950
+00:02:30.001 --> 00:02:35.783
 Under Tools, Data Pipelines, the Pipelines page lists every pipeline, with its published
 
-00:02:36.950 --> 00:02:41.382
+00:02:35.783 --> 00:02:40.151
 version, its unpublished changes, and the result of its last run.
 
-00:02:41.833 --> 00:02:44.713
+00:02:40.602 --> 00:02:42.742
 Search finds a pipeline by its name.
 
-00:02:45.163 --> 00:02:47.208
+00:02:43.437 --> 00:02:45.362
 Edit opens the designer.
 
-00:02:47.208 --> 00:02:52.863
+00:02:45.362 --> 00:02:50.687
 The Actions menu runs the pipeline now, opens its run history, or deletes it.
 
-00:02:53.314 --> 00:02:54.905
+00:02:51.137 --> 00:02:52.468
 Let's create one.
 
-00:02:54.905 --> 00:02:59.194
+00:02:52.468 --> 00:02:56.057
 Add Pipeline asks for its name, then opens the designer.
 
-00:03:03.394 --> 00:03:07.136
+00:03:00.248 --> 00:03:04.021
 The designer shows the steps on the left, the canvas in the middle,
 
-00:03:07.136 --> 00:03:10.827
+00:03:04.021 --> 00:03:07.743
 and the settings, issues and history of the pipeline on the right.
 
-00:03:10.827 --> 00:03:12.774
+00:03:07.743 --> 00:03:09.708
 A pipeline starts with a source.
 
-00:03:13.224 --> 00:03:16.417
+00:03:10.158 --> 00:03:13.142
 The step opens in the panel below the canvas.
 
-00:03:16.417 --> 00:03:18.420
+00:03:13.142 --> 00:03:15.015
 Pick the data set to read:
 
-00:03:18.420 --> 00:03:21.674
+00:03:15.015 --> 00:03:18.058
 here, the items of the Blog Post content type.
 
-00:03:22.125 --> 00:03:26.303
+00:03:18.508 --> 00:03:22.668
 Pick the fields to read, in their order, and add filters, such as
 
-00:03:26.303 --> 00:03:28.775
+00:03:22.668 --> 00:03:25.128
 the posts published since September.
 
-00:03:30.937 --> 00:03:35.757
+00:03:27.064 --> 00:03:31.479
 The Data tab previews the first rows, with the settings of the draft.
 
-00:03:35.757 --> 00:03:38.327
+00:03:31.479 --> 00:03:33.834
 A preview never delivers anything.
 
-00:03:42.505 --> 00:03:45.685
+00:03:38.017 --> 00:03:40.903
 Click the output of a step to add the next one.
 
-00:03:45.685 --> 00:03:50.065
+00:03:40.903 --> 00:03:44.877
 The menu offers only the steps that accept what the output carries.
 
-00:03:50.517 --> 00:03:57.161
-Add calculated fields computes fields from formulas, with text, number, date and logical functions.
+00:03:45.329 --> 00:03:50.072
+Add calculated fields computes fields from formulas, with typed results.
 
-00:03:57.161 --> 00:04:02.857
-The headline is the title in capitals, and the month is when the post was published.
+00:03:50.072 --> 00:03:52.749
+The headline is the title in capitals.
 
-00:04:03.307 --> 00:04:07.854
+00:03:54.031 --> 00:03:58.134
+The editor lists the fields and every function, with a search.
+
+00:03:58.134 --> 00:04:01.694
+Click a function, then a field, to write the formula:
+
+00:04:01.694 --> 00:04:04.409
+here, the month the post was published.
+
+00:04:04.409 --> 00:04:08.331
+Modules add their own functions with AddExpressionFunction.
+
+00:04:08.783 --> 00:04:13.191
 The Fields tab shows the fields a step receives and produces, with their
 
-00:04:07.854 --> 00:04:11.177
+00:04:13.191 --> 00:04:16.413
 types, which the designer infers from the formulas.
 
-00:04:11.628 --> 00:04:20.848
+00:04:16.863 --> 00:04:25.453
 Other transforms filter, select, sort, group and summarize, join, combine, deduplicate and limit rows.
 
-00:04:25.034 --> 00:04:30.724
+00:04:29.638 --> 00:04:34.712
 Create a file writes the rows as a CSV, Excel, JSON or JSON Lines file.
 
-00:04:30.724 --> 00:04:33.385
-Its options follow the format:
+00:04:34.712 --> 00:04:37.084
+Its options follow the format.
 
-00:04:33.385 --> 00:04:36.194
-a workbook has a worksheet name.
+00:04:37.084 --> 00:04:42.818
+Connect several steps to it, and each one gets its own worksheet in the workbook.
 
-00:04:36.645 --> 00:04:40.689
+00:04:43.270 --> 00:04:46.930
 The file name can use placeholders, such as the date of the run,
 
-00:04:40.689 --> 00:04:44.445
+00:04:46.930 --> 00:04:50.330
 the name of the pipeline, or a parameter a workflow passes.
 
-00:04:44.895 --> 00:04:48.530
+00:04:51.004 --> 00:04:54.398
 Save to the media library stores the file in a folder.
 
-00:04:48.530 --> 00:04:53.195
+00:04:54.398 --> 00:04:58.754
 Its editor warns about the file types the media library doesn't accept.
 
-00:04:55.874 --> 00:04:58.452
+00:05:02.435 --> 00:05:04.963
 A file can go to several destinations.
 
-00:04:58.452 --> 00:05:03.024
+00:05:04.963 --> 00:05:09.445
 Drag Share a download link from the library, and connect the file to it.
 
-00:05:04.605 --> 00:05:09.155
+00:05:11.274 --> 00:05:15.247
 A download link works only for its recipients, once they sign in, and
 
-00:05:09.155 --> 00:05:11.945
+00:05:15.247 --> 00:05:17.684
 stops working after the days you choose.
 
-00:05:12.396 --> 00:05:17.656
+00:05:18.134 --> 00:05:23.314
 The Data tab of a destination shows the file it would receive, without delivering it.
 
-00:05:21.834 --> 00:05:25.601
+00:05:27.516 --> 00:05:30.822
 The draft saves as you work, and runs never use it.
 
-00:05:25.601 --> 00:05:30.094
+00:05:30.822 --> 00:05:34.766
 Publish creates a version, and runs use the published version.
 
-00:05:30.545 --> 00:05:35.465
+00:05:35.218 --> 00:05:40.158
 Versions lists the published versions, and restores any of them into the draft.
 
-00:05:36.146 --> 00:05:38.695
+00:05:40.862 --> 00:05:43.270
 Run queues a run in the background.
 
-00:05:38.695 --> 00:05:44.476
+00:05:43.270 --> 00:05:48.732
 The History tab follows it, and the canvas shows the rows and files each step produced.
 
-00:05:44.926 --> 00:05:49.896
+00:05:49.182 --> 00:05:54.002
 Each run keeps its status, its steps, what it delivered, and a log.
 
-00:05:54.088 --> 00:06:00.045
+00:05:58.189 --> 00:06:03.897
 Run History, under Tools, Data Pipelines, lists the runs of every pipeline.
 
-00:06:00.045 --> 00:06:03.428
+00:06:03.897 --> 00:06:07.139
 Search by pipeline, or filter by status.
 
-00:06:03.879 --> 00:06:06.474
+00:06:07.589 --> 00:06:10.111
 A failed run shows why it failed:
 
-00:06:06.474 --> 00:06:09.999
+00:06:10.111 --> 00:06:13.539
 here, the API of a partner couldn't be reached.
 
-00:06:10.449 --> 00:06:16.202
+00:06:13.989 --> 00:06:19.286
 Shared Files lists the files shared through download links, with their recipients, their
 
-00:06:16.202 --> 00:06:18.221
+00:06:19.286 --> 00:06:21.145
 expiry and their downloads.
 
-00:06:18.221 --> 00:06:20.669
+00:06:21.145 --> 00:06:23.399
 A link can be revoked at any time.
 
-00:06:21.121 --> 00:06:24.971
+00:06:23.850 --> 00:06:27.475
 Recipients find the files shared with them on the Files shared with you
 
-00:06:24.971 --> 00:06:27.821
+00:06:27.475 --> 00:06:30.160
 page of the site, and download them once signed in.
 
-00:06:32.021 --> 00:06:36.851
+00:06:34.360 --> 00:06:39.009
 Sources read a data set of any data source, or the rows of
 
-00:06:36.851 --> 00:06:40.851
+00:06:39.009 --> 00:06:42.860
 a CSV, Excel or JSON file of the media library.
 
-00:06:41.601 --> 00:06:48.496
-Transforms filter rows into matched and unmatched outputs, add calculated fields, select and
+00:06:43.610 --> 00:06:51.069
+Transforms filter rows into matched and unmatched outputs, calculate, select and rename fields,
 
-00:06:48.496 --> 00:06:55.251
-rename fields, sort, group and summarize, join two inputs, combine, remove duplicates, and
+00:06:51.069 --> 00:06:57.790
+sort, group and summarize, join, combine, remove duplicates, and keep the first rows.
 
-00:06:55.251 --> 00:06:57.081
-keep the first rows.
-
-00:06:57.831 --> 00:07:04.005
+00:06:58.540 --> 00:07:04.453
 File steps write CSV, Excel, JSON and JSON Lines files, and zip several
 
-00:07:04.005 --> 00:07:06.331
+00:07:04.453 --> 00:07:06.680
 files into one archive.
 
-00:07:07.081 --> 00:07:13.895
+00:07:07.430 --> 00:07:14.325
 Destinations deliver to the media library, download links, email, web APIs, FTP and
 
-00:07:13.895 --> 00:07:20.021
-SFTP servers, and content items, which creates or updates items from rows.
+00:07:14.325 --> 00:07:17.270
+SFTP servers, and content items.
 
-00:07:24.221 --> 00:07:28.802
+00:07:21.470 --> 00:07:25.832
 In a workflow, the Run Data Pipeline Task runs a published pipeline.
 
-00:07:28.802 --> 00:07:34.251
+00:07:25.832 --> 00:07:31.020
 It can wait for the run to end, and continue with the Succeeded or Failed outcome.
 
-00:07:35.001 --> 00:07:39.880
+00:07:31.770 --> 00:07:36.508
 It passes parameters, written with Liquid, and steps read them with the Parameter
 
-00:07:39.880 --> 00:07:43.301
+00:07:36.508 --> 00:07:39.830
 placeholder, such as the date a data source filters on.
 
-00:07:44.051 --> 00:07:48.473
+00:07:40.580 --> 00:07:45.284
 The Data Pipeline Run Completed Event starts a workflow when a run ends,
 
-00:07:48.473 --> 00:07:51.251
+00:07:45.284 --> 00:07:48.240
 such as to notify someone when a run fails.
 
-00:07:55.451 --> 00:08:00.905
-The DataPipelines section of appsettings.json limits the rows a step holds in memory,
+00:07:52.440 --> 00:07:57.733
+The DataPipelines section of appsettings.json sets the memory a step may use before
 
-00:08:00.905 --> 00:08:04.261
-how long runs are kept, and the rows of a preview.
+00:07:57.733 --> 00:08:02.134
+it writes rows to temporary files, how many runs of a tenant execute
 
-00:08:05.011 --> 00:08:09.056
+00:08:02.134 --> 00:08:06.000
+at once, how long runs are kept, and the rows of a preview.
+
+00:08:06.750 --> 00:08:10.503
 The media library accepts Excel workbooks by default.
 
-00:08:09.056 --> 00:08:13.650
+00:08:10.503 --> 00:08:14.766
 To save CSV, JSON or zip files to it, add their extensions to
 
-00:08:13.650 --> 00:08:15.981
+00:08:14.766 --> 00:08:16.930
 its allowed file extensions.
 
-00:08:16.731 --> 00:08:21.980
+00:08:17.680 --> 00:08:22.640
 The All Data Pipelines deployment step exports pipelines without their secrets.
 
-00:08:21.980 --> 00:08:27.601
+00:08:22.640 --> 00:08:27.950
 The Data Pipelines recipe step imports them as drafts, to publish on the target site.
 
-00:08:31.801 --> 00:08:35.152
+00:08:32.150 --> 00:08:35.355
 A step type derives from DataPipelineStepType.
 
-00:08:35.152 --> 00:08:41.661
+00:08:35.355 --> 00:08:41.580
 It names its category, describes the fields it produces, and processes the rows batch by batch.
 
-00:08:42.411 --> 00:08:47.817
+00:08:42.330 --> 00:08:47.523
 Register it with AddDataPipelineStep, with the display driver of its editor, and it
 
-00:08:47.817 --> 00:08:50.551
+00:08:47.523 --> 00:08:50.150
 appears in the library of the designer.
 
-00:08:51.301 --> 00:08:54.140
-A data source implements IDataSource.
+00:08:50.900 --> 00:08:57.049
+A data source implements IDataSource, or derives from RecordDataSource to declare its fields
 
-00:08:54.140 --> 00:09:00.611
-Once registered, every pipeline, and every other module that reads data sources, can use it.
+00:08:57.049 --> 00:08:58.806
+over your own records.
 
-00:09:02.611 --> 00:09:08.756
-Data pipelines turn exports, feeds and transfers into pipelines that anyone allowed can
+00:08:58.806 --> 00:09:04.580
+Once registered, every pipeline, and every module that reads data sources, can use it.
 
-00:09:08.756 --> 00:09:11.333
-design, preview, publish and run.
+00:09:06.580 --> 00:09:12.528
+Data pipelines turn exports, feeds and transfers into pipelines anyone allowed can design,
 
-00:09:11.333 --> 00:09:13.051
+00:09:12.528 --> 00:09:14.449
+preview, publish and run.
+
+00:09:14.449 --> 00:09:16.060
 Thanks for watching.
 

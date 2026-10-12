@@ -1,8 +1,25 @@
-# Data Sources (`OrchardCore.DataSources`)
+# Data Sources (`OrchardCore.DataPipelines.Core`)
 
-The Data Sources module exposes the data of a site, such as its content items, its users and the results of its saved queries, as typed, tabular data sets. Other features read data through it without knowing where the data is stored or who may see it: [Data Pipelines](../DataPipelines/README.md) read data sources to transform and deliver data, and other modules, such as reporting tools, can reuse the same data sources, file formats and formula language.
+The **Data Pipelines Core** feature (`OrchardCore.DataPipelines.Core`) of the [Data Pipelines](../DataPipelines/README.md) module is the data layer that data pipelines and other features, such as reports, share. It provides:
 
-The module has no admin screen of its own. It is enabled as a dependency of the features that use it.
+- the **data sources**, which expose the data of a site, such as its content items, its users and the results of its saved queries, as typed, tabular data sets. Features read data through them without knowing where the data is stored or who may see it;
+- the **file formats** that rows are written to and read from: CSV, Excel, JSON and JSON Lines;
+- the **formula language**, whose functions modules can add to;
+- the **data operations** that sort, deduplicate, group and join any number of rows with a bounded amount of memory.
+
+The feature has no admin screen of its own. It is enabled only as a dependency of the features that use it, such as the Data Pipelines feature (`OrchardCore.DataPipelines`). A module that reads data sources, or adds its own, depends on the `OrchardCore.DataPipelines.Core` feature, whose identifier is also the `DataPipelinesConstants.CoreFeatureId` constant:
+
+```csharp
+[assembly: Module(
+    Name = "Support Reports",
+    Author = "The Support Team",
+    Version = "1.0.0",
+    Dependencies =
+    [
+        "OrchardCore.DataPipelines.Core",
+    ]
+)]
+```
 
 ## Concepts
 
@@ -24,7 +41,7 @@ Data is always read for a user, the `User` of the `DataSourceContext`. A data so
 
 ## Built-in data sources
 
-The built-in data sources are available when the feature that owns their data is enabled.
+The built-in data sources are part of the Data Pipelines Core feature, and each one is available when the feature that owns its data is enabled too.
 
 ### Content items
 
@@ -132,12 +149,12 @@ A consumer can offer conditions to a data source, with the operators of `DataFil
 
 ## File formats
 
-The module provides file formats that rows can be written to and read from. They are `IDataFileFormat` services, listed by the `IDataFileFormatManager` service, which also finds the format of a file from its extension.
+The feature provides file formats that rows can be written to and read from. They are `IDataFileFormat` services, listed by the `IDataFileFormatManager` service, which also finds the format of a file from its extension.
 
 | Name | Format | Extension | Notes |
 |------|--------|-----------|-------|
 | `csv` | CSV (comma separated values) | `.csv` | Values that hold the delimiter, a quote or a line break are quoted, and quotes are doubled (RFC 4180). Files are written in UTF-8 with a byte order mark, so spreadsheet applications detect the encoding. The delimiter is a comma by default; `tab` or `\t` stands for a tab. Every column read from a CSV file is text. |
-| `xlsx` | Excel workbook | `.xlsx` | Rows are written and read one at a time, so a large workbook never needs to fit in memory: each worksheet is streamed into the file as its rows arrive. A workbook can hold several data sets, each in its own worksheet. Numbers, booleans, dates and date-times keep their types. When reading, the type of each column is inferred from the values of the first batch. A worksheet is named `Sheet1` unless another name is given, and when reading, the first worksheet is read unless another one is named. |
+| `xlsx` | Excel workbook | `.xlsx` | Rows are written and read one at a time, so a large workbook never needs to fit in memory: each worksheet is streamed into the file as its rows arrive, and writing uses about 16 MB of memory whatever the number of rows. A workbook can hold several data sets, each in its own worksheet. A worksheet holds at most 1,048,576 rows, the row of column names included, which is the limit of Excel: writing more fails, with a message that suggests a CSV file or several worksheets. Numbers, booleans, dates and date-times keep their types. When reading, the type of each column is inferred from the values of the first batch. A worksheet is named `Sheet1` unless another name is given, and when reading, the first worksheet is read unless another one is named. |
 | `json` | JSON | `.json` | An array with one object per row. When reading, the fields and their types are inferred from the objects of the first batch; properties that first appear later are ignored, and nested objects and arrays are read as JSON text. |
 | `jsonl` | JSON Lines | `.jsonl` | One JSON object per line, which suits large exports. Fields are inferred as for JSON. |
 
@@ -145,7 +162,7 @@ When written to a text file, dates are formatted as `yyyy-MM-dd`, date-times in 
 
 The `DataFileOptions` class holds the options of a format: the `Delimiter` of a CSV file, whether the first row holds the column names (`HasHeaderRow`), the `SheetName` of a workbook, whether JSON is `Indented`, whether columns are named with the labels of the fields (`UseDisplayNames`), and the `BatchSize` of reading.
 
-A format whose files hold several data sets, such as the Excel workbook, also implements `IDataWorkbookFormat`. Its `WriteSheetsAsync` method writes a list of `DataSheet` objects, each with a name, fields and batches of rows, to the worksheets of one workbook, and returns the number of rows written to each one. The worksheets are written in order, and the batches of a sheet are read completely before those of the next sheet are started, so the batches of a later sheet must be able to wait. Worksheet names are made valid for Excel: the characters `: \ / ? * [ ]` are replaced with `_`, names are cut to 31 characters, an empty name becomes `SheetN`, where N is the position of the sheet, and a repeated name, ignoring case, gets a number such as ` (2)` appended.
+A format whose files hold several data sets, such as the Excel workbook, also implements `IDataWorkbookFormat`, from the `OrchardCore.DataSources.Files` namespace. Its `WriteSheetsAsync` method writes a list of `DataSheet` objects, each with a name, fields and batches of rows, to the worksheets of one workbook, and returns the number of rows written to each one; the `SheetName` of the `DataFileOptions` is ignored. The worksheets are written in order, and the batches of a sheet are read completely before those of the next sheet are started, so the batches of a later sheet must be able to wait, rather than come from a reader that is still in use. Worksheet names are made valid for Excel: the characters `: \ / ? * [ ]` are replaced with `_`, names are cut to 31 characters, an empty name becomes `SheetN`, where N is the position of the sheet, and a repeated name, ignoring case, gets a number such as ` (2)` appended. The **Create a file** step of data pipelines uses it to write each of its connections to its own worksheet.
 
 ```csharp
 if (dataFileFormatManager.GetFormat("xlsx") is IDataWorkbookFormat workbookFormat)
@@ -162,7 +179,7 @@ if (dataFileFormatManager.GetFormat("xlsx") is IDataWorkbookFormat workbookForma
 
 ## Formulas
 
-The module includes a formula language, used for example by the calculated fields and the filters of data pipelines. A formula computes a value from the fields of a row, such as `[Price] * [Quantity]` or `UPPER(TRIM([Country]))`.
+The feature includes a formula language, used for example by the calculated fields and the filters of data pipelines. A formula computes a value from the fields of a row, such as `[Price] * [Quantity]` or `UPPER(TRIM([Country]))`.
 
 ### Syntax
 
@@ -203,6 +220,8 @@ The operators follow these rules:
 Functions return a missing value, rather than failing, when an argument is missing or of the wrong type. A formula is checked before it is evaluated: every field must exist, every function must be called with the right number of arguments, and operators must suit the types of their operands.
 
 ### Functions
+
+These are the built-in functions. Modules can add functions, or replace built-in ones, see [Adding a formula function](#adding-a-formula-function).
 
 #### Text
 
@@ -302,15 +321,16 @@ Aggregate functions combine the values of a group of rows. They are available to
 
 ### Using formulas from code
 
-The `ExpressionCompiler` class compiles a formula against a scope, which resolves the fields it refers to. `FieldListExpressionScope` resolves the fields of a list of `DataField`, by their technical names:
+The `ExpressionCompiler` class compiles a formula against a scope, which resolves the fields it refers to, and a catalog of functions. `FieldListExpressionScope` resolves the fields of a list of `DataField`, by their technical names. The `IExpressionFunctionCatalog` singleton holds the built-in functions and those the modules add:
 
 ```csharp
 using OrchardCore.DataSources.Expressions;
 
+// _functionCatalog is the IExpressionFunctionCatalog, injected in the constructor.
 var scope = new FieldListExpressionScope(batch.Fields);
 
 // Throws an ExpressionException, whose message is localized, when the formula is invalid.
-var expression = ExpressionCompiler.Compile("[Price] * [Quantity]", scope, S);
+var expression = ExpressionCompiler.Compile("[Price] * [Quantity]", scope, _functionCatalog, S);
 
 foreach (var row in batch.Rows)
 {
@@ -318,13 +338,175 @@ foreach (var row in batch.Rows)
 }
 ```
 
-`CompiledExpression.DataType` is the type of the values the formula returns, and `CompiledExpression.References` lists the fields it reads. `ExpressionFunctions.All` lists every function, with its category, signature and description.
+`ExpressionCompiler.Compile(formula, scope, localizer)`, without a catalog, compiles a formula that calls the built-in functions only, those of `ExpressionFunctionCatalog.BuiltIn`, for code that runs without services.
+
+`CompiledExpression.DataType` is the type of the values the formula returns, and `CompiledExpression.References` lists the fields it reads. `IExpressionFunctionCatalog.Functions` lists every function, ordered by category and name, with its signature and description, such as to show them to the people who write formulas, and `Find(name)` finds a function by name, ignoring case. The descriptions are in English; pass them through a localizer to show them.
+
+## Data operations
+
+Some operations must see many rows before they write any, such as a sort. The static classes of the `OrchardCore.DataSources.Operations` namespace, from the `OrchardCore.DataSources.Core` package, perform them on any number of rows with a bounded amount of memory: they keep the rows in memory up to a limit, write the rows that don't fit to temporary files, and delete these files when they are done. The **Sort rows**, **Join**, **Group and summarize** and **Remove duplicates** steps of data pipelines use them, and other modules, such as reports, can too.
+
+A `DataSpillOptions` gives an operation the directory of its temporary files, created when needed, and the memory it may use, 32 MB by default (`DataSpillOptions.DefaultMemoryLimit`). The operations read rows as an `IAsyncEnumerable<object[]>` and return the rows they produce the same way:
+
+| Operation | Description |
+|-----------|-------------|
+| `DataSorter.SortAsync` | Sorts rows with an external merge sort: rows are sorted in memory, written to temporary files as sorted runs when there are more than the limit allows, and the runs are merged while the rows are read. The sort is stable: rows that compare equal keep their order. `DataSorter.CreateComparer` creates the comparer of rows by fields, each ascending or descending: numbers compare by value, text ignoring case, and missing values come first. |
+| `DataDistinct.DistinctAsync` | Keeps the first row of each set of rows with equal keys, and keeps the order of the rows. The keys that don't fit in memory have their rows deduplicated from a temporary file, once the others are done. |
+| `DataAggregator.AggregateAsync` | Groups rows by the values of fields and computes a `DataMeasure` for each group, such as `new DataMeasure(DataAggregate.Sum, amountIndex)`, or `new DataMeasure(DataAggregate.Count, -1)` to count the rows. The groups come out in the order they first appear. Without group fields, every row belongs to one group, and an empty input still has one. The values of a median and of a distinct count stay in memory with their group. |
+| `DataJoin.JoinAsync` | Joins two inputs on key fields, like a SQL join, with a `DataJoinType`: `Inner`, `Left`, `Right` or `Full`. The right input is read first: when it fits in memory, it becomes a lookup the left rows stream through (a hash join); otherwise both inputs are sorted by key in temporary files and merged. Either way, the rows come out in the same order: each left row with its matches in the order of the right input, then the right rows without a match. A row whose key has a missing value never matches. |
+
+Grouping, deduplicating and joining build their keys with `DataKeys`: numbers compare by value (`2` equals `2.0`), text compares exactly unless asked to ignore case, and two missing values are equal.
+
+```csharp
+using OrchardCore.DataSources;
+using OrchardCore.DataSources.Operations;
+
+// _tempDirectoryProvider is the ITempDirectoryProvider, injected in the constructor.
+var options = new DataSpillOptions(_tempDirectoryProvider.CreateTempSubdirectory("orders"), memoryLimit: 64L * 1024 * 1024);
+
+// The largest orders first.
+var comparer = DataSorter.CreateComparer([(fields.IndexOf("Amount"), Descending: true)]);
+
+await foreach (var row in DataSorter.SortAsync(rows, comparer, options, cancellationToken))
+{
+    // The first row is available once every row was read.
+}
+```
+
+Other classes of the namespace help write such operations:
+
+- `DataRowBuffer` holds rows to read them later, any number of times, in the order they were added. The rows stay in memory until they exceed the limit, then they all go to a temporary file, deleted when the buffer is disposed.
+- `DataRowQueue` is a first-in, first-out queue of batches of rows kept in a temporary file, for a producer that must not wait for a slower consumer.
+- `DataFieldTransforms.Apply` changes the values of a field before they are grouped or shown, with a `DataFieldTransform`, such as the `Year` or the `Quarter` of a date, the first day of its `Month`, the `Day` of a date-time without its time, text in `Upper` case, or a number rounded with `Round`. A value the transform doesn't apply to becomes missing. `Supports` tells whether a transform applies to a field type, and `GetResultType` gives the type it returns.
 
 ## Extending data sources
 
+### Define your own data source
+
+The simplest way to add a data source is to derive from `RecordDataSource`, from the `OrchardCore.DataSources.Abstractions` package, and to describe each of its data sets as a `RecordDataSet<TRecord>` over a .NET type, such as a document or the row of an index:
+
+- `AddField(name, displayName, type, read, group)` declares a field, in order, with the function that reads its value from a record. It returns the `DataField`, to set its other properties, such as `IsIdentifier`, `References`, or `IsKeyFilterable` when the data set loads only the records of a list of keys.
+- `CanReadAsync` tells whether the user of the context may read the data set; everyone may by default. The data source lists, describes and reads only the data sets the user may read.
+- `LoadAsync` streams the records, in a stable order, a page at a time, so that any number of records can be read. It stops when the enumeration stops: the base class reads only the fields and the number of rows the query asks for, and splits the rows into batches.
+
+The values are converted to the type of their field: an enumeration value becomes its name, and a date becomes a UTC date (a `DateTimeOffset`, a local date or a date without a kind).
+
+```csharp
+using System.Runtime.CompilerServices;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Localization;
+using OrchardCore.DataSources;
+
+public sealed record Ticket(string TicketId, TicketState State, DateTimeOffset OpenedUtc, int Priority, string OwnerId);
+
+public sealed class SupportDataSource : RecordDataSource
+{
+    private readonly IStringLocalizer S;
+
+    public SupportDataSource(
+        ITicketStore ticketStore,
+        IAuthorizationService authorizationService,
+        IStringLocalizer<SupportDataSource> localizer)
+    {
+        S = localizer;
+        DataSets = [new TicketsDataSet(ticketStore, authorizationService, localizer)];
+    }
+
+    public override string Name => "Support";
+
+    public override LocalizedString DisplayName => S["Support"];
+
+    public override LocalizedString Description => S["The tickets of the help desk."];
+
+    protected override IEnumerable<IRecordDataSet> DataSets { get; }
+}
+
+public sealed class TicketsDataSet : RecordDataSet<Ticket>
+{
+    private const int PageSize = 500;
+
+    private readonly ITicketStore _ticketStore;
+    private readonly IAuthorizationService _authorizationService;
+
+    public TicketsDataSet(ITicketStore ticketStore, IAuthorizationService authorizationService, IStringLocalizer localizer)
+        : base(new DataSetDescriptor("Tickets", localizer["Tickets"], localizer["One row per ticket."]))
+    {
+        _ticketStore = ticketStore;
+        _authorizationService = authorizationService;
+
+        // LoadAsync reads only the tickets of a list of ids when a consumer asks for them, such as a join.
+        var ticketId = AddField("TicketId", localizer["Ticket"], DataFieldType.Text, ticket => ticket.TicketId);
+        ticketId.IsIdentifier = true;
+        ticketId.IsKeyFilterable = true;
+
+        // An enumeration value is read as its name, and a DateTimeOffset as a UTC date.
+        AddField("State", localizer["State"], DataFieldType.Text, ticket => ticket.State);
+        AddField("OpenedUtc", localizer["Opened"], DataFieldType.DateTime, ticket => ticket.OpenedUtc);
+        AddField("Priority", localizer["Priority"], DataFieldType.Integer, ticket => ticket.Priority);
+
+        // The owner refers to the users, so consumers can suggest to join them.
+        var owner = AddField("OwnerId", localizer["Owner"], DataFieldType.Text, ticket => ticket.OwnerId);
+        owner.IsIdentifier = true;
+        owner.References.Add(new DataFieldReference("Users", "Users", "UserId"));
+    }
+
+    public override async Task<bool> CanReadAsync(DataSourceContext context, CancellationToken cancellationToken = default)
+        => context.User is not null && await _authorizationService.AuthorizeAsync(context.User, SupportPermissions.ViewTickets);
+
+    protected override async IAsyncEnumerable<Ticket> LoadAsync(DataSourceQuery query, [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        // Apply the conditions the store understands; the consumer applies every condition again.
+        var ticketIds = DataConditions.Keys(query.Conditions, "TicketId");
+        var (openedFrom, openedTo) = DataConditions.DateRange(query.Conditions, "OpenedUtc");
+        var skip = 0;
+
+        while (true)
+        {
+            var tickets = await _ticketStore.GetTicketsAsync(ticketIds, openedFrom, openedTo, skip, PageSize, cancellationToken);
+
+            if (tickets.Count == 0)
+            {
+                yield break;
+            }
+
+            foreach (var ticket in tickets)
+            {
+                yield return ticket;
+            }
+
+            skip += tickets.Count;
+        }
+    }
+}
+```
+
+Register the data source with `AddDataSource<T>()`, from the `OrchardCore.DataSources.Core` package, in a module that depends on the `OrchardCore.DataPipelines.Core` feature, or in a startup that requires it:
+
+```csharp
+using OrchardCore.Modules;
+
+[RequireFeatures("OrchardCore.DataPipelines.Core")]
+public sealed class DataSourcesStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDataSource<SupportDataSource>();
+    }
+}
+```
+
+The Data Pipelines Core feature is enabled only as a dependency of other features. With `[RequireFeatures]`, the data source is registered when a feature that depends on it, such as Data Pipelines, is enabled; with a dependency in the manifest of the module, enabling the module enables the Data Pipelines Core feature too.
+
+`DataConditions` reads the conditions of a query that a data source can apply while it loads its records, such as in a database query:
+
+- `DataConditions.Keys(conditions, field)` returns the values `In` and `Equals` conditions limit a field to, such as the keys of the rows a join needs, keeping only the values all of them allow, or `null` when no condition limits the field to a list of values. A field marked `IsKeyFilterable` must then be limited to these values exactly.
+- `DataConditions.DateRange(conditions, field)` returns the narrowest range of dates, with inclusive bounds, that the comparison conditions of a field allow; a missing bound is `null`.
+
+`DataField.WithName(name, displayName)` copies a field under another name, such as when a consumer prefixes the fields of a joined data set, keeping its type, group, description, whether it is an identifier, and the data sets it references.
+
 ### Adding a data source
 
-Implement `IDataSource` and register it with `AddDataSource<T>()`, from the `OrchardCore.DataSources.Core` package. Its data sets are then available to every consumer, such as the **Read a data source** step of data pipelines.
+A data source that doesn't read records one by one, such as one that lists its data sets dynamically or builds its batches itself, implements `IDataSource` directly, and is registered the same way, with `AddDataSource<T>()`. Its data sets are then available to every consumer, such as the **Read a data source** step of data pipelines.
 
 ```csharp
 using System.Runtime.CompilerServices;
@@ -426,7 +608,8 @@ public sealed class WarehouseDataSource : IDataSource
 ```
 
 ```csharp
-public sealed class Startup : StartupBase
+[RequireFeatures("OrchardCore.DataPipelines.Core")]
+public sealed class DataSourcesStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -492,9 +675,54 @@ services.AddDataFileFormat<XmlDataFileFormat>();
 
 The format is then offered by the **Create a file** and **Read a media file** steps of data pipelines.
 
+### Adding a formula function
+
+Formulas call the functions of the `IExpressionFunctionCatalog`: the built-in functions, and those the modules register. Create a function with `ExpressionFunction.CreateScalar`, for a function that computes a value from the values of its arguments, one row at a time, or `ExpressionFunction.CreateAggregate`, for a function that combines the values of a group of rows, and register it with `services.AddExpressionFunction(function)`, from the `OrchardCore.DataSources.Core` package:
+
+```csharp
+using OrchardCore.DataSources;
+using OrchardCore.DataSources.Expressions;
+using OrchardCore.Modules;
+
+[RequireFeatures("OrchardCore.DataPipelines.Core")]
+public sealed class FormulasStartup : StartupBase
+{
+    private const decimal TaxRate = 0.15m;
+
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddExpressionFunction(ExpressionFunction.CreateScalar(
+            name: "TAX",
+            category: ExpressionFunctions.NumberCategory,
+            signature: "TAX(amount)",
+            description: "Returns the sales tax of an amount.",
+            minArguments: 1,
+            maxArguments: 1,
+            returnType: _ => DataFieldType.Decimal,
+            // Return a missing value, rather than throwing, when an argument is missing or of the wrong type.
+            invoke: args => args[0] switch
+            {
+                long amount => Math.Round(amount * TaxRate, 2),
+                decimal amount => Math.Round(amount * TaxRate, 2),
+                _ => null,
+            }));
+    }
+}
+```
+
+The formula `[Price] + TAX([Price])` then adds the tax to a price, and the function is listed with the others, such as in the editors of the **Filter rows** and **Add calculated fields** steps of data pipelines.
+
+- A function is called with the values of its arguments, with the CLR types of their field types: `long` for an integer, `decimal` for a decimal, and so on. `returnType` infers the type of the result from the types of the arguments.
+- The name is case-insensitive. It starts with a letter or an underscore, holds only letters, digits and underscores, and can't be `AND`, `OR`, `NOT`, `TRUE`, `FALSE` or `NULL`. An invalid function fails when the catalog is first used.
+- A registered function replaces a built-in function of the same name, whatever the order of the startups, and a function registered later replaces one of the same name registered before.
+- The `category` groups the function in the list of functions, such as one of the `ExpressionFunctions` categories: `TextCategory`, `NumberCategory`, `DateCategory`, `LogicalCategory` or `AggregateCategory`, the category of the functions `CreateAggregate` creates.
+- The `description` is in English: the list of functions passes it through the localizer.
+
+To offer several functions, implement `IExpressionFunctionProvider`, whose `GetFunctions` returns them, and register it as a singleton with `services.AddExpressionFunctionProvider<TProvider>()`. The built-in functions come from the `BuiltInExpressionFunctionProvider`.
+
 ### Reading more parts and fields
 
-The content items data source reads the parts and content fields that `ContentDataSourceOptions` describes. A module that adds a part or a field type describes its values, so they show up as fields of the content type data sets, and can be written by the **Save content items** step of data pipelines. Each value is read from the JSON property of the same name:
+The content items data source reads the parts and content fields that `ContentDataSourceOptions`, from the `OrchardCore.DataPipelines` module, describes. A module that adds a part or a field type describes its values, so they show up as fields of the content type data sets, and can be written by the **Save content items** step of data pipelines. Each value is read from the JSON property of the same name:
 
 ```csharp
 using OrchardCore.DataSources;

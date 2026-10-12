@@ -58,7 +58,9 @@
         return last && scope.contains(last) ? last : scope.querySelector("[data-dp-formula]");
     };
 
-    // Inserts text at the caret, replacing the selection, and leaves the caret after "before" and before "after".
+    // Inserts text at the caret, replacing the selection, and leaves the caret after "before" and before "after". Only
+    // an "input" event is raised: the formula is usually incomplete, such as "MONTH()", and a "change" would apply it
+    // at once, and redraw the editor with an error while it is being written. It's applied when it is committed.
     const insertText = (target, before, after) => {
         const start = target.selectionStart ?? target.value.length;
         const end = target.selectionEnd ?? target.value.length;
@@ -67,7 +69,6 @@
         target.focus();
         target.setSelectionRange(start + before.length, start + before.length);
         target.dispatchEvent(new Event("input", { bubbles: true }));
-        notifyChange(target);
     };
 
     document.addEventListener("focusin", (event) => {
@@ -79,13 +80,7 @@
         }
     });
 
-    document.addEventListener("input", (event) => {
-        const search = event.target.closest?.("[data-dp-function-search]");
-
-        if (!search) {
-            return;
-        }
-
+    const filterFunctions = (search) => {
         const container = search.closest("[data-dp-functions]");
         const terms = search.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
         let matches = 0;
@@ -110,6 +105,24 @@
         if (empty) {
             empty.hidden = matches > 0;
         }
+    };
+
+    // The search of the functions isn't a setting: its events stop here, in the capture phase, so that the editor
+    // doesn't apply the form, and redraw it, when the search loses the focus.
+    ["input", "change"].forEach((type) => {
+        document.addEventListener(type, (event) => {
+            const search = event.target.closest?.("[data-dp-function-search]");
+
+            if (!search) {
+                return;
+            }
+
+            event.stopPropagation();
+
+            if (type === "input") {
+                filterFunctions(search);
+            }
+        }, true);
     });
 
     document.addEventListener("click", (event) => {

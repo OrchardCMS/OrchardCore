@@ -2,7 +2,7 @@
 
 The Data Pipelines module lets administrators design pipelines that read data, transform it, and deliver it, without writing code. A pipeline can, for example, read the orders of the last 30 days, join them with their customers, compute their totals, write them to an Excel workbook and upload it to an SFTP server every night, or import the rows of a CSV file of the media library as content items.
 
-Pipelines read their data from the [Data Sources](../DataSources/README.md) of the site, and their formulas use the [formula language](../DataSources/README.md#formulas) of the Data Sources module.
+Pipelines read their data from the [data sources](../DataSources/README.md) of the site, and their formulas use the [formula language](../DataSources/README.md#formulas) of the Data Pipelines Core feature.
 
 This video shows why data pipelines exist, and how to design, preview, publish, run, automate and extend them:
 
@@ -14,15 +14,30 @@ This video shows why data pipelines exist, and how to design, preview, publish, 
 
 ## Features
 
+The Data Pipelines module has two features:
+
 | Feature | Description |
 |---------|-------------|
-| Data Pipelines (`OrchardCore.DataPipelines`) | The designer, the runs, and the steps that read data sources, transform rows, create and zip files, share download links, and send files to web APIs. Depends on the Data Sources and Users features. |
-| Data Pipelines - FTP (`OrchardCore.DataPipelines.Ftp`) | Adds the **Upload to an FTP server** step, with the FluentFTP library. |
-| Data Pipelines - SFTP (`OrchardCore.DataPipelines.Sftp`) | Adds the **Upload to an SFTP server** step, with the SSH.NET library. |
-| Data Pipelines - Media (`OrchardCore.DataPipelines.Media`) | Adds the **Read a media file** and **Save to the media library** steps. Depends on the Media feature. |
-| Data Pipelines - Email (`OrchardCore.DataPipelines.Email`) | Adds the **Send by email** step. Depends on the Email feature. |
-| Data Pipelines - Content Items (`OrchardCore.DataPipelines.Contents`) | Adds the **Save content items** step, which creates and updates content items from rows. Depends on the Contents feature. |
-| Data Pipelines - Workflows (`OrchardCore.DataPipelines.Workflows`) | Adds the **Run Data Pipeline Task** activity and the **Data Pipeline Run Completed Event**. Depends on the Workflows feature. |
+| Data Pipelines Core (`OrchardCore.DataPipelines.Core`) | The data layer that data pipelines and other features, such as reports, share: the [data sources](../DataSources/README.md), the file formats, the formula language and its functions, and the data operations. It is enabled only as a dependency of other features. |
+| Data Pipelines (`OrchardCore.DataPipelines`) | The designer, the runs, and the steps that read data sources, transform rows, create and zip files, share download links, and send files to web APIs. Depends on the Data Pipelines Core and Users features. |
+
+The steps, activities and data sources that work with other features are available when these features are enabled too:
+
+| Feature | Adds |
+|---------|------|
+| Media (`OrchardCore.Media`) | The **Read a media file** and **Save to the media library** steps. |
+| Email (`OrchardCore.Email`) | The **Send by email** step. |
+| Contents (`OrchardCore.Contents`) | The **Save content items** step, which creates and updates content items from rows, and the [content items](../DataSources/README.md#content-items) data source. |
+| Workflows (`OrchardCore.Workflows`) | The **Run Data Pipeline Task** activity and the **Data Pipeline Run Completed Event**, see [Workflows](#workflows). |
+| Users (`OrchardCore.Users`) | The [users](../DataSources/README.md#users) data source. |
+| Queries (`OrchardCore.Queries`) | The [queries](../DataSources/README.md#queries) data source. |
+
+The steps that upload files to FTP and SFTP servers come with two other modules, so the Data Pipelines module doesn't depend on their libraries:
+
+| Module | Description |
+|--------|-------------|
+| Data Pipelines - FTP (`OrchardCore.DataPipelines.Ftp`) | Adds the **Upload to an FTP server** step, with the FluentFTP library. Depends on the Data Pipelines feature. |
+| Data Pipelines - SFTP (`OrchardCore.DataPipelines.Sftp`) | Adds the **Upload to an SFTP server** step, with the SSH.NET library. Depends on the Data Pipelines feature. |
 
 ## Concepts
 
@@ -35,7 +50,7 @@ A pipeline is a graph of steps connected by their ports, following the extract, 
 
 Each port carries either **rows**, with typed fields, or **files**. A connection joins an output to an input of the same kind, so a file step sits between the transforms and the destinations that deliver files. An output can be connected to several steps, which each receive all of its data. Some inputs accept several connections, whose data they read one after the other.
 
-The data flows through the pipeline in batches. Every step runs at the same time: a step works on a batch while the step before it reads the next one, and a fast step waits for a slow one, so the memory a run uses doesn't depend on the number of rows. A few steps must see every row before they write any, such as **Sort rows**; they hold the rows they need in memory, up to a [limit](#configuration).
+The data flows through the pipeline in batches. Every step runs at the same time: a step works on a batch while the step before it reads the next one, and a fast step waits for a slow one, so the memory a run uses doesn't depend on the number of rows. A few steps must see many rows before they write any, such as **Sort rows**: they hold the rows they need in memory, up to a [limit](#configuration), and write the rows that don't fit to temporary files of the run. The data that a step with several inputs, such as **Join**, doesn't read yet also waits in temporary files of the run rather than in memory, so the steps before it never wait for it forever. These files are deleted when the run ends.
 
 Each step describes the fields it produces from the fields it receives, so the designer knows the fields available to every step, and reports the issues of a pipeline before it runs: a missing setting, a field that doesn't exist, a required input that isn't connected, a loop, or a step whose feature is disabled.
 
@@ -89,7 +104,7 @@ The **Data** tab runs the pipeline up to the selected step, with the draft's set
 | Step | Ports | Settings |
 |------|-------|----------|
 | **Read a data source** (`DataSource`) | Out: rows | The **data set** to read, from any [data source](../DataSources/README.md), such as a content type, the users, or a saved query. The **fields** to read, in order (none reads every field). **Filters** that the rows must all match, with the [operators](../DataSources/README.md#filter-operators) of data sources; dates are written `yyyy-MM-dd` and compared in UTC. The **most rows** to read (0 reads every row). The **parameters** of a data set that takes them, such as a saved query, one `name=value` per line. Parameter and filter values can use [placeholders](#file-names-and-texts), such as `{Parameter:Since}`. |
-| **Read a media file** (`ReadMediaFile`) | Out: rows | The path of a CSV, Excel, JSON or JSON Lines **file** of the media library, and its **format** (inferred from the extension by default). Whether the first row holds the names of the columns (CSV, Excel), the CSV **delimiter**, and the **worksheet** of a workbook (the first one by default). Requires the Data Pipelines - Media feature. |
+| **Read a media file** (`ReadMediaFile`) | Out: rows | The path of a CSV, Excel, JSON or JSON Lines **file** of the media library, and its **format** (inferred from the extension by default). Whether the first row holds the names of the columns (CSV, Excel), the CSV **delimiter**, and the **worksheet** of a workbook (the first one by default). Available when the Media feature is enabled. |
 
 The **Read a data source** step reads the data with the access of the user the run is for: a data set this user may not read is reported as missing. **Read a media file** requires this user to be allowed to manage the media of the file's folder.
 
@@ -97,14 +112,14 @@ The **Read a data source** step reads the data with the access of the user the r
 
 | Step | Ports | Settings and behavior |
 |------|-------|-----------------------|
-| **Filter rows** (`Filter`) | In: rows. Out: **Matched** and **Unmatched** rows. | A **condition**, a [formula](../DataSources/README.md#formulas) that is true or false, such as `[Amount] >= 100 AND [Country] = 'CA'`. The rows that match go to **Matched**, the others to **Unmatched**, which may be left unconnected. A row whose condition can't be evaluated doesn't match, and is reported as a warning. |
-| **Add calculated fields** (`CalculatedFields`) | In: rows. Out: rows. | Fields computed by formulas, such as `[Price] * [Quantity]`. A formula can use the fields calculated before it, and a calculated field with the name of an input field replaces its value. A value that can't be calculated for a row is empty, and is reported as a warning. |
+| **Filter rows** (`Filter`) | In: rows. Out: **Matched** and **Unmatched** rows. | A **condition**, a [formula](../DataSources/README.md#formulas) that is true or false, such as `[Amount] >= 100 AND [Country] = 'CA'`. The rows that match go to **Matched**, the others to **Unmatched**, which may be left unconnected. A row whose condition can't be evaluated doesn't match, and is reported as a warning. See [Writing formulas](#writing-formulas). |
+| **Add calculated fields** (`CalculatedFields`) | In: rows. Out: rows. | Fields computed by formulas, such as `[Price] * [Quantity]`. A formula can use the fields calculated before it, and a calculated field with the name of an input field replaces its value. A value that can't be calculated for a row is empty, and is reported as a warning. See [Writing formulas](#writing-formulas). |
 | **Select fields** (`SelectFields`) | In: rows. Out: rows. | The fields to keep, in order, each with an optional new name and an optional type to convert its values to. A value that can't be converted becomes empty. Without any field, the rows pass unchanged. |
-| **Sort rows** (`Sort`) | In: rows. Out: rows. | The fields to sort by, the most significant first, each ascending or descending. Text is compared ignoring case, and empty values come first. The step holds every row in memory before writing the first one. |
-| **Group and summarize** (`Aggregate`) | In: rows. Out: rows. | The fields to **group by** (none summarizes every row into one) and the **values** computed for each group, each with a name, a function (`Count`, `CountDistinct`, `Sum`, `Average`, `Min`, `Max` or `Median`) and the field it reads; a count without a field counts the rows. The output has the group fields followed by the computed values. The step holds one entry per group in memory. |
-| **Join** (`Join`) | In: **Left** and **Right** rows. Out: rows. | The **rows to keep**: only the rows that match (inner join), every row of the left input (left join), every row of the right input (right join), or every row of both inputs (full join). The pairs of fields that must hold equal values for two rows to match; a row with an empty key never matches. Whether text keys **ignore case**. The **prefix of right fields**, `Right.` by default, added to a field of the right input whose name the left input already has. The step holds the right input in memory and streams the left one, so connect the smaller data set to the right. |
+| **Sort rows** (`Sort`) | In: rows. Out: rows. | The fields to sort by, the most significant first, each ascending or descending. Text is compared ignoring case, empty values come first, and rows with equal values keep their order. The step reads every row before writing the first one: it sorts the rows in memory, up to the [memory limit of a step](#configuration), and sorts the others in temporary files, which it merges. |
+| **Group and summarize** (`Aggregate`) | In: rows. Out: rows. | The fields to **group by** (none summarizes every row into one) and the **values** computed for each group, each with a name, a function (`Count`, `CountDistinct`, `Sum`, `Average`, `Min`, `Max` or `Median`) and the field it reads; a count without a field counts the rows. The output has the group fields followed by the computed values, with the groups in the order they first appear. The step holds the groups in memory, up to the [memory limit of a step](#configuration), and groups the rows of the others from a temporary file once the first ones are done; the values of a median and of a distinct count stay in memory with their group. |
+| **Join** (`Join`) | In: **Left** and **Right** rows. Out: rows. | The **rows to keep**: only the rows that match (inner join), every row of the left input (left join), every row of the right input (right join), or every row of both inputs (full join). The pairs of fields that must hold equal values for two rows to match; a row with an empty key never matches. Whether text keys **ignore case**. The **prefix of right fields**, `Right.` by default, added to a field of the right input whose name the left input already has. The step reads the right input first: when it fits in the [memory limit of a step](#configuration), the left rows stream through it, so connect the smaller data set to the right; otherwise both inputs are sorted in temporary files and merged. Either way, the rows come out in the same order: each left row with its matches, in the order of the right input, then the right rows without a match. |
 | **Combine rows** (`Union`) | In: rows, several connections. Out: rows. | Appends the rows of every step connected to its input, one connection after the other. Fields are matched by name: a field some rows don't have is empty in them, and fields of different types get the type that holds both. |
-| **Remove duplicates** (`Distinct`) | In: rows. Out: rows. | The fields to **compare** (none compares every field). Keeps the first row of each set of equal values. The step holds one key per distinct row in memory. |
+| **Remove duplicates** (`Distinct`) | In: rows. Out: rows. | The fields to **compare** (none compares every field). Keeps the first row of each set of equal values, and the order of the rows. The step holds the keys it saw in memory, up to the [memory limit of a step](#configuration), and deduplicates the rows of the others from a temporary file once the first ones are done. |
 | **Keep first rows** (`Limit`) | In: rows. Out: rows. | The number of rows to **keep**, and of rows to **skip** first. Once it has its rows, the step stops reading, and the steps before it stop too. |
 
 Grouping, deduplicating and joining compare values exactly: numbers compare by value (`2` equals `2.0`), and text compares with its case unless a join ignores it.
@@ -113,20 +128,28 @@ Grouping, deduplicating and joining compare values exactly: numbers compare by v
 
 | Step | Ports | Settings |
 |------|-------|----------|
-| **Create a file** (`CreateFile`) | In: rows. Out: files. | The **format**: CSV, Excel workbook, JSON or JSON Lines, or any other [registered format](../DataSources/README.md#adding-a-file-format). The **file name**, without its extension, `{PipelineName}-{Date:yyyyMMdd-HHmmss}` by default. Whether the file starts with a row of column names, whether the columns are named with the labels of the fields rather than their technical names, the CSV **delimiter** (`tab` for tab-separated values), the **worksheet name** of a workbook, and whether JSON is indented. The rows are written as they arrive, so a large file never needs to fit in memory. |
+| **Create a file** (`CreateFile`) | In: rows, several connections. Out: files. | The **format**: CSV, Excel workbook, JSON or JSON Lines, or any other [registered format](../DataSources/README.md#adding-a-file-format). The **file name**, without its extension, `{PipelineName}-{Date:yyyyMMdd-HHmmss}` by default. Whether the file starts with a row of column names, whether the columns are named with the labels of the fields rather than their technical names, the CSV **delimiter** (`tab` for tab-separated values), the **worksheet names** of a workbook, and whether JSON is indented. The rows are written as they arrive, so a large file never needs to fit in memory. See [Writing several data sets to a file](#writing-several-data-sets-to-a-file). |
 | **Zip files** (`ZipFiles`) | In: files, several connections. Out: files. | The **archive name**, without the `.zip` extension. Compresses every file it receives into one archive; files with the same name get a number appended. |
+
+#### Writing several data sets to a file
+
+The input of **Create a file** accepts several connections. With the Excel workbook format, each connection writes its own worksheet, in the order of the connections, named after the title of the step it comes from. The **Worksheet names** box takes one name per line, in the order of the connections; an empty or a missing line keeps the title of the step. A name Excel can't use is adjusted, see [File formats](../DataSources/README.md#file-formats).
+
+With the other formats, the rows of every connection are written to one file, one connection after the other, and mapped by field name to the fields of the first connection.
+
+Writing a workbook uses about 16 MB of memory, whatever the number of rows. A worksheet holds at most 1,048,576 rows, the row of column names included, which is the limit of Excel: a run that writes more fails, with a message that suggests a CSV file or several worksheets.
 
 ### Destinations
 
 | Step | Ports | Settings |
 |------|-------|----------|
-| **Save to the media library** (`SaveToMedia`) | In: files. | The **folder** of the media library, empty for the root, and whether a file with the same name is **replaced**, or saved under a name with a number appended. The user the run is for must be allowed to manage the media of the folder, and the media library must accept the extension of each file, see [Saving files to the media library](#saving-files-to-the-media-library). Requires the Data Pipelines - Media feature. |
+| **Save to the media library** (`SaveToMedia`) | In: files. | The **folder** of the media library, empty for the root, and whether a file with the same name is **replaced**, or saved under a name with a number appended. The user the run is for must be allowed to manage the media of the folder, and the media library must accept the extension of each file, see [Saving files to the media library](#saving-files-to-the-media-library). Available when the Media feature is enabled. |
 | **Share a download link** (`ShareDownloadLink`) | In: files. | The **recipients**, user names or emails of users of the site, separated by commas. The number of **days the link works**, from 1 to 365 (7 by default). Whether the link is **sent to the recipients by email**, with a **subject** and an optional **message**. See [Download links](#download-links). |
-| **Upload to an FTP server** (`UploadToFtp`) | In: files. | The **host** and **port** (21 by default), the **encryption** (explicit TLS, the default, implicit TLS, or none), whether the server's **certificate is validated** (by default), the **user name** and **password**, the **remote folder** (created when it doesn't exist, the user's starting folder when empty), whether existing files are **replaced** (otherwise the step fails when a file exists), and the **timeout** in seconds (30 by default). Requires the Data Pipelines - FTP feature. |
-| **Upload to an SFTP server** (`UploadToSftp`) | In: files. | The **host** and **port** (22 by default), the **user name**, a **password**, a **private key** (PEM or OpenSSH format) with its optional **passphrase**, or both, the **host key fingerprint**, the **remote folder** (created when it doesn't exist, the user's home folder when empty), whether existing files are **replaced**, and the **timeout** in seconds (30 by default). See [SFTP host keys](#sftp-host-keys). Requires the Data Pipelines - SFTP feature. |
+| **Upload to an FTP server** (`UploadToFtp`) | In: files. | The **host** and **port** (21 by default), the **encryption** (explicit TLS, the default, implicit TLS, or none), whether the server's **certificate is validated** (by default), the **user name** and **password**, the **remote folder** (created when it doesn't exist, the user's starting folder when empty), whether existing files are **replaced** (otherwise the step fails when a file exists), and the **timeout** in seconds (30 by default). Requires the `OrchardCore.DataPipelines.Ftp` module. |
+| **Upload to an SFTP server** (`UploadToSftp`) | In: files. | The **host** and **port** (22 by default), the **user name**, a **password**, a **private key** (PEM or OpenSSH format) with its optional **passphrase**, or both, the **host key fingerprint**, the **remote folder** (created when it doesn't exist, the user's home folder when empty), whether existing files are **replaced**, and the **timeout** in seconds (30 by default). See [SFTP host keys](#sftp-host-keys). Requires the `OrchardCore.DataPipelines.Sftp` module. |
 | **Send to a web API** (`SendToWebApi`) | In: files. | The absolute http or https **URL**, the **method** (`POST` or `PUT`), and the **body**: a `multipart/form-data` form with the file in a field (`file` by default), or the raw content of the file with its media type. Additional **headers**, which aren't secret. The **authentication**: none, basic (user name and password), a bearer token, or an API key in a header (`X-API-Key` by default). The **timeout** of each request in seconds (100 by default). Each file is sent in its own request, and a response with a status code other than 2xx fails the step. |
-| **Send by email** (`SendByEmail`) | In: files. | The **To**, **Cc** and **Bcc** recipients, separated by commas or semicolons, the **subject** and the **body**, plain text or HTML, and the **maximum size** of the attachments in megabytes (10 by default; larger files fail the step). Sends one email with every file attached, with the default email provider of the site. By default, no email is sent when there are no files. Requires the Data Pipelines - Email feature. |
-| **Save content items** (`SaveContentItems`) | In: rows. Out: **Rejected** rows. | See [Saving content items](#saving-content-items). Requires the Data Pipelines - Content Items feature. |
+| **Send by email** (`SendByEmail`) | In: files. | The **To**, **Cc** and **Bcc** recipients, separated by commas or semicolons, the **subject** and the **body**, plain text or HTML, and the **maximum size** of the attachments in megabytes (10 by default; larger files fail the step). Sends one email with every file attached, with the default email provider of the site. By default, no email is sent when there are no files. Available when the Email feature is enabled. |
+| **Save content items** (`SaveContentItems`) | In: rows. Out: **Rejected** rows. | See [Saving content items](#saving-content-items). Available when the Contents feature is enabled. |
 
 The destinations record what they delivered, such as the path of a saved file or the URL a file was sent to, in the history of the run.
 
@@ -134,6 +157,15 @@ The destinations record what they delivered, such as the path of a saved file or
     The FTP and web API steps warn when the connection isn't encrypted: the credentials and the files then travel in clear text. The web API step sends its requests from the server, to the URL it is given.
 
 The headers of the **Send to a web API** step can't hold credentials: the `Authorization` and `Proxy-Authorization` headers are set with the authentication settings, so they are stored as secrets, and the `Host`, `Content-Length`, `Transfer-Encoding` and `Connection` headers are set by the step. The step uses the `DataPipelines` named `HttpClient`, which can be configured, such as with a proxy, with `services.AddHttpClient("DataPipelines")`.
+
+### Writing formulas
+
+The editors of the **Filter rows** and **Add calculated fields** steps list, below the formulas:
+
+- the fields of the input. Clicking a field inserts its reference, such as `[Amount]`, at the caret of the formula last edited;
+- **Functions and operators**: a reminder of the syntax, and the functions formulas can call, by category, which can be searched by name, signature or description. Clicking a function inserts it, such as `ROUND()`, into the formula last edited, with the caret between the parentheses.
+
+The list holds the [built-in functions](../DataSources/README.md#functions) and those [the modules add](../DataSources/README.md#adding-a-formula-function), except the aggregate functions: the formulas of steps read one row at a time, so they can't use them. Use the **Group and summarize** step to compute counts, sums and averages.
 
 ### Saving content items
 
@@ -175,9 +207,10 @@ Runs execute in the background, so a long run neither delays a response nor hold
 
 - A run reads and writes data with the access of the user who published the pipeline. When this user no longer exists or is disabled, the run fails until the pipeline is published again.
 - One run of a pipeline executes at a time, so two runs don't deliver the same data at once. The other runs of the pipeline wait in the queue.
+- At most `MaxConcurrentRuns` runs of the tenant (4 by default) execute at the same time. The other runs wait in the queue until one ends.
 - A run records its progress every few seconds. A running run that stops reporting its progress for 10 minutes, such as when the site restarted, is marked as failed.
 - A step that fails stops the run.
-- The files a run creates are kept in a temporary folder of the tenant (`App_Data/Sites/{TenantName}/DataPipelines/Runs/{RunId}`), deleted when the run ends.
+- The files a run creates, and the rows its steps write to temporary files, are kept in a temporary folder of the tenant (`App_Data/Sites/{TenantName}/DataPipelines/Runs/{RunId}`), deleted when the run ends.
 
 ### Run history
 
@@ -194,7 +227,7 @@ Runs are deleted `RunRetentionDays` days after they ended (30 by default).
 
 ## Workflows
 
-The Data Pipelines - Workflows feature adds two activities, in the **Data** category.
+When the Workflows feature is enabled, the Data Pipelines feature adds two activities, in the **Data** category.
 
 ### Run Data Pipeline Task
 
@@ -365,7 +398,8 @@ The limits of the engine are the `DataPipelineOptions`, bound to the `OrchardCor
 {
   "OrchardCore": {
     "DataPipelines": {
-      "MaxRowsInMemory": 1000000,
+      "StepMemoryLimitMegabytes": 32,
+      "MaxConcurrentRuns": 4,
       "RunRetentionDays": 30,
       "PreviewRowLimit": 100
     }
@@ -375,14 +409,19 @@ The limits of the engine are the `DataPipelineOptions`, bound to the `OrchardCor
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `MaxRowsInMemory` | `1000000` | The number of rows a step that must see every row before it writes any may hold in memory: the rows of **Sort rows** and of the right input of **Join**, the groups of **Group and summarize**, and the distinct rows of **Remove duplicates**. A run fails rather than exhausting the memory of the server. |
+| `StepMemoryLimitMegabytes` | `32` | The memory, in megabytes, a step that must see many rows at once may use: the rows of **Sort rows**, the right input of **Join**, the groups of **Group and summarize**, and the keys of **Remove duplicates**. The rows that don't fit are written to temporary files of the run, so a step handles any number of rows with this much memory. |
+| `MaxConcurrentRuns` | `4` | The number of runs of the tenant that execute at the same time. The other runs wait in the queue until one ends. |
 | `RunRetentionDays` | `30` | The number of days the runs are kept after they end. `0` keeps them. |
 | `PreviewRowLimit` | `100` | The number of rows each source reads when a step is previewed. |
 
 The options can also be set from code:
 
 ```csharp
-services.Configure<DataPipelineOptions>(options => options.MaxRowsInMemory = 5_000_000);
+services.Configure<DataPipelineOptions>(options =>
+{
+    options.StepMemoryLimitMegabytes = 128;
+    options.MaxConcurrentRuns = 2;
+});
 ```
 
 ## Extending data pipelines
@@ -395,7 +434,7 @@ The **Read a data source** step reads every registered data source, and the **Cr
 
 A step type is a stateless, scoped service; the settings of each step are stored on its `DataPipelineStep`. Derive from `DataPipelineStepType<TSettings>`, from the `OrchardCore.DataPipelines.Abstractions` package, to store the settings as one object, read with `GetSettings(step)`:
 
-- `Category` sets the default ports: a `Source` has one rows output; a `Transform` has one required rows input and one rows output; a `File` step has one required rows input and one files output; a `Destination` has one required files input. Override `GetInputs` and `GetOutputs` for other ports, such as the two inputs of **Join**. Destinations are never executed by a preview.
+- `Category` sets the default ports: a `Source` has one rows output; a `Transform` has one required rows input and one rows output; a `File` step has one required rows input and one files output; a `Destination` has one required files input. Override `GetInputs` and `GetOutputs` for other ports, such as the two inputs of **Join**, or an input whose port sets `AllowsMany` to accept several connections. Destinations are never executed by a preview.
 - `DescribeAsync` checks the settings against the fields of the inputs, reports errors and warnings, and sets the fields of each rows output. The designer calls it to list the fields available to the next steps, and the engine calls it before a run. By default, a step passes the fields of its input to its outputs.
 - `ExecuteAsync` reads the inputs and writes the outputs until the inputs are exhausted. It runs at the same time as the other steps, in its own scope.
 
@@ -503,12 +542,29 @@ public sealed class MaskTextStep : DataPipelineStepType<MaskTextStepSettings>
 
 The `DataPipelineStepContext` gives a step:
 
-- its inputs and outputs, with `GetInput(port)` and `GetOutput(port)` (`Input` and `Output` by default). An input reads rows with `ReadBatchesAsync` or files with `ReadFilesAsync`; an output writes rows with `WriteAsync` or files with `WriteFileAsync`. The `Fields` of an input or an output are the fields described before the run;
+- its inputs and outputs, with `GetInput(port)` and `GetOutput(port)` (`Input` and `Output` by default). An input reads rows with `ReadBatchesAsync` or files with `ReadFilesAsync`; an output writes rows with `WriteAsync` or files with `WriteFileAsync`. The `Fields` of an input or an output are the fields described before the run. An input with several connections reads them one after the other; its `FieldSets` and `ConnectionLabels` are the fields and the step titles of each connection, and `ReadConnectionBatchesAsync(connection)` reads one connection, such as to write each one to its own worksheet;
 - the `Run`: the user the run is for (`Run.User`), its parameters, whether it is a preview (`Run.IsPreview`), and `Run.CreateFile(fileName, contentType)`, which creates a file in the temporary folder of the run;
 - the `Services` of the step's scope, and the `CancellationToken` that is cancelled when the run is cancelled or fails;
 - `LogInformation` and `LogWarning`, which record messages in the history of the run, and `AddDelivery`, which records what a destination delivered. These messages must not hold secrets.
 
 The engine counts the rows and files each step reads and writes.
+
+A step that must see many rows before it writes any, such as a sort, uses the [data operations](../DataSources/README.md#data-operations) of the Data Pipelines Core feature with the options `DataPipelineRowReader.CreateSpillOptions(context)` returns: the memory limit of `StepMemoryLimitMegabytes`, and a folder in the temporary folder of the run, deleted with it. `DataPipelineRowReader.OpenAsync(input)` reads the rows of an input as one sequence, and `DataPipelineRowReader.WriteRowsAsync` writes rows to an output in batches:
+
+```csharp
+using OrchardCore.DataSources.Operations;
+
+public override async Task ExecuteAsync(DataPipelineStepContext context)
+{
+    await using var reader = await DataPipelineRowReader.OpenAsync(context.GetInput(), context.CancellationToken);
+
+    // The largest amounts first.
+    var comparer = DataSorter.CreateComparer([(reader.Fields.IndexOf("Amount"), Descending: true)]);
+    var sorted = DataSorter.SortAsync(reader.ReadRowsAsync(), comparer, DataPipelineRowReader.CreateSpillOptions(context), context.CancellationToken);
+
+    await DataPipelineRowReader.WriteRowsAsync(context.GetOutput(), reader.Fields, sorted, context.CancellationToken);
+}
+```
 
 !!! note
     A step reads and writes data for the user the run is for, `Run.User`: the user who published the pipeline, or the designer during a preview. A step that reads or writes data of the site must check this user's permissions, as the built-in steps do.
@@ -603,7 +659,7 @@ public sealed class Startup : StartupBase
 
 ### Reacting to the end of runs
 
-Implement `IDataPipelineRunHandler` to react when a run ends, whether it succeeded, failed or was cancelled. Handlers are called in their own scope, after the run is saved; this is how the Workflows feature resumes the workflows that wait for a run.
+Implement `IDataPipelineRunHandler` to react when a run ends, whether it succeeded, failed or was cancelled. Handlers are called in their own scope, after the run is saved; this is how the workflow activities resume the workflows that wait for a run.
 
 ```csharp
 using OrchardCore.DataPipelines.Models;
